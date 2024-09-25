@@ -5,6 +5,7 @@ import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import Prompt from '@/components/Prompt.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
+import Question from '@/arkham/components/Question.vue';
 
 // TODO should we pass in the investigator
 export interface Props {
@@ -12,8 +13,11 @@ export interface Props {
   playerId: string
 }
 
+const question = computed(() => props.game.question[props.playerId])
 const model = defineModel()
 const props = defineProps<Props>()
+const emit = defineEmits<{ choose: [value: number] }>()
+const choose = (idx: number) => emit('choose', idx)
 const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
@@ -76,6 +80,23 @@ async function skip() {
     skipping.value = false
   });
 }
+
+const tabooList = function (investigator: Investigator) {
+  if (investigator.taboo) {
+    switch (investigator.taboo) {
+      case "TabooList15": return "1.5 (Apr 23, 2019)"
+      case "TabooList16": return "1.6 (Sep 27, 2019)"
+      case "TabooList18": return "1.8 (Oct 15, 2020)"
+      case "TabooList19": return "1.9 (Jun 28, 2021)"
+      case "TabooList20": return "2.0 (Aug 26, 2022)"
+      case "TabooList21": return "2.1 (Aug 30, 2023)"
+      case "TabooList22": return "2.2 (Feb 20, 2024)"
+      default: return "Unknown Taboo List"
+    }
+  }
+
+  return null
+}
 </script>
 
 <template>
@@ -83,21 +104,34 @@ async function skip() {
     <div class="column">
       <h2 class="title">Upgrade Deck ({{xp}} TOTAL xp)</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
-        <div class="fields">
-          <p>To upgrade your deck paste a URL from ArkhamDB, this can either be a brand new deck or the existing url</p>
-          <input
-            type="url"
-            v-model="deck"
-            @change="loadDeck"
-            @paste.prevent="pasteDeck($event)"
-            placeholder="ArkhamDB or arkham.build deck url"
-          />
-          <div class="buttons">
-            <button @click.prevent="upgrade">Upgrade</button>
-            <button @click.prevent="skipping = true">Do not Upgrade</button>
+        <template v-if="question && question.tag !== 'ChooseUpgradeDeck'">
+          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <div v-if="question && playerId == investigator.playerId" class="question">
+            <Question :game="game" :playerId="playerId" @choose="choose" />
           </div>
-        </div>
+          <div v-else>
+            <div v-if="tabooList(investigator)" class="taboo-list">
+              Taboo List: {{tabooList(investigator)}}
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <div class="fields">
+            <p>To upgrade your deck paste a URL from ArkhamDB, this can either be a brand new deck or the existing url</p>
+            <input
+              type="url"
+              v-model="deck"
+              @change="loadDeck"
+              @paste.prevent="pasteDeck($event)"
+              placeholder="ArkhamDB or arkham.build deck url"
+            />
+            <div class="buttons">
+              <button @click.prevent="upgrade">Upgrade</button>
+              <button @click.prevent="skipping = true">Do not Upgrade</button>
+            </div>
+          </div>
+        </template>
       </div>
       <div v-else class="upgrade-deck">
         Waiting for other players to upgrade deck.
@@ -194,5 +228,21 @@ input {
   width: 150px;
   border-radius: 10px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+.question {
+  flex: 1;
+  :deep(button) {
+    margin-left: 0px;
+  }
+  :deep(.amount-contents) {
+    form {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    border-radius: 15px;
+  }
 }
 </style>

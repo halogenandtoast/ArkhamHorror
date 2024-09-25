@@ -340,7 +340,7 @@ const tarotCardAbility = (card: TarotCard) => {
 
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" />
+    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose"/>
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body">

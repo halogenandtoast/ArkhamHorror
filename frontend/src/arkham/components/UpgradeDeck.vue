@@ -15,6 +15,7 @@ export interface Props {
 
 const question = computed(() => props.game.question[props.playerId])
 const model = defineModel()
+const fetching = ref(false)
 const props = defineProps<Props>()
 const emit = defineEmits<{ choose: [value: number] }>()
 const choose = (idx: number) => emit('choose', idx)
@@ -30,6 +31,63 @@ const investigator = computed(() => {
 const investigatorId = computed(() => investigator.value?.id)
 const xp = computed(() => investigator.value?.xp)
 const skipping = ref(false)
+
+const currentDeckUrl = computed(() => {
+  if (!investigator.value) { return null }
+  return investigator.value.deckUrl
+})
+
+const isArkhamDBDeck = computed(() => {
+  if (!currentDeckUrl.value) { return false }
+  return currentDeckUrl.value.startsWith('https://arkhamdb.com')
+})
+
+function viewDeck() {
+  if (currentDeckUrl.value) {
+    const arkhamDbApiRegex = /https:\/\/arkhamdb\.com\/api\/public\/deck\/([^/]+)/
+    const matches = currentDeckUrl.value.match(arkhamDbApiRegex)
+    if (matches) {
+      window.open(`https://arkhamdb.com/deck/view/${matches[1]}`)
+    }
+  }
+}
+
+async function syncUpgrade() {
+  if (!investigator.value?.deckUrl) return;
+  let nextUrl: string | null = investigator.value.deckUrl;
+  if (nextUrl) {
+    const arkhamDbApiRegex = /https:\/\/arkhamdb\.com\/api\/public\/deck\/([^/]+)/;
+    const matches = nextUrl.match(arkhamDbApiRegex);
+
+    if (matches) {
+      let content: { url: string; next_deck: string } | null = null;
+      fetching.value = true;
+
+      do {
+        try {
+          const response = await fetch(nextUrl);
+          const data = await response.json();
+          content = { ...data, url: nextUrl };
+
+          if (data.next_deck != null) {
+            nextUrl = `https://arkhamdb.com/api/public/deck/${data.next_deck}`;
+          } else {
+            nextUrl = null;
+          }
+        } catch (error) {
+          nextUrl = null;
+        }
+      } while (nextUrl);
+
+      if (content && content.url) {
+        model.value = content;
+        deck.value = content.url;
+        deckUrl.value = content.url;
+        upgrade();
+      }
+    }
+  }
+}
 
 function loadDeck() {
   if (!deck.value) return
@@ -126,17 +184,45 @@ const tabooList = function (investigator: Investigator) {
         <template v-else>
           <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
           <div class="fields">
-            <p>To upgrade your deck paste a URL from ArkhamDB, this can either be a brand new deck or the existing url</p>
-            <input
-              type="url"
-              v-model="deck"
-              @change="loadDeck"
-              @paste.prevent="pasteDeck($event)"
-              placeholder="ArkhamDB or arkham.build deck url"
-            />
-            <div class="buttons">
-              <button @click.prevent="upgrade">Upgrade</button>
-              <button @click.prevent="skipping = true">Do not Upgrade</button>
+            <div v-if="isArkhamDBDeck" class="arkhamdb-integration column">
+              <template v-if="fetching">
+                <p>Fetching deck from ArkhamDB...</p>
+              </template>
+              <template v-else>
+                <p>Upgrade your deck directly in ArkhamDB and sync here.</p>
+                <div class="buttons">
+                  <button @click.prevent="viewDeck">Open Deck in ArkhamDB</button>
+                  <button @click.prevent="syncUpgrade">Pull Upgraded Deck from ArkhamDB</button>
+                </div>
+                <span class="separator">OR</span>
+                <div class="single-field">
+                  <input
+                    type="url"
+                    v-model="deck"
+                    @change="loadDeck"
+                    @paste.prevent="pasteDeck($event)"
+                    placeholder="ArkhamDB or arkham.build deck url"
+                  />
+                  <button @click.prevent="upgrade">Upgrade</button>
+                </div>
+                <div class="buttons">
+                  <button class="skip" @click.prevent="skipping = true">Continue without upgrading</button>
+                </div>
+              </template>
+            </div>
+            <div v-else>
+              <p>To upgrade your deck paste a URL from ArkhamDB, this can either be a brand new deck or the existing url</p>
+              <input
+                type="url"
+                v-model="deck"
+                @change="loadDeck"
+                @paste.prevent="pasteDeck($event)"
+                placeholder="ArkhamDB or arkham.build deck url"
+              />
+              <div class="buttons">
+                <button @click.prevent="upgrade">Upgrade</button>
+                <button @click.prevent="skipping = true">Do not Upgrade</button>
+              </div>
             </div>
           </div>
         </template>
@@ -198,6 +284,7 @@ h2 {
 p {
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
 input {
@@ -213,15 +300,16 @@ input {
 .buttons {
   display: flex;
   gap: 5px;
-  button {
-    text-transform: uppercase;
-    flex: 1;
-    padding: 10px;
-    border: 0;
-    background-color: var(--button-1);
-    &:hover {
-      background-color: var(--button-1-highlight);
-    }
+}
+
+button {
+  text-transform: uppercase;
+  flex: 1;
+  padding: 10px;
+  border: 0;
+  background-color: var(--button-1);
+  &:hover {
+    background-color: var(--button-1-highlight);
   }
 }
 
@@ -252,5 +340,50 @@ input {
     }
     border-radius: 15px;
   }
+}
+
+.single-field {
+  display: grid;
+  grid-template-rows: 2em; grid-template-columns: 1fr auto;
+  padding-bottom: 10px;
+  input {
+    border: 0;
+    height: 100%;
+  }
+
+  button {
+    height: 100%;
+    min-width: fit-content;
+    width: fit-content;
+  }
+}
+
+.skip {
+  background-color: darkgoldenrod;
+}
+
+p.secondary {
+  font-size: 0.7em;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: .25em;
 }
 </style>

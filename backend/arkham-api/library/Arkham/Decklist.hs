@@ -41,6 +41,7 @@ data Decklist = Decklist
   , decklistCards :: [PlayerCard]
   , decklistExtraDeck :: [PlayerCard]
   , decklistTaboo :: Maybe TabooList
+  , decklistUrl :: Maybe Text
   }
 
 type Parser = ParsecT Text () Identity
@@ -51,6 +52,7 @@ loadDecklist decklist =
     <$> loadDecklistCards slots decklist
     <*> loadExtraDeck decklist
     <*> pure (fromTabooId $ taboo_id decklist)
+    <*> pure (url decklist)
 
 decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
 decklistInvestigatorId decklist = case meta decklist of

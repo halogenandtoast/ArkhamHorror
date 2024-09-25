@@ -287,6 +287,7 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   , investigatorTaboo :: Maybe TabooList
   , investigatorMutated :: Maybe Text -- for art display
+  , investigatorDeckUrl :: Maybe Text
   }
   deriving stock (Show, Eq, Data)
 

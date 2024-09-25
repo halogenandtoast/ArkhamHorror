@@ -141,7 +141,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
            , StartScenario scenarioId
            ]
     pure a
-  InitDeck iid deck -> do
+  InitDeck iid _ deck -> do
     standalone <- getIsStandalone
     if standalone
       then do

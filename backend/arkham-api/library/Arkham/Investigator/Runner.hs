@@ -324,6 +324,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         , investigatorTaboo = investigatorTaboo
         , investigatorMutated = investigatorMutated
         , investigatorSlots = defaultSlots a.id
+        , investigatorDeckUrl = investigatorDeckUrl
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -1857,6 +1858,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
       & (foundCardsL . each %~ filter (/= card))
+  InitDeck iid murl _ | iid == investigatorId -> do
+    pure $ a & deckUrlL .~ murl
+  UpgradeDeck iid murl _ | iid == investigatorId -> do
+    pure $ a & deckUrlL .~ murl
   ObtainCard card -> do
     pure
       $ a

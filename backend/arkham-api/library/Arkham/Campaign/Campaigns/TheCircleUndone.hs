@@ -112,7 +112,14 @@ instance RunMessage TheCircleUndone where
           [ CardLabel
             (cdCardCode card)
             [ LoadDecklist player
-                $ ArkhamDBDecklist mempty mempty (InvestigatorId $ cdCardCode card) (toTitle card) Nothing Nothing -- TODO: should we figure out the taboo list here??
+                $ ArkhamDBDecklist
+                  mempty
+                  mempty
+                  (InvestigatorId $ cdCardCode card)
+                  (toTitle card)
+                  Nothing
+                  Nothing
+                  Nothing -- TODO: should we figure out the taboo list here??
             ]
           | card <- availablePrologueInvestigators
           ]

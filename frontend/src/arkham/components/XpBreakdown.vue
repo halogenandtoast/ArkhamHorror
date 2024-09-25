@@ -25,6 +25,10 @@ const name = computed(() => {
     return result?.name || "Unknown Scenario"
   }
 
+  if (props.step.tag === 'InterludeStep') {
+    return `Interlude ${props.step.contents}`
+  }
+
   return "Unknown step"
 })
 

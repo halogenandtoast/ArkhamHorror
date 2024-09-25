@@ -28,6 +28,7 @@ const updateLanguage = (a: Event) => {
         <select v-model="$i18n.locale" @change="updateLanguage">
           <option value="en">English</option>
           <option value="it">Italiano</option>
+          <option value="es">Español</option>
         </select>
       </fieldset>
 

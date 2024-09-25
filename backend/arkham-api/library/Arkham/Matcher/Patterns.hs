@@ -243,6 +243,11 @@ pattern EnemyWithAnyDoom <- EnemyWithDoom (GreaterThan (Static 0))
   where
     EnemyWithAnyDoom = EnemyWithDoom (GreaterThan (Static 0))
 
+pattern EnemyWithoutDoom :: EnemyMatcher
+pattern EnemyWithoutDoom <- EnemyWithDoom (EqualTo (Static 0))
+  where
+    EnemyWithoutDoom = EnemyWithDoom (EqualTo (Static 0))
+
 pattern EnemyWithAnyDamage :: EnemyMatcher
 pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
   where

@@ -42,10 +42,16 @@ import Arkham.Source as X
 import Arkham.Spawn as X
 import Arkham.Target as X
 
-import Arkham.Classes.HasQueue (HasQueue, evalQueueT, replaceAllMessagesMatching)
+import Arkham.Classes.HasQueue (
+  HasQueue,
+  evalQueueT,
+  pushAll,
+  replaceAllMessagesMatching,
+ )
 import Arkham.Modifier
 import Arkham.Queue
 import Arkham.Window qualified as Window
+import Control.Monad.Trans
 
 disengageEnemyFromAll :: ReverseQueue m => EnemyAttrs -> m ()
 disengageEnemyFromAll attrs = push $ DisengageEnemyFromAll attrs.id
@@ -73,3 +79,41 @@ insteadOfDiscarding attrs body = do
 
 doesNotReadyDuringUpkeep :: (ReverseQueue m, Sourceable source) => source -> EnemyAttrs -> m ()
 doesNotReadyDuringUpkeep source attrs = roundModifier source attrs DoesNotReadyDuringUpkeep
+
+insteadOfDefeat
+  :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+insteadOfDefeat attrs body = whenM (beingDefeated attrs) do
+  cancelEnemyDefeat attrs
+  pushAll =<< evalQueueT body
+
+insteadOfEvading
+  :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
+insteadOfEvading attrs body = whenM (beingEvaded attrs) do
+  cancelEvadeEnemy attrs
+  pushAll =<< evalQueueT body
+
+cancelEvadeEnemy :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m ()
+cancelEvadeEnemy attrs = matchingDon't isEvadedMessage
+ where
+  isEvadedMessage = \case
+    EnemyEvaded _ eid -> eid == attrs.id
+    Do msg -> isEvadedMessage msg
+    _ -> False
+
+beingEvaded :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m Bool
+beingEvaded attrs = fromQueue $ any isEvadedMessage
+ where
+  isEvadedMessage = \case
+    EnemyEvaded _ eid -> eid == attrs.id
+    Do msg -> isEvadedMessage msg
+    _ -> False
+
+beingDefeated :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m Bool
+beingDefeated attrs = fromQueue $ any isDefeatedMessage
+ where
+  isDefeatedMessage = \case
+    EnemyDefeated eid _ _ _ -> eid == attrs.id
+    When (EnemyDefeated eid _ _ _) -> eid == attrs.id
+    After (EnemyDefeated eid _ _ _) -> eid == attrs.id
+    Do msg -> isDefeatedMessage msg
+    _ -> False

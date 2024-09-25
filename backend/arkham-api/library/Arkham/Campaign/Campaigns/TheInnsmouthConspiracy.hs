@@ -3,10 +3,12 @@ module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (
   theInnsmouthConspiracy,
 ) where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
 import Arkham.Helpers.Log
+import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Source
@@ -29,6 +31,8 @@ instance IsCampaign TheInnsmouthConspiracy where
     PrologueStep -> Just ThePitOfDespair
     ThePitOfDespair -> Just (InterludeStep 1 Nothing)
     InterludeStep 1 _ -> Just TheVanishingOfElinaHarper
+    TheVanishingOfElinaHarper -> Just (InterludeStep 2 Nothing)
+    InterludeStep 2 _ -> Just (UpgradeDeckStep InTooDeep)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -43,7 +47,7 @@ instance RunMessage TheInnsmouthConspiracy where
       memoriesRecovered <- getRecordSet MemoriesRecovered
       when (recorded AMeetingWithThomasDawson `elem` memoriesRecovered) $ do
         story $ i18nWithTitle "aMeetingWithThomasDawson"
-        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.AMeetingWithThomasDawson") 1
+        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.aMeetingWithThomasDawson") 1
       when (null memoriesRecovered) $ do
         story $ i18nWithTitle "noMemoriesRecovered"
       when (recorded ABattleWithAHorrifyingDevil `elem` memoriesRecovered) $ do
@@ -57,5 +61,14 @@ instance RunMessage TheInnsmouthConspiracy where
         selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.anEncounterWithASecretCult") 1
       story $ i18nWithTitle "part2"
       nextCampaignStep
+      pure c
+    CampaignStep (InterludeStep 2 _) -> scope "interlude2" do
+      story $ i18nWithTitle "theSyzygy1"
+      whenHasRecord TheMissionFailed $ story $ i18nWithTitle "theSyzygy2"
+      whenHasRecord TheMissionWasSuccessful do
+        story $ i18nWithTitle "theSyzygy3"
+        investigators <- allInvestigators
+        addCampaignCardToDeckChoice investigators Assets.elinaHarperKnowsTooMuch
+      story $ i18nWithTitle "theSyzygy4"
       pure c
     _ -> lift $ defaultCampaignRunner msg c

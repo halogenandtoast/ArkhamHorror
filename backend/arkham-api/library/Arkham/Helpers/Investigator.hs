@@ -365,6 +365,7 @@ investigator f cardDef Stats {..} =
                 , investigatorBeganRoundAt = Nothing
                 , investigatorTaboo = Nothing
                 , investigatorMutated = Nothing
+                , investigatorDeckUrl = Nothing
                 }
         }
 

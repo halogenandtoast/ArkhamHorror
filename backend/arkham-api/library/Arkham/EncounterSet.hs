@@ -133,6 +133,7 @@ data EncounterSet
   | Syzygy
   | FloodedCaverns
   | TheLocals
+  | InTooDeep
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

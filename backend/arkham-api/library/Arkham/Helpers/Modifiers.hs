@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability.Types
 import Arkham.Card
 import Arkham.ChaosToken.Types
-import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
@@ -27,7 +26,6 @@ import Control.Monad.Trans.Class
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Monoid (First (..))
-import GHC.OverloadedLabels
 
 withModifiers
   :: (HasGame m, Targetable target)

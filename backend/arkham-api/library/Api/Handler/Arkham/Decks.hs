@@ -122,7 +122,7 @@ putApiV1ArkhamGameDecksR gameId = do
           Left err -> error $ show err
           Right decklist -> do
             cards <- loadDecklistCards slots decklist
-            pure $ UpgradeDeck investigatorId (Deck cards)
+            pure $ UpgradeDeck investigatorId (Just deckUrl) (Deck cards)
     push msg
     runMessages Nothing
   ge <- readIORef gameRef

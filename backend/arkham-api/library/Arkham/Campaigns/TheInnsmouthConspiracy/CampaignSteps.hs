@@ -11,3 +11,8 @@ pattern TheVanishingOfElinaHarper :: CampaignStep
 pattern TheVanishingOfElinaHarper <- ScenarioStep "07056"
   where
     TheVanishingOfElinaHarper = ScenarioStep "07056"
+
+pattern InTooDeep :: CampaignStep
+pattern InTooDeep <- ScenarioStep "07123"
+  where
+    InTooDeep = ScenarioStep "07123"

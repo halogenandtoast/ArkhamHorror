@@ -22,7 +22,7 @@ instance HasAbilities GilmanHouse where
 
 instance RunMessage GilmanHouse where
   runMessage msg l@(GilmanHouse attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       twice $ doStep 1 msg
       pure l
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

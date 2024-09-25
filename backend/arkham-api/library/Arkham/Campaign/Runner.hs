@@ -73,7 +73,7 @@ defaultCampaignRunner msg a = case msg of
       then pure $ updateAttrs a (chaosBagL %~ (token :))
       else pure a
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
-  InitDeck iid deck -> do
+  InitDeck iid _ deck -> do
     playerCount <- getPlayerCount
     investigatorClass <- field InvestigatorClass iid
     (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
@@ -89,7 +89,7 @@ defaultCampaignRunner msg a = case msg of
     let mental = getChoiceAmount "Mental" choiceMap
     push $ SufferTrauma iid physical mental
     pure a
-  UpgradeDeck iid deck -> do
+  UpgradeDeck iid _ deck -> do
     pid <- getPlayer iid
     let
       oldDeck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)

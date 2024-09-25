@@ -112,6 +112,7 @@ export type Investigator = {
   isYithian: boolean;
   mutated?: string;
   taboo?: string;
+  deckUrl?: string;
   slots: Slot[];
   log: LogContents;
   meta: any;
@@ -210,6 +211,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   isYithian: JsonDecoder.boolean,
   mutated: JsonDecoder.optional(JsonDecoder.string),
   taboo: JsonDecoder.optional(JsonDecoder.string),
+  deckUrl: JsonDecoder.optional(JsonDecoder.string),
   slots: slotsDecoder,
   log: logContentsDecoder,
   meta: JsonDecoder.succeed,

@@ -50,11 +50,13 @@ export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
 
 export type InterludeStep = {
   tag: 'InterludeStep';
+  contents: number;
 }
 
 export const interludeStepDecoder = JsonDecoder.object<InterludeStep>(
   {
     tag: JsonDecoder.isExactly('InterludeStep'),
+    contents: JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.succeed]).map(([contents]) => contents),
   },
   'InterludeStep',
 );

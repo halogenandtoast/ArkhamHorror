@@ -570,7 +570,7 @@ onUnmounted(() => {
       </GameDetails>
     </div>
     <template v-else>
-      <CampaignLog v-if="showLog && game !== null" :game="game" :cards="cards" />
+      <CampaignLog v-if="showLog && game !== null" :game="game" :cards="cards" :playerId="playerId" />
       <div v-else class="game-main">
         <div v-if="gameCard" class="revelation">
           <div class="revelation-container">
@@ -636,7 +636,7 @@ onUnmounted(() => {
         </div>
         <div class="game-over" v-if="gameOver">
           <p>Game over</p>
-          <CampaignLog v-if="game !== null" :game="game" :cards="cards" />
+          <CampaignLog v-if="game !== null" :game="game" :cards="cards" :playerId="playerId" />
         </div>
         <div class="sidebar" v-if="game.scenario === null">
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />

@@ -65,7 +65,7 @@ const questionHash = computed(() => {
 
 <template>
   <div v-if="upgradeDeck" id="game" class="game">
-    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" />
+    <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="chooseDeck" id="game" class="game">
     <h2 v-if="questionLabel" class="question-label">{{ questionLabel }}</h2>

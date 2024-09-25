@@ -16,8 +16,7 @@ fogOverInnsmouth :: TreacheryCard FogOverInnsmouth
 fogOverInnsmouth = treachery FogOverInnsmouth Cards.fogOverInnsmouth
 
 instance HasModifiersFor FogOverInnsmouth where
-  getModifiersFor (LocationTarget _) (FogOverInnsmouth a) = do
-    modified a [ShroudModifier 1]
+  getModifiersFor (LocationTarget _) (FogOverInnsmouth a) = modified a [ShroudModifier 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FogOverInnsmouth where

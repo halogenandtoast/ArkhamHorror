@@ -445,6 +445,8 @@ allTreacheries =
       SomeTreacheryCard undertow
     , SomeTreacheryCard risingTides
     , SomeTreacheryCard riptide
+    , --- Fog over Innsmouth [tic]
+      SomeTreacheryCard fogOverInnsmouth
     , --- Shattered Memories [tic]
       SomeTreacheryCard macabreMemento
     , SomeTreacheryCard fracturedConsciousness

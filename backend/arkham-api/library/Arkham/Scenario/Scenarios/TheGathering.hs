@@ -4,7 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
-import Arkham.Campaigns.NightOfTheZealot.ChaosBag
+import Arkham.Campaigns.NightOfTheZealot.Import hiding (TheGathering)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -55,12 +55,12 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
 instance RunMessage TheGathering where
-  runMessage msg s@(TheGathering attrs) = runQueueT $ withI18n $ case msg of
+  runMessage msg s@(TheGathering attrs) = runQueueT $ campaignI18n $ scope "theGathering" $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
+      story $ i18nWithTitle "intro"
       pure s
     Setup -> runScenarioSetup TheGathering attrs do
       gather Set.TheGathering
@@ -69,6 +69,9 @@ instance RunMessage TheGathering where
       gather Set.StrikingFear
       gather Set.AncientEvils
       gather Set.ChillingCold
+
+      setAgendaDeck theGatheringAgendaDeck
+      setActDeck [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
 
       setAside
         [ Enemies.ghoulPriest
@@ -79,17 +82,13 @@ instance RunMessage TheGathering where
         , Locations.parlor
         ]
 
-      setAgendaDeck theGatheringAgendaDeck
-      setActDeck [Acts.trapped, Acts.theBarrier, Acts.whatHaveYouDone]
-
-      study <- place Locations.study
-      startAt study
+      startAt =<< place Locations.study
     ResolveChaosToken _ Cultist iid -> do
-      pushWhen (isHardExpert attrs) $ DrawAnotherChaosToken iid
+      when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
-      whenM (selectAny $ enemyAtLocationWith iid <> withTrait Ghoul)
-        $ assignDamageAndHorror iid Tablet 1 (byDifficulty attrs 0 1)
+      whenAny (enemyAtLocationWith iid <> withTrait Ghoul) do
+        assignDamageAndHorror iid Tablet 1 (byDifficulty attrs 0 1)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
@@ -107,26 +106,26 @@ instance RunMessage TheGathering where
             Assets.litaChantler
       case resolution of
         NoResolution -> do
-          story $ i18n "nightOfTheZealot.theGathering.resolutions.noResolution"
+          story $ i18n "resolutions.noResolution"
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita []
-          allGainXpWithBonus attrs 2
+          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 1 -> do
-          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution1"
+          story $ i18nWithTitle "resolutions.resolution1"
           record YourHouseHasBurnedToTheGround
           chooseToAddLita []
           sufferMentalTrauma leadId 1
-          allGainXpWithBonus attrs 2
+          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 2 -> do
-          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution2"
+          story $ i18nWithTitle "resolutions.resolution2"
           record YourHouseIsStillStanding
-          gainXp leadId attrs 1
-          allGainXpWithBonus attrs 2
+          gainXp leadId attrs (ikey "xp.resolution2") 1
+          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 3 -> do
           -- TODO: missing rules
           -- \* handle new investigators
-          story $ i18nWithTitle "nightOfTheZealot.theGathering.resolutions.resolution3"
+          story $ i18nWithTitle "resolutions.resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive

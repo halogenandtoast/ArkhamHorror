@@ -4,6 +4,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Prelude
 
 getIsFullCampaign :: HasGame m => m Bool
@@ -25,3 +26,6 @@ getIsTheWebOfDreams = getIsPartialCampaign TheWebOfDreams
 
 getIsTheDreamQuest :: HasGame m => m Bool
 getIsTheDreamQuest = getIsPartialCampaign TheDreamQuest
+
+campaignI18n :: (HasI18n => a) -> a
+campaignI18n a = withI18n $ scope "theDreamEaters" a

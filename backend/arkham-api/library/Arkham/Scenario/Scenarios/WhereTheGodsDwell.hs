@@ -11,12 +11,14 @@ import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype WhereTheGodsDwell = WhereTheGodsDwell ScenarioAttrs
@@ -68,14 +70,10 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage WhereTheGodsDwell where
-  runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ withI18n $ case msg of
+  runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       carried <- getHasRecord TheInvestigatorsWereCarriedToTheColdWastes
-      story
-        $ i18nWithTitle
-        $ if carried
-          then "theDreamEaters.whereTheGodsDwell.intro1"
-          else "theDreamEaters.whereTheGodsDwell.intro2"
+      story $ i18nWithTitle $ if carried then "intro1" else "intro2"
       pure s
     StandaloneSetup -> do
       record RandolphSurvivedTheVoyage
@@ -153,12 +151,12 @@ instance RunMessage WhereTheGodsDwell where
     ScenarioResolution r -> do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "theDreamEaters.whereTheGodsDwell.noResolution"
+          story $ i18n "resolutions.noResolution"
           record Nyarlathotep'sInvasionHasBegun
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "theDreamEaters.whereTheGodsDwell.resolution1"
+          story $ i18n "resolutions.resolution1"
           record TheDreamersEscapedFromNyarlathotep'sGrasp
           allGainXp attrs
           eachInvestigator (`sufferMentalTrauma` 2)
@@ -173,9 +171,9 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 2 -> do
-          story $ i18n "theDreamEaters.whereTheGodsDwell.resolution2"
+          story $ i18n "resolutions.resolution2"
           record TheDreamersBanishedNyarlathotep
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution2" 5
           eachInvestigator (`sufferMentalTrauma` 2)
           lead <- getLead
           knowOfAnotherPath <- getHasRecord TheDreamersKnowOfAnotherPath
@@ -188,17 +186,17 @@ instance RunMessage WhereTheGodsDwell where
                | knowOfAnotherPath
                ]
         Resolution 3 -> do
-          story $ i18n "theDreamEaters.whereTheGodsDwell.resolution3"
+          story $ i18n "resolutions.resolution3"
           record TheDreamersAwoke
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18n "theDreamEaters.whereTheGodsDwell.resolution4"
+          story $ i18n "resolutions.resolution4"
           record TheDreamersStayedInTheDreamlandsForever
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18n "theDreamEaters.whereTheGodsDwell.resolution5"
+          story $ i18n "resolutions.resolution5"
           record TheDreamersTraveledBeneathTheMonastery
           endOfScenario
         other -> throw $ UnknownResolution other

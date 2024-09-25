@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -20,6 +21,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheWitchingHour.Helpers
 import Arkham.Scenarios.TheWitchingHour.Story
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
@@ -50,7 +52,7 @@ instance HasChaosTokenValue TheWitchingHour where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheWitchingHour where
-  runMessage msg s@(TheWitchingHour attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheWitchingHour attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
@@ -152,13 +154,13 @@ instance RunMessage TheWitchingHour where
           story resolution1
           record TheWitches'SpellWasBroken
           recordSetInsert MementosDiscovered [MesmerizingFlute, RitualComponents]
-          allGainXpWithBonus attrs 1
+          allGainXpWithBonus attrs $ toBonus "bonus" 1
           endOfScenario
         Resolution 2 -> do
           story resolution2
           record TheWitches'SpellWasBroken
           recordSetInsert MementosDiscovered [MesmerizingFlute, ScrapOfTornShadow]
-          allGainXpWithBonus attrs 1
+          allGainXpWithBonus attrs $ toBonus "bonus" 1
           endOfScenario
         Resolution 3 -> do
           story resolution3
@@ -166,14 +168,14 @@ instance RunMessage TheWitchingHour where
           if step == ActStep 3
             then do
               recordSetInsert MementosDiscovered [MesmerizingFlute]
-              allGainXpWithBonus attrs 1
+              allGainXpWithBonus attrs $ toBonus "bonus" 1
             else allGainXp attrs
           endOfScenario
         Resolution 4 -> do
           story resolution4
           record TheWitches'SpellWasCast
           recordSetInsert MementosDiscovered [MesmerizingFlute]
-          allGainXpWithBonus attrs 1
+          allGainXpWithBonus attrs $ toBonus "bonus" 1
           endOfScenario
         _ -> error "invalid resolution"
       pure s

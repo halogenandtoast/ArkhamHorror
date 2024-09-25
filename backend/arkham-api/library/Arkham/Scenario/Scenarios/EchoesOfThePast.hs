@@ -24,6 +24,7 @@ import Arkham.Scenario.Helpers hiding (
   roundModifier,
  )
 import Arkham.Scenario.Import.Lifted hiding (replicate)
+import Arkham.Scenarios.EchoesOfThePast.Helpers
 import Arkham.Scenarios.EchoesOfThePast.Story
 import Arkham.Token
 import Arkham.Trait (Trait (SecondFloor, ThirdFloor))
@@ -86,7 +87,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage EchoesOfThePast where
-  runMessage msg s@(EchoesOfThePast attrs) = runQueueT $ case msg of
+  runMessage msg s@(EchoesOfThePast attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story intro
       whenInterviewed Assets.sebastienMoreau $ story sebastiensInformation
@@ -199,19 +200,16 @@ instance RunMessage EchoesOfThePast where
           story resolution2
           record YouLeftTheOnyxClaspBehind
           markDoubt
-          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
         3 -> do
           story resolution3
           record YouDestroyedTheOathspeaker
           addCampaignCardToDeckChoice investigators Assets.theTatteredCloak
-          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
         4 -> do
           story resolution4
           record TheFollowersOfTheSignHaveFoundTheWayForward
-          allGainXpWithBonus attrs $ if n == 4 then 1 else 0
         _ -> error "Invalid resolution"
 
-      allGainXpWithBonus attrs $ if n == 4 then 1 else 0
+      allGainXpWithBonus attrs $ if n == 4 then toBonus "resolution4" 1 else NoBonus
       sebastienSlain <- selectOne (VictoryDisplayCardMatch $ basic $ cardIs Enemies.sebastienMoreau)
       for_ sebastienSlain $ \sebastien ->
         recordSetInsert VIPsSlain [toCardCode sebastien]

@@ -80,7 +80,7 @@ standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [TheRelicIsMissing]}
 
 instance RunMessage TheDepthsOfYoth where
-  runMessage msg s@(TheDepthsOfYoth attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheDepthsOfYoth attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story intro1
       forgingYourOwnPath <- getHasRecord YouAreForgingYourOwnWay
@@ -250,7 +250,7 @@ instance RunMessage TheDepthsOfYoth where
           yigsFury <- getRecordCount YigsFury
           recordCount YigsFury (yigsFury + vengeance)
 
-          allGainXpWithBonus attrs depth
+          allGainXpWithBonus attrs $ toBonus "depth" depth
           endOfScenario
         _ -> error "Unknown Resolution"
       pure s

@@ -20,6 +20,7 @@ import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheCityOfArchives.Helpers
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
 import Arkham.Trait hiding (Trait (Cultist))
@@ -81,7 +82,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheCityOfArchives where
-  runMessage msg s@(TheCityOfArchives attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheCityOfArchives attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
@@ -198,10 +199,10 @@ instance RunMessage TheCityOfArchives where
           let
             totalTasks = rememberedTasks + if resignedWithTheCustodian then 1 else 0
             (logEntry, bonusXp) = case totalTasks of
-              n | n == 6 -> (TheProcessWasPerfected, 4)
-              n | n == 5 -> (TheProcessWasSuccessful, 2)
-              n | n == 4 -> (TheProcessBackfired, 1)
-              n | n == 3 -> (TheProcessBackfiredSpectacularly, 0)
+              n | n == 6 -> (TheProcessWasPerfected, toBonus "perfected" 4)
+              n | n == 5 -> (TheProcessWasSuccessful, toBonus "successful" 2)
+              n | n == 4 -> (TheProcessBackfired, toBonus "backfired" 1)
+              n | n == 3 -> (TheProcessBackfiredSpectacularly, NoBonus)
               _ -> error "Invalid number of tasks"
 
           story resolution1

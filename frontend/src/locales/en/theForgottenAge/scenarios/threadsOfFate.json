@@ -12,5 +12,8 @@
       "tablet": "-2. If you do not succeed by at least 2, place 1 doom on each _Cultist_ enemy.",
       "elderThing": "-3. If you fail, lose 1 of your clues."
     }
+  },
+  "xp": {
+    "bonus": "Gains insight into the schemes of the Brotherhood."
   }
 }

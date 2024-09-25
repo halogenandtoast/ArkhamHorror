@@ -43,18 +43,18 @@ instance RunMessage TheInnsmouthConspiracy where
       memoriesRecovered <- getRecordSet MemoriesRecovered
       when (recorded AMeetingWithThomasDawson `elem` memoriesRecovered) $ do
         story $ i18nWithTitle "aMeetingWithThomasDawson"
-        selectEach Anyone $ \iid -> gainXp iid CampaignSource 1
+        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.AMeetingWithThomasDawson") 1
       when (null memoriesRecovered) $ do
         story $ i18nWithTitle "noMemoriesRecovered"
       when (recorded ABattleWithAHorrifyingDevil `elem` memoriesRecovered) $ do
         story $ i18nWithTitle "aBattleWithAHorrifyingDevil"
-        selectEach Anyone $ \iid -> gainXp iid CampaignSource 1
+        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.aBattleWithAHorrifyingDevil") 1
       when (recorded ADecisionToStickTogether `elem` memoriesRecovered) $ do
         story $ i18nWithTitle "aDecisionToStickTogether"
-        selectEach Anyone $ \iid -> gainXp iid CampaignSource 1
+        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.aDecisionToStickTogether") 1
       when (recorded AnEncounterWithASecretCult `elem` memoriesRecovered) $ do
         story $ i18nWithTitle "anEncounterWithASecretCult"
-        selectEach Anyone $ \iid -> gainXp iid CampaignSource 1
+        selectEach Anyone $ \iid -> gainXp iid CampaignSource (ikey "xp.anEncounterWithASecretCult") 1
       story $ i18nWithTitle "part2"
       nextCampaignStep
       pure c

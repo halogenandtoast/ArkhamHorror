@@ -19,6 +19,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
+import Arkham.Scenarios.LostInTimeAndSpace.Helpers
 import Arkham.Trait hiding (Cultist)
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
@@ -92,7 +93,7 @@ readInvestigatorDefeat a = do
     for_ defeated (kill a)
 
 instance RunMessage LostInTimeAndSpace where
-  runMessage msg s@(LostInTimeAndSpace attrs) = runQueueT $ case msg of
+  runMessage msg s@(LostInTimeAndSpace attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story intro
       pure s
@@ -156,7 +157,7 @@ instance RunMessage LostInTimeAndSpace where
       story resolution1
       record TheInvestigatorsClosedTheTearInReality
       eachInvestigator \iid -> sufferTrauma iid 2 2
-      allGainXpWithBonus attrs 5
+      allGainXpWithBonus attrs $ toBonus "resolution1" 5
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do

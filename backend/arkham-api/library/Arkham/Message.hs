@@ -652,7 +652,7 @@ data Message
   | ApplyHealing Source
   | HealAllDamage Target Source
   | HealAllHorror Target Source
-  | ReportXp ScenarioId XpBreakdown
+  | ReportXp XpBreakdown
   | HealAllDamageAndHorror Target Source
   | ExcessHealDamage InvestigatorId Int
   | ExcessHealHorror InvestigatorId Int

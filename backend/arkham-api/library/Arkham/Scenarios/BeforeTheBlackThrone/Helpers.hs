@@ -2,6 +2,7 @@ module Arkham.Scenarios.BeforeTheBlackThrone.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -13,6 +14,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message (toDiscard)
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types
 import Arkham.Matcher
@@ -102,3 +104,6 @@ bottommostRevealedLocationPositions = do
     _ -> pure Nothing
 
   pure $ mins revealedCosmosLocations
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "beforeTheBlackThrone" a

@@ -81,6 +81,14 @@ async function skip() {
   });
 }
 
+const breakdowns = computed(() => {
+  if (props.game.campaign) {
+    return [...props.game.campaign.xpBreakdown].reverse()
+  }
+
+  return []
+})
+
 const tabooList = function (investigator: Investigator) {
   if (investigator.taboo) {
     switch (investigator.taboo) {
@@ -138,8 +146,8 @@ const tabooList = function (investigator: Investigator) {
       </div>
     </div>
 
-    <div v-for="[scenario, breakdown] in Object.entries(game.campaign.xpBreakdown)" :key="scenario" class="breakdowns">
-      <XpBreakdown :game="game" :scenario="scenario" :breakdown="breakdown" :playerId="playerId" />
+    <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
+      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" />
     </div>
   </div>
 

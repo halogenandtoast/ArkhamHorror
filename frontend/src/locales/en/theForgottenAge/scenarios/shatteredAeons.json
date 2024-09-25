@@ -12,5 +12,8 @@
       "tablet": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area.",
       "elderThing": "-3. Shuffle the topmost _Hex_ treachery in the encounter discard pile into the exploration deck."
     }
+  },
+  "xp": {
+    "resolution1": "Mended the shattered timeline and saved the Earth from catastrophe."
   }
 }

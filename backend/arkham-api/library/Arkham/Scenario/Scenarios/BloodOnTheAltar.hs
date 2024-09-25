@@ -18,6 +18,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.BloodOnTheAltar.Helpers
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Token
 
@@ -84,6 +85,7 @@ removeNecronomicon = do
 
 instance RunMessage BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar (attrs `With` metadata@(BloodOnTheAltarMetadata sacrificed))) = runQueueT
+    $ scenarioI18n
     $ case msg of
       PreScenarioSetup -> do
         story intro
@@ -200,7 +202,7 @@ instance RunMessage BloodOnTheAltar where
         placeUnderneath agendaId potentialSacrifices
         for_ (potentialSacrifices <> sacrificed) removeCampaignCard
         removeNecronomicon
-        allGainXpWithBonus attrs 2
+        allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
         pure s
       ScenarioResolution (Resolution 1) -> do
@@ -208,14 +210,14 @@ instance RunMessage BloodOnTheAltar where
         record TheInvestigatorsPutSilasBishopOutOfHisMisery
         for_ sacrificed removeCampaignCard
         removeNecronomicon
-        allGainXpWithBonus attrs 2
+        allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
         pure s
       ScenarioResolution (Resolution 2) -> do
         story resolution2
         record TheInvestigatorsRestoredSilasBishop
         for_ sacrificed removeCampaignCard
-        allGainXpWithBonus attrs 2
+        allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
         pure s
       ScenarioResolution (Resolution 3) -> do
@@ -224,7 +226,7 @@ instance RunMessage BloodOnTheAltar where
         for_ sacrificed removeCampaignCard
         recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
         removeNecronomicon
-        allGainXpWithBonus attrs 2
+        allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
         pure s
       _ -> BloodOnTheAltar . (`with` metadata) <$> liftRunMessage msg attrs

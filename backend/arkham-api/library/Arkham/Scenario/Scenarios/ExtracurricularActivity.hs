@@ -17,6 +17,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
+import Arkham.Scenarios.ExtracurricularActivity.Helpers
 
 newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
   deriving stock Generic
@@ -49,7 +50,7 @@ instance HasChaosTokenValue ExtracurricularActivity where
       otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ExtracurricularActivity where
-  runMessage msg s@(ExtracurricularActivity attrs) = runQueueT $ case msg of
+  runMessage msg s@(ExtracurricularActivity attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story intro
       pure s
@@ -108,7 +109,7 @@ instance RunMessage ExtracurricularActivity where
       record ProfessorWarrenRiceWasKidnapped
       record TheInvestigatorsFailedToSaveTheStudents
       addChaosToken Tablet
-      allGainXpWithBonus attrs 1
+      allGainXpWithBonus attrs $ toBonus "noResolution" 1
       endOfScenario
       pure s
     ScenarioResolution (Resolution 1) -> do
@@ -146,7 +147,7 @@ instance RunMessage ExtracurricularActivity where
       record ProfessorWarrenRiceWasKidnapped
       record TheInvestigatorsFailedToSaveTheStudents
       addChaosToken Tablet
-      allGainXpWithBonus attrs 1
+      allGainXpWithBonus attrs $ toBonus "resolution4" 1
       endOfScenario
       pure s
     _ -> ExtracurricularActivity <$> liftRunMessage msg attrs

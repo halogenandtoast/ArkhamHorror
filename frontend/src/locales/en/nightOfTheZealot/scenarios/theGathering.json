@@ -29,5 +29,9 @@
       "title": "Resolution 3",
       "body": "<p>You run to the hallway to try to find a way to escape the house, but the burning-hot barrier still blocks your path. Trapped, the horde of feral creatures that have invaded your home close in, and you have nowhere to run.</p>"
     }
+  },
+  "xp": {
+    "resolution2": "Refused to let the night’s events destroy his or her life",
+    "bonus": "Gains insight into the hidden world of the Mythos"
   }
 }

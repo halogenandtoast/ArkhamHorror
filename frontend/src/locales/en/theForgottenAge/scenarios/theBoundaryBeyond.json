@@ -12,5 +12,8 @@
       "tablet": "Reveal another token. If you fail, each _Serpent_ enemy at your location attacks you.",
       "elderThing": "-4. Place 1 clue (from the token pool) on the nearest _Ancient_ location."
     }
+  },
+  "xp": {
+    "additional": "Additional experience for each _Tenochtitlán_ location in the victory display"
   }
 }

@@ -12,5 +12,10 @@
       "tablet": "-3. For each point you fail by, discard 1 random card from your hand.",
       "elderThing": "@:theForgottenAge.theCityOfArchives.tokens.hardExpert.cultist"
     }
+  },
+  "xp": {
+    "perfected": "Gains insight into the secrets of the Earth.",
+    "successful": "Gains insight into the secrets of the Earth.",
+    "backfired": "Gains insight into the secrets of the Earth."
   }
 }

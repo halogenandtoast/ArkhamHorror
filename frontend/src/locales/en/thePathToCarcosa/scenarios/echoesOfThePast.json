@@ -12,5 +12,8 @@
       "tablet": "-4. Discard a random card from your hand.",
       "elderThing": "-4. If there is an enemy at your location, take 1 horror."
     }
+  },
+  "xp": {
+    "resolution4": "Gains insight into the machinations of The King in Yellow."
   }
 }

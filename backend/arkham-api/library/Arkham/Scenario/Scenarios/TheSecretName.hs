@@ -20,6 +20,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheSecretName.Helpers
 import Arkham.Scenarios.TheSecretName.Story
 import Arkham.Trait (Trait (Extradimensional))
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -80,7 +81,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheSecretName where
-  runMessage msg s@(TheSecretName (attrs `With` meta)) = runQueueT $ case msg of
+  runMessage msg s@(TheSecretName (attrs `With` meta)) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
       whenHasRecord TheInvestigatorsAreMembersOfTheLodge do
@@ -200,8 +201,8 @@ instance RunMessage TheSecretName where
       step <- getCurrentActStep
       lead <- getLead
       let
-        brownJenkinBonus = if brownJenkinDefeated meta then 1 else 0
-        nahabBonus = if nahabDefeated meta then 1 else 0
+        brownJenkinBonus = if brownJenkinDefeated meta then toBonus "brownJenkinDefeated" 1 else NoBonus
+        nahabBonus = if nahabDefeated meta then toBonus "nahabDefeated" 1 else NoBonus
         addTheBlackBook = chooseOneM lead do
           labeled "Do not add The Black Book" nothing
           targets iids \iid -> do
@@ -213,14 +214,14 @@ instance RunMessage TheSecretName where
           push R1
         Resolution 1 -> do
           story resolution1
-          allGainXpWithBonus attrs (brownJenkinBonus + nahabBonus)
+          allGainXpWithBonus attrs (brownJenkinBonus <> nahabBonus)
           when (step == 2) $ recordSetInsert MementosDiscovered [Gilman'sJournal]
           when (step == 3) $ recordSetInsert MementosDiscovered [Keziah'sFormulae]
           when (step >= 2) addTheBlackBook
           endOfScenario
         Resolution 2 -> do
           story resolution2
-          allGainXpWithBonus attrs 2
+          allGainXpWithBonus attrs $ toBonus "resolution2" 2
           recordSetInsert MementosDiscovered [Gilman'sJournal, Keziah'sFormulae, WornCrucifix]
           addTheBlackBook
           endOfScenario

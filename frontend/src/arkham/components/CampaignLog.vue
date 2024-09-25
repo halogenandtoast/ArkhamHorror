@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n';
 export interface Props {
   game: Arkham.Game
   cards: CardDef[]
+  playerId: string
 }
 
 const props = defineProps<Props>()
@@ -26,7 +27,10 @@ if (props.game.campaign?.meta?.otherCampaignAttrs?.log) {
   logContentsDecoder.decodeToPromise(props.game.campaign?.meta?.otherCampaignAttrs?.log).then(res => otherLog.value = res)
 }
 
-const xpBreakdown = props.game.campaign?.xpBreakdown || (props.game.scenario && props.game.scenario.xpBreakdown ? { [props.game.scenario.id]: props.game.scenario.xpBreakdown } : undefined) || {}
+const breakdowns =
+  props.game.campaign?.xpBreakdown ||
+    (props.game.scenario && props.game.scenario.xpBreakdown ? [{ "tag": "ScenarioStep", "contents": props.game.scenario.id }, props.game.scenario.xpBreakdown] : undefined) ||
+    []
 
 const logTitle = props.game.campaign?.meta?.currentCampaignMode ?
   (props.game.campaign.meta.currentCampaignMode === 'TheDreamQuest' ? "The Dream-Quest" : "The Web of Dreams") : null
@@ -177,8 +181,8 @@ const emptyLog = computed(() => {
       </div>
     </div>
 
-    <div v-for="[scenario, breakdown] in Object.entries(xpBreakdown)" :key="scenario" class="breakdowns">
-      <XpBreakdown :game="game" :scenario="scenario" :breakdown="breakdown" />
+    <div v-for="([step, entries], idx) in breakdowns" :key="idx" class="breakdowns">
+      <XpBreakdown :game="game" :step="step" :entries="entries" :playerId="playerId" />
     </div>
   </div>
 </template>

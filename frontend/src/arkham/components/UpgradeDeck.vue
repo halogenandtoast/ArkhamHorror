@@ -83,7 +83,7 @@ async function skip() {
 
 const breakdowns = computed(() => {
   if (props.game.campaign) {
-    return [...props.game.campaign.xpBreakdown].reverse()
+    return props.game.campaign.xpBreakdown
   }
 
   return []

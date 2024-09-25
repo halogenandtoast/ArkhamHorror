@@ -1,10 +1,8 @@
 module Arkham.Asset.Cards.HeirloomOfHyperborea where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 
@@ -20,8 +18,8 @@ instance HasAbilities HeirloomOfHyperborea where
     [controlledAbility x 1 CanDrawCards $ freeReaction $ Matcher.PlayCard #after You #spell]
 
 instance RunMessage HeirloomOfHyperborea where
-  runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
+  runMessage msg a@(HeirloomOfHyperborea attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ drawCards iid (toAbilitySource attrs 1) 1
+      drawCardsIfCan iid (attrs.ability 1) 1
       pure a
-    _ -> HeirloomOfHyperborea <$> runMessage msg attrs
+    _ -> HeirloomOfHyperborea <$> liftRunMessage msg attrs

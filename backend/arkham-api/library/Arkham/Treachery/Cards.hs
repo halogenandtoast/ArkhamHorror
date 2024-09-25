@@ -242,6 +242,7 @@ allEncounterTreacheryCards =
       , fateOfAllFools
       , finalMistake
       , fineDining
+      , fogOverInnsmouth
       , forcedIntoHiding
       , fracturedConsciousness
       , fromTheDepths
@@ -2112,6 +2113,12 @@ risingTides =
 riptide :: CardDef
 riptide =
   (treachery "07093" "Riptide" RisingTide 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+fogOverInnsmouth :: CardDef
+fogOverInnsmouth =
+  (treachery "07095" "Fog over Innsmouth" FogOverInnsmouth 2)
     { cdCardTraits = singleton Hazard
     }
 

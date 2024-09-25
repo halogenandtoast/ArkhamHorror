@@ -137,12 +137,14 @@ const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: 
 const handleResult = (result: ServerResult) => {
   switch(result.tag) {
     case "GameError":
+      if (props.spectate) return
       error.value = result.contents
       return
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
       return
     case "GameTarot":
+      if (props.spectate) return
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
@@ -153,6 +155,7 @@ const handleResult = (result: ServerResult) => {
       }
       return
     case "GameCard":
+      if (props.spectate) return
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
@@ -163,6 +166,7 @@ const handleResult = (result: ServerResult) => {
       }
       return
     case "GameCardOnly":
+      if (props.spectate) return
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {

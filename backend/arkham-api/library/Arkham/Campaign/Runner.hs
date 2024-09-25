@@ -220,6 +220,24 @@ defaultCampaignRunner msg a = case msg of
   SetCampaignLog newLog -> do
     pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
     pure $ updateAttrs a $ logL .~ newLog
-  ReportXp sid report -> do
-    pure $ updateAttrs a $ xpBreakdownL %~ insertMap sid report
+  ReportXp report -> do
+    let
+      normalizedCampaignStep = \case
+        PrologueStep -> PrologueStep
+        PrologueStepPart _ -> PrologueStep
+        ScenarioStep sid -> ScenarioStep sid
+        ScenarioStepPart sid _ -> ScenarioStep sid
+        InterludeStep n _ -> InterludeStep n Nothing
+        InterludeStepPart n _ _ -> InterludeStep n Nothing
+        UpgradeDeckStep c -> normalizedCampaignStep c
+        EpilogueStep -> EpilogueStep
+        EpilogueStepPart _ -> EpilogueStep
+        InvestigatorCampaignStep _ c -> normalizedCampaignStep c
+        ResupplyPoint -> ResupplyPoint
+    pure $ updateAttrs a \attrs ->
+      case campaignXpBreakdown attrs of
+        (step, report') : rest
+          | step == normalizedCampaignStep (campaignStep attrs) ->
+              attrs & xpBreakdownL .~ (step, report' <> report) : rest
+        _ -> attrs & xpBreakdownL %~ ((normalizedCampaignStep (campaignStep attrs), report) :)
   _ -> pure a

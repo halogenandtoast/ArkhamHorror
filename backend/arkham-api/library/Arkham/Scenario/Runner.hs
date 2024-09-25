@@ -1300,7 +1300,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
             ]
       [] -> pure ()
     pure a
-  ReportXp _ breakdown -> do
+  ReportXp breakdown -> do
     pure $ a & xpBreakdownL ?~ breakdown
   PlaceGrid gloc@(GridLocation pos lid) -> do
     let grid = insertGrid gloc scenarioGrid

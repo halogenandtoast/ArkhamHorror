@@ -15,6 +15,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Scenarios.TheHouseAlwaysWins.Story
 
 newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
@@ -45,7 +46,7 @@ instance HasChaosTokenValue TheHouseAlwaysWins where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheHouseAlwaysWins where
-  runMessage msg s@(TheHouseAlwaysWins attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheHouseAlwaysWins attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story intro
       pure s
@@ -112,7 +113,7 @@ instance RunMessage TheHouseAlwaysWins where
       record OBannionGangHasABoneToPickWithTheInvestigators
       record DrFrancisMorganWasKidnapped
       when (Cheated `member` attrs.log) $ addChaosToken ElderThing
-      allGainXpWithBonus attrs 1
+      allGainXpWithBonus attrs $ toBonus "resolution1" 1
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
@@ -140,7 +141,7 @@ instance RunMessage TheHouseAlwaysWins where
       record InvestigatorsWereUnconsciousForSeveralHours
       eachInvestigator (`sufferPhysicalTrauma` 1)
       when (Cheated `member` attrs.log) $ addChaosToken ElderThing
-      allGainXpWithBonus attrs 1
+      allGainXpWithBonus attrs $ toBonus "resolution4" 1
       endOfScenario
       pure s
     _ -> TheHouseAlwaysWins <$> liftRunMessage msg attrs

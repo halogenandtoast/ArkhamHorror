@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Log
 import Arkham.Helpers.Message
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 
@@ -33,3 +34,6 @@ runLocationHauntedAbilities iid lid = do
 
 getMementosDiscoveredCount :: HasGame m => m Int
 getMementosDiscoveredCount = length <$> getRecordSet MementosDiscovered
+
+campaignI18n :: (HasI18n => a) -> a
+campaignI18n a = withI18n $ scope "theCircleUndone" a

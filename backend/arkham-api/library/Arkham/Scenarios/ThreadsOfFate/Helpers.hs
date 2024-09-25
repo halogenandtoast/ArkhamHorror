@@ -3,11 +3,13 @@ module Arkham.Scenarios.ThreadsOfFate.Helpers where
 import Arkham.Prelude
 
 import Arkham.Act.Sequence qualified as Act
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted
@@ -34,3 +36,6 @@ isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
 
 rememberIchtacasPrey :: ReverseQueue m => EnemyId -> Card -> m ()
 rememberIchtacasPrey eid card = remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "threadsOfFate" a

@@ -10,5 +10,9 @@
       "cultist": "-3. If you fail, discard 3 resources.",
       "tablet": "-2. Discard 3 resources."
     }
+  },
+  "xp": {
+    "resolution1": "Reflects on the night’s events.",
+    "resolution4": "Reflects on the night’s events."
   }
 }

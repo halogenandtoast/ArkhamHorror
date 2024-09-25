@@ -88,7 +88,7 @@ cultistEffect = do
   moveToward eid x = push $ MoveToward (toTarget eid) (locationWithInvestigator x)
 
 instance RunMessage APhantomOfTruth where
-  runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ case msg of
+  runMessage msg s@(APhantomOfTruth attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       lead <- getLead
       theManInThePallidMask <- genCard Enemies.theManInThePallidMask
@@ -256,7 +256,7 @@ instance RunMessage APhantomOfTruth where
 
       selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.jordanPerry) \jordan ->
         recordSetInsert VIPsSlain [toCardCode jordan]
-      allGainXpWithBonus attrs $ if res == Resolution 2 then 2 else 0
+      allGainXpWithBonus attrs $ if res == Resolution 2 then toBonus "resolution2" 2 else NoBonus
       endOfScenario
       pure s
     _ -> APhantomOfTruth <$> liftRunMessage msg attrs

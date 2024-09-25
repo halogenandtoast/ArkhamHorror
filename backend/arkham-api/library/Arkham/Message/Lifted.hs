@@ -248,32 +248,30 @@ sufferPhysicalTrauma :: ReverseQueue m => InvestigatorId -> Int -> m ()
 sufferPhysicalTrauma iid physical = sufferTrauma iid physical 0
 
 gainXp
-  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-gainXp iid (toSource -> source) xp = push $ GainXP iid source xp
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Text -> Int -> m ()
+gainXp iid (toSource -> source) from xp = do
+  let report = XpBreakdown [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$" <> from) xp]
+  push $ ReportXp report
+  push $ GainXP iid source xp
 
-allGainXpWithBonus
-  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId) => source -> Int -> m ()
+allGainXpWithBonus :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m ()
 allGainXpWithBonus source xp = do
-  push . ReportXp (asId source) =<< generateXpReport xp
-  pushAll =<< toGainXp source (getXpWithBonus xp)
+  push . ReportXp =<< generateXpReport xp
+  pushAll =<< toGainXp source (getXpWithBonus xp.value)
 
-allGainXp
-  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId) => source -> m ()
+allGainXp :: (ReverseQueue m, Sourceable source) => source -> m ()
 allGainXp source = do
-  push . ReportXp (asId source) =<< generateXpReport 0
+  push . ReportXp =<< generateXpReport NoBonus
   pushAll =<< toGainXp source getXp
 
 allGainXpWith
-  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ScenarioId)
-  => source
-  -> (InvestigatorId -> [XpEntry])
-  -> m ()
+  :: (ReverseQueue m, Sourceable source) => source -> (InvestigatorId -> [XpEntry]) -> m ()
 allGainXpWith source f = do
   (pairs', additionalEntries) <-
     foldMap
       (\(iid, n) -> let entries = f iid in ([(iid, n + sum (map (.amount) entries))], entries))
       <$> getXp
-  push . ReportXp (asId source) . (<> XpBreakdown additionalEntries) =<< generateXpReport 0
+  push . ReportXp . (<> XpBreakdown additionalEntries) =<< generateXpReport NoBonus
   pushAll =<< toGainXp source (pure pairs')
 
 endOfScenario :: ReverseQueue m => m ()

@@ -1,11 +1,13 @@
 module Arkham.Scenarios.WhereTheGodsDwell.Helpers where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Helpers.Message (toDiscardBy)
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (LocationAttrs (..))
 import Arkham.Matcher
@@ -57,4 +59,5 @@ shuffleWhisperingChaosBackIntoEncounterDeck attrs = do
   x <- getWhisperingChaos attrs
   push $ ShuffleBackIntoEncounterDeck (toTarget x)
 
--- While this card is in your hand, you may activate the ability on the Northern Tower if you reveal this card from your hand. If the ability on the Northern Tower resolves successfully, discard this card. If it fails, shuffle this card back into the encounter deck.
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "whereTheGodsDwell" a

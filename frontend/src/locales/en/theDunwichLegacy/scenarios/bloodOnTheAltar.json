@@ -12,6 +12,9 @@
       "tablet": "-3. Reveal another token.",
       "elderThing": "-3. Place 1 doom on the current agenda."
     }
+  },
+  "xp": {
+    "bonus": "Gains insight into the hidden world of the Mythos."
   }
 }
 

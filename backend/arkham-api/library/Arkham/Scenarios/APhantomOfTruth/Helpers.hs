@@ -9,6 +9,7 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -63,3 +64,6 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
           | (iid, player, locations) <- locationPairs
           ]
        ]
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "aPhantomOfTruth" a

@@ -10,5 +10,8 @@
       "tablet": "-2. If you fail, after this test resolves, draw the bottommost treachery in the encounter discard pile.",
       "elderThing": "-4. If you fail, ready each _Witch_ enemy at your location and at each connecting location. Heal all damage from each of those enemies."
     }
+  },
+  "xp": {
+    "bonus": "Gains insight into Arkham’s mysterious past."
   }
 }

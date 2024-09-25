@@ -88,7 +88,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage BeforeTheBlackThrone where
-  runMessage msg s@(BeforeTheBlackThrone attrs) = runQueueT $ case msg of
+  runMessage msg s@(BeforeTheBlackThrone attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
@@ -238,14 +238,14 @@ instance RunMessage BeforeTheBlackThrone where
           record TheLeadInvestigatorHasJoinedThePipersOfAzathoth
           record AzathothSlumbersForNow
           drivenInsane =<< getLead
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution2" 5
           eachInvestigator (`sufferMentalTrauma` 2)
           endOfScenario
         Resolution 3 -> do
           readInvestigatorDefeat
           story resolution3
           record AzathothSlumbersForNow
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution3" 5
           eachInvestigator (`sufferPhysicalTrauma` 2)
           endOfScenario
         Resolution 4 -> do
@@ -258,7 +258,7 @@ instance RunMessage BeforeTheBlackThrone where
           story resolution5
           record AzathothSlumbersForNow
           record TheInvestigatorsSignedTheBlackBookOfAzathoth
-          allGainXpWithBonus attrs 10
+          allGainXpWithBonus attrs $ toBonus "resolution5" 10
           eachInvestigator \iid -> sufferTrauma iid 2 2
           endOfScenario
         _ -> error "unknown resolution"

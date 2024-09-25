@@ -5,6 +5,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Log
+import Arkham.I18n
 import Arkham.Message.Lifted (recordCount)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
@@ -38,3 +39,6 @@ whenInterviewed assetDef = whenM (interviewed assetDef)
 slain :: (HasGame m, HasCardCode cardCode) => cardCode -> m Bool
 slain (toCardCode -> cardCode) =
   elem (recorded cardCode) <$> getRecordSet VIPsSlain
+
+campaignI18n :: (HasI18n => a) -> a
+campaignI18n a = withI18n $ scope "thePathToCarcosa" a

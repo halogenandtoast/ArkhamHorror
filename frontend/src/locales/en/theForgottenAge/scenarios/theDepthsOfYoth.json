@@ -12,5 +12,8 @@
       "tablet": "Reveal another token. If you fail, place 1 clue on your location (from the token pool).",
       "elderThing": "-4. If there are 3 or more vengeance points in the victory display, you automatically fail this test, instead."
     }
+  },
+  "xp": {
+    "depth": "Depth Level"
   }
 }

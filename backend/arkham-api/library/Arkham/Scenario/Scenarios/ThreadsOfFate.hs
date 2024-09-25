@@ -13,12 +13,14 @@ import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Scenarios.ThreadsOfFate.Story
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -72,7 +74,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage ThreadsOfFate where
-  runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ case msg of
+  runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       story intro1
@@ -294,7 +296,7 @@ instance RunMessage ThreadsOfFate where
         addCampaignCardToDeckChoice iids Assets.ichtacaTheForgottenGuardian
 
       addCampaignCardToDeckChoice [lead] Assets.expeditionJournal
-      allGainXpWithBonus attrs act1sCompleted
+      allGainXpWithBonus attrs $ toBonus "bonus" act1sCompleted
       endOfScenario
       pure s
     _ -> ThreadsOfFate <$> liftRunMessage msg attrs

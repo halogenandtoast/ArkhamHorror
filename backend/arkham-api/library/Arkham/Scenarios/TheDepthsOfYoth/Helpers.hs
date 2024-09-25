@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheDepthsOfYoth.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
@@ -9,6 +10,7 @@ import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -25,7 +27,7 @@ import Data.Aeson (Result (..))
 newtype DepthsOfYothMeta = DepthsOfYothMeta
   { depthLocation :: LocationId
   }
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (FromJSON, ToJSON)
 
 incrementDepth :: HasGame m => m [Message]
@@ -81,3 +83,6 @@ getPlacePursuitEnemyMessages = do
         [ targetLabel choice [PlaceEnemy choice $ AtLocation depthStart]
         | choice <- choices
         ]
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "theDepthsOfYoth" a

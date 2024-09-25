@@ -27,6 +27,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (checkWhen, setupModifier)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (victoryDisplayL)
+import Arkham.Scenarios.ShatteredAeons.Helpers
 import Arkham.Scenarios.ShatteredAeons.Story
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -100,7 +101,7 @@ standaloneCampaignLog =
     }
 
 instance RunMessage ShatteredAeons where
-  runMessage msg s@(ShatteredAeons attrs) = runQueueT case msg of
+  runMessage msg s@(ShatteredAeons attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       braziersLit <- getHasRecord TheBraziersAreLit
       doStep (if braziersLit then 1 else 2) PreScenarioSetup
@@ -263,13 +264,13 @@ instance RunMessage ShatteredAeons where
           locations <- case mrelic of
             Nothing -> pure []
             Just relic -> fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
-          bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
+          let attrs' = attrs & victoryDisplayL %~ (locations <>)
           story resolution1
           record TheInvestigatorsMendedTheTearInTheFabricOfTime
           eachInvestigator \iid -> sufferTrauma iid 2 2
-          allGainXpWithBonus attrs (5 + bonus)
+          allGainXpWithBonus attrs' $ toBonus "resolution1" 5
           endOfScenario
-          pure . ShatteredAeons $ attrs & victoryDisplayL %~ (locations <>)
+          pure $ ShatteredAeons attrs'
         Resolution 2 -> do
           story resolution2
           record TheInvestigatorsSavedTheCivilizationOfTheSerpents
@@ -291,11 +292,11 @@ instance RunMessage ShatteredAeons where
           locations <- case mrelic of
             Nothing -> pure []
             Just relic -> fieldMapM AssetCardsUnderneath (filterM getHasVictoryPoints) relic
-          bonus <- sum . catMaybes <$> traverse getVictoryPoints locations
+          let attrs' = attrs & victoryDisplayL %~ (locations <>)
           story resolution5
           record TheInvestigatorsTurnedBackTime
-          allGainXpWithBonus attrs bonus
+          allGainXp attrs
           endOfScenarioThen EpilogueStep
-          pure s
+          pure $ ShatteredAeons attrs'
         _ -> error "invalid resolution"
     _ -> ShatteredAeons <$> liftRunMessage msg attrs

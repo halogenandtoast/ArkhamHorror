@@ -21,6 +21,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Scenarios.DimCarcosa.Story
 import Arkham.Token
 import Arkham.Trait (Trait (AncientOne, Monster))
@@ -88,7 +89,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage DimCarcosa where
-  runMessage msg s@(DimCarcosa attrs) = runQueueT $ case msg of
+  runMessage msg s@(DimCarcosa attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       openedThePathBelow <- getHasRecord YouOpenedThePathBelow
       story $ if openedThePathBelow then intro1 else intro2
@@ -237,19 +238,19 @@ instance RunMessage DimCarcosa where
         Resolution 1 -> do
           story resolution1
           eachInvestigator \iid -> sufferTrauma iid 2 2
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution1" 5
           recordPossessed
           endOfScenario
         Resolution 2 -> do
           story resolution2
           eachInvestigator (`sufferMentalTrauma` 2)
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution2" 5
           recordPossessed
           endOfScenario
         Resolution 3 -> do
           story resolution3
           eachInvestigator (`sufferPhysicalTrauma` 2)
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution3" 5
           recordPossessed
           endOfScenario
         Resolution 4 -> do

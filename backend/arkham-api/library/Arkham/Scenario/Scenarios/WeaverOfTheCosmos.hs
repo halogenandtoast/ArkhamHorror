@@ -1,9 +1,6 @@
 {-# LANGUAGE MultiWayIf #-}
 
-module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (
-  WeaverOfTheCosmos (..),
-  weaverOfTheCosmos,
-) where
+module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (WeaverOfTheCosmos (..), weaverOfTheCosmos) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
@@ -21,12 +18,13 @@ import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
-import Arkham.I18n
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.WeaverOfTheCosmos.Helpers
 import Arkham.Trait (Trait (AncientOne, Spider))
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -81,9 +79,9 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage WeaverOfTheCosmos where
-  runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ withI18n $ case msg of
+  runMessage msg s@(WeaverOfTheCosmos attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.intro"
+      story $ i18nWithTitle "intro"
       pure s
     StandaloneSetup -> do
       record RandolphDidNotSurviveTheDescent
@@ -179,15 +177,15 @@ instance RunMessage WeaverOfTheCosmos where
     ScenarioResolution r -> do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "theDreamEaters.weaverOfTheCosmos.noResolution"
+          story $ i18nWithTitle "resolutions.noResolution"
           record TheBridgeWasCompleted
           eachInvestigator $ kill attrs
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 1 -> do
-          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution1"
+          story $ i18nWithTitle "resolutions.resolution1"
           record TheBridgeWasDestroyed
-          allGainXpWithBonus attrs 5
+          allGainXpWithBonus attrs $ toBonus "resolution1" 5
           foundAWayOut <- getHasRecord TheInvestigatorsFoundAWayOutOfTheUnderworld
           trapped <- getHasRecord TheInvestigatorsAreTrappedInAtlachNacha'sRealm
           if
@@ -195,25 +193,25 @@ instance RunMessage WeaverOfTheCosmos where
             | trapped -> push R4
             | otherwise -> push R5
         Resolution 2 -> do
-          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution2"
+          story $ i18nWithTitle "resolutions.resolution2"
           record TheBridgeWasCompleted
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheWebOfDreams $ push GameOver
           endOfScenario
         Resolution 3 -> do
-          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution3"
+          story $ i18nWithTitle "resolutions.resolution3"
           record TheInvestigatorsReturnedToReality
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 4 -> do
-          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution4"
+          story $ i18nWithTitle "resolution.resolution4"
           record TheInvestigatorsNeverEscaped
           eachInvestigator $ push . DrivenInsane
           whenM getIsTheDreamQuest $ push GameOver
           endOfScenario
         Resolution 5 -> do
-          story $ i18n "theDreamEaters.weaverOfTheCosmos.resolution5"
+          story $ i18nWithTitle "resolution.resolution5"
           record TheInvestigatorsAreStillInTheDreamlands
           eachInvestigator (`sufferPhysicalTrauma` 2)
           whenM getIsTheDreamQuest $ push GameOver

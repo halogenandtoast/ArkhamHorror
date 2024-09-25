@@ -1219,6 +1219,7 @@ library
       Arkham.CampaignLogKey
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
+      Arkham.Campaigns.NightOfTheZealot.Helpers
       Arkham.Campaigns.NightOfTheZealot.Import
       Arkham.Campaigns.TheCircleUndone.CampaignSteps
       Arkham.Campaigns.TheCircleUndone.ChaosBag
@@ -1235,6 +1236,7 @@ library
       Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
       Arkham.Campaigns.TheDunwichLegacy.ChaosBag
       Arkham.Campaigns.TheDunwichLegacy.FlavorText
+      Arkham.Campaigns.TheDunwichLegacy.Helpers
       Arkham.Campaigns.TheDunwichLegacy.Import
       Arkham.Campaigns.TheForgottenAge.CampaignSteps
       Arkham.Campaigns.TheForgottenAge.ChaosBag
@@ -2868,6 +2870,7 @@ library
       Arkham.Scenarios.BeforeTheBlackThrone.Story
       Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
       Arkham.Scenarios.BlackStarsRise.Story
+      Arkham.Scenarios.BloodOnTheAltar.Helpers
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
@@ -2879,17 +2882,23 @@ library
       Arkham.Scenarios.DimCarcosa.Helpers
       Arkham.Scenarios.DimCarcosa.Story
       Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Story
+      Arkham.Scenarios.EchoesOfThePast.Helpers
       Arkham.Scenarios.EchoesOfThePast.Story
       Arkham.Scenarios.ExtracurricularActivity.FlavorText
+      Arkham.Scenarios.ExtracurricularActivity.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.ForTheGreaterGood.Story
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
+      Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
+      Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.ShatteredAeons.Story
+      Arkham.Scenarios.TheBoundaryBeyond.Helpers
       Arkham.Scenarios.TheBoundaryBeyond.Story
+      Arkham.Scenarios.TheCityOfArchives.Helpers
       Arkham.Scenarios.TheCityOfArchives.Story
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Story
@@ -2897,6 +2906,7 @@ library
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Story
+      Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLastKing.Story
       Arkham.Scenarios.TheMidnightMasks.Story
@@ -2907,12 +2917,14 @@ library
       Arkham.Scenarios.ThePitOfDespair.Helpers
       Arkham.Scenarios.TheSearchForKadath.FlavorText
       Arkham.Scenarios.TheSearchForKadath.Helpers
+      Arkham.Scenarios.TheSecretName.Helpers
       Arkham.Scenarios.TheSecretName.Story
       Arkham.Scenarios.TheUnspeakableOath.Story
       Arkham.Scenarios.TheUntamedWilds.Story
       Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheWagesOfSin.Helpers
       Arkham.Scenarios.TheWagesOfSin.Story
+      Arkham.Scenarios.TheWitchingHour.Helpers
       Arkham.Scenarios.TheWitchingHour.Story
       Arkham.Scenarios.ThreadsOfFate.Helpers
       Arkham.Scenarios.ThreadsOfFate.Story
@@ -2924,6 +2936,7 @@ library
       Arkham.Scenarios.WakingNightmare.FlavorText
       Arkham.Scenarios.WakingNightmare.Helpers
       Arkham.Scenarios.WakingNightmare.InfestationBag
+      Arkham.Scenarios.WeaverOfTheCosmos.Helpers
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Skill

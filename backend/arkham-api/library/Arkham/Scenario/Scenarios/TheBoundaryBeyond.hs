@@ -26,6 +26,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (checkWhen, setupModifier)
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
+import Arkham.Scenarios.TheBoundaryBeyond.Helpers
 import Arkham.Scenarios.TheBoundaryBeyond.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -86,7 +87,7 @@ standaloneChaosTokens =
   ]
 
 instance RunMessage TheBoundaryBeyond where
-  runMessage msg s@(TheBoundaryBeyond attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheBoundaryBeyond attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       story introPart1
 
@@ -267,6 +268,6 @@ instance RunMessage TheBoundaryBeyond where
       n <- selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Tenochtitlan
       recordCount PathsAreKnownToYou n
       recordWhen (n >= 3 && resolution == Resolution 1) IchtacaHasConfidenceInYou
-      allGainXpWithBonus attrs n
+      allGainXpWithBonus attrs $ toBonus "additional" n
       pure s
     _ -> TheBoundaryBeyond <$> liftRunMessage msg attrs

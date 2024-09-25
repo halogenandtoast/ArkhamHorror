@@ -12,6 +12,7 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types
@@ -242,3 +243,6 @@ exploreAction_ = exploreAction mempty
 
 cancelExplore :: ReverseQueue m => Sourceable source => source -> m ()
 cancelExplore source = push $ CancelNext (toSource source) ExploreMessage
+
+campaignI18n :: (HasI18n => a) -> a
+campaignI18n a = withI18n $ scope "theForgottenAge" a

@@ -1,20 +1,21 @@
 module Arkham.Helpers.Xp where
 
-import Arkham.Prelude
-
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
 import Arkham.Xp
+import GHC.Records
 
 toGainXp :: (HasGame m, Sourceable source) => source -> m [(InvestigatorId, Int)] -> m [Message]
 toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
@@ -37,7 +38,41 @@ getXpWithBonus bonus = do
   toVictory :: ConvertToCard c => [c] -> m (Sum Int)
   toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints
 
-generateXpReport :: forall m. (HasCallStack, HasGame m) => Int -> m XpBreakdown
+data XpBonus = NoBonus | WithBonus Text Int | MultiBonus [XpBonus]
+
+instance Monoid XpBonus where
+  mempty = NoBonus
+
+instance Semigroup XpBonus where
+  NoBonus <> a = a
+  a <> NoBonus = a
+  MultiBonus xs <> MultiBonus ys = MultiBonus (xs <> ys)
+  MultiBonus xs <> y = MultiBonus (xs <> [y])
+  x <> MultiBonus ys = MultiBonus (x : ys)
+  x <> y = MultiBonus [x, y]
+
+xpBonusToXp :: XpBonus -> Int
+xpBonusToXp = \case
+  NoBonus -> 0
+  WithBonus _ x -> x
+  MultiBonus xs -> sum $ map xpBonusToXp xs
+
+toBonus :: HasI18n => Text -> Int -> XpBonus
+toBonus k n = scope "xp" $ WithBonus ("$" <> ikey k) n
+
+flattenBonus :: XpBonus -> [XpBonus]
+flattenBonus = \case
+  NoBonus -> []
+  MultiBonus xs -> xs
+  x@WithBonus {} -> [x]
+
+instance HasField "value" XpBonus Int where
+  getField = xpBonusToXp
+
+instance HasField "flatten" XpBonus [XpBonus] where
+  getField = flattenBonus
+
+generateXpReport :: forall m. (HasCallStack, HasGame m) => XpBonus -> m XpBreakdown
 generateXpReport bonus = do
   victoryPileVictory <- fmap (map AllGainXp) . toVictory =<< scenarioField ScenarioVictoryDisplay
   locationVictory <-
@@ -48,7 +83,8 @@ generateXpReport bonus = do
     pure $ mapMaybe (modifierToXpDetail iid) modifiers'
   pure
     $ XpBreakdown
-    $ [AllGainXp (XpDetail XpBonus "Bonus" bonus) | bonus > 0]
+    $ [ InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- bonus.flatten, iid <- investigatorIds
+      ]
     <> victoryPileVictory
     <> locationVictory
     <> fromModifiers

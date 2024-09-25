@@ -28,6 +28,7 @@ import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
+import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
 
@@ -65,7 +66,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignStep :: CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
   , campaignResolutions :: Map ScenarioId Resolution
-  , campaignXpBreakdown :: Map ScenarioId XpBreakdown
+  , campaignXpBreakdown :: [(CampaignStep, XpBreakdown)]
   , campaignModifiers :: Map InvestigatorId [Modifier]
   , campaignMeta :: Value
   }
@@ -131,7 +132,7 @@ metaL = lens campaignMeta $ \m x -> m {campaignMeta = x}
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
-xpBreakdownL :: Lens' CampaignAttrs (Map ScenarioId XpBreakdown)
+xpBreakdownL :: Lens' CampaignAttrs [(CampaignStep, XpBreakdown)]
 xpBreakdownL = lens campaignXpBreakdown $ \m x -> m {campaignXpBreakdown = x}
 
 completeStep :: CampaignStep -> [CampaignStep] -> [CampaignStep]
@@ -242,6 +243,9 @@ chaosBagOf = campaignChaosBag . toAttrs
 
 $(deriveToJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)
 
+oldBreakdown :: Map ScenarioId XpBreakdown -> [(CampaignStep, XpBreakdown)]
+oldBreakdown = map (first ScenarioStep) . Map.toList
+
 instance FromJSON CampaignAttrs where
   parseJSON = withObject "CampaignAttrs" $ \o -> do
     campaignId <- o .: "id"
@@ -254,7 +258,7 @@ instance FromJSON CampaignAttrs where
     campaignStep <- o .: "step"
     campaignCompletedSteps <- o .: "completedSteps"
     campaignResolutions <- o .: "resolutions"
-    campaignXpBreakdown <- o .:? "xpBreakdown" .!= mempty
+    campaignXpBreakdown <- (oldBreakdown <$> o .: "xpBreakdown") <|> (o .:? "xpBreakdown" .!= mempty)
     campaignModifiers <- o .: "modifiers"
     campaignMeta <- o .: "meta"
 

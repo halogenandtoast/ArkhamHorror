@@ -79,8 +79,7 @@ const hasPool = computed(() => {
         <div class="card-frame">
           <div class="card-wrapper">
             <img v-if="isTrueForm" :src="image"
-              class="card enemy"
-              :data-id="id"
+              class="enemy card-no-overlay"
               :data-fight="enemy.fight"
               :data-evade="enemy.evade"
               :data-health="health"
@@ -89,10 +88,7 @@ const hasPool = computed(() => {
               :data-victory="gainedVictory"
               :data-keywords="addedKeywords"
             />
-            <img v-else
-              :src="image"
-              class="card enemy"
-              :data-id="id"
+            <img v-else :src="image" class="enemy card-no-overlay"
             />
           </div>
           <div v-if="hasPool" class="pool">
@@ -172,5 +168,13 @@ const hasPool = computed(() => {
 
 .card {
   width: 300px;
+}
+
+.card-no-overlay {
+  width: calc(var(--card-width) * 5); 
+  max-width: calc(var(--card-width) * 5);
+  border-radius: 15px;
+  transform: rotate(0deg);
+  transition: transform 0.2s linear;
 }
 </style>

@@ -218,6 +218,10 @@ watch(uiLock, async () => {
 // Keyboard Shortcuts
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
+  if (event.ctrlKey) return
+  if (event.metaKey) return
+  if (event.altKey) return
+
   if (event.key === 'u') {
     undo()
     return
@@ -347,6 +351,11 @@ function loadAllImages(game: Arkham.Game): Promise<void[]> {
   return Promise.all(images)
 }
 
+window.sendDebug = function (msg: any) {
+  if (!game.value) return
+  debug.send(game.value.id, msg)
+}
+
 // Callbacks
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
@@ -406,6 +415,7 @@ provide('choosePaymentAmounts', choosePaymentAmounts)
 provide('chooseAmounts', chooseAmounts)
 provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
+
 
 // callbacks
 onMounted(() => document.addEventListener('keydown', handleKeyPress))

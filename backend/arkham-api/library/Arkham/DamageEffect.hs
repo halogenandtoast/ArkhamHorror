@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Source
 import Data.Aeson.TH
+import GHC.Records
 
 data DamageAssignment = DamageAssignment
   { damageAssignmentSource :: Source
@@ -15,6 +16,12 @@ data DamageAssignment = DamageAssignment
   , damageAssignmentDelayed :: Bool
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "source" DamageAssignment Source where
+  getField = damageAssignmentSource
+
+instance HasField "amount" DamageAssignment Int where
+  getField = damageAssignmentAmount
 
 attack :: Sourceable a => a -> Int -> DamageAssignment
 attack a n =

@@ -248,6 +248,7 @@ allEncounterTreacheryCards =
       , fromTheDepths
       , frozenInFear
       , frozenInFearAPhantomOfTruth
+      , furtiveLocals
       , giftOfMadnessMisery
       , giftOfMadnessPity
       , ghostlyPresence
@@ -264,6 +265,7 @@ allEncounterTreacheryCards =
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
+      , innsmouthLook
       , insatiableBloodlust
       , kidnapped
       , lawOfYgirothChaos
@@ -2137,6 +2139,18 @@ fracturedConsciousness =
 memoryOfOblivion :: CardDef
 memoryOfOblivion =
   (treachery "07098" "Memory of Oblivion" ShatteredMemories 2)
+    { cdCardTraits = singleton Terror
+    }
+
+innsmouthLook :: CardDef
+innsmouthLook =
+  (treachery "07106" "Innsmouth Look" TheLocals 2)
+    { cdCardTraits = setFromList [Curse, Terror]
+    }
+
+furtiveLocals :: CardDef
+furtiveLocals =
+  (treachery "07107" "Furtive Locals" TheLocals 2)
     { cdCardTraits = singleton Terror
     }
 

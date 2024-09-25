@@ -451,6 +451,9 @@ allTreacheries =
       SomeTreacheryCard macabreMemento
     , SomeTreacheryCard fracturedConsciousness
     , SomeTreacheryCard memoryOfOblivion
+    , --- The Locals [tic]
+      SomeTreacheryCard innsmouthLook
+    , SomeTreacheryCard furtiveLocals
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

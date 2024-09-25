@@ -281,6 +281,10 @@ locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
+orConnected :: LocationMatcher -> LocationMatcher
+orConnected x = oneOf [x, ConnectedTo x]
+{-# INLINE orConnected #-}
+
 whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
 whileInvestigating = WhileInvestigating . LocationWithId . asId
 {-# INLINE whileInvestigating #-}

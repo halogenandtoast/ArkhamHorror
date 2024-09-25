@@ -154,14 +154,14 @@ const tabooList = function (investigator: Investigator) {
 
 <style scoped lang="scss">
 #upgrade-deck {
+  overflow: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 70vw;
   color: var(--title);
   font-size: 1.2em;
-  margin-inline: 10px;
-  margin-top: 20px;
+  padding: 20px;
   > :deep(.column) {
     width: 100%;
   }

@@ -241,11 +241,8 @@
       "  )",
       "where",
       "",
-      "import Arkham.Prelude",
-      "",
-      "import Arkham.Classes",
       "import Arkham.Enemy.Cards qualified as Cards",
-      "import Arkham.Enemy.Runner",
+      "import Arkham.Enemy.Import.Lifted",
       "",
       "newtype {dot} = {dot} EnemyAttrs",
       "  deriving anyclass (IsEnemy, HasModifiersFor)",
@@ -255,8 +252,8 @@
       "{dot|snakecase|camelcase} = enemy {dot} Cards.{dot|snakecase|camelcase} (0, Static 1, 0) (0, 0)",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) =",
-      "    {dot} <$> runMessage msg attrs"
+      "  runMessage msg ({dot} attrs) = runQueueT $ case msg of",
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-api/library/Arkham/Asset/Cards/*.hs": {

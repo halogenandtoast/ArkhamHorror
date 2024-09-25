@@ -48,6 +48,7 @@ import Arkham.Classes.HasQueue (
   pushAll,
   replaceAllMessagesMatching,
  )
+import Arkham.Matcher (LocationMatcher (EmptyLocation))
 import Arkham.Modifier
 import Arkham.Queue
 import Arkham.Window qualified as Window
@@ -117,3 +118,6 @@ beingDefeated attrs = fromQueue $ any isDefeatedMessage
     After (EnemyDefeated eid _ _ _) -> eid == attrs.id
     Do msg -> isDefeatedMessage msg
     _ -> False
+
+spawnAtEmptyLocation :: EnemyAttrs -> EnemyAttrs
+spawnAtEmptyLocation = spawnAtL ?~ SpawnAt EmptyLocation

@@ -1,4 +1,5 @@
 import ita from '@/digests/ita.json'
+import es from '@/digests/es.json'
 
 export function toCapitalizedWords(name: string) {
   // const words = name.match(/[A-Z]+[a-z']+/g) || [];
@@ -30,6 +31,11 @@ export function imgsrc(src: string) {
     case 'it': {
       const exists = ita.includes(path)
       return exists ? `${baseUrl}/img/arkham/ita/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+    }
+    case 'es': {
+      const exists = es.includes(path)
+      return exists ? `${baseUrl}/img/arkham/es/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
+
     }
     default: return `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
   }

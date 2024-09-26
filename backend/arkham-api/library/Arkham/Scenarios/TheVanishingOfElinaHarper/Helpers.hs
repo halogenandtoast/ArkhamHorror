@@ -50,7 +50,7 @@ getHideout :: (HasCallStack, HasGame m) => m Card
 getHideout = hideout <$> getScenarioMeta
 
 outForBlood :: ReverseQueue m => EnemyId -> m ()
-outForBlood = recordSetInsert OutForBlood . only <=< field EnemyCardCode
+outForBlood = recordSetInsert OutForBlood . only . toJSON . asSuspect <=< field EnemyCard
 
 suspects :: NonEmpty CardDef
 suspects =
@@ -100,8 +100,8 @@ scenarioI18n a = campaignI18n $ scope "theVanishingOfElinaHarper" a
 scenarioTooltip :: Text -> Ability -> Ability
 scenarioTooltip t ab = scenarioI18n $ withI18nTooltip t ab
 
-asKidnapper :: HasCardDef a => a -> Suspect
-asKidnapper (toCardDef -> def) =
+asSuspect :: HasCardDef a => a -> Suspect
+asSuspect (toCardDef -> def) =
   if
     | def.cardCode == Enemies.brianBurnhamWantsOut.cardCode -> BrianBurnham
     | def.cardCode == Enemies.barnabasMarshTheChangeIsUponHim.cardCode -> BarnabasMarsh

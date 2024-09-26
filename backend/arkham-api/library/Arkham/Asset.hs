@@ -675,7 +675,7 @@ allAssets =
       SomeAssetCard swordCane
     , --- survivor [tic]
       SomeAssetCard tokenOfFaith
-    , --- The Vanishing of Elina Harper [tic]
+    , --- scenario [tic]
       SomeAssetCard thomasDawsonSoldierInANewWar
     , SomeAssetCard elinaHarperKnowsTooMuch
     , -- In Too Deep
@@ -695,6 +695,9 @@ allAssets =
     , --- survivor [itp]
       SomeAssetCard marinersCompass
     , SomeAssetCard ancientCovenant2
+    , --- scenario [tic]
+      SomeAssetCard joeSargentRattletrapBusDriver
+    , SomeAssetCard teachingsOfTheOrder
     , -- Devil Reef
       --- guardian [def]
       SomeAssetCard keenEye

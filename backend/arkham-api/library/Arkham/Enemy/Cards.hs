@@ -142,6 +142,7 @@ allEncounterEnemyCards =
       , eaterOfTheDepths
       , elisabettaMagro
       , emergentMonstrosity
+      , emergingDeepOne
       , eztliGuardian
       , fanatic
       , fangOfYig
@@ -184,6 +185,7 @@ allEncounterEnemyCards =
       , icyGhoul
       , inconspicuousZoog
       , initiateOfDagon
+      , innsmouthShoggoth
       , innsmouthTroublemaker
       , interstellarTraveler
       , ishimaruHaruko
@@ -249,6 +251,7 @@ allEncounterEnemyCards =
       , priestOfAThousandMasks
       , priestOfDagon
       , priestessOfTheCoven
+      , ravagerFromTheDeep
       , ravenousGhoul
       , relentlessDarkYoung
       , riftSeeker
@@ -2121,6 +2124,31 @@ innsmouthTroublemaker =
   )
     { cdCardTraits = setFromList [Humanoid, Hybrid, Criminal]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+innsmouthShoggoth :: CardDef
+innsmouthShoggoth =
+  ( enemy "07144" "Innsmouth Shoggoth" InTooDeep 1
+  )
+    { cdCardTraits = setFromList [Monster, Shoggoth, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+ravagerFromTheDeep :: CardDef
+ravagerFromTheDeep =
+  ( enemy "07145" "Ravager from the Deep" InTooDeep 2
+  )
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+emergingDeepOne :: CardDef
+emergingDeepOne =
+  ( enemy "07146" "Emerging Deep One" InTooDeep 3
+  )
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 mobGoons :: CardDef

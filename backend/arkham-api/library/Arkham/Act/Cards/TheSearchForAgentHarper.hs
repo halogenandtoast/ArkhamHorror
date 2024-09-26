@@ -62,7 +62,7 @@ instance RunMessage TheSearchForAgentHarper where
               then doStep 1 msg
               else nothing
 
-      circle PossibleSuspects (asKidnapper kidnapper)
+      circle PossibleSuspects (asSuspect kidnapper)
       circle PossibleHideouts (asHideout hideout)
 
       doStep 2 msg

@@ -138,7 +138,7 @@ const emptyLog = computed(() => {
   if ((logTitles ?? []).length > 0) return false;
   if (hasSupplies.value) return false;
   if (recorded.value.length > 0) return false;
-  if (recordedSets.value.length > 0) return false;
+  if (Object.entries(recordedSets.value).length > 0) return false;
   return true;
 })
 

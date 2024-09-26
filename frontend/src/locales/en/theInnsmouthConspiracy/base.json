@@ -59,6 +59,22 @@
     "aDecisionToStickTogether": "A Decision to Stick Together",
     "anEncounterWithASecretCult": "An Encounter with a Secret Cult"
   },
+  "possibleHideouts": {
+    "innsmouthJail": "Innsmouth Jail",
+    "shorewardSlums": "Shoreward Slums",
+    "sawboneAlley": "Sawbone Alley",
+    "theHouseOnWaterStreet": "The House on Water Street",
+    "esotericOrderOfDagon": "Esoteric Order of Dagon",
+    "newChurchGreen": "New Church Green"
+  },
+  "possibleSuspects": {
+    "brianBurnham": "Brian Burnham",
+    "barnabasMarsh": "Barnabas Marsh",
+    "otheraGilman": "Othera Gilman",
+    "zadokAllen": "Zadok Allen",
+    "joyceLittle": "Joyce Little",
+    "robertFriendly": "Robert Friendly"
+  },
   "labels": {
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
   }

@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.GameValue (perPlayer)
@@ -32,6 +33,11 @@ instance HasAbilities TheSearchForAgentHarper where
       , mkAbility a 2 $ Objective $ freeReaction $ RoundEnds #when
       ]
 
+circle :: (ReverseQueue m, ToJSON a) => CampaignLogKey -> a -> m ()
+circle k x = do
+  let x' = toJSON x
+  recordSetReplace k (recorded x') (circled x')
+
 instance RunMessage TheSearchForAgentHarper where
   runMessage msg a@(TheSearchForAgentHarper attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
@@ -55,6 +61,9 @@ instance RunMessage TheSearchForAgentHarper where
             if possibleHideout == toCardDef hideout
               then doStep 1 msg
               else nothing
+
+      circle PossibleSuspects (asKidnapper kidnapper)
+      circle PossibleHideouts (asHideout hideout)
 
       doStep 2 msg
       pure a

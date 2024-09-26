@@ -818,6 +818,7 @@ data Message
   | RecordCount CampaignLogKey Int
   | IncrementRecordCount CampaignLogKey Int
   | RecordSetInsert CampaignLogKey [SomeRecorded]
+  | RecordSetReplace CampaignLogKey SomeRecorded SomeRecorded
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId
   | Remember ScenarioLogKey

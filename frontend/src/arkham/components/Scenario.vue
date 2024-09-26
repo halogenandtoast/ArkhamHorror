@@ -215,8 +215,6 @@ const locationStyles = computed(() => {
     cleaned = finalRows.map((row) => row.join(' '));
   }
 
-  console.log(cleaned[0].trim().split(/\s+/))
-
   return {
     display: 'grid',
     gap: '20px',

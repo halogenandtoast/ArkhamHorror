@@ -53,7 +53,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['MementosDiscovered', 'MemoriesRecovered'];
+  const nonCardKeys = ['MementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -89,6 +89,18 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     const contents = value.contents || value.recordVal?.contents
     const memory = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`theInnsmouthConspiracy.memoriesRecovered.${memory}`)
+  }
+
+  if (key === 'PossibleSuspects') {
+    const contents = value.contents || value.recordVal?.contents
+    const suspect = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`theInnsmouthConspiracy.possibleSuspects.${suspect}`, suspect)
+  }
+
+  if (key === 'PossibleHideouts') {
+    const contents = value.contents || value.recordVal?.contents
+    const hideout = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`theInnsmouthConspiracy.possibleHideouts.${hideout}`, hideout)
   }
 
   const code = value.contents || value.recordVal?.contents
@@ -171,7 +183,7 @@ const emptyLog = computed(() => {
         <ul>
           <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
             <ul>
-              <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut' }">{{displayRecordValue(setKey, setValue)}}</li>
+              <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut', 'circled': setValue.circled }">{{displayRecordValue(setKey, setValue)}}</li>
             </ul>
           </li>
         </ul>
@@ -265,5 +277,9 @@ li {
   display: flex;
   flex-direction: row;
   gap: 10px;
+}
+
+.circled {
+  background: var(--rogue-dark);
 }
 </style>

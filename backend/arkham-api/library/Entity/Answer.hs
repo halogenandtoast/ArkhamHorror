@@ -93,6 +93,9 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
     (SomeRecordableType RecordableMemory) ->
       let entries = mapMaybe (toEntry @Memory) vs
        in setCampaignLogRecorded k entries cl
+    (SomeRecordableType RecordableGeneric) ->
+      let entries = mapMaybe (toEntry @Value) vs
+       in setCampaignLogRecorded k entries cl
   toEntry :: forall a. Recordable a => SetRecordedEntry -> Maybe SomeRecorded
   toEntry (SetAsRecorded e) = case fromJSON @a e of
     Success a -> Just (recorded a)
@@ -199,6 +202,7 @@ makeCampaignLog settings =
       (SomeRecordableType RecordableCardCode) -> map (toEntry @CardCode) entries
       (SomeRecordableType RecordableMemento) -> map (toEntry @Memento) entries
       (SomeRecordableType RecordableMemory) -> map (toEntry @Memory) entries
+      (SomeRecordableType RecordableGeneric) -> map (toEntry @Value) entries
   toEntry :: forall a. Recordable a => CampaignRecordedEntry -> SomeRecorded
   toEntry (CampaignEntryRecorded e) = case fromJSON @a e of
     Success a -> recorded a

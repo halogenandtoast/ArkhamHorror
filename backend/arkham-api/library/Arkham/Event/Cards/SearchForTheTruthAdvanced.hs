@@ -21,7 +21,7 @@ instance RunMessage SearchForTheTruthAdvanced where
       doStep x msg
       pure e
     DoStep x msg'@(PlayThisEvent iid eid) | eid == toId attrs && x > 0 -> do
-      discard <- field InvestigatorDiscard iid
+      discardPile <- field InvestigatorDiscard iid
       mLocation <- field InvestigatorLocation iid
       canDrawCards <- can.draw.cards iid
       when (isJust mLocation || canDrawCards) do
@@ -33,7 +33,7 @@ instance RunMessage SearchForTheTruthAdvanced where
           labeled "Place that clue on your location and return any card from your discard pile to your hand" do
             push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
             chooseOneM iid do
-              for_ discard \card ->
+              for_ discardPile \card ->
                 targeting card $ addToHand iid [toCard card]
             doStep (x - 1) msg'
           labeled "Do nothing (finishes this card)" nothing

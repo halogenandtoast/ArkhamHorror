@@ -218,6 +218,9 @@ recordSetInsert
   -> m ()
 recordSetInsert k = push . Msg.recordSetInsert k
 
+recordSetReplace :: ReverseQueue m => CampaignLogKey -> SomeRecorded -> SomeRecorded -> m ()
+recordSetReplace k v v' = push $ Msg.RecordSetReplace k v v'
+
 incrementRecordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
 incrementRecordCount key = push . IncrementRecordCount key
 

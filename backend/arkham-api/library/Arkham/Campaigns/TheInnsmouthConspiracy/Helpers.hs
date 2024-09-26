@@ -16,6 +16,20 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Source
 
+data Suspect = BrianBurnham | BarnabasMarsh | OtheraGilman | ZadokAllen | JoyceLittle | RobertFriendly
+  deriving stock (Show, Eq, Enum, Bounded, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data Hideout
+  = InnsmouthJail
+  | ShorewardSlums
+  | SawboneAlley
+  | TheHouseOnWaterStreet
+  | EsotericOrderOfDagon
+  | NewChurchGreen
+  deriving stock (Show, Eq, Enum, Bounded, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 needsAir :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 needsAir a n = restricted a n (youExist $ at_ FullyFloodedLocation) $ forced $ TurnBegins #when You
 

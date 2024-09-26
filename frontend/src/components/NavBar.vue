@@ -111,7 +111,8 @@ input[type=checkbox]:checked ~ .user-links {
 .user-links--dropdown {
   position: absolute;
   top: 100%;
-  width: 100%;
+  right: 0;
+  width: fit-content;
   text-align: right;
   background: var(--background-dark);
   padding: 10px;

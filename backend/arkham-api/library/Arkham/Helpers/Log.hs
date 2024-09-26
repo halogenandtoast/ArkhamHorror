@@ -14,6 +14,7 @@ import Arkham.Message
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
+import Data.Typeable
 
 getCampaignLog :: HasGame m => m CampaignLog
 getCampaignLog =
@@ -49,6 +50,19 @@ inRecordSet :: (Recordable a, HasGame m) => a -> CampaignLogKey -> m Bool
 inRecordSet v k = do
   recordSet <- getRecordSet k
   pure $ recorded v `elem` recordSet
+
+getCircledRecord :: forall a m. (Recordable a, HasGame m) => CampaignLogKey -> m (Maybe a)
+getCircledRecord k = do
+  rs <- getRecordSet k
+  pure $ case mapMaybe isCircled rs of
+    (x : _) -> Just x
+    _ -> Nothing
+ where
+  isCircled = \case
+    SomeRecorded _ (Circled (Recorded a :: Recorded b)) -> case eqT @a @b of
+      Just Refl -> Just a
+      Nothing -> Nothing
+    _ -> Nothing
 
 getRecordedCardCodes :: HasGame m => CampaignLogKey -> m [CardCode]
 getRecordedCardCodes k = mapMaybe onlyRecorded <$> getRecordSet k

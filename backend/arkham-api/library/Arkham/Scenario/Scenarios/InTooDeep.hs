@@ -2,7 +2,11 @@ module Arkham.Scenario.Scenarios.InTooDeep (InTooDeep (..), inTooDeep) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Log (getCircledRecord, getRecordSet)
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
@@ -98,5 +102,41 @@ instance RunMessage InTooDeep where
 
       startAt desolateCoastline
 
-      setAsideKeys [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, BlackKey, WhiteKey]
+      setAsideKeys [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, WhiteKey]
+
+      mHideout <- maybeResult <$$> getCircledRecord PossibleHideouts
+      case join mHideout of
+        Just hideout -> do
+          let
+            hideoutLocation = case hideout of
+              InnsmouthJail -> innsmouthJail
+              ShorewardSlums -> shorewardSlums
+              SawboneAlley -> sawboneAlley
+              TheHouseOnWaterStreet -> theHouseOnWaterStreet
+              EsotericOrderOfDagon -> esotericOrderOfDagon
+              NewChurchGreen -> newChurchGreen
+          placeKey hideoutLocation BlackKey
+        Nothing -> setAsideKey BlackKey
+
+      outForBlood <- mapMaybe (maybeResult <=< unrecorded) <$> getRecordSet OutForBlood
+      for_ outForBlood \case
+        BrianBurnham -> enemyAt_ Enemies.brianBurnhamWantsOut firstNationalGrocery
+        BarnabasMarsh -> enemyAt_ Enemies.barnabasMarshTheChangeIsUponHim marshRefinery
+        OtheraGilman -> enemyAt_ Enemies.otheraGilmanProprietessOfTheHotel gilmanHouse
+        ZadokAllen -> enemyAt_ Enemies.zadokAllenDrunkAndDisorderly fishStreetBridge
+        JoyceLittle -> enemyAt_ Enemies.joyceLittleBookshopOwner theLittleBookshop
+        RobertFriendly -> enemyAt_ Enemies.robertFriendlyDisgruntledDockworker innsmouthHarbour
+
+      setAside
+        [ Enemies.ravagerFromTheDeep
+        , Enemies.ravagerFromTheDeep
+        , Enemies.youngDeepOne
+        , Enemies.youngDeepOne
+        , Assets.joeSargentRattletrapBusDriver
+        , Assets.teachingsOfTheOrder
+        , Enemies.innsmouthShoggoth
+        , Enemies.angryMob
+        ]
+
+      for_ [theHouseOnWaterStreet, innsmouthHarbour, desolateCoastline] (push . IncreaseFloodLevel)
     _ -> InTooDeep <$> liftRunMessage msg attrs

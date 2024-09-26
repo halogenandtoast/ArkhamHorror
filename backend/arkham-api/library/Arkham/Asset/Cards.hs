@@ -499,6 +499,7 @@ allPlayerAssetCards =
       , jewelOfAureolus3
       , jimsTrumpet
       , jimsTrumpetAdvanced
+      , joeSargentRattletrapBusDriver
       , joeyTheRatVigil
       , joeyTheRatVigil3
       , katana
@@ -782,6 +783,7 @@ allPlayerAssetCards =
       , switchblade2
       , swordCane
       , talismanOfProtection
+      , teachingsOfTheOrder
       , tennesseeSourMash
       , tennesseeSourMashRogue3
       , tennesseeSourMashSurvivor3
@@ -4526,6 +4528,20 @@ ancientCovenant2 =
       , cdDeckRestrictions = [TraitPerDeckLimit Covenant 1]
       , cdLevel = Just 2
       }
+
+teachingsOfTheOrder :: CardDef
+teachingsOfTheOrder =
+  (storyAsset "07151" "Teachings of the Order" 0 InTooDeep)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdPermanent = True
+    }
+
+joeSargentRattletrapBusDriver :: CardDef
+joeSargentRattletrapBusDriver =
+  (storyAsset "07150" ("Joe Sargant" <:> "Rattletrap Bus Driver") 0 InTooDeep)
+    { cdCardTraits = setFromList [Ally, Hybrid]
+    , cdUnique = True
+    }
 
 keenEye :: CardDef
 keenEye =

@@ -454,6 +454,10 @@ allTreacheries =
     , --- The Locals [tic]
       SomeTreacheryCard innsmouthLook
     , SomeTreacheryCard furtiveLocals
+    , --- In Too Deep [itd]
+      SomeTreacheryCard deepOneInvasion
+    , SomeTreacheryCard pulledBack
+    , SomeTreacheryCard inundated
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

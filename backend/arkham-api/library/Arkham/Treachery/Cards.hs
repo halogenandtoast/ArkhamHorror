@@ -215,6 +215,7 @@ allEncounterTreacheryCards =
       , deceptiveMemories
       , deepDark
       , deepOneAssault
+      , deepOneInvasion
       , deeperSlumber
       , descentIntoMadness
       , dholeTunnel
@@ -267,6 +268,7 @@ allEncounterTreacheryCards =
       , indescribableApparition
       , innsmouthLook
       , insatiableBloodlust
+      , inundated
       , kidnapped
       , lawOfYgirothChaos
       , lawOfYgirothDiscord
@@ -319,6 +321,7 @@ allEncounterTreacheryCards =
       , prismaticPhenomenon
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
+      , pulledBack
       , pulledByTheStars
       , punishment
       , pushedIntoTheBeyond
@@ -2152,6 +2155,24 @@ furtiveLocals :: CardDef
 furtiveLocals =
   (treachery "07107" "Furtive Locals" TheLocals 2)
     { cdCardTraits = singleton Terror
+    }
+
+deepOneInvasion :: CardDef
+deepOneInvasion =
+  (treachery "07147" "Deep One Invasion" InTooDeep 1)
+    { cdCardTraits = singleton Scheme
+    }
+
+pulledBack :: CardDef
+pulledBack =
+  (treachery "07148" "Pulled Back" InTooDeep 2)
+    { cdCardTraits = singleton Terror
+    }
+
+inundated :: CardDef
+inundated =
+  (treachery "07149" "Inundated" InTooDeep 3)
+    { cdCardTraits = singleton Hazard
     }
 
 theHarbinger :: CardDef

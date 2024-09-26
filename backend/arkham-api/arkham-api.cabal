@@ -807,6 +807,7 @@ library
       Arkham.Asset.Cards.JewelOfAureolus3
       Arkham.Asset.Cards.JimsTrumpet
       Arkham.Asset.Cards.JimsTrumpetAdvanced
+      Arkham.Asset.Cards.JoeSargentRattletrapBusDriver
       Arkham.Asset.Cards.JoeyTheRatVigil
       Arkham.Asset.Cards.JoeyTheRatVigil3
       Arkham.Asset.Cards.JordanPerry
@@ -1099,6 +1100,7 @@ library
       Arkham.Asset.Cards.Switchblade2
       Arkham.Asset.Cards.SwordCane
       Arkham.Asset.Cards.TalismanOfProtection
+      Arkham.Asset.Cards.TeachingsOfTheOrder
       Arkham.Asset.Cards.TennesseeSourMash
       Arkham.Asset.Cards.TennesseeSourMashRogue3
       Arkham.Asset.Cards.TennesseeSourMashSurvivor3
@@ -1402,6 +1404,7 @@ library
       Arkham.Enemy.Cards.EctoplasmicHorror
       Arkham.Enemy.Cards.ElisabettaMagro
       Arkham.Enemy.Cards.EmergentMonstrosity
+      Arkham.Enemy.Cards.EmergingDeepOne
       Arkham.Enemy.Cards.EztliGuardian
       Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FangOfYig
@@ -1448,6 +1451,7 @@ library
       Arkham.Enemy.Cards.IcyGhoul
       Arkham.Enemy.Cards.InconspicuousZoog
       Arkham.Enemy.Cards.InitiateOfDagon
+      Arkham.Enemy.Cards.InnsmouthShoggoth
       Arkham.Enemy.Cards.InnsmouthTroublemaker
       Arkham.Enemy.Cards.InterstellarTraveler
       Arkham.Enemy.Cards.IshimaruHaruko
@@ -1517,6 +1521,7 @@ library
       Arkham.Enemy.Cards.PriestessOfTheCoven
       Arkham.Enemy.Cards.PriestOfAThousandMasks
       Arkham.Enemy.Cards.PriestOfDagon
+      Arkham.Enemy.Cards.RavagerFromTheDeep
       Arkham.Enemy.Cards.RavenousGhoul
       Arkham.Enemy.Cards.ReanimatedDead
       Arkham.Enemy.Cards.RelentlessDarkYoung
@@ -3266,6 +3271,7 @@ library
       Arkham.Treachery.Cards.DeepDark
       Arkham.Treachery.Cards.DeeperSlumber
       Arkham.Treachery.Cards.DeepOneAssault
+      Arkham.Treachery.Cards.DeepOneInvasion
       Arkham.Treachery.Cards.DescentIntoMadness
       Arkham.Treachery.Cards.DetachedFromReality
       Arkham.Treachery.Cards.DholeTunnel
@@ -3336,6 +3342,7 @@ library
       Arkham.Treachery.Cards.InnsmouthLook
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
+      Arkham.Treachery.Cards.Inundated
       Arkham.Treachery.Cards.Kidnapped
       Arkham.Treachery.Cards.LawOfYgirothChaos
       Arkham.Treachery.Cards.LawOfYgirothDiscord
@@ -3401,6 +3408,7 @@ library
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.PsychopompsSongUnionAndDisillusion
       Arkham.Treachery.Cards.Psychosis
+      Arkham.Treachery.Cards.PulledBack
       Arkham.Treachery.Cards.PulledByTheStars
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond

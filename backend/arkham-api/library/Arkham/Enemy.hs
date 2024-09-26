@@ -385,6 +385,10 @@ allEnemies =
       SomeEnemyCard wingedOneFogOverInnsmouth
     , --- The Locals [tic]
       SomeEnemyCard innsmouthTroublemaker
+    , --- In Too Deep [itd]
+      SomeEnemyCard innsmouthShoggoth
+    , SomeEnemyCard ravagerFromTheDeep
+    , SomeEnemyCard emergingDeepOne
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

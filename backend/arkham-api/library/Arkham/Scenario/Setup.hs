@@ -113,8 +113,10 @@ gatherOneOf
 gatherOneOf = sampleOneOf >=> gather
 
 setAsideKeys :: ReverseQueue m => [ArkhamKey] -> ScenarioBuilderT m ()
-setAsideKeys ks = do
-  setAsideKeysL .= setFromList ks
+setAsideKeys ks = setAsideKeysL %= (<> setFromList ks)
+
+setAsideKey :: ReverseQueue m => ArkhamKey -> ScenarioBuilderT m ()
+setAsideKey k = setAsideKeysL %= (<> singleton k)
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
 setAside as = do

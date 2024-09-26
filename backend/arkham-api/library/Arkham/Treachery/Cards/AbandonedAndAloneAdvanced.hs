@@ -17,8 +17,8 @@ abandonedAndAloneAdvanced = treachery AbandonedAndAloneAdvanced Cards.abandonedA
 instance RunMessage AbandonedAndAloneAdvanced where
   runMessage msg t@(AbandonedAndAloneAdvanced attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      discard <- field InvestigatorDiscard iid
-      let nonWeaknesses = filter (`cardMatch` (not_ WeaknessCard)) discard
+      discardPile <- field InvestigatorDiscard iid
+      let nonWeaknesses = filter (`cardMatch` (not_ WeaknessCard)) discardPile
       for_ nonWeaknesses obtainCard
 
       if null nonWeaknesses

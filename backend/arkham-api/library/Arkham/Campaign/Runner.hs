@@ -157,6 +157,13 @@ defaultCampaignRunner msg a = case msg of
               <> recs
          in
           updateAttrs a $ logL . recordedSetsL %~ insertMap key set'
+  RecordSetReplace key v v' -> do
+    pure $ case (toAttrs a) ^. logL . recordedSetsL . at key of
+      Nothing ->
+        updateAttrs a $ logL . recordedSetsL %~ insertMap key (singleton v')
+      Just set ->
+        let set' = map (\x -> if x == v then v' else x) set
+         in updateAttrs a $ logL . recordedSetsL %~ insertMap key set'
   CrossOutRecordSetEntries key recs ->
     pure
       $ updateAttrs a

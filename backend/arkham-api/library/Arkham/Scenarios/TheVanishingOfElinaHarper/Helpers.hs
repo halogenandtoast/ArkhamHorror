@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiWayIf #-}
+
 module Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers where
 
 import Arkham.Ability
@@ -97,3 +99,25 @@ scenarioI18n a = campaignI18n $ scope "theVanishingOfElinaHarper" a
 
 scenarioTooltip :: Text -> Ability -> Ability
 scenarioTooltip t ab = scenarioI18n $ withI18nTooltip t ab
+
+asKidnapper :: HasCardDef a => a -> Suspect
+asKidnapper (toCardDef -> def) =
+  if
+    | def.cardCode == Enemies.brianBurnhamWantsOut.cardCode -> BrianBurnham
+    | def.cardCode == Enemies.barnabasMarshTheChangeIsUponHim.cardCode -> BarnabasMarsh
+    | def.cardCode == Enemies.otheraGilmanProprietessOfTheHotel.cardCode -> OtheraGilman
+    | def.cardCode == Enemies.zadokAllenDrunkAndDisorderly.cardCode -> ZadokAllen
+    | def.cardCode == Enemies.joyceLittleBookshopOwner.cardCode -> JoyceLittle
+    | def.cardCode == Enemies.robertFriendlyDisgruntledDockworker.cardCode -> RobertFriendly
+    | otherwise -> error "wrong card"
+
+asHideout :: HasCardDef a => a -> Hideout
+asHideout (toCardDef -> def) =
+  if
+    | def.cardCode == Locations.innsmouthJail.cardCode -> InnsmouthJail
+    | def.cardCode == Locations.shorewardSlums.cardCode -> ShorewardSlums
+    | def.cardCode == Locations.sawboneAlley.cardCode -> SawboneAlley
+    | def.cardCode == Locations.theHouseOnWaterStreet.cardCode -> TheHouseOnWaterStreet
+    | def.cardCode == Locations.esotericOrderOfDagon.cardCode -> EsotericOrderOfDagon
+    | def.cardCode == Locations.newChurchGreen.cardCode -> NewChurchGreen
+    | otherwise -> error "wrong card"

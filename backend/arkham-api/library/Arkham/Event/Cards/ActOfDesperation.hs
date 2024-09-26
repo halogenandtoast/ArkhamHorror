@@ -23,8 +23,8 @@ instance RunMessage ActOfDesperation where
   runMessage msg e@(ActOfDesperation attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       case attrs.payment.discards of
-        [(zone, discard)] -> do
-          let n = discard.printedCost
+        [(zone, discardedCard)] -> do
+          let n = discardedCard.printedCost
           sid <- getRandom
           skillTestModifiers sid attrs iid $ DamageDealt 1 : [SkillModifier #combat n | n > 0]
           when (zone == FromPlay && n > 0) $ createCardEffect Cards.actOfDesperation (effectInt n) attrs iid

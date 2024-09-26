@@ -8,6 +8,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
 import Control.Monad.Fail
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
 import Data.Data
@@ -270,6 +271,8 @@ data CampaignLogKey
   | OutForBlood
   | TheMissionFailed
   | TheMissionWasSuccessful
+  | PossibleSuspects
+  | PossibleHideouts
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -301,30 +304,36 @@ $(deriveJSON defaultOptions ''CampaignLogKey)
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
-data Recorded a = Recorded a | CrossedOut a
+data Recorded a = Recorded a | CrossedOut a | Circled (Recorded a)
   deriving stock (Show, Ord, Eq)
 
 instance ToJSON a => ToJSON (Recorded a) where
   toJSON (Recorded a) = object ["tag" .= String "Recorded", "contents" .= a]
   toJSON (CrossedOut a) = object ["tag" .= String "CrossedOut", "contents" .= a]
+  toJSON (Circled a) = toJSON (a `with` Envelope @"circled" True)
 
 instance FromJSON a => FromJSON (Recorded a) where
   parseJSON = withObject "Recorded" $ \o -> do
-    tag :: Text <- o .: "tag"
-    case tag of
-      "Recorded" -> Recorded <$> o .: "contents"
-      "CrossedOut" -> CrossedOut <$> o .: "contents"
+    isCircled <- o .:? "circled" .!= False
+    let o' = KeyMap.delete "circled" o
+    tag :: Text <- o' .: "tag"
+    rec <- case tag of
+      "Recorded" -> Recorded <$> o' .: "contents"
+      "CrossedOut" -> CrossedOut <$> o' .: "contents"
       _ -> fail $ "Unknown tag: " <> T.unpack tag
+    return $ if isCircled then Circled rec else rec
 
 recordedCardCodes :: [SomeRecorded] -> [CardCode]
 recordedCardCodes [] = []
 recordedCardCodes (SomeRecorded RecordableCardCode (Recorded a) : as) = a : recordedCardCodes as
+recordedCardCodes (SomeRecorded RecordableCardCode (Circled (Recorded a)) : as) = a : recordedCardCodes as
 recordedCardCodes (_ : as) = recordedCardCodes as
 
 unrecorded :: forall a. Recordable a => SomeRecorded -> Maybe a
 unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
   Just Refl -> case rec of
     Recorded a -> Just a
+    Circled (Recorded a) -> Just a
     _ -> Nothing
   Nothing -> Nothing
 
@@ -352,8 +361,14 @@ instance Recordable Memento where
 instance Recordable Memory where
   recordableType = RecordableMemory
 
+instance Recordable Value where
+  recordableType = RecordableGeneric
+
 recorded :: forall a. Recordable a => a -> SomeRecorded
 recorded a = SomeRecorded (recordableType @a) (Recorded a)
+
+circled :: forall a. Recordable a => a -> SomeRecorded
+circled a = SomeRecorded (recordableType @a) (Circled (Recorded a))
 
 crossedOut :: forall a. Recordable a => a -> SomeRecorded
 crossedOut a = SomeRecorded (recordableType @a) (CrossedOut a)
@@ -362,6 +377,7 @@ data RecordableType a where
   RecordableCardCode :: RecordableType CardCode
   RecordableMemento :: RecordableType Memento
   RecordableMemory :: RecordableType Memory
+  RecordableGeneric :: RecordableType Value
 
 data SomeRecordableType where
   SomeRecordableType :: RecordableType a -> SomeRecordableType
@@ -379,6 +395,7 @@ instance FromJSON SomeRecordableType where
     "RecordableCardCode" -> pure $ SomeRecordableType RecordableCardCode
     "RecordableMemento" -> pure $ SomeRecordableType RecordableMemento
     "RecordableMemory" -> pure $ SomeRecordableType RecordableMemory
+    "RecordableGeneric" -> pure $ SomeRecordableType RecordableGeneric
     other -> fail $ "No such recordable type: " <> unpack other
 
 data SomeRecorded where
@@ -412,3 +429,6 @@ instance FromJSON SomeRecorded where
       SomeRecordableType RecordableMemory -> do
         rVal <- o .: "recordVal"
         pure $ SomeRecorded RecordableMemory rVal
+      SomeRecordableType RecordableGeneric -> do
+        rVal <- o .: "recordVal"
+        pure $ SomeRecorded RecordableGeneric rVal

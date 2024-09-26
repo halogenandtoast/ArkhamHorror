@@ -79,5 +79,8 @@ recordSetInsert
   -> Message
 recordSetInsert k xs = RecordSetInsert k $ map recorded $ toList xs
 
+recordSetReplace :: CampaignLogKey -> SomeRecorded -> SomeRecorded -> Message
+recordSetReplace k v v' = RecordSetReplace k v v'
+
 crossOutRecordSetEntries :: Recordable a => CampaignLogKey -> [a] -> Message
 crossOutRecordSetEntries k xs = CrossOutRecordSetEntries k $ map recorded xs

@@ -70,5 +70,6 @@ instance RunMessage TheInnsmouthConspiracy where
         investigators <- allInvestigators
         addCampaignCardToDeckChoice investigators Assets.elinaHarperKnowsTooMuch
       story $ i18nWithTitle "theSyzygy4"
+      nextCampaignStep
       pure c
     _ -> lift $ defaultCampaignRunner msg c

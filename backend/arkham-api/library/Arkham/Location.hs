@@ -620,6 +620,22 @@ allLocations =
       SomeLocationCard underwaterCavern
     , SomeLocationCard tidalPool
     , SomeLocationCard undergroundRiver
+    , --- In Too Deep [itp]
+      SomeLocationCard esotericOrderOfDagonInTooDeep
+    , SomeLocationCard sawboneAlleyInTooDeep
+    , SomeLocationCard shorewardSlumsInTooDeep
+    , SomeLocationCard theHouseOnWaterStreetInTooDeep
+    , SomeLocationCard innsmouthJailInTooDeep
+    , SomeLocationCard newChurchGreenInTooDeep
+    , SomeLocationCard theLittleBookshopInTooDeep
+    , SomeLocationCard fishStreetBridgeInTooDeep
+    , SomeLocationCard firstNationalGroceryInTooDeep
+    , SomeLocationCard innsmouthHarbourInTooDeep
+    , SomeLocationCard innsmouthSquareInTooDeep
+    , SomeLocationCard gilmanHouseInTooDeep
+    , SomeLocationCard marshRefineryInTooDeep
+    , SomeLocationCard railroadStation
+    , SomeLocationCard desolateCoastline
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

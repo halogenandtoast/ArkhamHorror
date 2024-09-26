@@ -219,6 +219,7 @@ library
       Arkham.Act.Cards.TheYithianRelic
       Arkham.Act.Cards.TheyMustBeDestroyed
       Arkham.Act.Cards.ThroughTheCatacombs
+      Arkham.Act.Cards.ThroughTheLabyrinth
       Arkham.Act.Cards.Timelock
       Arkham.Act.Cards.Trapped
       Arkham.Act.Cards.TrialOfTheHuntress
@@ -251,6 +252,7 @@ library
       Arkham.Agenda.Cards.ATearInReality
       Arkham.Agenda.Cards.ATrailOfTwists
       Arkham.Agenda.Cards.Awakening
+      Arkham.Agenda.Cards.BarricadedStreets
       Arkham.Agenda.Cards.BeckoningForPower
       Arkham.Agenda.Cards.BehindTheCurtain
       Arkham.Agenda.Cards.BesetByMonsters
@@ -276,6 +278,7 @@ library
       Arkham.Agenda.Cards.EyesInTheDark
       Arkham.Agenda.Cards.FashionablyLate
       Arkham.Agenda.Cards.FeedTheBeast
+      Arkham.Agenda.Cards.FloodedStreets
       Arkham.Agenda.Cards.FranticPursuit
       Arkham.Agenda.Cards.FuryThatShakesTheEarth
       Arkham.Agenda.Cards.GrowingSuspicion
@@ -307,9 +310,11 @@ library
       Arkham.Agenda.Cards.PendulousThreads
       Arkham.Agenda.Cards.PredatorOrPrey
       Arkham.Agenda.Cards.QuietHalls
+      Arkham.Agenda.Cards.RageOfTheDeep
       Arkham.Agenda.Cards.RampagingCreatures
       Arkham.Agenda.Cards.RansackingTheManor
       Arkham.Agenda.Cards.RealitiesInterwoven
+      Arkham.Agenda.Cards.RelentlessTide
       Arkham.Agenda.Cards.RestrictedAccess
       Arkham.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Agenda.Cards.RiseOfTheGhouls
@@ -2342,6 +2347,7 @@ library
       Arkham.Location.Cards.DepthsOfDemheStepsOfThePalace
       Arkham.Location.Cards.DepthsOfDemheTheHeightOfTheDepths
       Arkham.Location.Cards.DescentToYoth
+      Arkham.Location.Cards.DesolateCoastline
       Arkham.Location.Cards.DestroyedPath
       Arkham.Location.Cards.DevilsHopYard_252
       Arkham.Location.Cards.DevilsHopYard_253
@@ -2384,6 +2390,7 @@ library
       Arkham.Location.Cards.EntryHallSpectral
       Arkham.Location.Cards.Entryway
       Arkham.Location.Cards.EsotericOrderOfDagon
+      Arkham.Location.Cards.EsotericOrderOfDagonInTooDeep
       Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
       Arkham.Location.Cards.ExhibitHallEgyptianExhibit
       Arkham.Location.Cards.ExhibitHallHallOfTheDead
@@ -2398,8 +2405,10 @@ library
       Arkham.Location.Cards.FarAboveYourHouse
       Arkham.Location.Cards.FaubourgMarigny
       Arkham.Location.Cards.FirstNationalGrocery
+      Arkham.Location.Cards.FirstNationalGroceryInTooDeep
       Arkham.Location.Cards.FishGraveyard
       Arkham.Location.Cards.FishStreetBridge
+      Arkham.Location.Cards.FishStreetBridgeInTooDeep
       Arkham.Location.Cards.FlightIntoOblivion
       Arkham.Location.Cards.FloodedSquare
       Arkham.Location.Cards.ForbiddenLands
@@ -2426,6 +2435,7 @@ library
       Arkham.Location.Cards.GardensOfLuxembourg
       Arkham.Location.Cards.GareDOrsay
       Arkham.Location.Cards.GilmanHouse
+      Arkham.Location.Cards.GilmanHouseInTooDeep
       Arkham.Location.Cards.Gondola
       Arkham.Location.Cards.GrandChamber
       Arkham.Location.Cards.GrandGuignol
@@ -2473,8 +2483,11 @@ library
       Arkham.Location.Cards.Infirmary
       Arkham.Location.Cards.InnerSanctum
       Arkham.Location.Cards.InnsmouthHarbour
+      Arkham.Location.Cards.InnsmouthHarbourInTooDeep
       Arkham.Location.Cards.InnsmouthJail
+      Arkham.Location.Cards.InnsmouthJailInTooDeep
       Arkham.Location.Cards.InnsmouthSquare
+      Arkham.Location.Cards.InnsmouthSquareInTooDeep
       Arkham.Location.Cards.InterviewRoomArrivalChamber
       Arkham.Location.Cards.InterviewRoomIchorFilledChamber
       Arkham.Location.Cards.InterviewRoomRestrainingChamber
@@ -2507,6 +2520,7 @@ library
       Arkham.Location.Cards.Lounge
       Arkham.Location.Cards.MainPath
       Arkham.Location.Cards.MarshRefinery
+      Arkham.Location.Cards.MarshRefineryInTooDeep
       Arkham.Location.Cards.MasterBedroom
       Arkham.Location.Cards.MasterBedroomSpectral
       Arkham.Location.Cards.MerchantDistrict_300
@@ -2541,6 +2555,7 @@ library
       Arkham.Location.Cards.NamelessRuins
       Arkham.Location.Cards.NarrowShaft
       Arkham.Location.Cards.NewChurchGreen
+      Arkham.Location.Cards.NewChurchGreenInTooDeep
       Arkham.Location.Cards.NexusOfNKai
       Arkham.Location.Cards.Northside
       Arkham.Location.Cards.NorthsideTrainStation
@@ -2588,6 +2603,7 @@ library
       Arkham.Location.Cards.PrivateRoom
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
+      Arkham.Location.Cards.RailroadStation
       Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
       Arkham.Location.Cards.Restaurant
@@ -2619,6 +2635,7 @@ library
       Arkham.Location.Cards.SanMarcoBasilica
       Arkham.Location.Cards.Sarnath
       Arkham.Location.Cards.SawboneAlley
+      Arkham.Location.Cards.SawboneAlleyInTooDeep
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
       Arkham.Location.Cards.ScienceBuilding
@@ -2641,6 +2658,7 @@ library
       Arkham.Location.Cards.ShoresOfHali
       Arkham.Location.Cards.ShoresOfRlyeh
       Arkham.Location.Cards.ShorewardSlums
+      Arkham.Location.Cards.ShorewardSlumsInTooDeep
       Arkham.Location.Cards.SilverTwilightLodgeShroudedInMystery
       Arkham.Location.Cards.SilverTwilightLodgeWhereItAllEnds
       Arkham.Location.Cards.SiteOfTheSacrifice
@@ -2699,7 +2717,9 @@ library
       Arkham.Location.Cards.TheGuardian
       Arkham.Location.Cards.TheHiddenChamber
       Arkham.Location.Cards.TheHouseOnWaterStreet
+      Arkham.Location.Cards.TheHouseOnWaterStreetInTooDeep
       Arkham.Location.Cards.TheLittleBookshop
+      Arkham.Location.Cards.TheLittleBookshopInTooDeep
       Arkham.Location.Cards.TheOnyxCastle
       Arkham.Location.Cards.TheWhiteShip
       Arkham.Location.Cards.TidalPool
@@ -2892,6 +2912,7 @@ library
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Story
+      Arkham.Scenarios.InTooDeep.Helpers
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
@@ -3070,6 +3091,7 @@ library
       Arkham.SkillType
       Arkham.Slot
       Arkham.SlotType
+      Arkham.SortedPair
       Arkham.Source
       Arkham.Spawn
       Arkham.Stats

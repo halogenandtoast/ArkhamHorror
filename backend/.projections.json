@@ -63,13 +63,9 @@
       "  , {dot|snakecase|camelcase}",
       "  ) where",
       "",
-      "import Arkham.Prelude",
-      "",
-      "import Arkham.Classes",
-      "import Arkham.Difficulty",
-      "import Arkham.Helpers.Scenario",
-      "import Arkham.Scenario.Runner",
-      "import Arkham.ChaosToken",
+      "import Arkham.Scenario.Import.Lifted",
+      "import Arkham.Scenarios.{dot}.Helpers",
+      "import Arkham.EncounterSet qualfied as Set",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",
       "  deriving anyclass (IsScenario, HasModifiersFor)",
@@ -92,8 +88,13 @@
       "    otherFace -> getChaosTokenValue iid otherFace attrs",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) =",
-      "    {dot} <$> runMessage msg attrs"
+      "  runMessage msg ({dot} attrs) = runQueueT $ scenarioI18n $ case msg of",
+      "    PreScenarioSetup -> do",
+      "      story $ i18nWithTitle \"intro1\"",
+      "      pure s",
+      "    Setup -> runScenarioSetup InTooDeep attrs do",
+      "      gather Set.{dot}",
+      "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
   "arkham-api/library/Arkham/Campaign/Campaigns/*.hs": {

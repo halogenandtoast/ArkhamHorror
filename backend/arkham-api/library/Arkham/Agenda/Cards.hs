@@ -30,6 +30,7 @@ allAgendaCards =
       , agentsOfTheOuterGods
       , allIsOne
       , awakening
+      , barricadedStreets
       , beckoningForPower
       , behindTheCurtain
       , besetByMonsters
@@ -55,6 +56,7 @@ allAgendaCards =
       , eyesInTheDark
       , fashionablyLate
       , feedTheBeast
+      , floodedStreets
       , franticPursuit
       , furyThatShakesTheEarth
       , growingSuspicion
@@ -86,9 +88,11 @@ allAgendaCards =
       , pendulousThreads
       , predatorOrPrey
       , quietHalls
+      , rageOfTheDeep
       , rampagingCreatures
       , ransackingTheManor
       , realitiesInterwoven
+      , relentlessTide
       , restrictedAccess
       , returnToPredatorOrPrey
       , riseOfTheGhouls
@@ -578,6 +582,18 @@ growingSuspicion = agenda "07058" "Growing Suspicion" 2 TheVanishingOfElinaHarpe
 
 franticPursuit :: CardDef
 franticPursuit = agenda "07059" "Frantic Pursuit" 3 TheVanishingOfElinaHarper
+
+barricadedStreets :: CardDef
+barricadedStreets = agenda "07124" "Barricaded Streets" 1 InTooDeep
+
+relentlessTide :: CardDef
+relentlessTide = agenda "07125" "Relentless Tide" 2 InTooDeep
+
+floodedStreets :: CardDef
+floodedStreets = agenda "07126" "Flooded Streets" 3 InTooDeep
+
+rageOfTheDeep :: CardDef
+rageOfTheDeep = agenda "07127" "Rage of the Deep" 4 InTooDeep
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

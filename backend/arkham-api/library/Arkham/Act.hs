@@ -274,6 +274,8 @@ allActs =
     , --- The Vanishing of Elina Harper
       SomeActCard theSearchForAgentHarper
     , SomeActCard theRescue
+    , --- In Too Deep
+      SomeActCard throughTheLabyrinth
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -207,6 +207,7 @@ allLocationCards =
       , depthsOfDemheTheHeightOfTheDepths
       , depthsOfDemheStepsOfThePalace
       , descentToYoth
+      , desolateCoastline
       , destroyedPath
       , devilsHopYard_252
       , devilsHopYard_253
@@ -248,6 +249,7 @@ allLocationCards =
       , entryHallSpectral
       , entryway
       , esotericOrderOfDagon
+      , esotericOrderOfDagonInTooDeep
       , exhibitHallAthabaskanExhibit
       , exhibitHallEgyptianExhibit
       , exhibitHallHallOfTheDead
@@ -262,8 +264,10 @@ allLocationCards =
       , farAboveYourHouse
       , faubourgMarigny
       , firstNationalGrocery
+      , firstNationalGroceryInTooDeep
       , fishGraveyard
       , fishStreetBridge
+      , fishStreetBridgeInTooDeep
       , flightIntoOblivion
       , floodedSquare
       , forbiddenLands
@@ -290,6 +294,7 @@ allLocationCards =
       , gardensOfLuxembourg
       , gareDOrsay
       , gilmanHouse
+      , gilmanHouseInTooDeep
       , gondola
       , grandChamber
       , grandGuignol
@@ -337,8 +342,11 @@ allLocationCards =
       , infirmary
       , innerSanctum
       , innsmouthHarbour
+      , innsmouthHarbourInTooDeep
       , innsmouthJail
+      , innsmouthJailInTooDeep
       , innsmouthSquare
+      , innsmouthSquareInTooDeep
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
@@ -371,6 +379,7 @@ allLocationCards =
       , lounge
       , mainPath
       , marshRefinery
+      , marshRefineryInTooDeep
       , masterBedroom
       , masterBedroomSpectral
       , merchantDistrict_300
@@ -405,6 +414,7 @@ allLocationCards =
       , namelessRuins
       , narrowShaft
       , newChurchGreen
+      , newChurchGreenInTooDeep
       , nexusOfNKai
       , northside
       , northsideTrainStation
@@ -452,6 +462,7 @@ allLocationCards =
       , privateRoom
       , quietHalls_131
       , quietHalls_135
+      , railroadStation
       , recordsOffice
       , rehearsalRoom
       , restaurant
@@ -483,6 +494,7 @@ allLocationCards =
       , sanctumDoorwayHoldingCells
       , sarnath
       , sawboneAlley
+      , sawboneAlleyInTooDeep
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
@@ -505,6 +517,7 @@ allLocationCards =
       , shoresOfHali
       , shoresOfRlyeh
       , shorewardSlums
+      , shorewardSlumsInTooDeep
       , silverTwilightLodgeShroudedInMystery
       , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
@@ -562,7 +575,9 @@ allLocationCards =
       , theGuardian
       , theHiddenChamber
       , theHouseOnWaterStreet
+      , theHouseOnWaterStreetInTooDeep
       , theLittleBookshop
+      , theLittleBookshopInTooDeep
       , theOnyxCastle
       , theWhiteShip
       , theatre
@@ -6331,6 +6346,161 @@ undergroundRiver =
       NoSymbol
       []
       FloodedCaverns
+
+esotericOrderOfDagonInTooDeep :: CardDef
+esotericOrderOfDagonInTooDeep =
+  location
+    "07129"
+    "Esoteric Order of Dagon"
+    [Innsmouth, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+sawboneAlleyInTooDeep :: CardDef
+sawboneAlleyInTooDeep =
+  victory 1
+    $ location
+      "07130"
+      "Sawbone Alley"
+      [Innsmouth]
+      NoSymbol
+      []
+      InTooDeep
+
+shorewardSlumsInTooDeep :: CardDef
+shorewardSlumsInTooDeep =
+  location
+    "07131"
+    "Shoreward Slums"
+    [Innsmouth, Coastal, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+theHouseOnWaterStreetInTooDeep :: CardDef
+theHouseOnWaterStreetInTooDeep =
+  location
+    "07132"
+    "The House on Water Street"
+    [Innsmouth, Coastal]
+    NoSymbol
+    []
+    InTooDeep
+
+innsmouthJailInTooDeep :: CardDef
+innsmouthJailInTooDeep =
+  victory 1
+    $ location
+      "07133"
+      "Innsmouth Jail"
+      [Innsmouth, Midtown]
+      NoSymbol
+      []
+      InTooDeep
+
+newChurchGreenInTooDeep :: CardDef
+newChurchGreenInTooDeep =
+  location
+    "07134"
+    "New Church Green"
+    [Innsmouth, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+theLittleBookshopInTooDeep :: CardDef
+theLittleBookshopInTooDeep =
+  location
+    "07135"
+    "The Little Bookshop"
+    [Innsmouth]
+    NoSymbol
+    []
+    InTooDeep
+
+fishStreetBridgeInTooDeep :: CardDef
+fishStreetBridgeInTooDeep =
+  victory 1
+    $ location
+      "07136"
+      "Fish Street Bridge"
+      [Innsmouth, Coastal, Midtown]
+      NoSymbol
+      []
+      InTooDeep
+
+firstNationalGroceryInTooDeep :: CardDef
+firstNationalGroceryInTooDeep =
+  victory 1
+    $ location
+      "07137"
+      "First National Grocery"
+      [Innsmouth, Coastal, Midtown]
+      NoSymbol
+      []
+      InTooDeep
+
+innsmouthHarbourInTooDeep :: CardDef
+innsmouthHarbourInTooDeep =
+  location
+    "07138"
+    "Fish Street Bridge"
+    [Innsmouth, Coastal, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+innsmouthSquareInTooDeep :: CardDef
+innsmouthSquareInTooDeep =
+  victory 1
+    $ location
+      "07139"
+      "Innsmouth Square"
+      [Innsmouth, Midtown]
+      NoSymbol
+      []
+      InTooDeep
+
+gilmanHouseInTooDeep :: CardDef
+gilmanHouseInTooDeep =
+  location
+    "07140"
+    "Gilman House"
+    [Innsmouth, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+marshRefineryInTooDeep :: CardDef
+marshRefineryInTooDeep =
+  location
+    "07141"
+    "Marsh Refinery"
+    [Innsmouth, Coastal, Midtown]
+    NoSymbol
+    []
+    InTooDeep
+
+railroadStation :: CardDef
+railroadStation =
+  location
+    "07142"
+    "Railroad Station"
+    [Innsmouth]
+    NoSymbol
+    []
+    InTooDeep
+
+desolateCoastline :: CardDef
+desolateCoastline =
+  location
+    "07143"
+    "Desolate Coastline"
+    [Innsmouth, Coastal]
+    NoSymbol
+    []
+    InTooDeep
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

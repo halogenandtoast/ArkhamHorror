@@ -90,6 +90,7 @@ const makeLine = function(div1: HTMLElement, div2: HTMLElement) {
   const y2 = (rightDivTop - bodyTop) - (rightDivHeight/2)
   const existingNode = document.querySelector(`[data-connection="${connection}"]`)
 
+
   const isNodeClose = (node: Element) => {
     const ex1 = node.getAttribute("x1") || "-1"
     const ey1 = node.getAttribute("y1") || "-1"

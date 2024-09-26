@@ -119,14 +119,10 @@ const isVertical = function(area: string) {
 
   if (!startLocation || !endLocation) return false
 
-  console.log(startLocation.label, endLocation.label, startLocation.label[startLocation.label.length - 1] !== endLocation.label[endLocation.label.length - 1])
-
-  // if the last character of the label for each location is different then it is vertical
-
   return startLocation.label[startLocation.label.length - 1] !== endLocation.label[endLocation.label.length - 1]
 }
 
-const barriers = computed(() => props.scenario.meta.barriers)
+const barriers = computed(() => props.scenario.meta?.barriers)
 function intercalateRows<T>(rows: T[], intercalatedRow: T): T[] {
   return rows.reduce((acc, row, index) => {
     acc.push(row);
@@ -218,6 +214,8 @@ const locationStyles = computed(() => {
     // Update the 'cleaned' variable
     cleaned = finalRows.map((row) => row.join(' '));
   }
+
+  console.log(cleaned[0].trim().split(/\s+/))
 
   return {
     display: 'grid',
@@ -666,9 +664,11 @@ const tarotCardAbility = (card: TarotCard) => {
             @choose="choose"
           />
 
-          <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
-            <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
-          </div>
+          <template v-if="barriers">
+            <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
+              <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
+            </div>
+          </template>
 
           <template v-if="scenario.usesGrid">
             <template v-for="u in unusedLabels" :key="u">
@@ -812,7 +812,7 @@ const tarotCardAbility = (card: TarotCard) => {
   margin: auto;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
-  justify-content: center;
+  place-content: safe center;
 }
 
 .location-cards-container {
@@ -1182,18 +1182,19 @@ margin: 20px !important;
 .barrier {
   display: flex;
   flex-direction: column;
-  width: 20px;
+  width: calc(var(--card-width) / 4);
+  height: calc(var(--card-width) / var(--card-aspect));
+  align-self: flex-start;
   justify-content: center;
-  height: 100px;
-  justify-self: center;
   img {
     width: 20px;
   }
 
   &.vertical {
     flex-direction: row;
-    height: 20px;
+    height: 40px;
     width: 100px;
+    justify-self: center;
     img {
       height: 20px;
     }

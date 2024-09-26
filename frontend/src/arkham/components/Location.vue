@@ -411,6 +411,7 @@ function onDrop(event: DragEvent) {
   flex-direction: column;
   position: relative;
   grid-area: location;
+  width: var(--card-width);
 }
 
 .pool {

@@ -384,8 +384,7 @@ createEnemyEngagedWithPrey c = do
 createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
-createEnemyAt_
-  :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
+createEnemyAt_ :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
 createEnemyAt_ c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
 
 createEnemyAt

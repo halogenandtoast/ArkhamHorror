@@ -116,8 +116,8 @@ instance RunMessage TheVanishingOfElinaHarper where
         , Locations.theLittleBookshop
         ]
 
-      (hideout, remainingHideouts) <- sampleWithRest =<< genCards hideouts
-      (kidnapper, remainingSuspects) <- sampleWithRest =<< genCards suspects
+      (hideout, remainingHideouts) <- sampleWithRest hideouts
+      (kidnapper, remainingSuspects) <- sampleWithRest suspects
 
       excludeFromEncounterDeck [hideout, kidnapper]
       addExtraDeck LeadsDeck =<< shuffleM (remainingHideouts <> remainingSuspects)
@@ -134,8 +134,10 @@ instance RunMessage TheVanishingOfElinaHarper where
       findingAgentHarper <- genCard Stories.findingAgentHarper
       push $ PlaceStory findingAgentHarper Global
       let target = StoryTarget $ StoryId $ coerce $ toCardCode findingAgentHarper
-      placeUnderneath target [kidnapper, hideout]
-      setMeta $ Meta {kidnapper, hideout}
+      kidnapperCard <- genCard kidnapper
+      hideoutCard <- genCard hideout
+      placeUnderneath target [kidnapperCard, hideoutCard]
+      setMeta $ Meta {kidnapper = kidnapperCard, hideout = hideoutCard}
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       let amount = if isEasyStandard attrs then 1 else 2
       case token.face of

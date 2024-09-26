@@ -64,6 +64,7 @@ export type Scenario = {
   hasEncounterDeck: boolean;
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
+  meta: any;
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -80,6 +81,7 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string,
+  meta: JsonDecoder.succeed,
   reference: JsonDecoder.string,
   difficulty: difficultyDecoder,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),

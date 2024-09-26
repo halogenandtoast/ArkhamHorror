@@ -180,6 +180,11 @@ placeInGrid pos def = do
   encounterDeckL %= flip removeEachFromDeck [def]
   placeLocationCardInGrid pos def
 
+placeInGrid_ :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m ()
+placeInGrid_ pos def = do
+  encounterDeckL %= flip removeEachFromDeck [def]
+  void $ placeLocationCardInGrid pos def
+
 place_ :: ReverseQueue m => CardDef -> ScenarioBuilderT m ()
 place_ = void . place
 

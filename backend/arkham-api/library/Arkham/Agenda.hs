@@ -224,6 +224,11 @@ allAgendas =
       SomeAgendaCard decrepitDecay
     , SomeAgendaCard growingSuspicion
     , SomeAgendaCard franticPursuit
+    , --- In Too Deep
+      SomeAgendaCard barricadedStreets
+    , SomeAgendaCard relentlessTide
+    , SomeAgendaCard floodedStreets
+    , SomeAgendaCard rageOfTheDeep
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

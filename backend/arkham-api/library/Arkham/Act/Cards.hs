@@ -198,6 +198,7 @@ allActCards =
       , theYithianRelic
       , theyMustBeDestroyed
       , throughTheCatacombs
+      , throughTheLabyrinth
       , timelock
       , trapped
       , trialOfTheHuntress
@@ -764,6 +765,9 @@ theSearchForAgentHarper = act "07060" "The Search for Agent Harper" 1 TheVanishi
 
 theRescue :: CardDef
 theRescue = act "07061" "The Rescue" 2 TheVanishingOfElinaHarper
+
+throughTheLabyrinth :: CardDef
+throughTheLabyrinth = act "07128" "Through the Labyrinth" 1 InTooDeep
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

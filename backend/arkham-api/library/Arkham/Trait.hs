@@ -46,6 +46,7 @@ data Trait
   | Clairvoyant
   | Clothing
   | CloverClub
+  | Coastal
   | Composure
   | Condition
   | Connection
@@ -137,6 +138,7 @@ data Trait
   | Melee
   | MexicoCity
   | MiGo
+  | Midtown
   | Miskatonic
   | Mnar
   | Monster

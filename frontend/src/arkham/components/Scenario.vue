@@ -111,10 +111,114 @@ const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
   return Object.entries(props.scenario.decks)
 })
+
+const isVertical = function(area: string) {
+  const [start, end] = area.split('--')
+  const startLocation = locations.value.find((l) => l.id === start);
+  const endLocation = locations.value.find((l) => l.id === end);
+
+  if (!startLocation || !endLocation) return false
+
+  console.log(startLocation.label, endLocation.label, startLocation.label[startLocation.label.length - 1] !== endLocation.label[endLocation.label.length - 1])
+
+  // if the last character of the label for each location is different then it is vertical
+
+  return startLocation.label[startLocation.label.length - 1] !== endLocation.label[endLocation.label.length - 1]
+}
+
+const barriers = computed(() => props.scenario.meta.barriers)
+function intercalateRows<T>(rows: T[], intercalatedRow: T): T[] {
+  return rows.reduce((acc, row, index) => {
+    acc.push(row);
+    if (index < rows.length - 1) {
+      acc.push(intercalatedRow);
+    }
+    return acc;
+  }, [] as T[]);
+}
+
 const locationStyles = computed(() => {
   const { locationLayout } = props.scenario
   if (!locationLayout) return null
-  const cleaned = locationLayout
+  let cleaned = locationLayout
+
+  if (barriers.value) {
+    let grid = {};
+    locationLayout.forEach((row) => {
+      row.split(' ').forEach((cell) => {
+        const location = locations.value.find((l) => l.label === cell);
+        if (!location) return;
+        grid[cell] = location.id;
+      });
+    });
+
+    // Process rows to insert barriers
+    const cleanedRows = locationLayout.map((row) => row.split(' '));
+    let newCleanedRows = [];
+
+    for (let rowIndex = 0; rowIndex < cleanedRows.length; rowIndex++) {
+      const row = cleanedRows[rowIndex];
+      let newRow = [];
+
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const cell = row[colIndex];
+        newRow.push(cell);
+
+        // Check for horizontal barriers
+        if (colIndex < row.length - 1) {
+          const cellA = cell;
+          const cellB = row[colIndex + 1];
+          const idA = grid[cellA];
+          const idB = grid[cellB];
+          if (idA && idB) {
+            const ids = `barrier-${[idA, idB].sort().join('--')}`;
+            newRow.push(ids); // Insert barrier
+          } else {
+            newRow.push('.'); // Insert period
+          }
+        }
+      }
+      newCleanedRows.push(newRow);
+    }
+
+    // Now process columns to insert vertical barriers
+    let finalRows = [];
+
+    for (let rowIndex = 0; rowIndex < newCleanedRows.length; rowIndex++) {
+      const row = newCleanedRows[rowIndex];
+      finalRows.push(row);
+
+      // Check if we need to insert a row of barriers below this row
+      if (rowIndex < newCleanedRows.length - 1) {
+        const nextRow = newCleanedRows[rowIndex + 1];
+        let barrierRow = [];
+        let needBarrierRow = false;
+
+        for (let colIndex = 0; colIndex < row.length; colIndex++) {
+          const cellA = row[colIndex];
+          const cellB = nextRow[colIndex];
+          const idA = grid[cellA];
+          const idB = grid[cellB];
+
+          if (idA && idB) {
+            const ids = `barrier-${[idA, idB].sort().join('--')}`;
+            barrierRow.push(ids); // Insert vertical barrier
+            needBarrierRow = true;
+          } else {
+            barrierRow.push('.'); // Insert period
+          }
+        }
+
+        if (needBarrierRow) {
+          finalRows.push(barrierRow);
+        }
+      }
+    }
+
+    // Update the 'cleaned' variable
+    cleaned = finalRows.map((row) => row.join(' '));
+  }
+
   return {
     display: 'grid',
     gap: '20px',
@@ -561,6 +665,10 @@ const tarotCardAbility = (card: TarotCard) => {
             :style="{ 'grid-area': enemy.asSelfLocation, 'justify-self': 'center', 'align-items': 'center' }"
             @choose="choose"
           />
+
+          <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
+            <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
+          </div>
 
           <template v-if="scenario.usesGrid">
             <template v-for="u in unusedLabels" :key="u">
@@ -1069,5 +1177,26 @@ margin: 20px !important;
   position: absolute;
   right: 10px;
   bottom: 10px;
+}
+
+.barrier {
+  display: flex;
+  flex-direction: column;
+  width: 20px;
+  justify-content: center;
+  height: 100px;
+  justify-self: center;
+  img {
+    width: 20px;
+  }
+
+  &.vertical {
+    flex-direction: row;
+    height: 20px;
+    width: 100px;
+    img {
+      height: 20px;
+    }
+  }
 }
 </style>

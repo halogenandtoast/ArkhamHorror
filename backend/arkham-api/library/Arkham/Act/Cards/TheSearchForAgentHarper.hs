@@ -14,6 +14,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
 import Arkham.Story.Cards qualified as Stories
@@ -89,7 +90,8 @@ instance RunMessage TheSearchForAgentHarper where
       elinaHarper <- getSetAsideCard Assets.elinaHarperKnowsTooMuch
       placeUnderneath hideout [elinaHarper]
       kidnapper <- getKidnapper
-      createEnemyAt_ kidnapper hideout
+      kidnapperEnemy <- createEnemyAt kidnapper hideout
+      gameModifier ScenarioSource kidnapperEnemy (ScenarioModifier "kidnapper")
       getScenarioDeck LeadsDeck >>= traverse_ obtainCard
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> clues) -> do

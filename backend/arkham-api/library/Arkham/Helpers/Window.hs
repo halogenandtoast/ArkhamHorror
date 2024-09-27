@@ -300,9 +300,11 @@ replaceWindow f wf = do
   replaceMessageMatching
     \case
       CheckWindows ws -> any f ws
+      Do (CheckWindows ws) -> any f ws
       _ -> False
     \case
       CheckWindows ws -> [CheckWindows $ map (\w -> if f w then wf w else w) ws]
+      Do (CheckWindows ws) -> [Do (CheckWindows $ map (\w -> if f w then wf w else w) ws)]
       _ -> error "impossible"
 
 replaceWindowMany
@@ -311,6 +313,7 @@ replaceWindowMany f wf = do
   replaceAllMessagesMatching
     \case
       CheckWindows ws -> any (f . windowType) ws
+      Do (CheckWindows ws) -> any (f . windowType) ws
       _ -> False
     \case
       CheckWindows ws ->
@@ -318,6 +321,14 @@ replaceWindowMany f wf = do
             $ concatMap
               (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
               ws
+        ]
+      Do (CheckWindows ws) ->
+        [ Do
+            ( CheckWindows
+                $ concatMap
+                  (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
+                  ws
+            )
         ]
       _ -> error "impossible"
 

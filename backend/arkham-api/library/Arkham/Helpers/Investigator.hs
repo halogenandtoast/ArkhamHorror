@@ -26,7 +26,7 @@ import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
 import Arkham.Message (
-  Message (CheckWindows, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
+  Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
  )
 import Arkham.Name
 import Arkham.Placement
@@ -644,9 +644,11 @@ healAdditional (toSource -> source) dType ws' additional = do
   replaceMessageMatching
     \case
       CheckWindows ws -> ws == ws'
+      Do (CheckWindows ws) -> ws == ws'
       _ -> False
     \case
       CheckWindows ws -> [CheckWindows $ map updateHealed ws]
+      Do (CheckWindows ws) -> [Do (CheckWindows $ map updateHealed ws)]
       _ -> error "invalid window"
   case dType of
     HorrorType -> push $ HealHorrorDirectly healedTarget source 1

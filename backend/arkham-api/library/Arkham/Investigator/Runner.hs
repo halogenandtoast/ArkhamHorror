@@ -262,7 +262,6 @@ runWindow attrs windows actions playableCards = do
         pushAll
           $ toForcedAbilities isSilent
           <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
-          <> [CheckWindows windows]
       else do
         actionsWithMatchingWindows <-
           for actions $ \ability@Ability {..} ->
@@ -3040,7 +3039,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          | card <- uncommittableCards
          ]
     pure a
-  CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
+  Do (CheckWindows windows) | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
     actions <- getActions a.id windows
     playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
     runWindow a windows actions playableCards

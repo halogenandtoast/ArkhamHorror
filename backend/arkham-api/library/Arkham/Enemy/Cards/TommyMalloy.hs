@@ -68,7 +68,7 @@ isTakeDamage attrs window = case attrs.target of
 
 instance RunMessage TommyMalloyEffect where
   runMessage msg e@(TommyMalloyEffect attrs) = case msg of
-    CheckWindows windows' | any (isTakeDamage attrs) windows' -> do
+    Do (CheckWindows windows') | any (isTakeDamage attrs) windows' -> do
       push $ disable attrs
       pure e
     _ -> TommyMalloyEffect <$> runMessage msg attrs

@@ -82,7 +82,7 @@ instance RunMessage LukeRobinson where
             . (`with` meta)
             <$> runMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
         else LukeRobinson . (`with` meta) <$> runMessage msg attrs
-    CheckWindows windows'
+    Do (CheckWindows windows')
       | active meta
       , not (investigatorDefeated attrs || investigatorResigned attrs)
           || Window.hasEliminatedWindow windows' -> do

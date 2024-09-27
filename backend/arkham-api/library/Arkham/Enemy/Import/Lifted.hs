@@ -68,6 +68,7 @@ insteadOfDiscarding attrs body = do
   lift $ replaceAllMessagesMatching
     \case
       CheckWindows ws -> any isEntityDiscarded ws
+      Do (CheckWindows ws) -> any isEntityDiscarded ws
       Discard _ _ target -> isTarget attrs target
       _ -> False
     \case
@@ -75,6 +76,10 @@ insteadOfDiscarding attrs body = do
         case filter (not . isEntityDiscarded) ws of
           [] -> []
           ws' -> [CheckWindows ws']
+      Do (CheckWindows ws) ->
+        case filter (not . isEntityDiscarded) ws of
+          [] -> []
+          ws' -> [Do (CheckWindows ws')]
       Discard {} -> msgs
       _ -> error "Invalid replacement"
 

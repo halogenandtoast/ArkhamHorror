@@ -59,7 +59,7 @@ instance RunMessage HallowedChalice where
       pure a
     DoStep 1 (HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) _) -> do
       pure $ overAttrs (setMetaKey "option2" True) a
-    CheckWindows windows | getMetaKey "option2" attrs -> do
+    Do (CheckWindows windows) | getMetaKey "option2" attrs -> do
       healedLast <- flip anyM (map windowType windows) \case
         Healed DamageType (InvestigatorTarget iid') (isAbilitySource attrs 1 -> True) _ -> not <$> fieldSome InvestigatorDamage iid'
         Healed HorrorType (InvestigatorTarget iid') (isAbilitySource attrs 1 -> True) _ -> not <$> fieldSome InvestigatorHorror iid'

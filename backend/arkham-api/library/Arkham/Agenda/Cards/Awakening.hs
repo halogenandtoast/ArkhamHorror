@@ -41,7 +41,7 @@ awakeningEffect = cardEffect AwakeningEffect Cards.awakening
 
 instance RunMessage AwakeningEffect where
   runMessage msg e@(AwakeningEffect attrs) = runQueueT $ case msg of
-    CheckWindows (filter ((== #when) . Window.windowTiming) -> map Window.windowType -> ws) -> do
+    Do (CheckWindows (filter ((== #when) . Window.windowTiming) -> map Window.windowType -> ws)) -> do
       let
         unRevealLocation (Window.RevealLocation _ lid) = First (Just lid)
         unRevealLocation _ = First Nothing

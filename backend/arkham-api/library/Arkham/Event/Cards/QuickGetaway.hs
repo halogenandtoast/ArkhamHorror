@@ -28,6 +28,7 @@ instance RunMessage QuickGetaway where
         PerformEnemyAttack eid -> eid == details.enemy
         After (PerformEnemyAttack eid) -> eid == details.enemy
         CheckWindows ws -> any (isEnemyAttackWindow . windowType) ws
+        Do (CheckWindows ws) -> any (isEnemyAttackWindow . windowType) ws
         _ -> False
 
       sid <- getRandom

@@ -55,7 +55,7 @@ instance HasChaosTokenValue TurnBackTime where
 
 instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = runQueueT $ case msg of
-    CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _] -> do
+    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
       mRepossessThePast <- selectOne $ inDeckOf iid <> basic (cardIs Assets.relicOfAgesRepossessThePast)
       pushAll
         [ RemovePlayerCardFromGame True repossessThePast

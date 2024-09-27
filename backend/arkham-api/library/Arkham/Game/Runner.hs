@@ -1241,10 +1241,13 @@ runGameMessage msg g = case msg of
       WindowAsk ws' _ _ -> ws == ws'
       _ -> False
 
-    push
-      $ if notNull others
-        then AskMap $ Map.fromList $ (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
-        else Ask pid q
+    pushAll
+      $ ( if notNull others
+            then AskMap $ Map.fromList $ (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
+            else Ask pid q
+        )
+      : [Do (CheckWindows ws)]
+
     pure g
   PlayCard iid card mtarget payment windows' False -> do
     investigator' <- getInvestigator iid
@@ -1380,11 +1383,13 @@ runGameMessage msg g = case msg of
     withQueue_ $ \q ->
       flip map q $ \case
         CheckWindows ws -> CheckWindows (filter ((/= Just bId) . windowBatchId) ws)
+        Do (CheckWindows ws) -> Do (CheckWindows (filter ((/= Just bId) . windowBatchId) ws))
         other -> other
     removeAllMessagesMatching $ \case
       Would bId' _ -> bId == bId'
       DoBatch bId' _ -> bId == bId'
       CheckWindows [] -> True
+      Do (CheckWindows []) -> True
       _ -> False
     pure g
   IgnoreBatch bId -> do
@@ -1423,6 +1428,12 @@ runGameMessage msg g = case msg of
               AfterRevelation iid'' tid ->
                 pure $ iid' == iid'' && TreacherySource tid == source'
               CheckWindows wins -> do
+                let
+                  isRevelationDrawCard = \case
+                    (windowType -> Window.DrawCard _ c _) -> (== c) <$> sourceToCard source'
+                    _ -> pure False
+                anyM isRevelationDrawCard wins
+              Do (CheckWindows wins) -> do
                 let
                   isRevelationDrawCard = \case
                     (windowType -> Window.DrawCard _ c _) -> (== c) <$> sourceToCard source'
@@ -2827,7 +2838,7 @@ instance RunMessage Game where
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
   CheckWindows ws -> do
-    push EndCheckWindow
+    pushAll [Do (CheckWindows ws), EndCheckWindow]
     pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))
   EndCheckWindow -> do
     let

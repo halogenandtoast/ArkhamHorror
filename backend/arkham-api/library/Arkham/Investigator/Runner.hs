@@ -270,14 +270,10 @@ runWindow attrs windows actions playableCards = do
         push
           $ asWindowChoose windows
           $ chooseOne player
-          $ [ targetLabel
-              c
-              [InitiatePlayCard iid c Nothing NoPayment windows True, CheckWindows windows]
+          $ [ targetLabel c [InitiatePlayCard iid c Nothing NoPayment windows True]
             | c <- playableCards
             ]
-          <> map
-            (\(ability, windows') -> AbilityLabel iid ability windows' [] [CheckWindows windows])
-            actionsWithMatchingWindows
+          <> map (\(ability, windows') -> AbilityLabel iid ability windows' [] []) actionsWithMatchingWindows
           <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
@@ -3039,11 +3035,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
          | card <- uncommittableCards
          ]
     pure a
-  Do (CheckWindows windows) | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
-    actions <- getActions a.id windows
-    playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
-    runWindow a windows actions playableCards
-    pure a
+  CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
+    pure $ a & skippedWindowL .~ False
+  SkippedWindow iid | iid == investigatorId -> do
+    pure $ a & skippedWindowL .~ True
+  Do (CheckWindows windows)
+    | not investigatorSkippedWindow
+        && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
+        actions <- getActions a.id windows
+        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+        runWindow a windows actions playableCards
+        pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> do
     pure a
   SpendActions iid source mAction n | iid == investigatorId -> do

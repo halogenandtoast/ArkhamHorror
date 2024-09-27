@@ -360,6 +360,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDiscarding = Nothing
                 , investigatorDiscover = Nothing
                 , investigatorDrawing = Nothing
+                , investigatorSkippedWindow = False
                 , investigatorLog = mkCampaignLog
                 , investigatorDeckBuildingAdjustments = mempty
                 , investigatorBeganRoundAt = Nothing

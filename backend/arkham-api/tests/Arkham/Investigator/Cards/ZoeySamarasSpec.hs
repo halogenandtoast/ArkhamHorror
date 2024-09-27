@@ -1,8 +1,6 @@
-module Arkham.Investigator.Cards.ZoeySamarasSpec (
-  spec,
-) where
+module Arkham.Investigator.Cards.ZoeySamarasSpec (spec) where
 
-import TestImport.Lifted hiding (EnemyDamage)
+import TestImport.New hiding (EnemyDamage)
 
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Enemy.Types (Field (..))
@@ -17,19 +15,17 @@ spec = do
       token <- getChaosTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
       chaosTokenValue token `shouldReturn` Just 1
 
-    it "elder sign token gives +1 and does +1 damage for attacks" $ gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
+    it "elder sign token gives +1 and does +1 damage for attacks" . gameTestWith Investigators.zoeySamaras . debug $ \zoeySamaras -> do
       enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 5))
       location <- testLocationWith id
-      pushAndRunAll
-        [ SetChaosTokens [ElderSign]
-        , spawnAt enemy location
-        , moveTo zoeySamaras location
-        , fightEnemy zoeySamaras enemy
-        ]
+      setChaosTokens [ElderSign]
+      enemy `spawnAt` location
+      zoeySamaras `moveTo` location
       skip
-      chooseOnlyOption "start skill test"
-      chooseOnlyOption "apply results"
-      fieldAssert EnemyDamage (== 2) enemy
+      _ <- fightEnemy zoeySamaras enemy
+      click "start skill test"
+      click "apply results"
+      enemy.damage `shouldReturn` 2
 
     it "allows you to gain a resource each time you are engaged by an enemy"
       $ gameTestWith Investigators.zoeySamaras
@@ -37,21 +33,13 @@ spec = do
         location <- testLocationWith id
         enemy1 <- testEnemyWith id
         enemy2 <- testEnemyWith id
-        pushAndRunAll
-          [ spawnAt enemy1 location
-          , moveTo zoeySamaras location
-          , spawnAt enemy2 location
-          ]
-        chooseOptionMatching
-          "use ability"
-          ( \case
-              AbilityLabel {} -> True
-              _ -> False
-          )
-        chooseOptionMatching
-          "use ability again"
-          ( \case
-              AbilityLabel {} -> True
-              _ -> False
-          )
-        fieldAssert InvestigatorResources (== 2) zoeySamaras
+        enemy1 `spawnAt` location
+        zoeySamaras `moveTo` location
+        chooseOptionMatching "use ability" \case
+          AbilityLabel {} -> True
+          _ -> False
+        enemy2 `spawnAt` location
+        chooseOptionMatching "use ability again" \case
+          AbilityLabel {} -> True
+          _ -> False
+        zoeySamaras.resources `shouldReturn` 2

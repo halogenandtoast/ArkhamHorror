@@ -960,6 +960,7 @@ data Message
   | StartScenario ScenarioId
   | RestartScenario
   | StartSkillTest InvestigatorId
+  | SkippedWindow InvestigatorId
   | -- There are two targets, one associated to the action and one
     -- to handle the result
     Successful (Action, Target) InvestigatorId Source Target Int
@@ -1118,7 +1119,7 @@ uiToRun = \case
   ChaosTokenGroupChoice source iid step -> Run [ChooseChaosTokenGroups source iid step]
   EffectActionButton _ _ msgs -> Run msgs
   Done _ -> Run []
-  SkipTriggersButton _ -> Run []
+  SkipTriggersButton iid -> Run [SkippedWindow iid]
   CardPile _ msgs -> Run msgs
 
 chooseOrRunOne :: HasCallStack => PlayerId -> [UI Message] -> Message

@@ -283,6 +283,7 @@ data InvestigatorAttrs = InvestigatorAttrs
     investigatorDiscarding :: Maybe (HandDiscard Message)
   , investigatorDiscover :: Maybe Discover
   , investigatorDrawing :: Maybe (CardDraw Message)
+  , investigatorSkippedWindow :: Bool
   , -- deck building
     investigatorDeckBuildingAdjustments :: [DeckBuildingAdjustment]
   , investigatorTaboo :: Maybe TabooList
@@ -539,4 +540,71 @@ instance FromJSON InvestigatorSearch where
       .: "searchingFoundCards"
       <*> (o .:? "searchingDrawnCards" .!= [])
 
-$(deriveJSON (aesonOptions $ Just "investigator") ''InvestigatorAttrs)
+$(deriveToJSON (aesonOptions $ Just "investigator") ''InvestigatorAttrs)
+
+instance FromJSON InvestigatorAttrs where
+  parseJSON = withObject "InvestigatorAttrs" \o -> do
+    investigatorId <- o .: "id"
+    investigatorPlayerId <- o .: "playerId"
+    investigatorName <- o .: "name"
+    investigatorCardCode <- o .: "cardCode"
+    investigatorArt <- o .: "art"
+    investigatorClass <- o .: "class"
+    investigatorHealth <- o .: "health"
+    investigatorAssignedHealthDamage <- o .: "assignedHealthDamage"
+    investigatorAssignedHealthHeal <- o .: "assignedHealthHeal"
+    investigatorSanity <- o .: "sanity"
+    investigatorAssignedSanityDamage <- o .: "assignedSanityDamage"
+    investigatorAssignedSanityHeal <- o .: "assignedSanityHeal"
+    investigatorWillpower <- o .: "willpower"
+    investigatorIntellect <- o .: "intellect"
+    investigatorCombat <- o .: "combat"
+    investigatorAgility <- o .: "agility"
+    investigatorTokens <- o .: "tokens"
+    investigatorPlacement <- o .: "placement"
+    investigatorActionsTaken <- o .: "actionsTaken"
+    investigatorActionsPerformed <- o .: "actionsPerformed"
+    investigatorRemainingActions <- o .: "remainingActions"
+    investigatorEndedTurn <- o .: "endedTurn"
+    investigatorDeck <- o .: "deck"
+    investigatorSideDeck <- o .:? "sideDeck"
+    investigatorDecks <- o .: "decks"
+    investigatorDiscard <- o .: "discard"
+    investigatorHand <- o .: "hand"
+    investigatorTraits <- o .: "traits"
+    investigatorDefeated <- o .: "defeated"
+    investigatorResigned <- o .: "resigned"
+    investigatorKilled <- o .: "killed"
+    investigatorDrivenInsane <- o .: "drivenInsane"
+    investigatorSlots <- o .: "slots"
+    investigatorXp <- o .: "xp"
+    investigatorPhysicalTrauma <- o .: "physicalTrauma"
+    investigatorMentalTrauma <- o .: "mentalTrauma"
+    investigatorStartsWith <- o .: "startsWith"
+    investigatorStartsWithInHand <- o .: "startsWithInHand"
+    investigatorCardsUnderneath <- o .: "cardsUnderneath"
+    investigatorSearch <- o .:? "search"
+    investigatorMovement <- o .:? "movement"
+    investigatorUsedAbilities <- o .: "usedAbilities"
+    investigatorUsedAdditionalActions <- o .: "usedAdditionalActions"
+    investigatorMulligansTaken <- o .: "mulligansTaken"
+    investigatorBondedCards <- o .: "bondedCards"
+    investigatorMeta <- o .: "meta"
+    investigatorUnhealedHorrorThisRound <- o .: "unhealedHorrorThisRound"
+    investigatorHorrorHealed <- o .: "horrorHealed"
+    investigatorSupplies <- o .: "supplies"
+    investigatorDrawnCards <- o .: "drawnCards"
+    investigatorIsYithian <- o .: "isYithian"
+    investigatorKeys <- o .: "keys"
+    investigatorBeganRoundAt <- o .:? "beganRoundAt"
+    investigatorLog <- o .: "log"
+    investigatorDiscarding <- o .:? "discarding"
+    investigatorDiscover <- o .:? "discover"
+    investigatorDrawing <- o .:? "drawing"
+    investigatorSkippedWindow <- o .:? "skippedWindow" .!= False
+    investigatorDeckBuildingAdjustments <- o .: "deckBuildingAdjustments"
+    investigatorTaboo <- o .:? "taboo"
+    investigatorMutated <- o .:? "mutated"
+    investigatorDeckUrl <- o .:? "deckUrl"
+
+    pure $ InvestigatorAttrs {..}

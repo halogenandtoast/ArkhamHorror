@@ -84,6 +84,7 @@ instance RunMessage LukeRobinson where
         else LukeRobinson . (`with` meta) <$> runMessage msg attrs
     Do (CheckWindows windows')
       | active meta
+      , not (investigatorSkippedWindow attrs)
       , not (investigatorDefeated attrs || investigatorResigned attrs)
           || Window.hasEliminatedWindow windows' -> do
           lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'

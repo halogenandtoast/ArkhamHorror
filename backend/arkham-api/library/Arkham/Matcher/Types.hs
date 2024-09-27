@@ -572,6 +572,7 @@ data LocationMatcher
   | LocationCanBeFlipped
   | SingleSidedLocation
   | ClosestPathLocation LocationId LocationId
+  | ClosestUnbarricadedPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
   | FloodedLocation

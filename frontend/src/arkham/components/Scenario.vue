@@ -665,6 +665,7 @@ const tarotCardAbility = (card: TarotCard) => {
           <template v-if="barriers">
             <div v-for="[area, amount] in Object.entries(barriers)" :key="area" class="barrier" :class="{ vertical: isVertical(area) }" :style="{ 'grid-area': `barrier-${area}` }">
               <img v-for="n in amount" :key="n" :src="imgsrc('resource.png')" />
+              <button v-if="debug.active && (amount as number > 0)" @click="debug.send(game.id, {tag: 'ScenarioCountDecrementBy', contents: [{ 'tag': 'Barriers', 'contents': area.split('--') }, 1]})">x</button>
             </div>
           </template>
 

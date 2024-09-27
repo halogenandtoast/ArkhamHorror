@@ -86,6 +86,7 @@ data ScenarioCountKey
   = CurrentDepth
   | SignOfTheGods
   | Distortion
+  | Barriers LocationId LocationId
   deriving stock (Eq, Show, Ord, Data)
 
 instance ToGameLoggerFormat ScenarioLogKey where

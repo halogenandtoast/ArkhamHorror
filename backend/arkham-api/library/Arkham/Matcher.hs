@@ -58,6 +58,9 @@ class OneOf a where
 mapOneOf :: OneOf b => (a -> b) -> [a] -> b
 mapOneOf f = oneOf . map f
 
+beOneOf :: (Be a b, OneOf b) => [a] -> b
+beOneOf = mapOneOf be
+
 notOneOf :: (Not a, OneOf a) => [a] -> a
 notOneOf = not_ . oneOf
 

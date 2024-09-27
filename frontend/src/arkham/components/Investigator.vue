@@ -231,6 +231,27 @@ function startDrag(event: DragEvent) {
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "InvestigatorTarget", "contents": id.value }))
   }
 }
+
+const dragover = (e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'move'
+  }
+}
+
+function onDrop(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "KeyTarget") {
+        debug.send(props.game.id, {tag: 'PlaceKey', contents: [{ tag: "InvestigatorTarget", contents: id.value }, { "tag": json.contents }]})
+      }
+
+    }
+  }
+}
 </script>
 
 <template>
@@ -242,6 +263,9 @@ function startDrag(event: DragEvent) {
       :draggable="debug.active"
       @click="$emit('choose', investigatorAction)"
       @dragstart="startDrag($event)"
+      @drop="onDrop($event)"
+      @dragover.prevent="dragover($event)"
+      @dragenter.prevent
     />
   </div>
   <div v-else>
@@ -259,6 +283,9 @@ function startDrag(event: DragEvent) {
             class="card card--sideways"
             :src="image"
             @click="$emit('choose', investigatorAction)"
+            @drop="onDrop($event)"
+            @dragover.prevent="dragover($event)"
+            @dragenter.prevent
           />
         </div>
       </div>

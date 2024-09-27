@@ -37,6 +37,9 @@ import GHC.OverloadedLabels
 
 data ModifierType
   = ForEach GameCalculation [ModifierType]
+  | Barricaded [LocationId]
+  | CanIgnoreBarricades
+  | IgnoreBarricades
   | CannotBeFullyFlooded
   | CannotBeFlooded
   | AbilityModifier Target Int ModifierType

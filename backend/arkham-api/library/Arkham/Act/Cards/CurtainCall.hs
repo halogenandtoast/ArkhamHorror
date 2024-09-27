@@ -37,10 +37,7 @@ instance HasAbilities CurtainCall where
     , restrictedAbility
         attrs
         2
-        ( LocationExists
-            $ LocationWithoutHorror
-            <> AccessibleTo LocationWithAnyHorror
-        )
+        (exists $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror)
         $ ForcedAbility
         $ RoundEnds Timing.When
     ]
@@ -56,10 +53,7 @@ instance RunMessage CurtainCall where
       push $ Resign iid
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
-      targets <-
-        selectMap LocationTarget
-          $ LocationWithoutHorror
-          <> AccessibleTo LocationWithAnyHorror
+      targets <- selectTargets $ LocationWithoutHorror <> ConnectedTo LocationWithAnyHorror
       pushAll $ map (\t -> PlaceHorror (toAbilitySource attrs 3) t 1) targets
       pure a
     UseCardAbility _ source 3 _ _ | isSource attrs source -> do

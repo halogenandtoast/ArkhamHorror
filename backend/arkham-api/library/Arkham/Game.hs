@@ -1848,6 +1848,12 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         matchAny <- getConnectedMatcher l
         selectAny $ NotLocation (LocationWithId $ toId l) <> matcher <> matchAny
+    AccessibleTo matcher -> do
+      flip filterM ls $ \l -> do
+        matchAny <- getConnectedMatcher l
+        mods <- getModifiers l.id
+        let barricaded = concat [xs | Barricaded xs <- mods]
+        selectAny $ not_ (beOneOf $ toId l : barricaded) <> Unblocked <> matcher <> matchAny
     ConnectedFrom matcher -> do
       -- we need to add the (ConnectedToWhen)
       -- NOTE: We need to not filter the starts
@@ -1861,14 +1867,26 @@ getLocationsMatching lmatcher = do
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
       allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
       pure $ filter (`elem` allOptions) ls
+    AccessibleFrom matcher -> do
+      -- we need to add the (ConnectedToWhen)
+      -- NOTE: We need to not filter the starts
+      starts <- select (Unblocked <> matcher)
+      others :: [Location] <- concatForM starts \l -> do
+        mods <- getModifiers l
+        let barricaded = concat [xs | Barricaded xs <- mods]
+        let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
+        concatForM checks $ \(isValid, connectedTo) -> do
+          valid <- l <=~> isValid
+          if valid
+            then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching connectedTo
+            else pure []
+      matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
+      allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+      pure $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do
       iid <- getLead
       passes <- passesCriteria iid Nothing GameSource GameSource [] criteria
       pure $ if passes then ls else []
-    AccessibleFrom matcher -> do
-      go ls (Unblocked <> ConnectedFrom matcher)
-    AccessibleTo matcher ->
-      go ls (ConnectedTo (Unblocked <> matcher))
     LocationWithResources valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr locationResources) ls
     Nowhere -> pure []
@@ -1895,6 +1913,39 @@ getLocationsMatching lmatcher = do
                     result <-
                       evalStateT
                         (markDistances initialLocation (pure . (== destination)) extraConnectionsMap)
+                        state'
+                    let
+                      mdistance :: Maybe Int = headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+                    pure $ (initialLocation,) <$> mdistance
+                )
+                connectedLocationIds
+            pure
+              $ setFromList @(Set LocationId)
+              . maybe [] (coerce . map fst)
+              . headMay
+              . groupOn snd
+              $ sortOn snd candidates
+      pure $ filter ((`member` matches') . toId) ls
+    ClosestUnbarricadedPathLocation start destination -> do
+      -- logic is to get each adjacent location and determine which is closest to
+      -- the destination
+      let extraConnectionsMap = mempty
+
+      mods <- getModifiers start
+      let barricades = concat [xs | Barricaded xs <- mods]
+      connectedLocationIds <-
+        filter (`notElem` barricades) <$> select (ConnectedFrom $ LocationWithId start)
+      matches' <-
+        if start == destination || destination `elem` connectedLocationIds
+          then pure $ singleton destination
+          else do
+            candidates :: [(LocationId, Int)] <-
+              mapMaybeM
+                ( \initialLocation -> do
+                    let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
+                    result <-
+                      evalStateT
+                        (markBarricadedDistances initialLocation (pure . (== destination)) extraConnectionsMap)
                         state'
                     let
                       mdistance :: Maybe Int = headMay . drop 1 . map fst . sortOn fst . mapToList $ result
@@ -3923,16 +3974,26 @@ markDistances
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
   -> StateT LPState m (Map Int [LocationId])
-markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion initialLocation target (const (pure True)) extraConnectionsMap
+markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap
+
+markBarricadedDistances
+  :: HasGame m
+  => LocationId
+  -> (LocationId -> m Bool)
+  -> Map LocationId [LocationId]
+  -> StateT LPState m (Map Int [LocationId])
+markBarricadedDistances initialLocation target extraConnectionsMap =
+  markDistancesWithInclusion True initialLocation target (const (pure True)) extraConnectionsMap
 
 markDistancesWithInclusion
   :: HasGame m
-  => LocationId
+  => Bool -- check barricades
+  -> LocationId
   -> (LocationId -> m Bool)
   -> (LocationId -> m Bool) -- can be included?
   -> Map LocationId [LocationId]
   -> StateT LPState m (Map Int [LocationId])
-markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap = do
+markDistancesWithInclusion checkBarricades initialLocation target canInclude extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
     then do
@@ -3944,9 +4005,18 @@ markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap
         nextLoc = Seq.index searchQueue 0
         newVisitedSet = insertSet nextLoc visitedSet
         extraConnections = findWithDefault [] nextLoc extraConnectionsMap
+
+      barricaded <-
+        if checkBarricades
+          then do
+            mods <- lift $ getModifiers nextLoc
+            pure $ concat [ls | Barricaded ls <- mods]
+          else pure mempty
+
       adjacentCells <-
         lift
           $ filterM canInclude
+          . filter (`notElem` barricaded)
           . nub
           . (<> extraConnections)
           =<< fieldMap LocationConnectedLocations setToList nextLoc
@@ -3960,7 +4030,7 @@ markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap
             parentsMap
             unvisitedNextCells
       put (LPState newSearchQueue newVisitedSet newParentsMap)
-      markDistancesWithInclusion initialLocation target canInclude extraConnectionsMap
+      markDistancesWithInclusion checkBarricades initialLocation target canInclude extraConnectionsMap
  where
   getDistances map' = do
     locationIds <- filterM target (keys map')

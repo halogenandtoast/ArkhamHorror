@@ -169,6 +169,9 @@ instance HasField "resignedCardCodes" ScenarioAttrs [CardCode] where
 instance HasField "decks" ScenarioAttrs (Map ScenarioDeckKey [Card]) where
   getField = scenarioDecks
 
+instance HasField "deck" ScenarioAttrs (ScenarioDeckKey -> [Card]) where
+  getField a k = findWithDefault [] k a.decks
+
 instance HasField "log" ScenarioAttrs (Set ScenarioLogKey) where
   getField = scenarioLog
 

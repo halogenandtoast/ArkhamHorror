@@ -184,7 +184,7 @@ instance RunMessage TheUnspeakableOath where
       when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s
     ResolveChaosToken _ ElderThing iid -> do
-      case attrs.decks ^. at MonstersDeck . non [] of
+      case attrs.deck MonstersDeck of
         [] -> failSkillTest
         (x : xs) -> do
           monster <- sample (x :| xs)
@@ -196,13 +196,11 @@ instance RunMessage TheUnspeakableOath where
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
-        Skull -> do
-          monsters <- getSetAsideCardsMatching (#enemy <> withTrait Monster)
-          case monsters of
-            [] -> pure ()
-            (x : xs) -> do
-              monster <- sample (x :| xs)
-              placeUnderneath ActDeckTarget [monster]
+        Skull -> case attrs.deck MonstersDeck of
+          [] -> pure ()
+          (x : xs) -> do
+            monster <- sample (x :| xs)
+            placeUnderneath ActDeckTarget [monster]
         Cultist | isHardExpert attrs -> assignHorror iid Cultist 1
         Tablet | isHardExpert attrs -> assignHorror iid Tablet 1
         _ -> pure ()

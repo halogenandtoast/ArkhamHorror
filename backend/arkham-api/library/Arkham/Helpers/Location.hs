@@ -19,6 +19,9 @@ import Arkham.Projection
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
+getConnectedLocations :: HasGame m => LocationId -> m [LocationId]
+getConnectedLocations = fieldMap LocationConnectedLocations toList
+
 toConnections :: HasGame m => LocationId -> m [LocationSymbol]
 toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
@@ -78,6 +81,9 @@ class Locateable a where
 
 instance Locateable InvestigatorId where
   getLocationOf = field InvestigatorLocation
+
+instance Locateable EnemyId where
+  getLocationOf = field EnemyLocation
 
 instance Locateable AssetId where
   getLocationOf = field AssetPlacement >=> placementLocation

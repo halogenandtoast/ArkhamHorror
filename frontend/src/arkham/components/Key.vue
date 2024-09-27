@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import {imgsrc} from '@/arkham/helpers'
 import { type ArkhamKey } from '@/arkham/types/Key'
 
@@ -26,11 +26,20 @@ const keyToImage = (k: ArkhamKey): string => {
 }
 
 const keyImage = computed<string>(() => keyToImage(props.name))
+const dragging = ref(false)
+
+function startDrag(event: DragEvent) {
+  dragging.value = true
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "KeyTarget", "contents": props.name }))
+  }
+}
 
 </script>
 
 <template>
-  <img :src="keyImage" class="key" />
+  <img :src="keyImage" class="key" @dragstart="startDrag($event)" />
 </template>
 
 <style lang="scss" scoped>

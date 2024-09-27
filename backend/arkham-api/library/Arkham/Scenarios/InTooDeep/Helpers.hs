@@ -12,12 +12,18 @@ newtype Meta = Meta {barriers :: Map (SortedPair LocationId) Int}
   deriving anyclass (ToJSON, FromJSON)
 
 insertBarrier :: LocationId -> LocationId -> Meta -> Meta
-insertBarrier a b (Meta barriers) =
-  Meta $ Map.insertWith (+) (sortedPair a b) 1 barriers
+insertBarrier = incrementBarriers 1
 
 removeBarrier :: LocationId -> LocationId -> Meta -> Meta
-removeBarrier a b (Meta barriers) =
-  Meta $ Map.insertWith (+) (sortedPair a b) (-1) barriers
+removeBarrier = decrementBarriers 1
+
+incrementBarriers :: Int -> LocationId -> LocationId -> Meta -> Meta
+incrementBarriers n a b (Meta barriers) =
+  Meta $ Map.insertWith (+) (sortedPair a b) n barriers
+
+decrementBarriers :: Int -> LocationId -> LocationId -> Meta -> Meta
+decrementBarriers n a b (Meta barriers) =
+  Meta $ Map.insertWith ((max 0 .) . subtract) (sortedPair a b) n barriers
 
 setBarriers :: LocationId -> LocationId -> Int -> Meta -> Meta
 setBarriers a b n (Meta barriers) =

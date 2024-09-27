@@ -4,32 +4,85 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Classes.HasGame
+import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
 import Arkham.Helpers.Log (getCircledRecord, getRecordSet)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (metaL)
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.InTooDeep.Helpers hiding (setBarriers)
 import Arkham.Scenarios.InTooDeep.Helpers qualified as Helpers
+import Arkham.SortedPair
 import Control.Lens (use)
+import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 
 newtype InTooDeep = InTooDeep ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+getBlockedFrom :: HasGame m => Meta -> LocationId -> m [LocationId]
+getBlockedFrom (Meta meta) lid = do
+  let
+    unblocked x y = Map.findWithDefault 0 (sortedPair y x) meta == 0
+    bfs visited [] = pure $ toList visited
+    bfs visited (current : queue)
+      | current `Set.member` visited = bfs visited queue
+      | otherwise = do
+          next <- filterBy [unblocked current, (`Set.notMember` visited)] <$> getConnectedLocations current
+          bfs (Set.insert current visited) (queue <> next)
+  select . not_ . beOneOf =<< bfs Set.empty [lid]
+
+instance HasModifiersFor InTooDeep where
+  getModifiersFor (InvestigatorTarget iid) (InTooDeep a) = maybeModified a do
+    lid <- MaybeT $ getLocationOf iid
+    meta <- hoistMaybe $ maybeResult @Meta a.meta
+    CannotEnter <$$> lift (getBlockedFrom meta lid)
+  getModifiersFor (LocationTarget lid) (InTooDeep a) = maybeModified a do
+    Meta meta <- hoistMaybe $ maybeResult @Meta a.meta
+    let
+      barricaded (pair, n) = case unSortedPair pair of
+        (l1, l2) | l1 == lid -> guard (n > 0) $> l2
+        (l1, l2) | l2 == lid -> guard (n > 0) $> l1
+        _ -> Nothing
+    let barricades = mapMaybe barricaded $ Map.toList meta
+    pure [Barricaded barricades | notNull barricades]
+  getModifiersFor (EnemyTarget _) (InTooDeep a) = modified a [CanIgnoreBarricades]
+  getModifiersFor _ _ = pure []
 
 inTooDeep :: Difficulty -> InTooDeep
 inTooDeep difficulty = scenario InTooDeep "07123" "In Too Deep" difficulty []
 
 instance HasChaosTokenValue InTooDeep where
   getChaosTokenValue iid tokenFace (InTooDeep attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <-
+        fromMaybe 0 <$> runMaybeT do
+          loc <- MaybeT $ getLocationOf iid
+          Pos x _ <- hoistMaybe $ findInGrid loc attrs.grid
+          pure $ abs x
+      pure $ toChaosTokenValue attrs Skull n (n * 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 5
+    ElderThing -> do
+      x <-
+        fromMaybe 0 <$> runMaybeT do
+          loc <- MaybeT $ getLocationOf iid
+          Meta meta <- hoistMaybe $ maybeResult @Meta attrs.meta
+          ls <- lift $ getConnectedLocations loc
+          pure $ sum [Map.findWithDefault 0 (sortedPair loc l) meta | l <- ls]
+      pure $ toChaosTokenValue attrs ElderThing x (x * 2)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 setBarriers :: ReverseQueue m => LocationId -> LocationId -> Int -> ScenarioBuilderT m ()
@@ -139,4 +192,24 @@ instance RunMessage InTooDeep where
         ]
 
       for_ [theHouseOnWaterStreet, innsmouthHarbour, desolateCoastline] (push . IncreaseFloodLevel)
+    ScenarioCountIncrementBy (Barriers l1 l2) n -> do
+      let meta' = incrementBarriers n l1 l2 $ toResultDefault (Meta mempty) attrs.meta
+      pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
+    ScenarioCountDecrementBy (Barriers l1 l2) n -> do
+      let meta' = decrementBarriers n l1 l2 $ toResultDefault (Meta mempty) attrs.meta
+      pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist -> void $ runMaybeT do
+          lid <- MaybeT $ getLocationOf iid
+          pos <- hoistMaybe $ findInGrid lid attrs.grid
+          GridLocation _ east <- hoistMaybe $ viewGrid (updatePosition pos East) attrs.grid
+          lift $ moveTo Cultist iid east
+        Tablet -> withLocationOf iid \lid -> do
+          connected <- getConnectedLocations lid
+          let Meta meta = toResultDefault (Meta mempty) attrs.meta
+          let choices = filter (\l -> Map.findWithDefault 0 (sortedPair lid l) meta == 0) connected
+          chooseTargetM iid choices $ \l -> push $ ScenarioCountIncrementBy (Barriers lid l) 1
+        _ -> pure ()
+      pure s
     _ -> InTooDeep <$> liftRunMessage msg attrs

@@ -175,6 +175,9 @@ instance HasField "log" ScenarioAttrs (Set ScenarioLogKey) where
 instance HasField "name" ScenarioAttrs Name where
   getField = scenarioName
 
+instance HasField "grid" ScenarioAttrs Grid where
+  getField = scenarioGrid
+
 instance HasField "meta" ScenarioAttrs Value where
   getField = scenarioMeta
 

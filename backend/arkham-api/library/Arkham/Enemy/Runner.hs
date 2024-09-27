@@ -477,25 +477,20 @@ instance RunMessage EnemyAttrs where
       push $ EnemyCheckEngagement a.id
       pure $ a & placementL .~ AtLocation newLocation
     HunterMove eid | eid == toId a && not enemyExhausted && not (isSwarm a) -> do
-      enemyLocation <- field EnemyLocation enemyId
-      case enemyLocation of
+      field EnemyLocation enemyId >>= \case
         Nothing -> pure a
         Just loc -> do
           mods <- getModifiers enemyId
           let
-            locationMatcherModifier =
-              if CanEnterEmptySpace `elem` mods
-                then IncludeEmptySpace
-                else id
+            locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
             matchForcedTargetLocation = \case
               DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
               _ -> Nothing
             forcedTargetLocation = firstJust matchForcedTargetLocation mods
           -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
-          --   unionWith (<>) connectionMap $ singletonMap loc [lid']
+          --  unionWith (<>) connectionMap $ singletonMap loc [lid']
           -- applyConnectionMapModifier connectionMap _ = connectionMap
-          -- extraConnectionsMap :: Map LocationId [LocationId] =
-          --   foldl' applyConnectionMapModifier mempty modifiers'
+          -- extraConnectionsMap :: Map LocationId [LocationId] = foldl' applyConnectionMapModifier mempty mods
 
           enemiesAsInvestigatorLocations <-
             select
@@ -518,36 +513,27 @@ instance RunMessage EnemyAttrs where
               select
                 $ locationMatcherModifier
                 $ locationWithInvestigator
-                $ fromJustNote
-                  "must have bearer"
-                  enemyBearer
+                $ fromJustNote "must have bearer" enemyBearer
             (Nothing, RestrictedBearerOf _ _) -> do
               -- this case should never happen, but just in case
               select
                 $ locationMatcherModifier
                 $ locationWithInvestigator
-                $ fromJustNote
-                  "must have bearer"
-                  enemyBearer
+                $ fromJustNote "must have bearer" enemyBearer
             (Nothing, OnlyPrey onlyPrey) ->
-              select
-                $ locationMatcherModifier
-                $ LocationWithInvestigator
-                $ onlyPrey
-                <> NearestToEnemy
-                  (EnemyWithId eid)
+              select $ locationMatcherModifier $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy (be eid)
             (Nothing, _prey) -> do
               investigatorLocations <-
                 select
                   $ locationMatcherModifier
                   $ LocationWithInvestigator
-                  $ NearestToEnemy (EnemyWithId eid)
+                  $ NearestToEnemy (be eid)
                   <> CanBeHuntedBy eid
               select
                 $ locationMatcherModifier
                 $ NearestLocationToLocation
                   loc
-                  (LocationMatchAny $ map LocationWithId (enemiesAsInvestigatorLocations <> investigatorLocations))
+                  (mapOneOf LocationWithId $ enemiesAsInvestigatorLocations <> investigatorLocations)
 
           preyIds <- select prey
           let includeEnemies = prey == Prey Anyone
@@ -575,10 +561,25 @@ instance RunMessage EnemyAttrs where
                 else filteredClosestLocationIds
 
           lead <- getLeadPlayer
+          pathIds' <-
+            concatForM destinationLocationIds
+              $ select
+              . (LocationCanBeEnteredBy enemyId <>)
+              . locationMatcherModifier
+              . ClosestPathLocation loc
+
           pathIds <-
-            concatForM
-              destinationLocationIds
-              (select . (LocationCanBeEnteredBy enemyId <>) . locationMatcherModifier . ClosestPathLocation loc)
+            if CanIgnoreBarricades `elem` mods
+              then do
+                barricadedPathIds <-
+                  concatForM destinationLocationIds
+                    $ select
+                    . (LocationCanBeEnteredBy enemyId <>)
+                    . locationMatcherModifier
+                    . ClosestUnbarricadedPathLocation loc
+                pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
+              else pure pathIds'
+
           case pathIds of
             [] -> pure a
             [lid] -> do

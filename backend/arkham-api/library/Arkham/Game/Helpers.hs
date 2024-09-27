@@ -3069,6 +3069,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
     Matcher.LocationInDirection _ _ -> locationId <=~> matcher
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
+    Matcher.ClosestUnbarricadedPathLocation _ _ -> locationId <=~> matcher
     Matcher.LocationWithoutClues -> locationId <=~> matcher
     Matcher.HighestShroud _ -> locationId <=~> matcher
     Matcher.LocationWithDamage {} -> locationId <=~> matcher

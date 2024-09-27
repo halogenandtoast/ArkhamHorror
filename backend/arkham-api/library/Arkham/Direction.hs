@@ -14,6 +14,26 @@ data Direction = Above | Below | LeftOf | RightOf
 data GridDirection = GridUp | GridDown | GridLeft | GridRight
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
 
+pattern North :: GridDirection
+pattern North <- GridUp
+  where
+    North = GridUp
+
+pattern South :: GridDirection
+pattern South <- GridDown
+  where
+    South = GridDown
+
+pattern East :: GridDirection
+pattern East <- GridRight
+  where
+    East = GridRight
+
+pattern West :: GridDirection
+pattern West <- GridLeft
+  where
+    West = GridLeft
+
 oppositeDirection :: GridDirection -> GridDirection
 oppositeDirection = \case
   GridUp -> GridDown

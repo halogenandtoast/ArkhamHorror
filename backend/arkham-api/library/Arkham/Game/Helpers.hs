@@ -112,6 +112,9 @@ cancelChaosToken token = withQueue_ $ \queue ->
         CheckWindows ws -> case filter (not . isRevealChaosToken) ws of
           [] -> Nothing
           ws' -> Just $ CheckWindows ws'
+        Do (CheckWindows ws) -> case filter (not . isRevealChaosToken) ws of
+          [] -> Nothing
+          ws' -> Just $ Do (CheckWindows ws')
         RequestedChaosTokens s miid ts -> Just $ RequestedChaosTokens s miid (filter (/= token) ts)
         msg -> Just msg
     )

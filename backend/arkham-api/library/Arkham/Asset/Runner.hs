@@ -476,6 +476,9 @@ instance RunMessage AssetAttrs where
           CheckWindows ws -> flip any ws \case
             (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
             _ -> False
+          Do (CheckWindows ws) -> flip any ws \case
+            (Window.windowType -> Window.Discarded _ _ c) -> toCard a == c
+            _ -> False
           _ -> False
         push $ RemoveFromGame (toTarget a)
       pure a

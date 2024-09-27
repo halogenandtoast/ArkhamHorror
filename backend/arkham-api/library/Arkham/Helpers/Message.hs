@@ -508,11 +508,20 @@ cancelDoom target n = do
       CheckWindows [window] -> case windowType window of
         Window.WouldPlaceDoom _ target' _ -> target == target'
         _ -> False
+      Do (CheckWindows [window]) -> case windowType window of
+        Window.WouldPlaceDoom _ target' _ -> target == target'
+        _ -> False
       _ -> False
     \case
       CheckWindows [window] -> case windowType window of
         Window.WouldPlaceDoom source' target' n' ->
           [CheckWindows [window {windowType = Window.WouldPlaceDoom source' target' (n' - n)}] | n' - n > 0]
+        _ -> error "mismatched"
+      Do (CheckWindows [window]) -> case windowType window of
+        Window.WouldPlaceDoom source' target' n' ->
+          [ Do (CheckWindows [window {windowType = Window.WouldPlaceDoom source' target' (n' - n)}])
+          | n' - n > 0
+          ]
         _ -> error "mismatched"
       _ -> error "mismatched"
 
@@ -531,6 +540,7 @@ cancelDoom target n = do
 
     replaceDoomAmount m = \case
       CheckWindows ws -> CheckWindows (map (replaceWindowDoomAmount m) ws)
+      Do (CheckWindows ws) -> Do (CheckWindows (map (replaceWindowDoomAmount m) ws))
       Do (PlaceTokens source' target' Token.Doom _) | target == target' -> Do (PlaceTokens source' target' Token.Doom m)
       other -> other
 

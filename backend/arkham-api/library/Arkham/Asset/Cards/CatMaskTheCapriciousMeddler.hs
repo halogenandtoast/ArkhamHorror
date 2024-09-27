@@ -38,7 +38,7 @@ instance RunMessage CatMaskTheCapriciousMeddler where
             $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
           labeled "Get +2 {combat}" $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       pure a
-    CheckWindows ws -> do
+    Do (CheckWindows ws) -> do
       when (attrs.use Offering < 2) do
         for_ attrs.controller \iid -> do
           shouldReplenish <-

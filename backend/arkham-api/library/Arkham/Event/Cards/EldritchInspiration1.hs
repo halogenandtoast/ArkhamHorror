@@ -75,6 +75,11 @@ instance RunMessage EldritchInspiration1 where
           Window.RevealChaosTokenEventEffect {} -> True
           Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
+        Do (CheckWindows [Window AtIf wType _]) -> case wType of
+          Window.RevealChaosTokenEffect {} -> True
+          Window.RevealChaosTokenEventEffect {} -> True
+          Window.RevealChaosTokenAssetAbilityEffect {} -> True
+          _ -> False
         _ -> False
       cancelledOrIgnoredCardOrGameEffect attrs
       pure e

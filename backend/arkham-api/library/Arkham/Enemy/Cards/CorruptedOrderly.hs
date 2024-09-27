@@ -57,7 +57,7 @@ isTakeDamage attrs window = case attrs.target of
 
 instance RunMessage CorruptedOrderlyEffect where
   runMessage msg e@(CorruptedOrderlyEffect attrs) = case msg of
-    CheckWindows windows' | any (isTakeDamage attrs) windows' -> do
+    Do (CheckWindows windows') | any (isTakeDamage attrs) windows' -> do
       push $ disable attrs
       pure e
     _ -> CorruptedOrderlyEffect <$> runMessage msg attrs

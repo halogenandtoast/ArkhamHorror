@@ -623,6 +623,7 @@ instance RunMessage ChaosBag where
         -- token draw is gone
         removeAllMessagesMatching $ \case
           CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+          Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
           _ -> False
 
         let
@@ -637,6 +638,7 @@ instance RunMessage ChaosBag where
     ReplaceEntireDraw source iid step -> do
       removeAllMessagesMatching $ \case
         CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+        Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
         _ -> False
 
       iids <- getInvestigatorIds
@@ -654,6 +656,7 @@ instance RunMessage ChaosBag where
         -- token draw is gone
         removeAllMessagesMatching $ \case
           CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
+          Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
           _ -> False
 
         iids <- getInvestigatorIds

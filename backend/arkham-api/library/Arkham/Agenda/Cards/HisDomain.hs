@@ -52,6 +52,9 @@ instance RunMessage HisDomain where
         CheckWindows [(windowType -> Window.PlaceUnderneath ActDeckTarget card')] ->
           card == card'
         _ -> False
+        Do (CheckWindows [(windowType -> Window.PlaceUnderneath ActDeckTarget card')]) ->
+          card == card'
+        _ -> False
       push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
       pure a
     HandleNoRemainingInvestigators target | isTarget attrs target -> do

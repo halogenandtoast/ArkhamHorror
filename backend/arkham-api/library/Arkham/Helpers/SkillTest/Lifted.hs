@@ -118,6 +118,7 @@ cancelTokenDraw = lift $ do
       _ -> False
   popMessageMatching_ $ \case
     CheckWindows windows' -> any removeWindow windows'
+    Do (CheckWindows windows') -> any removeWindow windows'
     _ -> False
   popMessageMatching_ $ \case
     NextChaosBagStep {} -> True

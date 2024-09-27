@@ -270,6 +270,10 @@ instance RunMessage SkillTest where
           False
         CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
           False
+        Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _]) ->
+          False
+        Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _]) ->
+          False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
         _ -> True
@@ -825,6 +829,10 @@ instance RunMessage SkillTest where
           CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _] ->
             False
           CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _] ->
+            False
+          Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _) _]) ->
+            False
+          Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _) _]) ->
             False
           Ask player' (ChooseOne [SkillTestApplyResultsButton])
             | player == player' -> False

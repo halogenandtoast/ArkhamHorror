@@ -54,6 +54,7 @@ instance RunMessage PlateauOfLengWhereTheGodsDwell where
           | eid == enemy ->
               After (EnemySpawnAtLocationMatching miid (LocationWithId attrs.id) eid)
         CheckWindows windows -> CheckWindows $ map replaceWindows windows
+        Do (CheckWindows windows) -> Do (CheckWindows $ map replaceWindows windows)
         other -> other
 
       pure l

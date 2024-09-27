@@ -4490,6 +4490,7 @@ runMessages mLogger = do
             let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
             runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
           CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
+          Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
           _ -> do
             -- Hidden Library handling
             -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -4498,6 +4499,8 @@ runMessages mLogger = do
               HunterMove eid -> overGame $ enemyMovingL ?~ eid
               WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
               CheckWindows (getEvadedEnemy -> Just eid) ->
+                overGame $ enemyEvadingL ?~ eid
+              Do (CheckWindows (getEvadedEnemy -> Just eid)) ->
                 overGame $ enemyEvadingL ?~ eid
               _ -> pure ()
 
@@ -4514,6 +4517,7 @@ runMessages mLogger = do
                 CheckAttackOfOpportunity {} -> False
                 CheckEnemyEngagement {} -> False
                 CheckWindows {} -> False
+                Do (CheckWindows {}) -> False
                 ClearUI {} -> False
                 CreatedCost {} -> False
                 EndCheckWindow {} -> False

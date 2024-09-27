@@ -93,7 +93,7 @@ instance RunMessage JoeDiamond where
         $ attrs
         & (deckL %~ filter ((/= insight) . toCard))
         & (decksL . at HunchDeck ?~ hunchDeck')
-    CheckWindows [Window Timing.When (Window.PhaseEnds InvestigationPhase) _] -> do
+    Do (CheckWindows [Window Timing.When (Window.PhaseEnds InvestigationPhase) _]) -> do
       case hunchDeck attrs of
         x : _ | Just x.id == revealedHunchCard meta -> do
           checkWhen $ Window.WouldBeShuffledIntoDeck (Deck.HunchDeck attrs.id) x

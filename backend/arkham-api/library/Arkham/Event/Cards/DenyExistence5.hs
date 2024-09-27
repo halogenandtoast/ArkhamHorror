@@ -61,14 +61,18 @@ instance RunMessage DenyExistence5 where
         _ -> error "Invalid window"
       popMessageMatching_ $ \case
         CheckWindows [w'] -> windowType w == windowType w'
+        Do (CheckWindows [w']) -> windowType w == windowType w'
         _ -> False
       replaceMessageMatching
         \case
           CheckWindows ws -> any ((== windowType w) . windowType) ws
+          Do (CheckWindows ws) -> any ((== windowType w) . windowType) ws
           _ -> False
         \case
           CheckWindows ws ->
             [CheckWindows $ filter ((/= windowType w) . windowType) ws]
+          Do (CheckWindows ws) ->
+            [Do (CheckWindows $ filter ((/= windowType w) . windowType) ws)]
           _ -> error "no match"
       cancelledOrIgnoredCardOrGameEffect attrs
       pure e

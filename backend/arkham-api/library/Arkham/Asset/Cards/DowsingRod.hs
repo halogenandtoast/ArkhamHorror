@@ -57,7 +57,7 @@ instance RunMessage DowsingRod where
       pure a
     DoStep 3 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ overAttrs (setMetaKey "option2" True) a
-    CheckWindows windows | getMetaKey "option2" attrs -> do
+    Do (CheckWindows windows) | getMetaKey "option2" attrs -> do
       case attrs.controller of
         Nothing -> pure a
         Just iid -> do

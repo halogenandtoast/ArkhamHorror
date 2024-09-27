@@ -1506,6 +1506,7 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
   EndTurn iid' -> iid == iid'
   After (EndTurn iid') -> iid == iid'
   CheckWindows ws -> any isEndTurnWindow ws
+  Do (CheckWindows ws) -> any isEndTurnWindow ws
   _ -> False
  where
   isEndTurnWindow w = case w.kind of
@@ -1559,12 +1560,14 @@ changeDrawnBy drawer newDrawer =
       Do (InvestigatorDrewEncounterCard me _) -> me == drawer
       InvestigatorDrawEnemy me _ -> me == drawer
       CheckWindows ws -> any (isDrawCard . Window.windowType) ws
+      Do (CheckWindows ws) -> any (isDrawCard . Window.windowType) ws
       _ -> False
     \case
       Revelation _ source' -> [Revelation newDrawer source']
       InvestigatorDrawEnemy _ eid -> [InvestigatorDrawEnemy newDrawer eid]
       Do (InvestigatorDrewEncounterCard _ c) -> [Do (InvestigatorDrewEncounterCard newDrawer c)]
       CheckWindows ws -> [CheckWindows $ map changeWindow ws]
+      Do (CheckWindows ws) -> [Do (CheckWindows $ map changeWindow ws)]
       _ -> error "wrong message found"
  where
   isDrawCard = \case

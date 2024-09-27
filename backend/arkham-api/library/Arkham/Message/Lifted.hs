@@ -1554,7 +1554,7 @@ checkDefeated source target = push $ Msg.checkDefeated source target
 
 changeDrawnBy :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> InvestigatorId -> t m ()
 changeDrawnBy drawer newDrawer =
-  lift $ replaceMessageMatching
+  lift $ replaceAllMessagesMatching
     \case
       Revelation me _ -> me == drawer
       Do (InvestigatorDrewEncounterCard me _) -> me == drawer

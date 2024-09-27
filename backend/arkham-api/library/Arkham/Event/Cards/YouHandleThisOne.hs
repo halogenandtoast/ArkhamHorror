@@ -1,6 +1,6 @@
 module Arkham.Event.Cards.YouHandleThisOne (youHandleThisOne, YouHandleThisOne (..)) where
 
-import Arkham.Classes.HasQueue
+import Arkham.Classes.HasQueue hiding (fromQueue)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher

@@ -12,10 +12,13 @@ import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
+import Arkham.Location.FloodLevel
+import Arkham.Location.Types (Field (LocationFloodLevel))
 import Arkham.Matcher
 import Arkham.Message (Message (CreateEffect))
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Scenario.Types
 import Arkham.Source
 import Arkham.Target
@@ -45,6 +48,9 @@ data Hideout
 
 needsAir :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
 needsAir a n = restricted a n (youExist $ at_ FullyFloodedLocation) $ forced $ TurnBegins #when You
+
+getFloodLevel :: HasGame m => LocationId -> m FloodLevel
+getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel
 
 struggleForAir :: (Sourceable a, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = push $ CreateEffect $ makeEffectBuilder "noair" Nothing a iid

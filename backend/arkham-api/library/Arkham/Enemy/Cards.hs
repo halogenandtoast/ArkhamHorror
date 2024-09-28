@@ -1919,8 +1919,7 @@ highPriestNotToBeDescribed =
 
 dholeOfTheWastes :: CardDef
 dholeOfTheWastes =
-  ( enemy "06312" "Dhole of the Wastes" WhereTheGodsDwell 1
-  )
+  (enemy "06312" "Dhole of the Wastes" WhereTheGodsDwell 1)
     { cdCardTraits = singleton Monster
     , cdKeywords = singleton Keyword.Hunter
     , cdVictoryPoints = Just 1
@@ -1928,8 +1927,7 @@ dholeOfTheWastes =
 
 liarWithNoFace :: CardDef
 liarWithNoFace =
-  ( enemy "06313" "Liar with No Face" WhereTheGodsDwell 3
-  )
+  (enemy "06313" "Liar with No Face" WhereTheGodsDwell 3)
     { cdCardTraits = setFromList [Monster, Cultist, Servitor]
     , cdKeywords = singleton Keyword.Hunter
     }
@@ -1937,8 +1935,7 @@ liarWithNoFace =
 atlachNacha :: CardDef
 atlachNacha =
   unique
-    $ ( enemy "06346" ("Atlach-Nacha" <:> "The Spider God") WeaverOfTheCosmos 1
-      )
+    $ (enemy "06346" ("Atlach-Nacha" <:> "The Spider God") WeaverOfTheCosmos 1)
       { cdCardTraits = setFromList [AncientOne, Spider, Elite]
       , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
@@ -1948,8 +1945,7 @@ atlachNacha =
 
 legsOfAtlachNacha_347 :: CardDef
 legsOfAtlachNacha_347 =
-  ( enemy "06347" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
-  )
+  (enemy "06347" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1)
     { cdCardTraits = setFromList [AncientOne, Spider, Elite]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
@@ -1957,8 +1953,7 @@ legsOfAtlachNacha_347 =
 
 legsOfAtlachNacha_348 :: CardDef
 legsOfAtlachNacha_348 =
-  ( enemy "06348" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
-  )
+  (enemy "06348" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1)
     { cdCardTraits = setFromList [AncientOne, Spider, Elite]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
@@ -1966,8 +1961,7 @@ legsOfAtlachNacha_348 =
 
 legsOfAtlachNacha_349 :: CardDef
 legsOfAtlachNacha_349 =
-  ( enemy "06349" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
-  )
+  (enemy "06349" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1)
     { cdCardTraits = setFromList [AncientOne, Spider, Elite]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
@@ -1975,8 +1969,7 @@ legsOfAtlachNacha_349 =
 
 legsOfAtlachNacha_350 :: CardDef
 legsOfAtlachNacha_350 =
-  ( enemy "06350" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1
-  )
+  (enemy "06350" "Legs of Atlach-Nacha" WeaverOfTheCosmos 1)
     { cdCardTraits = setFromList [AncientOne, Spider, Elite]
     , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
@@ -1984,8 +1977,7 @@ legsOfAtlachNacha_350 =
 
 webSpinner :: CardDef
 webSpinner =
-  ( enemy "06351" "Web-Spinner" WeaverOfTheCosmos 3
-  )
+  (enemy "06351" "Web-Spinner" WeaverOfTheCosmos 3)
     { cdCardTraits = setFromList [Monster, Spider]
     , cdKeywords = singleton Keyword.Aloof
     }
@@ -2007,8 +1999,7 @@ accursedFollower =
 theAmalgam :: CardDef
 theAmalgam =
   unique
-    $ ( enemy "07053" "The Amalgam" ThePitOfDespair 1
-      )
+    $ (enemy "07053" "The Amalgam" ThePitOfDespair 1)
       { cdCardTraits = setFromList [Monster, Abomination, DeepOne, Elite]
       , cdKeywords = singleton Keyword.Hunter
       }
@@ -2025,8 +2016,7 @@ angryMob =
 robertFriendlyDisgruntledDockworker :: CardDef
 robertFriendlyDisgruntledDockworker =
   unique
-    $ ( enemy "07076" ("Robert Friendly" <:> "Disgruntled Dockerworker") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07076" ("Robert Friendly" <:> "Disgruntled Dockerworker") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2035,8 +2025,7 @@ robertFriendlyDisgruntledDockworker =
 zadokAllenDrunkAndDisorderly :: CardDef
 zadokAllenDrunkAndDisorderly =
   unique
-    $ ( enemy "07077" ("Zadok Allen" <:> "Drunk and Disorderly") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07077" ("Zadok Allen" <:> "Drunk and Disorderly") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2045,8 +2034,7 @@ zadokAllenDrunkAndDisorderly =
 brianBurnhamWantsOut :: CardDef
 brianBurnhamWantsOut =
   unique
-    $ ( enemy "07078" ("Brian Burnham" <:> "Wants Out") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07078" ("Brian Burnham" <:> "Wants Out") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2055,8 +2043,7 @@ brianBurnhamWantsOut =
 barnabasMarshTheChangeIsUponHim :: CardDef
 barnabasMarshTheChangeIsUponHim =
   unique
-    $ ( enemy "07079" ("Barnabas Marsh" <:> "The Change Is upon Him") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07079" ("Barnabas Marsh" <:> "The Change Is upon Him") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2065,8 +2052,7 @@ barnabasMarshTheChangeIsUponHim =
 joyceLittleBookshopOwner :: CardDef
 joyceLittleBookshopOwner =
   unique
-    $ ( enemy "07080" ("Joyce Little" <:> "Bookshop Owner") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07080" ("Joyce Little" <:> "Bookshop Owner") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2075,8 +2061,7 @@ joyceLittleBookshopOwner =
 otheraGilmanProprietessOfTheHotel :: CardDef
 otheraGilmanProprietessOfTheHotel =
   unique
-    $ ( enemy "07081" ("Othera Gilman" <:> "Proprietess of the Hotel") TheVanishingOfElinaHarper 1
-      )
+    $ (enemy "07081" ("Othera Gilman" <:> "Proprietess of the Hotel") TheVanishingOfElinaHarper 1)
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
@@ -2084,52 +2069,45 @@ otheraGilmanProprietessOfTheHotel =
 
 priestOfDagon :: CardDef
 priestOfDagon =
-  ( enemy "07084" "Priest of Dagon" AgentsOfDagon 1
-  )
+  (enemy "07084" "Priest of Dagon" AgentsOfDagon 1)
     { cdCardTraits = setFromList [Humanoid, Cultist]
     }
 
 initiateOfDagon :: CardDef
 initiateOfDagon =
-  ( enemy "07085" "Initiate of Dagon" AgentsOfDagon 3
-  )
+  (enemy "07085" "Initiate of Dagon" AgentsOfDagon 3)
     { cdCardTraits = setFromList [Humanoid, Hybrid, Cultist]
     }
 
 deepOneBull :: CardDef
 deepOneBull =
-  ( enemy "07088" "Deep One Bull" ThePitOfDespair 1
-  )
+  (enemy "07088" "Deep One Bull" ThePitOfDespair 1)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
 lurkingDeepOne :: CardDef
 lurkingDeepOne =
-  ( enemy "07089" "Lurking Deep One" ThePitOfDespair 3
-  )
+  (enemy "07089" "Lurking Deep One" ThePitOfDespair 3)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
 wingedOneFogOverInnsmouth :: CardDef
 wingedOneFogOverInnsmouth =
-  ( enemy "07094" "Winged One" FogOverInnsmouth 1
-  )
+  (enemy "07094" "Winged One" FogOverInnsmouth 1)
     { cdCardTraits = setFromList [Creature, Monster]
     , cdKeywords = singleton Keyword.Hunter
     }
 
 innsmouthTroublemaker :: CardDef
 innsmouthTroublemaker =
-  ( enemy "07105" "Innsmouth Troublemaker" TheLocals 2
-  )
+  (enemy "07105" "Innsmouth Troublemaker" TheLocals 2)
     { cdCardTraits = setFromList [Humanoid, Hybrid, Criminal]
     , cdKeywords = singleton Keyword.Hunter
     }
 
 innsmouthShoggoth :: CardDef
 innsmouthShoggoth =
-  ( enemy "07144" "Innsmouth Shoggoth" InTooDeep 1
-  )
+  (enemy "07144" "Innsmouth Shoggoth" InTooDeep 1)
     { cdCardTraits = setFromList [Monster, Shoggoth, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 1
@@ -2137,18 +2115,17 @@ innsmouthShoggoth =
 
 ravagerFromTheDeep :: CardDef
 ravagerFromTheDeep =
-  ( enemy "07145" "Ravager from the Deep" InTooDeep 2
-  )
+  (enemy "07145" "Ravager from the Deep" InTooDeep 2)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 emergingDeepOne :: CardDef
 emergingDeepOne =
-  ( enemy "07146" "Emerging Deep One" InTooDeep 3
-  )
+  (enemy "07146" "Emerging Deep One" InTooDeep 3)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
+    , cdRevelation = IsRevelation
     }
 
 mobGoons :: CardDef

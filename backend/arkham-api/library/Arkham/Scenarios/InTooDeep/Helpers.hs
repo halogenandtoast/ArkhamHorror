@@ -30,6 +30,9 @@ removeBarrierBetweenConnected iid lid = do
   let barriers = concat [ls | Barricades ls <- mods]
   chooseTargetM iid barriers \lid' -> push $ ScenarioCountDecrementBy (Barriers lid lid') 1
 
+placeBarrier :: ReverseQueue m => LocationId -> LocationId -> m ()
+placeBarrier l1 l2 = push $ ScenarioCountIncrementBy (Barriers l1 l2) 1
+
 insertBarrier :: LocationId -> LocationId -> Meta -> Meta
 insertBarrier = incrementBarriers 1
 

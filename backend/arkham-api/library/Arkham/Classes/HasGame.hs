@@ -12,3 +12,6 @@ instance HasGame m => HasGame (QueueT msg m) where
 
 instance Monad m => HasGame (ReaderT Game m) where
   getGame = ask
+
+instance HasGame m => HasGame (MaybeT m) where
+  getGame = lift getGame

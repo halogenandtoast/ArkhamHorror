@@ -1,4 +1,4 @@
-module Arkham.SortedPair (SortedPair, sortedPair, unSortedPair) where
+module Arkham.SortedPair (SortedPair, sortedPair, unSortedPair, inSortedPair) where
 
 import Arkham.Prelude
 import Control.Monad.Fail
@@ -13,6 +13,9 @@ newtype SortedPair a = SortedPair (a, a)
 
 unSortedPair :: SortedPair a -> (a, a)
 unSortedPair (SortedPair pair) = pair
+
+inSortedPair :: Eq a => a -> SortedPair a -> Bool
+inSortedPair a (SortedPair (b, c)) = a == b || a == c
 
 instance (ToJSON a, ToJSONKey a) => ToJSONKey (SortedPair a) where
   toJSONKey = ToJSONKeyText toKey toKeyEncoding

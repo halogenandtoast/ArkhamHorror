@@ -397,6 +397,13 @@ createEnemyAt c lid = do
 createEnemyAtLocationMatching_ :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m ()
 createEnemyAtLocationMatching_ c = Msg.pushM . Msg.createEnemyAtLocationMatching_ (toCard c)
 
+createEnemyAtLocationMatching
+  :: (ReverseQueue m, IsCard card) => card -> LocationMatcher -> m EnemyId
+createEnemyAtLocationMatching c matcher = do
+  (eid, msg) <- Msg.createEnemyAtLocationMatching (toCard c) matcher
+  Msg.push msg
+  pure eid
+
 createSetAsideEnemy
   :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
 createSetAsideEnemy def creation = createSetAsideEnemyWith def creation id

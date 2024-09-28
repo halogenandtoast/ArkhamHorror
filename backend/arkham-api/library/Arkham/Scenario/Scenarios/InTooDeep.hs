@@ -56,9 +56,11 @@ instance HasModifiersFor InTooDeep where
         (l1, l2) | l1 == lid -> guard (n > 0) $> l2
         (l1, l2) | l2 == lid -> guard (n > 0) $> l1
         _ -> Nothing
-    let barricades = mapMaybe barricaded $ Map.toList meta
-    pure [Barricaded barricades | notNull barricades]
-  getModifiersFor (EnemyTarget _) (InTooDeep a) = modified a [CanIgnoreBarricades]
+    let barriers = mapMaybe barricaded $ Map.toList meta
+    pure [Barricades barriers | notNull barriers]
+  getModifiersFor (EnemyTarget eid) (InTooDeep a) = do
+    isInnsmouthShoggoth <- eid <=~> enemyIs Enemies.innsmouthShoggoth
+    modified a [CanIgnoreBarriers | not isInnsmouthShoggoth]
   getModifiersFor _ _ = pure []
 
 inTooDeep :: Difficulty -> InTooDeep
@@ -155,21 +157,19 @@ instance RunMessage InTooDeep where
 
       startAt desolateCoastline
 
-      setAsideKeys [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, WhiteKey]
+      setAsideKeys $ map UnrevealedKey [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, WhiteKey]
 
       mHideout <- maybeResult <$$> getCircledRecord PossibleHideouts
-      case join mHideout of
-        Just hideout -> do
-          let
-            hideoutLocation = case hideout of
-              InnsmouthJail -> innsmouthJail
-              ShorewardSlums -> shorewardSlums
-              SawboneAlley -> sawboneAlley
-              TheHouseOnWaterStreet -> theHouseOnWaterStreet
-              EsotericOrderOfDagon -> esotericOrderOfDagon
-              NewChurchGreen -> newChurchGreen
-          placeKey hideoutLocation BlackKey
-        Nothing -> setAsideKey BlackKey
+      for_ (join mHideout) \hideout -> do
+        let
+          hideoutLocation = case hideout of
+            InnsmouthJail -> innsmouthJail
+            ShorewardSlums -> shorewardSlums
+            SawboneAlley -> sawboneAlley
+            TheHouseOnWaterStreet -> theHouseOnWaterStreet
+            EsotericOrderOfDagon -> esotericOrderOfDagon
+            NewChurchGreen -> newChurchGreen
+        placeKey hideoutLocation BlackKey
 
       outForBlood <- mapMaybe (maybeResult <=< unrecorded) <$> getRecordSet OutForBlood
       for_ outForBlood \case
@@ -193,10 +193,17 @@ instance RunMessage InTooDeep where
 
       for_ [theHouseOnWaterStreet, innsmouthHarbour, desolateCoastline] (push . IncreaseFloodLevel)
     ScenarioCountIncrementBy (Barriers l1 l2) n -> do
-      let meta' = incrementBarriers n l1 l2 $ toResultDefault (Meta mempty) attrs.meta
-      pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
+      desolateCoastline <- selectJust $ locationIs Locations.desolateCoastline
+      if l1 == desolateCoastline || l2 == desolateCoastline
+        then pure s
+        else do
+          let meta' = incrementBarriers n l1 l2 $ toResultDefault (Meta mempty) attrs.meta
+          pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
     ScenarioCountDecrementBy (Barriers l1 l2) n -> do
       let meta' = decrementBarriers n l1 l2 $ toResultDefault (Meta mempty) attrs.meta
+      pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
+    ScenarioCountSet (Barriers l1 l2) n -> do
+      let meta' = Helpers.setBarriers l1 l2 n $ toResultDefault (Meta mempty) attrs.meta
       pure $ InTooDeep $ attrs & metaL .~ toJSON meta'
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

@@ -273,6 +273,8 @@ data CampaignLogKey
   | TheMissionWasSuccessful
   | PossibleSuspects
   | PossibleHideouts
+  | InnsmouthWasConsumedByTheRisingTide
+  | TheInvestigatorsMadeItSafelyToTheirVehicles
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

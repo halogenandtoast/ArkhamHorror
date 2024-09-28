@@ -15,7 +15,7 @@ spec = do
       token <- getChaosTokenValue (toId zoeySamaras) ElderSign (toId zoeySamaras)
       chaosTokenValue token `shouldReturn` Just 1
 
-    it "elder sign token gives +1 and does +1 damage for attacks" . gameTestWith Investigators.zoeySamaras . debug $ \zoeySamaras -> do
+    it "elder sign token gives +1 and does +1 damage for attacks" . gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
       enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 5))
       location <- testLocationWith id
       setChaosTokens [ElderSign]

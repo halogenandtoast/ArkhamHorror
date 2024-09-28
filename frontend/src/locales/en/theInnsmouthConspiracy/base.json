@@ -57,7 +57,11 @@
     "aMeetingWithThomasDawson": "A Meeting with Thomas Dawson",
     "aBattleWithAHorrifyingDevil": "A Battle with a Horrifying Devil",
     "aDecisionToStickTogether": "A Decision to Stick Together",
-    "anEncounterWithASecretCult": "An Encounter with a Secret Cult"
+    "anEncounterWithASecretCult": "An Encounter with a Secret Cult",
+    "anIntervention": "An Intervention",
+    "aJailbreak": "A Jailbreak",
+    "aDealWithJoeSargent": "A Deal with Joe Sargent",
+    "aFollowedLead": "A Followed Lead"
   },
   "possibleHideouts": {
     "innsmouthJail": "Innsmouth Jail",

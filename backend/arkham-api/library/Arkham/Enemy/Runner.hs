@@ -569,7 +569,7 @@ instance RunMessage EnemyAttrs where
               . ClosestPathLocation loc
 
           pathIds <-
-            if CanIgnoreBarricades `elem` mods
+            if CanIgnoreBarriers `elem` mods
               then do
                 barricadedPathIds <-
                   concatForM destinationLocationIds

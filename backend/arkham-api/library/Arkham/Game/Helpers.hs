@@ -3023,6 +3023,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.CanEnterLocation _ -> locationId <=~> matcher
     Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
     Matcher.LocationCanBeEnteredBy {} -> locationId <=~> matcher
+    Matcher.LocationWithAdjacentBarrier -> locationId <=~> matcher
     Matcher.MostBreaches _ -> locationId <=~> matcher
     Matcher.LocationWithVictory -> locationId <=~> matcher
     Matcher.FewestBreaches {} -> locationId <=~> matcher

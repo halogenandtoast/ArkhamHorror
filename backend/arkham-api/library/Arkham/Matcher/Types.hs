@@ -508,6 +508,7 @@ data LocationMatcher
   | LocationWithLabel Label
   | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
+  | LocationWithAdjacentBarrier
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher

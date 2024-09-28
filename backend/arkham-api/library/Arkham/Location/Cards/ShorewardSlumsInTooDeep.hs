@@ -4,9 +4,13 @@ module Arkham.Location.Cards.ShorewardSlumsInTooDeep (
 )
 where
 
+import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Scenarios.InTooDeep.Helpers
 
 newtype ShorewardSlumsInTooDeep = ShorewardSlumsInTooDeep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,9 +26,20 @@ shorewardSlumsInTooDeep =
     connectsToAdjacent
 
 instance HasAbilities ShorewardSlumsInTooDeep where
-  getAbilities (ShorewardSlumsInTooDeep attrs) =
-    extendRevealed attrs []
+  getAbilities (ShorewardSlumsInTooDeep a) =
+    extendRevealed
+      a
+      [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
+      , restricted a 2 (Here <> thisIs a LocationWithAdjacentBarrier)
+          $ FastAbility' (DamageCost (a.ability 2) YouTarget 1) [#parley]
+      ]
 
 instance RunMessage ShorewardSlumsInTooDeep where
-  runMessage msg (ShorewardSlumsInTooDeep attrs) = runQueueT $ case msg of
+  runMessage msg l@(ShorewardSlumsInTooDeep attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeUnrevealedKeyOn attrs
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      removeBarrierBetweenConnected iid attrs.id
+      pure l
     _ -> ShorewardSlumsInTooDeep <$> liftRunMessage msg attrs

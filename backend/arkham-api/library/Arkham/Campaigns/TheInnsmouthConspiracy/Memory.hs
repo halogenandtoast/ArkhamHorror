@@ -7,5 +7,9 @@ data Memory
   | ABattleWithAHorrifyingDevil
   | ADecisionToStickTogether
   | AnEncounterWithASecretCult
+  | AnIntervention
+  | AJailbreak
+  | ADealWithJoeSargent
+  | AFollowedLead
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

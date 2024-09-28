@@ -29,7 +29,6 @@ import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.Strategy
 import Arkham.Trait hiding (Cultist, Expert)
 import Arkham.Window qualified as Window
-import Control.Lens (non)
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

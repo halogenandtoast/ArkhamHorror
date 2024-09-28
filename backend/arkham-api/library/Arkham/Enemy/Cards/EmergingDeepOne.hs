@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Types (delayEngagementL)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Location.FloodLevel
 import Arkham.Matcher
@@ -14,7 +15,8 @@ newtype EmergingDeepOne = EmergingDeepOne EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 emergingDeepOne :: EnemyCard EmergingDeepOne
-emergingDeepOne = enemy EmergingDeepOne Cards.emergingDeepOne (3, Static 2, 1) (1, 1)
+emergingDeepOne =
+  enemyWith EmergingDeepOne Cards.emergingDeepOne (3, Static 2, 1) (1, 1) (delayEngagementL .~ True)
 
 instance HasAbilities EmergingDeepOne where
   getAbilities (EmergingDeepOne a) =
@@ -26,9 +28,17 @@ instance RunMessage EmergingDeepOne where
       getLocationOf attrs.id >>= \case
         Nothing -> error "We do not have a location yet..."
         Just loc ->
-          getFloodLevel loc <&> \case
-            FullyFlooded -> e
-            _ -> EmergingDeepOne $ attrs & exhaustedL .~ True & placementL .~ AtLocation loc
+          getFloodLevel loc >>= \case
+            FullyFlooded -> do
+              enemyCheckEngagement attrs.id
+              pure $ EmergingDeepOne $ attrs & delayEngagementL .~ False
+            _ ->
+              pure
+                $ EmergingDeepOne
+                $ attrs
+                & (exhaustedL .~ True)
+                & (placementL .~ AtLocation loc)
+                & (delayEngagementL .~ False)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e

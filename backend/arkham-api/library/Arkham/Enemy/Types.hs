@@ -202,6 +202,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyMeta = Null
             , enemyFlipped = False
             , enemyAttacking = Nothing
+            , enemyDelayEngagement = False
             }
     }
 

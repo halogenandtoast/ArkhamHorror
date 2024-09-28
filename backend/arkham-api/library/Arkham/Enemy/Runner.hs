@@ -391,7 +391,7 @@ instance RunMessage EnemyAttrs where
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
-    EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) -> do
+    EnemyCheckEngagement eid | eid == enemyId && not (isSwarm a) && not enemyDelayEngagement -> do
       let isAttached = isJust a.placement.attachedTo
 
       unless isAttached do

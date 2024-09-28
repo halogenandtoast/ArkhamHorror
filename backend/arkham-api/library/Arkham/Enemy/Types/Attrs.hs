@@ -57,6 +57,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyMeta :: Value
   , enemyFlipped :: Bool
   , enemyAttacking :: Maybe EnemyAttackDetails
+  , enemyDelayEngagement :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -112,4 +113,40 @@ instance HasCardCode EnemyAttrs where
 enemyReady :: EnemyAttrs -> Bool
 enemyReady = not . enemyExhausted
 
-$(deriveJSON (aesonOptions $ Just "enemy") ''EnemyAttrs)
+$(deriveToJSON (aesonOptions $ Just "enemy") ''EnemyAttrs)
+
+instance FromJSON EnemyAttrs where
+  parseJSON = withObject "EnemyAttrs" $ \v -> do
+    enemyId <- v .: "id"
+    enemyCardId <- v .: "cardId"
+    enemyCardCode <- v .: "cardCode"
+    enemyOriginalCardCode <- v .: "originalCardCode"
+    enemyPlacement <- v .: "placement"
+    enemyFight <- v .:? "fight"
+    enemyHealth <- v .:? "health"
+    enemyEvade <- v .:? "evade"
+    enemyAssignedDamage <- v .: "assignedDamage"
+    enemyHealthDamage <- v .: "healthDamage"
+    enemySanityDamage <- v .: "sanityDamage"
+    enemyPrey <- v .: "prey"
+    enemyModifiers <- v .: "modifiers"
+    enemyExhausted <- v .: "exhausted"
+    enemyTokens <- v .: "tokens"
+    enemySpawnAt <- v .:? "spawnAt"
+    enemySurgeIfUnableToSpawn <- v .: "surgeIfUnableToSpawn"
+    enemyAsSelfLocation <- v .:? "asSelfLocation"
+    enemyMovedFromHunterKeyword <- v .: "movedFromHunterKeyword"
+    enemyDamageStrategy <- v .: "damageStrategy"
+    enemyBearer <- v .:? "bearer"
+    enemySealedChaosTokens <- v .: "sealedChaosTokens"
+    enemyKeys <- v .: "keys"
+    enemySpawnedBy <- v .:? "spawnedBy"
+    enemyDiscardedBy <- v .:? "discardedBy"
+    enemyDefeated <- v .: "defeated"
+    enemyAttacks <- v .: "attacks"
+    enemyUnableToSpawn <- v .: "unableToSpawn"
+    enemyMeta <- v .: "meta"
+    enemyFlipped <- v .: "flipped"
+    enemyAttacking <- v .:? "attacking"
+    enemyDelayEngagement <- v .:? "delayEngagement" .!= False
+    return EnemyAttrs {..}

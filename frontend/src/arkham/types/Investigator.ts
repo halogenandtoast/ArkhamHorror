@@ -87,6 +87,7 @@ export type Investigator = {
   assignedHealthDamage: number;
   assignedSanityDamage: number;
   location: string;
+  placement: Placement;
   remainingActions: number;
   endedTurn: boolean;
   engagedEnemies: string[];
@@ -181,6 +182,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   assignedHealthDamage: JsonDecoder.number,
   assignedSanityDamage: JsonDecoder.number,
   location: placementDecoder.map((placement) => placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000"),
+  placement: placementDecoder,
   remainingActions: JsonDecoder.number,
   endedTurn: JsonDecoder.boolean,
   engagedEnemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),

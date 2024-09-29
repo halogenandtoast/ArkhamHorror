@@ -1140,6 +1140,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                       | lid <- matchingClosestLocationIds
                       ]
             Direct -> do
+              imods <- getModifiers investigatorId
               leaveCosts <- case mFromLocation of
                 Nothing -> pure mempty
                 Just lid ->
@@ -1154,7 +1155,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 if movePayAdditionalCosts movement
                   then do
                     mods' <- getModifiers destinationLocationId
-                    pure $ mconcat [c | AdditionalCostToEnter c <- mods']
+                    pcosts <-
+                      filterM ((destinationLocationId <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+                    pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
                   else pure mempty
 
               let

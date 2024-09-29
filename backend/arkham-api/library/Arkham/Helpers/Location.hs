@@ -62,6 +62,7 @@ placementLocation = \case
   AttachedToEnemy eid -> join <$> fieldMay EnemyLocation eid
   AttachedToTreachery tid -> field TreacheryLocation tid
   AttachedToAsset aid' _ -> field AssetLocation aid'
+  InVehicle aid' -> field AssetLocation aid'
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing
   Unplaced -> pure Nothing

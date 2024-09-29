@@ -9,6 +9,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message';
 import DebugAsset from '@/arkham/components/debug/Asset.vue';
 import Key from '@/arkham/components/Key.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -37,6 +38,7 @@ const emits = defineEmits<{
 const id = computed(() => props.asset.id)
 const exhausted = computed(() => props.asset.exhausted)
 const cardCode = computed(() => props.asset.cardCode)
+const investigators = computed(() => Object.values(props.game.investigators).filter((i) => i.placement.tag === 'InVehicle' && i.placement.contents === id.value))
 const image = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped) {
@@ -214,6 +216,18 @@ const assetStory = computed(() => {
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
           />
+          <div v-if="investigators.length > 0" class="in-vehicle">
+            <div v-for="investigator in investigators" :key="investigator.id">
+              <Investigator
+                :game="game"
+                :choices="choices"
+                :playerId="playerId"
+                :portrait="true"
+                :investigator="investigator"
+                @choose="$emit('choose', $event)"
+                />
+            </div>
+          </div>
         </div>
         <div v-if="hasPool" class="pool">
           <div class="keys" v-if="keys.length > 0">
@@ -415,6 +429,28 @@ const assetStory = computed(() => {
 .spirit-deck {
   position: relative;
   margin-right: 5px;
+}
+
+.in-vehicle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  pointer-events: none;
+  gap: 4px;
+
+  .vehicle-investigator {
+    line-height: 0;
+    height: fit-content;
+  }
+
+  &:deep(.portrait) {
+    pointer-events: auto;
+    width: 100%;
+  }
 }
 
 </style>

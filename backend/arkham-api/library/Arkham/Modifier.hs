@@ -64,6 +64,7 @@ data ModifierType
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
   | AdditionalCostToEnter Cost
+  | AdditionalCostToEnterMatching LocationMatcher Cost
   | AdditionalCostToInvestigate Cost
   | AdditionalCostToResign Cost
   | AdditionalCostToLeave Cost

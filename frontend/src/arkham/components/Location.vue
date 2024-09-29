@@ -205,6 +205,11 @@ const breaches = computed(() => {
 
   return 0
 })
+const investigators = computed(() => {
+  return props.location.investigators.
+    map((i) => props.game.investigators[i]).
+    filter(i => i.placement.tag === 'AtLocation')
+})
 const horror = computed(() => props.location.tokens[TokenType.Horror])
 const damage = computed(() => props.location.tokens[TokenType.Damage])
 const floodLevel = computed(() => {
@@ -244,15 +249,15 @@ function onDrop(event: DragEvent) {
     <div class="location-container">
       <div class="location-investigator-column">
         <div
-          v-for="cardCode in location.investigators"
-          :key="cardCode"
+          v-for="investigator in investigators"
+          :key="investigator.cardCode"
         >
           <Investigator
             :game="game"
             :choices="choices"
             :playerId="playerId"
             :portrait="true"
-            :investigator="game.investigators[cardCode]"
+            :investigator="investigator"
             @choose="$emit('choose', $event)"
             />
         </div>

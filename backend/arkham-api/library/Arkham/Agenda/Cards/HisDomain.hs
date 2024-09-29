@@ -51,7 +51,6 @@ instance RunMessage HisDomain where
         PlacedUnderneath ActDeckTarget card' -> card == card'
         CheckWindows [(windowType -> Window.PlaceUnderneath ActDeckTarget card')] ->
           card == card'
-        _ -> False
         Do (CheckWindows [(windowType -> Window.PlaceUnderneath ActDeckTarget card')]) ->
           card == card'
         _ -> False

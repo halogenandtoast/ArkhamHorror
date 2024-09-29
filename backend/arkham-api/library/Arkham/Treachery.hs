@@ -458,6 +458,12 @@ allTreacheries =
       SomeTreacheryCard deepOneInvasion
     , SomeTreacheryCard pulledBack
     , SomeTreacheryCard inundated
+    , --- Devil Reef
+      SomeTreacheryCard shapesInTheWater
+    , SomeTreacheryCard aquaticAmbush
+    , SomeTreacheryCard horrorsFromTheDeep
+    , SomeTreacheryCard stowaway
+    , SomeTreacheryCard draggedUnderDevilReef
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

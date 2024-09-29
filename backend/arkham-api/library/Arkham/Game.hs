@@ -875,6 +875,10 @@ getInvestigatorsMatching matcher = do
     NotInvestigator x -> do
       as' <- go as x
       pure $ filter (`notElem` as') as
+    InvestigatorWithPlacement p -> pure $ filter ((== p) . (.placement)) as
+    InVehicleMatching am -> flip filterM as \a -> case a.placement of
+      InVehicle aid -> aid <=~> am
+      _ -> pure False
     InvestigatorMatches xs -> foldM go as xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs
@@ -1648,10 +1652,12 @@ getLocationsMatching lmatcher = do
           PathState {_psPaths} <-
             execStateT (go1 (distance + 1) start mempty) (PathState (singleton start) mempty)
 
+          imods <- getModifiers investigator
           let
             getEnterCost loc = do
               mods <- getModifiers loc
-              pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+              pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+              pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
             getLeaveCost loc = do
               mods <- getModifiers loc
               pure $ mconcat [c | AdditionalCostToLeave c <- mods]
@@ -1713,10 +1719,12 @@ getLocationsMatching lmatcher = do
           PathState {_psPaths} <-
             execStateT (go1 start mempty) (PathState (singleton start) mempty)
 
+          imods <- getModifiers investigator
           let
             getEnterCost loc = do
               mods <- getModifiers loc
-              pure $ mconcat [c | AdditionalCostToEnter c <- mods]
+              pcosts <- filterM ((loc <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+              pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods]
             getLeaveCost loc = do
               mods <- getModifiers loc
               pure $ mconcat [c | AdditionalCostToLeave c <- mods]
@@ -3423,16 +3431,17 @@ instance Projection Investigator where
       InvestigatorRemainingHealth -> do
         health <- field InvestigatorHealth (toId attrs)
         pure (health - investigatorHealthDamage attrs)
+      InvestigatorPlacement -> pure investigatorPlacement
       InvestigatorLocation -> do
         mods <- getModifiers iid
         let
           mAsIfAt = headMay $ flip mapMaybe mods $ \case
             AsIfAt lid -> Just lid
             _ -> Nothing
-        pure
-          $ case investigatorPlacement of
-            AtLocation lid -> mAsIfAt <|> Just lid
-            _ -> mAsIfAt
+        case investigatorPlacement of
+          AtLocation lid -> pure $ mAsIfAt <|> Just lid
+          InVehicle aid -> (mAsIfAt <|>) <$> field AssetLocation aid
+          _ -> pure mAsIfAt
       InvestigatorWillpower -> skillValueFor #willpower Nothing attrs.id
       InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id
       InvestigatorCombat -> skillValueFor #combat Nothing attrs.id
@@ -3706,7 +3715,7 @@ instance Query ExtendedCardMatcher where
           _ -> pure handCards
         pure $ filter (`elem` cards) cs
       SetAsideCardMatch matcher' -> do
-        cards <- traceShowId <$> scenarioField ScenarioSetAsideCards
+        cards <- scenarioField ScenarioSetAsideCards
         pure $ filter (`elem` filterCards matcher' cards) cs
       PassesCommitRestrictions inner -> do
         let

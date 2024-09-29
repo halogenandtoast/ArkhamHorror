@@ -92,6 +92,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorSanity :: Field Investigator Int
   InvestigatorRemainingSanity :: Field Investigator Int
   InvestigatorRemainingHealth :: Field Investigator Int
+  InvestigatorPlacement :: Field Investigator Placement
   InvestigatorLocation :: Field Investigator (Maybe LocationId)
   InvestigatorWillpower :: Field Investigator Int
   InvestigatorIntellect :: Field Investigator Int
@@ -169,6 +170,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorSanity" -> pure $ SomeField InvestigatorSanity
     "InvestigatorRemainingSanity" -> pure $ SomeField InvestigatorRemainingSanity
     "InvestigatorRemainingHealth" -> pure $ SomeField InvestigatorRemainingHealth
+    "InvestigatorPlacement" -> pure $ SomeField InvestigatorPlacement
     "InvestigatorLocation" -> pure $ SomeField InvestigatorLocation
     "InvestigatorWillpower" -> pure $ SomeField InvestigatorWillpower
     "InvestigatorIntellect" -> pure $ SomeField InvestigatorIntellect

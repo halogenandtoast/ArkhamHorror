@@ -37,8 +37,7 @@ instance RunMessage TeachingsOfTheOrder where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         unlessHasRecord Teachings1 do
-          n <- selectCount $ ChaosTokenFaceIs #curse
-          when (n > 0) do
+          whenAny (ChaosTokenFaceIs #curse) do
             labeled "Remove all {curse} tokens from the chaos bag." $ doStep 1 msg
 
         unlessHasRecord Teachings2 do

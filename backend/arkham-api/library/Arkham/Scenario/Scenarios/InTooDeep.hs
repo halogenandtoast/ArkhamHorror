@@ -8,16 +8,20 @@ import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
 import Arkham.Helpers.Log (getCircledRecord, getRecordSet)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (metaL)
 import Arkham.ScenarioLogKey
@@ -231,4 +235,5 @@ instance RunMessage InTooDeep where
             $ if madeItSafely then WithBonus "Made it safely to their vehicles" 2 else NoBonus
           endOfScenario
         _ -> throw $ UnknownResolution resolution
+      pure s
     _ -> InTooDeep <$> liftRunMessage msg attrs

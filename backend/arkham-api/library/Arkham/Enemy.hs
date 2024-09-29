@@ -390,7 +390,9 @@ allEnemies =
     , SomeEnemyCard ravagerFromTheDeep
     , SomeEnemyCard emergingDeepOne
     , --- Devil Reef [def]
-      SomeEnemyCard deepOnePredator
+      SomeEnemyCard theTerrorOfDevilReef_164
+    , SomeEnemyCard theTerrorOfDevilReef_165
+    , SomeEnemyCard deepOnePredator
     , SomeEnemyCard huntingDeepOne
     , -- Edge of the Earth
       -- signature

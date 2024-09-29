@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheInnsmouthConspiracy.Helpers where
 
 import Arkham.Ability
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card.CardCode (HasCardCode)
@@ -47,7 +48,13 @@ data Hideout
   deriving anyclass (ToJSON, FromJSON)
 
 needsAir :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
-needsAir a n = restricted a n (youExist $ at_ FullyFloodedLocation) $ forced $ TurnBegins #when You
+needsAir a n =
+  restricted
+    a
+    n
+    (youExist $ at_ FullyFloodedLocation <> not_ (InVehicleMatching $ assetIs Assets.fishingVessel))
+    $ forced
+    $ TurnBegins #when You
 
 getFloodLevel :: HasGame m => LocationId -> m FloodLevel
 getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel

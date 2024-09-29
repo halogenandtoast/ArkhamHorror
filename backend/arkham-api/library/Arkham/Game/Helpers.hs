@@ -388,11 +388,22 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
                 pure [m | not doDelayAdditionalCosts, AdditionalCostToInvestigate m <- mods]
               _ -> pure []
       else pure []
+  enterCosts <-
+    if #move `elem` abilityActions a
+      then case a.source.location of
+        Just lid -> do
+          mods <- getModifiers lid
+          imods <- getModifiers iid
+          pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+          pure
+            $ map snd pcosts
+            <> [m | not doDelayAdditionalCosts, AdditionalCostToEnter m <- mods]
+        _ -> pure []
+      else pure []
   resignCosts <-
     if #resign `elem` abilityActions a
       then do
-        mLocation <- field InvestigatorLocation iid
-        case mLocation of
+        field InvestigatorLocation iid >>= \case
           Nothing -> pure []
           Just lid -> do
             mods <- getModifiers lid
@@ -403,8 +414,8 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     fixEnemy = maybe id Matcher.replaceThatEnemy mThatEnemy
     costF =
       case find isSetCost modifiers of
-        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts) . const c
-        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts)
+        Just (SetAbilityCost c) -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts) . const c
+        _ -> fixEnemy . fold . (: investigateCosts <> resignCosts <> enterCosts)
     isSetCost = \case
       SetAbilityCost _ -> True
       _ -> False
@@ -1066,6 +1077,29 @@ passesCriteria
   -> Criterion
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
+  Criteria.CanEnterThisVehicle -> do
+    case source of
+      AssetSource aid -> do
+        field InvestigatorPlacement iid >>= \case
+          AtLocation lid -> do
+            mlid' <- field AssetLocation aid
+            pure $ Just lid == mlid'
+          _ -> pure False
+      _ -> error $ "Unhandled vehicle source: " <> show source
+  Criteria.CanLeaveThisVehicle -> do
+    case source of
+      AssetSource aid -> do
+        field InvestigatorPlacement iid >>= \case
+          InVehicle aid' | aid == aid' -> pure True
+          _ -> pure False
+      _ -> error $ "Unhandled vehicle source: " <> show source
+  Criteria.InThisVehicle -> do
+    case source of
+      AssetSource aid -> do
+        field InvestigatorPlacement iid >>= \case
+          InVehicle aid' | aid == aid' -> pure True
+          _ -> pure False
+      _ -> error $ "Unhandled vehicle source: " <> show source
   Criteria.KeyIsSetAside key -> (elem key) <$> scenarioField ScenarioSetAsideKeys
   Criteria.UnrevealedKeyIsSetAside -> do
     let
@@ -1075,9 +1109,8 @@ passesCriteria iid mcard source' requestor windows' = \case
     any unrevealedKey . setToList <$> scenarioField ScenarioSetAsideKeys
   Criteria.TabooCriteria tabooList cIf cElse -> do
     mtabooList <- field InvestigatorTaboo iid
-    if maybe False (>= tabooList) mtabooList
-      then passesCriteria iid mcard source' requestor windows' cIf
-      else passesCriteria iid mcard source' requestor windows' cElse
+    passesCriteria iid mcard source' requestor windows'
+      $ if maybe False (>= tabooList) mtabooList then cIf else cElse
   Criteria.IfYouOweBiancaDieKatz -> do
     let
       isValid = \case
@@ -3788,13 +3821,14 @@ getCanMoveTo iid source lid = elem lid <$> getCanMoveToLocations iid source
 getCanMoveToLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
 getCanMoveToLocations iid source = do
-  canMove <- iid <=~> Matcher.InvestigatorCanMove
+  canMove <-
+    iid <=~> (Matcher.InvestigatorCanMove <> not_ (Matcher.InVehicleMatching Matcher.AnyAsset))
   if canMove
     then do
-      mLocation <- selectOne $ Matcher.locationWithInvestigator iid
-      case mLocation of
+      selectOne (Matcher.locationWithInvestigator iid) >>= \case
         Nothing -> pure []
         Just lid -> do
+          imods <- getModifiers iid
           mods <- getModifiers lid
           ls <-
             select
@@ -3803,7 +3837,8 @@ getCanMoveToLocations iid source = do
           let extraCostsToLeave = mconcat [c | AdditionalCostToLeave c <- mods]
           flip filterM ls $ \l -> do
             mods' <- getModifiers l
-            let extraCostsToEnter = mconcat [c | AdditionalCostToEnter c <- mods']
+            pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+            let extraCostsToEnter = concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
             getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
     else pure []
 

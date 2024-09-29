@@ -299,6 +299,8 @@ allEncounterEnemyCards =
       , theOrganistDrapedInMystery
       , theOrganistHopelessIDefiedHim
       , theSpectralWatcher
+      , theTerrorOfDevilReef_164
+      , theTerrorOfDevilReef_165
       , theRougarou
       , theUnnamable
       , theWingedSerpent
@@ -2128,6 +2130,21 @@ emergingDeepOne =
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdRevelation = IsRevelation
+    }
+
+theTerrorOfDevilReef_164 :: CardDef
+theTerrorOfDevilReef_164 =
+  (enemy "07164b" "The Terror of Devil Reef" DevilReef 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    }
+
+theTerrorOfDevilReef_165 :: CardDef
+theTerrorOfDevilReef_165 =
+  (enemy "07165b" "The Terror of Devil Reef" DevilReef 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
     }
 
 deepOnePredator :: CardDef

@@ -7,6 +7,7 @@ export type Placement
   | { tag: "OnTopOfDeck", contents: string }
   | { tag: "OutOfPlay", contents: string }
   | { tag: "AtLocation", contents: string }
+  | { tag: "InVehicle", contents: string }
   | { tag: "AttachedToLocation", contents: string }
   | { tag: "AsSwarm", swarmHost: string }
   | { tag: "Limbo" }
@@ -18,6 +19,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("NextToAgenda")}, 'NextToAgenda'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("Limbo")}, 'Limbo'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("AtLocation"), contents: JsonDecoder.string }, 'AtLocation'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("InVehicle"), contents: JsonDecoder.string }, 'InVehicle'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("AttachedToLocation"), contents: JsonDecoder.string }, 'AttachedToLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("InThreatArea"), contents: JsonDecoder.string }, 'InThreatArea'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("StillInHand"), contents: JsonDecoder.string }, 'StillInHand'),

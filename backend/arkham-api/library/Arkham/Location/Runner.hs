@@ -40,6 +40,7 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
+import Arkham.Helpers.Window qualified as Helpers
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate
@@ -60,6 +61,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token
@@ -183,6 +185,19 @@ instance RunMessage LocationAttrs where
         & (connectedMatchersL <>~ [LocationWithId toLid])
     EnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
+      pure a
+    PlaceAsset aid (AtLocation lid) | lid == locationId -> do
+      mInVehicle <- selectOne $ ActiveInvestigator <> InvestigatorWithPlacement (InVehicle aid)
+      for_ mInVehicle \iid -> do
+        afterMoveButBeforeEnemyEngagement <-
+          Helpers.checkWindows [Window.mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
+        enemies <- select $ enemyAt lid
+        pushAll
+          $ [ WhenWillEnterLocation iid lid
+            , EnterLocation iid lid
+            , afterMoveButBeforeEnemyEngagement
+            ]
+          <> map EnemyCheckEngagement enemies
       pure a
     SetFlippable lid flippable | lid == locationId -> do
       pure $ a & canBeFlippedL .~ flippable

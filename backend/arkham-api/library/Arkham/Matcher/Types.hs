@@ -64,6 +64,8 @@ pattern MostHorror <- MostToken Horror
 
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
+  | InVehicleMatching AssetMatcher
+  | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode
   | InvestigatorCanBeAssignedDamageBy InvestigatorId

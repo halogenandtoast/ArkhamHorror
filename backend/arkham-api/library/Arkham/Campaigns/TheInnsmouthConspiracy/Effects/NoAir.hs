@@ -1,5 +1,6 @@
 module Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir where
 
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes.Entity (Entity)
 import Arkham.Classes.HasAbilities (HasAbilities)
 import Arkham.Classes.HasModifiersFor (HasModifiersFor)
@@ -38,4 +39,5 @@ instance RunMessage NoAirEffect where
         Nothing -> pure e'
         Just iid -> do
           leftFullyFlooded <- selectAny $ locationWithInvestigator iid <> not_ FullyFloodedLocation
-          if leftFullyFlooded then disableReturn e' else pure e'
+          inBoat <- iid <=~> InVehicleMatching (assetIs Assets.fishingVessel)
+          if leftFullyFlooded || inBoat then disableReturn e' else pure e'

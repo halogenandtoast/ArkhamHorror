@@ -221,6 +221,9 @@ data Criterion
   | OnlySources SourceMatcher
   | KeyIsSetAside ArkhamKey
   | UnrevealedKeyIsSetAside
+  | CanEnterThisVehicle
+  | CanLeaveThisVehicle
+  | InThisVehicle
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

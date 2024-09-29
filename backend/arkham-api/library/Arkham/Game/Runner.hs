@@ -462,6 +462,7 @@ runGameMessage msg g = case msg of
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
+    imods <- getModifiers iid
     modifiers' <- getModifiers (AbilityTarget iid ability)
     -- TODO: we might want to check the ability index and source
     let
@@ -492,7 +493,8 @@ runGameMessage msg g = case msg of
         then case abilitySource ability of
           LocationSource lid -> do
             mods' <- getModifiers lid
-            pure [c | AdditionalCostToEnter c <- mods']
+            pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+            pure $ map snd pcosts <> [c | AdditionalCostToEnter c <- mods']
           _ -> pure []
         else pure []
 

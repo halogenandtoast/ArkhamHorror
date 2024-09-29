@@ -111,4 +111,8 @@ instance RunMessage ActAttrs where
           , chaosTokenEffect source token $ ChaosTokenFaceModifier [Zero]
           ]
         pure $ a {actUsedWheelOfFortuneX = True}
+    PlaceKey (isTarget a -> True) k -> do
+      pure $ a & keysL %~ insertSet k
+    PlaceKey (isTarget a -> False) k -> do
+      pure $ a & keysL %~ deleteSet k
     _ -> pure a

@@ -129,6 +129,10 @@ placeLocationInGrid pos card = do
   push placement
   pure lid
 
+placeLocationInGrid_
+  :: ReverseQueue m => Pos -> Card -> m ()
+placeLocationInGrid_ pos card = void $ placeLocationInGrid pos card
+
 placeLocation
   :: ReverseQueue m => Card -> m LocationId
 placeLocation card = do

@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.DeepOneGrotto_175a
-  ( deepOneGrotto_175a
-  , DeepOneGrotto_175a(..)
-  )
+module Arkham.Location.Cards.DeepOneGrotto_175a (
+  deepOneGrotto_175a,
+  DeepOneGrotto_175a (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype DeepOneGrotto_175a = DeepOneGrotto_175a LocationAttrs
@@ -12,7 +13,7 @@ newtype DeepOneGrotto_175a = DeepOneGrotto_175a LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneGrotto_175a :: LocationCard DeepOneGrotto_175a
-deepOneGrotto_175a = location DeepOneGrotto_175a Cards.deepOneGrotto_175a 4 (PerPlayer 1)
+deepOneGrotto_175a = locationWith DeepOneGrotto_175a Cards.deepOneGrotto_175a 4 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities DeepOneGrotto_175a where
   getAbilities (DeepOneGrotto_175a attrs) =

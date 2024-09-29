@@ -6531,7 +6531,7 @@ saltMarshes =
 blackReef :: CardDef
 blackReef =
   locationWithUnrevealed
-    "07172"
+    "07173"
     "Devil Reef"
     [Ocean, Island]
     Circle

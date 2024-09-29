@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.BlackReef
-  ( blackReef
-  , BlackReef(..)
-  )
+module Arkham.Location.Cards.BlackReef (
+  blackReef,
+  BlackReef (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype BlackReef = BlackReef LocationAttrs
@@ -12,7 +13,7 @@ newtype BlackReef = BlackReef LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blackReef :: LocationCard BlackReef
-blackReef = location BlackReef Cards.blackReef 2 (Static 0)
+blackReef = locationWith BlackReef Cards.blackReef 2 (Static 0) connectsToAdjacent
 
 instance HasAbilities BlackReef where
   getAbilities (BlackReef attrs) =

@@ -123,15 +123,6 @@ const isVertical = function(area: string) {
 }
 
 const barriers = computed(() => props.scenario.meta?.barriers)
-function intercalateRows<T>(rows: T[], intercalatedRow: T): T[] {
-  return rows.reduce((acc, row, index) => {
-    acc.push(row);
-    if (index < rows.length - 1) {
-      acc.push(intercalatedRow);
-    }
-    return acc;
-  }, [] as T[]);
-}
 
 const locationStyles = computed(() => {
   const { locationLayout } = props.scenario

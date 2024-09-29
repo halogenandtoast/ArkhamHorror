@@ -16,3 +16,8 @@ pattern InTooDeep :: CampaignStep
 pattern InTooDeep <- ScenarioStep "07123"
   where
     InTooDeep = ScenarioStep "07123"
+
+pattern DevilReef :: CampaignStep
+pattern DevilReef <- ScenarioStep "07163"
+  where
+    DevilReef = ScenarioStep "07163"

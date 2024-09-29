@@ -19,6 +19,7 @@ placedInThreatArea = \case
   AtLocation _ -> pure Nothing
   AttachedToLocation _ -> pure Nothing
   InPlayArea _ -> pure Nothing
+  InVehicle _ -> pure Nothing
   InThreatArea iid -> pure $ Just iid
   StillInHand _ -> pure Nothing
   StillInDiscard _ -> pure Nothing

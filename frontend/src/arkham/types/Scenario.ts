@@ -191,6 +191,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c07041": return "theInnsmouthConspiracy.thePitOfDespair"
     case "c07056": return "theInnsmouthConspiracy.theVanishingOfElinaHarper"
     case "c07123": return "theInnsmouthConspiracy.inTooDeep"
+    case "c07163": return "theInnsmouthConspiracy.devilReef"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

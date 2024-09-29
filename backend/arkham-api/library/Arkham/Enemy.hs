@@ -389,6 +389,9 @@ allEnemies =
       SomeEnemyCard innsmouthShoggoth
     , SomeEnemyCard ravagerFromTheDeep
     , SomeEnemyCard emergingDeepOne
+    , --- Devil Reef [def]
+      SomeEnemyCard deepOnePredator
+    , SomeEnemyCard huntingDeepOne
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

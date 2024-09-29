@@ -1012,6 +1012,10 @@ onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m 
 onSameLocation iid = \case
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  InVehicle aid -> do
+    field AssetLocation aid >>= \case
+      Nothing -> pure False
+      Just lid -> fieldMap InvestigatorLocation (== Just lid) iid
   InPlayArea iid' ->
     if iid == iid'
       then pure True

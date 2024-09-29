@@ -169,6 +169,7 @@ allPlayerAssetCards =
       , astronomicalAtlas3
       , augur
       , augustLindquist
+      , awakenedMantle
       , azureFlame
       , azureFlame3
       , azureFlame5
@@ -452,6 +453,7 @@ allPlayerAssetCards =
       , haste2
       , hatchet1
       , hawkEyeFoldingCamera
+      , headdressOfYhaNthlei
       , healingWords
       , healingWords3
       , heavyFurs
@@ -861,6 +863,7 @@ allPlayerAssetCards =
       , versatile2
       , virgilGray
       , vowOfDrzytelech
+      , wavewornIdol
       , wellConnected
       , wellConnected3
       , wellPrepared2
@@ -910,6 +913,7 @@ allEncounterAssetCards =
       , virgilGrayTrulyInspired
       , theCaptain
       , richardUptonPickman
+      , fishingVessel
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef
@@ -4574,6 +4578,35 @@ abyssalTome2 =
     , cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdLevel = Just 2
+    }
+
+fishingVessel :: CardDef
+fishingVessel =
+  (storyAsset "07178" "Fishing Vessel" 0 DevilReef)
+    { cdCardTraits = singleton Vehicle
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    }
+
+wavewornIdol :: CardDef
+wavewornIdol =
+  (storyAsset "07179" "Waveworn Idol" 2 DevilReef)
+    { cdSkills = [#intellect, #wild]
+    , cdCardTraits = setFromList [Item, Relic]
+    }
+
+awakenedMantle :: CardDef
+awakenedMantle =
+  (storyAsset "07180" "Awakened Mantle" 1 DevilReef)
+    { cdSkills = [#agility, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Clothing]
+    }
+
+headdressOfYhaNthlei :: CardDef
+headdressOfYhaNthlei =
+  (storyAsset "07181" "Headdress of Y'ha-nthlei" 1 DevilReef)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Item, Relic]
     }
 
 enchantedArmor2 :: CardDef

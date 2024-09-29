@@ -170,6 +170,7 @@ getPlacementLocation = \case
   AttachedToEnemy enemy -> field EnemyLocation enemy
   AttachedToTreachery treachery -> field TreacheryLocation treachery
   AttachedToAsset asset _ -> field AssetLocation asset
+  InVehicle asset -> field AssetLocation asset
   AttachedToAct _ -> pure Nothing
   AttachedToAgenda _ -> pure Nothing
   AttachedToInvestigator investigator -> field InvestigatorLocation investigator

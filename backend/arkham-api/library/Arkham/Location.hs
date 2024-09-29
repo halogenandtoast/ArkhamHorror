@@ -636,6 +636,21 @@ allLocations =
     , SomeLocationCard marshRefineryInTooDeep
     , SomeLocationCard railroadStation
     , SomeLocationCard desolateCoastline
+    , --- Devil Reef [def]
+      SomeLocationCard churningWaters
+    , SomeLocationCard lonelyIsle
+    , SomeLocationCard hiddenCove
+    , SomeLocationCard wavewornIsland
+    , SomeLocationCard saltMarshes
+    , SomeLocationCard blackReef
+    , SomeLocationCard bootleggersHideaway_174a
+    , SomeLocationCard bootleggersHideaway_174b
+    , SomeLocationCard deepOneGrotto_175a
+    , SomeLocationCard deepOneGrotto_175b
+    , SomeLocationCard cyclopeanRuins_176a
+    , SomeLocationCard cyclopeanRuins_176b
+    , SomeLocationCard templeOfTheUnion_177a
+    , SomeLocationCard templeOfTheUnion_177b
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

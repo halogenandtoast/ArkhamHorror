@@ -706,7 +706,12 @@ allAssets =
     , --- mystic [def]
       SomeAssetCard bloodPact
     , SomeAssetCard abyssalTome2
-    , -- Horror in High Geat
+    , --- scenario [def]
+      SomeAssetCard fishingVessel
+    , SomeAssetCard wavewornIdol
+    , SomeAssetCard awakenedMantle
+    , SomeAssetCard headdressOfYhaNthlei
+    , -- Horror in High Gear
       --- guardian [hhg]
       SomeAssetCard enchantedArmor2
     , SomeAssetCard blessingOfIsis3

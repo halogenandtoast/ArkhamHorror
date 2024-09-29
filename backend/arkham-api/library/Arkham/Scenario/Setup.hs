@@ -14,7 +14,7 @@ import Arkham.Id
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
-import Arkham.Matcher
+import Arkham.Matcher hiding (assetAt)
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Placement (IsPlacement (..))
@@ -120,9 +120,9 @@ setAsideKey k = setAsideKeysL %= (<> singleton k)
 
 setAside :: (ReverseQueue m, FindInEncounterDeck a) => [a] -> ScenarioBuilderT m ()
 setAside as = do
-  deck <- use encounterDeckL
   cards <- for as \a -> do
-    case (findInDeck a deck) of
+    deck <- use encounterDeckL
+    case findInDeck a deck of
       Just card -> do
         encounterDeckL %= filter (/= card)
         pure $ toCard card
@@ -239,12 +239,15 @@ addToEncounterDeck (toList -> defs) = do
   cards <- traverse genEncounterCard defs
   encounterDeckL %= withDeck (<> cards)
 
-assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
+assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m AssetId
 assetAt def lid = do
   encounterDeckL %= flip removeEachFromDeck [def]
   encounterDecksL . each . _1 %= flip removeEachFromDeck [def]
   card <- genCard def
-  createAssetAt_ card (AtLocation lid)
+  createAssetAt card (AtLocation lid)
+
+assetAt_ :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m ()
+assetAt_ def lid = void $ assetAt def lid
 
 excludeFromEncounterDeck
   :: (ReverseQueue m, MonoFoldable defs, Element defs ~ card, HasCardDef card)
@@ -414,6 +417,15 @@ pickN _ [] = pure []
 pickN n (def : defs) = do
   (x, rest) <- sampleWithRest (def :| defs)
   (x :) <$> pickN (n - 1) rest
+
+pickFrom
+  :: (MonadRandom m, SampleOneOf as, Sampled as ~ CardDef)
+  => as
+  -> ScenarioBuilderT m CardDef
+pickFrom defs = do
+  encounterDeckL %= flip removeEachFromDeck (sampledFrom defs)
+  encounterDecksL . each . _1 %= flip removeEachFromDeck (sampledFrom defs)
+  sampleOneOf defs
 
 placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()
 placeTokensOnScenarioReference tokenType n = tokensL %= addTokens tokenType n

@@ -122,6 +122,7 @@ allActCards =
       , pursuingShadows
       , raceForAnswers
       , recoverTheRelic
+      , reefOfMysteries
       , repossession
       , restrictedAccess
       , ricesWhereabouts
@@ -768,6 +769,9 @@ theRescue = act "07061" "The Rescue" 2 TheVanishingOfElinaHarper
 
 throughTheLabyrinth :: CardDef
 throughTheLabyrinth = act "07128" "Through the Labyrinth" 1 InTooDeep
+
+reefOfMysteries :: CardDef
+reefOfMysteries = act "07167" "Reef o Mysteries" 1 DevilReef
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

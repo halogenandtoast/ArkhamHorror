@@ -133,6 +133,7 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , deepOneBull
+      , deepOnePredator
       , devoteeOfTheKey
       , dholeOfTheWastes
       , dianneDevine
@@ -177,6 +178,7 @@ allEncounterEnemyCards =
       , hotelGuest
       , hotelManager
       , hotelSecurity
+      , huntingDeepOne
       , huntingGhast
       , huntingHorror
       , huntingNightgaunt
@@ -2126,6 +2128,20 @@ emergingDeepOne =
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     , cdRevelation = IsRevelation
+    }
+
+deepOnePredator :: CardDef
+deepOnePredator =
+  (enemy "07182" "Deep One Predator" DevilReef 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+huntingDeepOne :: CardDef
+huntingDeepOne =
+  (enemy "07183" "Hunting Deep One" DevilReef 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 mobGoons :: CardDef

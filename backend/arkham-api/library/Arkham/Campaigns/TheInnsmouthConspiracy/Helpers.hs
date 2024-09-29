@@ -56,9 +56,10 @@ struggleForAir :: (Sourceable a, HasQueue Message m) => a -> InvestigatorId -> m
 struggleForAir a iid = push $ CreateEffect $ makeEffectBuilder "noair" Nothing a iid
 
 whenRecoveredMemory :: HasGame m => Memory -> m () -> m ()
-whenRecoveredMemory memory action = do
-  hasMemory <- inRecordSet memory MemoriesRecovered
-  when hasMemory action
+whenRecoveredMemory memory action = whenM (hasMemory memory) action
+
+hasMemory :: HasGame m => Memory -> m Bool
+hasMemory memory = inRecordSet memory MemoriesRecovered
 
 recoverMemory :: ReverseQueue m => Memory -> m ()
 recoverMemory memory = recordSetInsert MemoriesRecovered [memory]

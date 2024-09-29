@@ -276,6 +276,8 @@ allActs =
     , SomeActCard theRescue
     , --- In Too Deep
       SomeActCard throughTheLabyrinth
+    , --- Devil Reef
+      SomeActCard reefOfMysteries
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

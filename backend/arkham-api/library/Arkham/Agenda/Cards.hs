@@ -99,6 +99,8 @@ allAgendaCards =
       , rollingBackwards
       , sacrificeForTheDeep
       , secretsBetterLeftHidden
+      , secretsOfTheSeaV1
+      , secretsOfTheSeaV2
       , settingSun
       , silentStirring
       , shadowsDeepen
@@ -120,6 +122,7 @@ allAgendaCards =
       , theCurseSpreads
       , theDeadWithNoName
       , theDescentBegins
+      , theDevilOfTheDepths
       , theEndOfAllThings
       , theEntityAboveTheFloodBelow
       , theEntityAboveTheVortexAbove
@@ -594,6 +597,15 @@ floodedStreets = agenda "07126" "Flooded Streets" 3 InTooDeep
 
 rageOfTheDeep :: CardDef
 rageOfTheDeep = agenda "07127" "Rage of the Deep" 4 InTooDeep
+
+secretsOfTheSeaV1 :: CardDef
+secretsOfTheSeaV1 = agenda "07164" "Secrets of the Sea (v. I)" 1 DevilReef
+
+secretsOfTheSeaV2 :: CardDef
+secretsOfTheSeaV2 = agenda "07165" "Secrets of the Sea (v. II)" 1 DevilReef
+
+theDevilOfTheDepths :: CardDef
+theDevilOfTheDepths = agenda "07166" "The Devil of the Depths" 2 DevilReef
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

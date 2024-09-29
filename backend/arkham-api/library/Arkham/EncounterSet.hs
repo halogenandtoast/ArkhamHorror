@@ -134,6 +134,7 @@ data EncounterSet
   | FloodedCaverns
   | TheLocals
   | InTooDeep
+  | DevilReef
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

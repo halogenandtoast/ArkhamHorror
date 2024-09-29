@@ -32,6 +32,7 @@ instance IsCampaign TheInnsmouthConspiracy where
     InterludeStep 1 _ -> Just TheVanishingOfElinaHarper
     TheVanishingOfElinaHarper -> Just (InterludeStep 2 Nothing)
     InterludeStep 2 _ -> Just (UpgradeDeckStep InTooDeep)
+    InTooDeep -> Just DevilReef
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

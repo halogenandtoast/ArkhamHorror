@@ -170,6 +170,7 @@ allEncounterTreacheryCards =
       , ancestralFear
       , ancientEvils
       , ants
+      , aquaticAmbush
       , arcaneBarrier
       , arousingSuspicions
       , arrowsFromTheTrees
@@ -224,6 +225,7 @@ allEncounterTreacheryCards =
       , disquietingDreams
       , dissonantVoices
       , draggedUnder
+      , draggedUnderDevilReef
       , dreamersCurse
       , dreamlandsEclipse
       , dreamsOfRlyeh
@@ -259,6 +261,7 @@ allEncounterTreacheryCards =
       , graveLight
       , graveLightSpectral
       , harvestedBrain
+      , horrorsFromTheDeep
       , huntedByByakhee
       , huntedByCorsairs
       , huntedDown
@@ -345,6 +348,7 @@ allEncounterTreacheryCards =
       , shadowSpawned
       , shadowed
       , shapesInTheMist
+      , shapesInTheWater
       , shatteredAges
       , sickeningWebs
       , slitheringBehindYou
@@ -359,6 +363,7 @@ allEncounterTreacheryCards =
       , spiresOfCarcosa
       , spiritsTorment
       , stalkedInTheDark
+      , stowaway
       , straitjacket
       , strangeSigns
       , tasteOfLifeblood
@@ -2173,6 +2178,36 @@ inundated :: CardDef
 inundated =
   (treachery "07149" "Inundated" InTooDeep 3)
     { cdCardTraits = singleton Hazard
+    }
+
+shapesInTheWater :: CardDef
+shapesInTheWater =
+  (treachery "07184" "Shapes in the Water" DevilReef 2)
+    { cdCardTraits = singleton Terror
+    }
+
+aquaticAmbush :: CardDef
+aquaticAmbush =
+  (treachery "07185" "Aquatic Ambush" DevilReef 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+horrorsFromTheDeep :: CardDef
+horrorsFromTheDeep =
+  (treachery "07186" "Horrors from the Deep" DevilReef 2)
+    { cdCardTraits = singleton Terror
+    }
+
+stowaway :: CardDef
+stowaway =
+  (treachery "07187" "Stowaway" DevilReef 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+draggedUnderDevilReef :: CardDef
+draggedUnderDevilReef =
+  (treachery "07188" "Dragged Under" DevilReef 3)
+    { cdCardTraits = setFromList [Scheme, Terror]
     }
 
 theHarbinger :: CardDef

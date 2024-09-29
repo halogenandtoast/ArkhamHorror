@@ -65,7 +65,7 @@
       "",
       "import Arkham.Scenario.Import.Lifted",
       "import Arkham.Scenarios.{dot}.Helpers",
-      "import Arkham.EncounterSet qualfied as Set",
+      "import Arkham.EncounterSet qualified as Set",
       "",
       "newtype {dot} = {dot} ScenarioAttrs",
       "  deriving anyclass (IsScenario, HasModifiersFor)",
@@ -88,11 +88,11 @@
       "    otherFace -> getChaosTokenValue iid otherFace attrs",
       "",
       "instance RunMessage {dot} where",
-      "  runMessage msg ({dot} attrs) = runQueueT $ scenarioI18n $ case msg of",
+      "  runMessage msg s@({dot} attrs) = runQueueT $ scenarioI18n $ case msg of",
       "    PreScenarioSetup -> do",
       "      story $ i18nWithTitle \"intro1\"",
       "      pure s",
-      "    Setup -> runScenarioSetup InTooDeep attrs do",
+      "    Setup -> runScenarioSetup {dot} attrs do",
       "      gather Set.{dot}",
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]

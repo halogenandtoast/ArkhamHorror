@@ -40,7 +40,7 @@ instance RunMessage TheMurder where
         (officer1, officer2, officer3) <-
           getSetAsideCardsMatching (cardIs Enemies.arkhamOfficer) <&> \case
             [x, y, z] -> (x, y, z)
-            _ -> error "could not find correct number of arkham officers"
+            res -> error $ "could not find correct number of arkham officers: " <> show res
 
         n <- getPlayerCount
         assetId <- getRandom

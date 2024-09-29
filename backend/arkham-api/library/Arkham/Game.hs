@@ -3706,8 +3706,8 @@ instance Query ExtendedCardMatcher where
           _ -> pure handCards
         pure $ filter (`elem` cards) cs
       SetAsideCardMatch matcher' -> do
-        cards <- scenarioField ScenarioSetAsideCards
-        pure $ filter (`elem` filter (`cardMatch` matcher') cards) cs
+        cards <- traceShowId <$> scenarioField ScenarioSetAsideCards
+        pure $ filter (`elem` filterCards matcher' cards) cs
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case

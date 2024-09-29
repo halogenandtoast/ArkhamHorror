@@ -122,6 +122,7 @@ data Trait
   | Insect
   | Insight
   | Instrument
+  | Island
   | Item
   | Job
   | Jungle
@@ -148,6 +149,7 @@ data Trait
   | Nightgaunt
   | Obstacle
   | Occult
+  | Ocean
   | Omen
   | OothNargai
   | Oriab
@@ -227,6 +229,7 @@ data Trait
   | Unhallowed
   | Upgrade
   | Vale
+  | Vehicle
   | Venice
   | Veteran
   | Void

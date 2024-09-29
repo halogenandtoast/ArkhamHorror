@@ -229,6 +229,10 @@ allAgendas =
     , SomeAgendaCard relentlessTide
     , SomeAgendaCard floodedStreets
     , SomeAgendaCard rageOfTheDeep
+    , --- Devil Reef
+      SomeAgendaCard secretsOfTheSeaV1
+    , SomeAgendaCard secretsOfTheSeaV2
+    , SomeAgendaCard theDevilOfTheDepths
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

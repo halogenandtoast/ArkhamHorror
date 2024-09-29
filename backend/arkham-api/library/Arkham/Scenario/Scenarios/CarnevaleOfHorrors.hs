@@ -11,7 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher hiding (RevealLocation, assetAt)
+import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
@@ -121,8 +121,8 @@ instance RunMessage CarnevaleOfHorrors where
           , Assets.maskedCarnevaleGoer_21
           ]
 
-      for_ (zip maskedCarnevaleGoers otherLocations) (uncurry assetAt)
-      assetAt Assets.abbessAllegriaDiBiase sanMarcoBasilica
+      for_ (zip maskedCarnevaleGoers otherLocations) (uncurry assetAt_)
+      assetAt_ Assets.abbessAllegriaDiBiase sanMarcoBasilica
 
       setAside
         [ Enemies.cnidathqua

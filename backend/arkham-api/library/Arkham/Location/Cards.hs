@@ -124,6 +124,7 @@ allLocationCards =
       , bishopsBrook_202
       , bishopsBrook_203
       , blackCave
+      , blackReef
       , blastedHeath_248
       , blastedHeath_249
       , bleakPlainsBleakDesolation
@@ -131,6 +132,8 @@ allLocationCards =
       , blockedPassage
       , boneFilledCaverns
       , boneRiddenPit
+      , bootleggersHideaway_174a
+      , bootleggersHideaway_174b
       , boxOffice
       , brackishWaters
       , bridgeOfSighs
@@ -170,6 +173,7 @@ allLocationCards =
       , chapultepecPark
       , choeurGothique_292
       , choeurGothique_293
+      , churningWaters
       , circuitousTrail
       , cityOfElderThings
       , cityOfGugs
@@ -198,12 +202,16 @@ allLocationCards =
       , crystalPillars
       , curiositieShoppe
       , cursedShores
+      , cyclopeanRuins_176a
+      , cyclopeanRuins_176b
       , dancersMist
       , darkHollow
       , darkenedHall
       , darkSpires
       , deconstructionRoom
       , deepBelowYourHouse
+      , deepOneGrotto_175a
+      , deepOneGrotto_175b
       , depthsOfDemheTheHeightOfTheDepths
       , depthsOfDemheStepsOfThePalace
       , descentToYoth
@@ -320,6 +328,7 @@ allLocationCards =
       , hereticsGravesSpectral_172
       , hereticsGraves_171
       , hereticsGraves_172
+      , hiddenCove
       , hiddenLibrary
       , hideousPalace
       , historicalSocietyHistoricalLibrary_133
@@ -375,6 +384,7 @@ allLocationCards =
       , lodgeCellarWeveBeenExpectingYou
       , lodgeGatesMembersOnly
       , lodgeGatesWeveBeenExpectingYou
+      , lonelyIsle
       , lostMemories
       , lounge
       , mainPath
@@ -489,6 +499,7 @@ allLocationCards =
       , sacredWoods_184
       , sacredWoods_185
       , salemGaol1692
+      , saltMarshes
       , sanMarcoBasilica
       , sanctumDoorwayCeremonyRoom
       , sanctumDoorwayHoldingCells
@@ -546,6 +557,8 @@ allLocationCards =
       , tearThroughTime
       , templeOfTheFang
       , templeOfTheMoonLizard
+      , templeOfTheUnion_177a
+      , templeOfTheUnion_177b
       , templeOfUnattainableDesires
       , templeRuins
       , templesOfTenochtitlan_176
@@ -625,6 +638,7 @@ allLocationCards =
       , vipArea
       , waitingRoom
       , walterGilmansRoom
+      , wavewornIsland
       , wellOfSouls
       , whateleyRuins_250
       , whateleyRuins_251
@@ -6447,6 +6461,200 @@ railroadStation = location "07142" "Railroad Station" [Innsmouth] NoSymbol [] In
 
 desolateCoastline :: CardDef
 desolateCoastline = location "07143" "Desolate Coastline" [Innsmouth, Coastal] NoSymbol [] InTooDeep
+
+churningWaters :: CardDef
+churningWaters =
+  location
+    "07168"
+    "Churning Waters"
+    [Ocean]
+    Triangle
+    [Circle, Square, Heart, Star, Diamond, Plus]
+    DevilReef
+
+lonelyIsle :: CardDef
+lonelyIsle =
+  locationWithUnrevealed
+    "07169"
+    "Devil Reef"
+    [Ocean, Island]
+    Circle
+    [Triangle]
+    "Lonely Isle"
+    [Ocean, Island]
+    Square
+    [Triangle, Plus, Diamond]
+    DevilReef
+
+hiddenCove :: CardDef
+hiddenCove =
+  locationWithUnrevealed
+    "07170"
+    "Devil Reef"
+    [Ocean, Island]
+    Circle
+    [Triangle]
+    "Hidden Cove"
+    [Ocean, Island]
+    Heart
+    [Triangle, Diamond, Star]
+    DevilReef
+
+wavewornIsland :: CardDef
+wavewornIsland =
+  locationWithUnrevealed
+    "07171"
+    "Devil Reef"
+    [Ocean, Island]
+    Circle
+    [Triangle]
+    "Waveworn Island"
+    [Ocean, Island]
+    Star
+    [Triangle, Plus, Heart]
+    DevilReef
+
+saltMarshes :: CardDef
+saltMarshes =
+  locationWithUnrevealed
+    "07172"
+    "Devil Reef"
+    [Ocean, Island]
+    Circle
+    [Triangle]
+    "Salt Marshes"
+    [Ocean, Island]
+    Diamond
+    [Triangle, Heart, Square]
+    DevilReef
+
+blackReef :: CardDef
+blackReef =
+  locationWithUnrevealed
+    "07172"
+    "Devil Reef"
+    [Ocean, Island]
+    Circle
+    [Triangle]
+    "Black Reef"
+    [Ocean, Island]
+    Plus
+    [Triangle, Square, Star]
+    DevilReef
+
+bootleggersHideaway_174a :: CardDef
+bootleggersHideaway_174a =
+  victory 1
+    $ locationWithUnrevealed
+      "07174a"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Bootlegger's Hideaway"
+      [Cave]
+      NoSymbol
+      []
+      DevilReef
+
+bootleggersHideaway_174b :: CardDef
+bootleggersHideaway_174b =
+  victory 1
+    $ locationWithUnrevealed
+      "07174b"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Bootlegger's Hideaway"
+      [Cave]
+      NoSymbol
+      []
+      DevilReef
+
+deepOneGrotto_175a :: CardDef
+deepOneGrotto_175a =
+  locationWithUnrevealed
+    "07175a"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Deep One Grotto"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
+
+deepOneGrotto_175b :: CardDef
+deepOneGrotto_175b =
+  locationWithUnrevealed
+    "07175b"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Deep One Grotto"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
+
+cyclopeanRuins_176a :: CardDef
+cyclopeanRuins_176a =
+  locationWithUnrevealed
+    "07176a"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Cyclopean Ruins"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
+
+cyclopeanRuins_176b :: CardDef
+cyclopeanRuins_176b =
+  locationWithUnrevealed
+    "07176b"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Cyclopean Ruins"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
+
+templeOfTheUnion_177a :: CardDef
+templeOfTheUnion_177a =
+  locationWithUnrevealed
+    "07177a"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Temple of the Union"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
+
+templeOfTheUnion_177b :: CardDef
+templeOfTheUnion_177b =
+  locationWithUnrevealed
+    "07177b"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Temple of the Union"
+    [Cave]
+    NoSymbol
+    []
+    DevilReef
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

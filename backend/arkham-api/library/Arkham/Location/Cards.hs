@@ -6422,85 +6422,31 @@ theLittleBookshopInTooDeep =
 fishStreetBridgeInTooDeep :: CardDef
 fishStreetBridgeInTooDeep =
   victory 1
-    $ location
-      "07136"
-      "Fish Street Bridge"
-      [Innsmouth, Coastal, Midtown]
-      NoSymbol
-      []
-      InTooDeep
+    $ location "07136" "Fish Street Bridge" [Innsmouth, Coastal, Midtown] NoSymbol [] InTooDeep
 
 firstNationalGroceryInTooDeep :: CardDef
 firstNationalGroceryInTooDeep =
-  victory 1
-    $ location
-      "07137"
-      "First National Grocery"
-      [Innsmouth, Coastal, Midtown]
-      NoSymbol
-      []
-      InTooDeep
+  victory 1 $ location "07137" "First National Grocery" [Innsmouth, Midtown] NoSymbol [] InTooDeep
 
 innsmouthHarbourInTooDeep :: CardDef
 innsmouthHarbourInTooDeep =
-  location
-    "07138"
-    "Fish Street Bridge"
-    [Innsmouth, Coastal, Midtown]
-    NoSymbol
-    []
-    InTooDeep
+  location "07138" "Fish Street Bridge" [Innsmouth, Coastal, Midtown] NoSymbol [] InTooDeep
 
 innsmouthSquareInTooDeep :: CardDef
 innsmouthSquareInTooDeep =
-  victory 1
-    $ location
-      "07139"
-      "Innsmouth Square"
-      [Innsmouth, Midtown]
-      NoSymbol
-      []
-      InTooDeep
+  victory 1 $ location "07139" "Innsmouth Square" [Innsmouth, Midtown] NoSymbol [] InTooDeep
 
 gilmanHouseInTooDeep :: CardDef
-gilmanHouseInTooDeep =
-  location
-    "07140"
-    "Gilman House"
-    [Innsmouth, Midtown]
-    NoSymbol
-    []
-    InTooDeep
+gilmanHouseInTooDeep = location "07140" "Gilman House" [Innsmouth, Midtown] NoSymbol [] InTooDeep
 
 marshRefineryInTooDeep :: CardDef
-marshRefineryInTooDeep =
-  location
-    "07141"
-    "Marsh Refinery"
-    [Innsmouth, Coastal, Midtown]
-    NoSymbol
-    []
-    InTooDeep
+marshRefineryInTooDeep = location "07141" "Marsh Refinery" [Innsmouth, Coastal, Midtown] NoSymbol [] InTooDeep
 
 railroadStation :: CardDef
-railroadStation =
-  location
-    "07142"
-    "Railroad Station"
-    [Innsmouth]
-    NoSymbol
-    []
-    InTooDeep
+railroadStation = location "07142" "Railroad Station" [Innsmouth] NoSymbol [] InTooDeep
 
 desolateCoastline :: CardDef
-desolateCoastline =
-  location
-    "07143"
-    "Desolate Coastline"
-    [Innsmouth, Coastal]
-    NoSymbol
-    []
-    InTooDeep
+desolateCoastline = location "07143" "Desolate Coastline" [Innsmouth, Coastal] NoSymbol [] InTooDeep
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

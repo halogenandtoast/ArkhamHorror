@@ -31,6 +31,7 @@ data Token
   | Secret
   | Supply
   | Suspicion
+  | Ticket
   | Time
   | Try
   | Wish

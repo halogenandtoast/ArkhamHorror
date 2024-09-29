@@ -38,6 +38,9 @@ hasRecord k campaignLog =
 whenHasRecord :: HasGame m => CampaignLogKey -> m () -> m ()
 whenHasRecord k = whenM (getHasRecord k)
 
+unlessHasRecord :: HasGame m => CampaignLogKey -> m () -> m ()
+unlessHasRecord k = unlessM (getHasRecord k)
+
 getRecordCount :: HasGame m => CampaignLogKey -> m Int
 getRecordCount k =
   findWithDefault 0 k . campaignLogRecordedCounts <$> getCampaignLog

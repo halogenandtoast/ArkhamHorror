@@ -219,4 +219,16 @@ instance RunMessage InTooDeep where
           chooseTargetM iid choices $ \l -> push $ ScenarioCountIncrementBy (Barriers lid l) 1
         _ -> pure ()
       pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          push R1
+        Resolution 1 -> do
+          story $ i18nWithTitle "resolution1"
+          madeItSafely <- getHasRecord TheInvestigatorsMadeItSafelyToTheirVehicles
+          allGainXpWithBonus attrs
+            $ if madeItSafely then WithBonus "Made it safely to their vehicles" 2 else NoBonus
+          endOfScenario
+        _ -> throw $ UnknownResolution resolution
     _ -> InTooDeep <$> liftRunMessage msg attrs

@@ -4541,6 +4541,7 @@ joeSargentRattletrapBusDriver =
   (storyAsset "07150" ("Joe Sargant" <:> "Rattletrap Bus Driver") 0 InTooDeep)
     { cdCardTraits = setFromList [Ally, Hybrid]
     , cdUnique = True
+    , cdUses = uses Ticket 3
     }
 
 keenEye :: CardDef

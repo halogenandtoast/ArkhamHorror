@@ -275,6 +275,7 @@ data CampaignLogKey
   | PossibleHideouts
   | InnsmouthWasConsumedByTheRisingTide
   | TheInvestigatorsMadeItSafelyToTheirVehicles
+  | TheTideHasGrownStronger
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

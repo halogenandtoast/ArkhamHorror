@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.SaltMarshes
-  ( saltMarshes
-  , SaltMarshes(..)
-  )
+module Arkham.Location.Cards.SaltMarshes (
+  saltMarshes,
+  SaltMarshes (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype SaltMarshes = SaltMarshes LocationAttrs
@@ -12,7 +13,7 @@ newtype SaltMarshes = SaltMarshes LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 saltMarshes :: LocationCard SaltMarshes
-saltMarshes = location SaltMarshes Cards.saltMarshes 4 (Static 0)
+saltMarshes = locationWith SaltMarshes Cards.saltMarshes 4 (Static 0) connectsToAdjacent
 
 instance HasAbilities SaltMarshes where
   getAbilities (SaltMarshes attrs) =

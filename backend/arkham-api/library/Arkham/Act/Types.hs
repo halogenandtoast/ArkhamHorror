@@ -12,6 +12,7 @@ import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Id
 import Arkham.Json
+import Arkham.Key
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Name
 import Arkham.Projection
@@ -55,6 +56,7 @@ data ActAttrs = ActAttrs
   , actBreaches :: Maybe Int
   , actUsedWheelOfFortuneX :: Bool
   , actMeta :: Value
+  , actKeys :: Set ArkhamKey
   }
   deriving stock (Show, Eq, Generic)
 
@@ -79,6 +81,9 @@ cluesL = lens actClues $ \m x -> m {actClues = x}
 
 metaL :: Lens' ActAttrs Value
 metaL = lens actMeta $ \m x -> m {actMeta = x}
+
+keysL :: Lens' ActAttrs (Set ArkhamKey)
+keysL = lens actKeys $ \m x -> m {actKeys = x}
 
 breachesL :: Lens' ActAttrs (Maybe Int)
 breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
@@ -106,6 +111,7 @@ actWith (n, side) f cardDef mCost g =
             , actBreaches = Nothing
             , actUsedWheelOfFortuneX = False
             , actMeta = Null
+            , actKeys = mempty
             }
     }
 
@@ -127,7 +133,18 @@ instance ToJSON ActAttrs where
   toEncoding = genericToEncoding $ aesonOptions $ Just "act"
 
 instance FromJSON ActAttrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "act"
+  parseJSON = withObject "ActAttrs" $ \v -> do
+    actId <- v .: "id"
+    actCardId <- v .: "cardId"
+    actSequence <- v .: "sequence"
+    actAdvanceCost <- v .:? "advanceCost"
+    actClues <- v .: "clues"
+    actDeckId <- v .: "deckId"
+    actBreaches <- v .:? "breaches"
+    actUsedWheelOfFortuneX <- v .: "usedWheelOfFortuneX"
+    actMeta <- v .: "meta"
+    actKeys <- v .:? "keys" .!= mempty
+    return ActAttrs {..}
 
 instance Entity ActAttrs where
   type EntityId ActAttrs = ActId

@@ -19,7 +19,7 @@ newtype ArchaicGlyphsProphecyForetold3 = ArchaicGlyphsProphecyForetold3 AssetAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasAbilities ArchaicGlyphsProphecyForetold3 where
-  getAbilities (ArchaicGlyphsProphecyForetold3 a) = [investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
+  getAbilities (ArchaicGlyphsProphecyForetold3 a) = [doesNotProvokeAttacksOfOpportunity $ investigateAbility a 1 (assetUseCost a Charge 1) ControlsThis]
 
 archaicGlyphsProphecyForetold3 :: AssetCard ArchaicGlyphsProphecyForetold3
 archaicGlyphsProphecyForetold3 = asset ArchaicGlyphsProphecyForetold3 Cards.archaicGlyphsProphecyForetold3

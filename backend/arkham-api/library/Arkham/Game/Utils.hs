@@ -181,6 +181,7 @@ getPlacementLocation = \case
   AsSwarm eid _ -> field EnemyLocation eid
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
+  Near _ -> pure Nothing
   NextToAgenda -> pure Nothing
 
 createActiveCostForAdditionalCardCosts

@@ -76,6 +76,7 @@ placementLocation = \case
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
+  Near _ -> pure Nothing
 
 class Locateable a where
   getLocationOf :: HasGame m => a -> m (Maybe LocationId)

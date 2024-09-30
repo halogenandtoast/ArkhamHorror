@@ -18,7 +18,7 @@ scenarioI18n a = campaignI18n $ scope "devilReef" a
 noKeyAbilities :: [Ability] -> [Ability]
 noKeyAbilities = filter \ab -> not (ab.index >= 500 && ab.index <= 520)
 
-data Flashback = Flashback9
+data Flashback = Flashback9 | Flashback10 | Flashback11
 
 flashback :: ReverseQueue m => InvestigatorId -> Flashback -> m ()
 flashback iid f = case f of
@@ -28,3 +28,15 @@ flashback iid f = case f of
     placeKey iid PurpleKey
     wavewornIdol <- getSetAsideCard Assets.wavewornIdol
     takeControlOfSetAsideAsset iid wavewornIdol
+  Flashback10 -> do
+    scenarioI18n $ story $ i18nWithTitle "flashback10"
+    recoverMemory DiscoveryOfAnUnholyMantle
+    placeKey iid WhiteKey
+    awakenedMantle <- getSetAsideCard Assets.awakenedMantle
+    takeControlOfSetAsideAsset iid awakenedMantle
+  Flashback11 -> do
+    scenarioI18n $ story $ i18nWithTitle "flashback11"
+    recoverMemory DiscoveryOfAMythicalRelic
+    placeKey iid BlackKey
+    headdressOfYhaNthlei <- getSetAsideCard Assets.headdressOfYhaNthlei
+    takeControlOfSetAsideAsset iid headdressOfYhaNthlei

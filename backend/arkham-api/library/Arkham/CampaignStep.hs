@@ -27,5 +27,14 @@ data InterludeKey
     ThePriceOfProgress4
   | ThePriceOfProgress5
   | ThePriceOfProgress6
+  | -- The Innsmouth Conspiracy
+    HasPurpleKey
+  | HasWhiteKey
+  | HasBlackKey
+  | HasPurpleAndWhiteKeys
+  | HasPurpleAndBlackKeys
+  | HasWhiteAndBlackKeys
+  | HasPurpleWhiteAndBlackKeys
+  | HasNoKeys
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

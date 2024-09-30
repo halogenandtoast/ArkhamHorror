@@ -1812,6 +1812,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         <*> windowMatches iid rawSource window' mtchr'
     Matcher.NotAnyWindow -> noMatch
     Matcher.AnyWindow -> isMatch
+    Matcher.FloodLevelChanged timing whereMatcher -> guardTiming timing \case
+      Window.FloodLevelChanged where' _ _ -> locationMatches iid source window' where' whereMatcher
+      _ -> noMatch
     Matcher.FirstTimeParleyingThisRound timing whoMatcher -> guardTiming timing \case
       Window.FirstTimeParleyingThisRound who -> matchWho iid who whoMatcher
       _ -> noMatch

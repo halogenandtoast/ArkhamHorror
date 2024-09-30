@@ -1080,6 +1080,7 @@ type ToWhere = Where
 
 data WindowMatcher
   = EnemyDefeated Timing Who DefeatedByMatcher EnemyMatcher
+  | FloodLevelChanged Timing LocationMatcher
   | FirstTimeParleyingThisRound Timing Who
   | SpentUses Timing Who SourceMatcher UseType AssetMatcher ValueMatcher
   | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType

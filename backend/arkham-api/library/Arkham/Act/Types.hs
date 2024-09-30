@@ -45,6 +45,7 @@ data instance Field Act :: Type -> Type where
   ActAbilities :: Field Act [Ability]
   ActCard :: Field Act Card
   ActUsedWheelOfFortuneX :: Field Act Bool
+  ActKeys :: Field Act (Set ArkhamKey)
 
 data ActAttrs = ActAttrs
   { actId :: ActId

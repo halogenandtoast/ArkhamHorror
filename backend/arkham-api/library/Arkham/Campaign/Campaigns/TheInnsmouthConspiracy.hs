@@ -7,8 +7,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
+import Arkham.ChaosToken
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Source
 
@@ -33,6 +35,8 @@ instance IsCampaign TheInnsmouthConspiracy where
     TheVanishingOfElinaHarper -> Just (InterludeStep 2 Nothing)
     InterludeStep 2 _ -> Just (UpgradeDeckStep InTooDeep)
     InTooDeep -> Just DevilReef
+    -- Devil Reef must choose interlude options
+    InterludeStep 3 _ -> Just (UpgradeDeckStep HorrorInHighGear)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -84,6 +88,43 @@ instance RunMessage TheInnsmouthConspiracy where
         investigators <- allInvestigators
         addCampaignCardToDeckChoice investigators Assets.elinaHarperKnowsTooMuch
       story $ i18nWithTitle "theSyzygy4"
+      nextCampaignStep
+      pure c
+    CampaignStep (InterludeStep 3 (Just keysFound)) -> scope "interlude3" do
+      story $ i18nWithTitle "beneathTheWaves1"
+
+      when
+        ( keysFound
+            `elem` [HasPurpleKey, HasPurpleAndWhiteKeys, HasPurpleAndBlackKeys, HasPurpleWhiteAndBlackKeys]
+        )
+        do
+          story $ i18n "purpleKey"
+          interludeXpAll (toBonus "purpleKey" 2)
+          addChaosToken Cultist
+          record TheIdolWasBroughtToTheLighthouse
+
+      when
+        ( keysFound
+            `elem` [HasWhiteKey, HasPurpleAndWhiteKeys, HasWhiteAndBlackKeys, HasPurpleWhiteAndBlackKeys]
+        )
+        do
+          story $ i18n "whiteKey"
+          interludeXpAll (toBonus "whiteKey" 2)
+          addChaosToken Tablet
+          record TheMantleWasBroughtToTheLighthouse
+
+      when
+        ( keysFound
+            `elem` [HasBlackKey, HasPurpleAndBlackKeys, HasWhiteAndBlackKeys, HasPurpleWhiteAndBlackKeys]
+        )
+        do
+          story $ i18n "blackKey"
+          interludeXpAll (toBonus "blackKey" 2)
+          addChaosToken ElderThing
+          record TheHeaddressWasBroughtToTheLighthouse
+
+      story $ i18n "beneathTheWaves2"
+
       nextCampaignStep
       pure c
     _ -> lift $ defaultCampaignRunner msg c

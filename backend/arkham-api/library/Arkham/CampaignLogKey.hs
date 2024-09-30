@@ -276,6 +276,11 @@ data CampaignLogKey
   | InnsmouthWasConsumedByTheRisingTide
   | TheInvestigatorsMadeItSafelyToTheirVehicles
   | TheTideHasGrownStronger
+  | TheTerrorOfDevilReefIsStillAlive
+  | TheTerrorOfDevilReefIsDead
+  | TheIdolWasBroughtToTheLighthouse
+  | TheMantleWasBroughtToTheLighthouse
+  | TheHeaddressWasBroughtToTheLighthouse
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -73,7 +73,7 @@ function format(s: string) {
   <div class="breakdown column box">
     <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount">{{scenarioTotal}} XP</span></header>
     <div class="sections">
-      <section class="box column group">
+      <section class="box column group" v-if="totalVictoryDisplay > 0">
         <header class="entry-header"><h3>Victory Display</h3><span class="amount">{{totalVictoryDisplay}} XP</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">

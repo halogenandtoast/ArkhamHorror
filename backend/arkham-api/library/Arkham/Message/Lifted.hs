@@ -281,6 +281,26 @@ allGainXpWith source f = do
   push . ReportXp . (<> XpBreakdown additionalEntries) =<< generateXpReport NoBonus
   pushAll =<< toGainXp source (pure pairs')
 
+interludeXpAll :: ReverseQueue m => XpBonus -> m ()
+interludeXpAll xp = do
+  investigatorIds <- allInvestigatorIds
+  push
+    $ ReportXp
+    $ XpBreakdown
+      [ InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- xp.flatten, iid <- investigatorIds
+      ]
+  for_ investigatorIds \iid -> do
+    push $ GainXP iid CampaignSource xp.value
+
+interludeXp :: ReverseQueue m => InvestigatorId -> XpBonus -> m ()
+interludeXp iid xp = do
+  pushAll
+    [ ReportXp
+        $ XpBreakdown
+          [InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- xp.flatten]
+    , GainXP iid CampaignSource xp.value
+    ]
+
 endOfScenario :: ReverseQueue m => m ()
 endOfScenario = push $ EndOfGame Nothing
 
@@ -775,8 +795,12 @@ chooseOrRunN iid n msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOrRunN player n msgs
 
-addToHand :: (IsCard a, ReverseQueue m) => InvestigatorId -> [a] -> m ()
-addToHand iid cards = do
+addToHand
+  :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => InvestigatorId
+  -> cards
+  -> m ()
+addToHand iid (toList -> cards) = do
   for_ cards obtainCard
   push $ AddToHand iid (map toCard cards)
 

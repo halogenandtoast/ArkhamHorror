@@ -21,3 +21,8 @@ pattern DevilReef :: CampaignStep
 pattern DevilReef <- ScenarioStep "07163"
   where
     DevilReef = ScenarioStep "07163"
+
+pattern HorrorInHighGear :: CampaignStep
+pattern HorrorInHighGear <- ScenarioStep "07198"
+  where
+    HorrorInHighGear = ScenarioStep "07198"

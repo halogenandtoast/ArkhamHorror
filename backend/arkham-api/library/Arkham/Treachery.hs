@@ -439,6 +439,8 @@ allTreacheries =
     , --- The Pit of Despair [tic]
       SomeTreacheryCard blindsense
     , SomeTreacheryCard fromTheDepths
+    , --- Agents of Hydrea [tic]
+      SomeTreacheryCard psychicPull
     , --- Creatures of the Deep [tic]
       SomeTreacheryCard deepOneAssault
     , --- Rising Tide [tic]
@@ -451,6 +453,8 @@ allTreacheries =
       SomeTreacheryCard macabreMemento
     , SomeTreacheryCard fracturedConsciousness
     , SomeTreacheryCard memoryOfOblivion
+    , --- Malfunction [tic]
+      SomeTreacheryCard malfunction
     , --- Syzygy [tic]
       SomeTreacheryCard tidalAlignment
     , SomeTreacheryCard syzygy

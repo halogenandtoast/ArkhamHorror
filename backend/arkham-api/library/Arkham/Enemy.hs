@@ -378,6 +378,8 @@ allEnemies =
     , --- Agents of Dagon [tic]
       SomeEnemyCard priestOfDagon
     , SomeEnemyCard initiateOfDagon
+    , --- Agents of Hydra [tic]
+      SomeEnemyCard lloigor
     , --- Creatures of the Deep [tic]
       SomeEnemyCard deepOneBull
     , SomeEnemyCard lurkingDeepOne

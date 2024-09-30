@@ -207,6 +207,7 @@ allEncounterEnemyCards =
       , legsOfAtlachNacha_349
       , legsOfAtlachNacha_350
       , liarWithNoFace
+      , lloigor
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
@@ -2081,6 +2082,14 @@ initiateOfDagon :: CardDef
 initiateOfDagon =
   (enemy "07085" "Initiate of Dagon" AgentsOfDagon 3)
     { cdCardTraits = setFromList [Humanoid, Hybrid, Cultist]
+    }
+
+lloigor :: CardDef
+lloigor =
+  (enemy "07086" "Lloigor" AgentsOfHydra 1)
+    { cdCardTraits = singleton Monster
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    , cdVictoryPoints = Just 1
     }
 
 deepOneBull :: CardDef

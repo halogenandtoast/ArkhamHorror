@@ -325,7 +325,7 @@ instance Semigroup AssetMatcher where
   AssetWithFewestClues x <> y = AssetWithFewestClues (x <> y)
   x <> AssetWithFewestClues y = AssetWithFewestClues (x <> y)
   ClosestAsset lid x <> ClosestAsset lid' y
-    | lid == lid' = AssetWithFewestClues (x <> y)
+    | lid == lid' = ClosestAsset lid (x <> y)
     | otherwise = error "Cannnot combine"
   ClosestAsset lid x <> y = ClosestAsset lid (x <> y)
   x <> ClosestAsset lid y = ClosestAsset lid (x <> y)

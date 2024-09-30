@@ -42,6 +42,7 @@ data ModifierType
   | IgnoreBarriers
   | CannotBeFullyFlooded
   | CannotBeFlooded
+  | CannotEnterVehicles
   | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
   | IgnoreActionCost

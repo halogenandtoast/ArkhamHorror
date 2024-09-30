@@ -25,6 +25,9 @@ import GHC.Records
 instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand
 
+instance HasField "clues" InvestigatorId (QueueT Message GameT Int) where
+  getField = field InvestigatorClues
+
 instance HasField "hand" InvestigatorAttrs (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand . toId
 

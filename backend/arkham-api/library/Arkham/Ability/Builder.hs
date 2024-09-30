@@ -8,11 +8,15 @@ import Arkham.Ability
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.Classes.Entity
+import Arkham.Classes.HasAbilities
+import Arkham.Helpers.Ability (withBaseAbilities)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Source
 import Control.Monad.Reader
 import Control.Monad.Writer.Strict
+import GHC.Records
 
 newtype AbilitiesBuilder e a = AbilitiesBuilder {runAbilitiesBuilder :: WriterT [Ability] (Reader e) a}
   deriving newtype (Functor, Applicative, Monad, MonadWriter [Ability], MonadReader e)
@@ -92,3 +96,21 @@ mustExist a = ActionAbilityBuilder $ \ab -> ((), ab {abilityCriteria = abilityCr
 
 mustControl :: ActionAbilityBuilder ()
 mustControl = addCriteria ControlsThis
+
+extendRevealedAbilities
+  :: (HasField "revealed" attrs Bool, attrs ~ EntityAttrs e, Entity e, HasAbilities attrs)
+  => e
+  -> AbilitiesBuilder e ()
+  -> [Ability]
+extendRevealedAbilities e action =
+  withBaseAbilities (toAttrs e)
+    $ guard ((toAttrs e).revealed)
+    *> runReader (execWriterT $ runAbilitiesBuilder action) e
+
+revealedSide
+  :: (HasField "revealed" attrs Bool, attrs ~ EntityAttrs e, Entity e)
+  => AbilitiesBuilder e ()
+  -> AbilitiesBuilder e ()
+revealedSide action = do
+  e <- ask
+  when ((toAttrs e).revealed) action

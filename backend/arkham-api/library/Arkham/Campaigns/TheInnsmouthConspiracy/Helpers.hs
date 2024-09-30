@@ -16,7 +16,7 @@ import Arkham.Key
 import Arkham.Location.FloodLevel
 import Arkham.Location.Types (Field (LocationFloodLevel))
 import Arkham.Matcher
-import Arkham.Message (Message (CreateEffect))
+import Arkham.Message (Message (CreateEffect, IncreaseFloodLevel))
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
@@ -58,6 +58,10 @@ needsAir a n =
 
 getFloodLevel :: HasGame m => LocationId -> m FloodLevel
 getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel
+
+increaseThisFloodLevel
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+increaseThisFloodLevel location = push $ IncreaseFloodLevel (asId location)
 
 struggleForAir :: (Sourceable a, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = push $ CreateEffect $ makeEffectBuilder "noair" Nothing a iid

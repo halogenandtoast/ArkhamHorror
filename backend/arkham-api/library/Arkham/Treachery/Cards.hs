@@ -289,6 +289,7 @@ allEncounterTreacheryCards =
       , lowOnSupplies
       , lunarPatrol
       , macabreMemento
+      , malfunction
       , markOfTheOrder
       , markedByTheSign
       , markedForDeath
@@ -322,6 +323,7 @@ allEncounterTreacheryCards =
       , possessionTraitorous
       , primordialGateway
       , prismaticPhenomenon
+      , psychicPull
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
       , pulledBack
@@ -2104,6 +2106,12 @@ fromTheDepths =
     { cdCardTraits = singleton Scheme
     }
 
+psychicPull :: CardDef
+psychicPull =
+  (treachery "07087" "Psychic Pull" AgentsOfHydra 3)
+    { cdCardTraits = singleton Power
+    }
+
 deepOneAssault :: CardDef
 deepOneAssault =
   (treachery "07090" "Deep One Assault" CreaturesOfTheDeep 2)
@@ -2150,6 +2158,12 @@ memoryOfOblivion :: CardDef
 memoryOfOblivion =
   (treachery "07098" "Memory of Oblivion" ShatteredMemories 2)
     { cdCardTraits = singleton Terror
+    }
+
+malfunction :: CardDef
+malfunction =
+  (treachery "07099" "Malfunction" Malfunction 2)
+    { cdCardTraits = singleton Blunder
     }
 
 tidalAlignment :: CardDef

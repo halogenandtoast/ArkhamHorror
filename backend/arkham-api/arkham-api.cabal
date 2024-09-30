@@ -1481,6 +1481,7 @@ library
       Arkham.Enemy.Cards.LegsOfAtlachNacha_349
       Arkham.Enemy.Cards.LegsOfAtlachNacha_350
       Arkham.Enemy.Cards.LiarWithNoFace
+      Arkham.Enemy.Cards.Lloigor
       Arkham.Enemy.Cards.LodgeEnforcer
       Arkham.Enemy.Cards.LodgeJailor
       Arkham.Enemy.Cards.LodgeNeophyte
@@ -3394,6 +3395,7 @@ library
       Arkham.Treachery.Cards.LowOnSupplies
       Arkham.Treachery.Cards.LunarPatrol
       Arkham.Treachery.Cards.MacabreMemento
+      Arkham.Treachery.Cards.Malfunction
       Arkham.Treachery.Cards.MarkedByTheSign
       Arkham.Treachery.Cards.MarkedForDeath
       Arkham.Treachery.Cards.MarkOfTheOrder
@@ -3436,6 +3438,7 @@ library
       Arkham.Treachery.Cards.PossessionTraitorous
       Arkham.Treachery.Cards.PrimordialGateway
       Arkham.Treachery.Cards.PrismaticPhenomenon
+      Arkham.Treachery.Cards.PsychicPull
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.PsychopompsSongUnionAndDisillusion
       Arkham.Treachery.Cards.Psychosis

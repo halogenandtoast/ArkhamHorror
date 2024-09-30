@@ -42,7 +42,7 @@ data ModifierType
   | IgnoreBarriers
   | CannotBeFullyFlooded
   | CannotBeFlooded
-  | CannotEnterVehicles
+  | CannotEnterVehicle AssetMatcher
   | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
   | IgnoreActionCost

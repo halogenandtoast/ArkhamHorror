@@ -1079,17 +1079,25 @@ passesCriteria
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
   Criteria.CanEnterThisVehicle -> do
-    cannotEnterVehicles <- hasModifier iid CannotEnterVehicles
-    if cannotEnterVehicles
-      then pure False
-      else case source of
-        AssetSource aid -> do
-          field InvestigatorPlacement iid >>= \case
-            AtLocation lid -> do
-              mlid' <- field AssetLocation aid
-              pure $ Just lid == mlid'
-            _ -> pure False
-        _ -> error $ "Unhandled vehicle source: " <> show source
+    mods <- getModifiers iid
+    let invalidMatcher =
+          let matchers = [matcher | CannotEnterVehicle matcher <- mods]
+           in if null matchers then Nothing else Just (Matcher.oneOf matchers)
+    case source of
+      AssetSource aid -> do
+        let
+          go = do
+            field InvestigatorPlacement iid >>= \case
+              AtLocation lid -> do
+                mlid' <- field AssetLocation aid
+                pure $ Just lid == mlid'
+              _ -> pure False
+        case invalidMatcher of
+          Nothing -> go
+          Just matcher -> do
+            invalid <- aid <=~> matcher
+            if invalid then pure False else go
+      _ -> error $ "Unhandled vehicle source: " <> show source
   Criteria.CanLeaveThisVehicle -> do
     case source of
       AssetSource aid -> do

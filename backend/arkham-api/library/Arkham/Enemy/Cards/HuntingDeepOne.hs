@@ -21,7 +21,7 @@ huntingDeepOne = enemy HuntingDeepOne Cards.huntingDeepOne (3, Static 3, 3) (1, 
 instance HasModifiersFor HuntingDeepOne where
   getModifiersFor (InvestigatorTarget iid) (HuntingDeepOne a) = maybeModified a do
     liftGuardM $ iid <=~> investigatorEngagedWith a
-    pure [CannotEnterVehicles, CannotGainResources]
+    pure [CannotEnterVehicle AnyAsset, CannotGainResources]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HuntingDeepOne where

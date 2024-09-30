@@ -3500,6 +3500,7 @@ library
       Arkham.Treachery.Cards.Straitjacket
       Arkham.Treachery.Cards.StrangeSigns
       Arkham.Treachery.Cards.Stupor
+      Arkham.Treachery.Cards.Syzygy
       Arkham.Treachery.Cards.TasteOfLifeblood
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
@@ -3525,6 +3526,7 @@ library
       Arkham.Treachery.Cards.ThreadsOfReality
       Arkham.Treachery.Cards.ThriceDamnedCuriosity
       Arkham.Treachery.Cards.ThroughTheGates
+      Arkham.Treachery.Cards.TidalAlignment
       Arkham.Treachery.Cards.TimelineDestabilization
       Arkham.Treachery.Cards.ToFightTheBlackWind
       Arkham.Treachery.Cards.ToilAndTrouble

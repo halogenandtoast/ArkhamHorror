@@ -1079,14 +1079,17 @@ passesCriteria
   -> m Bool
 passesCriteria iid mcard source' requestor windows' = \case
   Criteria.CanEnterThisVehicle -> do
-    case source of
-      AssetSource aid -> do
-        field InvestigatorPlacement iid >>= \case
-          AtLocation lid -> do
-            mlid' <- field AssetLocation aid
-            pure $ Just lid == mlid'
-          _ -> pure False
-      _ -> error $ "Unhandled vehicle source: " <> show source
+    cannotEnterVehicles <- hasModifier iid CannotEnterVehicles
+    if cannotEnterVehicles
+      then pure False
+      else case source of
+        AssetSource aid -> do
+          field InvestigatorPlacement iid >>= \case
+            AtLocation lid -> do
+              mlid' <- field AssetLocation aid
+              pure $ Just lid == mlid'
+            _ -> pure False
+        _ -> error $ "Unhandled vehicle source: " <> show source
   Criteria.CanLeaveThisVehicle -> do
     case source of
       AssetSource aid -> do

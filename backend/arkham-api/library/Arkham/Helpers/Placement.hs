@@ -34,6 +34,7 @@ placedInThreatArea = \case
   Unplaced -> pure Nothing
   Limbo -> pure Nothing
   Global -> pure Nothing
+  Near _ -> pure Nothing
   OutOfPlay _ -> pure Nothing
   HiddenInHand _ -> pure Nothing
   OnTopOfDeck _ -> pure Nothing

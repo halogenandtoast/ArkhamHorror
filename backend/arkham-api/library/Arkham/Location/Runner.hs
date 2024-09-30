@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Location.Runner (
@@ -68,7 +69,6 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
-import Control.Lens (non)
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
@@ -340,20 +340,33 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ deleteSet k
     IncreaseFloodLevel lid | lid == locationId -> do
       mods <- getModifiers a
-      let maxFloodLevel =
-            if CannotBeFlooded `elem` mods
-              then Unflooded
-              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
-      pure $ a & floodLevelL . non Unflooded %~ min maxFloodLevel . increaseFloodLevel
+      let
+        newFloodLevel =
+          if
+            | CannotBeFlooded `elem` mods -> Unflooded
+            | CannotBeFullyFlooded `elem` mods -> PartiallyFlooded
+            | otherwise -> maybe PartiallyFlooded increaseFloodLevel locationFloodLevel
+      runMessage (SetFloodLevel lid newFloodLevel) a
     DecreaseFloodLevel lid | lid == locationId -> do
-      pure $ a & floodLevelL . non Unflooded %~ decreaseFloodLevel
+      runMessage (SetFloodLevel lid $ maybe Unflooded decreaseFloodLevel locationFloodLevel) a
     SetFloodLevel lid level | lid == locationId -> do
       mods <- getModifiers a
-      let maxFloodLevel =
-            if CannotBeFlooded `elem` mods
-              then Unflooded
-              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
-      pure $ a & floodLevelL ?~ min maxFloodLevel level
+      let
+        maxFloodLevel =
+          if
+            | CannotBeFlooded `elem` mods -> Unflooded
+            | CannotBeFullyFlooded `elem` mods -> PartiallyFlooded
+            | otherwise -> FullyFlooded
+        newFloodLevel = min maxFloodLevel level
+      when (level /= newFloodLevel) do
+        before <-
+          checkWhen (Window.FloodLevelChanged lid (fromMaybe Unflooded locationFloodLevel) newFloodLevel)
+        pushAll [before, Do msg]
+      pure a
+    Do (SetFloodLevel lid level) | lid == locationId -> do
+      after <- checkAfter (Window.FloodLevelChanged lid (fromMaybe Unflooded locationFloodLevel) level)
+      push after
+      pure $ a & floodLevelL ?~ level
     PlaceBreaches (isTarget a -> True) n -> do
       wouldDoEach
         n

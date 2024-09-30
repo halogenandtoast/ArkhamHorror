@@ -16,6 +16,7 @@ import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
 import Arkham.DefeatedBy
 import Arkham.Id
+import Arkham.Location.FloodLevel
 import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
 import Arkham.ScenarioLogKey
@@ -121,6 +122,7 @@ data IsDirect = IsDirect | IsNonDirect
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | FloodLevelChanged LocationId FloodLevel FloodLevel
   | FirstTimeParleyingThisRound InvestigatorId
   | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId

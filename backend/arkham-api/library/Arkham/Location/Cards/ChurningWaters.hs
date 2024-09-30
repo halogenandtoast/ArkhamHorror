@@ -18,9 +18,8 @@ churningWaters = location ChurningWaters Cards.churningWaters 6 (Static 0)
 instance HasAbilities ChurningWaters where
   getAbilities (ChurningWaters a) =
     extendRevealed1 a
-      $ restricted a 1 (youExist $ InVehicleMatching $ assetIs Assets.fishingVessel)
-      $ ActionAbility [#resign]
-      $ ActionCost 1
+      $ restricted a 1 (Here <> youExist (InVehicleMatching $ assetIs Assets.fishingVessel))
+      $ ActionAbility [#resign] (ActionCost 1)
 
 instance RunMessage ChurningWaters where
   runMessage msg l@(ChurningWaters attrs) = runQueueT $ case msg of

@@ -11,5 +11,6 @@ data Memory
   | AJailbreak
   | ADealWithJoeSargent
   | AFollowedLead
+  | DiscoveryOfAStrangeIdol
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

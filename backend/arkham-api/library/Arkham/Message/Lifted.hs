@@ -1773,3 +1773,7 @@ resign iid = push $ Resign iid
 
 discard :: (IsCard card, ReverseQueue m) => card -> m ()
 discard card = push $ DiscardedCard (toCardId card)
+
+lookAtRevealed
+  :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
+lookAtRevealed iid source target = push $ LookAtRevealed iid (toSource source) (toTarget target)

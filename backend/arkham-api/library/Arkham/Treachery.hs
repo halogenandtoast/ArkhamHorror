@@ -451,6 +451,9 @@ allTreacheries =
       SomeTreacheryCard macabreMemento
     , SomeTreacheryCard fracturedConsciousness
     , SomeTreacheryCard memoryOfOblivion
+    , --- Syzygy [tic]
+      SomeTreacheryCard tidalAlignment
+    , SomeTreacheryCard syzygy
     , --- The Locals [tic]
       SomeTreacheryCard innsmouthLook
     , SomeTreacheryCard furtiveLocals

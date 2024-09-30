@@ -366,6 +366,7 @@ allEncounterTreacheryCards =
       , stowaway
       , straitjacket
       , strangeSigns
+      , syzygy
       , tasteOfLifeblood
       , terrorInTheNight
       , terrorFromBeyond
@@ -383,6 +384,7 @@ allEncounterTreacheryCards =
       , theYellowSign
       , theZealotsSeal
       , threadsOfReality
+      , tidalAlignment
       , timelineDestabilization
       , toilAndTrouble
       , torturousChords
@@ -2148,6 +2150,20 @@ memoryOfOblivion :: CardDef
 memoryOfOblivion =
   (treachery "07098" "Memory of Oblivion" ShatteredMemories 2)
     { cdCardTraits = singleton Terror
+    }
+
+tidalAlignment :: CardDef
+tidalAlignment =
+  (treachery "07100" "Tidal Alignment" Syzygy 2)
+    { cdCardTraits = singleton Omen
+    , cdKeywords = singleton Keyword.Peril
+    }
+
+syzygy :: CardDef
+syzygy =
+  (treachery "07101" "Syzygy" Syzygy 2)
+    { cdCardTraits = singleton Omen
+    , cdKeywords = singleton Keyword.Peril
     }
 
 innsmouthLook :: CardDef

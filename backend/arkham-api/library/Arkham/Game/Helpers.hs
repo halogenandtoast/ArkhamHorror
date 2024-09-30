@@ -1066,6 +1066,7 @@ onSameLocation iid = \case
   HiddenInHand _ -> pure False
   OnTopOfDeck _ -> pure False
   NextToAgenda -> pure False
+  Near _ -> pure False
 
 passesCriteria
   :: (HasCallStack, HasGame m)

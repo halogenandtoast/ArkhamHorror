@@ -11,6 +11,8 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
+import Arkham.Matcher hiding (assetAt)
+import Arkham.Message.Lifted.Placement qualified as P
 import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
@@ -95,4 +97,31 @@ instance RunMessage DevilReef where
           , Locations.undergroundRiver
           , Locations.undergroundRiver
           ]
+    PlaceKey (InvestigatorTarget iid) PurpleKey -> do
+      selectForMaybeM (assetIs Assets.wavewornIdol) $ takeControlOfAsset iid
+      pure s
+    PlaceKey (InvestigatorTarget iid) WhiteKey -> do
+      selectForMaybeM (assetIs Assets.awakenedMantle) $ takeControlOfAsset iid
+      pure s
+    PlaceKey (InvestigatorTarget iid) BlackKey -> do
+      selectForMaybeM (assetIs Assets.headdressOfYhaNthlei) $ takeControlOfAsset iid
+      pure s
+    PlaceKey (ActTarget _) PurpleKey -> do
+      selectForMaybeM (assetIs Assets.wavewornIdol) removeFromGame
+      pure s
+    PlaceKey (ActTarget _) WhiteKey -> do
+      selectForMaybeM (assetIs Assets.awakenedMantle) removeFromGame
+      pure s
+    PlaceKey (ActTarget _) BlackKey -> do
+      selectForMaybeM (assetIs Assets.headdressOfYhaNthlei) removeFromGame
+      pure s
+    PlaceKey target PurpleKey -> do
+      selectForMaybeM (assetIs Assets.wavewornIdol) (`P.place` Near target)
+      pure s
+    PlaceKey target WhiteKey -> do
+      selectForMaybeM (assetIs Assets.awakenedMantle) (`P.place` Near target)
+      pure s
+    PlaceKey target BlackKey -> do
+      selectForMaybeM (assetIs Assets.headdressOfYhaNthlei) (`P.place` Near target)
+      pure s
     _ -> DevilReef <$> liftRunMessage msg attrs

@@ -12,5 +12,7 @@ data Memory
   | ADealWithJoeSargent
   | AFollowedLead
   | DiscoveryOfAStrangeIdol
+  | DiscoveryOfAnUnholyMantle
+  | DiscoveryOfAMythicalRelic
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

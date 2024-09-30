@@ -42,6 +42,7 @@ data Placement
   | Limbo
   | Global
   | OutOfPlay OutOfPlayZone
+  | Near Target
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
@@ -52,6 +53,7 @@ placementToAttached = \case
   AttachedToLocation lid -> Just $ LocationTarget lid
   AttachedToEnemy eid -> Just $ EnemyTarget eid
   AttachedToTreachery tid -> Just $ TreacheryTarget tid
+  Near _ -> Nothing
   AtLocation _ -> Nothing
   InPlayArea _ -> Nothing
   InVehicle _ -> Nothing
@@ -104,6 +106,7 @@ isInPlayPlacement = \case
   OutOfPlay {} -> False
   HiddenInHand _ -> False
   OnTopOfDeck _ -> False
+  Near _ -> True
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case

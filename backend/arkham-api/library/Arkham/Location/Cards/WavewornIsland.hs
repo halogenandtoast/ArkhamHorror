@@ -32,12 +32,12 @@ instance RunMessage WavewornIsland where
       unfathomableDepths <- getSetAsideCardsMatching $ CardWithType LocationType
 
       let
-        [p1, p2, p3] = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> [Pos (-1) 3, Pos 1 3, Pos 0 4]
-          Just (Pos 4 2) -> [Pos 5 2, Pos 4 1, Pos 3 2]
-          Just (Pos 4 (-2)) -> [Pos 5 (-2), Pos 4 (-1), Pos 3 (-2)]
-          Just (Pos (-4) 2) -> [Pos (-5) 2, Pos (-4) 1, Pos (-3) 2]
-          Just (Pos (-4) (-2)) -> [Pos (-5) (-2), Pos (-4) (-1), Pos (-3) (-2)]
+        (p1, p2, p3) = case findInGrid attrs.id grid of
+          Just (Pos 0 3) -> (Pos (-1) 3, Pos 1 3, Pos 0 4)
+          Just (Pos 4 2) -> (Pos 5 2, Pos 4 1, Pos 3 2)
+          Just (Pos 4 (-2)) -> (Pos 5 (-2), Pos 4 (-1), Pos 3 (-2))
+          Just (Pos (-4) 2) -> (Pos (-5) 2, Pos (-4) 1, Pos (-3) 2)
+          Just (Pos (-4) (-2)) -> (Pos (-5) (-2), Pos (-4) (-1), Pos (-3) (-2))
           _ -> error "invalid location"
       zipWithM_ placeLocationInGrid [p1, p2] tunnels
 

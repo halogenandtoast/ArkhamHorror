@@ -29,12 +29,12 @@ instance RunMessage HiddenCove where
       unfathomableDepths <- getSetAsideCardsMatching $ CardWithType LocationType
 
       let
-        [p1, p2] = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> [Pos 0 4, Pos 1 4]
-          Just (Pos 4 2) -> [Pos 5 2, Pos 6 2]
-          Just (Pos 4 (-2)) -> [Pos 5 (-2), Pos 6 (-2)]
-          Just (Pos (-4) 2) -> [Pos (-5) 2, Pos (-6) 2]
-          Just (Pos (-4) (-2)) -> [Pos (-5) (-2), Pos (-6) (-2)]
+        (p1, p2) = case findInGrid attrs.id grid of
+          Just (Pos 0 3) -> (Pos 0 4, Pos 1 4)
+          Just (Pos 4 2) -> (Pos 5 2, Pos 6 2)
+          Just (Pos 4 (-2)) -> (Pos 5 (-2), Pos 6 (-2))
+          Just (Pos (-4) 2) -> (Pos (-5) 2, Pos (-6) 2)
+          Just (Pos (-4) (-2)) -> (Pos (-5) (-2), Pos (-6) (-2))
           _ -> error "invalid location"
       case tunnels of
         [] -> pure ()

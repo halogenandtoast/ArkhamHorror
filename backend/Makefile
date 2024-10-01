@@ -1,7 +1,7 @@
 .PHONY: api.watch
 api.watch:
 	cd arkham-api && \
-	stack build --test --no-run-tests --fast arkham-api \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \
@@ -11,7 +11,7 @@ api.watch:
 .PHONY: api.watch.test
 api.watch.test:
 	cd arkham-api && \
-	stack build --test --fast arkham-api \
+	stack build --test --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 	  --file-watch \

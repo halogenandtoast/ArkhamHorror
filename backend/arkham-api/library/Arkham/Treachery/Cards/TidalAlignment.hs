@@ -21,7 +21,7 @@ instance RunMessage TidalAlignment where
       choices <- select $ LocationWithInvestigator Anyone
       chooseTargetM iid choices $ handleTarget iid attrs
       pure t
-    HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
+    HandleTargetChoice _iid (isSource attrs -> True) (LocationTarget lid) -> do
       selectEach (investigatorAt lid) \iid' -> assignDamage iid' attrs 1
       isDesolateCoastline <- lid <=~> locationIs Locations.desolateCoastline
       fl <- getFloodLevel lid

@@ -241,6 +241,7 @@ data Trait
   | Witch
   | WitchHouse
   | Woods
+  | YHaNthlei
   | Yithian
   | Yoth
   | Zoog

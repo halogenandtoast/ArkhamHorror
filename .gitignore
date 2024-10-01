@@ -35,3 +35,5 @@ logfile
 *.eventlog
 *.eventlog.html
 *.hp
+
+.kamal/secrets

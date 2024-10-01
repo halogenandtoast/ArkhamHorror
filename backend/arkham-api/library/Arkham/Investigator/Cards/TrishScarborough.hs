@@ -1,8 +1,4 @@
-module Arkham.Investigator.Cards.TrishScarborough (
-  trishScarborough,
-  TrishScarborough (..),
-)
-where
+module Arkham.Investigator.Cards.TrishScarborough (trishScarborough, TrishScarborough (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Discover
@@ -38,22 +34,22 @@ trishScarborough =
       }
 
 instance HasAbilities TrishScarborough where
-  getAbilities (TrishScarborough attrs) =
+  getAbilities (TrishScarborough a) =
     [ playerLimit PerRound
-        $ restrictedAbility
-          attrs
+        $ restricted
+          a
           1
           ( Self
               <> oneOf
                 [ exists (LocationBeingDiscovered <> LocationWithAnyClues)
-                , exists $ tabooModifier $ CanEvadeEnemy (toSource attrs)
+                , exists $ tabooModifier $ CanEvadeEnemy (toSource a)
                 ]
           )
         $ freeReaction
         $ DiscoverClues #after You (LocationWithEnemy AnyEnemy) (atLeast 1)
     ]
    where
-    tabooModifier = if tabooed TabooList21 attrs then (NonEliteEnemy <>) else id
+    tabooModifier = if tabooed TabooList21 a then (NonEliteEnemy <>) else id
 
 instance HasChaosTokenValue TrishScarborough where
   getChaosTokenValue iid ElderSign (TrishScarborough attrs) | iid == toId attrs = do
@@ -69,7 +65,7 @@ instance RunMessage TrishScarborough where
   runMessage msg i@(TrishScarborough attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
       player <- getPlayer iid
-      enemies <- select $ enemyAt lid <> CanEvadeEnemy (attrs.ability 1)
+      enemies <- select $ enemyAt lid <> EnemyCanBeEvadedBy (attrs.ability 1)
       push
         $ chooseOrRunOne player
         $ [Label "Discover 1 additional clue at that location" [Msg.DiscoverClues iid $ discover lid attrs 1]]
@@ -80,8 +76,7 @@ instance RunMessage TrishScarborough where
            ]
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      mAction <- getSkillTestAction
-      case mAction of
+      getSkillTestAction >>= \case
         Just Action.Investigate -> do
           mLocation <- getMaybeLocation iid
           locations <- select $ RevealedLocation <> maybe Anywhere (not_ . LocationWithId) mLocation

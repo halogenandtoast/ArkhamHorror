@@ -24,8 +24,9 @@ data Movement = Movement
 data MovementMeans = Direct | OneAtATime | Towards
   deriving stock (Show, Eq, Data)
 
+-- Forced movement should not require additional costs
 uncancellableMove :: Movement -> Movement
-uncancellableMove m = m {moveCancelable = False}
+uncancellableMove m = m {moveCancelable = False, movePayAdditionalCosts = False}
 
 afterMove :: [Message] -> Movement -> Movement
 afterMove msgs m = m {moveAfter = msgs}

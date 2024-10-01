@@ -482,9 +482,13 @@ getCanAffordUseWith
   -> [Window]
   -> m Bool
 getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
-  usedAbilities <-
-    fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
-  limit <- getAbilityLimit iid ability
+  let
+    debug :: Show a => a -> a
+    debug = case ability.cardCode of
+      "08032" -> traceShowId
+      _ -> id
+  usedAbilities <- fmap f . filterDepthSpecificAbilities =<< field InvestigatorUsedAbilities iid
+  limit <- debug <$> getAbilityLimit iid ability
   ignoreLimit <-
     or
       . sequence [(IgnoreLimit `elem`), (CanIgnoreLimit `elem`)]
@@ -547,7 +551,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             =<< concatMapM (field InvestigatorUsedAbilities)
             =<< allInvestigatorIds
 
-        let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
+        let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) (debug usedAbilities')
 
         pure
           . (&& not wasUsedThisWindow)

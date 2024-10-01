@@ -63,6 +63,9 @@ instance HasField "requestor" Ability Source where
 instance HasField "source" Ability Source where
   getField = abilitySource
 
+instance HasField "cardCode" Ability CardCode where
+  getField = abilityCardCode
+
 instance HasField "index" Ability Int where
   getField = abilityIndex
 

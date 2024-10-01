@@ -6,6 +6,8 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Placement
 
 newtype VowOfDrzytelech = VowOfDrzytelech AssetAttrs
   deriving anyclass IsAsset
@@ -31,6 +33,9 @@ instance RunMessage VowOfDrzytelech where
           labeled "Take 1 horror and shuffle it into your deck" do
             assignHorror iid attrs 1
             shuffleIntoDeck iid attrs
+      pure t
+    CardEnteredPlay iid card | card.id == attrs.cardId -> do
+      place attrs (InThreatArea iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs

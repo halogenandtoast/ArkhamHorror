@@ -285,7 +285,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     pure $ a & (logL . recordedL %~ insertSet key) . (logL . orderedKeysL %~ (<> [key]))
   EndCheckWindow -> do
     depth <- getWindowDepth
-    -- NOTE: Milan triggers twice for some reason but we don't want to change these as EndCheckWindow should be a depth 1 window lower
     let
       filterAbility UsedAbility {..} = do
         limit <- getAbilityLimit (toId a) usedAbility
@@ -297,7 +296,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
     usedAbilities' <- filterM filterAbility investigatorUsedAbilities
     let usedAbilities'' =
-          map (\u -> if usedDepth u >= depth then u {usedThisWindow = False} else u) usedAbilities'
+          map
+            ( \u ->
+                if usedDepth u > depth
+                  then u {usedThisWindow = False}
+                  else if usedDepth u == depth then u {usedThisWindow = True} else u
+            )
+            usedAbilities'
     pure $ a & usedAbilitiesL .~ usedAbilities''
   EndOfScenario {} -> do
     pure $ a & handL .~ mempty

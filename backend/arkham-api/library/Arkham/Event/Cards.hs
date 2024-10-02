@@ -1,7 +1,5 @@
 module Arkham.Event.Cards (module Arkham.Event.Cards, module X) where
 
-import Arkham.Prelude
-
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Event.Cards.EdgeOfTheEarth as X
@@ -19,6 +17,7 @@ import Arkham.Event.Cards.TheForgottenAge as X
 import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
+import Arkham.Prelude
 
 allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards =

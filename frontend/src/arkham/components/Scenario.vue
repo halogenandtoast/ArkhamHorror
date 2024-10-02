@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   onMounted,
@@ -61,6 +61,7 @@ const upgradeDeck = computed(() => Object.values(props.game.question).some((q) =
 const choose = async (idx: number) => emit('choose', idx)
 
 //Refs
+const splitView = ref(false)
 const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
@@ -97,6 +98,14 @@ addEntry({
   shortcut: "c",
   nested: 'view',
   action: () => showChaosBag.value = !showChaosBag.value
+})
+
+addEntry({
+  id: "splitView",
+  icon: ViewColumnsIcon,
+  content: "Split View",
+  nested: 'view',
+  action: () => splitView.value = !splitView.value
 })
 
 // Computed
@@ -434,7 +443,7 @@ const tarotCardAbility = (card: TarotCard) => {
     <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose"/>
   </div>
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
-    <div class="scenario-body">
+    <div class="scenario-body" :class="{'split-view': splitView }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
         <template #handle><header><h2>Out of Play</h2></header></template>
         <div class="card-row-cards">
@@ -793,6 +802,106 @@ const tarotCardAbility = (card: TarotCard) => {
   width: 100%;
   flex: 1;
   inset: 0;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  @media (max-height: 800px) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 3fr;
+    padding-bottom: 10px;
+    row-gap: 30px;
+
+    &:deep(.player-info) {
+      grid-column: 1;
+      grid-row: 2 / 5;
+      display: flex;
+      flex-direction: column;
+
+      .tab {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+        overflow: hidden;
+      }
+
+      .player-cards {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+      }
+
+      .player {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-self: safe start;
+        width: 100%;
+        flex: 1;
+      }
+    }
+
+    .scenario-cards {
+      grid-column: 1;
+      grid-row: 1 / 2;
+    }
+
+    .location-cards-container {
+      grid-column: 2;
+      grid-row: 1 / 5;
+    }
+  }
+
+  &.split-view {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 3fr;
+    padding-bottom: 10px;
+    row-gap: 30px;
+
+    &:deep(.player-info) {
+      grid-column: 1;
+      grid-row: 2 / 5;
+      display: flex;
+      flex-direction: column;
+
+      .tab {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+        overflow: hidden;
+      }
+
+      .player-cards {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+      }
+
+      .player {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-self: safe start;
+        width: 100%;
+        flex: 1;
+      }
+    }
+
+    .scenario-cards {
+      grid-column: 1;
+      grid-row: 1 / 2;
+    }
+
+    .location-cards-container {
+      grid-column: 2;
+      grid-row: 1 / 5;
+    }
+  }
 }
 
 .location-cards {

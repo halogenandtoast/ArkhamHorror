@@ -794,6 +794,55 @@ const tarotCardAbility = (card: TarotCard) => {
   }
 }
 
+@mixin splitView {
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr 3fr;
+    padding-bottom: 10px;
+    row-gap: 30px;
+
+    &:deep(.player-info) {
+      grid-column: 1;
+      grid-row: 2 / 5;
+      display: flex;
+      flex-direction: column;
+
+      .tab {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+        overflow: hidden;
+      }
+
+      .player-cards {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        border-top-right-radius: 10px;
+      }
+
+      .player {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        flex: 1;
+      }
+    }
+
+    .scenario-cards {
+      grid-column: 1;
+      grid-row: 1 / 2;
+      flex-wrap: wrap;
+    }
+
+    .location-cards-container {
+      grid-column: 2;
+      grid-row: 1 / 5;
+    }
+}
+
 .scenario-body {
   display: flex;
   flex-direction: column;
@@ -806,103 +855,11 @@ const tarotCardAbility = (card: TarotCard) => {
   display: grid;
   grid-template-rows: auto 1fr auto;
   @media (max-height: 800px) {
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: 1fr 3fr;
-    padding-bottom: 10px;
-    row-gap: 30px;
-
-    &:deep(.player-info) {
-      grid-column: 1;
-      grid-row: 2 / 5;
-      display: flex;
-      flex-direction: column;
-
-      .tab {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        border-top-right-radius: 10px;
-        overflow: hidden;
-      }
-
-      .player-cards {
-        overflow: auto;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        border-top-right-radius: 10px;
-      }
-
-      .player {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-self: safe start;
-        width: 100%;
-        flex: 1;
-      }
-    }
-
-    .scenario-cards {
-      grid-column: 1;
-      grid-row: 1 / 2;
-      flex-wrap: wrap;
-    }
-
-    .location-cards-container {
-      grid-column: 2;
-      grid-row: 1 / 5;
-    }
+    @include splitView;
   }
 
   &.split-view {
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: 1fr 3fr;
-    padding-bottom: 10px;
-    row-gap: 30px;
-
-    &:deep(.player-info) {
-      grid-column: 1;
-      grid-row: 2 / 5;
-      display: flex;
-      flex-direction: column;
-
-      .tab {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        border-top-right-radius: 10px;
-        overflow: hidden;
-      }
-
-      .player-cards {
-        overflow: auto;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        border-top-right-radius: 10px;
-      }
-
-      .player {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-self: safe start;
-        width: 100%;
-        flex: 1;
-      }
-    }
-
-    .scenario-cards {
-      grid-column: 1;
-      grid-row: 1 / 2;
-      flex-wrap: wrap;
-    }
-
-    .location-cards-container {
-      grid-column: 2;
-      grid-row: 1 / 5;
-    }
+    @include splitView;
   }
 }
 

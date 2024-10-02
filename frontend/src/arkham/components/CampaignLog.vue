@@ -29,7 +29,7 @@ if (props.game.campaign?.meta?.otherCampaignAttrs?.log) {
 
 const breakdowns =
   props.game.campaign?.xpBreakdown ||
-    (props.game.scenario && props.game.scenario.xpBreakdown ? [{ "tag": "ScenarioStep", "contents": props.game.scenario.id }, props.game.scenario.xpBreakdown] : undefined) ||
+    (props.game.scenario && props.game.scenario.xpBreakdown ? [[{ "tag": "ScenarioStep", "contents": props.game.scenario.id }, props.game.scenario.xpBreakdown]] : undefined) ||
     []
 
 const logTitle = props.game.campaign?.meta?.currentCampaignMode ?

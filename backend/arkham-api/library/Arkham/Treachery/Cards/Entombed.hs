@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.Entombed (entombed, Entombed (..)) where
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest qualified as Msg
-import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -24,7 +23,7 @@ instance HasModifiersFor Entombed where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Entombed where
-  getAbilities (Entombed (a `With` _)) = [skillTestAbility $ restrictedAbility a 1 (InThreatAreaOf You) actionAbility]
+  getAbilities (Entombed (a `With` _)) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage Entombed where
   runMessage msg t@(Entombed (attrs `With` metadata)) = runQueueT $ case msg of

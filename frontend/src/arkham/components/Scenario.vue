@@ -806,7 +806,7 @@ const tarotCardAbility = (card: TarotCard) => {
   display: grid;
   grid-template-rows: auto 1fr auto;
   @media (max-height: 800px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     grid-template-rows: 1fr 3fr;
     padding-bottom: 10px;
     row-gap: 30px;
@@ -855,7 +855,7 @@ const tarotCardAbility = (card: TarotCard) => {
   }
 
   &.split-view {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     grid-template-rows: 1fr 3fr;
     padding-bottom: 10px;
     row-gap: 30px;

@@ -25,14 +25,14 @@ williamYorick =
     $ Stats {health = 8, sanity = 6, willpower = 3, intellect = 2, combat = 4, agility = 3}
 
 instance HasChaosTokenValue WilliamYorick where
-  getChaosTokenValue iid ElderSign (WilliamYorick attrs) | iid == investigatorId attrs = do
+  getChaosTokenValue iid ElderSign (WilliamYorick attrs) | iid == attrs.id = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 2)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasAbilities WilliamYorick where
   getAbilities (WilliamYorick attrs) =
     [ playerLimit PerRound
-        $ restrictedAbility attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) #asset)
+        $ restricted attrs 1 (Self <> PlayableCardInDiscard (DiscardOf You) #asset)
         $ freeReaction (Matcher.EnemyDefeated #after You ByAny AnyEnemy)
     ]
 
@@ -43,16 +43,19 @@ instance RunMessage WilliamYorick where
         windows'' = nub $ windows' <> [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
         targets = filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
         playCardMsgs c =
-          [addToHand iid c]
+          [UnfocusCards, addToHand iid c]
             <> if isFastCard c
               then [InitiatePlayCard iid c Nothing NoPayment windows'' False]
               else [PayCardCost iid c windows'']
       playableTargets <-
         filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) windows'' . PlayerCard) targets
       player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [targetLabel (toCardId card) (playCardMsgs $ PlayerCard card) | card <- playableTargets]
+      pushAll
+        [ FocusCards (map toCard $ investigatorDiscard attrs)
+        , chooseOne
+            player
+            [targetLabel (toCardId card) (playCardMsgs $ PlayerCard card) | card <- playableTargets]
+        ]
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       push $ createCardEffect Cards.williamYorick Nothing (toSource ElderSign) iid

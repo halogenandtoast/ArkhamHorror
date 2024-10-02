@@ -846,6 +846,7 @@ const tarotCardAbility = (card: TarotCard) => {
     .scenario-cards {
       grid-column: 1;
       grid-row: 1 / 2;
+      flex-wrap: wrap;
     }
 
     .location-cards-container {
@@ -895,6 +896,7 @@ const tarotCardAbility = (card: TarotCard) => {
     .scenario-cards {
       grid-column: 1;
       grid-row: 1 / 2;
+      flex-wrap: wrap;
     }
 
     .location-cards-container {

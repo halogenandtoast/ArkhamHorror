@@ -20,7 +20,7 @@ instance HasModifiersFor CharonsObol1 where
         pure
           $ toModifiers attrs
           $ KilledIfDefeated
-          : [XPModifier 2 | not isDefeated]
+          : [XPModifier "Charon's Obol" 2 | not isDefeated]
   getModifiersFor _ _ = pure []
 
 charonsObol1 :: AssetCard CharonsObol1

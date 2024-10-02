@@ -35,7 +35,7 @@ instance RunMessage UnspeakableOathCuriosity where
       placeTreachery attrs (HiddenInHand iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gameModifier attrs iid (XPModifier (-2))
+      gameModifier attrs iid (XPModifier "Unspeakable Oath: Curiosity" (-2))
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

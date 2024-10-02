@@ -358,7 +358,7 @@ data ModifierType
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
-  | XPModifier Int
+  | XPModifier Text Int
   | IfSuccessfulModifier ModifierType
   | IfFailureModifier ModifierType
   | NoInitialSwarm
@@ -498,6 +498,11 @@ $( do
               "CanBecomeFastOrReduceCostOf" -> do
                 contents <- v .: "contents"
                 pure $ uncurry ChuckFergus2Modifier contents
+              "XPModifier" -> do
+                contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+                case contents of
+                  Left n -> pure $ XPModifier "Card Effect" n
+                  Right (s, n) -> pure $ XPModifier s n
               _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
         |]
     deriveModifier <- deriveJSON (aesonOptions $ Just "modifier") ''Modifier

@@ -79,11 +79,12 @@ instance RunMessage WilliamYorickEffect where
           unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
             discards <- field InvestigatorDiscard iid
             player <- getPlayer iid
-            when (notNull discards)
-              $ push
-              $ chooseOne player
-              $ Done "Do not return card to hand"
-              : [targetLabel (toCardId card) [addToHand iid $ PlayerCard card] | card <- discards]
+            when (notNull discards) do
+              pushAll
+                [ FocusCards (map toCard discards)
+                , chooseOne player $ Done "Do not return card to hand"
+                    : [targetLabel (toCardId card) [UnfocusCards, addToHand iid $ PlayerCard card] | card <- discards]
+                ]
           pure e
         _ -> pure e
     SkillTestEnds _ _ _ -> e <$ push (DisableEffect $ effectId attrs)

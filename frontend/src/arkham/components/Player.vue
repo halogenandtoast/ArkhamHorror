@@ -480,46 +480,48 @@ const realityAcid = ref('89005')
         <span class="deck-size">{{hunchDeck.length}}</span>
       </div>
 
-      <Investigator
-        :game="game"
-        :investigator="investigator"
-        :choices="choices"
-        :playerId="playerId"
-        @choose="$emit('choose', $event)"
-        @showCards="doShowCards"
-      />
+      <div class="investigator-and-deck">
+        <Investigator
+          :game="game"
+          :investigator="investigator"
+          :choices="choices"
+          :playerId="playerId"
+          @choose="$emit('choose', $event)"
+          @showCards="doShowCards"
+        />
 
-      <div class="discard">
-        <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="$emit('choose', $event)" />
-        <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
-        <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">Shuffle Back In</button>
-      </div>
-
-      <div class="deck-container">
-        <div class="top-of-deck">
-          <Treachery
-            v-if="topOfDeckTreachery"
-            :treachery="topOfDeckTreachery"
-            :game="game"
-            :data-index="topOfDeckTreachery.cardId"
-            :playerId="playerId"
-            class="deck"
-            @choose="$emit('choose', $event)"
-          />
-          <img
-            v-else
-            :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
-            class="deck"
-            :src="topOfDeck"
-            width="150px"
-            @click="$emit('choose', drawCardsAction)"
-          />
-          <span class="deck-size">{{investigator.deckSize}}</span>
-          <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
+        <div class="discard">
+          <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="$emit('choose', $event)" />
+          <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
+          <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">Shuffle Back In</button>
         </div>
-        <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
-        </template>
+
+        <div class="deck-container">
+          <div class="top-of-deck">
+            <Treachery
+              v-if="topOfDeckTreachery"
+              :treachery="topOfDeckTreachery"
+              :game="game"
+              :data-index="topOfDeckTreachery.cardId"
+              :playerId="playerId"
+              class="deck"
+              @choose="$emit('choose', $event)"
+            />
+            <img
+              v-else
+              :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
+              class="deck"
+              :src="topOfDeck"
+              width="150px"
+              @click="$emit('choose', drawCardsAction)"
+            />
+            <span class="deck-size">{{investigator.deckSize}}</span>
+            <button v-if="playTopOfDeckAction !== -1" @click="$emit('choose', playTopOfDeckAction)">Play</button>
+          </div>
+          <template v-if="debug.active">
+            <button @click="debug.send(game.id, {tag: 'Search', contents: ['Looking', investigatorId, {tag: 'GameSource', contents: []}, { tag: 'InvestigatorTarget', contents: investigatorId }, [[{tag: 'FromDeck', contents: []}, 'ShuffleBackIn']], {tag: 'BasicCardMatch', contents: {tag: 'AnyCard', contents: []}}, { tag: 'DrawFound', contents: [investigatorId, 1]}]})">Select Draw</button>
+          </template>
+        </div>
       </div>
       <div class="hand">
         <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
@@ -582,7 +584,7 @@ const realityAcid = ref('89005')
 .player {
   display: flex;
   gap: 5px;
-  align-self: center;
+  align-self: safe center;
   align-items: flex-start;
   padding: 10px;
   background: var(--background-dark);
@@ -796,6 +798,12 @@ const realityAcid = ref('89005')
 
 .hand {
   display: flex;
+  gap: 5px;
+}
+
+.investigator-and-deck {
+  display: flex;
+  flex-direction: row;
   gap: 5px;
 }
 </style>

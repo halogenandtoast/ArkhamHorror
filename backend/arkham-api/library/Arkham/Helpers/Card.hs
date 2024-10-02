@@ -109,7 +109,7 @@ getVictoryPoints c = do
     then pure Nothing
     else pure $ foldr applyModifier printedVictory modifiers'
  where
-  applyModifier (GainVictory n) _ = Just n
+  applyModifier (GainVictory n) m = Just (n + fromMaybe 0 m)
   applyModifier _ n = n
 
 getHasVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m Bool

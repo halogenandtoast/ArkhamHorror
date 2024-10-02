@@ -156,8 +156,8 @@ instance HasModifiersFor TarotCard where
             pure
               . toModifiers source
               $ case facing of
-                Upright -> [XPModifier 2 | not isDefeated && affected]
-                Reversed -> [XPModifier (-2) | isDefeated && affected]
+                Upright -> [XPModifier "The Fool 0" 2 | not isDefeated && affected]
+                Reversed -> [XPModifier "The Fool 0" (-2) | isDefeated && affected]
           _ -> pure []
       TheMagicianI ->
         case target of

@@ -14,7 +14,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype UnsolvedCase = UnsolvedCase EventAttrs
-  deriving anyclass (IsEvent)
+  deriving anyclass IsEvent
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unsolvedCase :: EventCard UnsolvedCase
@@ -22,7 +22,7 @@ unsolvedCase = eventWith UnsolvedCase Cards.unsolvedCase $ afterPlayL .~ RemoveT
 
 instance HasModifiersFor UnsolvedCase where
   getModifiersFor (InvestigatorTarget iid) (UnsolvedCase attrs) = case eventPlacement attrs of
-    InThreatArea iid' | iid == iid' -> pure $ toModifiers attrs [XPModifier (-2)]
+    InThreatArea iid' | iid == iid' -> pure $ toModifiers attrs [XPModifier "Unsolved Case" (-2)]
     _ -> pure []
   getModifiersFor _ _ = pure []
 

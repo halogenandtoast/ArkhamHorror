@@ -33,7 +33,7 @@ getXpWithBonus bonus = do
     modifiers' <- getModifiers iid
     pure (iid, foldl' applyModifier initialAmount modifiers')
  where
-  applyModifier n (XPModifier m) = max 0 (n + m)
+  applyModifier n (XPModifier _ m) = max 0 (n + m)
   applyModifier n _ = n
   toVictory :: ConvertToCard c => [c] -> m (Sum Int)
   toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints
@@ -89,8 +89,8 @@ generateXpReport bonus = do
     <> locationVictory
     <> fromModifiers
  where
-  modifierToXpDetail iid (XPModifier m) | m > 0 = Just (InvestigatorGainXp iid $ XpDetail XpFromCardEffect "Card Effect" m)
-  modifierToXpDetail iid (XPModifier m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect "Card Effect" m)
+  modifierToXpDetail iid (XPModifier lbl m) | m > 0 = Just (InvestigatorGainXp iid $ XpDetail XpFromCardEffect lbl m)
+  modifierToXpDetail iid (XPModifier lbl m) | m < 0 = Just (InvestigatorLoseXp iid $ XpDetail XpFromCardEffect lbl m)
   modifierToXpDetail _ _ = Nothing
   toVictory :: ConvertToCard c => [c] -> m [XpDetail]
   toVictory = mapMaybeM toEntry

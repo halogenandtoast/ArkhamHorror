@@ -199,7 +199,9 @@ instance RunMessage TheLastKing where
       let
         extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
         (assignedXp, remainingXp) = quotRem extraXp (length investigators)
-        assignXp amount iid = resolutionModifier attrs iid (XPModifier amount)
+        assignXp amount iid =
+          resolutionModifier attrs iid
+            $ XPModifier "Clues that were on the act deck when the game ended" amount
       eachInvestigator (assignXp assignedXp)
 
       lead <- getLead

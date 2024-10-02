@@ -31,6 +31,9 @@ instance HasField "clues" InvestigatorId (QueueT Message GameT Int) where
 instance HasField "hand" InvestigatorAttrs (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand . toId
 
+instance HasField "discard" InvestigatorId (QueueT Message GameT [PlayerCard]) where
+  getField = field InvestigatorDiscard
+
 getSlots :: HasGame m => SlotType -> InvestigatorId -> m [Slot]
 getSlots sType iid = fieldMap InvestigatorSlots (findWithDefault [] sType) iid
 

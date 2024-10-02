@@ -224,7 +224,7 @@ getSkills CardJson {..} =
   getSkill _ Nothing = []
   getSkill skillType (Just n) = replicate n skillType
 
-getTraits :: CardJson -> Set Trait
+getTraits :: HasCallStack => CardJson -> Set Trait
 getTraits CardJson {code} | code == "01000" = mempty
 getTraits CardJson {..} = case traits of
   Nothing -> mempty
@@ -232,8 +232,7 @@ getTraits CardJson {..} = case traits of
   Just s -> setFromList $ map toTrait (T.splitOn ". " $ cleanText s)
  where
   toTrait x =
-    handleEither x
-      . readEither
+    (\s -> handleEither s $ readEither s)
       . T.unpack
       . normalizeTrait
       . cleanText

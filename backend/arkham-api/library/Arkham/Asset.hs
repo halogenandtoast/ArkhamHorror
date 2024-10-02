@@ -905,7 +905,7 @@ allAssets =
     , --- rogue [tsk]
       SomeAssetCard damningTestimony
     , SomeAssetCard disguise
-    , SomeAssetCard embezzeledTreasure
+    , SomeAssetCard embezzledTreasure
     , SomeAssetCard thievesKit
     , SomeAssetCard stylishCoat1
     , SomeAssetCard chuckFergus2

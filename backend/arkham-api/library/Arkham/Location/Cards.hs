@@ -6577,11 +6577,11 @@ deepOneGrotto_175a =
   locationWithUnrevealed
     "07175a"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Deep One Grotto"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef
@@ -6591,11 +6591,11 @@ deepOneGrotto_175b =
   locationWithUnrevealed
     "07175b"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Deep One Grotto"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef
@@ -6605,11 +6605,11 @@ cyclopeanRuins_176a =
   locationWithUnrevealed
     "07176a"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Cyclopean Ruins"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef
@@ -6619,11 +6619,11 @@ cyclopeanRuins_176b =
   locationWithUnrevealed
     "07176b"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Cyclopean Ruins"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef
@@ -6633,11 +6633,11 @@ templeOfTheUnion_177a =
   locationWithUnrevealed
     "07177a"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Temple of the Union"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef
@@ -6647,11 +6647,11 @@ templeOfTheUnion_177b =
   locationWithUnrevealed
     "07177b"
     "Tidal Tunnel"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     "Temple of the Union"
-    [Cave, YHaNthlei]
+    [Cave, Yhanthlei]
     NoSymbol
     []
     DevilReef

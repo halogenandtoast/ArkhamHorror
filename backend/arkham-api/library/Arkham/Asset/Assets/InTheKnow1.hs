@@ -1,0 +1,49 @@
+module Arkham.Asset.Assets.InTheKnow1 (inTheKnow1, InTheKnow1 (..)) where
+
+import Arkham.Ability
+import Arkham.Asset.Cards qualified as Cards
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Matcher
+
+newtype InTheKnow1 = InTheKnow1 AssetAttrs
+  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+inTheKnow1 :: AssetCard InTheKnow1
+inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
+
+instance HasAbilities InTheKnow1 where
+  getAbilities (InTheKnow1 attrs) =
+    [ delayAdditionalCostsWhen (exists $ RevealedLocation <> InvestigatableLocation)
+        $ restrictedAbility attrs 1 ControlsThis (investigateAction $ assetUseCost attrs Secret 1)
+        & (abilityMetadataL ?~ InvestigateTargets RevealedLocation)
+    ]
+
+instance RunMessage InTheKnow1 where
+  runMessage msg a@(InTheKnow1 attrs) = runQueueT $ case msg of
+    UseCardAbility iid source 1 windows' _ | isSource attrs source -> do
+      locations <- select $ RevealedLocation <> InvestigatableLocation
+      locationsWithInvestigate <- concatForM locations \lid -> do
+        investigateActions <- select $ AbilityOnLocation (be lid) <> #investigate
+        mods <- getModifiers lid
+        let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+        pure $ map (lid,costs,) investigateActions
+      batchId <- getRandom
+      chooseOne
+        iid
+        [ targetLabel
+          location
+          [ Would
+              batchId
+              [ Msg.abilityModifier ability.ref (attrs.ability 1) iid (AsIfAt location)
+              , PayAdditionalCost iid batchId costs
+              , UseAbility iid ability windows'
+              ]
+          ]
+        | (location, costs, ability) <- locationsWithInvestigate
+        ]
+      pure a
+    _ -> InTheKnow1 <$> liftRunMessage msg attrs

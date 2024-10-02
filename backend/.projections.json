@@ -257,11 +257,11 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-api/library/Arkham/Asset/Cards/*.hs": {
+  "arkham-api/library/Arkham/Asset/Assets/*.hs": {
     "type": "asset",
-    "alternate": "arkham-api/tests/Arkham/Asset/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Asset/Assets/{}Spec.hs",
     "template": [
-      "module Arkham.Asset.Cards.{dot}",
+      "module Arkham.Asset.Assets.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",
@@ -282,11 +282,11 @@
       "    _ -> {dot} <$> liftRunMessage msg attrs"
     ]
   },
-  "arkham-api/library/Arkham/Event/Cards/*.hs": {
+  "arkham-api/library/Arkham/Event/Events/*.hs": {
     "type": "event",
-    "alternate": "arkham-api/tests/Arkham/Event/Cards/{}Spec.hs",
+    "alternate": "arkham-api/tests/Arkham/Event/Events/{}Spec.hs",
     "template": [
-      "module Arkham.Event.Cards.{dot}",
+      "module Arkham.Event.Events.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
       "  )",

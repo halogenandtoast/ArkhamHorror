@@ -55,7 +55,7 @@ validate:
 .PHONY: validate.watch
 validate.watch:
 	cd validate && \
-	stack build --test --no-run-tests --fast validate \
+	stack build --test --no-run-tests --pedantic --fast validate \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 		--file-watch \
@@ -65,7 +65,7 @@ validate.watch:
 .PHONY: revalidate
 revalidate:
 	cd arkham-api && \
-	stack build --pedantic --fast arkham-api \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)

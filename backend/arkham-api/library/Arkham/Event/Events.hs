@@ -1,1 +1,1 @@
-{-# OPTIONS_GHC -F -pgmF cards-discover #-}
+{-# OPTIONS_GHC -F -pgmF cards-discover -optF --dir=Events #-}

@@ -182,13 +182,18 @@ instance RunMessage SkillTest where
         x@HalfResourcesOf {} -> pure x
         x@FixedBaseValue {} -> pure x
 
+      let icons =
+            if null skillTestIconValues
+              then iconValuesForSkillTestType updatedSkillTestType
+              else skillTestIconValues
+
       pure
         $ s
         & (targetCardL .~ mTargetCardId)
         & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
         & (stepL .~ CommitCardsFromHandToSkillTestStep)
         & (skillTestTypeL .~ updatedSkillTestType)
-        & (iconValuesL .~ iconValuesForSkillTestType updatedSkillTestType)
+        & (iconValuesL .~ icons)
         & (baseValueL .~ updatedBaseValue)
     ReplaceSkillTestSkill (FromSkillType fsType) (ToSkillType tsType) -> do
       let

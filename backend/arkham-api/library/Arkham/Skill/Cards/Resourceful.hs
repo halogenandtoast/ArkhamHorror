@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.Resourceful (
-  resourceful,
-  Resourceful (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.Resourceful (resourceful, Resourceful (..)) where
 
 import Arkham.Card
-import Arkham.ClassSymbol
-import Arkham.Classes
+import Arkham.Investigator.Projection ()
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Resourceful = Resourceful SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -21,27 +15,16 @@ resourceful :: SkillCard Resourceful
 resourceful = skill Resourceful Cards.resourceful
 
 instance RunMessage Resourceful where
-  runMessage msg s@(Resourceful attrs) = case msg of
+  runMessage msg s@(Resourceful attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
-      targets <-
-        select
-          ( InDiscardOf (InvestigatorWithId $ skillOwner attrs)
-              <> BasicCardMatch
-                (CardWithClass Survivor <> NotCard (CardWithTitle "Resourceful"))
-          )
-      player <- getPlayer (skillOwner attrs)
-      s
-        <$ when
-          (notNull targets)
-          ( push
-              $ chooseOne
-                player
-                [ TargetLabel
-                  (CardIdTarget $ toCardId card)
-                  [ RemoveFromDiscard (skillOwner attrs) (toCardId card)
-                  , addToHand (skillOwner attrs) card
-                  ]
-                | card <- targets
-                ]
-          )
-    _ -> Resourceful <$> runMessage msg attrs
+      cards <- select $ inDiscardOf attrs.owner <> basic (#survivor <> not_ (CardWithTitle "Resourceful"))
+      unless (null cards) do
+        discards <- map toCard <$> attrs.owner.discard
+        focusCards discards \unfocus -> do
+          chooseOneM attrs.owner do
+            targets cards \card -> do
+              push unfocus
+              obtainCard card
+              addToHand attrs.owner (only card)
+      pure s
+    _ -> Resourceful <$> liftRunMessage msg attrs

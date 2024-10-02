@@ -28,3 +28,8 @@ env:
     - MAILTRAP_API_TOKEN
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
+
+proxy:
+  app_port: 3000
+  healthcheck:
+    path: /health

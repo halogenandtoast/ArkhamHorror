@@ -1,7 +1,7 @@
 module Arkham.Helpers.Cost where
 
 import Arkham.Action (Action)
-import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Cards.TheCircleUndone qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Capability
 import Arkham.Card

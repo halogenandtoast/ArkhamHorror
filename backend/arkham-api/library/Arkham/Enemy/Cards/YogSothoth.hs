@@ -10,7 +10,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Prelude
 
 newtype YogSothoth = YogSothoth EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yogSothoth :: EnemyCard YogSothoth
@@ -43,9 +43,10 @@ instance RunMessage YogSothoth where
                 <> tshow (enemySanityDamage - discardCount)
                 <> " horror"
             )
-            [ createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
-            , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
-            ]
+            $ [ createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
+              , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
+              ]
+            <> [assignHorror iid (attrs.ability 1) (5 - discardCount) | (5 - discardCount) > 0]
           | discardCount <- [0 .. enemySanityDamage]
           ]
       pure e

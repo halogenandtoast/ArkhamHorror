@@ -300,7 +300,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ( \u ->
                 if usedDepth u > depth
                   then u {usedThisWindow = False}
-                  else if usedDepth u == depth then u {usedThisWindow = True} else u
+                  else if usedDepth u == depth && depth > 0 then u {usedThisWindow = True} else u
             )
             usedAbilities'
     pure $ a & usedAbilitiesL .~ usedAbilities''

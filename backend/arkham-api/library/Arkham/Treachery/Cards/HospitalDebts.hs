@@ -20,10 +20,8 @@ instance HasAbilities HospitalDebts where
   getAbilities (HospitalDebts a) =
     limitedAbility
       (PlayerLimit PerRound 2)
-      ( restrictedAbility a 1 (OnSameLocation <> youExist (InvestigatorWithResources $ atLeast 1))
-          $ FastAbility Free
-      )
-      : [ restrictedAbility a 2 (ResourcesOnThis $ lessThan 6) $ forcedOnElimination iid
+      (restricted a 1 (OnSameLocation <> youExist InvestigatorWithAnyResources) $ FastAbility Free)
+      : [ restricted a 2 (ResourcesOnThis $ lessThan 6) $ forcedOnElimination iid
         | iid <- toList a.inThreatAreaOf
         ]
 

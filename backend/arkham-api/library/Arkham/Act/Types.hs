@@ -41,6 +41,7 @@ type ActCard a = CardBuilder (Int, ActId) a
 data instance Field Act :: Type -> Type where
   ActSequence :: Field Act AS.ActSequence
   ActClues :: Field Act Int
+  ActFlipped :: Field Act Bool
   ActDeckId :: Field Act Int
   ActAbilities :: Field Act [Ability]
   ActCard :: Field Act Card
@@ -58,6 +59,7 @@ data ActAttrs = ActAttrs
   , actUsedWheelOfFortuneX :: Bool
   , actMeta :: Value
   , actKeys :: Set ArkhamKey
+  , actFlipped :: Bool
   }
   deriving stock (Show, Eq, Generic)
 
@@ -86,6 +88,9 @@ metaL = lens actMeta $ \m x -> m {actMeta = x}
 keysL :: Lens' ActAttrs (Set ArkhamKey)
 keysL = lens actKeys $ \m x -> m {actKeys = x}
 
+flippedL :: Lens' ActAttrs Bool
+flippedL = lens actFlipped $ \m x -> m {actFlipped = x}
+
 breachesL :: Lens' ActAttrs (Maybe Int)
 breachesL = lens actBreaches $ \m x -> m {actBreaches = x}
 
@@ -113,6 +118,7 @@ actWith (n, side) f cardDef mCost g =
             , actUsedWheelOfFortuneX = False
             , actMeta = Null
             , actKeys = mempty
+            , actFlipped = False
             }
     }
 
@@ -145,6 +151,7 @@ instance FromJSON ActAttrs where
     actUsedWheelOfFortuneX <- v .: "usedWheelOfFortuneX"
     actMeta <- v .: "meta"
     actKeys <- v .:? "keys" .!= mempty
+    actFlipped <- v .:? "flipped" .!= False
     return ActAttrs {..}
 
 instance Entity ActAttrs where

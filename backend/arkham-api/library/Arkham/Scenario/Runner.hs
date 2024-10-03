@@ -498,8 +498,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     handler <- getEncounterDeckHandler (toCardId ec)
     pure
       $ a
-      & discardLens handler
-      %~ (ec :)
+      & (discardLens handler %~ (ec :))
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
@@ -516,8 +515,10 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     card <- field TreacheryCard tid
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (ActTarget aid) -> do
+    flipped <- field ActFlipped aid
     card <- field ActCard aid
-    pure $ a & (victoryDisplayL %~ (card :))
+    let card' = if flipped then flipCard card else card
+    pure $ a & (victoryDisplayL %~ (card' :))
   AddToVictory (AgendaTarget aid) -> do
     card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ (card :))

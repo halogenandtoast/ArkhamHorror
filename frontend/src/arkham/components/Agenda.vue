@@ -149,7 +149,6 @@ const debug = useDebug()
       v-model="showAbilities"
       :abilities="abilities"
       position="bottom"
-      class="sideways"
       @choose="chooseAbility"
       />
     <div v-if="groupedTreacheries.length > 0" class="treacheries">

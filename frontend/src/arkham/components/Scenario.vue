@@ -854,9 +854,6 @@ const tarotCardAbility = (card: TarotCard) => {
 
   display: grid;
   grid-template-rows: auto 1fr auto;
-  @media (max-height: 800px) {
-    @include splitView;
-  }
 
   &.split-view {
     @include splitView;

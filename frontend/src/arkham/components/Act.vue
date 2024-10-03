@@ -3,7 +3,7 @@ import { ComputedRef, computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage } from '@/arkham/types/Card'
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -26,6 +26,7 @@ const emits = defineEmits<{
 }>()
 
 const showAbilities = ref(false)
+const frame = ref(null)
 
 const id = computed(() => props.act.id)
 
@@ -117,9 +118,9 @@ async function clicked() {
   }
 }
 
-async function chooseAbility(ability: AbilityMessage) {
+async function chooseAbility(index: number) {
   showAbilities.value = false
-  emits('choose', ability.index)
+  emits('choose', index)
 }
 
 const isOtherEncounterCard = computed(() => {
@@ -136,24 +137,17 @@ const isOtherEncounterCard = computed(() => {
         class="card"
         @click="clicked"
         :src="image"
+        ref="frame"
       />
 
     </div>
-    <div class="abilities" v-if="showAbilities">
-      <AbilityButton
-        v-for="ability in abilities"
-        :key="ability.index"
-        :ability="ability.contents"
-        :data-image="image"
-        @click="chooseAbility(ability)"
-        />
-
-      <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'AdvanceAct', contents: [id, {tag: 'TestSource', contents:[]}]})">Advance</button>
-      </template>
-
-    </div>
-    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
+    <AbilitiesMenu
+      :frame="frame"
+      v-model="showAbilities"
+      :abilities="abilities"
+      position="bottom"
+      @choose="chooseAbility"
+      />
     <img
       v-for="(card, idx) in cardsNextTo"
       class="card card--sideways"

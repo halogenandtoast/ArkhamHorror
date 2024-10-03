@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import { OnClickOutside } from '@vueuse/components'
-import { watch, computed, ref, useId } from 'vue'
+import { computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
@@ -32,7 +31,7 @@ const emits = defineEmits<{
 }>()
 
 
-const abilitiesId = useId()
+const frame = ref(null)
 const debugging = ref(false)
 const dragging = ref(false)
 const enemyStory = computed(() => {
@@ -176,17 +175,6 @@ async function chooseAbility(ability: number) {
   emits('choose', ability)
 }
 
-watch(abilities, (abilities) => {
-  // ability is forced we must show
-  if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
-    showAbilities.value = true
-  }
-
-  if (abilities.length === 0) {
-    showAbilities.value = false
-  }
-})
-
 function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   dragging.value = true
   if (event.dataTransfer) {
@@ -202,7 +190,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
     <div class="enemy">
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
-        <div class="card-frame">
+        <div class="card-frame" ref="frame">
           <div class="card-wrapper">
             <img v-if="isTrueForm" :src="image"
               class="card enemy"
@@ -250,16 +238,13 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             />
           </div>
 
-          <OnClickOutside @trigger="showAbilities = false">
-            <div :id="abilitiesId" v-if="showAbilities" class="abilities" :class="{ right: atLocation, left: inVoid || global }">
-              <AbilityButton
-                v-for="ability in abilities"
-                :key="ability.index"
-                :ability="ability.contents"
-                @click="chooseAbility(ability.index)"
-                />
-            </div>
-          </OnClickOutside>
+          <AbilitiesMenu
+            :frame="frame"
+            v-model="showAbilities"
+            :abilities="abilities"
+            :position="atLocation ? 'right' : (inVoid || global) ? 'left' : 'top'"
+            @choose="chooseAbility"
+            />
         </div>
 
       </template>

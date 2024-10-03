@@ -13,7 +13,7 @@ import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue';
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 import { TokenType } from '@/arkham/types/Token';
@@ -24,27 +24,16 @@ export interface Props {
   playerId: string
 }
 
+const frame = ref(null)
 const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
 const abilitiesEl = ref<HTMLElement | null>(null)
-
-const handleFocus = () => {
-  showAbilities.value = true
-}
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
   if (e.dataTransfer) {
     e.dataTransfer.dropEffect = 'move'
   }
-}
-
-const handleFocusOut = (e: FocusEvent) => {
-  const target = e.target as HTMLElement
-  if (target && target.classList.contains('abilities')) {
-    return
-  }
-  showAbilities.value = false
 }
 
 const props = defineProps<Props>()
@@ -138,12 +127,10 @@ watch(abilities, (abilities) => {
   // ability is forced we must show
   if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
     showAbilities.value = true
-    abilitiesEl.value?.focus()
   }
 
   if (abilities.length === 0) {
     showAbilities.value = false
-    abilitiesEl.value?.blur()
   }
 })
 
@@ -263,7 +250,7 @@ function onDrop(event: DragEvent) {
         </div>
       </div>
       <div class="location-column">
-        <div class="card-frame" :class="{ explosion }">
+        <div class="card-frame" :class="{ explosion }" ref="frame">
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
@@ -298,15 +285,15 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="location.cardsUnderneath.length > 0" type="card" :amount="location.cardsUnderneath.length" />
           </div>
         </div>
-        <div v-if="showAbilities" class="abilities" :data-image="image" tabindex="-1" @focus="handleFocus" @focusout="handleFocusOut" ref="abilitiesEl">
-          <AbilityButton
-            v-for="ability in abilities"
-            :key="ability.index"
-            :ability="ability.contents"
-            :show-move="false"
-            @click="chooseAbility(ability.index)"
-            />
-        </div>
+
+        <AbilitiesMenu
+          v-model="showAbilities"
+          :abilities="abilities"
+          :frame="frame"
+          :show-move="false"
+          position="left"
+          @choose="chooseAbility"
+        />
 
         <template v-if="debug.active">
           <button @click="debugging = true">Debug</button>

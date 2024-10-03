@@ -124,11 +124,12 @@ const applyResultsAction = computed(() => {
 
 const skillValue = computed(() => {
   const result = skillTestResults.value
+  const cap = (a: number) => Math.max(0, a)
   if (result !== null) {
     const {skillTestResultsSkillValue, skillTestResultsIconValue, skillTestResultsChaosTokensValue } = result
-    return skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsChaosTokensValue
+    return cap(skillTestResultsSkillValue + skillTestResultsIconValue + skillTestResultsChaosTokensValue)
   } else {
-    return props.skillTest.modifiedSkillValue
+    return cap(props.skillTest.modifiedSkillValue)
   }
 })
 

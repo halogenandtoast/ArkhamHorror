@@ -70,7 +70,7 @@ instance RunMessage ActAttrs where
   runMessage msg a@ActAttrs {..} = case msg of
     AdvanceAct aid _ advanceMode | aid == actId && onFrontSide a -> do
       pushAll =<< advanceActSideA a advanceMode
-      pure $ a & (sequenceL .~ Sequence (unActStep $ actStep actSequence) (backSide a))
+      pure $ a & flippedL .~ True & sequenceL .~ Sequence (unActStep $ actStep actSequence) (backSide a)
     InvestigatorResigned _ -> do
       investigatorIds <- select UneliminatedInvestigator
       whenMsg <- checkWhen AllUndefeatedInvestigatorsResigned

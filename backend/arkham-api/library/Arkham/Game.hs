@@ -3261,6 +3261,7 @@ instance Projection Act where
       ActAbilities -> pure $ getAbilities a
       ActCard -> pure $ lookupCard (unActId aid) actCardId
       ActUsedWheelOfFortuneX -> pure actUsedWheelOfFortuneX
+      ActFlipped -> pure actFlipped
       ActKeys -> pure actKeys
 
 instance Projection (OutOfPlayEntity Enemy) where

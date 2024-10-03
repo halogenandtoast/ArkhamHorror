@@ -323,8 +323,8 @@ addExtraDeck k defs = do
         pure $ toCard card
       Nothing -> notFoundInDeck def
 
-  cards' <- shuffle cards
-  decksL %= (at k ?~ cards')
+  -- cards' <- shuffle cards
+  decksL %= (at k ?~ cards)
 
 setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setActDeck defs = do

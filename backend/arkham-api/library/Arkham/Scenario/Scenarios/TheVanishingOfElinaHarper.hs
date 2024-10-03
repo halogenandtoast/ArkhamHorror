@@ -120,7 +120,7 @@ instance RunMessage TheVanishingOfElinaHarper where
       (kidnapper, remainingSuspects) <- sampleWithRest suspects
 
       excludeFromEncounterDeck [hideout, kidnapper]
-      addExtraDeck LeadsDeck =<< shuffleM (remainingHideouts <> remainingSuspects)
+      addExtraDeck LeadsDeck =<< shuffle (remainingHideouts <> remainingSuspects)
 
       setAside
         [ Agendas.franticPursuit

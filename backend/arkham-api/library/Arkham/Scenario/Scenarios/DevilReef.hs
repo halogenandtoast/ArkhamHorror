@@ -115,7 +115,7 @@ instance RunMessage DevilReef where
           , Locations.blackReef
           ]
       addExtraDeck TidalTunnelDeck
-        =<< shuffleM
+        =<< shuffle
           [ Locations.boneRiddenPit
           , Locations.fishGraveyard
           , Locations.underwaterCavern

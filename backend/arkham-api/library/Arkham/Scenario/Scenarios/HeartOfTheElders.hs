@@ -167,18 +167,20 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         when mappedOutTheWayForward $ place_ ruinsLocation
 
         addExtraDeck ExplorationDeck
-          $ [ruinsLocation | not mappedOutTheWayForward]
-          <> [ Locations.timeWrackedWoods
-             , Locations.pathOfThorns
-             , Locations.riverCanyon
-             , Locations.ropeBridge
-             , Locations.serpentsHaven
-             , Locations.circuitousTrail
-             , Treacheries.pitfall
-             , Treacheries.ants
-             , Treacheries.lostInTheWilds
-             , Treacheries.lowOnSupplies
-             ]
+          =<< shuffle
+            ( [ruinsLocation | not mappedOutTheWayForward]
+                <> [ Locations.timeWrackedWoods
+                   , Locations.pathOfThorns
+                   , Locations.riverCanyon
+                   , Locations.ropeBridge
+                   , Locations.serpentsHaven
+                   , Locations.circuitousTrail
+                   , Treacheries.pitfall
+                   , Treacheries.ants
+                   , Treacheries.lostInTheWilds
+                   , Treacheries.lowOnSupplies
+                   ]
+            )
 
         setAsidePoisonedCount <- getSetAsidePoisonedCount
         setAside $ replicate setAsidePoisonedCount Treacheries.poisoned
@@ -241,18 +243,18 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
 
-    addExtraDeck
-      ExplorationDeck
-      [ Locations.vastPassages
-      , Locations.hallOfIdolatry
-      , Locations.darkHollow
-      , Locations.perilousGulch
-      , Locations.crystalPillars
-      , Treacheries.pitfall
-      , Treacheries.noTurningBack
-      , Treacheries.deepDark
-      , Treacheries.finalMistake
-      ]
+    addExtraDeck ExplorationDeck
+      =<< shuffle
+        [ Locations.vastPassages
+        , Locations.hallOfIdolatry
+        , Locations.darkHollow
+        , Locations.perilousGulch
+        , Locations.crystalPillars
+        , Treacheries.pitfall
+        , Treacheries.noTurningBack
+        , Treacheries.deepDark
+        , Treacheries.finalMistake
+        ]
 
     setActDeck [Acts.cavernOfTheForgottenAge, Acts.descentIntoDark]
     setAgendaDeck [Agendas.theLonelyCaverns, Agendas.eyesInTheDark]

@@ -9,7 +9,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.ChaosBag
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Meta
-import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -103,7 +102,7 @@ instance RunMessage TheUntamedWilds where
         ]
 
       addExtraDeck ExplorationDeck
-        =<< genCards
+        =<< shuffle
           [ Locations.pathOfThorns
           , Locations.riverCanyon
           , Locations.ropeBridge

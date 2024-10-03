@@ -164,7 +164,7 @@ instance RunMessage TheDepthsOfYoth where
           _ -> error "impossible"
         (inExplore, setAsideLocations) = splitAt 4 rest
 
-      addExtraDeck ExplorationDeck $ Locations.stepsOfYoth : inExplore
+      addExtraDeck ExplorationDeck =<< shuffle (Locations.stepsOfYoth : inExplore)
 
       startLocation <- place start
       startAt startLocation

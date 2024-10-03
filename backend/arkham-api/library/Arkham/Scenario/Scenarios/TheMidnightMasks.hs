@@ -102,7 +102,7 @@ instance RunMessage TheMidnightMasks where
       placeAll
         [Locations.easttown, Locations.miskatonicUniversity, Locations.northside, Locations.stMarysHospital]
 
-      addExtraDeck CultistDeck =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
+      addExtraDeck CultistDeck =<< shuffle =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
       getHasRecord YourHouseHasBurnedToTheGround >>= \case
         True -> startAt rivertown

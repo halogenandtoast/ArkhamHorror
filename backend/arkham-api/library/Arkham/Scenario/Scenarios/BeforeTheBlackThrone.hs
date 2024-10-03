@@ -107,7 +107,7 @@ instance RunMessage BeforeTheBlackThrone where
       startAt cosmicIngress
 
       cosmosCards' <-
-        shuffleM
+        shuffle
           [ Locations.infinityOfDarkness
           , Locations.infinityOfDarkness
           , Locations.infinityOfDarkness

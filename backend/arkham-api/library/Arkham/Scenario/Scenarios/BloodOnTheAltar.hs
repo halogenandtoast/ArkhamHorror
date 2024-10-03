@@ -168,8 +168,8 @@ instance RunMessage BloodOnTheAltar where
         zebulonWhateley <- genCard Assets.zebulonWhateley
         earlSawyer <- genCard Assets.earlSawyer
         addExtraDeck PotentialSacrifices
-          $ [zebulonWhateley, earlSawyer]
-          <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
+          =<< shuffle
+            ([zebulonWhateley, earlSawyer] <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage])
       ResolveChaosToken _ Tablet iid -> do
         lid <- getJustLocation iid
         isHiddenChamber <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid

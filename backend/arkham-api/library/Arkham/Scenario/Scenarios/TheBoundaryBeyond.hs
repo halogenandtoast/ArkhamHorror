@@ -158,25 +158,25 @@ instance RunMessage TheBoundaryBeyond where
         , Locations.chapultepecPark
         ]
 
-      addExtraDeck
-        ExplorationDeck
-        [ Locations.temploMayor_174
-        , Locations.temploMayor_175
-        , Locations.templesOfTenochtitlan_176
-        , Locations.templesOfTenochtitlan_177
-        , Locations.chapultepecHill_178
-        , Locations.chapultepecHill_179
-        , Locations.canalsOfTenochtitlan_180
-        , Locations.canalsOfTenochtitlan_181
-        , Locations.lakeXochimilco_182
-        , Locations.lakeXochimilco_183
-        , Locations.sacredWoods_184
-        , Locations.sacredWoods_185
-        , Treacheries.windowToAnotherTime
-        , Treacheries.timelineDestabilization
-        , Treacheries.aTearInTime
-        , Treacheries.lostInTime
-        ]
+      addExtraDeck ExplorationDeck
+        =<< shuffle
+          [ Locations.temploMayor_174
+          , Locations.temploMayor_175
+          , Locations.templesOfTenochtitlan_176
+          , Locations.templesOfTenochtitlan_177
+          , Locations.chapultepecHill_178
+          , Locations.chapultepecHill_179
+          , Locations.canalsOfTenochtitlan_180
+          , Locations.canalsOfTenochtitlan_181
+          , Locations.lakeXochimilco_182
+          , Locations.lakeXochimilco_183
+          , Locations.sacredWoods_184
+          , Locations.sacredWoods_185
+          , Treacheries.windowToAnotherTime
+          , Treacheries.timelineDestabilization
+          , Treacheries.aTearInTime
+          , Treacheries.lostInTime
+          ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       setAside

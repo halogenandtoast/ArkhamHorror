@@ -89,19 +89,19 @@ instance RunMessage TurnBackTime where
 
       startAt =<< place Locations.entryway
 
-      addExtraDeck
-        ExplorationDeck
-        [ Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.burialPit
-        , Locations.undergroundRuins
-        , Locations.secretPassage
-        , Treacheries.illOmen
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        , Treacheries.entombed
-        , Treacheries.cryptChill
-        ]
+      addExtraDeck ExplorationDeck
+        =<< shuffle
+          [ Locations.ancientHall
+          , Locations.grandChamber
+          , Locations.burialPit
+          , Locations.undergroundRuins
+          , Locations.secretPassage
+          , Treacheries.illOmen
+          , Treacheries.deepDark
+          , Treacheries.finalMistake
+          , Treacheries.entombed
+          , Treacheries.cryptChill
+          ]
 
       setAsidePoisonedCount <- getSetAsidePoisonedCount
       setAside

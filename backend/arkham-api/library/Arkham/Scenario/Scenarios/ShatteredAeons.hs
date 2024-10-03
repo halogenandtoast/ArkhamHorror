@@ -194,15 +194,15 @@ instance RunMessage ShatteredAeons where
         , Acts.timelock
         ]
 
-      addExtraDeck
-        ExplorationDeck
-        [ Locations.yuggoth
-        , Locations.shoresOfRlyeh
-        , Locations.cityOfTheUnseen
-        , Treacheries.wrackedByTime
-        , Treacheries.betweenWorlds
-        , Treacheries.ancientEvils
-        ]
+      addExtraDeck ExplorationDeck
+        =<< shuffle
+          [ Locations.yuggoth
+          , Locations.shoresOfRlyeh
+          , Locations.cityOfTheUnseen
+          , Treacheries.wrackedByTime
+          , Treacheries.betweenWorlds
+          , Treacheries.ancientEvils
+          ]
 
       yigsFury <- getRecordCount YigsFury
       leadDeck <- fieldMap InvestigatorDeck unDeck =<< getLead

@@ -152,19 +152,19 @@ instance RunMessage TheDoomOfEztli where
       setActDeck [Acts.intoTheRuins, Acts.magicAndScience, Acts.escapeTheRuins]
       setAgendaDeck [Agendas.somethingStirs, Agendas.theTempleWarden]
 
-      addExtraDeck
-        ExplorationDeck
-        [ Locations.ancientHall
-        , Locations.grandChamber
-        , Locations.burialPit
-        , Locations.undergroundRuins
-        , Locations.secretPassage
-        , Treacheries.illOmen
-        , Treacheries.deepDark
-        , Treacheries.finalMistake
-        , Treacheries.entombed
-        , Treacheries.cryptChill
-        ]
+      addExtraDeck ExplorationDeck
+        =<< shuffle
+          [ Locations.ancientHall
+          , Locations.grandChamber
+          , Locations.burialPit
+          , Locations.undergroundRuins
+          , Locations.secretPassage
+          , Treacheries.illOmen
+          , Treacheries.deepDark
+          , Treacheries.finalMistake
+          , Treacheries.entombed
+          , Treacheries.cryptChill
+          ]
     Explore iid _ _ -> do
       checkWhen $ Window.AttemptExplore iid
       push $ Do msg

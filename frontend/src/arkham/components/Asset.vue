@@ -14,7 +14,7 @@ import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
-import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import Story from '@/arkham/components/Story.vue';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<{
 }>(), { atLocation: false })
 
 const debugging = ref(false)
+const frame = ref(null)
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -189,7 +190,7 @@ const assetStory = computed(() => {
   <div class="asset--outer">
     <Story v-if="assetStory" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
     <div v-else class="asset" :data-index="asset.cardId">
-      <div class="card-frame">
+      <div class="card-frame" ref="frame">
         <div v-if="asset.marketDeck" class="market-deck">
           <img
             class="deck card"
@@ -259,15 +260,12 @@ const assetStory = computed(() => {
           <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
           <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
         </div>
-
-        <div v-if="showAbilities" class="abilities" :class="{ right: atLocation }">
-          <AbilityButton
-            v-for="ability in abilities"
-            :key="ability.index"
-            :ability="ability.contents"
-            @click="chooseAbility(ability.index)"
-            />
-        </div>
+        <AbilitiesMenu
+          v-model="showAbilities"
+          :frame="frame"
+          :abilities="abilities"
+          @choose="chooseAbility"
+        />
       </div>
       <Event
         v-for="eventId in asset.events"
@@ -388,25 +386,6 @@ const assetStory = computed(() => {
   justify-content: center;
 }
 
-.abilities {
-  position: absolute;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  bottom:100%;
-  left: 0;
-  z-index: 1000;
-
-  &.right {
-    bottom:50%;
-    left: 100%;
-    transform: translateY(50%);
-  }
-}
-
 .deck-size {
   pointer-events: none;
   position: absolute;
@@ -452,5 +431,4 @@ const assetStory = computed(() => {
     width: 100%;
   }
 }
-
 </style>

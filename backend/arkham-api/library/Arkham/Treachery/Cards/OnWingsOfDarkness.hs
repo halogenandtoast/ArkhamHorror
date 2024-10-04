@@ -28,6 +28,6 @@ instance RunMessage OnWingsOfDarkness where
       assignDamageAndHorror iid attrs 1 1
       pushAll $ map (DisengageEnemy iid) enemiesToDisengage
       when (notNull centralLocations) do
-        chooseOne iid $ targetLabels centralLocations (only . MoveTo . move attrs iid)
+        chooseOne iid $ targetLabels centralLocations (only . Move . move attrs iid)
       pure t
     _ -> OnWingsOfDarkness <$> liftRunMessage msg attrs

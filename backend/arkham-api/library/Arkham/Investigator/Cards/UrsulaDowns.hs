@@ -25,7 +25,7 @@ ursulaDowns =
 instance HasAbilities UrsulaDowns where
   getAbilities (UrsulaDowns (attrs `With` _)) =
     [ playerLimit PerRound
-        $ restrictedAbility attrs 1 Self
+        $ restricted attrs 1 Self
         $ freeReaction (Moves #after You AnySource Anywhere Anywhere)
     ]
 

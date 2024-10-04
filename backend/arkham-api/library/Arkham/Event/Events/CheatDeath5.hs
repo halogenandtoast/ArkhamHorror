@@ -34,7 +34,7 @@ instance RunMessage CheatDeath5 where
 
       locations <- getCanMoveToMatchingLocations iid attrs LocationWithoutEnemies
       when (notNull locations) do
-        chooseOrRunOne iid $ targetLabels locations (only . MoveTo . move (toSource attrs) iid)
+        chooseOrRunOne iid $ targetLabels locations (only . Move . move (toSource attrs) iid)
 
       whenM (iid <=~> TurnInvestigator) $ push $ ChooseEndTurn iid
       pure e

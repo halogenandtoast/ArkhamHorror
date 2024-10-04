@@ -141,7 +141,7 @@ instance RunMessage RunicAxe where
                 if engaged
                   then do
                     accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
-                    chooseOne iid $ targetLabels accessibleLocations (only . MoveTo . move (attrs.ability 1) iid)
+                    chooseOne iid $ targetLabels accessibleLocations (only . Move . move (attrs.ability 1) iid)
                   else push $ EngageEnemy iid eid Nothing False
         Fury -> pure ()
       RunicAxe . (`with` Metadata (inscription : inscriptions meta)) <$> liftRunMessage msg attrs

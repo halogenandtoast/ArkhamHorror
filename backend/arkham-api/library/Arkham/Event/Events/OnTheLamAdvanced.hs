@@ -54,7 +54,7 @@ instance RunMessage OnTheLamAdvancedEffect where
       chooseOrRunOneM iid do
         for_ locations \location -> do
           targeting location do
-            push $ MoveTo $ (move attrs iid location) {moveMeans = Towards}
+            push $ Move $ (move attrs iid location) {moveMeans = Towards}
       disableReturn e
     EndRound -> disableReturn e
     _ -> OnTheLamAdvancedEffect <$> liftRunMessage msg attrs

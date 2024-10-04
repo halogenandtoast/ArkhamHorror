@@ -31,7 +31,7 @@ instance RunMessage DetachedFromReality where
           canLeaveCurrentLocation <- getCanLeaveCurrentLocation iid attrs
           pushAll $ ReplaceLocation wondrousJourney pointlessReality Swap
             : map (DisengageEnemy iid) enemies
-              <> [ MoveTo $ move (toAbilitySource attrs 1) iid wondrousJourney
+              <> [ Move $ move (toAbilitySource attrs 1) iid wondrousJourney
                  | currentLocation /= Just wondrousJourney && canLeaveCurrentLocation
                  ]
         Nothing -> do
@@ -41,6 +41,6 @@ instance RunMessage DetachedFromReality where
           pushAll
             $ map (DisengageEnemy iid) enemies
             <> [placement, afterPutIntoPlay]
-            <> [MoveTo $ move (attrs.ability 1) iid dreamGate | canLeaveCurrentLocation]
+            <> [Move $ move (attrs.ability 1) iid dreamGate | canLeaveCurrentLocation]
       pure t
     _ -> DetachedFromReality <$> runMessage msg attrs

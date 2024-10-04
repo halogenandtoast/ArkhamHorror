@@ -80,7 +80,7 @@ instance RunMessage LostInTheWoods where
           flip concatMap (zip iids placements) $ \(iid, (lid, placement)) ->
             [ placement
             , PutLocationInFrontOf iid lid
-            , MoveTo $ uncancellableMove $ move attrs iid lid
+            , Move $ uncancellableMove $ move attrs iid lid
             ]
 
       enemyMsgs <- flip concatMapM enemyPairings $ \(iid, enemyCard) ->

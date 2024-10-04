@@ -197,7 +197,7 @@ moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 
 moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
-moveTo (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
+moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
 
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record

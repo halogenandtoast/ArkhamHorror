@@ -41,7 +41,7 @@ instance RunMessage NorthsideTrainStation where
       push
         $ chooseOne
           player
-          [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+          [ targetLabel lid [Move $ move (toSource attrs) iid lid]
           | lid <- locationIds
           ]
       pure l

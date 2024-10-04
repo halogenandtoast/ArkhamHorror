@@ -34,7 +34,7 @@ instance RunMessage Wormhole where
       do
         pushAll
           [ InvestigatorDrewEncounterCard iid card
-          , MoveTo $ moveToMatch (toSource attrs) iid (LocationWithCardId $ toCardId card)
+          , Move $ moveToMatch (toSource attrs) iid (LocationWithCardId $ toCardId card)
           ]
         pure t
     _ -> Wormhole <$> runMessage msg attrs

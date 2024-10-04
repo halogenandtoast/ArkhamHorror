@@ -30,7 +30,7 @@ instance RunMessage SpacesBetween where
             <$> selectOne (ConnectedTo locationMatcher <> LocationWithTrait SentinelHill)
 
         pure
-          $ [MoveTo $ move source iid destination | iid <- investigatorIds]
+          $ [Move $ move source iid destination | iid <- investigatorIds]
           <> [EnemyMove eid destination | eid <- enemyIds]
           <> [RemoveAllClues (toSource attrs) (toTarget flipLocation), UnrevealLocation flipLocation]
 

@@ -29,7 +29,7 @@ instance RunMessage Elusive where
             else RevealedLocation
       for_ enemies $ disengageEnemy iid
       when (notNull ts) do
-        chooseOrRunOne iid $ targetLabels ts (only . MoveTo . move attrs iid)
+        chooseOrRunOne iid $ targetLabels ts (only . Move . move attrs iid)
       for_ enemies enemyCheckEngagement
       pure e
     _ -> Elusive <$> liftRunMessage msg attrs

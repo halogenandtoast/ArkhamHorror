@@ -24,7 +24,7 @@ instance RunMessage TheBalefulStar where
       pushAll
         $ [ScenarioCountIncrementBy SignOfTheGods 2]
         <> map (toDiscard attrs) enemies
-        <> [MoveTo $ uncancellableMove $ move attrs iid templeOfUnattainableDesires | iid <- investigators]
+        <> [Move $ uncancellableMove $ move attrs iid templeOfUnattainableDesires | iid <- investigators]
         <> [AddToVictory $ toTarget cityWhichAppearsOnNoMap]
       pure s
     _ -> TheBalefulStar <$> runMessage msg attrs

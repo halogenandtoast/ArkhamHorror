@@ -7,7 +7,7 @@ import { type Card, cardImage } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
-import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Agenda';
@@ -35,7 +35,6 @@ const image = computed(() => {
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
-const frame = ref(null)
 const viewingUnder = ref(false)
 const viewUnderLabel = computed(() => viewingUnder.value ? "Close" : `${props.cardsUnder.length} Cards Underneath`)
 
@@ -76,13 +75,6 @@ const abilities = computed(() => {
     }, [])
 })
 
-const showAbilities = ref<boolean>(false)
-
-async function chooseAbility(ability: number) {
-  showAbilities.value = false
-  emit('choose', ability)
-}
-
 const cardsUnder = computed(() => props.cardsUnder)
 const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda', false)
 
@@ -117,7 +109,6 @@ const debug = useDebug()
         class="card card--sideways card--agenda"
         @click="$emit('choose', interactAction)"
         :src="image"
-        ref="frame"
       />
       <div class="pool" v-if="!agenda.flipped">
         <PoolItem
@@ -144,12 +135,13 @@ const debug = useDebug()
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
-    <AbilitiesMenu
-      :frame="frame"
-      v-model="showAbilities"
-      :abilities="abilities"
-      position="bottom"
-      @choose="chooseAbility"
+    <AbilityButton
+      v-for="ability in abilities"
+      :key="ability.index"
+      :ability="ability.contents"
+      :data-image="image"
+      class="sideways"
+      @click="$emit('choose', ability.index)"
       />
     <div v-if="groupedTreacheries.length > 0" class="treacheries">
       <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">

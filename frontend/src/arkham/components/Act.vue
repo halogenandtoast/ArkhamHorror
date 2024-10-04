@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref } from 'vue'
-import { useDebug } from '@/arkham/debug'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage } from '@/arkham/types/Card'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
@@ -108,8 +107,6 @@ const cardsUnder = computed(() => props.cardsUnder)
 
 const showCardsUnderAct = () => emits('show', cardsUnder, 'Cards Under Act', false)
 
-const debug = useDebug()
-
 async function clicked() {
   if (interactAction.value !== -1) {
     emits('choose', interactAction.value)
@@ -148,6 +145,7 @@ const isOtherEncounterCard = computed(() => {
       position="bottom"
       @choose="chooseAbility"
       />
+    <button v-if="cardsUnder.length > 0" class="view-cards-under-button" @click="showCardsUnderAct">{{viewUnderLabel}}</button>
     <img
       v-for="(card, idx) in cardsNextTo"
       class="card card--sideways"

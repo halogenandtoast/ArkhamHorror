@@ -147,9 +147,6 @@ explore iid source cardMatcher exploreRule matchCount = do
                   Just lid -> pure (lid, ReplaceLocation lid x DefaultReplace)
                   Nothing -> error "no location found"
 
-            afterPutIntoPlayWindow <-
-              checkWindows
-                [mkWindow Timing.After (Window.PutLocationIntoPlay iid lid)]
             afterExploredWindow <-
               checkWindows
                 [mkWindow Timing.After $ Window.Explored iid (Success lid)]
@@ -161,7 +158,6 @@ explore iid source cardMatcher exploreRule matchCount = do
                 ]
                 <> [ UpdateHistory iid historyItem
                    , afterExploredWindow
-                   , afterPutIntoPlayWindow
                    ]
           else do
             windowMsg <-
@@ -193,11 +189,6 @@ explore iid source cardMatcher exploreRule matchCount = do
           historyItem = HistoryItem HistorySuccessfulExplore True
           locationIds = map fst placements
 
-        afterPutIntoPlayWindow <-
-          checkWindows
-            [ mkWindow Timing.After (Window.PutLocationIntoPlay iid lid)
-            | lid <- locationIds
-            ]
         afterExploredWindow <-
           checkWindows
             [ mkWindow Timing.After $ Window.Explored iid (Success lid)
@@ -215,7 +206,6 @@ explore iid source cardMatcher exploreRule matchCount = do
              ]
           <> [ UpdateHistory iid historyItem
              , afterExploredWindow
-             , afterPutIntoPlayWindow
              ]
       deck' <-
         if null notMatched

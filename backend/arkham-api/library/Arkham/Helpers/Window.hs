@@ -129,6 +129,12 @@ discoveredLocation =
     (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
     _ -> Nothing
 
+maybeDiscoveredLocation :: [Window] -> Maybe LocationId
+maybeDiscoveredLocation =
+  asum . map \case
+    (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
+    _ -> Nothing
+
 engagedEnemy :: HasCallStack => [Window] -> EnemyId
 engagedEnemy =
   fromMaybe (error "missing enemy") . asum . map \case

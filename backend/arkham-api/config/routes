@@ -30,6 +30,7 @@
           /replay/#Int ApiV1ArkhamGameReplayR GET
           /decks ApiV1ArkhamGameDecksR PUT
           /undo ApiV1ArkhamGameUndoR PUT
+          /undo/scenario ApiV1ArkhamGameUndoScenarioR PUT
           /file-bug ApiV1ArkhamGameBugR POST
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET

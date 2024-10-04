@@ -308,6 +308,14 @@ async function undo() {
   undoChoice(props.gameId)
 }
 
+/*async function undoScenario() {
+  resultQueue.value = []
+  gameCard.value = null
+  tarotCards.value = []
+  uiLock.value = false
+  undoScenarioChoice(props.gameId)
+}*/
+
 const filingBug = ref(false)
 const submittingBug = ref(false)
 const bugTitle = ref("")

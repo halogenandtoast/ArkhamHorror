@@ -24,6 +24,7 @@ import Arkham.Enemy.Runner as X (
   setMeta,
   spawnAtL,
   tokensL,
+  pattern R3,
  )
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X

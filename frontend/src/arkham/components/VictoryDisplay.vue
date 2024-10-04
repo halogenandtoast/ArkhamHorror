@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
@@ -12,14 +12,13 @@ export interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['show'])
-const reference = ref(props.victoryDisplay)
 const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
 const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Card${props.victoryDisplay.length === 1 ? '' : 's'}`)
 
-const showVictoryDisplay = () => emit('show', reference, 'Victory Display', true)
+const showVictoryDisplay = () => emit('show')
 </script>
-
+i
 <template>
   <div v-if="topOfVictoryDisplay" class="victory-display">
     <div class="victory-display-card">

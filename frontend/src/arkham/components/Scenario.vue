@@ -436,6 +436,10 @@ const tarotCardAbility = (card: TarotCard) => {
   })
 }
 
+const victoryDisplay = computed(() => props.scenario.victoryDisplay)
+
+const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', true)
+
 </script>
 
 <template>
@@ -505,7 +509,7 @@ const tarotCardAbility = (card: TarotCard) => {
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="scenario.victoryDisplay" @show="doShowCards" :playerId="playerId" />
+        <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" :playerId="playerId" />
         <div class="scenario-encounter-decks">
 
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">

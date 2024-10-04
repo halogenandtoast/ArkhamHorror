@@ -18,20 +18,17 @@ sacredWoods_184 :: LocationCard SacredWoods_184
 sacredWoods_184 = locationWith SacredWoods_184 Cards.sacredWoods_184 4 (PerPlayer 1) (labelL .~ "star")
 
 instance HasAbilities SacredWoods_184 where
-  getAbilities (SacredWoods_184 attrs) =
+  getAbilities (SacredWoods_184 a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 (exists $ investigatorAt attrs.id)
+      a
+      [ groupLimit PerWindow
+          $ restricted a 1 (exists $ investigatorAt a.id)
           $ forced
-          $ PutLocationIntoPlay #after Anyone (be attrs)
-      , restrictedAbility
-          attrs
+          $ PutLocationIntoPlay #after Anyone (be a)
+      , restricted
+          a
           2
-          ( Here
-              <> youExist DeckIsEmpty
-              <> CluesOnThis (atLeast 1)
-              <> CanDiscoverCluesAt (LocationWithId attrs.id)
-          )
+          (Here <> youExist DeckIsEmpty <> CluesOnThis (atLeast 1) <> CanDiscoverCluesAt (be a))
           actionAbility
       ]
 

@@ -34,7 +34,7 @@ instance RunMessage Nimble where
           $ Label "Do not move" []
           : [ targetLabel
               location
-              [MoveTo $ move (toSource attrs) iid location, ResolveSkill (toId attrs)]
+              [Move $ move (toSource attrs) iid location, ResolveSkill (toId attrs)]
             | location <- connectingLocations
             ]
       pure $ Nimble $ attrs `with` Metadata (moveCount meta - 1)

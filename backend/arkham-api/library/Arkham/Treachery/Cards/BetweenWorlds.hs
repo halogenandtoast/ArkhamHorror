@@ -38,7 +38,7 @@ instance RunMessage BetweenWorlds where
             (if useLabel2 then "betweenWorlds2" else "betweenWorlds1")
         , AddDirectConnection locationId nexus
         , AddDirectConnection nexus locationId
-        , MoveTo $ move (toSource attrs) iid locationId
+        , Move $ move (toSource attrs) iid locationId
         ]
       pure t
     After (Revelation _ source) | isSource attrs source -> do

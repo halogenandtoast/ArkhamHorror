@@ -79,7 +79,7 @@ instance RunMessage PendantOfTheQueen where
 
       push
         $ chooseOrRunOne player
-        $ [ Label "Move to this location" [MoveTo $ move (toAbilitySource attrs 1) iid lid]
+        $ [ Label "Move to this location" [Move $ move (attrs.ability 1) iid lid]
           | canMove && moveChoice
           ]
         <> [ Label

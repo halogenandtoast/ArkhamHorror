@@ -2364,7 +2364,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
           <> [ chooseOne
               player
-              [ Label "Move too" [MoveTo $ move iid' iid' lid]
+              [ Label "Move too" [Move $ move iid' iid' lid]
               , Label "Skip" []
               ]
              | (iid', player) <- moveWith

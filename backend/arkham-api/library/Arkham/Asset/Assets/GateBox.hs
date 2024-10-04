@@ -34,6 +34,6 @@ instance RunMessage GateBox where
       afterPutIntoPlayWindow <- checkAfter $ PutLocationIntoPlay iid dreamGate
       pushAll
         $ map (DisengageEnemy iid) enemies
-        <> [placement, afterPutIntoPlayWindow, MoveTo $ move (attrs.ability 1) iid dreamGate]
+        <> [placement, afterPutIntoPlayWindow, Move $ move (attrs.ability 1) iid dreamGate]
       pure a
     _ -> GateBox <$> runMessage msg attrs

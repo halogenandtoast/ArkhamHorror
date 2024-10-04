@@ -36,7 +36,7 @@ instance RunMessage TheUnvisitedIsle where
         pure
           $ placement
           : PutLocationInFrontOf investigator lid
-          : MoveTo
+          : Move
             ( uncancellableMove
                 $ move attrs investigator lid
             )

@@ -60,6 +60,7 @@ instance RunMessage StepsOfYhagharl where
           replaceMessageMatching
             ( \case
                 Will (MoveTo movement) | moveTarget movement == toTarget iid -> True
+                Will (Move movement) | moveTarget movement == toTarget iid -> True
                 _ -> False
             )
             (const [])

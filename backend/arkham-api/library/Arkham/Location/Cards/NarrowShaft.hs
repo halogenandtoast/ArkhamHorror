@@ -49,6 +49,7 @@ instance RunMessage NarrowShaft where
         _ -> False
       moveTo <- popMessageMatching \case
         MoveTo movement -> moveTarget movement == InvestigatorTarget iid -- we don't know where they are going for the cancel
+        Move movement -> moveTarget movement == InvestigatorTarget iid -- we don't know where they are going for the cancel
         _ -> False
       let
         target = InvestigatorTarget iid

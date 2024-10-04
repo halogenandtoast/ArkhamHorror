@@ -61,7 +61,7 @@ instance RunMessage KeziahsRoom where
           , chooseOne
               player
               [ Label "Do not move" []
-              , Label "Move to location" [MoveTo $ move attrs iid lid]
+              , Label "Move to location" [Move $ move attrs iid lid]
               ]
           ]
       pure l

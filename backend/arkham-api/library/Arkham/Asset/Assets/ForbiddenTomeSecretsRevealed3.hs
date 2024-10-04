@@ -15,7 +15,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Movement
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenTomeSecretsRevealed3 :: AssetCard ForbiddenTomeSecretsRevealed3
@@ -46,7 +46,7 @@ instance RunMessage ForbiddenTomeSecretsRevealed3 where
       pushAll
         [ chooseOrRunOne player
             $ Label "Do not move" []
-            : [targetLabel lid [MoveTo $ move (toSource attrs) iid lid] | lid <- lids]
+            : [targetLabel lid [Move $ move (toSource attrs) iid lid] | lid <- lids]
         , Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
         ]
       pure a

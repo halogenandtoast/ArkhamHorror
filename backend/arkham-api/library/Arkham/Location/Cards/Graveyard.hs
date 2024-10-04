@@ -34,6 +34,6 @@ instance RunMessage Graveyard where
       push
         $ chooseOne player
         $ [Label "Take 2 horror" [assignHorror iid (attrs.ability 1) 2]]
-        <> [Label "Move to Rivertown" [MoveTo $ move (attrs.ability 1) iid rivertown] | canMoveToRivertown]
+        <> [Label "Move to Rivertown" [Move $ move (attrs.ability 1) iid rivertown] | canMoveToRivertown]
       pure l
     _ -> Graveyard <$> runMessage msg attrs

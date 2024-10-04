@@ -44,7 +44,7 @@ instance RunMessage SledDog where
       unless (null locations) $ do
         chooseOne
           iid
-          [ targetLabel location [MoveTo $ move (toSource attrs) iid location, DoStep (n - 1) msg']
+          [ targetLabel location [Move $ move (toSource attrs) iid location, DoStep (n - 1) msg']
           | location <- locations
           ]
       pure a

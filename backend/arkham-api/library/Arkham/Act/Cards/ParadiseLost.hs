@@ -74,7 +74,7 @@ instance RunMessage ParadiseLost where
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         relic <- selectJust $ AssetWithTitle "Relic of Ages"
         pushAll
-          $ [MoveTo $ move (toSource attrs) iid' aPocketInTime | iid' <- iids]
+          $ [Move $ move (toSource attrs) iid' aPocketInTime | iid' <- iids]
           <> [EnemyMove eid lid | eid <- enemyIds]
           <> [RemoveLocation lid, PlaceUnderneath (AssetTarget relic) [card]]
         pure a

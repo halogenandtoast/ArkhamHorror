@@ -31,7 +31,7 @@ instance RunMessage EsotericAtlas1 where
       push
         $ chooseOne
           player
-          [ targetLabel location [MoveTo $ move (toSource attrs) iid location]
+          [ targetLabel location [Move $ move (toSource attrs) iid location]
           | location <- locations
           ]
       pure a

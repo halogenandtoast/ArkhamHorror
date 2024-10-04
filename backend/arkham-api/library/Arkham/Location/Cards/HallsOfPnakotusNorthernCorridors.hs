@@ -48,7 +48,7 @@ instance RunMessage HallsOfPnakotusNorthernCorridors where
       push
         $ chooseOne
           player
-          [ targetLabel lid [MoveTo $ move (toSource attrs) iid lid]
+          [ targetLabel lid [Move $ move (toSource attrs) iid lid]
           | lid <- otherHalls
           ]
       pure l

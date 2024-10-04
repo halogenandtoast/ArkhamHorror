@@ -82,7 +82,7 @@ instance RunMessage CavernOfTheForgottenAge where
                 *> [ chooseOne
                       player
                       [ targetLabel l
-                        $ [MoveTo $ move attrs i l | i <- investigators]
+                        $ [Move $ move attrs i l | i <- investigators]
                         <> [EnemyMove eid lid | eid <- enemies]
                       | l <- moveTo
                       ]

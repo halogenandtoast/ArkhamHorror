@@ -45,7 +45,7 @@ instance RunMessage Transmogrify where
       sid <- getRandom
       chooseEvadeEnemyWithSkillChoice sid iid attrs [#intellect, #agility]
       pure e
-    PassedThisSkillTest _iid (isSource attrs -> True) -> do
+    When (PassedThisSkillTest _iid (isSource attrs -> True)) -> do
       getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> do
           whenM (eid <=~> NonEliteEnemy) do

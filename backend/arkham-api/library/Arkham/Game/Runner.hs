@@ -26,6 +26,7 @@ import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Effect
+import Arkham.Effect.Types (EffectAttrs (effectFinished))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.EffectMetadata
 import Arkham.Enemy
@@ -576,7 +577,14 @@ runGameMessage msg g = case msg of
     push $ CreatedEffect effectId Nothing source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
-    pure $ g & entitiesL . effectsL %~ deleteMap effectId
+    effect <- getEffect effectId
+    pure
+      $ g
+      & (entitiesL . effectsL %~ deleteMap effectId)
+      & ( actionRemovedEntitiesL
+            . effectsL
+            %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
+        )
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
   ClearFound FromDeck -> do

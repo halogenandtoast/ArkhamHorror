@@ -280,7 +280,12 @@ createSurgeEffect (toSource -> source) (toTarget -> target) = do
     )
 
 instance RunMessage Effect where
-  runMessage msg (Effect a) = Effect <$> runMessage msg a
+  runMessage msg (Effect a) = case msg of
+    UseThisAbility {} -> Effect <$> runMessage msg a
+    _ -> do
+      if effectFinished (toAttrs a)
+        then pure $ Effect a
+        else Effect <$> runMessage msg a
 
 lookupEffect :: EffectId -> EffectBuilder -> Effect
 lookupEffect eid builder =

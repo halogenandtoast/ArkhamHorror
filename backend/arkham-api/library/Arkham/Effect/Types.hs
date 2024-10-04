@@ -230,8 +230,11 @@ instance ToJSON Effect where
 
 instance HasModifiersFor Effect where
   getModifiersFor target (Effect a) = do
-    mods <- getModifiersFor target a
-    foldMapM expandForEach mods
+    if effectFinished (toAttrs a)
+      then pure []
+      else do
+        mods <- getModifiersFor target a
+        foldMapM expandForEach mods
    where
     expandForEach x@(modifierType -> ForEach calc ms) = do
       n <- calculate calc

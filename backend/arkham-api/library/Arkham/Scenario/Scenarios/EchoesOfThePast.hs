@@ -168,7 +168,7 @@ instance RunMessage EchoesOfThePast where
       setActDeck [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
     ResolveChaosToken _ token iid | isHardExpert attrs -> do
       case token of
-        Cultist -> do
+        Cultist | isHardExpert attrs -> do
           es <- select $ NearestEnemyTo iid AnyEnemy
           chooseTargetM iid es \target -> placeDoom Cultist target 1
         Tablet -> randomDiscard iid Tablet

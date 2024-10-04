@@ -2009,10 +2009,15 @@ getLocationsMatching lmatcher = do
       maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
-      maybeToList <$> runMaybeT do
-        LocationTarget lid <- MaybeT getSkillTestTarget
-        Action.Investigate <- MaybeT getSkillTestAction
-        hoistMaybe $ find ((== lid) . toId) ls
+      getWindowStack >>= \case
+        (ws : []) -> case maybeDiscoveredLocation ws of
+          Nothing -> pure []
+          Just lid -> pure $ filter ((== lid) . toId) ls
+        _ ->
+          maybeToList <$> runMaybeT do
+            LocationTarget lid <- MaybeT getSkillTestTarget
+            Action.Investigate <- MaybeT getSkillTestAction
+            hoistMaybe $ find ((== lid) . toId) ls
     LocationWithAdjacentBarrier -> do
       flip filterM ls \l -> do
         mods <- getModifiers l.id

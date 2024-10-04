@@ -1,15 +1,11 @@
-module Arkham.Agenda.Cards.TheFirstNight (
-  TheFirstNight (..),
-  theFirstNight,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheFirstNight (TheFirstNight (..), theFirstNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheFirstNight = TheFirstNight AgendaAttrs
@@ -27,12 +23,12 @@ instance HasModifiersFor TheFirstNight where
 
 instance RunMessage TheFirstNight where
   runMessage msg a@(TheFirstNight attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       msgs <- disengageEachEnemyAndMoveToConnectingLocation attrs
       pushAll $ msgs <> [NextAdvanceAgendaStep (toId attrs) 2]
       pure a
-    NextAdvanceAgendaStep aid 2 | aid == toId attrs && onSide B attrs -> do
+    NextAdvanceAgendaStep (isSide B attrs -> True) 2 -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
-      pushAll $ organistMsg : [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      pushAll $ organistMsg : [advanceAgendaDeck attrs]
       pure a
     _ -> TheFirstNight <$> runMessage msg attrs

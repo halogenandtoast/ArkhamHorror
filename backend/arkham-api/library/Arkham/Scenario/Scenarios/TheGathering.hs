@@ -123,8 +123,6 @@ instance RunMessage TheGathering where
           gainXp leadId attrs (ikey "xp.resolution2") 1
           allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 3 -> do
-          -- TODO: missing rules
-          -- \* handle new investigators
           story $ i18nWithTitle "resolutions.resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause
           record YourHouseIsStillStanding

@@ -171,6 +171,9 @@ export const joinGame = (gameId: string): Promise<Game> => api
 export const undoChoice = (gameId: string): Promise<void> => api
   .put(`arkham/games/${gameId}/undo`)
 
+export const undoScenarioChoice = (gameId: string): Promise<void> => api
+  .put(`arkham/games/${gameId}/undo/scenario`)
+
 export const debugGame = (formData: FormData): Promise<Game> => api
   .post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   .then((resp) => gameDecoder.decodeToPromise(resp.data))

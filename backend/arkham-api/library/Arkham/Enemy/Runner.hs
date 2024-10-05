@@ -487,13 +487,16 @@ instance RunMessage EnemyAttrs where
               DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
               _ -> Nothing
             forcedTargetLocation = firstJust matchForcedTargetLocation mods
+            additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+
           -- applyConnectionMapModifier connectionMap (HunterConnectedTo lid') =
           --  unionWith (<>) connectionMap $ singletonMap loc [lid']
           -- applyConnectionMapModifier connectionMap _ = connectionMap
           -- extraConnectionsMap :: Map LocationId [LocationId] = foldl' applyConnectionMapModifier mempty mods
 
           enemiesAsInvestigatorLocations <-
-            select
+            withModifiers loc (toModifiers a additionalConnections)
+              $ select
               $ locationMatcherModifier
               $ LocationWithEnemy
               $ NearestEnemyToLocation loc
@@ -505,35 +508,36 @@ instance RunMessage EnemyAttrs where
           -- to AnyPrey and then find if there are any investigators
           -- who qualify as prey to filter
           prey <- getPreyMatcher a
-          matchingClosestLocationIds <- case (forcedTargetLocation, prey) of
-            (Just forcedTargetLocationId, _) ->
-              -- Lure (1)
-              select $ locationMatcherModifier $ ClosestPathLocation loc forcedTargetLocationId
-            (Nothing, BearerOf _) ->
-              select
-                $ locationMatcherModifier
-                $ locationWithInvestigator
-                $ fromJustNote "must have bearer" enemyBearer
-            (Nothing, RestrictedBearerOf _ _) -> do
-              -- this case should never happen, but just in case
-              select
-                $ locationMatcherModifier
-                $ locationWithInvestigator
-                $ fromJustNote "must have bearer" enemyBearer
-            (Nothing, OnlyPrey onlyPrey) ->
-              select $ locationMatcherModifier $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy (be eid)
-            (Nothing, _prey) -> do
-              investigatorLocations <-
+          matchingClosestLocationIds <- withModifiers loc (toModifiers a additionalConnections)
+            $ case (forcedTargetLocation, prey) of
+              (Just forcedTargetLocationId, _) ->
+                -- Lure (1)
+                select $ locationMatcherModifier $ ClosestPathLocation loc forcedTargetLocationId
+              (Nothing, BearerOf _) ->
                 select
                   $ locationMatcherModifier
-                  $ LocationWithInvestigator
-                  $ NearestToEnemy (be eid)
-                  <> CanBeHuntedBy eid
-              select
-                $ locationMatcherModifier
-                $ NearestLocationToLocation
-                  loc
-                  (mapOneOf LocationWithId $ enemiesAsInvestigatorLocations <> investigatorLocations)
+                  $ locationWithInvestigator
+                  $ fromJustNote "must have bearer" enemyBearer
+              (Nothing, RestrictedBearerOf _ _) -> do
+                -- this case should never happen, but just in case
+                select
+                  $ locationMatcherModifier
+                  $ locationWithInvestigator
+                  $ fromJustNote "must have bearer" enemyBearer
+              (Nothing, OnlyPrey onlyPrey) ->
+                select $ locationMatcherModifier $ LocationWithInvestigator $ onlyPrey <> NearestToEnemy (be eid)
+              (Nothing, _prey) -> do
+                investigatorLocations <-
+                  select
+                    $ locationMatcherModifier
+                    $ LocationWithInvestigator
+                    $ NearestToEnemy (be eid)
+                    <> CanBeHuntedBy eid
+                select
+                  $ locationMatcherModifier
+                  $ NearestLocationToLocation
+                    loc
+                    (mapOneOf LocationWithId $ enemiesAsInvestigatorLocations <> investigatorLocations)
 
           preyIds <- select prey
           let includeEnemies = prey == Prey Anyone
@@ -561,14 +565,14 @@ instance RunMessage EnemyAttrs where
                 else filteredClosestLocationIds
 
           lead <- getLeadPlayer
-          pathIds' <-
+          pathIds' <- withModifiers loc (toModifiers a additionalConnections) do
             concatForM destinationLocationIds
               $ select
               . (LocationCanBeEnteredBy enemyId <>)
               . locationMatcherModifier
               . ClosestPathLocation loc
 
-          pathIds <-
+          pathIds <- withModifiers loc (toModifiers a additionalConnections) do
             if CanIgnoreBarriers `elem` mods
               then do
                 barricadedPathIds <-

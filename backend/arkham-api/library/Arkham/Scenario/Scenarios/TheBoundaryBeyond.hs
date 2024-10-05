@@ -183,7 +183,7 @@ instance RunMessage TheBoundaryBeyond where
         $ [Enemies.padmaAmrita, Acts.theReturnTrip, Agendas.timeCollapsing]
         <> replicate setAsidePoisonedCount Treacheries.poisoned
 
-      eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo attrs iid
+      eachInvestigator \iid -> chooseTargetM iid [zocalo, coyoacan] $ moveTo_ attrs iid
       setAgendaDeck [Agendas.theBoundaryBroken, Agendas.theBarrierIsThin]
       setActDeck [Acts.crossingTheThreshold, Acts.pastAndPresent]
     Explore iid _ _ -> do

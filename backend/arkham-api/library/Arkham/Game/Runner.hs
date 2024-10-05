@@ -719,18 +719,12 @@ runGameMessage msg g = case msg of
                 , locationWithoutClues = locationWithoutClues oldAttrs
                 }
     -- todo: should we just run this in place?
-    lead <- getLead
     enemies <- select $ enemyAt lid
-    afterPutIntoPlayWindow <-
-      checkWindows
-        [mkAfter (Window.PutLocationIntoPlay lead lid)]
     if replaceStrategy == Swap
       then pushAll $ map EnemyCheckEngagement enemies
       else
         pushAll
-          $ [ PlacedLocation (toName card) (toCardCode card) lid
-            , afterPutIntoPlayWindow
-            ]
+          $ [PlacedLocation (toName card) (toCardCode card) lid]
           <> map EnemyCheckEngagement enemies
     pure $ g & entitiesL . locationsL . at lid ?~ location'
   ReplaceEnemy eid card replaceStrategy -> do

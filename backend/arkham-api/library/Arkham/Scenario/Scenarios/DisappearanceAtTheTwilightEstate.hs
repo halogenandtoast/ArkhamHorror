@@ -75,23 +75,23 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
       enemyAt_ Enemies.theSpectralWatcher entryHall
 
       selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
-        moveTo attrs gavriella victorianHalls
+        moveTo_ attrs gavriella victorianHalls
         removeOneOf Treacheries.fateOfAllFools
 
       selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
-        moveTo attrs jerome office
+        moveTo_ attrs jerome office
         tid1 <- getRandom
         obscuringFog <- genCard Treacheries.obscuringFog
         push $ AttachStoryTreacheryTo tid1 obscuringFog (toTarget office)
         enemyAt_ Enemies.netherMist office
 
       selectForMaybeM (investigatorIs Investigators.valentinoRivas) \valentino -> do
-        moveTo attrs valentino billiardsRoom
+        moveTo_ attrs valentino billiardsRoom
         placeEnemy Enemies.shadowHound (InThreatArea valentino)
         removeOneOf Treacheries.terrorInTheNight
 
       selectForMaybeM (investigatorIs Investigators.pennyWhite) \penny -> do
-        moveTo attrs penny balcony
+        moveTo_ attrs penny balcony
         placeEnemy Enemies.wraith (InThreatArea penny)
         removeOneOf Treacheries.whispersInTheDark
 

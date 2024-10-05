@@ -82,9 +82,9 @@ instance RunMessage MurderAtTheExcelsiorHotel where
 
       placeAll [Locations.suiteBalcony, Locations.secondFloorHall, Locations.restaurant]
 
-      moveTo attrs lead room225
+      moveTo_ attrs lead room225
       beginWithStoryAsset lead Assets.bloodstainedDagger
-      for_ otherPlayers \p -> moveTo attrs p foyer
+      for_ otherPlayers \p -> moveTo_ attrs p foyer
 
       setAside
         [ Assets.sergeantMonroe

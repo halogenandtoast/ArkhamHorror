@@ -164,7 +164,7 @@ instance RunMessage TheUnspeakableOath where
         Expert -> MinusFive
 
       eachInvestigator \iid -> do
-        chooseTargetM iid [westernPatientWing, easternPatientWing] $ moveTo attrs iid
+        chooseTargetM iid [westernPatientWing, easternPatientWing] $ moveTo_ attrs iid
 
       tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp
       let theReallyBadOnes = if tookTheOnyxClasp then Acts.theReallyBadOnesV1 else Acts.theReallyBadOnesV2

@@ -330,6 +330,7 @@ danielChesterfield =
     , cdUnique = True
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
+    , cdSlots = [#ally]
     }
 
 straitjacket :: CardDef

@@ -23,6 +23,7 @@
         !/import ApiV1ArkhamGamesImportR POST
         !/fix ApiV1ArkhamGamesFixR POST
         !/reload ApiV1ArkhamGamesReloadR GET
+        !/old ApiV1ArkhamGamesOldR GET
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT

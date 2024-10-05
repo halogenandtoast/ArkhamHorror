@@ -83,6 +83,7 @@ library:
     - http-types
     - jwt
     - lens
+    - lens-aeson
     - mailtrap
     - monad-logger
     - monoidal-containers

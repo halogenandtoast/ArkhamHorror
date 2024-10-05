@@ -1,16 +1,11 @@
-module Arkham.Asset.Assets.SealOfTheSeventhSign5 (
-  sealOfTheSeventhSign5,
-  SealOfTheSeventhSign5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SealOfTheSeventhSign5 (sealOfTheSeventhSign5, SealOfTheSeventhSign5 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype SealOfTheSeventhSign5 = SealOfTheSeventhSign5 AssetAttrs
@@ -27,10 +22,9 @@ sealOfTheSeventhSign5 =
 instance HasAbilities SealOfTheSeventhSign5 where
   getAbilities (SealOfTheSeventhSign5 a) =
     [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ ForcedAbility
-        $ RevealChaosToken Timing.After You
-        $ ChaosTokenMatchesAny
-        $ map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
+        $ forced
+        $ RevealChaosToken #after Anyone
+        $ mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing]
     ]
 
 instance RunMessage SealOfTheSeventhSign5 where

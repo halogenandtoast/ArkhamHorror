@@ -141,7 +141,7 @@ instance RunMessage TheWitchingHour where
         runMaybeT do
           startingLocation <- hoistMaybe $ lookup investigator startingLocations
           guard $ location == startingLocation
-          lift $ moveTo attrs investigator lid
+          lift $ moveTo_ attrs investigator lid
 
       setAgendaDeck [Agendas.temperanceXIV, Agendas.theNightHowls]
       setActDeck

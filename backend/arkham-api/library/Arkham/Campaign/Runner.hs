@@ -29,6 +29,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Name
 import Arkham.Projection
+import Arkham.Xp
 import Data.Map.Strict qualified as Map
 
 defaultCampaignRunner :: IsCampaign a => Runner a
@@ -227,6 +228,10 @@ defaultCampaignRunner msg a = case msg of
   SetCampaignLog newLog -> do
     pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
     pure $ updateAttrs a $ logL .~ newLog
+  SpendXP iid n -> do
+    runMessage
+      (ReportXp $ XpBreakdown [InvestigatorLoseXp iid $ XpDetail XpFromCardEffect "Spent Xp" n])
+      a
   ReportXp report -> do
     let
       normalizedCampaignStep = \case

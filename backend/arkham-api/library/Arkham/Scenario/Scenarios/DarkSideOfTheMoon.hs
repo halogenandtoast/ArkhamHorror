@@ -109,12 +109,12 @@ instance RunMessage DarkSideOfTheMoon where
         then do
           moonBeastGalley <- place Locations.moonBeastGalley
           for_ captured \iid -> do
-            moveTo attrs iid moonBeastGalley
+            moveTo_ attrs iid moonBeastGalley
             placeClues attrs moonBeastGalley 2
         else setAside [Locations.moonBeastGalley]
 
       notCaptured <- select $ not_ (InvestigatorWithRecord WasCaptured)
-      for_ notCaptured \iid -> moveTo attrs iid moonForest
+      for_ notCaptured \iid -> moveTo_ attrs iid moonForest
 
       whenHasRecord RandolphWasCaptured do
         getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard

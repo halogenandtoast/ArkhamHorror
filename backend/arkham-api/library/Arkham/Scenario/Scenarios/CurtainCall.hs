@@ -73,13 +73,13 @@ instance RunMessage CurtainCall where
       mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       for_ mLola \lola -> do
         reveal backstage
-        moveTo attrs lola backstage
+        moveTo_ attrs lola backstage
 
       let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
 
       unless (null theatreInvestigators) do
         reveal theatre
-        for_ theatreInvestigators \iid -> moveTo attrs iid theatre
+        for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
 
       setAside
         [ Enemies.royalEmissary

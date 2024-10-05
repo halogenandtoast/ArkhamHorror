@@ -29,7 +29,11 @@ const name = computed(() => {
     return `Interlude ${props.step.contents}`
   }
 
-  return "Unknown step"
+  if (props.step.tag === 'ResupplyPoint') {
+    return "Resupply Point"
+  }
+
+  return "Unknown step: " + props.step.tag
 })
 
 const allGainXp = computed(() => {
@@ -71,10 +75,10 @@ function format(s: string) {
 
 <template>
   <div class="breakdown column box">
-    <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount">{{scenarioTotal}} XP</span></header>
+    <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount" :class="{ 'amount--negative': scenarioTotal < 0 }">{{scenarioTotal}} XP</span></header>
     <div class="sections">
       <section class="box column group" v-if="totalVictoryDisplay > 0">
-        <header class="entry-header"><h3>Victory Display</h3><span class="amount">{{totalVictoryDisplay}} XP</span></header>
+        <header class="entry-header"><h3>Victory Display</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{totalVictoryDisplay}} XP</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
             <span>{{entry.details.sourceName}}</span>
@@ -83,10 +87,11 @@ function format(s: string) {
         </div>
       </section>
       <section class="box column group" v-for="([name, entries, total]) in perInvestigator" :key="name">
-        <header class="entry-header"><h3>{{name}}</h3><span class="amount">{{total}} XP</span></header>
+        <header class="entry-header"><h3>{{name}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{total}} XP</span></header>
         <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
-          <span class="amount">+{{entry.details.amount}}</span>
+          <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>
+          <span v-if="entry.tag === 'InvestigatorLoseXp'" class="amount amount--negative">-{{entry.details.amount}}</span>
         </div>
       </section>
     </div>
@@ -118,6 +123,9 @@ h3 {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
+    &--negative {
+      background: darkred;
+    }
   }
 }
 
@@ -136,6 +144,9 @@ h3 {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
+    &--negative {
+      background: darkred;
+    }
   }
 }
 
@@ -155,6 +166,9 @@ h3 {
     background: var(--spooky-green);
     color: white;
     border-radius: 3px;
+    &--negative {
+      background: darkred;
+    }
   }
 }
 

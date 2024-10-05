@@ -1,13 +1,9 @@
-module Arkham.Asset.Assets.ExpeditionJournal (
-  expeditionJournal,
-  ExpeditionJournal (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ExpeditionJournal (expeditionJournal, ExpeditionJournal (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Modifier (ModifierType (..))
 
 newtype ExpeditionJournal = ExpeditionJournal AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -18,12 +14,11 @@ expeditionJournal = asset ExpeditionJournal Cards.expeditionJournal
 
 instance HasModifiersFor ExpeditionJournal where
   getModifiersFor (InvestigatorTarget iid) (ExpeditionJournal a) =
-    pure
-      $ toModifiers
-        a
-        [ GiveAdditionalAction $ AdditionalAction "Expedition Journal" (toSource a) #explore
-        | controlledBy a iid
-        ]
+    modified
+      a
+      [ GiveAdditionalAction $ AdditionalAction "Expedition Journal" (toSource a) #explore
+      | controlledBy a iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExpeditionJournal where

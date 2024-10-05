@@ -72,6 +72,8 @@ function skillId(card: Card) {
 
 .card-row-cards--inner {
   display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .card {

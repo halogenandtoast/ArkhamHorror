@@ -730,13 +730,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [] | handDiscard.strategy /= DiscardRandom -> pure ()
       cs -> case discardStrategy handDiscard of
         DiscardChoose -> do
-          let n = discardAmount handDiscard - (length investigatorHand - length cs)
+          let n = min (discardAmount handDiscard) (length investigatorHand - length cs)
           case handDiscard.filter of
             CardWithId _ ->
               pushAll
                 [DiscardCard investigatorId handDiscard.source c.id | c <- filterCards handDiscard.filter cs]
             _ ->
-              push
+              pushWhen (n > 0)
                 $ chooseN player n
                 $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
                   | c <- filterCards handDiscard.filter cs

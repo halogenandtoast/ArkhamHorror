@@ -206,63 +206,64 @@ instance RunMessage TheDoomOfEztli where
               recordCount TheHarbingerIsStillAlive damage
 
       investigatorDefeat attrs
-      case n of
-        NoResolution -> do
-          anyDefeated <- selectAny DefeatedInvestigator
-          push $ if anyDefeated && yigsFury >= 4 then R2 else R3
-          pure s
-        Resolution 1 -> do
-          story resolution1
-          record TheInvestigatorsRecoveredTheRelicOfAges
-          harbingerMessages
-          recordCount YigsFury (yigsFury + vengeance)
-          allGainXp attrs
-          endOfScenario
-          pure s
-        Resolution 2 -> do
-          story resolution2
-          record AlejandroRecoveredTheRelicOfAges
-          harbingerMessages
-          recordCount YigsFury (yigsFury + vengeance)
-          allGainXp attrs
-          endOfScenario
-          pure s
-        Resolution 3 -> do
-          story resolution3
-          chooseOne
-            lead
-            [ Label
-                "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
-                [ScenarioResolution $ Resolution 4]
-            , Label
-                "“It’s too dangerous. This place must be destroyed.” - Proceed to Resolution 5."
-                [ScenarioResolution $ Resolution 5]
-            ]
-          pure s
-        Resolution 4 -> do
-          standalone <- getIsStandalone
-          story resolution4
-          pushAll
-            $ ResetGame
-            : [StandaloneSetup | standalone]
-              <> [ ChooseLeadInvestigator
-                 , SetupInvestigators
-                 , SetChaosTokensForScenario -- (chaosBagOf campaign')
-                 , InvestigatorsMulligan
-                 , Setup
-                 , EndSetup
-                 ]
-          let resetAttrs = toAttrs $ theDoomOfEztli attrs.difficulty
-          pure . TheDoomOfEztli $ resetAttrs `with` Metadata (resolution4Count metadata + 1)
-        Resolution 5 -> do
-          story resolution5
-          record TheInvestigatorsRecoveredTheRelicOfAges
-          harbingerMessages
-          recordCount YigsFury (yigsFury + vengeance)
-          allGainXp attrs
-          endOfScenario
-          pure s
-        _ -> error "Unknown Resolution"
+      let
+        go = \case
+          NoResolution -> do
+            anyDefeated <- selectAny DefeatedInvestigator
+            go $ Resolution $ if anyDefeated && yigsFury >= 4 then 2 else 3
+          Resolution 1 -> do
+            story resolution1
+            record TheInvestigatorsRecoveredTheRelicOfAges
+            harbingerMessages
+            recordCount YigsFury (yigsFury + vengeance)
+            allGainXp attrs
+            endOfScenario
+            pure s
+          Resolution 2 -> do
+            story resolution2
+            record AlejandroRecoveredTheRelicOfAges
+            harbingerMessages
+            recordCount YigsFury (yigsFury + vengeance)
+            allGainXp attrs
+            endOfScenario
+            pure s
+          Resolution 3 -> do
+            story resolution3
+            chooseOne
+              lead
+              [ Label
+                  "“We can’t stop now—we have to go back inside!” - Proceed to Resolution 4."
+                  [ScenarioResolution $ Resolution 4]
+              , Label
+                  "“It’s too dangerous. This place must be destroyed.” - Proceed to Resolution 5."
+                  [ScenarioResolution $ Resolution 5]
+              ]
+            pure s
+          Resolution 4 -> do
+            standalone <- getIsStandalone
+            story resolution4
+            pushAll
+              $ ResetGame
+              : [StandaloneSetup | standalone]
+                <> [ ChooseLeadInvestigator
+                   , SetupInvestigators
+                   , SetChaosTokensForScenario -- (chaosBagOf campaign')
+                   , InvestigatorsMulligan
+                   , Setup
+                   , EndSetup
+                   ]
+            let resetAttrs = toAttrs $ theDoomOfEztli attrs.difficulty
+            pure . TheDoomOfEztli $ resetAttrs `with` Metadata (resolution4Count metadata + 1)
+          Resolution 5 -> do
+            story resolution5
+            record TheInvestigatorsRecoveredTheRelicOfAges
+            harbingerMessages
+            recordCount YigsFury (yigsFury + vengeance)
+            allGainXp attrs
+            endOfScenario
+            pure s
+          _ -> error "Unknown Resolution"
+      go n
     ChooseLeadInvestigator -> do
       standalone <- getIsStandalone
       leader <- if standalone then pure Nothing else CampaignMeta.expeditionLeader <$> getCampaignMeta

@@ -1089,6 +1089,8 @@ instance FromJSON Message where
       "AssetDamageWithCheck" -> do
         (a, b, c, d, e) <- o .: "contents"
         pure $ DealAssetDamageWithCheck a b c d e
+      "ReportXp" -> do
+        ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
       _ -> $(mkParseJSON defaultOptions ''Message) (Object o)
 
 stepMessage :: Int -> Message -> Message

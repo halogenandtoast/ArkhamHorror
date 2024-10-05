@@ -31,6 +31,7 @@ library
       Api.Handler.Arkham.Game.Debug
       Api.Handler.Arkham.Games
       Api.Handler.Arkham.Investigators
+      Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames
       Api.Handler.Arkham.Replay
       Api.Handler.Arkham.Undo
@@ -3718,6 +3719,7 @@ library
     , http-types
     , jwt
     , lens
+    , lens-aeson
     , mailtrap
     , monad-logger
     , monoidal-containers

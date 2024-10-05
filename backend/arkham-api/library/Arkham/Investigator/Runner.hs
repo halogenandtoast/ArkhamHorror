@@ -659,7 +659,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   ChooseAndDiscardAsset iid source assetMatcher | iid == investigatorId -> do
     discardableAssetIds <- select $ assetControlledBy iid <> DiscardableAsset <> assetMatcher
     player <- getPlayer iid
-    push
+    pushWhen (notNull discardableAssetIds)
       $ chooseOrRunOne player
       $ targetLabels discardableAssetIds (Only . toDiscardBy iid source)
     pure a

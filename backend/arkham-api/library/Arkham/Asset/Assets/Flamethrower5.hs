@@ -45,8 +45,10 @@ instance RunMessage Flamethrower5 where
           player
           [ Label "Do standard damage" [EnemyDamage eid $ attack attrs 1]
           , Label "Assign up to 4 damage among enemies engaged with you"
-              $ replicate damage
-              $ chooseOne player [targetLabel eid' [toMsg eid'] | eid' <- engaged]
+              $ replicate
+                damage
+                (chooseOne player [targetLabel eid' [toMsg eid'] | eid' <- engaged])
+              <> map (CheckDefeated (toSource attrs) . toTarget) engaged
           ]
       pure a
     _ -> Flamethrower5 <$> runMessage msg attrs

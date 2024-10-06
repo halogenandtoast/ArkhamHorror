@@ -8,7 +8,6 @@ import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
@@ -80,19 +79,14 @@ instance RunMessage TheHouseAlwaysWins where
     ResolveChaosToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3
       resourceCount <- getSpendableResources iid
-      withSkillTest \sid -> do
-        when (resourceCount >= requiredResources) do
-          chooseOneM iid do
-            labeled ("Spend " <> tshow requiredResources <> " resources to treat this token as a 0")
-              $ pushAll
-                [ SpendResources iid requiredResources
-                , CreateChaosTokenValueEffect
-                    sid
-                    0
-                    (ChaosTokenSource drawnToken)
-                    (ChaosTokenTarget drawnToken)
-                ]
-            labeled "Do not spend resources" nothing
+      when (resourceCount >= requiredResources) do
+        chooseOneM iid do
+          labeled ("Spend " <> tshow requiredResources <> " resources to treat this token as a 0")
+            $ pushAll
+              [ SpendResources iid requiredResources
+              , Arkham.Scenario.Helpers.chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
+              ]
+          labeled "Do not spend resources" nothing
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

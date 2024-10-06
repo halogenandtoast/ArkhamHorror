@@ -28,7 +28,7 @@ instance RunMessage ArousingSuspicions where
           <> EnemyWithTrait Criminal
           <> EnemyWithoutModifier CannotPlaceDoomOnThis
       if null criminals
-        then push (SpendResources iid 2)
+        then push $ LoseResources iid (toSource attrs) 2
         else pushAll [PlaceDoom (toSource attrs) (toTarget eid) 1 | eid <- criminals]
       pure t
     _ -> ArousingSuspicions <$> runMessage msg attrs

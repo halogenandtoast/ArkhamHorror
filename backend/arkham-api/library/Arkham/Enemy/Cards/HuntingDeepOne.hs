@@ -35,6 +35,6 @@ instance RunMessage HuntingDeepOne where
         InVehicle aid -> do
           mlocation <- field AssetLocation aid
           for_ mlocation \location -> place iid (AtLocation location)
-        _ -> push $ SpendResources iid 2
+        _ -> push $ LoseResources iid (attrs.ability 1) 2
       pure e
     _ -> HuntingDeepOne <$> liftRunMessage msg attrs

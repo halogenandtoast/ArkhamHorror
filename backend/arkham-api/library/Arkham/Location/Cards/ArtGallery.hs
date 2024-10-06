@@ -28,6 +28,6 @@ instance HasAbilities ArtGallery where
 instance RunMessage ArtGallery where
   runMessage msg l@(ArtGallery attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ SpendResources iid 2
+      push $ LoseResources iid (attrs.ability 1) 2
       pure l
     _ -> ArtGallery <$> runMessage msg attrs

@@ -5,7 +5,9 @@ import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
 
 export type SkillTestStep
   = "DetermineSkillOfTestStep"
+  | "SkillTestFastWindow1"
   | "CommitCardsFromHandToSkillTestStep"
+  | "SkillTestFastWindow2"
   | "RevealChaosTokenStep"
   | "ResolveChaosSymbolEffectsStep"
   | "DetermineInvestigatorsModifiedSkillValueStep"
@@ -69,7 +71,9 @@ export type SkillTestResults = {
 const skillTestStepDecoder = JsonDecoder.oneOf<SkillTestStep>(
   [
     JsonDecoder.isExactly('DetermineSkillOfTestStep'),
+    JsonDecoder.isExactly('SkillTestFastWindow1'),
     JsonDecoder.isExactly('CommitCardsFromHandToSkillTestStep'),
+    JsonDecoder.isExactly('SkillTestFastWindow2'),
     JsonDecoder.isExactly('RevealChaosTokenStep'),
     JsonDecoder.isExactly('ResolveChaosSymbolEffectsStep'),
     JsonDecoder.isExactly('DetermineInvestigatorsModifiedSkillValueStep'),

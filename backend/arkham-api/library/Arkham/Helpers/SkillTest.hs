@@ -2,6 +2,7 @@ module Arkham.Helpers.SkillTest (module X, module Arkham.Helpers.SkillTest) wher
 
 import Arkham.Prelude
 
+import Arkham.Ability
 import Arkham.Action
 import Arkham.Calculation
 import Arkham.Card
@@ -111,6 +112,13 @@ getSkillTestMatchingSkillIcons = maybe mempty keysSet <$> getsSkillTest skillTes
 
 isInvestigation :: HasGame m => m Bool
 isInvestigation = (== Just #investigate) <$> getSkillTestAction
+
+isParley :: HasGame m => m Bool
+isParley =
+  orM
+    [ (== Just #parley) <$> getSkillTestAction
+    , any (`abilityIs` #parley) <$> getActiveAbilities
+    ]
 
 getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
 getIsBeingInvestigated lid = do

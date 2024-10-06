@@ -3590,7 +3590,7 @@ instance Query ChaosTokenMatcher where
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
-      ChaosTokenFaceIs face -> pure . (== face) . chaosTokenFace
+      ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True
       ChaosTokenMatchesAny ms -> \t -> anyM (`go` t) ms

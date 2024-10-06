@@ -170,7 +170,9 @@ const tokenEffects = computed(() => {
     <div class="skill-test">
       <div class="steps">
         <div v-tooltip="'Determine skill of test. Skill test of that type begins.'" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
+        <div v-tooltip="'{fast}'" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow1' }" v-html="formatContent('{fast}')" />
         <div v-tooltip="'Commit cards from hand to skill test.'" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
+        <div v-tooltip="'{fast}'" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow2' }" v-html="formatContent('{fast}')" />
         <div v-tooltip="'Reveal chaos token.'" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
         <div v-tooltip="'Resolve chaos symbol effect(s).'" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
         <div v-tooltip="'Determine investigator\'s modified skill value.'" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>

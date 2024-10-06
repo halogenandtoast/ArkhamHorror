@@ -7,7 +7,9 @@ import Data.Aeson.TH
 
 data SkillTestStep
   = DetermineSkillOfTestStep -- ST.1
+  | SkillTestFastWindow1
   | CommitCardsFromHandToSkillTestStep -- ST.2
+  | SkillTestFastWindow2
   | RevealChaosTokenStep -- ST.3
   | ResolveChaosSymbolEffectsStep -- ST.4
   | DetermineInvestigatorsModifiedSkillValueStep -- ST.5

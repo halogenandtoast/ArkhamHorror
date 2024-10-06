@@ -154,6 +154,8 @@ instance RunMessage SkillTest where
         & (revealedChaosTokensL %~ filter (`notElem` tokens))
         & (resolvedChaosTokensL %~ filter (`notElem` tokens))
         & (toResolveChaosTokensL %~ filter (`notElem` tokens))
+    BeforeSkillTest st | st.id == s.id -> do
+      pure $ s & stepL .~ CommitCardsFromHandToSkillTestStep
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
       pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
@@ -191,7 +193,7 @@ instance RunMessage SkillTest where
         $ s
         & (targetCardL .~ mTargetCardId)
         & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
-        & (stepL .~ CommitCardsFromHandToSkillTestStep)
+        & (stepL .~ SkillTestFastWindow1)
         & (skillTestTypeL .~ updatedSkillTestType)
         & (iconValuesL .~ icons)
         & (baseValueL .~ updatedBaseValue)
@@ -442,7 +444,7 @@ instance RunMessage SkillTest where
     StartSkillTest _ -> do
       windowMsg <- checkWindows [mkWindow Timing.When Window.FastPlayerWindow]
       pushAll [CheckAllAdditionalCommitCosts, windowMsg, TriggerSkillTest skillTestInvestigator]
-      pure s
+      pure $ s & stepL .~ SkillTestFastWindow2
     CheckAllAdditionalCommitCosts -> do
       pushAll $ Map.foldMapWithKey (\i cs -> [CheckAdditionalCommitCosts i cs]) skillTestCommittedCards
       pure s
@@ -491,6 +493,8 @@ instance RunMessage SkillTest where
     CardEnteredPlay _ card -> do
       pure $ s & committedCardsL %~ map (filter (/= card))
     SkillTestCommitCard iid card -> do
+      when (skillTestStep > CommitCardsFromHandToSkillTestStep) do
+        push $ CheckAdditionalCommitCosts iid [card]
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     CommitCard iid card | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]

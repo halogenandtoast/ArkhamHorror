@@ -60,7 +60,7 @@ import Arkham.Helpers.Investigator (
   getCanAfford,
  )
 import Arkham.Helpers.Message hiding (InvestigatorDamage, PaidCost)
-import Arkham.Helpers.SkillTest (getIsPerilous, getSkillTestDifficulty)
+import Arkham.Helpers.SkillTest (getIsPerilous, getSkillTestDifficulty, isParley)
 import Arkham.Helpers.Tarot
 import Arkham.History
 import Arkham.Id
@@ -3267,14 +3267,11 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       Just eid -> elem eid <$> select enemyMatcher
       _ -> pure False
     _ -> pure False
-  Matcher.WhileParleyingWithAnEnemy enemyMatcher -> case skillTestAction st of
-    Just Action.Parley -> case st.target.enemy of
-      Just eid -> elem eid <$> select enemyMatcher
+  Matcher.WhileParleyingWithAnEnemy enemyMatcher ->
+    case st.target.enemy of
+      Just eid -> andM [isParley, elem eid <$> select enemyMatcher]
       _ -> pure False
-    _ -> pure False
-  Matcher.WhileParleying -> case skillTestAction st of
-    Just Action.Parley -> pure True
-    _ -> pure False
+  Matcher.WhileParleying -> isParley
   Matcher.SkillTestWithSkill sk -> selectAny sk
   Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
     SkillSkillTest sType' -> sType' == sType

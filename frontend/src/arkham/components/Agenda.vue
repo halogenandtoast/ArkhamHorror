@@ -96,7 +96,7 @@ function groupBy<T, K extends string | number | symbol>(
   }, {} as Record<K, T[]>);
 }
 
-const groupedTreacheries = computed(() => Object.entries(groupBy(props.agenda.treacheries, (t) => props.game.treacheries[t].cardCode)))
+const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
 const debug = useDebug()
 </script>
@@ -126,14 +126,6 @@ const debug = useDebug()
       class="card card--sideways"
       :key="idx"
       :src="cardImage(card)"
-    />
-    <Treachery
-      v-for="treacheryId in nextToTreacheries"
-      :key="treacheryId"
-      :treachery="game.treacheries[treacheryId]"
-      :game="game"
-      :playerId="playerId"
-      @choose="$emit('choose', $event)"
     />
     <AbilityButton
       v-for="ability in abilities"

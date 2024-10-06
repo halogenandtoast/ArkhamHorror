@@ -25,7 +25,7 @@ instance RunMessage Copycat3 where
       iids <- select $ not_ $ InvestigatorWithId iid
       iidsWithCommittableCards <- forMaybeM iids $ \iid' -> do
         committableCards <- select $ CommittableCard (InvestigatorWithId iid) $ inDiscardOf iid' <> #skill
-        pure $ guard (null committableCards) $> (iid', committableCards)
+        pure $ guard (notNull committableCards) $> (iid', committableCards)
       player <- getPlayer iid
       unless (null iidsWithCommittableCards)
         $ pushAll

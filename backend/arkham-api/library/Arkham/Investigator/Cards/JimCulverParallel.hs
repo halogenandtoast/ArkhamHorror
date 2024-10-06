@@ -8,6 +8,7 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Import.Lifted qualified as Msg (Message (RevealChaosToken))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Token
 
@@ -48,5 +49,9 @@ instance RunMessage JimCulverParallel where
           , Label "Resolve as {skull}" [Msg.chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]]
           , Label "Resolve as {curse}" [Msg.chaosTokenEffect attrs token $ ChaosTokenFaceModifier [CurseToken]]
           ]
+      pure i
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assets <- select $ assetControlledBy iid <> AssetNotAtUsesX <> AssetWithUseType Charge
+      chooseTargetM iid assets $ \a -> push $ AddUses (attrs.ability 1) a Charge 1
       pure i
     _ -> JimCulverParallel <$> liftRunMessage msg attrs

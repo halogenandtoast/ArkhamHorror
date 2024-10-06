@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Deck
+import Arkham.Draw.Types
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
@@ -164,7 +165,15 @@ explore iid source cardMatcher exploreRule matchCount = do
               checkWindows
                 [mkWindow Timing.After $ Window.Explored iid (Failure x)]
             pure
-              [ DrewTreachery iid (Just $ ScenarioDeckByKey ExplorationDeck) x
+              [ DrewCards iid
+                  $ CardDrew
+                    { cardDrewSource = source
+                    , cardDrewDeck = ScenarioDeckByKey ExplorationDeck
+                    , cardDrewCards = [x]
+                    , cardDrewAction = False
+                    , cardDrewRules = mempty
+                    , cardDrewTarget = Nothing
+                    }
               , windowMsg
               ]
       deck' <-

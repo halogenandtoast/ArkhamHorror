@@ -856,6 +856,7 @@ longShot :: CardDef
 longShot =
   (skill "10116" "Long Shot" [] Survivor)
     { cdCardTraits = setFromList [Practiced]
+    , cdCardInHandEffects = True
     , cdCommitRestrictions =
         [ AnyCommitRestriction
             [ OnlyFightAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])

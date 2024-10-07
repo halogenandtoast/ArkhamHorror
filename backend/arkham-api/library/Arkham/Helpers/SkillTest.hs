@@ -452,8 +452,8 @@ getIsCommittable a c = do
                   passesCommitRestriction = \case
                     CommittableTreachery -> error "unhandled"
                     AnyCommitRestriction cs -> anyM passesCommitRestriction cs
-                    OnlyFightAgainst matcher -> case skillTestTarget skillTest of
-                      EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #fight, eid <=~> matcher]
+                    OnlyFightAgainst matcher -> case skillTest.target.enemy of
+                      Just eid -> andM [pure $ skillTestAction skillTest == Just #fight, eid <=~> matcher]
                       _ -> pure False
                     OnlyEvasionAgainst matcher -> case skillTestTarget skillTest of
                       EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #evade, eid <=~> matcher]

@@ -3710,8 +3710,8 @@ instance Query ExtendedCardMatcher where
             CommittableTreachery -> error "unhandled"
             AnyCommitRestriction crs -> anyM (passesCommitRestriction card) crs
             OnlyFightAgainst ematcher ->
-              getSkillTestTarget >>= \case
-                Just (EnemyTarget eid) -> andM [(== Just #fight) <$> getSkillTestAction, eid <=~> ematcher]
+              getSkillTestTarget >>= \mt -> case ((.enemy) =<< mt) of
+                Just eid -> andM [(== Just #fight) <$> getSkillTestAction, eid <=~> ematcher]
                 _ -> pure False
             OnlyEvasionAgainst ematcher ->
               getSkillTestTarget >>= \case

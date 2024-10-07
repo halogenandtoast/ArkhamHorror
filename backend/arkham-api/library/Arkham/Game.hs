@@ -3479,7 +3479,7 @@ instance Projection Investigator where
       InvestigatorSlots -> pure investigatorSlots
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
       InvestigatorTraits -> pure investigatorTraits
-      InvestigatorAbilities -> pure $ getAbilities i
+      InvestigatorAbilities -> pure $ filter ((< 1000) . abilityIndex) $ getAbilities i
       InvestigatorCommittedCards -> do
         mskillTest <- getSkillTest
         pure $ case mskillTest of

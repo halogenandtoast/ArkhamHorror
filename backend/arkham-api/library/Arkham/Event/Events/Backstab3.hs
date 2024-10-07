@@ -32,8 +32,8 @@ instance RunMessage Backstab3 where
       skillTestModifier sid attrs iid (DamageDealt 2)
       aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e
-    PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      createCardEffect Cards.pilfer3 (effectMetaTarget attrs.cardId) attrs iid
+    PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 2 -> do
+      createCardEffect Cards.backstab3 (effectMetaTarget attrs.cardId) attrs iid
       pure e
     _ -> Backstab3 <$> liftRunMessage msg attrs
 
@@ -46,7 +46,7 @@ backstab3Effect = cardEffect Backstab3Effect Cards.backstab3
 
 instance RunMessage Backstab3Effect where
   runMessage msg e@(Backstab3Effect attrs) = runQueueT $ case msg of
-    EndTurn iid | toTarget iid == attrs.target -> do
+    When (EndTurn iid) | toTarget iid == attrs.target -> do
       case attrs.meta of
         Just (EffectMetaTarget target) -> do
           disable attrs

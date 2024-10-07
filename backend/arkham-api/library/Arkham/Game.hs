@@ -227,6 +227,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameActionRemovedEntities = mempty
+        , gameOutOfPlayEntities = mempty
         , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -486,6 +487,8 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "otherInvestigators" .= toJSON otherInvestigators
       , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
       , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
+      , "outOfPlayEnemies"
+          .= toJSON (runReader (traverse withEnemyMetadata $ g ^. outOfPlayEntitiesL . each . enemiesL) g)
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
       , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
       , "treacheries" .= toJSON (runReader (traverse withTreacheryMetadata (gameTreacheries g)) g)

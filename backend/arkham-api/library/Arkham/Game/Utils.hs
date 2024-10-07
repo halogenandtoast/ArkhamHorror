@@ -230,7 +230,6 @@ maybeEnemy eid = do
   g <- getGame
   pure
     $ preview (entitiesL . enemiesL . ix eid) g
-    <|> preview (outOfPlayEntitiesL . each . enemiesL . ix eid) g
     <|> getInDiscardEntity enemiesL eid g
     <|> getInEncounterDiscardEntity enemiesL eid g
     <|> getRemovedEntity enemiesL eid g

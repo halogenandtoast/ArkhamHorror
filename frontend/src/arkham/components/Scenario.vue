@@ -233,11 +233,7 @@ const scenarioDeckStyles = computed(() => {
 const players = computed(() => props.game.investigators)
 const playerOrder = computed(() => props.game.playerOrder)
 const discards = computed<Card[]>(() => props.scenario.discard.map(c => ({ tag: 'EncounterCard', contents: c })))
-const outOfPlayEnemies = computed(() => {
-  const inOutOfPlay = Object.values(props.game.outOfPlayEnemies)
-  const other = Object.values(props.game.enemies).filter(e => e.placement.tag === 'OutOfPlay')
-  return [...inOutOfPlay, ...other]
-})
+const outOfPlayEnemies = computed(() => Object.values(props.game.enemies).filter(e => e.placement.tag === 'OutOfPlay'))
 const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
@@ -257,10 +253,10 @@ const topOfSpectralDiscard = computed(() => {
 })
 const topEnemyInVoid = computed(() => {
   const inVoidEnemy = Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && (['VoidZone', 'TheDepths'] as string[]).includes(e.placement.contents))[0]
-  return inVoidEnemy ?? Object.values(props.game.enemiesInVoid)[0]
+  return inVoidEnemy
 })
 const activePlayerId = computed(() => props.game.activeInvestigatorId)
-const pursuit = computed(() => Object.values(props.game.outOfPlayEnemies).filter((enemy) =>
+const pursuit = computed(() => Object.values(outOfPlayEnemies.value).filter((enemy) =>
   enemy.placement.tag === 'OutOfPlay' && enemy.placement.contents === 'PursuitZone'
 ))
 const globalEnemies = computed(() => Object.values(props.game.enemies).filter((enemy) =>

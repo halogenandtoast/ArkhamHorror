@@ -730,7 +730,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       [] | handDiscard.strategy /= DiscardRandom -> pure ()
       cs -> case discardStrategy handDiscard of
         DiscardChoose -> do
-          let n = min (discardAmount handDiscard) (length investigatorHand - length cs)
+          let n = min handDiscard.amount (length cs)
           case handDiscard.filter of
             CardWithId _ ->
               pushAll
@@ -3264,6 +3264,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
+      & (handL %~ (<> cards))
   SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
     push $ CheckEnemyEngagement a.id
     pure $ a & placementL .~ AtLocation newLocation

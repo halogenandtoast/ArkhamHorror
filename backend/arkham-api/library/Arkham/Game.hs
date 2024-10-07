@@ -169,7 +169,7 @@ import Arkham.Treachery.Types (
  )
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
-import Control.Lens (each, non, over, set)
+import Control.Lens (each, over, set)
 import Control.Monad (mfilter)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
@@ -226,7 +226,6 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInDiscardEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
-        , gameOutOfPlayEntities = mempty
         , gameActionRemovedEntities = mempty
         , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
@@ -486,14 +485,6 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
             )
       , "otherInvestigators" .= toJSON otherInvestigators
       , "enemies" .= toJSON (runReader (traverse withEnemyMetadata (gameEnemies g)) g)
-      , "enemiesInVoid"
-          .= toJSON
-            ( runReader
-                (traverse withEnemyMetadata (g ^. outOfPlayEntitiesL . at VoidZone . non mempty . enemiesL))
-                g
-            )
-      , "outOfPlayEnemies"
-          .= toJSON (runReader (traverse withEnemyMetadata $ g ^. outOfPlayEntitiesL . each . enemiesL) g)
       , "assets" .= toJSON (runReader (traverse withAssetMetadata (gameAssets g)) g)
       , "acts" .= toJSON (runReader (traverse withActMetadata (gameActs g)) g)
       , "agendas" .= toJSON (runReader (traverse withAgendaMetadata (gameAgendas g)) g)
@@ -2439,22 +2430,13 @@ getStoriesMatching matcher = do
 
 getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
 getOutOfPlayEnemy outOfPlayZone eid = do
-  old <- preview (outOfPlayEntitiesL . ix outOfPlayZone . enemiesL . ix eid) <$> getGame
   new <- mfilter isCorrectOutOfPlay . preview (entitiesL . enemiesL . ix eid) <$> getGame
-  pure $ fromJustNote missingEnemy $ old <|> new
+  pure $ fromJustNote missingEnemy new
  where
   missingEnemy = "Unknown out of play enemy: " <> show eid
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
-
-getVoidEnemy :: HasGame m => EnemyId -> m Enemy
-getVoidEnemy eid =
-  fromJustNote missingEnemy
-    . preview (outOfPlayEntitiesL . ix VoidZone . enemiesL . ix eid)
-    <$> getGame
- where
-  missingEnemy = "Unknown out of playenemy: " <> show eid
 
 getEnemyMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
@@ -2469,17 +2451,6 @@ getEnemiesMatching (DefeatedEnemy matcher) = do
 getEnemiesMatching (IncludeOmnipotent matcher) = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter matcher) allGameEnemies
-getEnemiesMatching (OutOfPlayEnemy outOfPlayZone matcher) = do
-  allGameEnemies <-
-    toList . view (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL) <$> getGame
-  newStyleOutOfPlayEnemies <-
-    filter (isOutOfPlayZonePlacement . (attr enemyPlacement))
-      . toList
-      . view (entitiesL . enemiesL)
-      <$> getGame
-  filterM
-    (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent))
-    (allGameEnemies <> newStyleOutOfPlayEnemies)
 getEnemiesMatching matcher = do
   allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
   filterM (enemyMatcherFilter (matcher <> EnemyWithoutModifier Omnipotent)) allGameEnemies
@@ -2556,7 +2527,16 @@ enemyMatcherFilter = \case
       _ -> False
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   IncludeOutOfPlayEnemy matcher -> enemyMatcherFilter matcher
-  OutOfPlayEnemy _ matcher -> enemyMatcherFilter matcher
+  OutOfPlayEnemy outOfPlayZone matcher -> do
+    let
+      inOutOfPlayZone = \case
+        OutOfPlay zone -> zone == outOfPlayZone
+        _ -> False
+    andM
+      . sequence
+        [ pure . inOutOfPlayZone . attr enemyPlacement
+        , enemyMatcherFilter matcher
+        ]
   EnemyWithCardId cardId -> pure . (== cardId) . toCardId
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> \enemy -> do
     (>= n)

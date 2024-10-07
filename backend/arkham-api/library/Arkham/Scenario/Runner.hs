@@ -1018,16 +1018,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       )
       $ push
       $ chooseOne player
-      $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card]
+      $ [ targetLabel card [FoundEncounterCardFrom iid target FromDiscard card, UnfocusCards]
         | card <- matchingDiscards
         ]
-      <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card]
+      <> [ targetLabel card [FoundEncounterCardFrom iid target FromEncounterDeck card, UnfocusCards]
          | card <- matchingDeckCards
          ]
-      <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card]
+      <> [ targetLabel card [FoundEncounterCardFrom iid target FromVictoryDisplay card, UnfocusCards]
          | card <- matchingVictoryDisplay
          ]
-      <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid]
+      <> [ targetLabel card [FoundEnemyInOutOfPlay Zone.VoidZone iid target eid, UnfocusCards]
          | (eid, card) <- voidEnemiesWithCards
          ]
 

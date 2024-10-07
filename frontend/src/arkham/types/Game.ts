@@ -56,8 +56,6 @@ export type Game = {
   events: Record<string, Event>;
   enemies: Record<string, Enemy>;
   stories: Record<string, Story>;
-  outOfPlayEnemies: Record<string, Enemy>;
-  enemiesInVoid: Record<string, Enemy>;
   gameState: GameState;
   investigators: Record<string, Investigator>;
   otherInvestigators: Record<string, Investigator>;
@@ -185,8 +183,6 @@ export const gameDecoder = JsonDecoder.object<Game>(
     events: JsonDecoder.dictionary<Event>(eventDecoder, 'Dict<UUID, Event>'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     stories: JsonDecoder.dictionary<Story>(storyDecoder, 'Dict<UUID, Story>'),
-    outOfPlayEnemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
-    enemiesInVoid: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameState: gameStateDecoder,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     otherInvestigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),

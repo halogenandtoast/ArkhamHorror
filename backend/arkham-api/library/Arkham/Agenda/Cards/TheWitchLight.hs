@@ -1,7 +1,4 @@
-module Arkham.Agenda.Cards.TheWitchLight (
-  TheWitchLight (..),
-  theWitchLight,
-) where
+module Arkham.Agenda.Cards.TheWitchLight (TheWitchLight (..), theWitchLight) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -12,11 +9,11 @@ import Arkham.GameValue
 import Arkham.Helpers.Act
 import Arkham.Helpers.Enemy
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype TheWitchLight = TheWitchLight AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theWitchLight :: AgendaCard TheWitchLight
@@ -31,11 +28,9 @@ instance HasModifiersFor TheWitchLight where
 instance HasAbilities TheWitchLight where
   getAbilities (TheWitchLight a) =
     [ mkAbility a 1
-        $ ReactionAbility
-          ( EnemyDefeated Timing.After You ByAny
-              $ EnemyOneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
-          )
-          Free
+        $ freeReaction
+        $ EnemyDefeated #after You ByAny
+        $ oneOf [enemyIs Enemies.nahab, enemyIs Enemies.brownJenkin]
     ]
 
 instance RunMessage TheWitchLight where
@@ -49,13 +44,13 @@ instance RunMessage TheWitchLight where
           , advanceAgendaDeck attrs
           ]
         _ ->
-          [ SetOutOfPlay SetAsideZone (toTarget nahab)
+          [ PlaceEnemy nahab (OutOfPlay SetAsideZone)
           , advanceAgendaDeck attrs
           , PlaceDoomOnAgenda 4 CanNotAdvance
           ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       playerCount <- getPlayerCount
-      push $ GainClues iid (toAbilitySource attrs 1) $ if playerCount >= 3 then 2 else 1
+      push $ GainClues iid (attrs.ability 1) $ if playerCount >= 3 then 2 else 1
       pure a
     _ -> TheWitchLight <$> runMessage msg attrs

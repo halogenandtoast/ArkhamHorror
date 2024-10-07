@@ -671,7 +671,6 @@ data Message
   | InDiscard InvestigatorId Message -- Nothing uses this yet
   | InSearch Message
   | InHand InvestigatorId Message
-  | InOutOfPlay Message
   | InitDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
@@ -853,10 +852,8 @@ data Message
   | RemoveLocation LocationId
   | RemovedLocation LocationId
   | SetCardAside Card
-  | SetOutOfPlay OutOfPlayZone Target
   | PlaceInvestigator InvestigatorId Placement
   | PlaceInBonded InvestigatorId Card
-  | DoSetOutOfPlay OutOfPlayZone Target
   | RemoveFromPlay Source
   | RemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep

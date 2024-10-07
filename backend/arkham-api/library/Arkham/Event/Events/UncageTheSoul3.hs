@@ -23,7 +23,7 @@ uncageTheSoul3 = event UncageTheSoul3 Cards.uncageTheSoul3
 instance RunMessage UncageTheSoul3 where
   runMessage msg e@(UncageTheSoul3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      assets <- select $ assetControlledBy iid <> DiscardableAsset
+      assets <- select $ assetControlledBy iid <> DiscardableAsset <> oneOf [#spell, #ritual]
       rs <- (+ 3) <$> getSpendableResources iid
       assets' <- flip filterM assets \aid -> do
         card <- field AssetCard aid

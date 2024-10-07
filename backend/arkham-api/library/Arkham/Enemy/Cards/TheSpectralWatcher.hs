@@ -5,7 +5,6 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher
-import Arkham.Token
 
 newtype TheSpectralWatcher = TheSpectralWatcher EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -29,6 +28,4 @@ instance RunMessage TheSpectralWatcher where
         exhaustThis attrs
         doesNotReadyDuringUpkeep (attrs.ability 1) attrs
       pure e
-    InOutOfPlay outOfPlayMsg@(PlaceTokens _ (isTarget attrs -> True) LostSoul _) -> do
-      TheSpectralWatcher <$> liftRunMessage outOfPlayMsg attrs
     _ -> TheSpectralWatcher <$> liftRunMessage msg attrs

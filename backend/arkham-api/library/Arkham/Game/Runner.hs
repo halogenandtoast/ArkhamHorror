@@ -169,8 +169,6 @@ runGameMessage msg g = case msg of
       %~ (\e -> foldr (over biplate . swapCard) e cards')
       & actionRemovedEntitiesL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
-      & outOfPlayEntitiesL
-      %~ (\e -> foldr (over biplate . swapCard) e cards')
       & inHandEntitiesL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
       & inDiscardEntitiesL
@@ -269,7 +267,6 @@ runGameMessage msg g = case msg of
       & (actionCanBeUndoneL .~ False)
       & (actionDiffL .~ [])
       & (inDiscardEntitiesL .~ mempty)
-      & (outOfPlayEntitiesL %~ deleteMap RemovedZone)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
@@ -297,7 +294,6 @@ runGameMessage msg g = case msg of
           & (entitiesL . skillsL .~ mempty)
           & (entitiesL . storiesL .~ mempty)
           & (encounterDiscardEntitiesL .~ defaultEntities)
-          & (outOfPlayEntitiesL .~ mempty)
           & (skillTestL .~ Nothing)
           & (skillTestResultsL .~ Nothing)
           & (inDiscardEntitiesL .~ mempty)
@@ -316,7 +312,6 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
-      & (outOfPlayEntitiesL .~ mempty)
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (entitiesL . assetsL .~ mempty)
@@ -1135,37 +1130,19 @@ runGameMessage msg g = case msg of
         then push $ toDiscard GameSource $ toTarget assetId
         else pushAll [RemoveFromPlay (toSource assetId), addToHand iid card]
     pure g
-  PlaceEnemy enemyId (OutOfPlay outOfPlayZone) -> do
-    push $ SetOutOfPlay outOfPlayZone (EnemyTarget enemyId)
-    pure g
   PlaceEnemy enemyId placement | not (isOutOfPlayZonePlacement placement) -> do
-    mOutOfPlayEnemy <-
-      asum . preview (outOfPlayEntitiesL . each . enemiesL . at enemyId) <$> getGame
-    case mOutOfPlayEnemy of
-      Just enemy -> do
-        case placement of
-          AtLocation lid ->
-            pushAll
-              $ [ Will (EnemySpawn Nothing lid enemyId)
-                , When (EnemySpawn Nothing lid enemyId)
-                , EnemySpawn Nothing lid enemyId
-                , After (EnemySpawn Nothing lid enemyId)
-                ]
-          _ -> pure ()
-        pure
-          $ g
-          & (outOfPlayEntitiesL . each . enemiesL %~ deleteMap enemyId)
-          & (entitiesL . enemiesL . at enemyId ?~ enemy)
-      _ -> pure g
-  SetOutOfPlay outOfPlayZone target@(EnemyTarget enemyId) -> do
-    pushAll [RemovedFromPlay (EnemySource enemyId), DoSetOutOfPlay outOfPlayZone target]
-    pure g
-  DoSetOutOfPlay outOfPlayZone (EnemyTarget enemyId) -> do
     enemy <- getEnemy enemyId
-    pure
-      $ g
-      & (entitiesL . enemiesL %~ deleteMap enemyId)
-      & (outOfPlayEntitiesL . at outOfPlayZone . non mempty . enemiesL . at enemyId ?~ enemy)
+    when (isOutOfPlayPlacement $ attr enemyPlacement enemy) do
+      case placement of
+        AtLocation lid ->
+          pushAll
+            $ [ Will (EnemySpawn Nothing lid enemyId)
+              , When (EnemySpawn Nothing lid enemyId)
+              , EnemySpawn Nothing lid enemyId
+              , After (EnemySpawn Nothing lid enemyId)
+              ]
+        _ -> pure ()
+    pure g
   PlaceInBonded _ (toCardId -> cardId) -> do
     assets <- select $ AssetWithCardId cardId
     events <- select $ EventWithCardId cardId
@@ -1614,15 +1591,9 @@ runGameMessage msg g = case msg of
         _ -> False
     withQueue_ $ filter (not . isDiscardEnemy)
     pure g
-  EnemySpawnFromOutOfPlay oZone miid lid eid -> do
+  EnemySpawnFromOutOfPlay _oZone miid lid eid -> do
     pushAll (resolve $ EnemySpawn miid lid eid)
-    enemy <- getEnemy eid
-    pure
-      $ g
-      & (activeCardL .~ Nothing)
-      & (focusedCardsL .~ mempty)
-      & (outOfPlayEntitiesL . ix oZone . enemiesL %~ deleteMap eid)
-      & (entitiesL . enemiesL %~ insertMap eid enemy)
+    pure $ g & (activeCardL .~ Nothing) & (focusedCardsL .~ mempty)
   Discard _ _ (SearchedCardTarget cardId) -> do
     investigator' <- getActiveInvestigator
     let
@@ -1673,10 +1644,7 @@ runGameMessage msg g = case msg of
     ks <- fieldMap EnemyKeys toList eid
     pushAll $ map handleKey ks
 
-    pure
-      $ g
-      & (entitiesL . enemiesL %~ deleteMap eid)
-      & (outOfPlayEntitiesL . at RemovedZone . non mempty . enemiesL %~ insertMap eid enemy)
+    pure g
   AddToDiscard _ pc -> pure $ g & removedFromPlayL %~ filter (/= PlayerCard pc)
   AddToVictory (EnemyTarget eid) -> do
     card <- field EnemyCard eid
@@ -2265,10 +2233,6 @@ runGameMessage msg g = case msg of
           <> enemyCreationAfter enemyCreation
       SpawnViaSpawnInstruction -> spawnAt enemyId miid (fromMaybe (error "called without spawn at") $ attr enemySpawnAt enemy)
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
-  EnemySpawnEngagedWithPrey eid ->
-    pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
-  EnemySpawnEngagedWith eid _ ->
-    pure $ g & activeCardL .~ Nothing & outOfPlayEntitiesL . each . enemiesL %~ deleteMap eid
   Discarded (InvestigatorTarget iid) source card -> do
     pushM
       $ checkWindows
@@ -2830,7 +2794,6 @@ instance RunMessage Game where
         >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
         >>= encounterDiscardEntitiesL (runMessage msg)
         >>= inSearchEntitiesL (runMessage (InSearch msg))
-        >>= (outOfPlayEntitiesL . itraversed) (runMessage (InOutOfPlay msg))
         >>= (skillTestL . traverse) (runMessage msg)
         >>= (activeCostL . traverse) (runMessage msg)
         >>= runGameMessage msg

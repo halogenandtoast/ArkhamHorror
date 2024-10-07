@@ -87,14 +87,7 @@ const abilities = computed<AbilityMessage[]>(() => {
     }, []);
 })
 
-const outOfPlayEnemy = computed<Enemy | null>(() => {
-  return Object.values(props.game.outOfPlayEnemies).find(e => e.cardId === id.value) ?? null
-})
-
 const tokens = computed(() => {
-  if (outOfPlayEnemy.value) {
-    return outOfPlayEnemy.value.tokens
-  }
   return cardContents.value.tokens || {}
 })
 

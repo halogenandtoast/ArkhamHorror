@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.JennysTwin45sSpec (
-  spec,
-) where
-
-import TestImport.Lifted hiding (EnemyDamage)
+module Arkham.Asset.Assets.JennysTwin45sSpec (spec) where
 
 import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +8,7 @@ import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
 import Arkham.Projection
 import Arkham.Token
+import TestImport.Lifted hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do
@@ -30,7 +27,7 @@ spec = describe "Jenny's Twin .45s" $ do
     assetId <- selectJust $ assetIs Cards.jennysTwin45s
     assert $ fieldP AssetUses ((== 5) . findWithDefault 0 Ammo) assetId
 
-  it "gives +2 combat and does +1 damage" $ gameTest $ \investigator -> do
+  it "gives +2 combat and does +1 damage" . gameTest $ \investigator -> do
     jennysTwin45s <- genPlayerCard Cards.jennysTwin45s
     updateInvestigator investigator $ \attrs ->
       attrs
@@ -47,7 +44,8 @@ spec = describe "Jenny's Twin .45s" $ do
       , spawnAt enemy location
       , moveTo investigator location
       ]
-    [ability] <- getAbilitiesMatching (AbilityOnCardControlledBy $ toId investigator)
+    [ability] <-
+      getAbilitiesMatching (PerformableAbility [] <> AbilityOnCardControlledBy investigator.id)
     pushAndRun $ UseAbility (toId investigator) ability []
 
     chooseOnlyOption "choose enemy"

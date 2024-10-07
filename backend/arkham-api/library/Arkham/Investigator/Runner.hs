@@ -728,7 +728,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
     player <- getPlayer investigatorId
     case discardableCards a of
       [] | handDiscard.strategy /= DiscardRandom -> pure ()
-      cs -> case discardStrategy handDiscard of
+      cs -> case handDiscard.strategy of
         DiscardChoose -> do
           let n = min handDiscard.amount (length cs)
           case handDiscard.filter of

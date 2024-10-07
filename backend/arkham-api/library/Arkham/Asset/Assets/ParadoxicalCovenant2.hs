@@ -19,7 +19,12 @@ instance HasAbilities ParadoxicalCovenant2 where
     [ controlledAbility
         attrs
         1
-        (DuringSkillTest (SkillTestWithRevealedChaosToken #bless <> SkillTestWithRevealedChaosToken #curse))
+        ( DuringSkillTest
+            ( SkillTestOfInvestigator (InvestigatorAt YourLocation)
+                <> SkillTestWithRevealedChaosToken #bless
+                <> SkillTestWithRevealedChaosToken #curse
+            )
+        )
         $ ReactionAbility (SkillTestStep #after RevealChaosTokenStep) (exhaust attrs)
     ]
 

@@ -4038,7 +4038,7 @@ moldyHalls =
     "Moldy Halls"
     [WitchHouse]
     Triangle
-    [Plus, Circle, Heart, Square, Triangle]
+    [Plus, Circle, Heart, Square, Diamond]
     TheSecretName
 
 landlordsQuarters :: CardDef

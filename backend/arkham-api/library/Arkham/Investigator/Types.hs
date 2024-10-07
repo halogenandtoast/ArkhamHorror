@@ -18,6 +18,7 @@ import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
+import Arkham.Constants
 import Arkham.Deck qualified as Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Discard
@@ -462,7 +463,7 @@ instance HasChaosTokenValue Investigator where
 instance HasAbilities Investigator where
   getAbilities i@(Investigator a) =
     getAbilities a
-      <> [ restrictedAbility
+      <> [ restricted
           i
           500
           ( Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a))
@@ -470,6 +471,9 @@ instance HasAbilities Investigator where
           $ ActionAbility []
           $ ActionCost 1
          | notNull (investigatorKeys $ toAttrs a)
+         ]
+      <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
+         , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
          ]
 
 instance Entity Investigator where

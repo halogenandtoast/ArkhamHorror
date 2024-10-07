@@ -18,7 +18,7 @@ instance HasModifiersFor Panic where
 
 instance HasAbilities Panic where
   getAbilities (Panic a) =
-    [ restrictedAbility a 1 injuryCriteria
+    [ restricted a 1 injuryCriteria
         $ forced
         $ ActivateAbility #after You
         $ oneOf [#play, #engage, #resource]

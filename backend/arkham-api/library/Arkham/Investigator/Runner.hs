@@ -2853,18 +2853,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
   Do (LoseResources iid source n) | iid == investigatorId -> runMessage (RemoveTokens source (toTarget a) #resource n) a
   LoseAllResources iid | iid == investigatorId -> pure $ a & tokensL %~ removeAllTokens Resource
   TakeResources iid n source True | iid == investigatorId -> do
-    beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #resource)]
-    afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #resource)]
+    let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
+    whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
+    afterActivateAbilityWindow <- checkAfter $ Window.ActivateAbility iid [] ability
+    beforeWindowMsg <- checkWhen $ Window.PerformAction iid #resource
+    afterWindowMsg <- checkAfter $ Window.PerformAction iid #resource
     canGain <- can.gain.resources (sourceToFromSource source) iid
 
     when canGain do
       pushAll
         [ BeginAction
         , beforeWindowMsg
+        , whenActivateAbilityWindow
         , TakeActions iid [#resource] (ActionCost 1)
         , CheckAttackOfOpportunity iid False
         , TakeResources iid n source False
         , afterWindowMsg
+        , afterActivateAbilityWindow
         , FinishAction
         ]
     pure a

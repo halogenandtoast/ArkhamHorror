@@ -36,3 +36,13 @@ pattern AbilityInvestigate :: Int
 pattern AbilityInvestigate <- 101
   where
     AbilityInvestigate = 101
+
+pattern PlayAbility :: Int
+pattern PlayAbility <- 1000
+  where
+    PlayAbility = 1000
+
+pattern ResourceAbility :: Int
+pattern ResourceAbility <- 1001
+  where
+    ResourceAbility = 1001

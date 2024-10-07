@@ -23,6 +23,7 @@ import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.Constants
 import Arkham.Cost.FieldCost
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
@@ -1201,11 +1202,16 @@ instance RunMessage ActiveCost where
         ForCard isPlayAction card -> do
           let iid = c.investigator
           let actions = [#play | isPlayAction == IsPlayAction] <> card.actions
+          let ability = restricted iid PlayAbility (Self <> Never) (ActionAbility [#play] $ ActionCost 1)
+          whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
+          afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
           pushAll
-            $ [PlayCard iid card Nothing c.payments c.windows False]
+            $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]
+            <> [PlayCard iid card Nothing c.payments c.windows False]
             <> [SealedChaosToken token card | token <- c.sealedChaosTokens]
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]
+            <> [afterActivateAbilityWindow | isPlayAction == IsPlayAction]
         ForCost card -> pushAll [SealedChaosToken token card | token <- c.sealedChaosTokens]
         ForAdditionalCost _ -> pure ()
       push PaidAllCosts

@@ -278,6 +278,8 @@ allActs =
       SomeActCard throughTheLabyrinth
     , --- Devil Reef
       SomeActCard reefOfMysteries
+    , --- Pedal to the Metal
+      SomeActCard pedalToTheMetal
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

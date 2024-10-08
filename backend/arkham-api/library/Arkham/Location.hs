@@ -651,6 +651,23 @@ allLocations =
     , SomeLocationCard cyclopeanRuins_176b
     , SomeLocationCard templeOfTheUnion_177a
     , SomeLocationCard templeOfTheUnion_177b
+    , --- Horror in High Gear [hhg]
+      SomeLocationCard falconPointApproach
+    , SomeLocationCard dimlyLitRoad_a
+    , SomeLocationCard dimlyLitRoad_b
+    , SomeLocationCard dimlyLitRoad_c
+    , SomeLocationCard cliffsideRoad_a
+    , SomeLocationCard cliffsideRoad_b
+    , SomeLocationCard forkInTheRoad_a
+    , SomeLocationCard forkInTheRoad_b
+    , SomeLocationCard intersection_a
+    , SomeLocationCard intersection_b
+    , SomeLocationCard tightTurn_a
+    , SomeLocationCard tightTurn_b
+    , SomeLocationCard tightTurn_c
+    , SomeLocationCard desolateRoad_a
+    , SomeLocationCard desolateRoad_b
+    , SomeLocationCard longWayAround
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -118,6 +118,7 @@ allActCards =
       , paradiseLost
       , pastAndPresent
       , pathsIntoTwilight
+      , pedalToTheMetal
       , planningTheEscape
       , pursuingShadows
       , raceForAnswers
@@ -771,7 +772,10 @@ throughTheLabyrinth :: CardDef
 throughTheLabyrinth = act "07128" "Through the Labyrinth" 1 InTooDeep
 
 reefOfMysteries :: CardDef
-reefOfMysteries = act "07167" "Reef o Mysteries" 1 DevilReef
+reefOfMysteries = act "07167" "Reef of Mysteries" 1 DevilReef
+
+pedalToTheMetal :: CardDef
+pedalToTheMetal = act "07202" "Pedal to the Metal" 1 HorrorInHighGear
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

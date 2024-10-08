@@ -186,6 +186,7 @@ allEncounterTreacheryCards =
       , blindsense
       , bloodOnYourHands
       , brokenRails
+      , bumpyRide
       , burdensOfThePast
       , callToOrder
       , caughtInAWeb
@@ -240,6 +241,7 @@ allEncounterTreacheryCards =
       , evilPast
       , expulsion
       , extradimensionalVisions
+      , eyesInTheTrees
       , eyesInTheWalls
       , falseLead
       , fateOfAllFools
@@ -266,6 +268,7 @@ allEncounterTreacheryCards =
       , huntedByCorsairs
       , huntedDown
       , huntingShadow
+      , iCantSee
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
@@ -385,6 +388,7 @@ allEncounterTreacheryCards =
       , theSpinnerInDarkness
       , theYellowSign
       , theZealotsSeal
+      , theyreCatchingUp
       , threadsOfReality
       , tidalAlignment
       , timelineDestabilization
@@ -2238,6 +2242,30 @@ draggedUnderDevilReef :: CardDef
 draggedUnderDevilReef =
   (treachery "07188" "Dragged Under" DevilReef 3)
     { cdCardTraits = setFromList [Scheme, Terror]
+    }
+
+bumpyRide :: CardDef
+bumpyRide =
+  (treachery "07216" "Bumpy Ride" HorrorInHighGear 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+iCantSee :: CardDef
+iCantSee =
+  (treachery "07217" "\"I can't see\"" HorrorInHighGear 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+eyesInTheTrees :: CardDef
+eyesInTheTrees =
+  (treachery "07218" "Eyes in the Trees" HorrorInHighGear 2)
+    { cdCardTraits = singleton Hazard
+    }
+
+theyreCatchingUp :: CardDef
+theyreCatchingUp =
+  (treachery "07219" "\"They're catching up!\"" HorrorInHighGear 2)
+    { cdCardTraits = singleton Scheme
     }
 
 theHarbinger :: CardDef

@@ -1,0 +1,144 @@
+module Arkham.Scenario.Scenarios.HorrorInHighGear (HorrorInHighGear (..), horrorInHighGear) where
+
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
+import Arkham.Card
+import Arkham.Direction
+import Arkham.EncounterSet qualified as Set
+import Arkham.Helpers.Query (getLead, getPlayerCount)
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher hiding (assetAt)
+import Arkham.Message.Lifted.Choose
+import Arkham.Name
+import Arkham.Placement
+import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Trait (Trait (Vehicle))
+
+newtype HorrorInHighGear = HorrorInHighGear ScenarioAttrs
+  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+horrorInHighGear :: Difficulty -> HorrorInHighGear
+horrorInHighGear difficulty =
+  scenario
+    HorrorInHighGear
+    "07198"
+    "Horror in High Gear"
+    difficulty
+    [ ".      .      .    "
+    , ".      .      .    "
+    , "road1a road2a road3a"
+    , "road1a road2a road3a"
+    , ".      .      .    "
+    , ".      .      .    "
+    ]
+
+instance HasChaosTokenValue HorrorInHighGear where
+  getChaosTokenValue iid tokenFace (HorrorInHighGear attrs) = case tokenFace of
+    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
+    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
+    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
+    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance RunMessage HorrorInHighGear where
+  runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
+    PreScenarioSetup -> do
+      story $ i18nWithTitle "intro"
+      pure s
+    Setup -> runScenarioSetup HorrorInHighGear attrs do
+      gather Set.HorrorInHighGear
+      gather Set.FogOverInnsmouth
+      gather Set.Malfunction
+      gather Set.ShatteredMemories
+      gather Set.AncientEvils
+
+      theTerrorOfDevilReefIsDead <- getHasRecord TheTerrorOfDevilReefIsDead
+      let agenda1 = if theTerrorOfDevilReefIsDead then Agendas.theChaseIsOnV2 else Agendas.theChaseIsOnV1
+
+      setAgendaDeck [agenda1, Agendas.hotPursuit]
+      setActDeck [Acts.pedalToTheMetal]
+
+      (bottom, top) <-
+        splitAt 2
+          <$> shuffleM
+            [ Locations.dimlyLitRoad_a
+            , Locations.dimlyLitRoad_b
+            , Locations.dimlyLitRoad_c
+            , Locations.cliffsideRoad_a
+            , Locations.cliffsideRoad_b
+            , Locations.forkInTheRoad_a
+            , Locations.forkInTheRoad_b
+            , Locations.intersection_a
+            , Locations.intersection_b
+            , Locations.tightTurn_a
+            , Locations.tightTurn_b
+            , Locations.tightTurn_c
+            , Locations.desolateRoad_a
+            , Locations.desolateRoad_b
+            ]
+
+      bottom' <- shuffleM $ Locations.falconPointApproach : bottom
+      setAside $ replicate 6 Locations.longWayAround
+
+      let (inPlay, roadDeck) = splitAt 3 (top <> bottom')
+
+      placed <- for (withIndex1 inPlay) $ \(n, location) -> placeLabeled ("road" <> tshow n <> "a") location
+
+      for_ (zip placed (drop 1 placed)) \(left, right) -> do
+        push $ PlacedLocationDirection left LeftOf right
+
+      for_ (headMay $ reverse placed) \front -> do
+        assetAt_ Assets.thomasDawsonsCarRunning front
+        assetAt_ Assets.elinaHarpersCarRunning front
+        eachInvestigator (`forInvestigator` DoStep 1 Setup)
+        doStep 2 Setup
+        reveal front
+
+      addExtraDeck RoadDeck roadDeck
+
+      lead <- getLead
+      getPlayerCount >>= \case
+        2 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        3 -> findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        4 -> do
+          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+          findEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+        _ -> pure ()
+    ForInvestigator iid (DoStep 1 Setup) -> do
+      vehicles <- selectWithFilterM (AssetWithTrait Vehicle) \vehicle -> do
+        passengers <- selectCount $ InVehicleMatching $ AssetWithId vehicle
+        pure $ passengers < 2
+
+      chooseOrRunOneM iid do
+        questionLabeled "Which vehicle will you start in?"
+        targets vehicles $ push . PlaceInvestigator iid . InVehicle
+      pure s
+    DoStep 2 Setup -> do
+      selectEach (AssetWithTrait Vehicle) \vehicle -> do
+        passengers <- select $ InVehicleMatching $ AssetWithId vehicle
+        if null passengers
+          then removeFromGame vehicle
+          else do
+            name <- field AssetName vehicle
+            lead <- getLead
+            chooseOrRunOneM lead do
+              questionLabeled $ "Who will drive " <> toTitle name <> "?"
+              targets passengers $ push . SetDriver vehicle
+
+      pure s
+    FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
+      focusCards [card] \unfocus -> do
+        locations <- getRear
+        lead <- getLead
+        chooseOrRunOneM lead do
+          questionLabeled "Where will the enemy spawn?"
+          targets locations $ createEnemyAt_ card
+        push unfocus
+      pure s
+    _ -> HorrorInHighGear <$> liftRunMessage msg attrs

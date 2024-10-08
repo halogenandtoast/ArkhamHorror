@@ -270,6 +270,7 @@ data AssetAttrs = AssetAttrs
   , assetFlipped :: Bool
   , assetTaboo :: Maybe TabooList
   , assetMutated :: Maybe Text -- for art display
+  , assetDriver :: Maybe InvestigatorId
   }
   deriving stock (Show, Eq)
 
@@ -288,6 +289,12 @@ instance HasField "owner" Asset (Maybe InvestigatorId) where
 
 instance HasField "taboo" AssetAttrs (Maybe TabooList) where
   getField = assetTaboo
+
+instance HasField "name" AssetAttrs Name where
+  getField = toName
+
+instance HasField "driver" AssetAttrs (Maybe InvestigatorId) where
+  getField = assetDriver
 
 instance HasField "customizations" AssetAttrs Customizations where
   getField = assetCustomizations
@@ -449,6 +456,7 @@ assetWith f cardDef g =
             , assetFlipped = False
             , assetTaboo = Nothing
             , assetMutated = Nothing
+            , assetDriver = Nothing
             }
     }
 

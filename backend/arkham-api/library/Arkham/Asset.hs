@@ -722,6 +722,11 @@ allAssets =
       SomeAssetCard tristanBotleyFixerForHire2
     , --- mystic [hhg]
       SomeAssetCard curseOfAeons3
+    , --- scenario [def]
+      SomeAssetCard thomasDawsonsCarRunning
+    , SomeAssetCard thomasDawsonsCarStopped
+    , SomeAssetCard elinaHarpersCarRunning
+    , SomeAssetCard elinaHarpersCarStopped
     , -- A Light in the Fog
       --- guardian [lif]
       SomeAssetCard holyRosary2

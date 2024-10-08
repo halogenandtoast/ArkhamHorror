@@ -396,6 +396,10 @@ allEnemies =
     , SomeEnemyCard theTerrorOfDevilReef_165
     , SomeEnemyCard deepOnePredator
     , SomeEnemyCard huntingDeepOne
+    , --- Horror in High Gear [hhg]
+      SomeEnemyCard pursuingMotorcar
+    , SomeEnemyCard hitVan
+    , SomeEnemyCard hybridAssassin
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

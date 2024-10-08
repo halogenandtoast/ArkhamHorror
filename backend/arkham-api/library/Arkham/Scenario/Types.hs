@@ -81,6 +81,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioTurn :: Field Scenario Int
   ScenarioDefeatedEnemies :: Field Scenario (Map EnemyId DefeatedEnemyAttrs)
   ScenarioGrid :: Field Scenario Grid
+  ScenarioLocationLayout :: Field Scenario [GridTemplateRow]
 
 deriving stock instance Show (Field Scenario typ)
 

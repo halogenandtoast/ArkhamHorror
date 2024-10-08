@@ -66,6 +66,7 @@ allAgendaCards =
       , horrificDescent
       , horrorsUnleashed
       , hospitalOfHorrors
+      , hotPursuit
       , humanityFading
       , intruders
       , inEveryShadow
@@ -117,6 +118,8 @@ allAgendaCards =
       , theBoundaryBroken
       , theBridgeOfWebs
       , theChariotVII
+      , theChaseIsOnV1
+      , theChaseIsOnV2
       , theCityFloods
       , theCloverClub
       , theCurseSpreads
@@ -606,6 +609,15 @@ secretsOfTheSeaV2 = agenda "07165" "Secrets of the Sea (v. II)" 1 DevilReef
 
 theDevilOfTheDepths :: CardDef
 theDevilOfTheDepths = agenda "07166" "The Devil of the Depths" 2 DevilReef
+
+theChaseIsOnV1 :: CardDef
+theChaseIsOnV1 = agenda "07199" "The Chase is On! (v. I)" 1 HorrorInHighGear
+
+theChaseIsOnV2 :: CardDef
+theChaseIsOnV2 = agenda "07200" "The Chase is On! (v. II)" 1 HorrorInHighGear
+
+hotPursuit :: CardDef
+hotPursuit = agenda "07201" "Hot Pursuit" 2 HorrorInHighGear
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

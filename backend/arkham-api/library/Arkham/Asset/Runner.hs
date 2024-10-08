@@ -69,6 +69,8 @@ instance RunMessage Asset where
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
+    SetDriver aid iid | aid == assetId -> do
+      pure $ a & driverL ?~ iid
     Msg.DealAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
       case a.controller of
         Nothing -> runMessage (Msg.AssignAssetDamageWithCheck aid source damage horror doCheck) a

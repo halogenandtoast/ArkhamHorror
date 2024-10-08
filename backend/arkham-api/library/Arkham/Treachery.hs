@@ -471,6 +471,11 @@ allTreacheries =
     , SomeTreacheryCard horrorsFromTheDeep
     , SomeTreacheryCard stowaway
     , SomeTreacheryCard draggedUnderDevilReef
+    , --- Horror in High Gear
+      SomeTreacheryCard bumpyRide
+    , SomeTreacheryCard iCantSee
+    , SomeTreacheryCard eyesInTheTrees
+    , SomeTreacheryCard theyreCatchingUp
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

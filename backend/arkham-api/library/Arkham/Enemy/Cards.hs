@@ -174,6 +174,7 @@ allEncounterEnemyCards =
       , heretic_K
       , hermanCollins
       , highPriestNotToBeDescribed
+      , hitVan
       , hordeOfNight
       , hotelGuest
       , hotelManager
@@ -182,6 +183,7 @@ allEncounterEnemyCards =
       , huntingGhast
       , huntingHorror
       , huntingNightgaunt
+      , hybridAssassin
       , ichtaca
       , ichtacaScionOfYig
       , icyGhoul
@@ -254,6 +256,7 @@ allEncounterEnemyCards =
       , priestOfAThousandMasks
       , priestOfDagon
       , priestessOfTheCoven
+      , pursuingMotorcar
       , ravagerFromTheDeep
       , ravenousGhoul
       , relentlessDarkYoung
@@ -2168,6 +2171,27 @@ huntingDeepOne =
   (enemy "07183" "Hunting Deep One" DevilReef 2)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+pursuingMotorcar :: CardDef
+pursuingMotorcar =
+  (enemy "07213" "Pursuing Motorcar" HorrorInHighGear 2)
+    { cdCardTraits = setFromList [Vehicle, Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+hitVan :: CardDef
+hitVan =
+  (enemy "07214" "Hit Van" HorrorInHighGear 2)
+    { cdCardTraits = setFromList [Vehicle, Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+hybridAssassin :: CardDef
+hybridAssassin =
+  (enemy "07215" "Hybrid Assassin" HorrorInHighGear 2)
+    { cdCardTraits = setFromList [Vehicle, Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 mobGoons :: CardDef

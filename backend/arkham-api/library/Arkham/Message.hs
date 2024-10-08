@@ -331,6 +331,7 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | SetDriver AssetId InvestigatorId
   | SetGameState GameState
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId

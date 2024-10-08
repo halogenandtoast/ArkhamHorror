@@ -6,7 +6,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Message (Message)
+import Arkham.Message (Message, uiToRun)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Query
@@ -59,8 +59,13 @@ chooseOneFromEachM iid choices = do
 
 chooseOrRunOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneM iid choices = do
-  (_, choices') <- runChooseT choices
-  unless (null choices') $ chooseOrRunOne iid choices'
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseOrRunOne iid choices'
+      Just l -> case choices' of
+        [x] -> push $ uiToRun x
+        _ -> questionLabel l iid $ ChooseOne choices'
 
 chooseOrRunNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseOrRunNM iid n choices = do

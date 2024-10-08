@@ -387,6 +387,46 @@ curseOfAeons3 =
     , cdLevel = Just 3
     }
 
+thomasDawsonsCarRunning :: CardDef
+thomasDawsonsCarRunning =
+  (storyAsset "07211a" ("Thomas Dawson's Car" <:> "Running") 0 HorrorInHighGear)
+    { cdCardTraits = singleton Vehicle
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07211b"
+    }
+
+thomasDawsonsCarStopped :: CardDef
+thomasDawsonsCarStopped =
+  (storyAsset "07211b" ("Thomas Dawson's Car" <:> "Stopped") 0 HorrorInHighGear)
+    { cdCardTraits = singleton Vehicle
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07211a"
+    }
+
+elinaHarpersCarRunning :: CardDef
+elinaHarpersCarRunning =
+  (storyAsset "07212a" ("Elina Harper's Car" <:> "Running") 0 HorrorInHighGear)
+    { cdCardTraits = singleton Vehicle
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07212b"
+    }
+
+elinaHarpersCarStopped :: CardDef
+elinaHarpersCarStopped =
+  (storyAsset "07212b" ("Elina Harper's Car" <:> "Stopped") 0 HorrorInHighGear)
+    { cdCardTraits = singleton Vehicle
+    , cdCost = Nothing
+    , cdCardType = EncounterAssetType
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07212a"
+    }
+
 holyRosary2 :: CardDef
 holyRosary2 =
   (asset "07220" "Holy Rosary" 2 Guardian)

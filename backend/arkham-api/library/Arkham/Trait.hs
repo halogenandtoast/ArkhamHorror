@@ -177,6 +177,7 @@ data Trait
   | Ritual
   | River
   | Riverside
+  | Road
   | Rot
   | Ruins
   | Salem

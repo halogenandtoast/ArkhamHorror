@@ -822,6 +822,10 @@ allEncounterAssetCards =
       , theCaptain
       , richardUptonPickman
       , fishingVessel
+      , thomasDawsonsCarRunning
+      , thomasDawsonsCarStopped
+      , elinaHarpersCarRunning
+      , elinaHarpersCarStopped
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

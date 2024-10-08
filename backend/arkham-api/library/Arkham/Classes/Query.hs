@@ -24,6 +24,9 @@ whenAny q f = whenM (selectAny q) f
 selectNone :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectNone = fmap not . selectAny
 
+whenNone :: (HasCallStack, Query a, HasGame m) => a -> m () -> m ()
+whenNone q f = whenM (selectNone q) f
+
 selectFilter :: (HasCallStack, Query a, HasGame m) => a -> [QueryElement a] -> m [QueryElement a]
 selectFilter matcher ids = (ids `List.intersect`) <$> select matcher
 
@@ -267,6 +270,10 @@ selectMaybeM
   -> (QueryElement a -> m b)
   -> m b
 selectMaybeM def matcher f = maybe (pure def) f =<< selectOne matcher
+
+selectWithFilterM
+  :: (HasCallStack, Query a, HasGame m) => a -> (QueryElement a -> m Bool) -> m [QueryElement a]
+selectWithFilterM matcher f = filterM f =<< select matcher
 
 selectForMaybeM
   :: (HasCallStack, Query a, HasGame m)

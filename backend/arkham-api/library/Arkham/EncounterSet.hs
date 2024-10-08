@@ -135,6 +135,7 @@ data EncounterSet
   | TheLocals
   | InTooDeep
   | DevilReef
+  | HorrorInHighGear
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

@@ -233,6 +233,10 @@ allAgendas =
       SomeAgendaCard secretsOfTheSeaV1
     , SomeAgendaCard secretsOfTheSeaV2
     , SomeAgendaCard theDevilOfTheDepths
+    , --- Horror in High Gear
+      SomeAgendaCard theChaseIsOnV1
+    , SomeAgendaCard theChaseIsOnV2
+    , SomeAgendaCard hotPursuit
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

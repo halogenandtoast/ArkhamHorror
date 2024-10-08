@@ -249,5 +249,6 @@
   { "id": "07041", "name": "The Pit of Despair", "campaign": "07", "settings": [] },
   { "id": "07056", "name": "The Vanishing of Elina Harper", "campaign": "07", "settings": [] },
   { "id": "07123", "name": "In Too Deep", "campaign": "07", "settings": [] },
-  { "id": "07163", "name": "Devil Reef", "campaign": "07", "settings": [] }
+  { "id": "07163", "name": "Devil Reef", "campaign": "07", "settings": [] },
+  { "id": "07198", "name": "Horror in High Gear", "campaign": "07", "settings": [] }
 ]

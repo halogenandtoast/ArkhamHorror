@@ -181,6 +181,8 @@ allLocationCards =
       , cityOfTheSerpents
       , cityOfTheUnseen
       , cityWhichAppearsOnNoMap
+      , cliffsideRoad_a
+      , cliffsideRoad_b
       , cloister
       , cloverClubBar
       , cloverClubCardroom
@@ -216,14 +218,19 @@ allLocationCards =
       , depthsOfDemheStepsOfThePalace
       , descentToYoth
       , desolateCoastline
+      , desolateRoad_a
+      , desolateRoad_b
       , destroyedPath
       , devilsHopYard_252
       , devilsHopYard_253
+      , dimStreetsMappingTheStreets
+      , dimStreetsTheArchway
+      , dimStreetsTheKingsParade
       , dimensionalDoorway
       , dimensionalGap
-      , dimStreetsMappingTheStreets
-      , dimStreetsTheKingsParade
-      , dimStreetsTheArchway
+      , dimlyLitRoad_a
+      , dimlyLitRoad_b
+      , dimlyLitRoad_c
       , diningCar
       , diningRoom
       , dormitories
@@ -269,6 +276,7 @@ allLocationCards =
       , eztliExhibit
       , facultyOfficesTheHourIsLate
       , facultyOfficesTheNightIsStillYoung
+      , falconPointApproach
       , farAboveYourHouse
       , faubourgMarigny
       , firstNationalGrocery
@@ -281,6 +289,8 @@ allLocationCards =
       , forbiddenLands
       , forbiddingShore
       , forgottenMarsh
+      , forkInTheRoad_a
+      , forkInTheRoad_b
       , forkedPath
       , forsakenTowerOfEternalFlame
       , forsakenTowerOfIllusionAndMyth
@@ -356,6 +366,8 @@ allLocationCards =
       , innsmouthJailInTooDeep
       , innsmouthSquare
       , innsmouthSquareInTooDeep
+      , intersection_a
+      , intersection_b
       , interviewRoomArrivalChamber
       , interviewRoomIchorFilledChamber
       , interviewRoomRestrainingChamber
@@ -385,6 +397,7 @@ allLocationCards =
       , lodgeGatesMembersOnly
       , lodgeGatesWeveBeenExpectingYou
       , lonelyIsle
+      , longWayAround
       , lostMemories
       , lounge
       , mainPath
@@ -595,6 +608,9 @@ allLocationCards =
       , theWhiteShip
       , theatre
       , tidalPool
+      , tightTurn_a
+      , tightTurn_b
+      , tightTurn_c
       , timeWrackedWoods
       , tombOfShadows
       , towerOfKoth
@@ -6655,6 +6671,83 @@ templeOfTheUnion_177b =
     NoSymbol
     []
     DevilReef
+
+oldInnsmouthRoad :: CardCode -> Name -> CardDef
+oldInnsmouthRoad cardCode name =
+  locationWithUnrevealed
+    cardCode
+    "Old Innsmouth Road"
+    [Road]
+    NoSymbol
+    []
+    name
+    [Road]
+    NoSymbol
+    []
+    HorrorInHighGear
+
+falconPointApproach :: CardDef
+falconPointApproach = oldInnsmouthRoad "07203" "Falcon Point Approach"
+
+-- road 1
+dimlyLitRoad_a :: CardDef
+dimlyLitRoad_a = oldInnsmouthRoad "07204a" "Dimly Lit Road"
+
+-- road 1
+dimlyLitRoad_b :: CardDef
+dimlyLitRoad_b = oldInnsmouthRoad "07204b" "Dimly Lit Road"
+
+-- road 1
+dimlyLitRoad_c :: CardDef
+dimlyLitRoad_c = oldInnsmouthRoad "07204c" "Dimly Lit Road"
+
+-- road 1
+cliffsideRoad_a :: CardDef
+cliffsideRoad_a = victory 1 $ oldInnsmouthRoad "07205a" "Cliffside Road"
+
+-- road 1
+cliffsideRoad_b :: CardDef
+cliffsideRoad_b = victory 1 $ oldInnsmouthRoad "07205b" "Cliffside Road"
+
+-- road 2
+forkInTheRoad_a :: CardDef
+forkInTheRoad_a = victory 1 $ oldInnsmouthRoad "07206a" "Fork in the Road"
+
+-- road 2
+forkInTheRoad_b :: CardDef
+forkInTheRoad_b = victory 1 $ oldInnsmouthRoad "07206b" "Fork in the Road"
+
+-- road 3
+intersection_a :: CardDef
+intersection_a = victory 1 $ oldInnsmouthRoad "07207a" "Intersection"
+
+-- road 3
+intersection_b :: CardDef
+intersection_b = victory 1 $ oldInnsmouthRoad "07207b" "Intersection"
+
+-- road 1
+tightTurn_a :: CardDef
+tightTurn_a = oldInnsmouthRoad "07208a" "Tight Turn"
+
+-- road 1
+tightTurn_b :: CardDef
+tightTurn_b = oldInnsmouthRoad "07208b" "Tight Turn"
+
+-- road 1
+tightTurn_c :: CardDef
+tightTurn_c = oldInnsmouthRoad "07208c" "Tight Turn"
+
+-- road 1
+desolateRoad_a :: CardDef
+desolateRoad_a = victory 1 $ oldInnsmouthRoad "07209a" "Desolate Road"
+
+-- road 1
+desolateRoad_b :: CardDef
+desolateRoad_b = victory 1 $ oldInnsmouthRoad "07209b" "Desolate Road"
+
+-- road 1
+longWayAround :: CardDef
+longWayAround = quantity 6 $ oldInnsmouthRoad "07210" "Long Way Around"
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

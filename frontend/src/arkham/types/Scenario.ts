@@ -65,6 +65,7 @@ export type Scenario = {
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
   meta: any;
+  log: Remembered[];
 }
 
 export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
@@ -78,11 +79,21 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   name: scenarioNameDecoder,
 }, 'ScenarioDetails');
 
+export type Remembered = { tag: string }
+
+const rememberedDecoder = JsonDecoder.object<Remembered>(
+  { tag: JsonDecoder.string },
+  'Remembered'
+);
+
+
+
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
   id: JsonDecoder.string,
   meta: JsonDecoder.succeed,
   reference: JsonDecoder.string,
+  log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
   difficulty: difficultyDecoder,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
   usesGrid: JsonDecoder.boolean,

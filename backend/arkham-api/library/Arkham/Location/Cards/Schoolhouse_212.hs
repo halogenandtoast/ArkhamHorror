@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.Schoolhouse_212 (
-  schoolhouse_212,
-  Schoolhouse_212 (..),
-) where
+module Arkham.Location.Cards.Schoolhouse_212 (schoolhouse_212, Schoolhouse_212 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (isAt, withDrawCardUnderneathAction)
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 schoolhouse_212 :: LocationCard Schoolhouse_212

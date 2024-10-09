@@ -50,7 +50,7 @@ getConnectedMatcher l = do
   self = LocationWithId l
 
 isAt :: (HasGame m, Entity a, EntityId a ~ LocationId) => InvestigatorId -> a -> m Bool
-isAt iid (toId -> lid) = fieldMap InvestigatorLocation (== Just lid) iid
+isAt iid (toId -> lid) = fieldMap InvestigatorLocation (elem lid) iid
 
 placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case

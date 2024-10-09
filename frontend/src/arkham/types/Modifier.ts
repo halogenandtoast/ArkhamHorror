@@ -1,5 +1,69 @@
 import { JsonDecoder } from 'ts.data.json';
 
+type CardType = "SkillType"
+
+type CardMatcher
+  = { tag: 'CardWithType', contents: CardType }
+  | { tag: 'AnyCard' }
+  | { tag: 'CardWithOddNumberOfWordsInTitle' }
+  | { tag: 'CardWithOddSkillIcons' }
+
+const cardTypeDecoder = JsonDecoder.oneOf<CardType>([
+  JsonDecoder.isExactly('SkillType')
+], 'CardType')
+
+const cardMatcherDecoder = JsonDecoder.oneOf<CardMatcher>([
+  JsonDecoder.object<CardMatcher>(
+    {
+      tag: JsonDecoder.isExactly('CardWithType'),
+      contents: cardTypeDecoder
+    },
+    'CardWithType'
+  ),
+  JsonDecoder.object<CardMatcher>(
+    {
+      tag: JsonDecoder.isExactly('AnyCard')
+    },
+    'AnyCard'
+  ),
+  JsonDecoder.object<CardMatcher>(
+    {
+      tag: JsonDecoder.isExactly('CardWithOddNumberOfWordsInTitle')
+    },
+    'CardWithOddNumberOfWordsInTitle'
+  ),
+  JsonDecoder.object<CardMatcher>(
+    {
+      tag: JsonDecoder.isExactly('CardWithOddSkillIcons')
+    },
+    'CardWithOddSkillIcons'
+  )
+], 'CardMatcher')
+
+export function cardMatcherToWords(m: CardMatcher): string {
+  switch (m.tag) {
+    case 'CardWithType':
+      switch (m.contents) {
+        case 'SkillType':
+          return " Skill cards"
+        default:
+          return " Unknown card type"
+      }
+    case 'AnyCard':
+      return " cards"
+    case 'CardWithOddNumberOfWordsInTitle':
+      return " cards with odd number of words in title"
+    case 'CardWithOddSkillIcons':
+      return " cards with odd skill icons"
+    default:
+      return "Unknown card matcher"
+  }
+} 
+
+export function cannotCommitCardsToWords(m: { tag: 'CannotCommitCards', contents: CardMatcher }): string {
+  return "Cannot commit" + cardMatcherToWords(m.contents)
+}
+
 export type ModifierType
   = ActionSkillModifier
   | AddKeyword
@@ -14,6 +78,7 @@ export type ModifierType
   | OtherModifier
   | SkillModifier
   | UseEncounterDeck
+  | CannotCommitCards
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -74,6 +139,11 @@ export type UseEncounterDeck = {
   contents: string
 }
 
+export type CannotCommitCards = {
+  tag: "CannotCommitCards"
+  contents: any
+}
+
 export type CannotEnter = {
   tag: "CannotEnter"
   contents: string
@@ -125,7 +195,12 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
     {
       tag: JsonDecoder.isExactly('CannotEnter'),
       contents: JsonDecoder.string
-    }, 'UseEncounterDeck'),
+    }, 'CannotEnter'),
+  JsonDecoder.object<CannotCommitCards>(
+    {
+      tag: JsonDecoder.isExactly('CannotCommitCards'),
+      contents: JsonDecoder.succeed
+    }, 'CannotCommitCards'),
   JsonDecoder.object<SkillModifier>(
     {
       tag: JsonDecoder.isExactly('SkillModifier'),

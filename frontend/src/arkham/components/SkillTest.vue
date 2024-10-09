@@ -6,7 +6,7 @@ import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
-import { ModifierType } from '@/arkham/types/Modifier';
+import { ModifierType, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
@@ -14,7 +14,7 @@ import Card from '@/arkham/components/Card.vue'
 import CommittedSkills from '@/arkham/components/CommittedSkills.vue';
 import { MessageType, StartSkillTestButton } from '@/arkham/types/Message';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { imgsrc, toCamelCase, formatContent } from '@/arkham/helpers';
+import { imgsrc, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
 
@@ -48,10 +48,26 @@ const shouldRender = (mod: ModifierType) => {
   if (mod.tag === 'DamageDealt') return true
   if (mod.tag === 'AnySkillValue') return true
   if (mod.tag === 'AddSkillValue') return true
+  if (mod.tag === 'CannotCommitCards')
+    return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
   if (mod.tag === 'OtherModifier' && mod.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
   return false
 }
-const modifiers = computed(() => (props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).map((m) => m.type).filter(shouldRender))
+
+const shouldRenderYourModifiers = (mod: ModifierType) => {
+  if (!('tag' in mod)) return false
+  if (props.game.investigators[props.skillTest.investigator].playerId === props.playerId) return false
+  if (mod.tag === 'CannotCommitCards') return true
+  return false
+}
+
+const yourModifiers = computed(() => {
+  const investigator = Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
+  if (!investigator) return []
+  return (investigator.modifiers ?? []).map((m) => m.type).filter(shouldRenderYourModifiers)
+})
+
+const modifiers = computed(() => [...(props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).map((m) => m.type).filter(shouldRender), ...yourModifiers.value]) 
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
@@ -217,6 +233,9 @@ const tokenEffects = computed(() => {
       />
       <div v-if="modifiers.length > 0" class="modifiers">
         <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier">
+          <template v-if="modifier.tag === 'CannotCommitCards'">
+            <span>{{cannotCommitCardsToWords(modifier)}}</span>
+          </template>
           <template v-if="modifier.tag === 'DiscoveredClues'">
             <span>+{{modifier.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />

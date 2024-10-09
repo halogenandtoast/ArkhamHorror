@@ -115,6 +115,16 @@ damageLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [DamageLabel iid msgs]
 
+resourceLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+resourceLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [ResourceLabel iid msgs]
+
+clueLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+clueLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [ClueLabel iid msgs]
+
 cardLabeled :: (ReverseQueue m, HasCardCode a) => a -> QueueT Message m () -> ChooseT m ()
 cardLabeled a action = unterminated do
   msgs <- lift $ evalQueueT action

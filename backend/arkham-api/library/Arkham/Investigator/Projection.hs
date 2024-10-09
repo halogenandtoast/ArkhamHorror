@@ -16,6 +16,7 @@ import Arkham.Investigator.Types as X (Field (..))
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
@@ -27,6 +28,9 @@ instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
 
 instance HasField "clues" InvestigatorId (QueueT Message GameT Int) where
   getField = field InvestigatorClues
+
+instance HasField "placement" InvestigatorId (QueueT Message GameT Placement) where
+  getField = field InvestigatorPlacement
 
 instance HasField "hand" InvestigatorAttrs (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand . toId

@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype DownstairsDoorwayParlor = DownstairsDoorwayParlor LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downstairsDoorwayParlor :: LocationCard DownstairsDoorwayParlor
@@ -19,22 +19,20 @@ downstairsDoorwayParlor = location DownstairsDoorwayParlor Cards.downstairsDoorw
 instance HasModifiersFor DownstairsDoorwayParlor where
   getModifiersFor target (DownstairsDoorwayParlor a) | a `is` target = do
     n <- selectCount $ investigatorAt a
-    pure $ toModifiers a [ShroudModifier (-n) | n > 0]
+    pure $ toModifiers a [ShroudModifier n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DownstairsDoorwayParlor where
-  getAbilities (DownstairsDoorwayParlor attrs) =
-    extendRevealed
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
-              <> not_ (Remembered RecoveredAStrangeKey)
-          )
-          $ FastAbility Free
-      ]
+  getAbilities (DownstairsDoorwayParlor a) =
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
+            <> not_ (Remembered RecoveredAStrangeKey)
+        )
+      $ FastAbility Free
 
 instance RunMessage DownstairsDoorwayParlor where
   runMessage msg l@(DownstairsDoorwayParlor attrs) = case msg of

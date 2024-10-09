@@ -1105,6 +1105,9 @@ gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n
   for_ mmsg push
 
+loseResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+loseResources iid source n = push $ Msg.LoseResources iid (toSource source) n
+
 drawEncounterCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 

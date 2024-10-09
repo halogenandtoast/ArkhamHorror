@@ -4,7 +4,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
-import Arkham.Classes.Query (select, whenNone)
+import Arkham.Classes.Query (select, selectAny, selectField, selectWithField, whenNone)
 import Arkham.Direction
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -13,11 +13,16 @@ import Arkham.Id
 import Arkham.Label
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Location
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (Message (PlacedLocationDirection, SetLayout, SetLocationLabel))
+import Arkham.Message (
+  Message (PlacedLocationDirection, RemoveLocation, SetLayout, SetLocationLabel),
+ )
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenario.Deck
+import Arkham.Trait (Trait (Vehicle))
+import Data.Foldable (foldl)
 import Data.Text qualified as T
 import GHC.Records
 import Text.Read
@@ -28,13 +33,14 @@ scenarioI18n a = campaignI18n $ scope "horrorInHighGear" a
 getRoadDeck :: HasGame m => m [Card]
 getRoadDeck = getScenarioDeck RoadDeck
 
+getLabelPosition :: Text -> Int
+getLabelPosition label' = case unsnoc label' of
+  Just (lbl, _) -> read @Int $ drop 4 $ unpack lbl
+  Nothing -> error "impossible"
+
 road :: (ReverseQueue m, HasField "label" a Text, HasField "id" a LocationId) => Int -> a -> m ()
 road n attrs = do
-  let
-    x =
-      case unsnoc attrs.label of
-        Just (lbl, _) -> read @Int $ drop 4 $ unpack lbl
-        Nothing -> error "impossible"
+  let x = getLabelPosition attrs.label
   let prefix = "road" <> tshow (x + 1)
   whenNone (LocationWithLabel $ Label $ prefix <> "a") do
     roadCard <- take 1 <$> getRoadDeck
@@ -72,11 +78,54 @@ road n attrs = do
 
 getRear :: HasGame m => m [LocationId]
 getRear = do
+  labels <- getRearLabels <$> getLayout
+  select $ mapOneOf (LocationWithLabel . Label) labels
+
+getRearLabels :: [GridTemplateRow] -> [Text]
+getRearLabels layout =
   let
     getRearLabel (GridTemplateRow txt) =
       case (T.words txt) of
         [] -> Nothing
         ("." : _) -> Nothing
         (x : _) -> Just x
-  labels <- mapMaybe getRearLabel <$> getLayout
-  select $ mapOneOf (LocationWithLabel . Label) labels
+   in
+    mapMaybe getRearLabel layout
+
+getRearmostInvestigator :: HasGame m => m [InvestigatorId]
+getRearmostInvestigator = do
+  locations <- selectWithField LocationLabel $ LocationWithInvestigator Anyone
+  case nonEmpty locations of
+    Nothing -> pure []
+    Just (x :| xs) -> do
+      let chooseRearmost z@(_, l1) y@(_, l2) = if getLabelPosition l1 > getLabelPosition l2 then y else z
+      let (rearmost, _) = foldl chooseRearmost x xs
+      select $ investigatorAt rearmost
+
+advanceRoad :: ReverseQueue m => m ()
+advanceRoad = do
+  mStopAt <-
+    getRearmostInvestigator >>= \case
+      [] -> pure Nothing
+      (x : _) ->
+        fmap (subtract 1 . getLabelPosition)
+          . listToMaybe
+          <$> selectField LocationLabel (locationWithInvestigator x)
+  push . SetLayout =<< go mStopAt =<< getLayout
+ where
+  go mStopAt layout = do
+    case getRearLabels layout of
+      [] -> error "impossible"
+      xs@(x : _) -> do
+        shouldStop <-
+          orM
+            [ pure $ maybe False (== getLabelPosition x) mStopAt
+            , selectAny $ AssetWithTrait Vehicle <> AssetAt (mapOneOf (LocationWithLabel . Label) xs)
+            , selectAny $ EnemyAt (mapOneOf (LocationWithLabel . Label) xs)
+            ]
+        if shouldStop
+          then pure layout
+          else do
+            selectEach (mapOneOf (LocationWithLabel . Label) xs) $ push . RemoveLocation
+            go mStopAt
+              $ map (\(GridTemplateRow row) -> GridTemplateRow . T.unwords . drop 1 $ T.words row) layout

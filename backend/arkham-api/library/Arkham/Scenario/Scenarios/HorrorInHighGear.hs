@@ -150,20 +150,32 @@ instance RunMessage HorrorInHighGear where
           field InvestigatorPlacement iid >>= \case
             InVehicle aid -> do
               loc <- fieldJust AssetLocation aid
-              passengers <- select $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
+              passengers <-
+                selectWithField InvestigatorClues $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
               case passengers of
                 [] -> pure ()
-                [x] -> placeClues x loc n
-                _xs -> pure ()
+                [(x, c)] -> placeClues x loc (min c n)
+                xs ->
+                  if sum (map snd xs) <= n
+                    then for_ xs \(x, c) -> placeClues x loc c
+                    else chooseNM iid n do
+                      for_ xs \(x, _c) -> clueLabeled x $ placeClues x loc 1
             _ -> pure ()
         Tablet | n > 0 -> do
           field InvestigatorPlacement iid >>= \case
             InVehicle aid -> do
-              passengers <- select $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyResources
+              passengers <-
+                selectWithField InvestigatorResources
+                  $ InVehicleMatching (AssetWithId aid)
+                  <> InvestigatorWithAnyResources
               case passengers of
                 [] -> pure ()
-                [x] -> push $ LoseResources x (toSource Tablet) n
-                _xs -> pure ()
+                [(x, r)] -> loseResources x Tablet (min n r)
+                xs ->
+                  if sum (map snd xs) <= n
+                    then for_ xs \(x, c) -> loseResources x Tablet c
+                    else chooseNM iid n do
+                      for_ xs \(x, _c) -> resourceLabeled x $ loseResources x Tablet 1
             _ -> pure ()
         ElderThing | isEasyStandard attrs -> push HuntersMove
         _ -> pure ()

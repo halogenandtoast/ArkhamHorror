@@ -1,12 +1,11 @@
-module Arkham.Location.Cards.ForkInTheRoad_b (
-  forkInTheRoad_b,
-  ForkInTheRoad_b (..),
-)
-where
+module Arkham.Location.Cards.ForkInTheRoad_b (forkInTheRoad_b, ForkInTheRoad_b (..)) where
 
+import Arkham.Ability
 import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Scenarios.HorrorInHighGear.Helpers
 
 newtype ForkInTheRoad_b = ForkInTheRoad_b LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +18,12 @@ forkInTheRoad_b =
     .~ setFromList [LeftOf, RightOf]
 
 instance HasAbilities ForkInTheRoad_b where
-  getAbilities (ForkInTheRoad_b attrs) =
-    extendRevealed attrs []
+  getAbilities (ForkInTheRoad_b a) =
+    extendRevealed a [mkAbility a 1 $ SilentForcedAbility $ RevealLocation #after Anyone (be a)]
 
 instance RunMessage ForkInTheRoad_b where
-  runMessage msg (ForkInTheRoad_b attrs) = runQueueT $ case msg of
+  runMessage msg l@(ForkInTheRoad_b attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      road 2 attrs
+      pure l
     _ -> ForkInTheRoad_b <$> liftRunMessage msg attrs

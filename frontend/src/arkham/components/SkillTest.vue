@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
-import { computed } from 'vue';
+import { computed, h } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
-import { ModifierType, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
+import { ModifierType, Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
@@ -42,32 +42,36 @@ const skills = computed(() => {
 })
 const skillTestResults = computed(() => props.game.skillTestResults)
 const emit = defineEmits(['choose'])
-const shouldRender = (mod: ModifierType) => {
-  if (!('tag' in mod)) return false
-  if (mod.tag === 'DiscoveredClues') return true
-  if (mod.tag === 'DamageDealt') return true
-  if (mod.tag === 'AnySkillValue') return true
-  if (mod.tag === 'AddSkillValue') return true
-  if (mod.tag === 'CannotCommitCards')
+const shouldRender = (mod: Modifier) => {
+  const { type } = mod
+  if (!('tag' in type)) return false
+  if (type.tag === 'DiscoveredClues') return true
+  if (type.tag === 'DamageDealt') return true
+  if (type.tag === 'AnySkillValue') return true
+  if (type.tag === 'AddSkillValue') return true
+  if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
-  if (mod.tag === 'OtherModifier' && mod.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
+  if (type.tag === 'OtherModifier' && type.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
   return false
 }
 
-const shouldRenderYourModifiers = (mod: ModifierType) => {
-  if (!('tag' in mod)) return false
+const shouldRenderYourModifiers = (mod: Modifier) => {
+  const { type } = mod
+  if (!('tag' in type)) return false
   if (props.game.investigators[props.skillTest.investigator].playerId === props.playerId) return false
-  if (mod.tag === 'CannotCommitCards') return true
+  if (type.tag === 'CannotCommitCards') return true
   return false
 }
 
 const yourModifiers = computed(() => {
   const investigator = Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
   if (!investigator) return []
-  return (investigator.modifiers ?? []).map((m) => m.type).filter(shouldRenderYourModifiers)
+  return (investigator.modifiers ?? []).filter(shouldRenderYourModifiers)
 })
 
-const modifiers = computed(() => [...(props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).map((m) => m.type).filter(shouldRender), ...yourModifiers.value]) 
+const modifiers = computed(() =>
+  [...(props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).
+    filter(shouldRender), ...yourModifiers.value]) 
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
@@ -121,6 +125,18 @@ const abilities = computed<AbilityMessage[]>(() => {
 
 async function choose(idx: number) {
   emit('choose', idx)
+}
+
+function modifierSource(mod: Modifier) {
+  if (mod.source.tag === 'LocationSource') {
+    const location = props.game.locations[mod.source.contents]
+    if (!location) return null
+    const { cardCode, revealed } = location
+    const suffix = revealed ? '' : 'b'
+
+    return `${cardCode.replace('c', '')}${suffix}`
+  }
+  return null
 }
 
 const targetCard = computed(() => {
@@ -233,29 +249,29 @@ const tokenEffects = computed(() => {
       />
       <div v-if="modifiers.length > 0" class="modifiers">
         <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier">
-          <template v-if="modifier.tag === 'CannotCommitCards'">
-            <span>{{cannotCommitCardsToWords(modifier)}}</span>
+          <template v-if="modifier.type.tag === 'CannotCommitCards'">
+            <span :data-image-id="modifierSource(modifier)">{{cannotCommitCardsToWords(modifier.type)}}</span>
           </template>
-          <template v-if="modifier.tag === 'DiscoveredClues'">
-            <span>+{{modifier.contents}}</span>
+          <template v-if="modifier.type.tag === 'DiscoveredClues'">
+            <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />
           </template>
-          <template v-if="modifier.tag === 'DamageDealt'">
-            <span>+{{modifier.contents}}</span>
+          <template v-if="modifier.type.tag === 'DamageDealt'">
+            <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`damage.png`)" />
           </template>
-          <template v-if="modifier.tag === 'AddSkillValue'">
+          <template v-if="modifier.type.tag === 'AddSkillValue'">
             <span>+</span>
             <i
-               :class="`${normalizeSkill(modifier.contents)}-icon`"
-               :style="{ color: `var(--${normalizeSkill(modifier.contents)})` }"
+               :class="`${normalizeSkill(modifier.type.contents)}-icon`"
+               :style="{ color: `var(--${normalizeSkill(modifier.type.contents)})` }"
             ></i>
           </template>
-          <template v-if="modifier.tag === 'AnySkillValue'">
-            <span>+ {{modifier.contents}}</span>
+          <template v-if="modifier.type.tag === 'AnySkillValue'">
+            <span>+ {{modifier.type.contents}}</span>
             <span class="text">Skill Value</span>
           </template>
-          <template v-if="modifier.tag === 'OtherModifier' && modifier.contents === 'MayIgnoreLocationEffectsAndKeywords'">
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'MayIgnoreLocationEffectsAndKeywords'">
             <span class="text">May Ignore Location Effects</span>
           </template>
         </div>
@@ -673,8 +689,8 @@ i.iconSkillAgility {
   gap: 4px;
   margin-bottom: 10px;
   padding: 2px 10px;
-  pointer-events: none;
   text-align: center;
+  user-select: none;
   text-decoration: none;
   text-transform: uppercase;
   font-family: sans-serif;

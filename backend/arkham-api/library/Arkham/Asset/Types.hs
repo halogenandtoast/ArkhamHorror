@@ -21,7 +21,8 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Matcher (replaceThisCard)
-import Arkham.Matcher.Types (AssetMatcher (AssetWithId), Be (..))
+import Arkham.Matcher.Asset (AssetMatcher (AssetWithId))
+import Arkham.Matcher.Base (Be (..))
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement

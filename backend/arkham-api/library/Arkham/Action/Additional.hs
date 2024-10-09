@@ -3,11 +3,12 @@
 
 module Arkham.Action.Additional where
 
-import Arkham.Prelude
-
 import Arkham.Action
 import Arkham.Id
-import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.Prelude
+
+-- import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.Matcher.Types
 import {-# SOURCE #-} Arkham.Source
 import Arkham.Trait
 import Data.Aeson.TH

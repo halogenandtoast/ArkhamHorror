@@ -17,7 +17,8 @@ import Arkham.Customization
 import Arkham.Event.Cards
 import Arkham.Id
 import Arkham.Json
-import Arkham.Matcher.Types (Be (..), EventMatcher (EventWithId))
+import Arkham.Matcher.Base (Be (..))
+import Arkham.Matcher.Event
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement

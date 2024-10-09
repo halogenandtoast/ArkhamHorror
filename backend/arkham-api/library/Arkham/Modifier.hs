@@ -2,8 +2,6 @@
 
 module Arkham.Modifier where
 
-import Arkham.Prelude
-
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Uses
@@ -21,7 +19,10 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
-import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.Prelude
+
+-- import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.Matcher.Types
 import Arkham.Phase
 import Arkham.Scenario.Deck
 import Arkham.SkillType

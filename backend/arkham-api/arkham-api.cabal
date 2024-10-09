@@ -2168,6 +2168,7 @@ library
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
       Arkham.Helpers.Use
+      Arkham.Helpers.Vehicle
       Arkham.Helpers.Window
       Arkham.Helpers.Xp
       Arkham.History
@@ -2890,8 +2891,37 @@ library
       Arkham.Location.Types
       Arkham.LocationSymbol
       Arkham.Matcher
+      Arkham.Matcher.Ability
+      Arkham.Matcher.Act
+      Arkham.Matcher.Action
+      Arkham.Matcher.Agenda
+      Arkham.Matcher.Aspect
+      Arkham.Matcher.Asset
+      Arkham.Matcher.Base
+      Arkham.Matcher.Campaign
+      Arkham.Matcher.Card
+      Arkham.Matcher.ChaosToken
+      Arkham.Matcher.Counter
+      Arkham.Matcher.Damage
+      Arkham.Matcher.Effect
+      Arkham.Matcher.Enemy
+      Arkham.Matcher.Event
+      Arkham.Matcher.History
+      Arkham.Matcher.Investigator
+      Arkham.Matcher.Location
       Arkham.Matcher.Patterns
+      Arkham.Matcher.Phase
+      Arkham.Matcher.Scenario
+      Arkham.Matcher.Skill
+      Arkham.Matcher.SkillTest
+      Arkham.Matcher.SkillType
+      Arkham.Matcher.Source
+      Arkham.Matcher.Story
+      Arkham.Matcher.Target
+      Arkham.Matcher.Treachery
       Arkham.Matcher.Types
+      Arkham.Matcher.Value
+      Arkham.Matcher.Window
       Arkham.Message
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Choose

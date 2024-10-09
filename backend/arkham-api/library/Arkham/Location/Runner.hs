@@ -51,7 +51,6 @@ import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers
 import Arkham.Matcher (
-  Be (..),
   EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
@@ -60,6 +59,7 @@ import Arkham.Matcher (
   investigatorAt,
   noModifier,
  )
+import Arkham.Matcher.Base
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
 import Arkham.Placement

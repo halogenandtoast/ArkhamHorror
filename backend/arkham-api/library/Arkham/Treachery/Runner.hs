@@ -38,7 +38,8 @@ import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Id
-import Arkham.Matcher (Be (..), TreacheryMatcher (TreacheryWithId))
+import Arkham.Matcher.Base (Be (..))
+import Arkham.Matcher.Treachery (TreacheryMatcher (TreacheryWithId))
 import Arkham.Message qualified as Msg
 import Arkham.Token
 import Arkham.Window (mkWindow)

@@ -6,20 +6,28 @@ where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Vehicle
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Placement
 
 newtype ThomasDawsonsCarRunning = ThomasDawsonsCarRunning AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasDawsonsCarRunning :: AssetCard ThomasDawsonsCarRunning
 thomasDawsonsCarRunning = asset ThomasDawsonsCarRunning Cards.thomasDawsonsCarRunning
 
+instance HasAbilities ThomasDawsonsCarRunning where
+  getAbilities (ThomasDawsonsCarRunning x) =
+    [ vehicleEnterOrExitAbility x
+    ]
+
 instance RunMessage ThomasDawsonsCarRunning where
-  runMessage msg (ThomasDawsonsCarRunning attrs) = runQueueT $ case msg of
+  runMessage msg a@(ThomasDawsonsCarRunning attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) VehicleEnterExitAbility -> do
+      enterOrExitVehicle iid a
     PlaceInvestigator iid (InVehicle aid) | aid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
       pure . ThomasDawsonsCarRunning $ attrs' & driverL %~ Just . fromMaybe iid

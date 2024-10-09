@@ -2,12 +2,12 @@
 
 module Arkham.Keyword where
 
-import Arkham.Prelude
-
 import Arkham.CampaignLogKey
 import Arkham.Card.CardCode
 import Arkham.GameValue
-import {-# SOURCE #-} Arkham.Matcher.Types
+import Arkham.Matcher.ChaosToken
+import {-# SOURCE #-} Arkham.Matcher.Location
+import Arkham.Prelude
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels

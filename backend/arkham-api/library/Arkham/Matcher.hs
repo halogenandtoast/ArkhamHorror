@@ -1,5 +1,6 @@
 module Arkham.Matcher (
   module Arkham.Matcher,
+  module Arkham.Matcher.Base,
   module Arkham.Matcher.Patterns,
   module Arkham.Matcher.Types,
 ) where
@@ -11,6 +12,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.Id
+import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier

@@ -1,6 +1,7 @@
 module Arkham.Scenarios.HorrorInHighGear.Helpers where
 
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select, whenNone)
@@ -24,6 +25,9 @@ import Text.Read
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "horrorInHighGear" a
 
+getRoadDeck :: HasGame m => m [Card]
+getRoadDeck = getScenarioDeck RoadDeck
+
 road :: (ReverseQueue m, HasField "label" a Text, HasField "id" a LocationId) => Int -> a -> m ()
 road n attrs = do
   let
@@ -33,7 +37,7 @@ road n attrs = do
         Nothing -> error "impossible"
   let prefix = "road" <> tshow (x + 1)
   whenNone (LocationWithLabel $ Label $ prefix <> "a") do
-    roadCard <- take 1 <$> getScenarioDeck RoadDeck
+    roadCard <- take 1 <$> getRoadDeck
     longWays <- take (n - 1) <$> getSetAsideCardsMatching (cardIs Location.longWayAround)
     cards <- shuffleM $ roadCard <> longWays
 

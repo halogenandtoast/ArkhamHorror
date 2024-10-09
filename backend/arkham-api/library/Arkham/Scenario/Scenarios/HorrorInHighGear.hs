@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Query (getLead, getPlayerCount)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
@@ -40,10 +41,12 @@ horrorInHighGear difficulty =
 
 instance HasChaosTokenValue HorrorInHighGear where
   getChaosTokenValue iid tokenFace (HorrorInHighGear attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      useHigher <- (<= 6) . length <$> getRoadDeck
+      pure $ toChaosTokenValue attrs Skull (if useHigher then 3 else 1) (if useHigher then 4 else 2)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 2
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage HorrorInHighGear where
@@ -140,5 +143,32 @@ instance RunMessage HorrorInHighGear where
           questionLabeled "Where will the enemy spawn?"
           targets locations $ createEnemyAt_ card
         push unfocus
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist | n > 0 -> do
+          field InvestigatorPlacement iid >>= \case
+            InVehicle aid -> do
+              loc <- fieldJust AssetLocation aid
+              passengers <- select $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyClues
+              case passengers of
+                [] -> pure ()
+                [x] -> placeClues x loc n
+                _xs -> pure ()
+            _ -> pure ()
+        Tablet | n > 0 -> do
+          field InvestigatorPlacement iid >>= \case
+            InVehicle aid -> do
+              passengers <- select $ InVehicleMatching (AssetWithId aid) <> InvestigatorWithAnyResources
+              case passengers of
+                [] -> pure ()
+                [x] -> push $ LoseResources x (toSource Tablet) n
+                _xs -> pure ()
+            _ -> pure ()
+        ElderThing | isEasyStandard attrs -> push HuntersMove
+        _ -> pure ()
+      pure s
+    ResolveChaosToken _ ElderThing _iid -> do
+      when (isHardExpert attrs) $ push HuntersMove
       pure s
     _ -> HorrorInHighGear <$> liftRunMessage msg attrs

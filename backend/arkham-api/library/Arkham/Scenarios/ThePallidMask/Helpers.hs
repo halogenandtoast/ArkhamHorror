@@ -10,7 +10,8 @@ import Arkham.Helpers.Message hiding (Label)
 import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Types
-import Arkham.Matcher
+import Arkham.Matcher.Base
+import Arkham.Matcher.Location
 import Control.Monad (zipWithM)
 
 posLabelToPosition :: Label -> (Int, Int)

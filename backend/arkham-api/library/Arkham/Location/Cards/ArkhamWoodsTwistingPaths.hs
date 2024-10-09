@@ -5,7 +5,9 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
 import Arkham.Location.Runner
-import Arkham.Matcher
+import Arkham.Matcher.Base
+import Arkham.Matcher.Investigator
+import Arkham.Matcher.Window
 import Arkham.Prelude
 import Arkham.Window (getBatchId)
 
@@ -24,11 +26,10 @@ instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (toAbilitySource attrs 1) (BatchTarget batchId) #intellect (Fixed 3)
+      push $ beginSkillTest sid iid (attrs.ability 1) (BatchTarget batchId) #intellect (Fixed 3)
       pure l
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      mTarget <- getSkillTestTarget
-      case mTarget of
+      getSkillTestTarget >>= \case
         Just (BatchTarget batchId) -> push $ CancelBatch batchId
         _ -> error "Invalid target"
       pure l

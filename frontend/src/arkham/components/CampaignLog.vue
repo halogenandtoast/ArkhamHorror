@@ -5,6 +5,7 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Name } from '@/arkham/types/Name'
+import { scenarioToI18n, type Remembered } from '@/arkham/types/Scenario'
 import Supplies from '@/arkham/components/Supplies.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
@@ -20,6 +21,14 @@ const props = defineProps<Props>()
 
 const { t } = useI18n()
 const mainLog = props.game.campaign?.log || props.game.scenario?.standaloneCampaignLog || { recorded: [], recordedSets: [], recordedCounts: [] }
+
+const remembered = computed(() => {
+  const log = props.game.scenario?.log
+  if (!log) return []
+  if (!props.game.scenario) return []
+  const prefix = scenarioToI18n(props.game.scenario)
+  return log.map((record: Remembered) => t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`))
+})
 
 const otherLog = ref<LogContents | null>(null)
 
@@ -138,6 +147,7 @@ const emptyLog = computed(() => {
   if ((logTitles ?? []).length > 0) return false;
   if (hasSupplies.value) return false;
   if (recorded.value.length > 0) return false;
+  if (remembered.value.length > 0) return false;
   if (Object.entries(recordedSets.value).length > 0) return false;
   return true;
 })
@@ -150,6 +160,12 @@ const emptyLog = computed(() => {
       <h1>Campaign Log: {{game.name}}</h1>
       <div v-if="emptyLog" class="box">
         No entries yet.
+      </div>
+      <div v-if="remembered.length > 0" class="remembered box">
+        <h3 class="title">Remembered</h3>
+        <ul>
+          <li v-for="record in remembered" :key="record">{{record}}.</li>
+        </ul>
       </div>
       <div class="log-categories">
         <div v-if="logTitles" class="options">
@@ -281,5 +297,11 @@ li {
 
 .circled {
   background: var(--rogue-dark);
+}
+
+h3.title {
+  color: var(--title);
+  font-family: teutonic, sans-serif;
+  margin-bottom: 10px;
 }
 </style>

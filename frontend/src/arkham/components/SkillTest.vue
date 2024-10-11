@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
+import { useDebug } from '@/arkham/debug'
 import { computed, h } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
@@ -18,6 +19,7 @@ import { imgsrc, formatContent } from '@/arkham/helpers';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
 import { useI18n } from 'vue-i18n';
 
+const debug = useDebug()
 const { t } = useI18n()
 const props = defineProps<{
   game: Game
@@ -326,6 +328,10 @@ const tokenEffects = computed(() => {
       </div>
       <div v-if="tokenEffects.length > 0" class="token-effects">
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
+      </div>
+      <div v-if="debug.active">
+        <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
+        <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
       </div>
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <div class="skills-container">

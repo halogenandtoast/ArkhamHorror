@@ -21,7 +21,8 @@ instance RunMessage HitMe where
       pure e
     RequestedChaosTokens (isSource attrs -> True) miid tokens -> do
       withSkillTest \sid -> do
-        for_ tokens $ \token -> do
+        for_ tokens \token -> do
+          when (token.face == #skull) failSkillTest
           skillTestModifier sid attrs (ChaosTokenTarget token) NegativeToPositive
         push $ RequestedChaosTokens (SkillTestSource sid) miid tokens
       pure e

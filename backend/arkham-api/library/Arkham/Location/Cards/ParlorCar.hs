@@ -34,8 +34,8 @@ instance HasModifiersFor ParlorCar where
     case lookup LeftOf locationDirections of
       Just leftLocation -> do
         clueCount <- field LocationClues leftLocation
-        pure $ toModifiers l $ CannotInvestigate : [Blocked | not locationRevealed && clueCount > 0]
-      Nothing -> pure $ toModifiers l [CannotInvestigate]
+        toModifiers l $ CannotInvestigate : [Blocked | not locationRevealed && clueCount > 0]
+      Nothing -> toModifiers l [CannotInvestigate]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ParlorCar where

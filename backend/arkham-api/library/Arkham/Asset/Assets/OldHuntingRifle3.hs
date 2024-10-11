@@ -40,7 +40,8 @@ instance RunMessage OldHuntingRifle3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [SkillModifier #combat 3, DamageDealt 2], chooseFight]
+      enabled <- skillTestModifiers sid source iid [SkillModifier #combat 3, DamageDealt 2]
+      pushAll [enabled, chooseFight]
       pure a
     Msg.RevealChaosToken (SkillTestSource _) _ t | t.face `elem` [Skull, AutoFail] -> do
       mSkillTestSource <- getSkillTestSource

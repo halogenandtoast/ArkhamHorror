@@ -1,17 +1,11 @@
-module Arkham.Act.Cards.StoppingTheRitual (
-  StoppingTheRitual (..),
-  stoppingTheRitual,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.StoppingTheRitual (StoppingTheRitual (..), stoppingTheRitual) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype StoppingTheRitual = StoppingTheRitual ActAttrs
   deriving anyclass IsAct
@@ -24,46 +18,33 @@ stoppingTheRitual =
 instance HasModifiersFor StoppingTheRitual where
   getModifiersFor (EnemyTarget eid) (StoppingTheRitual a) = do
     isNahab <- eid <=~> enemyIs Enemies.nahab
-    pure $ toModifiers a [CannotMove | isNahab]
+    toModifiers a [CannotMove | isNahab]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StoppingTheRitual where
   getAbilities (StoppingTheRitual a)
     | onSide A a =
-        [ mkAbility a 1
-            $ ForcedAbility
-            $ EnemyDefeated Timing.When Anyone ByAny
-            $ enemyIs
-              Enemies.nahab
-        , restrictedAbility
-            a
-            2
-            (enemyExists $ enemyIs Enemies.nahab <> NotEnemy EnemyWithAnyDoom)
+        [ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny $ enemyIs Enemies.nahab
+        , restricted a 2 (exists $ enemyIs Enemies.nahab <> not_ EnemyWithAnyDoom)
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
         ]
   getAbilities _ = []
 
 instance RunMessage StoppingTheRitual where
-  runMessage msg a@(StoppingTheRitual attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(StoppingTheRitual attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       nahab <- selectJust $ enemyIs Enemies.nahab
-      pushAll
-        [ CancelNext (toSource attrs) EnemyDefeatedMessage
-        , HealAllDamage (toTarget nahab) (toSource attrs)
-        , DisengageEnemyFromAll nahab
-        , Exhaust (toTarget nahab)
-        , CreateWindowModifierEffect
-            EffectRoundWindow
-            (EffectModifiers $ toModifiers attrs [DoesNotReadyDuringUpkeep])
-            (toSource attrs)
-            (toTarget nahab)
-        ]
+      cancelEnemyDefeat nahab
+      healAllDamage attrs nahab
+      disengageFromAll nahab
+      exhaustThis nahab
+      roundModifier attrs nahab DoesNotReadyDuringUpkeep
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ scenarioResolution 2
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R2
       pure a
-    _ -> StoppingTheRitual <$> runMessage msg attrs
+    _ -> StoppingTheRitual <$> liftRunMessage msg attrs

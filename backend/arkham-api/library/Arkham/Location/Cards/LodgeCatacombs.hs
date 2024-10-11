@@ -31,7 +31,7 @@ instance HasModifiersFor LodgeCatacombs where
           , InvestigatorWithKey CultistKey
           , InvestigatorWithKey TabletKey
           ]
-    pure $ toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasAKey]
+    toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasAKey]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LodgeCatacombs where

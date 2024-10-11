@@ -318,12 +318,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       push $ DiscardTopOfDeck iid n source Nothing
       withPayment $ DiscardCardPayment cards
     IncreaseCostOfThis cardId n -> do
-      push
-        $ CreateWindowModifierEffect
-          (EffectCardCostWindow cardId)
-          (EffectModifiers $ toModifiers source [IncreaseCostOf (CardWithId cardId) n])
-          source
-          (toTarget cardId)
+      ems <- effectModifiers source [IncreaseCostOf (CardWithId cardId) n]
+      push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems source (toTarget cardId)
       pure c
     ExhaustCost target -> do
       push $ Exhaust target

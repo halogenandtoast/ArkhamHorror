@@ -6,9 +6,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card (playIsValidAfterSeal)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
@@ -26,9 +26,9 @@ instance HasModifiersFor TriggerMan3 where
       Nothing -> pure []
       Just iid -> do
         placement <- field AssetPlacement aid
-        pure case placement of
+        case placement of
           AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
-          _ -> []
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TriggerMan3 where
@@ -67,10 +67,8 @@ instance RunMessage TriggerMan3 where
           $ PerformableAbility [IgnoreActionCost]
           <> AbilityOnAsset (AssetAttachedToAsset $ be attrs)
           <> #action
-      chooseOrRunOne
-        iid
-        [ AbilityLabel iid ab [] [Msg.abilityModifier ab.ref (attrs.ability 2) iid (BaseSkill 4)] []
-        | ab <- abilities
-        ]
+      chooseOrRunOneM iid do
+        for_ abilities \ab -> abilityLabeled iid ab do
+          abilityModifier ab.ref (attrs.ability 2) iid (BaseSkill 4)
       pure a
     _ -> TriggerMan3 <$> liftRunMessage msg attrs

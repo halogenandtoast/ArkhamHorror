@@ -18,7 +18,7 @@ easttown = location Easttown Cards.easttown 2 (PerPlayer 1)
 instance HasModifiersFor Easttown where
   getModifiersFor (InvestigatorTarget iid) (Easttown attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs $ [ReduceCostOf (#asset <> #ally) 2 | here]
+    toModifiers attrs $ [ReduceCostOf (#asset <> #ally) 2 | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Easttown where

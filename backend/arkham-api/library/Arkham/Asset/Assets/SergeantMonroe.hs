@@ -18,21 +18,19 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype SergeantMonroe = SergeantMonroe AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sergeantMonroe :: AssetCard SergeantMonroe
 sergeantMonroe = ally SergeantMonroe Cards.sergeantMonroe (3, 3)
 
 instance HasModifiersFor SergeantMonroe where
-  getModifiersFor (InvestigatorTarget iid) (SergeantMonroe a)
-    | not (controlledBy a iid) = do
-        locationId <- field InvestigatorLocation iid
-        assetLocationId <- field AssetLocation (toId a)
-        pure
-          $ toModifiers a
-          $ guard (locationId == assetLocationId && isJust locationId)
-          *> [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
+  getModifiersFor (InvestigatorTarget iid) (SergeantMonroe a) | not (controlledBy a iid) = do
+    locationId <- field InvestigatorLocation iid
+    assetLocationId <- field AssetLocation (toId a)
+    toModifiers a
+      $ guard (locationId == assetLocationId && isJust locationId)
+      *> [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SergeantMonroe where

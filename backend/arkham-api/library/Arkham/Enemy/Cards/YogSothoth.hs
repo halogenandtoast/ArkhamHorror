@@ -19,8 +19,7 @@ yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evad
 instance HasModifiersFor YogSothoth where
   getModifiersFor target (YogSothoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 6)
-    pure
-      $ toModifiers a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
+    toModifiers a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YogSothoth where
@@ -64,7 +63,7 @@ instance HasModifiersFor YogSothothEffect where
     Just (EffectInt n) -> case target of
       EnemyTarget eid -> case effectSource attrs of
         EnemySource eid' | eid' == eid -> do
-          pure $ toModifiers attrs [HorrorDealt (-n)]
+          toModifiers attrs [HorrorDealt (-n)]
         _ -> pure []
       _ -> pure []
     _ -> pure []

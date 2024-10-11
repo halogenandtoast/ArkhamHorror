@@ -7,7 +7,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getIsPlayable)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), toModifier, withModifiers)
+import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers, withModifiers)
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
@@ -41,9 +41,7 @@ instance RunMessage EtherealWeaving3 where
     DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) | n > 0 -> do
       cards <- traverse getCard (chosenEvents meta)
       playable <-
-        withModifiers
-          iid
-          [toModifier GameSource $ ReduceCostOf (oneOf $ map (CardWithId . toCardId) cards) 1]
+        withModifiers iid (toModifiers GameSource [ReduceCostOf (mapOneOf (CardWithId . toCardId) cards) 1])
           $ filterM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid)) cards
       when (notNull playable) do
         chooseOneM iid do

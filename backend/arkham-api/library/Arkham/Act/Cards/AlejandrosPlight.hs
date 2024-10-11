@@ -20,7 +20,7 @@ instance HasModifiersFor AlejandrosPlight where
   getModifiersFor (EnemyTarget eid) (AlejandrosPlight a) = do
     isModified <- eid <=~> EnemyWithAsset (assetIs Assets.alejandroVela)
     n <- perPlayer 2
-    pure $ toModifiers a [HealthModifier n | isModified]
+    toModifiers a [HealthModifier n | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlejandrosPlight where

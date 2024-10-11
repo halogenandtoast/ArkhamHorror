@@ -15,7 +15,7 @@ fiveOfPentacles1 = asset FiveOfPentacles1 Cards.fiveOfPentacles1
 
 instance HasModifiersFor FiveOfPentacles1 where
   getModifiersFor (InvestigatorTarget iid) (FiveOfPentacles1 a) | controlledBy a iid = do
-    pure $ toModifiers a [HealthModifier 1, SanityModifier 1]
+    toModifiers a [HealthModifier 1, SanityModifier 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FiveOfPentacles1 where

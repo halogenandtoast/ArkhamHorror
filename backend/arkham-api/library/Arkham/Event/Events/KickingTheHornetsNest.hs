@@ -4,8 +4,7 @@ import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyHealth))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Spawn
@@ -27,15 +26,11 @@ instance RunMessage KickingTheHornetsNest where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
-      chooseN iid (min (length enemyCards) (1 + additionalTargets))
-        $ [ targetLabel
-            card
-            [ Msg.searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
-            , InvestigatorDrewEncounterCard iid card
-            , HandleTargetChoice iid (toSource attrs) (CardIdTarget $ toCardId card)
-            ]
-          | card <- enemyCards
-          ]
+      chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
+        targets enemyCards \card -> do
+          searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+          push $ InvestigatorDrewEncounterCard iid card
+          handleTarget iid attrs (toCardId card)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       discoverAtYourLocation NotInvestigate iid attrs 1

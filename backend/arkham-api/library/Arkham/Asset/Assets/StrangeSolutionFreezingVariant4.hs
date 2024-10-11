@@ -29,7 +29,7 @@ instance HasModifiersFor StrangeSolutionFreezingVariant4 where
     mAction <- getSkillTestAction
     case (mAction, mSource) of
       (Just Action.Evade, Just source) | isSource a source -> do
-        pure $ toModifiers a [BaseSkillOf SkillAgility 6]
+        toModifiers a [BaseSkillOf SkillAgility 6]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

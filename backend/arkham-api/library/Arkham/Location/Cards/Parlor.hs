@@ -20,7 +20,7 @@ parlor = location Parlor Cards.parlor 2 (Static 0)
 
 instance HasModifiersFor Parlor where
   getModifiersFor target (Parlor attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+    toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Parlor where

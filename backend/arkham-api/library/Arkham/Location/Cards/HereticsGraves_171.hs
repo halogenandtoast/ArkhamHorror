@@ -26,7 +26,7 @@ instance HasModifiersFor HereticsGraves_171 where
   getModifiersFor (InvestigatorTarget iid) (HereticsGraves_171 a) = do
     investigating <- isInvestigating iid (toId a)
     willpower <- getSkillValue SkillWillpower iid
-    pure $ toModifiers a [AnySkillValue willpower | investigating]
+    toModifiers a [AnySkillValue willpower | investigating]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HereticsGraves_171 where

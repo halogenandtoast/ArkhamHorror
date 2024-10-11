@@ -18,12 +18,11 @@ watchersGrasp = treachery WatchersGrasp Cards.watchersGrasp
 instance HasModifiersFor WatchersGrasp where
   getModifiersFor (EnemyTarget eid) (WatchersGrasp a) = do
     isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-    pure
-      $ toModifiers
-        a
-        [ ForcePrey $ Prey $ InvestigatorWithId $ treacheryDrawnBy a
-        | isTheSpectralWatcher
-        ]
+    toModifiers
+      a
+      [ ForcePrey $ Prey $ InvestigatorWithId $ treacheryDrawnBy a
+      | isTheSpectralWatcher
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WatchersGrasp where

@@ -24,7 +24,7 @@ instance HasModifiersFor HiddenLibrary where
   getModifiersFor (LocationTarget lid) (HiddenLibrary attrs)
     | toId attrs == lid = do
         enemyIsMoving <- isJust <$> selectOne MovingEnemy
-        pure $ toModifiers attrs [AddTrait Passageway | enemyIsMoving]
+        toModifiers attrs [AddTrait Passageway | enemyIsMoving]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HiddenLibrary where

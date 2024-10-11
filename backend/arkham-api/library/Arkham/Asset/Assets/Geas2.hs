@@ -27,7 +27,7 @@ pattern CommitPromise <- 3 where CommitPromise = 3
 
 instance HasModifiersFor Geas2 where
   getModifiersFor (InvestigatorTarget iid) (Geas2 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier sType 1 | sType <- [#willpower, #intellect, #combat, #agility]]
+    toModifiers a [SkillModifier sType 1 | sType <- [#willpower, #intellect, #combat, #agility]]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Geas2 where

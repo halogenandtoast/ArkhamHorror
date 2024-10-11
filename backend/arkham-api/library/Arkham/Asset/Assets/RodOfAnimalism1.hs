@@ -19,8 +19,7 @@ rodOfAnimalism1 = asset RodOfAnimalism1 Cards.rodOfAnimalism1
 
 instance HasModifiersFor RodOfAnimalism1 where
   getModifiersFor (InvestigatorTarget iid) (RodOfAnimalism1 attrs) =
-    pure
-      $ toModifiers attrs [CanReduceCostOf (#asset <> CardWithTrait Creature) 1 | controlledBy attrs iid]
+    toModifiers attrs [CanReduceCostOf (#asset <> CardWithTrait Creature) 1 | controlledBy attrs iid]
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot

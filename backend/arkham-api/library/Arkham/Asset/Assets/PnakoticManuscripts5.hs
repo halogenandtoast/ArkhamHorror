@@ -6,12 +6,12 @@ module Arkham.Asset.Assets.PnakoticManuscripts5 (
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
-import Arkham.Id
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -24,14 +24,11 @@ pnakoticManuscripts5 = asset PnakoticManuscripts5 Cards.pnakoticManuscripts5
 
 instance HasAbilities PnakoticManuscripts5 where
   getAbilities (PnakoticManuscripts5 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility
           (WouldPerformRevelationSkillTest #when (affectsOthers $ InvestigatorAt YourLocation))
           (assetUseCost a Secret 1)
-    , skillTestAbility
-        $ restrictedAbility a 2 ControlsThis
-        $ actionAbilityWithCost
-        $ assetUseCost a Secret 1
+    , skillTestAbility $ restricted a 2 ControlsThis $ actionAbilityWithCost $ assetUseCost a Secret 1
     ]
 
 getInvestigator :: [Window] -> (InvestigatorId, SkillTestId)
@@ -41,21 +38,16 @@ getInvestigator ((windowType -> Window.WouldPerformRevelationSkillTest iid sid) 
 getInvestigator (_ : xs) = getInvestigator xs
 
 instance RunMessage PnakoticManuscripts5 where
-  runMessage msg a@(PnakoticManuscripts5 attrs) = case msg of
+  runMessage msg a@(PnakoticManuscripts5 attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getInvestigator -> (iid, sid)) _ -> do
-      push $ skillTestModifier sid (attrs.ability 1) iid DoNotDrawChaosTokensForSkillChecks
+      skillTestModifier sid (attrs.ability 1) iid DoNotDrawChaosTokensForSkillChecks
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       iids <- select $ affectsOthers $ colocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel iid' [createCardEffect Cards.pnakoticManuscripts5 Nothing attrs iid']
-          | iid' <- iids
-          ]
+      chooseOrRunOneM iid do
+        targets iids $ createCardEffect Cards.pnakoticManuscripts5 Nothing attrs
       pure a
-    _ -> PnakoticManuscripts5 <$> runMessage msg attrs
+    _ -> PnakoticManuscripts5 <$> liftRunMessage msg attrs
 
 newtype PnakoticManuscripts5Effect = PnakoticManuscripts5Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -66,17 +58,12 @@ pnakoticManuscripts5Effect =
   cardEffect PnakoticManuscripts5Effect Cards.pnakoticManuscripts5
 
 instance HasModifiersFor PnakoticManuscripts5Effect where
-  getModifiersFor target (PnakoticManuscripts5Effect a) | effectTarget a == target = do
-    pure $ toModifiers a [DoNotDrawChaosTokensForSkillChecks]
+  getModifiersFor target (PnakoticManuscripts5Effect a) | a.target == target = do
+    toModifiers a [DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ = pure []
 
 instance RunMessage PnakoticManuscripts5Effect where
-  runMessage msg e@(PnakoticManuscripts5Effect attrs@EffectAttrs {..}) =
-    case msg of
-      SkillTestEnds _ iid _ | InvestigatorTarget iid == effectTarget -> do
-        push (DisableEffect effectId)
-        pure e
-      EndRound -> do
-        push (DisableEffect effectId)
-        pure e
-      _ -> PnakoticManuscripts5Effect <$> runMessage msg attrs
+  runMessage msg e@(PnakoticManuscripts5Effect attrs) = runQueueT $ case msg of
+    SkillTestEnds _ iid _ | isTarget iid attrs.target -> disableReturn e
+    EndRound -> disableReturn e
+    _ -> PnakoticManuscripts5Effect <$> liftRunMessage msg attrs

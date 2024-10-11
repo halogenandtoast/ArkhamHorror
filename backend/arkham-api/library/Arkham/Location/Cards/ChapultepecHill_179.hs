@@ -25,7 +25,7 @@ chapultepecHill_179 =
 instance HasModifiersFor ChapultepecHill_179 where
   getModifiersFor (InvestigatorTarget iid) (ChapultepecHill_179 a) = do
     here <- iid `isAt` a
-    pure $ toModifiers a [SkillModifier #willpower (-2) | here]
+    toModifiers a [SkillModifier #willpower (-2) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapultepecHill_179 where

@@ -41,7 +41,7 @@ mrPeabodyEffect = cardEffect MrPeabodyEffect Cards.mrPeabody
 
 instance HasModifiersFor MrPeabodyEffect where
   getModifiersFor target (MrPeabodyEffect attrs) | attrs.target == target = do
-    pure $ toModifiers attrs [ShroudModifier (-1), AddTrait Passageway]
+    toModifiers attrs [ShroudModifier (-1), AddTrait Passageway]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MrPeabodyEffect where

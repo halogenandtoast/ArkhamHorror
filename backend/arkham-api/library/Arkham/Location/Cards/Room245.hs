@@ -1,19 +1,16 @@
-module Arkham.Location.Cards.Room245 (
-  room245,
-  Room245 (..),
-)
-where
+module Arkham.Location.Cards.Room245 (room245, Room245 (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Modifiers ()
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message (getChoiceAmount, pattern MovedClues)
+import Arkham.Modifier
 import Arkham.Name
 import Arkham.Projection
 
@@ -25,56 +22,41 @@ room245 :: LocationCard Room245
 room245 = locationWith Room245 Cards.room245 2 (PerPlayer 1) (labelL .~ "room245")
 
 instance HasAbilities Room245 where
-  getAbilities (Room245 attrs) =
-    withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]
+  getAbilities (Room245 a) = extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage Room245 where
-  runMessage msg l@(Room245 attrs) = case msg of
+  runMessage msg l@(Room245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mTopOfDiscard <- fieldMap InvestigatorDiscard headMay iid
-      investigators <- getInvestigators
       sid <- getRandom
-      push $ beginSkillTest sid iid (toAbilitySource attrs 1) iid #intellect (Fixed 3)
-      case mTopOfDiscard of
+      fieldMap InvestigatorDiscard headMay iid >>= \case
         Just topOfDiscard -> do
-          push
-            $ skillTestModifier
-              sid
-              (toAbilitySource attrs 1)
-              (toCardId topOfDiscard)
-              PlaceOnBottomOfDeckInsteadOfDiscard
-          for_ investigators $ \investigator -> do
-            if investigator == iid
-              then
-                push
-                  $ skillTestModifiers
-                    sid
-                    (toAbilitySource attrs 1)
-                    investigator
-                    [ CanCommitToSkillTestsAsIfInHand $ toCard topOfDiscard
-                    , CannotCommitCards (NotCard $ CardWithId $ toCardId topOfDiscard)
-                    ]
-              else
-                push $ skillTestModifiers sid (toAbilitySource attrs 1) investigator [CannotCommitCards AnyCard]
+          skillTestModifier sid (attrs.ability 1) topOfDiscard.id PlaceOnBottomOfDeckInsteadOfDiscard
+          eachInvestigator \investigator -> do
+            skillTestModifiers sid (attrs.ability 1) investigator
+              $ if investigator == iid
+                then
+                  [ CanCommitToSkillTestsAsIfInHand $ toCard topOfDiscard
+                  , CannotCommitCards (NotCard $ CardWithId $ toCardId topOfDiscard)
+                  ]
+                else [CannotCommitCards AnyCard]
         Nothing -> do
-          for_ investigators $ \investigator -> do
-            push $ skillTestModifiers sid (toAbilitySource attrs 1) investigator [CannotCommitCards AnyCard]
+          eachInvestigator \investigator -> do
+            skillTestModifiers sid (attrs.ability 1) investigator [CannotCommitCards AnyCard]
 
+      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      player <- getPlayer iid
       iids <- selectWithField InvestigatorClues $ investigatorAt (toId attrs) <> InvestigatorWithAnyClues
       timeWornLocket <- selectOne $ assetIs Assets.timeWornLocket
 
       unless (null iids || isNothing timeWornLocket) $ do
         named <- traverse (\(iid', n) -> (,n) <$> field InvestigatorName iid') iids
-        pushM
-          $ chooseAmounts
-            player
-            "number of clues to move to Time-worn Locket"
-            (MinAmountTarget 0)
-            (map (\(name, n) -> (toTitle name, (0, n))) named)
-            (toTarget attrs)
+        chooseAmounts
+          iid
+          "number of clues to move to Time-worn Locket"
+          (MinAmountTarget 0)
+          (map (\(name, n) -> (toTitle name, (0, n))) named)
+          (toTarget attrs)
       pure l
     ResolveAmounts _ choices (isTarget attrs -> True) -> do
       named <- selectWithField InvestigatorName UneliminatedInvestigator
@@ -89,4 +71,4 @@ instance RunMessage Room245 where
           | (iid, n) <- iidsWithAmounts
           ]
       pure l
-    _ -> Room245 <$> runMessage msg attrs
+    _ -> Room245 <$> liftRunMessage msg attrs

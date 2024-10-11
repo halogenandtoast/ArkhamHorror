@@ -26,7 +26,7 @@ instance HasAbilities WhittonGreene where
 instance HasModifiersFor WhittonGreene where
   getModifiersFor (InvestigatorTarget iid) (WhittonGreene a) | controlledBy a iid = do
     active <- selectAny $ assetControlledBy iid <> oneOf (withTrait <$> [Tome, Relic])
-    pure $ toModifiers a [SkillModifier #intellect 1 | active]
+    toModifiers a [SkillModifier #intellect 1 | active]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WhittonGreene where

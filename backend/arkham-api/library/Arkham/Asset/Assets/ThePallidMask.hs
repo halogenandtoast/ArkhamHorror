@@ -18,7 +18,7 @@ thePallidMask = assetWith ThePallidMask Cards.thePallidMask (canLeavePlayByNorma
 
 instance HasModifiersFor ThePallidMask where
   getModifiersFor (InvestigatorTarget iid) (ThePallidMask a) | controlledBy a iid = do
-    pure $ toModifiers a [SanityModifier (-2)]
+    toModifiers a [SanityModifier (-2)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ThePallidMask where

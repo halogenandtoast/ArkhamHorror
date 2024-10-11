@@ -1,9 +1,4 @@
-module Arkham.Investigator.Cards.FinnEdwards (
-  finnEdwards,
-  FinnEdwards (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.FinnEdwards (finnEdwards, FinnEdwards (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Discover
@@ -13,12 +8,13 @@ import Arkham.Investigator.Runner
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype FinnEdwards = FinnEdwards InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 finnEdwards :: InvestigatorCard FinnEdwards
 finnEdwards =
@@ -33,14 +29,13 @@ instance HasChaosTokenValue FinnEdwards where
 
 instance HasModifiersFor FinnEdwards where
   getModifiersFor target (FinnEdwards attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [GiveAdditionalAction $ AdditionalAction "Finn Edwards" (toSource attrs) #evade]
+    toModifiers attrs [GiveAdditionalAction $ AdditionalAction "Finn Edwards" (toSource attrs) #evade]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FinnEdwards where
   runMessage msg i@(FinnEdwards attrs) = case msg of
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n | attrs `is` iid && n >= 2 -> do
-      when (chaosTokenFace token == ElderSign) $ do
+      when (token.face == ElderSign) $ do
         mlid <- selectOne $ locationWithInvestigator iid
         for_ mlid $ \lid -> do
           canDiscover <- getCanDiscoverClues NotInvestigate (toId attrs) lid

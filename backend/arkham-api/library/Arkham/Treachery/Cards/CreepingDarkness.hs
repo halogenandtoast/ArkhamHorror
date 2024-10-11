@@ -24,7 +24,7 @@ instance HasModifiersFor CreepingDarkness where
   getModifiersFor (EnemyTarget eid) (CreepingDarkness a) = do
     isFormlessSpawn <- eid <=~> enemyIs Enemies.formlessSpawn
     n <- getPlayerCountValue (PerPlayer 1)
-    pure $ toModifiers a [HealthModifier n | isFormlessSpawn]
+    toModifiers a [HealthModifier n | isFormlessSpawn]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CreepingDarkness where

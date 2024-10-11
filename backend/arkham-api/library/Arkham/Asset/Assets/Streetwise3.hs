@@ -24,10 +24,10 @@ instance RunMessage Streetwise3 where
   runMessage msg a@(Streetwise3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 3)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 3)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #agility 3)
+        pushM $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #agility 3)
       pure a
     _ -> Streetwise3 <$> runMessage msg attrs

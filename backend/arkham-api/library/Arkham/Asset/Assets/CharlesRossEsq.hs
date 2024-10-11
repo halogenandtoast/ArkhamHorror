@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Trait
 
 newtype CharlesRossEsq = CharlesRossEsq AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 charlesRossEsq :: AssetCard CharlesRossEsq
@@ -26,14 +26,13 @@ charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 instance HasModifiersFor CharlesRossEsq where
   getModifiersFor (InvestigatorTarget iid) (CharlesRossEsq attrs) | attrs `controlledBy` iid = do
     mlid <- field AssetLocation (toId attrs)
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendResourcesOnCardFromInvestigator
-          (investigatorAt lid <> not_ (InvestigatorWithId iid))
-          (#asset <> #item)
-        | lid <- maybeToList mlid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendResourcesOnCardFromInvestigator
+        (investigatorAt lid <> not_ (InvestigatorWithId iid))
+        (#asset <> #item)
+      | lid <- maybeToList mlid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CharlesRossEsq where
@@ -60,12 +59,11 @@ instance HasModifiersFor CharlesRossEsqEffect where
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
-        pure
-          $ toModifiers
-            attrs
-            [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
-            | isJust assetLid && assetLid == investigatorLid
-            ]
+        toModifiers
+          attrs
+          [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
+          | isJust assetLid && assetLid == investigatorLid
+          ]
       _ -> error "invalid source"
   getModifiersFor _ _ = pure []
 

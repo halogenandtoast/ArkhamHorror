@@ -32,9 +32,8 @@ instance RunMessage EnchantedBlade where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> EnchantedBlade <$> runMessage msg attrs

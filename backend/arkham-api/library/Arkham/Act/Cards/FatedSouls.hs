@@ -23,7 +23,7 @@ newtype FatedSouls = FatedSouls ActAttrs
 
 instance HasModifiersFor FatedSouls where
   getModifiersFor (InvestigatorTarget _) (FatedSouls attrs) = do
-    pure $ toModifiers attrs [CannotMove, CannotBeMoved]
+    toModifiers attrs [CannotMove, CannotBeMoved]
   getModifiersFor _ _ = pure []
 
 fatedSouls :: ActCard FatedSouls

@@ -19,16 +19,15 @@ schoffnersCatalogue = assetWith SchoffnersCatalogue Cards.schoffnersCatalogue di
 
 instance HasModifiersFor SchoffnersCatalogue where
   getModifiersFor (InvestigatorTarget iid) (SchoffnersCatalogue attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          Secret
-          (colocatedWith iid)
-          (#item <> #asset)
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        Secret
+        (colocatedWith iid)
+        (#item <> #asset)
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SchoffnersCatalogue where

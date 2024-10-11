@@ -2,8 +2,7 @@ module Arkham.Event.Events.PracticeMakesPerfect where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Matcher
 import Arkham.Strategy
@@ -25,15 +24,10 @@ instance RunMessage PracticeMakesPerfect where
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       committable <- filterM (getIsCommittable iid) cards
       withSkillTest \sid -> do
-        let
-          choices =
-            [ targetLabel
-              card
-              [ Msg.skillTestModifiers sid attrs card [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
-              , SkillTestCommitCard iid card
-              ]
-            | card <- committable
-            ]
-        chooseOne iid $ if null choices then [Label "No cards found" []] else choices
+        chooseOneM iid do
+          when (null committable) $ labeled "No cards found" nothing
+          targets committable \card -> do
+            skillTestModifiers sid attrs card [IfSuccessfulModifier ReturnToHandAfterTest, MustBeCommitted]
+            push $ SkillTestCommitCard iid card
       pure e
     _ -> PracticeMakesPerfect <$> liftRunMessage msg attrs

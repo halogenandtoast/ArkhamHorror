@@ -9,10 +9,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Investigate
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype PrismaticSpectaclesLensToTheOtherworld2 = PrismaticSpectaclesLensToTheOtherworld2 AssetAttrs
@@ -63,14 +63,11 @@ instance RunMessage PrismaticSpectaclesLensToTheOtherworld2Effect where
           sid <- MaybeT getSkillTestId
           metaTarget <- hoistMaybe attrs.metaTarget
           guard $ isTarget sid metaTarget
-          lift
-            $ chooseOne
-              iid
-              [ Label
-                  "Exhaust Prismatic Spectacles to discover 1 additional clue at your location"
-                  [Exhaust (toTarget aid), Msg.skillTestModifier sid attrs.source iid (DiscoveredClues 1)]
-              , Label "Do not exaust" []
-              ]
+          lift $ chooseOneM iid do
+            labeled "Exhaust Prismatic Spectacles to discover 1 additional clue at your location" do
+              exhaustThis aid
+              skillTestModifier sid attrs.source iid (DiscoveredClues 1)
+            labeled "Do not exaust" nothing
         _ -> pure ()
       pure e
     SkillTestEnds _ _ _ -> disableReturn e

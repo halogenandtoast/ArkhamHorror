@@ -10,7 +10,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.SkillTest (investigate)
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Import.Lifted
+import Arkham.Location.Import.Lifted hiding (investigate)
 import Arkham.Matcher
 import Arkham.Scenarios.WhereTheGodsDwell.Helpers
 

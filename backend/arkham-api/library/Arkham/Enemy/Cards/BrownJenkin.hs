@@ -19,7 +19,7 @@ brownJenkin = enemy BrownJenkin Cards.brownJenkin (1, Static 1, 4) (1, 1)
 instance HasModifiersFor BrownJenkin where
   getModifiersFor (EnemyTarget eid) (BrownJenkin attrs) = do
     isReady <- eid <=~> (ReadyEnemy <> EnemyWithTrait Creature)
-    pure $ toModifiers attrs [EnemyFight 2 | isReady]
+    toModifiers attrs [EnemyFight 2 | isReady]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrownJenkin where

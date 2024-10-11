@@ -1,13 +1,11 @@
 module Arkham.Location.Cards.LeMarais218 (leMarais218, LeMarais218 (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype LeMarais218 = LeMarais218 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,12 +15,12 @@ leMarais218 :: LocationCard LeMarais218
 leMarais218 = location LeMarais218 Cards.leMarais218 1 (PerPlayer 1)
 
 instance HasAbilities LeMarais218 where
-  getAbilities (LeMarais218 attrs) =
-    withRevealedAbilities attrs [restrictedAbility attrs 1 Here (forced $ Enters #after You $ be attrs)]
+  getAbilities (LeMarais218 a) =
+    extendRevealed1 a $ restricted a 1 Here $ forced $ Enters #after You (be a)
 
 instance RunMessage LeMarais218 where
-  runMessage msg l@(LeMarais218 attrs) = case msg of
+  runMessage msg l@(LeMarais218 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ roundModifier (attrs.ability 1) iid CannotMove
+      roundModifier (attrs.ability 1) iid CannotMove
       pure l
-    _ -> LeMarais218 <$> runMessage msg attrs
+    _ -> LeMarais218 <$> liftRunMessage msg attrs

@@ -26,7 +26,7 @@ instance HasModifiersFor OperaGarnier213 where
     mAction <- getSkillTestAction
     case (mAction, mtarget) of
       (Just Action.Investigate, Just target) | isTarget attrs target -> do
-        pure $ toModifiers attrs [DoubleBaseSkillValue]
+        toModifiers attrs [DoubleBaseSkillValue]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

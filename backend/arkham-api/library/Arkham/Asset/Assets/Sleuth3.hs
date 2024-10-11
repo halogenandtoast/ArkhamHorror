@@ -17,16 +17,15 @@ sleuth3 = asset Sleuth3 Cards.sleuth3
 
 instance HasModifiersFor Sleuth3 where
   getModifiersFor (InvestigatorTarget iid) (Sleuth3 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          #resource
-          (InvestigatorWithId iid)
-          (oneOf [CardWithTrait t | t <- [Charm, Tactic, Tome]])
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        #resource
+        (InvestigatorWithId iid)
+        (oneOf [CardWithTrait t | t <- [Charm, Tactic, Tome]])
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Sleuth3 where

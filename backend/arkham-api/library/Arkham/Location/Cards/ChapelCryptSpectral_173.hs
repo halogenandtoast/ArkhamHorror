@@ -27,7 +27,7 @@ chapelCryptSpectral_173 = location ChapelCryptSpectral_173 Cards.chapelCryptSpec
 instance HasModifiersFor ChapelCryptSpectral_173 where
   getModifiersFor target (ChapelCryptSpectral_173 attrs) | isTarget attrs target = do
     shouldModifyShroud <- selectNone $ enemyAt (toId attrs) <> ReadyEnemy
-    pure $ toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
+    toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapelCryptSpectral_173 where

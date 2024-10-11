@@ -24,7 +24,7 @@ theSpinnerInDarkness = treachery TheSpinnerInDarkness Cards.theSpinnerInDarkness
 instance HasModifiersFor TheSpinnerInDarkness where
   getModifiersFor (EnemyTarget eid) (TheSpinnerInDarkness attrs)
     | treacheryOnEnemy eid attrs =
-        pure $ toModifiers attrs [DamageDealt 1, HorrorDealt 1]
+        toModifiers attrs [DamageDealt 1, HorrorDealt 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheSpinnerInDarkness where

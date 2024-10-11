@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.CampaignLogKey
 import Arkham.Discover
-import Arkham.Id
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Message qualified as Msg
@@ -32,8 +31,9 @@ instance RunMessage AncientStone1 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
+      enabled <- skillTestModifiers sid attrs investigation.location [ShroudModifier 3]
       pushAll
-        [ skillTestModifiers @LocationId sid attrs investigation.location [ShroudModifier 3]
+        [ enabled
         , toMessage investigation
         ]
       pure a

@@ -22,7 +22,7 @@ lightingBox = location LightingBox Cards.lightingBox 4 (PerPlayer 1)
 instance HasModifiersFor LightingBox where
   getModifiersFor (InvestigatorTarget iid) (LightingBox attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [IncreaseCostOf AnyCard 2 | here]
+    toModifiers attrs [IncreaseCostOf AnyCard 2 | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LightingBox where

@@ -49,9 +49,9 @@ instance HasModifiersFor DimCarcosa where
   getModifiersFor (EnemyTarget eid) (DimCarcosa a) = do
     isHastur <- elem eid <$> select (EnemyWithTitle "Hastur")
     knowTheSecret <- remembered KnowTheSecret
-    pure $ toModifiers a [CannotBeDefeated | isHastur && not knowTheSecret]
+    toModifiers a [CannotBeDefeated | isHastur && not knowTheSecret]
   getModifiersFor (InvestigatorTarget _) (DimCarcosa a) = do
-    pure $ toModifiers a [CanOnlyBeDefeatedByDamage]
+    toModifiers a [CanOnlyBeDefeatedByDamage]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue DimCarcosa where

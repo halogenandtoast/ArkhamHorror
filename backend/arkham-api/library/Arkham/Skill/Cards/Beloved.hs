@@ -23,6 +23,7 @@ instance RunMessage Beloved where
           let meta = toResult @Bool attrs.meta
           if meta
             then do
+              enabled <- skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
               player <- getPlayer attrs.owner
               push
                 $ chooseOne
@@ -30,7 +31,7 @@ instance RunMessage Beloved where
                   [ Label
                       "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\""
                       [ RemoveFromGame (toTarget attrs)
-                      , skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
+                      , enabled
                       , PassSkillTest
                       ]
                   , Label "Do not remove" []

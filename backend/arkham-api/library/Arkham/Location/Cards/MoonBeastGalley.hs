@@ -15,7 +15,7 @@ newtype MoonBeastGalley = MoonBeastGalley LocationAttrs
 
 instance HasModifiersFor MoonBeastGalley where
   getModifiersFor target (MoonBeastGalley attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [AdditionalCostToEnter UnpayableCost, AdditionalCostToLeave UnpayableCost]
+    toModifiers attrs [AdditionalCostToEnter UnpayableCost, AdditionalCostToLeave UnpayableCost]
   getModifiersFor _ _ = pure []
 
 moonBeastGalley :: LocationCard MoonBeastGalley

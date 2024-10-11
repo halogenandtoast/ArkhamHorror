@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 
 newtype Intrepid = Intrepid AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 intrepid :: AssetCard Intrepid
@@ -19,8 +19,7 @@ intrepid = asset Intrepid Cards.intrepid
 
 instance HasModifiersFor Intrepid where
   getModifiersFor (InvestigatorTarget iid) (Intrepid a) =
-    pure
-      $ toModifiers a
+    toModifiers a
       $ guard (controlledBy a iid)
       *> map (`SkillModifier` 1) [#intellect, #combat, #agility]
   getModifiersFor _ _ = pure []

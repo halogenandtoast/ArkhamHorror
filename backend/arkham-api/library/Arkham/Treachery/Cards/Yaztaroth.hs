@@ -15,7 +15,7 @@ yaztaroth = treachery Yaztaroth Cards.yaztaroth
 
 instance HasModifiersFor Yaztaroth where
   getModifiersFor (InvestigatorTarget iid) (Yaztaroth attrs) =
-    pure $ toModifiers attrs $ do
+    toModifiers attrs $ do
       guard $ treacheryInThreatArea iid attrs
       [CannotPlay AssetCard, CannotPutIntoPlay AssetCard]
   getModifiersFor _ _ = pure []

@@ -22,7 +22,7 @@ trusted = event Trusted Cards.trusted
 instance HasModifiersFor Trusted where
   getModifiersFor (AssetTarget aid) (Trusted a) =
     if AssetTarget aid `elem` eventAttachedTarget a
-      then pure $ toModifiers a [HealthModifier 1, SanityModifier 1]
+      then toModifiers a [HealthModifier 1, SanityModifier 1]
       else pure []
   getModifiersFor _ _ = pure []
 

@@ -25,7 +25,7 @@ instance HasModifiersFor VaultOfEarthlyDemise where
   getModifiersFor target@(EnemyTarget _) (VaultOfEarthlyDemise attrs) | target `elem` attrs.attached = do
     let x = treacheryResources attrs
     additionalHealth <- getPlayerCountValue (PerPlayer x)
-    pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
+    toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ = pure []
 
 instance RunMessage VaultOfEarthlyDemise where

@@ -51,7 +51,7 @@ miskatonicArchaeologyFunding4Effect = cardEffect MiskatonicArchaeologyFunding4Ef
 
 instance HasModifiersFor MiskatonicArchaeologyFunding4Effect where
   getModifiersFor target (MiskatonicArchaeologyFunding4Effect a) | effectTarget a == target = do
-    pure $ toModifiers a [NoMoreThanOneDamageOrHorrorAmongst $ AssetWithTrait Miskatonic]
+    toModifiers a [NoMoreThanOneDamageOrHorrorAmongst $ AssetWithTrait Miskatonic]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MiskatonicArchaeologyFunding4Effect where

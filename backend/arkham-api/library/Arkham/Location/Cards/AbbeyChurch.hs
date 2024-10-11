@@ -29,7 +29,7 @@ anyDifferent (x : y : xs) = if x /= y then True else anyDifferent (y : xs)
 instance HasModifiersFor AbbeyChurch where
   getModifiersFor target (AbbeyChurch a) | a `is` target = do
     as <- map AS.agendaStep <$> selectAgg pure AgendaSequence AnyAgenda
-    pure $ toModifiers a [ShroudModifier 2 | anyDifferent as]
+    toModifiers a [ShroudModifier 2 | anyDifferent as]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AbbeyChurch where

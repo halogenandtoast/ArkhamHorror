@@ -24,7 +24,7 @@ lobbyWeveBeenExpectingYou = location LobbyWeveBeenExpectingYou Cards.lobbyWeveBe
 instance HasModifiersFor LobbyWeveBeenExpectingYou where
   getModifiersFor target (LobbyWeveBeenExpectingYou attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LobbyWeveBeenExpectingYou where

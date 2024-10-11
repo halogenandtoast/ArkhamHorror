@@ -27,7 +27,7 @@ instance HasModifiersFor OperaGarnier212 where
     case (mAction, mtarget) of
       (Just Action.Investigate, Just target)
         | isTarget attrs target ->
-            pure $ toModifiers attrs [DoubleSkillIcons]
+            toModifiers attrs [DoubleSkillIcons]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

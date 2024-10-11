@@ -35,7 +35,7 @@ instance HasModifiersFor TombOfShadows where
           )
     -- preventing the man in the pallid mask from being defeated is handled by
     -- the man in the pallid mask
-    pure $ toModifiers attrs [HealthModifier 1 | active]
+    toModifiers attrs [HealthModifier 1 | active]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TombOfShadows where

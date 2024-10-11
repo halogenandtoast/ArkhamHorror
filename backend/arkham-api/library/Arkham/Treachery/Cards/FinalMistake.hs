@@ -20,8 +20,9 @@ instance RunMessage FinalMistake where
     Revelation iid source | isSource attrs source -> do
       doom <- getSum <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
       sid <- getRandom
+      enabled <- skillTestModifier sid source (SkillTestTarget sid) (Difficulty doom)
       pushAll
-        [ skillTestModifier sid source (SkillTestTarget sid) (Difficulty doom)
+        [ enabled
         , revelationSkillTest sid iid source #agility (Fixed 2)
         ]
       pure t

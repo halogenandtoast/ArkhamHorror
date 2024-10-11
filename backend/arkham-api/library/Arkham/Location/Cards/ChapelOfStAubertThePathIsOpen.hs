@@ -28,11 +28,11 @@ chapelOfStAubertThePathIsOpen =
 instance HasModifiersFor ChapelOfStAubertThePathIsOpen where
   getModifiersFor target (ChapelOfStAubertThePathIsOpen attrs) | isTarget attrs target = do
     foundAGuide <- remembered FoundAGuide
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
+    toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor (InvestigatorTarget iid) (ChapelOfStAubertThePathIsOpen attrs) = do
     here <- iid `isAt` attrs
     remainingSanity <- field InvestigatorRemainingSanity iid
-    pure $ toModifiers attrs [CannotDiscoverClues | here, remainingSanity > 3]
+    toModifiers attrs [CannotDiscoverClues | here, remainingSanity > 3]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapelOfStAubertThePathIsOpen where

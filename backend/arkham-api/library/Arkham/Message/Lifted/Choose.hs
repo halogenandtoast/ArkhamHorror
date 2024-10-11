@@ -1,12 +1,13 @@
 module Arkham.Message.Lifted.Choose where
 
+import Arkham.Ability.Types
 import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Message (Message, uiToRun)
+import Arkham.Message (Message (Would), uiToRun)
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Query
@@ -130,6 +131,11 @@ cardLabeled a action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [CardLabel (toCardCode a) msgs]
 
+abilityLabeled :: ReverseQueue m => InvestigatorId -> Ability -> QueueT Message m () -> ChooseT m ()
+abilityLabeled iid ab action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [AbilityLabel iid ab [] [] msgs]
+
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do
   msgs <- lift $ evalQueueT action
@@ -154,6 +160,11 @@ targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m (
 targeting target action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [targetLabel target msgs]
+
+batching :: ReverseQueue m => BatchId -> QueueT Message m () -> QueueT Message m ()
+batching batchId action = do
+  msgs <- lift $ evalQueueT action
+  push $ Would batchId msgs
 
 targets
   :: (ReverseQueue m, Targetable target) => [target] -> (target -> QueueT Message m ()) -> ChooseT m ()

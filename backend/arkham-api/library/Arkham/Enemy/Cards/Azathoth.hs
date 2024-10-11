@@ -26,7 +26,7 @@ instance HasAbilities Azathoth where
 instance HasModifiersFor Azathoth where
   getModifiersFor target (Azathoth attrs) | isTarget attrs target = do
     noAgenda <- selectNone AnyAgenda
-    pure $ toModifiers attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
+    toModifiers attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Azathoth where

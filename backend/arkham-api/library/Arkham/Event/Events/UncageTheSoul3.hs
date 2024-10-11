@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getIsPlayableWithResources)
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher hiding (AssetCard, PlayCard)
 import Arkham.Modifier
 import Arkham.Projection
@@ -47,23 +46,18 @@ instance RunMessage UncageTheSoul3 where
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       let ws = defaultWindows iid
       rs <- (+ 3) <$> getSpendableResources iid
-      results <-
-        select
-          $ oneOf
-            [ inHandOf iid <> basic (oneOf [#spell, #ritual])
-            , inDiscardOf iid <> basic (oneOf [#spell, #ritual])
-            ]
 
-      cards <- filterM (getIsPlayableWithResources iid GameSource rs (UnpaidCost NoAction) ws) results
-      chooseOne
-        iid
-        [ targetLabel
-          c
-          [ AddToHandQuiet iid [c]
-          , Msg.costModifier attrs c (ReduceCostOf (CardWithId c.id) 3)
-          , PayCardCost iid c ws
-          ]
-        | c <- cards
-        ]
+      cards <-
+        filterM (getIsPlayableWithResources iid GameSource rs (UnpaidCost NoAction) ws)
+          =<< select
+            ( oneOf
+                [ inHandOf iid <> basic (oneOf [#spell, #ritual])
+                , inDiscardOf iid <> basic (oneOf [#spell, #ritual])
+                ]
+            )
+      chooseTargetM iid cards \c -> do
+        push $ AddToHandQuiet iid [c]
+        costModifier attrs c (ReduceCostOf (CardWithId c.id) 3)
+        push $ PayCardCost iid c ws
       pure e
     _ -> UncageTheSoul3 <$> liftRunMessage msg attrs

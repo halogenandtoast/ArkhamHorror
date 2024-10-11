@@ -17,10 +17,9 @@ empowerSelfAlacrity2 =
 
 instance HasModifiersFor EmpowerSelfAlacrity2 where
   getModifiersFor (InvestigatorTarget iid) (EmpowerSelfAlacrity2 a) | controlledBy a iid = do
-    pure
-      $ toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
+    toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
   getModifiersFor target (EmpowerSelfAlacrity2 a) | a `is` target = do
-    pure $ toModifiers a [SharesSlotWith 3 "Empower Self"]
+    toModifiers a [SharesSlotWith 3 "Empower Self"]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EmpowerSelfAlacrity2 where
@@ -32,6 +31,6 @@ instance RunMessage EmpowerSelfAlacrity2 where
   runMessage msg a@(EmpowerSelfAlacrity2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
       pure a
     _ -> EmpowerSelfAlacrity2 <$> runMessage msg attrs

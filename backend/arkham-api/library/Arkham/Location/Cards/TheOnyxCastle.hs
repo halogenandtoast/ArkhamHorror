@@ -18,7 +18,7 @@ theOnyxCastle = location TheOnyxCastle Cards.theOnyxCastle 3 (Static 0)
 
 instance HasModifiersFor TheOnyxCastle where
   getModifiersFor target (TheOnyxCastle attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [Blocked | not attrs.revealed]
+    toModifiers attrs [Blocked | not attrs.revealed]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheOnyxCastle where

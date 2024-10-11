@@ -47,12 +47,11 @@ pennyWhite =
 
 instance HasModifiersFor PennyWhite where
   getModifiersFor target (PennyWhite a) | a `is` target = do
-    pure
-      $ toModifiersWith a setActiveDuringSetup
+    toModifiersWith a setActiveDuringSetup
       $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
   getModifiersFor (AssetTarget aid) (PennyWhite a) = do
     isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
-    pure $ toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-1) | isFlashlight]
+    toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-1) | isFlashlight]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PennyWhite where

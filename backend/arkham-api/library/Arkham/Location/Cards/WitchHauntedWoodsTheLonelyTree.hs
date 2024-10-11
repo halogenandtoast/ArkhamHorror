@@ -28,7 +28,7 @@ instance HasModifiersFor WitchHauntedWoodsTheLonelyTree where
   getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTheLonelyTree a) =
     do
       handLength <- fieldMap InvestigatorHand length iid
-      pure $ toModifiers a [CannotInvestigateLocation (toId a) | handLength >= 3 && handLength <= 5]
+      toModifiers a [CannotInvestigateLocation (toId a) | handLength >= 3 && handLength <= 5]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WitchHauntedWoodsTheLonelyTree where

@@ -20,7 +20,7 @@ instance HasModifiersFor DonLagorio where
       Nothing -> pure []
       Just loc -> do
         mCounterClockwiseLocationId <- getCounterClockwiseLocation loc
-        pure $ toModifiers attrs $ case mCounterClockwiseLocationId of
+        toModifiers attrs $ case mCounterClockwiseLocationId of
           Nothing -> []
           Just counterClockwiseLocationId ->
             [ HunterConnectedTo counterClockwiseLocationId

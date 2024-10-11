@@ -22,7 +22,7 @@ exhibitHallRestrictedHall = location ExhibitHallRestrictedHall Cards.exhibitHall
 instance HasModifiersFor ExhibitHallRestrictedHall where
   getModifiersFor target (ExhibitHallRestrictedHall attrs) | isTarget attrs target = do
     mHuntingHorror <- selectOne $ enemyIs Cards.huntingHorror <> at_ (LocationWithId $ toId attrs)
-    pure $ toModifiers attrs [CannotInvestigate | isJust mHuntingHorror]
+    toModifiers attrs [CannotInvestigate | isJust mHuntingHorror]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExhibitHallRestrictedHall where

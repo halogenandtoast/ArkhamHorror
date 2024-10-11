@@ -19,7 +19,7 @@ alejandrosPrison = act (3, C) AlejandrosPrison Cards.alejandrosPrison Nothing
 instance HasModifiersFor AlejandrosPrison where
   getModifiersFor (LocationTarget lid) (AlejandrosPrison a) = do
     isModified <- lid <=~> LocationWithAsset (assetIs Assets.alejandroVela)
-    pure $ toModifiers a [ShroudModifier 2 | isModified]
+    toModifiers a [ShroudModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlejandrosPrison where

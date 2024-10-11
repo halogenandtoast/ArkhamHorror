@@ -22,7 +22,7 @@ instance HasModifiersFor GrapplingHorror where
   getModifiersFor (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..}) =
     do
       cannotMove <- iid <=~> investigatorEngagedWith enemyId
-      pure $ toModifiers a [CannotMove | cannotMove]
+      toModifiers a [CannotMove | cannotMove]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GrapplingHorror where

@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheGuardedRuins (
-  TheGuardedRuins (..),
-  theGuardedRuins,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheGuardedRuins (TheGuardedRuins (..), theGuardedRuins) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
@@ -12,11 +7,12 @@ import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheGuardedRuins = TheGuardedRuins ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theGuardedRuins :: ActCard TheGuardedRuins
@@ -30,18 +26,16 @@ theGuardedRuins =
 instance HasModifiersFor TheGuardedRuins where
   getModifiersFor (EnemyTarget eid) (TheGuardedRuins a) = do
     isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure
-      $ if isEztliGuardian
-        then toModifiers a [EnemyFight 1, EnemyEvade 1]
-        else []
+    if isEztliGuardian
+      then toModifiers a [EnemyFight 1, EnemyEvade 1]
+      else pure []
   getModifiersFor (CardIdTarget cardId) (TheGuardedRuins a) = do
     card <- getCard cardId
-    pure
-      $ toModifiers
-        a
-        [ AddKeyword Keyword.Surge
-        | card `isCard` Treacheries.arrowsFromTheTrees
-        ]
+    toModifiers
+      a
+      [ AddKeyword Keyword.Surge
+      | card `isCard` Treacheries.arrowsFromTheTrees
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheGuardedRuins where

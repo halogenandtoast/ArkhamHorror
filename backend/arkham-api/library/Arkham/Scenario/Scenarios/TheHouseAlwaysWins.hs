@@ -11,7 +11,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice, chaosTokenEffect)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
@@ -81,11 +81,9 @@ instance RunMessage TheHouseAlwaysWins where
       resourceCount <- getSpendableResources iid
       when (resourceCount >= requiredResources) do
         chooseOneM iid do
-          labeled ("Spend " <> tshow requiredResources <> " resources to treat this token as a 0")
-            $ pushAll
-              [ SpendResources iid requiredResources
-              , Arkham.Scenario.Helpers.chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
-              ]
+          labeled ("Spend " <> tshow requiredResources <> " resources to treat this token as a 0") do
+            push $ SpendResources iid requiredResources
+            chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
           labeled "Do not spend resources" nothing
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

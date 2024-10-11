@@ -29,9 +29,7 @@ instance RunMessage OtherworldlyCompass2 where
       revealedLocations <- selectCount $ RevealedLocation <> ConnectedTo (locationWithInvestigator iid)
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
-      pushAll
-        [ skillTestModifier sid attrs lid (ShroudModifier (-revealedLocations))
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid attrs lid (ShroudModifier (-revealedLocations))
+      pushAll [enabled, toMessage investigation]
       pure a
     _ -> OtherworldlyCompass2 <$> runMessage msg attrs

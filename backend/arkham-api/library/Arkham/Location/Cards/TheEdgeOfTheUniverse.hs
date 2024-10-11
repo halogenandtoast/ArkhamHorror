@@ -28,7 +28,7 @@ instance HasModifiersFor TheEdgeOfTheUniverse where
   getModifiersFor (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs) = do
     here <- iid `isAt` attrs
     phase <- getPhase
-    pure $ toModifiers attrs [CannotDrawCards | here, phase == UpkeepPhase]
+    toModifiers attrs [CannotDrawCards | here, phase == UpkeepPhase]
   getModifiersFor _ _ = pure []
 
 -- TODO: This should be some sort of restriction encoded in attrs

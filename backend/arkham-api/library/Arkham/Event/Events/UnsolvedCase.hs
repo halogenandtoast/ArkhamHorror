@@ -22,7 +22,7 @@ unsolvedCase = eventWith UnsolvedCase Cards.unsolvedCase $ afterPlayL .~ RemoveT
 
 instance HasModifiersFor UnsolvedCase where
   getModifiersFor (InvestigatorTarget iid) (UnsolvedCase attrs) = case eventPlacement attrs of
-    InThreatArea iid' | iid == iid' -> pure $ toModifiers attrs [XPModifier "Unsolved Case" (-2)]
+    InThreatArea iid' | iid == iid' -> toModifiers attrs [XPModifier "Unsolved Case" (-2)]
     _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -15,7 +15,7 @@ aceOfSwords1 = asset AceOfSwords1 Cards.aceOfSwords1
 
 instance HasModifiersFor AceOfSwords1 where
   getModifiersFor (InvestigatorTarget iid) (AceOfSwords1 a) =
-    pure $ toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AceOfSwords1 where

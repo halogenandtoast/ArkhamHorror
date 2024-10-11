@@ -23,10 +23,10 @@ stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
 instance HasModifiersFor StickToThePlan3 where
   getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs) | controlledBy attrs iid = do
-    pure $ toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
+    toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
   getModifiersFor (CardIdTarget cardId) (StickToThePlan3 attrs)
     | cardId `elem` map toCardId (assetCardsUnderneath attrs) = do
-        pure $ toModifiers attrs [AdditionalCost $ exhaust attrs]
+        toModifiers attrs [AdditionalCost $ exhaust attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StickToThePlan3 where
@@ -68,10 +68,7 @@ instance RunMessage StickToThePlan3 where
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-      pushAll
-        [ costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
-        , addToHand iid card
-        , msg
-        ]
+      enabled <- costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
+      pushAll [enabled, addToHand iid card, msg]
       pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan3 <$> runMessage msg attrs

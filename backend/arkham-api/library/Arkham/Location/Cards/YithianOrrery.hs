@@ -23,7 +23,7 @@ yithianOrrery = location YithianOrrery Cards.yithianOrrery 4 (PerPlayer 1)
 instance HasModifiersFor YithianOrrery where
   getModifiersFor (InvestigatorTarget iid) (YithianOrrery a) = do
     here <- iid <=~> investigatorAt (toId a)
-    pure $ toModifiers a [HandSize 2 | here]
+    toModifiers a [HandSize 2 | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YithianOrrery where

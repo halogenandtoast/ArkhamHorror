@@ -15,7 +15,7 @@ newtype Metadata = Metadata {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype Newspaper2 = Newspaper2 (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newspaper2 :: AssetCard Newspaper2
@@ -24,8 +24,7 @@ newspaper2 = asset (Newspaper2 . (`with` Metadata False)) Cards.newspaper2
 instance HasModifiersFor Newspaper2 where
   getModifiersFor (InvestigatorTarget iid) (Newspaper2 (a `With` metadata)) | controlledBy a iid = do
     clueCount <- field InvestigatorClues iid
-    pure
-      $ toModifiers a
+    toModifiers a
       $ guard (clueCount == 0)
       *> ActionSkillModifier #investigate #intellect 2
       : [DiscoveredClues 1 | active metadata]

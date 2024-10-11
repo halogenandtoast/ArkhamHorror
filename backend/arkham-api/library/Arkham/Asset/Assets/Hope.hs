@@ -2,13 +2,13 @@ module Arkham.Asset.Assets.Hope (hope, Hope (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Evade
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Projection
 
 newtype Hope = Hope AssetAttrs
@@ -22,46 +22,34 @@ instance HasAbilities Hope where
   getAbilities (Hope a) =
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.augur])
         $ forced
-        $ AssetEntersPlay #when
-        $ be a
-    , controlledAbility a 2 (exists $ AssetWithId (toId a) <> AssetReady)
+        $ AssetEntersPlay #when (be a)
+    , controlledAbility a 2 (exists $ be a <> AssetReady)
         $ evadeAction
         $ OrCost [exhaust a, discardCost a]
     ]
 
 instance RunMessage Hope where
-  runMessage msg a@(Hope attrs) = case msg of
+  runMessage msg a@(Hope attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       otherCats <- select $ oneOf [assetIs Cards.zeal, assetIs Cards.augur]
-      for_ otherCats $ push . toDiscardBy iid (toAbilitySource attrs 1)
+      for_ otherCats $ toDiscardBy iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
       discarded <- selectNone $ AssetWithId (toId attrs)
       catsInDiscard <-
-        fieldMap
-          InvestigatorDiscard
-          (filter (`cardMatch` oneOf [cardIs Cards.zeal, cardIs Cards.augur]))
-          iid
-      player <- getPlayer iid
+        fieldMap InvestigatorDiscard (filterCards (oneOf [cardIs Cards.zeal, cardIs Cards.augur])) iid
       hopeCard <- field AssetCard (toId attrs)
       sid <- getRandom
-      chooseEvade <- toMessage <$> mkChooseEvade sid iid source
-      pushAll
-        $ [skillTestModifier sid source iid (BaseSkillOf #agility 5)]
-        <> [skillTestModifier sid source sid SkillTestAutomaticallySucceeds | discarded]
-        <> [chooseEvade]
-        <> [ questionLabel "Put into play from discard" player
-            $ ChooseOne
-            $ [ CardLabel
-                (toCardCode card)
-                [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [hopeCard]
-                , PutCardIntoPlay iid (toCard card) Nothing NoPayment []
-                ]
-              | card <- catsInDiscard
-              ]
-            <> [Label "Skip" []]
-           | notNull catsInDiscard
-           ]
+      skillTestModifier sid source iid (BaseSkillOf #agility 5)
+      when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
+      pushM $ mkChooseEvade sid iid source
+      chooseOrRunOneM iid do
+        questionLabeled "Put into play from discard"
+        for_ catsInDiscard $ \card -> do
+          cardLabeled card do
+            shuffleCardsIntoDeck iid (only hopeCard)
+            putCardIntoPlay iid card
+        labeled "Skip" nothing
       pure a
-    _ -> Hope <$> runMessage msg attrs
+    _ -> Hope <$> liftRunMessage msg attrs

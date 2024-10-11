@@ -29,7 +29,7 @@ instance RunMessage AlchemicalConcoction where
       pure a
     ChoseEnemy sid iid (isAbilitySource attrs 1 -> True) eid -> do
       isTheExperiment <- eid <=~> enemyIs Enemies.theExperiment
-      pushWhen isTheExperiment $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 6)
+      when isTheExperiment $ pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 6)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       push $ RemoveFromGame (toTarget attrs)

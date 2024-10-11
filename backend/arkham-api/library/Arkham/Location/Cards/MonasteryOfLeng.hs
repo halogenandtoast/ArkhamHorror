@@ -16,7 +16,7 @@ monasteryOfLeng = location MonasteryOfLeng Cards.monasteryOfLeng 3 (PerPlayer 2)
 
 instance HasModifiersFor MonasteryOfLeng where
   getModifiersFor target (MonasteryOfLeng attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [Blocked | not attrs.revealed]
+    toModifiers attrs [Blocked | not attrs.revealed]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MonasteryOfLeng where

@@ -14,7 +14,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterSylvestre2 :: AssetCard PeterSylvestre2
@@ -23,10 +23,9 @@ peterSylvestre2 = ally PeterSylvestre2 Cards.peterSylvestre2 (1, 3)
 instance HasModifiersFor PeterSylvestre2 where
   getModifiersFor (InvestigatorTarget iid) (PeterSylvestre2 a)
     | controlledBy a iid =
-        pure
-          $ toModifiers
-            a
-            [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
+        toModifiers
+          a
+          [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PeterSylvestre2 where

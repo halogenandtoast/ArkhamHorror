@@ -1,17 +1,10 @@
-module Arkham.Skill.Cards.ViciousBlow2 (
-  viciousBlow2,
-  ViciousBlow2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.ViciousBlow2 (viciousBlow2, ViciousBlow2 (..)) where
 
 import Arkham.Action
-import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Message
+import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype ViciousBlow2 = ViciousBlow2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -21,9 +14,8 @@ viciousBlow2 :: SkillCard ViciousBlow2
 viciousBlow2 = skill ViciousBlow2 Cards.viciousBlow2
 
 instance RunMessage ViciousBlow2 where
-  runMessage msg s@(ViciousBlow2 attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ n | sid == skillId -> do
-      withSkillTest \stId -> do
-        push $ skillTestModifier stId attrs (InvestigatorTarget iid) (DamageDealt $ if n >= 2 then 2 else 1)
+  runMessage msg s@(ViciousBlow2 attrs) = runQueueT $ case msg of
+    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ n | sid == attrs.id -> do
+      withSkillTest \stId -> skillTestModifier stId attrs iid (DamageDealt $ if n >= 2 then 2 else 1)
       pure s
-    _ -> ViciousBlow2 <$> runMessage msg attrs
+    _ -> ViciousBlow2 <$> liftRunMessage msg attrs

@@ -23,7 +23,7 @@ instance HasModifiersFor BroodOfYig where
   getModifiersFor (EnemyTarget eid) (BroodOfYig a) | toId a == eid =
     do
       vengeance <- getVengeanceInVictoryDisplay
-      pure $ toModifiers a [EnemyFight vengeance | vengeance > 0]
+      toModifiers a [EnemyFight vengeance | vengeance > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BroodOfYig where

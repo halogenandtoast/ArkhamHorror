@@ -1,7 +1,4 @@
-module Arkham.Act.Cards.TheOath (
-  TheOath (..),
-  theOath,
-) where
+module Arkham.Act.Cards.TheOath (TheOath (..), theOath) where
 
 import Arkham.Prelude
 
@@ -14,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype TheOath = TheOath ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theOath :: ActCard TheOath
@@ -27,10 +24,9 @@ theOath =
 
 instance HasModifiersFor TheOath where
   getModifiersFor (LocationTarget _) (TheOath attrs) = do
-    pure
-      $ toModifiers
-        attrs
-        [ConnectedToWhen (LocationWithTrait Passageway) (LocationWithTrait Passageway)]
+    toModifiers
+      attrs
+      [ConnectedToWhen (LocationWithTrait Passageway) (LocationWithTrait Passageway)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheOath where

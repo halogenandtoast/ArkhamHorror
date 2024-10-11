@@ -1,19 +1,11 @@
-module Arkham.Enemy.Cards.YoungPsychopath (
-  youngPsychopath,
-  YoungPsychopath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.YoungPsychopath (youngPsychopath, YoungPsychopath (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier qualified as Modifier
-import Arkham.Timing qualified as Timing
 
 newtype YoungPsychopath = YoungPsychopath EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -25,31 +17,17 @@ youngPsychopath =
 
 instance HasAbilities YoungPsychopath where
   getAbilities (YoungPsychopath a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyEngaged Timing.After You
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemyEngaged #after You (be a)
 
 instance RunMessage YoungPsychopath where
-  runMessage msg e@(YoungPsychopath attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Take 1 Horror" [InvestigatorAssignDamage iid source DamageAny 0 1]
-          , Label
-              "Young Psycopath gets +3 fight until the end of the investigation phase"
-              [ CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [Modifier.EnemyFight 3])
-                  source
-                  (toTarget attrs)
-              ]
-          ]
+  runMessage msg e@(YoungPsychopath attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid do
+        labeled "Take 1 Horror" $ assignHorror iid (attrs.ability 1) 1
+        labeled "Young Psycopath gets +3 fight until the end of the investigation phase" do
+          phaseModifier (attrs.ability 1) attrs (Modifier.EnemyFight 3)
       pure e
-    _ -> YoungPsychopath <$> runMessage msg attrs
+    _ -> YoungPsychopath <$> liftRunMessage msg attrs

@@ -17,7 +17,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype TownHall = TownHall LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 townHall :: LocationCard TownHall
@@ -26,12 +26,11 @@ townHall = location TownHall Cards.townHall 4 (PerPlayer 1)
 instance HasModifiersFor TownHall where
   getModifiersFor (LocationTarget lid) (TownHall a) = do
     isDowntown <- lid <=~> locationIs Cards.downtownFirstBankOfArkham
-    pure
-      $ toModifiers
-        a
-        [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-        | isDowntown
-        ]
+    toModifiers
+      a
+      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
+      | isDowntown
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TownHall where

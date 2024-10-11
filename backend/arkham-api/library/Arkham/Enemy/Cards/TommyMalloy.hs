@@ -53,7 +53,7 @@ tommyMalloyEffect = cardEffect TommyMalloyEffect Cards.tommyMalloy
 
 instance HasModifiersFor TommyMalloyEffect where
   getModifiersFor target (TommyMalloyEffect attrs) | attrs.target == target = do
-    pure $ toModifiers attrs [MaxDamageTaken 1]
+    toModifiers attrs [MaxDamageTaken 1]
   getModifiersFor _ _ = pure []
 
 isTakeDamage :: EffectAttrs -> Window -> Bool

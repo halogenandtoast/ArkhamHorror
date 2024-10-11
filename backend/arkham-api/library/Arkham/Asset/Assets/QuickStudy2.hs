@@ -24,6 +24,6 @@ instance RunMessage QuickStudy2 where
   runMessage msg a@(QuickStudy2 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs (InvestigatorTarget iid) $ AnySkillValue 3
+        pushM $ skillTestModifier sid attrs (InvestigatorTarget iid) $ AnySkillValue 3
       pure a
     _ -> QuickStudy2 <$> runMessage msg attrs

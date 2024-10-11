@@ -19,7 +19,7 @@ threadsOfReality = treachery ThreadsOfReality Cards.threadsOfReality
 
 instance HasModifiersFor ThreadsOfReality where
   getModifiersFor target (ThreadsOfReality a) | Just target == a.attached = do
-    pure $ toModifiers a [BlankExceptForcedAbilities]
+    toModifiers a [BlankExceptForcedAbilities]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ThreadsOfReality where

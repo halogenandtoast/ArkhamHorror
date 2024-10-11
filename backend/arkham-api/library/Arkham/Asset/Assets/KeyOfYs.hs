@@ -15,7 +15,7 @@ keyOfYs = assetWith KeyOfYs Cards.keyOfYs (sanityL ?~ 4)
 
 instance HasModifiersFor KeyOfYs where
   getModifiersFor (InvestigatorTarget iid) (KeyOfYs a) =
-    pure $ toModifiers a [AnySkillValue $ assetHorror a | controlledBy a iid]
+    toModifiers a [AnySkillValue $ assetHorror a | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities KeyOfYs where

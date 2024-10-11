@@ -26,7 +26,7 @@ theUnnamable =
 instance HasModifiersFor TheUnnamable where
   getModifiersFor target (TheUnnamable a) | isTarget a target = do
     n <- countM remembered [FoundACrackedMirror, StudiedADesecratedPortrait, NoticedTheMissingBones]
-    pure $ toModifiers a $ CannotBeDefeated
+    toModifiers a $ CannotBeDefeated
       : (guard (n > 0) *> [Mod.EnemyFight (-n), Mod.EnemyEvade (-n)])
   getModifiersFor _ _ = pure []
 

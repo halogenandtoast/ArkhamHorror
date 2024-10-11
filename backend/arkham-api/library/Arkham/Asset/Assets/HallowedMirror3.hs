@@ -1,18 +1,16 @@
 module Arkham.Asset.Assets.HallowedMirror3 (hallowedMirror3, HallowedMirror3) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
-import Arkham.Deck
+import Arkham.Asset.Import.Lifted
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (getCanShuffleDeck, searchBonded)
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Strategy
 
 newtype HallowedMirror3 = HallowedMirror3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -25,39 +23,24 @@ instance HasAbilities HallowedMirror3 where
   getAbilities (HallowedMirror3 a) =
     [ restrictedAbility a 1 ControlsThis
         $ freeReaction
-        $ Matcher.PlayCard #when You
-        $ BasicCardMatch
-        $ cardIs Events.soothingMelody
+        $ Matcher.PlayCard #when You (basic $ cardIs Events.soothingMelody)
     ]
 
-getCard :: [Window] -> Card
-getCard = \case
-  ((windowType -> Window.PlayCard _ card) : _) -> card
-  _ -> error "impossible"
-
 instance RunMessage HallowedMirror3 where
-  runMessage msg a@(HallowedMirror3 attrs) = case msg of
+  runMessage msg a@(HallowedMirror3 attrs) = runQueueT $ case msg of
     InvestigatorPlayAsset iid aid | aid == assetId attrs -> do
       bonded <- take 3 <$> searchBonded iid Events.soothingMelody
       case bonded of
         [] -> pure ()
         (handSoothingMelody : deckSoothingMelodies) -> do
-          canShuffleDeck <- getCanShuffleDeck iid
-          pushAll
-            $ addToHand iid handSoothingMelody
-            : [ShuffleCardsIntoDeck (InvestigatorDeck iid) deckSoothingMelodies | canShuffleDeck]
-      HallowedMirror3 <$> runMessage msg attrs
-    UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
-              "Change each \"2\" to a \"3\""
-              [eventModifier (toAbilitySource attrs 1) (toCardId card) (MetaModifier $ object ["use3" .= True])]
-          , Label
-              "Shuffle it into your deck instead of discarding it"
-              [eventModifier (toAbilitySource attrs 1) (toCardId card) (SetAfterPlay ShuffleThisBackIntoDeck)]
-          ]
+          addToHand iid (only handSoothingMelody)
+          whenM (getCanShuffleDeck iid) $ shuffleCardsIntoDeck iid deckSoothingMelodies
+      HallowedMirror3 <$> liftRunMessage msg attrs
+    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      chooseOneM iid do
+        labeled "Change each \"2\" to a \"3\""
+          $ eventModifier (attrs.ability 1) card (MetaModifier $ object ["use3" .= True])
+        labeled "Shuffle it into your deck instead of discarding it"
+          $ eventModifier (attrs.ability 1) card (SetAfterPlay ShuffleThisBackIntoDeck)
       pure a
-    _ -> HallowedMirror3 <$> runMessage msg attrs
+    _ -> HallowedMirror3 <$> liftRunMessage msg attrs

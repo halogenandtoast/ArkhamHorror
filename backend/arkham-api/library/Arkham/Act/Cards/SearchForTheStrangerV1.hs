@@ -27,7 +27,7 @@ instance HasModifiersFor SearchForTheStrangerV1 where
     isManInThePallidMask <-
       eid
         `isMatch` EnemyWithTitle "The Main in the Pallid Mask"
-    pure $ toModifiers a [CannotBeDefeated | isManInThePallidMask]
+    toModifiers a [CannotBeDefeated | isManInThePallidMask]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SearchForTheStrangerV1 where

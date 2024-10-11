@@ -31,7 +31,7 @@ instance HasModifiersFor PulledByTheStars where
     case (mSource, mInvestigator) of
       (Just source, Just iid) | isAbilitySource attrs 2 source -> do
         exhaustedWitch <- selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
-        pure $ toModifiers attrs [SkillTestAutomaticallySucceeds | exhaustedWitch]
+        toModifiers attrs [SkillTestAutomaticallySucceeds | exhaustedWitch]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

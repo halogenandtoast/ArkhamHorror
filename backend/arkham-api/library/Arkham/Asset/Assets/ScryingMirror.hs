@@ -25,6 +25,6 @@ instance RunMessage ScryingMirror where
   runMessage msg a@(ScryingMirror attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs sid RevealChaosTokensBeforeCommittingCards
+        pushM $ skillTestModifier sid attrs sid RevealChaosTokensBeforeCommittingCards
       pure a
     _ -> ScryingMirror <$> runMessage msg attrs

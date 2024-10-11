@@ -36,7 +36,7 @@ instance HasModifiersFor FieldworkEffect where
   getModifiersFor target (FieldworkEffect a) | a.target == target = do
     mSkillTestSource <- getSkillTestSource
     let meta = toResult @Bool a.extra
-    pure $ toModifiers a [AnySkillValue 2 | isJust mSkillTestSource && meta]
+    toModifiers a [AnySkillValue 2 | isJust mSkillTestSource && meta]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FieldworkEffect where

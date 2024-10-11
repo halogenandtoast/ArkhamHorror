@@ -39,10 +39,9 @@ getRevealedCards = fromMaybe mempty . parseMaybe parseRevealedCards
 
 instance HasModifiersFor BobJenkins where
   getModifiersFor target (BobJenkins a) | a `is` target = do
-    pure
-      $ toModifiers
-        a
-        [GiveAdditionalAction (AdditionalAction "Bob Jenkins" (toSource a) BobJenkinsAction)]
+    toModifiers
+      a
+      [GiveAdditionalAction (AdditionalAction "Bob Jenkins" (toSource a) BobJenkinsAction)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BobJenkins where

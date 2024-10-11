@@ -30,7 +30,7 @@ exploringPnakotus =
 instance HasModifiersFor ExploringPnakotus where
   getModifiersFor (EnemyTarget eid) (ExploringPnakotus attrs) | onSide A attrs = do
     isYithianObserver <- eid <=~> enemyIs Enemies.yithianObserver
-    pure $ toModifiersWith attrs setActiveDuringSetup [AddKeyword Aloof | isYithianObserver]
+    toModifiersWith attrs setActiveDuringSetup [AddKeyword Aloof | isYithianObserver]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExploringPnakotus where

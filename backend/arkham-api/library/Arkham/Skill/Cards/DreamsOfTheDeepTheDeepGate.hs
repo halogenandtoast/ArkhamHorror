@@ -19,7 +19,7 @@ newtype DreamsOfTheDeepTheDeepGate = DreamsOfTheDeepTheDeepGate SkillAttrs
 
 instance HasModifiersFor DreamsOfTheDeepTheDeepGate where
   getModifiersFor target (DreamsOfTheDeepTheDeepGate attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [IfFailureModifier ReturnToHandAfterTest]
+    toModifiers attrs [IfFailureModifier ReturnToHandAfterTest]
   getModifiersFor _ _ = pure []
 
 dreamsOfTheDeepTheDeepGate :: SkillCard DreamsOfTheDeepTheDeepGate

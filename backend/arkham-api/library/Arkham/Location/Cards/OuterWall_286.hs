@@ -34,7 +34,7 @@ instance HasModifiersFor OuterWall_286 where
       here <- lift $ iid `isAt` a
       guard $ here && cDoom > aDoom
       pure $ DoubleSkillIcons
-    pure $ toModifiers a $ maybeToList mMod
+    toModifiers a $ maybeToList mMod
   getModifiersFor _ _ = pure []
 
 instance RunMessage OuterWall_286 where

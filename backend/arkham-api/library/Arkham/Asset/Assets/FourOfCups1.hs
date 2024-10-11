@@ -15,7 +15,7 @@ fourOfCups1 = asset FourOfCups1 Cards.fourOfCups1
 
 instance HasModifiersFor FourOfCups1 where
   getModifiersFor (InvestigatorTarget iid) (FourOfCups1 a) = do
-    pure $ toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FourOfCups1 where

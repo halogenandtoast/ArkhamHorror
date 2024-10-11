@@ -30,10 +30,7 @@ instance HasModifiersFor JazzMulligan where
     case miid of
       Just iid | controlledBy attrs iid -> do
         isUnrevealed <- lid <=~> UnrevealedLocation
-        pure
-          [ toModifier attrs (TraitRestrictedModifier Miskatonic Blank)
-          | isUnrevealed
-          ]
+        toModifiers attrs [TraitRestrictedModifier Miskatonic Blank | isUnrevealed]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

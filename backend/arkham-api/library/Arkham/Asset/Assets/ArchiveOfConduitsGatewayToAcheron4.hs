@@ -61,7 +61,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
       player <- getPlayer iid
       sid <- getRandom
       choices <- for locations \location -> do
-        investigate <- mkInvestigateLocation sid iid' (attrs.ability 2) location
+        investigate' <- mkInvestigateLocation sid iid' (attrs.ability 2) location
         pure
           $ targetLabel
             location
@@ -72,7 +72,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
                 , Label
                     "Remove Leyline"
                     [ RemoveTokens (attrs.ability 2) (toTarget location) Token.Leyline 1
-                    , toMessage investigate
+                    , toMessage investigate'
                     ]
                 ]
             ]

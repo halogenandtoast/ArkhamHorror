@@ -25,12 +25,12 @@ instance RunMessage Divination4 where
   runMessage msg a@(Divination4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      investigate <- setTarget attrs <$> mkInvestigate sid iid (attrs.ability 1)
+      investigate' <- setTarget attrs <$> mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       chooseOne
         iid
-        [ Label "Use {willpower} instead of {intellect}" [toMessage $ withSkillType #willpower investigate]
-        , Label "Use {intellect}" [toMessage investigate]
+        [ Label "Use {willpower} instead of {intellect}" [toMessage $ withSkillType #willpower investigate']
+        , Label "Use {intellect}" [toMessage investigate']
         ]
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) n -> do

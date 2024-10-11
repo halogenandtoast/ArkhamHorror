@@ -23,7 +23,7 @@ instance HasModifiersFor HuntingNightgaunt where
     mAction <- getSkillTestAction
     case (mAction, mTarget) of
       (Just Evade, Just (isTarget a -> True)) -> do
-        pure $ toModifiers a [DoubleNegativeModifiersOnChaosTokens]
+        toModifiers a [DoubleNegativeModifiersOnChaosTokens]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

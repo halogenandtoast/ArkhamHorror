@@ -3,13 +3,13 @@ module Arkham.Asset.Assets.ShiningTrapezohedron4 (shiningTrapezohedron4, Shining
 import Arkham.Ability
 import Arkham.ActiveCost.Base
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Id
+import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Name
-import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -23,13 +23,13 @@ shiningTrapezohedron4 = asset ShiningTrapezohedron4 Cards.shiningTrapezohedron4
 instance HasAbilities ShiningTrapezohedron4 where
   getAbilities (ShiningTrapezohedron4 a) =
     [ skillTestAbility
-        $ restrictedAbility a 1 ControlsThis
+        $ restricted a 1 ControlsThis
         $ ReactionAbility (WouldPayCardCost #when You #spell) (exhaust a)
     ]
 
 instance HasModifiersFor ShiningTrapezohedron4 where
   getModifiersFor (InvestigatorTarget iid) (ShiningTrapezohedron4 attrs) | attrs `controlledBy` iid = do
-    pure $ toModifiers attrs [CanModify $ AlternateResourceCost #spell Free | not attrs.exhausted]
+    toModifiers attrs [CanModify $ AlternateResourceCost #spell Free | not attrs.exhausted]
   getModifiersFor _ _ = pure []
 
 getWindowCard :: [Window] -> (ActiveCostId, BatchId, Card)
@@ -38,17 +38,16 @@ getWindowCard ((windowType -> Window.WouldPayCardCost _ acId batchId card) : _) 
 getWindowCard (_ : rest) = getWindowCard rest
 
 instance RunMessage ShiningTrapezohedron4 where
-  runMessage msg a@(ShiningTrapezohedron4 attrs) = case msg of
+  runMessage msg a@(ShiningTrapezohedron4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getWindowCard -> (acId, _batchId, card)) _ -> do
       sid <- getRandom
-      push
-        $ beginSkillTest
-          sid
-          iid
-          (attrs.ability 1)
-          (ActiveCostTarget acId)
-          #willpower
-          (CardCostCalculation iid $ toCardId card)
+      beginSkillTest
+        sid
+        iid
+        (attrs.ability 1)
+        (ActiveCostTarget acId)
+        #willpower
+        (CardCostCalculation iid $ toCardId card)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       costs <- getActiveCosts
@@ -74,13 +73,11 @@ instance RunMessage ShiningTrapezohedron4 where
         Just (ActiveCostTarget acId) -> case find ((== acId) . activeCostId) costs of
           Nothing -> error "invalid target"
           Just cost -> case activeCostTarget cost of
-            ForCard _ c ->
-              pushAll
-                [ CancelCost acId
-                , roundModifier (toAbilitySource attrs 1) iid (CannotPlay $ CardWithTitle $ toTitle c)
-                ]
+            ForCard _ c -> do
+              push $ CancelCost acId
+              roundModifier (attrs.ability 1) iid (CannotPlay $ CardWithTitle $ toTitle c)
             _ -> error "wrong cost target"
         _ -> error "invalid target"
 
       pure a
-    _ -> ShiningTrapezohedron4 <$> runMessage msg attrs
+    _ -> ShiningTrapezohedron4 <$> liftRunMessage msg attrs

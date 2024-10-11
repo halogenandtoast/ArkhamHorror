@@ -28,7 +28,7 @@ arbiterOfFates =
 instance HasModifiersFor ArbiterOfFates where
   getModifiersFor (AbilityTarget "60401" ab) (ArbiterOfFates a)
     | abilityIndex ab == 1 && abilitySource ab == InvestigatorSource "60401" && not (assetExhausted a) = do
-        pure $ toModifiers a [CanIgnoreLimit]
+        toModifiers a [CanIgnoreLimit]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ArbiterOfFates where
@@ -64,7 +64,7 @@ arbiterOfFatesEffect = cardEffect ArbiterOfFatesEffect Cards.arbiterOfFates
 instance HasModifiersFor ArbiterOfFatesEffect where
   getModifiersFor (AbilityTarget "60401" ab) (ArbiterOfFatesEffect a)
     | abilityIndex ab == 1 && abilitySource ab == InvestigatorSource "60401" = do
-        pure $ toModifiers a [IgnoreLimit | not (effectFinished a)]
+        toModifiers a [IgnoreLimit | not (effectFinished a)]
   getModifiersFor _ _ = pure []
 
 -- > When you use Jacqueline Fine's  ability, exhaust Arbiter of Fates: This use of her ability does not count towards its limit.

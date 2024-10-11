@@ -25,7 +25,8 @@ instance RunMessage ColtVestPocket where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      pushAll [skillTestModifiers sid attrs iid [SkillModifier #combat 1, DamageDealt 1], chooseFight]
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 1, DamageDealt 1]
+      pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ toDiscardBy iid (attrs.ability 2) attrs

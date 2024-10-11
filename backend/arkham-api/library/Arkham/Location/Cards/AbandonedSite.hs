@@ -22,7 +22,7 @@ abandonedSite =
 instance HasModifiersFor AbandonedSite where
   getModifiersFor target (AbandonedSite attrs) | isTarget attrs target = do
     n <- getCurrentDepth
-    pure $ toModifiers attrs [ShroudModifier n]
+    toModifiers attrs [ShroudModifier n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AbandonedSite where

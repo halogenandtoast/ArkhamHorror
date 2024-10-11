@@ -9,10 +9,12 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Classes.HasGame
 import Arkham.Effect.Effects
 import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
+import Arkham.Helpers.Modifiers (effectModifiers)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -44,9 +46,6 @@ import Arkham.Asset.Assets (
   arbiterOfFatesEffect,
   armageddon4Effect,
   armageddonEffect,
-  azureFlame3Effect,
-  azureFlame5Effect,
-  azureFlameEffect,
   charlesRossEsqEffect,
   crystalPendulumEffect,
   daisysToteBagAdvancedEffect,
@@ -57,7 +56,6 @@ import Arkham.Asset.Assets (
   eyeOfChaosEffect,
   eyeOfTheDjinnVesselOfGoodAndEvil2Effect,
   eyesOfValusiaTheMothersCunning4Effect,
-  fence1Effect,
   fieldworkEffect,
   fireExtinguisher1Effect,
   gildedVoltoEffect,
@@ -86,12 +84,10 @@ import Arkham.Asset.Assets (
   prismaticSpectaclesLensToTheOtherworld2Effect,
   riteOfSeekingEffect,
   showmanshipEffect,
-  shrivellingEffect,
   shroudOfShadows4Effect,
   shroudOfShadowsEffect,
   sixthSense4Effect,
   sixthSenseEffect,
-  songOfTheDead2Effect,
   steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
   wellConnected3Effect,
@@ -158,7 +154,6 @@ import Arkham.Event.Events (
  )
 import Arkham.Investigator.Investigators (
   dexterDrakeEffect,
-  fatherMateoElderSignEffect,
   kymaniJonesEffect,
   nathanielChoEffect,
   pennyWhiteEffect,
@@ -226,10 +221,10 @@ createEffect builder = do
   pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect
-  :: MonadRandom m => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
+  :: (HasGame m, MonadRandom m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
 createChaosTokenValueEffect sid n source target = do
   eid <- getRandom
-  pure (eid, buildChaosTokenValueEffect sid eid n source target)
+  (eid,) <$> buildChaosTokenValueEffect sid eid n source target
 
 createWindowModifierEffect
   :: MonadRandom m
@@ -293,13 +288,11 @@ lookupEffect eid builder =
     Nothing -> error $ "Unknown effect: " <> show builder.effectBuilderCardCode
     Just (SomeEffect f) -> Effect $ f (eid, builder)
 
-buildChaosTokenValueEffect :: SkillTestId -> EffectId -> Int -> Source -> Target -> Effect
-buildChaosTokenValueEffect sid eid n source =
-  buildWindowModifierEffect
-    eid
-    (EffectModifiers [Modifier source (ChaosTokenValueModifier n) False])
-    (EffectSkillTestWindow sid)
-    source
+buildChaosTokenValueEffect
+  :: HasGame m => SkillTestId -> EffectId -> Int -> Source -> Target -> m Effect
+buildChaosTokenValueEffect sid eid n source target = do
+  ems <- effectModifiers source [ChaosTokenValueModifier n]
+  pure $ buildWindowModifierEffect eid ems (EffectSkillTestWindow sid) source target
 
 buildWindowModifierEffect
   :: EffectId
@@ -338,14 +331,14 @@ instance FromJSON Effect where
 allEffects :: Map CardCode SomeEffect
 allEffects =
   mapFromList
-    [ ("01060", SomeEffect shrivellingEffect)
+    [ ("01060", SomeEffect $ noop "01060")
     , ("01066", SomeEffect blindingLightEffect)
     , ("01069", SomeEffect blindingLight2Effect)
     , ("01074", SomeEffect $ noop "01074")
     , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2Effect)
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
-    , ("02112", SomeEffect songOfTheDead2Effect)
+    , ("02112", SomeEffect $ noop "02112")
     , ("02114", SomeEffect fireExtinguisher1Effect)
     , ("02150", SomeEffect deduction2Effect)
     , ("02190", SomeEffect defianceEffect)
@@ -375,12 +368,12 @@ allEffects =
     , ("03209", SomeEffect montmartre209Effect)
     , ("03254", SomeEffect narrowShaftEffect)
     , ("03306", SomeEffect eideticMemory3Effect)
-    , ("04004", SomeEffect fatherMateoElderSignEffect)
+    , ("04004", SomeEffect $ noop "04004")
     , ("04029", SomeEffect mistsOfRlyehEffect)
     , ("04035", SomeEffect yaotl1Effect)
     , ("04079", SomeEffect boaConstrictorEffect)
     , ("04104", SomeEffect marksmanship1Effect)
-    , ("04108", SomeEffect fence1Effect)
+    , ("04108", SomeEffect $ noop "04108")
     , ("04155", SomeEffect hatchetManEffect)
     , ("04156", SomeEffect highRoller2Effect)
     , ("04195", SomeEffect exposeWeakness3Effect)
@@ -489,15 +482,15 @@ allEffects =
     , ("60329", SomeEffect backstab3Effect)
     , ("60330", SomeEffect copycat3Effect)
     , ("60402", SomeEffect arbiterOfFatesEffect)
-    , ("60407", SomeEffect azureFlameEffect)
+    , ("60407", SomeEffect $ noop "60407")
     , ("60408", SomeEffect $ noop "60408")
     , ("60409", SomeEffect ineffableTruthEffect)
     , ("60411", SomeEffect crystalPendulumEffect)
     , ("60419", SomeEffect prescientEffect)
-    , ("60425", SomeEffect azureFlame3Effect)
+    , ("60425", SomeEffect $ noop "60425")
     , ("60426", SomeEffect $ noop "60426")
     , ("60427", SomeEffect ineffableTruth3Effect)
-    , ("60430", SomeEffect azureFlame5Effect)
+    , ("60430", SomeEffect $ noop "60430")
     , ("60431", SomeEffect $ noop "60431")
     , ("60432", SomeEffect ineffableTruth5Effect)
     , ("60512", SomeEffect willToSurviveEffect)

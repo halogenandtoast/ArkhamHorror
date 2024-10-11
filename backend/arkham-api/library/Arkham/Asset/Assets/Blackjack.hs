@@ -22,9 +22,8 @@ instance RunMessage Blackjack where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid [SkillModifier #combat 1, DoesNotDamageOtherInvestigator]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid source iid [SkillModifier #combat 1, DoesNotDamageOtherInvestigator]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> Blackjack <$> runMessage msg attrs

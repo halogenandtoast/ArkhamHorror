@@ -23,7 +23,7 @@ theCodexOfAges = asset TheCodexOfAges Cards.theCodexOfAges
 
 instance HasModifiersFor TheCodexOfAges where
   getModifiersFor (InvestigatorTarget iid) (TheCodexOfAges a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier SkillWillpower 1 | notNull (assetSealedChaosTokens a)]
+    toModifiers a [SkillModifier SkillWillpower 1 | notNull (assetSealedChaosTokens a)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheCodexOfAges where

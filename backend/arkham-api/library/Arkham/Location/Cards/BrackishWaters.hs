@@ -20,7 +20,7 @@ brackishWaters = location BrackishWaters Cards.brackishWaters 1 (Static 0)
 instance HasModifiersFor BrackishWaters where
   getModifiersFor (InvestigatorTarget iid) (BrackishWaters attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotPlay #asset | here]
+    toModifiers attrs [CannotPlay #asset | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrackishWaters where

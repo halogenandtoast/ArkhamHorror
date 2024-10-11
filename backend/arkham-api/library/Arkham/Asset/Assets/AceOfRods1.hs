@@ -56,18 +56,17 @@ instance HasModifiersFor AceOfRods1Effect where
   getModifiersFor target (AceOfRods1Effect (a `With` meta))
     | target == effectTarget a
     , active meta =
-        pure $ toModifiers a [SkillModifier sType 2 | sType <- allSkills]
+        toModifiers a [SkillModifier sType 2 | sType <- allSkills]
   getModifiersFor target (AceOfRods1Effect (a `With` meta))
     | target == effectTarget a
     , not (active meta) =
-        pure
-          $ toModifiers
-            a
-            [ GiveAdditionalAction
-                $ AdditionalAction "Ace of Rods" (toSource a)
-                $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
-                $ toId a
-            ]
+        toModifiers
+          a
+          [ GiveAdditionalAction
+              $ AdditionalAction "Ace of Rods" (toSource a)
+              $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
+              $ toId a
+          ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AceOfRods1Effect where

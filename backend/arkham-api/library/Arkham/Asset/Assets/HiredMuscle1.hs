@@ -22,7 +22,7 @@ instance HasAbilities HiredMuscle1 where
 
 instance HasModifiersFor HiredMuscle1 where
   getModifiersFor (InvestigatorTarget iid) (HiredMuscle1 a) =
-    pure $ toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HiredMuscle1 where

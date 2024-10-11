@@ -35,16 +35,16 @@ instance RunMessage SurvivalKnife where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid [SkillModifier #combat 1]
-        , chooseFight
-        ]
+      enabled <- skillTestModifiers sid source iid [SkillModifier #combat 1]
+      pushAll [enabled, chooseFight]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
       let source = toAbilitySource attrs 2
       sid <- getRandom
+      enabled <- skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
+
       pushAll
-        [ skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
+        [ enabled
         , FightEnemy sid iid (toEnemy $ map Window.windowType windows') source Nothing #combat False
         ]
       pure a

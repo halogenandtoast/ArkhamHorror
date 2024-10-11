@@ -22,10 +22,9 @@ instance HasAbilities CombatTraining3 where
 
 instance HasModifiersFor CombatTraining3 where
   getModifiersFor target (CombatTraining3 attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (CombatTraining3 attrs) | iid `controls` attrs = do
-    pure $ toModifiers attrs [SkillModifier #combat 1, SkillModifier #agility 1]
+    toModifiers attrs [SkillModifier #combat 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CombatTraining3 where

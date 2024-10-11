@@ -23,10 +23,9 @@ instance HasAbilities Poltergeist where
 
 instance HasModifiersFor Poltergeist where
   getModifiersFor (EnemyTarget eid) (Poltergeist a) | toId a == eid = do
-    pure
-      $ toModifiers
-        a
-        [CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map SourceWithTrait [Spell, Relic]]
+    toModifiers
+      a
+      [CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map SourceWithTrait [Spell, Relic]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Poltergeist where

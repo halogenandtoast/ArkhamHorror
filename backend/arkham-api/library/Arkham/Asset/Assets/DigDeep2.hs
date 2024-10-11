@@ -28,10 +28,10 @@ instance RunMessage DigDeep2 where
   runMessage msg a@(DigDeep2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        push $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> do
-        push $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
       pure a
     _ -> DigDeep2 <$> runMessage msg attrs

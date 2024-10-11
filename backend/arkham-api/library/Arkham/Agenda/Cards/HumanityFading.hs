@@ -20,7 +20,7 @@ humanityFading = agenda (3, A) HumanityFading Cards.humanityFading (Static 7)
 
 instance HasModifiersFor HumanityFading where
   getModifiersFor (InvestigatorTarget _) (HumanityFading attrs)
-    | onSide A attrs = pure $ toModifiers attrs [HandSize (-4)]
+    | onSide A attrs = toModifiers attrs [HandSize (-4)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HumanityFading where

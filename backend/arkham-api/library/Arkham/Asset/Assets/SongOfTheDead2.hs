@@ -1,13 +1,12 @@
-module Arkham.Asset.Assets.SongOfTheDead2 (songOfTheDead2, songOfTheDead2Effect, SongOfTheDead2 (..)) where
+module Arkham.Asset.Assets.SongOfTheDead2 (songOfTheDead2, SongOfTheDead2 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Fight
-import Arkham.Prelude
-import Arkham.Window qualified as Window
+import Arkham.Modifier
 
 newtype SongOfTheDead2 = SongOfTheDead2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -18,42 +17,16 @@ songOfTheDead2 = asset SongOfTheDead2 Cards.songOfTheDead2
 
 instance HasAbilities SongOfTheDead2 where
   getAbilities (SongOfTheDead2 x) =
-    [restrictedAbility x 1 ControlsThis $ fightAction (assetUseCost x Charge 1)]
+    [restricted x 1 ControlsThis $ fightAction (assetUseCost x Charge 1)]
 
 instance RunMessage SongOfTheDead2 where
-  runMessage msg a@(SongOfTheDead2 attrs) = case msg of
+  runMessage msg a@(SongOfTheDead2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
-      pushAll
-        $ [ skillTestModifier sid source iid (SkillModifier #willpower 1)
-          , createCardEffect Cards.songOfTheDead2 (effectMetaTarget sid) source iid
-          ]
-        <> chooseFight
+      skillTestModifier sid source iid (SkillModifier #willpower 1)
+      onRevealChaosTokenEffect sid #skull source iid do
+        skillTestModifier sid source iid (DamageDealt 2)
+      aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
-    _ -> SongOfTheDead2 <$> runMessage msg attrs
-
-newtype SongOfTheDead2Effect = SongOfTheDead2Effect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-songOfTheDead2Effect :: EffectArgs -> SongOfTheDead2Effect
-songOfTheDead2Effect = cardEffect SongOfTheDead2Effect Cards.songOfTheDead2
-
-instance HasModifiersFor SongOfTheDead2Effect
-
-instance RunMessage SongOfTheDead2Effect where
-  runMessage msg e@(SongOfTheDead2Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | isTarget iid attrs.target && token.face == #skull -> do
-      withSkillTest \sid ->
-        push
-          $ If
-            (Window.RevealChaosTokenEffect iid token effectId)
-            [skillTestModifier sid attrs effectTarget (DamageDealt 2)]
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      push $ DisableEffect effectId
-      pure e
-    _ -> SongOfTheDead2Effect <$> runMessage msg attrs
+    _ -> SongOfTheDead2 <$> liftRunMessage msg attrs

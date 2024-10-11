@@ -20,11 +20,11 @@ instance HasModifiersFor DauntlessSpirit1 where
   getModifiersFor (CardIdTarget cid) (DauntlessSpirit1 a) | toCardId a == cid = do
     willpower <- field InvestigatorWillpower (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
+    toModifiers a [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
   getModifiersFor target (DauntlessSpirit1 a) | a `is` target = do
     willpower <- field InvestigatorWillpower (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
+    toModifiers a [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DauntlessSpirit1 where

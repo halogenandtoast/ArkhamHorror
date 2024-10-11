@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype BrotherhoodCultist = BrotherhoodCultist EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brotherhoodCultist :: EnemyCard BrotherhoodCultist
@@ -19,7 +19,7 @@ brotherhoodCultist = enemy BrotherhoodCultist Cards.brotherhoodCultist (2, Stati
 instance HasModifiersFor BrotherhoodCultist where
   getModifiersFor target (BrotherhoodCultist a) | a `is` target = do
     doom <- field EnemyDoom (toId a)
-    pure . toModifiers a $ guard (doom > 0) *> [EnemyFight doom, EnemyEvade doom]
+    toModifiers a $ guard (doom > 0) *> [EnemyFight doom, EnemyEvade doom]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BrotherhoodCultist where

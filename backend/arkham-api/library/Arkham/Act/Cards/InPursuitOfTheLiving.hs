@@ -29,7 +29,7 @@ inPursuitOfTheLiving = act (2, A) (InPursuitOfTheLiving . (`with` Metadata [])) 
 
 instance HasModifiersFor InPursuitOfTheLiving where
   getModifiersFor (InvestigatorTarget _) (InPursuitOfTheLiving (a `With` _)) =
-    pure $ toModifiers a [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
+    toModifiers a [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
   getModifiersFor _ _ = pure []
 
 -- Group limit once per round at each location.

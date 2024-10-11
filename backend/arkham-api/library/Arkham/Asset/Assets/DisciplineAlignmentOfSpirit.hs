@@ -21,7 +21,7 @@ disciplineAlignmentOfSpirit = asset DisciplineAlignmentOfSpirit Cards.discipline
 
 instance HasModifiersFor DisciplineAlignmentOfSpirit where
   getModifiersFor (InvestigatorTarget iid) (DisciplineAlignmentOfSpirit a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DisciplineAlignmentOfSpirit where

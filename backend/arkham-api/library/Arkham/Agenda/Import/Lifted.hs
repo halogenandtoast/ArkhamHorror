@@ -27,9 +27,12 @@ import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Message as X (
+  AgendaAdvancementMethod (..),
   CanAdvance (..),
   Message (..),
   pattern AdvanceAgenda,
+  pattern PassedThisSkillTest,
+  pattern RemoveClues,
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X

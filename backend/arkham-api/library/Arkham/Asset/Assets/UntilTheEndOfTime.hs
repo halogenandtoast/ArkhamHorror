@@ -24,7 +24,7 @@ untilTheEndOfTime =
 instance HasModifiersFor UntilTheEndOfTime where
   getModifiersFor (AssetTarget aid) (UntilTheEndOfTime a)
     | aid == toId a =
-        pure $ toModifiers a [CanBeAssignedDirectDamage]
+        toModifiers a [CanBeAssignedDirectDamage]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UntilTheEndOfTime where

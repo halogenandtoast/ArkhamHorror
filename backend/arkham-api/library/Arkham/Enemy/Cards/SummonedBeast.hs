@@ -23,7 +23,7 @@ summonedBeast = enemy SummonedBeast Cards.summonedBeast (5, PerPlayer 6, 2) (2, 
 instance HasModifiersFor SummonedBeast where
   getModifiersFor target (SummonedBeast attrs) | isTarget attrs target = do
     n <- (`div` 2) <$> getDoomCount
-    pure $ toModifiers attrs [EnemyFight n, EnemyEvade n, DamageDealt n, HorrorDealt n]
+    toModifiers attrs [EnemyFight n, EnemyEvade n, DamageDealt n, HorrorDealt n]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SummonedBeast where

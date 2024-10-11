@@ -26,10 +26,9 @@ instance HasModifiersFor NoTurningBack where
     case attrs.placement.attachedTo of
       Just (LocationTarget lid) -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
-        pure
-          $ toModifiers
-            attrs
-            [if onNoTurningBack then CannotMove else CannotEnter lid]
+        toModifiers
+          attrs
+          [if onNoTurningBack then CannotMove else CannotEnter lid]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

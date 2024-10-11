@@ -19,7 +19,7 @@ newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
 
 instance HasModifiersFor TheOrganistDrapedInMystery where
   getModifiersFor target (TheOrganistDrapedInMystery attrs) | isTarget attrs target = do
-    pure $ toModifiers attrs [CannotBeDamaged]
+    toModifiers attrs [CannotBeDamaged]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheOrganistDrapedInMystery where

@@ -35,7 +35,7 @@ instance HasModifiersFor DiningCar where
     | isTarget l target = case lookup LeftOf locationDirections of
         Just leftLocation -> do
           clueCount <- field LocationClues leftLocation
-          pure $ toModifiers l [Blocked | not locationRevealed && clueCount > 0]
+          toModifiers l [Blocked | not locationRevealed && clueCount > 0]
         Nothing -> pure []
   getModifiersFor _ _ = pure []
 

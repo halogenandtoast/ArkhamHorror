@@ -3,8 +3,6 @@ module Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove (
   letTheStormRageTheVortexAbove,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
@@ -17,10 +15,11 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype LetTheStormRageTheVortexAbove = LetTheStormRageTheVortexAbove AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 letTheStormRageTheVortexAbove :: AgendaCard LetTheStormRageTheVortexAbove
@@ -34,19 +33,12 @@ letTheStormRageTheVortexAbove =
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
   getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheVortexAbove a) = do
     card <- getCard cardId
-    pure
-      $ toModifiers
-        a
-        [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
+    toModifiers a [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LetTheStormRageTheVortexAbove where
   getAbilities (LetTheStormRageTheVortexAbove a) =
-    [ limitedAbility (GroupLimit PerRound 1)
-        $ mkAbility a 1
-        $ FastAbility
-        $ GroupClueCost (PerPlayer 1) Anywhere
-    ]
+    [groupLimit PerRound $ mkAbility a 1 $ FastAbility $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance RunMessage LetTheStormRageTheVortexAbove where
   runMessage msg a@(LetTheStormRageTheVortexAbove attrs) = case msg of

@@ -36,8 +36,8 @@ instance RunMessage OrnateBow3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
-      pushAll $ skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #agility 2]
-        : leftOr chooseFight
+      enabled <- skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #agility 2]
+      pushAll $ enabled : leftOr chooseFight
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ AddUses (attrs.ability 2) (toId attrs) Ammo 1

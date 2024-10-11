@@ -25,7 +25,7 @@ instance HasModifiersFor FindTheRelic where
     isModified <-
       lid
         <=~> LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    pure $ toModifiers a [ShroudModifier 2 | isModified]
+    toModifiers a [ShroudModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FindTheRelic where

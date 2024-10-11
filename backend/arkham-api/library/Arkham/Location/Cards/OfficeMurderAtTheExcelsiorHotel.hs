@@ -29,7 +29,7 @@ officeMurderAtTheExcelsiorHotel = location OfficeMurderAtTheExcelsiorHotel Cards
 instance HasModifiersFor OfficeMurderAtTheExcelsiorHotel where
   getModifiersFor (InvestigatorTarget iid) (OfficeMurderAtTheExcelsiorHotel attrs) = do
     hasManagersKey <- iid <=~> HasMatchingAsset (assetIs Assets.managersKey)
-    pure $ toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasManagersKey]
+    toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasManagersKey]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities OfficeMurderAtTheExcelsiorHotel where

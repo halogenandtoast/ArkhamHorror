@@ -26,9 +26,9 @@ instance HasModifiersFor SearchForTheStrangerV3 where
     isTheManInThePallidMask <-
       eid
         `isMatch` enemyIs Enemies.theManInThePallidMask
-    pure $ toModifiers a [CanOnlyBeDefeatedByDamage | isTheManInThePallidMask]
+    toModifiers a [CanOnlyBeDefeatedByDamage | isTheManInThePallidMask]
   getModifiersFor (InvestigatorTarget _) (SearchForTheStrangerV3 a) =
-    pure $ toModifiers a [CannotDiscoverClues]
+    toModifiers a [CannotDiscoverClues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SearchForTheStrangerV3 where

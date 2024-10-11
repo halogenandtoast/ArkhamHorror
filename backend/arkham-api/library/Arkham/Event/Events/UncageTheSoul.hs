@@ -54,7 +54,7 @@ uncageTheSoulEffect = cardEffect UncageTheSoulEffect Cards.uncageTheSoul
 
 instance HasModifiersFor UncageTheSoulEffect where
   getModifiersFor target@(CardIdTarget cid) (UncageTheSoulEffect attrs) | effectTarget attrs == target = do
-    pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
+    toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
   getModifiersFor _ _ = pure []
 
 instance RunMessage UncageTheSoulEffect where

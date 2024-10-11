@@ -30,10 +30,10 @@ instance RunMessage Hyperawareness where
   runMessage msg a@(Hyperawareness attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #agility 1)
+        pushM $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #agility 1)
       pure a
     _ -> Hyperawareness <$> runMessage msg attrs

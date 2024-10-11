@@ -213,8 +213,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
 isNonWeakness :: IsCard a => a -> Bool
 isNonWeakness = (`cardMatch` NonWeakness)
 
-filterCards :: IsCardMatcher a => a -> [Card] -> [Card]
-filterCards matcher = filter (`cardMatch` matcher)
+filterCards :: (IsCardMatcher a, IsCard b) => a -> [b] -> [b]
+filterCards matcher = filter ((`cardMatch` matcher) . toCard)
 
 findCardMatch
   :: (IsCardMatcher a, IsCard card, Element cards ~ card, MonoFoldable cards)

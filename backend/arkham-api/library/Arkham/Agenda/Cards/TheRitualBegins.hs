@@ -24,7 +24,7 @@ theRitualBegins =
 
 instance HasModifiersFor TheRitualBegins where
   getModifiersFor (EnemyTarget _) (TheRitualBegins attrs) | onSide A attrs = do
-    pure $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
+    toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheRitualBegins where

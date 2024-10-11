@@ -73,6 +73,9 @@ instance IsLabel "investigate" AbilityMatcher where
 instance IsLabel "evade" AbilityMatcher where
   fromLabel = AbilityIsAction #evade
 
+instance IsLabel "fight" AbilityMatcher where
+  fromLabel = AbilityIsAction #fight
+
 instance IsLabel "action" AbilityMatcher where
   fromLabel = AbilityIsActionAbility
 

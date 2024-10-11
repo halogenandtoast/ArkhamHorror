@@ -26,7 +26,7 @@ instance HasModifiersFor HidingSpot where
     case eventAttachedTarget attrs of
       Just (LocationTarget lid) -> do
         enemies <- select $ EnemyAt $ LocationWithId lid
-        pure $ toModifiers attrs [AddKeyword Aloof | eid `elem` enemies]
+        toModifiers attrs [AddKeyword Aloof | eid `elem` enemies]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

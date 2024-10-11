@@ -37,8 +37,9 @@ instance RunMessage ShroudOfShadows4 where
           source
           (#willpower `InsteadOf` #agility)
           (setTarget attrs <$> mkChooseEvade sid iid source)
+      enabled <- skillTestModifier sid source iid (SkillModifier #willpower 2)
       pushAll
-        $ [ skillTestModifier sid source iid (SkillModifier #willpower 2)
+        $ [ enabled
           , createCardEffect Cards.shroudOfShadows4 Nothing source sid
           ]
         <> leftOr chooseEvade

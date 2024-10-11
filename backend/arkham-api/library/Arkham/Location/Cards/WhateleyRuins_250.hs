@@ -27,7 +27,7 @@ whateleyRuins_250 =
 instance HasModifiersFor WhateleyRuins_250 where
   getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_250 attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [SkillModifier #willpower (-1) | here]
+    toModifiers attrs [SkillModifier #willpower (-1) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_250 where

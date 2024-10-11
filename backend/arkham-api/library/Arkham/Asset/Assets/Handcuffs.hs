@@ -21,7 +21,7 @@ handcuffs = asset Handcuffs Cards.handcuffs
 instance HasModifiersFor Handcuffs where
   getModifiersFor (EnemyTarget eid) (Handcuffs a) | attachedToEnemy a eid = do
     isNonElite <- eid <=~> NonEliteEnemy
-    pure $ toModifiers a $ do
+    toModifiers a $ do
       guard isNonElite
       [CannotReady, CannotPlaceDoomOnThis]
   getModifiersFor _ _ = pure []

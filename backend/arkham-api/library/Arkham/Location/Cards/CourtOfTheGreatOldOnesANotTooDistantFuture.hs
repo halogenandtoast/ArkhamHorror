@@ -14,7 +14,6 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype CourtOfTheGreatOldOnesANotTooDistantFuture
   = CourtOfTheGreatOldOnesANotTooDistantFuture LocationAttrs
@@ -32,14 +31,9 @@ courtOfTheGreatOldOnesANotTooDistantFuture =
 
 instance HasAbilities CourtOfTheGreatOldOnesANotTooDistantFuture where
   getAbilities (CourtOfTheGreatOldOnesANotTooDistantFuture a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ skillTestAbility
-          $ mkAbility a 1
-          $ ForcedAbility
-          $ Enters Timing.After You
-          $ LocationWithId
-          $ toId a
+      [ skillTestAbility $ mkAbility a 1 $ forced $ Enters #after You (be a)
       , haunted "The next action you perform this round must be an investigate action." a 2
       ]
 
@@ -53,7 +47,7 @@ instance RunMessage CourtOfTheGreatOldOnesANotTooDistantFuture where
       push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 3)
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push
+      pushM
         $ createWindowModifierEffect
           (FirstEffectWindow [EffectRoundWindow, EffectNextActionWindow])
           attrs

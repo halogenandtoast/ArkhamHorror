@@ -96,7 +96,7 @@ libraryDocent1Effect = cardEffect LibraryDocent1Effect Cards.libraryDocent1
 instance HasModifiersFor LibraryDocent1Effect where
   getModifiersFor target@(CardIdTarget cid) (LibraryDocent1Effect attrs)
     | effectTarget attrs == target = do
-        pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
+        toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LibraryDocent1Effect where

@@ -27,7 +27,7 @@ instance HasModifiersFor EmergencyRoom where
     case mSkillTest of
       Just st -> do
         here <- skillTestInvestigator st <=~> investigatorAt (toId attrs)
-        pure $ toModifiers attrs [Difficulty (length $ skillTestCommittedCards st) | here]
+        toModifiers attrs [Difficulty (length $ skillTestCommittedCards st) | here]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

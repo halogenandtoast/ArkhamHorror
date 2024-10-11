@@ -1,11 +1,9 @@
 module Arkham.Event.Events.Lucky where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 
 newtype Lucky = Lucky EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -15,9 +13,10 @@ lucky :: EventCard Lucky
 lucky = event Lucky Cards.lucky
 
 instance RunMessage Lucky where
-  runMessage msg e@(Lucky attrs) = case msg of
+  runMessage msg e@(Lucky attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      withSkillTest \sid ->
-        pushAll [skillTestModifier sid attrs iid (AnySkillValue 2), RerunSkillTest]
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs iid (AnySkillValue 2)
+        push RerunSkillTest
       pure e
-    _ -> Lucky <$> runMessage msg attrs
+    _ -> Lucky <$> liftRunMessage msg attrs

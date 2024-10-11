@@ -78,7 +78,7 @@ jeromesFateEffect = cardEffect JeromesFateEffect Cards.jeromesFate
 instance HasModifiersFor JeromesFateEffect where
   getModifiersFor (AssetTarget aid) (JeromesFateEffect a) = do
     isJerome <- elem aid <$> select (assetIs Assets.jeromeDavids)
-    pure $ toModifiers a [DoNotTakeUpSlot AllySlot | isJerome]
+    toModifiers a [DoNotTakeUpSlot AllySlot | isJerome]
   getModifiersFor _ _ = pure []
 
 instance RunMessage JeromesFateEffect where

@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.GuardianAngel (
-  guardianAngel,
-  GuardianAngel (..),
-)
-where
+module Arkham.Asset.Assets.GuardianAngel (guardianAngel, GuardianAngel (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -24,21 +20,16 @@ guardianAngel =
   assetWith GuardianAngel Cards.guardianAngel (healthL ?~ 3)
 
 instance HasModifiersFor GuardianAngel where
-  getModifiersFor (InvestigatorTarget iid) (GuardianAngel a)
-    | not (controlledBy a iid) = do
-        mAssetLocation <- field AssetLocation (toId a)
-        valid <- case mAssetLocation of
-          Just location ->
-            iid
-              <=~> InvestigatorAt
-                (oneOf [LocationWithId location, ConnectedTo (LocationWithId location)])
-          Nothing -> pure False
-        pure [toModifier a (CanAssignDamageToAsset $ toId a) | valid]
+  getModifiersFor (InvestigatorTarget iid) (GuardianAngel a) = maybeModified a do
+    guard $ not (controlledBy a iid)
+    location <- MaybeT $ field AssetLocation (toId a)
+    liftGuardM $ iid <=~> InvestigatorAt (orConnected $ be location)
+    pure [CanAssignDamageToAsset a.id]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GuardianAngel where
   getAbilities (GuardianAngel attrs) =
-    [ restrictedAbility attrs 1 ControlsThis $ freeReaction $ AssetDealtDamage #when AnySource (be attrs)
+    [ restricted attrs 1 ControlsThis $ freeReaction $ AssetDealtDamage #when AnySource (be attrs)
     ]
 
 getDamage :: [Window] -> Int

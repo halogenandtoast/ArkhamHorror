@@ -2,11 +2,11 @@ module Arkham.Investigator.Cards.SilasMarsh (silasMarsh, SilasMarsh (..)) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 
@@ -23,7 +23,7 @@ silasMarsh =
 instance HasAbilities SilasMarsh where
   getAbilities (SilasMarsh attrs) =
     [ playerLimit PerRound
-        $ restrictedAbility
+        $ restricted
           attrs
           1
           (Self <> DuringSkillTest (YourSkillTest AnySkillTest) <> exists (SkillControlledBy You))
@@ -40,7 +40,7 @@ instance RunMessage SilasMarsh where
   runMessage msg i@(SilasMarsh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       skills <- select $ skillControlledBy iid
-      chooseOrRunOne iid $ targetLabels skills $ only . ReturnToHand iid . toTarget
+      chooseOrRunOneM iid $ targets skills $ returnToHand iid
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       skills <-
@@ -50,12 +50,12 @@ instance RunMessage SilasMarsh where
 
       when (notNull skills) do
         withSkillTest \sid -> do
-          push $ FocusCards skills
-          chooseOne iid $ Label "Do not commit skills" []
-            : [ targetLabel
-                card
-                [CommitCard iid card, Msg.skillTestModifier @Source sid #elderSign card ReturnToHandAfterTest]
-              | card <- skills
-              ]
+          focusCards skills \unfocus -> do
+            chooseOneM iid do
+              labeled "Do not commit skills" nothing
+              targets skills \card -> do
+                push $ CommitCard iid card
+                skillTestModifier sid ElderSign card ReturnToHandAfterTest
+            push unfocus
       pure i
     _ -> SilasMarsh <$> liftRunMessage msg attrs

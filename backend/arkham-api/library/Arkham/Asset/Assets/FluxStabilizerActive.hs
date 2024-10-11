@@ -33,10 +33,11 @@ instance RunMessage FluxStabilizerActive where
       push $ ReplaceInvestigatorAsset iid attrs.id (flipCard $ toCard attrs)
       pure $ FluxStabilizerActive $ attrs & flippedL .~ True
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      ems <- effectModifiers (attrs.ability 1) [AnySkillValue 2]
       push
         $ CreateWindowModifierEffect
           (FirstEffectWindow [EffectNextSkillTestWindow, EffectPhaseWindow])
-          (effectModifiers (attrs.ability 1) [AnySkillValue 2])
+          ems
           (attrs.ability 1)
           (toTarget iid)
       pure a

@@ -23,13 +23,13 @@ instance HasAbilities Grounded1 where
 
 instance HasModifiersFor Grounded1 where
   getModifiersFor (AssetTarget aid) (Grounded1 attrs) | toId attrs == aid = do
-    pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Grounded1 where
   runMessage msg a@(Grounded1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       pure a
     _ -> Grounded1 <$> runMessage msg attrs

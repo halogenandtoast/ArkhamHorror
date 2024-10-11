@@ -15,13 +15,13 @@ finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
 finnsTrustyThirtyEight = asset FinnsTrustyThirtyEight Cards.finnsTrustyThirtyEight
 
 instance HasModifiersFor FinnsTrustyThirtyEight where
-  getModifiersFor (InvestigatorTarget iid) (FinnsTrustyThirtyEight attrs) = do
-    toModifiers attrs . toList <$> runMaybeT do
-      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      engagedEnemies <- lift $ select $ EnemyIsEngagedWith $ InvestigatorWithId iid
-      guard (eid `notElem` engagedEnemies) $> DamageDealt 1
+  getModifiersFor (InvestigatorTarget iid) (FinnsTrustyThirtyEight attrs) = maybeModified attrs do
+    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+    EnemyTarget eid <- MaybeT getSkillTestTarget
+    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+    engagedEnemies <- lift $ select $ EnemyIsEngagedWith $ InvestigatorWithId iid
+    guard $ eid `notElem` engagedEnemies
+    pure [DamageDealt 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FinnsTrustyThirtyEight where
@@ -33,6 +33,7 @@ instance RunMessage FinnsTrustyThirtyEight where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     _ -> FinnsTrustyThirtyEight <$> runMessage msg attrs

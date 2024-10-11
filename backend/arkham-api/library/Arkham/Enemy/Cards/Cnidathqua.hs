@@ -30,7 +30,7 @@ cnidathqua =
 instance HasModifiersFor Cnidathqua where
   getModifiersFor (EnemyTarget eid) (Cnidathqua attrs)
     | eid == toId attrs =
-        pure $ toModifiers attrs [CannotBeEvaded, CanBeFoughtAsIfAtYourLocation]
+        toModifiers attrs [CannotBeEvaded, CanBeFoughtAsIfAtYourLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Cnidathqua where

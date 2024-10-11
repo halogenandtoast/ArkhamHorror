@@ -4,8 +4,6 @@ module Arkham.Location.Cards.UnvisitedIsleMistyClearing (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
 import Arkham.CampaignLogKey
 import Arkham.GameValue
@@ -16,6 +14,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleMistyClearing = UnvisitedIsleMistyClearing LocationAttrs
@@ -26,22 +25,19 @@ unvisitedIsleMistyClearing :: LocationCard UnvisitedIsleMistyClearing
 unvisitedIsleMistyClearing = location UnvisitedIsleMistyClearing Cards.unvisitedIsleMistyClearing 1 (PerPlayer 2)
 
 instance HasModifiersFor UnvisitedIsleMistyClearing where
-  getModifiersFor target (UnvisitedIsleMistyClearing attrs)
-    | attrs `isTarget` target
-    , not (locationRevealed attrs) = do
-        sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
-        isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
-        pure
-          [ toModifier attrs Blocked
-          | if sidedWithLodge then not isLit else isLit
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (UnvisitedIsleMistyClearing attrs) = maybeModified attrs do
+    guard $ attrs `isTarget` target
+    guard $ not attrs.revealed
+    sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
+    isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
+    guard $ if sidedWithLodge then not isLit else isLit
+    pure [Blocked]
 
 instance HasAbilities UnvisitedIsleMistyClearing where
   getAbilities (UnvisitedIsleMistyClearing attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
+      [ restricted attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted "You must either place 1 doom on this location, or take 1 damage and 1 horror" attrs 2
       ]
 

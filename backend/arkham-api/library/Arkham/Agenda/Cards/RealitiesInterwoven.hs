@@ -18,7 +18,7 @@ realitiesInterwoven = agenda (3, A) RealitiesInterwoven Cards.realitiesInterwove
 instance HasModifiersFor RealitiesInterwoven where
   getModifiersFor target (RealitiesInterwoven attrs) | attrs `is` target = do
     n <- perPlayer 2
-    pure $ toModifiers attrs [DoomThresholdModifier n]
+    toModifiers attrs [DoomThresholdModifier n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage RealitiesInterwoven where

@@ -6,9 +6,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Game.Helpers (getPlayableCards)
 import Arkham.Helpers.Modifiers (withModifiers)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Taboo
@@ -39,16 +39,15 @@ instance RunMessage GearedUp where
           <$> getPlayableCards iattrs (UnpaidCost NoAction) (defaultWindows iid)
       when (notNull cards) do
         ( if tabooed TabooList21 attrs
-            then chooseUpToN iid 5 "Done Playing Items"
-            else chooseOne iid . (Label "Done Playing Items" [] :)
+            then chooseUpToNM iid 5 "Done Playing Items"
+            else chooseOneM iid
           )
-          [ targetLabel
-            (toCardId card)
-            [ Msg.reduceCostOf (attrs.ability 1) card 1
-            , PayCardCost iid card (defaultWindows iid)
-            , DoStep 1 msg'
-            ]
-          | card <- cards
-          ]
+          do
+            unless (tabooed TabooList21 attrs) $ labeled "Done Playing Items" nothing
+            for_ cards \card -> do
+              targeting card do
+                reduceCostOf (attrs.ability 1) card 1
+                push $ PayCardCost iid card (defaultWindows iid)
+                doStep 1 msg'
       pure a
     _ -> GearedUp <$> liftRunMessage msg attrs

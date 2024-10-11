@@ -18,12 +18,12 @@ fireAxe2 :: AssetCard FireAxe2
 fireAxe2 = asset FireAxe2 Cards.fireAxe2
 
 instance HasModifiersFor FireAxe2 where
-  getModifiersFor (InvestigatorTarget iid) (FireAxe2 a) | controlledBy a iid = do
-    toModifiers a . toList <$> runMaybeT do
-      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
-      Action.Fight <- MaybeT getSkillTestAction
-      resourceCount <- lift $ field InvestigatorResources iid
-      DamageDealt 1 <$ guard (resourceCount == 0)
+  getModifiersFor (InvestigatorTarget iid) (FireAxe2 a) | controlledBy a iid = maybeModified a do
+    guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+    Action.Fight <- MaybeT getSkillTestAction
+    resourceCount <- lift $ field InvestigatorResources iid
+    guard $ resourceCount == 0
+    pure [DamageDealt 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FireAxe2 where
@@ -43,6 +43,6 @@ instance RunMessage FireAxe2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #combat 2)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 2)
       pure a
     _ -> FireAxe2 <$> runMessage msg attrs

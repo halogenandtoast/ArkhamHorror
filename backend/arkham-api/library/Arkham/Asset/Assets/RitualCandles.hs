@@ -18,7 +18,7 @@ ritualCandles = asset RitualCandles Cards.ritualCandles
 
 instance HasAbilities RitualCandles where
   getAbilities (RitualCandles x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ restricted x 1 ControlsThis
         $ freeReaction
         $ RevealChaosToken #when You
         $ if tabooed TabooList20 x
@@ -30,9 +30,7 @@ instance RunMessage RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> tokens) _ -> do
       getSkillTestId >>= traverse_ \sid -> do
-        push
-          $ If
-            (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs))
-            [skillTestModifier sid attrs iid (AnySkillValue 1)]
+        enable <- skillTestModifier sid attrs iid (AnySkillValue 1)
+        push $ If (Window.RevealChaosTokenAssetAbilityEffect iid tokens (toId attrs)) [enable]
       pure a
     _ -> RitualCandles <$> runMessage msg attrs

@@ -28,7 +28,7 @@ theGallowsSpectral_170 = location TheGallowsSpectral_170 Cards.theGallowsSpectra
 instance HasModifiersFor TheGallowsSpectral_170 where
   getModifiersFor target (TheGallowsSpectral_170 attrs) | isTarget attrs target = do
     geistCount <- selectCount $ EnemyWithTrait Geist
-    pure $ toModifiers attrs [ShroudModifier geistCount | geistCount > 0]
+    toModifiers attrs [ShroudModifier geistCount | geistCount > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheGallowsSpectral_170 where

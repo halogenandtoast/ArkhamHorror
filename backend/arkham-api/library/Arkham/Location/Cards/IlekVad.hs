@@ -26,7 +26,7 @@ instance HasModifiersFor IlekVad where
     playedCards <- historyPlayedCards <$> getHistory RoundHistory iid
     let cardMatcher = oneOf (map CardWithTrait [Spell, Ritual, Relic])
     let active = none (`cardMatch` cardMatcher) playedCards
-    pure $ toModifiers attrs [ReduceCostOf cardMatcher 1 | here && active]
+    toModifiers attrs [ReduceCostOf cardMatcher 1 | here && active]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities IlekVad where

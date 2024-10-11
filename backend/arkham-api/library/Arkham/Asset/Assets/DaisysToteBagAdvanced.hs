@@ -33,7 +33,7 @@ instance HasAbilities DaisysToteBagAdvanced where
 
 instance HasModifiersFor DaisysToteBagAdvanced where
   getModifiersFor (InvestigatorTarget iid) (DaisysToteBagAdvanced a) | controlledBy a iid = do
-    pure [toModifier a $ CanBecomeFast $ #asset <> #tome]
+    toModifiers a [CanBecomeFast $ #asset <> #tome]
   getModifiersFor _ _ = pure []
 
 slot :: AssetAttrs -> Slot
@@ -59,7 +59,7 @@ daisysToteBagAdvancedEffect = cardEffect DaisysToteBagAdvancedEffect Cards.daisy
 
 instance HasModifiersFor DaisysToteBagAdvancedEffect where
   getModifiersFor target (DaisysToteBagAdvancedEffect attrs) | target == attrs.target = do
-    pure $ toModifiers attrs [BecomesFast FastPlayerWindow]
+    toModifiers attrs [BecomesFast FastPlayerWindow]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisysToteBagAdvancedEffect where

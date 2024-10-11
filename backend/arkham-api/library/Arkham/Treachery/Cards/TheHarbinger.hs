@@ -20,7 +20,7 @@ theHarbinger = treachery TheHarbinger Cards.theHarbinger
 
 instance HasModifiersFor TheHarbinger where
   getModifiersFor (InvestigatorTarget iid) (TheHarbinger a) | Just iid == treacheryOnTopOfDeck a = do
-    pure $ toModifiers a [CannotManipulateDeck]
+    toModifiers a [CannotManipulateDeck]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheHarbinger where

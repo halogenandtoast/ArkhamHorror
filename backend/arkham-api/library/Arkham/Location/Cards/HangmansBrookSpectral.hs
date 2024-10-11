@@ -1,20 +1,15 @@
-module Arkham.Location.Cards.HangmansBrookSpectral (
-  hangmansBrookSpectral,
-  HangmansBrookSpectral (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.HangmansBrookSpectral (hangmansBrookSpectral, HangmansBrookSpectral (..)) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Constants
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (..))
+import Arkham.Modifier
 
 newtype HangmansBrookSpectral = HangmansBrookSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,11 +20,9 @@ hangmansBrookSpectral = location HangmansBrookSpectral Cards.hangmansBrookSpectr
 
 instance HasAbilities HangmansBrookSpectral where
   getAbilities (HangmansBrookSpectral a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ withTooltip
-          "\"Who's bright idea was this, anyway?\""
-          (locationResignAction a)
+      [ withTooltip "\"Who's bright idea was this, anyway?\"" (locationResignAction a)
       , haunted
           "Take 1 damage. Until the end of the round, the above resign ability cannot be triggered."
           a
@@ -37,15 +30,13 @@ instance HasAbilities HangmansBrookSpectral where
       ]
 
 instance RunMessage HangmansBrookSpectral where
-  runMessage msg l@(HangmansBrookSpectral attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0
-        , roundModifier attrs iid (CannotTriggerAbilityMatching $ AbilityIs (toSource attrs) ResignAbility)
-        ]
+  runMessage msg l@(HangmansBrookSpectral attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
+      roundModifier attrs iid (CannotTriggerAbilityMatching $ AbilityIs (toSource attrs) ResignAbility)
       pure l
-    Flip _ _ target | isTarget attrs target -> do
+    Flip _ _ (isTarget attrs -> True) -> do
       regular <- genCard Locations.hangmansBrook
       push $ ReplaceLocation (toId attrs) regular Swap
       pure l
-    _ -> HangmansBrookSpectral <$> runMessage msg attrs
+    _ -> HangmansBrookSpectral <$> liftRunMessage msg attrs

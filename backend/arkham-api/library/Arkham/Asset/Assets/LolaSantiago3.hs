@@ -23,7 +23,7 @@ lolaSantiago3 = ally LolaSantiago3 Cards.lolaSantiago3 (2, 2)
 
 instance HasModifiersFor LolaSantiago3 where
   getModifiersFor (InvestigatorTarget iid) (LolaSantiago3 a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1, SkillModifier #agility 1]
+    toModifiers a [SkillModifier #intellect 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LolaSantiago3 where

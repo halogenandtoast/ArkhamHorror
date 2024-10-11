@@ -31,9 +31,8 @@ instance RunMessage ChicagoTypewriter4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ (getActionsSpent -> actionsSpent) -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      pushAll
-        [ skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat (2 * actionsSpent)]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat (2 * actionsSpent)]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> ChicagoTypewriter4 <$> runMessage msg attrs

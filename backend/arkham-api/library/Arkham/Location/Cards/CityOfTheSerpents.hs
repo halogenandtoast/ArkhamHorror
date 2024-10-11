@@ -23,7 +23,7 @@ cityOfTheSerpents =
 instance HasModifiersFor CityOfTheSerpents where
   getModifiersFor target (CityOfTheSerpents a) | isTarget a target = do
     clueless <- fieldMap LocationClues (== 0) (toId a)
-    pure $ toModifiers a [InVictoryDisplayForCountingVengeance | clueless]
+    toModifiers a [InVictoryDisplayForCountingVengeance | clueless]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CityOfTheSerpents where

@@ -23,7 +23,7 @@ instance HasModifiersFor ValeOfPnath where
   getModifiersFor (InvestigatorTarget iid) (ValeOfPnath a) = do
     here <- iid `isAt` a
     hasClues <- fieldMap LocationClues (> 0) a.id
-    pure $ toModifiers a $ guard (here && hasClues) *> [CannotPlay AnyCard, CannotCommitCards AnyCard]
+    toModifiers a $ guard (here && hasClues) *> [CannotPlay AnyCard, CannotCommitCards AnyCard]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ValeOfPnath where

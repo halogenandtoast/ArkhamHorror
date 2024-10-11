@@ -18,7 +18,7 @@ sebastienMoreau = enemy SebastienMoreau Cards.sebastienMoreau (3, Static 5, 3) (
 
 instance HasModifiersFor SebastienMoreau where
   getModifiersFor target (SebastienMoreau a) | isTarget a target = do
-    pure $ toModifiers a [AttacksCannotBeCancelled]
+    toModifiers a [AttacksCannotBeCancelled]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SebastienMoreau where

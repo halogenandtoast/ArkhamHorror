@@ -1,7 +1,4 @@
-module Arkham.Event.Events.SwiftReflexes (
-  swiftReflexes,
-  SwiftReflexes (..),
-) where
+module Arkham.Event.Events.SwiftReflexes (swiftReflexes, SwiftReflexes (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Classes
@@ -26,13 +23,14 @@ instance RunMessage SwiftReflexes where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iid' <- getActiveInvestigatorId
       turn <- selectJust TurnInvestigator
+      enabled <-
+        turnModifier turn attrs iid
+          $ GiveAdditionalAction
+          $ AdditionalAction "Swift Reflexes" (toSource attrs) #any
+
       pushAll
         $ [SetActiveInvestigator iid | iid /= iid']
-        <> [ turnModifier turn attrs iid
-              $ GiveAdditionalAction
-              $ AdditionalAction "Swift Reflexes" (toSource attrs) #any
-           , PlayerWindow iid [] False
-           ]
+        <> [enabled, PlayerWindow iid [] False]
         <> [SetActiveInvestigator iid' | iid /= iid']
       pure e
     _ -> SwiftReflexes <$> runMessage msg attrs

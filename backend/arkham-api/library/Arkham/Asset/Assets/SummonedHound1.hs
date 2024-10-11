@@ -41,22 +41,20 @@ instance RunMessage SummonedHound1 where
 
       case (fightableEnemies, mDoInvestigate) of
         ([], Nothing) -> error "invalid call"
-        ([], Just doInvestigate) ->
-          pushAll
-            [ skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
-            , toMessage doInvestigate
-            ]
-        (_ : _, Nothing) -> pushAll [skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
+        ([], Just doInvestigate) -> do
+          enabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
+          pushAll [enabled, toMessage doInvestigate]
+        (_ : _, Nothing) -> do
+          enabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
+          pushAll [enabled, doFight]
         (_ : _, Just doInvestigate) -> do
+          intellectEnabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
+          combatEnabled <- skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
           push
             $ chooseOne
               player
-              [ Label
-                  "Investigate"
-                  [ skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #intellect 5)
-                  , toMessage doInvestigate
-                  ]
-              , Label "Fight" [skillTestModifier sid (toAbilitySource attrs 1) iid (BaseSkillOf #combat 5), doFight]
+              [ Label "Investigate" [intellectEnabled, toMessage doInvestigate]
+              , Label "Fight" [combatEnabled, doFight]
               ]
       pure a
     _ -> SummonedHound1 <$> runMessage msg attrs

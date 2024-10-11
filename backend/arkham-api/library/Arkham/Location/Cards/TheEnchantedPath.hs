@@ -29,7 +29,7 @@ instance HasModifiersFor TheEnchantedPath where
   getModifiersFor target (TheEnchantedPath a) | a `is` target = do
     blocked <- selectAny $ locationIs Cards.baseOfTheSteps <> LocationWithAnyClues
     shroud <- selectCount $ "Enchanted Woods" <> UnrevealedLocation
-    pure $ toModifiers a $ [Blocked | blocked] <> [ShroudModifier shroud | locationRevealed a]
+    toModifiers a $ [Blocked | blocked] <> [ShroudModifier shroud | locationRevealed a]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheEnchantedPath where

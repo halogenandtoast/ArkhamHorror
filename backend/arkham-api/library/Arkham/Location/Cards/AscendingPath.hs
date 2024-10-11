@@ -26,7 +26,7 @@ ascendingPath =
 
 instance HasModifiersFor AscendingPath where
   getModifiersFor target (AscendingPath l@LocationAttrs {..}) | isTarget l target = do
-    pure $ toModifiers l [Blocked | not locationRevealed]
+    toModifiers l [Blocked | not locationRevealed]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AscendingPath where

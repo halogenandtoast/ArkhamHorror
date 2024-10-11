@@ -102,7 +102,7 @@ oldBookOfLore3Effect = cardEffect OldBookOfLore3Effect Cards.oldBookOfLore3
 
 instance HasModifiersFor OldBookOfLore3Effect where
   getModifiersFor target@(CardIdTarget cid) (OldBookOfLore3Effect attrs) | attrs.target `is` target = do
-    pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
+    toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage OldBookOfLore3Effect where

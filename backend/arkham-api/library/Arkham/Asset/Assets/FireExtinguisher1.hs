@@ -29,14 +29,16 @@ instance RunMessage FireExtinguisher1 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
+      pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
       sid <- getRandom
       chooseEvade <- toMessage <$> mkChooseEvade sid iid source
+      enabled <- skillTestModifier sid source iid (SkillModifier #agility 3)
       pushAll
-        [ skillTestModifier sid source iid (SkillModifier #agility 3)
+        [ enabled
         , createCardEffect Cards.fireExtinguisher1 Nothing source (SkillTestTarget sid)
         , chooseEvade
         ]

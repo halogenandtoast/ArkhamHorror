@@ -44,7 +44,7 @@ lockpicksEffect = cardEffect LockpicksEffect Cards.lockpicks
 
 instance HasModifiersFor LockpicksEffect where
   getModifiersFor target (LockpicksEffect a) | a.target `is` target = do
-    pure $ toModifiers a [AddSkillValue #agility]
+    toModifiers a [AddSkillValue #agility]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LockpicksEffect where

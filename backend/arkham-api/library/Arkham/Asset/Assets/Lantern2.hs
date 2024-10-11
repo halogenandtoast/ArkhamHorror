@@ -1,9 +1,4 @@
-module Arkham.Asset.Assets.Lantern2 (
-  lantern2,
-  Lantern2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Lantern2 (lantern2, Lantern2 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,6 +8,7 @@ import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Lantern2 = Lantern2 AssetAttrs
@@ -37,10 +33,8 @@ instance RunMessage Lantern2 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       investigation <- mkInvestigate sid iid source
-      pushAll
-        [ skillTestModifier sid source lid (ShroudModifier (-1))
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid source lid (ShroudModifier (-1))
+      pushAll [enabled, toMessage investigation]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2

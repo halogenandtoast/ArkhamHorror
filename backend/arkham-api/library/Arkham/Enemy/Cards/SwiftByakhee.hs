@@ -1,22 +1,15 @@
-module Arkham.Enemy.Cards.SwiftByakhee (
-  swiftByakhee,
-  SwiftByakhee (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SwiftByakhee (swiftByakhee, SwiftByakhee (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Distance
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Id
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype SwiftByakhee = SwiftByakhee EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -24,51 +17,27 @@ newtype SwiftByakhee = SwiftByakhee EnemyAttrs
 
 swiftByakhee :: EnemyCard SwiftByakhee
 swiftByakhee =
-  enemyWith
-    SwiftByakhee
-    Cards.swiftByakhee
-    (2, Static 3, 2)
-    (1, 1)
-    (preyL .~ Prey LowestRemainingSanity)
+  enemyWith SwiftByakhee Cards.swiftByakhee (2, Static 3, 2) (1, 1)
+    $ preyL
+    .~ Prey LowestRemainingSanity
 
 instance HasAbilities SwiftByakhee where
-  getAbilities (SwiftByakhee a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ MovedFromHunter Timing.When
-          $ EnemyWithId
-          $ toId a
-      ]
-
-choosePrey :: EnemyAttrs -> (InvestigatorId, LocationId, Distance) -> UI Message
-choosePrey attrs (iid, pathId, distance) =
-  targetLabel iid
-    $ [noAttack | unDistance distance <= 1]
-    <> [MoveUntil pathId (toTarget attrs)]
- where
-  noAttack =
-    CreateWindowModifierEffect
-      EffectPhaseWindow
-      (EffectModifiers $ toModifiers attrs [CannotAttack])
-      (toSource attrs)
-      (toTarget attrs)
+  getAbilities (SwiftByakhee a) = extend1 a $ mkAbility a 1 $ forced $ MovedFromHunter #when (be a)
 
 instance RunMessage SwiftByakhee where
-  runMessage msg e@(SwiftByakhee attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg e@(SwiftByakhee attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemyLocation <- field EnemyLocation (toId attrs)
-      for_ enemyLocation $ \loc -> do
+      for_ enemyLocation \loc -> do
         prey <- select (enemyPrey attrs)
-        preyWithLocationsAndDistances <- fmap catMaybes $ for prey $ \preyId -> do
-          mlid <- selectOne $ locationWithInvestigator preyId
-          case mlid of
-            Nothing -> pure Nothing
-            Just lid -> do
-              distance <- fromMaybe (Distance 1000) <$> getDistance loc lid
-              pure $ Just (preyId, lid, distance)
-        player <- getPlayer iid
-        push $ chooseOrRunOne player $ map (choosePrey attrs) preyWithLocationsAndDistances
+        preyWithLocationsAndDistances <- forMaybeM prey \preyId -> runMaybeT do
+          lid <- MaybeT $ selectOne $ locationWithInvestigator preyId
+          distance <- lift $ fromMaybe (Distance 1000) <$> getDistance loc lid
+          pure (preyId, lid, distance)
+        chooseOrRunOneM iid do
+          for_ preyWithLocationsAndDistances \(iid', pathId, distance) -> do
+            targeting iid' do
+              when (unDistance distance <= 1) $ phaseModifier attrs attrs CannotAttack
+              moveUntil attrs pathId
       pure e
-    _ -> SwiftByakhee <$> runMessage msg attrs
+    _ -> SwiftByakhee <$> liftRunMessage msg attrs

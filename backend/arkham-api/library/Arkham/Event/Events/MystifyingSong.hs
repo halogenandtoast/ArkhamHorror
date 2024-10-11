@@ -51,7 +51,7 @@ mystifyingSongEffect = cardEffect MystifyingSongEffect Cards.mystifyingSong
 
 instance HasModifiersFor MystifyingSongEffect where
   getModifiersFor (AgendaTarget _) (MystifyingSongEffect a) =
-    pure $ toModifiers a [CannotBeAdvancedByDoomThreshold]
+    toModifiers a [CannotBeAdvancedByDoomThreshold]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MystifyingSongEffect where

@@ -43,10 +43,11 @@ instance RunMessage RecallTheFuture2 where
     When (Msg.RevealChaosToken _ _ token) | Just token.face == chosenChaosToken metadata -> do
       unless (assetExhausted attrs) $ for_ (assetController attrs) $ \iid -> do
         getSkillTestId >>= traverse_ \sid -> do
+          enable <- skillTestModifier sid attrs iid (AnySkillValue 2)
           push
             $ If
               (Window.RevealChaosTokenAssetAbilityEffect iid [token] (toId attrs))
-              [ExhaustThen (toTarget attrs) [skillTestModifier sid attrs iid (AnySkillValue 2)]]
+              [ExhaustThen (toTarget attrs) [enable]]
       pure a
     SkillTestEnds {} ->
       pure . RecallTheFuture2 $ attrs `with` Metadata Nothing

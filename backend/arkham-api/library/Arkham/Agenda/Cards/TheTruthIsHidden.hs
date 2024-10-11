@@ -26,7 +26,7 @@ theTruthIsHidden =
 
 instance HasModifiersFor TheTruthIsHidden where
   getModifiersFor (PhaseTarget MythosPhase) (TheTruthIsHidden attrs) =
-    pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
+    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheTruthIsHidden where

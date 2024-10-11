@@ -25,7 +25,7 @@ hauntedFields = location HauntedFields Cards.hauntedFields 3 (PerPlayer 2)
 instance HasModifiersFor HauntedFields where
   getModifiersFor (EnemyTarget eid) (HauntedFields attrs) = do
     affected <- eid <=~> (enemyAt (toId attrs) <> EnemyWithTrait Spectral)
-    pure $ toModifiers attrs [HorrorDealt 1 | affected]
+    toModifiers attrs [HorrorDealt 1 | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HauntedFields where

@@ -1,20 +1,11 @@
-module Arkham.Event.Events.Decoy (
-  decoy,
-  Decoy (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Decoy (decoy, Decoy (..)) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted hiding (PlayCard)
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Timing qualified as Timing
+import Arkham.Modifier
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 
@@ -29,22 +20,22 @@ instance HasAbilities Decoy where
   getAbilities (Decoy a) =
     [ withTooltip
         "{reaction}  When you play Decoy, increase its cost by 2: Change \"a non-Elite enemy\" to \"up to 2 non-Elite enemies.\""
-        $ restrictedAbility a 1 InYourHand
+        $ restricted a 1 InYourHand
         $ ReactionAbility
-          (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
+          (PlayCard #when You (basic $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     , withTooltip
         "{reaction} When you play Decoy, increase its cost by 2: Change \"at your location\" to \"at a location up to 2 connections away.\""
-        $ restrictedAbility a 2 InYourHand
+        $ restricted a 2 InYourHand
         $ ForcedWhen (Negate $ EnemyCriteria $ EnemyExists $ EnemyAt YourLocation <> NonEliteEnemy)
         $ ReactionAbility
-          (PlayCard Timing.When You (BasicCardMatch $ CardWithId $ toCardId a))
+          (PlayCard #when You (basic $ CardWithId $ toCardId a))
           (IncreaseCostOfThis (toCardId a) 2)
     ]
 
 instance RunMessage Decoy where
-  runMessage msg e@(Decoy attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(Decoy attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
       modifiers' <- getModifiers (toTarget $ toCardId attrs)
 
       let
@@ -66,49 +57,26 @@ instance RunMessage Decoy where
       enemies <-
         select
           $ NonEliteEnemy
-          <> EnemyOneOf
-            ( EnemyAt (locationWithInvestigator iid)
-                : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
-                  | upToTwoAway
-                  , n <- [1 .. 2]
-                  ]
+          <> oneOf
+            ( at_ (locationWithInvestigator iid)
+                : [at_ (LocationWithDistanceFrom n Anywhere) | upToTwoAway, n <- [1 .. 2]]
             )
 
-      player <- getPlayer iid
       let
-        targets = [targetLabel enemy [EnemyEvaded iid enemy] | enemy <- enemies]
-        evadeOneEnemy = chooseOrRunOne player targets
-
-      push
-        $ if enemyCount == 2 && length targets > 1
-          then
-            chooseOne
-              player
-              [Label "Evade 1 enemy" [evadeOneEnemy], Label "Evade 2 enemies" [chooseOrRunN player 2 targets]]
-          else evadeOneEnemy
+        performEvade :: ReverseQueue m => ChooseT m ()
+        performEvade = targets enemies $ automaticallyEvadeEnemy iid
+      if enemyCount == 2 && length enemies > 1
+        then chooseOneM iid do
+          labeled "Evade 1 enemy" do
+            chooseOrRunOneM iid performEvade
+          labeled "Evade 2 enemies" do
+            chooseOrRunNM iid 2 performEvade
+        else chooseOrRunOneM iid performEvade
       pure e
-    InHand _ (UseCardAbility _ (isSource attrs -> True) 1 _ _) -> do
-      push
-        $ CreateWindowModifierEffect
-          EffectEventWindow
-          ( EffectModifiers
-              $ toModifiers
-                attrs
-                [MetaModifier $ object ["enemyCount" .= (2 :: Int)]]
-          )
-          (toSource attrs)
-          (CardIdTarget $ toCardId attrs)
+    InHand _ (UseThisAbility _ (isSource attrs -> True) 1) -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["enemyCount" .= (2 :: Int)]
       pure e
-    InHand _ (UseCardAbility _ (isSource attrs -> True) 2 _ _) -> do
-      push
-        $ CreateWindowModifierEffect
-          EffectEventWindow
-          ( EffectModifiers
-              $ toModifiers
-                attrs
-                [MetaModifier $ object ["upToTwoAway" .= True]]
-          )
-          (toSource attrs)
-          (CardIdTarget $ toCardId attrs)
+    InHand _ (UseThisAbility _ (isSource attrs -> True) 2) -> do
+      eventModifier attrs (toCardId attrs) $ MetaModifier $ object ["upToTwoAway" .= True]
       pure e
-    _ -> Decoy <$> runMessage msg attrs
+    _ -> Decoy <$> liftRunMessage msg attrs

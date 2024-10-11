@@ -63,8 +63,7 @@ instance HasModifiersFor TheEyeOfTruth5Effect where
             card <- toTitle <$> getCard cardId
             inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId cardId
             treacheryCard <- fieldMap TreacheryCard toTitle tid
-            pure
-              $ toModifiers a
+            toModifiers a
               $ guard (card == treacheryCard && inVictory)
               *> [AddSkillIcons [#wild, #wild, #wild, #wild]]
           else pure []

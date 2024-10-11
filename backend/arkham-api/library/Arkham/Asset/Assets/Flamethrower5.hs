@@ -30,10 +30,8 @@ instance RunMessage Flamethrower5 where
       enemies <- withMaybeMaxField Field.EnemyFight =<< select (enemyEngagedWith iid)
       chooseFight <-
         toMessage . setTarget attrs <$> mkChooseFightMatch sid iid source (oneOf $ map EnemyWithId enemies)
-      pushAll
-        [ skillTestModifier sid attrs iid (SkillModifier #combat 4)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat 4)
+      pushAll [enabled, chooseFight]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       damage <- damageValueFor 4 iid DamageForEnemy

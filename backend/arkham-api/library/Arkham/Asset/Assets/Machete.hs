@@ -15,13 +15,12 @@ machete :: AssetCard Machete
 machete = asset Machete Cards.machete
 
 instance HasModifiersFor Machete where
-  getModifiersFor (InvestigatorTarget iid) (Machete attrs) = do
-    toModifiers attrs . toList <$> runMaybeT do
-      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      guardM $ (== [eid]) <$> lift (select $ enemyEngagedWith iid)
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      pure $ DamageDealt 1
+  getModifiersFor (InvestigatorTarget iid) (Machete attrs) = maybeModified attrs do
+    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+    EnemyTarget eid <- MaybeT getSkillTestTarget
+    guardM $ (== [eid]) <$> lift (select $ enemyEngagedWith iid)
+    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+    pure [DamageDealt 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Machete where
@@ -33,6 +32,7 @@ instance RunMessage Machete where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
+      pushAll [enabled, chooseFight]
       pure a
     _ -> Machete <$> runMessage msg attrs

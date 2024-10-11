@@ -32,7 +32,7 @@ instance RunMessage MarinersCompass2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     FailedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       pushWhen attrs.exhausted $ ready attrs
@@ -40,6 +40,6 @@ instance RunMessage MarinersCompass2 where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       noResources <- fieldNone InvestigatorResources iid
       withSkillTest \sid ->
-        pushWhen noResources $ skillTestModifier sid attrs iid (DiscoveredClues 1)
+        when noResources $ pushM $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure a
     _ -> MarinersCompass2 <$> runMessage msg attrs

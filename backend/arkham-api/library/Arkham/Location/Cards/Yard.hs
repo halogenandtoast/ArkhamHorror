@@ -31,7 +31,7 @@ instance HasModifiersFor Yard where
     case (mAction, mSource, mInvestigator) of
       (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
         horror <- field InvestigatorHorror iid
-        pure $ toModifiers attrs [ShroudModifier horror | locationRevealed attrs]
+        toModifiers attrs [ShroudModifier horror | locationRevealed attrs]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

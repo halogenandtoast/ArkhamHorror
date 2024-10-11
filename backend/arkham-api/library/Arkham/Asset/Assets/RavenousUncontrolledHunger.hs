@@ -28,7 +28,7 @@ instance HasAbilities RavenousUncontrolledHunger where
 instance HasModifiersFor RavenousUncontrolledHunger where
   getModifiersFor (InvestigatorTarget iid) (RavenousUncontrolledHunger a) | a `controlledBy` iid = do
     n <- fieldMap AssetCardsUnderneath (min 5 . length) a.id
-    pure $ toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
+    toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage RavenousUncontrolledHunger where

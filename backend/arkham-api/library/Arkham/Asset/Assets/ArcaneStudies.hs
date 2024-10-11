@@ -31,10 +31,10 @@ instance RunMessage ArcaneStudies where
   runMessage msg a@(ArcaneStudies attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        push $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> do
-        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     _ -> ArcaneStudies <$> runMessage msg attrs

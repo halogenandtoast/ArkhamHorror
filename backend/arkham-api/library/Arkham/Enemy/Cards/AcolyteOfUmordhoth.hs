@@ -23,7 +23,7 @@ instance HasModifiersFor AcolyteOfUmordhoth where
   getModifiersFor target (AcolyteOfUmordhoth a) | a `is` target = do
     investigators <- select $ investigatorEngagedWith (toId a)
     anyWithoutCards <- or <$> traverse (fieldMap InvestigatorHand null) investigators
-    pure $ toModifiers a [CannotBeEvaded | anyWithoutCards]
+    toModifiers a [CannotBeEvaded | anyWithoutCards]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AcolyteOfUmordhoth where

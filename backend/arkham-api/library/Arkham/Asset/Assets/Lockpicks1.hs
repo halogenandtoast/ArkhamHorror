@@ -37,7 +37,7 @@ lockpicks1Effect = cardEffect Lockpicks1Effect Cards.lockpicks1
 
 instance HasModifiersFor Lockpicks1Effect where
   getModifiersFor target (Lockpicks1Effect a) | a.target `is` target = do
-    pure $ toModifiers a [AddSkillValue #agility]
+    toModifiers a [AddSkillValue #agility]
   getModifiersFor _ _ = pure []
 
 handleEffect :: ReverseQueue m => EffectAttrs -> m ()

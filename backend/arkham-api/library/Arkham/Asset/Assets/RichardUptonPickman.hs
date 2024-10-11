@@ -18,11 +18,11 @@ richardUptonPickman :: AssetCard RichardUptonPickman
 richardUptonPickman = assetWith RichardUptonPickman Cards.richardUptonPickman (healthL ?~ 3)
 
 instance HasModifiersFor RichardUptonPickman where
-  getModifiersFor (InvestigatorTarget _) (RichardUptonPickman a) = do
-    toModifiers a . toList <$> runMaybeT do
-      guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
-      let n = count (`cardMatch` IsEncounterCard) $ assetCardsUnderneath a
-      guard (n > 0) $> DamageDealt n
+  getModifiersFor (InvestigatorTarget _) (RichardUptonPickman a) = maybeModified a do
+    guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
+    let n = count (`cardMatch` IsEncounterCard) $ assetCardsUnderneath a
+    guard (n > 0)
+    pure [DamageDealt n]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RichardUptonPickman where

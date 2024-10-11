@@ -23,11 +23,11 @@ instance HasModifiersFor BeneathTheLodge where
     case (mSource, mInvestigator) of
       (Just source, Just iid) | isSource attrs source -> do
         hasKey <- fieldMap InvestigatorKeys notNull iid
-        pure $ toModifiers attrs [Difficulty 1 | hasKey]
+        toModifiers attrs [Difficulty 1 | hasKey]
       _ -> pure []
   getModifiersFor target (BeneathTheLodge attrs) | isTarget attrs target = do
     hasKey <- maybe (pure False) (fieldMap InvestigatorKeys notNull) (treacheryOwner attrs)
-    pure $ toModifiers attrs $ [AddKeyword Keyword.Peril | hasKey]
+    toModifiers attrs $ [AddKeyword Keyword.Peril | hasKey]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BeneathTheLodge where

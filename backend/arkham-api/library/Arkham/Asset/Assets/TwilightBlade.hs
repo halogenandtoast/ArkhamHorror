@@ -25,13 +25,13 @@ instance HasModifiersFor TwilightBlade where
       case find ((== cid) . toCardId) underDiana of
         Just card -> do
           let isAffected = card `cardMatch` CardWithOneOf [CardWithType EventType, CardWithType SkillType]
-          pure $ toModifiers a [AdditionalCost (ExhaustCost $ toTarget a) | isAffected]
+          toModifiers a [AdditionalCost (ExhaustCost $ toTarget a) | isAffected]
         _ -> pure []
     _ -> pure []
   getModifiersFor (InvestigatorTarget iid) (TwilightBlade a) | a `controlledBy` iid = do
     underDiana <- field InvestigatorCardsUnderneath iid
     let eventsAndSkills = filter (`cardMatch` (CardWithOneOf [CardWithType EventType, CardWithType SkillType])) underDiana
-    pure $ toModifiers a $ map AsIfInHand eventsAndSkills
+    toModifiers a $ map AsIfInHand eventsAndSkills
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TwilightBlade where

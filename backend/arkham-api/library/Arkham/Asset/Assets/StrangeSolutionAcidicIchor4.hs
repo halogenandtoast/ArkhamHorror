@@ -24,11 +24,11 @@ instance HasAbilities StrangeSolutionAcidicIchor4 where
     [fightAbility attrs 1 (assetUseCost attrs Supply 1) ControlsThis]
 
 instance HasModifiersFor StrangeSolutionAcidicIchor4 where
-  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a) | controlledBy a iid = do
-    toModifiers a . fromMaybe [] <$> runMaybeT do
-      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
-      Action.Fight <- MaybeT getSkillTestAction
-      pure [BaseSkillOf SkillCombat 6, DamageDealt $ if tabooed TabooList20 a then 1 else 2]
+  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionAcidicIchor4 a) = maybeModified a do
+    guard $ controlledBy a iid
+    guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+    Action.Fight <- MaybeT getSkillTestAction
+    pure [BaseSkillOf SkillCombat 6, DamageDealt $ if tabooed TabooList20 a then 1 else 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StrangeSolutionAcidicIchor4 where

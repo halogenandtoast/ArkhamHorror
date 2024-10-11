@@ -19,7 +19,7 @@ cityOfTheMoonBeasts = location CityOfTheMoonBeasts Cards.cityOfTheMoonBeasts 0 (
 instance HasModifiersFor CityOfTheMoonBeasts where
   getModifiersFor target (CityOfTheMoonBeasts attrs) | attrs `is` target = do
     x <- getMaxAlarmLevel
-    pure $ toModifiers attrs [ShroudModifier x]
+    toModifiers attrs [ShroudModifier x]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CityOfTheMoonBeasts where

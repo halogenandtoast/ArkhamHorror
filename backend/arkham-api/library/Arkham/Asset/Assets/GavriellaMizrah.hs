@@ -22,7 +22,7 @@ gavriellaMizrah = allyWith GavriellaMizrah Cards.gavriellaMizrah (4, 1) (isStory
 
 instance HasModifiersFor GavriellaMizrah where
   getModifiersFor (InvestigatorTarget iid) (GavriellaMizrah a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #combat 1]
+    toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GavriellaMizrah where

@@ -19,7 +19,7 @@ silasBishop = enemy SilasBishop Cards.silasBishop (3, PerPlayer 6, 7) (2, 2)
 instance HasModifiersFor SilasBishop where
   getModifiersFor target (SilasBishop attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [CannotMakeAttacksOfOpportunity]
+        toModifiers attrs [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SilasBishop where

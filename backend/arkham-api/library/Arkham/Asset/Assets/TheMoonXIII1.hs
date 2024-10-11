@@ -15,7 +15,7 @@ theMoonXiii1 = asset TheMoonXIII1 Cards.theMoonXiii1
 
 instance HasModifiersFor TheMoonXIII1 where
   getModifiersFor (InvestigatorTarget iid) (TheMoonXIII1 a) = do
-    pure $ toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheMoonXIII1 where

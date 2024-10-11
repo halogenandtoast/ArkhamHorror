@@ -27,16 +27,13 @@ planningTheEscape =
 instance HasModifiersFor PlanningTheEscape where
   getModifiersFor (LocationTarget lid) (PlanningTheEscape attrs) = do
     targets <- select UnrevealedLocation
-    pure
-      [ toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)
-      | lid `elem` targets
-      ]
+    toModifiers attrs [TraitRestrictedModifier ArkhamAsylum Blank | lid `elem` targets]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PlanningTheEscape where
   getAbilities (PlanningTheEscape x)
     | onSide A x =
-        [ restrictedAbility
+        [ restricted
             x
             1
             ( RememberedAtLeast

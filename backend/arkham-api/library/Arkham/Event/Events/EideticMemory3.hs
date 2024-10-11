@@ -61,9 +61,9 @@ eideticMemory3Effect = cardEffect EideticMemory3Effect Cards.eideticMemory3
 instance HasModifiersFor EideticMemory3Effect where
   getModifiersFor (EventTarget eid) (EideticMemory3Effect a) = do
     cardId <- field EventCardId eid
-    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
+    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
   getModifiersFor (CardIdTarget cardId) (EideticMemory3Effect a) = do
-    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
+    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EideticMemory3Effect where

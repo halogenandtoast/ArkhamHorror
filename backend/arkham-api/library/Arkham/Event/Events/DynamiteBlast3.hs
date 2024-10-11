@@ -1,7 +1,5 @@
 module Arkham.Event.Events.DynamiteBlast3 where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
@@ -9,6 +7,7 @@ import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DynamiteBlast3 = DynamiteBlast3 EventAttrs
@@ -29,11 +28,12 @@ instance RunMessage DynamiteBlast3 where
         investigatorIds <- select $ investigatorAt lid
         if null enemyIds && null investigatorIds
           then pure Nothing
-          else
+          else do
+            animation <- uiEffect eid lid Explosion
             pure
               $ Just
                 ( lid
-                , uiEffect eid lid Explosion
+                , animation
                     : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
                       <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
                 )

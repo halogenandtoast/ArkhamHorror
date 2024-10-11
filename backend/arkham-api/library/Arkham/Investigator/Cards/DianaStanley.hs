@@ -33,7 +33,7 @@ dianaStanley =
 instance HasModifiersFor DianaStanley where
   getModifiersFor target (DianaStanley a) | isTarget a target = do
     n <- fieldMap InvestigatorCardsUnderneath length (toId a)
-    pure $ toModifiers a [SkillModifier #willpower n | n > 0]
+    toModifiers a [SkillModifier #willpower n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DianaStanley where

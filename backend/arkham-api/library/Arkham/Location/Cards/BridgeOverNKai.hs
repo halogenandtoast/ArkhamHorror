@@ -22,7 +22,7 @@ bridgeOverNKai =
 instance HasModifiersFor BridgeOverNKai where
   getModifiersFor target (BridgeOverNKai a) | isTarget a target = do
     n <- getVengeanceInVictoryDisplay
-    pure $ toModifiers a [ShroudModifier n]
+    toModifiers a [ShroudModifier n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BridgeOverNKai where

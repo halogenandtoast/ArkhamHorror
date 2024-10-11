@@ -62,7 +62,7 @@ instance HasModifiersFor IchtacaScionOfYigEffect where
   getModifiersFor (ChaosTokenTarget token) (IchtacaScionOfYigEffect a) | chaosTokenFace token == Cultist = do
     getSkillTestId >>= \case
       Just sid | isTarget sid a.target -> do
-        pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
+        toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

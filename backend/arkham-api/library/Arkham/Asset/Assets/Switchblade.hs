@@ -24,6 +24,6 @@ instance RunMessage Switchblade where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid ->
-        pushWhen (n >= 2) $ skillTestModifier sid attrs iid (DamageDealt 1)
+        when (n >= 2) $ pushM $ skillTestModifier sid attrs iid (DamageDealt 1)
       pure a
     _ -> Switchblade <$> runMessage msg attrs

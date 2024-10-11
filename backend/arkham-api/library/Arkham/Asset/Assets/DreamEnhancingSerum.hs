@@ -13,7 +13,7 @@ import Arkham.Capability
 import Arkham.Matcher
 
 newtype DreamEnhancingSerum = DreamEnhancingSerum AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamEnhancingSerum :: AssetCard DreamEnhancingSerum
@@ -21,12 +21,11 @@ dreamEnhancingSerum = asset DreamEnhancingSerum Cards.dreamEnhancingSerum
 
 instance HasModifiersFor DreamEnhancingSerum where
   getModifiersFor (InvestigatorTarget iid) (DreamEnhancingSerum a) =
-    pure
-      $ toModifiers
-        a
-        [ OnlyFirstCopyCardCountsTowardMaximumHandSize
-        | a `controlledBy` iid
-        ]
+    toModifiers
+      a
+      [ OnlyFirstCopyCardCountsTowardMaximumHandSize
+      | a `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 -- TODO: No good way to handle reveal

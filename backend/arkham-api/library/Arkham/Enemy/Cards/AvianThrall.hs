@@ -27,7 +27,7 @@ instance HasModifiersFor AvianThrall where
       (Just source, Just Action.Fight) -> do
         traits <- sourceTraits source
         let validTraits = [Ranged, Firearm, Spell]
-        pure $ toModifiers attrs [Modifier.EnemyFight (-3) | any (`elem` validTraits) traits]
+        toModifiers attrs [Modifier.EnemyFight (-3) | any (`elem` validTraits) traits]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

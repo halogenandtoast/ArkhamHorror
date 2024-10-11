@@ -19,7 +19,8 @@ instance RunMessage SweepingKick1 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
-      pushAll [skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1], chooseFight]
+      enabled <- skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
+      pushAll [enabled, chooseFight]
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       mSkillTestTarget <- getSkillTestTarget

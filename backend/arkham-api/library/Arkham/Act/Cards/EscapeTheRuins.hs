@@ -27,7 +27,7 @@ instance HasModifiersFor EscapeTheRuins where
   getModifiersFor (EnemyTarget eid) (EscapeTheRuins a) = do
     n <- getVengeanceInVictoryDisplay
     isSerpent <- fieldP EnemyTraits (elem Serpent) eid
-    pure $ toModifiers a [EnemyEvade 1 | n >= 3 && isSerpent]
+    toModifiers a [EnemyEvade 1 | n >= 3 && isSerpent]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EscapeTheRuins where

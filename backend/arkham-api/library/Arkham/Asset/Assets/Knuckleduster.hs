@@ -19,12 +19,11 @@ instance HasAbilities Knuckleduster where
   getAbilities (Knuckleduster a) = [fightAbility a 1 mempty ControlsThis]
 
 instance HasModifiersFor Knuckleduster where
-  getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = do
-    toModifiers attrs . toList <$> runMaybeT do
-      guardM $ isTarget eid <$> MaybeT getSkillTestTarget
-      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-      Action.Fight <- MaybeT getSkillTestAction
-      pure $ AddKeyword Keyword.Retaliate
+  getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = maybeModified attrs do
+    guardM $ isTarget eid <$> MaybeT getSkillTestTarget
+    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+    Action.Fight <- MaybeT getSkillTestAction
+    pure [AddKeyword Keyword.Retaliate]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Knuckleduster where
@@ -33,6 +32,7 @@ instance RunMessage Knuckleduster where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (DamageDealt 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (DamageDealt 1)
+      pushAll [enabled, chooseFight]
       pure a
     _ -> Knuckleduster <$> runMessage msg attrs

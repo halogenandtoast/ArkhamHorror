@@ -1,10 +1,4 @@
-module Arkham.Event.Events.Marksmanship1 (
-  marksmanship1,
-  marksmanship1Effect,
-  Marksmanship1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Marksmanship1 (marksmanship1, marksmanship1Effect, Marksmanship1 (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -17,7 +11,7 @@ import Arkham.Event.Runner hiding (targetL)
 import Arkham.Game.Helpers
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher hiding (EventCard)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -45,43 +39,20 @@ marksmanship1 :: EventCard Marksmanship1
 marksmanship1 = event Marksmanship1 Cards.marksmanship1
 
 instance HasModifiersFor Marksmanship1 where
-  getModifiersFor (AbilityTarget iid ability) (Marksmanship1 a)
-    | eventOwner a == iid =
-        if Action.Fight `elem` abilityActions ability
-          then do
-            traits <- sourceTraits (abilitySource ability)
-            if any (`elem` traits) [Firearm, Ranged]
-              then do
-                mlid <- selectOne $ locationWithInvestigator iid
-                case mlid of
-                  Nothing -> pure []
-                  Just lid -> do
-                    isPlayable <-
-                      getIsPlayable
-                        iid
-                        (InvestigatorSource iid)
-                        (UnpaidCost NeedsAction)
-                        [mkWindow Timing.When DoNotCheckWindow]
-                        (toCard a)
-                    pure
-                      $ toModifiers
-                        a
-                        [ CanModify
-                          $ EnemyFightActionCriteria
-                          $ CriteriaOverride
-                          $ EnemyCriteria
-                          $ ThisEnemy
-                          $ EnemyWithoutModifier CannotBeAttacked
-                          <> EnemyAt
-                            ( LocationMatchAny
-                                [ LocationWithId lid
-                                , ConnectedTo $ LocationWithId lid
-                                ]
-                            )
-                        | isPlayable
-                        ]
-              else pure []
-          else pure []
+  getModifiersFor (AbilityTarget iid ability) (Marksmanship1 a) = maybeModified a do
+    guard $ eventOwner a == iid
+    guard $ Action.Fight `elem` abilityActions ability
+    traits <- sourceTraits (abilitySource ability)
+    guard $ any (`elem` traits) [Firearm, Ranged]
+    lid <- MaybeT $ selectOne $ locationWithInvestigator iid
+    liftGuardM $ getIsPlayable iid iid (UnpaidCost NeedsAction) [mkWhen DoNotCheckWindow] (toCard a)
+    pure
+      [ CanModify
+          $ EnemyFightActionCriteria
+          $ CriteriaOverride
+          $ EnemyCriteria
+          $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected $ be lid))
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Marksmanship1 where
@@ -109,46 +80,36 @@ marksmanship1Effect = cardEffect Marksmanship1Effect Cards.marksmanship1
 
 instance HasModifiersFor Marksmanship1Effect where
   getModifiersFor (EnemyTarget eid) (Marksmanship1Effect a) =
-    case effectTarget a of
+    case a.target of
       InvestigatorTarget _ ->
-        pure
-          $ toModifiers
-            a
-            [ EnemyFightActionCriteria
-                $ CriteriaOverride
-                $ AnyCriterion
-                  [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
-                <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
-            ]
+        toModifiers
+          a
+          [ EnemyFightActionCriteria
+              $ CriteriaOverride
+              $ AnyCriterion [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
+              <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+          ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
     FightEnemy sid iid eid _ _ _ _ -> do
-      ignored <-
-        selectAny $ EnemyWithId eid <> EnemyOneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
-      ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect effectSource)]
-      pushAll
-        $ skillTestModifiers
-          sid
-          (toSource attrs)
-          (InvestigatorTarget iid)
-          [IgnoreRetaliate, IgnoreAloof]
-        : [ignoreWindow | ignored]
+      ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
+      ignoreWindow <- checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource]
+      enabled <- skillTestModifiers sid attrs iid [IgnoreRetaliate, IgnoreAloof]
+
+      pushAll $ enabled : [ignoreWindow | ignored]
       pure . Marksmanship1Effect $ attrs & targetL .~ EnemyTarget eid
-    PassedSkillTest iid (Just Action.Fight) _ SkillTestInitiatorTarget {} _ _ ->
-      do
-        mSkillTestTarget <- getSkillTestTarget
-        for_ mSkillTestTarget $ \case
-          target@(EnemyTarget eid) | effectTarget == target -> do
-            engaged <- eid <=~> enemyEngagedWith iid
-            unless engaged do
-              withSkillTest \sid ->
-                push $ skillTestModifier sid attrs (InvestigatorTarget iid) (DamageDealt 1)
-          _ -> pure ()
-        pure e
+    PassedSkillTest iid (Just Action.Fight) _ SkillTestInitiatorTarget {} _ _ -> do
+      mSkillTestTarget <- getSkillTestTarget
+      for_ mSkillTestTarget $ \case
+        target@(EnemyTarget eid) | effectTarget == target -> do
+          engaged <- eid <=~> enemyEngagedWith iid
+          unless engaged do
+            withSkillTest \sid -> pushM $ skillTestModifier sid attrs iid (DamageDealt 1)
+        _ -> pure ()
+      pure e
     SkillTestEnds _ _ _ -> do
       push $ DisableEffect effectId
       pure e

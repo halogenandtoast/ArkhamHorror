@@ -24,7 +24,7 @@ ravenousControlledHunger = asset RavenousControlledHunger Cards.ravenousControll
 instance HasModifiersFor RavenousControlledHunger where
   getModifiersFor (InvestigatorTarget iid) (RavenousControlledHunger a) | a `controlledBy` iid = do
     n <- fieldMap AssetCardsUnderneath (min 5 . length) a.id
-    pure $ toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
+    toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RavenousControlledHunger where

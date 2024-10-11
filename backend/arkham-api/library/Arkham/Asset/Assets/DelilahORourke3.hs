@@ -24,7 +24,7 @@ delilahORourke3 = ally DelilahORourke3 Cards.delilahORourke3 (3, 2)
 
 instance HasModifiersFor DelilahORourke3 where
   getModifiersFor (InvestigatorTarget iid) (DelilahORourke3 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
+    toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DelilahORourke3 where

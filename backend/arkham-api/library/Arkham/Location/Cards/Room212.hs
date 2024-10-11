@@ -28,7 +28,7 @@ room212 = locationWith Room212 Cards.room212 4 (PerPlayer 2) (labelL .~ "room212
 
 instance HasModifiersFor Room212 where
   getModifiersFor target (Room212 attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [Blocked | unrevealed attrs]
+    toModifiers attrs [Blocked | unrevealed attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Room212 where

@@ -64,10 +64,10 @@ thePaintedWorldEffect = cardEffect ThePaintedWorldEffect Cards.thePaintedWorld
 instance HasModifiersFor ThePaintedWorldEffect where
   getModifiersFor (EventTarget eid) (ThePaintedWorldEffect a@EffectAttrs {..}) = do
     cardId <- field EventCardId eid
-    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor (CardIdTarget cardId) (ThePaintedWorldEffect a@EffectAttrs {..}) = do
     -- Mainly used for cards like Crystallizer of Dreams that work with After you play effects
-    pure $ toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
+    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == effectTarget]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ThePaintedWorldEffect where

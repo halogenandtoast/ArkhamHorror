@@ -27,13 +27,10 @@ undimensionedAndUnseenTabletToken =
 instance HasModifiersFor UndimensionedAndUnseenTabletToken where
   getModifiersFor (ChaosTokenTarget token) (UndimensionedAndUnseenTabletToken attrs) | token.face == #tablet = do
     difficulty <- scenarioField ScenarioDifficulty
-    pure
-      [ toModifier
-          attrs
-          $ ChangeChaosTokenModifier
-          $ if difficulty `elem` [Easy, Standard]
-            then NegativeModifier 4
-            else AutoFailModifier
+    toModifiers
+      attrs
+      [ ChangeChaosTokenModifier
+          $ if difficulty `elem` [Easy, Standard] then NegativeModifier 4 else AutoFailModifier
       ]
   getModifiersFor _ _ = pure []
 

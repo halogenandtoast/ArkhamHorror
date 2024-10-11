@@ -22,7 +22,7 @@ selfSacrifice = skill SelfSacrifice Cards.selfSacrifice
 
 instance HasModifiersFor SelfSacrifice where
   getModifiersFor (InvestigatorTarget iid) (SelfSacrifice attrs) = do
-    pure $ toModifiers attrs [ResolvesFailedEffects | attrs.controller == iid]
+    toModifiers attrs [ResolvesFailedEffects | attrs.controller == iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SelfSacrifice where

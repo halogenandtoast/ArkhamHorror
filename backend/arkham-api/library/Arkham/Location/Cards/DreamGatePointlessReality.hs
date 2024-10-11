@@ -27,12 +27,12 @@ dreamGatePointlessReality = location DreamGatePointlessReality Cards.dreamGatePo
 
 instance HasModifiersFor DreamGatePointlessReality where
   getModifiersFor target (DreamGatePointlessReality a) | a `is` target = do
-    pure $ toModifiers a [CannotBeEnteredBy AnyEnemy]
+    toModifiers a [CannotBeEnteredBy AnyEnemy]
   getModifiersFor (InvestigatorTarget iid) (DreamGatePointlessReality a) = do
     notLuke <- iid <!=~> investigatorIs Investigators.lukeRobinson
-    pure $ toModifiers a [CannotEnter (toId a) | notLuke]
+    toModifiers a [CannotEnter (toId a) | notLuke]
   getModifiersFor (EnemyTarget _) (DreamGatePointlessReality a) = do
-    pure $ toModifiers a [CannotSpawnIn (be a)]
+    toModifiers a [CannotSpawnIn (be a)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamGatePointlessReality where

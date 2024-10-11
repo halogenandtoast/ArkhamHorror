@@ -24,7 +24,7 @@ instance HasModifiersFor TheBlackCore where
     n <- fieldMap LocationTokens (countTokens Depth) attrs.id
     anyClues <-
       fieldMap LocationClues (> 0) =<< selectJust (locationIs Cards.cavernsBeneathTheMoonDarkSide)
-    pure $ toModifiers attrs $ ShroudModifier n : [Blocked | anyClues]
+    toModifiers attrs $ ShroudModifier n : [Blocked | anyClues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBlackCore where

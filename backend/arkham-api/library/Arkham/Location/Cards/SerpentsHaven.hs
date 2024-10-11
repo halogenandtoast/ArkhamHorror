@@ -19,7 +19,7 @@ serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
 instance HasModifiersFor SerpentsHaven where
   getModifiersFor (EnemyTarget eid) (SerpentsHaven a) = do
     isSerpent <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
-    pure $ toModifiers a [EnemyFight 1 | isSerpent]
+    toModifiers a [EnemyFight 1 | isSerpent]
   getModifiersFor _ _ = pure []
 
 -- NOTE: Because an explore will move you to Serpent's Haven, it will trigger

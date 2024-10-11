@@ -22,7 +22,7 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types
 
 newtype StrangeOccurences = StrangeOccurences ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 strangeOccurences :: ActCard StrangeOccurences
@@ -39,12 +39,11 @@ instance HasModifiersFor StrangeOccurences where
           selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
         treacheriesDrawnCount <-
           length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
-        pure
-          $ toModifiers
-            a
-            [ AddKeyword Keyword.Surge
-            | atIchtacasDestination && treacheriesDrawnCount == 1
-            ]
+        toModifiers
+          a
+          [ AddKeyword Keyword.Surge
+          | atIchtacasDestination && treacheriesDrawnCount == 1
+          ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

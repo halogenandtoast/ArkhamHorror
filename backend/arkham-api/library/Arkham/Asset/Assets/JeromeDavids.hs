@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 
 newtype JeromeDavids = JeromeDavids AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jeromeDavids :: AssetCard JeromeDavids
@@ -17,7 +17,7 @@ jeromeDavids =
 
 instance HasModifiersFor JeromeDavids where
   getModifiersFor (InvestigatorTarget iid) (JeromeDavids a) =
-    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
+    toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeromeDavids where

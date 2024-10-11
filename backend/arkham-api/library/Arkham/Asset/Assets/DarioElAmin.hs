@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype DarioElAmin = DarioElAmin AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darioElAmin :: AssetCard DarioElAmin
@@ -18,8 +18,7 @@ darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 instance HasModifiersFor DarioElAmin where
   getModifiersFor (InvestigatorTarget iid) (DarioElAmin attrs) | attrs `controlledBy` iid = do
     resources <- field InvestigatorResources iid
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard (resources >= 10)
       *> [SkillModifier #willpower 1, SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []

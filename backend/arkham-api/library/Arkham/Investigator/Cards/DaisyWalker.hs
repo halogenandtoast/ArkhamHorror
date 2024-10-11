@@ -1,20 +1,16 @@
-module Arkham.Investigator.Cards.DaisyWalker (
-  DaisyWalker (..),
-  daisyWalker,
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.DaisyWalker (DaisyWalker (..), daisyWalker) where
 
 import Arkham.Action.Additional
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 daisyWalker :: InvestigatorCard DaisyWalker
 daisyWalker =
@@ -28,13 +24,12 @@ instance HasChaosTokenValue DaisyWalker where
 
 instance HasModifiersFor DaisyWalker where
   getModifiersFor target (DaisyWalker a) | a `is` target = do
-    pure
-      $ toModifiers
-        a
-        [ GiveAdditionalAction
-            $ AdditionalAction "Daisy Walker" (toSource a)
-            $ TraitRestrictedAdditionalAction Tome AbilitiesOnly
-        ]
+    toModifiers
+      a
+      [ GiveAdditionalAction
+          $ AdditionalAction "Daisy Walker" (toSource a)
+          $ TraitRestrictedAdditionalAction Tome AbilitiesOnly
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisyWalker where

@@ -30,7 +30,7 @@ instance HasAbilities TheRedGlovedMan5 where
 
 instance HasModifiersFor TheRedGlovedMan5 where
   getModifiersFor (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..})) | controlledBy a iid = do
-    pure $ toModifiers a $ map (`BaseSkillOf` 6) chosenSkills
+    toModifiers a $ map (`BaseSkillOf` 6) chosenSkills
   getModifiersFor _ _ = pure []
 
 skillTypes :: [(Text, SkillType)]

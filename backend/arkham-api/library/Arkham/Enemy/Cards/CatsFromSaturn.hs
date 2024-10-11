@@ -19,7 +19,7 @@ instance HasModifiersFor CatsFromSaturn where
   getModifiersFor target (CatsFromSaturn a) | a `is` target = do
     mInvestigator <- selectOne ActiveInvestigator
     x <- maybe getMaxAlarmLevel getAlarmLevel mInvestigator
-    pure $ toModifiers a [SwarmingValue x]
+    toModifiers a [SwarmingValue x]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CatsFromSaturn where

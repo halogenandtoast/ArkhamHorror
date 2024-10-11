@@ -15,7 +15,7 @@ import Arkham.Name
 import Arkham.Trait
 
 newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theReallyBadOnesV2 :: ActCard TheReallyBadOnesV2
@@ -25,10 +25,7 @@ theReallyBadOnesV2 =
 instance HasModifiersFor TheReallyBadOnesV2 where
   getModifiersFor (LocationTarget lid) (TheReallyBadOnesV2 attrs) = do
     targets <- select UnrevealedLocation
-    pure
-      [ toModifier attrs (TraitRestrictedModifier ArkhamAsylum Blank)
-      | lid `elem` targets
-      ]
+    toModifiers attrs [TraitRestrictedModifier ArkhamAsylum Blank | lid `elem` targets]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheReallyBadOnesV2 where

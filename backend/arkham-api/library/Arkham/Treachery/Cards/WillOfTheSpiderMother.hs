@@ -1,12 +1,11 @@
 module Arkham.Treachery.Cards.WillOfTheSpiderMother (willOfTheSpiderMother, WillOfTheSpiderMother (..)) where
 
-import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
-import Arkham.Message
-import Arkham.Prelude
 import Arkham.Trait (Trait (Spider))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype WillOfTheSpiderMother = WillOfTheSpiderMother TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)
@@ -16,26 +15,22 @@ willOfTheSpiderMother :: TreacheryCard WillOfTheSpiderMother
 willOfTheSpiderMother = treachery WillOfTheSpiderMother Cards.willOfTheSpiderMother
 
 instance HasModifiersFor WillOfTheSpiderMother where
-  getModifiersFor (InvestigatorTarget iid) (WillOfTheSpiderMother attrs) = do
-    mSkillTestInvestigator <- getSkillTestInvestigator
-    if Just iid == mSkillTestInvestigator
-      then do
-        mSource <- getSkillTestSource
-        hasSpider <- iid <=~> InvestigatorAt (LocationWithEnemy $ EnemyWithTrait Spider)
-        pure
-          $ toModifiers
-            attrs
-            [CannotCommitCards AnyCard | hasSpider, source <- maybeToList mSource, attrs `isSource` source]
-      else pure []
+  getModifiersFor (InvestigatorTarget iid) (WillOfTheSpiderMother attrs) = maybeModified attrs do
+    iid' <- MaybeT getSkillTestInvestigator
+    guard $ iid == iid'
+    source <- MaybeT getSkillTestSource
+    guard $ isSource attrs source
+    liftGuardM $ iid <=~> InvestigatorAt (LocationWithEnemy $ withTrait Spider)
+    pure [CannotCommitCards AnyCard]
   getModifiersFor _ _ = pure []
 
 instance RunMessage WillOfTheSpiderMother where
-  runMessage msg t@(WillOfTheSpiderMother attrs) = case msg of
+  runMessage msg t@(WillOfTheSpiderMother attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      push $ roundModifiers attrs iid [CannotFight AnyEnemy, CannotInvestigate]
+      roundModifiers attrs iid [CannotFight AnyEnemy, CannotInvestigate]
       pure t
-    _ -> WillOfTheSpiderMother <$> runMessage msg attrs
+    _ -> WillOfTheSpiderMother <$> liftRunMessage msg attrs

@@ -59,7 +59,7 @@ instance HasModifiersFor AlejandroVelaEffect where
   getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a) | token.face == Tablet = do
     getSkillTestId >>= \case
       Just sid | isTarget sid a.target -> do
-        pure $ toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
+        toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

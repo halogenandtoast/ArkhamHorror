@@ -24,7 +24,7 @@ crystalPendulum = asset CrystalPendulum Cards.crystalPendulum
 
 instance HasModifiersFor CrystalPendulum where
   getModifiersFor (InvestigatorTarget iid) (CrystalPendulum a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CrystalPendulum where

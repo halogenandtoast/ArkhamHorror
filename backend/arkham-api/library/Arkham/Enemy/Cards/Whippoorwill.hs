@@ -20,7 +20,7 @@ whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)
 instance HasModifiersFor Whippoorwill where
   getModifiersFor (InvestigatorTarget iid) (Whippoorwill attrs) = do
     affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId attrs)
-    pure $ toModifiers attrs [AnySkillValue (-1) | affected]
+    toModifiers attrs [AnySkillValue (-1) | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Whippoorwill where

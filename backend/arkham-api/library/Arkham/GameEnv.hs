@@ -189,14 +189,15 @@ getAllModifiers = gameModifiers <$> getGame
 withModifiers'
   :: (Targetable target, HasGame m)
   => target
-  -> [Modifier]
+  -> m [Modifier]
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
 withModifiers' (toTarget -> target) mods body = do
   game <- getGame
+  mods' <- mods
   let
     modifiers = gameModifiers game
-    modifiers' = insertWith (<>) target mods modifiers
+    modifiers' = insertWith (<>) target mods' modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
 getActiveAbilities :: HasGame m => m [Ability]

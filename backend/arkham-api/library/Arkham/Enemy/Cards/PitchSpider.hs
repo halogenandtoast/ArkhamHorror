@@ -27,7 +27,7 @@ pitchSpider =
 instance HasModifiersFor PitchSpider where
   getModifiersFor target (PitchSpider a) | a `is` target = do
     x <- scenarioCount Distortion
-    pure $ toModifiers a $ AttackDealsEitherDamageOrHorror : [SwarmingValue x | x > 0]
+    toModifiers a $ AttackDealsEitherDamageOrHorror : [SwarmingValue x | x > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PitchSpider where

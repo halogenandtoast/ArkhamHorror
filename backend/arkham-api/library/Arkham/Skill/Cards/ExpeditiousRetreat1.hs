@@ -27,7 +27,7 @@ instance HasModifiersFor ExpeditiousRetreat1 where
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Evade, Just (AbilitySource (EnemySource _) AbilityAttack)) -> pure $ toModifiers a [AddSkillIcons [#agility, #agility]]
+      (Just Action.Evade, Just (AbilitySource (EnemySource _) AbilityAttack)) -> toModifiers a [AddSkillIcons [#agility, #agility]]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

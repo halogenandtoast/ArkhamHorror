@@ -42,7 +42,7 @@ corruptedOrderlyEffect = cardEffect CorruptedOrderlyEffect Cards.corruptedOrderl
 
 instance HasModifiersFor CorruptedOrderlyEffect where
   getModifiersFor target (CorruptedOrderlyEffect attrs) | attrs.target == target = do
-    pure $ toModifiers attrs [DamageTaken (-1)]
+    toModifiers attrs [DamageTaken (-1)]
   getModifiersFor _ _ = pure []
 
 isTakeDamage :: EffectAttrs -> Window -> Bool

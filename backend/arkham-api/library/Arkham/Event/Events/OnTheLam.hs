@@ -1,12 +1,9 @@
 module Arkham.Event.Events.OnTheLam where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype OnTheLam = OnTheLam EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,8 +13,8 @@ onTheLam :: EventCard OnTheLam
 onTheLam = event OnTheLam Cards.onTheLam
 
 instance RunMessage OnTheLam where
-  runMessage msg e@(OnTheLam attrs) = case msg of
+  runMessage msg e@(OnTheLam attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      push $ roundModifier eid iid (CannotBeAttackedBy NonEliteEnemy)
+      roundModifier eid iid (CannotBeAttackedBy NonEliteEnemy)
       pure e
-    _ -> OnTheLam <$> runMessage msg attrs
+    _ -> OnTheLam <$> liftRunMessage msg attrs

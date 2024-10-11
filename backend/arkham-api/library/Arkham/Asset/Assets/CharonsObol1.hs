@@ -17,8 +17,7 @@ instance HasModifiersFor CharonsObol1 where
   getModifiersFor (InvestigatorTarget iid) (CharonsObol1 attrs)
     | controlledBy attrs iid = do
         isDefeated <- elem iid <$> select DefeatedInvestigator
-        pure
-          $ toModifiers attrs
+        toModifiers attrs
           $ KilledIfDefeated
           : [XPModifier "Charon's Obol" 2 | not isDefeated]
   getModifiersFor _ _ = pure []

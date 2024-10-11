@@ -27,11 +27,11 @@ instance HasModifiersFor TheGeistTrap where
   getModifiersFor target (TheGeistTrap attrs)
     | attrs `isTarget` target
     , not (locationRevealed attrs) = do
-        pure $ toModifiers attrs [Blocked]
+        toModifiers attrs [Blocked]
   getModifiersFor (EnemyTarget eid) (TheGeistTrap attrs) | locationRevealed attrs = do
     gainsRetaliate <-
       selectAny (EnemyWithId eid <> enemyIs Enemies.theSpectralWatcher <> enemyAt (toId attrs))
-    pure $ toModifiers attrs [AddKeyword Keyword.Retaliate | gainsRetaliate]
+    toModifiers attrs [AddKeyword Keyword.Retaliate | gainsRetaliate]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheGeistTrap where

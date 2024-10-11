@@ -26,7 +26,8 @@ instance RunMessage FortyFiveThompsonGuardian3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
+      pushAll [enabled, chooseFight]
       pure a
     SpendUses _ (isTarget attrs -> True) Ammo n -> do
       for_ attrs.controller \iid -> do

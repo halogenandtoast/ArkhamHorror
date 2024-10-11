@@ -22,7 +22,7 @@ theCavernOfFlame = location TheCavernOfFlame Cards.theCavernOfFlame 9 (Static 0)
 instance HasModifiersFor TheCavernOfFlame where
   getModifiersFor target (TheCavernOfFlame a) | a `is` target = do
     blocked <- selectAny $ locationIs Cards.seventySteps <> LocationWithAnyClues
-    pure $ toModifiers a [Blocked | blocked]
+    toModifiers a [Blocked | blocked]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheCavernOfFlame where

@@ -4,8 +4,8 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
-import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Game.Helpers (getAsIfInHandCards, getIsPlayable)
+import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers, withModifiers)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection
@@ -46,15 +46,10 @@ instance RunMessage EverVigilant4 where
         filterM
           (getIsPlayable iid GameSource (UnpaidCost NoAction) (defaultWindows iid))
           (cards <> asIfCards)
-      when (notNull playableCards)
-        $ chooseOne
-          iid
-          [ targetLabel
-            (toCardId c)
-            [ Msg.costModifier attrs (CardIdTarget $ toCardId c) (ReduceCostOf AnyCard 1)
-            , PayCardCost iid c (defaultWindows iid)
-            ]
-          | c <- playableCards
-          ]
+      when (notNull playableCards) do
+        chooseOneM iid do
+          targets playableCards \c -> do
+            costModifier attrs c (ReduceCostOf AnyCard 1)
+            push $ PayCardCost iid c (defaultWindows iid)
       pure e
     _ -> EverVigilant4 <$> liftRunMessage msg attrs

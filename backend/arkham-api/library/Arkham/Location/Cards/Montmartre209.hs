@@ -42,7 +42,7 @@ montmartre209Effect = cardEffect Montmartre209Effect Cards.montmartre209
 
 instance HasModifiersFor Montmartre209Effect where
   getModifiersFor (InvestigatorTarget _) (Montmartre209Effect a) =
-    pure $ toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
+    toModifiers a [TopCardOfDeckIsRevealed, CanPlayTopOfDeck AnyCard]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Montmartre209Effect where

@@ -22,7 +22,7 @@ pennyWhite = allyWith PennyWhite Cards.pennyWhite (3, 2) (isStoryL .~ True)
 
 instance HasModifiersFor PennyWhite where
   getModifiersFor (InvestigatorTarget iid) (PennyWhite a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PennyWhite where

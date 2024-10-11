@@ -22,7 +22,7 @@ osbornsGeneralStore_206 =
 instance HasModifiersFor OsbornsGeneralStore_206 where
   getModifiersFor (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotGainResources | here]
+    toModifiers attrs [CannotGainResources | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities OsbornsGeneralStore_206 where

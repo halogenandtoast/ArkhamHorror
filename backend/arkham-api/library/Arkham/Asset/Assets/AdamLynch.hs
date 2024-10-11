@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.AdamLynch (
-  adamLynch,
-  AdamLynch (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.AdamLynch (adamLynch, AdamLynch (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype AdamLynch = AdamLynch AssetAttrs
   deriving anyclass IsAsset
@@ -28,13 +24,12 @@ instance HasAbilities AdamLynch where
 instance HasModifiersFor AdamLynch where
   getModifiersFor (AbilityTarget iid ab) (AdamLynch attrs) | controlledBy attrs iid = do
     mSecurityOffice <- selectOne (LocationWithTitle "Security Office")
-    pure
-      $ toModifiers
-        attrs
-        [ ActionCostSetToModifier 1
-        | securityOffice <- toList mSecurityOffice
-        , ab.source.location == Just securityOffice
-        ]
+    toModifiers
+      attrs
+      [ ActionCostSetToModifier 1
+      | securityOffice <- toList mSecurityOffice
+      , ab.source.location == Just securityOffice
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AdamLynch where

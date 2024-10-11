@@ -28,7 +28,6 @@ import Arkham.Decklist
 import Arkham.Effect
 import Arkham.Effect.Types (EffectAttrs (effectFinished))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
-import Arkham.EffectMetadata
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
 import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
@@ -426,12 +425,8 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateChaosTokenValueEffect sid n source target -> do
     (effectId, effect) <- createChaosTokenValueEffect sid n source target
-    push
-      $ CreatedEffect
-        effectId
-        (Just $ EffectModifiers [Modifier source (ChaosTokenValueModifier n) False])
-        source
-        target
+    ems <- effectModifiers source [ChaosTokenValueModifier n]
+    push $ CreatedEffect effectId (Just ems) source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   PayCardCost iid card windows' -> do
     activeCost <- createActiveCostForCard iid card NotPlayAction windows'
@@ -2288,13 +2283,10 @@ runGameMessage msg g = case msg of
         (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
     g <$ push (RequestedPlayerCard iid source mcard [])
   CancelSurge _ -> do
-    for_ (view resolvingCardL g) $ \c ->
+    ems <- effectModifiers GameSource [NoSurge]
+    for_ (view resolvingCardL g) $ \c -> do
       push
-        $ CreateWindowModifierEffect
-          (EffectCardResolutionWindow $ toCardId c)
-          (EffectModifiers $ toModifiers GameSource [NoSurge])
-          GameSource
-          (CardIdTarget $ toCardId c)
+        $ CreateWindowModifierEffect (EffectCardResolutionWindow c.id) ems GameSource (CardIdTarget c.id)
     pure g
   GainSurge source target -> do
     cardId <- case target of

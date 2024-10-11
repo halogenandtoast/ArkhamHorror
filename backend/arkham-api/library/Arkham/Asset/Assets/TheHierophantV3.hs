@@ -21,12 +21,11 @@ instance HasAbilities TheHierophantV3 where
 
 instance HasModifiersFor TheHierophantV3 where
   getModifiersFor (InvestigatorTarget iid) (TheHierophantV3 attrs) | attrs `controlledBy` iid = do
-    pure
-      $ toModifiers
-        attrs
-        [ SlotCanBe ArcaneSlot AccessorySlot
-        , SlotCanBe AccessorySlot ArcaneSlot
-        ]
+    toModifiers
+      attrs
+      [ SlotCanBe ArcaneSlot AccessorySlot
+      , SlotCanBe AccessorySlot ArcaneSlot
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheHierophantV3 where

@@ -23,7 +23,7 @@ templeOfTheFang =
 instance HasModifiersFor TempleOfTheFang where
   getModifiersFor target (TempleOfTheFang a) | isTarget a target = do
     n <- getVengeanceInVictoryDisplay
-    pure $ toModifiers a [ShroudModifier n | n > 0]
+    toModifiers a [ShroudModifier n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TempleOfTheFang where

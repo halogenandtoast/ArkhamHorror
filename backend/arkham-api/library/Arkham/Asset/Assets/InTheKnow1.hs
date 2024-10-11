@@ -5,8 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype InTheKnow1 = InTheKnow1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,18 +32,12 @@ instance RunMessage InTheKnow1 where
         let costs = fold [m | AdditionalCostToInvestigate m <- mods]
         pure $ map (lid,costs,) investigateActions
       batchId <- getRandom
-      chooseOne
-        iid
-        [ targetLabel
-          location
-          [ Would
-              batchId
-              [ Msg.abilityModifier ability.ref (attrs.ability 1) iid (AsIfAt location)
-              , PayAdditionalCost iid batchId costs
-              , UseAbility iid ability windows'
-              ]
-          ]
-        | (location, costs, ability) <- locationsWithInvestigate
-        ]
+      chooseOneM iid do
+        for_ locationsWithInvestigate \(location, costs, ability) -> do
+          targeting location do
+            batching batchId do
+              abilityModifier ability.ref (attrs.ability 1) iid (AsIfAt location)
+              push $ PayAdditionalCost iid batchId costs
+              push $ UseAbility iid ability windows'
       pure a
     _ -> InTheKnow1 <$> liftRunMessage msg attrs

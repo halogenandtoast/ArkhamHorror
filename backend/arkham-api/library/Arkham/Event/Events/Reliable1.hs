@@ -1,9 +1,4 @@
-module Arkham.Event.Events.Reliable1 (
-  reliable1,
-  Reliable1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Reliable1 (reliable1, Reliable1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
@@ -14,6 +9,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait
 
@@ -25,24 +21,14 @@ reliable1 :: EventCard Reliable1
 reliable1 = event Reliable1 Cards.reliable1
 
 instance HasModifiersFor Reliable1 where
-  getModifiersFor (InvestigatorTarget iid) (Reliable1 a) =
-    case eventAttachedTarget a of
-      Just (AssetTarget aid) -> do
-        owner <- field AssetController aid
-        if owner == Just iid
-          then do
-            abilities <- getActiveAbilities
-            let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
-            pure
-              $ toModifiers
-                a
-                [ AnySkillValue 1
-                | any
-                    (and . sequence [isAttachedTargetAbility, isTriggeredAbility])
-                    abilities
-                ]
-          else pure []
-      _ -> pure []
+  getModifiersFor (InvestigatorTarget iid) (Reliable1 a) = maybeModified a do
+    AssetTarget aid <- hoistMaybe a.attachedTo
+    owner <- MaybeT $ field AssetController aid
+    guard $ owner == iid
+    abilities <- lift getActiveAbilities
+    let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
+    guard $ any (and . sequence [isAttachedTargetAbility, isTriggeredAbility]) abilities
+    pure [AnySkillValue 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Reliable1 where

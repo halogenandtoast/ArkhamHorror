@@ -32,7 +32,7 @@ instance HasModifiersFor TheTatteredCloak where
                 , SkillModifier SkillAgility 1
                 ]
               else []
-        pure $ toModifiers attrs (SanityModifier (-1) : skillModifiers)
+        toModifiers attrs (SanityModifier (-1) : skillModifiers)
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheTatteredCloak where

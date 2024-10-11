@@ -21,7 +21,7 @@ randolphCarterExpertDreamer = ally RandolphCarterExpertDreamer Cards.randolphCar
 
 instance HasModifiersFor RandolphCarterExpertDreamer where
   getModifiersFor (InvestigatorTarget iid) (RandolphCarterExpertDreamer a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
+    toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RandolphCarterExpertDreamer where

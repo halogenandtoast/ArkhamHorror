@@ -24,7 +24,7 @@ disciplineBalanceOfBody = asset (DisciplineBalanceOfBody . (`with` Metadata []))
 
 instance HasModifiersFor DisciplineBalanceOfBody where
   getModifiersFor (InvestigatorTarget iid) (DisciplineBalanceOfBody (With a _)) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #agility 1]
+    toModifiers a [SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DisciplineBalanceOfBody where

@@ -19,7 +19,7 @@ treasureHunter1 = ally TreasureHunter1 Cards.treasureHunter1 (2, 2)
 
 instance HasModifiersFor TreasureHunter1 where
   getModifiersFor (InvestigatorTarget iid) (TreasureHunter1 a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TreasureHunter1 where

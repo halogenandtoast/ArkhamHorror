@@ -16,7 +16,7 @@ outbreak = treachery Outbreak Cards.outbreak
 
 instance HasModifiersFor Outbreak where
   getModifiersFor (StoryTarget _) (Outbreak attrs) = do
-    pure $ toModifiers attrs [MetaModifier $ object ["treatTabletAsSkill" .= True]]
+    toModifiers attrs [MetaModifier $ object ["treatTabletAsSkill" .= True]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Outbreak where

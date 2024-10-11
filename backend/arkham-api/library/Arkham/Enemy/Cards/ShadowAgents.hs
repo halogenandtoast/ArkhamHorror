@@ -35,7 +35,7 @@ instance HasAbilities ShadowAgents where
 instance HasModifiersFor ShadowAgents where
   getModifiersFor (InvestigatorTarget iid) (ShadowAgents attrs) = do
     affected <- iid <=~> investigatorEngagedWith attrs
-    pure $ toModifiers attrs [CannotDiscoverCluesExceptAsResultOfInvestigation Anywhere | affected]
+    toModifiers attrs [CannotDiscoverCluesExceptAsResultOfInvestigation Anywhere | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ShadowAgents where

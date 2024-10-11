@@ -25,7 +25,7 @@ crystallizerOfDreams = asset CrystallizerOfDreams Cards.crystallizerOfDreams
 
 instance HasModifiersFor CrystallizerOfDreams where
   getModifiersFor (InvestigatorTarget iid) (CrystallizerOfDreams attrs) | attrs `controlledBy` iid = do
-    pure $ toModifiers attrs $ map CanCommitToSkillTestsAsIfInHand (assetCardsUnderneath attrs)
+    toModifiers attrs $ map CanCommitToSkillTestsAsIfInHand (assetCardsUnderneath attrs)
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CrystallizerOfDreams where

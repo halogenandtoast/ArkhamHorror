@@ -2,9 +2,11 @@ module Arkham.Asset.Assets.KnightOfSwords3 (knightOfSwords3, KnightOfSwords3 (..
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype KnightOfSwords3 = KnightOfSwords3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,22 +22,18 @@ instance HasAbilities KnightOfSwords3 where
     ]
 
 instance RunMessage KnightOfSwords3 where
-  runMessage msg a@(KnightOfSwords3 attrs) = case msg of
+  runMessage msg a@(KnightOfSwords3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ Label
-                "Discard Knight of Swords to get +3 instead"
-                [skillTestModifier sid attrs iid (AnySkillValue 3), RecalculateSkillTestResults]
-            , Label
-                "Do not discard"
-                [skillTestModifier sid attrs iid (AnySkillValue 1), RecalculateSkillTestResults]
-            ]
+        chooseOneM iid do
+          labeled "Discard Knight of Swords to get +3 instead" do
+            skillTestModifier sid attrs iid (AnySkillValue 3)
+            push RecalculateSkillTestResults
+          labeled "Do not discard" do
+            skillTestModifier sid attrs iid (AnySkillValue 1)
+            push RecalculateSkillTestResults
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ putCardIntoPlay iid attrs
+      putCardIntoPlay iid attrs
       pure a
-    _ -> KnightOfSwords3 <$> runMessage msg attrs
+    _ -> KnightOfSwords3 <$> liftRunMessage msg attrs

@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.PadmaAmrita (
-  padmaAmrita,
-  PadmaAmrita (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.PadmaAmrita (padmaAmrita, PadmaAmrita (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -11,12 +6,12 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Ancient))
 
 newtype PadmaAmrita = PadmaAmrita EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 padmaAmrita :: EnemyCard PadmaAmrita
@@ -24,24 +19,16 @@ padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita (5, PerPlayer 3, 3) (0, 0)
 
 instance HasModifiersFor PadmaAmrita where
   getModifiersFor (InvestigatorTarget _) (PadmaAmrita a) =
-    pure
-      $ toModifiers
-        a
-        [ CannotDiscoverCluesAt (LocationWithTrait Ancient)
-        | not (enemyExhausted a)
-        ]
+    toModifiers
+      a
+      [ CannotDiscoverCluesAt (LocationWithTrait Ancient)
+      | not (enemyExhausted a)
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PadmaAmrita where
   getAbilities (PadmaAmrita a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ EnemyAttacks Timing.After You AnyEnemyAttack
-          $ EnemyWithId
-          $ toId a
-      ]
+    extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after You AnyEnemyAttack (be a)
 
 instance RunMessage PadmaAmrita where
   runMessage msg e@(PadmaAmrita attrs) = case msg of

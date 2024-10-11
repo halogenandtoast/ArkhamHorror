@@ -25,7 +25,7 @@ instance HasModifiersFor BishopsBrook_202 where
   getModifiersFor (EnemyTarget eid) (BishopsBrook_202 attrs) = do
     -- \| eid `elem` locationEnemies =
     atLocation <- fieldMap EnemyLocation (== Just (toId attrs)) eid
-    pure $ toModifiers attrs [HorrorDealt 1 | atLocation]
+    toModifiers attrs [HorrorDealt 1 | atLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BishopsBrook_202 where

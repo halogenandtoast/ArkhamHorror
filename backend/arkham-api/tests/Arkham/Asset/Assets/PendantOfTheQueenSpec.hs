@@ -35,7 +35,7 @@ spec = describe "Pendant of the Queen" do
         updateProp @"clues" 1 location2
         self `moveTo` location1
         run $ RevealLocation Nothing (toId location2)
-        run $ gameModifier (TestSource mempty) location2 Blocked
+        run =<< gameModifier (TestSource mempty) location2 Blocked
         pendantOfTheQueen <- self `putAssetIntoPlay` Assets.pendantOfTheQueen
         [usePendant] <- self `getActionsFrom` pendantOfTheQueen
         self `useAbility` usePendant
@@ -50,7 +50,7 @@ spec = describe "Pendant of the Queen" do
         enemy `spawnAt` location2
         self `moveTo` location1
         run $ RevealLocation Nothing (toId location2)
-        run $ gameModifier (TestSource mempty) location2 Blocked
+        run =<< gameModifier (TestSource mempty) location2 Blocked
         pendantOfTheQueen <- self `putAssetIntoPlay` Assets.pendantOfTheQueen
         [usePendant] <- self `getActionsFrom` pendantOfTheQueen
         self `useAbility` usePendant

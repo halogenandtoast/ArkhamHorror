@@ -15,7 +15,7 @@ import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (Gug))
 
 newtype PlainOfTheGhouls = PlainOfTheGhouls LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 plainOfTheGhouls :: LocationCard PlainOfTheGhouls
@@ -24,8 +24,7 @@ plainOfTheGhouls = location PlainOfTheGhouls Cards.plainOfTheGhouls 4 (PerPlayer
 instance HasModifiersFor PlainOfTheGhouls where
   getModifiersFor (EnemyTarget eid) (PlainOfTheGhouls attrs) = do
     isGug <- fieldMap EnemyTraits (member Gug) eid
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard isGug
       *> [CannotEnter attrs.id, ChangeSpawnLocation (be attrs) (locationIs Cards.cityOfGugs)]
   getModifiersFor _ _ = pure []

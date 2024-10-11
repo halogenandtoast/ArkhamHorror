@@ -27,11 +27,9 @@ instance RunMessage BlessingOfIsis3 where
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> drawnToken) _ -> do
       withSkillTest \sid -> do
         tokens <- nub . (drawnToken :) . filter ((== #bless) . (.face)) <$> getSkillTestRevealedChaosTokens
-
-        pushAll $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken
-          : [ skillTestModifiers sid (attrs.ability 1) (ChaosTokenTarget token) $ ReturnBlessedToChaosBag
-              : [ChaosTokenFaceModifier [#eldersign] | token == drawnToken]
-            | token <- tokens
-            ]
+        enabled <- for tokens \token -> do
+          skillTestModifiers sid (attrs.ability 1) (ChaosTokenTarget token) $ ReturnBlessedToChaosBag
+            : [ChaosTokenFaceModifier [#eldersign] | token == drawnToken]
+        pushAll $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken : enabled
       pure a
     _ -> BlessingOfIsis3 <$> runMessage msg attrs

@@ -27,7 +27,7 @@ import Control.Monad.Random
 withModifiers'
   :: (Targetable target, HasGame m)
   => target
-  -> [Modifier]
+  -> m [Modifier]
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
 getAllModifiers :: HasGame m => m (Map Target [Modifier])

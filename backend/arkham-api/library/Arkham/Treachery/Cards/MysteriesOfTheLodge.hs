@@ -57,7 +57,7 @@ instance HasModifiersFor MysteriesOfTheLodgeEffect where
   getModifiersFor (SkillTestTarget _) (MysteriesOfTheLodgeEffect a) = do
     mTarget <- getSkillTestTarget
     mAction <- getSkillTestAction
-    pure $ toModifiers a $ case (mTarget, mAction) of
+    toModifiers a $ case (mTarget, mAction) of
       (Just target, Just action)
         | target == effectTarget a
         , action `elem` [Action.Fight, Action.Evade, Action.Parley] ->

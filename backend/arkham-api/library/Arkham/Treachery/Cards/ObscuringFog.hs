@@ -19,7 +19,7 @@ obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
 instance HasModifiersFor ObscuringFog where
   getModifiersFor (LocationTarget lid) (ObscuringFog attrs) =
-    pure $ toModifiers attrs [ShroudModifier 2 | treacheryOnLocation lid attrs]
+    toModifiers attrs [ShroudModifier 2 | treacheryOnLocation lid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ObscuringFog where

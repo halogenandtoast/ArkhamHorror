@@ -30,7 +30,8 @@ instance RunMessage GravediggersShovel2 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let

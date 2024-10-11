@@ -19,7 +19,7 @@ occultScraps = asset OccultScraps Cards.occultScraps
 
 instance HasModifiersFor OccultScraps where
   getModifiersFor (InvestigatorTarget iid) (OccultScraps a) = do
-    pure $ toModifiers a $ case assetPlacement a of
+    toModifiers a $ case assetPlacement a of
       InPlayArea iid' | iid == iid' -> [SkillModifier #willpower (-1)]
       StillInHand iid' | iid == iid' -> [SkillModifier #willpower (-2)]
       _ -> []

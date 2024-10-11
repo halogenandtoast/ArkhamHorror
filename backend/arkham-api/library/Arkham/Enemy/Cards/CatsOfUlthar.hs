@@ -25,7 +25,7 @@ instance HasModifiersFor CatsOfUlthar where
         st <- MaybeT getSkillTest
         guard $ a `is` st.target && st.action == Just #evade
         pure RevealAnotherChaosToken
-    pure $ toModifiers a modifiers
+    toModifiers a modifiers
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CatsOfUlthar where

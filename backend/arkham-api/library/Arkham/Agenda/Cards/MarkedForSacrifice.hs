@@ -24,7 +24,7 @@ markedForSacrifice =
 instance HasModifiersFor MarkedForSacrifice where
   getModifiersFor (EnemyTarget eid) (MarkedForSacrifice a) = do
     isNonWeakness <- eid <=~> NonWeaknessEnemy
-    pure $ toModifiers a [HealthModifier 4 | isNonWeakness]
+    toModifiers a [HealthModifier 4 | isNonWeakness]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MarkedForSacrifice where

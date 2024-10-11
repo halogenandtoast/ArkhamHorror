@@ -18,7 +18,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype BearTrap = BearTrap AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bearTrap :: AssetCard BearTrap
@@ -26,8 +26,7 @@ bearTrap = assetWith BearTrap Cards.bearTrap (isStoryL .~ True)
 
 instance HasModifiersFor BearTrap where
   getModifiersFor (EnemyTarget eid) (BearTrap attrs@AssetAttrs {..}) =
-    pure
-      . toModifiers attrs
+    toModifiers attrs
       $ case assetPlacement of
         AttachedToEnemy eid' | eid == eid' -> [EnemyFight (-1), EnemyEvade (-1)]
         _ -> []

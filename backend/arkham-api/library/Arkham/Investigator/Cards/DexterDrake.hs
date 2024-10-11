@@ -105,8 +105,7 @@ dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
 instance HasModifiersFor DexterDrakeEffect where
   getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs) | effectTarget attrs == target = do
     card <- getCard cid
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ [ReduceCostOf (CardWithId cid) 1]
       <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
   getModifiersFor _ _ = pure []

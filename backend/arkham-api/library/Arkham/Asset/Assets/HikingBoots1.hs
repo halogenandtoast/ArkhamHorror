@@ -16,7 +16,7 @@ hikingBoots1 = asset HikingBoots1 Cards.hikingBoots1
 
 instance HasModifiersFor HikingBoots1 where
   getModifiersFor (InvestigatorTarget iid) (HikingBoots1 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #agility 1]
+    toModifiers a [SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HikingBoots1 where

@@ -16,10 +16,9 @@ empowerSelfAcuity2 = asset EmpowerSelfAcuity2 Cards.empowerSelfAcuity2
 
 instance HasModifiersFor EmpowerSelfAcuity2 where
   getModifiersFor (InvestigatorTarget iid) (EmpowerSelfAcuity2 a) | controlledBy a iid = do
-    pure
-      $ toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #intellect]
+    toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #intellect]
   getModifiersFor target (EmpowerSelfAcuity2 a) | a `is` target = do
-    pure $ toModifiers a [SharesSlotWith 3 "Empower Self"]
+    toModifiers a [SharesSlotWith 3 "Empower Self"]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EmpowerSelfAcuity2 where
@@ -30,6 +29,6 @@ instance RunMessage EmpowerSelfAcuity2 where
   runMessage msg a@(EmpowerSelfAcuity2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 2)
       pure a
     _ -> EmpowerSelfAcuity2 <$> runMessage msg attrs

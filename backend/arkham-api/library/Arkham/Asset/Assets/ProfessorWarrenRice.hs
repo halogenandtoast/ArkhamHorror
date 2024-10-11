@@ -20,7 +20,7 @@ professorWarrenRice =
 
 instance HasModifiersFor ProfessorWarrenRice where
   getModifiersFor (InvestigatorTarget iid) (ProfessorWarrenRice a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ProfessorWarrenRice where

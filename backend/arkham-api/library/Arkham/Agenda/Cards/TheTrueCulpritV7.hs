@@ -27,7 +27,7 @@ theTrueCulpritV7 = agenda (3, A) TheTrueCulpritV7 Cards.theTrueCulpritV7 (Static
 instance HasModifiersFor TheTrueCulpritV7 where
   getModifiersFor (EnemyTarget eid) (TheTrueCulpritV7 attrs) = do
     isGuest <- eid <=~> EnemyWithTrait Guest
-    pure $ toModifiers attrs $ guard isGuest *> [LoseVictory, RemoveTrait Innocent, AddTrait Cultist]
+    toModifiers attrs $ guard isGuest *> [LoseVictory, RemoveTrait Innocent, AddTrait Cultist]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheTrueCulpritV7 where

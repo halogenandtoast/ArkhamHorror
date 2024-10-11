@@ -23,7 +23,7 @@ instance HasModifiersFor BishopsBrook_203 where
   getModifiersFor (InvestigatorTarget iid) (BishopsBrook_203 attrs) = do
     here <- iid `isAt` attrs
     anyHere <- selectAny $ investigatorAt $ toId attrs
-    pure $ toModifiers attrs [CannotEnter (toId attrs) | not here && anyHere]
+    toModifiers attrs [CannotEnter (toId attrs) | not here && anyHere]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BishopsBrook_203 where

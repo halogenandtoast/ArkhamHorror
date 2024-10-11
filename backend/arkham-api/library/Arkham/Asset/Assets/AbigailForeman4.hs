@@ -1,48 +1,40 @@
-module Arkham.Asset.Assets.AbigailForeman4 (
-  abigailForeman4,
-  AbigailForeman4 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.AbigailForeman4 (abigailForeman4, AbigailForeman4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype AbigailForeman4 = AbigailForeman4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abigailForeman4 :: AssetCard AbigailForeman4
 abigailForeman4 = ally AbigailForeman4 Cards.abigailForeman4 (1, 2)
 
 instance HasModifiersFor AbigailForeman4 where
-  getModifiersFor (AssetTarget aid) (AbigailForeman4 a) | aid /= toId a = do
-    controller <- field AssetController (toId a)
-    case controller of
-      Nothing -> pure []
-      Just iid -> do
-        placement <- field AssetPlacement aid
-        pure case placement of
-          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
-          _ -> []
+  getModifiersFor (AssetTarget aid) (AbigailForeman4 a) = maybeModified a do
+    guard $ aid /= a.id
+    iid <- MaybeT $ field AssetController a.id
+    AttachedToAsset aid' _ <- lift $ field AssetPlacement aid
+    guard $ aid' == a.id
+    pure [AsIfUnderControlOf iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AbigailForeman4 where
   getAbilities (AbigailForeman4 a) =
     [ controlledAbility a 1 criteria $ FastAbility Free
-    , restrictedAbility a 2 ControlsThis
+    , restricted a 2 ControlsThis
         $ ReactionAbility
           ( ActivateAbility #after You
               $ PerformableAbility [IgnoreAllCosts]
               <> AbilityIsActionAbility
-              <> AssetAbility (AssetAttachedToAsset (AssetWithId $ toId a))
+              <> AssetAbility (AssetAttachedToAsset (be a))
           )
           (exhaust a)
     ]

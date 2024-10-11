@@ -25,7 +25,7 @@ instance HasModifiersFor SavioCorvi where
       Nothing -> pure []
       Just loc -> do
         acrossLocationId <- getAcrossLocation loc
-        pure $ toModifiers attrs [HunterConnectedTo acrossLocationId]
+        toModifiers attrs [HunterConnectedTo acrossLocationId]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SavioCorvi where

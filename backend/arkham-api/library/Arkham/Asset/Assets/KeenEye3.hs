@@ -24,10 +24,10 @@ instance RunMessage KeenEye3 where
   runMessage msg a@(KeenEye3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
       pure a
     _ -> KeenEye3 <$> runMessage msg attrs

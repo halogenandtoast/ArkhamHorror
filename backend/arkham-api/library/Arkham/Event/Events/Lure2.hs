@@ -29,7 +29,7 @@ instance HasModifiersFor Lure2 where
   getModifiersFor (EnemyTarget _) (Lure2 attrs) =
     case eventAttachedTarget attrs of
       Just target@(LocationTarget _) ->
-        pure $ toModifiers attrs [DuringEnemyPhaseMustMoveToward target]
+        toModifiers attrs [DuringEnemyPhaseMustMoveToward target]
       Just _ -> pure []
       Nothing -> pure []
   getModifiersFor _ _ = pure []

@@ -28,18 +28,14 @@ instance RunMessage BloodstainedDagger where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      pushAll
-        [ skillTestModifier sid attrs iid (SkillModifier #combat 2)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 2)
-      pushAll
-        [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-        , chooseFight
-        ]
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
+      pushAll [enabled, chooseFight]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 2 -> True) _ -> do
       for_ (assetController attrs) \iid -> do

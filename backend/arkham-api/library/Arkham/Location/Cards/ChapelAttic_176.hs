@@ -26,7 +26,7 @@ instance HasModifiersFor ChapelAttic_176 where
   getModifiersFor (InvestigatorTarget iid) (ChapelAttic_176 a) = do
     investigating <- isInvestigating iid (toId a)
     cardCount <- fieldMap InvestigatorHand length iid
-    pure $ toModifiers a [AnySkillValue cardCount | investigating]
+    toModifiers a [AnySkillValue cardCount | investigating]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ChapelAttic_176 where

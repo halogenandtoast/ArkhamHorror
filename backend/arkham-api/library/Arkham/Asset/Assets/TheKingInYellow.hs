@@ -32,8 +32,7 @@ instance HasModifiersFor TheKingInYellow where
     case assetPlacement attrs of
       InPlayArea minh -> do
         commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
-        pure
-          $ toModifiers attrs [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
+        toModifiers attrs [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
       _ -> pure [] -- if drawn during a skill test, it will have a small moment where it can't modify
   getModifiersFor _ _ = pure []
 

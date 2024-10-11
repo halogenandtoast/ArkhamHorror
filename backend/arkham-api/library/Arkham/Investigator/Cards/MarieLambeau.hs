@@ -1,10 +1,4 @@
-module Arkham.Investigator.Cards.MarieLambeau (
-  marieLambeau,
-  MarieLambeau (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.MarieLambeau (marieLambeau, MarieLambeau (..)) where
 
 import Arkham.Action.Additional
 import Arkham.Action.Additional qualified as Additional
@@ -16,12 +10,13 @@ import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Token
 
 newtype MarieLambeau = MarieLambeau InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 marieAction :: AdditionalActionType
 marieAction = TraitRestrictedAdditionalAction Spell Additional.NoRestriction
@@ -34,8 +29,7 @@ marieLambeau =
 instance HasModifiersFor MarieLambeau where
   getModifiersFor target (MarieLambeau a) | a `is` target = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
-    pure
-      $ toModifiers a
+    toModifiers a
       $ [GiveAdditionalAction (AdditionalAction "Marie Lambeau" (toSource a) marieAction) | hasDoom]
   getModifiersFor _ _ = pure []
 

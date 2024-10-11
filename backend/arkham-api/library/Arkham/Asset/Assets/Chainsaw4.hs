@@ -22,10 +22,8 @@ instance RunMessage Chainsaw4 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      pushAll
-        [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 2]
-        , chooseFight
-        ]
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 2]
+      pushAll [enabled, chooseFight]
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       getSkillTestTarget >>= \case

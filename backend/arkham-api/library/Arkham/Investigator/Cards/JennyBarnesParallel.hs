@@ -28,7 +28,7 @@ jennyBarnesParallel =
 instance HasModifiersFor JennyBarnesParallel where
   getModifiersFor (CardIdTarget cid) (JennyBarnesParallel (attrs `With` meta))
     | cid `elem` fmap toCardId (responseCard meta) = do
-        pure $ toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
+        toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JennyBarnesParallel where

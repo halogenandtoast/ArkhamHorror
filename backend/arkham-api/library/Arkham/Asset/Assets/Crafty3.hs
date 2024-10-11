@@ -17,16 +17,15 @@ crafty3 = asset Crafty3 Cards.crafty3
 
 instance HasModifiersFor Crafty3 where
   getModifiersFor (InvestigatorTarget iid) (Crafty3 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          #resource
-          (InvestigatorWithId iid)
-          (oneOf [CardWithTrait t | t <- [Insight, Tool, Trick]])
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        #resource
+        (InvestigatorWithId iid)
+        (oneOf [CardWithTrait t | t <- [Insight, Tool, Trick]])
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Crafty3 where

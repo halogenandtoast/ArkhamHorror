@@ -20,7 +20,7 @@ xochimilco =
 instance HasModifiersFor Xochimilco where
   getModifiersFor (InvestigatorTarget iid) (Xochimilco a) = do
     atXochimilco <- iid <=~> investigatorAt (toId a)
-    pure $ toModifiers a [CannotGainResources | atXochimilco]
+    toModifiers a [CannotGainResources | atXochimilco]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Xochimilco where

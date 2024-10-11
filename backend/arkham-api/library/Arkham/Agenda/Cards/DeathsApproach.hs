@@ -26,7 +26,7 @@ newtype DeathsApproach = DeathsApproach AgendaAttrs
 instance HasModifiersFor DeathsApproach where
   getModifiersFor (LocationTarget lid) (DeathsApproach attrs) = do
     isSpectral <- lid <=~> LocationWithTrait Spectral
-    pure $ toModifiers attrs [CannotBeFlipped | isSpectral]
+    toModifiers attrs [CannotBeFlipped | isSpectral]
   getModifiersFor _ _ = pure []
 
 deathsApproach :: AgendaCard DeathsApproach

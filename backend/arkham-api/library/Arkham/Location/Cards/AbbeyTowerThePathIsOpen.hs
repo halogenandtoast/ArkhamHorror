@@ -29,11 +29,11 @@ abbeyTowerThePathIsOpen =
 instance HasModifiersFor AbbeyTowerThePathIsOpen where
   getModifiersFor target (AbbeyTowerThePathIsOpen attrs) | isTarget attrs target = do
     foundAGuide <- remembered FoundTheTowerKey
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
+    toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
   getModifiersFor (InvestigatorTarget iid) (AbbeyTowerThePathIsOpen attrs) = do
     here <- iid `isAt` attrs
     cardsInHand <- fieldMap InvestigatorHand length iid
-    pure $ toModifiers attrs [CannotDiscoverClues | here, cardsInHand == 0]
+    toModifiers attrs [CannotDiscoverClues | here, cardsInHand == 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AbbeyTowerThePathIsOpen where

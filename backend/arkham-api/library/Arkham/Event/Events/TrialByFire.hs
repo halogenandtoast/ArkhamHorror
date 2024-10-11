@@ -1,14 +1,8 @@
-module Arkham.Event.Events.TrialByFire (
-  trialByFire,
-  TrialByFire (..),
-) where
+module Arkham.Event.Events.TrialByFire (trialByFire, TrialByFire (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 import Arkham.SkillType
 
 newtype TrialByFire = TrialByFire EventAttrs
@@ -19,12 +13,10 @@ trialByFire :: EventCard TrialByFire
 trialByFire = event TrialByFire Cards.trialByFire
 
 instance RunMessage TrialByFire where
-  runMessage msg e@(TrialByFire attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [SkillLabel skill [turnModifier iid attrs iid (BaseSkillOf skill 5)] | skill <- allSkills]
+  runMessage msg e@(TrialByFire attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      chooseOneM iid do
+        for_ allSkills \skill -> do
+          skillLabeled skill $ turnModifier iid attrs iid (BaseSkillOf skill 5)
       pure e
-    _ -> TrialByFire <$> runMessage msg attrs
+    _ -> TrialByFire <$> liftRunMessage msg attrs

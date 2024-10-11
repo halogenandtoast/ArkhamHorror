@@ -22,7 +22,7 @@ sacredWoods_185 = locationWith SacredWoods_185 Cards.sacredWoods_185 6 (PerPlaye
 instance HasModifiersFor SacredWoods_185 where
   getModifiersFor (InvestigatorTarget iid) (SacredWoods_185 a) = do
     here <- iid `isAt` a
-    pure $ toModifiers a [IncreaseCostOf AnyCard 2 | here]
+    toModifiers a [IncreaseCostOf AnyCard 2 | here]
   getModifiersFor target (SacredWoods_185 a) | isTarget a target = do
     miid <- getSkillTestInvestigator
     case miid of
@@ -30,7 +30,7 @@ instance HasModifiersFor SacredWoods_185 where
       Just iid -> do
         n <- selectCount $ assetControlledBy iid
         isBeingInvestigated <- getIsBeingInvestigated (toId a)
-        pure $ toModifiers a [ShroudModifier (-n) | isBeingInvestigated]
+        toModifiers a [ShroudModifier (-n) | isBeingInvestigated]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SacredWoods_185 where

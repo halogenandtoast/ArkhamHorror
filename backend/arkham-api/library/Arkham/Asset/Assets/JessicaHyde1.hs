@@ -16,7 +16,7 @@ jessicaHyde1 =
 
 instance HasModifiersFor JessicaHyde1 where
   getModifiersFor (InvestigatorTarget iid) (JessicaHyde1 a) =
-    pure $ toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JessicaHyde1 where

@@ -25,11 +25,11 @@ instance HasModifiersFor DefensiveStance1 where
   getModifiersFor (CardIdTarget cid) (DefensiveStance1 a) | toCardId a == cid = do
     agility <- field InvestigatorAgility (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
+    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
   getModifiersFor target (DefensiveStance1 a) | a `is` target = do
     agility <- field InvestigatorAgility (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
+    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DefensiveStance1 where

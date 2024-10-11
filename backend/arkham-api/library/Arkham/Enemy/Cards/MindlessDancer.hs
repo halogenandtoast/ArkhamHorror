@@ -40,7 +40,7 @@ instance HasAbilities MindlessDancer where
         ]
 
 instance HasModifiersFor MindlessDancer where
-  getModifiersFor target (MindlessDancer attrs) | isTarget attrs target = pure $ toModifiers attrs [CanEnterEmptySpace]
+  getModifiersFor target (MindlessDancer attrs) | isTarget attrs target = toModifiers attrs [CanEnterEmptySpace]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindlessDancer where

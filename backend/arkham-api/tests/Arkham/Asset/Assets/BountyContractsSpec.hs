@@ -33,7 +33,7 @@ spec = describe "Bounty Contracts" do
       useReaction -- place bounty
       resolveAmounts self [("Bounties", 2)]
       sid <- self `fightEnemy` enemy
-      run $ skillTestModifier sid (TestSource mempty) self (DamageDealt 1)
+      run =<< skillTestModifier sid (TestSource mempty) self (DamageDealt 1)
       startSkillTest
       applyResults
       useForcedAbility

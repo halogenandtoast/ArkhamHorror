@@ -27,8 +27,7 @@ instance HasModifiersFor MysteriousStairs_186 where
   getModifiersFor (InvestigatorTarget iid) (MysteriousStairs_186 attrs) = do
     here <- iid `isAt` attrs
     hasResources <- fieldSome LocationResources attrs.id
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard (here && hasResources)
       *> [CannotTakeAction #move, CannotTakeAction #resign]
   getModifiersFor _ _ = pure []

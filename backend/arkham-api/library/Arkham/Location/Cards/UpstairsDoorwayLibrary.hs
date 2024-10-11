@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype UpstairsDoorwayLibrary = UpstairsDoorwayLibrary LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 upstairsDoorwayLibrary :: LocationCard UpstairsDoorwayLibrary
@@ -16,17 +16,16 @@ upstairsDoorwayLibrary = location UpstairsDoorwayLibrary Cards.upstairsDoorwayLi
 
 instance HasModifiersFor UpstairsDoorwayLibrary where
   getModifiersFor target (UpstairsDoorwayLibrary a) | a `is` target = do
-    pure
-      $ toModifiers
-        a
-        [AdditionalCostToInvestigate (OrCost [ActionCost 1, HorrorCost (toSource a) YouTarget 1])]
+    toModifiers
+      a
+      [AdditionalCostToInvestigate (OrCost [ActionCost 1, HorrorCost (toSource a) YouTarget 1])]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UpstairsDoorwayLibrary where
   getAbilities (UpstairsDoorwayLibrary a) =
     extendRevealed
       a
-      [ restrictedAbility a 1 (Here <> notExists (LocationWithTitle "Unmarked Tomb"))
+      [ restricted a 1 (Here <> notExists (LocationWithTitle "Unmarked Tomb"))
           $ FastAbility (GroupClueCost (PerPlayer 1) (be a))
       ]
 

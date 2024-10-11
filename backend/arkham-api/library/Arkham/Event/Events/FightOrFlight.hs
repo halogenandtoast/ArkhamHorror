@@ -33,7 +33,7 @@ fightOrFlightEffect = cardEffect FightOrFlightEffect Cards.fightOrFlight
 instance HasModifiersFor FightOrFlightEffect where
   getModifiersFor target@(InvestigatorTarget iid) (FightOrFlightEffect attrs) | attrs.target == target = do
     horror <- field InvestigatorHorror iid
-    pure $ toModifiers attrs [SkillModifier #combat horror, SkillModifier #agility horror]
+    toModifiers attrs [SkillModifier #combat horror, SkillModifier #agility horror]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FightOrFlightEffect where

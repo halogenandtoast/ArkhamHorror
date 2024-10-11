@@ -2,11 +2,13 @@ module Arkham.Asset.Assets.GrislyTotem (grislyTotem, GrislyTotem (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Card
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -20,7 +22,7 @@ grislyTotem = asset GrislyTotem Cards.grislyTotem
 
 instance HasAbilities GrislyTotem where
   getAbilities (GrislyTotem a) =
-    [ restrictedAbility a 1 ControlsThis $ ReactionAbility (CommittedCard #after You AnyCard) (exhaust a)
+    [ restricted a 1 ControlsThis $ ReactionAbility (CommittedCard #after You AnyCard) (exhaust a)
     ]
 
 getCard :: [Window] -> Card
@@ -38,18 +40,13 @@ toSkillLabel (SkillIcon sType) = case sType of
   SkillAgility -> "Choose {agility}"
 
 instance RunMessage GrislyTotem where
-  runMessage msg a@(GrislyTotem attrs) = case msg of
+  runMessage msg a@(GrislyTotem attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
       icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
-      player <- getPlayer iid
-      getSkillTestId >>= traverse_ \sid -> do
-        push
-          $ chooseOrRunOne
-            player
-            [ Label
-              (toSkillLabel icon)
-              [skillTestModifier sid attrs card (AddSkillIcons [icon])]
-            | icon <- setToList icons
-            ]
+      withSkillTest \sid -> do
+        chooseOrRunOneM iid do
+          for_ (setToList icons) \icon -> do
+            labeled (toSkillLabel icon) do
+              skillTestModifier sid attrs card (AddSkillIcons [icon])
       pure a
-    _ -> GrislyTotem <$> runMessage msg attrs
+    _ -> GrislyTotem <$> liftRunMessage msg attrs

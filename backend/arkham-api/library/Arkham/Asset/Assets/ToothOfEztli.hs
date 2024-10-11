@@ -21,7 +21,7 @@ toothOfEztli = asset ToothOfEztli Cards.toothOfEztli
 instance HasModifiersFor ToothOfEztli where
   getModifiersFor (InvestigatorTarget iid) (ToothOfEztli a) | controlledBy a iid = do
     mSource <- getSkillTestSource
-    pure $ toModifiers a $ case mSource of
+    toModifiers a $ case mSource of
       Just (TreacherySource _) -> [SkillModifier #willpower 1, SkillModifier #agility 1]
       _ -> []
   getModifiersFor _ _ = pure []

@@ -64,7 +64,7 @@ spec = describe "Rex's Curse" $ do
     chooseOnlyOption "start skill test"
     -- we sneak in this modifier to cause the next test (with the same token) to fail instead
     pushAndRun
-      $ skillTestModifier
+      =<< skillTestModifier
         sid
         (TestSource mempty)
         (toTarget investigator)

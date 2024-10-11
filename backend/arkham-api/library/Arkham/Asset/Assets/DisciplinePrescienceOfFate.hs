@@ -21,7 +21,7 @@ disciplinePrescienceOfFate = asset DisciplinePrescienceOfFate Cards.disciplinePr
 
 instance HasModifiersFor DisciplinePrescienceOfFate where
   getModifiersFor (InvestigatorTarget iid) (DisciplinePrescienceOfFate a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #combat 1]
+    toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DisciplinePrescienceOfFate where
@@ -48,7 +48,7 @@ disciplinePrescienceOfFateEffect = cardEffect DisciplinePrescienceOfFateEffect C
 instance HasModifiersFor DisciplinePrescienceOfFateEffect where
   getModifiersFor target@(InvestigatorTarget iid) (DisciplinePrescienceOfFateEffect a) | target == a.target = do
     getSkillTestInvestigator >>= \case
-      Just iid' | iid == iid' -> pure $ toModifiers a [AnySkillValue 5]
+      Just iid' | iid == iid' -> toModifiers a [AnySkillValue 5]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

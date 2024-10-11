@@ -21,7 +21,7 @@ dormitories = location Dormitories Cards.dormitories 1 (PerPlayer 3)
 instance HasModifiersFor Dormitories where
   getModifiersFor target (Dormitories attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Dormitories where

@@ -3,18 +3,16 @@ module Arkham.Location.Cards.CanalsOfTenochtitlan_181 (
   CanalsOfTenochtitlan_181 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype CanalsOfTenochtitlan_181 = CanalsOfTenochtitlan_181 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 canalsOfTenochtitlan_181 :: LocationCard CanalsOfTenochtitlan_181
@@ -27,26 +25,17 @@ canalsOfTenochtitlan_181 =
     (labelL .~ "diamond")
 
 instance HasModifiersFor CanalsOfTenochtitlan_181 where
-  getModifiersFor target (CanalsOfTenochtitlan_181 a)
-    | isTarget a target =
-        pure
-          $ toModifiers
-            a
-            [ShroudModifier (locationResources a) | locationResources a > 0]
+  getModifiersFor target (CanalsOfTenochtitlan_181 a) | isTarget a target = do
+    toModifiers a [ShroudModifier (locationResources a) | locationResources a > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CanalsOfTenochtitlan_181 where
-  getAbilities (CanalsOfTenochtitlan_181 attrs) =
-    withRevealedAbilities attrs
-      $ [ mkAbility attrs 1
-            $ ForcedAbility
-            $ PutLocationIntoPlay Timing.After Anyone
-            $ LocationWithId
-            $ toId attrs
-        , restrictedAbility attrs 2 (ResourcesOnThis $ AtLeast $ Static 1)
-            $ ForcedAbility
-            $ RoundEnds Timing.When
-        ]
+  getAbilities (CanalsOfTenochtitlan_181 a) =
+    extendRevealed
+      a
+      [ mkAbility a 1 $ forced $ PutLocationIntoPlay #after Anyone (be a)
+      , restrictedAbility a 2 (ResourcesOnThis $ atLeast 1) $ forced $ RoundEnds #when
+      ]
 
 instance RunMessage CanalsOfTenochtitlan_181 where
   runMessage msg l@(CanalsOfTenochtitlan_181 attrs) = case msg of

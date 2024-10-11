@@ -29,7 +29,7 @@ instance HasModifiersFor CragOfTheGhouls where
     if phase == MythosPhase && card `cardMatch` CardWithType TreacheryType
       then do
         history <- fmap fold . traverse (getHistory PhaseHistory) =<< select (investigatorAt a)
-        pure $ toModifiers a [AddKeyword Keyword.Surge | length (historyTreacheriesDrawn history) == 1]
+        toModifiers a [AddKeyword Keyword.Surge | length (historyTreacheriesDrawn history) == 1]
       else pure []
   getModifiersFor _ _ = pure []
 

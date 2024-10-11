@@ -21,7 +21,7 @@ instance HasModifiersFor SealOfTheElderSign5 where
     mSkillTest <- getSkillTest
     case mSkillTest of
       Just _ ->
-        pure $ toModifiers attrs [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
+        toModifiers attrs [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
       Nothing -> pure []
   getModifiersFor _ _ = pure []
 

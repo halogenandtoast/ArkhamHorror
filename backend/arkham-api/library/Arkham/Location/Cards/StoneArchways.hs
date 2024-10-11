@@ -27,7 +27,7 @@ instance HasModifiersFor StoneArchways where
   getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do
     isUnrevealedAdjacent <-
       lid <=~> (UnrevealedLocation <> oneOf [LocationInDirection dir (be attrs) | dir <- [minBound ..]])
-    pure $ toModifiers attrs [Blank | isUnrevealedAdjacent]
+    toModifiers attrs [Blank | isUnrevealedAdjacent]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities StoneArchways where

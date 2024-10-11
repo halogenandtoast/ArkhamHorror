@@ -3621,6 +3621,7 @@ instance Query ExtendedCardMatcher where
     game <- getGame
     go (Map.elems $ gameCards game) matcher
    where
+    go :: HasGame m => [Card] -> ExtendedCardMatcher -> m [Card]
     go [] = const (pure []) -- if we have no cards remaining, just stop
     go cs = \case
       CardIdentifiedByScenarioMetaKey key -> do
@@ -3805,7 +3806,7 @@ instance Query ExtendedCardMatcher where
         go cs matcher'
           >>= filterM
             ( \r ->
-                Helpers.withModifiers (toCardId r) [toModifier GameSource $ CanPlayWithOverride override]
+                Helpers.withModifiers (toCardId r) (toModifiers GameSource [CanPlayWithOverride override])
                   $ getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
             )
       CommittableCard imatch matcher' -> do
@@ -4656,12 +4657,12 @@ handleTraitRestrictedModifiers g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers \case
-        Modifier source (TraitRestrictedModifier t mt) isSetup -> do
+        Modifier source (TraitRestrictedModifier t mt) isSetup mcard -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup]
-        Modifier source (NonTraitRestrictedModifier t mt) isSetup -> do
+          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
+        Modifier source (NonTraitRestrictedModifier t mt) isSetup mcard -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup]
+          when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
@@ -4671,7 +4672,7 @@ handleBlanked g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
-        Modifier _ Blank _ -> applyBlank (targetToSource target)
+        Modifier _ Blank _ _ -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
@@ -4681,7 +4682,7 @@ applyBlank s = do
   for_ (mapToList current) $ \(target, targetModifiers) -> do
     let
       modifiers' = flip mapMaybe targetModifiers $ \case
-        Modifier s' _ _ | s == s' -> Nothing
+        Modifier s' _ _ _ | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
 

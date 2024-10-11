@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.CorsairOfLeng (
-  corsairOfLeng,
-  CorsairOfLeng (..),
-)
-where
+module Arkham.Enemy.Cards.CorsairOfLeng (corsairOfLeng, CorsairOfLeng (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Modifiers qualified as Mods
 import Arkham.Matcher
 import Arkham.Trait (Trait (City, Surface))
@@ -24,14 +18,12 @@ corsairOfLeng =
     ?~ SpawnAt (NearestLocationToYou $ oneOf [withTrait City, withTrait Surface])
 
 instance HasAbilities CorsairOfLeng where
-  getAbilities (CorsairOfLeng attrs) =
-    extend
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ EnemyAttacks #after Anyone AttackViaAlert $ be attrs]
+  getAbilities (CorsairOfLeng a) =
+    extend1 a $ mkAbility a 1 $ forced $ EnemyAttacks #after Anyone AttackViaAlert (be a)
 
 instance RunMessage CorsairOfLeng where
-  runMessage msg e@(CorsairOfLeng attrs) = case msg of
+  runMessage msg e@(CorsairOfLeng attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ phaseModifier (attrs.ability 1) attrs (Mods.EnemyEvade (-3))
+      phaseModifier (attrs.ability 1) attrs (Mods.EnemyEvade (-3))
       pure e
-    _ -> CorsairOfLeng <$> runMessage msg attrs
+    _ -> CorsairOfLeng <$> liftRunMessage msg attrs

@@ -16,7 +16,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype HaroldWalsted = HaroldWalsted AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haroldWalsted :: AssetCard HaroldWalsted
@@ -45,12 +45,11 @@ instance HasModifiersFor HaroldWalsted where
           selectAny
             $ LocationWithInvestigator (InvestigatorWithId iid)
             <> LocationWithTrait Miskatonic
-        pure
-          $ toModifiers
-            attrs
-            [ SkillModifier SkillIntellect 2
-            | isMiskatonic && controlledBy attrs iid
-            ]
+        toModifiers
+          attrs
+          [ SkillModifier SkillIntellect 2
+          | isMiskatonic && controlledBy attrs iid
+          ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

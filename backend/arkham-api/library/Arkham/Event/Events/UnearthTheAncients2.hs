@@ -46,10 +46,8 @@ instance RunMessage UnearthTheAncients2 where
       sid <- getRandom
       investigation <- mkInvestigate sid iid attrs
       cards <- traverse getCard (chosenCards metadata)
-      pushAll
-        [ skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost cards)
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost cards)
+      pushAll [enabled, toMessage investigation]
       pure e
     Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
       cards <- traverse getCard (chosenCards metadata)

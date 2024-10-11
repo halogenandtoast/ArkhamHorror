@@ -24,7 +24,7 @@ instance HasModifiersFor AbyssalTome2 where
     case mSource of
       Just (isAbilitySource attrs 1 -> True) -> do
         doom <- field AssetDoom (toId attrs)
-        pure $ toModifiers attrs [AnySkillValue doom, DamageDealt doom]
+        toModifiers attrs [AnySkillValue doom, DamageDealt doom]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

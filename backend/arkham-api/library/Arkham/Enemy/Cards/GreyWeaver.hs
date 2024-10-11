@@ -20,7 +20,7 @@ instance HasModifiersFor GreyWeaver where
   getModifiersFor (InvestigatorTarget iid) (GreyWeaver attrs) = do
     isReady <- toId attrs <=~> ReadyEnemy
     sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy attrs)
-    pure $ toModifiers attrs [CannotTakeAction #move | isReady && sameLocation]
+    toModifiers attrs [CannotTakeAction #move | isReady && sameLocation]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GreyWeaver where

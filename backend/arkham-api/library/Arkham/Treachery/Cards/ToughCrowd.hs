@@ -19,7 +19,7 @@ toughCrowd = treachery ToughCrowd Cards.toughCrowd
 
 instance HasModifiersFor ToughCrowd where
   getModifiersFor (InvestigatorTarget _) (ToughCrowd a) =
-    pure $ toModifiers a [AdditionalActionCostOf (IsAction Parley) 1]
+    toModifiers a [AdditionalActionCostOf (IsAction Parley) 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ToughCrowd where

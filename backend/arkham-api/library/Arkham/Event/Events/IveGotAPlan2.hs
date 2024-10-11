@@ -26,7 +26,7 @@ instance HasModifiersFor IveGotAPlan2 where
     case (mAction, mInvestigator) of
       (Just Fight, Just iid) -> do
         clueCount <- field InvestigatorClues iid
-        pure $ toModifiers attrs [DamageDealt (min clueCount 3), SkillModifier SkillIntellect 2]
+        toModifiers attrs [DamageDealt (min clueCount 3), SkillModifier SkillIntellect 2]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

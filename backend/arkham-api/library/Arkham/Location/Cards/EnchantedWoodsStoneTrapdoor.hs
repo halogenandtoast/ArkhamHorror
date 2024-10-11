@@ -29,7 +29,7 @@ instance HasModifiersFor EnchantedWoodsStoneTrapdoor where
     case (mAction, mSource, mInvestigator) of
       (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
         handSize <- fieldMap InvestigatorHand length iid
-        pure $ toModifiers attrs [ShroudModifier handSize | locationRevealed attrs]
+        toModifiers attrs [ShroudModifier handSize | locationRevealed attrs]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

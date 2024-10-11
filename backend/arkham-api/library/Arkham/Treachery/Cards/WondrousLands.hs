@@ -20,7 +20,7 @@ wondrousLands = treachery WondrousLands Cards.wondrousLands
 
 instance HasModifiersFor WondrousLands where
   getModifiersFor (LocationTarget lid) (WondrousLands attrs) =
-    pure $ toModifiers attrs [ShroudModifier (-2) | treacheryOnLocation lid attrs]
+    toModifiers attrs [ShroudModifier (-2) | treacheryOnLocation lid attrs]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WondrousLands where

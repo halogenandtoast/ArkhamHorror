@@ -28,17 +28,17 @@ instance HasAbilities Moxie1 where
 
 instance HasModifiersFor Moxie1 where
   getModifiersFor (AssetTarget aid) (Moxie1 attrs) | toId attrs == aid = do
-    pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Moxie1 where
   runMessage msg a@(Moxie1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
       pure a
     _ -> Moxie1 <$> runMessage msg attrs

@@ -19,7 +19,7 @@ onyxGates = location OnyxGates Cards.onyxGates 1 (Static 12)
 instance HasModifiersFor OnyxGates where
   getModifiersFor target (OnyxGates attrs) | attrs `is` target = do
     n <- perPlayer 1
-    pure $ toModifiers attrs [ShroudModifier n]
+    toModifiers attrs [ShroudModifier n]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities OnyxGates where

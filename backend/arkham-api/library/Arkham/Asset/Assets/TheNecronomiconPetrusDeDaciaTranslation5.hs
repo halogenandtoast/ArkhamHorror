@@ -43,7 +43,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
         withSkillTest \sid ->
-          push $ skillTestModifier sid (toAbilitySource attrs 1) iid (AnySkillValue 2)
+          pushM $ skillTestModifier sid (toAbilitySource attrs 1) iid (AnySkillValue 2)
         pure a
       UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
         push $ drawCards iid (toAbilitySource attrs 2) 2

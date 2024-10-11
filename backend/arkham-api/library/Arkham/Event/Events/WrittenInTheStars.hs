@@ -57,14 +57,14 @@ instance HasModifiersFor WrittenInTheStarsEffect where
         card <- getCard cid
         committable <- getIsCommittable iid card
         committedCards <- field InvestigatorCommittedCards iid
-        pure $ toModifiers attrs [MustBeCommitted | committable || card `elem` committedCards]
+        toModifiers attrs [MustBeCommitted | committable || card `elem` committedCards]
       _ -> error "Expected EffectMetaTarget"
   getModifiersFor target@(InvestigatorTarget iid) (WrittenInTheStarsEffect attrs) | Just (EffectMetaTarget target) == attrs.meta = do
     case attrs.target of
       CardIdTarget cid -> do
         card <- getCard cid
         committable <- getIsCommittable iid card
-        pure $ toModifiers attrs $ [CanCommitToSkillTestsAsIfInHand card | committable]
+        toModifiers attrs $ [CanCommitToSkillTestsAsIfInHand card | committable]
       _ -> error "Expected EffectMetaTarget"
   getModifiersFor _ _ = pure []
 

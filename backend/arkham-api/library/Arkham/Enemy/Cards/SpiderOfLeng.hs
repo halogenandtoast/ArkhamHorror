@@ -1,15 +1,13 @@
-module Arkham.Enemy.Cards.SpiderOfLeng (
-  spiderOfLeng,
-  SpiderOfLeng (..),
-)
-where
+module Arkham.Enemy.Cards.SpiderOfLeng (spiderOfLeng, SpiderOfLeng (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Message (createEnemy, toMessage)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype SpiderOfLeng = SpiderOfLeng EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,27 +17,20 @@ spiderOfLeng :: EnemyCard SpiderOfLeng
 spiderOfLeng = enemy SpiderOfLeng Cards.spiderOfLeng (3, Static 4, 3) (1, 1)
 
 instance HasAbilities SpiderOfLeng where
-  getAbilities (SpiderOfLeng x) =
-    extend x [mkAbility x 1 $ forced $ PhaseEnds #when #enemy]
+  getAbilities (SpiderOfLeng x) = extend1 x $ mkAbility x 1 $ forced $ PhaseEnds #when #enemy
 
 instance RunMessage SpiderOfLeng where
-  runMessage msg e@(SpiderOfLeng attrs) = case msg of
+  runMessage msg e@(SpiderOfLeng attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       lead <- getLead
-      player <- getLeadPlayer
       swarmsOfSpiders <- select $ enemyIs Cards.swarmOfSpiders
       if null swarmsOfSpiders
-        then
-          push $ findEncounterCard lead attrs [FromEncounterDeck, FromEncounterDiscard] Cards.swarmOfSpiders
-        else do
-          push
-            $ chooseOneAtATime player [targetLabel eid [PlaceSwarmCards lead eid 1] | eid <- swarmsOfSpiders]
+        then findEncounterCard lead attrs Cards.swarmOfSpiders
+        else chooseOneAtATimeM lead $ targets swarmsOfSpiders \eid -> push $ PlaceSwarmCards lead eid 1
       pure e
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do
-      creation <- createEnemy card (locationWithEnemy $ toId attrs)
-      pushAll
-        [ abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) creation.enemy NoInitialSwarm
-        , toMessage creation
-        ]
+      creation <- createEnemy card (locationWithEnemy attrs.id)
+      abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) creation.enemy NoInitialSwarm
+      push $ toMessage creation
       pure e
-    _ -> SpiderOfLeng <$> runMessage msg attrs
+    _ -> SpiderOfLeng <$> liftRunMessage msg attrs

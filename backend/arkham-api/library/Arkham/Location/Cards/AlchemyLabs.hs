@@ -21,7 +21,7 @@ alchemyLabs = location AlchemyLabs Cards.alchemyLabs 5 (Static 0)
 
 instance HasModifiersFor AlchemyLabs where
   getModifiersFor target (AlchemyLabs attrs) | isTarget attrs target = do
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+    toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AlchemyLabs where

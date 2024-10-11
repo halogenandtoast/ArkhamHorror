@@ -23,13 +23,11 @@ instance RunMessage Switchblade2 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifier sid source iid (SkillModifier #combat 2)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (DamageDealt 1)
+        pushM $ skillTestModifier sid attrs iid (DamageDealt 1)
       pure a
     _ -> Switchblade2 <$> runMessage msg attrs

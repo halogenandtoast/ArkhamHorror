@@ -22,7 +22,7 @@ instance HasAbilities AnalyticalMind where
 
 instance HasModifiersFor AnalyticalMind where
   getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs) | controlledBy attrs iid = do
-    pure $ toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
+    toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AnalyticalMind where

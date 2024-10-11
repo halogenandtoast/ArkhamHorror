@@ -14,7 +14,7 @@ holyRosary = assetWith HolyRosary Cards.holyRosary (sanityL ?~ 2)
 
 instance HasModifiersFor HolyRosary where
   getModifiersFor (InvestigatorTarget iid) (HolyRosary a) =
-    pure $ toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HolyRosary where

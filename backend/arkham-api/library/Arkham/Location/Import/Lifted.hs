@@ -4,6 +4,7 @@ import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Modifiers as X (toModifiers)
+import Arkham.Location.Helpers as X (adjacentLocations)
 import Arkham.Location.Runner as X (
   IsLocation,
   LocationAttrs (..),
@@ -11,6 +12,7 @@ import Arkham.Location.Runner as X (
   Message (..),
   canBeFlippedL,
   connectsToL,
+  costToEnterUnrevealedL,
   extendRevealed,
   extendRevealed1,
   floodLevelL,
@@ -20,10 +22,12 @@ import Arkham.Location.Runner as X (
   is,
   labelL,
   location,
+  locationResignAction,
   locationWith,
   push,
   pushAll,
   setMeta,
+  symbolLabel,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,

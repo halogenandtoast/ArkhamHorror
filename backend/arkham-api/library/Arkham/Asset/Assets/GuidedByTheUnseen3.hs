@@ -6,10 +6,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getIsCommittable, getSkillTestInvestigator, withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Strategy
 
@@ -40,7 +39,7 @@ instance RunMessage GuidedByTheUnseen3 where
       canSearchDeck <- can.search.deck iid
       if canSearchDeck
         then search you (attrs.ability 1) iid [fromTopOfDeck 3] #any (defer attrs IsNotDraw)
-        else whenM (can.shuffle.deck iid) $ push $ ShuffleDeck $ Deck.InvestigatorDeck iid
+        else whenM (can.shuffle.deck iid) $ shuffleDeck iid
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       committable <- filterM (getIsCommittable iid) cards
@@ -49,15 +48,12 @@ instance RunMessage GuidedByTheUnseen3 where
           then chooseOne iid [Label "Continue" [unfocus]]
           else withSkillTest \sid ->
             -- MustBeCommitted prevents being able to uncommit, as it is really "committed"
-            chooseOne iid $ Label "Do not commit any cards" [unfocus]
-              : [ targetLabel
-                  card
-                  [ unfocus
-                  , SpendUses (attrs.ability 1) (toTarget attrs) Secret 1
-                  , Msg.skillTestModifier sid attrs (toCardId card) MustBeCommitted
-                  , SkillTestCommitCard iid card
-                  ]
-                | card <- committable
-                ]
+            chooseOneM iid do
+              labeled "Do not commit any cards" $ push unfocus
+              targets committable \card -> do
+                push unfocus
+                push $ SpendUses (attrs.ability 1) (toTarget attrs) Secret 1
+                skillTestModifier sid attrs (toCardId card) MustBeCommitted
+                push $ SkillTestCommitCard iid card
       pure a
     _ -> GuidedByTheUnseen3 <$> liftRunMessage msg attrs

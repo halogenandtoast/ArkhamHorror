@@ -16,7 +16,7 @@ sledDog = ally SledDog Cards.sledDog (2, 2)
 
 instance HasModifiersFor SledDog where
   getModifiersFor target (SledDog a) | a `is` target = do
-    pure $ toModifiers a [SharesSlotWith 2 "Sled Dog"]
+    toModifiers a [SharesSlotWith 2 "Sled Dog"]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SledDog where

@@ -21,19 +21,18 @@ darkHorse5 = asset DarkHorse5 Cards.darkHorse5
 instance HasModifiersFor DarkHorse5 where
   getModifiersFor (InvestigatorTarget iid) (DarkHorse5 a) | controlledBy a iid = do
     resourceCount <- field InvestigatorResources iid
-    pure
-      $ toModifiers
-        a
-        ( if resourceCount == 0
-            then
-              [ SkillModifier SkillWillpower 1
-              , SkillModifier SkillIntellect 1
-              , SkillModifier SkillCombat 1
-              , SkillModifier SkillAgility 1
-              , MayChooseNotToTakeUpkeepResources
-              ]
-            else [MayChooseNotToTakeUpkeepResources]
-        )
+    toModifiers
+      a
+      ( if resourceCount == 0
+          then
+            [ SkillModifier SkillWillpower 1
+            , SkillModifier SkillIntellect 1
+            , SkillModifier SkillCombat 1
+            , SkillModifier SkillAgility 1
+            , MayChooseNotToTakeUpkeepResources
+            ]
+          else [MayChooseNotToTakeUpkeepResources]
+      )
   getModifiersFor _ _ = pure []
 
 instance RunMessage DarkHorse5 where

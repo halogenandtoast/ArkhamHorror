@@ -1,21 +1,17 @@
-module Arkham.Act.Cards.BeyondTheMistV3 (
-  BeyondTheMistV3 (..),
-  beyondTheMistV3,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.BeyondTheMistV3 (BeyondTheMistV3 (..), beyondTheMistV3) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.CampaignLogKey
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount, getSetAsideCardsMatching)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Movement
+import Arkham.Modifier
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV3 = BeyondTheMistV3 ActAttrs
@@ -42,50 +38,34 @@ instance HasAbilities BeyondTheMistV3 where
   getAbilities _ = []
 
 instance RunMessage BeyondTheMistV3 where
-  runMessage msg a@(BeyondTheMistV3 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      withSkillTest \sid ->
-        push $ skillTestModifier sid (toSource attrs) (SkillTestTarget sid) (Difficulty (-2))
+  runMessage msg a@(BeyondTheMistV3 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       geistTrap <- getJustLocationByName "The Geist-Trap"
+      reveal geistTrap
       investigatorsAtUnvisitedIsles <- select $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
+      for_ investigatorsAtUnvisitedIsles \iid -> moveTo attrs iid geistTrap
       players <- getPlayerCount
       lodgeNeophytes <-
         take (if players > 2 then 2 else 1) <$> getSetAsideCardsMatching (cardIs Enemies.lodgeNeophyte)
-      creationMessages <-
-        traverse (\lodgeNeophyte -> createEnemyAt_ lodgeNeophyte geistTrap Nothing) lodgeNeophytes
-      josefIsAliveAndWell <- getHasRecord JosefIsAliveAndWell
+      for_ lodgeNeophytes (`createEnemyAt_` geistTrap)
 
-      josefMessages <-
-        if josefIsAliveAndWell
-          then do
-            josef <- getSetAsideCard Enemies.josefMeiger
-            josefCreation <- createEnemyAt_ josef geistTrap Nothing
-            investigators <- getInvestigators
-            pure
-              $ josefCreation
-              : [ gameModifier
-                  attrs
-                  iid
-                  $ CannotParleyWith
-                  $ enemyIs Enemies.josefMeiger
-                | iid <- investigators
-                ]
-          else pure []
+      whenHasRecord JosefIsAliveAndWell do
+        josef <- getSetAsideCard Enemies.josefMeiger
+        createEnemyAt_ josef geistTrap
+        eachInvestigator \iid -> gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.josefMeiger
 
-      pushAll
-        $ RevealLocation Nothing geistTrap
-        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-          <> creationMessages
-          <> josefMessages
-          <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      push $ NextAdvanceActStep attrs.id 1
+      advanceActDeck attrs
       pure a
-    NextAdvanceActStep aid 1 | aid == toId attrs -> do
-      rest <- getSetAsideCardsMatching (CardFromEncounterSet SilverTwilightLodge)
-      pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck rest, ShuffleEncounterDiscardBackIn]
+    NextAdvanceActStep aid 1 | aid == attrs.id -> do
+      shuffleCardsIntoDeck Deck.EncounterDeck
+        =<< getSetAsideCardsMatching (CardFromEncounterSet SilverTwilightLodge)
+      shuffleEncounterDiscardBackIn
       pure a
-    _ -> BeyondTheMistV3 <$> runMessage msg attrs
+    _ -> BeyondTheMistV3 <$> liftRunMessage msg attrs

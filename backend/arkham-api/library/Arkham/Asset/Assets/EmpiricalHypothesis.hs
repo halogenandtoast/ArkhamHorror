@@ -157,7 +157,7 @@ empiricalHypothesisEffect =
 
 instance HasModifiersFor EmpiricalHypothesisEffect where
   getModifiersFor target (EmpiricalHypothesisEffect attrs) | isNothing attrs.meta && target == attrs.target = do
-    pure $ toModifiers attrs [ReduceCostOf AnyCard 3]
+    toModifiers attrs [ReduceCostOf AnyCard 3]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EmpiricalHypothesisEffect where

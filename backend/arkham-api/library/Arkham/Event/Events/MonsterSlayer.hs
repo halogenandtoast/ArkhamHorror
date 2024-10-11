@@ -19,8 +19,9 @@ instance RunMessage MonsterSlayer where
     PlayThisEvent iid eid | eid == attrs.id -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
+      enabled <- skillTestModifier sid attrs iid (DamageDealt 1)
       pushAll
-        [ skillTestModifier sid attrs iid (DamageDealt 1)
+        [ enabled
         , chooseFight
         ]
       pure e

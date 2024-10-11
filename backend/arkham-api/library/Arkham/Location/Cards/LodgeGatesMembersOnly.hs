@@ -21,7 +21,7 @@ lodgeGatesMembersOnly = location LodgeGatesMembersOnly Cards.lodgeGatesMembersOn
 
 instance HasModifiersFor LodgeGatesMembersOnly where
   getModifiersFor (EnemyTarget _) (LodgeGatesMembersOnly attrs) =
-    pure $ toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs)]
+    toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LodgeGatesMembersOnly where

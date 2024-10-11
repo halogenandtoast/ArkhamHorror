@@ -19,7 +19,7 @@ burialGround = location BurialGround Cards.burialGround 4 (PerPlayer 1)
 instance HasModifiersFor BurialGround where
   getModifiersFor (EnemyTarget eid) (BurialGround attrs) = do
     isGhoul <- eid <=~> EnemyWithTrait Ghoul
-    pure $ toModifiers attrs [ForceSpawnLocation (LocationWithId $ toId attrs) | isGhoul]
+    toModifiers attrs [ForceSpawnLocation (LocationWithId $ toId attrs) | isGhoul]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BurialGround where

@@ -106,9 +106,10 @@ instance RunMessage ActAttrs where
       1
       (Window.revealedChaosTokens -> [token])
       _ -> do
+        enabled <- chaosTokenEffect source token $ ChaosTokenFaceModifier [Zero]
         pushAll
           [ ChaosTokenCanceled iid source token
-          , chaosTokenEffect source token $ ChaosTokenFaceModifier [Zero]
+          , enabled
           ]
         pure $ a {actUsedWheelOfFortuneX = True}
     PlaceKey (isTarget a -> True) k -> do

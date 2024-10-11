@@ -2,13 +2,13 @@ module Arkham.Asset.Assets.Zeal (zeal, Zeal (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Projection
 
 newtype Zeal = Zeal AssetAttrs
@@ -29,38 +29,26 @@ instance HasAbilities Zeal where
     ]
 
 instance RunMessage Zeal where
-  runMessage msg a@(Zeal attrs) = case msg of
+  runMessage msg a@(Zeal attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       otherCats <- select $ oneOf [assetIs Cards.hope, assetIs Cards.augur]
-      for_ otherCats $ push . toDiscardBy iid (attrs.ability 1)
+      for_ otherCats $ toDiscardBy iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
       sid <- getRandom
       discarded <- selectNone $ AssetWithId (toId attrs)
       catsInDiscard <-
-        fieldMap
-          InvestigatorDiscard
-          (filter (`cardMatch` oneOf [cardIs Cards.hope, cardIs Cards.augur]))
-          iid
-      player <- getPlayer iid
+        fieldMap InvestigatorDiscard (filterCards (oneOf [cardIs Cards.hope, cardIs Cards.augur])) iid
       zealCard <- field AssetCard (toId attrs)
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        $ [skillTestModifier sid source iid (BaseSkillOf #combat 5)]
-        <> [skillTestModifier sid source sid SkillTestAutomaticallySucceeds | discarded]
-        <> [chooseFight]
-        <> [ questionLabel "Put into play from discard" player
-            $ ChooseOne
-            $ [ CardLabel
-                (toCardCode card)
-                [ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [zealCard]
-                , PutCardIntoPlay iid (toCard card) Nothing NoPayment []
-                ]
-              | card <- catsInDiscard
-              ]
-            <> [Label "Skip" []]
-           | notNull catsInDiscard
-           ]
+      skillTestModifier sid source iid (BaseSkillOf #combat 5)
+      when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
+      pushM $ mkChooseFight sid iid source
+      chooseOrRunOneM iid do
+        questionLabeled "Put into play from discard"
+        for_ catsInDiscard \card -> cardLabeled card do
+          shuffleCardsIntoDeck iid (only zealCard)
+          putCardIntoPlay iid card
+        labeled "Skip" nothing
       pure a
-    _ -> Zeal <$> runMessage msg attrs
+    _ -> Zeal <$> liftRunMessage msg attrs

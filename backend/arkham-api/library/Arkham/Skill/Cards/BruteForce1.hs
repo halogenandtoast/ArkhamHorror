@@ -1,16 +1,11 @@
-module Arkham.Skill.Cards.BruteForce1 (
-  bruteForce1,
-  BruteForce1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.BruteForce1 (bruteForce1, BruteForce1 (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -26,7 +21,7 @@ instance HasModifiersFor BruteForce1 where
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack)) -> pure $ toModifiers a [AddSkillIcons [#combat, #combat]]
+      (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack)) -> toModifiers a [AddSkillIcons [#combat, #combat]]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -39,7 +34,7 @@ instance RunMessage BruteForce1 where
       case (mAction, mSource, mInvestigator) of
         (Just Action.Fight, Just (AbilitySource (EnemySource _) AbilityAttack), Just iid) -> do
           withSkillTest \sid ->
-            push $ skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
+            pushM $ skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
         _ -> pure ()
       pure s
     _ -> BruteForce1 <$> runMessage msg attrs

@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -28,37 +27,25 @@ witchHauntedWoodsAbandonedMine =
     (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsAbandonedMine where
-  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsAbandonedMine a) =
-    do
-      resources <- field InvestigatorResources iid
-      pure
-        $ toModifiers
-          a
-          [ CannotInvestigateLocation (toId a)
-          | resources >= 3 && resources <= 10
-          ]
+  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsAbandonedMine a) = do
+    resources <- field InvestigatorResources iid
+    toModifiers a [CannotInvestigateLocation (toId a) | resources >= 3 && resources <= 10]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WitchHauntedWoodsAbandonedMine where
-  getAbilities (WitchHauntedWoodsAbandonedMine attrs) =
-    withBaseAbilities
-      attrs
-      [ limitedAbility (GroupLimit PerRound 1)
-          $ restrictedAbility
-            attrs
-            1
-            ( Here
-                <> ( InvestigatorExists
-                      $ InvestigatorWithAnyResources
-                      <> AnyInvestigator
-                        [ You
-                        , InvestigatorAt
-                            (NotLocation $ LocationWithInvestigator You)
-                        ]
-                   )
-            )
-          $ FastAbility Free
-      ]
+  getAbilities (WitchHauntedWoodsAbandonedMine a) =
+    extendRevealed1 a
+      $ groupLimit PerRound
+      $ restricted
+        a
+        1
+        ( Here
+            <> ( exists
+                  $ InvestigatorWithAnyResources
+                  <> oneOf [You, InvestigatorAt (not_ $ LocationWithInvestigator You)]
+               )
+        )
+      $ FastAbility Free
 
 -- Note: we above ProxyTarget here by doubling it to include the two and from,
 -- it would be nice to have a better way to handle this
@@ -66,14 +53,11 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
   runMessage msg l@(WitchHauntedWoodsAbandonedMine attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       resources <- field InvestigatorResources iid
-      let
-        checkResources =
-          if resources > 0 then id else (<> InvestigatorWithAnyResources)
+      let checkResources = if resources > 0 then id else (<> InvestigatorWithAnyResources)
       iids <-
         selectWithField InvestigatorResources
           $ checkResources
-          $ InvestigatorAt
-            (NotLocation $ locationWithInvestigator iid)
+          $ InvestigatorAt (not_ $ locationWithInvestigator iid)
 
       player <- getPlayer iid
 
@@ -85,9 +69,7 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
             (MaxAmountTarget 3)
             [("Resources", (0, resources))]
             $ ProxyTarget (toTarget attrs)
-            $ ProxyTarget
-              (InvestigatorTarget iid)
-              (InvestigatorTarget iid')
+            $ ProxyTarget (InvestigatorTarget iid) (InvestigatorTarget iid')
         chooseMsg2 <-
           chooseAmounts
             player

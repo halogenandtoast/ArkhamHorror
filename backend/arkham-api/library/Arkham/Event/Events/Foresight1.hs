@@ -36,10 +36,9 @@ instance RunMessage Foresight1 where
   runMessage msg e@(Foresight1 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (getWindowInvestigator -> iid') _ | eid == toId attrs -> do
       cardNames <- allCardNames
-      chooseOneDropDown
-        iid
-        [ (name, cardDrawModifier attrs iid' [Foresight name])
-        | name <- cardNames
-        ]
+
+      chooseOneDropDown iid =<< for cardNames \name -> do
+        enabled <- cardDrawModifier attrs iid' [Foresight name]
+        pure (name, enabled)
       pure e
     _ -> Foresight1 <$> liftRunMessage msg attrs

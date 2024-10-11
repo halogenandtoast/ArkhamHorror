@@ -21,7 +21,7 @@ instance HasModifiersFor MoonLizard where
     mInvestigator <- selectOne $ investigatorEngagedWith attrs
     x <- maybe (pure 5) getAlarmLevel mInvestigator
     nonCaves <- select $ not_ (LocationWithTrait Cave)
-    pure $ toModifiers attrs $ [Mod.EnemyFight x, Mod.EnemyEvade x] <> map CannotEnter nonCaves
+    toModifiers attrs $ [Mod.EnemyFight x, Mod.EnemyEvade x] <> map CannotEnter nonCaves
   getModifiersFor _ _ = pure []
 
 instance RunMessage MoonLizard where

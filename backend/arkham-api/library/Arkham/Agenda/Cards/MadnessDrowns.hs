@@ -23,7 +23,7 @@ madnessDrowns = agenda (2, A) MadnessDrowns Cards.madnessDrowns (Static 7)
 instance HasModifiersFor MadnessDrowns where
   getModifiersFor (EnemyTarget eid) (MadnessDrowns a) = do
     isHastur <- eid `isMatch` EnemyWithTitle "Hastur"
-    pure $ toModifiers a [EnemyFight 1 | isHastur]
+    toModifiers a [EnemyFight 1 | isHastur]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MadnessDrowns where

@@ -3,11 +3,10 @@ module Arkham.Asset.Assets.Bonesaw (bonesaw, Bonesaw (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype Bonesaw = Bonesaw AssetAttrs
@@ -38,15 +37,11 @@ instance RunMessage Bonesaw where
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid ->
-        chooseOne
-          iid
-          [ Label
-              "Take 1 damage to do +1 damage"
-              [ Msg.assignDamage iid (attrs.ability 1) 1
-              , Msg.skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-              ]
-          , Label "Do not take damage" []
-          ]
+        chooseOneM iid do
+          labeled "Take 1 damage to do +1 damage" do
+            assignDamage iid (attrs.ability 1) 1
+            skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+          labeled "Do not take damage" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       investigators <- select $ HealableInvestigator (attrs.ability 2) #damage $ colocatedWith iid

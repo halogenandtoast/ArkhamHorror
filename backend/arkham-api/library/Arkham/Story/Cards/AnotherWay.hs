@@ -1,19 +1,14 @@
-module Arkham.Story.Cards.AnotherWay (
-  AnotherWay (..),
-  anotherWay,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.AnotherWay (AnotherWay (..), anotherWay) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 import Arkham.Trait qualified as Trait
 
 newtype AnotherWay = AnotherWay StoryAttrs
@@ -24,43 +19,23 @@ anotherWay :: StoryCard AnotherWay
 anotherWay = story AnotherWay Cards.anotherWay
 
 instance RunMessage AnotherWay where
-  runMessage msg s@(AnotherWay attrs) = case msg of
+  runMessage msg s@(AnotherWay attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ Label
-              "I could never turn my back on humanity"
-              [ Exhaust (toTarget alejandro)
-              , DisengageEnemyFromAll alejandro
-              , CreateWindowModifierEffect
-                  EffectGameWindow
-                  ( EffectModifiers
-                      $ toModifiers
-                        attrs
-                        [CannotParleyWith $ enemyIs Enemies.alejandroVela]
-                  )
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
-          , Label
-              "I accept"
-              [ RemoveEnemy alejandro
-              , AdvanceToAct 1 Acts.timelock A (toSource attrs)
-              , CreateWindowModifierEffect
-                  EffectGameWindow
-                  ( EffectModifiers
-                      $ toModifiers
-                        attrs
-                        [ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
-                        , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist
-                        , CannotBeEngagedBy $ EnemyWithTrait Trait.Cultist
-                        ]
-                  )
-                  (toSource attrs)
-                  (InvestigatorTarget iid)
-              ]
-          ]
+      chooseOneM iid do
+        labeled "I could never turn my back on humanity" do
+          exhaustThis alejandro
+          disengageFromAll alejandro
+          gameModifier attrs iid $ CannotParleyWith $ enemyIs Enemies.alejandroVela
+        labeled "I accept" do
+          push $ RemoveEnemy alejandro
+          push $ AdvanceToAct 1 Acts.timelock A (toSource attrs)
+          gameModifiers
+            attrs
+            iid
+            [ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
+            , CannotBeAttackedBy $ EnemyWithTrait Trait.Cultist
+            , CannotBeEngagedBy $ EnemyWithTrait Trait.Cultist
+            ]
       pure s
-    _ -> AnotherWay <$> runMessage msg attrs
+    _ -> AnotherWay <$> liftRunMessage msg attrs

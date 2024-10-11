@@ -78,7 +78,7 @@ pennysFateEffect = cardEffect PennysFateEffect Cards.pennysFate
 instance HasModifiersFor PennysFateEffect where
   getModifiersFor (AssetTarget aid) (PennysFateEffect a) = do
     isPenny <- elem aid <$> select (assetIs Assets.pennyWhite)
-    pure $ toModifiers a [DoNotTakeUpSlot AllySlot | isPenny]
+    toModifiers a [DoNotTakeUpSlot AllySlot | isPenny]
   getModifiersFor _ _ = pure []
 
 instance RunMessage PennysFateEffect where

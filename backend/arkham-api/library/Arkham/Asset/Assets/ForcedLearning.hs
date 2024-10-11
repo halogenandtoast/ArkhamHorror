@@ -14,7 +14,7 @@ forcedLearning = asset ForcedLearning Cards.forcedLearning
 
 instance HasModifiersFor ForcedLearning where
   getModifiersFor (InvestigatorTarget iid) (ForcedLearning a) | a `controlledBy` iid = do
-    pure $ toModifiers a [AlternateUpkeepDraw (toTarget a)]
+    toModifiers a [AlternateUpkeepDraw (toTarget a)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ForcedLearning where

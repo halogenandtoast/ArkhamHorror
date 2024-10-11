@@ -1,15 +1,11 @@
-module Arkham.Enemy.Cards.LiarWithNoFace (
-  liarWithNoFace,
-  LiarWithNoFace (..),
-)
-where
+module Arkham.Enemy.Cards.LiarWithNoFace (liarWithNoFace, LiarWithNoFace (..)) where
 
-import Arkham.Card
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Treachery.Types (Field (..))
 
 newtype LiarWithNoFace = LiarWithNoFace EnemyAttrs
@@ -18,40 +14,25 @@ newtype LiarWithNoFace = LiarWithNoFace EnemyAttrs
 
 liarWithNoFace :: EnemyCard LiarWithNoFace
 liarWithNoFace =
-  enemyWith
-    LiarWithNoFace
-    Cards.liarWithNoFace
-    (3, Static 4, 3)
-    (0, 2)
-    (preyL .~ Prey MostCardsInHand)
+  enemyWith LiarWithNoFace Cards.liarWithNoFace (3, Static 4, 3) (0, 2)
+    $ preyL
+    .~ Prey MostCardsInHand
 
 instance HasAbilities LiarWithNoFace where
   getAbilities (LiarWithNoFace x) =
-    withBaseAbilities
-      x
-      [ restrictedAbility
-          x
-          1
-          (youExist $ InvestigatorWithTreacheryInHand $ TreacheryWithTitle "Whispering Chaos")
-          $ forced
-          $ EnemyAttacks #when You AnyEnemyAttack (be x)
-      ]
+    extend1 x
+      $ restricted x 1 (youExist $ InvestigatorWithTreacheryInHand $ TreacheryWithTitle "Whispering Chaos")
+      $ forced
+      $ EnemyAttacks #when You AnyEnemyAttack (be x)
 
 instance RunMessage LiarWithNoFace where
-  runMessage msg e@(LiarWithNoFace attrs) = case msg of
+  runMessage msg e@(LiarWithNoFace attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cards <-
-        selectWithField TreacheryCard
-          $ TreacheryInHandOf (InvestigatorWithId iid)
-          <> TreacheryWithTitle "Whispering Chaos"
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            whisperingChaos
-            [RevealCard (toCardId card), enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)]
-          | (whisperingChaos, card) <- cards
-          ]
+        selectWithField TreacheryCard $ treacheryInHandOf iid <> TreacheryWithTitle "Whispering Chaos"
+      chooseOneM iid do
+        for_ cards \(whisperingChaos, card) -> targeting whisperingChaos do
+          push $ RevealCard card.id
+          enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
       pure e
-    _ -> LiarWithNoFace <$> runMessage msg attrs
+    _ -> LiarWithNoFace <$> liftRunMessage msg attrs

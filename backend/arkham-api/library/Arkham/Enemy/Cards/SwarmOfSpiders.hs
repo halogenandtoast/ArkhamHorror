@@ -17,7 +17,7 @@ swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders (1, Static 1, 0) (1, 
 instance HasModifiersFor SwarmOfSpiders where
   getModifiersFor target (SwarmOfSpiders attrs) | attrs `is` target = do
     x <- selectCount $ enemyIs Cards.swarmOfSpiders <> at_ (locationWithEnemy attrs)
-    pure $ toModifiers attrs [Mods.EnemyEvade x]
+    toModifiers attrs [Mods.EnemyEvade x]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SwarmOfSpiders where

@@ -26,7 +26,7 @@ office = location Office Cards.office 4 (PerPlayer 1)
 instance HasModifiersFor Office where
   getModifiersFor (EnemyTarget eid) (Office a) = do
     atOffice <- eid <=~> enemyAt (toId a)
-    pure $ toModifiers a [RemoveKeyword Keyword.Aloof | atOffice]
+    toModifiers a [RemoveKeyword Keyword.Aloof | atOffice]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Office where

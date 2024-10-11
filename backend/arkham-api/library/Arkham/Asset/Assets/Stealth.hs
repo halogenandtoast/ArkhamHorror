@@ -27,7 +27,7 @@ instance RunMessage Stealth where
       pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
     ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do
-      push $ skillTestModifier sid source eid (EnemyEvade (-2))
+      pushM $ skillTestModifier sid source eid (EnemyEvade (-2))
       pure a
     AfterSkillTestEnds
       (isAbilitySource attrs 1 -> True)
@@ -38,8 +38,9 @@ instance RunMessage Stealth where
         isYourTurn <- iid <=~> TurnInvestigator
         whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid eid]
         afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid eid]
+        enemyCannotEngage <- turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid)
         pushAll
-          $ [turnModifier iid attrs (toTarget eid) (EnemyCannotEngage iid) | isYourTurn]
+          $ [enemyCannotEngage | isYourTurn]
           <> [whenWindow]
           <> [DisengageEnemy iid eid | canDisengage]
           <> [EnemyCheckEngagement eid | canDisengage]

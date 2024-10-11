@@ -29,7 +29,7 @@ instance HasModifiersFor ChapelCryptSpectral_174 where
   getModifiersFor target (ChapelCryptSpectral_174 attrs) | isTarget attrs target = do
     shouldModifyShroud <-
       selectNone $ investigatorAt (toId attrs) <> HasMatchingTreachery (TreacheryWithTrait Hex)
-    pure $ toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
+    toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ChapelCryptSpectral_174 where

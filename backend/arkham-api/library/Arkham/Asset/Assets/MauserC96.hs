@@ -25,7 +25,8 @@ instance RunMessage MauserC96 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
+      pushAll [enabled, chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
       canReady <-

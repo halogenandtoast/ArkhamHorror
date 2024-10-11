@@ -16,7 +16,7 @@ schoolhouse_212 = location Schoolhouse_212 Cards.schoolhouse_212 4 (Static 1)
 instance HasModifiersFor Schoolhouse_212 where
   getModifiersFor (InvestigatorTarget iid) (Schoolhouse_212 attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotCommitCards #skill | here]
+    toModifiers attrs [CannotCommitCards #skill | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Schoolhouse_212 where

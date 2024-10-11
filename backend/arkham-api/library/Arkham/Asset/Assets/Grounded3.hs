@@ -22,10 +22,9 @@ instance HasAbilities Grounded3 where
 
 instance HasModifiersFor Grounded3 where
   getModifiersFor target (Grounded3 attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (Grounded3 attrs) | iid `controls` attrs = do
-    pure $ toModifiers attrs [AnySkillValue 1]
+    toModifiers attrs [AnySkillValue 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Grounded3 where

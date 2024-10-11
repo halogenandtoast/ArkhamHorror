@@ -1,11 +1,10 @@
 module Arkham.Treachery.Cards.ClawsOfSteam (clawsOfSteam, ClawsOfSteam (..)) where
 
-import Arkham.Classes
-import Arkham.Game.Helpers
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ClawsOfSteam = ClawsOfSteam TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -15,15 +14,13 @@ clawsOfSteam :: TreacheryCard ClawsOfSteam
 clawsOfSteam = treachery ClawsOfSteam Cards.clawsOfSteam
 
 instance RunMessage ClawsOfSteam where
-  runMessage msg t@(ClawsOfSteam attrs@TreacheryAttrs {..}) = case msg of
+  runMessage msg t@(ClawsOfSteam attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      pushAll
-        [ roundModifier attrs iid CannotMove
-        , InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAssetsFirst 2 0
-        ]
+      roundModifier attrs iid CannotMove
+      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAssetsFirst 2 0
       pure t
-    _ -> ClawsOfSteam <$> runMessage msg attrs
+    _ -> ClawsOfSteam <$> liftRunMessage msg attrs

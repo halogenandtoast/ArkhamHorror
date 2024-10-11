@@ -24,7 +24,7 @@ disciplineQuiescenceOfThought = asset DisciplineQuiescenceOfThought Cards.discip
 
 instance HasModifiersFor DisciplineQuiescenceOfThought where
   getModifiersFor (InvestigatorTarget iid) (DisciplineQuiescenceOfThought a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DisciplineQuiescenceOfThought where

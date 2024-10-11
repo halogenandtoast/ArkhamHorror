@@ -3,7 +3,6 @@ module Arkham.Investigator.Cards.JimCulverParallel (jimCulverParallel, JimCulver
 import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Game.Helpers (getModifiedChaosTokenFace)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Import.Lifted qualified as Msg (Message (RevealChaosToken))
@@ -25,7 +24,7 @@ jimCulverParallel =
 instance HasAbilities JimCulverParallel where
   getAbilities (JimCulverParallel a) =
     [ playerLimit PerRound
-        $ restrictedAbility
+        $ restricted
           a
           1
           (Self <> exists (AssetControlledBy You <> AssetNotAtUsesX <> AssetWithUseType Charge))
@@ -43,12 +42,10 @@ instance RunMessage JimCulverParallel where
     When (Msg.RevealChaosToken _ iid token) | iid == attrs.id -> do
       faces <- getModifiedChaosTokenFace token
       when (ElderSign `elem` faces) do
-        chooseOne
-          iid
-          [ Label "Resolve as {elderSign}" []
-          , Label "Resolve as {skull}" [Msg.chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]]
-          , Label "Resolve as {curse}" [Msg.chaosTokenEffect attrs token $ ChaosTokenFaceModifier [CurseToken]]
-          ]
+        chooseOneM iid do
+          labeled "Resolve as {elderSign}" nothing
+          labeled "Resolve as {skull}" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [Skull]
+          labeled "Resolve as {curse}" $ chaosTokenEffect attrs token $ ChaosTokenFaceModifier [CurseToken]
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> AssetNotAtUsesX <> AssetWithUseType Charge

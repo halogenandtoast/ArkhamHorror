@@ -42,7 +42,7 @@ defiance2Effect = cardEffect Defiance2Effect Cards.defiance2
 instance HasModifiersFor Defiance2Effect where
   getModifiersFor (ChaosTokenFaceTarget face) (Defiance2Effect a)
     | face `elem` [Skull, Cultist, Tablet, ElderThing] =
-        pure $ toModifiers a [IgnoreChaosTokenEffects]
+        toModifiers a [IgnoreChaosTokenEffects]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Defiance2Effect where

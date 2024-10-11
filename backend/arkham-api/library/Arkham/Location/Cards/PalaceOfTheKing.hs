@@ -39,7 +39,7 @@ instance HasModifiersFor PalaceOfTheKing where
             n <- getPlayerCountValue (PerPlayer 5)
             hasEnoughDamage <- fieldP EnemyDamage (>= n) hastur
             pure [CannotBeFlipped | not hasEnoughDamage]
-        pure $ toModifiers attrs modifiers'
+        toModifiers attrs modifiers'
   getModifiersFor _ _ = pure []
 
 instance RunMessage PalaceOfTheKing where

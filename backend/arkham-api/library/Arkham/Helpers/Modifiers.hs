@@ -13,6 +13,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Matcher.Types
 import Arkham.Message
@@ -30,7 +31,7 @@ import Data.Monoid (First (..))
 withModifiers
   :: (HasGame m, Targetable target)
   => target
-  -> [Modifier]
+  -> (m [Modifier])
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
 withModifiers = withModifiers'
@@ -79,230 +80,267 @@ withoutModifiers
   :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
 withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 
-toModifier :: Sourceable a => a -> ModifierType -> Modifier
-toModifier a mType = Modifier (toSource a) mType False
+toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier
+toModifier a mType = Modifier (toSource a) mType False <$> sourceToMaybeCard a
 
-toModifiers :: Sourceable a => a -> [ModifierType] -> [Modifier]
-toModifiers = map . toModifier
+toModifiers :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m [Modifier]
+toModifiers = traverse . toModifier
 
-modified :: (Sourceable a, Applicative m) => a -> [ModifierType] -> m [Modifier]
-modified a = pure . toModifiers a
+modified :: (Sourceable a, HasGame m) => a -> [ModifierType] -> m [Modifier]
+modified a = toModifiers a
 
-maybeModified :: (Sourceable a, Monad m) => a -> MaybeT m [ModifierType] -> m [Modifier]
+maybeModified :: (Sourceable a, HasGame m) => a -> MaybeT m [ModifierType] -> m [Modifier]
 maybeModified a = modified a . fromMaybe [] <=< runMaybeT
 
-toModifiersWith :: Sourceable a => a -> (Modifier -> Modifier) -> [ModifierType] -> [Modifier]
-toModifiersWith a f xs = map (f . toModifier a) xs
+toModifiersWith
+  :: (HasGame m, Sourceable a) => a -> (Modifier -> Modifier) -> [ModifierType] -> m [Modifier]
+toModifiersWith a f xs = traverse (fmap f . toModifier a) xs
 
 skillTestModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => SkillTestId
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 skillTestModifier sid source target modifier =
   skillTestModifiers sid source target [modifier]
 
 skillTestModifiers
-  :: forall target source
-   . (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => SkillTestId
   -> source
   -> target
   -> [ModifierType]
-  -> Message
-skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect (#skillTest sid) (effectModifiers source mods) source target
+  -> m Message
+skillTestModifiers sid (toSource -> source) (toTarget -> target) mods = do
+  ems <- effectModifiers source mods
+  pure $ CreateWindowModifierEffect (#skillTest sid) ems source target
 
 nextSkillTestModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 nextSkillTestModifier source target modifier =
   nextSkillTestModifiers source target [modifier]
 
 nextSkillTestModifiers
-  :: forall target source
-   . (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> [ModifierType]
-  -> Message
-nextSkillTestModifiers (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect EffectNextSkillTestWindow (effectModifiers source mods) source target
+  -> m Message
+nextSkillTestModifiers (toSource -> source) (toTarget -> target) mods = do
+  ems <- effectModifiers source mods
+  pure $ CreateWindowModifierEffect EffectNextSkillTestWindow ems source target
 
-effectModifiers :: Sourceable a => a -> [ModifierType] -> EffectMetadata Window Message
-effectModifiers source = EffectModifiers . toModifiers source
+effectModifiers
+  :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m (EffectMetadata Window Message)
+effectModifiers source ms = EffectModifiers <$> toModifiers source ms
 
 createWindowModifierEffect
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => EffectWindow
   -> source
   -> target
   -> [ModifierType]
-  -> Message
-createWindowModifierEffect eWindow (toSource -> source) (toTarget -> target) mods =
-  CreateWindowModifierEffect eWindow (effectModifiers source mods) source target
+  -> m Message
+createWindowModifierEffect eWindow (toSource -> source) (toTarget -> target) mods = do
+  ems <- effectModifiers source mods
+  pure $ CreateWindowModifierEffect eWindow ems source target
 
 createCostModifiers
-  :: (Sourceable source, IsCard card) => source -> card -> [ModifierType] -> Message
+  :: (HasGame m, Sourceable source, IsCard card) => source -> card -> [ModifierType] -> m Message
 createCostModifiers source (toCard -> card) modifiers' =
   createWindowModifierEffect (EffectCardCostWindow $ toCardId card) source (toCardId card) modifiers'
 
-reduceCostOf :: (Sourceable source, IsCard card) => source -> card -> Int -> Message
+reduceCostOf :: (HasGame m, Sourceable source, IsCard card) => source -> card -> Int -> m Message
 reduceCostOf source (toCard -> card) n = createCostModifiers source card [ReduceCostOf (CardWithId $ toCardId card) n]
 
 turnModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 turnModifier iid source target modifier = createWindowModifierEffect (EffectTurnWindow iid) source target [modifier]
 
 turnModifiers
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
   -> [ModifierType]
-  -> Message
+  -> m Message
 turnModifiers iid source target modifiers = createWindowModifierEffect (EffectTurnWindow iid) source target modifiers
 
 nextTurnModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 nextTurnModifier iid source target modifier = createWindowModifierEffect (EffectNextTurnWindow iid) source target [modifier]
 
 nextTurnModifiers
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
   -> [ModifierType]
-  -> Message
+  -> m Message
 nextTurnModifiers iid source target modifiers = createWindowModifierEffect (EffectNextTurnWindow iid) source target modifiers
 
 createRoundModifier
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 createRoundModifier = createWindowModifierEffect EffectRoundWindow
 
 roundModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 roundModifier source target modifier = createWindowModifierEffect EffectRoundWindow source target [modifier]
 
 roundModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 roundModifiers = createRoundModifier
 
 gameModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 gameModifier source target modifier = createWindowModifierEffect EffectGameWindow source target [modifier]
 
 resolutionModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 resolutionModifier source target modifier = createWindowModifierEffect EffectResolutionWindow source target [modifier]
 
 nextPhaseModifier
-  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
 nextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectPhaseWindowFor phase) source target [modifier]
 
+nextPhaseModifiers
+  :: (Sourceable source, Targetable target, HasGame m)
+  => Phase
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m Message
+nextPhaseModifiers phase source target modifiers = createWindowModifierEffect (EffectPhaseWindowFor phase) source target modifiers
+
 endOfPhaseModifier
-  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
 endOfPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfPhaseWindowFor phase) source target [modifier]
 
 endOfNextPhaseModifier
-  :: (Sourceable source, Targetable target) => Phase -> source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m)
+  => Phase
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
 endOfNextPhaseModifier phase source target modifier = createWindowModifierEffect (EffectUntilEndOfNextPhaseWindowFor phase) source target [modifier]
 
 enemyAttackModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 enemyAttackModifier source target modifier = createWindowModifierEffect EffectAttackWindow source target [modifier]
 
+enemyAttackModifiers
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
+enemyAttackModifiers source target modifiers = createWindowModifierEffect EffectAttackWindow source target modifiers
+
 costModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 costModifier source target modifier = createWindowModifierEffect EffectCostWindow source target [modifier]
 
+costModifiers
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
+costModifiers source target modifiers = createWindowModifierEffect EffectCostWindow source target modifiers
+
 eventModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 eventModifier source target modifier = createWindowModifierEffect EffectEventWindow source target [modifier]
 
 gainResourcesModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => InvestigatorId
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 gainResourcesModifier iid source target modifier = createWindowModifierEffect (EffectGainResourcesWindow iid) source target [modifier]
 
 eventModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 eventModifiers source target modifiers = createWindowModifierEffect EffectEventWindow source target modifiers
 
 movementModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 movementModifier source target modifier = createWindowModifierEffect EffectMoveWindow source target [modifier]
 
 phaseModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 phaseModifier source target modifier = createWindowModifierEffect EffectPhaseWindow source target [modifier]
 
 phaseModifiers
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
 cardDrawModifier
-  :: (Sourceable source, Targetable target) => source -> target -> [ModifierType] -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
 cardDrawModifier source target modifiers = createWindowModifierEffect EffectCardDrawWindow source target modifiers
 
 cardResolutionModifier
-  :: (Sourceable source, Targetable target, IsCard card)
+  :: (Sourceable source, Targetable target, IsCard card, HasGame m)
   => card
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 cardResolutionModifier card source target modifier =
   createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target [modifier]
 
 cardResolutionModifiers
-  :: (Sourceable source, Targetable target, IsCard card)
+  :: (Sourceable source, Targetable target, IsCard card, HasGame m)
   => card
   -> source
   -> target
   -> [ModifierType]
-  -> Message
+  -> m Message
 cardResolutionModifiers card source target modifiers = createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target modifiers
 
 searchModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 searchModifier source target modifier = createWindowModifierEffect EffectSearchWindow source target [modifier]
 
 setupModifier
-  :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 setupModifier source target modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
 abilityModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => AbilityRef
   -> source
   -> target
   -> ModifierType
-  -> Message
+  -> m Message
 abilityModifier abilityRef source target modifier = createWindowModifierEffect (EffectAbilityWindow abilityRef) source target [modifier]
 
-chaosTokenEffect :: Sourceable source => source -> ChaosToken -> ModifierType -> Message
-chaosTokenEffect (toSource -> source) token modifier =
-  CreateChaosTokenEffect (effectModifiers source [modifier]) source token
+chaosTokenEffect
+  :: (HasGame m, Sourceable source) => source -> ChaosToken -> ModifierType -> m Message
+chaosTokenEffect (toSource -> source) token modifier = do
+  ems <- effectModifiers source [modifier]
+  pure $ CreateChaosTokenEffect ems source token
 
 onRevealChaosTokenEffect
   :: (Sourceable source, Targetable target)
@@ -314,7 +352,8 @@ onRevealChaosTokenEffect
   -> Message
 onRevealChaosTokenEffect sid matchr source target msgs = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msgs
 
-uiEffect :: (Sourceable source, Targetable target) => source -> target -> ModifierType -> Message
+uiEffect
+  :: (HasGame m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [modifier]
 
 getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
@@ -346,25 +385,22 @@ getMetaMaybe def target k = do
   pure $ fromMaybe def value
 
 revelationModifiers
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> TreacheryId
   -> [ModifierType]
-  -> Message
-revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
-  CreateWindowModifierEffect
-    (EffectRevelationWindow tid)
-    (effectModifiers source modifiers)
-    source
-    target
+  -> m Message
+revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers = do
+  ems <- effectModifiers source modifiers
+  pure $ CreateWindowModifierEffect (EffectRevelationWindow tid) ems source target
 
 revelationModifier
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> TreacheryId
   -> ModifierType
-  -> Message
-revelationModifier (toSource -> source) (toTarget -> target) tid modifier =
+  -> m Message
+revelationModifier (toSource -> source) (toTarget -> target) tid modifier = do
   revelationModifiers source target tid [modifier]

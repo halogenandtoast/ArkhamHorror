@@ -23,13 +23,12 @@ astralMirror2 = asset (AstralMirror2 . (`with` Meta 0)) Cards.astralMirror2
 
 instance HasModifiersFor AstralMirror2 where
   getModifiersFor (InvestigatorTarget iid) (AstralMirror2 (With attrs _)) | attrs `controlledBy` iid = do
-    pure
-      $ toModifiers
-        attrs
-        [ GiveAdditionalAction
-            $ AdditionalAction "Astral Mirror (2)" (toSource attrs)
-            $ PlayCardRestrictedAdditionalAction (basic #asset <> WillGoIntoSlot #hand)
-        ]
+    toModifiers
+      attrs
+      [ GiveAdditionalAction
+          $ AdditionalAction "Astral Mirror (2)" (toSource attrs)
+          $ PlayCardRestrictedAdditionalAction (basic #asset <> WillGoIntoSlot #hand)
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AstralMirror2 where

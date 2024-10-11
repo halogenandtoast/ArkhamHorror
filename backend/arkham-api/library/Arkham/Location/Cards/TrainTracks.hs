@@ -18,7 +18,7 @@ trainTracks = location TrainTracks Cards.trainTracks 3 (PerPlayer 1)
 instance HasModifiersFor TrainTracks where
   getModifiersFor (LocationTarget lid) (TrainTracks a) = do
     isNorthside <- lid <=~> locationIs Cards.northside
-    pure $ toModifiers a [ConnectedToWhen (LocationWithId lid) (be a) | isNorthside]
+    toModifiers a [ConnectedToWhen (LocationWithId lid) (be a) | isNorthside]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrainTracks where

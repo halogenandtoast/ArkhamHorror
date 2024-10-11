@@ -18,7 +18,7 @@ fightingLessons = skill FightingLessons Cards.fightingLessons
 
 instance HasModifiersFor FightingLessons where
   getModifiersFor (CardIdTarget cid) (FightingLessons attrs) | toCardId attrs == cid = do
-    pure $ toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
+    toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
   getModifiersFor _ _ = pure []
 
 instance RunMessage FightingLessons where

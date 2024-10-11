@@ -1,19 +1,20 @@
 module Arkham.Investigator.Cards.MandyThompson (mandyThompson, MandyThompson (..)) where
 
-import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Modifiers
+import Arkham.Ability
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
+import Arkham.Strategy
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
 newtype MandyThompson = MandyThompson InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 mandyThompson :: InvestigatorCard MandyThompson
 mandyThompson =
@@ -44,21 +45,16 @@ getInvestigator = \case
   _ -> error "Expected investigator"
 
 instance RunMessage MandyThompson where
-  runMessage msg i@(MandyThompson attrs) = case msg of
+  runMessage msg i@(MandyThompson attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getInvestigator -> iid') _ -> do
       let source = toAbilitySource attrs 1
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Search 3 additional cards" [searchModifier source iid' $ SearchDepth 3]
-          , Label "Resolve 1 additional target of the search" [searchModifier source iid' $ AdditionalTargets 1]
-          ]
+      chooseOneM iid do
+        labeled "Search 3 additional cards" $ searchModifier source iid' $ SearchDepth 3
+        labeled "Resolve 1 additional target of the search" do
+          searchModifier source iid' $ AdditionalTargets 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      pushAll
-        [ search iid ElderSign iid [fromTopOfDeck 3] #any (DrawOrCommitFound iid 1)
-        , ShuffleDeck (Deck.InvestigatorDeck iid)
-        ]
+      search iid ElderSign iid [fromTopOfDeck 3] #any (DrawOrCommitFound iid 1)
+      shuffleDeck iid
       pure i
-    _ -> MandyThompson <$> runMessage msg attrs
+    _ -> MandyThompson <$> liftRunMessage msg attrs

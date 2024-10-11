@@ -23,7 +23,7 @@ ikiaqTheCouncilsChosen3 = allyWith IkiaqTheCouncilsChosen3 Cards.ikiaqTheCouncil
 instance HasModifiersFor IkiaqTheCouncilsChosen3 where
   getModifiersFor (InvestigatorTarget iid) (IkiaqTheCouncilsChosen3 a) | a `controlledBy` iid = do
     let n = 1 - count (`cardMatch` WeaknessCard) a.cardsUnderneath
-    pure $ toModifiers a [SkillModifier #willpower n, SkillModifier #intellect n]
+    toModifiers a [SkillModifier #willpower n, SkillModifier #intellect n]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities IkiaqTheCouncilsChosen3 where

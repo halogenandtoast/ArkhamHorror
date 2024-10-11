@@ -29,7 +29,7 @@ instance HasModifiersFor EnchantedWoodsMysticalForest where
       then do
         clues <- field LocationClues (toId attrs)
         discardableCards <- fieldMap InvestigatorHand (filter (`cardMatch` DiscardableCard)) iid
-        pure $ toModifiers attrs [CannotMove | clues > 0, length discardableCards < clues]
+        toModifiers attrs [CannotMove | clues > 0, length discardableCards < clues]
       else pure []
   getModifiersFor _ _ = pure []
 

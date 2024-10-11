@@ -24,7 +24,7 @@ baseOfTheSteps = location BaseOfTheSteps Cards.baseOfTheSteps 3 (PerPlayer 1)
 instance HasModifiersFor BaseOfTheSteps where
   getModifiersFor target (BaseOfTheSteps a) | a `is` target = do
     blocked <- selectAny $ locationIs Cards.sevenHundredSteps <> LocationWithAnyClues
-    pure $ toModifiers a [Blocked | blocked]
+    toModifiers a [Blocked | blocked]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BaseOfTheSteps where

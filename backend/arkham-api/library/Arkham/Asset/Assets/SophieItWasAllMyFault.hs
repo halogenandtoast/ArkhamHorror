@@ -28,7 +28,7 @@ instance HasAbilities SophieItWasAllMyFault where
 
 instance HasModifiersFor SophieItWasAllMyFault where
   getModifiersFor (InvestigatorTarget iid) (SophieItWasAllMyFault attrs) | controlledBy attrs iid = do
-    pure $ toModifiers attrs [AnySkillValue (-1)]
+    toModifiers attrs [AnySkillValue (-1)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SophieItWasAllMyFault where
@@ -40,7 +40,7 @@ instance RunMessage SophieItWasAllMyFault where
     -- back over again.
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ Flip iid (toSource attrs) (toTarget attrs)

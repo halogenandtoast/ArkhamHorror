@@ -27,8 +27,7 @@ foolishnessFoolishCatOfUlthar =
 instance HasModifiersFor FoolishnessFoolishCatOfUlthar where
   getModifiersFor (InvestigatorTarget iid) (FoolishnessFoolishCatOfUlthar a) | a `controlledBy` iid = do
     horror <- field AssetHorror a.id
-    pure
-      $ toModifiers a
+    toModifiers a
       $ if horror == 0
         then [SkillModifier stype 1 | stype <- allSkills]
         else [HealHorrorAsIfOnInvestigator (toTarget a) horror]

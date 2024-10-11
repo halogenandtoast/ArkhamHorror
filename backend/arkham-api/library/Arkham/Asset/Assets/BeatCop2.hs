@@ -19,7 +19,7 @@ beatCop2 = ally BeatCop2 Cards.beatCop2 (3, 2)
 
 instance HasModifiersFor BeatCop2 where
   getModifiersFor (InvestigatorTarget iid) (BeatCop2 a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #combat 1]
+    toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BeatCop2 where

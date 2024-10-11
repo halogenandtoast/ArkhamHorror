@@ -18,7 +18,7 @@ instance HasModifiersFor Nightriders where
   getModifiersFor target (Nightriders a) | a `is` target = do
     isHost <- toId a <=~> IsHost
     noSwarm <- selectNone $ SwarmOf (toId a)
-    pure $ toModifiers a $ [Mod.EnemyEvade (-5) | isHost && noSwarm]
+    toModifiers a $ [Mod.EnemyEvade (-5) | isHost && noSwarm]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Nightriders where

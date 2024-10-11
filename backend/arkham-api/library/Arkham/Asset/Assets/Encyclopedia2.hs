@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.Encyclopedia2 (
-  Encyclopedia2 (..),
-  encyclopedia2,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Encyclopedia2 (Encyclopedia2 (..), encyclopedia2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.SkillType
 
 newtype Encyclopedia2 = Encyclopedia2 AssetAttrs
@@ -19,21 +16,16 @@ encyclopedia2 :: AssetCard Encyclopedia2
 encyclopedia2 = asset Encyclopedia2 Cards.encyclopedia2
 
 instance HasAbilities Encyclopedia2 where
-  getAbilities (Encyclopedia2 a) = [restrictedAbility a 1 ControlsThis $ actionAbilityWithCost (exhaust a)]
+  getAbilities (Encyclopedia2 a) = [restricted a 1 ControlsThis $ actionAbilityWithCost (exhaust a)]
 
 instance RunMessage Encyclopedia2 where
-  runMessage msg a@(Encyclopedia2 attrs) = case msg of
+  runMessage msg a@(Encyclopedia2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ affectsOthers $ colocatedWith iid
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ targetLabels targets
-        $ \target ->
-          only
-            $ chooseOne player
-            $ [ Label label [phaseModifier (toAbilitySource attrs 1) target $ SkillModifier skill 2]
-              | (label, skill) <- labeledSkills
-              ]
+      investigators <- selectTargets $ affectsOthers $ colocatedWith iid
+      chooseOneM iid do
+        targets investigators \target ->
+          chooseOneM iid do
+            for_ labeledSkills \(label, skill) ->
+              labeled label $ phaseModifier (attrs.ability 1) target $ SkillModifier skill 2
       pure a
-    _ -> Encyclopedia2 <$> runMessage msg attrs
+    _ -> Encyclopedia2 <$> liftRunMessage msg attrs

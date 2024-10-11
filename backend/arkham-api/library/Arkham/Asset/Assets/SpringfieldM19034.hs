@@ -18,21 +18,20 @@ springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 instance HasModifiersFor SpringfieldM19034 where
   getModifiersFor (AbilityTarget iid ability) (SpringfieldM19034 a)
     | tabooed TabooList19 a && isSource a ability.source && ability.index == 1 =
-        pure
-          $ toModifiers
-            a
-            [ CanModify
-                $ EnemyFightActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyWithoutModifier CannotBeAttacked
-                <> not_ (enemyEngagedWith iid)
-                <> oneOf
-                  [ EnemyAt YourLocation
-                  , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
-                  ]
-            ]
+        toModifiers
+          a
+          [ CanModify
+              $ EnemyFightActionCriteria
+              $ CriteriaOverride
+              $ EnemyCriteria
+              $ ThisEnemy
+              $ EnemyWithoutModifier CannotBeAttacked
+              <> not_ (enemyEngagedWith iid)
+              <> oneOf
+                [ EnemyAt YourLocation
+                , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
+                ]
+          ]
   getModifiersFor _ _ = pure []
 
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
@@ -61,11 +60,11 @@ instance RunMessage SpringfieldM19034 where
               else id
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFightMatch sid iid source (tabooExtend EnemyNotEngagedWithYou)
-      pushAll
-        [ skillTestModifiers sid attrs iid $ DamageDealt 2
-            : SkillModifier #combat 3
-            : [IgnoreRetaliate | tabooed TabooList19 attrs]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid attrs iid $ DamageDealt 2
+          : SkillModifier #combat 3
+          : [IgnoreRetaliate | tabooed TabooList19 attrs]
+
+      pushAll [enabled, chooseFight]
       pure a
     _ -> SpringfieldM19034 <$> runMessage msg attrs

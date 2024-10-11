@@ -20,7 +20,7 @@ surgeEffect = SurgeEffect . uncurry (baseAttrs "surge")
 
 instance HasModifiersFor SurgeEffect where
   getModifiersFor target (SurgeEffect EffectAttrs {..}) | target == effectTarget = do
-    pure $ toModifiers effectSource [AddKeyword Keyword.Surge]
+    toModifiers effectSource [AddKeyword Keyword.Surge]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SurgeEffect where

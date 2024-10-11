@@ -17,16 +17,15 @@ antiquary3 = asset Antiquary3 Cards.antiquary3
 
 instance HasModifiersFor Antiquary3 where
   getModifiersFor (InvestigatorTarget iid) (Antiquary3 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          #resource
-          (InvestigatorWithId iid)
-          (oneOf [CardWithTrait t | t <- [Favor, Relic, Ritual]])
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        #resource
+        (InvestigatorWithId iid)
+        (oneOf [CardWithTrait t | t <- [Favor, Relic, Ritual]])
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Antiquary3 where

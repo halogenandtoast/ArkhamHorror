@@ -20,7 +20,7 @@ instance HasModifiersFor EnchantedArmor2 where
   getModifiersFor (InvestigatorTarget iid) (EnchantedArmor2 attrs) =
     case attrs.controller of
       Just controller | controller == iid -> do
-        pure $ toModifiers attrs [CanAssignDamageToAsset attrs.id, CanAssignHorrorToAsset attrs.id]
+        toModifiers attrs [CanAssignDamageToAsset attrs.id, CanAssignHorrorToAsset attrs.id]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

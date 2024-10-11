@@ -1,16 +1,8 @@
-module Arkham.Event.Events.GritYourTeeth (
-  gritYourTeeth,
-  GritYourTeeth (..),
-) where
+module Arkham.Event.Events.GritYourTeeth (gritYourTeeth, GritYourTeeth (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 
 newtype GritYourTeeth = GritYourTeeth EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -20,14 +12,8 @@ gritYourTeeth :: EventCard GritYourTeeth
 gritYourTeeth = event GritYourTeeth Cards.gritYourTeeth
 
 instance RunMessage GritYourTeeth where
-  runMessage msg e@(GritYourTeeth attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      e
-        <$ pushAll
-          [ CreateWindowModifierEffect
-              EffectRoundWindow
-              (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
-              (toSource attrs)
-              (InvestigatorTarget iid)
-          ]
-    _ -> GritYourTeeth <$> runMessage msg attrs
+  runMessage msg e@(GritYourTeeth attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      roundModifier attrs iid $ AnySkillValue 1
+      pure e
+    _ -> GritYourTeeth <$> liftRunMessage msg attrs

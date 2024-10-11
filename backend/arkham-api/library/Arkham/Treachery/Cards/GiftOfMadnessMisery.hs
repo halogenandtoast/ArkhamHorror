@@ -16,7 +16,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessMisery = GiftOfMadnessMisery TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 giftOfMadnessMisery :: TreacheryCard GiftOfMadnessMisery
@@ -24,12 +24,11 @@ giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery
 
 instance HasModifiersFor GiftOfMadnessMisery where
   getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessMisery a) =
-    pure
-      $ toModifiers
-        a
-        [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
-        | treacheryInHandOf a == Just iid
-        ]
+    toModifiers
+      a
+      [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
+      | treacheryInHandOf a == Just iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GiftOfMadnessMisery where

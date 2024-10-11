@@ -25,10 +25,8 @@ instance RunMessage OneTwoPunch where
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
-      pushAll
-        [ skillTestModifier sid attrs iid (SkillModifier #combat 1)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat 1)
+      pushAll [enabled, chooseFight]
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) | isFirst metadata -> do
       skillTest <- fromJustNote "invalid call" <$> getSkillTest
@@ -37,15 +35,12 @@ instance RunMessage OneTwoPunch where
           isStillAlive <- selectAny $ EnemyWithId eid
           player <- getPlayer iid
           sid <- getRandom
+          enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
           push
             $ chooseOrRunOne player
             $ [ Label
                 "Fight that enemy again"
-                [ BeginSkillTestWithPreMessages'
-                    [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-                    ]
-                    (resetSkillTest sid skillTest)
-                ]
+                [BeginSkillTestWithPreMessages' [enabled] (resetSkillTest sid skillTest)]
               | isStillAlive
               ]
             <> [Label "Do not fight that enemy again" []]

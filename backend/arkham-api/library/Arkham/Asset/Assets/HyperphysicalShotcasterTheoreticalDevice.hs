@@ -46,29 +46,28 @@ hyperphysicalShotcasterTheoreticalDevice =
 instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
   getModifiersFor target (HyperphysicalShotcasterTheoreticalDevice (With attrs _)) | attrs `is` target = do
     let linked = attrs `hasCustomization` AethericLink
-    pure $ toModifiers attrs [AdditionalStartingUses 2 | linked]
+    toModifiers attrs [AdditionalStartingUses 2 | linked]
   getModifiersFor (AbilityTarget _iid ab) (HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) | isSource attrs ab.source && ab.index == 1 = do
     case manifest meta of
       Just Translocator -> do
-        pure
-          $ toModifiers
-            attrs
-            [ CanModify
-                $ EnemyEvadeActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ oneOf
-                  [ EnemyAt (ConnectedFrom YourLocation)
-                      <> NonEliteEnemy
-                      <> EnemyWithEvade
-                      <> EnemyCanEnter YourLocation
-                  , EnemyAt (CanEnterLocation You)
-                      <> oneOf [not_ (EnemyIsEngagedWith Anyone), MassiveEnemy]
-                      <> EnemyWithEvade
-                  , EnemyAt YourLocation <> EnemyIsEngagedWith You <> EnemyWithEvade
-                  ]
-            ]
+        toModifiers
+          attrs
+          [ CanModify
+              $ EnemyEvadeActionCriteria
+              $ CriteriaOverride
+              $ EnemyCriteria
+              $ ThisEnemy
+              $ oneOf
+                [ EnemyAt (ConnectedFrom YourLocation)
+                    <> NonEliteEnemy
+                    <> EnemyWithEvade
+                    <> EnemyCanEnter YourLocation
+                , EnemyAt (CanEnterLocation You)
+                    <> oneOf [not_ (EnemyIsEngagedWith Anyone), MassiveEnemy]
+                    <> EnemyWithEvade
+                , EnemyAt YourLocation <> EnemyIsEngagedWith You <> EnemyWithEvade
+                ]
+          ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

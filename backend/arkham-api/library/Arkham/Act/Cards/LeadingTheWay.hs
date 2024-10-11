@@ -26,7 +26,7 @@ instance HasModifiersFor LeadingTheWay where
     isBlockedPassage <-
       elem lid
         <$> select (locationIs Locations.blockedPassage)
-    pure $ toModifiers attrs [Blank | isBlockedPassage]
+    toModifiers attrs [Blank | isBlockedPassage]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LeadingTheWay where

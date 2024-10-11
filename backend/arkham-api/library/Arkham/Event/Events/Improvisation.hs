@@ -45,7 +45,7 @@ improvisationEffect = cardEffect ImprovisationEffect Cards.improvisation
 instance HasModifiersFor ImprovisationEffect where
   getModifiersFor target@(InvestigatorTarget iid) (ImprovisationEffect attrs) | attrs.target == target = do
     role <- field InvestigatorClass iid
-    pure $ toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
+    toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ImprovisationEffect where

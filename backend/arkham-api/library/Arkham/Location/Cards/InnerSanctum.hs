@@ -25,7 +25,7 @@ innerSanctum = location InnerSanctum Cards.innerSanctum 4 (PerPlayer 1)
 instance HasModifiersFor InnerSanctum where
   getModifiersFor (InvestigatorTarget iid) (InnerSanctum attrs) = do
     hasCultistKey <- iid <=~> InvestigatorWithKey CultistKey
-    pure $ toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasCultistKey]
+    toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasCultistKey]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities InnerSanctum where

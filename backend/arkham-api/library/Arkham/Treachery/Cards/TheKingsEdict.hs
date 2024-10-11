@@ -45,7 +45,7 @@ instance HasModifiersFor TheKingsEdictEffect where
   getModifiersFor target@(EnemyTarget eid) (TheKingsEdictEffect a) | target == a.target = do
     clueCount <- field EnemyClues eid
     doomCount <- field EnemyDoom eid
-    pure $ toModifiers a [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
+    toModifiers a [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheKingsEdictEffect where

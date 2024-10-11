@@ -26,7 +26,7 @@ instance RunMessage BlasphemousCovenant2 where
   runMessage msg a@(BlasphemousCovenant2 attrs) = case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       withSkillTest \sid -> do
-        push
+        pushM
           $ skillTestModifiers
             sid
             attrs

@@ -22,8 +22,7 @@ instance HasModifiersFor TheDeadWithNoName where
   getModifiersFor (EnemyTarget eid) (TheDeadWithNoName a) = do
     isRat <- eid <=~> enemyIs Enemies.swarmOfRats
     isUnnamable <- eid <=~> enemyIs Enemies.theUnnamable
-    pure
-      $ toModifiers a
+    toModifiers a
       $ (guard isRat $> AddKeyword (Swarming (Static 2)))
       <> (guard isUnnamable *> [RemoveKeyword Aloof, AddKeyword Massive])
   getModifiersFor _ _ = pure []
@@ -31,7 +30,7 @@ instance HasModifiersFor TheDeadWithNoName where
 instance HasAbilities TheDeadWithNoName where
   getAbilities (TheDeadWithNoName a) =
     [ skillTestAbility
-        $ restrictedAbility a 1 (exists $ enemyIs Enemies.theUnnamable <> EnemyAt YourLocation <> ReadyEnemy)
+        $ restricted a 1 (exists $ enemyIs Enemies.theUnnamable <> at_ YourLocation <> ReadyEnemy)
         $ forced
         $ TurnBegins #when You
     ]

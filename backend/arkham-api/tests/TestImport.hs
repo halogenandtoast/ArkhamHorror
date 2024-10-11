@@ -395,13 +395,13 @@ instance UpdateField "exhausted" Enemy Bool where
 
 instance UpdateField "elite" Enemy Bool where
   updateField True this = do
-    run $ gameModifier (TestSource mempty) (toTarget this) (AddTrait Elite)
+    run =<< gameModifier (TestSource mempty) (toTarget this) (AddTrait Elite)
     pure this
   updateField False _ = error "Cannot set elite to false"
 
 instance UpdateField "hunter" Enemy Bool where
   updateField True this = do
-    run $ gameModifier (TestSource mempty) (toTarget this) (AddKeyword Keyword.Hunter)
+    run =<< gameModifier (TestSource mempty) (toTarget this) (AddKeyword Keyword.Hunter)
     pure this
   updateField False _ = error "Cannot set hunter to false"
 

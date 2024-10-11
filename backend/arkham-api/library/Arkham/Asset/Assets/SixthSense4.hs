@@ -1,16 +1,19 @@
 module Arkham.Asset.Assets.SixthSense4 (sixthSense4, sixthSense4Effect, SixthSense4 (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Effect.Runner
+import Arkham.Classes.HasQueue (evalQueueT)
+import Arkham.Effect.Import
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Window qualified as Window
 
@@ -25,21 +28,16 @@ instance HasAbilities SixthSense4 where
   getAbilities (SixthSense4 a) = [investigateAbility a 1 mempty ControlsThis]
 
 instance RunMessage SixthSense4 where
-  runMessage msg a@(SixthSense4 attrs) = case msg of
+  runMessage msg a@(SixthSense4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
       sid <- getRandom
-      investigation <-
-        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
-
-      pushAll
-        $ [ createCardEffect Cards.sixthSense4 (effectMetaTarget sid) source (InvestigationTarget iid lid)
-          , skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
-          ]
-        <> leftOr investigation
+      createCardEffect Cards.sixthSense4 (effectMetaTarget sid) source (InvestigationTarget iid lid)
+      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 2)
+      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
-    _ -> SixthSense4 <$> runMessage msg attrs
+    _ -> SixthSense4 <$> liftRunMessage msg attrs
 
 newtype SixthSense4Effect = SixthSense4Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -49,58 +47,44 @@ sixthSense4Effect :: EffectArgs -> SixthSense4Effect
 sixthSense4Effect = cardEffect SixthSense4Effect Cards.sixthSense4
 
 instance RunMessage SixthSense4Effect where
-  runMessage msg e@(SixthSense4Effect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> case effectTarget of
-      InvestigationTarget iid' lid | iid == iid' -> do
-        when (chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
-          currentShroud <- fieldJust LocationShroud lid
-          locations <-
-            selectWithField
-              LocationShroud
-              ( RevealedLocation
-                  <> LocationMatchAny
-                    [ LocationWithDistanceFrom n Anywhere
-                    | n <- [1 .. 2]
-                    ]
-              )
-              <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
-
-          locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
-            mods <- getModifiers lid'
-            let costs = fold [m | AdditionalCostToInvestigate m <- mods]
-            canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
-            pure $ guard canAfford $> (location, costs)
-          player <- getPlayer iid
-          batchId <- getRandom
-          pushAll
-            [ If
-                (Window.RevealChaosTokenEffect iid token effectId)
-                [ chooseOne player
-                    $ Label "Do not choose other location" []
-                    : [ targetLabel
-                        location
-                        [ Would
-                            batchId
-                            [ PayAdditionalCost iid batchId cost
-                            , SetSkillTestTarget
-                                (BothTarget (toTarget location) (toTarget lid))
-                            , chooseOne
-                                player
-                                [ Label
-                                    "Use new location's shroud"
-                                    [skillTestModifier sid (AbilitySource effectSource 1) sid (SetDifficulty shroud)]
-                                , Label
-                                    "Use original locations shroud"
-                                    [skillTestModifier sid (AbilitySource effectSource 1) sid (SetDifficulty currentShroud)]
-                                ]
-                            ]
-                        ]
-                      | ((location, shroud), cost) <- locationsWithAdditionalCosts
+  runMessage msg e@(SixthSense4Effect attrs) = runQueueT $ case msg of
+    RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> do
+      case attrs.target of
+        InvestigationTarget iid' lid | iid == iid' -> do
+          when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
+            currentShroud <- fieldJust LocationShroud lid
+            locations <-
+              selectWithField
+                LocationShroud
+                ( RevealedLocation
+                    <> LocationMatchAny
+                      [ LocationWithDistanceFrom n Anywhere
+                      | n <- [1 .. 2]
                       ]
-                ]
-            , DisableEffect effectId
-            ]
-        pure e
-      _ -> error "Invalid target"
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> e <$ push (DisableEffect effectId)
-    _ -> SixthSense4Effect <$> runMessage msg attrs
+                )
+                <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
+
+            locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
+              mods <- getModifiers lid'
+              let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+              canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
+              pure $ guard canAfford $> (location, costs)
+            batchId <- getRandom
+            askQ <- evalQueueT $ chooseOneM iid do
+              labeled "Do not choose other location" nothing
+              for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
+                targeting location do
+                  batching batchId do
+                    push $ PayAdditionalCost iid batchId cost
+                    push $ SetSkillTestTarget (BothTarget (toTarget location) (toTarget lid))
+                    chooseOneM iid do
+                      labeled "Use new location's shroud" do
+                        skillTestModifier sid attrs.source sid (SetDifficulty shroud)
+                      labeled "Use original locations shroud" do
+                        skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
+            push $ If (Window.RevealChaosTokenEffect iid token attrs.id) askQ
+            disable attrs
+        _ -> error "Invalid target"
+      pure e
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
+    _ -> SixthSense4Effect <$> liftRunMessage msg attrs

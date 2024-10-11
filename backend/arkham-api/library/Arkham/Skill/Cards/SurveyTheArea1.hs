@@ -25,11 +25,11 @@ instance HasModifiersFor SurveyTheArea1 where
   getModifiersFor (CardIdTarget cid) (SurveyTheArea1 a) | toCardId a == cid = do
     agility <- field InvestigatorAgility (skillOwner a)
     intellect <- field InvestigatorIntellect (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
+    toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
   getModifiersFor target (SurveyTheArea1 a) | a `is` target = do
     agility <- field InvestigatorAgility (skillOwner a)
     intellect <- field InvestigatorIntellect (skillOwner a)
-    pure $ toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
+    toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SurveyTheArea1 where

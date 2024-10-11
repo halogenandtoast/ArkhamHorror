@@ -33,8 +33,8 @@ instance HasModifiersFor TheHiddenChamber where
     case mKeyToTheChamber of
       Just keyToTheChamber -> do
         placement <- field AssetPlacement keyToTheChamber
-        pure $ toModifiers attrs [Blocked | placement /= AttachedToLocation (toId attrs)]
-      _ -> pure $ toModifiers attrs [Blocked]
+        toModifiers attrs [Blocked | placement /= AttachedToLocation (toId attrs)]
+      _ -> toModifiers attrs [Blocked]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheHiddenChamber where

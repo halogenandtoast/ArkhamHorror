@@ -21,7 +21,7 @@ houseInTheReeds_210 = location HouseInTheReeds_210 Cards.houseInTheReeds_210 2 (
 instance HasModifiersFor HouseInTheReeds_210 where
   getModifiersFor (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotPlay #event | here]
+    toModifiers attrs [CannotPlay #event | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HouseInTheReeds_210 where

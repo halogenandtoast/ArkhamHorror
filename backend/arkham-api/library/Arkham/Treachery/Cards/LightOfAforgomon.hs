@@ -15,7 +15,7 @@ lightOfAforgomon = treachery LightOfAforgomon Cards.lightOfAforgomon
 
 instance HasModifiersFor LightOfAforgomon where
   getModifiersFor (InvestigatorTarget _) (LightOfAforgomon attrs) =
-    pure $ toModifiers attrs [TreatAllDamageAsDirect]
+    toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LightOfAforgomon where

@@ -13,7 +13,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype WhispersInYourHeadDread = WhispersInYourHeadDread TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whispersInYourHeadDread :: TreacheryCard WhispersInYourHeadDread
@@ -22,10 +22,7 @@ whispersInYourHeadDread =
 
 instance HasModifiersFor WhispersInYourHeadDread where
   getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDread a) =
-    pure
-      $ toModifiers
-        a
-        [CannotMoveMoreThanOnceEachTurn | treacheryInHandOf a == Just iid]
+    toModifiers a [CannotMoveMoreThanOnceEachTurn | treacheryInHandOf a == Just iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhispersInYourHeadDread where

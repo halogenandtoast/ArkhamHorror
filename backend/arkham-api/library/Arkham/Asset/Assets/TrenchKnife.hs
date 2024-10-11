@@ -16,7 +16,7 @@ trenchKnife = asset TrenchKnife Cards.trenchKnife
 
 instance HasModifiersFor TrenchKnife where
   getModifiersFor (InvestigatorTarget iid) (TrenchKnife attrs) | attrs `controlledBy` iid = do
-    pure $ toModifiers attrs [ActionDoesNotCauseAttacksOfOpportunity #engage]
+    toModifiers attrs [ActionDoesNotCauseAttacksOfOpportunity #engage]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrenchKnife where
@@ -29,9 +29,7 @@ instance RunMessage TrenchKnife where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
+      pushAll [enabled, chooseFight]
       pure a
     _ -> TrenchKnife <$> runMessage msg attrs

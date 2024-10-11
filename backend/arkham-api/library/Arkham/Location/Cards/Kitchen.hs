@@ -24,7 +24,7 @@ instance HasAbilities Kitchen where
 
 instance HasModifiersFor Kitchen where
   getModifiersFor (LocationTarget lid) (Kitchen attrs) | lid == toId attrs = do
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+    toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Kitchen where

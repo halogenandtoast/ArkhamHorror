@@ -19,7 +19,7 @@ sacrificialBeast =
 instance HasModifiersFor SacrificialBeast where
   getModifiersFor (InvestigatorTarget iid) (SacrificialBeast attrs) = do
     affected <- iid <=~> investigatorIs Investigators.jennyBarnes
-    pure $ toModifiers attrs [CannotGainResourcesFromPlayerCardEffects | affected]
+    toModifiers attrs [CannotGainResourcesFromPlayerCardEffects | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SacrificialBeast where

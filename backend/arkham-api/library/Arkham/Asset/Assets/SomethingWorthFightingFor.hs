@@ -26,8 +26,9 @@ instance HasModifiersFor SomethingWorthFightingFor where
     | not (controlledBy a iid) = do
         locationId <- field InvestigatorLocation iid
         assetLocationId <- field AssetLocation (toId a)
-        pure
-          [ toModifier a (CanAssignHorrorToAsset $ toId a)
+        toModifiers
+          a
+          [ CanAssignHorrorToAsset a.id
           | (locationId == assetLocationId) && isJust locationId
           ]
   getModifiersFor _ _ = pure []

@@ -15,7 +15,7 @@ policeBadge2 = asset PoliceBadge2 Cards.policeBadge2
 
 instance HasModifiersFor PoliceBadge2 where
   getModifiersFor (InvestigatorTarget iid) (PoliceBadge2 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PoliceBadge2 where

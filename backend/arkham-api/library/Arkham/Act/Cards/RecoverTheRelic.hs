@@ -27,7 +27,7 @@ instance HasModifiersFor RecoverTheRelic where
     isModified <-
       lid
         <=~> EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    pure $ toModifiers a [HealthModifier 2 | isModified]
+    toModifiers a [HealthModifier 2 | isModified]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RecoverTheRelic where

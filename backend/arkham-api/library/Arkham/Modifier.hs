@@ -446,6 +446,7 @@ data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
   , modifierActiveDuringSetup :: Bool
+  , modifierCard :: Maybe Card
   }
   deriving stock (Show, Eq, Ord, Data)
 

@@ -20,7 +20,7 @@ templeOfUnattainableDesires = location TempleOfUnattainableDesires Cards.templeO
 instance HasModifiersFor TempleOfUnattainableDesires where
   getModifiersFor target (TempleOfUnattainableDesires attrs) | isTarget attrs target = do
     beseechedTheKing <- remembered BeseechedTheKing
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs) && not beseechedTheKing]
+    toModifiers attrs [Blocked | not (locationRevealed attrs) && not beseechedTheKing]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TempleOfUnattainableDesires where

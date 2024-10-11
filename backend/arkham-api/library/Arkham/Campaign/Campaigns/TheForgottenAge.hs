@@ -447,14 +447,13 @@ instance RunMessage TheForgottenAge where
         withMedicine <- flip concatMapM iids $ \iid -> do
           n <- getSupplyCount iid Medicine
           pure $ replicate n iid
+        startingClues <- toModifiers CampaignSource [StartingClues 1]
+        cannotMulligan <- toModifiers CampaignSource [CannotMulligan]
         let
           (gasMessages, gasUpdate) = case withGasoline of
             [] ->
               ( [story players outOfGas]
-              , ala Endo foldMap
-                  $ [ modifiersL %~ insertWith (<>) iid [toModifier CampaignSource CannotMulligan]
-                    | iid <- iids
-                    ]
+              , ala Endo foldMap [modifiersL %~ insertWith (<>) iid cannotMulligan | iid <- iids]
               )
             x : _ -> ([UseSupply x Gasoline], id)
           mapMessages = case withMap of
@@ -467,12 +466,7 @@ instance RunMessage TheForgottenAge where
             [] -> ([story players secretsInTheStone], id)
             xs ->
               ( [story players patternsInTheStone]
-              , ala
-                  Endo
-                  foldMap
-                  [ modifiersL %~ insertWith (<>) iid [toModifier CampaignSource $ StartingClues 1]
-                  | iid <- xs
-                  ]
+              , ala Endo foldMap [modifiersL %~ insertWith (<>) iid startingClues | iid <- xs]
               )
           lowOnRationsCount = length iids - length provisions
           useProvisions = take (length iids) provisions
@@ -638,16 +632,12 @@ instance RunMessage TheForgottenAge where
         players <- allPlayers
         let storyEntry = if hasChalk then theWayIsOpen else theWayIsShut
         push $ story players storyEntry
-
+        mods <- toModifiers CampaignSource [CannotMulligan]
         let
           update =
             if hasChalk
               then id
-              else
-                ala Endo foldMap
-                  $ [ modifiersL %~ insertWith (<>) iid [toModifier CampaignSource CannotMulligan]
-                    | iid <- iids
-                    ]
+              else ala Endo foldMap $ [modifiersL %~ insertWith (<>) iid mods | iid <- iids]
         pure . TheForgottenAge . (`with` oldMetadata) $ attrs & update
       CampaignStep (InterludeStepPart 4 _ 4) -> do
         investigatorIds <- allInvestigatorIds
@@ -827,11 +817,8 @@ instance RunMessage TheForgottenAge where
         push $ NextCampaignStep (Just $ ScenarioStep "04344")
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
-        pure
-          . TheForgottenAge
-          . (`with` oldMetadata)
-          $ attrs
-          & (modifiersL %~ insertWith (<>) iid [toModifier CampaignSource $ StartingResources (-3)])
+        mods <- toModifiers CampaignSource [StartingResources (-3)]
+        pure . TheForgottenAge . (`with` oldMetadata) $ attrs & (modifiersL %~ insertWith (<>) iid mods)
       EndOfScenario _ -> do
         pure . TheForgottenAge . (`with` oldMetadata) $ attrs & modifiersL .~ mempty
       PickSupply investigatorId supply -> do

@@ -22,9 +22,8 @@ instance RunMessage FortyFiveAutomatic2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseFight <- mkChooseFight sid iid attrs
-      pushAll
-        [ skillTestModifiers sid attrs iid [DamageDealt 1, SkillModifier #combat 2, IgnoreRetaliate]
-        , toMessage chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid attrs iid [DamageDealt 1, SkillModifier #combat 2, IgnoreRetaliate]
+      pushAll [enabled, toMessage chooseFight]
       pure a
     _ -> FortyFiveAutomatic2 <$> runMessage msg attrs

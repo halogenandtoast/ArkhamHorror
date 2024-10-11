@@ -1,17 +1,13 @@
-module Arkham.Investigator.Cards.WendyAdamsParallel (
-  wendyAdamsParallel,
-  WendyAdamsParallel (..),
-)
-where
+module Arkham.Investigator.Cards.WendyAdamsParallel (wendyAdamsParallel, WendyAdamsParallel (..)) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Enemy.Types (Field (EnemyCard))
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestTarget, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 
@@ -28,7 +24,7 @@ wendyAdamsParallel =
 instance HasAbilities WendyAdamsParallel where
   getAbilities (WendyAdamsParallel a) =
     [ playerLimit PerTestOrAbility
-        $ restrictedAbility a 1 Self
+        $ restricted a 1 Self
         $ freeReaction
         $ SkillTestResult #after You #evading #success
     ]
@@ -45,14 +41,12 @@ instance RunMessage WendyAdamsParallel where
         filter ((`elem` [CurseToken, BlessToken]) . (.face)) <$> getSkillTestRevealedChaosTokens
       inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
 
-      chooseOne iid
-        $ [Label "Seal 1 {bless} or {curse} token from the chaos bag" [DoStep 1 msg] | notNull inBag]
-        <> [ Label
-            "Seal any {bless} or {curse} tokens revealed from the chaos bag during this test"
-            [DoStep 2 msg]
-           | notNull revealedTokens
-           ]
-
+      chooseOneM iid do
+        when (notNull inBag) do
+          labeled "Seal 1 {bless} or {curse} token from the chaos bag" $ doStep 1 msg
+        when (notNull revealedTokens) do
+          labeled "Seal any {bless} or {curse} tokens revealed from the chaos bag during this test" do
+            doStep 2 msg
       pure i
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       whenJustM getSkillTestTarget \case
@@ -60,11 +54,10 @@ instance RunMessage WendyAdamsParallel where
           inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
           card <- field EnemyCard eid
           push $ FocusChaosTokens inBag
-          chooseOne
-            iid
-            [ targetLabel token [SealChaosToken token, SealedChaosToken token card]
-            | token <- inBag
-            ]
+          chooseOneM iid do
+            targets inBag \token -> do
+              push $ SealChaosToken token
+              push $ SealedChaosToken token card
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i
@@ -75,13 +68,10 @@ instance RunMessage WendyAdamsParallel where
             filter ((`elem` [CurseToken, BlessToken]) . (.face)) <$> getSkillTestRevealedChaosTokens
           card <- field EnemyCard eid
           push $ FocusChaosTokens revealedTokens
-          chooseUpToN
-            iid
-            (length revealedTokens)
-            "Done sealing tokens"
-            [ targetLabel token [SealChaosToken token, SealedChaosToken token card]
-            | token <- revealedTokens
-            ]
+          chooseUpToNM iid (length revealedTokens) "Done sealing tokens" do
+            targets revealedTokens \token -> do
+              push $ SealChaosToken token
+              push $ SealedChaosToken token card
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i
@@ -90,22 +80,15 @@ instance RunMessage WendyAdamsParallel where
         tokens <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
         when (notNull tokens) do
           push $ FocusChaosTokens tokens
-          chooseUpToN
-            attrs.id
-            2
-            "Do not choose any more tokens"
-            [ targetLabel
-              token
-              [ Msg.skillTestModifiers
-                  sid
-                  attrs
-                  token
-                  [IgnoreChaosTokenModifier, IgnoreChaosTokenEffects, ReturnCursedToChaosBag, ReturnBlessedToChaosBag]
-              , RevealChaosToken (SkillTestSource sid) attrs.id token
-              , RevealSkillTestChaosTokensAgain attrs.id
-              ]
-            | token <- tokens
-            ]
+          chooseUpToNM attrs.id 2 "Do not choose any more tokens" do
+            targets tokens \token -> do
+              skillTestModifiers
+                sid
+                attrs
+                token
+                [IgnoreChaosTokenModifier, IgnoreChaosTokenEffects, ReturnCursedToChaosBag, ReturnBlessedToChaosBag]
+              push $ RevealChaosToken (SkillTestSource sid) attrs.id token
+              push $ RevealSkillTestChaosTokensAgain attrs.id
           push UnfocusChaosTokens
 
       pure i

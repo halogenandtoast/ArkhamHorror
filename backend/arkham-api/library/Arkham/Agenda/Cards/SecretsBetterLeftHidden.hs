@@ -30,7 +30,7 @@ secretsBetterLeftHidden =
 
 instance HasModifiersFor SecretsBetterLeftHidden where
   getModifiersFor (PhaseTarget MythosPhase) (SecretsBetterLeftHidden attrs) =
-    pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
+    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SecretsBetterLeftHidden where

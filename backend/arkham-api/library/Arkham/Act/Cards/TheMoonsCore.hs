@@ -8,7 +8,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 
 newtype TheMoonsCore = TheMoonsCore ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMoonsCore :: ActCard TheMoonsCore
@@ -17,20 +17,19 @@ theMoonsCore = act (3, A) TheMoonsCore Cards.theMoonsCore Nothing
 instance HasModifiersFor TheMoonsCore where
   getModifiersFor (InvestigatorTarget _) (TheMoonsCore x) = do
     -- Clues cannot be discovered from The Black Core except as a result of a successful investigation.
-    pure
-      $ toModifiers x [CannotDiscoverCluesExceptAsResultOfInvestigation (locationIs Locations.theBlackCore)]
+    toModifiers x [CannotDiscoverCluesExceptAsResultOfInvestigation (locationIs Locations.theBlackCore)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheMoonsCore where
   getAbilities (TheMoonsCore x) =
-    [ restrictedAbility
+    [ restricted
       x
       1
       ( exists (locationIs Locations.theBlackCore <> LocationWithoutClues)
           <> EachUndefeatedInvestigator (investigatorAt Locations.theBlackCore)
       )
       $ Objective
-      $ ForcedAbility AnyWindow
+      $ forced AnyWindow
     | onSide A x
     ]
 

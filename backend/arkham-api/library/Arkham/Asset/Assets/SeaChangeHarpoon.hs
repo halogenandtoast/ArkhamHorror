@@ -21,13 +21,13 @@ instance HasAbilities SeaChangeHarpoon where
   getAbilities (SeaChangeHarpoon attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
 
 instance HasModifiersFor SeaChangeHarpoon where
-  getModifiersFor (InvestigatorTarget iid) (SeaChangeHarpoon attrs) = do
-    toModifiers attrs . toList <$> runMaybeT do
-      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      skillCount <-
-        lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
-      guard (skillCount > 0) $> DamageDealt 1
+  getModifiersFor (InvestigatorTarget iid) (SeaChangeHarpoon attrs) = maybeModified attrs do
+    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+    skillCount <-
+      lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
+    guard (skillCount > 0)
+    pure [DamageDealt 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SeaChangeHarpoon where
@@ -36,7 +36,8 @@ instance RunMessage SeaChangeHarpoon where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
+      pushAll [enabled, chooseFight]
       pure a
     SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator

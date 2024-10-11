@@ -26,7 +26,7 @@ instance HasModifiersFor OpenGate where
     case eventPlacement a of
       AttachedToLocation lid' | lid /= lid' -> do
         hasGate <- selectAny $ EventAt (LocationWithId lid) <> eventIs Cards.openGate
-        pure $ toModifiers a [ConnectedToWhen (LocationWithId lid) (LocationWithId lid') | hasGate]
+        toModifiers a [ConnectedToWhen (LocationWithId lid) (LocationWithId lid') | hasGate]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

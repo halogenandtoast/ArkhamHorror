@@ -1,17 +1,12 @@
-module Arkham.Event.Events.NarrowEscape (
-  narrowEscape,
-  NarrowEscape (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.NarrowEscape (narrowEscape, NarrowEscape (..)) where
 
 import Arkham.Classes
 import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype NarrowEscape = NarrowEscape EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,11 +19,12 @@ instance RunMessage NarrowEscape where
   runMessage msg e@(NarrowEscape attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       iid' <- selectJust TurnInvestigator
+      ems <- effectModifiers attrs [AnySkillValue 2]
       pushAll
         [ CancelNext (toSource attrs) AttackMessage
         , CreateWindowModifierEffect
             (FirstEffectWindow [EffectNextSkillTestWindow, EffectTurnWindow iid'])
-            (EffectModifiers $ toModifiers attrs [AnySkillValue 2])
+            ems
             (toSource attrs)
             (InvestigatorTarget iid)
         ]

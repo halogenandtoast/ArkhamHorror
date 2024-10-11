@@ -31,7 +31,7 @@ undergroundRuins =
 instance HasModifiersFor UndergroundRuins where
   getModifiersFor target (UndergroundRuins a) | isTarget a target = do
     hasEnemies <- selectAny $ enemyAt $ toId a
-    pure $ toModifiers a [InVictoryDisplayForCountingVengeance | hasEnemies]
+    toModifiers a [InVictoryDisplayForCountingVengeance | hasEnemies]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UndergroundRuins where

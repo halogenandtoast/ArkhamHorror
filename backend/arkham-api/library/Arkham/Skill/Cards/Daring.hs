@@ -1,15 +1,11 @@
-module Arkham.Skill.Cards.Daring (
-  daring,
-  Daring (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.Daring (daring, Daring (..)) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Keyword qualified as Keyword
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -31,7 +27,8 @@ instance RunMessage Daring where
       case mtarget of
         Just target@(EnemyTarget _) -> do
           withSkillTest \stId ->
-            push $ skillTestModifiers stId attrs target [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
+            pushM
+              $ skillTestModifiers stId attrs target [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         _ -> error "Target was invalid"
       Daring <$> runMessage msg attrs
     SkillTestEnds _ _ _ -> do

@@ -1,14 +1,9 @@
-module Arkham.Asset.Assets.KeenEye (
-  keenEye,
-  KeenEye (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.KeenEye (keenEye, KeenEye (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.SkillType
+import Arkham.Asset.Import.Lifted
+import Arkham.Modifier
 
 newtype KeenEye = KeenEye AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,25 +23,11 @@ instance HasAbilities KeenEye where
     ]
 
 instance RunMessage KeenEye where
-  runMessage msg a@(KeenEye attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
-                  source
-                  (InvestigatorTarget iid)
-              )
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-                  source
-                  (InvestigatorTarget iid)
-              )
-    _ -> KeenEye <$> runMessage msg attrs
+  runMessage msg a@(KeenEye attrs) = runQueueT $ case msg of
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      phaseModifier source iid $ SkillModifier #intellect 1
+      pure a
+    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+      phaseModifier source iid $ SkillModifier #combat 1
+      pure a
+    _ -> KeenEye <$> liftRunMessage msg attrs

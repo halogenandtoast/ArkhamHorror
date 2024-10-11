@@ -25,10 +25,8 @@ instance RunMessage ThirtyTwoColt2 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifier sid source iid (DamageDealt 1)
-        , chooseFight
-        ]
+      enabled <- skillTestModifier sid source iid (DamageDealt 1)
+      pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ ReturnToHand iid (toTarget attrs)

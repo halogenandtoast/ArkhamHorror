@@ -22,10 +22,9 @@ instance HasAbilities Plucky3 where
 
 instance HasModifiersFor Plucky3 where
   getModifiersFor target (Plucky3 attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (Plucky3 attrs) | iid `controls` attrs = do
-    pure $ toModifiers attrs [SkillModifier #willpower 1, SkillModifier #intellect 1]
+    toModifiers attrs [SkillModifier #willpower 1, SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Plucky3 where

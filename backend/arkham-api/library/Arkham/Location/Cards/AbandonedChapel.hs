@@ -24,7 +24,7 @@ instance HasModifiersFor AbandonedChapel where
   getModifiersFor (InvestigatorTarget iid) (AbandonedChapel a) = do
     here <- iid <=~> investigatorAt (toId a)
     phase <- getPhase
-    pure $ toModifiers a [SkillModifier sType (-1) | here, isMythosPhase phase, sType <- allSkills]
+    toModifiers a [SkillModifier sType (-1) | here, isMythosPhase phase, sType <- allSkills]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AbandonedChapel where

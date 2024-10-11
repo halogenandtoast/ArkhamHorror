@@ -26,7 +26,7 @@ nephthysHuntressOfBast4 = ally NephthysHuntressOfBast4 Cards.nephthysHuntressOfB
 
 instance HasModifiersFor NephthysHuntressOfBast4 where
   getModifiersFor (InvestigatorTarget iid) (NephthysHuntressOfBast4 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NephthysHuntressOfBast4 where

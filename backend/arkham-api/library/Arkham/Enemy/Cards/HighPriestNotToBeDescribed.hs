@@ -20,7 +20,7 @@ highPriestNotToBeDescribed = enemy HighPriestNotToBeDescribed Cards.highPriestNo
 
 instance HasModifiersFor HighPriestNotToBeDescribed where
   getModifiersFor target (HighPriestNotToBeDescribed a) | isTarget a target = do
-    pure $ toModifiers a [CannotMakeAttacksOfOpportunity]
+    toModifiers a [CannotMakeAttacksOfOpportunity]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HighPriestNotToBeDescribed where

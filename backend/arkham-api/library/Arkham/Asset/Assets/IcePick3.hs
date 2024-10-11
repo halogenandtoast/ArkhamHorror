@@ -3,10 +3,9 @@ module Arkham.Asset.Assets.IcePick3 (icePick3, IcePick3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype IcePick3 = IcePick3 AssetAttrs
@@ -31,24 +30,16 @@ instance RunMessage IcePick3 where
     PassedSkillTest iid (Just action) _ (isTarget attrs -> True) _ _ | Just iid == attrs.controller -> do
       withSkillTest \sid -> do
         when (action == #fight) do
-          chooseOne
-            iid
-            [ Label
-                "Discard Ice Pick (3) to do +1 damage"
-                [ Msg.toDiscardBy iid (attrs.ability 1) attrs
-                , Msg.skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-                ]
-            , Label "Do not Discard" []
-            ]
+          chooseOneM iid do
+            labeled "Discard Ice Pick (3) to do +1 damage" do
+              toDiscardBy iid (attrs.ability 1) attrs
+              skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+            labeled "Do not Discard" nothing
         when (action == #investigate) do
-          chooseOne
-            iid
-            [ Label
-                "Discard Ice Pick (3) to discover 1 additional clue"
-                [ Msg.toDiscardBy iid (attrs.ability 1) attrs
-                , Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-                ]
-            , Label "Do not Discard" []
-            ]
+          chooseOneM iid do
+            labeled "Discard Ice Pick (3) to discover 1 additional clue" do
+              toDiscardBy iid (attrs.ability 1) attrs
+              skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+            labeled "Do not Discard" nothing
       pure a
     _ -> IcePick3 <$> liftRunMessage msg attrs

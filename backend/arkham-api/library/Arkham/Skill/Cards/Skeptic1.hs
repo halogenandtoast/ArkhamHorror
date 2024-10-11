@@ -16,7 +16,7 @@ skeptic1 = skill Skeptic1 Cards.skeptic1
 
 instance HasModifiersFor Skeptic1 where
   getModifiersFor (ChaosTokenTarget token) (Skeptic1 attrs) | token.face `elem` [#bless, #curse] = do
-    pure $ toModifiers attrs [ChangeChaosTokenModifier (PositiveModifier 1)]
+    toModifiers attrs [ChangeChaosTokenModifier (PositiveModifier 1)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Skeptic1 where

@@ -53,7 +53,7 @@ gildedVoltoEffect = cardEffect GildedVoltoEffect Cards.gildedVolto
 
 instance HasModifiersFor GildedVoltoEffect where
   getModifiersFor target (GildedVoltoEffect a) | target == a.target = do
-    pure [toModifier a $ CanBecomeFast #asset]
+    toModifiers a [CanBecomeFast #asset]
   getModifiersFor (CardIdTarget cid) (GildedVoltoEffect a) = maybeModified a do
     card <- lift $ getCard cid
     owner <- hoistMaybe $ toCardOwner card

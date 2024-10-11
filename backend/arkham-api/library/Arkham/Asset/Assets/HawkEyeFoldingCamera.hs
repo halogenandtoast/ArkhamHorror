@@ -24,8 +24,7 @@ hawkEyeFoldingCamera =
 instance HasModifiersFor HawkEyeFoldingCamera where
   getModifiersFor (InvestigatorTarget iid) (HawkEyeFoldingCamera (a `With` _))
     | controlledBy a iid = do
-        pure
-          $ toModifiers a
+        toModifiers a
           $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
           <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
           <> [SanityModifier 1 | a.use Evidence >= 3]

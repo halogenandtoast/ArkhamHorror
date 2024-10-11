@@ -43,13 +43,13 @@ instance RunMessage DowsingRod4 where
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       sid <- getRandom
-      investigate <- mkInvestigate sid iid (attrs.ability 1)
+      investigate' <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do
-        labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate
+        labeled "Use your {willpower}" $ push $ withSkillType #willpower investigate'
         labeled "get +1 {intellect}" do
           skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
-          push investigate
+          push investigate'
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)

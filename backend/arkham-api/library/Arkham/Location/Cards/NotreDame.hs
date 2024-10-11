@@ -19,7 +19,7 @@ notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)
 instance HasModifiersFor NotreDame where
   getModifiersFor (EnemyTarget eid) (NotreDame attrs) | attrs.revealed = do
     atLocation <- enemyAtLocation eid attrs
-    pure $ toModifiers attrs $ guard atLocation *> [EnemyFight (-1), EnemyEvade 1]
+    toModifiers attrs $ guard atLocation *> [EnemyFight (-1), EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities NotreDame where

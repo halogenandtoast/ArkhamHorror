@@ -29,7 +29,8 @@ instance RunMessage FortyFiveThompsonRogue3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
+      pushAll [enabled, chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | attrs.use Ammo > 0 -> do
       getSkillTestTarget >>= \case

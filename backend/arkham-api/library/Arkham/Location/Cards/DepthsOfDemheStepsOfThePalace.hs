@@ -27,7 +27,7 @@ depthsOfDemheStepsOfThePalace =
 instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
   getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheStepsOfThePalace a) = do
     here <- iid `isAt` a
-    pure $ toModifiers a [CannotPlay FastCard | here]
+    toModifiers a [CannotPlay FastCard | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DepthsOfDemheStepsOfThePalace where

@@ -1,21 +1,20 @@
-module Arkham.Investigator.Cards.LukeRobinson (
-  lukeRobinson,
-  LukeRobinson (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.LukeRobinson (lukeRobinson, LukeRobinson (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
+import Arkham.Cost
+import Arkham.Game.Helpers (canDo, getActions, getIsPlayable, getPlayableCards)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, toModifiers, withModifiers)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Runner (runWindow)
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Window (Window, defaultWindows, mkAfter, mkWhen)
+import Arkham.Message.Lifted.Choose
+import Arkham.Queue (QueueT)
+import Arkham.Window (Window, defaultWindows)
 import Arkham.Window qualified as Window
 
 newtype Meta = Meta {active :: Bool}
@@ -33,7 +32,7 @@ instance HasModifiersFor LukeRobinson where
     mods <- for connectingLocations $ \lid -> do
       enemies <- select $ enemyAt lid
       pure (AsIfAt lid : map AsIfEngagedWith enemies)
-    pure $ toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
+    toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
   getModifiersFor _ _ = pure []
 
 lukeRobinson :: InvestigatorCard LukeRobinson
@@ -58,7 +57,7 @@ getLukePlayable attrs windows' = do
         <$> getPlayableCards attrs (UnpaidCost NeedsAction) windows'
 
 instance RunMessage LukeRobinson where
-  runMessage msg i@(LukeRobinson (attrs `With` meta)) = case msg of
+  runMessage msg i@(LukeRobinson (attrs `With` meta)) = runQueueT $ case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       gateBox <- selectJust $ assetIs Assets.gateBox
       push $ AddUses #elderSign gateBox Charge 1
@@ -80,12 +79,12 @@ instance RunMessage LukeRobinson where
               ]
           LukeRobinson
             . (`with` meta)
-            <$> runMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
-        else LukeRobinson . (`with` meta) <$> runMessage msg attrs
+            <$> liftRunMessage (PlayerWindow iid (additionalActions <> asIfActions) isAdditional) attrs
+        else LukeRobinson . (`with` meta) <$> liftRunMessage msg attrs
     Do (CheckWindows windows')
       | active meta
       , not (investigatorSkippedWindow attrs)
-      , not (investigatorDefeated attrs || investigatorResigned attrs)
+      , attrs.inGame
           || Window.hasEliminatedWindow windows' -> do
           lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
           actions <- getActions attrs.id windows'
@@ -102,41 +101,34 @@ instance RunMessage LukeRobinson where
           AsIfInHand card' -> card == card'
           _ -> False
 
-      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
-      let playCard =
-            guard (not shouldSkip)
-              *> [ CheckWindows [mkWhen (Window.PlayCard iid card)]
-                 , PlayCard iid card mtarget payment windows' asAction
-                 , afterPlayCard
-                 ]
+      let
+        playCard :: ReverseQueue m => QueueT Message m ()
+        playCard = when (not shouldSkip) do
+          checkWhen $ Window.PlayCard iid card
+          push $ PlayCard iid card mtarget payment windows' asAction
+          checkAfter $ Window.PlayCard iid card
 
       lukePlayable <- getLukePlayable attrs windows'
 
       if card `elem` concatMap snd lukePlayable
         then do
           let lids = map fst $ filter (elem card . snd) lukePlayable
-          locationOptions <- forToSnd lids $ \lid -> do
-            enemies <- select $ enemyAt lid
-            pure
-              $ [cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies]
-              <> playCard
-
-          player <- getPlayer iid
-          push
-            $ chooseOrRunOne player
-            $ [Label "Play at current location" playCard | playable]
-            <> [ Label
-                "Play at connecting location"
-                [ HandleTargetChoice iid (toSource attrs) (toTarget attrs)
-                , chooseOrRunOne player [targetLabel lid msgs | (lid, msgs) <- locationOptions]
-                ]
-               | notNull locationOptions
-               ]
-        else pushAll playCard
+          chooseOrRunOneM iid do
+            when playable do
+              labeled "Play at current location" playCard
+            when (notNull lids) do
+              labeled "Play at connecting location" $ do
+                handleTarget iid attrs attrs
+                chooseOrRunOneM iid do
+                  targets lids \lid -> do
+                    enemies <- select $ enemyAt lid
+                    cardResolutionModifiers card attrs attrs $ AsIfAt lid : map AsIfEngagedWith enemies
+                    playCard
+        else runQueueT playCard
       pure i
     HandleTargetChoice _ (isSource attrs -> True) (isTarget attrs -> True) -> do
       pure $ LukeRobinson (attrs `with` Meta False)
     EndTurn _ -> do
-      attrs' <- runMessage msg attrs
+      attrs' <- liftRunMessage msg attrs
       pure $ LukeRobinson (attrs' `with` Meta True)
-    _ -> LukeRobinson . (`with` meta) <$> runMessage msg attrs
+    _ -> LukeRobinson . (`with` meta) <$> liftRunMessage msg attrs

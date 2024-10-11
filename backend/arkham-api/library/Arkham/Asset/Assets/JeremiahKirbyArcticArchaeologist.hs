@@ -22,7 +22,7 @@ jeremiahKirbyArcticArchaeologist = ally JeremiahKirbyArcticArchaeologist Cards.j
 
 instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
   getModifiersFor (InvestigatorTarget iid) (JeremiahKirbyArcticArchaeologist a) | iid `controls` a = do
-    pure $ toModifiers a [SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where

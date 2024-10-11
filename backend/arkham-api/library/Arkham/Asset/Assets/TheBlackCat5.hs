@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.TheBlackCat5 (
-  theBlackCat5,
-  TheBlackCat5 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheBlackCat5 (theBlackCat5, TheBlackCat5 (..)) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 
 newtype TheBlackCat5 = TheBlackCat5 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -19,37 +15,30 @@ theBlackCat5 = ally TheBlackCat5 Cards.theBlackCat5 (3, 3)
 
 instance HasModifiersFor TheBlackCat5 where
   getModifiersFor (InvestigatorTarget iid) (TheBlackCat5 a) | a `controlledBy` iid = do
-    pure
-      $ toModifiers
-        a
-        [ CanResolveToken #tablet (toTarget a)
-        , CanResolveToken #elderthing (toTarget a)
-        , CanResolveToken #eldersign (toTarget a)
-        ]
+    toModifiers
+      a
+      [ CanResolveToken #tablet (toTarget a)
+      , CanResolveToken #elderthing (toTarget a)
+      , CanResolveToken #eldersign (toTarget a)
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheBlackCat5 where
-  runMessage msg a@(TheBlackCat5 attrs) = case msg of
+  runMessage msg a@(TheBlackCat5 attrs) = runQueueT $ case msg of
     TargetResolveChaosToken (isTarget attrs -> True) token Tablet _ -> do
-      withSkillTest \sid ->
-        pushAll
-          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-          , DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 1 0
-          ]
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+        push $ DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 1 0
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderThing _ -> do
-      withSkillTest \sid ->
-        pushAll
-          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
-          , DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 0 1
-          ]
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ NegativeModifier 1)
+        push $ DealAssetDirectDamage (toId attrs) (ChaosTokenEffectSource Tablet) 0 1
       pure a
     TargetResolveChaosToken (isTarget attrs -> True) token ElderSign _ -> do
-      withSkillTest \sid ->
-        pushAll
-          [ skillTestModifier sid attrs token (ChangeChaosTokenModifier $ PositiveModifier 5)
-          , HealAllDamage (toTarget attrs) (ChaosTokenEffectSource ElderSign)
-          , HealAllHorror (toTarget attrs) (ChaosTokenEffectSource ElderSign)
-          ]
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs token (ChangeChaosTokenModifier $ PositiveModifier 5)
+        push $ HealAllDamage (toTarget attrs) (ChaosTokenEffectSource ElderSign)
+        push $ HealAllHorror (toTarget attrs) (ChaosTokenEffectSource ElderSign)
       pure a
-    _ -> TheBlackCat5 <$> runMessage msg attrs
+    _ -> TheBlackCat5 <$> liftRunMessage msg attrs

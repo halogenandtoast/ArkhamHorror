@@ -22,7 +22,7 @@ lonnieRitter = ally LonnieRitter Cards.lonnieRitter (2, 3)
 
 instance HasModifiersFor LonnieRitter where
   getModifiersFor (InvestigatorTarget iid) (LonnieRitter a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #combat 1]
+    toModifiers a [SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LonnieRitter where

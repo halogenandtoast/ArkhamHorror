@@ -19,7 +19,7 @@ instance HasModifiersFor HemisphericMap3 where
     | controlledBy a iid = do
         connectedLocationCount <-
           selectCount $ ConnectedFrom $ locationWithInvestigator iid
-        pure $ toModifiers a $ case connectedLocationCount of
+        toModifiers a $ case connectedLocationCount of
           n
             | n >= 4 ->
                 [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]

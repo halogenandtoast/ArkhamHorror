@@ -53,15 +53,11 @@ instance RunMessage WitherEffect where
                 && maybe False (isTarget sid) attrs.metaTarget
         when triggers do
           iid' <- selectJust TurnInvestigator
+          ems <- effectModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token attrs.id)
-                [ CreateWindowModifierEffect
-                    (EffectTurnWindow iid')
-                    ( effectModifiers attrs [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1)]
-                    )
-                    attrs.source
-                    (toTarget enemyId)
+                [ CreateWindowModifierEffect (EffectTurnWindow iid') ems attrs.source (toTarget enemyId)
                 ]
             , disable attrs
             ]

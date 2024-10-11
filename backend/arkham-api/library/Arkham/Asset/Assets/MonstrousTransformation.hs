@@ -15,14 +15,13 @@ monstrousTransformation = assetWith MonstrousTransformation Cards.monstrousTrans
 
 instance HasModifiersFor MonstrousTransformation where
   getModifiersFor (InvestigatorTarget iid) (MonstrousTransformation a) | controlledBy a iid = do
-    pure
-      $ toModifiers
-        a
-        [ BaseSkillOf #willpower 2
-        , BaseSkillOf #intellect 2
-        , BaseSkillOf #combat 5
-        , BaseSkillOf #agility 5
-        ]
+    toModifiers
+      a
+      [ BaseSkillOf #willpower 2
+      , BaseSkillOf #intellect 2
+      , BaseSkillOf #combat 5
+      , BaseSkillOf #agility 5
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MonstrousTransformation where
@@ -34,6 +33,7 @@ instance RunMessage MonstrousTransformation where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (DamageDealt 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (DamageDealt 1)
+      pushAll [enabled, chooseFight]
       pure a
     _ -> MonstrousTransformation <$> runMessage msg attrs

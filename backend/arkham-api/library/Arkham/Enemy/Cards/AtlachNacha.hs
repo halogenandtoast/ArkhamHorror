@@ -1,21 +1,17 @@
-module Arkham.Enemy.Cards.AtlachNacha (
-  atlachNacha,
-  AtlachNacha (..),
-)
-where
+module Arkham.Enemy.Cards.AtlachNacha (atlachNacha, AtlachNacha (..)) where
 
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Label
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Placement
 import Arkham.Projection
@@ -25,7 +21,7 @@ newtype Meta = Meta {rotation :: Int}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype AtlachNacha = AtlachNacha EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 atlachNacha :: EnemyCard AtlachNacha
@@ -39,11 +35,7 @@ atlachNacha =
 
 instance HasModifiersFor AtlachNacha where
   getModifiersFor target (AtlachNacha attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs
-      $ if attrs.placement == Global
-        then [Omnipotent]
-        else [DoNotExhaustEvaded]
+    toModifiers attrs $ if attrs.placement == Global then [Omnipotent] else [DoNotExhaustEvaded]
   getModifiersFor _ _ = pure []
 
 rotateLocation :: Int -> Text -> Text
@@ -72,9 +64,8 @@ instance RunMessage AtlachNacha where
     Flip iid _ (isTarget attrs -> True) -> do
       lids <- liftA2 (<|>) (selectMax LocationDoom Anywhere) (select Anywhere)
       push $ Flipped (toSource attrs) (toCard attrs)
-      chooseOrRunOne
-        iid
-        [targetLabel lid [PlaceEnemy attrs.id $ AtLocation lid] | lid <- lids]
+      chooseOrRunOneM iid do
+        targets lids \lid -> push $ PlaceEnemy attrs.id $ AtLocation lid
       pure $ AtlachNacha $ attrs & asSelfLocationL .~ Nothing & flippedL .~ True
     HandleAbilityOption _ (isSource attrs -> True) n -> do
       let Meta m = toResult attrs.meta
@@ -94,13 +85,8 @@ instance RunMessage AtlachNacha where
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       iids <- select $ InvestigatorAt $ locationWithInvestigator iid
-      chooseOrRunOne
-        iid
-        [ targetLabel
-          iid'
-          [Msg.roundModifier (attrs.ability 1) iid' $ CannotBeAttackedBy (EnemyWithId attrs.id)]
-        | iid' <- iids
-        ]
+      chooseOrRunOneM iid do
+        targets iids \iid' -> roundModifier (attrs.ability 1) iid' $ CannotBeAttackedBy (EnemyWithId attrs.id)
       pure e
     Do (Msg.EnemyEvaded _ eid) | eid == attrs.id -> do
       pure e

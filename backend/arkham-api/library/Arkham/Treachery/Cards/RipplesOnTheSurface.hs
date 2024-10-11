@@ -28,7 +28,7 @@ instance HasModifiersFor RipplesOnTheSurface where
     case mSource of
       Just source | isSource attrs source -> do
         isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
-        pure $ toModifiers attrs [CannotCommitCards AnyCard | isBayou]
+        toModifiers attrs [CannotCommitCards AnyCard | isBayou]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

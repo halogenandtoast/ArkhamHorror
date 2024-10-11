@@ -1,22 +1,12 @@
-module Arkham.Asset.Assets.RobesOfEndlessNight2 (
-  robesOfEndlessNight2,
-  RobesOfEndlessNight2 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.RobesOfEndlessNight2 (robesOfEndlessNight2, RobesOfEndlessNight2 (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
-import Arkham.Trait (Trait (Spell))
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
+import Arkham.Modifier
 
 newtype RobesOfEndlessNight2 = RobesOfEndlessNight2 AssetAttrs
   deriving anyclass IsAsset
@@ -27,37 +17,24 @@ robesOfEndlessNight2 =
   assetWith RobesOfEndlessNight2 Cards.robesOfEndlessNight2 (healthL ?~ 2)
 
 instance HasModifiersFor RobesOfEndlessNight2 where
-  getModifiersFor (InvestigatorTarget iid) (RobesOfEndlessNight2 a)
-    | controlledBy a iid && not (assetExhausted a) =
-        pure $ toModifiers a [CanReduceCostOf (CardWithTrait Spell) 1]
+  getModifiersFor (InvestigatorTarget iid) (RobesOfEndlessNight2 a) | controlledBy a iid && a.ready = do
+    toModifiers a [CanReduceCostOf #spell 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RobesOfEndlessNight2 where
   getAbilities (RobesOfEndlessNight2 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          ( Matcher.PlayCard
-              Timing.When
-              You
-              (BasicCardMatch $ CardWithTrait Spell)
-          )
-        $ ExhaustCost (toTarget a)
+        $ ReactionAbility (Matcher.PlayCard #when You (basic #spell)) (exhaust a)
     ]
 
 instance RunMessage RobesOfEndlessNight2 where
-  runMessage msg a@(RobesOfEndlessNight2 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do
-      push
-        $ CreateWindowModifierEffect
-          EffectCostWindow
-          ( EffectModifiers
-              $ toModifiers
-                attrs
-                [ ReduceCostOf (CardWithId $ toCardId card) 1
-                , ActionDoesNotCauseAttacksOfOpportunity Action.Play
-                ]
-          )
-          (toSource attrs)
-          (InvestigatorTarget iid)
+  runMessage msg a@(RobesOfEndlessNight2 attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      costModifiers
+        attrs
+        iid
+        [ ReduceCostOf (CardWithId card.id) 1
+        , ActionDoesNotCauseAttacksOfOpportunity #play
+        ]
       pure a
-    _ -> RobesOfEndlessNight2 <$> runMessage msg attrs
+    _ -> RobesOfEndlessNight2 <$> liftRunMessage msg attrs

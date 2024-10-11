@@ -22,7 +22,7 @@ administrationOffice_130 = location AdministrationOffice_130 Cards.administratio
 instance HasModifiersFor AdministrationOffice_130 where
   getModifiersFor (InvestigatorTarget iid) (AdministrationOffice_130 attrs) = do
     resources <- field InvestigatorResources iid
-    pure $ toModifiers attrs [CannotInvestigateLocation attrs.id | resources <= 4]
+    toModifiers attrs [CannotInvestigateLocation attrs.id | resources <= 4]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AdministrationOffice_130 where

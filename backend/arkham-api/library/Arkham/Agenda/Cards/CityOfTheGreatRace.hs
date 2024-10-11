@@ -25,7 +25,7 @@ cityOfTheGreatRace =
 instance HasModifiersFor CityOfTheGreatRace where
   getModifiersFor (InvestigatorTarget _) (CityOfTheGreatRace attrs)
     | onSide A attrs =
-        pure $ toModifiers attrs [CannotPlay $ CardWithTrait Item]
+        toModifiers attrs [CannotPlay $ CardWithTrait Item]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CityOfTheGreatRace where

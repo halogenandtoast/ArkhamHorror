@@ -36,7 +36,7 @@ instance HasModifiersFor DreamDiaryDreamsOfAnExplorer3 where
       location <- MaybeT $ field InvestigatorLocation controller
       guardM $ lift $ fieldMap LocationShroud (maybe False (>= 4)) location
       pure $ AddSkillIcons [#wild, #wild]
-    pure $ toModifiers a $ toList mMods
+    toModifiers a $ toList mMods
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamDiaryDreamsOfAnExplorer3 where

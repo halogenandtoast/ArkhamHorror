@@ -17,16 +17,15 @@ bruiser3 = asset Bruiser3 Cards.bruiser3
 
 instance HasModifiersFor Bruiser3 where
   getModifiersFor (InvestigatorTarget iid) (Bruiser3 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          #resource
-          (InvestigatorWithId iid)
-          (oneOf [CardWithTrait t | t <- [Armor, Firearm, Melee]])
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        #resource
+        (InvestigatorWithId iid)
+        (oneOf [CardWithTrait t | t <- [Armor, Firearm, Melee]])
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Bruiser3 where

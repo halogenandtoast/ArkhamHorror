@@ -27,7 +27,7 @@ instance HasModifiersFor MoonPendant2 where
       then do
         card <- getCard cid
         let valid = cardMatch card (NonWeakness <> CardWithTrait Tarot)
-        pure $ toModifiers attrs [AddSkillIcons [#wild, #wild] | valid]
+        toModifiers attrs [AddSkillIcons [#wild, #wild] | valid]
       else pure []
   getModifiersFor _ _ = pure []
 

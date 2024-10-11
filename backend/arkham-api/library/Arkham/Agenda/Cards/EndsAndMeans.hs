@@ -27,7 +27,7 @@ endsAndMeans = agenda (2, A) EndsAndMeans Cards.endsAndMeans (Static 10)
 instance HasModifiersFor EndsAndMeans where
   getModifiersFor (EnemyTarget enemy) (EndsAndMeans attrs) = do
     qualifies <- enemy <=~> (EnemyWithTrait SilverTwilight <> EnemyAt (LocationWithTrait Sanctum))
-    pure $ toModifiers attrs [RemoveKeyword Aloof | qualifies]
+    toModifiers attrs [RemoveKeyword Aloof | qualifies]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EndsAndMeans where

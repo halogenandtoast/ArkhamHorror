@@ -23,7 +23,7 @@ hotelManager = enemy HotelManager Cards.hotelManager (3, PerPlayer 6, 4) (2, 2)
 instance HasModifiersFor HotelManager where
   getModifiersFor (EnemyTarget eid) (HotelManager attrs) = do
     isGuest <- eid <=~> EnemyWithTrait Guest
-    pure $ toModifiers attrs $ guard isGuest *> [LosePatrol, AddKeyword Keyword.Surge]
+    toModifiers attrs $ guard isGuest *> [LosePatrol, AddKeyword Keyword.Surge]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HotelManager where

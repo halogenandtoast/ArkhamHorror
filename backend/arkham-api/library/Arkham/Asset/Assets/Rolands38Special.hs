@@ -26,6 +26,7 @@ instance RunMessage Rolands38Special where
       let n = if anyClues then 3 else 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat n], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat n]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> Rolands38Special <$> runMessage msg attrs

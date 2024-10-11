@@ -22,10 +22,10 @@ sickeningWebs = treachery SickeningWebs Cards.sickeningWebs
 instance HasModifiersFor SickeningWebs where
   getModifiersFor (EnemyTarget eid) (SickeningWebs attrs) = do
     isSpider <- eid <=~> (EnemyWithTrait Spider <> at_ (locationWithTreachery attrs))
-    pure $ toModifiers attrs $ guard isSpider *> [AddKeyword Retaliate, AddKeyword Alert]
+    toModifiers attrs $ guard isSpider *> [AddKeyword Retaliate, AddKeyword Alert]
   getModifiersFor (InvestigatorTarget iid) (SickeningWebs attrs) = do
     here <- iid <=~> InvestigatorAt (locationWithTreachery attrs)
-    pure $ toModifiers attrs [CannotMove | here]
+    toModifiers attrs [CannotMove | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SickeningWebs where

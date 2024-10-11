@@ -17,7 +17,7 @@ ascendingTheHillV1 = act (2, A) AscendingTheHillV1 Cards.ascendingTheHillV1 Noth
 
 instance HasModifiersFor AscendingTheHillV1 where
   getModifiersFor (LocationTarget _) (AscendingTheHillV1 attrs) = do
-    pure $ toModifiers attrs [NonTraitRestrictedModifier Altered CannotPlaceClues]
+    toModifiers attrs [NonTraitRestrictedModifier Altered CannotPlaceClues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AscendingTheHillV1 where

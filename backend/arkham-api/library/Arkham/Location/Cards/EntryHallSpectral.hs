@@ -24,10 +24,10 @@ entryHallSpectral =
 instance HasModifiersFor EntryHallSpectral where
   getModifiersFor target (EntryHallSpectral attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor (EnemyTarget eid) (EntryHallSpectral attrs) = do
     isSilverTwilight <- elem eid <$> select (EnemyWithTrait SilverTwilight)
-    pure $ toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs) | isSilverTwilight]
+    toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs) | isSilverTwilight]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EntryHallSpectral where

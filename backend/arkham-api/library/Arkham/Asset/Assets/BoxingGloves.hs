@@ -19,7 +19,7 @@ boxingGloves = asset BoxingGloves Cards.boxingGloves
 
 instance HasModifiersFor BoxingGloves where
   getModifiersFor (InvestigatorTarget iid) (BoxingGloves a) | a `controlledBy` iid = do
-    pure $ toModifiers a [ActionSkillModifier #fight #combat 1]
+    toModifiers a [ActionSkillModifier #fight #combat 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BoxingGloves where

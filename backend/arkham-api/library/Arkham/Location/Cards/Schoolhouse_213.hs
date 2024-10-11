@@ -17,7 +17,7 @@ schoolhouse_213 = location Schoolhouse_213 Cards.schoolhouse_213 4 (Static 1)
 
 instance HasModifiersFor Schoolhouse_213 where
   getModifiersFor (InvestigatorTarget _) (Schoolhouse_213 attrs) = do
-    pure $ toModifiers attrs [CannotDiscoverCluesExceptAsResultOfInvestigation (be attrs)]
+    toModifiers attrs [CannotDiscoverCluesExceptAsResultOfInvestigation (be attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Schoolhouse_213 where

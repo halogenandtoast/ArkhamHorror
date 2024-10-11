@@ -33,9 +33,10 @@ instance RunMessage EatLead where
           ignoreWindow <-
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
           withSkillTest \sid -> do
+            enabled <- skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose 1 1)
             pushAll
               [ SpendUses (toSource attrs) (AssetTarget aid) Ammo 1
-              , skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose 1 1)
+              , enabled
               , ignoreWindow
               ]
           pure . EatLead $ attrs `with` Metadata (Just aid)

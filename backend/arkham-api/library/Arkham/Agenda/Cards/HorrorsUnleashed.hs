@@ -29,7 +29,7 @@ instance HasAbilities HorrorsUnleashed where
 instance HasModifiersFor HorrorsUnleashed where
   getModifiersFor (EnemyTarget eid) (HorrorsUnleashed attrs) = do
     isAbomination <- member Abomination <$> field EnemyTraits eid
-    pure $ toModifiers attrs $ guard isAbomination *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
+    toModifiers attrs $ guard isAbomination *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HorrorsUnleashed where

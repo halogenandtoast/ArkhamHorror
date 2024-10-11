@@ -13,7 +13,7 @@ import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype GuidingSpirit1 = GuidingSpirit1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 guidingSpirit1 :: AssetCard GuidingSpirit1
@@ -22,12 +22,11 @@ guidingSpirit1 = assetWith GuidingSpirit1 Cards.guidingSpirit1 (sanityL ?~ 3)
 instance HasModifiersFor GuidingSpirit1 where
   getModifiersFor (AssetTarget aid) (GuidingSpirit1 attrs)
     | toId attrs == aid =
-        pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
+        toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (GuidingSpirit1 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [SkillModifier SkillIntellect 1 | controlledBy attrs iid]
+    toModifiers
+      attrs
+      [SkillModifier SkillIntellect 1 | controlledBy attrs iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GuidingSpirit1 where

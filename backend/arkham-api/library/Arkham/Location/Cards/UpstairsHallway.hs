@@ -16,7 +16,7 @@ upstairsHallway = location UpstairsHallway Cards.upstairsHallway 2 (Static 0)
 
 instance HasModifiersFor UpstairsHallway where
   getModifiersFor target (UpstairsHallway attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+    toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities UpstairsHallway where

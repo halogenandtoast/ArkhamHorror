@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
@@ -24,18 +23,14 @@ instance RunMessage MotivationalSpeech where
       chooseOrRunOne iid $ targetLabels ts $ only . handleTargetChoice iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
-      allies <-
-        select $ PlayableCardWithCostReduction NoAction 3 $ InHandOf (InvestigatorWithId iid) <> #ally
+      allies <- select $ PlayableCardWithCostReduction NoAction 3 $ inHandOf iid <> #ally
       when (notNull allies) do
         focusCards allies \unfocus -> do
-          chooseOne iid $ Label "Do not play ally" [unfocus]
-            : [ targetLabel
-                ally
-                [ unfocus
-                , Msg.costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)
-                , PayCardCost iid ally (defaultWindows iid)
-                ]
-              | ally <- allies
-              ]
+          chooseOneM iid do
+            labeled "Do not play ally" $ push unfocus
+            targets allies \ally -> do
+              push unfocus
+              costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)
+              push $ PayCardCost iid ally (defaultWindows iid)
       pure e
     _ -> MotivationalSpeech <$> liftRunMessage msg attrs

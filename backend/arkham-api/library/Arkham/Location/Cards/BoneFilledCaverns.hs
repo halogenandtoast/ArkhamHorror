@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.BoneFilledCaverns (
-  boneFilledCaverns,
-  BoneFilledCaverns (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BoneFilledCaverns (boneFilledCaverns, BoneFilledCaverns (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -16,6 +11,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
@@ -34,24 +30,17 @@ boneFilledCaverns =
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor BoneFilledCaverns where
-  getModifiersFor (InvestigatorTarget iid) (BoneFilledCaverns (attrs `With` metadata)) = do
-    pure $ case affectedInvestigator metadata of
-      Just iid' | iid == iid' -> toModifiers attrs [FewerSlots #hand 1]
-      _ -> []
+  getModifiersFor (InvestigatorTarget iid) (BoneFilledCaverns (a `With` metadata)) = maybeModified a do
+    iid' <- hoistMaybe $ affectedInvestigator metadata
+    guard $ iid == iid'
+    pure [FewerSlots #hand 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities BoneFilledCaverns where
-  getAbilities (BoneFilledCaverns (attrs `With` _)) =
-    withRevealedAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            ( oneOf
-                [ Negate (exists $ LocationInDirection dir (be attrs)) | dir <- [Below, RightOf]
-                ]
-            )
-            $ forced (RevealLocation #when Anyone $ be attrs)
-        ]
+  getAbilities (BoneFilledCaverns (a `With` _)) =
+    extendRevealed1 a
+      $ restricted a 1 (oneOf [notExists $ LocationInDirection dir (be a) | dir <- [Below, RightOf]])
+      $ forced (RevealLocation #when Anyone $ be a)
 
 instance RunMessage BoneFilledCaverns where
   runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = case msg of

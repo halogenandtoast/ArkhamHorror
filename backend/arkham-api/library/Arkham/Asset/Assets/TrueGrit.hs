@@ -22,10 +22,7 @@ instance HasModifiersFor TrueGrit where
     | not (controlledBy a iid) = do
         locationId <- field InvestigatorLocation iid
         assetLocationId <- field AssetLocation (toId a)
-        pure
-          [ toModifier a (CanAssignDamageToAsset $ toId a)
-          | (locationId == assetLocationId) && isJust locationId
-          ]
+        toModifiers a [CanAssignDamageToAsset a.id | (locationId == assetLocationId) && isJust locationId]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TrueGrit where

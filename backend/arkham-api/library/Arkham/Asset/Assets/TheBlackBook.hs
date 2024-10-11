@@ -18,7 +18,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype TheBlackBook = TheBlackBook AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBlackBook :: AssetCard TheBlackBook
@@ -28,13 +28,12 @@ instance HasModifiersFor TheBlackBook where
   getModifiersFor (InvestigatorTarget iid) (TheBlackBook a)
     | controlledBy a iid = do
         sanity <- field InvestigatorRemainingSanity iid
-        pure
-          $ toModifiers
-            a
-            [ SkillModifier #willpower 1
-            , SkillModifier #intellect 1
-            , CanReduceCostOf AnyCard sanity
-            ]
+        toModifiers
+          a
+          [ SkillModifier #willpower 1
+          , SkillModifier #intellect 1
+          , CanReduceCostOf AnyCard sanity
+          ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBlackBook where
@@ -59,6 +58,6 @@ windowToCard (_ : xs) = windowToCard xs
 instance RunMessage TheBlackBook where
   runMessage msg a@(TheBlackBook attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (windowToCard -> card) (toHorror -> n) -> do
-      push $ reduceCostOf attrs card n
+      pushM $ reduceCostOf attrs card n
       pure a
     _ -> TheBlackBook <$> runMessage msg attrs

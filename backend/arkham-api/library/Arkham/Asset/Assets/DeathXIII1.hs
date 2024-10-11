@@ -15,7 +15,7 @@ deathXiii1 = asset DeathXIII1 Cards.deathXiii1
 
 instance HasModifiersFor DeathXIII1 where
   getModifiersFor (InvestigatorTarget iid) (DeathXIII1 a) = do
-    pure $ toModifiers a [SkillModifier #intellect 1 | controlledBy a iid]
+    toModifiers a [SkillModifier #intellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DeathXIII1 where

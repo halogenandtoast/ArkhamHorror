@@ -50,7 +50,7 @@ hatchetManEffect = cardEffect HatchetManEffect Cards.hatchetMan
 instance HasModifiersFor HatchetManEffect where
   getModifiersFor target (HatchetManEffect a)
     | effectTarget a == target =
-        pure $ toModifiers a [DamageTaken 1]
+        toModifiers a [DamageTaken 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HatchetManEffect where

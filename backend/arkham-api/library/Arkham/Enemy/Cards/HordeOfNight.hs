@@ -16,7 +16,7 @@ hordeOfNight = enemy HordeOfNight Cards.hordeOfNight (1, Static 1, 1) (1, 1)
 instance HasModifiersFor HordeOfNight where
   getModifiersFor target (HordeOfNight a) | a `is` target = do
     isHost <- toId a <=~> IsHost
-    pure $ toModifiers a $ CannotAttack : [ExhaustIfDefeated | isHost]
+    toModifiers a $ CannotAttack : [ExhaustIfDefeated | isHost]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HordeOfNight where

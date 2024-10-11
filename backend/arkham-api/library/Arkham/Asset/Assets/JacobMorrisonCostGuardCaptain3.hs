@@ -20,7 +20,7 @@ jacobMorrisonCostGuardCaptain3 = ally JacobMorrisonCostGuardCaptain3 Cards.jacob
 
 instance HasModifiersFor JacobMorrisonCostGuardCaptain3 where
   getModifiersFor target (JacobMorrisonCostGuardCaptain3 a) | a `is` target = do
-    pure $ toModifiers a [DoesNotReadyDuringUpkeep]
+    toModifiers a [DoesNotReadyDuringUpkeep]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JacobMorrisonCostGuardCaptain3 where

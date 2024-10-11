@@ -29,7 +29,7 @@ ransackingTheManor =
 
 instance HasModifiersFor RansackingTheManor where
   getModifiersFor (PhaseTarget MythosPhase) (RansackingTheManor attrs) =
-    pure $ toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
+    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RansackingTheManor where

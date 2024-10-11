@@ -1,9 +1,4 @@
-module Arkham.Event.Events.WingingIt (
-  wingingIt,
-  WingingIt (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.WingingIt (wingingIt, WingingIt (..)) where
 
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
@@ -12,6 +7,7 @@ import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Zone qualified as Zone
 
@@ -27,10 +23,14 @@ instance RunMessage WingingIt where
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
       sid <- getRandom
-      let modifiers = [skillTestModifier sid attrs iid (DiscoveredClues 1) | zone == Zone.FromDiscard]
+      modifiers <-
+        if zone == Zone.FromDiscard
+          then (: []) <$> skillTestModifier sid attrs iid (DiscoveredClues 1)
+          else pure []
       investigation <- mkInvestigate sid iid attrs
+      enabled <- skillTestModifier sid attrs lid (ShroudModifier (-1))
       pushAll
-        $ skillTestModifier sid attrs lid (ShroudModifier (-1))
+        $ enabled
         : modifiers
           <> [toMessage investigation]
           <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == Zone.FromDiscard]

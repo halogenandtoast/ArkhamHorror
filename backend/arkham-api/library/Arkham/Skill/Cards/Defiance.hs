@@ -56,7 +56,7 @@ defianceEffect = cardEffect DefianceEffect Cards.defiance
 
 instance HasModifiersFor DefianceEffect where
   getModifiersFor target (DefianceEffect a) | effectTarget a == target = do
-    pure $ toModifiers a [IgnoreChaosTokenEffects]
+    toModifiers a [IgnoreChaosTokenEffects]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DefianceEffect where

@@ -28,7 +28,8 @@ instance RunMessage EnchantedBladeGuardian3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       player <- getPlayer iid
@@ -44,7 +45,8 @@ instance RunMessage EnchantedBladeGuardian3 where
         Nothing -> pure a
         Just sid -> do
           for_ attrs.controller \iid -> do
-            pushAll [msg', skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)]
+            damageDealt <- skillTestModifier sid (toAbilitySource attrs 1) iid (DamageDealt 1)
+            pushAll [msg', damageDealt]
           pure . EnchantedBladeGuardian3 $ attrs `with` Metadata (Just sid)
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ | isJust (empowered meta) -> do
       for_ attrs.controller \iid -> do

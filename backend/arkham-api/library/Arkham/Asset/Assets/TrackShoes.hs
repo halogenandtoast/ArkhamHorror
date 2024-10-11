@@ -16,7 +16,7 @@ trackShoes = asset TrackShoes Cards.trackShoes
 
 instance HasModifiersFor TrackShoes where
   getModifiersFor (InvestigatorTarget iid) (TrackShoes attrs) | attrs `controlledBy` iid = do
-    pure $ toModifiers attrs [SkillModifier #agility 1]
+    toModifiers attrs [SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrackShoes where

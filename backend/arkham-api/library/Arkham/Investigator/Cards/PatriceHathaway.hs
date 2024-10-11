@@ -21,7 +21,7 @@ patriceHathaway =
 
 instance HasModifiersFor PatriceHathaway where
   getModifiersFor target (PatriceHathaway attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [HandSize (-3), AlternateUpkeepDraw (toTarget attrs)]
+    toModifiers attrs [HandSize (-3), AlternateUpkeepDraw (toTarget attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue PatriceHathaway where

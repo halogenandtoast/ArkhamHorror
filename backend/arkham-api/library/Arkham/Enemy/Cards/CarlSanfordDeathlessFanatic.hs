@@ -30,7 +30,7 @@ carlSanfordDeathlessFanatic =
 instance HasModifiersFor CarlSanfordDeathlessFanatic where
   getModifiersFor target (CarlSanfordDeathlessFanatic a) | isTarget a target = do
     clues <- getSum <$> selectAgg Sum InvestigatorClues UneliminatedInvestigator
-    pure $ toModifiers a [HealthModifier $ negate $ 2 * clues]
+    toModifiers a [HealthModifier $ negate $ 2 * clues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CarlSanfordDeathlessFanatic where

@@ -29,7 +29,7 @@ instance HasModifiersFor HereticsGravesSpectral_171 where
   getModifiersFor (InvestigatorTarget iid) (HereticsGravesSpectral_171 a) = do
     investigating <- isInvestigating iid (toId a)
     willpower <- getSkillValue SkillWillpower iid
-    pure $ toModifiers a [AnySkillValue willpower | investigating]
+    toModifiers a [AnySkillValue willpower | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HereticsGravesSpectral_171 where
@@ -62,7 +62,7 @@ hereticsGravesSpectral_171Effect =
 
 instance HasModifiersFor HereticsGravesSpectral_171Effect where
   getModifiersFor target (HereticsGravesSpectral_171Effect (a `With` _)) = do
-    pure $ toModifiers a [BaseSkillOf SkillWillpower 1 | target == effectTarget a]
+    toModifiers a [BaseSkillOf SkillWillpower 1 | target == effectTarget a]
 
 instance RunMessage HereticsGravesSpectral_171Effect where
   runMessage msg e@(HereticsGravesSpectral_171Effect (attrs `With` meta)) = case msg of

@@ -19,7 +19,7 @@ searchingForIzzieAdvanced = treachery SearchingForIzzieAdvanced Cards.searchingF
 
 instance HasModifiersFor SearchingForIzzieAdvanced where
   getModifiersFor target (SearchingForIzzieAdvanced a) | a.attached == Just target = do
-    pure $ toModifiers a [ShroudModifier 2]
+    toModifiers a [ShroudModifier 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SearchingForIzzieAdvanced where

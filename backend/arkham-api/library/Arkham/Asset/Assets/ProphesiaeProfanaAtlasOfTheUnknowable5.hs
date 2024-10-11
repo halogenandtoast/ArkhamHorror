@@ -35,13 +35,12 @@ instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
           if tabooed TabooList20 attrs
             then [IgnoreAttacksOfOpportunity | canTaboo]
             else [MayIgnoreAttacksOfOpportunity]
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard (not atLocus)
       *> ([SkillModifier #intellect 1, SkillModifier #agility 1] <> aooModified)
   getModifiersFor (LocationTarget lid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
     let mlocus = maybeResult attrs.meta
-    pure $ toModifiers attrs $ guard (Just lid == mlocus) *> [Locus]
+    toModifiers attrs $ guard (Just lid == mlocus) *> [Locus]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where

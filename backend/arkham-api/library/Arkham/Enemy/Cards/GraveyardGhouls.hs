@@ -26,7 +26,7 @@ graveyardGhouls =
 instance HasModifiersFor GraveyardGhouls where
   getModifiersFor (InvestigatorTarget iid) (GraveyardGhouls attrs) = do
     affected <- iid <=~> investigatorEngagedWith (toId attrs)
-    pure $ toModifiers attrs [CardsCannotLeaveYourDiscardPile | affected]
+    toModifiers attrs [CardsCannotLeaveYourDiscardPile | affected]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GraveyardGhouls where

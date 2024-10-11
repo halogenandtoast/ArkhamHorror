@@ -5,9 +5,9 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype TrustyBullwhip = TrustyBullwhip AssetAttrs
@@ -29,18 +29,19 @@ instance RunMessage TrustyBullwhip where
       aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      withSkillTest \sid -> do
-        when attrs.ready do
-          getSkillTestTarget >>= \case
-            Just (EnemyTarget eid) -> do
-              canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
-              chooseOne iid
-                $ [Label "Automatically evade the enemy" [Exhaust (toTarget attrs), EnemyEvaded iid eid] | canEvade]
-                <> [ Label
-                      "Deal +1 damage for this attack"
-                      [Exhaust (toTarget attrs), Msg.skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)]
-                   , Label "Do nothing" []
-                   ]
-            _ -> error "impossible"
+      withSkillTest \sid -> when attrs.ready do
+        getSkillTestTarget >>= \case
+          Just (EnemyTarget eid) -> do
+            canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
+            chooseOneM iid do
+              when canEvade do
+                labeled "Automatically evade the enemy" do
+                  exhaustThis attrs
+                  push $ EnemyEvaded iid eid
+              labeled "Deal +1 damage for this attack" do
+                exhaustThis attrs
+                skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+              labeled "Do nothing" nothing
+          _ -> error "impossible"
       pure a
     _ -> TrustyBullwhip <$> liftRunMessage msg attrs

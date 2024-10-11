@@ -38,7 +38,7 @@ instance HasModifiersFor HistoricalSocietyHistoricalMuseum_132 where
       case (mAction, mtarget) of
         (Just Action.Investigate, Just target)
           | isTarget attrs target ->
-              pure $ toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
+              toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
         _ -> pure []
   getModifiersFor _ _ = pure []
 

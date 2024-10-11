@@ -3,8 +3,7 @@ module Arkham.Event.Events.OnTheHunt (onTheHunt, OnTheHunt (..)) where
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
 import Arkham.Matcher
 import Arkham.Spawn
 import Arkham.Strategy
@@ -33,15 +32,10 @@ instance RunMessage OnTheHunt where
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
       if (notNull enemyCards)
-        then
-          chooseN iid (min (length enemyCards) (1 + additionalTargets))
-            $ [ targetLabel
-                card
-                [ Msg.searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
-                , InvestigatorDrewEncounterCard iid card
-                ]
-              | card <- enemyCards
-              ]
+        then chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
+          targets enemyCards \card -> do
+            searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+            push $ InvestigatorDrewEncounterCard iid card
         else drawEncounterCard iid attrs
       pure e
     _ -> OnTheHunt <$> liftRunMessage msg attrs

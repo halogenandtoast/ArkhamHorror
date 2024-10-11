@@ -29,17 +29,17 @@ instance HasAbilities ScientificTheory1 where
 
 instance HasModifiersFor ScientificTheory1 where
   getModifiersFor (AssetTarget aid) (ScientificTheory1 attrs) | toId attrs == aid = do
-    pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ScientificTheory1 where
   runMessage msg a@(ScientificTheory1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #intellect 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
       pure a
     _ -> ScientificTheory1 <$> runMessage msg attrs

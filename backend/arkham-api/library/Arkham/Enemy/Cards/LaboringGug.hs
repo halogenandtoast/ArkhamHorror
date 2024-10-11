@@ -22,7 +22,7 @@ laboringGug = enemy LaboringGug Cards.laboringGug (5, Static 5, 2) (3, 1)
 instance HasModifiersFor LaboringGug where
   getModifiersFor (LocationTarget lid) (LaboringGug attrs) = do
     isTheEnchantedPath <- lid <=~> locationIs Locations.theEnchantedPath
-    pure $ toModifiers attrs [CannotBeEnteredBy $ EnemyWithId $ toId attrs | isTheEnchantedPath]
+    toModifiers attrs [CannotBeEnteredBy $ EnemyWithId $ toId attrs | isTheEnchantedPath]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LaboringGug where

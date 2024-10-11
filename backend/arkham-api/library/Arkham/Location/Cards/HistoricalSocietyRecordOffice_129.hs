@@ -3,20 +3,16 @@ module Arkham.Location.Cards.HistoricalSocietyRecordOffice_129 (
   HistoricalSocietyRecordOffice_129 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyRecordOffice_129 = HistoricalSocietyRecordOffice_129 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyRecordOffice_129
@@ -29,30 +25,22 @@ historicalSocietyRecordOffice_129 =
     (PerPlayer 1)
 
 instance HasModifiersFor HistoricalSocietyRecordOffice_129 where
-  getModifiersFor (EnemyTarget eid) (HistoricalSocietyRecordOffice_129 attrs) = do
-    atLocation <- enemyAtLocation eid attrs
-    pure
-      $ toModifiers attrs
-      $ guard atLocation
-      *> [EnemyFight 1, EnemyEvade 1]
+  getModifiersFor (EnemyTarget eid) (HistoricalSocietyRecordOffice_129 attrs) = maybeModified attrs do
+    liftGuardM $ enemyAtLocation eid attrs
+    pure [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyRecordOffice_129 where
-  getAbilities (HistoricalSocietyRecordOffice_129 attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemySpawns
-          Timing.When
-          (LocationWithId $ toId attrs)
-          AnyEnemy
-      | not (locationRevealed attrs)
+  getAbilities (HistoricalSocietyRecordOffice_129 a) =
+    extend
+      a
+      [ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      | not a.revealed
       ]
 
 instance RunMessage HistoricalSocietyRecordOffice_129 where
-  runMessage msg l@(HistoricalSocietyRecordOffice_129 attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          l <$ push (Msg.RevealLocation Nothing $ toId attrs)
-    _ -> HistoricalSocietyRecordOffice_129 <$> runMessage msg attrs
+  runMessage msg l@(HistoricalSocietyRecordOffice_129 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      reveal attrs.id
+      pure l
+    _ -> HistoricalSocietyRecordOffice_129 <$> liftRunMessage msg attrs

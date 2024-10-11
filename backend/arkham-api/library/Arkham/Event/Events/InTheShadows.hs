@@ -1,15 +1,9 @@
-module Arkham.Event.Events.InTheShadows (
-  inTheShadows,
-  InTheShadows (..),
-)
-where
+module Arkham.Event.Events.InTheShadows (inTheShadows, InTheShadows (..)) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype InTheShadows = InTheShadows EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,11 +13,10 @@ inTheShadows :: EventCard InTheShadows
 inTheShadows = event InTheShadows Cards.inTheShadows
 
 instance RunMessage InTheShadows where
-  runMessage msg e@(InTheShadows attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(InTheShadows attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
       enemies <- select $ enemyEngagedWith iid
-      pushAll
-        $ map (DisengageEnemy iid) enemies
-        <> [roundModifiers attrs iid [CannotBeEngaged, CannotDealDamage]]
+      for_ enemies $ disengageEnemy iid
+      roundModifiers attrs iid [CannotBeEngaged, CannotDealDamage]
       pure e
-    _ -> InTheShadows <$> runMessage msg attrs
+    _ -> InTheShadows <$> liftRunMessage msg attrs

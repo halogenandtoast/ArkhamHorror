@@ -20,6 +20,6 @@ instance RunMessage Deduction where
   runMessage msg s@(Deduction attrs) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (DiscoveredClues 1)
+        pushM $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure s
     _ -> Deduction <$> runMessage msg attrs

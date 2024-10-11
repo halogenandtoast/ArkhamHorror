@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.SerpentOfTenochtitlan (
-  serpentOfTenochtitlan,
-  SerpentOfTenochtitlan (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SerpentOfTenochtitlan (serpentOfTenochtitlan, SerpentOfTenochtitlan (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -12,31 +7,21 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Trait (Trait (Ancient))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SerpentOfTenochtitlan = SerpentOfTenochtitlan EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 serpentOfTenochtitlan :: EnemyCard SerpentOfTenochtitlan
-serpentOfTenochtitlan =
-  enemy
-    SerpentOfTenochtitlan
-    Cards.serpentOfTenochtitlan
-    (3, Static 5, 3)
-    (1, 1)
+serpentOfTenochtitlan = enemy SerpentOfTenochtitlan Cards.serpentOfTenochtitlan (3, Static 5, 3) (1, 1)
 
 instance HasModifiersFor SerpentOfTenochtitlan where
   getModifiersFor target (SerpentOfTenochtitlan a) | isTarget a target = do
-    atAncientLocation <-
-      selectAny
-        $ EnemyWithId (toId a)
-        <> EnemyAt
-          (LocationWithTrait Ancient)
-    pure
-      $ toModifiers a
+    atAncientLocation <- selectAny $ EnemyWithId a.id <> at_ (LocationWithTrait Ancient)
+    toModifiers a
       $ if atAncientLocation
         then [AddKeyword Retaliate, AddKeyword Alert]
         else [AddKeyword Hunter]
@@ -44,22 +29,10 @@ instance HasModifiersFor SerpentOfTenochtitlan where
 
 instance HasAbilities SerpentOfTenochtitlan where
   getAbilities (SerpentOfTenochtitlan a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility
-          a
-          1
-          ( InvestigatorExists
-              $ You
-              <> NotInvestigator
-                (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
-          )
-          $ ForcedAbility
-          $ DealtDamage
-            Timing.After
-            (SourceIsEnemyAttack $ EnemyWithId $ toId a)
-            You
-      ]
+    extend1 a
+      $ restricted a 1 (youExist $ not_ (HasMatchingTreachery $ treacheryIs Treacheries.poisoned))
+      $ forced
+      $ DealtDamage #after (SourceIsEnemyAttack $ be a) You
 
 instance RunMessage SerpentOfTenochtitlan where
   runMessage msg e@(SerpentOfTenochtitlan attrs) = case msg of

@@ -23,10 +23,9 @@ dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)
 instance HasModifiersFor DayanaEsperence3 where
   getModifiersFor (InvestigatorTarget iid) (DayanaEsperence3 attrs)
     | controlledBy attrs iid = do
-        pure $ toModifiers attrs [AsIfInHand card | card <- assetCardsUnderneath attrs]
+        toModifiers attrs [AsIfInHand card | card <- assetCardsUnderneath attrs]
   getModifiersFor (CardIdTarget cardId) (DayanaEsperence3 attrs) = do
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard (cardId `elem` map toCardId (assetCardsUnderneath attrs))
       *> [ LeaveCardWhereItIs
          , AdditionalCost $ assetUseCost attrs Secret 1 <> exhaust attrs

@@ -19,8 +19,7 @@ instance HasModifiersFor CelaenoFragments where
   getModifiersFor (InvestigatorTarget iid) (CelaenoFragments attrs)
     | controlledBy attrs iid = do
         count' <- fieldMap InvestigatorHand length iid
-        pure
-          . toModifiers attrs
+        toModifiers attrs
           $ [SkillModifier SkillIntellect 1 | count' >= 5]
           <> [SkillModifier SkillWillpower 1 | count' >= 10]
           <> [SkillModifier SkillIntellect 1 | count' >= 15]

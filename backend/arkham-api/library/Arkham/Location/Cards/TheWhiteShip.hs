@@ -20,7 +20,7 @@ theWhiteShip = location TheWhiteShip Cards.theWhiteShip 1 (Static 0)
 instance HasModifiersFor TheWhiteShip where
   getModifiersFor (InvestigatorTarget iid) (TheWhiteShip a) = do
     alarmLevel <- getAlarmLevel iid
-    pure $ toModifiers a [CannotEnter a.id | alarmLevel >= 5]
+    toModifiers a [CannotEnter a.id | alarmLevel >= 5]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheWhiteShip where

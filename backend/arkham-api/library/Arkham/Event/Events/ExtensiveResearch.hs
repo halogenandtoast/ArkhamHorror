@@ -27,7 +27,7 @@ instance HasModifiersFor ExtensiveResearch where
   getModifiersFor (CardIdTarget cid) (ExtensiveResearch a) | toCardId a == cid =
     do
       n <- fieldMap InvestigatorHand length (eventOwner a)
-      pure $ toModifiers a [ReduceCostOf (CardWithId cid) n]
+      toModifiers a [ReduceCostOf (CardWithId cid) n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ExtensiveResearch where

@@ -36,7 +36,7 @@ instance HasModifiersFor TheCrawlingMist where
         , action `elem` [Action.Fight, Action.Evade] -> do
             n <- selectCount $ TreacheryInHandOf (InvestigatorWithId iid)
             m <- selectCount $ EnemyInHandOf (InvestigatorWithId iid) <> NonWeaknessEnemy
-            pure $ toModifiers a [Difficulty $ n + m]
+            toModifiers a [Difficulty $ n + m]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -18,7 +18,7 @@ theSkeletonKey2 = asset TheSkeletonKey2 Cards.theSkeletonKey2
 instance HasModifiersFor TheSkeletonKey2 where
   getModifiersFor (LocationTarget lid) (TheSkeletonKey2 a) =
     case a.placement of
-      AttachedToLocation lid' | lid == lid' -> pure $ toModifiers a [SetShroud 1]
+      AttachedToLocation lid' | lid == lid' -> toModifiers a [SetShroud 1]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

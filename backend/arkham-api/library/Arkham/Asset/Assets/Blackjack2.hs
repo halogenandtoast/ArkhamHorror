@@ -15,14 +15,13 @@ blackjack2 :: AssetCard Blackjack2
 blackjack2 = asset Blackjack2 Cards.blackjack2
 
 instance HasModifiersFor Blackjack2 where
-  getModifiersFor (InvestigatorTarget iid) (Blackjack2 attrs) = do
-    toModifiers attrs . toList <$> runMaybeT do
-      (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      guardM $ lift $ selectAny $ investigatorEngagedWith eid <> notInvestigator iid
-      iid' <- MaybeT getSkillTestInvestigator
-      guard $ iid == iid'
-      pure $ DamageDealt 1
+  getModifiersFor (InvestigatorTarget iid) (Blackjack2 attrs) = maybeModified attrs do
+    (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
+    EnemyTarget eid <- MaybeT getSkillTestTarget
+    guardM $ lift $ selectAny $ investigatorEngagedWith eid <> notInvestigator iid
+    iid' <- MaybeT getSkillTestInvestigator
+    guard $ iid == iid'
+    pure [DamageDealt 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Blackjack2 where
@@ -34,9 +33,8 @@ instance RunMessage Blackjack2 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> Blackjack2 <$> runMessage msg attrs

@@ -58,7 +58,7 @@ showmanshipEffect = cardEffect ShowmanshipEffect Cards.showmanship
 instance HasModifiersFor ShowmanshipEffect where
   getModifiersFor target (ShowmanshipEffect attrs) | effectTarget attrs == target = do
     mability <- listToMaybe <$> getActiveAbilities
-    pure $ toModifiers attrs $ case (mability, effectMetadata attrs) of
+    toModifiers attrs $ case (mability, effectMetadata attrs) of
       (Just ab, Just (EffectMetaTarget t))
         | sourceToTarget (abilitySource ab) == t ->
             [SkillModifier sType 2 | sType <- allSkills]

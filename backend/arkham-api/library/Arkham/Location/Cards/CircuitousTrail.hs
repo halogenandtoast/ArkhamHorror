@@ -28,7 +28,7 @@ instance HasModifiersFor CircuitousTrail where
     here <- iid `isAt` attrs
     anyWithCompass <- getAny <$> selectAgg (Any . elem Compass) InvestigatorSupplies (colocatedWith iid)
     if any (`elem` [#investigate, #explore]) (abilityActions ab)
-      then pure $ toModifiers attrs [AdditionalCost (ResourceCost 3) | here, not anyWithCompass]
+      then toModifiers attrs [AdditionalCost (ResourceCost 3) | here, not anyWithCompass]
       else pure []
   getModifiersFor _ _ = pure []
 

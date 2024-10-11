@@ -24,7 +24,7 @@ lodgeCellarMembersOnly = location LodgeCellarMembersOnly Cards.lodgeCellarMember
 instance HasModifiersFor LodgeCellarMembersOnly where
   getModifiersFor target (LodgeCellarMembersOnly attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LodgeCellarMembersOnly where

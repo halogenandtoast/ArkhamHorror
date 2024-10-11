@@ -5,9 +5,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Strategy
 
@@ -32,13 +32,13 @@ instance RunMessage AstronomicalAtlas3 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        focusCards attrs.cardsUnderneath $ \unfocus -> chooseOrRunOne iid $ flip map attrs.cardsUnderneath \card ->
-          targetLabel
-            card
-            [ unfocus
-            , Msg.skillTestModifier sid attrs card (IfSuccessfulModifier ReturnToHandAfterTest)
-            , SkillTestCommitCard iid card
-            ]
+        focusCards attrs.cardsUnderneath $ \unfocus -> do
+          chooseOrRunOneM iid do
+            for_ attrs.cardsUnderneath \card -> do
+              targeting card do
+                push unfocus
+                skillTestModifier sid attrs card (IfSuccessfulModifier ReturnToHandAfterTest)
+                push $ SkillTestCommitCard iid card
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards \unfocus -> continue iid [unfocus, Do msg]

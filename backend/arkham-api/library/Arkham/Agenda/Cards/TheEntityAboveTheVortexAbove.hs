@@ -28,7 +28,7 @@ theEntityAboveTheVortexAbove =
 instance HasModifiersFor TheEntityAboveTheVortexAbove where
   getModifiersFor (EnemyTarget eid) (TheEntityAboveTheVortexAbove a) = do
     isMonster <- fieldP EnemyTraits (member Monster) eid
-    pure $ toModifiers a [EnemyFight 1 | isMonster]
+    toModifiers a [EnemyFight 1 | isMonster]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheEntityAboveTheVortexAbove where

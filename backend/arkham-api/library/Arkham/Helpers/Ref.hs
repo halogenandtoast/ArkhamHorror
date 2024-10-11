@@ -38,8 +38,8 @@ targetToMaybeCard = \case
 sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
-sourceToMaybeCard :: (HasCallStack, HasGame m) => Source -> m (Maybe Card)
-sourceToMaybeCard = maybe (pure Nothing) targetToMaybeCard . sourceToMaybeTarget
+sourceToMaybeCard :: (HasCallStack, HasGame m, Sourceable source) => source -> m (Maybe Card)
+sourceToMaybeCard = maybe (pure Nothing) targetToMaybeCard . sourceToMaybeTarget . toSource
 
 sourceToTarget :: HasCallStack => Source -> Target
 sourceToTarget s =

@@ -33,7 +33,7 @@ instance HasModifiersFor CustomAmmunition3 where
             do
               isMonster <- eid <=~> EnemyWithTrait Monster
               isController <- iid <=~> HasMatchingAsset (AssetWithId aid)
-              pure $ toModifiers a [DamageDealt 1 | isMonster && isController]
+              toModifiers a [DamageDealt 1 | isMonster && isController]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

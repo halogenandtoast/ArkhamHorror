@@ -30,10 +30,10 @@ instance RunMessage HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #combat 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
+        pushM $ skillTestModifier sid attrs iid (SkillModifier #agility 1)
       pure a
     _ -> HardKnocks2 <$> runMessage msg attrs

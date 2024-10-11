@@ -23,10 +23,9 @@ instance HasAbilities ScientificTheory3 where
 
 instance HasModifiersFor ScientificTheory3 where
   getModifiersFor target (ScientificTheory3 attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (ScientificTheory3 attrs) | iid `controls` attrs = do
-    pure $ toModifiers attrs [SkillModifier #intellect 1, SkillModifier #combat 1]
+    toModifiers attrs [SkillModifier #intellect 1, SkillModifier #combat 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ScientificTheory3 where

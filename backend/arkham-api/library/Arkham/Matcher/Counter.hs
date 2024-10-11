@@ -18,4 +18,10 @@ instance IsLabel "damage" CounterMatcher where
 instance IsLabel "clue" CounterMatcher where
   fromLabel = ClueCounter
 
+instance IsLabel "doom" CounterMatcher where
+  fromLabel = DoomCounter
+
+instance IsLabel "resource" CounterMatcher where
+  fromLabel = ResourceCounter
+
 $(deriveJSON defaultOptions ''CounterMatcher)

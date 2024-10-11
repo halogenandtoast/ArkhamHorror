@@ -8,10 +8,10 @@ import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), getMetaMaybe)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 
 newtype AlchemicalDistillation = AlchemicalDistillation AssetAttrs
@@ -38,20 +38,15 @@ instance RunMessage AlchemicalDistillation where
   runMessage msg a@(AlchemicalDistillation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       if attrs `hasCustomization` Empowered
-        then
-          chooseOne
-            iid
-            [ Label
-                "Empower (increase difficulty by 2)"
-                [ Msg.abilityModifier
-                    (AbilityRef (toSource attrs) 1)
-                    (attrs.ability 1)
-                    attrs
-                    (MetaModifier $ object ["empowered" .= True])
-                , Do msg
-                ]
-            , Label "Do not empower" [Do msg]
-            ]
+        then chooseOneM iid do
+          labeled "Empower (increase difficulty by 2)" do
+            abilityModifier
+              (AbilityRef (toSource attrs) 1)
+              (attrs.ability 1)
+              attrs
+              (MetaModifier $ object ["empowered" .= True])
+            push $ Do msg
+          labeled "Do not empower" $ push $ Do msg
         else push $ Do msg
       pure a
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do

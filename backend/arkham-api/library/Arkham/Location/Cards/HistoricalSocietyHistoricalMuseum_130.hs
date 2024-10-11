@@ -32,7 +32,7 @@ historicalSocietyHistoricalMuseum_130 =
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_130 where
   getModifiersFor (InvestigatorTarget iid) (HistoricalSocietyHistoricalMuseum_130 a) = do
     investigating <- isInvestigating iid (toId a)
-    pure $ toModifiers a [SkillCannotBeIncreased SkillIntellect | investigating]
+    toModifiers a [SkillCannotBeIncreased SkillIntellect | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where

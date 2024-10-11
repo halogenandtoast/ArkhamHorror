@@ -23,7 +23,8 @@ instance RunMessage Suggestion1 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       chooseEvade <- toMessage <$> mkChooseEvade sid iid source
-      pushAll [skillTestModifier sid source iid (AddSkillValue #willpower), chooseEvade]
+      enabled <- skillTestModifier sid source iid (AddSkillValue #willpower)
+      pushAll [enabled, chooseEvade]
       pure a
     PassedThisSkillTestBy _ (isSource attrs -> True) n | n < 2 -> do
       push $ SpendUses (attrs.ability 1) (toTarget attrs) Charge 1

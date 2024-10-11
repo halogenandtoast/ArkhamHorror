@@ -28,8 +28,7 @@ closeTheCircle1 = asset (CloseTheCircle1 . (`with` Metadata False)) Cards.closeT
 
 instance HasModifiersFor CloseTheCircle1 where
   getModifiersFor (InvestigatorTarget iid) (CloseTheCircle1 (With a meta)) | iid `controls` a = do
-    pure
-      $ toModifiers a
+    toModifiers a
       $ guard (active meta)
       *> [UseSkillInPlaceOf sType #willpower | sType <- [#combat, #agility, #intellect]]
   getModifiersFor _ _ = pure []

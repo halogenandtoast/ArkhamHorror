@@ -42,10 +42,8 @@ instance RunMessage UnearthTheAncients where
       sid <- getRandom
       investigation <- mkInvestigate sid iid attrs <&> setTarget attrs
       card <- getCard cid
-      pushAll
-        [ skillTestModifier sid attrs sid (SetDifficulty $ getCost card)
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid attrs sid (SetDifficulty $ getCost card)
+      pushAll [enabled, toMessage investigation]
       pure $ UnearthTheAncients $ attrs `with` Metadata (Just cid)
     Successful (Action.Investigate, _) iid _ target _ | isTarget attrs target -> do
       case chosenCard metadata of

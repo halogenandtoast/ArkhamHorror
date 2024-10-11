@@ -17,7 +17,7 @@ jennyBarnes =
 
 instance HasModifiersFor JennyBarnes where
   getModifiersFor target (JennyBarnes attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [UpkeepResources 1]
+    toModifiers attrs [UpkeepResources 1]
   getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue JennyBarnes where

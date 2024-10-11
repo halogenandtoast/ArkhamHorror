@@ -1,20 +1,13 @@
-module Arkham.Event.Events.ToeToToe (
-  toeToToe,
-  toeToToeEffect,
-  ToeToToe (..),
-)
-where
+module Arkham.Event.Events.ToeToToe (toeToToe, toeToToeEffect, ToeToToe (..)) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Cost
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Fight
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
-import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.Modifiers (ModifierType (..), getMeta)
 
 newtype ToeToToe = ToeToToe EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -24,17 +17,15 @@ toeToToe :: EventCard ToeToToe
 toeToToe = event ToeToToe Cards.toeToToe
 
 instance RunMessage ToeToToe where
-  runMessage msg e@(ToeToToe attrs) = case msg of
+  runMessage msg e@(ToeToToe attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
       enemy <- fromJustNote "enemy should be set" <$> getMeta (toCardId attrs) "chosenEnemy"
-      pushAll
-        [ skillTestModifier sid attrs iid (DamageDealt 1)
-        , skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
-        , FightEnemy sid iid enemy (toSource attrs) Nothing #combat False
-        ]
+      skillTestModifier sid attrs iid (DamageDealt 1)
+      skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
+      push $ FightEnemy sid iid enemy (toSource attrs) Nothing #combat False
       pure e
-    _ -> ToeToToe <$> runMessage msg attrs
+    _ -> ToeToToe <$> liftRunMessage msg attrs
 
 newtype ToeToToeEffect = ToeToToeEffect EffectAttrs
   deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
@@ -45,7 +36,7 @@ toeToToeEffect = cardEffect ToeToToeEffect Cards.toeToToe
 
 -- effect is triggered by cdBeforeEffect
 instance RunMessage ToeToToeEffect where
-  runMessage msg e@(ToeToToeEffect attrs) = case msg of
+  runMessage msg e@(ToeToToeEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ (BothSource (InvestigatorSource iid) cardSource) _target | eid == toId attrs -> do
       sid <- getRandom
       pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight sid iid cardSource)
@@ -61,12 +52,10 @@ instance RunMessage ToeToToeEffect where
             card <- case attrs.target of
               CardIdTarget cid -> getCard cid
               _ -> error "ToeToToeEffect: cardId should be CardIdTarget"
-            pushAll
-              [ disable attrs
-              , costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
-              , cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
-              ]
+            disable attrs
+            costModifier attrs (ActiveCostTarget acId) (AdditionalCost $ EnemyAttackCost enemy)
+            cardResolutionModifier card attrs attrs.target (MetaModifier $ object ["chosenEnemy" .= enemy])
           _ -> error "invalid before effect meta"
         else pure ()
       pure e
-    _ -> ToeToToeEffect <$> runMessage msg attrs
+    _ -> ToeToToeEffect <$> liftRunMessage msg attrs

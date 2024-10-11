@@ -20,10 +20,8 @@ instance HasAbilities WellPrepared2 where
     [ controlledAbility
         a
         1
-        ( exists $ not_ (AssetWithId $ toId a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon
-        )
-        $ FastAbility
-        $ exhaust a
+        (exists $ not_ (be a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon)
+        $ FastAbility (exhaust a)
     ]
 
 instance RunMessage WellPrepared2 where
@@ -41,13 +39,9 @@ instance RunMessage WellPrepared2 where
           x <- fieldMap AssetCard (length . filter (`member` matchingIcons) . cdSkills . toCardDef) aid
           pure (aid, x)
         player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ targetLabel
-              aid
-              [skillTestModifier sid (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)]
-            | (aid, x) <- assetIdsWithIconCount
-            ]
+        choices <- for assetIdsWithIconCount $ \(aid, x) -> do
+          enabled <- skillTestModifier sid (toSource attrs) (InvestigatorTarget iid) (AnySkillValue x)
+          pure $ targetLabel aid [enabled]
+        push $ chooseOne player choices
       pure a
     _ -> WellPrepared2 <$> runMessage msg attrs

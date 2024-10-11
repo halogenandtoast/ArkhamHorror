@@ -21,7 +21,7 @@ instance HasModifiersFor TheDreamEaters where
     if isTrueShape
       then do
         clues <- selectSum InvestigatorClues UneliminatedInvestigator
-        pure $ toModifiers attrs [HealthModifier (-clues) | clues > 0]
+        toModifiers attrs [HealthModifier (-clues) | clues > 0]
       else pure []
   getModifiersFor _ _ = pure []
 

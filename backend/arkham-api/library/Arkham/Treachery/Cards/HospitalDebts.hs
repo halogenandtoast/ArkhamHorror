@@ -6,8 +6,7 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -26,14 +25,14 @@ instance HasAbilities HospitalDebts where
         ]
 
 instance RunMessage HospitalDebts where
-  runMessage msg t@(HospitalDebts attrs) = case msg of
+  runMessage msg t@(HospitalDebts attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       pushAll [SpendResources iid 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ resolutionModifier (attrs.ability 2) iid (XPModifier "Hospital Debts" (-2))
+      resolutionModifier (attrs.ability 2) iid (XPModifier "Hospital Debts" (-2))
       pure t
-    _ -> HospitalDebts <$> runMessage msg attrs
+    _ -> HospitalDebts <$> liftRunMessage msg attrs

@@ -35,7 +35,7 @@ instance HasModifiersFor TheBlackThrone where
     azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
     doom <- field EnemyDoom azathoth
     let x = ceiling (fromIntegral doom / (2 :: Double))
-    pure $ toModifiers attrs [ShroudModifier x]
+    toModifiers attrs [ShroudModifier x]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBlackThrone where

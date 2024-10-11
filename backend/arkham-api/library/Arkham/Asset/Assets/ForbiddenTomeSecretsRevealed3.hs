@@ -26,7 +26,7 @@ instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
     | isSource a (abilitySource ab) && abilityIndex ab == 1 = do
         handCount <- getHandCount iid
         let n = handCount `div` 4
-        pure $ toModifiers a [ActionCostModifier (-n) | n > 0]
+        toModifiers a [ActionCostModifier (-n) | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where

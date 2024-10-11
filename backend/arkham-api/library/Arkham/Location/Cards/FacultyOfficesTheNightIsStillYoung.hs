@@ -10,9 +10,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (
-  facultyOfficesTheNightIsStillYoung,
- )
+import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Resolution
@@ -20,7 +18,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheNightIsStillYoung
@@ -33,10 +31,8 @@ facultyOfficesTheNightIsStillYoung =
     (PerPlayer 2)
 
 instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
-  getModifiersFor target (FacultyOfficesTheNightIsStillYoung attrs)
-    | isTarget attrs target =
-        pure
-          $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+  getModifiersFor target (FacultyOfficesTheNightIsStillYoung attrs) | isTarget attrs target = do
+    toModifiers attrs [Blocked | not attrs.revealed]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FacultyOfficesTheNightIsStillYoung where

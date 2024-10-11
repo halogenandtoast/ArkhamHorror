@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype HasturLordOfCarcosa = HasturLordOfCarcosa EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hasturLordOfCarcosa :: EnemyCard HasturLordOfCarcosa
@@ -20,14 +20,13 @@ hasturLordOfCarcosa =
     . (preyL .~ Prey MostRemainingSanity)
 
 instance HasModifiersFor HasturLordOfCarcosa where
-  getModifiersFor (ChaosTokenTarget t) (HasturLordOfCarcosa a) = do
-    toModifiers a . toList <$> runMaybeT do
-      guard $ t.face `elem` [PlusOne, Zero, MinusOne, ElderSign]
-      guardM $ isTarget a <$> MaybeT getSkillTestTarget
-      guardM $ (`elem` [#fight, #evade]) <$> MaybeT getSkillTestAction
-      iid <- MaybeT getSkillTestInvestigator
-      guardM $ lift $ fieldNone InvestigatorRemainingSanity iid
-      pure $ ForcedChaosTokenChange t.face [AutoFail]
+  getModifiersFor (ChaosTokenTarget t) (HasturLordOfCarcosa a) = maybeModified a do
+    guard $ t.face `elem` [PlusOne, Zero, MinusOne, ElderSign]
+    guardM $ isTarget a <$> MaybeT getSkillTestTarget
+    guardM $ (`elem` [#fight, #evade]) <$> MaybeT getSkillTestAction
+    iid <- MaybeT getSkillTestInvestigator
+    liftGuardM $ fieldNone InvestigatorRemainingSanity iid
+    pure [ForcedChaosTokenChange t.face [AutoFail]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage HasturLordOfCarcosa where

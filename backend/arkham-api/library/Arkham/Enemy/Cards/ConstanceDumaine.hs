@@ -21,7 +21,7 @@ constanceDumaine =
 instance HasModifiersFor ConstanceDumaine where
   getModifiersFor (EnemyTarget eid) (ConstanceDumaine a)
     | eid == toId a =
-        pure $ toModifiers a [Modifier.EnemyFight 3 | enemyExhausted a]
+        toModifiers a [Modifier.EnemyFight 3 | enemyExhausted a]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ConstanceDumaine where

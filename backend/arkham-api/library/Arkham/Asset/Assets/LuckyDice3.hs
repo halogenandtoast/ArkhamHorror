@@ -54,7 +54,7 @@ luckyDice3Effect = cardEffect (LuckyDice3Effect . (`with` Metadata False)) Cards
 
 instance HasModifiersFor LuckyDice3Effect where
   getModifiersFor target (LuckyDice3Effect (attrs `With` _)) | target == effectTarget attrs = do
-    pure $ toModifiers attrs [IgnoreChaosToken]
+    toModifiers attrs [IgnoreChaosToken]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LuckyDice3Effect where

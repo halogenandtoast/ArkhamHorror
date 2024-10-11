@@ -20,7 +20,7 @@ garden = location Garden Cards.garden 3 (PerPlayer 1)
 instance HasModifiersFor Garden where
   getModifiersFor (LocationTarget lid) (Garden attrs)
     | lid == toId attrs =
-        pure $ toModifiers attrs [Blocked | not (locationRevealed attrs)]
+        toModifiers attrs [Blocked | not (locationRevealed attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Garden where

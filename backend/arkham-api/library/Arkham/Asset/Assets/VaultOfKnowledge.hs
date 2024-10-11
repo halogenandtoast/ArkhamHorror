@@ -20,7 +20,7 @@ vaultOfKnowledge = asset VaultOfKnowledge Cards.vaultOfKnowledge
 
 instance HasModifiersFor VaultOfKnowledge where
   getModifiersFor (InvestigatorTarget iid) (VaultOfKnowledge a) | a `controlledBy` iid = do
-    pure $ toModifiers a [HandSize 2]
+    toModifiers a [HandSize 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities VaultOfKnowledge where

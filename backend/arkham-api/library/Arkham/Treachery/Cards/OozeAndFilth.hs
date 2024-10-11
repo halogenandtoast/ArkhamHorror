@@ -22,7 +22,7 @@ oozeAndFilth = treachery OozeAndFilth Cards.oozeAndFilth
 
 instance HasModifiersFor OozeAndFilth where
   getModifiersFor (LocationTarget _) (OozeAndFilth a) =
-    pure $ toModifiers a [ShroudModifier 1]
+    toModifiers a [ShroudModifier 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities OozeAndFilth where

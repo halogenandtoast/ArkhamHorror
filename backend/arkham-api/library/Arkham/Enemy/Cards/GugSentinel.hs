@@ -17,7 +17,7 @@ gugSentinel = enemy GugSentinel Cards.gugSentinel (5, Static 2, 3) (2, 1)
 instance HasModifiersFor GugSentinel where
   getModifiersFor target (GugSentinel attrs) | attrs `is` target = do
     health <- perPlayer 2
-    pure $ toModifiers attrs [HealthModifier health]
+    toModifiers attrs [HealthModifier health]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GugSentinel where

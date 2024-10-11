@@ -18,7 +18,7 @@ import Arkham.Strategy
 import Arkham.Trait
 
 newtype DrElliHorowitz = DrElliHorowitz AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drElliHorowitz :: AssetCard DrElliHorowitz
@@ -28,11 +28,10 @@ instance HasModifiersFor DrElliHorowitz where
   getModifiersFor (AssetTarget aid) (DrElliHorowitz a) | aid /= toId a = do
     field AssetController a.id >>= \case
       Nothing -> pure []
-      Just iid -> do
-        placement <- field AssetPlacement aid
-        pure case placement of
+      Just iid ->
+        field AssetPlacement aid >>= \case
           AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
-          _ -> []
+          _ -> pure []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DrElliHorowitz where

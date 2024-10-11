@@ -15,7 +15,7 @@ valentinoRivas = allyWith ValentinoRivas Cards.valentinoRivas (2, 3) (isStoryL .
 
 instance HasModifiersFor ValentinoRivas where
   getModifiersFor (InvestigatorTarget iid) (ValentinoRivas a) =
-    pure [toModifier a (SkillModifier #agility 1) | controlledBy a iid]
+    toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ValentinoRivas where
@@ -30,6 +30,6 @@ instance RunMessage ValentinoRivas where
   runMessage msg a@(ValentinoRivas attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs (SkillTestTarget sid) (Difficulty (-1))
+        pushM $ skillTestModifier sid attrs (SkillTestTarget sid) (Difficulty (-1))
       pure a
     _ -> ValentinoRivas <$> runMessage msg attrs

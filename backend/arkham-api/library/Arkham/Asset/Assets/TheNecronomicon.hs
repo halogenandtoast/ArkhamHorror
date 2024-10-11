@@ -20,7 +20,7 @@ instance HasModifiersFor TheNecronomicon where
   getModifiersFor (ChaosTokenTarget token) (TheNecronomicon a) = do
     case a.controller of
       Just iid | token.revealedBy == Just iid -> do
-        pure $ toModifiers a [ForcedChaosTokenChange #eldersign [#autofail]]
+        toModifiers a [ForcedChaosTokenChange #eldersign [#autofail]]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

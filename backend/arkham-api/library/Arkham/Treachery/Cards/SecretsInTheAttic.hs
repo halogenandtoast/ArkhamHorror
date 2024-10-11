@@ -17,8 +17,7 @@ secretsInTheAttic = treachery SecretsInTheAttic Cards.secretsInTheAttic
 
 instance HasModifiersFor SecretsInTheAttic where
   getModifiersFor (InvestigatorTarget _) (SecretsInTheAttic a) =
-    pure
-      $ toModifiers a [CannotTriggerAbilityMatching $ AbilityIsFastAbility <> AbilityOnLocation Anywhere]
+    toModifiers a [CannotTriggerAbilityMatching $ AbilityIsFastAbility <> AbilityOnLocation Anywhere]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SecretsInTheAttic where

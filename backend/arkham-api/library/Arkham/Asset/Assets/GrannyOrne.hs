@@ -2,9 +2,11 @@ module Arkham.Asset.Assets.GrannyOrne (grannyOrne, GrannyOrne (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype GrannyOrne = GrannyOrne AssetAttrs
   deriving anyclass IsAsset
@@ -15,35 +17,27 @@ grannyOrne = ally GrannyOrne Cards.grannyOrne (1, 3)
 
 instance HasModifiersFor GrannyOrne where
   getModifiersFor (InvestigatorTarget iid) (GrannyOrne a)
-    | controlledBy a iid = pure $ toModifiers a [SkillModifier #willpower 1]
+    | controlledBy a iid = toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GrannyOrne where
   getAbilities (GrannyOrne a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility
           (WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) #any #failure)
           (exhaust a)
     ]
 
 instance RunMessage GrannyOrne where
-  runMessage msg a@(GrannyOrne attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
+  runMessage msg a@(GrannyOrne attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push
-          $ chooseOne
-            player
-            [ Label
-                "Fail by 1 less"
-                [ skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
-                , RecalculateSkillTestResults
-                ]
-            , Label
-                "Fail by 1 more"
-                [ skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
-                , RecalculateSkillTestResults
-                ]
-            ]
+        chooseOneM iid do
+          labeled "Fail by 1 less" do
+            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
+            push RecalculateSkillTestResults
+          labeled "Fail by 1 more" do
+            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
+            push RecalculateSkillTestResults
       pure a
-    _ -> GrannyOrne <$> runMessage msg attrs
+    _ -> GrannyOrne <$> liftRunMessage msg attrs

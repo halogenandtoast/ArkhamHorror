@@ -1,17 +1,12 @@
-module Arkham.Skill.Cards.NotWithoutAFight (
-  notWithoutAFight,
-  NotWithoutAFight (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.NotWithoutAFight (notWithoutAFight, NotWithoutAFight (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
-import Arkham.SkillType
 
 newtype NotWithoutAFight = NotWithoutAFight SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -21,20 +16,10 @@ notWithoutAFight :: SkillCard NotWithoutAFight
 notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight
 
 instance HasModifiersFor NotWithoutAFight where
-  getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs)
-    | toCardId attrs == cid = do
-        n <-
-          selectCount
-            $ EnemyIsEngagedWith
-            $ InvestigatorWithId
-            $ skillOwner
-              attrs
-        pure
-          $ toModifiers
-            attrs
-            [AddSkillIcons $ cycleN n [SkillIcon SkillWillpower, SkillIcon SkillCombat, SkillIcon SkillAgility]]
+  getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs) | toCardId attrs == cid = do
+    n <- selectCount $ EnemyIsEngagedWith $ InvestigatorWithId attrs.owner
+    toModifiers attrs [AddSkillIcons $ cycleN n [#willpower, #combat, #agility]]
   getModifiersFor _ _ = pure []
 
 instance RunMessage NotWithoutAFight where
-  runMessage msg (NotWithoutAFight attrs) =
-    NotWithoutAFight <$> runMessage msg attrs
+  runMessage msg (NotWithoutAFight attrs) = NotWithoutAFight <$> runMessage msg attrs

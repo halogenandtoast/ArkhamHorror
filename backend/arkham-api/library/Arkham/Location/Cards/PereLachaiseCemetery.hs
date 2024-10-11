@@ -1,13 +1,11 @@
 module Arkham.Location.Cards.PereLachaiseCemetery (pereLachaiseCemetery, PereLachaiseCemetery (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype PereLachaiseCemetery = PereLachaiseCemetery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,16 +17,14 @@ pereLachaiseCemetery =
 
 instance HasAbilities PereLachaiseCemetery where
   getAbilities (PereLachaiseCemetery attrs) =
-    withRevealedAbilities
-      attrs
-      [ restrictedAbility attrs 1 Here
-          $ forced
-          $ SkillTestResult #after You (WhileInvestigating $ be attrs) (SuccessResult AnyValue)
-      ]
+    extendRevealed1 attrs
+      $ restricted attrs 1 Here
+      $ forced
+      $ SkillTestResult #after You (WhileInvestigating $ be attrs) (SuccessResult AnyValue)
 
 instance RunMessage PereLachaiseCemetery where
-  runMessage msg a@(PereLachaiseCemetery attrs) = case msg of
+  runMessage msg a@(PereLachaiseCemetery attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ roundModifier (attrs.ability 1) iid CannotMove
+      roundModifier (attrs.ability 1) iid CannotMove
       pure a
-    _ -> PereLachaiseCemetery <$> runMessage msg attrs
+    _ -> PereLachaiseCemetery <$> liftRunMessage msg attrs

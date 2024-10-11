@@ -22,10 +22,9 @@ instance HasAbilities Moxie3 where
 
 instance HasModifiersFor Moxie3 where
   getModifiersFor target (Moxie3 attrs) | attrs `is` target = do
-    pure
-      $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
   getModifiersFor (InvestigatorTarget iid) (Moxie3 attrs) | iid `controls` attrs = do
-    pure $ toModifiers attrs [SkillModifier #willpower 1, SkillModifier #agility 1]
+    toModifiers attrs [SkillModifier #willpower 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Moxie3 where

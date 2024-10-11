@@ -1,13 +1,12 @@
 module Arkham.Event.Events.DynamiteBlast where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
@@ -28,11 +27,12 @@ instance RunMessage DynamiteBlast where
         investigators <- select $ investigatorAt location
         if null enemies && null investigators
           then pure Nothing
-          else
+          else do
+            animation <- uiEffect attrs location Explosion
             pure
               $ Just
                 ( location
-                , uiEffect attrs location Explosion
+                , animation
                     : map (nonAttackEnemyDamage attrs 3) enemies
                       <> map (\iid' -> assignDamage iid' attrs 3) investigators
                 )

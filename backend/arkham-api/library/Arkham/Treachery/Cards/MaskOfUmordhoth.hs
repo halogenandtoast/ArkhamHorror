@@ -23,7 +23,7 @@ instance HasModifiersFor MaskOfUmordhoth where
   getModifiersFor (EnemyTarget eid) (MaskOfUmordhoth attrs) | treacheryOnEnemy eid attrs = do
     isUnique <- elem eid <$> select UniqueEnemy
     let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
-    pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
+    toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MaskOfUmordhoth where

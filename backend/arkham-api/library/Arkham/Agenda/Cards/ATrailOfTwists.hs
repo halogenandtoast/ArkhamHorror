@@ -22,7 +22,7 @@ aTrailOfTwists =
 instance HasModifiersFor ATrailOfTwists where
   getModifiersFor target (ATrailOfTwists attrs) | attrs `is` target = do
     n <- perPlayer 2
-    pure $ toModifiers attrs [DoomThresholdModifier n]
+    toModifiers attrs [DoomThresholdModifier n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ATrailOfTwists where

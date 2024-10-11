@@ -22,7 +22,7 @@ newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
 instance HasModifiersFor InPursuitOfTheDead where
   getModifiersFor (LocationTarget lid) (InPursuitOfTheDead attrs) = do
     notSpectral <- lid <=~> NotLocation (LocationWithTrait Spectral)
-    pure $ toModifiers attrs [CannotBeFlipped | notSpectral]
+    toModifiers attrs [CannotBeFlipped | notSpectral]
   getModifiersFor _ _ = pure []
 
 inPursuitOfTheDead :: ActCard InPursuitOfTheDead

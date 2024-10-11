@@ -21,10 +21,7 @@ bogGator =
 instance HasModifiersFor BogGator where
   getModifiersFor target (BogGator a) | spawned a && a `is` target = do
     bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy (toId a)
-    pure
-      $ toModifiers a
-      $ guard bayouLocation
-      *> [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
+    toModifiers a $ guard bayouLocation *> [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BogGator where

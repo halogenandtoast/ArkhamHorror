@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype ArkhamPoliceStation = ArkhamPoliceStation LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 arkhamPoliceStation :: LocationCard ArkhamPoliceStation
@@ -19,12 +19,11 @@ arkhamPoliceStation = location ArkhamPoliceStation Cards.arkhamPoliceStation 3 (
 instance HasModifiersFor ArkhamPoliceStation where
   getModifiersFor (LocationTarget lid) (ArkhamPoliceStation a) = do
     isEasttown <- lid <=~> locationIs Cards.easttown
-    pure
-      $ toModifiers
-        a
-        [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-        | isEasttown
-        ]
+    toModifiers
+      a
+      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
+      | isEasttown
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ArkhamPoliceStation where

@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype SlitheringDhole = SlitheringDhole EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 slitheringDhole :: EnemyCard SlitheringDhole
@@ -26,17 +26,15 @@ slitheringDhole =
 
 instance HasModifiersFor SlitheringDhole where
   getModifiersFor (LocationTarget lid) (SlitheringDhole a) = do
-    pure
-      $ toModifiers
-        a
-        [ ConnectedToWhen
-            ( LocationWithTreachery (treacheryIs Treacheries.dholeTunnel)
-                <> LocationWhenCriteria (exists $ EnemyWithId a.id <> MovingEnemy)
-            )
-            (LocationWithTreachery (treacheryIs Treacheries.dholeTunnel) <> not_ (LocationWithId lid))
-        ]
+    toModifiers
+      a
+      [ ConnectedToWhen
+          ( LocationWithTreachery (treacheryIs Treacheries.dholeTunnel)
+              <> LocationWhenCriteria (exists $ EnemyWithId a.id <> MovingEnemy)
+          )
+          (LocationWithTreachery (treacheryIs Treacheries.dholeTunnel) <> not_ (LocationWithId lid))
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage SlitheringDhole where
-  runMessage msg (SlitheringDhole attrs) =
-    SlitheringDhole <$> runMessage msg attrs
+  runMessage msg (SlitheringDhole attrs) = SlitheringDhole <$> runMessage msg attrs

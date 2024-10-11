@@ -23,7 +23,7 @@ instance HasModifiersFor DismalCurse where
     mInvestigator <- getSkillTestInvestigator
     case (mSource, mInvestigator) of
       (Just source, Just iid) | iid == iid' && isSource a source -> do
-        pure $ toModifiers a [Difficulty 2]
+        toModifiers a [Difficulty 2]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

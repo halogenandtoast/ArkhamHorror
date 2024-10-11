@@ -25,7 +25,7 @@ instance HasModifiersFor VipArea where
     here <- iid `isAt` attrs
     phase <- getPhase
     if here && phase == UpkeepPhase
-      then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
+      then toModifiers attrs [CannotDrawCards, CannotGainResources]
       else pure []
   getModifiersFor _ _ = pure []
 

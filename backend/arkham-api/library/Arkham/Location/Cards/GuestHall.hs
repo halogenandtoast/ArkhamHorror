@@ -18,7 +18,7 @@ guestHall = location GuestHall Cards.guestHall 1 (Static 0)
 instance HasModifiersFor GuestHall where
   getModifiersFor (InvestigatorTarget iid) (GuestHall attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotTakeAction #draw | here]
+    toModifiers attrs [CannotTakeAction #draw | here]
   getModifiersFor _ _ = pure []
 
 instance RunMessage GuestHall where

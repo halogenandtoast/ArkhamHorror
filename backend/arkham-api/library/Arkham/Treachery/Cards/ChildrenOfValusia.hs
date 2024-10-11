@@ -24,7 +24,7 @@ childrenOfValusia = treachery ChildrenOfValusia Cards.childrenOfValusia
 instance HasModifiersFor ChildrenOfValusia where
   getModifiersFor (EnemyTarget eid) (ChildrenOfValusia a) = do
     isSerpent <- eid <=~> EnemyWithTrait Serpent
-    pure $ toModifiers a $ do
+    toModifiers a $ do
       guard isSerpent
       [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ = pure []

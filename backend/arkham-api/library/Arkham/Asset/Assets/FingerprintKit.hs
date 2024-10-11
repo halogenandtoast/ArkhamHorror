@@ -25,8 +25,9 @@ instance RunMessage FingerprintKit where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #intellect 1, DiscoveredClues 1]
       pushAll
-        [ skillTestModifiers sid attrs iid [SkillModifier #intellect 1, DiscoveredClues 1]
+        [ enabled
         , toMessage investigation
         ]
       pure a

@@ -28,7 +28,7 @@ instance HasAbilities CombatTraining1 where
 
 instance HasModifiersFor CombatTraining1 where
   getModifiersFor target (CombatTraining1 attrs) | attrs `is` target = do
-    pure $ toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
+    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CombatTraining1 where

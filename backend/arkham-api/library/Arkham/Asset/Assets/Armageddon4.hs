@@ -31,8 +31,9 @@ instance RunMessage Armageddon4 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       chooseFight <- aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #willpower 2]
       pushAll
-        $ [ skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #willpower 2]
+        $ [ enabled
           , createCardEffect Cards.armageddon4 (effectMetaTarget sid) source iid
           ]
         <> leftOr chooseFight

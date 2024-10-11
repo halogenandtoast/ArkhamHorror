@@ -27,7 +27,7 @@ instance HasAbilities EarlSawyer where
 
 instance HasModifiersFor EarlSawyer where
   getModifiersFor (InvestigatorTarget iid) (EarlSawyer a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #agility 1]
+    toModifiers a [SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage EarlSawyer where

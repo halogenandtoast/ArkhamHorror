@@ -34,7 +34,7 @@ theEntityAboveTheFloodBelow =
 instance HasModifiersFor TheEntityAboveTheFloodBelow where
   getModifiersFor (EnemyTarget eid) (TheEntityAboveTheFloodBelow a) = do
     isMonster <- fieldP EnemyTraits (member Monster) eid
-    pure $ toModifiers a [EnemyFight 1 | isMonster]
+    toModifiers a [EnemyFight 1 | isMonster]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheEntityAboveTheFloodBelow where

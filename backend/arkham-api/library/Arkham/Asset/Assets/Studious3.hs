@@ -17,7 +17,7 @@ studious3 = asset Studious3 Cards.studious3
 
 instance HasModifiersFor Studious3 where
   getModifiersFor (InvestigatorTarget iid) (Studious3 a) =
-    pure $ toModifiersWith a setActiveDuringSetup [StartingHand 1 | controlledBy a iid]
+    toModifiersWith a setActiveDuringSetup [StartingHand 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Studious3 where

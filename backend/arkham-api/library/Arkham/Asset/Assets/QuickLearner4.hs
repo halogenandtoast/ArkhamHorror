@@ -22,8 +22,8 @@ instance HasModifiersFor QuickLearner4 where
       Just iid | controlledBy a iid -> do
         actionsTaken <- fieldMap InvestigatorActionsTaken length iid
         case actionsTaken of
-          n | n < 2 -> pure $ toModifiers a [Difficulty 1]
-          n | n > 2 -> pure $ toModifiers a [Difficulty (-1)]
+          n | n < 2 -> toModifiers a [Difficulty 1]
+          n | n > 2 -> toModifiers a [Difficulty (-1)]
           _ -> pure []
       _ -> pure []
   getModifiersFor _ _ = pure []

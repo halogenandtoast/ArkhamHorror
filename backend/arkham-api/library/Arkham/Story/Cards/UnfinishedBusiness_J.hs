@@ -78,20 +78,17 @@ unfinishedBusiness_JEffect :: EffectArgs -> UnfinishedBusiness_JEffect
 unfinishedBusiness_JEffect = cardEffect UnfinishedBusiness_JEffect Cards.unfinishedBusiness_J
 
 instance HasModifiersFor UnfinishedBusiness_JEffect where
-  getModifiersFor target (UnfinishedBusiness_JEffect a) | effectTarget a == target =
-    do
-      pure
-        $ toModifiers a [CannotBeDefeated]
+  getModifiersFor target (UnfinishedBusiness_JEffect a) | effectTarget a == target = do
+    toModifiers a [CannotBeDefeated]
   getModifiersFor (AbilityTarget _ ability) (UnfinishedBusiness_JEffect a) = do
     case abilitySource ability of
       EnemySource eid | EnemyTarget eid == effectTarget a && abilityIndex ability == 1 -> do
-        pure
-          $ toModifiers
-            a
-            [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
-            , SetAbilityCriteria
-                (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))
-            ]
+        toModifiers
+          a
+          [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
+          , SetAbilityCriteria
+              (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))
+          ]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

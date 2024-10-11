@@ -1,12 +1,10 @@
 module Arkham.Event.Events.MindWipe3 where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype MindWipe3 = MindWipe3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,16 +14,9 @@ mindWipe3 :: EventCard MindWipe3
 mindWipe3 = event MindWipe3 Cards.mindWipe3
 
 instance RunMessage MindWipe3 where
-  runMessage msg e@(MindWipe3 attrs) = case msg of
+  runMessage msg e@(MindWipe3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      enemyIds <- select $ enemiesColocatedWith iid <> NonEliteEnemy
-      unless (null enemyIds) $ do
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ targetLabel eid' [phaseModifiers attrs eid' [Blank, DamageDealt (-1), HorrorDealt (-1)]]
-            | eid' <- enemyIds
-            ]
+      enemies <- select $ enemiesColocatedWith iid <> NonEliteEnemy
+      chooseTargetM iid enemies \eid' -> phaseModifiers attrs eid' [Blank, DamageDealt (-1), HorrorDealt (-1)]
       pure e
-    _ -> MindWipe3 <$> runMessage msg attrs
+    _ -> MindWipe3 <$> liftRunMessage msg attrs

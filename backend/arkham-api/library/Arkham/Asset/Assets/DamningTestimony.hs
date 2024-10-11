@@ -65,7 +65,7 @@ instance RunMessage DamningTestimony where
       withLocationOf iid \lid -> do
         enemyLoc <- fieldJust EnemyLocation eid
         sid <- getRandom
-        investigate <- mkInvestigate sid iid (attrs.ability 1)
+        investigate' <- mkInvestigate sid iid (attrs.ability 1)
         investigatable <- enemyLoc <=~> InvestigatableLocation
         if attrs `hasCustomization` Surveil && enemyLoc /= lid && investigatable
           then
@@ -73,10 +73,10 @@ instance RunMessage DamningTestimony where
               iid
               [ Label
                   "Investigate the enemy's location"
-                  [toMessage $ investigate {investigateLocation = enemyLoc}]
-              , Label "Investigate your location" [toMessage investigate]
+                  [toMessage $ investigate' {investigateLocation = enemyLoc}]
+              , Label "Investigate your location" [toMessage investigate']
               ]
-          else push investigate
+          else push investigate'
       pure $ DamningTestimony $ attrs `with` Metadata (Just eid)
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
       push $ DoStep 0 msg
@@ -89,11 +89,12 @@ instance RunMessage DamningTestimony where
               guard $ not $ testBit n 0
               lid <- MaybeT $ field EnemyLocation eid
               guardM $ lift $ getCanDiscoverClues IsInvestigate iid lid
+              enabled <- Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
               pure
                 $ Label
                   "Spend 1 Evidence to discover 1 additional clue at the chosen enemy's location."
                   [ SpendUses (attrs.ability 1) (toTarget attrs) Evidence 1
-                  , Msg.skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt lid 1)
+                  , enabled
                   , DoStep (setBit 0 n) msg'
                   ]
 

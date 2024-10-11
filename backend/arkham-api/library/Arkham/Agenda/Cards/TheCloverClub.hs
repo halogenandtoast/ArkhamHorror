@@ -27,7 +27,7 @@ instance HasModifiersFor TheCloverClub where
   getModifiersFor (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
     do
       isCriminal <- elem eid <$> select (EnemyWithTrait Criminal)
-      pure $ toModifiers attrs [AddKeyword Aloof | isCriminal]
+      toModifiers attrs [AddKeyword Aloof | isCriminal]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheCloverClub where

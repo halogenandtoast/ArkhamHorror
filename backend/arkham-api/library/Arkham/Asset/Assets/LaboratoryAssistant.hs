@@ -15,7 +15,7 @@ laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)
 
 instance HasModifiersFor LaboratoryAssistant where
   getModifiersFor (InvestigatorTarget iid) (LaboratoryAssistant attrs) | controlledBy attrs iid = do
-    pure $ toModifiers attrs [HandSize 2]
+    toModifiers attrs [HandSize 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LaboratoryAssistant where

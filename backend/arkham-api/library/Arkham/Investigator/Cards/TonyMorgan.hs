@@ -30,8 +30,7 @@ tonyMorgan =
 
 instance HasModifiersFor TonyMorgan where
   getModifiersFor target (TonyMorgan (a `With` meta)) | a `is` target = do
-    pure
-      $ toModifiers a
+    toModifiers a
       $ GiveAdditionalAction (AdditionalAction "Tony Morgan" (toSource a) BountyAction)
       : [BountiesOnly | active meta]
   getModifiersFor _ _ = pure []

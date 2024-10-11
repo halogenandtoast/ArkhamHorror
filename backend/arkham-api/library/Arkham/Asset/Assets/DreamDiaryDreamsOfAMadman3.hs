@@ -32,7 +32,7 @@ instance HasModifiersFor DreamDiaryDreamsOfAMadman3 where
       controller <- hoistMaybe a.controller
       guardM $ lift $ controller <=~> InvestigatorEngagedWith AnyEnemy
       pure $ AddSkillIcons [#wild, #wild]
-    pure $ toModifiers a $ toList mMods
+    toModifiers a $ toList mMods
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DreamDiaryDreamsOfAMadman3 where

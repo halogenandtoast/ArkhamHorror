@@ -14,7 +14,7 @@ import Arkham.SkillTest.Step
 import Arkham.Trait (Trait (Insight))
 
 newtype CrypticGrimoireTextOfTheElderHerald4 = CrypticGrimoireTextOfTheElderHerald4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 crypticGrimoireTextOfTheElderHerald4 :: AssetCard CrypticGrimoireTextOfTheElderHerald4
@@ -24,7 +24,7 @@ crypticGrimoireTextOfTheElderHerald4 =
 instance HasModifiersFor CrypticGrimoireTextOfTheElderHerald4 where
   getModifiersFor (InvestigatorTarget iid) (CrypticGrimoireTextOfTheElderHerald4 a) | controlledBy a iid = do
     yourTurn <- iid <=~> TurnInvestigator
-    pure $ toModifiers a $ [CanReduceCostOf (CardWithTrait Insight) 1 | yourTurn, a.use Secret >= 2]
+    toModifiers a $ [CanReduceCostOf (CardWithTrait Insight) 1 | yourTurn, a.use Secret >= 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CrypticGrimoireTextOfTheElderHerald4 where
@@ -43,6 +43,6 @@ instance RunMessage CrypticGrimoireTextOfTheElderHerald4 where
       push $ AddUses (attrs.ability 1) attrs.id Secret n
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> c) _ -> do
-      push $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId c) 1)
+      pushM $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId c) 1)
       pure a
     _ -> CrypticGrimoireTextOfTheElderHerald4 <$> runMessage msg attrs

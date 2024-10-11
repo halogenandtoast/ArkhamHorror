@@ -27,10 +27,10 @@ canalsOfTenochtitlan_180 =
 instance HasModifiersFor CanalsOfTenochtitlan_180 where
   getModifiersFor (EnemyTarget eid) (CanalsOfTenochtitlan_180 a) = do
     here <- eid <=~> enemyAt (toId a)
-    pure $ toModifiers a [EnemyEvade 2 | here]
+    toModifiers a [EnemyEvade 2 | here]
   getModifiersFor target (CanalsOfTenochtitlan_180 a) | isTarget a target = do
     exhaustedEnemy <- selectAny $ ExhaustedEnemy <> enemyAt (toId a)
-    pure $ toModifiers a [ShroudModifier (-3) | exhaustedEnemy]
+    toModifiers a [ShroudModifier (-3) | exhaustedEnemy]
   getModifiersFor _ _ = pure []
 
 instance RunMessage CanalsOfTenochtitlan_180 where

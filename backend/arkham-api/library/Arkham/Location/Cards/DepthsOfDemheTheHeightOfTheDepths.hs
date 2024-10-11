@@ -21,7 +21,7 @@ newtype DepthsOfDemheTheHeightOfTheDepths = DepthsOfDemheTheHeightOfTheDepths Lo
 instance HasModifiersFor DepthsOfDemheTheHeightOfTheDepths where
   getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a) = do
     here <- iid `isAt` a
-    pure $ toModifiers a [CannotPlay FastCard | here]
+    toModifiers a [CannotPlay FastCard | here]
   getModifiersFor _ _ = pure []
 
 depthsOfDemheTheHeightOfTheDepths

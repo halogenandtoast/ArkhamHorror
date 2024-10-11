@@ -22,7 +22,7 @@ lostMemories = agenda (2, A) LostMemories Cards.lostMemories (Static 7)
 
 instance HasModifiersFor LostMemories where
   getModifiersFor (InvestigatorTarget _) (LostMemories attrs) | onSide A attrs = do
-    pure $ toModifiers attrs [HandSize (-2)]
+    toModifiers attrs [HandSize (-2)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LostMemories where
@@ -66,7 +66,7 @@ lostMemoriesEffect = cardEffect LostMemoriesEffect Cards.lostMemories
 instance HasModifiersFor LostMemoriesEffect where
   getModifiersFor (InvestigatorTarget iid) (LostMemoriesEffect a) = do
     hasPendant <- getHasSupply iid Pendant
-    pure $ toModifiers a [IgnoreHandSizeReduction | hasPendant]
+    toModifiers a [IgnoreHandSizeReduction | hasPendant]
   getModifiersFor _ _ = pure []
 
 instance RunMessage LostMemoriesEffect where

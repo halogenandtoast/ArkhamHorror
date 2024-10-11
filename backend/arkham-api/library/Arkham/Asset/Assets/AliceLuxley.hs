@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.AliceLuxley (
-  aliceLuxley,
-  AliceLuxley (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.AliceLuxley (aliceLuxley, AliceLuxley (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,11 +6,10 @@ import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype AliceLuxley = AliceLuxley AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aliceLuxley :: AssetCard AliceLuxley
@@ -24,24 +17,16 @@ aliceLuxley = ally AliceLuxley Cards.aliceLuxley (2, 2)
 
 instance HasModifiersFor AliceLuxley where
   getModifiersFor (InvestigatorTarget iid) (AliceLuxley a) =
-    pure [toModifier a (SkillModifier SkillIntellect 1) | controlledBy a iid]
+    toModifiers a [SkillModifier #intellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AliceLuxley where
   getAbilities (AliceLuxley a) =
-    [ restrictedAbility
+    [ controlledAbility
         a
         1
-        ( ControlsThis
-            <> exists
-              ( EnemyAt YourLocation
-                  <> EnemyCanBeDamagedBySource (toAbilitySource a 1)
-              )
-            <> CanDealDamage
-        )
-        $ ReactionAbility
-          (Matcher.DiscoverClues Timing.After You Anywhere $ AtLeast $ Static 1)
-          (ExhaustCost $ toTarget a)
+        (exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toAbilitySource a 1)) <> CanDealDamage)
+        $ ReactionAbility (Matcher.DiscoverClues #after You Anywhere $ atLeast 1) (exhaust a)
     ]
 
 instance RunMessage AliceLuxley where

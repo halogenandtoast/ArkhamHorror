@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype TheStarXVII3 = TheStarXVII3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStarXvii3 :: AssetCard TheStarXVII3
@@ -19,8 +19,7 @@ instance HasModifiersFor TheStarXVII3 where
     Just iid -> do
       isHealthAsset <- aid <=~> (assetControlledBy iid <> AssetWithHealth)
       isSanityAsset <- aid <=~> (assetControlledBy iid <> AssetWithSanity)
-      pure
-        $ toModifiers attrs
+      toModifiers attrs
         $ [HealthModifier 1 | isHealthAsset]
         <> [SanityModifier 1 | isSanityAsset]
   getModifiersFor _ _ = pure []

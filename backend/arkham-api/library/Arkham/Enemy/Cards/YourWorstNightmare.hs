@@ -1,18 +1,13 @@
-module Arkham.Enemy.Cards.YourWorstNightmare (
-  yourWorstNightmare,
-  YourWorstNightmare (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.YourWorstNightmare (yourWorstNightmare, YourWorstNightmare (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype YourWorstNightmare = YourWorstNightmare EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 yourWorstNightmare :: EnemyCard YourWorstNightmare
@@ -21,21 +16,20 @@ yourWorstNightmare = enemyWith YourWorstNightmare Cards.yourWorstNightmare (2, S
 
 instance HasModifiersFor YourWorstNightmare where
   getModifiersFor (InvestigatorTarget iid) (YourWorstNightmare attrs) | enemyBearer attrs == Just iid = do
-    pure $ toModifiers attrs [CannotTakeAction $ EnemyAction #fight $ EnemyWithId $ toId attrs]
+    toModifiers attrs [CannotTakeAction $ EnemyAction #fight $ EnemyWithId $ toId attrs]
   getModifiersFor target (YourWorstNightmare attrs) | attrs `is` target = do
-    pure
-      $ toModifiers
-        attrs
-        [ CannotBeDamagedByPlayerSources
-            (SourceOwnedBy $ InvestigatorWithId $ fromJustNote "must have bearer" $ enemyBearer attrs)
-        , CanOnlyBeDefeatedBy
-            ( NotSource
-                $ SourceOwnedBy
-                $ InvestigatorWithId
-                $ fromJustNote "must have bearer"
-                $ enemyBearer attrs
-            )
-        ]
+    toModifiers
+      attrs
+      [ CannotBeDamagedByPlayerSources
+          (SourceOwnedBy $ InvestigatorWithId $ fromJustNote "must have bearer" $ enemyBearer attrs)
+      , CanOnlyBeDefeatedBy
+          ( NotSource
+              $ SourceOwnedBy
+              $ InvestigatorWithId
+              $ fromJustNote "must have bearer"
+              $ enemyBearer attrs
+          )
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage YourWorstNightmare where

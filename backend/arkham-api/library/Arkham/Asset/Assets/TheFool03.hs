@@ -11,7 +11,7 @@ import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
 newtype TheFool03 = TheFool03 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFool03 :: AssetCard TheFool03
@@ -19,7 +19,7 @@ theFool03 = asset TheFool03 Cards.theFool03
 
 instance HasModifiersFor TheFool03 where
   getModifiersFor (InvestigatorTarget iid) (TheFool03 a) | controlledBy a iid && not (assetExhausted a) = do
-    pure $ toModifiers a [CanReduceCostOf AnyCard 1]
+    toModifiers a [CanReduceCostOf AnyCard 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheFool03 where
@@ -39,7 +39,7 @@ getCard = \case
 instance RunMessage TheFool03 where
   runMessage msg a@(TheFool03 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      push $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId card) 1)
+      pushM $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId card) 1)
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
       push $ putCardIntoPlay iid attrs

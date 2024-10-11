@@ -153,8 +153,7 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             isDefeated <- iid <=~> Matcher.DefeatedInvestigator
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [XPModifier "The Fool 0" 2 | not isDefeated && affected]
                 Reversed -> [XPModifier "The Fool 0" (-2) | isDefeated && affected]
@@ -164,8 +163,7 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            pure
-              . map setActiveDuringSetup
+            fmap (map setActiveDuringSetup)
               . toModifiers source
               $ case facing of
                 Upright -> [StartingResources 3 | affected]
@@ -180,8 +178,7 @@ instance HasModifiersFor TarotCard where
             let
               skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [SkillModifier #intellect 1 | firstIntellectTest && affected]
                 Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest && affected]
@@ -195,8 +192,7 @@ instance HasModifiersFor TarotCard where
             let
               skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [SkillModifier #agility 1 | firstAgilityTest && affected]
                 Reversed -> [SkillModifier #agility (-1) | firstAgilityTest && affected]
@@ -210,8 +206,7 @@ instance HasModifiersFor TarotCard where
             let
               skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [SkillModifier #combat 1 | firstCombatTest && affected]
                 Reversed -> [SkillModifier #combat (-1) | firstCombatTest && affected]
@@ -225,8 +220,7 @@ instance HasModifiersFor TarotCard where
             let
               skillTypes = concatMap fst $ historySkillTestsPerformed history
               firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [SkillModifier #willpower 1 | firstWillpowerTest && affected]
                 Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest && affected]
@@ -240,8 +234,7 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            pure
-              . map setActiveDuringSetup
+            fmap (map setActiveDuringSetup)
               . toModifiers source
               $ case facing of
                 Upright -> [StartingHand 2 | affected]
@@ -255,14 +248,13 @@ instance HasModifiersFor TarotCard where
               InvestigatorTarget iid -> do
                 affected <- affectedByTarot iid c
                 firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-                pure $ toModifiers source [CannotPlay #asset | firstTurn && affected]
+                toModifiers source [CannotPlay #asset | firstTurn && affected]
               _ -> pure []
       TheHermitIX ->
         case target of
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [HandSize 3 | affected]
                 Reversed -> [HandSize (-3) | affected]
@@ -279,8 +271,7 @@ instance HasModifiersFor TarotCard where
         case target of
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
-            pure
-              . map setActiveDuringSetup
+            fmap (map setActiveDuringSetup)
               . toModifiers source
               $ case facing of
                 Upright -> [Mulligans 2 | affected]
@@ -290,8 +281,7 @@ instance HasModifiersFor TarotCard where
         case target of
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [HealthModifier 1 | affected]
                 Reversed -> [HealthModifier (-1) | affected]
@@ -300,8 +290,7 @@ instance HasModifiersFor TarotCard where
         case target of
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [SanityModifier 1 | affected]
                 Reversed -> [SanityModifier (-1) | affected]
@@ -327,8 +316,7 @@ instance HasModifiersFor TarotCard where
           InvestigatorTarget iid -> do
             affected <- affectedByTarot iid c
             firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            pure
-              . toModifiers source
+            toModifiers source
               $ case facing of
                 Upright -> [AdditionalActions "THE SUN · XIX" source 2 | firstTurn && affected]
                 Reversed -> [FewerActions 2 | firstTurn && affected]
@@ -380,18 +368,11 @@ instance RunMessage Scenario where
             )
             results
         player <- getPlayer investigator
-        pure
-          $ Just
-          $ chooseOne player
-          $ Label "Do not play asset" []
-          : [ targetLabel
-              (toCardId c)
-              [ costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
-              , PayCardCost investigator c [duringTurnWindow investigator]
-              ]
-            | c <- cards
-            ]
+        choices <- for cards \c -> do
+          enabled <- costModifier source investigator (ReduceCostOf (Matcher.CardWithId $ toCardId c) 2)
+          pure $ targetLabel c [enabled, PayCardCost investigator c [duringTurnWindow investigator]]
 
+        pure $ Just $ chooseOne player $ Label "Do not play asset" [] : choices
       pushAll msgs
       pure x
     UseCardAbility _ source@(TarotSource card@(TarotCard facing JusticeXI)) 1 ws _ -> do

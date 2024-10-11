@@ -25,8 +25,9 @@ instance RunMessage FingerprintKit4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #intellect 2, DiscoveredClues 2]
       pushAll
-        [ skillTestModifiers sid attrs iid [SkillModifier #intellect 2, DiscoveredClues 2]
+        [ enabled
         , toMessage investigation
         ]
       pure a

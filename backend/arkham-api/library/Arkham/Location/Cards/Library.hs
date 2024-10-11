@@ -29,7 +29,7 @@ instance HasModifiersFor Library where
     case (mAction, mSource, mInvestigator) of
       (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
         hasTabletKey <- iid <=~> InvestigatorWithKey TabletKey
-        pure $ toModifiers attrs [ShroudModifier (-3) | locationRevealed attrs && hasTabletKey]
+        toModifiers attrs [ShroudModifier (-3) | locationRevealed attrs && hasTabletKey]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

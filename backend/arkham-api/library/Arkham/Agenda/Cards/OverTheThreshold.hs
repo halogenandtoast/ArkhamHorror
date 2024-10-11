@@ -24,11 +24,11 @@ newtype OverTheThreshold = OverTheThreshold AgendaAttrs
 instance HasModifiersFor OverTheThreshold where
   getModifiersFor (EnemyTarget eid) (OverTheThreshold a) = do
     isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
-    pure $ toModifiers a [CountsAsInvestigatorForHunterEnemies | isSilverTwilight]
+    toModifiers a [CountsAsInvestigatorForHunterEnemies | isSilverTwilight]
   getModifiersFor (CardIdTarget cid) (OverTheThreshold a) = do
     card <- getCard cid
     let isSilverTwilight = SilverTwilight `member` toTraits card
-    pure $ toModifiers a [GainVictory 0 | isSilverTwilight]
+    toModifiers a [GainVictory 0 | isSilverTwilight]
   getModifiersFor _ _ = pure []
 
 overTheThreshold :: AgendaCard OverTheThreshold

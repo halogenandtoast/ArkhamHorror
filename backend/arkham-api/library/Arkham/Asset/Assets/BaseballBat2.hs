@@ -4,9 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestSource)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype BaseballBat2 = BaseballBat2 AssetAttrs
@@ -28,20 +27,14 @@ instance RunMessage BaseballBat2 where
       pure a
     SkillTestEnds sid iid _ -> do
       whenJustM getSkillTestSource \source ->
-        if isAbilitySource attrs 1 source
-          then do
-            tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
-            when (any (`elem` [Skull, AutoFail]) tokens) do
-              afterSkillTest do
-                chooseOne
-                  iid
-                  [ Label "Return baseball Bat to your hand after this attack" [ReturnToHand iid (toTarget attrs)]
-                  , Label
-                      "This attack deals an additional +1 damage. Discard Baseball Bat after this attack"
-                      [ Msg.skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-                      , Msg.toDiscardBy iid (attrs.ability 1) attrs
-                      ]
-                  ]
-          else pure ()
+        when (isAbilitySource attrs 1 source) do
+          tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+          when (any (`elem` [Skull, AutoFail]) tokens) do
+            afterSkillTest do
+              chooseOneM iid do
+                labeled "Return baseball Bat to your hand after this attack" $ returnToHand iid attrs
+                labeled "This attack deals an additional +1 damage. Discard Baseball Bat after this attack" do
+                  skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+                  toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> BaseballBat2 <$> liftRunMessage msg attrs

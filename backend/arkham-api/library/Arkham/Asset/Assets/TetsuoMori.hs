@@ -23,8 +23,7 @@ instance HasModifiersFor TetsuoMori where
   getModifiersFor (InvestigatorTarget iid) (TetsuoMori a) | not (controlledBy a iid) = do
     locationId <- field InvestigatorLocation iid
     assetLocationId <- field AssetLocation (toId a)
-    pure
-      $ toModifiers a
+    toModifiers a
       $ if (locationId == assetLocationId) && isJust locationId
         then [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
         else []

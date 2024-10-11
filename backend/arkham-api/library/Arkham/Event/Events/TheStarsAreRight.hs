@@ -27,16 +27,17 @@ instance RunMessage TheStarsAreRight where
         canDraw <- can.draw.cards investigator
         canGainResources <- can.gain.resources investigator
         let drawing = drawCards investigator (toSource attrs) 1
+        enabled <-
+          turnModifier investigator attrs iid
+            $ GiveAdditionalAction
+            $ AdditionalAction "The Stars Are Right" (toSource attrs) #any
+
         pure
           ( investigator
           , [drawing | canDraw]
               <> [takeResources investigator (toSource attrs) 1 | canGainResources]
               <> [SetActiveInvestigator iid | iid /= iid']
-              <> [ turnModifier investigator attrs iid
-                    $ GiveAdditionalAction
-                    $ AdditionalAction "The Stars Are Right" (toSource attrs) #any
-                 , PlayerWindow iid [] False
-                 ]
+              <> [enabled, PlayerWindow iid [] False]
               <> [SetActiveInvestigator iid' | iid /= iid']
           )
 

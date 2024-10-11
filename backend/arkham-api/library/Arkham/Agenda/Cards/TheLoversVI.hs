@@ -67,7 +67,7 @@ instance HasModifiersFor TheLoversVIEffect where
     if isTheSpectralWatcher
       then do
         tokens <- fieldMap EnemyTokens (countTokens LostSoul) eid
-        pure $ toModifiers attrs [EnemyFight tokens, HealthModifier tokens]
+        toModifiers attrs [EnemyFight tokens, HealthModifier tokens]
       else pure []
   getModifiersFor _ _ = pure []
 

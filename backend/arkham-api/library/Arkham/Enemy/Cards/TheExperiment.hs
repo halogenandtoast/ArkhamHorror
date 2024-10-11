@@ -27,7 +27,7 @@ instance HasAbilities TheExperiment where
 instance HasModifiersFor TheExperiment where
   getModifiersFor target (TheExperiment attrs) | isTarget attrs target = do
     modifier <- getPlayerCountValue (PerPlayer 3)
-    pure $ toModifiers attrs [HealthModifier modifier]
+    toModifiers attrs [HealthModifier modifier]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheExperiment where

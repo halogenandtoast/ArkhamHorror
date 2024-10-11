@@ -193,14 +193,21 @@ placeLocationCardM
   -> m LocationId
 placeLocationCardM = (>>= placeLocationCard)
 
-reveal :: ReverseQueue m => LocationId -> m ()
-reveal = push . Msg.RevealLocation Nothing
+reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
+reveal = push . Msg.RevealLocation Nothing . asId
 
 moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 
 moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
 moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
+
+moveUntil
+  :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
+  => target
+  -> location
+  -> m ()
+moveUntil target location = push $ MoveUntil (asId location) (toTarget target)
 
 -- No callbacks
 moveTo_ :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
@@ -828,15 +835,19 @@ createCardEffect def mMeta source target = push $ Msg.createCardEffect def mMeta
 
 phaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-phaseModifier source target modifier = push $ Msg.phaseModifier source target modifier
+phaseModifier source target modifier = Msg.pushM $ Msg.phaseModifier source target modifier
+
+phaseModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+phaseModifiers source target modifiers = Msg.pushM $ Msg.phaseModifiers source target modifiers
 
 resolutionModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-resolutionModifier source target modifier = push $ Msg.resolutionModifier source target modifier
+resolutionModifier source target modifier = Msg.pushM $ Msg.resolutionModifier source target modifier
 
 gameModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-gameModifier source target modifier = push $ Msg.gameModifier source target modifier
+gameModifier source target modifier = Msg.pushM $ Msg.gameModifier source target modifier
 
 gameModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
@@ -849,7 +860,7 @@ nextTurnModifier
   -> target
   -> ModifierType
   -> m ()
-nextTurnModifier iid source target modifier = push $ Msg.nextTurnModifier iid source target modifier
+nextTurnModifier iid source target modifier = Msg.pushM $ Msg.nextTurnModifier iid source target modifier
 
 nextTurnModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -858,7 +869,7 @@ nextTurnModifiers
   -> target
   -> [ModifierType]
   -> m ()
-nextTurnModifiers iid source target modifiers = push $ Msg.nextTurnModifiers iid source target modifiers
+nextTurnModifiers iid source target modifiers = Msg.pushM $ Msg.nextTurnModifiers iid source target modifiers
 
 flipOver
   :: (ReverseQueue m, Sourceable a, Targetable a) => InvestigatorId -> a -> m ()
@@ -875,7 +886,16 @@ nextPhaseModifier
   -> target
   -> ModifierType
   -> m ()
-nextPhaseModifier phase source target modifier = push $ Msg.nextPhaseModifier phase source target modifier
+nextPhaseModifier phase source target modifier = Msg.pushM $ Msg.nextPhaseModifier phase source target modifier
+
+nextPhaseModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => Phase
+  -> source
+  -> target
+  -> [ModifierType]
+  -> m ()
+nextPhaseModifiers phase source target modifiers = Msg.pushM $ Msg.nextPhaseModifiers phase source target modifiers
 
 endOfPhaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -884,7 +904,7 @@ endOfPhaseModifier
   -> target
   -> ModifierType
   -> m ()
-endOfPhaseModifier phase source target modifier = push $ Msg.endOfPhaseModifier phase source target modifier
+endOfPhaseModifier phase source target modifier = Msg.pushM $ Msg.endOfPhaseModifier phase source target modifier
 
 endOfNextPhaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -893,15 +913,15 @@ endOfNextPhaseModifier
   -> target
   -> ModifierType
   -> m ()
-endOfNextPhaseModifier phase source target modifier = push $ Msg.endOfNextPhaseModifier phase source target modifier
+endOfNextPhaseModifier phase source target modifier = Msg.pushM $ Msg.endOfNextPhaseModifier phase source target modifier
 
 roundModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-roundModifier source target modifier = push $ Msg.roundModifier source target modifier
+roundModifier source target modifier = Msg.pushM $ Msg.roundModifier source target modifier
 
 roundModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
-roundModifiers source target modifiers = push $ Msg.roundModifiers source target modifiers
+roundModifiers source target modifiers = Msg.pushM $ Msg.roundModifiers source target modifiers
 
 skillTestModifiers
   :: forall target source m
@@ -912,7 +932,7 @@ skillTestModifiers
   -> [ModifierType]
   -> m ()
 skillTestModifiers sid (toSource -> source) (toTarget -> target) mods =
-  push $ Msg.skillTestModifiers sid source target mods
+  Msg.pushM $ Msg.skillTestModifiers sid source target mods
 
 turnModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -921,7 +941,7 @@ turnModifier
   -> target
   -> ModifierType
   -> m ()
-turnModifier iid source target modifier = push $ Msg.turnModifier iid source target modifier
+turnModifier iid source target modifier = Msg.pushM $ Msg.turnModifier iid source target modifier
 
 turnModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -930,11 +950,11 @@ turnModifiers
   -> target
   -> [ModifierType]
   -> m ()
-turnModifiers iid source target modifiers = push $ Msg.turnModifiers iid source target modifiers
+turnModifiers iid source target modifiers = Msg.pushM $ Msg.turnModifiers iid source target modifiers
 
 setupModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-setupModifier source target modifier = push $ Msg.setupModifier source target modifier
+setupModifier source target modifier = Msg.pushM $ Msg.setupModifier source target modifier
 
 revelationModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -944,7 +964,7 @@ revelationModifier
   -> ModifierType
   -> m ()
 revelationModifier (toSource -> source) (toTarget -> target) tid modifier =
-  push $ Msg.revelationModifier source target tid modifier
+  Msg.pushM $ Msg.revelationModifier source target tid modifier
 
 revelationModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -954,7 +974,7 @@ revelationModifiers
   -> [ModifierType]
   -> m ()
 revelationModifiers (toSource -> source) (toTarget -> target) tid modifiers =
-  push $ Msg.revelationModifiers source target tid modifiers
+  Msg.pushM $ Msg.revelationModifiers source target tid modifiers
 
 skillTestModifier
   :: forall target source m
@@ -965,7 +985,7 @@ skillTestModifier
   -> ModifierType
   -> m ()
 skillTestModifier sid (toSource -> source) (toTarget -> target) x =
-  push $ Msg.skillTestModifier sid source target x
+  Msg.pushM $ Msg.skillTestModifier sid source target x
 
 nextSkillTestModifier
   :: forall target source m
@@ -975,7 +995,7 @@ nextSkillTestModifier
   -> ModifierType
   -> m ()
 nextSkillTestModifier (toSource -> source) (toTarget -> target) x =
-  push $ Msg.nextSkillTestModifier source target x
+  Msg.pushM $ Msg.nextSkillTestModifier source target x
 
 nextSkillTestModifiers
   :: forall target source m
@@ -985,7 +1005,7 @@ nextSkillTestModifiers
   -> [ModifierType]
   -> m ()
 nextSkillTestModifiers (toSource -> source) (toTarget -> target) x =
-  push $ Msg.nextSkillTestModifiers source target x
+  Msg.pushM $ Msg.nextSkillTestModifiers source target x
 
 searchModifier
   :: forall target source m
@@ -995,7 +1015,7 @@ searchModifier
   -> ModifierType
   -> m ()
 searchModifier (toSource -> source) (toTarget -> target) modifier =
-  push $ Msg.searchModifier source target modifier
+  Msg.pushM $ Msg.searchModifier source target modifier
 
 chooseFightEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
@@ -1082,6 +1102,14 @@ investigateWithSkillChoice sid iid source skillTypes = do
   Arkham.Message.Lifted.chooseOne
     iid
     [Label ("Use " <> format sType) [using sType] | sType <- skillTypes]
+
+investigate
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> m ()
+investigate sid iid source = push . toMessage =<< mkInvestigate sid iid source
 
 mapQueue :: (MonadTrans t, HasQueue Message m) => (Message -> Message) -> t m ()
 mapQueue = lift . Msg.mapQueue
@@ -1201,7 +1229,7 @@ shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
 shuffleDeck deck = shuffleCardsIntoDeck deck ([] :: [Card])
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
-reduceCostOf source card n = push $ Msg.reduceCostOf source card n
+reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
 
 gainResourcesModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1210,7 +1238,7 @@ gainResourcesModifier
   -> target
   -> ModifierType
   -> m ()
-gainResourcesModifier iid source target modifier = push $ Msg.gainResourcesModifier iid source target modifier
+gainResourcesModifier iid source target modifier = Msg.pushM $ Msg.gainResourcesModifier iid source target modifier
 
 onRevealChaosTokenEffect
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1234,11 +1262,11 @@ failOnReveal matchr sid attrs = onRevealChaosTokenEffect sid matchr attrs attrs 
 
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-eventModifier source target modifier = push $ Msg.eventModifier source target modifier
+eventModifier source target modifier = Msg.pushM $ Msg.eventModifier source target modifier
 
 eventModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
-eventModifiers source target modifiers = push $ Msg.eventModifiers source target modifiers
+eventModifiers source target modifiers = Msg.pushM $ Msg.eventModifiers source target modifiers
 
 dealAdditionalDamage
   :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
@@ -1267,7 +1295,7 @@ cardResolutionModifier
   -> target
   -> ModifierType
   -> m ()
-cardResolutionModifier card source target modifier = push $ Msg.cardResolutionModifier card source target modifier
+cardResolutionModifier card source target modifier = Msg.pushM $ Msg.cardResolutionModifier card source target modifier
 
 cardResolutionModifiers
   :: (ReverseQueue m, IsCard card, Sourceable source, Targetable target)
@@ -1276,7 +1304,7 @@ cardResolutionModifiers
   -> target
   -> [ModifierType]
   -> m ()
-cardResolutionModifiers card source target modifiers = push $ Msg.cardResolutionModifiers card source target modifiers
+cardResolutionModifiers card source target modifiers = Msg.pushM $ Msg.cardResolutionModifiers card source target modifiers
 
 insteadOf
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
@@ -1307,7 +1335,11 @@ matchingDon't f = lift $ popMessageMatching_ f
 
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-enemyAttackModifier source target modifier = push $ Msg.enemyAttackModifier source target modifier
+enemyAttackModifier source target modifier = Msg.pushM $ Msg.enemyAttackModifier source target modifier
+
+enemyAttackModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+enemyAttackModifiers source target modifiers = Msg.pushM $ Msg.enemyAttackModifiers source target modifiers
 
 abilityModifier
   :: (ReverseQueue m, Sourceable source, Targetable target)
@@ -1316,7 +1348,7 @@ abilityModifier
   -> target
   -> ModifierType
   -> m ()
-abilityModifier ab source target modifier = push $ Msg.abilityModifier ab source target modifier
+abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab source target modifier
 
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
@@ -1363,7 +1395,11 @@ delayIfSkillTest body = do
 
 costModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-costModifier source target modifier = push $ Msg.costModifier source target modifier
+costModifier source target modifier = Msg.pushM $ Msg.costModifier source target modifier
+
+costModifiers
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
+costModifiers source target modifiers = Msg.pushM $ Msg.costModifiers source target modifiers
 
 placeUnderneath :: (ReverseQueue m, Targetable target) => target -> [Card] -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target cards
@@ -1398,7 +1434,7 @@ exhaustThis = push . Msg.Exhaust . toTarget
 
 uiEffect
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
-uiEffect s t m = push $ Msg.uiEffect s t m
+uiEffect s t m = Msg.pushM $ Msg.uiEffect s t m
 
 healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
@@ -1467,6 +1503,9 @@ repeated n = replicateM_ n
 
 disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 disengageEnemy iid eid = push $ Msg.DisengageEnemy iid eid
+
+disengageFromAll :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m ()
+disengageFromAll enemy = push $ Msg.DisengageEnemyFromAll (asId enemy)
 
 cancelledOrIgnoredCardOrGameEffect :: (ReverseQueue m, Sourceable source) => source -> m ()
 cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource source)
@@ -1625,7 +1664,7 @@ changeDrawnBy drawer newDrawer =
 chaosTokenEffect
   :: (ReverseQueue m, Sourceable source) => source -> ChaosToken -> ModifierType -> m ()
 chaosTokenEffect (toSource -> source) token modifier =
-  push $ Msg.chaosTokenEffect source token modifier
+  Msg.pushM $ Msg.chaosTokenEffect source token modifier
 
 addCurseTokens :: ReverseQueue m => Int -> m ()
 addCurseTokens n = do

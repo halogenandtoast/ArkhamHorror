@@ -21,7 +21,7 @@ lodgeGatesWeveBeenExpectingYou = location LodgeGatesWeveBeenExpectingYou Cards.l
 
 instance HasModifiersFor LodgeGatesWeveBeenExpectingYou where
   getModifiersFor (EnemyTarget _) (LodgeGatesWeveBeenExpectingYou attrs) =
-    pure $ toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs)]
+    toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LodgeGatesWeveBeenExpectingYou where

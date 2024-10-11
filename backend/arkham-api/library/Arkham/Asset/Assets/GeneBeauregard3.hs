@@ -20,7 +20,7 @@ geneBeauregard3 = ally GeneBeauregard3 Cards.geneBeauregard3 (2, 2)
 
 instance HasModifiersFor GeneBeauregard3 where
   getModifiersFor (InvestigatorTarget iid) (GeneBeauregard3 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #intellect 1, SkillModifier #agility 1]
+    toModifiers a [SkillModifier #intellect 1, SkillModifier #agility 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities GeneBeauregard3 where

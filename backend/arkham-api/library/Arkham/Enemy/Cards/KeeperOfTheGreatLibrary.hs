@@ -3,40 +3,31 @@ module Arkham.Enemy.Cards.KeeperOfTheGreatLibrary (
   KeeperOfTheGreatLibrary (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Keyword qualified as Keyword
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype KeeperOfTheGreatLibrary = KeeperOfTheGreatLibrary EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 keeperOfTheGreatLibrary :: EnemyCard KeeperOfTheGreatLibrary
 keeperOfTheGreatLibrary =
-  enemyWith
-    KeeperOfTheGreatLibrary
-    Cards.keeperOfTheGreatLibrary
-    (3, Static 4, 3)
-    (1, 1)
-    (spawnAtL ?~ "Great Library")
+  enemyWith KeeperOfTheGreatLibrary Cards.keeperOfTheGreatLibrary (3, Static 4, 3) (1, 1)
+    $ spawnAtL
+    ?~ "Great Library"
 
 instance HasModifiersFor KeeperOfTheGreatLibrary where
   getModifiersFor target (KeeperOfTheGreatLibrary a) | isTarget a target = do
     foundTheProcess <- remembered FoundTheProcess
     realizedWhatYearItIs <- remembered RealizedWhatYearItIs
-    pure
-      $ if foundTheProcess || realizedWhatYearItIs
-        then
-          toModifiers
-            a
-            [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
-        else []
+    toModifiers a
+      $ guard (foundTheProcess || realizedWhatYearItIs)
+      *> [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
   getModifiersFor _ _ = pure []
 
 instance RunMessage KeeperOfTheGreatLibrary where
-  runMessage msg (KeeperOfTheGreatLibrary attrs) =
-    KeeperOfTheGreatLibrary <$> runMessage msg attrs
+  runMessage msg (KeeperOfTheGreatLibrary attrs) = KeeperOfTheGreatLibrary <$> runMessage msg attrs

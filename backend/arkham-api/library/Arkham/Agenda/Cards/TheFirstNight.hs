@@ -18,7 +18,7 @@ theFirstNight = agenda (1, A) TheFirstNight Cards.theFirstNight (Static 6)
 instance HasModifiersFor TheFirstNight where
   getModifiersFor target (TheFirstNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
+    toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheFirstNight where

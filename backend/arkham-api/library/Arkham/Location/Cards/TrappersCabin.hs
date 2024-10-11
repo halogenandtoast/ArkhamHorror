@@ -24,7 +24,7 @@ trappersCabin = location TrappersCabin Cards.trappersCabin 3 (Static 0)
 instance HasModifiersFor TrappersCabin where
   getModifiersFor (InvestigatorTarget iid) (TrappersCabin attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [CannotGainResources | here]
+    toModifiers attrs [CannotGainResources | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrappersCabin where

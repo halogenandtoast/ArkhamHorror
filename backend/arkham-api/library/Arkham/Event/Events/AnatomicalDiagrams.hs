@@ -2,9 +2,8 @@ module Arkham.Event.Events.AnatomicalDiagrams (anatomicalDiagrams, AnatomicalDia
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype AnatomicalDiagrams = AnatomicalDiagrams EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,10 +17,7 @@ instance RunMessage AnatomicalDiagrams where
     PlayThisEvent iid eid | eid == attrs.id -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
       selectOne TurnInvestigator >>= traverse_ \iid' -> do
-        chooseOrRunOne
-          iid
-          [ targetLabel enemy [Msg.turnModifiers iid' attrs enemy [EnemyFight (-2), EnemyEvade (-2)]]
-          | enemy <- enemies
-          ]
+        chooseOrRunOneM iid do
+          targets enemies \enemy -> turnModifiers iid' attrs enemy [EnemyFight (-2), EnemyEvade (-2)]
       pure e
     _ -> AnatomicalDiagrams <$> liftRunMessage msg attrs

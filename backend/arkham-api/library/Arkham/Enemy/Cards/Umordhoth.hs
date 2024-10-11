@@ -23,7 +23,7 @@ umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 instance HasModifiersFor Umordhoth where
   getModifiersFor target (Umordhoth a) | isTarget a target = do
     healthModifier <- getPlayerCountValue (PerPlayer 4)
-    pure $ toModifiers a [HealthModifier healthModifier]
+    toModifiers a [HealthModifier healthModifier]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Umordhoth where

@@ -25,7 +25,7 @@ whateleyRuins_251 = location WhateleyRuins_251 Cards.whateleyRuins_251 2 (PerPla
 instance HasModifiersFor WhateleyRuins_251 where
   getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_251 attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [SkillModifier #willpower (-1) | here]
+    toModifiers attrs [SkillModifier #willpower (-1) | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities WhateleyRuins_251 where

@@ -29,7 +29,7 @@ instance HasAbilities ZebulonWhateley where
 
 instance HasModifiersFor ZebulonWhateley where
   getModifiersFor (InvestigatorTarget iid) (ZebulonWhateley a) | controlledBy a iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1]
+    toModifiers a [SkillModifier #willpower 1]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ZebulonWhateley where

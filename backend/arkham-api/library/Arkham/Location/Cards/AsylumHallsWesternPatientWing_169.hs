@@ -27,7 +27,7 @@ asylumHallsWesternPatientWing_169 =
 instance HasModifiersFor AsylumHallsWesternPatientWing_169 where
   getModifiersFor (EnemyTarget eid) (AsylumHallsWesternPatientWing_169 attrs) = do
     atLocation <- enemyAtLocation eid attrs
-    pure $ toModifiers attrs [HorrorDealt 1 | atLocation, locationRevealed attrs]
+    toModifiers attrs [HorrorDealt 1 | atLocation, locationRevealed attrs]
   getModifiersFor _ _ = pure []
 
 instance RunMessage AsylumHallsWesternPatientWing_169 where

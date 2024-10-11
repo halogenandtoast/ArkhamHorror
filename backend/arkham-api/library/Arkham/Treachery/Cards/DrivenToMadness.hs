@@ -25,10 +25,10 @@ drivenToMadness = treachery DrivenToMadness Cards.drivenToMadness
 
 instance HasModifiersFor DrivenToMadness where
   getModifiersFor target (DrivenToMadness attrs) | target `elem` treacheryAttachedTarget attrs = do
-    pure $ toModifiers attrs [EnemyFight 1, HealthModifier 1, EnemyEvade 1, RemoveKeyword Keyword.Aloof]
+    toModifiers attrs [EnemyFight 1, HealthModifier 1, EnemyEvade 1, RemoveKeyword Keyword.Aloof]
   getModifiersFor (InvestigatorTarget _) (DrivenToMadness attrs) = do
     case treacheryAttachedTarget attrs of
-      Just (EnemyTarget eid) -> pure $ toModifiers attrs [CannotParleyWith $ EnemyWithId eid]
+      Just (EnemyTarget eid) -> toModifiers attrs [CannotParleyWith $ EnemyWithId eid]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

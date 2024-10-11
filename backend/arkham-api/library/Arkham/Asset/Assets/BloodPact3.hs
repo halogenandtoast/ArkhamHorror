@@ -28,10 +28,10 @@ instance RunMessage BloodPact3 where
   runMessage msg a@(BloodPact3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 3)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 3)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 3)
+        pushM $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 3)
       pure a
     _ -> BloodPact3 <$> runMessage msg attrs

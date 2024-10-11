@@ -14,13 +14,12 @@ riotWhistle = asset RiotWhistle Cards.riotWhistle
 
 instance HasModifiersFor RiotWhistle where
   getModifiersFor (InvestigatorTarget iid) (RiotWhistle a) | a `controlledBy` iid = do
-    pure
-      $ toModifiers
-        a
-        [ GiveAdditionalAction
-            $ AdditionalAction "Riot Whistle" (toSource a)
-            $ ActionRestrictedAdditionalAction #evade
-        ]
+    toModifiers
+      a
+      [ GiveAdditionalAction
+          $ AdditionalAction "Riot Whistle" (toSource a)
+          $ ActionRestrictedAdditionalAction #evade
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage RiotWhistle where

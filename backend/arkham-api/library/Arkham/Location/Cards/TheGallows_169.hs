@@ -25,7 +25,7 @@ theGallows_169 = location TheGallows_169 Cards.theGallows_169 3 (Static 0)
 instance HasModifiersFor TheGallows_169 where
   getModifiersFor target (TheGallows_169 a) | isTarget a target = do
     witchCount <- selectCount $ EnemyWithTrait Witch
-    pure $ toModifiers a [ShroudModifier witchCount | witchCount > 0]
+    toModifiers a [ShroudModifier witchCount | witchCount > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheGallows_169 where

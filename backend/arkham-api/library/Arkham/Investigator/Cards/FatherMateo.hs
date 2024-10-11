@@ -1,19 +1,14 @@
-module Arkham.Investigator.Cards.FatherMateo (
-  fatherMateo,
-  FatherMateo (..),
-  fatherMateoElderSignEffect,
-) where
+module Arkham.Investigator.Cards.FatherMateo (fatherMateo, FatherMateo (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Effect.Import
-import Arkham.Game.Helpers
-import Arkham.Helpers.Effect
+import Arkham.Ability
+import Arkham.Capability
+import Arkham.Helpers.Window (getRevealedChaosTokens)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Window qualified as Window
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype FatherMateo = FatherMateo InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -38,37 +33,24 @@ instance HasChaosTokenValue FatherMateo where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage FatherMateo where
-  runMessage msg i@(FatherMateo attrs) = case msg of
+  runMessage msg i@(FatherMateo attrs) = runQueueT $ case msg of
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      pushAll [createCardEffect Cards.fatherMateo Nothing ElderSign iid, PassSkillTest]
+      afterSkillTest $ push $ Do msg
+      passSkillTest
       pure i
-    UseCardAbility _ (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
-      push $ chaosTokenEffect (attrs.ability 1) token (ChaosTokenFaceModifier [ElderSign])
+    Do (ResolveChaosToken _ ElderSign iid) | attrs `is` iid -> do
+      isTurn <- iid <=~> TurnInvestigator
+      canDraw <- can.draw.cards iid
+      canGainResources <- can.gain.resources iid
+      chooseOrRunOneM iid do
+        when (canDraw || canGainResources) $ do
+          labeled "Draw 1 card and gain 1 resource" do
+            drawCardsIfCan iid ElderSign 1
+            gainResourcesIfCan iid ElderSign 1
+        when isTurn $ do
+          labeled "Take an additional action this turn" $ gainActions iid ElderSign 1
       pure i
-    _ -> FatherMateo <$> runMessage msg attrs
-
-newtype FatherMateoElderSignEffect = FatherMateoElderSignEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock Data
-
-fatherMateoElderSignEffect :: EffectArgs -> FatherMateoElderSignEffect
-fatherMateoElderSignEffect = cardEffect FatherMateoElderSignEffect Cards.fatherMateo
-
-instance RunMessage FatherMateoElderSignEffect where
-  runMessage msg e@(FatherMateoElderSignEffect attrs) = case msg of
-    SkillTestEnds _ _ _ -> do
-      push $ DisableEffect $ toId attrs
-      for_ (attrs.target ^? #investigator) $ \iid -> do
-        isTurn <- iid <=~> TurnInvestigator
-        player <- getPlayer iid
-        push
-          $ chooseOrRunOne player
-          $ Label
-            "Draw 1 card and gain 1 resource"
-            [ drawCards iid ElderSign 1
-            , TakeResources iid 1 (toSource ElderSign) False
-            ]
-          : [Label "Take an additional action this turn" [GainActions iid (toSource attrs) 1] | isTurn]
-      pure e
-    _ -> FatherMateoElderSignEffect <$> runMessage msg attrs
+    UseCardAbility _ (isSource attrs -> True) 1 (getRevealedChaosTokens -> [token]) _ -> do
+      chaosTokenEffect (attrs.ability 1) token (ChaosTokenFaceModifier [ElderSign])
+      pure i
+    _ -> FatherMateo <$> liftRunMessage msg attrs

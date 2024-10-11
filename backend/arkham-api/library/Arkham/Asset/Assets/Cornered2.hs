@@ -25,6 +25,6 @@ instance RunMessage Cornered2 where
   runMessage msg a@(Cornered2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid attrs iid $ AnySkillValue 2
+        pushM $ skillTestModifier sid attrs iid $ AnySkillValue 2
       pure a
     _ -> Cornered2 <$> runMessage msg attrs

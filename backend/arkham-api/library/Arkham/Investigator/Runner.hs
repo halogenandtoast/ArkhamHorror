@@ -2760,6 +2760,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             (Cost.UnpaidCost NoAction)
             (Window.defaultWindows iid)
             (toCard card)
+        reduceCost <- costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
         push
           $ chooseOrRunOne player
           $ [ Label
@@ -2769,7 +2770,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
             ]
           <> [ Label
               "Immediately play that card at -2 cost"
-              [ costModifier iid iid (ReduceCostOf (CardWithId card.id) 2)
+              [ reduceCost
               , PayCardCost iid (toCard card) (Window.defaultWindows iid)
               ]
              | playable
@@ -4071,7 +4072,7 @@ takeUpkeepResources a = do
   let additionalAmount =
         sum
           [ n
-          | Modifier s (UpkeepResources n) _ <- fullModifiers
+          | Modifier s (UpkeepResources n) _ _ <- fullModifiers
           , not cannotGainResourcesFromPlayerCardEffects || sourceToFromSource s /= FromPlayerCardEffect
           ]
   let amount = 1 + additionalAmount

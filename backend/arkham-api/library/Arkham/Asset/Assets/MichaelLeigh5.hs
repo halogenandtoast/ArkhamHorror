@@ -15,7 +15,7 @@ michaelLeigh5 = ally MichaelLeigh5 Cards.michaelLeigh5 (3, 3)
 
 instance HasModifiersFor MichaelLeigh5 where
   getModifiersFor (InvestigatorTarget iid) (MichaelLeigh5 a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #combat 1, SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #combat 1, SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MichaelLeigh5 where
@@ -37,6 +37,6 @@ instance RunMessage MichaelLeigh5 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure a
     _ -> MichaelLeigh5 <$> runMessage msg attrs

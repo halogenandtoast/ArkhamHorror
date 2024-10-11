@@ -14,7 +14,7 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.SkillType
 
 newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 salvatoreNeri :: EnemyCard SalvatoreNeri
@@ -27,13 +27,10 @@ instance HasModifiersFor SalvatoreNeri where
     case (miid, mAction) of
       (Just iid, Just Action.Evade) -> do
         evadeValue <- getSkillValue SkillAgility iid
-        pure $ toModifiers attrs [Modifier.EnemyEvade evadeValue]
+        toModifiers attrs [Modifier.EnemyEvade evadeValue]
       (Just iid, Just Action.Fight) -> do
         fightValue <- getSkillValue SkillCombat iid
-        pure
-          $ toModifiers
-            attrs
-            [Modifier.EnemyFight fightValue]
+        toModifiers attrs [Modifier.EnemyFight fightValue]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

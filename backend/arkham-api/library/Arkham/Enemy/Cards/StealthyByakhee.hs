@@ -21,7 +21,7 @@ stealthyByakhee =
 instance HasModifiersFor StealthyByakhee where
   getModifiersFor target (StealthyByakhee attrs)
     | isTarget attrs target =
-        pure $ toModifiers attrs [Modifier.EnemyFight (-3) | enemyExhausted attrs]
+        toModifiers attrs [Modifier.EnemyFight (-3) | enemyExhausted attrs]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StealthyByakhee where

@@ -22,13 +22,14 @@ instance RunMessage Shotgun4 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 3), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 3)
+      pushAll [enabled, chooseFight]
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid -> do
         let val = max 1 (min 5 n)
         -- sort of annoying but we need to handle oops here, but also the investigator damage
-        push
+        pushM
           $ skillTestModifiers
             sid
             (attrs.ability 1)
@@ -37,7 +38,7 @@ instance RunMessage Shotgun4 where
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid -> do
-        push
+        pushM
           $ skillTestModifiers sid (attrs.ability 1) iid [NoStandardDamage, DamageDealt $ max 1 (min 5 n)]
       pure a
     _ -> Shotgun4 <$> runMessage msg attrs

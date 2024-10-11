@@ -34,7 +34,7 @@ instance HasModifiersFor NorthTower_288 where
       here <- lift $ iid `isAt` a
       guard $ here && aDoom > cDoom
       pure $ Difficulty (-1)
-    pure $ toModifiers a $ toList mMod
+    toModifiers a $ toList mMod
   getModifiersFor _ _ = pure []
 
 instance RunMessage NorthTower_288 where

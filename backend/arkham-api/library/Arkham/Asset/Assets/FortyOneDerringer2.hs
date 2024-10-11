@@ -28,13 +28,14 @@ instance RunMessage FortyOneDerringer2 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 1 -> do
       getSkillTestId >>= \case
         Nothing -> pure a
         Just sid -> do
-          push (skillTestModifier sid attrs iid (DamageDealt 1))
+          pushM (skillTestModifier sid attrs iid (DamageDealt 1))
           if n >= 3 && not (gotExtraAction metadata)
             then do
               push $ GainActions iid (attrs.ability 1) 1

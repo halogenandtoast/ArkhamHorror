@@ -27,7 +27,7 @@ coldSpringGlen_245 =
 instance HasModifiersFor ColdSpringGlen_245 where
   getModifiersFor (EnemyTarget eid) (ColdSpringGlen_245 attrs) = do
     atLocation <- enemyAtLocation eid attrs
-    pure $ toModifiers attrs [EnemyEvade (-1) | atLocation]
+    toModifiers attrs [EnemyEvade (-1) | atLocation]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ColdSpringGlen_245 where

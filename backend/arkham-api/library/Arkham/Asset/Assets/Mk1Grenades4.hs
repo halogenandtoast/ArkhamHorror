@@ -25,7 +25,8 @@ instance RunMessage Mk1Grenades4 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage . setTarget attrs <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 2), chooseFight]
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
+      pushAll [enabled, chooseFight]
       pure a
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       let

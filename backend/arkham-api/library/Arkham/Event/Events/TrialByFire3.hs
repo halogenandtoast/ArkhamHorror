@@ -1,14 +1,8 @@
-module Arkham.Event.Events.TrialByFire3 (
-  trialByFire3,
-  TrialByFire3 (..),
-) where
+module Arkham.Event.Events.TrialByFire3 (trialByFire3, TrialByFire3 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Modifier
 import Arkham.SkillType
 
 newtype TrialByFire3 = TrialByFire3 EventAttrs
@@ -19,13 +13,10 @@ trialByFire3 :: EventCard TrialByFire3
 trialByFire3 = event TrialByFire3 Cards.trialByFire3
 
 instance RunMessage TrialByFire3 where
-  runMessage msg e@(TrialByFire3 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ SkillLabel skill [turnModifiers iid attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest]
-          | (skill, rest) <- eachWithRest allSkills
-          ]
+  runMessage msg e@(TrialByFire3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      chooseOneM iid do
+        for_ (eachWithRest allSkills) \(skill, rest) -> do
+          skillLabeled skill $ turnModifiers iid attrs iid $ BaseSkillOf skill 7 : map (`BaseSkillOf` 5) rest
       pure e
-    _ -> TrialByFire3 <$> runMessage msg attrs
+    _ -> TrialByFire3 <$> liftRunMessage msg attrs

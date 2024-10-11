@@ -22,7 +22,7 @@ theBridgeOfWebs =
 instance HasModifiersFor TheBridgeOfWebs where
   getModifiersFor target (TheBridgeOfWebs attrs) | attrs `is` target = do
     n <- perPlayer 2
-    pure $ toModifiers attrs [DoomThresholdModifier n]
+    toModifiers attrs [DoomThresholdModifier n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheBridgeOfWebs where

@@ -2,10 +2,12 @@ module Arkham.Asset.Assets.Kukri (kukri, Kukri (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Fight
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Projection
 
 newtype Kukri = Kukri AssetAttrs
@@ -19,24 +21,21 @@ instance HasAbilities Kukri where
   getAbilities (Kukri a) = [restrictedAbility a 1 ControlsThis fightAction_]
 
 instance RunMessage Kukri where
-  runMessage msg a@(Kukri attrs) = case msg of
+  runMessage msg a@(Kukri attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (SkillModifier #combat 1), chooseFight]
+      skillTestModifier sid source iid (SkillModifier #combat 1)
+      pushM $ mkChooseFight sid iid source
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid -> do
         actionRemainingCount <- field InvestigatorRemainingActions iid
-        player <- getPlayer iid
-        pushWhen (actionRemainingCount > 0)
-          $ chooseOne
-            player
-            [ Label
-                "Spend 1 action to deal +1 damage"
-                [LoseActions iid (attrs.ability 1) 1, skillTestModifier sid attrs iid (DamageDealt 1)]
-            , Label "Skip additional Kukri damage" []
-            ]
+        when (actionRemainingCount > 0) do
+          chooseOneM iid do
+            labeled "Spend 1 action to deal +1 damage" do
+              push $ LoseActions iid (attrs.ability 1) 1
+              skillTestModifier sid attrs iid (DamageDealt 1)
+            labeled "Skip additional Kukri damage" nothing
       pure a
-    _ -> Kukri <$> runMessage msg attrs
+    _ -> Kukri <$> liftRunMessage msg attrs

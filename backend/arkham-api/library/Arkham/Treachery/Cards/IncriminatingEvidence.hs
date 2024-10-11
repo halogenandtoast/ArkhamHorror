@@ -20,7 +20,7 @@ incriminatingEvidence = treachery IncriminatingEvidence Cards.incriminatingEvide
 
 instance HasModifiersFor IncriminatingEvidence where
   getModifiersFor target (IncriminatingEvidence a) | target `elem` treacheryAttachedTarget a = do
-    pure $ toModifiers a [AddTrait CrimeScene, ShroudModifier 2]
+    toModifiers a [AddTrait CrimeScene, ShroudModifier 2]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities IncriminatingEvidence where
@@ -47,7 +47,7 @@ instance RunMessage IncriminatingEvidence where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       case treacheryAttachedTarget attrs of
         Just (LocationTarget lid) -> withSkillTest \sid ->
-          push
+          pushM
             $ skillTestModifier sid (attrs.ability 1) lid (AlternateSuccessfullInvestigation $ toTarget attrs)
         _ -> error "Unexpected"
       pure t

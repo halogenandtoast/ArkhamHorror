@@ -26,7 +26,7 @@ instance HasModifiersFor DetectivesColt1911s where
       Nothing -> pure []
       Just iid -> do
         toolAssetsWithHands <- select $ assetControlledBy iid <> AssetWithTrait Tool <> AssetInSlot HandSlot
-        pure $ toModifiers a [DoNotTakeUpSlot HandSlot | aid `elem` take 2 toolAssetsWithHands]
+        toModifiers a [DoNotTakeUpSlot HandSlot | aid `elem` take 2 toolAssetsWithHands]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DetectivesColt1911s where
@@ -39,10 +39,8 @@ instance RunMessage DetectivesColt1911s where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
-        , chooseFight
-        ]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
+      pushAll [enabled, chooseFight]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do

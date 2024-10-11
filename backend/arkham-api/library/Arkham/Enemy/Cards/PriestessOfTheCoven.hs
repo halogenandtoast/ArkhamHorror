@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.PriestessOfTheCoven (
-  priestessOfTheCoven,
-  PriestessOfTheCoven (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.PriestessOfTheCoven (priestessOfTheCoven, PriestessOfTheCoven (..)) where
 
 import Arkham.Ability
 import Arkham.Attack
@@ -12,21 +7,20 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
+import Arkham.Prelude
 import Arkham.Trait (Trait (Witch))
 
 newtype PriestessOfTheCoven = PriestessOfTheCoven EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 priestessOfTheCoven :: EnemyCard PriestessOfTheCoven
-priestessOfTheCoven =
-  enemy PriestessOfTheCoven Cards.priestessOfTheCoven (2, Static 3, 2) (2, 0)
+priestessOfTheCoven = enemy PriestessOfTheCoven Cards.priestessOfTheCoven (2, Static 3, 2) (2, 0)
 
 instance HasModifiersFor PriestessOfTheCoven where
   getModifiersFor target (PriestessOfTheCoven a) | isTarget a target = do
     witchCount <- length <$> findInDiscard (CardWithTrait Witch)
-    pure
-      $ toModifiers a
+    toModifiers a
       $ guard (witchCount > 0)
       *> [ Modifier.EnemyFight (min 3 witchCount)
          , Modifier.EnemyEvade (min 3 witchCount)
@@ -34,10 +28,7 @@ instance HasModifiersFor PriestessOfTheCoven where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities PriestessOfTheCoven where
-  getAbilities (PriestessOfTheCoven a) =
-    withBaseAbilities
-      a
-      [mkAbility a 1 $ ForcedAbility EncounterDeckRunsOutOfCards]
+  getAbilities (PriestessOfTheCoven a) = extend1 a $ mkAbility a 1 $ forced EncounterDeckRunsOutOfCards
 
 instance RunMessage PriestessOfTheCoven where
   runMessage msg e@(PriestessOfTheCoven attrs) = case msg of

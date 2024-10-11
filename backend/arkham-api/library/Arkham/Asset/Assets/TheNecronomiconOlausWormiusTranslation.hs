@@ -27,7 +27,7 @@ instance HasAbilities TheNecronomiconOlausWormiusTranslation where
 
 instance HasModifiersFor TheNecronomiconOlausWormiusTranslation where
   getModifiersFor (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a) =
-    pure $ toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
+    toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheNecronomiconOlausWormiusTranslation where

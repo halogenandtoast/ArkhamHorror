@@ -27,7 +27,7 @@ instance HasModifiersFor RiseToTheOccasion3 where
         base <- getSkillTestBaseSkillForSkillTest (skillOwner attrs) skillTest
         difficulty <- getModifiedSkillTestDifficulty skillTest
         let n = max 0 (min 3 (difficulty - base))
-        pure $ toModifiers attrs [AddSkillIcons $ replicate n #wild]
+        toModifiers attrs [AddSkillIcons $ replicate n #wild]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

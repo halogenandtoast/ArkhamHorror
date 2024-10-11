@@ -22,7 +22,7 @@ dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 instance HasModifiersFor DianneDevine where
   getModifiersFor (InvestigatorTarget iid) (DianneDevine a) = do
     affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId a)
-    pure $ toModifiers a $ guard affected *> [CannotDiscoverClues, CannotTakeControlOfClues]
+    toModifiers a $ guard affected *> [CannotDiscoverClues, CannotTakeControlOfClues]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DianneDevine where

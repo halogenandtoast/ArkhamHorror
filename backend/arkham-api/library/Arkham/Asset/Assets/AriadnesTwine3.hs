@@ -21,7 +21,7 @@ instance HasModifiersFor AriadnesTwine3 where
       Nothing -> pure []
       Just iid -> do
         valid <- aid <=~> AssetControlledBy (affectsOthers $ colocatedWith iid)
-        pure $ toModifiers a [ProvidesUses Secret (toSource a) | valid && a.use Secret > 0]
+        toModifiers a [ProvidesUses Secret (toSource a) | valid && a.use Secret > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities AriadnesTwine3 where

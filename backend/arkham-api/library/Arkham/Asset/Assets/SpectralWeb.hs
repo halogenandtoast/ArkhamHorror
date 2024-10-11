@@ -35,8 +35,8 @@ instance RunMessage SpectralWeb where
       sid <- getRandom
       choices <- for [#willpower, #combat] \sType -> do
         chooseFight <- toMessage . withSkillType sType <$> mkChooseFight sid iid source
-        pure
-          $ SkillLabel sType [skillTestModifiers sid source iid [AnySkillValue x, DamageDealt x], chooseFight]
+        enabled <- skillTestModifiers sid source iid [AnySkillValue x, DamageDealt x]
+        pure $ SkillLabel sType [enabled, chooseFight]
       push $ chooseOne player choices
       pure a
     _ -> SpectralWeb <$> runMessage msg attrs

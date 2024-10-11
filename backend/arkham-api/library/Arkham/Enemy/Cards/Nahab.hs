@@ -25,7 +25,7 @@ nahab = enemy Nahab Cards.nahab (1, PerPlayer 1, 3) (1, 2)
 instance HasModifiersFor Nahab where
   getModifiersFor target (Nahab attrs) | isTarget attrs target = do
     agendaStep <- getCurrentAgendaStep
-    pure $ toModifiers attrs [DoNotRemoveDoom, EnemyFight agendaStep]
+    toModifiers attrs [DoNotRemoveDoom, EnemyFight agendaStep]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Nahab where

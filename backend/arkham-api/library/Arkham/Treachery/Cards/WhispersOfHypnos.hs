@@ -55,7 +55,7 @@ whispersOfHypnosEffect = cardEffect WhispersOfHypnosEffect Cards.whispersOfHypno
 instance HasModifiersFor WhispersOfHypnosEffect where
   getModifiersFor (InvestigatorTarget _) (WhispersOfHypnosEffect attrs) = do
     case attrs.meta of
-      Just (EffectMetaSkill sType) -> pure $ toModifiers attrs [SkillModifier sType (-2)]
+      Just (EffectMetaSkill sType) -> toModifiers attrs [SkillModifier sType (-2)]
       _ -> error "invalid meta"
   getModifiersFor _ _ = pure []
 

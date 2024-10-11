@@ -8,8 +8,8 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
 
 newtype EldritchTongue = EldritchTongue AssetAttrs
@@ -58,22 +58,15 @@ instance RunMessage EldritchTongueEffect where
       cards <- select $ PlayableCard (UnpaidCost NeedsAction) $ inDiscardOf iid <> #event <> #parley
       for_ attrs.source.asset \aid -> do
         focusCards cards \unfocus -> do
-          chooseOne
-            iid
-            [ targetLabel
-              card
-              [ unfocus
-              , AddToHand iid [card]
-              , Msg.eventModifiers
-                  attrs.source
-                  card
-                  [SetAfterPlay AbsoluteRemoveThisFromGame, AdditionalCost $ UseCost (AssetWithId aid) Charge 1]
-              , PayCardCost iid card ws
-              ]
-            | card <- cards
-            ]
-
+          chooseOneM iid do
+            targets cards \card -> do
+              push unfocus
+              addToHand iid (only card)
+              eventModifiers
+                attrs.source
+                card
+                [SetAfterPlay AbsoluteRemoveThisFromGame, AdditionalCost $ UseCost (AssetWithId aid) Charge 1]
+              push $ PayCardCost iid card ws
       pure e
-    RemovedFromPlay source | isSource source attrs.source -> do
-      disableReturn e
+    RemovedFromPlay source | isSource source attrs.source -> disableReturn e
     _ -> EldritchTongueEffect <$> liftRunMessage msg attrs

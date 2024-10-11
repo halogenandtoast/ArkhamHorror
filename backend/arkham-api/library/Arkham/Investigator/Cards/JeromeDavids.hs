@@ -1,20 +1,17 @@
-module Arkham.Investigator.Cards.JeromeDavids (
-  jeromeDavids,
-  JeromeDavids (..),
-) where
+module Arkham.Investigator.Cards.JeromeDavids (jeromeDavids, JeromeDavids (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (jeromeDavids)
 import Arkham.Card
-import Arkham.Discover
+import Arkham.Discover hiding (discoverAtYourLocation)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Investigator (startsWithInHand)
+import Arkham.Helpers.Modifiers (ModifierType (..), setActiveDuringSetup, toModifiersWith)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 
@@ -42,15 +39,14 @@ jeromeDavids =
 
 instance HasModifiersFor JeromeDavids where
   getModifiersFor target (JeromeDavids a) | a `is` target = do
-    pure
-      $ toModifiersWith a setActiveDuringSetup
+    toModifiersWith a setActiveDuringSetup
       $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 Self
+        $ restricted a 1 Self
         $ ReactionAbility
           (DrawCard #when (InvestigatorAt YourLocation) #treachery EncounterDeck)
           (SkillIconCost 2 $ singleton #intellect)
@@ -62,12 +58,12 @@ instance HasChaosTokenValue JeromeDavids where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage JeromeDavids where
-  runMessage msg i@(JeromeDavids attrs) = case msg of
+  runMessage msg i@(JeromeDavids attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
-      push $ cardResolutionModifier card (attrs.ability 1) card IgnoreRevelation
+      cardResolutionModifier card (attrs.ability 1) card IgnoreRevelation
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation ElderSign 1
+      discoverAtYourLocation NotInvestigate iid ElderSign 1
       pure i
     InvestigatorMulligan iid | attrs `is` iid -> do
       push $ FinishedWithMulligan iid
@@ -82,4 +78,4 @@ instance RunMessage JeromeDavids where
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
     DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
-    _ -> JeromeDavids <$> runMessage msg attrs
+    _ -> JeromeDavids <$> liftRunMessage msg attrs

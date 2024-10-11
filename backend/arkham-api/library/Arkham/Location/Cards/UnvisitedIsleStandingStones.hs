@@ -5,8 +5,6 @@ module Arkham.Location.Cards.UnvisitedIsleStandingStones (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
 import Arkham.CampaignLogKey
 import Arkham.Effect.Runner ()
@@ -19,6 +17,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleStandingStones = UnvisitedIsleStandingStones LocationAttrs
@@ -29,20 +28,17 @@ unvisitedIsleStandingStones :: LocationCard UnvisitedIsleStandingStones
 unvisitedIsleStandingStones = location UnvisitedIsleStandingStones Cards.unvisitedIsleStandingStones 3 (PerPlayer 2)
 
 instance HasModifiersFor UnvisitedIsleStandingStones where
-  getModifiersFor target (UnvisitedIsleStandingStones attrs)
-    | attrs `isTarget` target
-    , not (locationRevealed attrs) = do
-        sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
-        isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
-        pure
-          [ toModifier attrs Blocked
-          | if sidedWithLodge then not isLit else isLit
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (UnvisitedIsleStandingStones attrs) = maybeModified attrs do
+    guard $ attrs `isTarget` target
+    guard $ not attrs.revealed
+    sidedWithLodge <- lift $ getHasRecord TheInvestigatorsSidedWithTheLodge
+    isLit <- lift $ selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
+    guard $ if sidedWithLodge then not isLit else isLit
+    pure [Blocked]
 
 instance HasAbilities UnvisitedIsleStandingStones where
   getAbilities (UnvisitedIsleStandingStones attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
       [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted
@@ -77,7 +73,7 @@ instance HasModifiersFor UnvisitedIsleStandingStonesEffect where
   getModifiersFor (SkillTestTarget _) (UnvisitedIsleStandingStonesEffect a) = do
     mAction <- getSkillTestAction
     case mAction of
-      Just Action.Circle -> pure $ toModifiers a [Difficulty 2]
+      Just Action.Circle -> toModifiers a [Difficulty 2]
       _ -> pure []
   getModifiersFor _ _ = pure []
 

@@ -21,7 +21,7 @@ instance HasAbilities BuriedSecretsAdvanced where
 instance HasModifiersFor BuriedSecretsAdvanced where
   getModifiersFor (InvestigatorTarget iid) (BuriedSecretsAdvanced a) | a `on` iid = do
     canInvestigate <- selectAny $ locationWithInvestigator iid <> InvestigatableLocation
-    pure $ toModifiers a [CannotMoveExceptByScenarioCardEffects | canInvestigate]
+    toModifiers a [CannotMoveExceptByScenarioCardEffects | canInvestigate]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BuriedSecretsAdvanced where

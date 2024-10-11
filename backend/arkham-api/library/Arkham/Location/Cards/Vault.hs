@@ -25,7 +25,7 @@ vault = location Vault Cards.vault 4 (PerPlayer 1)
 instance HasModifiersFor Vault where
   getModifiersFor (InvestigatorTarget iid) (Vault attrs) = do
     hasElderThingKey <- iid <=~> InvestigatorWithKey ElderThingKey
-    pure $ toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasElderThingKey]
+    toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasElderThingKey]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Vault where

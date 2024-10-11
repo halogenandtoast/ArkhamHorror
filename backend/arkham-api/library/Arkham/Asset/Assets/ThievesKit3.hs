@@ -21,12 +21,12 @@ instance RunMessage ThievesKit3 where
   runMessage msg a@(ThievesKit3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      investigate <- mkInvestigate sid iid (attrs.ability 1)
+      investigate' <- mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
         iid
-        [ Label "Use {agility}" [toMessage $ withSkillType #agility investigate]
-        , Label "Use {intellect}" [toMessage investigate]
+        [ Label "Use {agility}" [toMessage $ withSkillType #agility investigate']
+        , Label "Use {intellect}" [toMessage investigate']
         ]
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

@@ -36,18 +36,14 @@ instance RunMessage CryptographicCipher where
       lid <- getJustLocation iid
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
-      pushAll
-        [ skillTestModifier sid attrs lid (ShroudModifier 1)
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid attrs lid (ShroudModifier 1)
+      pushAll [enabled, toMessage investigation]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       lid <- getJustLocation iid
       sid <- getRandom
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1)
-      pushAll
-        [ skillTestModifier sid attrs lid (ShroudModifier (-2))
-        , toMessage investigation
-        ]
+      enabled <- skillTestModifier sid attrs lid (ShroudModifier (-2))
+      pushAll [enabled, toMessage investigation]
       pure a
     _ -> CryptographicCipher <$> runMessage msg attrs

@@ -25,7 +25,7 @@ theSecondNight = agenda (2, A) TheSecondNight Cards.theSecondNight (Static 5)
 instance HasModifiersFor TheSecondNight where
   getModifiersFor target (TheSecondNight a) | not (isTarget a target) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    pure $ toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
+    toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheSecondNight where

@@ -20,7 +20,7 @@ randolphCarterChainedToTheWakingWorld =
 
 instance HasModifiersFor RandolphCarterChainedToTheWakingWorld where
   getModifiersFor (InvestigatorTarget iid) (RandolphCarterChainedToTheWakingWorld a) | a `controlledBy` iid = do
-    pure $ toModifiers a [SkillModifier #willpower 1, SkillModifier #intellect 1]
+    toModifiers a [SkillModifier #willpower 1, SkillModifier #intellect 1]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities RandolphCarterChainedToTheWakingWorld where

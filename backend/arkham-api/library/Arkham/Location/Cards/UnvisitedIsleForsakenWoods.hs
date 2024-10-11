@@ -4,8 +4,6 @@ module Arkham.Location.Cards.UnvisitedIsleForsakenWoods (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.CampaignLogKey
@@ -19,6 +17,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleForsakenWoods = UnvisitedIsleForsakenWoods LocationAttrs
@@ -29,22 +28,19 @@ unvisitedIsleForsakenWoods :: LocationCard UnvisitedIsleForsakenWoods
 unvisitedIsleForsakenWoods = location UnvisitedIsleForsakenWoods Cards.unvisitedIsleForsakenWoods 2 (PerPlayer 2)
 
 instance HasModifiersFor UnvisitedIsleForsakenWoods where
-  getModifiersFor target (UnvisitedIsleForsakenWoods attrs)
-    | attrs `isTarget` target
-    , not (locationRevealed attrs) = do
-        sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
-        isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
-        pure
-          [ toModifier attrs Blocked
-          | if sidedWithLodge then not isLit else isLit
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (UnvisitedIsleForsakenWoods attrs) = maybeModified attrs do
+    guard $ attrs `isTarget` target
+    guard $ not attrs.revealed
+    sidedWithLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
+    isLit <- selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
+    guard $ if sidedWithLodge then not isLit else isLit
+    pure [Blocked]
 
 instance HasAbilities UnvisitedIsleForsakenWoods where
   getAbilities (UnvisitedIsleForsakenWoods attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
+      [ restricted attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
       , haunted
           "You must either search the encounter deck and discard pile for a Whippoorwill and spawn it at this location, or the nearest Whippoorwill attack you."
           attrs

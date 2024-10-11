@@ -19,12 +19,12 @@ theStygianEye3 = event TheStygianEye3 Cards.theStygianEye3
 instance HasModifiersFor TheStygianEye3 where
   getModifiersFor (CardIdTarget cid) (TheStygianEye3 a) | toCardId a == cid = do
     n <- selectCount $ ChaosTokenFaceIs #curse
-    pure $ toModifiers a [ReduceCostOf (CardWithId cid) n]
+    toModifiers a [ReduceCostOf (CardWithId cid) n]
   getModifiersFor _ _ = pure []
 
 instance RunMessage TheStygianEye3 where
   runMessage msg e@(TheStygianEye3 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ roundModifiers attrs iid [SkillModifier sType 3 | sType <- allSkills]
+      pushM $ roundModifiers attrs iid [SkillModifier sType 3 | sType <- allSkills]
       pure e
     _ -> TheStygianEye3 <$> runMessage msg attrs

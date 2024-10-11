@@ -37,7 +37,7 @@ instance HasModifiersFor HistoricalSocietyPeabodysOffice where
               ( assetIs Assets.mrPeabody
                   <> AssetControlledBy (InvestigatorAt $ LocationWithId lid)
               )
-        pure $ toModifiers attrs [ShroudModifier (-2) | modifierIsActive]
+        toModifiers attrs [ShroudModifier (-2) | modifierIsActive]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyPeabodysOffice where

@@ -28,10 +28,8 @@ instance RunMessage ColtVestPocket2 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      pushAll
-        [ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-        , chooseFight
-        ]
+      enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
+      pushAll [enabled, chooseFight]
       pure . ColtVestPocket2 $ attrs `with` Metadata True
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       push $ toDiscardBy iid (attrs.ability 2) attrs

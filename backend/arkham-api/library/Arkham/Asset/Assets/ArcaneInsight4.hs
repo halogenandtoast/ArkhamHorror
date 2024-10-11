@@ -33,11 +33,7 @@ instance RunMessage ArcaneInsight4 where
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
         iid' <- selectJust TurnInvestigator
-        push
-          $ CreateWindowModifierEffect
-            (EffectTurnWindow iid')
-            (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
-            (toSource attrs)
-            (LocationTarget lid)
+        ems <- effectModifiers attrs [ShroudModifier (-2)]
+        push $ CreateWindowModifierEffect (EffectTurnWindow iid') ems (toSource attrs) (LocationTarget lid)
       pure a
     _ -> ArcaneInsight4 <$> runMessage msg attrs

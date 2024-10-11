@@ -17,16 +17,15 @@ prophetic3 = asset Prophetic3 Cards.prophetic3
 
 instance HasModifiersFor Prophetic3 where
   getModifiersFor (InvestigatorTarget iid) (Prophetic3 attrs) =
-    pure
-      $ toModifiers
-        attrs
-        [ CanSpendUsesAsResourceOnCardFromInvestigator
-          (toId attrs)
-          #resource
-          (InvestigatorWithId iid)
-          (oneOf [CardWithTrait t | t <- [Fortune, Spell, Spirit]])
-        | attrs `controlledBy` iid
-        ]
+    toModifiers
+      attrs
+      [ CanSpendUsesAsResourceOnCardFromInvestigator
+        (toId attrs)
+        #resource
+        (InvestigatorWithId iid)
+        (oneOf [CardWithTrait t | t <- [Fortune, Spell, Spirit]])
+      | attrs `controlledBy` iid
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Prophetic3 where

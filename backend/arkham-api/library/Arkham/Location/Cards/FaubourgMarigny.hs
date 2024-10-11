@@ -21,7 +21,7 @@ faubourgMarigny = location FaubourgMarigny Cards.faubourgMarigny 4 (Static 0)
 instance HasModifiersFor FaubourgMarigny where
   getModifiersFor (InvestigatorTarget iid) (FaubourgMarigny attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [ReduceCostOf #asset 1 | here]
+    toModifiers attrs [ReduceCostOf #asset 1 | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FaubourgMarigny where

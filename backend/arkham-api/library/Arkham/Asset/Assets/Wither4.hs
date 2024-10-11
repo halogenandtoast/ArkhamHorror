@@ -31,9 +31,10 @@ instance RunMessage Wither4 where
       sid <- getRandom
       chooseFight <-
         leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
+      enabled <- skillTestModifier sid source iid (SkillModifier #willpower 2)
       pushAll
         $ [ createCardEffect Cards.wither4 (effectMetaTarget sid) source iid
-          , skillTestModifier sid source iid (SkillModifier #willpower 2)
+          , enabled
           ]
         <> chooseFight
       pure a
@@ -57,17 +58,14 @@ instance RunMessage Wither4Effect where
                 && maybe False (isTarget sid) attrs.metaTarget
         when triggers do
           iid' <- selectJust TurnInvestigator
+          ems <-
+            effectModifiers
+              attrs
+              [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
           pushAll
             [ If
                 (Window.RevealChaosTokenEffect iid token attrs.id)
-                [ CreateWindowModifierEffect
-                    (EffectTurnWindow iid')
-                    ( effectModifiers
-                        attrs
-                        [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
-                    )
-                    attrs.source
-                    (toTarget enemyId)
+                [ CreateWindowModifierEffect (EffectTurnWindow iid') ems attrs.source (toTarget enemyId)
                 ]
             , disable attrs
             ]

@@ -23,7 +23,7 @@ newtype Metadata = Metadata {mariaDeSilvasLocation :: Maybe LocationId}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheBrotherhoodIsRevealed = TheBrotherhoodIsRevealed (ActAttrs `With` Metadata)
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBrotherhoodIsRevealed :: ActCard TheBrotherhoodIsRevealed
@@ -39,8 +39,7 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
     isPrey <- isIchtacasPrey eid
     atLocationWithoutClues <- selectAny $ locationWithEnemy eid <> LocationWithoutClues
     n <- perPlayer 1
-    pure
-      $ toModifiers a
+    toModifiers a
       $ guard (isPrey && atLocationWithoutClues)
       *> [EnemyFight 1, HealthModifier n, EnemyEvade 1]
   getModifiersFor _ _ = pure []

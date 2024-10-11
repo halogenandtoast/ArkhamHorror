@@ -19,7 +19,7 @@ downstairsDoorwayParlor = location DownstairsDoorwayParlor Cards.downstairsDoorw
 instance HasModifiersFor DownstairsDoorwayParlor where
   getModifiersFor target (DownstairsDoorwayParlor a) | a `is` target = do
     n <- selectCount $ investigatorAt a
-    pure $ toModifiers a [ShroudModifier n | n > 0]
+    toModifiers a [ShroudModifier n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities DownstairsDoorwayParlor where

@@ -26,14 +26,12 @@ instance RunMessage NauticalProwess where
         then do
           mDrawing <- drawCardsIfCan attrs.owner attrs 1
           player <- getPlayer attrs.owner
-          withSkillTest \sid ->
+          withSkillTest \sid -> do
+            enabled <-
+              skillTestModifier sid attrs (CardIdTarget $ toCardId attrs) $ AddSkillIcons [#wild, #wild]
             push
               $ chooseOrRunOne player
-              $ [ Label
-                    "Nautical Prowess gains {wild}{wild}"
-                    [ skillTestModifier sid attrs (CardIdTarget $ toCardId attrs) $ AddSkillIcons [#wild, #wild]
-                    ]
-                ]
+              $ [Label "Nautical Prowess gains {wild}{wild}" [enabled]]
               <> [Label "Draw 1 card" [drawing] | drawing <- toList mDrawing]
           pure . NauticalProwess $ attrs & setMeta @Bool True
         else pure s

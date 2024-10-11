@@ -18,7 +18,7 @@ instance HasModifiersFor PackOfVooniths where
   getModifiersFor target (PackOfVooniths a) | a `is` target = do
     isHost <- toId a <=~> IsHost
     noSwarm <- selectNone $ SwarmOf (toId a)
-    pure $ toModifiers a $ guard (isHost && noSwarm) *> [Mod.EnemyFight 2, Mod.EnemyEvade 2]
+    toModifiers a $ guard (isHost && noSwarm) *> [Mod.EnemyFight 2, Mod.EnemyEvade 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage PackOfVooniths where

@@ -1,20 +1,12 @@
-module Arkham.Event.Events.Eucatastrophe3 (
-  eucatastrophe3,
-  Eucatastrophe3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Eucatastrophe3 (eucatastrophe3, Eucatastrophe3 (..)) where
 
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.EffectMetadata
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (getChaosToken)
+import Arkham.Modifier
+import Arkham.Strategy
 import Arkham.Taboo
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype Eucatastrophe3 = Eucatastrophe3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -22,23 +14,12 @@ newtype Eucatastrophe3 = Eucatastrophe3 EventAttrs
 
 eucatastrophe3 :: EventCard Eucatastrophe3
 eucatastrophe3 =
-  eventWith
-    Eucatastrophe3
-    Cards.eucatastrophe3
-    (\a -> if tabooed TabooList19 a then a {eventAfterPlay = RemoveThisFromGame} else a)
-
-toWindowChaosToken :: [Window] -> ChaosToken
-toWindowChaosToken [] = error "Missing window"
-toWindowChaosToken ((windowType -> Window.RevealChaosToken _ token) : _) = token
-toWindowChaosToken (_ : xs) = toWindowChaosToken xs
+  eventWith Eucatastrophe3 Cards.eucatastrophe3
+    $ \a -> if tabooed TabooList19 a then a {eventAfterPlay = RemoveThisFromGame} else a
 
 instance RunMessage Eucatastrophe3 where
-  runMessage msg e@(Eucatastrophe3 attrs) = case msg of
-    InvestigatorPlayEvent _ eid _ (toWindowChaosToken -> token) _ | eid == toId attrs -> do
-      push
-        $ CreateChaosTokenEffect
-          (EffectModifiers $ toModifiers attrs [ChaosTokenFaceModifier [ElderSign]])
-          (toSource attrs)
-          token
+  runMessage msg e@(Eucatastrophe3 attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent _ eid _ (getChaosToken -> token) _ | eid == toId attrs -> do
+      chaosTokenEffect attrs token $ ChaosTokenFaceModifier [ElderSign]
       pure e
-    _ -> Eucatastrophe3 <$> runMessage msg attrs
+    _ -> Eucatastrophe3 <$> liftRunMessage msg attrs

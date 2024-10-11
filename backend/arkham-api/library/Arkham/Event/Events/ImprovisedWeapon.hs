@@ -1,12 +1,9 @@
 module Arkham.Event.Events.ImprovisedWeapon (improvisedWeapon, ImprovisedWeapon (..)) where
 
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.SkillType
 import Arkham.Zone
 
@@ -18,23 +15,14 @@ improvisedWeapon :: EventCard ImprovisedWeapon
 improvisedWeapon = event ImprovisedWeapon Cards.improvisedWeapon
 
 instance RunMessage ImprovisedWeapon where
-  runMessage msg e@(ImprovisedWeapon attrs) = case msg of
+  runMessage msg e@(ImprovisedWeapon attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
-      enemyIds <- select $ CanFightEnemy (toSource attrs)
-      player <- getPlayer iid
       sid <- getRandom
-      pushAll
-        $ [skillTestModifier sid attrs iid (DamageDealt 1) | zone == FromDiscard]
-        <> [ chooseOne
-              player
-              [ targetLabel
-                enemyId
-                [ skillTestModifier sid attrs enemyId (EnemyFight (-1))
-                , FightEnemy sid iid enemyId (toSource attrs) Nothing SkillCombat False
-                ]
-              | enemyId <- enemyIds
-              ]
-           ]
-        <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
+      when (zone == FromDiscard) $ skillTestModifier sid attrs iid (DamageDealt 1)
+      enemyIds <- select $ CanFightEnemy (toSource attrs)
+      chooseTargetM iid enemyIds \enemyId -> do
+        skillTestModifier sid attrs enemyId (EnemyFight (-1))
+        push $ FightEnemy sid iid enemyId (toSource attrs) Nothing SkillCombat False
+      when (zone == FromDiscard) $ shuffleIntoDeck iid attrs
       pure e
-    _ -> ImprovisedWeapon <$> runMessage msg attrs
+    _ -> ImprovisedWeapon <$> liftRunMessage msg attrs

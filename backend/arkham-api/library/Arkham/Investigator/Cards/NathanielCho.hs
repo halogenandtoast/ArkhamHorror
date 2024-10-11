@@ -64,7 +64,7 @@ nathanielChoEffect = cardEffect NathanielChoEffect Cards.nathanielCho
 
 instance HasModifiersFor NathanielChoEffect where
   getModifiersFor target@(EnemyTarget _) (NathanielChoEffect attrs) | attrs.target == target = do
-    pure $ toModifiers attrs [DamageTaken 1]
+    toModifiers attrs [DamageTaken 1]
   getModifiersFor _ _ = pure []
 
 isTakeDamage :: EffectAttrs -> Window -> Bool

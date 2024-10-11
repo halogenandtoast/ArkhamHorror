@@ -33,7 +33,7 @@ instance RunMessage ImpromptuBarrier where
         : [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == FromDiscard]
       pure . ImpromptuBarrier $ attrs `with` Metadata (zone == FromDiscard)
     ChosenEvadeEnemy sid (isSource attrs -> True) eid -> do
-      push $ skillTestModifier sid attrs eid (EnemyEvade (-1))
+      pushM $ skillTestModifier sid attrs eid (EnemyEvade (-1))
       pure e
     Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) n -> do
       enemies <-

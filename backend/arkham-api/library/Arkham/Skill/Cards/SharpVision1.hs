@@ -21,7 +21,7 @@ instance HasModifiersFor SharpVision1 where
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate)) -> pure $ toModifiers a [AddSkillIcons [#intellect, #intellect]]
+      (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate)) -> toModifiers a [AddSkillIcons [#intellect, #intellect]]
       _ -> pure []
   getModifiersFor _ _ = pure []
 
@@ -34,7 +34,7 @@ instance RunMessage SharpVision1 where
       case (mAction, mSource, mInvestigator) of
         (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate), Just iid) -> do
           withSkillTest \sid ->
-            push $ skillTestModifier sid (toSource attrs) iid (DiscoveredClues 1)
+            pushM $ skillTestModifier sid (toSource attrs) iid (DiscoveredClues 1)
         _ -> pure ()
       pure s
     _ -> SharpVision1 <$> runMessage msg attrs

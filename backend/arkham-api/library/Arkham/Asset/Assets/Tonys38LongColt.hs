@@ -26,12 +26,13 @@ instance HasAbilities Tonys38LongColt where
     ]
 
 instance HasModifiersFor Tonys38LongColt where
-  getModifiersFor (InvestigatorTarget iid) (Tonys38LongColt a) | a `controlledBy` iid = do
-    toModifiers a . toList <$> runMaybeT do
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
-      bounties <- lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
-      guard (bounties > 0) $> SkillModifier #combat bounties
+  getModifiersFor (InvestigatorTarget iid) (Tonys38LongColt a) = maybeModified a do
+    guard $ a `controlledBy` iid
+    EnemyTarget eid <- MaybeT getSkillTestTarget
+    guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
+    bounties <- lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
+    guard (bounties > 0)
+    pure [SkillModifier #combat bounties]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Tonys38LongColt where
@@ -44,7 +45,8 @@ instance RunMessage Tonys38LongColt where
       let source = attrs.ability 2
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifier sid source iid (DamageDealt 1), chooseFight]
+      enabled <- skillTestModifier sid source iid (DamageDealt 1)
+      pushAll [enabled, chooseFight]
       pure a
     EnemyDefeated eid _ (isAbilitySource attrs 2 -> True) _ -> do
       hadBounty <- eid <=~> EnemyWithBounty

@@ -22,7 +22,7 @@ stubbornDetective =
 instance HasModifiersFor StubbornDetective where
   getModifiersFor (InvestigatorTarget iid) (StubbornDetective a) = do
     sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy $ toId a)
-    pure $ toModifiers a [Blank | sameLocation]
+    toModifiers a [Blank | sameLocation]
   getModifiersFor _ _ = pure []
 
 instance RunMessage StubbornDetective where

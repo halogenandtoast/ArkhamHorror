@@ -21,7 +21,7 @@ cityWhichAppearsOnNoMap = location CityWhichAppearsOnNoMap Cards.cityWhichAppear
 instance HasModifiersFor CityWhichAppearsOnNoMap where
   getModifiersFor target (CityWhichAppearsOnNoMap attrs) | attrs `is` target = do
     n <- selectCount $ enemyAt (toId attrs) <> enemyIs Enemies.priestOfAThousandMasks
-    pure $ toModifiers attrs [ShroudModifier (-n) | n > 0]
+    toModifiers attrs [ShroudModifier (-n) | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities CityWhichAppearsOnNoMap where

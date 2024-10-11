@@ -1,20 +1,11 @@
-module Arkham.Location.Cards.BlockedPassage (
-  blockedPassage,
-  BlockedPassage (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BlockedPassage (blockedPassage, BlockedPassage (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Window
-import Arkham.EffectMetadata
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Modifier
 
 newtype BlockedPassage = BlockedPassage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,27 +18,13 @@ blockedPassage =
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasAbilities BlockedPassage where
-  getAbilities (BlockedPassage attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.When You
-        $ LocationWithId
-        $ toId attrs
-      | locationRevealed attrs
-      ]
+  getAbilities (BlockedPassage a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #when You (be a)
 
 instance RunMessage BlockedPassage where
-  runMessage msg l@(BlockedPassage attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0
-        , CreateWindowModifierEffect
-            EffectRoundWindow
-            (EffectModifiers $ toModifiers attrs [CannotMove])
-            (toSource attrs)
-            (InvestigatorTarget iid)
-        ]
+  runMessage msg l@(BlockedPassage attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 2
+      roundModifier (attrs.ability 1) iid CannotMove
       pure l
-    _ -> BlockedPassage <$> runMessage msg attrs
+    _ -> BlockedPassage <$> liftRunMessage msg attrs

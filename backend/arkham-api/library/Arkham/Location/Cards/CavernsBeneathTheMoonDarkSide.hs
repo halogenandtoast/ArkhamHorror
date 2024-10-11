@@ -33,6 +33,6 @@ instance HasAbilities CavernsBeneathTheMoonDarkSide where
 instance RunMessage CavernsBeneathTheMoonDarkSide where
   runMessage msg l@(CavernsBeneathTheMoonDarkSide attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ turnModifier iid (attrs.ability 1) attrs (ShroudModifier (-2))
+      pushM $ turnModifier iid (attrs.ability 1) attrs (ShroudModifier (-2))
       pure l
     _ -> CavernsBeneathTheMoonDarkSide <$> runMessage msg attrs

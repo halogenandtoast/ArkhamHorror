@@ -23,7 +23,7 @@ seaOfPitch_265 = location SeaOfPitch_265 Cards.seaOfPitch_265 0 (PerPlayer 1)
 instance HasModifiersFor SeaOfPitch_265 where
   getModifiersFor target (SeaOfPitch_265 attrs) | attrs `is` target = do
     n <- scenarioCount Distortion
-    pure $ toModifiers attrs [ShroudModifier n | n > 0]
+    toModifiers attrs [ShroudModifier n | n > 0]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities SeaOfPitch_265 where

@@ -24,10 +24,10 @@ instance RunMessage PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 1)
+        pushM $ skillTestModifier sid (attrs.ability 2) iid (SkillModifier #combat 1)
       pure a
     _ -> PhysicalTraining <$> runMessage msg attrs

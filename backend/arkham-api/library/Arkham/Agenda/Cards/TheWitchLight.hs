@@ -22,7 +22,7 @@ theWitchLight = agenda (3, A) TheWitchLight Cards.theWitchLight (Static 8)
 instance HasModifiersFor TheWitchLight where
   getModifiersFor (EnemyTarget eid) (TheWitchLight a) = do
     isNonWeakness <- eid <=~> NonWeaknessEnemy
-    pure $ toModifiers a [HealthModifier 3 | isNonWeakness]
+    toModifiers a [HealthModifier 3 | isNonWeakness]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheWitchLight where

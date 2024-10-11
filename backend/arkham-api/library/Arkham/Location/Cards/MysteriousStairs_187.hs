@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype MysteriousStairs_187 = MysteriousStairs_187 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriousStairs_187 :: LocationCard MysteriousStairs_187
@@ -30,8 +30,7 @@ instance HasModifiersFor MysteriousStairs_187 where
     n <- perPlayer 1
     mTheUnnamable <- selectOne $ enemyIs Enemies.theUnnamable <> enemyAt attrs
     hasEnoughDamage <- maybe (pure False) (fieldMap EnemyDamage (>= n)) mTheUnnamable
-    pure
-      $ toModifiers attrs
+    toModifiers attrs
       $ guard (here && hasEnoughDamage)
       *> [CannotTakeAction #move, CannotTakeAction #resign]
   getModifiersFor _ _ = pure []

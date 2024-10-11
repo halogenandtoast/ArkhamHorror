@@ -27,7 +27,7 @@ instance HasModifiersFor AlejandroVela where
         case (mTarget, mAction) of
           (Just (LocationTarget lid), Just Action.Investigate) -> do
             isAncient <- lid <=~> LocationWithTrait Ancient
-            pure $ toModifiers a [AnySkillValue 1 | isAncient]
+            toModifiers a [AnySkillValue 1 | isAncient]
           _ -> pure []
   getModifiersFor _ _ = pure []
 

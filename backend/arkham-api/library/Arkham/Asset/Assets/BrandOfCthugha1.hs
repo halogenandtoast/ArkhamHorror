@@ -23,12 +23,8 @@ instance RunMessage BrandOfCthugha1 where
       sid <- getRandom
       choices <- for [#willpower, #combat] \sType -> do
         chooseFight <- toMessage . withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
-        pure
-          $ SkillLabel
-            sType
-            [ skillTestModifiers sid (attrs.ability 1) iid [SkillModifier sType 1, NoStandardDamage]
-            , chooseFight
-            ]
+        enabled <- skillTestModifiers sid (attrs.ability 1) iid [SkillModifier sType 1, NoStandardDamage]
+        pure $ SkillLabel sType [enabled, chooseFight]
 
       player <- getPlayer iid
       push $ chooseOne player choices
@@ -46,9 +42,10 @@ instance RunMessage BrandOfCthugha1 where
             $ chooseAmounts player "Amount of Charges to Spend" (MaxAmountTarget 2) [("Charges", (1, 2))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Charges" -> n) (isTarget attrs -> True) -> do
-      withSkillTest \sid ->
+      withSkillTest \sid -> do
+        enabled <- skillTestModifier sid (attrs.ability 1) iid (DamageDealt n)
         pushAll
-          [ skillTestModifier sid (attrs.ability 1) iid (DamageDealt n)
+          [ enabled
           , SpendUses (attrs.ability 1) (toTarget attrs) Charge n
           ]
       pure a

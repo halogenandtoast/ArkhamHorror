@@ -27,7 +27,7 @@ emptySpace =
 
 instance HasModifiersFor EmptySpace where
   getModifiersFor target (EmptySpace a) | isTarget a target = do
-    pure $ toModifiers a [IsEmptySpace]
+    toModifiers a [IsEmptySpace]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities EmptySpace where

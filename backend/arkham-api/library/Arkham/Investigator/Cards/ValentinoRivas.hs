@@ -1,19 +1,15 @@
-module Arkham.Investigator.Cards.ValentinoRivas (
-  valentinoRivas,
-  ValentinoRivas (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.ValentinoRivas (valentinoRivas, ValentinoRivas (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards hiding (valentinoRivas)
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Investigator (startsWithInHand)
+import Arkham.Helpers.Modifiers (ModifierType (..), setActiveDuringSetup, toModifiersWith)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
@@ -25,41 +21,35 @@ newtype ValentinoRivas = ValentinoRivas InvestigatorAttrs
 
 valentinoRivas :: InvestigatorCard ValentinoRivas
 valentinoRivas =
-  investigatorWith
-    ValentinoRivas
-    Cards.valentinoRivas
-    (Stats {health = 5, sanity = 7, willpower = 1, intellect = 3, combat = 2, agility = 4})
-    $ ( startsWithL
-          .~ [Cards.wellConnected]
-      )
-    . ( startsWithInHandL
-          .~ [ Cards.fortyOneDerringer
-             , Cards.opportunist
-             , Cards.sureGamble3
-             , Cards.moneyTalks
-             , Cards.moneyTalks
-             , Cards.cunning
-             , Cards.cunning
-             ]
-      )
+  startsWithInHand
+    [ Cards.fortyOneDerringer
+    , Cards.opportunist
+    , Cards.sureGamble3
+    , Cards.moneyTalks
+    , Cards.moneyTalks
+    , Cards.cunning
+    , Cards.cunning
+    ]
+    $ startsWith [Cards.wellConnected]
+    $ investigator ValentinoRivas Cards.valentinoRivas
+    $ Stats {health = 5, sanity = 7, willpower = 1, intellect = 3, combat = 2, agility = 4}
 
 instance HasModifiersFor ValentinoRivas where
   getModifiersFor target (ValentinoRivas a) | isTarget a target = do
-    pure
-      $ toModifiersWith
-        a
-        setActiveDuringSetup
-        [ CannotTakeAction (IsAction Action.Draw)
-        , CannotDrawCards
-        , CannotManipulateDeck
-        , StartingResources 5
-        ]
+    toModifiersWith
+      a
+      setActiveDuringSetup
+      [ CannotTakeAction #draw
+      , CannotDrawCards
+      , CannotManipulateDeck
+      , StartingResources 5
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest))
+        $ restricted a 1 (Self <> DuringSkillTest (YourSkillTest AnySkillTest))
         $ FastAbility
         $ ResourceCost 2
     ]
@@ -70,10 +60,9 @@ instance HasChaosTokenValue ValentinoRivas where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ValentinoRivas where
-  runMessage msg i@(ValentinoRivas attrs) = case msg of
+  runMessage msg i@(ValentinoRivas attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      withSkillTest \sid ->
-        push $ skillTestModifier sid (toSource attrs) sid (Difficulty (-1))
+      withSkillTest \sid -> skillTestModifier sid (toSource attrs) sid (Difficulty (-1))
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ TakeResources iid 2 (ChaosTokenEffectSource ElderSign) False
@@ -91,4 +80,4 @@ instance RunMessage ValentinoRivas where
       pure i
     Do (DiscardCard iid _ _) | iid == toId attrs -> pure i
     DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
-    _ -> ValentinoRivas <$> runMessage msg attrs
+    _ -> ValentinoRivas <$> liftRunMessage msg attrs

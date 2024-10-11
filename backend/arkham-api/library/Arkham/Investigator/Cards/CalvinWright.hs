@@ -9,7 +9,7 @@ import Arkham.Investigator.Import.Lifted
 newtype CalvinWright = CalvinWright InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 calvinWright :: InvestigatorCard CalvinWright
 calvinWright =
@@ -20,8 +20,7 @@ instance HasModifiersFor CalvinWright where
   getModifiersFor target (CalvinWright a) | a `isTarget` target = do
     let horror = a.sanityDamage
     let damage = a.healthDamage
-    pure
-      $ toModifiers a
+    toModifiers a
       $ [SkillModifier skill horror | horror > 0, skill <- [#willpower, #intellect]]
       <> [SkillModifier skill damage | damage > 0, skill <- [#combat, #agility]]
   getModifiersFor _ _ = pure []

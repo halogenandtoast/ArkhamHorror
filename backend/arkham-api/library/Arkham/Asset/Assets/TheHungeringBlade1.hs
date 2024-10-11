@@ -25,14 +25,14 @@ instance RunMessage TheHungeringBlade1 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll
-        [ skillTestModifiers sid source iid $ DamageDealt 1
-            : [ ForEach
-                  (CountTreacheries $ treacheryIs Treacheries.bloodlust <> TreacheryIsAttachedTo (toTarget attrs))
-                  [SkillModifier #combat 1]
-              ]
-        , chooseFight
-        ]
+      enabled <-
+        skillTestModifiers sid source iid $ DamageDealt 1
+          : [ ForEach
+                (CountTreacheries $ treacheryIs Treacheries.bloodlust <> TreacheryIsAttachedTo (toTarget attrs))
+                [SkillModifier #combat 1]
+            ]
+
+      pushAll [enabled, chooseFight]
       pure a
     EnemyDefeated _ _ (isAbilitySource attrs 1 -> True) _ -> do
       push $ PlaceTokens (attrs.ability 1) (toTarget attrs) Offering 1

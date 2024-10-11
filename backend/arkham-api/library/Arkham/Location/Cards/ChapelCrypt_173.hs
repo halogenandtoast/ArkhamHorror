@@ -24,7 +24,7 @@ chapelCrypt_173 = location ChapelCrypt_173 Cards.chapelCrypt_173 6 (Static 0)
 instance HasModifiersFor ChapelCrypt_173 where
   getModifiersFor target (ChapelCrypt_173 attrs) | isTarget attrs target = do
     shouldModifyShroud <- selectNone $ enemyAt (toId attrs) <> ReadyEnemy
-    pure $ toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
+    toModifiers attrs [ShroudModifier (-3) | shouldModifyShroud]
   getModifiersFor _ _ = pure []
 
 instance RunMessage ChapelCrypt_173 where

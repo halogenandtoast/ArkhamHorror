@@ -27,7 +27,8 @@ instance RunMessage Lupara3 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt n, SkillModifier #combat n], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt n, SkillModifier #combat n]
+      pushAll [enabled, chooseFight]
       pure a
     EndTurn _ -> pure . Lupara3 $ attrs `with` Metadata False
     _ -> Lupara3 . (`with` metadata) <$> runMessage msg attrs

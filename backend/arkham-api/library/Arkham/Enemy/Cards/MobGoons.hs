@@ -14,7 +14,7 @@ mobGoons = enemy MobGoons Cards.mobGoons (3, Static 3, 3) (1, 1)
 
 instance HasModifiersFor MobGoons where
   getModifiersFor target (MobGoons a) | a `is` target = do
-    pure $ toModifiers a [AttacksCannotBeCancelled, SetAttackDamageStrategy DamageDirect]
+    toModifiers a [AttacksCannotBeCancelled, SetAttackDamageStrategy DamageDirect]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MobGoons where

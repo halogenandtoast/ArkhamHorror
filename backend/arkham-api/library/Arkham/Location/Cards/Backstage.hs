@@ -22,7 +22,7 @@ instance HasModifiersFor Backstage where
   getModifiersFor (CardIdTarget cid) (Backstage attrs) = do
     card <- getCard cid
     here <- maybe (pure False) (`isAt` attrs) (toCardOwner card)
-    pure $ toModifiers attrs [HandSizeCardCount 3 | here, Hidden `elem` card.keywords]
+    toModifiers attrs [HandSizeCardCount 3 | here, Hidden `elem` card.keywords]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities Backstage where

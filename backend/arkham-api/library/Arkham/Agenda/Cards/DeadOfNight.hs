@@ -23,7 +23,7 @@ deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
 
 instance HasModifiersFor DeadOfNight where
   getModifiersFor (InvestigatorTarget _) (DeadOfNight a) =
-    pure $ toModifiers a [HandSize (-3)]
+    toModifiers a [HandSize (-3)]
   getModifiersFor _ _ = pure []
 
 instance RunMessage DeadOfNight where

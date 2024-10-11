@@ -1,15 +1,10 @@
-module Arkham.Asset.Assets.Scrapper3 (
-  scrapper3,
-  Scrapper3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Scrapper3 (scrapper3, Scrapper3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Modifier
 
 newtype Scrapper3 = Scrapper3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -22,36 +17,22 @@ instance HasAbilities Scrapper3 where
   getAbilities (Scrapper3 a) =
     [ withTooltip
         "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ ResourceCost 1
     , withTooltip
         "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-        $ restrictedAbility a 2 (ControlsThis <> DuringSkillTest AnySkillTest)
+        $ controlledAbility a 2 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ ResourceCost 1
     ]
 
 instance RunMessage Scrapper3 where
-  runMessage msg a@(Scrapper3 attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
-                  source
-                  (InvestigatorTarget iid)
-              )
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          a
-            <$ push
-              ( CreateWindowModifierEffect
-                  EffectPhaseWindow
-                  (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
-                  source
-                  (InvestigatorTarget iid)
-              )
-    _ -> Scrapper3 <$> runMessage msg attrs
+  runMessage msg a@(Scrapper3 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      phaseModifier (attrs.ability 1) iid $ SkillModifier #combat 1
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      phaseModifier (attrs.ability 2) iid $ SkillModifier #agility 1
+      pure a
+    _ -> Scrapper3 <$> liftRunMessage msg attrs

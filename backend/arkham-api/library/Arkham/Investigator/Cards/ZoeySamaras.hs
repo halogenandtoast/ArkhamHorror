@@ -1,12 +1,11 @@
 module Arkham.Investigator.Cards.ZoeySamaras where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype ZoeySamaras = ZoeySamaras InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -31,12 +30,11 @@ instance HasChaosTokenValue ZoeySamaras where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage ZoeySamaras where
-  runMessage msg i@(ZoeySamaras attrs) = case msg of
+  runMessage msg i@(ZoeySamaras attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ takeResources iid (toAbilitySource attrs 1) 1
+      gainResourcesIfCan iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      withSkillTest \sid ->
-        push $ skillTestModifier sid attrs attrs (DamageDealt 1)
+      withSkillTest \sid -> skillTestModifier sid attrs attrs (DamageDealt 1)
       pure i
-    _ -> ZoeySamaras <$> runMessage msg attrs
+    _ -> ZoeySamaras <$> liftRunMessage msg attrs

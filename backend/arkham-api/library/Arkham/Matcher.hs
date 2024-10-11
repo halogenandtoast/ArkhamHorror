@@ -303,8 +303,8 @@ whileEvading = WhileEvadingAnEnemy . EnemyWithId . asId
 treacheryIs :: HasCardCode a => a -> TreacheryMatcher
 treacheryIs = TreacheryIs . toCardCode
 
-treacheryAt :: LocationId -> TreacheryMatcher
-treacheryAt = TreacheryAt . LocationWithId
+treacheryAt :: (AsId location, IdOf location ~ LocationId) => location -> TreacheryMatcher
+treacheryAt = TreacheryAt . LocationWithId . asId
 {-# INLINE treacheryAt #-}
 
 treacheryInHandOf :: InvestigatorId -> TreacheryMatcher

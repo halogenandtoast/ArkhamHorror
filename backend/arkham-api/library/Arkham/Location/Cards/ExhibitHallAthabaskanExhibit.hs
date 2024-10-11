@@ -24,7 +24,7 @@ exhibitHallAthabaskanExhibit =
 instance HasModifiersFor ExhibitHallAthabaskanExhibit where
   getModifiersFor (InvestigatorTarget iid) (ExhibitHallAthabaskanExhibit attrs) = do
     here <- iid `isAt` attrs
-    pure $ toModifiers attrs [SkillModifier #agility 2 | here]
+    toModifiers attrs [SkillModifier #agility 2 | here]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities ExhibitHallAthabaskanExhibit where

@@ -29,7 +29,7 @@ theFamiliar = agenda (2, A) TheFamiliar Cards.theFamiliar (Static 6)
 instance HasModifiersFor TheFamiliar where
   getModifiersFor (EnemyTarget eid) (TheFamiliar a) = do
     isNonWeakness <- eid <=~> NonWeaknessEnemy
-    pure $ toModifiers a [HealthModifier 2 | isNonWeakness]
+    toModifiers a [HealthModifier 2 | isNonWeakness]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheFamiliar where

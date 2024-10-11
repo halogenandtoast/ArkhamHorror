@@ -33,7 +33,7 @@ malevolentSpirit =
 instance HasModifiersFor MalevolentSpirit where
   getModifiersFor target (MalevolentSpirit a) | isTarget a target = do
     atSpectral <- selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
-    pure $ toModifiers a $ if atSpectral then [AddKeyword Hunter, DamageDealt 1, HorrorDealt 1] else []
+    toModifiers a $ if atSpectral then [AddKeyword Hunter, DamageDealt 1, HorrorDealt 1] else []
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MalevolentSpirit where

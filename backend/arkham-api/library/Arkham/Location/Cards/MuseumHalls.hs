@@ -23,7 +23,7 @@ museumHalls =
 
 instance HasModifiersFor MuseumHalls where
   getModifiersFor target (MuseumHalls l) | l `is` target = do
-    pure $ toModifiers l [Blocked | unrevealed l]
+    toModifiers l [Blocked | unrevealed l]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities MuseumHalls where

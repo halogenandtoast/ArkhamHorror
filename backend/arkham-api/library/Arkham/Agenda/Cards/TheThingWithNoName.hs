@@ -21,7 +21,7 @@ theThingWithNoName = agenda (2, A) TheThingWithNoName Cards.theThingWithNoName (
 instance HasModifiersFor TheThingWithNoName where
   getModifiersFor (EnemyTarget eid) (TheThingWithNoName a) = do
     isRat <- eid <=~> enemyIs Enemies.swarmOfRats
-    pure $ toModifiers a (guard isRat $> AddKeyword (Swarming (Static 1)))
+    toModifiers a (guard isRat $> AddKeyword (Swarming (Static 1)))
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheThingWithNoName where

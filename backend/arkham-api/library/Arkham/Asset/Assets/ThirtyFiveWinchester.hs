@@ -32,8 +32,9 @@ instance RunMessage ThirtyFiveWinchester where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
+      enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
       pushAll
-        [ skillTestModifier sid source iid (SkillModifier #combat 2)
+        [ enabled
         , createCardEffect
             Cards.thirtyFiveWinchester
             (effectInt $ if tabooed TabooList18 attrs then 1 else 0)
@@ -61,10 +62,8 @@ instance RunMessage ThirtyFiveWinchesterEffect where
             else
               token <=~> IncludeTokenPool (IncludeSealed $ mapOneOf ChaosTokenFaceIs [PlusOne, Zero, ElderSign])
         when (isTarget sid attrs.target && valid) do
-          pushAll
-            [ disable attrs
-            , skillTestModifier sid attrs.source iid (DamageDealt 2)
-            ]
+          enabled <- skillTestModifier sid attrs.source iid (DamageDealt 2)
+          pushAll [disable attrs, enabled]
       pure e
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       push $ disable attrs

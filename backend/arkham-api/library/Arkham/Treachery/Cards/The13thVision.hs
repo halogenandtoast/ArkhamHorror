@@ -22,7 +22,7 @@ instance HasModifiersFor The13thVision where
       case mSkillTestInvestigator of
         Just iid -> do
           atSameLocation <- iid <=~> colocatedWith iid'
-          pure $ toModifiers a [FailTies | atSameLocation]
+          toModifiers a [FailTies | atSameLocation]
         _ -> pure []
     _ -> pure []
   getModifiersFor _ _ = pure []

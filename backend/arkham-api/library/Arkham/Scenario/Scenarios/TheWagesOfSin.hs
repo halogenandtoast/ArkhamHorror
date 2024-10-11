@@ -31,10 +31,10 @@ newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
 instance HasModifiersFor TheWagesOfSin where
   getModifiersFor (InvestigatorTarget iid) (TheWagesOfSin a) = do
     atSpectralLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Spectral
-    pure $ toModifiers a [UseEncounterDeck SpectralEncounterDeck | atSpectralLocation]
+    toModifiers a [UseEncounterDeck SpectralEncounterDeck | atSpectralLocation]
   getModifiersFor (CardIdTarget cid) (TheWagesOfSin a) = do
     isSpectral <- (`cardMatch` CardWithTrait Spectral) <$> getCard cid
-    pure $ toModifiers a [UseEncounterDeck SpectralEncounterDeck | isSpectral]
+    toModifiers a [UseEncounterDeck SpectralEncounterDeck | isSpectral]
   getModifiersFor _ _ = pure []
 
 theWagesOfSin :: Difficulty -> TheWagesOfSin

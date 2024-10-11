@@ -27,7 +27,7 @@ harbingerOfValusia =
 instance HasModifiersFor HarbingerOfValusia where
   getModifiersFor target (HarbingerOfValusia a)
     | isTarget a target =
-        pure $ toModifiers a [CanRetaliateWhileExhausted]
+        toModifiers a [CanRetaliateWhileExhausted]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HarbingerOfValusia where

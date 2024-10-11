@@ -22,6 +22,7 @@ instance RunMessage LightningGun5 where
       let source = attrs.ability 1
       sid <- getRandom
       chooseFight <- toMessage <$> mkChooseFight sid iid source
-      pushAll [skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #combat 5], chooseFight]
+      enabled <- skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #combat 5]
+      pushAll [enabled, chooseFight]
       pure a
     _ -> LightningGun5 <$> runMessage msg attrs

@@ -28,19 +28,18 @@ newtype LostInTheWoods = LostInTheWoods ActAttrs
 instance HasModifiersFor LostInTheWoods where
   getModifiersFor (LocationTarget lid) (LostInTheWoods a) = do
     mInFrontOf <- field LocationInFrontOf lid
-    pure
-      $ toModifiers
-        a
-        [ ConnectedToWhen (LocationWithId lid)
-          $ NotLocation (LocationWithId lid)
-          <> LocationIsInFrontOf (InvestigatorWithId iid)
-        | iid <- maybeToList mInFrontOf
-        ]
+    toModifiers
+      a
+      [ ConnectedToWhen (LocationWithId lid)
+        $ NotLocation (LocationWithId lid)
+        <> LocationIsInFrontOf (InvestigatorWithId iid)
+      | iid <- maybeToList mInFrontOf
+      ]
   getModifiersFor (InvestigatorTarget iid) (LostInTheWoods a) = do
     lids <-
       select
         $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
-    pure $ toModifiers a $ map CannotEnter lids
+    toModifiers a $ map CannotEnter lids
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LostInTheWoods where

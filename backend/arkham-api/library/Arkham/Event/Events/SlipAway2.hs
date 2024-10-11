@@ -24,7 +24,8 @@ instance RunMessage SlipAway2 where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       sid <- getRandom
       chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
-      pushAll [skillTestModifier sid attrs iid (AddSkillValue #agility), chooseEvade]
+      enabled <- skillTestModifier sid attrs iid (AddSkillValue #agility)
+      pushAll [enabled, chooseEvade]
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 1 -> do
       pushWhen (n >= 3)
@@ -33,7 +34,7 @@ instance RunMessage SlipAway2 where
       case mTarget of
         Just (EnemyTarget enemyId) -> do
           nonElite <- enemyId <=~> NonEliteEnemy
-          pushWhen nonElite $ nextPhaseModifier #upkeep attrs enemyId DoesNotReadyDuringUpkeep
+          when nonElite $ pushM $ nextPhaseModifier #upkeep attrs enemyId DoesNotReadyDuringUpkeep
         _ -> error "Invalid call, expected enemy skill test target"
       pure e
     _ -> SlipAway2 <$> runMessage msg attrs

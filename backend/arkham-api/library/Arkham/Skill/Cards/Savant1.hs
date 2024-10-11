@@ -31,7 +31,7 @@ instance HasModifiersFor Savant1 where
         SkillCombat -> stats.combat
         SkillAgility -> stats.agility
     let n = fromMaybe 0 $ minimumMay (map getType types)
-    pure $ toModifiers attrs [AddSkillIcons $ replicate n #wild | n > 0]
+    toModifiers attrs [AddSkillIcons $ replicate n #wild | n > 0]
   getModifiersFor _ _ = pure []
 
 instance RunMessage Savant1 where

@@ -1,10 +1,9 @@
 module Arkham.Event.Events.DaringManeuver (daringManeuver, DaringManeuver (..)) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
-import Arkham.Prelude
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 
 newtype DaringManeuver = DaringManeuver EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,9 +13,10 @@ daringManeuver :: EventCard DaringManeuver
 daringManeuver = event DaringManeuver Cards.daringManeuver
 
 instance RunMessage DaringManeuver where
-  runMessage msg e@(DaringManeuver attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      withSkillTest \sid ->
-        pushAll [skillTestModifier sid attrs iid (AnySkillValue 2), RecalculateSkillTestResults]
+  runMessage msg e@(DaringManeuver attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs iid (AnySkillValue 2)
+        push RecalculateSkillTestResults
       pure e
-    _ -> DaringManeuver <$> runMessage msg attrs
+    _ -> DaringManeuver <$> liftRunMessage msg attrs

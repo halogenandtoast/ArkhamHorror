@@ -188,29 +188,21 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
         when (reachedAct2 metadata) do
           enemyAt_ Enemies.theWingedSerpent mouthOfKnYanTheCavernsMaw
 
-        setActDeck [Acts.searchForThePattern, Acts.openingTheMaw]
+        setActDeck $ [Acts.searchForThePattern | not (reachedAct2 metadata)] <> [Acts.openingTheMaw]
         setAgendaDeck [Agendas.theJunglesHeart, Agendas.settingSun]
   ScenarioResolution r -> case r of
     NoResolution -> do
+      story noResolutionA
       pathsKnown <- getRecordCount PathsAreKnownToYou
       pillarTokens <-
-        getSum
-          <$> selectAgg
-            Sum
-            LocationResources
-            (locationIs Locations.mouthOfKnYanTheCavernsMaw)
+        getSum <$> selectAgg Sum LocationResources (locationIs Locations.mouthOfKnYanTheCavernsMaw)
       actStep <- getCurrentActStep
       when (pillarTokens > pathsKnown) do
         recordCount PathsAreKnownToYou pillarTokens
       push RestartScenario
-      pure
-        $ HeartOfTheElders
-          ( attrs
-              `With` metadata
-                { reachedAct2 = reachedAct2 metadata || actStep >= 2
-                }
-          )
+      pure $ HeartOfTheElders (attrs `With` metadata {reachedAct2 = reachedAct2 metadata || actStep >= 2})
     Resolution 1 -> do
+      story resolution1A
       vengeanceCards <-
         filter (isJust . cdVengeancePoints . toCardDef)
           <$> scenarioField ScenarioVictoryDisplay

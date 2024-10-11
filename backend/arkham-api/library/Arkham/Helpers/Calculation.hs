@@ -68,7 +68,13 @@ calculate = go
         Just (EnemyTarget eid) -> field fld eid
         _ -> pure 0
     LocationFieldCalculation lid fld -> field fld lid
-    LocationMaybeFieldCalculation lid fld -> fromJustNote "missing maybe field" <$> field fld lid
+    LocationMaybeFieldCalculation lid fld -> fromMaybe 0 <$> field fld lid
+    -- In the boundary beyond if you pass a skill test it could trigger the act
+    -- to advance, during that advancement it will cause the location to be
+    -- removed mid-test so we need to need to just zero out the value. We may
+    -- want to figure out how to memoize the calculation when the calculation
+    -- fails.
+    -- fromJustNote ("missing maybe field " <> show fld <> "<" <> show lid <> ">") <$> field fld lid
     InvestigatorLocationFieldCalculation iid fld -> do
       maybe (pure 0) (field fld) =<< field InvestigatorLocation iid
     InvestigatorLocationMaybeFieldCalculation iid fld -> do

@@ -100,8 +100,7 @@ allCommands a =
       ]
       <> [ ( BetrayCommand
            , \eid ->
-              EnemyWhenOtherEnemy
-                $ EnemyAt (locationWithEnemy eid)
+              EnemyAt (locationWithEnemy eid)
                 <> EnemyCanBeDamagedBySource (a.ability 1)
                 <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
            )
@@ -136,9 +135,7 @@ allCommands a =
          ]
       <> [ ( DistractCommand
            , \eid ->
-              EnemyWhenOtherEnemy
-                $ EnemyAt (locationWithEnemy eid)
-                <> not_ (EnemyWithId eid)
+              EnemyAt (locationWithEnemy eid)
                 <> EnemyCanBeEvadedBy (a.ability 1)
                 <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyEvade
            )
@@ -240,7 +237,6 @@ instance RunMessage PowerWord where
               enemies <-
                 select
                   $ EnemyAt (locationWithEnemy eid)
-                  <> not_ (EnemyWithId eid)
                   <> EnemyCanBeDamagedBySource (attrs.ability 1)
                   <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyFight
               when (notNull enemies) do
@@ -274,7 +270,6 @@ instance RunMessage PowerWord where
               enemies <-
                 select
                   $ EnemyAt (locationWithEnemy eid)
-                  <> not_ (EnemyWithId eid)
                   <> EnemyCanBeEvadedBy (attrs.ability 1)
                   <> EnemyWithMaybeFieldLessThanOrEqualToThis eid EnemyEvade
               when (notNull enemies)

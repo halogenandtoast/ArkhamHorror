@@ -48,6 +48,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'DiscoveredClues') return true
   if (type.tag === 'DamageDealt') return true
   if (type.tag === 'AnySkillValue') return true
+  if (type.tag === 'SkillModifier') return true
   if (type.tag === 'AddSkillValue') return true
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
@@ -127,16 +128,56 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
-function modifierSource(mod: Modifier) {
-  if (mod.source.tag === 'LocationSource') {
-    const location = props.game.locations[mod.source.contents]
+function sourceCardCode(source: Source) {
+  if (source.tag === 'LocationSource') {
+    const location = props.game.locations[source.contents]
     if (!location) return null
     const { cardCode, revealed } = location
     const suffix = revealed ? '' : 'b'
 
     return `${cardCode.replace('c', '')}${suffix}`
   }
+
+  if (source.tag === 'AssetSource') {
+    const asset = props.game.assets[source.contents]
+    if (!asset) return null
+
+    const mutated = asset.mutated ? `_${asset.mutated}` : ''
+    if (asset.flipped) {
+      if (asset.cardCode === "c90052") return "90052b"
+      return null
+    }
+    return `${asset.cardCode.replace('c', '')}${mutated}`
+  }
+
+  if (source.tag === 'TreacherySource') {
+    const treachery = props.game.treacheries[source.contents]
+    if (!treachery) return null
+    return `${treachery.cardCode.replace('c', '')}`
+  }
+
+  if (source.tag === 'EnemySource') {
+    const enemy = props.game.enemies[source.contents]
+    if (!enemy) return null
+
+    const { cardCode, flipped } = enemy
+    const suffix = flipped ? 'b' : ''
+    return `${cardCode.replace('c', '')}${suffix}`
+  }
+
+  if (source.tag === 'AbilitySource') {
+    const [inner,] = source.contents
+    return sourceCardCode(inner)
+  }
+
   return null
+}
+
+function modifierSource(mod: Modifier) {
+  if(mod.card) {
+    return mod.card.contents.cardCode.replace(/^c/, '')
+  }
+  return sourceCardCode(mod.source)
 }
 
 const targetCard = computed(() => {
@@ -248,9 +289,9 @@ const tokenEffects = computed(() => {
         @choose="choose"
       />
       <div v-if="modifiers.length > 0" class="modifiers">
-        <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier">
+        <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier" :data-image-id="modifierSource(modifier)">
           <template v-if="modifier.type.tag === 'CannotCommitCards'">
-            <span :data-image-id="modifierSource(modifier)">{{cannotCommitCardsToWords(modifier.type)}}</span>
+            <span>{{cannotCommitCardsToWords(modifier.type)}}</span>
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>
@@ -265,6 +306,13 @@ const tokenEffects = computed(() => {
             <i
                :class="`${normalizeSkill(modifier.type.contents)}-icon`"
                :style="{ color: `var(--${normalizeSkill(modifier.type.contents)})` }"
+            ></i>
+          </template>
+          <template v-if="modifier.type.tag === 'SkillModifier'">
+            <span>+ {{modifier.type.value}}</span>
+            <i
+               :class="`${normalizeSkill(modifier.type.skillType)}-icon`"
+               :style="{ color: `var(--${normalizeSkill(modifier.type.skillType)})` }"
             ></i>
           </template>
           <template v-if="modifier.type.tag === 'AnySkillValue'">
@@ -694,6 +742,9 @@ i.iconSkillAgility {
   text-decoration: none;
   text-transform: uppercase;
   font-family: sans-serif;
+  > * {
+    pointer-events: none;
+  }
 
   img {
     height: 15px;

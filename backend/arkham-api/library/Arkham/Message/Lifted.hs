@@ -1376,6 +1376,19 @@ oncePerAbility attrs n f = do
 insertAfterMatching :: (MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
+-- Usage:
+--      atEndOfTurn iid do
+--        addToHand iid (toCard attrs)
+atEndOfTurn
+  :: (Sourceable a, HasQueue Message m)
+  => a
+  -> InvestigatorId
+  -> QueueT Message m ()
+  -> m ()
+atEndOfTurn a iid body = do
+  msgs <- evalQueueT body
+  push $ CreateEndOfTurnEffect (toSource a) iid msgs
+
 afterSkillTest
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
 afterSkillTest body = do

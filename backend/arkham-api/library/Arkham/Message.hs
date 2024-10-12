@@ -397,6 +397,7 @@ data Message
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
   | AddToHand InvestigatorId [Card]
+  | DebugAddToHand InvestigatorId CardId
   | DrawFocusedToHand InvestigatorId Target Zone CardId
   | DrawToHand InvestigatorId [Card]
   | AddToHandQuiet InvestigatorId [Card] -- used for playing cards
@@ -539,6 +540,7 @@ data Message
     CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
   | CreateOnRevealChaosTokenEffect SkillTestId ChaosTokenMatcher Source Target [Message]
+  | CreateEndOfTurnEffect Source InvestigatorId [Message]
   | CreateAssetAt AssetId Card Placement
   | CreateEventAt InvestigatorId Card Placement
   | PlaceAsset AssetId Placement

@@ -262,6 +262,16 @@ createOnRevealChaosTokenEffect sid matchr source target messages = do
   eid <- getRandom
   pure (eid, buildOnRevealChaosTokenEffect eid sid matchr source target messages)
 
+createEndOfTurnEffect
+  :: MonadRandom m
+  => Source
+  -> InvestigatorId
+  -> [Message]
+  -> m (EffectId, Effect)
+createEndOfTurnEffect source iid messages = do
+  eid <- getRandom
+  pure (eid, buildEndOfTurnEffect eid source iid messages)
+
 createSurgeEffect
   :: (MonadRandom m, Sourceable source, Targetable target)
   => source
@@ -313,6 +323,11 @@ buildOnRevealChaosTokenEffect
   :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> [Message] -> Effect
 buildOnRevealChaosTokenEffect eid sid matchr source token msgs =
   Effect $ onRevealChaosTokenEffect' eid sid matchr source token msgs
+
+buildEndOfTurnEffect
+  :: EffectId -> Source -> InvestigatorId -> [Message] -> Effect
+buildEndOfTurnEffect eid source iid msgs =
+  Effect $ endOfTurnEffect' eid source iid msgs
 
 effectIsForNextGame :: Effect -> Bool
 effectIsForNextGame e = e.window == Just EffectSetupWindow
@@ -505,6 +520,7 @@ allEffects =
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)
     , ("ontok", SomeEffect onRevealChaosTokenEffect)
+    , ("eotef", SomeEffect endOfTurnEffect)
     , ("surge", SomeEffect surgeEffect)
     , ("maxef", SomeEffect maxEffect)
     , ("noair", SomeEffect noAirEffect)

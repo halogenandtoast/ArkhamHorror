@@ -128,4 +128,18 @@ instance RunMessage HankSamson where
               ]
         _ -> pure ()
       pure i
+    ResetGame -> do
+      HankSamson
+        <$> liftRunMessage
+          msg
+          ( attrs
+              { investigatorArt = "10015"
+              , investigatorHealth = 5
+              , investigatorSanity = 5
+              , investigatorWillpower = 3
+              , investigatorIntellect = 1
+              , investigatorCombat = 5
+              , investigatorAgility = 3
+              }
+          )
     _ -> HankSamson <$> liftRunMessage msg attrs

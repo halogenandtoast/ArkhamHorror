@@ -320,6 +320,7 @@ updateGame response gameId userId writeChannel = do
       where_ $ game.id ==. val gameId
       locking ForUpdate
       pure ()
+    deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
     replace gameId
       $ ArkhamGame
         arkhamGameName
@@ -329,7 +330,6 @@ updateGame response gameId userId writeChannel = do
         arkhamGameCreatedAt
         now
     insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
-    deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
     void
       $ upsertBy
         (UniqueStep gameId (arkhamGameStep + 1))

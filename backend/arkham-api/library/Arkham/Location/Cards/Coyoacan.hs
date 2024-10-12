@@ -21,8 +21,7 @@ instance HasAbilities Coyoacan where
       attrs
       [ restrictedAbility attrs 1 Here
           $ exploreAction
-          $ ActionCost 1
-          <> OrCost
+          $ OrCost
             [ DamageCost (toSource attrs) YouTarget 1
             , HorrorCost (toSource attrs) YouTarget 1
             ]

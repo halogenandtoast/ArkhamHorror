@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (Nightgaunts, StrikingFear, TerrorOfTheVale))
-import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Vale))

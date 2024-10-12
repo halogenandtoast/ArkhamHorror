@@ -1,18 +1,10 @@
-module Arkham.Act.Cards.TheReturnTrip (
-  TheReturnTrip (..),
-  theReturnTrip,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheReturnTrip (TheReturnTrip (..), theReturnTrip) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 
 newtype TheReturnTrip = TheReturnTrip ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -20,30 +12,19 @@ newtype TheReturnTrip = TheReturnTrip ActAttrs
 
 theReturnTrip :: ActCard TheReturnTrip
 theReturnTrip =
-  act
-    (3, A)
-    TheReturnTrip
-    Cards.theReturnTrip
-    (Just $ GroupClueCost (PerPlayer 2) $ LocationWithTitle "Templo Mayor")
+  act (3, A) TheReturnTrip Cards.theReturnTrip
+    $ Just (GroupClueCost (PerPlayer 2) $ LocationWithTitle "Templo Mayor")
 
 instance HasAbilities TheReturnTrip where
   getAbilities (TheReturnTrip a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-        $ Objective
-        $ ForcedAbility
-        $ EnemyDefeated Timing.When Anyone ByAny
-        $ enemyIs Enemies.padmaAmrita
-      | onSide A a
-      ]
+    extend a [mkAbility a 1 $ Objective $ forced $ ifEnemyDefeated Enemies.padmaAmrita | onSide A a]
 
 instance RunMessage TheReturnTrip where
-  runMessage msg a@(TheReturnTrip attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(TheReturnTrip attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 1
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
       pure a
-    _ -> TheReturnTrip <$> runMessage msg attrs
+    _ -> TheReturnTrip <$> liftRunMessage msg attrs

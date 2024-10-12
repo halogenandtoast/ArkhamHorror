@@ -285,6 +285,7 @@ locationWith f def shroud' revealClues g =
             , locationInFrontOf = Nothing
             , locationWithoutClues = False
             , locationMeta = Null
+            , locationGlobalMeta = mempty
             , locationKeys = mempty
             , locationBrazier = Nothing
             , locationBreaches = Nothing
@@ -294,9 +295,7 @@ locationWith f def shroud' revealClues g =
 
 locationResignAction :: LocationAttrs -> Ability
 locationResignAction attrs =
-  toLocationAbility
-    attrs
-    (mkAbility attrs 99 $ ActionAbility [Action.Resign] (ActionCost 1))
+  toLocationAbility attrs (mkAbility attrs 99 $ ActionAbility [Action.Resign] (ActionCost 1))
 
 toLocationAbility :: LocationAttrs -> Ability -> Ability
 toLocationAbility attrs =
@@ -304,8 +303,7 @@ toLocationAbility attrs =
 
 locationAbility :: Ability -> Ability
 locationAbility ability = case abilitySource ability of
-  LocationSource lid ->
-    ability & abilityCriteriaL <>~ OnLocation (LocationWithId lid)
+  LocationSource lid -> ability & abilityCriteriaL <>~ OnLocation (LocationWithId lid)
   _ -> ability
 
 data Location = forall a. IsLocation a => Location a
@@ -414,11 +412,5 @@ instance IsCard LocationAttrs where
   toCardOwner = const Nothing
 
 symbolLabel
-  :: (Entity a, EntityAttrs a ~ LocationAttrs)
-  => CardBuilder LocationId a
-  -> CardBuilder LocationId a
-symbolLabel =
-  fmap
-    ( overAttrs
-        (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs))
-    )
+  :: (Entity a, EntityAttrs a ~ LocationAttrs) => CardBuilder LocationId a -> CardBuilder LocationId a
+symbolLabel = fmap (overAttrs (\attrs -> attrs & labelL .~ (T.toLower . tshow $ locationSymbol attrs)))

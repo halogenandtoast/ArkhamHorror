@@ -1,7 +1,5 @@
 module Arkham.Campaigns.TheForgottenAge.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
@@ -20,10 +18,12 @@ import Arkham.Location.Types
 import Arkham.Matcher
 import Arkham.Message.Lifted.Queue
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types
 import Arkham.Source
+import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Result (..), mkWindow)
@@ -92,6 +92,8 @@ getSetAsidePoisoned =
 data ExploreRule = PlaceExplored | ReplaceExplored
   deriving stock Eq
 
+-- ReplaceExplored should actually place the location on "top"
+
 explore
   :: (HasQueue Message m, HasGame m, MonadRandom m)
   => InvestigatorId
@@ -152,6 +154,10 @@ explore iid source cardMatcher exploreRule matchCount = do
               checkWindows
                 [mkWindow Timing.After $ Window.Explored iid (Success lid)]
 
+            -- we want to have kept track of revealed and without clues
+            replacedIsRevealed <- field LocationRevealed lid
+            replacedIsWithoutClues <- lid <=~> LocationWithoutClues
+
             pure
               $ locationAction
               : [ Move $ move source iid lid
@@ -160,6 +166,11 @@ explore iid source cardMatcher exploreRule matchCount = do
                 <> [ UpdateHistory iid historyItem
                    , afterExploredWindow
                    ]
+                <> ( guard (exploreRule == ReplaceExplored)
+                      *> [ SetGlobal (toTarget lid) "replacedIsRevealed" (toJSON replacedIsRevealed)
+                         , SetGlobal (toTarget lid) "replacedIsWithoutClues" (toJSON replacedIsWithoutClues)
+                         ]
+                   )
           else do
             windowMsg <-
               checkWindows

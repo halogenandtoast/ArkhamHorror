@@ -29,7 +29,7 @@ instance RunMessage IllTakeThat where
       focusCards items \unfocus -> do
         chooseTargetM iid items \item -> do
           push unfocus
-          reduceCostOf attrs item 3
+          reduceCostOf attrs item n
           payCardCost iid item
           handleTarget iid attrs item
       pure e

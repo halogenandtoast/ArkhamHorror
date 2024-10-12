@@ -2,13 +2,14 @@ module Arkham.Asset.Assets.TwilightBlade (twilightBlade, TwilightBlade (..)) whe
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Fight
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
@@ -35,20 +36,23 @@ instance HasModifiersFor TwilightBlade where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TwilightBlade where
-  getAbilities (TwilightBlade a) = [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (TwilightBlade a) = [restricted a 1 ControlsThis fightAction_]
 
 instance RunMessage TwilightBlade where
-  runMessage msg a@(TwilightBlade attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(TwilightBlade attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- mkChooseFight sid iid source
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Use Willpower" [toMessage $ withSkillType #willpower chooseFight]
-          , Label "Use Combat" [toMessage chooseFight]
-          ]
+      chooseOneM iid do
+        labeled "Use {willpower}" $ chooseFightEnemyEdit sid iid source (withSkillType #willpower)
+        labeled "Use {combat}" $ chooseFightEnemy sid iid source
       pure a
-    _ -> TwilightBlade <$> runMessage msg attrs
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid -> do
+      underDiana <- field InvestigatorCardsUnderneath iid
+      when (card `elem` underDiana) do
+        exhaustThis attrs
+        cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
+        addToHand iid [card]
+        push msg
+      pure a
+    _ -> TwilightBlade <$> liftRunMessage msg attrs

@@ -39,14 +39,17 @@ import Arkham.Cost as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X (extend, extend1)
 import Arkham.Helpers.Log as X (getHasRecord)
+import Arkham.Helpers.Query as X (getLead)
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Source as X
 import Arkham.Target as X
 import Arkham.Text as X
 
+import Arkham.Card.CardDef
 import Arkham.Helpers.Act qualified as Msg
 import Arkham.Id
+import Arkham.Matcher
 
 advanceVia
   :: (ReverseQueue m, EntityId a ~ ActId, Sourceable source, Entity a)
@@ -55,3 +58,6 @@ advanceVia
   -> source
   -> m ()
 advanceVia method actId source = push $ Msg.advanceVia method actId source
+
+ifEnemyDefeated :: CardDef -> WindowMatcher
+ifEnemyDefeated = EnemyDefeated #after Anyone ByAny . enemyIs

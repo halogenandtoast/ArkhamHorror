@@ -10,7 +10,6 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

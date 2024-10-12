@@ -1,7 +1,4 @@
-module Arkham.Act.Cards.TheWeaverOfTheCosmos (
-  TheWeaverOfTheCosmos (..),
-  theWeaverOfTheCosmos,
-) where
+module Arkham.Act.Cards.TheWeaverOfTheCosmos (TheWeaverOfTheCosmos (..), theWeaverOfTheCosmos) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -10,7 +7,6 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message (Message (EnemyDamage))
 import Arkham.RequestedChaosTokenStrategy
@@ -25,10 +21,10 @@ theWeaverOfTheCosmos = act (2, A) TheWeaverOfTheCosmos Cards.theWeaverOfTheCosmo
 
 instance HasAbilities TheWeaverOfTheCosmos where
   getAbilities (TheWeaverOfTheCosmos attrs) =
-    [ restrictedAbility attrs 1 (exists $ at_ YourLocation <> EnemyWithTrait AncientOne)
+    [ restricted attrs 1 (exists $ at_ YourLocation <> EnemyWithTrait AncientOne)
         $ actionAbilityWithCost (ClueCost $ Static 1)
     , mkAbility attrs 2 $ forced $ PhaseBegins #when #mythos
-    , restrictedAbility
+    , restricted
         attrs
         3
         (InVictoryDisplay (CardWithTitle "Legs of Atlach-Nacha") (EqualTo $ Static 4))

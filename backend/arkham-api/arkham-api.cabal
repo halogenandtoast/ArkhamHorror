@@ -1357,6 +1357,7 @@ library
       Arkham.Effect
       Arkham.Effect.Effects
       Arkham.Effect.Effects.ChaosTokenEffect
+      Arkham.Effect.Effects.EndOfTurnEffect
       Arkham.Effect.Effects.MaxEffect
       Arkham.Effect.Effects.OnRevealChaosTokenEffect
       Arkham.Effect.Effects.SurgeEffect

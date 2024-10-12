@@ -344,6 +344,26 @@ function onLeave(el: Element, done: () => void) {
 }
 
 const realityAcid = ref('89005')
+
+const dragover = (e: DragEvent) => {
+  e.preventDefault()
+  if (e.dataTransfer) {
+    e.dataTransfer.dropEffect = 'copy'
+  }
+}
+
+function onDropHand(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "CardTarget") {
+        debug.send(props.game.id, {tag: 'DebugAddToHand', contents: [id.value, json.contents]})
+      }
+    }
+  }
+}
 </script>
 
 <template>
@@ -523,8 +543,12 @@ const realityAcid = ref('89005')
           </template>
         </div>
       </div>
-      <div class="hand">
-        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+      <div class="hand" >
+        <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
+          @drop="onDropHand($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+          >
           <HandCard
             v-for="card in playerHand"
             :card="card"

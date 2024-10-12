@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import type { Game } from '@/arkham/types/Game';
 import type { CardContents } from '@/arkham/types/Card';
+import * as CardT from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
+import { useDebug } from '@/arkham/debug';
+
+const debug = useDebug()
 
 withDefaults(defineProps<{
   game: Game
@@ -16,6 +20,18 @@ const emit = defineEmits<{
   choose: [value: number]
   close: []
 }>()
+
+function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
+  if (!debug.active) {
+    event.preventDefault()
+    return
+  }
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'copy'
+    const cardId = CardT.toCardContents(card).id
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardTarget", "contents": cardId }))
+  }
+}
 </script>
 
 <template>
@@ -26,7 +42,10 @@ const emit = defineEmits<{
     <div class="card-row-container">
       <div class="card-row-cards">
         <div v-for="card in cards" :key="card.id" class="card-row-card" :class="{ discard: isDiscards }">
-          <Card :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
+          <Card 
+            :draggable="debug.active"
+            @dragstart="startDrag($event, card)"
+            :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
         </div>
       </div>
       <button class="button close" @click="emit('close')">Close</button>

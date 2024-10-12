@@ -115,7 +115,10 @@ defaultCampaignRunner msg a = case msg of
     _ -> error "invalid state"
   ResetGame -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, deck) -> do
-      let investigatorStoryCards = findWithDefault [] iid (campaignStoryCards $ toAttrs a)
+      let deckCardCodes = map toCardCode $ unDeck deck
+      let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
+      let investigatorStoryCards = filter ifShouldAdd $ findWithDefault [] iid (campaignStoryCards $ toAttrs a)
+
       push (LoadDeck iid . Deck $ unDeck deck <> investigatorStoryCards)
     pure a
   CrossOutRecord key -> do

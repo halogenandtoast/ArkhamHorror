@@ -27,7 +27,7 @@ instance HasAbilities PossessedOathspeaker where
     extend
       a
       [ mkAbility a 1 $ forced $ PhaseBegins #when #enemy
-      , mkAbility a 2 $ forced $ EnemyDefeated #after Anyone ByAny (be a)
+      , mkAbility a 2 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (be a)
       ]
 
 instance RunMessage PossessedOathspeaker where
@@ -42,7 +42,6 @@ instance RunMessage PossessedOathspeaker where
         else placeDoom (toAbilitySource attrs 1) attrs 1
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      addToVictory attrs
       push R3
       pure e
     _ -> PossessedOathspeaker <$> liftRunMessage msg attrs

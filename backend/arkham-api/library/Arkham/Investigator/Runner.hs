@@ -3230,6 +3230,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
         & (foundCardsL . each %~ filter (/= PlayerCard pc))
     EncounterCard _ -> pure a
     VengeanceCard _ -> pure a
+  DebugAddToHand iid cardId | iid == investigatorId -> do
+    card <- getCard cardId
+    runMessage (AddToHandQuiet iid [card]) a
   AddToHand iid cards | iid == investigatorId -> do
     for_ (reverse cards) \case
       PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc

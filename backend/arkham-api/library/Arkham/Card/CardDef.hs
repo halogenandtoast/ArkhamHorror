@@ -187,6 +187,9 @@ instance HasField "customizations" CardDef (Map Customization Int) where
 instance HasField "victoryPoints" CardDef (Maybe Int) where
   getField = cdVictoryPoints
 
+instance HasField "unique" CardDef Bool where
+  getField = cdUnique
+
 instance Exists CardDef where
   exists def = case cdCardType def of
     AssetType -> exists $ assetIs def

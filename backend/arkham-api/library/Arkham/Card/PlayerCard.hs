@@ -43,6 +43,12 @@ instance HasField "customizations" PlayerCard Customizations where
 instance HasField "owner" PlayerCard (Maybe InvestigatorId) where
   getField = pcOwner
 
+instance HasField "cardCode" PlayerCard CardCode where
+  getField = pcCardCode
+
+instance HasField "unique" PlayerCard Bool where
+  getField = (.unique) . toCardDef
+
 instance Eq PlayerCard where
   pc1 == pc2 = pcId pc1 == pcId pc2
 

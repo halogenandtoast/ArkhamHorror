@@ -10,7 +10,7 @@ import Arkham.Game.Helpers (canDo, getCanPerformAbility, getPlayableCards)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Investigator)
+import Arkham.Investigator.Types (Investigator, remainingActionsL)
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Window (defaultWindows)
@@ -45,14 +45,17 @@ instance RunMessage CloseTheCircle1 where
       let windows = defaultWindows iid
       iattrs <- getAttrs @Investigator iid
       withModifiers iid (toModifiers attrs [ActionCostModifier (-1)]) $ do
-        abilities <- filterM (getCanPerformAbility iid (defaultWindows iid)) =<< select BasicAbility
+        abilities <-
+          fmap (map (`applyAbilityModifiers` [ActionCostModifier (-1)]))
+            . filterM (getCanPerformAbility iid (defaultWindows iid))
+            =<< select BasicAbility
         canDraw <- canDo iid #draw
         playableCards <-
           filter (`cardMatch` CardWithoutAction) <$> getPlayableCards iattrs (UnpaidCost NoAction) windows
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
-        canAffordTakeResources <- getCanAfford iattrs [#resource]
+        canAffordTakeResources <- getCanAfford (iattrs & remainingActionsL +~ 1) [#resource]
         let drawing = drawCards iid iid 1
-        canAffordDrawCards <- getCanAfford iattrs [#draw]
+        canAffordDrawCards <- getCanAfford (iattrs & remainingActionsL +~ 1) [#draw]
         canPlay <- canDo iid #play
         mods <- getModifiers iid
         lift

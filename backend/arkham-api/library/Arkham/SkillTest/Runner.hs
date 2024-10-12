@@ -370,6 +370,9 @@ instance RunMessage SkillTest where
     PassSkillTest -> do
       modifiedSkillValue' <- totalModifiedSkillValue s
       player <- getPlayer skillTestInvestigator
+      removeAllMessagesMatching \case
+        Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
+        _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
       pure
         $ s
@@ -377,6 +380,9 @@ instance RunMessage SkillTest where
         & (difficultyL .~ SkillTestDifficulty (Fixed 0))
     PassSkillTestBy n -> do
       player <- getPlayer skillTestInvestigator
+      removeAllMessagesMatching \case
+        Ask _ (ChooseOne [SkillTestApplyResultsButton]) -> True
+        _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
       pure $ s & resultL .~ SucceededBy NonAutomatic n
     FailSkillTest -> do

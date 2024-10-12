@@ -6,7 +6,6 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Window (defaultWindows)
 
 newtype WindsOfPower1 = WindsOfPower1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -20,7 +19,11 @@ instance HasAbilities WindsOfPower1 where
     [ restrictedAbility
         x
         1
-        (InYourHand <> DuringTurn You <> exists (AssetControlledBy You <> AssetCanHaveUses Charge))
+        ( InYourHand
+            <> DuringTurn You
+            <> exists (AssetControlledBy You <> AssetCanHaveUses Charge)
+            <> PlayableCardExists (UnpaidCost NoAction) (basic $ CardWithId $ toCardId x)
+        )
         $ freeReaction
         $ DrawCard #after You (basic $ CardWithId $ toCardId x) AnyDeck
     ]
@@ -32,6 +35,6 @@ instance RunMessage WindsOfPower1 where
       chooseOne iid [targetLabel asset [AddUses (toSource attrs) asset Charge 2] | asset <- assets]
       pure e
     InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _) | iid' == iid -> do
-      push $ InitiatePlayCard iid (toCard attrs) Nothing NoPayment (defaultWindows iid) False
+      playCardPayingCost iid (toCard attrs)
       pure e
     _ -> WindsOfPower1 <$> liftRunMessage msg attrs

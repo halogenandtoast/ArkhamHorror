@@ -206,7 +206,7 @@ instance RunMessage TheBoundaryBeyond where
           "Sacred Woods" -> Locations.coyoacan
           _ -> error $ "Unmatched location title: " <> show title
       card <- genCard replacement
-      push $ ReplaceLocation lid card DefaultReplace
+      push $ ReplaceLocation lid card Swap
       pure s
     ResolveChaosToken _ chaosTokenFace iid | chaosTokenFace `elem` [Cultist, Tablet] -> do
       drawAnotherChaosToken iid

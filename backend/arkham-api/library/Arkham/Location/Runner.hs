@@ -91,6 +91,7 @@ extendRevealed1 attrs ability = extendRevealed attrs [ability]
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
+    SetGlobal target key v | isTarget a target -> pure $ a & globalMetaL %~ insertMap key v
     UpdateLocation lid upd | lid == locationId -> do
       -- TODO: we may want life cycles around this, generally this might just be a bad idea
       pure $ updateLocation [upd] a

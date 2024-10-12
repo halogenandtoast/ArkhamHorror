@@ -119,6 +119,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
 import Control.Monad.State.Strict (evalStateT, get, put)
+import Data.Aeson (Result (..))
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -697,16 +698,30 @@ runGameMessage msg g = case msg of
     location <- getLocation lid
     let
       oldAttrs = toAttrs location
+      orKey k v = case lookup k (locationGlobalMeta oldAttrs) of
+        Nothing -> v
+        Just v' -> case fromJSON v' of
+          Success v'' -> v''
+          Error _ -> v
+
       location' =
         flip overAttrs (lookupLocation (toCardCode card) lid (toCardId card))
           $ \attrs -> case replaceStrategy of
-            DefaultReplace -> attrs
+            DefaultReplace ->
+              attrs
+                { locationRevealed = orKey "replacedIsRevealed" (locationRevealed attrs)
+                , locationWithoutClues =
+                    orKey "replacedIsWithoutClues" (locationWithoutClues attrs) && oldAttrs.clues == 0
+                , locationTokens = locationTokens oldAttrs
+                , locationCardsUnderneath = locationCardsUnderneath oldAttrs
+                }
             Swap ->
               attrs
                 { locationTokens = locationTokens oldAttrs
-                , locationRevealed = locationRevealed oldAttrs
+                , locationRevealed = orKey "replacedIsRevealed" (locationRevealed oldAttrs)
                 , locationCardsUnderneath = locationCardsUnderneath oldAttrs
-                , locationWithoutClues = locationWithoutClues oldAttrs
+                , locationWithoutClues =
+                    orKey "replacedIsWithoutClues" (locationWithoutClues oldAttrs) && oldAttrs.clues == 0
                 }
     -- todo: should we just run this in place?
     enemies <- select $ enemyAt lid

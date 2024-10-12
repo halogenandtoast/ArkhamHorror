@@ -18,6 +18,7 @@ import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
 import Arkham.SkillType
 import Arkham.Token
+import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import GHC.Records
 
@@ -50,6 +51,7 @@ data LocationAttrs = LocationAttrs
     -- are placed. TODO: this could be a hasBeenRevealed bool
     locationWithoutClues :: Bool
   , locationMeta :: Value
+  , locationGlobalMeta :: Map Aeson.Key Value
   }
   deriving stock (Show, Eq)
 
@@ -78,6 +80,9 @@ locationResources = countTokens Resource . locationTokens
 instance HasField "meta" LocationAttrs Value where
   getField = locationMeta
 
+instance HasField "global" LocationAttrs (Map Aeson.Key Value) where
+  getField = locationGlobalMeta
+
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
 
@@ -103,4 +108,35 @@ getLocationMeta attrs = case fromJSON attrs.meta of
 getLocationMetaDefault :: FromJSON a => a -> LocationAttrs -> a
 getLocationMetaDefault def = fromMaybe def . getLocationMeta
 
-$(deriveJSON (aesonOptions $ Just "location") ''LocationAttrs)
+$(deriveToJSON (aesonOptions $ Just "location") ''LocationAttrs)
+
+instance FromJSON LocationAttrs where
+  parseJSON = withObject "Location" \o -> do
+    locationId <- o .: "id"
+    locationCardCode <- o .: "cardCode"
+    locationCardId <- o .: "cardId"
+    locationLabel <- o .: "label"
+    locationRevealClues <- o .: "revealClues"
+    locationTokens <- o .: "tokens"
+    locationShroud <- o .:? "shroud"
+    locationRevealed <- o .: "revealed"
+    locationSymbol <- o .: "symbol"
+    locationRevealedSymbol <- o .: "revealedSymbol"
+    locationConnectedMatchers <- o .: "connectedMatchers"
+    locationRevealedConnectedMatchers <- o .: "revealedConnectedMatchers"
+    locationDirections <- o .: "directions"
+    locationConnectsTo <- o .: "connectsTo"
+    locationCardsUnderneath <- o .: "cardsUnderneath"
+    locationCostToEnterUnrevealed <- o .: "costToEnterUnrevealed"
+    locationCanBeFlipped <- o .: "canBeFlipped"
+    locationInvestigateSkill <- o .: "investigateSkill"
+    locationInFrontOf <- o .:? "inFrontOf"
+    locationKeys <- o .: "keys"
+    locationFloodLevel <- o .:? "floodLevel"
+    locationBrazier <- o .:? "brazier"
+    locationBreaches <- o .:? "breaches"
+    locationWithoutClues <- o .: "withoutClues"
+    locationMeta <- o .: "meta"
+    locationGlobalMeta <- o .:? "globalMeta" .!= mempty
+
+    pure LocationAttrs {..}

@@ -83,6 +83,7 @@ import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Arkham.Xp
+import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -333,6 +334,7 @@ data Message
   = UseAbility InvestigatorId Ability [Window]
   | SetDriver AssetId InvestigatorId
   | SetGameState GameState
+  | SetGlobal Target Aeson.Key Value
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId
   | SetFloodLevel LocationId FloodLevel

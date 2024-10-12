@@ -21,12 +21,12 @@ targetToCard target = fromMaybe handleMissing <$> targetToMaybeCard target
 
 targetToMaybeCard :: (HasCallStack, HasGame m) => Target -> m (Maybe Card)
 targetToMaybeCard = \case
-  AssetTarget aid -> Just <$> field AssetCard aid
-  EventTarget aid -> Just <$> field EventCard aid
-  SkillTarget aid -> Just <$> field SkillCard aid
-  EnemyTarget aid -> Just <$> field EnemyCard aid
-  TreacheryTarget aid -> Just <$> field TreacheryCard aid
-  LocationTarget aid -> Just <$> field LocationCard aid
+  AssetTarget aid -> fieldMay AssetCard aid
+  EventTarget aid -> fieldMay EventCard aid
+  SkillTarget aid -> fieldMay SkillCard aid
+  EnemyTarget aid -> fieldMay EnemyCard aid
+  TreacheryTarget aid -> fieldMay TreacheryCard aid
+  LocationTarget aid -> fieldMay LocationCard aid
   SearchedCardTarget cId -> Just <$> getCard cId
   CardIdTarget cId -> Just <$> getCard cId
   BothTarget a b -> do

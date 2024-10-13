@@ -43,7 +43,7 @@ instance HasModifiersFor NormanWithers where
 
 instance HasAbilities NormanWithers where
   getAbilities (NormanWithers (a `With` _)) =
-    [ restrictedAbility
+    [ restricted
         a
         1
         (Self <> youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)

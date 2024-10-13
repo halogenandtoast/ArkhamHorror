@@ -12,7 +12,7 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype TheHarbinger = TheHarbinger TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theHarbinger :: TreacheryCard TheHarbinger
@@ -20,12 +20,12 @@ theHarbinger = treachery TheHarbinger Cards.theHarbinger
 
 instance HasModifiersFor TheHarbinger where
   getModifiersFor (InvestigatorTarget iid) (TheHarbinger a) | Just iid == treacheryOnTopOfDeck a = do
-    toModifiers a [CannotManipulateDeck]
+    map setActiveDuringSetup <$> toModifiers a [CannotManipulateDeck]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheHarbinger where
   getAbilities (TheHarbinger a) = case treacheryOnTopOfDeck a of
-    Just iid -> [restrictedAbility a 1 (youExist $ InvestigatorWithId iid) $ ActionAbility [] (ActionCost 2)]
+    Just iid -> [restricted a 1 (youExist $ InvestigatorWithId iid) $ ActionAbility [] (ActionCost 2)]
     _ -> []
 
 instance RunMessage TheHarbinger where

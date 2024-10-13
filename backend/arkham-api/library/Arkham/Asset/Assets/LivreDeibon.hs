@@ -26,7 +26,7 @@ instance HasAbilities LivreDeibon where
   getAbilities (LivreDeibon a) =
     [ withTooltip
         "{fast} Exhaust Livre d'Eibon: Swap the top card of your deck with a card in your hand."
-        $ restrictedAbility a 1 ControlsThis
+        $ controlledAbility a 1 CanManipulateDeck
         $ FastAbility (exhaust a)
     , withTooltip
         "{fast} Exhaust Livre d'Eibon: Commit the top card of your deck to an eligible skill test performed by an investigator at your location."

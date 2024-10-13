@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { CardContents } from '@/arkham/types/Card';
+import * as CardT from '@/arkham/types/Card';
 import gsap from 'gsap';
 import { computed, inject, Ref, ref, ComputedRef, reactive, watch } from 'vue';
 import { useDebug } from '@/arkham/debug';
@@ -352,6 +354,19 @@ const dragover = (e: DragEvent) => {
   }
 }
 
+function onDropDiscard(event: DragEvent) {
+  event.preventDefault()
+  if (event.dataTransfer) {
+    const data = event.dataTransfer.getData('text/plain')
+    if (data) {
+      const json = JSON.parse(data)
+      if (json.tag === "CardTarget") {
+        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
+      }
+    }
+  }
+}
+
 function onDropHand(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
@@ -362,6 +377,18 @@ function onDropHand(event: DragEvent) {
         debug.send(props.game.id, {tag: 'DebugAddToHand', contents: [id.value, json.contents]})
       }
     }
+  }
+}
+
+function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
+  if (!debug.active) {
+    event.preventDefault()
+    return
+  }
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'copy'
+    const cardId = CardT.toCardContents(card).id
+    event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardTarget", "contents": cardId }))
   }
 }
 </script>
@@ -510,7 +537,11 @@ function onDropHand(event: DragEvent) {
           @showCards="doShowCards"
         />
 
-        <div class="discard">
+        <div class="discard"
+          @drop="onDropDiscard($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+          >
           <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" @choose="$emit('choose', $event)" />
           <button v-if="discards.length > 0" class="view-discard-button" @click="showDiscards">{{viewDiscardLabel}}</button>
           <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">Shuffle Back In</button>
@@ -557,6 +588,8 @@ function onDropHand(event: DragEvent) {
             :ownerId="investigator.id"
             :key="toCardContents(card).id"
             @choose="$emit('choose', $event)"
+            :draggable="debug.active"
+            @dragstart="startHandDrag($event, card)"
           />
 
           <template v-for="enemy in inHandEnemies" :key="enemy.id">

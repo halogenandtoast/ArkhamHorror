@@ -18,7 +18,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype NephthysHuntressOfBast4 = NephthysHuntressOfBast4 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nephthysHuntressOfBast4 :: AssetCard NephthysHuntressOfBast4
@@ -36,14 +36,14 @@ instance HasAbilities NephthysHuntressOfBast4 where
         $ FastAbility (exhaust x)
     ]
 
-getRemovedTokens :: [Window] -> [ChaosToken]
-getRemovedTokens = foldMap \case
-  (windowType -> Window.TokensWouldBeRemovedFromChaosBag tokens) -> tokens
+getRemovedBlessTokens :: [Window] -> [ChaosToken]
+getRemovedBlessTokens = foldMap \case
+  (windowType -> Window.TokensWouldBeRemovedFromChaosBag tokens) -> filter ((== #bless) . (.face)) tokens
   _ -> []
 
 instance RunMessage NephthysHuntressOfBast4 where
   runMessage msg a@(NephthysHuntressOfBast4 attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getRemovedTokens -> tokens) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
       for_ tokens $ \token ->
         pushAll [SealChaosToken token, SealedChaosToken token $ toCard attrs]
       pure a

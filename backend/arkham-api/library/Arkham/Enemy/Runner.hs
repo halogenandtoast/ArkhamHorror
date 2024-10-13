@@ -1304,14 +1304,12 @@ instance RunMessage EnemyAttrs where
                 else
                   if not unchanged
                     then do
-                      spawnAt
-                        enemyId
-                        (Just iid)
+                      spawnAt enemyId (Just iid)
                         $ applyMatcherExclusions mods
                         $ replaceYouMatcher iid (SpawnAt $ not_ changeSpawnMatchers <> changedSpawnMatchers)
                     else noSpawn a (Just iid)
             Nothing -> noSpawn a (Just iid)
-        Just matcher -> spawnAt enemyId Nothing (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
+        Just matcher -> spawnAt enemyId (Just iid) (applyMatcherExclusions mods $ replaceYouMatcher iid matcher)
       pure a
     EnemySpawnAtLocationMatching miid locationMatcher eid | eid == enemyId -> do
       activeInvestigatorId <- getActiveInvestigatorId

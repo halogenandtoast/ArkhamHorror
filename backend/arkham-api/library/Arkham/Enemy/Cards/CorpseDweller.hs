@@ -1,14 +1,10 @@
-module Arkham.Enemy.Cards.CorpseDweller (
-  corpseDweller,
-  CorpseDweller (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.CorpseDweller (corpseDweller, CorpseDweller (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype CorpseDweller = CorpseDweller EnemyAttrs

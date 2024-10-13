@@ -105,7 +105,8 @@ sceneOfTheCrime =
     { cdSkills = [#combat, #intellect]
     , cdCardTraits = setFromList [Insight, Bold]
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
-    , cdCriteria = Just $ Criteria.Criteria [Criteria.FirstAction, Criteria.ClueOnLocation]
+    , cdCriteria =
+        Just $ Criteria.Criteria [Criteria.FirstAction, canDiscoverCluesAtYourLocation]
     }
 
 marksmanship1 :: CardDef

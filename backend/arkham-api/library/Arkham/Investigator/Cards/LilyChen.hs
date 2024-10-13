@@ -61,18 +61,17 @@ instance RunMessage LilyChen where
           Object o -> Object $ KM.insert "prescient" (Bool False) o
           _ -> object ["balanced" .= True, "quiescent" .= True, "prescient" .= False, "aligned" .= True]
       pure . LilyChen . (`with` meta) $ attrs' & setMeta meta'
-    AssignDamage target | isTarget attrs target -> do
-      let tookDamage = investigatorAssignedHealthDamage attrs > 0
-      if tookDamage
+    InvestigatorDamage iid _source damage horror | iid == attrs.id -> do
+      attrs' <- lift $ runMessage msg attrs
+      if damage > 0 || horror > 0
         then do
           let
             meta' =
               case attrs.meta of
                 Object o -> Object $ KM.insert "aligned" (Bool False) o
                 _ -> object ["balanced" .= True, "quiescent" .= True, "prescient" .= True, "aligned" .= False]
-          attrs' <- lift $ runMessage msg attrs
           pure . LilyChen . (`with` meta) $ attrs' & setMeta meta'
-        else LilyChen . (`with` meta) <$> liftRunMessage msg attrs
+        else pure $ LilyChen $ attrs' `with` meta
     _ ->
       do
         quiescent <- fieldMap InvestigatorHand ((< 2) . length) attrs.id

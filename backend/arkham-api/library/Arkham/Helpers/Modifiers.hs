@@ -28,6 +28,14 @@ import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Monoid (First (..))
 
+withGrantedAction
+  :: (HasGame m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+withGrantedAction iid source = withModifiers iid (toModifiers source [ActionCostModifier (-1)])
+
 withModifiers
   :: (HasGame m, Targetable target)
   => target

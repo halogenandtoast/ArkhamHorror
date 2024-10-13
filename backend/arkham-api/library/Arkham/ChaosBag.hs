@@ -28,7 +28,7 @@ import Arkham.Target
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
-import Control.Monad.State.Strict (StateT, gets, modify', runStateT)
+import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True
@@ -536,23 +536,30 @@ instance RunMessage ChaosBag where
               if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
           | otherwise -> pure True
 
-      when (notNull tokensToPool) do
-        for_ tokensToPool \token -> do
-          mods <- getModifiers token
-          let iids = [iid | MayChooseToRemoveChaosToken iid <- mods]
-          removeWindow <- checkWindows [mkWhen $ Window.TokensWouldBeRemovedFromChaosBag tokensToPool]
-          case iids of
-            [] -> push removeWindow
-            (iid : _) -> do
-              player <- getPlayer iid
-              pushAll
-                [ FocusChaosTokens [token]
-                , chooseOne
-                    player
-                    [ Label "Remove to Token Pool" [UnfocusChaosTokens, removeWindow]
-                    , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
+      let removeWindow ts = checkWindows [mkWhen $ Window.TokensWouldBeRemovedFromChaosBag ts]
+      s <- flip execStateT True do
+        when (notNull tokensToPool) do
+          for_ tokensToPool \token -> do
+            mods <- lift $ getModifiers token
+            let iids = [iid | MayChooseToRemoveChaosToken iid <- mods]
+            case iids of
+              [] -> pure ()
+              (iid : _) -> do
+                put False
+                lift do
+                  player <- getPlayer iid
+                  removeWindowMessage <- removeWindow [token]
+                  pushAll
+                    [ FocusChaosTokens [token]
+                    , chooseOne
+                        player
+                        [ Label "Remove to Token Pool" [UnfocusChaosTokens, removeWindowMessage]
+                        , Label "Return to Bag" [UnfocusChaosTokens, ReturnChaosTokens [token]]
+                        ]
                     ]
-                ]
+
+      when s do
+        push =<< removeWindow tokensToPool
 
       pure
         $ c

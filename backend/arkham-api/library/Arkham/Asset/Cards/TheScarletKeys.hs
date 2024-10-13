@@ -625,6 +625,7 @@ toolBelt =
   (asset "09120" "Tool Belt" 2 Neutral)
     { cdCardTraits = setFromList [Item, Clothing]
     , cdSlots = [#body]
+    , cdSkills = [#willpower]
     }
 
 flashlight3 :: CardDef

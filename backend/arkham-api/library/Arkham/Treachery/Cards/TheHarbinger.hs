@@ -25,7 +25,10 @@ instance HasModifiersFor TheHarbinger where
 
 instance HasAbilities TheHarbinger where
   getAbilities (TheHarbinger a) = case treacheryOnTopOfDeck a of
-    Just iid -> [restricted a 1 (youExist $ InvestigatorWithId iid) $ ActionAbility [] (ActionCost 2)]
+    Just iid ->
+      [ restricted a 1 (youExist $ InvestigatorAt $ locationWithInvestigator iid)
+          $ ActionAbility [] (ActionCost 2)
+      ]
     _ -> []
 
 instance RunMessage TheHarbinger where

@@ -8,6 +8,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Name
+import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Char (isUpper, toLower)
 
@@ -116,7 +117,24 @@ instance ToGameLoggerFormat ScenarioLogKey where
     go' (x : xs) = x : go' xs
 
 $(deriveJSON defaultOptions ''ScenarioLogKey)
-$(deriveJSON defaultOptions ''ScenarioCountKey)
+$(deriveToJSON defaultOptions ''ScenarioCountKey)
+
+instance FromJSON ScenarioCountKey where
+  parseJSON = \case
+    String "CurrentDepth" -> pure CurrentDepth
+    String "SignOfTheGods" -> pure SignOfTheGods
+    String "Distortion" -> pure Distortion
+    Object o -> do
+      tag :: Text <- o .: "tag"
+      case tag of
+        "Barriers" -> do
+          (x, y) <- o .: "contents"
+          pure $ Barriers x y
+        "CurrentDepth" -> pure CurrentDepth
+        "SignOfTheGods" -> pure SignOfTheGods
+        "Distortion" -> pure Distortion
+        _ -> fail "Unknown tag"
+    _ -> fail "Expected String or Object"
 
 instance ToJSONKey ScenarioLogKey
 instance FromJSONKey ScenarioLogKey

@@ -721,7 +721,7 @@ hasFightActions
 hasFightActions iid requestor window windows' =
   anyM (\a -> getCanPerformAbility iid windows' $ decreaseAbilityActionCost a 1)
     . map (setRequestor requestor)
-    =<< select (Matcher.AbilityIsAction #fight <> Matcher.AbilityWindow window)
+    =<< select (Matcher.BasicAbility <> Matcher.AbilityIsAction #fight <> Matcher.AbilityWindow window)
 
 hasEvadeActions
   :: (HasCallStack, HasGame m)

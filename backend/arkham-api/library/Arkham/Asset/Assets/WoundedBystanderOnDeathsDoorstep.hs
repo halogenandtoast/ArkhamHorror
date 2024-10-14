@@ -12,7 +12,7 @@ import Arkham.Modifier
 import Arkham.Token
 
 newtype WoundedBystanderOnDeathsDoorstep = WoundedBystanderOnDeathsDoorstep AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor WoundedBystanderOnDeathsDoorstep where
@@ -32,7 +32,7 @@ instance HasAbilities WoundedBystanderOnDeathsDoorstep where
         $ forced
         $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
     , restrictedAbility a 2 ControlsThis $ forced $ AssetDefeated #when ByAny (be a)
-    , restrictedAbility a 3 (exists $ be a <> not_ AssetWithDamage) $ SilentForcedAbility AnyWindow
+    , controlledAbility a 3 (exists $ be a <> not_ AssetWithDamage) $ SilentForcedAbility AnyWindow
     ]
 
 instance RunMessage WoundedBystanderOnDeathsDoorstep where

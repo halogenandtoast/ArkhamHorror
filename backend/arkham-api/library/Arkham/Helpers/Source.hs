@@ -24,7 +24,7 @@ sourceTraits = \case
   AgendaMatcherSource _ -> pure mempty
   AgendaSource _ -> pure mempty
   AssetMatcherSource _ -> pure mempty
-  AssetSource aid -> fromMaybe mempty <$> fieldMay AssetTraits aid
+  AssetSource aid -> field AssetTraits aid
   BatchSource _ -> pure mempty
   BothSource _ _ -> error "doesn't make sense, or will solve later"
   CampaignSource -> pure mempty

@@ -29,5 +29,6 @@ instance RunMessage OnWingsOfDarkness where
       pushAll $ map (DisengageEnemy iid) enemiesToDisengage
       when (notNull centralLocations) do
         chooseOne iid $ targetLabels centralLocations (only . Move . move attrs iid)
+      for_ enemiesToDisengage enemyCheckEngagement
       pure t
     _ -> OnWingsOfDarkness <$> liftRunMessage msg attrs

@@ -5,7 +5,7 @@ import Arkham.Prelude
 import Control.Lens (non)
 
 data SetGlobalSetting
-  = SetIgnoreUnrelatedSkillTestReactions Bool
+  = SetIgnoreUnrelatedSkillTestTriggers Bool
   | FutureProofGlobalSetting
   deriving stock (Show, Eq, Generic, Data)
 
@@ -20,22 +20,22 @@ data CardSettings = CardSettings
   deriving anyclass (ToJSON, FromJSON)
 
 data GlobalSettings = GlobalSettings
-  { ignoreUnrelatedSkillTestReactions :: Bool
+  { ignoreUnrelatedSkillTestTriggers :: Bool
   }
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data PerCardSettings = PerCardSettings
-  { cardIgnoreUnrelatedSkillTestReactions :: Bool
+  { cardIgnoreUnrelatedSkillTestTriggers :: Bool
   }
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data PerCardSetting a where
-  CardIgnoreUnrelatedSkillTestReactions :: PerCardSetting Bool
+  CardIgnoreUnrelatedSkillTestTriggers :: PerCardSetting Bool
 
 data SetCardSetting
-  = SetCardIgnoreUnrelatedSkillTestReactions Bool
+  = SetCardIgnoreUnrelatedSkillTestTriggers Bool
   deriving stock (Show, Eq, Generic, Data)
 
 instance ToJSON SetCardSetting
@@ -46,7 +46,7 @@ defaultCardSettings =
   CardSettings
     { globalSettings =
         GlobalSettings
-          { ignoreUnrelatedSkillTestReactions = True
+          { ignoreUnrelatedSkillTestTriggers = True
           }
     , perCardSettings = mempty
     }
@@ -54,20 +54,20 @@ defaultCardSettings =
 defaultPerCardSettings :: PerCardSettings
 defaultPerCardSettings =
   PerCardSettings
-    { cardIgnoreUnrelatedSkillTestReactions = False
+    { cardIgnoreUnrelatedSkillTestTriggers = False
     }
 
 globalSettingsL :: Lens' CardSettings GlobalSettings
 globalSettingsL = lens globalSettings \m x -> m {globalSettings = x}
 
-ignoreUnrelatedSkillTestReactionsL :: Lens' GlobalSettings Bool
-ignoreUnrelatedSkillTestReactionsL =
-  lens ignoreUnrelatedSkillTestReactions \m x -> m {ignoreUnrelatedSkillTestReactions = x}
+ignoreUnrelatedSkillTestTriggersL :: Lens' GlobalSettings Bool
+ignoreUnrelatedSkillTestTriggersL =
+  lens ignoreUnrelatedSkillTestTriggers \m x -> m {ignoreUnrelatedSkillTestTriggers = x}
 
 updateGlobalSetting :: SetGlobalSetting -> CardSettings -> CardSettings
 updateGlobalSetting = \case
-  SetIgnoreUnrelatedSkillTestReactions v ->
-    globalSettingsL . ignoreUnrelatedSkillTestReactionsL .~ v
+  SetIgnoreUnrelatedSkillTestTriggers v ->
+    globalSettingsL . ignoreUnrelatedSkillTestTriggersL .~ v
   FutureProofGlobalSetting -> id
 
 perCardSettingsL :: Lens' CardSettings (Map CardCode PerCardSettings)
@@ -75,17 +75,17 @@ perCardSettingsL = lens perCardSettings \m x -> m {perCardSettings = x}
 
 perCardSettingsLens :: PerCardSetting a -> Lens' PerCardSettings a
 perCardSettingsLens = \case
-  CardIgnoreUnrelatedSkillTestReactions -> lens cardIgnoreUnrelatedSkillTestReactions \m x -> m {cardIgnoreUnrelatedSkillTestReactions = x}
+  CardIgnoreUnrelatedSkillTestTriggers -> lens cardIgnoreUnrelatedSkillTestTriggers \m x -> m {cardIgnoreUnrelatedSkillTestTriggers = x}
 
-cardIgnoreUnrelatedSkillTestReactionsL :: Lens' PerCardSettings Bool
-cardIgnoreUnrelatedSkillTestReactionsL =
-  lens cardIgnoreUnrelatedSkillTestReactions \m x -> m {cardIgnoreUnrelatedSkillTestReactions = x}
+cardIgnoreUnrelatedSkillTestTriggersL :: Lens' PerCardSettings Bool
+cardIgnoreUnrelatedSkillTestTriggersL =
+  lens cardIgnoreUnrelatedSkillTestTriggers \m x -> m {cardIgnoreUnrelatedSkillTestTriggers = x}
 
 updateCardSetting :: CardCode -> SetCardSetting -> CardSettings -> CardSettings
 updateCardSetting cCode = \case
-  SetCardIgnoreUnrelatedSkillTestReactions v ->
+  SetCardIgnoreUnrelatedSkillTestTriggers v ->
     perCardSettingsL
       . at cCode
       . non defaultPerCardSettings
-      . cardIgnoreUnrelatedSkillTestReactionsL
+      . cardIgnoreUnrelatedSkillTestTriggersL
       .~ v

@@ -75,32 +75,32 @@ export type InvestigatorDetails = {
 //   deriving anyclass (ToJSON, FromJSON)
 // 
 // data GlobalSettings = GlobalSettings
-//   { ignoreUnrelatedSkillTestReactions :: Bool
+//   { ignoreUnrelatedSkillTestTriggers :: Bool
 //   }
 //   deriving stock (Show, Eq, Generic, Data)
 //   deriving anyclass (ToJSON, FromJSON)
 // 
 // data PerCardSettings = PerCardSettings
-//   { cardIgnoreUnrelatedSkillTestReactions :: Bool
+//   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
 //   }
 //   deriving stock (Show, Eq, Generic, Data)
 //   deriving anyclass (ToJSON, FromJSON)
 
 type CardSettings = {
   globalSettings: {
-    ignoreUnrelatedSkillTestReactions: boolean;
+    ignoreUnrelatedSkillTestTriggers: boolean;
   };
   perCardSettings: Record<string, {
-    cardIgnoreUnrelatedSkillTestReactions: boolean;
+    cardIgnoreUnrelatedSkillTestTriggers: boolean;
   }>;
 }
 
 export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
   globalSettings: JsonDecoder.object({
-    ignoreUnrelatedSkillTestReactions: JsonDecoder.boolean,
+    ignoreUnrelatedSkillTestTriggers: JsonDecoder.boolean,
   }, 'GlobalSettings'),
   perCardSettings: JsonDecoder.dictionary(JsonDecoder.object({
-    cardIgnoreUnrelatedSkillTestReactions: JsonDecoder.boolean,
+    cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean,
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');
 

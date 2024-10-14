@@ -14,13 +14,13 @@ const investigator = computed(() => {
   return Object.values(props.game.investigators).find(i => i.playerId === props.playerId)
 })
 
-const skipReactions = ref(investigator.value.settings.globalSettings.ignoreUnrelatedSkillTestReactions)
+const skipTriggers = ref(investigator.value.settings.globalSettings.ignoreUnrelatedSkillTestTriggers)
 
-watch(() => skipReactions.value, (value) => {
+watch(() => skipTriggers.value, (value) => {
   if (investigator.value) {
     debug.send(props.game.id,
       ({ tag: 'UpdateGlobalSetting'
-       , contents: [investigator.value.id, {tag: "SetIgnoreUnrelatedSkillTestReactions", contents: value}]
+       , contents: [investigator.value.id, {tag: "SetIgnoreUnrelatedSkillTestTriggers", contents: value}]
        }
       )
     )
@@ -32,8 +32,8 @@ watch(() => skipReactions.value, (value) => {
   <div class="settings">
     <div class="options box">
       <h2 class="title">Settings for {{investigator.name.title}}</h2>
-      <label>Skip reactions during skill tests that don't affect the outcome</label>
-      <input type="checkbox" v-model="skipReactions" />
+      <label>Skip triggers during skill tests that don't affect the outcome</label>
+      <input type="checkbox" v-model="skipTriggers" />
     </div>
     <div>
       <button @click="closeSettings">Close</button>

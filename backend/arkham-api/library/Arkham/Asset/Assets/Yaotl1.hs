@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
@@ -21,6 +22,7 @@ instance HasAbilities Yaotl1 where
   getAbilities (Yaotl1 a) =
     [ withTooltip
         "{fast} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {skillWild} icons)."
+        $ wantsSkillTest (YourSkillTest #any)
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ exhaust a

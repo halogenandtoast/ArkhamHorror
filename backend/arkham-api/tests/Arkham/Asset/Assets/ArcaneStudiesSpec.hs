@@ -10,7 +10,7 @@ spec = describe "Arcane Studies" $ do
     withProp @"resources" 2 self
     arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
     sid <- getRandom
-    run $ beginSkillTest sid self #combat 3 -- skill test type is irrelevant
+    run $ beginSkillTest sid self #willpower 3
     useFastActionOf arcaneStudies 1
     useFastActionOf arcaneStudies 1
     self.willpower `shouldReturn` 2
@@ -20,7 +20,7 @@ spec = describe "Arcane Studies" $ do
     withProp @"resources" 2 self
     arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
     sid <- getRandom
-    run $ beginSkillTest sid self #combat 3 -- skill test type is irrelevant
+    run $ beginSkillTest sid self #intellect 3
     useFastActionOf arcaneStudies 2
     useFastActionOf arcaneStudies 2
     self.intellect `shouldReturn` 2

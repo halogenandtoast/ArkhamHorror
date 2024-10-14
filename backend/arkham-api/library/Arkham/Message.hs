@@ -25,6 +25,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
@@ -332,6 +333,8 @@ instance AndThen (CardDraw Message) where
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | UpdateGlobalSetting InvestigatorId SetGlobalSetting
+  | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetDriver AssetId InvestigatorId
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value

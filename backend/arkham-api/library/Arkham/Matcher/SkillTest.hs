@@ -55,6 +55,18 @@ data SkillTestMatcher
   | SkillTestBeforeRevealingChaosTokens
   deriving stock (Show, Eq, Ord, Data, Generic)
 
+instance IsLabel "willpower" SkillTestMatcher where
+  fromLabel = SkillTestWithSkillType #willpower
+
+instance IsLabel "intellect" SkillTestMatcher where
+  fromLabel = SkillTestWithSkillType #intellect
+
+instance IsLabel "combat" SkillTestMatcher where
+  fromLabel = SkillTestWithSkillType #combat
+
+instance IsLabel "agility" SkillTestMatcher where
+  fromLabel = SkillTestWithSkillType #agility
+
 instance IsLabel "investigating" SkillTestMatcher where
   fromLabel = WhileInvestigating Anywhere
 

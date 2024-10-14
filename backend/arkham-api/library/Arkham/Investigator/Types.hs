@@ -11,6 +11,7 @@ import Arkham.Action.Additional
 import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
+import Arkham.Card.Settings
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
@@ -292,6 +293,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorTaboo :: Maybe TabooList
   , investigatorMutated :: Maybe Text -- for art display
   , investigatorDeckUrl :: Maybe Text
+  , investigatorSettings :: CardSettings
   }
   deriving stock (Show, Eq, Data)
 
@@ -382,6 +384,9 @@ instance Sourceable InvestigatorAttrs where
   isSource InvestigatorAttrs {investigatorId} (InvestigatorSource iid) =
     iid == investigatorId
   isSource _ _ = False
+
+instance HasField "settings" InvestigatorAttrs CardSettings where
+  getField = investigatorSettings
 
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
@@ -612,5 +617,6 @@ instance FromJSON InvestigatorAttrs where
     investigatorTaboo <- o .:? "taboo"
     investigatorMutated <- o .:? "mutated"
     investigatorDeckUrl <- o .:? "deckUrl"
+    investigatorSettings <- o .:? "settings" .!= defaultCardSettings
 
     pure $ InvestigatorAttrs {..}

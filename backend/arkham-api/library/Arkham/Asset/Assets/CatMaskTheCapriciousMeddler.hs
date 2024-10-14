@@ -24,6 +24,7 @@ catMaskTheCapriciousMeddler = asset CatMaskTheCapriciousMeddler Cards.catMaskThe
 instance HasAbilities CatMaskTheCapriciousMeddler where
   getAbilities (CatMaskTheCapriciousMeddler a) =
     [ playerLimit PerTestOrAbility
+        $ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #combat])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ assetUseCost a Offering 1

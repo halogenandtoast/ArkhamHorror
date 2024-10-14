@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Effect.Import
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -17,7 +18,9 @@ wellConnected3 = asset WellConnected3 Cards.wellConnected3
 
 instance HasAbilities WellConnected3 where
   getAbilities (WellConnected3 a) =
-    [ controlledAbility a 1 DuringAnySkillTest $ FastAbility $ exhaust a
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 DuringAnySkillTest
+        $ FastAbility (exhaust a)
     , playerLimit PerRound $ restrictedAbility a 2 ControlsThis $ FastAbility $ ResourceCost 2
     ]
 

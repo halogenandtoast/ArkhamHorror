@@ -30,10 +30,8 @@ instance HasModifiersFor Antiquary3 where
 
 instance HasAbilities Antiquary3 where
   getAbilities (Antiquary3 a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Favor, Relic, Ritual]])
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Favor, Relic, Ritual])
         $ FastAbility (assetUseCost a #resource 1)
     ]
 

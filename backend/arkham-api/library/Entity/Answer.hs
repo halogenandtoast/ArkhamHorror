@@ -266,7 +266,7 @@ handleAnswer Game {..} playerId = \case
           $ concatMap (\(cId, n) -> replicate n (Map.findWithDefault Noop cId costMap))
           $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
-  Raw message -> pure [message]
+  Raw message -> pure $ [message] <> [AskMap gameQuestion | not (Map.null gameQuestion)]
   Answer response -> do
     let q = fromJustNote "Invalid question type" (Map.lookup playerId gameQuestion)
     pure $ go id q response

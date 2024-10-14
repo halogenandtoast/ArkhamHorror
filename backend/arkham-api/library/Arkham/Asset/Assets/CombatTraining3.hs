@@ -16,8 +16,8 @@ combatTraining3 = assetWith CombatTraining3 Cards.combatTraining3 $ (healthL ?~ 
 
 instance HasAbilities CombatTraining3 where
   getAbilities (CombatTraining3 x) =
-    [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
-        $ FastAbility (ResourceCost 1)
+    [ wantsSkillTest (YourSkillTest $ oneOf [#combat, #agility])
+        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor CombatTraining3 where

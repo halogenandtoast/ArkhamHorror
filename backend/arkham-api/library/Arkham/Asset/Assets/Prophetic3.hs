@@ -30,10 +30,8 @@ instance HasModifiersFor Prophetic3 where
 
 instance HasAbilities Prophetic3 where
   getAbilities (Prophetic3 a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Fortune, Spell, Spirit]])
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Fortune, Spell, Spirit])
         $ FastAbility (assetUseCost a #resource 1)
     ]
 

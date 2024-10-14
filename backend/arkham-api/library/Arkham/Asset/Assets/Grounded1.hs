@@ -16,7 +16,8 @@ grounded1 = assetWith Grounded1 Cards.grounded1 (sanityL ?~ 1)
 
 instance HasAbilities Grounded1 where
   getAbilities (Grounded1 x) =
-    [ controlledAbility x 1 (DuringSkillTest $ SkillTestSourceMatches $ SourceWithTrait Spell)
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ controlledAbility x 1 (DuringSkillTest $ SkillTestSourceMatches $ SourceWithTrait Spell)
         $ FastAbility
         $ ResourceCost 1
     ]

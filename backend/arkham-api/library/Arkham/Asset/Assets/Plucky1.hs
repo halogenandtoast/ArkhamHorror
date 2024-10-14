@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Plucky1 (plucky1, Plucky1 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Plucky1 = Plucky1 AssetAttrs
@@ -14,16 +15,12 @@ plucky1 = assetWith Plucky1 Cards.plucky1 (sanityL ?~ 1)
 
 instance HasAbilities Plucky1 where
   getAbilities (Plucky1 x) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
-        $ controlledAbility x 1 DuringAnySkillTest
-        $ FastAbility
-        $ ResourceCost 1
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
-        $ controlledAbility x 2 DuringAnySkillTest
-        $ FastAbility
-        $ ResourceCost 1
+    [ withTooltip "{fast} Spend 1 resource: You get +1 {willpower} for this skill test."
+        $ wantsSkillTest (YourSkillTest #willpower)
+        $ controlledAbility x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+    , withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+        $ wantsSkillTest (YourSkillTest #intellect)
+        $ controlledAbility x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor Plucky1 where

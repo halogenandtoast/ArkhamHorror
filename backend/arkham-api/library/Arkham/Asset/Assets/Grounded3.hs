@@ -16,7 +16,8 @@ grounded3 = assetWith Grounded3 Cards.grounded3 $ (healthL ?~ 2) . (sanityL ?~ 2
 
 instance HasAbilities Grounded3 where
   getAbilities (Grounded3 x) =
-    [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ controlledAbility x 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (ResourceCost 1)
     ]
 

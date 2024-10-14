@@ -3,7 +3,7 @@ import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { JsonDecoder } from 'ts.data.json';
-import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, ExclamationTriangleIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, ExclamationTriangleIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
@@ -24,6 +24,7 @@ import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
 import CampaignLog from '@/arkham/components/CampaignLog.vue'
 import CampaignSettings from '@/arkham/components/CampaignSettings.vue'
+import Settings from '@/arkham/components/Settings.vue'
 import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
 import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/TarotCard'
 import { useCardStore } from '@/stores/cards'
@@ -63,7 +64,7 @@ const source = ref(`${window.location.href}/join`) // fix-syntax`
 const store = useCardStore()
 const userStore = useUserStore()
 const { copy } = useClipboard({ source })
-const { menuItems } = useMenu()
+const { addEntry, menuItems } = useMenu()
 
 store.fetchCards()
 
@@ -82,6 +83,16 @@ const error = ref<string | null>(null)
 const solo = ref(false)
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
+const showSettings = ref(false)
+
+addEntry({
+  id: "viewSettings",
+  icon: AdjustmentsHorizontalIcon,
+  content: "View Settings",
+  shortcut: "S",
+  nested: 'view',
+  action: () => showSettings.value = !showSettings.value
+})
 
 // Reactive
 const preloaded = reactive<string[]>([])
@@ -578,6 +589,9 @@ onUnmounted(() => {
       </GameDetails>
     </div>
     <template v-else>
+      <Draggable v-if="showSettings">
+      <Settings :game="game" :playerId="playerId" :closeSettings="() => showSettings = false" />
+      </Draggable>
       <CampaignLog v-if="showLog && game !== null" :game="game" :cards="cards" :playerId="playerId" />
       <div v-else class="game-main">
         <div v-if="gameCard" class="revelation">

@@ -30,10 +30,8 @@ instance HasModifiersFor Crafty3 where
 
 instance HasAbilities Crafty3 where
   getAbilities (Crafty3 a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Insight, Tool, Trick]])
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Insight, Tool, Trick])
         $ FastAbility (assetUseCost a #resource 1)
     ]
 

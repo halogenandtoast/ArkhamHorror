@@ -17,10 +17,13 @@ wellPrepared2 = asset WellPrepared2 Cards.wellPrepared2
 
 instance HasAbilities WellPrepared2 where
   getAbilities (WellPrepared2 a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ not_ (be a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon)
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ controlledAbility
+          a
+          1
+          ( exists (not_ (be a) <> AssetControlledBy You <> AssetWithMatchingSkillTestIcon)
+              <> DuringSkillTest AnySkillTest
+          )
         $ FastAbility (exhaust a)
     ]
 

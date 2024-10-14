@@ -16,7 +16,8 @@ plucky3 = assetWith Plucky3 Cards.plucky3 $ (healthL ?~ 1) . (sanityL ?~ 3)
 
 instance HasAbilities Plucky3 where
   getAbilities (Plucky3 x) =
-    [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
+    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #intellect])
+        $ controlledAbility x 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (ResourceCost 1)
     ]
 

@@ -17,7 +17,8 @@ physicalTraining4 = asset PhysicalTraining4 Cards.physicalTraining4
 
 instance HasAbilities PhysicalTraining4 where
   getAbilities (PhysicalTraining4 a) =
-    [ controlledAbility a 1 DuringAnySkillTest
+    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #combat])
+        $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, UseCost (be a) #resource 1]
     ]

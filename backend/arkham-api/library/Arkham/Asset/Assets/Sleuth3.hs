@@ -30,10 +30,8 @@ instance HasModifiersFor Sleuth3 where
 
 instance HasAbilities Sleuth3 where
   getAbilities (Sleuth3 a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Charm, Tactic, Tome]])
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Charm, Tactic, Tome])
         $ FastAbility (assetUseCost a #resource 1)
     ]
 

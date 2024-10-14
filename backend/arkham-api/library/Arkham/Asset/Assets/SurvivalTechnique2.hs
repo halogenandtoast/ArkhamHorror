@@ -23,13 +23,14 @@ instance HasAbilities SurvivalTechnique2 where
     [ restrictedAbility a 1 ControlsThis
         $ FastAbility
           (ChooseExtendedCardCost (OwnedBy You <> CardIsAttachedToLocation YourLocation) <> exhaust a)
-    , controlledAbility
-        a
-        2
-        ( DuringSkillTest
-            $ oneOf
-              [SkillTestOnLocation YourLocation, SkillTestOnTreachery (TreacheryAttachedToLocation YourLocation)]
-        )
+    , wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility
+          a
+          2
+          ( DuringSkillTest
+              $ oneOf
+                [SkillTestOnLocation YourLocation, SkillTestOnTreachery (TreacheryAttachedToLocation YourLocation)]
+          )
         $ FastAbility (exhaust a)
     ]
 

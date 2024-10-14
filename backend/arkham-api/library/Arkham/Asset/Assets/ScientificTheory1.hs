@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ScientificTheory1 (scientificTheory1, ScientificTheor
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Matcher
 import Arkham.Prelude
 
 newtype ScientificTheory1 = ScientificTheory1 AssetAttrs
@@ -15,16 +16,12 @@ scientificTheory1 =
 
 instance HasAbilities ScientificTheory1 where
   getAbilities (ScientificTheory1 x) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
-        $ controlledAbility x 1 DuringAnySkillTest
-        $ FastAbility
-        $ ResourceCost 1
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ controlledAbility x 2 DuringAnySkillTest
-        $ FastAbility
-        $ ResourceCost 1
+    [ withTooltip "{fast} Spend 1 resource: You get +1 {intellect} for this skill test."
+        $ wantsSkillTest (YourSkillTest #intellect)
+        $ controlledAbility x 1 DuringAnySkillTest (FastAbility $ ResourceCost 1)
+    , withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+        $ wantsSkillTest (YourSkillTest #combat)
+        $ controlledAbility x 2 DuringAnySkillTest (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor ScientificTheory1 where

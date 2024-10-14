@@ -67,6 +67,43 @@ export type InvestigatorDetails = {
   classSymbol: ClassSymbol;
 }
 
+// data CardSettings = CardSettings
+//   { globalSettings :: GlobalSettings
+//   , perCardSettings :: Map CardCode PerCardSettings
+//   }
+//   deriving stock (Show, Eq, Generic, Data)
+//   deriving anyclass (ToJSON, FromJSON)
+// 
+// data GlobalSettings = GlobalSettings
+//   { ignoreUnrelatedSkillTestReactions :: Bool
+//   }
+//   deriving stock (Show, Eq, Generic, Data)
+//   deriving anyclass (ToJSON, FromJSON)
+// 
+// data PerCardSettings = PerCardSettings
+//   { cardIgnoreUnrelatedSkillTestReactions :: Bool
+//   }
+//   deriving stock (Show, Eq, Generic, Data)
+//   deriving anyclass (ToJSON, FromJSON)
+
+type CardSettings = {
+  globalSettings: {
+    ignoreUnrelatedSkillTestReactions: boolean;
+  };
+  perCardSettings: Record<string, {
+    cardIgnoreUnrelatedSkillTestReactions: boolean;
+  }>;
+}
+
+export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
+  globalSettings: JsonDecoder.object({
+    ignoreUnrelatedSkillTestReactions: JsonDecoder.boolean,
+  }, 'GlobalSettings'),
+  perCardSettings: JsonDecoder.dictionary(JsonDecoder.object({
+    cardIgnoreUnrelatedSkillTestReactions: JsonDecoder.boolean,
+  }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
+}, 'CardSettings');
+
 export type Investigator = {
   deckSize?: number;
   connectedLocations: string[];
@@ -117,6 +154,7 @@ export type Investigator = {
   slots: Slot[];
   log: LogContents;
   meta: any;
+  settings: CardSettings;
 }
 
 type SlotType = 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
@@ -217,4 +255,5 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   slots: slotsDecoder,
   log: logContentsDecoder,
   meta: JsonDecoder.succeed,
+  settings: cardSettingsDecoder,
 }, 'Investigator', { foundCards: 'search', location: 'placement' });

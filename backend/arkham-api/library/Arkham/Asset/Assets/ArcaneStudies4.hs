@@ -17,7 +17,8 @@ arcaneStudies4 = asset ArcaneStudies4 Cards.arcaneStudies4
 
 instance HasAbilities ArcaneStudies4 where
   getAbilities (ArcaneStudies4 a) =
-    [ controlledAbility a 1 (DuringSkillTest AnySkillTest)
+    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #intellect])
+        $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]
     ]

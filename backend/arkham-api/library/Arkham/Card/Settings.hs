@@ -6,6 +6,7 @@ import Control.Lens (non)
 
 data SetGlobalSetting
   = SetIgnoreUnrelatedSkillTestReactions Bool
+  | FutureProofGlobalSetting
   deriving stock (Show, Eq, Generic, Data)
 
 instance ToJSON SetGlobalSetting
@@ -67,6 +68,7 @@ updateGlobalSetting :: SetGlobalSetting -> CardSettings -> CardSettings
 updateGlobalSetting = \case
   SetIgnoreUnrelatedSkillTestReactions v ->
     globalSettingsL . ignoreUnrelatedSkillTestReactionsL .~ v
+  FutureProofGlobalSetting -> id
 
 perCardSettingsL :: Lens' CardSettings (Map CardCode PerCardSettings)
 perCardSettingsL = lens perCardSettings \m x -> m {perCardSettings = x}

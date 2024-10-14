@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -282,14 +282,15 @@ runWindow attrs windows actions playableCards = do
           for actions' $ \ability@Ability {..} ->
             (ability,) <$> filterM (\w -> windowMatches iid abilitySource w abilityWindow) windows
         skippable <- getAllAbilitiesSkippable attrs windows
-        push
-          $ asWindowChoose windows
-          $ chooseOne player
-          $ [ targetLabel c [InitiatePlayCard iid c Nothing NoPayment windows True]
-            | c <- playableCards
-            ]
-          <> map (\(ability, windows') -> AbilityLabel iid ability windows' [] []) actionsWithMatchingWindows
-          <> [SkipTriggersButton iid | skippable]
+        unless (null playableCards && null actionsWithMatchingWindows) do
+          push
+            $ asWindowChoose windows
+            $ chooseOne player
+            $ [ targetLabel c [InitiatePlayCard iid c Nothing NoPayment windows True]
+              | c <- playableCards
+              ]
+            <> map (\(ability, windows') -> AbilityLabel iid ability windows' [] []) actionsWithMatchingWindows
+            <> [SkipTriggersButton iid | skippable]
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of

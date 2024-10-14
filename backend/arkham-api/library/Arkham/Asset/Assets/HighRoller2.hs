@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Matcher
 import Arkham.Modifier
 
 newtype HighRoller2 = HighRoller2 AssetAttrs
@@ -15,7 +16,11 @@ highRoller2 :: AssetCard HighRoller2
 highRoller2 = asset HighRoller2 Cards.highRoller2
 
 instance HasAbilities HighRoller2 where
-  getAbilities (HighRoller2 a) = [controlledAbility a 1 DuringAnySkillTest $ FastAbility $ ResourceCost 3 <> exhaust a]
+  getAbilities (HighRoller2 a) =
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ controlledAbility a 1 DuringAnySkillTest
+        $ FastAbility (ResourceCost 3 <> exhaust a)
+    ]
 
 instance RunMessage HighRoller2 where
   runMessage msg a@(HighRoller2 attrs) = runQueueT $ case msg of

@@ -16,14 +16,12 @@ combatTraining1 = assetWith CombatTraining1 Cards.combatTraining1 (sanityL ?~ 1)
 
 instance HasAbilities CombatTraining1 where
   getAbilities (CombatTraining1 x) =
-    [ withTooltip
-        "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest)
-        $ FastAbility (ResourceCost 1)
-    , withTooltip
-        "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
-        $ controlledAbility x 2 (DuringSkillTest AnySkillTest)
-        $ FastAbility (ResourceCost 1)
+    [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
+        $ wantsSkillTest (YourSkillTest #combat)
+        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
+    , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
+        $ wantsSkillTest (YourSkillTest #agility)
+        $ controlledAbility x 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor CombatTraining1 where

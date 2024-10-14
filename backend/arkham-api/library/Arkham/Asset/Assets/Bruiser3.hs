@@ -30,10 +30,8 @@ instance HasModifiersFor Bruiser3 where
 
 instance HasAbilities Bruiser3 where
   getAbilities (Bruiser3 a) =
-    [ controlledAbility
-        a
-        1
-        (DuringSkillTest $ oneOf [SkillTestOnCardWithTrait t | t <- [Armor, Firearm, Melee]])
+    [ wantsSkillTest (YourSkillTest #any)
+        $ controlledAbility a 1 (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Armor, Firearm, Melee])
         $ FastAbility (assetUseCost a #resource 1)
     ]
 

@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -16,7 +17,8 @@ hyperawareness4 = asset Hyperawareness4 Cards.hyperawareness4
 
 instance HasAbilities Hyperawareness4 where
   getAbilities (Hyperawareness4 a) =
-    [ controlledAbility a 1 DuringAnySkillTest
+    [ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #agility])
+        $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]
     ]

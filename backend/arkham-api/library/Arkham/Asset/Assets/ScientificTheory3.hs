@@ -17,8 +17,8 @@ scientificTheory3 = assetWith ScientificTheory3 Cards.scientificTheory3 $ (healt
 
 instance HasAbilities ScientificTheory3 where
   getAbilities (ScientificTheory3 x) =
-    [ controlledAbility x 1 (DuringSkillTest AnySkillTest)
-        $ FastAbility (ResourceCost 1)
+    [ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #combat])
+        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor ScientificTheory3 where

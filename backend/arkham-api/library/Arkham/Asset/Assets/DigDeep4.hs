@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
@@ -16,7 +17,8 @@ digDeep4 = asset DigDeep4 Cards.digDeep4
 
 instance HasAbilities DigDeep4 where
   getAbilities (DigDeep4 a) =
-    [ controlledAbility a 1 DuringAnySkillTest
+    [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #agility])
+        $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ OrCost [ResourceCost 1, assetUseCost a #resource 1]
     ]

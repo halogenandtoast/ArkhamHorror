@@ -20,6 +20,7 @@ wolfMaskTheMoonsSire = asset WolfMaskTheMoonsSire Cards.wolfMaskTheMoonsSire
 instance HasAbilities WolfMaskTheMoonsSire where
   getAbilities (WolfMaskTheMoonsSire a) =
     [ playerLimit PerTestOrAbility
+        $ wantsSkillTest (YourSkillTest $ oneOf [#combat, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
         $ assetUseCost a Offering 1

@@ -36,6 +36,7 @@ import Arkham.CampaignLog
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Card.Settings
 import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Constants
@@ -264,8 +265,21 @@ runWindow attrs windows actions playableCards = do
           $ toForcedAbilities isSilent
           <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
       else do
+        let globalSkip = attrs.settings.globalSettings.ignoreUnrelatedSkillTestReactions
+        let
+          applySettingsFilter ab =
+            case ab.wantsSkillTest of
+              Nothing -> pure True
+              Just matcher ->
+                if globalSkip
+                  then
+                    getSkillTest >>= \case
+                      Just st -> skillTestMatches iid GameSource st matcher
+                      Nothing -> pure False
+                  else pure True
+        actions' <- filterM applySettingsFilter actions
         actionsWithMatchingWindows <-
-          for actions $ \ability@Ability {..} ->
+          for actions' $ \ability@Ability {..} ->
             (ability,) <$> filterM (\w -> windowMatches iid abilitySource w abilityWindow) windows
         skippable <- getAllAbilitiesSkippable attrs windows
         push
@@ -279,6 +293,10 @@ runWindow attrs windows actions playableCards = do
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
+  UpdateGlobalSetting iid s | iid == a.id -> do
+    pure $ a & settingsL %~ updateGlobalSetting s
+  UpdateCardSetting iid cCode s | iid == a.id -> do
+    pure $ a & settingsL %~ updateCardSetting cCode s
   EndOfGame _ -> do
     pure $ a & placementL .~ Unplaced
   RecordForInvestigator iid key | iid == toId a -> do

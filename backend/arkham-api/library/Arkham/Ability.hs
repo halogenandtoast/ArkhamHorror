@@ -212,6 +212,7 @@ mkAbility entity idx type' =
     , abilityDelayAdditionalCosts = Nothing
     , abilityBasic = False
     , abilityAdditionalCosts = []
+    , abilityWantsSkillTest = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability
@@ -450,3 +451,6 @@ defaultAbilityLimit = \case
 decreaseAbilityActionCost :: Ability -> Int -> Ability
 decreaseAbilityActionCost ab n =
   ab {Arkham.Ability.Types.abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}
+
+wantsSkillTest :: SkillTestMatcher -> Ability -> Ability
+wantsSkillTest matcher ab = ab {abilityWantsSkillTest = Just matcher}

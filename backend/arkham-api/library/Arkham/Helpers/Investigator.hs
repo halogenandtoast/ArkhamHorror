@@ -10,6 +10,7 @@ import Arkham.Asset.Types qualified as Field
 import Arkham.CampaignLog
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Card.Settings
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -367,6 +368,7 @@ investigator f cardDef Stats {..} =
                 , investigatorTaboo = Nothing
                 , investigatorMutated = Nothing
                 , investigatorDeckUrl = Nothing
+                , investigatorSettings = defaultCardSettings
                 }
         }
 

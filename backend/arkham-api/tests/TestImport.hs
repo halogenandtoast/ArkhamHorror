@@ -34,6 +34,7 @@ import Arkham.Investigator as X hiding (
   InvestigatorResigned,
   allInvestigators,
   foundCardsL,
+  settingsL,
  )
 import Arkham.Location as X
 import Arkham.Scenario as X
@@ -72,7 +73,7 @@ import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Git
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types
+import Arkham.Investigator.Types hiding (settingsL)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Types

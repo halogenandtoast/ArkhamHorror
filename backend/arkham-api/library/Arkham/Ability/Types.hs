@@ -39,6 +39,7 @@ data Ability = Ability
   , abilityAdditionalCosts :: [Cost]
   , abilityRequestor :: Source
   , abilityTriggersSkillTest :: Bool
+  , abilityWantsSkillTest :: Maybe SkillTestMatcher
   }
   deriving stock (Show, Ord, Data)
 
@@ -53,6 +54,9 @@ setRequestor source ab = ab {abilityRequestor = toSource source}
 
 instance HasCost Ability where
   overCost f ab = ab {Arkham.Ability.Types.abilityType = overCost f (abilityType ab)}
+
+instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
+  getField = abilityWantsSkillTest
 
 instance HasField "kind" Ability AbilityType where
   getField = abilityType
@@ -153,6 +157,8 @@ instance FromJSON Ability where
     abilityAdditionalCosts <- o .: "additionalCosts"
     abilityRequestor <- o .:? "requestor" .!= abilitySource
     abilityTriggersSkillTest <- o .:? "triggersSkillTest" .!= False
+    abilityWantsSkillTest <- o .:? "wantsSkillTest" .!= Nothing
+
     pure Ability {..}
 
 newtype DifferentAbility = DifferentAbility Ability

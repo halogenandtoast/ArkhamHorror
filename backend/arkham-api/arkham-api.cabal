@@ -1308,6 +1308,7 @@ library
       Arkham.Card.EncounterCard
       Arkham.Card.Id
       Arkham.Card.PlayerCard
+      Arkham.Card.Settings
       Arkham.ChaosBag
       Arkham.ChaosBag.Base
       Arkham.ChaosBag.RevealStrategy

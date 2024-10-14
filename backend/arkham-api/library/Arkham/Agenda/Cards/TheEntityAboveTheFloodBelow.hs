@@ -20,7 +20,7 @@ import Arkham.Projection
 import Arkham.Trait
 
 newtype TheEntityAboveTheFloodBelow = TheEntityAboveTheFloodBelow AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEntityAboveTheFloodBelow :: AgendaCard TheEntityAboveTheFloodBelow
@@ -53,7 +53,7 @@ instance RunMessage TheEntityAboveTheFloodBelow where
       mChapel <- selectOne $ LocationWithTitle "Chapel of St. Aubert"
       spawnAshleighClarkeMessages <- do
         spawnAshleighClarke <- not <$> slain Enemies.ashleighClarke
-        port <- selectJust $ LocationWithTitle "Porte de l’Avancée"
+        port <- selectJust $ LocationWithTitle "Porte de l'Avancée"
         card <- genCard Enemies.ashleighClarke
         createAshleighClarke <- createEnemyAt_ card port Nothing
         pure [createAshleighClarke | spawnAshleighClarke]

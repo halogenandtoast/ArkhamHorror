@@ -20,7 +20,6 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Timing qualified as Timing
 
 newtype InfiltratingTheLodge = InfiltratingTheLodge ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -36,9 +35,7 @@ infiltratingTheLodge =
 
 instance HasAbilities InfiltratingTheLodge where
   getAbilities (InfiltratingTheLodge attrs) =
-    withBaseAbilities
-      attrs
-      [mkAbility attrs 1 $ ReactionAbility (EnemyEvaded Timing.After You EnemyWithAnyDoom) Free]
+    extend attrs [mkAbility attrs 1 $ freeReaction (EnemyEvaded #after You EnemyWithAnyDoom)]
 
 spawnNathanWick :: (MonadRandom m, HasGame m) => LocationId -> m [Message]
 spawnNathanWick innerSanctum = do
@@ -81,14 +78,16 @@ newtype InfiltratingTheLodgeEffect = InfiltratingTheLodgeEffect EffectAttrs
 
 instance HasAbilities InfiltratingTheLodgeEffect where
   getAbilities (InfiltratingTheLodgeEffect attrs) =
-    [mkAbility attrs 1 $ ReactionAbility (EnemyEvaded Timing.After You EnemyWithAnyDoom) Free]
+    [ mkAbility (proxied (ActMatcherSource AnyAct) attrs) 1
+        $ freeReaction (EnemyEvaded #after You EnemyWithAnyDoom)
+    ]
 
 infiltratingTheLodgeEffect :: EffectArgs -> InfiltratingTheLodgeEffect
 infiltratingTheLodgeEffect = cardEffect InfiltratingTheLodgeEffect Cards.infiltratingTheLodge
 
 instance RunMessage InfiltratingTheLodgeEffect where
   runMessage msg e@(InfiltratingTheLodgeEffect attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
+    UseCardAbility _ (isProxySource attrs -> True) 1 (evadedEnemy -> enemy) _ -> do
       push $ RemoveAllDoom (toSource attrs) (toTarget enemy)
       pure e
     _ -> InfiltratingTheLodgeEffect <$> runMessage msg attrs

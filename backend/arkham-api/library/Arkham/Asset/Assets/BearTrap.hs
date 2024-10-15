@@ -1,9 +1,4 @@
-module Arkham.Asset.Assets.BearTrap (
-  BearTrap (..),
-  bearTrap,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.BearTrap (BearTrap (..), bearTrap) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,8 +7,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -34,13 +29,8 @@ instance HasModifiersFor BearTrap where
 
 instance HasAbilities BearTrap where
   getAbilities (BearTrap x) =
-    [ restrictedAbility x 1 restriction $ FastAbility Free
-    , mkAbility x 2
-        $ ForcedAbility
-        $ EnemyEnters
-          Timing.After
-          LocationOfThis
-          (enemyIs Cards.theRougarou)
+    [ restricted x 1 restriction $ FastAbility Free
+    , mkAbility x 2 $ forced $ EnemyEnters #after LocationOfThis (enemyIs Cards.theRougarou)
     ]
    where
     restriction = case assetPlacement x of
@@ -48,15 +38,12 @@ instance HasAbilities BearTrap where
       _ -> ControlsThis
 
 instance RunMessage BearTrap where
-  runMessage msg a@(BearTrap attrs@AssetAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locationId <-
-        fieldMap
-          InvestigatorLocation
-          (fromJustNote "must be at a location")
-          iid
-      a <$ push (AttachAsset assetId (LocationTarget locationId))
-    UseCardAbility _ source 2 [(windowType -> Window.EnemyEnters eid _)] _
-      | isSource attrs source -> do
-          a <$ push (AttachAsset assetId (EnemyTarget eid))
+  runMessage msg a@(BearTrap attrs) = case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      locationId <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
+      push $ AttachAsset attrs.id (LocationTarget locationId)
+      pure a
+    UseCardAbility _ (isSource attrs -> True) 2 [(windowType -> Window.EnemyEnters eid _)] _ -> do
+      push $ AttachAsset attrs.id (EnemyTarget eid)
+      pure a
     _ -> BearTrap <$> runMessage msg attrs

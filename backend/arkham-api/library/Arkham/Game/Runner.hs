@@ -1485,6 +1485,18 @@ runGameMessage msg g = case msg of
             [(iid1, ChooseOne c1), (iid2, ChooseOne c2)]
       _ -> push (chooseOne iid1 c1)
     pure g
+  AskPlayer (Ask iid1 (PlayerWindowChooseOne c1)) -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (AskPlayer (Ask iid2 (PlayerWindowChooseOne c2))) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ mapFromList
+            [(iid1, PlayerWindowChooseOne c1), (iid2, PlayerWindowChooseOne c2)]
+      _ -> push (Ask iid1 $ PlayerWindowChooseOne c1)
+    pure g
   AskPlayer (AskMap askMap) -> do
     mNextMessage <- peekMessage
     case mNextMessage of
@@ -1500,6 +1512,19 @@ runGameMessage msg g = case msg of
             )
             iid2
             (ChooseOne c2)
+            askMap
+      Just (AskPlayer (Ask iid2 (PlayerWindowChooseOne c2))) -> do
+        _ <- popMessage
+        push
+          $ AskPlayer
+          $ AskMap
+          $ insertWith
+            ( \x y -> case (x, y) of
+                (PlayerWindowChooseOne m, PlayerWindowChooseOne n) -> PlayerWindowChooseOne $ m <> n
+                _ -> error "unhandled"
+            )
+            iid2
+            (PlayerWindowChooseOne c2)
             askMap
       _ -> push $ AskMap askMap
     pure g

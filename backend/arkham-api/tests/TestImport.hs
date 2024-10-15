@@ -671,6 +671,7 @@ chooseOnlyOption _reason = do
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne [msg] -> push (uiToRun msg) <* runMessages
+      PlayerWindowChooseOne [msg] -> push (uiToRun msg) <* runMessages
       ChooseOneAtATime [msg] -> push (uiToRun msg) <* runMessages
       ChooseN _ [msg] -> push (uiToRun msg) <* runMessages
       Read {} -> runMessages
@@ -683,6 +684,7 @@ chooseFirstOption _reason = do
   case mapToList questionMap of
     [(_, question)] -> case question of
       ChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
+      PlayerWindowChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages
       _ -> error "spec expectation mismatch"
     _ -> error "There must be at least one option"
@@ -697,6 +699,9 @@ chooseOptionMatching _reason f = do
   go iid question = case question of
     QuestionLabel _ _ q -> go iid q
     ChooseOne msgs -> case find f msgs of
+      Just msg -> push (uiToRun msg) <* runMessages
+      Nothing -> liftIO $ expectationFailure "could not find a matching message"
+    PlayerWindowChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
       Nothing -> liftIO $ expectationFailure "could not find a matching message"
     ChooseOneAtATime msgs -> case find f msgs of

@@ -266,7 +266,13 @@ handleAnswer Game {..} playerId = \case
           $ concatMap (\(cId, n) -> replicate n (Map.findWithDefault Noop cId costMap))
           $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
-  Raw message -> pure $ [message] <> [AskMap gameQuestion | not (Map.null gameQuestion)]
+  Raw message -> do
+    let isPlayerWindowChoose = \case
+          PlayerWindowChooseOne _ -> True
+          _ -> False
+    if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
+      then pure [message, AskMap gameQuestion]
+      else pure [message]
   Answer response -> do
     let q = fromJustNote "Invalid question type" (Map.lookup playerId gameQuestion)
     pure $ go id q response
@@ -283,6 +289,9 @@ handleAnswer Game {..} playerId = \case
       Just msg -> [uiToRun msg]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOne qs]
+      Just msg -> [uiToRun msg]
+    PlayerWindowChooseOne qs -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ PlayerWindowChooseOne qs]
       Just msg -> [uiToRun msg]
     ChooseOneFromEach qs -> case concat qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOneFromEach qs]

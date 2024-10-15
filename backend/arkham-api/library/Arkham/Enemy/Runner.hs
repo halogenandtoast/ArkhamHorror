@@ -94,6 +94,9 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   ChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOne x)
+  PlayerWindowChooseOne msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask pid $ PlayerWindowChooseOne x)
   ChooseOneFromEach groups -> case filter notNull $ map (mapMaybe (filterOutEnemyUiMessages eid)) groups of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOneFromEach x)

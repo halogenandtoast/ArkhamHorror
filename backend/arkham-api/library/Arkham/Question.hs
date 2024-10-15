@@ -119,6 +119,7 @@ data AmountTarget = MinAmountTarget Int | MaxAmountTarget Int | TotalAmountTarge
 
 data Question msg
   = ChooseOne {choices :: [UI msg]}
+  | PlayerWindowChooseOne {choices :: [UI msg]}
   | ChooseOneFromEach {groups :: [[UI msg]]}
   | ChooseN {amount :: Int, choices :: [UI msg]}
   | ChooseSome {choices :: [UI msg]}

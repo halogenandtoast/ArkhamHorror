@@ -426,6 +426,9 @@ assertHasNoReaction = do
       ChooseOne msgs -> case find isReaction msgs of
         Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
         Nothing -> pure ()
+      PlayerWindowChooseOne msgs -> case find isReaction msgs of
+        Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
+        Nothing -> pure ()
       ChooseN _ msgs -> case find isReaction msgs of
         Just msg -> expectationFailure $ "expected no reaction, but found " <> show msg
         Nothing -> pure ()
@@ -599,6 +602,7 @@ applyAllDamage = do
     choices = case mapToList questionMap of
       [(_, question)] -> case question of
         ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
         _ -> []
       _ -> []
     isDamage = \case
@@ -618,6 +622,7 @@ applyAllHorror = do
     choices = case mapToList questionMap of
       [(_, question)] -> case question of
         ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
         _ -> []
       _ -> []
     isHorror = \case
@@ -664,6 +669,7 @@ assertNoReaction = do
     choices = case mapToList questionMap of
       [(_, question)] -> case question of
         ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
         _ -> []
       _ -> []
     isReaction = \case
@@ -686,6 +692,7 @@ assertTarget (toTarget -> target) = do
       case mapToList questionMap of
         [(_, question)] -> case question of
           ChooseOne msgs -> msgs
+          PlayerWindowChooseOne msgs -> msgs
           ChooseN _ msgs -> msgs
           _ -> error $ "unsupported questions type: " <> show question
         _ -> error "There must be only one question to use this function"
@@ -708,6 +715,7 @@ assertNotTarget (toTarget -> target) = do
       case mapToList questionMap of
         [(_, question)] -> case question of
           ChooseOne msgs -> msgs
+          PlayerWindowChooseOne msgs -> msgs
           ChooseN _ msgs -> msgs
           _ -> error $ "unsupported questions type: " <> show question
         _ -> []
@@ -748,6 +756,7 @@ assertDamageIsDirect = do
     choices = case mapToList questionMap of
       [(_, question)] -> case question of
         ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
         _ -> []
       _ -> []
     isDirectDamage = \case
@@ -766,6 +775,7 @@ assertHorrorIsDirect = do
     choices = case mapToList questionMap of
       [(_, question)] -> case question of
         ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
         _ -> []
       _ -> []
     isDirectHorror = \case

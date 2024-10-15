@@ -3888,7 +3888,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
 
         push
           $ AskPlayer
-          $ chooseOne player
+          $ Ask player
+          $ PlayerWindowChooseOne
           $ nub
           $ additionalActions
           <> [ ResourceLabel iid [TakeResources iid 1 (toSource a) usesAction]
@@ -3924,7 +3925,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
               ((\f -> f windows [] []) . AbilityLabel investigatorId)
               (filter (not . isActionAbility) actions)
       player <- getPlayer investigatorId
-      unless (null choices) $ push $ AskPlayer $ chooseOne player choices
+      unless (null choices) $ push $ AskPlayer $ Ask player $ PlayerWindowChooseOne choices
     pure a
   EndInvestigation -> do
     pure

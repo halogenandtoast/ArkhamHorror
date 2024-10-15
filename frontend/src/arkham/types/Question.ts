@@ -5,6 +5,7 @@ export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | Choo
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
+  PLAYER_WINDOW_CHOOSE_ONE = 'PlayerWindowChooseOne',
   CHOOSE_ONE_FROM_EACH = 'ChooseOneFromEach',
   CHOOSE_UP_TO_N = 'ChooseUpToN',
   CHOOSE_SOME = 'ChooseSome',
@@ -291,7 +292,10 @@ export const dropDownDecoder = JsonDecoder.object<DropDown>(
 
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
-    tag: JsonDecoder.isExactly(QuestionType.CHOOSE_ONE),
+    tag: JsonDecoder.oneOf(
+        [JsonDecoder.isExactly(QuestionType.CHOOSE_ONE)
+        , JsonDecoder.isExactly(QuestionType.PLAYER_WINDOW_CHOOSE_ONE).map(() => QuestionType.CHOOSE_ONE)
+        ], "ChooseOne.tag"),
     choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
   },
   'ChooseOne',

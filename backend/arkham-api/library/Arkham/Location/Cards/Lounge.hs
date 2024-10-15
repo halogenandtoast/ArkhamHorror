@@ -1,20 +1,14 @@
-module Arkham.Location.Cards.Lounge (
-  lounge,
-  Lounge (..),
-)
-where
+module Arkham.Location.Cards.Lounge (lounge, Lounge (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype Lounge = Lounge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,23 +18,19 @@ lounge :: LocationCard Lounge
 lounge = location Lounge Cards.lounge 2 (PerPlayer 2)
 
 instance HasAbilities Lounge where
-  getAbilities (Lounge attrs) =
-    withRevealedAbilities
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation Timing.After You $ LocationWithId $ toId attrs]
+  getAbilities (Lounge a) = extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage Lounge where
-  runMessage msg l@(Lounge attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      augustLindquist <- getSetAsideCard Assets.augustLindquist
-      augustLindquistId <- getRandom
+  runMessage msg l@(Lounge attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ PlaceLocationMatching (CardWithTitle "Vault")
+      whenM (selectNone $ LocationWithTitle "Library") do
+        push $ PlaceLocationMatching (CardWithTitle "Library")
+
+      card <- getSetAsideCard Assets.augustLindquist
+      augustLindquist <- createAssetAt card (AtLocation attrs.id)
+
       mKey <- getRandomKey
-      pushAll
-        $ [ PlaceLocationMatching (CardWithTitle "Vault")
-          , PlaceLocationMatching (CardWithTitle "Library")
-          , CreateAssetAt augustLindquistId augustLindquist (AtLocation $ toId attrs)
-          ]
-        <> [ PlaceKey (AssetTarget augustLindquistId) k | k <- maybeToList mKey
-           ]
+      for_ mKey $ placeKey augustLindquist
       pure l
-    _ -> Lounge <$> runMessage msg attrs
+    _ -> Lounge <$> liftRunMessage msg attrs

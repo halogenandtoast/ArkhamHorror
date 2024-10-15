@@ -21,9 +21,9 @@ instance HasModifiersFor SledDog where
 
 instance HasAbilities SledDog where
   getAbilities (SledDog a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ActionAbility [#move] (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
-    , restrictedAbility a 2 ControlsThis
+    , restricted a 2 ControlsThis
         $ ActionAbility [#fight] (ActionCost 1 <> ExhaustXAssetCost "Sled Dog")
     ]
 

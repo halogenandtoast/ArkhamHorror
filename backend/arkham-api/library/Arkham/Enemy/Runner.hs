@@ -299,7 +299,11 @@ instance RunMessage EnemyAttrs where
           swarm <- select $ SwarmOf eid
           pushAll
             =<< traverse
-              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen, mkAfter]))
+              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkAfter]))
+              (eid : swarm)
+          pushAll
+            =<< traverse
+              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
           case a.placement of
             InThreatArea {} -> pure a

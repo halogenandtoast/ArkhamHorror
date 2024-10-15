@@ -103,9 +103,7 @@ defaultCampaignRunner msg a = case msg of
     purchaseTrauma <- initDeckTrauma (Deck deckDiff) iid pid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
-    playerCount <- getPlayerCount
-    investigatorClass <- field InvestigatorClass iid
-    (deck', _) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
+    let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
     pushAll purchaseTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -33,15 +34,16 @@ instance HasAbilities Bandages where
           (assetUseCost a Supply 1)
     ]
 
-getHealTarget :: [Window] -> Target
-getHealTarget = \case
-  (windowType -> Window.DealtDamage _ _ target _) : _ -> target
-  _ : rest -> getHealTarget rest
-  [] -> error "No target found"
+getHealTargets :: [Window] -> [Target]
+getHealTargets = \case
+  (windowType -> Window.DealtDamage _ _ target _) : rest -> target : getHealTargets rest
+  _ : rest -> getHealTargets rest
+  [] -> []
 
 instance RunMessage Bandages where
   runMessage msg a@(Bandages attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getHealTarget -> target) _ -> do
-      push $ HealDamage target (attrs.ability 1) 1
+    UseCardAbility iid (isSource attrs -> True) 1 (getHealTargets -> healTargets) _ -> do
+      chooseOrRunOneM iid do
+        targets healTargets \target -> healDamage target (attrs.ability 1) 1
       pure a
     _ -> Bandages <$> liftRunMessage msg attrs

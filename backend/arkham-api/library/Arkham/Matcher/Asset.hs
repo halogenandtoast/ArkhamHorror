@@ -37,6 +37,7 @@ pattern AssetCanHaveUses uType <-
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text
+  | AssetWithSubtitle Text
   | AssetWithId AssetId
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait

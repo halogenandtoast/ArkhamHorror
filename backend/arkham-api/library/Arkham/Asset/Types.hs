@@ -180,6 +180,7 @@ data instance Field Asset :: Type -> Type where
   AssetAssignedSanityHeal :: Field Asset (Map Source Int)
   AssetAssignedHealthDamage :: Field Asset Int
   AssetAssignedSanityDamage :: Field Asset Int
+  AssetDriver :: Field Asset (Maybe InvestigatorId)
   -- virtual
   AssetClasses :: Field Asset (Set ClassSymbol)
   AssetTraits :: Field Asset (Set Trait)
@@ -235,6 +236,7 @@ instance FromJSON (SomeField Asset) where
     "AssetAssignedHealthDamage" -> pure $ SomeField AssetAssignedHealthDamage
     "AssetAssignedSanityDamage" -> pure $ SomeField AssetAssignedSanityDamage
     "AssetTokens" -> pure $ SomeField AssetTokens
+    "AssetDriver" -> pure $ SomeField AssetDriver
     _ -> error "no such field"
 
 data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses | NotifySelfOfNoUses

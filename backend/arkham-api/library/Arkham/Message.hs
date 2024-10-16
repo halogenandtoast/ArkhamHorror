@@ -980,6 +980,7 @@ data Message
   | TakeControlOfAsset InvestigatorId AssetId
   | LoseControlOfAsset AssetId
   | ReplaceInvestigatorAsset InvestigatorId AssetId Card
+  | ReplaceAsset AssetId CardDef
   | ReplacedInvestigatorAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId Card
   | SetAsideCards [Card]

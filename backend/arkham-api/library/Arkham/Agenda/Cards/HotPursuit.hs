@@ -24,6 +24,8 @@ instance HasModifiersFor HotPursuit where
 instance RunMessage HotPursuit where
   runMessage msg a@(HotPursuit attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      eachInvestigator \iid -> do
+        sufferPhysicalTrauma iid 1
+        investigatorDefeated attrs iid
       pure a
     _ -> HotPursuit <$> liftRunMessage msg attrs

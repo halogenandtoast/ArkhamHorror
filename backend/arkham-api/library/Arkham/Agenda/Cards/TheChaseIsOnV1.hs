@@ -3,6 +3,8 @@ module Arkham.Agenda.Cards.TheChaseIsOnV1 (TheChaseIsOnV1 (..), theChaseIsOnV1) 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Card
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Investigator.Projection
 import Arkham.Matcher.Window
@@ -30,6 +32,7 @@ instance HasAbilities TheChaseIsOnV1 where
 instance RunMessage TheChaseIsOnV1 where
   runMessage msg a@(TheChaseIsOnV1 attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
+      spawnEnemy_ =<< genCard Enemies.theTerrorOfDevilReefRelentlessMonstrosity
       advanceAgendaDeck attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

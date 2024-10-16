@@ -147,6 +147,7 @@ import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.ScenarioLogKey
+import Arkham.Scenarios.HorrorInHighGear.Helpers (getRear)
 import Arkham.Scenarios.WakingNightmare.InfestationBag
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner hiding (stepL)
@@ -873,6 +874,8 @@ getInvestigatorsMatching matcher = do
     InVehicleMatching am -> flip filterM as \a -> case a.placement of
       InVehicle aid -> aid <=~> am
       _ -> pure False
+    IsDriverOf am -> flip filterM as \a -> do
+      anyM (fieldMap AssetDriver (== Just a.id)) =<< select am
     InvestigatorMatches xs -> foldM go as xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs
@@ -2001,6 +2004,9 @@ getLocationsMatching lmatcher = do
     MostBreaches matcher' -> do
       ls' <- go ls matcher'
       maxes <$> forToSnd ls' (fieldMap LocationBreaches (maybe 0 Breach.countBreaches) . toId)
+    RearmostLocation -> do
+      rear <- getRear
+      pure $ filter ((`elem` rear) . toId) ls
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case
@@ -2046,6 +2052,8 @@ getAssetsMatching matcher = do
       pure $ filter (`hasTitle` title) as
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== (title <:> subtitle)) . toName) as
+    AssetWithSubtitle subtitle ->
+      pure $ filter ((== Just subtitle) . nameSubtitle . toName) as
     AssetWithId assetId -> pure $ filter ((== assetId) . toId) as
     AssetWithCardId cardId ->
       pure $ filter ((== cardId) . toCardId) as
@@ -3118,6 +3126,7 @@ instance Projection Asset where
     let attrs@AssetAttrs {..} = toAttrs a
     case f of
       AssetTokens -> pure assetTokens
+      AssetDriver -> pure assetDriver
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
       AssetClues -> pure $ assetClues attrs

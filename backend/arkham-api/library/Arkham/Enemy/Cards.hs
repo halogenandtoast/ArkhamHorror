@@ -305,6 +305,7 @@ allEncounterEnemyCards =
       , theSpectralWatcher
       , theTerrorOfDevilReef_164
       , theTerrorOfDevilReef_165
+      , theTerrorOfDevilReefRelentlessMonstrosity
       , theRougarou
       , theUnnamable
       , theWingedSerpent
@@ -2171,6 +2172,13 @@ huntingDeepOne =
   (enemy "07183" "Hunting Deep One" DevilReef 2)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+theTerrorOfDevilReefRelentlessMonstrosity :: CardDef
+theTerrorOfDevilReefRelentlessMonstrosity =
+  (enemy "07199b" ("The Terror of Devil Reef" <:> "Relentless Monstrosity") HorrorInHighGear 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
     }
 
 pursuingMotorcar :: CardDef

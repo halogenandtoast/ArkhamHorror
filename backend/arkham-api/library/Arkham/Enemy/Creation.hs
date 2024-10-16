@@ -25,6 +25,9 @@ class IsEnemyCreationMethod a where
 instance IsEnemyCreationMethod EnemyCreationMethod where
   toEnemyCreationMethod = id
 
+instance IsEnemyCreationMethod () where
+  toEnemyCreationMethod _ = SpawnViaSpawnInstruction
+
 instance IsEnemyCreationMethod InvestigatorId where
   toEnemyCreationMethod = SpawnEngagedWith
 

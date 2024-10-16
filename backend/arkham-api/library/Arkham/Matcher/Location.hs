@@ -130,6 +130,7 @@ data LocationMatcher
   | LocationWithBreaches ValueMatcher
   | LocationWithIncursion
   | FewestBreaches
+  | RearmostLocation
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
   | LocationWhenCriteria Criterion

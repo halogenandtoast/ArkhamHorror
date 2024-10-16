@@ -4,9 +4,9 @@ module Arkham.Asset.Assets.ThomasDawsonsCarRunning (
 )
 where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Vehicle
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Name
@@ -21,13 +21,14 @@ thomasDawsonsCarRunning = asset ThomasDawsonsCarRunning Cards.thomasDawsonsCarRu
 
 instance HasAbilities ThomasDawsonsCarRunning where
   getAbilities (ThomasDawsonsCarRunning x) =
-    [ vehicleEnterOrExitAbility x
+    [ restrictedAbility x 2 (maybe Never (youExist . InvestigatorWithId) x.driver) actionAbility
     ]
 
 instance RunMessage ThomasDawsonsCarRunning where
   runMessage msg a@(ThomasDawsonsCarRunning attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) VehicleEnterExitAbility -> do
-      enterOrExitVehicle iid a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      flipOver iid attrs
+      pure a
     PlaceInvestigator iid (InVehicle aid) | aid == attrs.id -> do
       attrs' <- liftRunMessage msg attrs
       pure . ThomasDawsonsCarRunning $ attrs' & driverL %~ Just . fromMaybe iid
@@ -39,4 +40,7 @@ instance RunMessage ThomasDawsonsCarRunning where
           questionLabeled $ "Choose new driver for " <> toTitle attrs.name
           targets passengers $ push . SetDriver attrs.id
       pure . ThomasDawsonsCarRunning $ attrs' & driverL .~ Nothing
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.thomasDawsonsCarStopped
+      pure a
     _ -> ThomasDawsonsCarRunning <$> liftRunMessage msg attrs

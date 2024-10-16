@@ -397,7 +397,8 @@ allEnemies =
     , SomeEnemyCard deepOnePredator
     , SomeEnemyCard huntingDeepOne
     , --- Horror in High Gear [hhg]
-      SomeEnemyCard pursuingMotorcar
+      SomeEnemyCard theTerrorOfDevilReefRelentlessMonstrosity
+    , SomeEnemyCard pursuingMotorcar
     , SomeEnemyCard hitVan
     , SomeEnemyCard hybridAssassin
     , -- Edge of the Earth

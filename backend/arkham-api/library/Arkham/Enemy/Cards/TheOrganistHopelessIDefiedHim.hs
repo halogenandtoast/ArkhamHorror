@@ -20,7 +20,11 @@ instance HasModifiersFor TheOrganistHopelessIDefiedHim where
 
 instance HasAbilities TheOrganistHopelessIDefiedHim where
   getAbilities (TheOrganistHopelessIDefiedHim attrs) =
-    extend1 attrs $ groupLimit PerRound $ mkAbility attrs 1 $ forced $ MovedFromHunter #after (be attrs)
+    extend1 attrs
+      $ groupLimit PerRound
+      $ mkAbility attrs 1
+      $ forced
+      $ MovedFromHunter #after (be attrs <> UnengagedEnemy)
 
 theOrganistHopelessIDefiedHim :: EnemyCard TheOrganistHopelessIDefiedHim
 theOrganistHopelessIDefiedHim =

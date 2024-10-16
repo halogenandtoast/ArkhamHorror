@@ -1,8 +1,11 @@
 module Arkham.Enemy.Cards.PursuingMotorcar (pursuingMotorcar, PursuingMotorcar (..)) where
 
 import Arkham.Ability
+import Arkham.Attack.Types
+import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -26,9 +29,13 @@ instance HasAbilities PursuingMotorcar where
       [ mkAbility a 1
           $ forced
           $ EnemyAttacks #when (You <> not_ (InVehicleMatching AnyAsset)) AnyEnemyAttack (be a)
-      , restrictedAbility a 1 (exists $ not_ You <> InVehicleMatching (VehicleWithInvestigator You))
+      , restrictedAbility a 2 (exists $ not_ You <> InVehicleMatching (VehicleWithInvestigator You))
           $ forced
-          $ EnemyAttacks #when (You <> InVehicleMatching AnyAsset) AnyEnemyAttack (be a)
+          $ EnemyAttacks
+            #when
+            (You <> InVehicleMatching AnyAsset)
+            (not_ $ AttackViaSource (SourceIs $ a.ability 2))
+            (be a)
       ]
 
 instance RunMessage PursuingMotorcar where
@@ -36,11 +43,12 @@ instance RunMessage PursuingMotorcar where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
       pure e
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      otherInvestigator <-
-        selectJust
+    UseCardAbility iid (isSource attrs -> True) 2 (getAttackDetails -> details) _ -> do
+      others <-
+        select
           $ not_ (InvestigatorWithId iid)
           <> InVehicleMatching (VehicleWithInvestigator $ InvestigatorWithId iid)
-      push $ ChangeEnemyAttackTarget attrs.id (bothTarget iid otherInvestigator)
+      msgs <- evalQueueT $ for_ others $ initiateEnemyAttack attrs (attrs.ability 2)
+      push $ ChangeEnemyAttackDetails attrs.id $ details {attackAfter = msgs}
       pure e
     _ -> PursuingMotorcar <$> liftRunMessage msg attrs

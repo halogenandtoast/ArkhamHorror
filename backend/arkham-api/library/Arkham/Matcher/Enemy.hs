@@ -16,6 +16,7 @@ import Arkham.Matcher.ChaosToken
 import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import {-# SOURCE #-} Arkham.Matcher.Location
+import {-# SOURCE #-} Arkham.Matcher.Source
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
@@ -172,6 +173,7 @@ data EnemyAttackMatcher
   | AttackDamagedAsset AssetMatcher
   | AttackDealtDamageOrHorror
   | EnemyAttackMatches [EnemyAttackMatcher]
+  | AttackViaSource SourceMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup EnemyAttackMatcher where

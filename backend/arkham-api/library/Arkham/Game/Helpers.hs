@@ -3427,6 +3427,7 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
   Matcher.AttackOfOpportunityAttackYouProvoked ->
     pure $ attackType == AttackOfOpportunity && isTarget youId attackOriginalTarget
   Matcher.AttackViaAlert -> pure $ attackType == AlertAttack
+  Matcher.AttackViaSource sourceMatcher -> sourceMatches details.source sourceMatcher
   Matcher.CancelableEnemyAttack matcher -> do
     modifiers' <- getModifiers (sourceToTarget attackSource)
     enemyModifiers <- getModifiers attackEnemy

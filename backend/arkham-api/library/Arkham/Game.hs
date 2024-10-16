@@ -1859,6 +1859,20 @@ getLocationsMatching lmatcher = do
         mods <- getModifiers l.id
         let barricaded = concat [xs | Barricades xs <- mods]
         selectAny $ not_ (beOneOf $ toId l : barricaded) <> Unblocked <> matcher <> matchAny
+    UnbarricadedConnectedFrom matcher -> do
+      starts <- select matcher
+      case starts of
+        [start] -> do
+          mods <- getModifiers start
+          let barricades = concat [xs | Barricades xs <- mods]
+          let checks = [(isValid, connectedTo) | ConnectedToWhen isValid connectedTo <- mods]
+          others <- concatForM checks $ \(isValid, connectedTo) -> do
+            valid <- start <=~> isValid
+            if valid then getLocationsMatching connectedTo else pure []
+          matcherSupreme <- AnyLocationMatcher <$> Helpers.getConnectedMatcher start
+          allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+          pure $ filter (and . sequence [(`elem` allOptions), (`notElem` barricades) . toId]) ls
+        _ -> error "not designed to handle no or multiple starts"
     ConnectedFrom matcher -> do
       -- we need to add the (ConnectedToWhen)
       -- NOTE: We need to not filter the starts

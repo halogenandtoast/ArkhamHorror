@@ -19,7 +19,8 @@ instance HasAbilities SawboneAlleyInTooDeep where
     extendRevealed
       attrs
       [ skillTestAbility $ restricted attrs 1 Here parleyAction_
-      , restricted attrs 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 7))
+      , groupLimit PerGame
+          $ restricted attrs 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 7))
           $ FastAbility' Free [#parley]
       ]
 

@@ -20,9 +20,9 @@ bearTrap :: AssetCard BearTrap
 bearTrap = assetWith BearTrap Cards.bearTrap (isStoryL .~ True)
 
 instance HasModifiersFor BearTrap where
-  getModifiersFor (EnemyTarget eid) (BearTrap attrs@AssetAttrs {..}) =
+  getModifiersFor (EnemyTarget eid) (BearTrap attrs) =
     toModifiers attrs
-      $ case assetPlacement of
+      $ case attrs.placement of
         AttachedToEnemy eid' | eid == eid' -> [EnemyFight (-1), EnemyEvade (-1)]
         _ -> []
   getModifiersFor _ _ = pure []
@@ -33,7 +33,7 @@ instance HasAbilities BearTrap where
     , mkAbility x 2 $ forced $ EnemyEnters #after LocationOfThis (enemyIs Cards.theRougarou)
     ]
    where
-    restriction = case assetPlacement x of
+    restriction = case x.placement of
       AttachedToEnemy _ -> Never
       _ -> ControlsThis
 

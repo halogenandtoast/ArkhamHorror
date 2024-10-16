@@ -155,8 +155,8 @@ const emptyLog = computed(() => {
 </script>
 
 <template>
-  <div class="content">
-    <div class="campaign-log">
+  <div class="content column">
+    <div class="campaign-log column">
       <h1>Campaign Log: {{game.name}}</h1>
       <div v-if="emptyLog" class="box">
         No entries yet.
@@ -190,12 +190,15 @@ const emptyLog = computed(() => {
             </Supplies>
           </div>
         </div>
-        <ul>
-          <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
-          <template v-for="i in game.investigators" :key="i.id">
-            <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
-          </template>
-        </ul>
+        <div v-if="recorded.length > 0" class="box">
+          Campaign Notes
+          <ul>
+            <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
+            <template v-for="i in game.investigators" :key="i.id">
+              <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
+            </template>
+          </ul>
+        </div>
         <ul>
           <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
             <ul>
@@ -226,8 +229,8 @@ h1 {
 
 .campaign-log {
   width: 80%;
-  margin: 0 auto;
-  margin-top: 20px;
+  margin-inline: auto;
+  margin-block: 20px;
   font-size: 1.8em;
 }
 
@@ -277,9 +280,16 @@ li {
   }
 }
 
+.box {
+  & ul li {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
 .content {
   overflow: auto;
   width: 100%;
+  padding-bottom: 50px;
 }
 
 .supplies-container {

@@ -2057,6 +2057,8 @@ getAssetsMatching matcher = do
   canBeDiscarded = and . sequence [attr assetCanLeavePlayByNormalMeans, not . cdPermanent . toCardDef]
   filterMatcher [] = const (pure [])
   filterMatcher as = \case
+    VehicleWithInvestigator imatcher -> do
+      filterM (\a -> selectAny $ imatcher <> InVehicleMatching (AssetWithId $ toId a)) as
     PermanentAsset -> pure $ filter (cdPermanent . toCardDef) as
     NotAsset matcher' -> do
       matches' <- filterMatcher as matcher'

@@ -122,6 +122,8 @@ data IsDirect = IsDirect | IsNonDirect
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | VehicleLeaves AssetId LocationId
+  | VehicleEnters AssetId LocationId
   | FloodLevelChanged LocationId FloodLevel FloodLevel
   | FirstTimeParleyingThisRound InvestigatorId
   | AttachCard (Maybe InvestigatorId) Card Target

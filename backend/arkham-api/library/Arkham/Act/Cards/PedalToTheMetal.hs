@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Types (Field (AssetDriver))
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (AddKeyword), modified)
+import Arkham.Helpers.Modifiers (ModifierType (AddKeyword, VehicleCannotMove), modified)
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -26,7 +26,17 @@ instance HasModifiersFor PedalToTheMetal where
 
 instance HasAbilities PedalToTheMetal where
   getAbilities (PedalToTheMetal x) =
-    extend1 x $ mkAbility x 1 $ forced $ PhaseEnds #when #investigation
+    extend1 x
+      $ restricted
+        x
+        1
+        ( exists
+            $ AssetWithTrait Vehicle
+            <> AssetWithSubtitle "Running"
+            <> AssetWithoutModifier VehicleCannotMove
+        )
+      $ forced
+      $ PhaseEnds #when #investigation
 
 instance RunMessage PedalToTheMetal where
   runMessage msg a@(PedalToTheMetal attrs) = runQueueT $ case msg of
@@ -34,7 +44,11 @@ instance RunMessage PedalToTheMetal where
       push R1
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      vehicles <- select $ AssetWithTrait Vehicle <> AssetWithSubtitle "Running"
+      vehicles <-
+        select
+          $ AssetWithTrait Vehicle
+          <> AssetWithSubtitle "Running"
+          <> AssetWithoutModifier VehicleCannotMove
       lead <- getLead
       chooseOneAtATimeM lead do
         targets vehicles $ handleTarget lead (attrs.ability 1)

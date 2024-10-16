@@ -51,6 +51,30 @@ instance HasChaosTokenValue HorrorInHighGear where
 
 instance RunMessage HorrorInHighGear where
   runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens
+        [ PlusOne
+        , Zero
+        , Zero
+        , MinusOne
+        , MinusOne
+        , MinusOne
+        , MinusTwo
+        , MinusTwo
+        , MinusThree
+        , MinusFour
+        , Skull
+        , Skull
+        , Cultist
+        , Cultist
+        , Tablet
+        , Tablet
+        , ElderThing
+        , ElderThing
+        , AutoFail
+        , ElderSign
+        ]
+      pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       pure s

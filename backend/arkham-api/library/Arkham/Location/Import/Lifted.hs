@@ -19,6 +19,7 @@ import Arkham.Location.Runner as X (
   getLeadPlayer,
   getLocationMetaDefault,
   getSetAsideCard,
+  globalMetaL,
   is,
   labelL,
   location,

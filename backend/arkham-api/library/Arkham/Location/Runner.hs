@@ -193,12 +193,15 @@ instance RunMessage LocationAttrs where
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [Window.mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
         enemies <- select $ enemyAt lid
+        afterVehicleEnters <-
+          Helpers.checkWindows [Window.mkAfter (Window.VehicleEnters aid lid)]
         pushAll
           $ [ WhenWillEnterLocation iid lid
             , EnterLocation iid lid
             , afterMoveButBeforeEnemyEngagement
             ]
           <> map EnemyCheckEngagement enemies
+          <> [afterVehicleEnters]
       pure a
     SetFlippable lid flippable | lid == locationId -> do
       pure $ a & canBeFlippedL .~ flippable

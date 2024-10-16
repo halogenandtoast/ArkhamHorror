@@ -27,7 +27,9 @@ instance HasAbilities InnsmouthJailInTooDeep where
       [ restricted attrs 1 (Here <> thisIs attrs LocationWithAdjacentBarrier)
           $ parleyAction
           $ ResourceCost 3
-      , restricted attrs 2 (Here <> youExist (InvestigatorWithKey BlackKey)) $ FastAbility' Free [#parley]
+      , groupLimit PerGame
+          $ restricted attrs 2 (Here <> youExist (InvestigatorWithKey BlackKey))
+          $ FastAbility' Free [#parley]
       ]
 
 instance RunMessage InnsmouthJailInTooDeep where
@@ -35,7 +37,7 @@ instance RunMessage InnsmouthJailInTooDeep where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       removeBarrierBetweenConnected iid attrs.id
       pure l
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       flashback iid Flashback8
       pure l
     _ -> InnsmouthJailInTooDeep <$> liftRunMessage msg attrs

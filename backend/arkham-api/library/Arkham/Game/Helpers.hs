@@ -3072,6 +3072,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
+    Matcher.UnbarricadedConnectedFrom {} -> locationId <=~> matcher
     Matcher.LocationWithCardsUnderneath {} -> locationId <=~> matcher
     Matcher.FloodedLocation {} -> locationId <=~> matcher
     Matcher.FullyFloodedLocation {} -> locationId <=~> matcher

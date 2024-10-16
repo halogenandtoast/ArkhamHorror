@@ -30,7 +30,8 @@ instance HasAbilities TheLittleBookshopInTooDeep where
       a
       [ restricted a 1 (Here <> thisIs a LocationWithAdjacentBarrier)
           $ ActionAbility [#parley] (ActionCost 2 <> DrawEncounterCardsCost 1)
-      , restricted a 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 5))
+      , groupLimit PerGame
+          $ restricted a 2 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 5))
           $ FastAbility' Free [#parley]
       ]
 

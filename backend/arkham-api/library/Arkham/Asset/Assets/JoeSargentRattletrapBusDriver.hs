@@ -15,13 +15,21 @@ newtype JoeSargentRattletrapBusDriver = JoeSargentRattletrapBusDriver AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+-- Story assets do not enter play in the same way so we hard code the uses for now
 joeSargentRattletrapBusDriver :: AssetCard JoeSargentRattletrapBusDriver
-joeSargentRattletrapBusDriver = asset JoeSargentRattletrapBusDriver Cards.joeSargentRattletrapBusDriver
+joeSargentRattletrapBusDriver =
+  assetWith
+    JoeSargentRattletrapBusDriver
+    Cards.joeSargentRattletrapBusDriver
+    (tokensL . at Ticket ?~ 3)
 
 instance HasAbilities JoeSargentRattletrapBusDriver where
   getAbilities (JoeSargentRattletrapBusDriver x) =
     [ mkAbility x 1 $ forced $ AssetLeavesPlay #when (be x)
-    , restricted x 2 (ControlsThis <> exists (ConnectedFrom YourLocation <> not_ FullyFloodedLocation))
+    , restricted
+        x
+        2
+        (ControlsThis <> exists (UnbarricadedConnectedFrom YourLocation <> not_ FullyFloodedLocation))
         $ FastAbility
         $ assetUseCost x Ticket 1
     ]
@@ -32,7 +40,8 @@ instance RunMessage JoeSargentRattletrapBusDriver where
       removeFromGame attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      locations <- select $ ConnectedFrom (locationWithInvestigator iid) <> not_ FullyFloodedLocation
+      locations <-
+        select (UnbarricadedConnectedFrom (locationWithInvestigator iid) <> not_ FullyFloodedLocation)
       chooseTargetM iid locations $ moveTo (attrs.ability 2) iid
       pure a
     _ -> JoeSargentRattletrapBusDriver <$> liftRunMessage msg attrs

@@ -59,6 +59,7 @@ data LocationMatcher
   | EmptyLocation
   | LocationWithToken Token
   | ConnectedFrom LocationMatcher
+  | UnbarricadedConnectedFrom LocationMatcher
   | ConnectedTo LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher

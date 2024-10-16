@@ -34,7 +34,8 @@ instance HasAbilities InnsmouthSquareInTooDeep where
       a
       [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
       , restricted a 2 (Here <> thisIs a LocationWithAdjacentBarrier) parleyAction_
-      , restricted a 3 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 2))
+      , groupLimit PerGame
+          $ restricted a 3 (Here <> HasCalculation (InvestigatorKeyCountCalculation Anyone) (atLeast 2))
           $ FastAbility' Free [#parley]
       ]
 

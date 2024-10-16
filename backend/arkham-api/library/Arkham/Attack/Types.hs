@@ -32,6 +32,9 @@ data EnemyAttackDetails = EnemyAttackDetails
 instance HasField "target" EnemyAttackDetails Target where
   getField = attackTarget
 
+instance HasField "source" EnemyAttackDetails Source where
+  getField = attackSource
+
 instance HasField "enemy" EnemyAttackDetails EnemyId where
   getField = attackEnemy
 

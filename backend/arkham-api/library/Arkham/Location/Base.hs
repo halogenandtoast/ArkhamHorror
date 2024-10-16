@@ -80,8 +80,8 @@ locationResources = countTokens Resource . locationTokens
 instance HasField "meta" LocationAttrs Value where
   getField = locationMeta
 
-instance HasField "global" LocationAttrs (Map Aeson.Key Value) where
-  getField = locationGlobalMeta
+instance HasField "global" LocationAttrs (Aeson.Key -> Maybe Value) where
+  getField l k = lookup k (locationGlobalMeta l)
 
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed

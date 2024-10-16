@@ -165,6 +165,7 @@ import Arkham.Location.Locations (
   cursedShoresEffect,
   enchantedWoodsLostWoodsEffect,
   hereticsGravesSpectral_171Effect,
+  longWayAroundEffect,
   montmartre209Effect,
   narrowShaftEffect,
   restaurantEffect,
@@ -451,6 +452,7 @@ allEffects =
     , ("07118", SomeEffect eyeOfChaosEffect)
     , ("07119", SomeEffect shroudOfShadowsEffect)
     , ("07161", SomeEffect thirdTimesACharm2Effect)
+    , ("07210", SomeEffect longWayAroundEffect)
     , ("07222", SomeEffect fey1Effect)
     , ("07225", SomeEffect eyeOfTheDjinnVesselOfGoodAndEvil2Effect)
     , ("07226", SomeEffect armageddon4Effect)

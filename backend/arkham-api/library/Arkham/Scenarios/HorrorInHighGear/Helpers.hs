@@ -6,6 +6,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select, selectAny, selectField, selectWithField, whenNone)
 import Arkham.Direction
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
@@ -13,15 +14,18 @@ import Arkham.Id
 import Arkham.Label
 import Arkham.Layout
 import Arkham.Location.Cards qualified as Location
-import Arkham.Location.Types (Field (..))
+import Arkham.Location.Types (Field (..), LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (
-  Message (PlacedLocationDirection, RemoveLocation, SetLayout, SetLocationLabel),
+  Message (PlacedLocationDirection, RemoveLocation, SetLayout, SetLocationLabel, SpendClues),
  )
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait (Trait (Vehicle))
+import Arkham.Window
+import Arkham.Window qualified as Window
+import Data.Aeson qualified as Aeson
 import Data.Foldable (foldl)
 import Data.Text qualified as T
 import GHC.Records
@@ -129,3 +133,34 @@ advanceRoad = do
             selectEach (mapOneOf (LocationWithLabel . Label) xs) $ push . RemoveLocation
             go mStopAt
               $ map (\(GridTemplateRow row) -> GridTemplateRow . T.unwords . drop 1 $ T.words row) layout
+
+getLeavingVehicle :: [Window] -> AssetId
+getLeavingVehicle = \case
+  [] -> error "impossible"
+  ((windowType -> Window.VehicleLeaves aid _) : _) -> aid
+  (_ : rest) -> getLeavingVehicle rest
+
+getEnteringVehicle :: [Window] -> AssetId
+getEnteringVehicle = \case
+  [] -> error "impossible"
+  ((windowType -> Window.VehicleEnters aid _) : _) -> aid
+  (_ : rest) -> getEnteringVehicle rest
+
+handleVehicleLeaves :: ReverseQueue m => AssetId -> LocationId -> Int -> m Int
+handleVehicleLeaves vehicle here per = do
+  investigators <- select $ investigatorAt here
+  n <- getSpendableClueCount investigators
+  inVehicle <- select $ InVehicleMatching (AssetWithId vehicle)
+  let total = length inVehicle * per
+  when (n > 0) $ push $ SpendClues (min n total) investigators
+  pure $ max 0 (total - n)
+
+notSeenVehicle :: LocationAttrs -> AssetMatcher
+notSeenVehicle attrs = case (maybeResult =<< attrs.global "seenVehicles") of
+  Nothing -> AnyAsset
+  Just xs -> not_ (mapOneOf AssetWithId xs)
+
+sawVehicle :: AssetId -> Map Aeson.Key Value -> Map Aeson.Key Value
+sawVehicle aid kmap = insertMap "seenVehicles" (toJSON (aid : current)) kmap
+ where
+  current = maybe [] (toResultDefault []) $ lookup "seenVehicles" kmap

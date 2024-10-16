@@ -7,15 +7,22 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Vehicle
 import Arkham.Matcher
 
 newtype ThomasDawsonsCarStopped = ThomasDawsonsCarStopped AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasDawsonsCarStopped :: AssetCard ThomasDawsonsCarStopped
 thomasDawsonsCarStopped = asset ThomasDawsonsCarStopped Cards.thomasDawsonsCarStopped
+
+instance HasModifiersFor ThomasDawsonsCarStopped where
+  getModifiersFor (InvestigatorTarget _) (ThomasDawsonsCarStopped a) = do
+    n <- selectCount $ InVehicleMatching (be a)
+    modified a [CannotEnterVehicle (be a) | n >= 2]
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities ThomasDawsonsCarStopped where
   getAbilities (ThomasDawsonsCarStopped x) =

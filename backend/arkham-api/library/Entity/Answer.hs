@@ -271,7 +271,11 @@ handleAnswer Game {..} playerId = \case
           PlayerWindowChooseOne _ -> True
           _ -> False
     if not (Map.null gameQuestion) && not (any isPlayerWindowChoose $ toList gameQuestion)
-      then pure [message, AskMap gameQuestion]
+      then case message of
+        PassSkillTest -> pure [message]
+        FailSkillTest -> pure [message]
+        ForceChaosTokenDraw _ -> pure [message]
+        _ -> pure [message, AskMap gameQuestion]
       else pure [message]
   Answer response -> do
     let q = fromJustNote "Invalid question type" (Map.lookup playerId gameQuestion)

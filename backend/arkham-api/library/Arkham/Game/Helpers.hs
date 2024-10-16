@@ -1776,6 +1776,20 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.VehicleEnters timing assetMatcher whereMatcher -> guardTiming timing \case
+      Window.VehicleEnters aid where' -> do
+        andM
+          [ locationMatches iid source window' where' whereMatcher
+          , aid <=~> assetMatcher
+          ]
+      _ -> noMatch
+    Matcher.VehicleLeaves timing assetMatcher whereMatcher -> guardTiming timing \case
+      Window.VehicleLeaves aid where' -> do
+        andM
+          [ locationMatches iid source window' where' whereMatcher
+          , aid <=~> assetMatcher
+          ]
+      _ -> noMatch
     Matcher.WouldPlaceClueOnLocation timing whoMatcher whereMatcher valueMatcher -> guardTiming timing \case
       Window.WouldPlaceClueOnLocation who where' _ n -> do
         andM

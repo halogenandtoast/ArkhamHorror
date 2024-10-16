@@ -558,7 +558,7 @@ instance RunMessage ChaosBag where
                         ]
                     ]
 
-      when s do
+      when (s && notNull tokensToPool) do
         push =<< removeWindow tokensToPool
 
       pure

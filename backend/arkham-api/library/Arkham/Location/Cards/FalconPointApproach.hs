@@ -1,12 +1,10 @@
-module Arkham.Location.Cards.FalconPointApproach (
-  falconPointApproach,
-  FalconPointApproach (..),
-)
-where
+module Arkham.Location.Cards.FalconPointApproach (falconPointApproach, FalconPointApproach (..)) where
 
+import Arkham.Ability
 import Arkham.Direction
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype FalconPointApproach = FalconPointApproach LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,9 +17,15 @@ falconPointApproach =
     .~ setFromList [LeftOf, RightOf]
 
 instance HasAbilities FalconPointApproach where
-  getAbilities (FalconPointApproach attrs) =
-    extendRevealed attrs []
+  getAbilities (FalconPointApproach a) =
+    extendRevealed
+      a
+      [restricted a 1 (EachUndefeatedInvestigator $ InvestigatorAt (be a)) $ Objective $ forced AnyWindow]
 
 instance RunMessage FalconPointApproach where
-  runMessage msg (FalconPointApproach attrs) = runQueueT $ case msg of
+  runMessage msg a@(FalconPointApproach attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+      actId <- selectJust AnyAct
+      push $ AdvanceAct actId (toSource attrs) #other
+      pure a
     _ -> FalconPointApproach <$> liftRunMessage msg attrs

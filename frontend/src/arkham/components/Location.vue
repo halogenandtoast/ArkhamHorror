@@ -254,18 +254,20 @@ function onDrop(event: DragEvent) {
           <Locus v-if="locus" class="locus" />
           <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
 
-          <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
-          <img
-            :data-id="id"
-            class="card"
-            :src="image"
-            :class="{ 'location--can-interact': canInteract }"
-            draggable="false"
-            @drop="onDrop($event)"
-            @dragover.prevent="dragover($event)"
-            @dragenter.prevent
-            @click="clicked"
-          />
+          <div class="card-frame-inner">
+            <div class="wave" v-if="location.floodLevel" :class="{ [location.floodLevel]: true }"></div>
+            <img
+              :data-id="id"
+              class="card"
+              :src="image"
+              :class="{ 'location--can-interact': canInteract }"
+              draggable="false"
+              @drop="onDrop($event)"
+              @dragover.prevent="dragover($event)"
+              @dragenter.prevent
+              @click="clicked"
+            />
+          </div>
 
           <div class="clues pool">
             <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
@@ -504,6 +506,12 @@ function onDrop(event: DragEvent) {
   justify-content: center;
   border-radius: 5px;
   min-width: fit-content;
+
+  .card-frame-inner {
+    overflow: hidden;
+    position: relative;
+    line-height: 0;
+  }
 }
 
 

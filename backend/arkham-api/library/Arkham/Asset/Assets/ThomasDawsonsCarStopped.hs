@@ -1,19 +1,36 @@
-module Arkham.Asset.Assets.ThomasDawsonsCarStopped
-  ( thomasDawsonsCarStopped
-  , ThomasDawsonsCarStopped(..)
-  )
+module Arkham.Asset.Assets.ThomasDawsonsCarStopped (
+  thomasDawsonsCarStopped,
+  ThomasDawsonsCarStopped (..),
+)
 where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Vehicle
+import Arkham.Matcher
 
 newtype ThomasDawsonsCarStopped = ThomasDawsonsCarStopped AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasDawsonsCarStopped :: AssetCard ThomasDawsonsCarStopped
 thomasDawsonsCarStopped = asset ThomasDawsonsCarStopped Cards.thomasDawsonsCarStopped
 
+instance HasAbilities ThomasDawsonsCarStopped where
+  getAbilities (ThomasDawsonsCarStopped x) =
+    [ vehicleEnterOrExitAbility x
+    , restrictedAbility x 2 (maybe Never (youExist . InvestigatorWithId) x.driver) actionAbility
+    ]
+
 instance RunMessage ThomasDawsonsCarStopped where
-  runMessage msg (ThomasDawsonsCarStopped attrs) = runQueueT $ case msg of
+  runMessage msg a@(ThomasDawsonsCarStopped attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) VehicleEnterExitAbility -> do
+      enterOrExitVehicle iid a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      flipOver iid attrs
+      pure a
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceAsset attrs.id Cards.thomasDawsonsCarRunning
+      pure a
     _ -> ThomasDawsonsCarStopped <$> liftRunMessage msg attrs

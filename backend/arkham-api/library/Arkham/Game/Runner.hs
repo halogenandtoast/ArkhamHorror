@@ -2155,6 +2155,27 @@ runGameMessage msg g = case msg of
             (createAsset card assetId)
     push (ReplacedInvestigatorAsset iid assetId)
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
+  ReplaceAsset assetId cardDef -> do
+    asset <- getAsset assetId
+    let card = lookupCard cardDef (toCardId asset)
+    replaceCard (toCardId card) card
+    let asset' =
+          overAttrs
+            ( \attrs ->
+                attrs
+                  { assetTokens = attr assetTokens asset
+                  , assetCardsUnderneath = attr assetCardsUnderneath asset
+                  , assetPlacement = attr assetPlacement asset
+                  , assetOwner = attr assetOwner asset
+                  , assetController = attr assetController asset
+                  , assetExhausted = attr assetExhausted asset
+                  , assetSealedChaosTokens = attr assetSealedChaosTokens asset
+                  , assetKeys = attr assetKeys asset
+                  , assetDriver = attr assetDriver asset
+                  }
+            )
+            (createAsset card assetId)
+    pure $ g & entitiesL . assetsL . at assetId ?~ asset'
   When (EnemySpawn _ lid eid) -> do
     windowMsg <- checkWindows [mkWhen (Window.EnemySpawns eid lid)]
     g <$ push windowMsg

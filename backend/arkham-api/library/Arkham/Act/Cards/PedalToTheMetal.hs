@@ -1,21 +1,48 @@
-module Arkham.Act.Cards.PedalToTheMetal
-  ( PedalToTheMetal(..)
-  , pedalToTheMetal
-  ) where
+module Arkham.Act.Cards.PedalToTheMetal (PedalToTheMetal (..), pedalToTheMetal) where
 
+import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Asset.Types (Field (AssetDriver))
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (AddKeyword), modified)
+import Arkham.Keyword (Keyword (Hunter))
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Projection
+import Arkham.Trait (Trait (Road, Vehicle))
 
 newtype PedalToTheMetal = PedalToTheMetal ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving anyclass IsAct
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pedalToTheMetal :: ActCard PedalToTheMetal
 pedalToTheMetal = act (1, A) PedalToTheMetal Cards.pedalToTheMetal Nothing
 
+instance HasModifiersFor PedalToTheMetal where
+  getModifiersFor (EnemyTarget _) (PedalToTheMetal a) = modified a [AddKeyword Hunter]
+  getModifiersFor _ _ = pure []
+
+instance HasAbilities PedalToTheMetal where
+  getAbilities (PedalToTheMetal x) =
+    extend1 x $ mkAbility x 1 $ forced $ PhaseEnds #when #investigation
+
 instance RunMessage PedalToTheMetal where
   runMessage msg a@(PedalToTheMetal attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R1
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      vehicles <- select $ AssetWithTrait Vehicle <> AssetWithSubtitle "Running"
+      lead <- getLead
+      chooseOneAtATimeM lead do
+        targets vehicles $ handleTarget lead (attrs.ability 1)
+      pure a
+    HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (AssetTarget aid) -> do
+      getLocationOf aid >>= traverse_ \lid -> do
+        driver <- fieldJust AssetDriver aid
+        roads <- select $ withTrait Road <> ConnectedTo (LocationWithId lid)
+        chooseTargetM driver roads $ place aid
       pure a
     _ -> PedalToTheMetal <$> liftRunMessage msg attrs

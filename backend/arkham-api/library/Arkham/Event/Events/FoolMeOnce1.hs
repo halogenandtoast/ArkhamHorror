@@ -1,10 +1,4 @@
-module Arkham.Event.Events.FoolMeOnce1 (
-  foolMeOnce1,
-  FoolMeOnce1 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Events.FoolMeOnce1 (foolMeOnce1, FoolMeOnce1 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -13,6 +7,7 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window hiding (DrawCard, PlaceUnderneath)
@@ -33,18 +28,14 @@ instance HasAbilities FoolMeOnce1 where
   getAbilities (FoolMeOnce1 attrs) =
     [ restrictedAbility attrs 1 ControlsThis
         $ ReactionAbility
-          ( DrawCard
-              #when
-              Anyone
-              (basic $ oneOf $ map cardIs $ eventCardsUnderneath attrs)
-              AnyDeck
-          )
+          (DrawCard #when Anyone (basic $ mapOneOf cardIs $ eventCardsUnderneath attrs) AnyDeck)
           (discardCost attrs)
     ]
 
 instance RunMessage FoolMeOnce1 where
   runMessage msg e@(FoolMeOnce1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ (getTreachery -> (batchId, treachery)) _ | eid == toId attrs -> do
+    PlayThisEvent iid eid | eid == attrs.id -> do
+      let (batchId, treachery) = getTreachery attrs.windows
       card <- field TreacheryCard treachery
       pushAll
         [ RemoveTreachery treachery

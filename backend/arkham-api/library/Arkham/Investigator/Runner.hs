@@ -2290,31 +2290,43 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       then pure a
       else pure $ a & assignedSanityHealL %~ insertWith (+) source n
   MoveTokens s _ (isTarget a -> True) tType amount -> runMessage (PlaceTokens s (toTarget a) tType amount) a
-  MoveTokens s source@(isSource a -> True) target tType amount | amount > 0 -> do
+  MoveTokens s (isSource a -> True) _target tType amount | amount > 0 -> do
     case tType of
       Clue -> do
-        assetsWithClues <- selectWithField AssetClues (assetControlledBy a.id <> AssetWithAnyClues)
-        let total = sum (map snd assetsWithClues) + investigatorClues a
-        if total == amount
-          then do
-            for_ assetsWithClues \(aid, n) -> do
-              push $ RemoveTokens s (AssetTarget aid) tType n
-            if investigatorClues a > 0
-              then runMessage (RemoveTokens s (toTarget a) tType (investigatorClues a)) a
-              else pure a
+        push $ ForInvestigator investigatorId msg
+        pure a
+      _ -> runMessage (RemoveTokens s (toTarget a) tType amount) a
+  ForInvestigator iid (MoveTokens s source@(isSource a -> True) target Clue amount) | amount > 0 && iid == investigatorId -> do
+    assetsWithClues <- selectWithField AssetClues (assetControlledBy a.id <> AssetWithAnyClues)
+    let total = sum (map snd assetsWithClues) + investigatorClues a
+    if total == amount
+      then do
+        for_ assetsWithClues \(aid, n) -> do
+          push $ RemoveTokens s (AssetTarget aid) Clue n
+        if investigatorClues a > 0
+          then runMessage (RemoveTokens s (toTarget a) Clue (investigatorClues a)) a
+          else pure a
+      else do
+        if null assetsWithClues
+          then runMessage (RemoveTokens s (toTarget a) Clue amount) a
           else do
             player <- getPlayer a.id
             push
               $ chooseOne player
-              $ [ ClueLabel a.id [RemoveTokens s (toTarget a) tType 1, MoveTokens s source target tType (amount - 1)]
+              $ [ ClueLabel
+                    a.id
+                    [ RemoveTokens s (toTarget a) Clue 1
+                    , ForInvestigator iid (MoveTokens s source target Clue (amount - 1))
+                    ]
                 ]
               <> [ targetLabel
                   aid
-                  [RemoveTokens s (toTarget aid) tType 1, MoveTokens s source target tType (amount - 1)]
+                  [ RemoveTokens s (toTarget aid) Clue 1
+                  , ForInvestigator iid (MoveTokens s source target Clue (amount - 1))
+                  ]
                  | (aid, _) <- assetsWithClues
                  ]
             pure a
-      _ -> runMessage (RemoveTokens s (toTarget a) tType amount) a
   MoveTokensNoDefeated s _ target tType n | isTarget a target -> do
     runMessage (PlaceTokens s (toTarget a) tType n) a
   MoveTokensNoDefeated s source _ tType n | isSource a source -> do

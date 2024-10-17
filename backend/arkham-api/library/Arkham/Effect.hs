@@ -218,7 +218,7 @@ instance RunMessage NoEffect where
 
 createEffect :: MonadRandom m => EffectBuilder -> m (EffectId, Effect)
 createEffect builder = do
-  eid <- getRandom
+  eid <- maybe getRandom pure (effectBuilderEffectId builder)
   pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect

@@ -1,8 +1,4 @@
-module Arkham.Location.Cards.FalconPointGatehouse (
-  falconPointGatehouse,
-  FalconPointGatehouse (..),
-)
-where
+module Arkham.Location.Cards.FalconPointGatehouse (falconPointGatehouse, FalconPointGatehouse (..)) where
 
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
@@ -14,7 +10,7 @@ newtype FalconPointGatehouse = FalconPointGatehouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falconPointGatehouse :: LocationCard FalconPointGatehouse
-falconPointGatehouse = location FalconPointGatehouse Cards.falconPointGatehouse 0 (Static 0)
+falconPointGatehouse = location FalconPointGatehouse Cards.falconPointGatehouse 1 (Static 0)
 
 instance HasModifiersFor FalconPointGatehouse where
   getModifiersFor target (FalconPointGatehouse attrs) = preventDrawConnections target attrs

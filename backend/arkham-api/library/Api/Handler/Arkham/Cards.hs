@@ -36,7 +36,20 @@ getApiV1ArkhamCardsR = do
             <> Map.filter (isNothing . cdEncounterSet) allPlayerCards
             <> Map.fromList
               (map (toCardCode &&& id) [Locations.dreamGateWondrousJourney, Events.theStarsAreRight]) -- is encounter back so won't show correctly
-    safeBCodes = ["03047b", "03084b"]
+    safeBCodes =
+      [ "03047b"
+      , "03084b"
+      , "07174b"
+      , "07175b"
+      , "07176b"
+      , "07177b"
+      , "07204b"
+      , "07205b"
+      , "07206b"
+      , "07207b"
+      , "07208b"
+      , "07209b"
+      ]
     safeDCodes = ["03084d"]
 
   pure

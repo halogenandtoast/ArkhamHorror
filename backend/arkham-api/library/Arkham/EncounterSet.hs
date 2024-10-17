@@ -136,6 +136,7 @@ data EncounterSet
   | InTooDeep
   | DevilReef
   | HorrorInHighGear
+  | ALightInTheFog
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

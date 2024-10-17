@@ -134,6 +134,7 @@ data LocationMatcher
   | RearmostLocation
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
+  | LocationInRow Int
   | LocationWhenCriteria Criterion
   | -- | Must be replaced
     ThatLocation

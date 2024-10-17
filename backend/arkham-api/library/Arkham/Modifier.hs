@@ -27,6 +27,7 @@ import Arkham.Phase
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
+import Arkham.SortedPair
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Spawn
 import {-# SOURCE #-} Arkham.Strategy
@@ -38,6 +39,7 @@ import GHC.OverloadedLabels
 
 data ModifierType
   = ForEach GameCalculation [ModifierType]
+  | DoNotDrawConnection (SortedPair LocationId)
   | Barricades [LocationId]
   | CanIgnoreBarriers
   | IgnoreBarriers

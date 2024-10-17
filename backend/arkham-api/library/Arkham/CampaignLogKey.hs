@@ -281,6 +281,8 @@ data CampaignLogKey
   | TheIdolWasBroughtToTheLighthouse
   | TheMantleWasBroughtToTheLighthouse
   | TheHeaddressWasBroughtToTheLighthouse
+  | TheInvestigatorsReachedFalconPointBeforeSunrise
+  | TheInvestigatorsReachedFalconPointAfterSunrise
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

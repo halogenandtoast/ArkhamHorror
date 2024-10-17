@@ -93,7 +93,7 @@ instance HasChaosTokenValue InTooDeep where
 
 setBarriers :: ReverseQueue m => LocationId -> LocationId -> Int -> ScenarioBuilderT m ()
 setBarriers a b n = do
-  meta <- toResultDefault (Meta mempty) <$> use metaL
+  meta <- toResultDefault (Meta mempty) <$> use (attrsL . metaL)
   setMeta $ Helpers.setBarriers a b n meta
 
 instance RunMessage InTooDeep where

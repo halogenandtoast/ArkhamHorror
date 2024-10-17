@@ -668,6 +668,20 @@ allLocations =
     , SomeLocationCard desolateRoad_a
     , SomeLocationCard desolateRoad_b
     , SomeLocationCard longWayAround
+    , --- A Light in the Fog [lif]
+      SomeLocationCard falconPointGatehouse
+    , SomeLocationCard lighthouseStairwell
+    , SomeLocationCard lanternRoom
+    , SomeLocationCard falconPointCliffside
+    , SomeLocationCard lighthouseKeepersCottage
+    , SomeLocationCard sunkenGrottoUpperDepths
+    , SomeLocationCard sunkenGrottoLowerDepths
+    , SomeLocationCard sunkenGrottoFinalDepths
+    , SomeLocationCard shrineToHydra
+    , SomeLocationCard deepOneNursery
+    , SomeLocationCard theMoonRoom
+    , SomeLocationCard sunkenArchives
+    , SomeLocationCard pumpRoom
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

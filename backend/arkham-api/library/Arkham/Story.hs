@@ -107,5 +107,6 @@ allStories =
     , SomeStoryCard rollingPits
     , SomeStoryCard centerOfTheSea
     , SomeStoryCard findingAgentHarper
+    , SomeStoryCard captured
     , SomeStoryCard realityAcid
     ]

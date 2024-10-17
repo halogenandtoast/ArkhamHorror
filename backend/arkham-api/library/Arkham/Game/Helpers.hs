@@ -3094,6 +3094,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithVictory -> locationId <=~> matcher
     Matcher.FewestBreaches {} -> locationId <=~> matcher
     Matcher.RearmostLocation {} -> locationId <=~> matcher
+    Matcher.LocationInRow {} -> locationId <=~> matcher
     Matcher.LocationWithBreaches _ -> locationId <=~> matcher
     Matcher.LocationWithBrazier _ -> locationId <=~> matcher
     Matcher.LocationWithIncursion -> locationId <=~> matcher

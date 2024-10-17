@@ -237,6 +237,11 @@ allAgendas =
       SomeAgendaCard theChaseIsOnV1
     , SomeAgendaCard theChaseIsOnV2
     , SomeAgendaCard hotPursuit
+    , --- A Light in the Fog
+      SomeAgendaCard fogOnTheBay
+    , SomeAgendaCard unchangingAsTheSea
+    , SomeAgendaCard theTideRisesALightInTheFog
+    , SomeAgendaCard terrorAtFalconPoint
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

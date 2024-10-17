@@ -26,6 +26,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
 import Arkham.Location.Cards
 import Arkham.Location.FloodLevel
+import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import Arkham.Matcher (LocationMatcher (..))
 import Arkham.Message
@@ -92,6 +93,7 @@ data instance Field Location :: Type -> Type where
   LocationTraits :: Field Location (Set Trait)
   LocationUnrevealedName :: Field Location Name
   LocationVengeance :: Field Location (Maybe Int)
+  LocationPosition :: Field Location (Maybe Pos)
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -112,6 +114,7 @@ fieldLens = \case
   LocationRevealed -> revealedL
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
+  LocationPosition -> positionL
   LocationInvestigateSkill -> investigateSkillL
   LocationInFrontOf -> inFrontOfL
   LocationCardId -> cardIdL
@@ -185,6 +188,7 @@ instance FromJSON (SomeField Location) where
     "LocationTraits" -> pure $ SomeField LocationTraits
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance
+    "LocationPosition" -> pure $ SomeField LocationPosition
     _ -> error "no such field"
 
 instance Entity LocationAttrs where
@@ -290,6 +294,7 @@ locationWith f def shroud' revealClues g =
             , locationBrazier = Nothing
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing
+            , locationPosition = Nothing
             }
     }
 

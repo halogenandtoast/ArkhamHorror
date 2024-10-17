@@ -278,8 +278,12 @@ allActs =
       SomeActCard throughTheLabyrinth
     , --- Devil Reef
       SomeActCard reefOfMysteries
-    , --- Pedal to the Metal
+    , --- Horror in High Gear
       SomeActCard pedalToTheMetal
+    , --- A Light in the Fog
+      SomeActCard theLighthouse
+    , SomeActCard findingThePath
+    , SomeActCard worshippersOfTheDeep
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

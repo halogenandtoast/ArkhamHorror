@@ -37,6 +37,7 @@ instance IsCampaign TheInnsmouthConspiracy where
     InTooDeep -> Just DevilReef
     -- Devil Reef must choose interlude options
     InterludeStep 3 _ -> Just (UpgradeDeckStep HorrorInHighGear)
+    HorrorInHighGear -> Just ALightInTheFog
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

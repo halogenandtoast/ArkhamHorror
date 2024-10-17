@@ -401,6 +401,10 @@ allEnemies =
     , SomeEnemyCard pursuingMotorcar
     , SomeEnemyCard hitVan
     , SomeEnemyCard hybridAssassin
+    , --- A Light in the Fog [lif]
+      SomeEnemyCard oceirosMarsh
+    , SomeEnemyCard deepOneNursemaid
+    , SomeEnemyCard deepOneHatchling
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

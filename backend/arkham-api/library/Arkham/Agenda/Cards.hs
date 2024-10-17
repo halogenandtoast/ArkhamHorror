@@ -57,6 +57,7 @@ allAgendaCards =
       , fashionablyLate
       , feedTheBeast
       , floodedStreets
+      , fogOnTheBay
       , franticPursuit
       , furyThatShakesTheEarth
       , growingSuspicion
@@ -111,6 +112,7 @@ allAgendaCards =
       , strangeDisappearances
       , swallowedSky
       , temperanceXIV
+      , terrorAtFalconPoint
       , theAlarmIsRaised
       , theArkhamWoods
       , theBarrierIsThin
@@ -159,6 +161,7 @@ allAgendaCards =
       , theThirdAct
       , theThirdNight
       , theTideRises
+      , theTideRisesALightInTheFog
       , theTrueCulpritV1
       , theTrueCulpritV10
       , theTrueCulpritV2
@@ -179,6 +182,7 @@ allAgendaCards =
       , timeCollapsing
       , timeIsRunningShort
       , torturousDescent
+      , unchangingAsTheSea
       , undergroundMuscle
       , vengeance
       , vengeanceAwaits
@@ -618,6 +622,18 @@ theChaseIsOnV2 = agenda "07200" "The Chase is On! (v. II)" 1 HorrorInHighGear
 
 hotPursuit :: CardDef
 hotPursuit = agenda "07201" "Hot Pursuit" 2 HorrorInHighGear
+
+fogOnTheBay :: CardDef
+fogOnTheBay = agenda "07232" "Fog on the Bay" 1 ALightInTheFog
+
+unchangingAsTheSea :: CardDef
+unchangingAsTheSea = agenda "07233" "Unchanging as the Sea" 2 ALightInTheFog
+
+theTideRisesALightInTheFog :: CardDef
+theTideRisesALightInTheFog = agenda "07234" "The Tide Rises" 3 ALightInTheFog
+
+terrorAtFalconPoint :: CardDef
+terrorAtFalconPoint = agenda "07235" "Terror at Falcon Point" 4 ALightInTheFog
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

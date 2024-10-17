@@ -83,6 +83,7 @@ data Trait
   | Extradimensional
   | Extraterrestrial
   | Eztli
+  | FalconPoint
   | Familiar
   | Fated
   | Favor

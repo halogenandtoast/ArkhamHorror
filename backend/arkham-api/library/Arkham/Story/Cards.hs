@@ -92,6 +92,7 @@ allStoryCards =
       , rollingPits
       , centerOfTheSea
       , findingAgentHarper
+      , captured
       , realityAcid
       ]
 
@@ -308,6 +309,9 @@ centerOfTheSea = story "06265b" "Center of the Sea" PointOfNoReturn
 
 findingAgentHarper :: CardDef
 findingAgentHarper = story "07062" "Finding Agent Harper" TheVanishingOfElinaHarper
+
+captured :: CardDef
+captured = story "07252" "Captured!" ALightInTheFog
 
 realityAcid :: CardDef
 realityAcid =

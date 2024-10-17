@@ -5,7 +5,6 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Grid
 import Arkham.Matcher
@@ -23,13 +22,14 @@ thePit = act (1, A) ThePit Cards.thePit (groupClueCost $ Static 3)
 instance RunMessage ThePit where
   runMessage msg a@(ThePit attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      lead <- getLead
-      createSetAsideEnemy Enemies.theAmalgam lead
+      createSetAsideEnemy Enemies.theAmalgam =<< getLead
       shuffleSetAsideIntoEncounterDeck
-        $ oneOf [cardIs Treacheries.blindsense, cardIs Treacheries.fromTheDepths]
+        $ mapOneOf cardIs [Treacheries.blindsense, Treacheries.fromTheDepths]
 
-      tidalTunnelDeck <- shuffleM =<< getSetAsideCardsMatching "Tidal Tunnel"
-      setScenarioDeck TidalTunnelDeck tidalTunnelDeck
+      shuffleSetAsideIntoScenarioDeck TidalTunnelDeck $ CardWithTitle "Tidal Tunnel"
+      doStep 1 msg
+      pure a
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       grid <- getGrid
 
       let
@@ -38,11 +38,11 @@ instance RunMessage ThePit where
           Just pos -> emptyPositionsInDirections grid pos [GridDown, GridLeft, GridRight]
 
       positions <- nub . concatMap locationPositions <$> select RevealedLocation
+      tidalTunnelDeck <- getScenarioDeck TidalTunnelDeck
       for_ (zip positions tidalTunnelDeck) (uncurry placeLocationInGrid)
 
       flashback Flashback1
       recoverMemory AMeetingWithThomasDawson
-
       advanceActDeck attrs
       pure a
     _ -> ThePit <$> liftRunMessage msg attrs

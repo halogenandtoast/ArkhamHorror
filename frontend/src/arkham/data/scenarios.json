@@ -247,8 +247,35 @@
     "settings": []
   },
   { "id": "07041", "name": "The Pit of Despair", "campaign": "07", "settings": [] },
-  { "id": "07056", "name": "The Vanishing of Elina Harper", "campaign": "07", "settings": [] },
-  { "id": "07123", "name": "In Too Deep", "campaign": "07", "settings": [] },
+  {
+      "id": "07056",
+      "name": "The Vanishing of Elina Harper",
+      "campaign": "07",
+      "settings": [
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A Decision to Stick Together", "key": "ADecisionToStickTogether", "content": false }
+          ]
+        }
+      ]
+  },
+  {
+    "id": "07123",
+    "name": "In Too Deep",
+    "campaign": "07",
+    "settings": [
+      { "key": "OutForBlood", "recordable": "RecordableCardCode", "type": "ToggleRecords", "content": [
+        { "label": "Brian Burnham", "key": "07078", "content": false },
+        { "label": "Othera Gilman", "key": "07081", "content": false },
+        { "label": "Joyce Little", "key": "07080", "content": false },
+        { "label": "Barnabas Marsh", "key": "07079", "content": false },
+        { "label": "Zadok Allen", "key": "07077", "content": false },
+        { "label": "Robert Friendly", "key": "07076", "content": false }
+      ] }
+    ]
+  },
   { "id": "07163", "name": "Devil Reef", "campaign": "07", "settings": [] },
   {
       "id": "07198",

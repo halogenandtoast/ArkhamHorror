@@ -56,30 +56,6 @@ instance HasChaosTokenValue TheVanishingOfElinaHarper where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-standaloneChaosTokens :: [ChaosTokenFace]
-standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Cultist
-  , Tablet
-  , Tablet
-  , ElderThing
-  , ElderThing
-  , AutoFail
-  , ElderSign
-  ]
-
 instance RunMessage TheVanishingOfElinaHarper where
   runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -90,7 +66,13 @@ instance RunMessage TheVanishingOfElinaHarper where
       unless standalone $ eachInvestigator chooseUpgradeDeck
       pure s
     StandaloneSetup -> do
-      setChaosTokens standaloneChaosTokens
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup TheVanishingOfElinaHarper attrs do
       gather Set.TheVanishingOfElinaHarper
@@ -127,6 +109,7 @@ instance RunMessage TheVanishingOfElinaHarper where
         , Acts.theRescue
         , Assets.thomasDawsonSoldierInANewWar
         , Assets.elinaHarperKnowsTooMuch
+        , Enemies.huntingNightgaunt
         , Enemies.huntingNightgaunt
         , Enemies.wingedOneFogOverInnsmouth
         ]

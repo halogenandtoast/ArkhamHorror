@@ -4,5 +4,6 @@ import theVanishingOfElinaHarper from '@/locales/en/theInnsmouthConspiracy/scena
 import inTooDeep from '@/locales/en/theInnsmouthConspiracy/scenarios/inTooDeep.json'
 import devilReef from '@/locales/en/theInnsmouthConspiracy/scenarios/devilReef.json'
 import horrorInHighGear from '@/locales/en/theInnsmouthConspiracy/scenarios/horrorInHighGear.json'
+import aLightInTheFog from '@/locales/en/theInnsmouthConspiracy/scenarios/aLightInTheFog.json'
 
-export default {...base, thePitOfDespair, theVanishingOfElinaHarper, inTooDeep, devilReef, horrorInHighGear}
+export default {...base, thePitOfDespair, theVanishingOfElinaHarper, inTooDeep, devilReef, horrorInHighGear, aLightInTheFog}

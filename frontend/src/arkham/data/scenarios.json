@@ -257,5 +257,17 @@
       "settings": [
         { "key": "TerrorOfDevilReefStatus", "keys": ["TheTerrorOfDevilReefIsStillAlive", "TheTerrorOfDevilReefIsDead"], "type": "PickKey", "content": "TheTerrorOfDevilReefIsStillAlive" }
       ]
+  },
+  {
+      "id": "07231",
+      "name": "A Light in the Fog",
+      "campaign": "07",
+      "settings": [
+        { "key": "ReachingFalconPoint", "keys": ["TheInvestigatorsReachedFalconPointBeforeSunrise", "TheInvestigatorsReachedFalconPointAfterSunrise"], "type": "PickKey", "content": "TheInvestigatorsReachedFalconPointBeforeSunrise" },
+        { "key": "TheIdolWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheMantleWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheHeaddressWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheTideHasGrownStronger", "type": "ToggleKey", "content": false }
+      ]
   }
 ]

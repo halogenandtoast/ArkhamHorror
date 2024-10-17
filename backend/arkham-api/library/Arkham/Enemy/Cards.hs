@@ -133,6 +133,8 @@ allEncounterEnemyCards =
       , danielChesterfield
       , darkYoungHost
       , deepOneBull
+      , deepOneHatchling
+      , deepOneNursemaid
       , deepOnePredator
       , devoteeOfTheKey
       , dholeOfTheWastes
@@ -240,6 +242,7 @@ allEncounterEnemyCards =
       , nyarlathotepTheCrawlingChaos
       , nyarlathotepTheFacelessWhisperer
       , oBannionsThug
+      , oceirosMarsh
       , otheraGilmanProprietessOfTheHotel
       , otherworldlyMeddler
       , packOfVooniths
@@ -2098,13 +2101,13 @@ lloigor =
 
 deepOneBull :: CardDef
 deepOneBull =
-  (enemy "07088" "Deep One Bull" ThePitOfDespair 1)
+  (enemy "07088" "Deep One Bull" CreaturesOfTheDeep 1)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
 lurkingDeepOne :: CardDef
 lurkingDeepOne =
-  (enemy "07089" "Lurking Deep One" ThePitOfDespair 3)
+  (enemy "07089" "Lurking Deep One" CreaturesOfTheDeep 3)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     }
 
@@ -2200,6 +2203,29 @@ hybridAssassin =
   (enemy "07215" "Hybrid Assassin" HorrorInHighGear 2)
     { cdCardTraits = setFromList [Vehicle, Humanoid, Cultist]
     , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+oceirosMarsh :: CardDef
+oceirosMarsh =
+  (enemy "07253" ("Oceiros Marsh" <:> "Keeper of the Lighthouse") ALightInTheFog 1)
+    { cdCardTraits = setFromList [Humanoid, DeepOne, Hybrid, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdUnique = True
+    , cdVictoryPoints = Just 2
+    }
+
+deepOneNursemaid :: CardDef
+deepOneNursemaid =
+  (enemy "07254" "Deep One Nursemaid" ALightInTheFog 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
+    }
+
+deepOneHatchling :: CardDef
+deepOneHatchling =
+  (enemy "07255" "Deep One Hatchling" ALightInTheFog 4)
+    { cdCardTraits = setFromList [Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 mobGoons :: CardDef

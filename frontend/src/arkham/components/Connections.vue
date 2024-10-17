@@ -157,6 +157,7 @@ function handleConnections() {
 
       const conn = toConnection(start, end)
       if (!conn) return
+      if (location.modifiers.some((m) => m.type.tag == "DoNotDrawConnection" && conn == `${m.type.contents[0]}:${m.type.contents[1]}`)) return
 
       activeConnections.push(conn)
       makeLine(start, end)

@@ -8,6 +8,7 @@ import Arkham.Layout
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
 import Data.Text qualified as T
+import GHC.Records
 import Text.Printf
 
 nTimes :: Int -> (a -> a) -> (a -> a)
@@ -18,6 +19,18 @@ nTimes n f = f . nTimes (n - 1) f
 data Pos = Pos Int Int
   deriving stock (Eq, Show, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+positionRow :: Pos -> Int
+positionRow (Pos _ y) = y
+
+positionColumn :: Pos -> Int
+positionColumn (Pos x _) = x
+
+instance HasField "row" Pos Int where
+  getField = positionRow
+
+instance HasField "column" Pos Int where
+  getField = positionColumn
 
 data GridLocation = GridLocation Pos LocationId
   deriving stock (Show, Eq, Generic, Data)

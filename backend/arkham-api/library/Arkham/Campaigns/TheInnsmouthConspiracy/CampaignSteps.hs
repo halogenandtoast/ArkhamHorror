@@ -26,3 +26,8 @@ pattern HorrorInHighGear :: CampaignStep
 pattern HorrorInHighGear <- ScenarioStep "07198"
   where
     HorrorInHighGear = ScenarioStep "07198"
+
+pattern ALightInTheFog :: CampaignStep
+pattern ALightInTheFog <- ScenarioStep "07231"
+  where
+    ALightInTheFog = ScenarioStep "07231"

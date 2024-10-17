@@ -14,6 +14,7 @@ import Arkham.Key
 import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
 import Arkham.Location.FloodLevel
+import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
 import Arkham.SkillType
@@ -52,6 +53,7 @@ data LocationAttrs = LocationAttrs
     locationWithoutClues :: Bool
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
+  , locationPosition :: Maybe Pos
   }
   deriving stock (Show, Eq)
 
@@ -82,6 +84,9 @@ instance HasField "meta" LocationAttrs Value where
 
 instance HasField "global" LocationAttrs (Aeson.Key -> Maybe Value) where
   getField l k = lookup k (locationGlobalMeta l)
+
+instance HasField "position" LocationAttrs (Maybe Pos) where
+  getField = locationPosition
 
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
@@ -138,5 +143,6 @@ instance FromJSON LocationAttrs where
     locationWithoutClues <- o .: "withoutClues"
     locationMeta <- o .: "meta"
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
+    locationPosition <- o .:? "position"
 
     pure LocationAttrs {..}

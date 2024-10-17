@@ -8,7 +8,7 @@ import Data.Aeson.Key qualified as K
 import Data.Text qualified as T
 
 newtype SortedPair a = SortedPair (a, a)
-  deriving stock (Show, Ord, Eq, Generic)
+  deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 unSortedPair :: SortedPair a -> (a, a)

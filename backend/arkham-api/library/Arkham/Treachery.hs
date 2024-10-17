@@ -476,6 +476,12 @@ allTreacheries =
     , SomeTreacheryCard iCantSee
     , SomeTreacheryCard eyesInTheTrees
     , SomeTreacheryCard theyreCatchingUp
+    , --- A Light in the Fog
+      SomeTreacheryCard hideousLullaby
+    , SomeTreacheryCard kissOfBrine
+    , SomeTreacheryCard totality
+    , SomeTreacheryCard worthHisSalt
+    , SomeTreacheryCard takenCaptive
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

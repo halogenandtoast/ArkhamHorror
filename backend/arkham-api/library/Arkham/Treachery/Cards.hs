@@ -263,6 +263,7 @@ allEncounterTreacheryCards =
       , graveLight
       , graveLightSpectral
       , harvestedBrain
+      , hideousLullaby
       , horrorsFromTheDeep
       , huntedByByakhee
       , huntedByCorsairs
@@ -276,6 +277,7 @@ allEncounterTreacheryCards =
       , insatiableBloodlust
       , inundated
       , kidnapped
+      , kissOfBrine
       , lawOfYgirothChaos
       , lawOfYgirothDiscord
       , lawOfYgirothPandemonium
@@ -372,6 +374,7 @@ allEncounterTreacheryCards =
       , straitjacket
       , strangeSigns
       , syzygy
+      , takenCaptive
       , tasteOfLifeblood
       , terrorInTheNight
       , terrorFromBeyond
@@ -394,6 +397,7 @@ allEncounterTreacheryCards =
       , timelineDestabilization
       , toilAndTrouble
       , torturousChords
+      , totality
       , toughCrowd
       , toweringBeasts
       , trappedSpirits
@@ -433,6 +437,7 @@ allEncounterTreacheryCards =
       , wordsOfPower
       , worldsMerge
       , wormhole
+      , worthHisSalt
       , wracked
       , wrackedByTime
       , yithianPresence
@@ -2265,6 +2270,36 @@ eyesInTheTrees =
 theyreCatchingUp :: CardDef
 theyreCatchingUp =
   (treachery "07219" "\"They're catching up!\"" HorrorInHighGear 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+hideousLullaby :: CardDef
+hideousLullaby =
+  (treachery "07256" "Hideous Lullaby" ALightInTheFog 3)
+    { cdCardTraits = singleton Terror
+    }
+
+kissOfBrine :: CardDef
+kissOfBrine =
+  (treachery "07257" "Kiss of Brine" ALightInTheFog 2)
+    { cdCardTraits = setFromList [Curse, Hazard]
+    }
+
+totality :: CardDef
+totality =
+  (treachery "07258" "Totality" ALightInTheFog 2)
+    { cdCardTraits = setFromList [Omen, Terror]
+    }
+
+worthHisSalt :: CardDef
+worthHisSalt =
+  (treachery "07259" "Worth His Salt" ALightInTheFog 2)
+    { cdCardTraits = singleton Scheme
+    }
+
+takenCaptive :: CardDef
+takenCaptive =
+  (treachery "07260" "Taken Captive" ALightInTheFog 2)
     { cdCardTraits = singleton Scheme
     }
 

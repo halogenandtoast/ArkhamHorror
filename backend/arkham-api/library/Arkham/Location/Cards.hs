@@ -214,6 +214,7 @@ allLocationCards =
       , deepBelowYourHouse
       , deepOneGrotto_175a
       , deepOneGrotto_175b
+      , deepOneNursery
       , depthsOfDemheTheHeightOfTheDepths
       , depthsOfDemheStepsOfThePalace
       , descentToYoth
@@ -277,6 +278,8 @@ allLocationCards =
       , facultyOfficesTheHourIsLate
       , facultyOfficesTheNightIsStillYoung
       , falconPointApproach
+      , falconPointCliffside
+      , falconPointGatehouse
       , farAboveYourHouse
       , faubourgMarigny
       , firstNationalGrocery
@@ -382,10 +385,13 @@ allLocationCards =
       , lakeXochimilco_182
       , lakeXochimilco_183
       , landlordsQuarters
+      , lanternRoom
       , leMarais217
       , leMarais218
       , library
       , lightSideOfTheMoon
+      , lighthouseKeepersCottage
+      , lighthouseStairwell
       , lightingBox
       , livingRoom
       , lobby
@@ -483,6 +489,7 @@ allLocationCards =
       , porteDeLAvancee
       , prismaticCascade
       , privateRoom
+      , pumpRoom
       , quietHalls_131
       , quietHalls_135
       , railroadStation
@@ -542,6 +549,7 @@ allLocationCards =
       , shoresOfRlyeh
       , shorewardSlums
       , shorewardSlumsInTooDeep
+      , shrineToHydra
       , silverTwilightLodgeShroudedInMystery
       , silverTwilightLodgeWhereItAllEnds
       , siteOfTheSacrifice
@@ -566,6 +574,10 @@ allLocationCards =
       , study
       , studyAberrantGateway
       , suiteBalcony
+      , sunkenArchives
+      , sunkenGrottoFinalDepths
+      , sunkenGrottoLowerDepths
+      , sunkenGrottoUpperDepths
       , tearThroughSpace
       , tearThroughTime
       , templeOfTheFang
@@ -604,6 +616,7 @@ allLocationCards =
       , theHouseOnWaterStreetInTooDeep
       , theLittleBookshop
       , theLittleBookshopInTooDeep
+      , theMoonRoom
       , theOnyxCastle
       , theWhiteShip
       , theatre
@@ -6748,6 +6761,162 @@ desolateRoad_b = victory 1 $ oldInnsmouthRoad "07209b" "Desolate Road"
 -- road 1
 longWayAround :: CardDef
 longWayAround = quantity 6 $ oldInnsmouthRoad "07210" "Long Way Around"
+
+falconPointGatehouse :: CardDef
+falconPointGatehouse =
+  location
+    "07239"
+    "Falcon Point Gatehouse"
+    [FalconPoint]
+    NoSymbol
+    []
+    ALightInTheFog
+
+lighthouseStairwell :: CardDef
+lighthouseStairwell =
+  location
+    "07240"
+    "Lighthouse Stairwell"
+    [FalconPoint]
+    Equals
+    [Triangle, Squiggle]
+    ALightInTheFog
+
+lanternRoom :: CardDef
+lanternRoom =
+  victory 1
+    $ location
+      "07241"
+      "Lantern Room"
+      [FalconPoint]
+      Triangle
+      [Equals]
+      ALightInTheFog
+
+falconPointCliffside :: CardDef
+falconPointCliffside =
+  location
+    "07242"
+    "Falcon Point Cliffside"
+    [FalconPoint]
+    NoSymbol
+    []
+    ALightInTheFog
+
+lighthouseKeepersCottage :: CardDef
+lighthouseKeepersCottage =
+  location
+    "07243"
+    "Lighthouse Keeper's Cottage"
+    [FalconPoint]
+    NoSymbol
+    []
+    ALightInTheFog
+
+sunkenGrottoUpperDepths :: CardDef
+sunkenGrottoUpperDepths =
+  locationWithUnrevealed
+    "07244"
+    "Lighthouse Basement"
+    [Cave]
+    Squiggle
+    [Equals, Square, T]
+    ("Sunken Grotto" <:> "Upper Depths")
+    [Cave]
+    Squiggle
+    [Equals, Square, T]
+    ALightInTheFog
+
+sunkenGrottoLowerDepths :: CardDef
+sunkenGrottoLowerDepths =
+  location
+    "07245"
+    ("Sunken Grotto" <:> "Lower Depths")
+    [Cave]
+    Square
+    [Squiggle, Diamond, T]
+    ALightInTheFog
+
+sunkenGrottoFinalDepths :: CardDef
+sunkenGrottoFinalDepths =
+  location
+    "07246"
+    ("Sunken Grotto" <:> "Final Depths")
+    [Cave]
+    Diamond
+    [Square, T]
+    ALightInTheFog
+
+shrineToHydra :: CardDef
+shrineToHydra =
+  victory 1
+    $ locationWithUnrevealed
+      "07247"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Shrine to Hydra"
+      [Cave]
+      NoSymbol
+      []
+      ALightInTheFog
+
+deepOneNursery :: CardDef
+deepOneNursery =
+  locationWithUnrevealed
+    "07248"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Deep One Nursery"
+    [Cave]
+    NoSymbol
+    []
+    ALightInTheFog
+
+theMoonRoom :: CardDef
+theMoonRoom =
+  locationWithUnrevealed
+    "07249"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "The Moon Room"
+    [Cave]
+    NoSymbol
+    []
+    ALightInTheFog
+
+sunkenArchives :: CardDef
+sunkenArchives =
+  locationWithUnrevealed
+    "07250"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Sunken Archives"
+    [Cave]
+    NoSymbol
+    []
+    ALightInTheFog
+
+pumpRoom :: CardDef
+pumpRoom =
+  locationWithUnrevealed
+    "07251"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Pump Room"
+    [Cave]
+    NoSymbol
+    []
+    ALightInTheFog
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

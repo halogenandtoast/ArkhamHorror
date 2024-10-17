@@ -70,6 +70,7 @@ allActCards =
       , findingANewWay
       , findingAWayInside
       , findingLadyEsprit
+      , findingThePath
       , fold
       , followingLeads
       , friendsInHighPlacesHenryDeveau
@@ -171,6 +172,7 @@ allActCards =
       , theGuardedRuins
       , theGuardiansInquiry
       , theIsleOfOriab
+      , theLighthouse
       , theKingInTatters
       , theKingsDecree
       , theMoonsCore
@@ -213,6 +215,7 @@ allActCards =
       , whatMustBeDone
       , witchHauntings
       , worldsBeyond
+      , worshippersOfTheDeep
       ]
 
 trapped :: CardDef
@@ -776,6 +779,15 @@ reefOfMysteries = act "07167" "Reef of Mysteries" 1 DevilReef
 
 pedalToTheMetal :: CardDef
 pedalToTheMetal = act "07202" "Pedal to the Metal" 1 HorrorInHighGear
+
+theLighthouse :: CardDef
+theLighthouse = act "07236" "The Lighthouse" 1 ALightInTheFog
+
+findingThePath :: CardDef
+findingThePath = act "07237" "Finding the Path" 2 ALightInTheFog
+
+worshippersOfTheDeep :: CardDef
+worshippersOfTheDeep = act "07238" "Worshippers of the Deep" 3 ALightInTheFog
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

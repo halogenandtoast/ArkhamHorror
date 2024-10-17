@@ -101,6 +101,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
+import Arkham.Location.Grid (positionRow)
 import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
@@ -2021,6 +2022,8 @@ getLocationsMatching lmatcher = do
     RearmostLocation -> do
       rear <- getRear
       pure $ filter ((`elem` rear) . toId) ls
+    LocationInRow n -> do
+      pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case
@@ -3068,6 +3071,7 @@ instance Projection Location where
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
     case f of
+      LocationPosition -> pure locationPosition
       LocationInFrontOf -> pure locationInFrontOf
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationLabel -> pure locationLabel

@@ -73,6 +73,36 @@ data ChaosTokenFace
   | BlessToken
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
 
+instance IsLabel "+1" ChaosTokenFace where
+  fromLabel = PlusOne
+
+instance IsLabel "0" ChaosTokenFace where
+  fromLabel = Zero
+
+instance IsLabel "-1" ChaosTokenFace where
+  fromLabel = MinusOne
+
+instance IsLabel "-2" ChaosTokenFace where
+  fromLabel = MinusTwo
+
+instance IsLabel "-3" ChaosTokenFace where
+  fromLabel = MinusThree
+
+instance IsLabel "-4" ChaosTokenFace where
+  fromLabel = MinusFour
+
+instance IsLabel "-5" ChaosTokenFace where
+  fromLabel = MinusFive
+
+instance IsLabel "-6" ChaosTokenFace where
+  fromLabel = MinusSix
+
+instance IsLabel "-7" ChaosTokenFace where
+  fromLabel = MinusSeven
+
+instance IsLabel "-8" ChaosTokenFace where
+  fromLabel = MinusEight
+
 instance IsLabel "skull" ChaosTokenFace where
   fromLabel = Skull
 

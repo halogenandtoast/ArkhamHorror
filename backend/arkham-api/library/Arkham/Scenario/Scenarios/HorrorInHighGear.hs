@@ -7,7 +7,9 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
+import Arkham.Exception
 import Arkham.Helpers.Query (getLead, getPlayerCount)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
@@ -15,6 +17,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.HorrorInHighGear.Helpers
@@ -206,5 +209,18 @@ instance RunMessage HorrorInHighGear where
       pure s
     ResolveChaosToken _ ElderThing _iid -> do
       when (isHardExpert attrs) $ push HuntersMove
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          record TheInvestigatorsReachedFalconPointAfterSunrise
+        Resolution 1 -> do
+          story $ i18nWithTitle "resolution1"
+          record TheInvestigatorsReachedFalconPointBeforeSunrise
+        _ -> throw $ UnknownResolution resolution
+
+      allGainXp attrs
+      endOfScenario
       pure s
     _ -> HorrorInHighGear <$> liftRunMessage msg attrs

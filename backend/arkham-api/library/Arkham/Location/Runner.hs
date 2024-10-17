@@ -49,6 +49,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
+import Arkham.Location.Grid
 import Arkham.Location.Helpers
 import Arkham.Matcher (
   EnemyMatcher (..),
@@ -203,6 +204,8 @@ instance RunMessage LocationAttrs where
           <> map EnemyCheckEngagement enemies
           <> [afterVehicleEnters]
       pure a
+    PlaceGrid (GridLocation pos lid) | lid == locationId -> do
+      pure $ a & positionL ?~ pos
     SetFlippable lid flippable | lid == locationId -> do
       pure $ a & canBeFlippedL .~ flippable
     RemovePlayerCardFromGame _ card -> do

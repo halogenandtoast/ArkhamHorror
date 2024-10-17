@@ -2,9 +2,10 @@ module Arkham.Asset.Assets.MichaelLeigh5 (michaelLeigh5, MichaelLeigh5 (..)) whe
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
   deriving anyclass IsAsset
@@ -28,15 +29,14 @@ instance HasAbilities MichaelLeigh5 where
         <> exhaust a
     ]
    where
-    cardRestriction = if findWithDefault 0 Evidence (assetUses a) == 3 then Never else NoRestriction
+    cardRestriction = if a.use Evidence == 3 then Never else NoRestriction
 
 instance RunMessage MichaelLeigh5 where
-  runMessage msg a@(MichaelLeigh5 attrs) = case msg of
+  runMessage msg a@(MichaelLeigh5 attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ AddUses (attrs.ability 1) (toId a) Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      nextSkillTestModifier (attrs.ability 2) iid (DamageDealt 1)
       pure a
-    _ -> MichaelLeigh5 <$> runMessage msg attrs
+    _ -> MichaelLeigh5 <$> liftRunMessage msg attrs

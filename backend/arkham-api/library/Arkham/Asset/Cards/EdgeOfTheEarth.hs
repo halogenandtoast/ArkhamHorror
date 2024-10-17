@@ -662,7 +662,7 @@ blur4 =
     { cdCardTraits = setFromList [Spell]
     , cdSkills = [#willpower, #agility]
     , cdSlots = [#arcane]
-    , cdUses = uses Charge 3
+    , cdUses = uses Charge 4
     , cdLevel = Just 4
     }
 

@@ -276,7 +276,22 @@
       ] }
     ]
   },
-  { "id": "07163", "name": "Devil Reef", "campaign": "07", "settings": [] },
+  {
+      "id": "07163",
+      "name": "Devil Reef",
+      "campaign": "07",
+      "settings": [
+        { "key": "MissionStatus", "keys": ["TheMissionFailed", "TheMissionWasSuccessful"], "type": "PickKey", "content": "TheMissionFailed" },
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A battle with a horrifying devil", "key": "ABattleWithAHorrifyingDevil", "content": false }
+          ]
+        }
+
+      ]
+  },
   {
       "id": "07198",
       "name": "Horror in High Gear",

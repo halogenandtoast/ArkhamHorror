@@ -306,6 +306,10 @@ const portraitLabelImage = (investigatorId: string) => {
   return imgsrc(`portraits/${player.cardCode.replace('c', '')}.jpg`)
 }
 
+const portraits = computed<[Message, number]>(() =>
+  choices.value.map((x: Message, i: number) => [x, i] as [Message, number]).filter(([choice,]) => choice.tag === "PortraitLabel")
+)
+
 const tarotLabels = computed(() =>
   choices.value.
     flatMap((choice, index) => {
@@ -456,17 +460,22 @@ const cardPiles = computed(() => {
       </div>
     </div>
 
+    <div v-if="portraits.length > 0" class="portraits">
+      <template v-for="([choice, index]) in portraits" :key="index">
+        <template v-if="choice.tag === 'PortraitLabel'">
+          <div class="portrait">
+            <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+          </div>
+        </template>
+      </template>
+    </div>
+
     <template v-for="(choice, index) in choices" :key="index">
       <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
         <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
       </template>
       <template v-if="choice.tag === MessageType.ABILITY_LABEL && choice.ability.type.tag === 'ConstantReaction'">
         <button @click="choose(index)">{{choice.ability.type.label}}</button>
-      </template>
-      <template v-if="choice.tag === 'PortraitLabel'">
-        <div class="portrait">
-          <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
-        </div>
       </template>
       <div v-if="choice.tag === MessageType.LABEL" class="message-label">
         <button v-if="choice.label == 'Choose {skull}'" @click="choose(index)">
@@ -694,6 +703,7 @@ button:hover {
 }
 
 .portrait {
+  min-width: fit-content;
   border-radius: 3px;
   margin: 10px;
 
@@ -728,6 +738,7 @@ button:hover {
   gap: 10px;
   margin-inline: 10px;
   margin-block: 10px;
+  flex-wrap: wrap;
 }
 
 .choices button {
@@ -970,6 +981,16 @@ h2 {
   img {
     border: 1px solid var(--select);
     border-radius: 5px;
+  }
+}
+
+.portraits {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  .portrait {
+    min-width: fit-content;
   }
 }
 

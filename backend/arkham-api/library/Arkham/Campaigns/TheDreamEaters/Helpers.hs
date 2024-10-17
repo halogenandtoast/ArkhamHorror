@@ -9,8 +9,12 @@ import Arkham.Prelude
 
 getIsFullCampaign :: HasGame m => m Bool
 getIsFullCampaign = do
-  meta <- getCampaignMeta
-  pure $ campaignMode meta == FullMode
+  standalone <- getIsStandalone
+  if standalone
+    then pure False
+    else do
+      meta <- getCampaignMeta
+      pure $ campaignMode meta == FullMode
 
 getIsPartialCampaign :: HasGame m => CampaignPart -> m Bool
 getIsPartialCampaign campaignPart = do

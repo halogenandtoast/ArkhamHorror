@@ -66,7 +66,7 @@ getIsAlreadyOwned cDef = any (any ((== cDef) . toCardDef)) . toList <$> getCampa
 campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld
 
-getCampaignMeta :: forall a m. (HasGame m, FromJSON a) => m a
+getCampaignMeta :: forall a m. (HasCallStack, HasGame m, FromJSON a) => m a
 getCampaignMeta = do
   result <- fromJSON @a <$> campaignField CampaignMeta
   case result of

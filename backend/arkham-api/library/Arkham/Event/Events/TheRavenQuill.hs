@@ -86,9 +86,9 @@ instance RunMessage TheRavenQuill where
           cards <-
             select
               $ PlayableCard (UnpaidCost NoAction)
-              $ oneOf (inHandOf iid : inDiscardOf iid : [inDeckOf iid | canSearch])
+              $ oneOf [inHandOf iid, inDiscardOf iid]
               <> basic (oneOf $ CardWithTitle <$> titles)
-          if null cards
+          if null cards && not canSearch
             then pushAll defaultChoose
             else
               chooseOrRunOne iid
@@ -104,6 +104,9 @@ instance RunMessage TheRavenQuill where
       let titles = [t | ChosenCard t <- concatMap snd (toList attrs.customizations)]
       let matcher = (PlayableCard (UnpaidCost NoAction) $ basic $ oneOf $ CardWithTitle <$> titles)
       search iid attrs iid sources matcher (defer attrs IsNotDraw)
+      pure e
+    SearchFound iid (isTarget attrs -> True) _ xs | null xs -> do
+      chooseOne iid [Label "No playable cards found" []]
       pure e
     SearchFound iid (isTarget attrs -> True) _ xs | notNull xs -> do
       let ws = defaultWindows iid

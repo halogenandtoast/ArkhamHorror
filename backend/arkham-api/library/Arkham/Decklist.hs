@@ -132,7 +132,11 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
         $ char '|'
         *> (try parseSkillTypes <|> try parseTraits <|> try parseIndex <|> try parseCardCodes <|> pure [])
     pure (n, fromMaybe [] choices)
-  parseIndex = pure . ChosenIndex <$> parseInt
+  parseIndex = do
+    n <- parseInt
+    if n <= 4
+      then pure . pure $ ChosenIndex n
+      else unexpected "index must be between 1 and 4"
   parseSkillTypes = sepBy1 parseSkillType (char '^')
   parseSkillType =
     ChosenSkill

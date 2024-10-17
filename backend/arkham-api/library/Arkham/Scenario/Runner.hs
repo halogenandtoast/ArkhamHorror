@@ -18,6 +18,7 @@ import Arkham.Agenda.Sequence qualified as Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
+import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosBag ()
@@ -52,6 +53,7 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
+import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
@@ -641,6 +643,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (decksL . at deckKey ?~ deck')
       & (discardL %~ filter ((`notElem` cards) . EncounterCard))
       & (victoryDisplayL %~ filterOutCards)
+      & (setAsideCardsL %~ filterOutCards)
   ShuffleCardsIntoDeck _ cards -> do
     let
       encounterCards = mapMaybe (preview _EncounterCard) cards
@@ -1156,6 +1159,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       $ if isStandalone
         then a & standaloneCampaignLogL . recordedCountsL %~ alterMap (Just . maybe n (+ n)) key
         else a
+  RecordSetInsert key recs -> do
+    isStandalone <- getIsStandalone
+    if isStandalone
+      then do
+        let defs = mapMaybe lookupCardDef $ recordedCardCodes recs
+        for_ defs $ \def ->
+          send $ "Record \"" <> format (toName def) <> " " <> format key <> "\""
+        pure $ case a ^. standaloneCampaignLogL . recordedSetsL . at key of
+          Nothing -> a & standaloneCampaignLogL . recordedSetsL %~ insertMap key recs
+          Just set ->
+            let set' = filter (`notElem` recs) set <> recs
+             in a & standaloneCampaignLogL . recordedSetsL %~ insertMap key set'
+      else pure a
+  RecordSetReplace key v v' -> do
+    isStandalone <- getIsStandalone
+    if isStandalone
+      then do
+        pure $ case a ^. standaloneCampaignLogL . recordedSetsL . at key of
+          Nothing -> a & standaloneCampaignLogL . recordedSetsL %~ insertMap key (singleton v')
+          Just set ->
+            let set' = map (\x -> if x == v then v' else x) set
+             in a & standaloneCampaignLogL . recordedSetsL %~ insertMap key set'
+      else pure a
   ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'

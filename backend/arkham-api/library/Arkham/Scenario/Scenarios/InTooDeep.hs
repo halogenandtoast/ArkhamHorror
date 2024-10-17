@@ -101,6 +101,30 @@ instance RunMessage InTooDeep where
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       pure s
+    StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
+      hideout <- sample $ InnsmouthJail :| [ ShorewardSlums , SawboneAlley , TheHouseOnWaterStreet , EsotericOrderOfDagon , NewChurchGreen ]
+
+      recordSetInsert PossibleSuspects
+        $ map toJSON [BrianBurnham, BarnabasMarsh, OtheraGilman, ZadokAllen, JoyceLittle, RobertFriendly]
+      recordSetInsert PossibleHideouts
+        $ map
+          toJSON
+          [ InnsmouthJail
+          , ShorewardSlums
+          , SawboneAlley
+          , TheHouseOnWaterStreet
+          , EsotericOrderOfDagon
+          , NewChurchGreen
+          ]
+      recordSetReplace PossibleHideouts (recorded $ toJSON hideout) (circled $ toJSON hideout)
+      pure s
     Setup -> runScenarioSetup InTooDeep attrs do
       setUsesGrid
 

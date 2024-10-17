@@ -1831,6 +1831,12 @@ shuffleSetAsideIntoEncounterDeck matcher = do
   cards <- getSetAsideCardsMatching (toCardMatcher matcher)
   push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
 
+shuffleSetAsideIntoScenarioDeck
+  :: (ReverseQueue m, IsCardMatcher matcher) => ScenarioDeckKey -> matcher -> m ()
+shuffleSetAsideIntoScenarioDeck key matcher = do
+  cards <- getSetAsideCardsMatching (toCardMatcher matcher)
+  push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey key) cards
+
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
 setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 

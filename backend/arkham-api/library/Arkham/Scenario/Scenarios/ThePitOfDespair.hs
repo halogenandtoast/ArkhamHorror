@@ -19,6 +19,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ThePitOfDespair.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -68,7 +69,7 @@ instance RunMessage ThePitOfDespair where
       randomizedKeys <- shuffleM $ map UnrevealedKey [RedKey, YellowKey, PurpleKey]
       setAsideKeys $ BlueKey : GreenKey : randomizedKeys
 
-      (inPlayTidalTunnels, setAsideTidalTunnels) <-
+      (inPlayTidalTunnels, tidalTunnelDeck) <-
         splitAt 3
           <$> shuffleM
             [ Locations.boneRiddenPit
@@ -80,7 +81,7 @@ instance RunMessage ThePitOfDespair where
             , Locations.undergroundRiver
             , Locations.undergroundRiver
             ]
-      setAside setAsideTidalTunnels
+      addExtraDeck TidalTunnelDeck tidalTunnelDeck
       for_ (zip [Pos (-1) 0, Pos 1 0, Pos 0 (-1)] inPlayTidalTunnels) (uncurry placeInGrid)
 
       setAside

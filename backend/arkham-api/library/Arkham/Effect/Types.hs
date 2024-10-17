@@ -68,6 +68,7 @@ data EffectBuilder = EffectBuilder
   -- to track and escape recursion
   , effectBuilderExtraMetadata :: Value
   , effectBuilderSkillTest :: Maybe SkillTestId
+  , effectBuilderEffectId :: Maybe EffectId
   }
   deriving stock (Show, Eq, Data)
 
@@ -288,6 +289,7 @@ makeEffectBuilder cardCode meffectMetadata (toSource -> source) (toTarget -> tar
     , effectBuilderFinished = False
     , effectBuilderExtraMetadata = Null
     , effectBuilderSkillTest = mSkillTest
+    , effectBuilderEffectId = Nothing
     }
  where
   mSkillTest = case (meffectMetadata, source, target, effectWindow) of

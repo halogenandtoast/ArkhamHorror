@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts
@@ -7,12 +8,17 @@ import Arkham.CampaignLogKey
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
+import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Message.Lifted.Choose
 import Arkham.Key
+import Arkham.Keyword (Keyword(Aloof))
+import Arkham.Modifier
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -100,9 +106,37 @@ instance RunMessage ALightInTheFog where
       whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda 1
     ResolveChaosToken _ face iid -> do
       case face of
-        Cultist -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
+        Skull -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
           drawAnotherChaosToken iid
-        ElderThing -> pure ()
+        ElderThing | isHardExpert attrs -> withLocationOf iid \lid -> do
+          nearest <- select (NearestEnemyTo iid UnengagedEnemy)
+          chooseTargetM iid nearest \enemy -> do
+            temporaryModifier enemy ElderThing (RemoveKeyword Aloof) do
+              moveTowardsMatching ElderThing enemy (LocationWithId lid)
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
+      case token.face of
+        Cultist -> afterSkillTest $ doStep 1 msg
+        Tablet -> do
+          whenAny (locationWithInvestigator iid <> FloodedLocation) do
+            assignDamage iid Tablet $ if isEasyStandard attrs then 1 else 2
+        ElderThing | isEasyStandard attrs -> withLocationOf iid \lid -> do
+          nearest <- select (NearestEnemyTo iid UnengagedEnemy)
+          chooseTargetM iid nearest \enemy -> do
+            temporaryModifier enemy ElderThing (RemoveKeyword Aloof) do
+              moveTowardsMatching ElderThing enemy (LocationWithId lid)
+
+        _ -> pure ()
+      pure s
+    DoStep 1 (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n) -> do
+      case token.face of
+        Cultist -> withLocationOf iid \lid -> do
+          canIncreaseFloodLevel <- lid <=~> CanHaveFloodLevelIncreased 
+          if canIncreaseFloodLevel
+            then increaseThisFloodLevel lid
+            else when (isHardExpert attrs) do
+              assignHorror iid Cultist 1
         _ -> pure ()
       pure s
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

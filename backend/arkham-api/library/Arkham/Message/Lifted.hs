@@ -24,7 +24,7 @@ import Arkham.Deck (IsDeck (..))
 import Arkham.Deck qualified as Deck
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
-import Arkham.Effect.Types (Field (..))
+import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Helpers qualified as Msg
@@ -1875,3 +1875,18 @@ discard card = push $ DiscardedCard (toCardId card)
 lookAtRevealed
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 lookAtRevealed iid source target = push $ LookAtRevealed iid (toSource source) (toTarget target)
+
+temporaryModifier
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  => target
+  -> source
+  -> ModifierType
+  -> QueueT Message m ()
+  -> m ()
+temporaryModifier target source modType body = do
+  effectId <- getRandom
+  ems <- Msg.effectModifiers source [modType]
+  let builder = Msg.makeEffectBuilder "wmode" (Just ems) source target
+  msgs <- evalQueueT body
+  pushAll $ CreateEffect builder {effectBuilderEffectId = Just effectId}
+    : msgs <> [DisableEffect effectId]

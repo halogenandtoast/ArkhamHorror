@@ -66,6 +66,15 @@ instance RunMessage DevilReef where
     DoStep 3 PreScenarioSetup -> do
       story $ i18nWithTitle "intro3"
       pure s
+    StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4"
+        , Skull, Skull, Cultist, Cultist, Tablet, Tablet, ElderThing, ElderThing
+        , AutoFail, ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
+      pure s
     Setup -> runScenarioSetup DevilReef attrs do
       gather Set.DevilReef
       gather Set.AgentsOfHydra

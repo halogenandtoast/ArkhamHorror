@@ -44,8 +44,8 @@
 
   { "name": "The Innsmouth Conspiracy", "min": 7001, "max": 7107, "playerCards": 40, "code": "tic", "cycle": 7 },
   { "name": "In Too Deep", "min": 7108, "max": 7151, "playerCards": 15, "code": "itd", "cycle": 7 },
-  { "name": "Devil Reef", "min": 7152, "max": 7188, "playerCards": 11, "code": "def", "cycle": 7 },
-  { "name": "Horror in High Gear", "min": 7189, "max": 7219, "playerCards": 9, "code": "hhg", "cycle": 7 },
+  { "name": "Devil Reef", "min": 7152, "max": 7188, "playerCards": 11, "code": "def", "cycle": 7, "encounterDuplicates": 4 },
+  { "name": "Horror in High Gear", "min": 7189, "max": 7219, "playerCards": 9, "code": "hhg", "cycle": 7, "encounterDuplicates": 8 },
   { "name": "A Light in the Fog", "min": 7220, "max": 7260, "playerCards": 11, "code": "lif", "cycle": 7 },
   { "name": "The Lair of Dagon", "min": 7261, "max": 7300, "playerCards": 13, "code": "lod", "cycle": 7 },
   { "name": "Into the Maelstrom", "min": 7301, "max": 7338, "playerCards": 10, "code": "itm", "cycle": 7 },

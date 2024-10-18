@@ -329,7 +329,7 @@ const tokenEffects = computed(() => {
       <div v-if="tokenEffects.length > 0" class="token-effects">
         <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
       </div>
-      <div v-if="debug.active">
+      <div v-if="debug.active && skillTest.result.tag == 'Unrun'">
         <button @click="debug.send(game.id, {tag: 'PassSkillTest'})">Pass Skill Test</button>
         <button @click="debug.send(game.id, {tag: 'FailSkillTest'})">Fail Skill Test</button>
       </div>

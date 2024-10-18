@@ -57,6 +57,7 @@ export type SkillTest = {
   skills: SkillType[];
   step: SkillTestStep;
   baseValue: SkillTestBaseValue;
+  result: null | { tag: string };
 }
 
 export type SkillTestResults = {
@@ -101,6 +102,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
     step: JsonDecoder.failover({ tag: "DetermineSkillOfTestStep" }, skillTestStepDecoder),
     baseValue: baseValueDecoder,
+    result: JsonDecoder.nullable(JsonDecoder.object({ tag: JsonDecoder.string }, 'SkillTestResult')),
   },
   'SkillTest',
 );

@@ -1,10 +1,10 @@
 module Arkham.Location.Cards.UpstairsDoorwayBedroom (upstairsDoorwayBedroom, UpstairsDoorwayBedroom (..)) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype UpstairsDoorwayBedroom = UpstairsDoorwayBedroom LocationAttrs
@@ -18,20 +18,20 @@ instance HasAbilities UpstairsDoorwayBedroom where
   getAbilities (UpstairsDoorwayBedroom x) =
     extendRevealed
       x
-      [ restrictedAbility x 1 (Here <> exists (TreacheryInThreatAreaOf You <> TreacheryIsNonWeakness))
+      [ restricted x 1 (Here <> exists (TreacheryInThreatAreaOf You <> TreacheryIsNonWeakness))
           $ ActionAbility [] (ActionCost 2)
-      , restrictedAbility x 2 (Here <> not_ (Remembered FoundACrackedMirror))
+      , restricted x 2 (Here <> not_ (Remembered FoundACrackedMirror))
           $ FastAbility
-          $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId x)
+          $ GroupClueCost (PerPlayer 1) (be x)
       ]
 
 instance RunMessage UpstairsDoorwayBedroom where
-  runMessage msg l@(UpstairsDoorwayBedroom attrs) = case msg of
+  runMessage msg l@(UpstairsDoorwayBedroom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       treacheries <- select $ treacheryInThreatAreaOf iid <> TreacheryIsNonWeakness
-      for_ treacheries $ push . toDiscardBy iid attrs
+      for_ treacheries $ toDiscardBy iid attrs
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Remember FoundACrackedMirror
+      remember FoundACrackedMirror
       pure l
-    _ -> UpstairsDoorwayBedroom <$> runMessage msg attrs
+    _ -> UpstairsDoorwayBedroom <$> liftRunMessage msg attrs

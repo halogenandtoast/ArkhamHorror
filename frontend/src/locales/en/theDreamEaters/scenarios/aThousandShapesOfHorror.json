@@ -48,6 +48,8 @@
     }
   },
   "remembered": {
-    "recoveredAStrangeKey": "Recovered a strange key"
+    "recoveredAStrangeKey": "Recovered a strange key",
+    "studiedADesecratedPortrait": "Studied a Desecrated Portrait",
+    "noticedTheMissingBones": "Noticed the Missing Bones"
   }
 }

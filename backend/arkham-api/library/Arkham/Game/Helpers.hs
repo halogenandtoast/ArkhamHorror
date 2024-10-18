@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,
@@ -1644,7 +1646,7 @@ passesCriteria iid mcard source' requestor windows' = \case
         ActionAbility [Action.Resign] _ -> True
         _ -> False
   Criteria.Remembered logKey -> do
-    elem logKey <$> scenarioFieldMap ScenarioRemembered Set.toList
+    elem (traceShowId logKey) . traceShowId <$> scenarioFieldMap ScenarioRemembered Set.toList
   Criteria.RememberedAtLeast value logKeys -> do
     n <-
       length

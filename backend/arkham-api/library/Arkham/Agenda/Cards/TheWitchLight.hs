@@ -2,15 +2,17 @@ module Arkham.Agenda.Cards.TheWitchLight (TheWitchLight (..), theWitchLight) whe
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Enemy
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype TheWitchLight = TheWitchLight AgendaAttrs
   deriving anyclass IsAgenda
@@ -21,8 +23,8 @@ theWitchLight = agenda (3, A) TheWitchLight Cards.theWitchLight (Static 8)
 
 instance HasModifiersFor TheWitchLight where
   getModifiersFor (EnemyTarget eid) (TheWitchLight a) = do
-    isNonWeakness <- eid <=~> NonWeaknessEnemy
-    toModifiers a [HealthModifier 3 | isNonWeakness]
+    valid <- eid <=~> NonWeaknessEnemy
+    toModifiers a [HealthModifier 3 | valid]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheWitchLight where
@@ -34,23 +36,27 @@ instance HasAbilities TheWitchLight where
     ]
 
 instance RunMessage TheWitchLight where
-  runMessage msg a@(TheWitchLight attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      nahab <- getUniqueEnemy Enemies.nahab
+  runMessage msg a@(TheWitchLight attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       step <- getCurrentActStep
-      pushAll $ case step of
-        3 ->
-          [ PlaceDoom (toSource attrs) (toTarget nahab) 1
-          , advanceAgendaDeck attrs
-          ]
-        _ ->
-          [ PlaceEnemy nahab (OutOfPlay SetAsideZone)
-          , advanceAgendaDeck attrs
-          , PlaceDoomOnAgenda 4 CanNotAdvance
-          ]
+      mnahab <- getUniqueEnemyMaybe Enemies.nahab
+      case step of
+        3 -> do
+          for_ mnahab \nahab -> placeDoom attrs nahab 1
+          advanceAgendaDeck attrs
+        _ -> do
+          case mnahab of
+            Nothing -> do
+              mcard <- findCard (`cardMatch` cardIs Enemies.nahab)
+              for_ mcard \card -> do
+                obtainCard card
+                setCardAside card
+            Just nahab -> place nahab (OutOfPlay SetAsideZone)
+          advanceAgendaDeck attrs
+          placeDoomOnAgenda 4
       pure a
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       playerCount <- getPlayerCount
       push $ GainClues iid (attrs.ability 1) $ if playerCount >= 3 then 2 else 1
       pure a
-    _ -> TheWitchLight <$> runMessage msg attrs
+    _ -> TheWitchLight <$> liftRunMessage msg attrs

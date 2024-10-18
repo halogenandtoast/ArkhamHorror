@@ -84,6 +84,7 @@ const solo = ref(false)
 const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
+const processing = ref(false)
 
 addEntry({
   id: "viewSettings",
@@ -146,6 +147,7 @@ const onError = () => socketError.value = true
 const onConnected = () => socketError.value = false
 const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected })
 const handleResult = (result: ServerResult) => {
+  processing.value = false
   switch(result.tag) {
     case "GameError":
       if (props.spectate) return
@@ -382,24 +384,32 @@ window.sendDebug = function (msg: any) {
 // Callbacks
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
+    game.value.question = {}
+    processing.value = true
     send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
   }
 }
 
 async function chooseDeck(deckId: string): Promise<void> {
   if(game.value && !props.spectate) {
+    game.value.question = {}
+    processing.value = true
     send(JSON.stringify({tag: 'DeckAnswer', deckId, playerId: playerId.value}))
   }
 }
 
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
+    game.value.question = {}
+    processing.value = true
     send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
   }
 }
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
+    game.value.question = {}
+    processing.value = true
     send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
   }
 }
@@ -469,6 +479,7 @@ onUnmounted(() => {
         <button @click="error = null">Close</button>
       </div>
     </dialog>
+    <div v-if="processing" class="loader"></div>
     <CardOverlay />
     <Draggable v-if="showShortcuts">
       <template #handle>
@@ -1315,5 +1326,31 @@ button:hover .shortcut {
   align-items: center;
   justify-self: center;
   align-self: center;
+}
+.loader {
+  z-index: 1000;
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  width: 60px;
+  aspect-ratio: 1;
+  display: flex;
+  color: #d0d0d099;
+  border: 4px solid;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle 5px, currentColor 95%,#0000),
+    linear-gradient(currentColor 50%,#0000 0) 50%/4px 60% no-repeat;
+  animation: l1 30s infinite linear;
+}
+.loader:before {
+  content: "";
+  flex: 1;
+  background:linear-gradient(currentColor 50%,#0000 0) 50%/4px 80% no-repeat;
+  animation: inherit;
+}
+@keyframes l1 {
+  100% {transform: rotate(1turn)}
 }
 </style>

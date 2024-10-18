@@ -32,7 +32,7 @@ instance HasAbilities LodgeCellarMembersOnly where
       [ withTooltip
         "{action}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
         $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 Here
-        $ ActionAbility [] (ActionCost 1 <> GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
+        $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
       | unrevealed attrs
       ]
 

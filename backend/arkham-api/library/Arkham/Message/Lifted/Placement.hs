@@ -34,6 +34,9 @@ instance Placeable AssetAttrs where
 instance Placeable AssetId where
   place aid placement = push $ PlaceAsset aid (toPlacement placement)
 
+instance Placeable EnemyId where
+  place aid placement = push $ PlaceEnemy aid (toPlacement placement)
+
 instance Placeable EnemyAttrs where
   place attrs placement = push $ PlaceEnemy attrs.id (toPlacement placement)
 

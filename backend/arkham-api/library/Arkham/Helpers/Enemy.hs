@@ -154,7 +154,7 @@ getEnemyAccessibleLocations eid = do
   connectedLocationIds <- select matcher
   filterM (canEnterLocation eid) connectedLocationIds
 
-getUniqueEnemy :: HasGame m => CardDef -> m EnemyId
+getUniqueEnemy :: (HasCallStack, HasGame m) => CardDef -> m EnemyId
 getUniqueEnemy = selectJust . enemyIs
 
 getUniqueEnemyMaybe :: HasGame m => CardDef -> m (Maybe EnemyId)

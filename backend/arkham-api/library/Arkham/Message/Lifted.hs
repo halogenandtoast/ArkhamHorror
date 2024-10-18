@@ -492,6 +492,9 @@ spawnEnemy_ = void . spawnEnemy
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
+setCardAside :: ReverseQueue m => Card -> m ()
+setCardAside = push . Msg.SetAsideCards . (: [])
+
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
 

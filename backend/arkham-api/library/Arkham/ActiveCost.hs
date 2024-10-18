@@ -29,6 +29,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
+import Arkham.Exception
 import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
 import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
@@ -1165,8 +1166,8 @@ instance RunMessage ActiveCost where
                       $ getCanAffordCost iid source actions c.windows cost'
                   if canStillAfford'
                     then payCost msg c iid skipAdditionalCosts cost'
-                    else error $ "Can't afford cost: " <> show cost'
-                else error $ "Can't afford cost: " <> show cost
+                    else throw $ InvalidState $ "Can't afford cost: " <> tshow cost'
+                else throw $ InvalidState $ "Can't afford cost: " <> tshow cost
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
     PaidCost acId _ _ payment | acId == c.id -> do

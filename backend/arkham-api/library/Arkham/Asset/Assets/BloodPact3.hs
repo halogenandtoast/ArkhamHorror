@@ -31,7 +31,7 @@ instance RunMessage BloodPact3 where
   runMessage msg a@(BloodPact3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #intellect 3)
+        pushM $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #willpower 3)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->

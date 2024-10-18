@@ -148,20 +148,32 @@ const baseURL = `${window.location.protocol}//${window.location.hostname}${windo
 // Socket Handling
 const onError = () => {
   processing.value = false
-  game.value.question = oldQuestion.value
+  if (game.value && oldQuestion.value) {
+    game.value.question = oldQuestion.value
+  }
   socketError.value = true
 }
 const onConnected = () => {
   socketError.value = false
   processing.value = false
 }
-const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected })
+
+const onMessage = (_ws: WebSocket, event: MessageEvent) => {
+  const result = JSON.parse(event.data)
+  handleResult(result)
+  oldQuestion.value = null
+}
+
+const { send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected, onMessage })
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch(result.tag) {
     case "GameError":
       if (props.spectate) return
       error.value = result.contents
+      if(oldQuestion.value) {
+        game.value.question = oldQuestion.value
+      }
       return
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
@@ -230,11 +242,6 @@ const handleResult = (result: ServerResult) => {
       return
   }
 }
-// watchers
-watch(data, async (newData) => {
-  const result = JSON.parse(newData)
-  handleResult(result)
-})
 
 watch(uiLock, async () => {
   if (uiLock.value) return

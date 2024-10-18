@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { LottieAnimation } from "lottie-web-vue"
+import processingJSON from "@/assets/processing.json"
 import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -85,6 +87,7 @@ const tarotCards = ref<TarotCard[]>([])
 const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
 const processing = ref(false)
+const oldQuestion = ref<Record<string, Question> | null>(null)
 
 addEntry({
   id: "viewSettings",
@@ -143,8 +146,15 @@ const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
 const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`
 
 // Socket Handling
-const onError = () => socketError.value = true
-const onConnected = () => socketError.value = false
+const onError = () => {
+  processing.value = false
+  game.value.question = oldQuestion.value
+  socketError.value = true
+}
+const onConnected = () => {
+  socketError.value = false
+  processing.value = false
+}
 const { data, send, close } = useWebSocket(websocketUrl.value, { autoReconnect: true, onError, onConnected })
 const handleResult = (result: ServerResult) => {
   processing.value = false
@@ -384,6 +394,7 @@ window.sendDebug = function (msg: any) {
 // Callbacks
 async function choose(idx: number) {
   if (idx !== -1 && game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
     game.value.question = {}
     processing.value = true
     send(JSON.stringify({tag: 'Answer', contents: { choice: idx , playerId: playerId.value } }))
@@ -392,6 +403,7 @@ async function choose(idx: number) {
 
 async function chooseDeck(deckId: string): Promise<void> {
   if(game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
     game.value.question = {}
     processing.value = true
     send(JSON.stringify({tag: 'DeckAnswer', deckId, playerId: playerId.value}))
@@ -400,6 +412,7 @@ async function chooseDeck(deckId: string): Promise<void> {
 
 async function choosePaymentAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
     game.value.question = {}
     processing.value = true
     send(JSON.stringify({tag: 'PaymentAmountsAnswer', contents: { amounts } }))
@@ -408,6 +421,7 @@ async function choosePaymentAmounts(amounts: Record<string, number>): Promise<vo
 
 async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
   if(game.value && !props.spectate) {
+    oldQuestion.value = game.value.question
     game.value.question = {}
     processing.value = true
     send(JSON.stringify({tag: 'AmountsAnswer', contents: { amounts } }))
@@ -479,7 +493,14 @@ onUnmounted(() => {
         <button @click="error = null">Close</button>
       </div>
     </dialog>
-    <div v-if="processing" class="loader"></div>
+    <div v-if="processing" class="processing">
+      <LottieAnimation 
+        :animation-data="processingJSON"
+        :auto-play="true"
+        :loop="true"
+        :speed="1"
+        ref="anim" />
+    </div>
     <CardOverlay />
     <Draggable v-if="showShortcuts">
       <template #handle>
@@ -1352,5 +1373,15 @@ button:hover .shortcut {
 }
 @keyframes l1 {
   100% {transform: rotate(1turn)}
+}
+
+.processing {
+  z-index: 1000;
+  position: absolute;
+  top: 45px;
+  left: 00px;
+  width: 80px;
+  filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);
+  aspect-ratio: 1;
 }
 </style>

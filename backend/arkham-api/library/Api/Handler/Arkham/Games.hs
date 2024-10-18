@@ -3,6 +3,7 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,
@@ -53,6 +54,7 @@ import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Import qualified as P
 import Json
+import Network.HTTP.Types.Status (status200)
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
 import UnliftIO.Exception hiding (Handler)
@@ -279,6 +281,9 @@ putApiV1ArkhamGameR gameId = do
   writeChannel <- (.channel) <$> getRoom gameId
   updateGame response gameId userId writeChannel
 
+handleError :: forall a. SomeException -> Handler a
+handleError (SomeException ex) = sendStatusJSON status200 $ GameError (traceShowId $ tshow ex)
+
 updateGame :: Answer -> ArkhamGameId -> UserId -> TChan BSL.ByteString -> Handler ()
 updateGame response gameId userId writeChannel = do
   (Entity _ _, ArkhamGame {..}) <-
@@ -296,15 +301,16 @@ updateGame response gameId userId writeChannel = do
 
   let playerId = fromMaybe activePlayer (answerPlayer response)
 
-  messages <- handleAnswer gameJson playerId response
+  logRef <- newIORef []
+  messages <- handleAnswer gameJson playerId response `catch` handleError
   gameRef <- newIORef gameJson
   queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
-  logRef <- newIORef []
   genRef <- newIORef $ mkStdGen gameSeed
 
   runGameApp
     (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
     (runMessages Nothing)
+    `catch` handleError
 
   ge <- readIORef gameRef
   let diffDown = diff ge arkhamGameCurrentData

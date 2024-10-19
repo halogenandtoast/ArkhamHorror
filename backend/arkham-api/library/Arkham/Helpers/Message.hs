@@ -33,6 +33,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), WindowType, defaultWindows, mkAfter, mkWindow)
 import Arkham.Window qualified as Window
+import Control.Monad.Trans
 
 drawCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
 drawCards i source n = DrawCards i $ newCardDraw source i n
@@ -572,16 +573,23 @@ handleTargetChoice
   :: (Sourceable source, Targetable target) => InvestigatorId -> source -> target -> Message
 handleTargetChoice iid (toSource -> source) (toTarget -> target) = HandleTargetChoice iid source target
 
-handleSkillTestNesting :: HasQueue Message m => SkillTestId -> Message -> a -> m a -> m a
+handleSkillTestNesting
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => SkillTestId
+  -> Message
+  -> a
+  -> t m a
+  -> t m a
 handleSkillTestNesting sid msg a action = do
   push $ NextSkillTest sid
-  inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
+  inSkillTestWindow <- lift $ fromQueue $ elem EndSkillTestWindow
   if inSkillTestWindow
     then do
-      msgs <- popMessagesMatching \case
-        MoveWithSkillTest _ -> True
-        _ -> False
-      insertAfterMatching (msg : msgs) (== EndSkillTestWindow)
+      lift do
+        msgs <- popMessagesMatching \case
+          MoveWithSkillTest _ -> True
+          _ -> False
+        insertAfterMatching (msg : msgs) (== EndSkillTestWindow)
       pure a
     else do
       mapQueue \case
@@ -589,7 +597,12 @@ handleSkillTestNesting sid msg a action = do
         x -> x
       action
 
-handleSkillTestNesting_ :: HasQueue Message m => SkillTestId -> Message -> m () -> m ()
+handleSkillTestNesting_
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => SkillTestId
+  -> Message
+  -> t m ()
+  -> t m ()
 handleSkillTestNesting_ sid msg action = handleSkillTestNesting sid msg () action
 
 createAssetAt :: MonadRandom m => Card -> Placement -> m (AssetId, Message)

@@ -1974,7 +1974,7 @@ runGameMessage msg g = case msg of
       & (phaseHistoryL .~ mempty)
   BeginSkillTestWithPreMessages _ pre skillTest -> runMessage (BeginSkillTestWithPreMessages' pre skillTest) g
   BeginSkillTestWithPreMessages' pre skillTest -> do
-    handleSkillTestNesting skillTest.id msg g do
+    runQueueT $ handleSkillTestNesting skillTest.id msg g do
       let iid = skillTest.investigator
       let windows' = windows [Window.InitiatedSkillTest skillTest]
       let defaultCase = windows' <> [BeginSkillTestAfterFast]

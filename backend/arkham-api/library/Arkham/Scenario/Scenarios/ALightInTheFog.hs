@@ -104,16 +104,17 @@ instance RunMessage ALightInTheFog where
       whenHasRecord TheHeaddressWasBroughtToTheLighthouse $ setAside [Assets.headdressOfYhaNthlei]
       whenHasRecord TheInvestigatorsReachedFalconPointAfterSunrise $ placeDoomOnAgenda 1
       whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda 1
-    ResolveChaosToken _ face iid -> do
-      case face of
-        Skull -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
-          drawAnotherChaosToken iid
-        ElderThing | isHardExpert attrs -> withLocationOf iid \lid -> do
+    ResolveChaosToken _ Skull iid -> do
+      whenAny (locationWithInvestigator iid <> FloodedLocation) do
+        drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      when (isHardExpert attrs) do
+        withLocationOf iid \lid -> do
           nearest <- select (NearestEnemyTo iid UnengagedEnemy)
           chooseTargetM iid nearest \enemy -> do
             temporaryModifier enemy ElderThing (RemoveKeyword Aloof) do
               moveTowardsMatching ElderThing enemy (LocationWithId lid)
-        _ -> pure ()
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of

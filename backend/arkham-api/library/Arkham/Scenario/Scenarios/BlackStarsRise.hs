@@ -191,6 +191,12 @@ instance RunMessage BlackStarsRise where
       when (token.face == ElderThing) do
         findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Trait.Byakhee
       pure s
+    ResolveChaosToken _ Cultist iid -> do
+      drawAnotherChaosToken iid
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      drawAnotherChaosToken iid
+      pure s
     ScenarioResolution res -> do
       let
         updateSlain = selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ashleighClarke) \ashleigh ->

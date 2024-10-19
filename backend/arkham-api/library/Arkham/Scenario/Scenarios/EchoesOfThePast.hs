@@ -166,14 +166,15 @@ instance RunMessage EchoesOfThePast where
       setAgendaDeck
         [Agendas.theTruthIsHidden, Agendas.ransackingTheManor, Agendas.secretsBetterLeftHidden]
       setActDeck [Acts.raceForAnswers, Acts.mistakesOfThePast, Acts.theOath]
-    ResolveChaosToken _ token iid | isHardExpert attrs -> do
-      case token of
-        Cultist | isHardExpert attrs -> do
-          es <- select $ NearestEnemyTo iid AnyEnemy
-          chooseTargetM iid es \target -> placeDoom Cultist target 1
-        Tablet -> randomDiscard iid Tablet
-        ElderThing -> whenAny (EnemyAt YourLocation) $ assignHorror iid ElderThing 1
-        _ -> pure ()
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      es <- select $ NearestEnemyTo iid AnyEnemy
+      chooseTargetM iid es \target -> placeDoom Cultist target 1
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      randomDiscard iid Tablet
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      whenAny (EnemyAt YourLocation) $ assignHorror iid ElderThing 1
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
       case chaosTokenFace token of

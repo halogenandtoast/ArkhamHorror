@@ -92,16 +92,18 @@ instance RunMessage ThePitOfDespair where
         , Treacheries.fromTheDepths
         , Treacheries.fromTheDepths
         ]
-    ResolveChaosToken _ face iid -> do
+    ResolveChaosToken _ Cultist iid -> do
       when (isHardExpert attrs) do
-        case face of
-          Cultist -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
-            assignDamage iid Cultist 1
-          Tablet -> whenM (notNull <$> iid.keys) $ assignHorror iid Cultist 1
-          ElderThing ->
-            selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
-              withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
-          _ -> pure ()
+        whenAny (locationWithInvestigator iid <> FloodedLocation) $ assignDamage iid Cultist 1
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      when (isHardExpert attrs) do
+        whenM (notNull <$> iid.keys) $ assignHorror iid Tablet 1
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      when (isHardExpert attrs) do
+        selectOne (OutOfPlayEnemy TheDepths $ enemyIs Enemies.theAmalgam) >>= traverse_ \eid -> do
+          withLocationOf iid \lid -> push $ EnemySpawnFromOutOfPlay TheDepths (Just iid) lid eid
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (isEasyStandard attrs) do

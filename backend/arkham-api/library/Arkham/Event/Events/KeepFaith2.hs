@@ -16,7 +16,7 @@ keepFaith2 = event KeepFaith2 Cards.keepFaith2
 instance RunMessage KeepFaith2 where
   runMessage msg e@(KeepFaith2 attrs) = case msg of
     PlayThisEvent _iid eid | eid == toId attrs -> do
-      n <- min 4 <$> getRemainingCurseTokens
+      n <- min 4 <$> getRemainingBlessTokens
       pushAll $ replicate n $ AddChaosToken #bless
       pure e
     _ -> KeepFaith2 <$> runMessage msg attrs

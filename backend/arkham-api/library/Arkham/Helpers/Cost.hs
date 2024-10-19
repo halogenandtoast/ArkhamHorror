@@ -53,7 +53,19 @@ getCanAffordCost
   -> [Window]
   -> Cost
   -> m Bool
-getCanAffordCost iid !(toSource -> source) actions windows' = \case
+getCanAffordCost iid source actions windows' =
+  getCanAffordCost_ iid source actions windows' True
+
+getCanAffordCost_
+  :: (HasGame m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> [Action]
+  -> [Window]
+  -> Bool
+  -> Cost
+  -> m Bool
+getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr
   ChooseExtendedCardCost mtcr -> selectAny mtcr
@@ -106,7 +118,7 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
   SkillTestCost {} -> pure True
   AsIfAtLocationCost lid c -> do
     withModifiers' iid (toModifiers source [AsIfAt lid])
-      $ getCanAffordCost iid source actions windows' c
+      $ getCanAffordCost_ iid source actions windows' canModify c
   ShuffleAttachedCardIntoDeckCost target cardMatcher -> do
     case target of
       AssetTarget aid -> fieldMap AssetCardsUnderneath (any (`cardMatch` cardMatcher)) aid
@@ -115,17 +127,17 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
   DrawEncounterCardsCost _n -> can.target.encounterDeck iid
   CostWhenEnemy mtchr c -> do
     hasEnemy <- selectAny mtchr
-    if hasEnemy then getCanAffordCost iid source actions windows' c else pure True
+    if hasEnemy then getCanAffordCost_ iid source actions windows' canModify c else pure True
   CostIfEnemy mtchr c1 c2 -> do
     hasEnemy <- selectAny mtchr
-    getCanAffordCost iid source actions windows' $ if hasEnemy then c1 else c2
+    getCanAffordCost_ iid source actions windows' canModify $ if hasEnemy then c1 else c2
   CostIfCustomization customization c1 c2 -> do
     case source of
       (CardIdSource cid) -> do
         card <- getCard cid
         case card of
           PlayerCard pc ->
-            getCanAffordCost iid source actions windows'
+            getCanAffordCost_ iid source actions windows' canModify
               $ if pc `hasCustomization` customization then c1 else c2
           _ -> error "Not implemented"
       _ -> error "Not implemented"
@@ -136,7 +148,7 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
     mods <- getModifiers (sourceToTarget source)
     if Blank `elem` mods
       then pure True
-      else getCanAffordCost iid source actions windows' c
+      else getCanAffordCost_ iid source actions windows' canModify c
   GloriaCost -> do
     mtarget <- getSkillTestTarget
     case mtarget of
@@ -165,12 +177,12 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
     let totalActions = totalActionCost cost
     let reduction = max 0 ((spendableActions - totalActions) * n)
     withModifiers iid (toModifiers source [ExtraResources reduction]) do
-      getCanAffordCost iid source actions windows' cost
+      getCanAffordCost_ iid source actions windows' canModify cost
   RevealCost {} -> pure True
   Costs xs ->
-    and <$> traverse (getCanAffordCost iid source actions windows') xs
+    and <$> traverse (getCanAffordCost_ iid source actions windows' canModify) xs
   OrCost xs ->
-    or <$> traverse (getCanAffordCost iid source actions windows') xs
+    or <$> traverse (getCanAffordCost_ iid source actions windows' canModify) xs
   ExhaustCost target -> case target of
     AssetTarget aid ->
       elem aid <$> select Matcher.AssetReady
@@ -229,17 +241,20 @@ getCanAffordCost iid !(toSource -> source) actions windows' = \case
     pure $ uses >= n
   ActionCost n -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
-    if ActionsAreFree `elem` modifiers
+    if any (`elem` modifiers) [ActionsAreFree, IgnoreActionCost]
       then pure True
       else do
         takenActions <- field InvestigatorActionsTaken iid
         performedActions <- field InvestigatorActionsPerformed iid
-        let modifiedActionCost = foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
+        let modifiedActionCost =
+              if canModify
+                then foldr (applyActionCostModifier takenActions performedActions actions) n modifiers
+                else n
         additionalActions <- field InvestigatorAdditionalActions iid
         additionalActionCount <- countM (additionalActionCovers source actions) additionalActions
         actionCount <- field InvestigatorRemainingActions iid
-        pure $ (actionCount + additionalActionCount) >= modifiedActionCost
-  AdditionalActionCost -> getCanAffordCost iid source actions windows' (ActionCost 1)
+        pure $ actionCount + additionalActionCount >= modifiedActionCost
+  AdditionalActionCost -> getCanAffordCost_ iid source actions windows' canModify (ActionCost 1)
   AssetClueCost _ aMatcher gv -> do
     totalClueCost <- getPlayerCountValue gv
     clues <- getSum <$> selectAgg Sum AssetClues aMatcher

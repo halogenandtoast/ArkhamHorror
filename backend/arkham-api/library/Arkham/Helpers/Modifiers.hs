@@ -34,7 +34,23 @@ withGrantedAction
   -> source
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
-withGrantedAction iid source = withModifiers iid (toModifiers source [ActionCostModifier (-1)])
+withGrantedAction iid source = withGrantedActions iid source 1
+
+withGrantedActions
+  :: (HasGame m, Sourceable source)
+  => InvestigatorId
+  -> source
+  -> Int
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+withGrantedActions iid source n = withModifiers iid (toModifiers source [ActionCostModifier (-n)])
+
+ignoreActionCost
+  :: HasGame m
+  => InvestigatorId
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+ignoreActionCost iid = withModifiers iid (toModifiers GameSource [ActionsAreFree])
 
 withModifiers
   :: (HasGame m, Targetable target)

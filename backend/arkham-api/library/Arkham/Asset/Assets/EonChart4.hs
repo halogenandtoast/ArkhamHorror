@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Asset.Assets.EonChart4 (eonChart4, EonChart4 (..)) where
 
 import Arkham.Ability

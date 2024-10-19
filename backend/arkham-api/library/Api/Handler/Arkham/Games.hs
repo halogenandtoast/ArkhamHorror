@@ -3,7 +3,6 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,

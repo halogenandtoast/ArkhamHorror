@@ -17,7 +17,7 @@ chaosInTheWater = treachery ChaosInTheWater Cards.chaosInTheWater
 instance RunMessage ChaosInTheWater where
   runMessage msg t@(ChaosInTheWater attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      innocentRevelerIds <- select $ assetControlledBy iid <> assetIs Assets.innocentReveler
+      innocentRevelerIds <- select $ assetIs Assets.innocentReveler
       investigatorsWithRevelers <-
         catMaybes <$> traverse (selectOne . HasMatchingAsset . AssetWithId) innocentRevelerIds
       sid <- getRandom

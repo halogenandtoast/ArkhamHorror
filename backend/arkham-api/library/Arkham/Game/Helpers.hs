@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,
@@ -904,7 +902,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (cardInFastWindows iid source c windows')
         (cdFastWindow pcDef <|> canBecomeFastWindow)
 
-    canEvade <-
+    ac <- getActionCost attrs (cdActions pcDef)
+
+    canEvade <- withGrantedActions iid GameSource ac do
       if (#evade `elem` cdActions pcDef)
         then
           if inFastWindow
@@ -914,8 +914,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
             else hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
         else pure False
 
-    canFight <-
-      if (#fight `elem` cdActions pcDef)
+    canFight <- withGrantedActions iid GameSource ac do
+      if (#fight `elem` pcDef.actions)
         then
           if inFastWindow
             then
@@ -972,11 +972,15 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               pure [m | AdditionalCostToResign m <- mods]
         else pure []
 
-    actionCost <-
-      getActionCost attrs (cdActions pcDef) >>= case costStatus of
-        PaidCost -> pure . max 0 . subtract 1
-        UnpaidCost NoAction -> pure . max 0 . subtract 1
-        UnpaidCost NeedsAction -> pure
+    -- NOTE: This used to be
+    -- PaidCost -> pure . max 0 . subtract 1
+    -- But we removed it because it conflicted with additional action costs
+    let
+      actionCost =
+        case costStatus of
+          PaidCost -> const 0 ac
+          UnpaidCost NoAction -> max 0 $ subtract 1 ac
+          UnpaidCost NeedsAction -> ac
 
     -- Warning: We check if the source is GameSource, this affects the
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
@@ -1005,11 +1009,11 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins)
-      && ( (#evade `notElem` cdActions pcDef)
+      && ( (#evade `notElem` pcDef.actions)
             || canEvade
             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
          )
-      && ( (#fight `notElem` cdActions pcDef)
+      && ( (#fight `notElem` pcDef.actions)
             || canFight
             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
          )
@@ -1646,7 +1650,7 @@ passesCriteria iid mcard source' requestor windows' = \case
         ActionAbility [Action.Resign] _ -> True
         _ -> False
   Criteria.Remembered logKey -> do
-    elem (traceShowId logKey) . traceShowId <$> scenarioFieldMap ScenarioRemembered Set.toList
+    elem logKey <$> scenarioFieldMap ScenarioRemembered Set.toList
   Criteria.RememberedAtLeast value logKeys -> do
     n <-
       length

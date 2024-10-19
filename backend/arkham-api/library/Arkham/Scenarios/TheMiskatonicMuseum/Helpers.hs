@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Scenarios.TheMiskatonicMuseum.Helpers where
 
 import Arkham.Classes

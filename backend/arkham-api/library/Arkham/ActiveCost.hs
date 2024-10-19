@@ -1146,9 +1146,15 @@ instance RunMessage ActiveCost where
               _ -> pure 0
         _ -> pure 0
 
+      let
+        canModify =
+          case c.target of
+            ForCard {} -> False
+            _ -> True
+
       canStillAfford <-
         withModifiers iid (toModifiers source [ExtraResources extraResources])
-          $ getCanAffordCost iid source actions c.windows cost
+          $ getCanAffordCost_ iid source actions c.windows canModify cost
       if canStillAfford
         then payCost msg c iid skipAdditionalCosts cost
         else do
@@ -1163,7 +1169,7 @@ instance RunMessage ActiveCost where
                   let cost' = decreaseResourceCost cost 2
                   canStillAfford' <-
                     withModifiers iid (toModifiers source [ExtraResources extraResources])
-                      $ getCanAffordCost iid source actions c.windows cost'
+                      $ getCanAffordCost_ iid source actions c.windows canModify cost'
                   if canStillAfford'
                     then payCost msg c iid skipAdditionalCosts cost'
                     else throw $ InvalidState $ "Can't afford cost: " <> tshow cost'

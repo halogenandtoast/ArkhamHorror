@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts

@@ -2835,18 +2835,25 @@ enemyMatcherFilter = \case
         if excluded || sourceIsExcluded
           then pure False
           else
-            anyM
-              ( andM
-                  . sequence
-                    [ pure . (`abilityIs` Action.Fight)
-                    , -- Because ChooseFightEnemy happens after taking a fight action we
-                      -- need to decrement the action cost
-                      getCanPerformAbility iid [window]
-                        . (`applyAbilityModifiers` [ActionCostModifier (-1)])
-                        . overrideFunc
-                    ]
-              )
-              (map (setRequestor source) $ getAbilities enemy)
+            if isSource enemy source
+              then
+                anyM
+                  ( andM
+                      . sequence
+                        [ pure . (`abilityIs` Action.Fight)
+                        , getCanPerformAbility iid [window] . overrideFunc
+                        ]
+                  )
+                  (map (setRequestor source) $ getAbilities enemy)
+              else ignoreActionCost iid do
+                anyM
+                  ( andM
+                      . sequence
+                        [ pure . (`abilityIs` Action.Fight)
+                        , getCanPerformAbility iid [window] . overrideFunc
+                        ]
+                  )
+                  (map (setRequestor source) $ getAbilities enemy)
   CanFightEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (EnemyTarget $ toId enemy)

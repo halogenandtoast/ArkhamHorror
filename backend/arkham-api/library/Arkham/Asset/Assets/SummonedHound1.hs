@@ -7,7 +7,7 @@ import Arkham.Fight
 import Arkham.Investigate
 import Arkham.Investigate.Types qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 import Arkham.Projection
 
@@ -20,8 +20,10 @@ summonedHound1 = assetWith SummonedHound1 Cards.summonedHound1 $ healthL ?~ 3
 
 instance HasAbilities SummonedHound1 where
   getAbilities (SummonedHound1 attrs) =
-    [ controlledAbility attrs 1 (Negate DuringAction) $ FastAbility' (exhaust attrs) [#fight]
-    , controlledAbility attrs 1 (Negate DuringAction) $ FastAbility' (exhaust attrs) [#investigate]
+    [ controlledAbility attrs 1 (Negate DuringAction <> DuringTurn You)
+        $ FastAbility' (exhaust attrs) [#fight]
+    , controlledAbility attrs 1 (Negate DuringAction <> DuringTurn You)
+        $ FastAbility' (exhaust attrs) [#investigate]
     ]
 
 instance RunMessage SummonedHound1 where

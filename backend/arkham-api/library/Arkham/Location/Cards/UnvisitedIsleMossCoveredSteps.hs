@@ -46,14 +46,14 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
 
 instance RunMessage UnvisitedIsleMossCoveredSteps where
   runMessage msg l@(UnvisitedIsleMossCoveredSteps attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#combat, #agility] (Fixed 10)
+      circleTest sid iid (attrs.ability 1) attrs [#combat, #agility] (Fixed 10)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleMossCoveredSteps <$> runMessage msg attrs

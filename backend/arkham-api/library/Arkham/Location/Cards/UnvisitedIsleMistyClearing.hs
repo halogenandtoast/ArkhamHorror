@@ -43,11 +43,11 @@ instance HasAbilities UnvisitedIsleMistyClearing where
 
 instance RunMessage UnvisitedIsleMistyClearing where
   runMessage msg l@(UnvisitedIsleMistyClearing attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#willpower, #agility] (Fixed 11)
+      circleTest sid iid (attrs.ability 1) attrs [#willpower, #agility] (Fixed 11)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       player <- getPlayer iid
       push
         $ chooseOne
@@ -56,7 +56,7 @@ instance RunMessage UnvisitedIsleMistyClearing where
           , Label "Take 1 damage and 1 horror" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1]
           ]
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleMistyClearing <$> runMessage msg attrs

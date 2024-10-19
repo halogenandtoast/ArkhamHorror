@@ -43,11 +43,11 @@ instance HasAbilities UnvisitedIsleHauntedSpring where
 
 instance RunMessage UnvisitedIsleHauntedSpring where
   runMessage msg l@(UnvisitedIsleHauntedSpring attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#intellect, #agility] (Fixed 9)
+      circleTest sid iid (attrs.ability 1) attrs [#intellect, #agility] (Fixed 9)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       player <- getPlayer iid
       push
@@ -57,7 +57,7 @@ instance RunMessage UnvisitedIsleHauntedSpring where
           ]
         <> [Label "Take 1 damage" [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]]
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleHauntedSpring <$> runMessage msg attrs

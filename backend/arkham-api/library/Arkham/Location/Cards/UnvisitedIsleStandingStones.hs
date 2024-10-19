@@ -49,15 +49,15 @@ instance HasAbilities UnvisitedIsleStandingStones where
 
 instance RunMessage UnvisitedIsleStandingStones where
   runMessage msg l@(UnvisitedIsleStandingStones attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#willpower, #intellect] (Fixed 10)
+      circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 10)
       pure l
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
         push $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleStandingStones <$> runMessage msg attrs

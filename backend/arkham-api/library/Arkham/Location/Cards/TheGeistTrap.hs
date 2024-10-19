@@ -44,14 +44,14 @@ instance HasAbilities TheGeistTrap where
 
 instance RunMessage TheGeistTrap where
   runMessage msg l@(TheGeistTrap attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#willpower, #intellect, #combat, #agility] (Fixed 20)
+      circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect, #combat, #agility] (Fixed 20)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestTarget {} _ _ -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> TheGeistTrap <$> runMessage msg attrs

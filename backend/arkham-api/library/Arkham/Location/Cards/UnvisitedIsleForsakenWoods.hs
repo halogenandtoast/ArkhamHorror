@@ -49,11 +49,11 @@ instance HasAbilities UnvisitedIsleForsakenWoods where
 
 instance RunMessage UnvisitedIsleForsakenWoods where
   runMessage msg l@(UnvisitedIsleForsakenWoods attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#willpower, #combat] (Fixed 11)
+      circleTest sid iid (attrs.ability 1) attrs [#willpower, #combat] (Fixed 11)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       whippoorwills <- select $ NearestEnemyTo iid $ enemyIs Enemies.whippoorwill
       player <- getPlayer iid
       push
@@ -77,7 +77,7 @@ instance RunMessage UnvisitedIsleForsakenWoods where
           | notNull whippoorwills
           ]
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do

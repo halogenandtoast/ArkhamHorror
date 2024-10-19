@@ -43,14 +43,14 @@ instance HasAbilities UnvisitedIsleDecayedWillow where
 
 instance RunMessage UnvisitedIsleDecayedWillow where
   runMessage msg l@(UnvisitedIsleDecayedWillow attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      circleTest sid iid attrs attrs [#intellect, #combat] (Fixed 9)
+      circleTest sid iid (attrs.ability 1) attrs [#intellect, #combat] (Fixed 9)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ toMessage $ chooseAndDiscardCard iid attrs
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
     _ -> UnvisitedIsleDecayedWillow <$> runMessage msg attrs

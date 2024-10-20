@@ -3,19 +3,18 @@ module Arkham.Location.Cards.BleakPlainsStarsOfAldebaran (
   BleakPlainsStarsOfAldebaran (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype BleakPlainsStarsOfAldebaran = BleakPlainsStarsOfAldebaran LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bleakPlainsStarsOfAldebaran :: LocationCard BleakPlainsStarsOfAldebaran

@@ -27,4 +27,8 @@ instance RunMessage MappingTheStreets where
         , Msg.EnemyDamage hastur $ storyDamage iid n
         ]
       pure s
+    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
+      | isSource attrs source -> do
+          push $ InvestigatorAssignDamage iid source DamageAny 0 n
+          pure s
     _ -> MappingTheStreets <$> runMessage msg attrs

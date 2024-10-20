@@ -49,8 +49,4 @@ instance RunMessage DimStreetsMappingTheStreets where
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.mappingTheStreets
       pure . DimStreetsMappingTheStreets $ attrs & canBeFlippedL .~ False
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
-      | isSource attrs source -> do
-          push $ InvestigatorAssignDamage iid source DamageAny 0 n
-          pure l
     _ -> DimStreetsMappingTheStreets <$> runMessage msg attrs

@@ -166,6 +166,7 @@ data WindowMatcher
   | DuringTurn Who
   | Enters Timing Who Where
   | Leaves Timing Who Where
+  | WouldMove Timing Who SourceMatcher FromWhere ToWhere
   | Moves Timing Who SourceMatcher FromWhere ToWhere
   | MoveAction Timing Who FromWhere ToWhere
   | OrWindowMatcher [WindowMatcher]

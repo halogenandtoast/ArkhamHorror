@@ -94,6 +94,7 @@ data instance Field Location :: Type -> Type where
   LocationUnrevealedName :: Field Location Name
   LocationVengeance :: Field Location (Maybe Int)
   LocationPosition :: Field Location (Maybe Pos)
+  LocationCostToEnterUnrevealed :: Field Location Cost
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -115,6 +116,7 @@ fieldLens = \case
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
   LocationPosition -> positionL
+  LocationCostToEnterUnrevealed -> costToEnterUnrevealedL
   LocationInvestigateSkill -> investigateSkillL
   LocationInFrontOf -> inFrontOfL
   LocationCardId -> cardIdL
@@ -189,6 +191,7 @@ instance FromJSON (SomeField Location) where
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance
     "LocationPosition" -> pure $ SomeField LocationPosition
+    "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     _ -> error "no such field"
 
 instance Entity LocationAttrs where

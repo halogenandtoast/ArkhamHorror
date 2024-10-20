@@ -1,19 +1,12 @@
-module Arkham.Location.Cards.TombOfShadows (
-  tombOfShadows,
-  TombOfShadows (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TombOfShadows (tombOfShadows, TombOfShadows (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype TombOfShadows = TombOfShadows LocationAttrs
   deriving anyclass IsLocation
@@ -27,12 +20,7 @@ tombOfShadows =
 
 instance HasModifiersFor TombOfShadows where
   getModifiersFor (EnemyTarget eid) (TombOfShadows attrs) = do
-    active <-
-      elem eid
-        <$> select
-          ( enemyIs Enemies.theManInThePallidMask
-              <> EnemyAt (LocationWithId $ toId attrs)
-          )
+    active <- elem eid <$> select (enemyIs Enemies.theManInThePallidMask <> EnemyAt (be attrs))
     -- preventing the man in the pallid mask from being defeated is handled by
     -- the man in the pallid mask
     toModifiers attrs [HealthModifier 1 | active]
@@ -40,21 +28,12 @@ instance HasModifiersFor TombOfShadows where
 
 instance HasAbilities TombOfShadows where
   getAbilities (TombOfShadows attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation
-          Timing.When
-          Anyone
-          (LocationWithId $ toId attrs)
-      | locationRevealed attrs
-      ]
+    extendRevealed1 attrs $ mkAbility attrs 1 $ forced $ RevealLocation #when Anyone (be attrs)
 
 instance RunMessage TombOfShadows where
-  runMessage msg l@(TombOfShadows attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(TombOfShadows attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       actIds <- select AnyAct
-      pushAll (map (\aid -> AdvanceAct aid source AdvancedWithOther) actIds)
+      pushAll $ map (\aid -> AdvanceAct aid (attrs.ability 1) #other) actIds
       pure l
-    _ -> TombOfShadows <$> runMessage msg attrs
+    _ -> TombOfShadows <$> liftRunMessage msg attrs

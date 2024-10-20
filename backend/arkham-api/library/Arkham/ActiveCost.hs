@@ -187,6 +187,9 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    CostToEnterUnrevealed _ -> do
+      -- we don't pay this directly, it must be unwrapped elsewhere
+      pure c
     ChooseExtendedCardCost mtch -> do
       cards <- select mtch
       push $ chooseOne player $ targetLabels cards $ only . pay . ChosenCardCost . toCardId

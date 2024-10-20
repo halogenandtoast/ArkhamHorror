@@ -1,20 +1,18 @@
-module Arkham.Location.Cards.NarrowShaft (narrowShaft, narrowShaftEffect, NarrowShaft (..)) where
+module Arkham.Location.Cards.NarrowShaft (narrowShaft, NarrowShaft (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Draw.Types
-import Arkham.Effect.Runner hiding (RevealLocation)
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
-import Arkham.SkillType
+import Arkham.Window (getBatchId)
 
 newtype NarrowShaft = NarrowShaft LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,12 +26,12 @@ narrowShaft =
 
 instance HasAbilities NarrowShaft where
   getAbilities (NarrowShaft attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
       [ skillTestAbility
           $ mkAbility attrs 1
           $ forced
-          $ Moves #when You AnySource (be attrs) UnrevealedLocation
+          $ WouldMove #when You AnySource (be attrs) UnrevealedLocation
       , restrictedAbility
           attrs
           2
@@ -42,25 +40,17 @@ instance HasAbilities NarrowShaft where
       ]
 
 instance RunMessage NarrowShaft where
-  runMessage msg l@(NarrowShaft attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      moveFrom <- popMessageMatching \case
-        MoveFrom _ iid' lid' -> iid' == iid && toId l == lid'
-        _ -> False
-      moveTo <- popMessageMatching \case
-        MoveTo movement -> moveTarget movement == InvestigatorTarget iid -- we don't know where they are going for the cancel
-        Move movement -> moveTarget movement == InvestigatorTarget iid -- we don't know where they are going for the cancel
-        _ -> False
-      let
-        target = InvestigatorTarget iid
-        effectMetadata = Just $ EffectMessages (catMaybes [moveFrom, moveTo])
+  runMessage msg l@(NarrowShaft attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushAll
-        [ createCardEffect Cards.narrowShaft effectMetadata (attrs.ability 1) target
-        , beginSkillTest sid iid (attrs.ability 1) target SkillAgility (Fixed 3)
-        ]
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      batchId <- getBatchId . concat <$> getWindowStack
+      push $ CancelBatch batchId
+      assignDamage iid (attrs.ability 1) 1
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
       pure l
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
@@ -70,35 +60,10 @@ instance RunMessage NarrowShaft where
           placeRight <- placeAtDirection RightOf attrs >>= \f -> f card
           aboveEmpty <- directionEmpty attrs Above
           rightEmpty <- directionEmpty attrs RightOf
-          player <- getPlayer iid
-          push
-            $ chooseOrRunOne player
-            $ [Label "Place Above" placeAbove | aboveEmpty]
-            <> [Label "Place to the Right" placeRight | rightEmpty]
+          chooseOrRunOneM iid do
+            when aboveEmpty $ labeled "Place Above" $ pushAll placeAbove
+            when rightEmpty $ labeled "Place to the Right" $ pushAll placeRight
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l
-    _ -> NarrowShaft <$> runMessage msg attrs
-
-newtype NarrowShaftEffect = NarrowShaftEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-narrowShaftEffect :: EffectArgs -> NarrowShaftEffect
-narrowShaftEffect = cardEffect NarrowShaftEffect Cards.narrowShaft
-
-instance RunMessage NarrowShaftEffect where
-  runMessage msg e@(NarrowShaftEffect attrs) = case msg of
-    PassedThisSkillTest _ (AbilitySource (LocationSource lid) 1) -> do
-      narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
-      when (lid == narrowShaftEffectId)
-        $ case effectMetadata attrs of
-          Just (EffectMessages msgs) -> pushAll (msgs <> [disable attrs])
-          _ -> push $ disable attrs
-      pure e
-    FailedThisSkillTest iid (AbilitySource (LocationSource lid) 1) -> do
-      narrowShaftEffectId <- getJustLocationByName "Narrow Shaft"
-      when (lid == narrowShaftEffectId)
-        $ pushAll [assignDamage iid narrowShaftEffectId 1, disable attrs]
-      pure e
-    _ -> NarrowShaftEffect <$> runMessage msg attrs
+    _ -> NarrowShaft <$> liftRunMessage msg attrs

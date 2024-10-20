@@ -521,7 +521,7 @@ instance HasAbilities LocationAttrs where
     moveCost =
       if l.revealed
         then ActionCost 1
-        else ActionCost 1 <> NonBlankedCost (locationCostToEnterUnrevealed l)
+        else ActionCost 1 <> NonBlankedCost (CostToEnterUnrevealed $ locationCostToEnterUnrevealed l)
 
 getShouldSpawnNonEliteAtConnectingInstead :: HasGame m => LocationAttrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do

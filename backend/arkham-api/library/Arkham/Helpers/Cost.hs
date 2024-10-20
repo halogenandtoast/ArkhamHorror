@@ -66,6 +66,7 @@ getCanAffordCost_
   -> Cost
   -> m Bool
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
+  CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr
   ChooseExtendedCardCost mtcr -> selectAny mtcr
@@ -313,7 +314,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
             =<< select whoMatcher
         FromPlayAreaOf whoMatcher -> do
           assets <- select $ Matcher.AssetControlledBy whoMatcher
-          traverse (field AssetCard) assets
+          filterCards cardMatcher <$> traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
     (>= n) . length <$> getCards zone
   DiscardUnderneathCardCost assetId cardMatcher -> do

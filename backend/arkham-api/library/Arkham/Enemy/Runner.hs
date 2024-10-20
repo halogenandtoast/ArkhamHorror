@@ -685,21 +685,22 @@ instance RunMessage EnemyAttrs where
       pure a
     HandleElusive eid | eid == enemyId -> do
       -- just a reminder that the messages are handled in reverse, so exhaust happens last
-      whenM (eid <=~> ReadyEnemy) do
-        push $ Exhaust (toTarget a)
+      when (isInPlayPlacement enemyPlacement) do
+        whenM (eid <=~> ReadyEnemy) do
+          push $ Exhaust (toTarget a)
 
-        emptyConnectedLocations <-
-          select $ ConnectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
-        lead <- getLeadPlayer
-        if notNull emptyConnectedLocations
-          then do
-            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
-          else do
-            otherConnectedLocations <-
-              select $ ConnectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
-            push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
+          emptyConnectedLocations <-
+            select $ ConnectedFrom (locationWithEnemy eid) <> not_ (LocationWithInvestigator Anyone)
+          lead <- getLeadPlayer
+          if notNull emptyConnectedLocations
+            then do
+              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- emptyConnectedLocations]
+            else do
+              otherConnectedLocations <-
+                select $ ConnectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
+              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
 
-        push $ DisengageEnemyFromAll eid
+          push $ DisengageEnemyFromAll eid
       pure a
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen (Window.SuccessfulAttackEnemy iid source enemyId n)]

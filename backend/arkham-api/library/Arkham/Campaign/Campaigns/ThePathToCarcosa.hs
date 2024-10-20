@@ -78,7 +78,7 @@ instance RunMessage ThePathToCarcosa where
               , NextCampaignStep Nothing
               ]
           , Label
-              "I don't trust this place one bit. Letbs block the door and get the hell out of here!"
+              "I don't trust this place one bit. Let's block the door and get the hell out of here!"
               [ story players lunacysReward2
               , Record YouFledTheDinnerParty
               , RemoveAllChaosTokens Cultist

@@ -75,8 +75,9 @@ chooseOrRunNM iid n choices = do
 
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
-  (_, choices') <- runChooseT choices
-  unless (null choices') $ chooseN iid n choices'
+  when (n > 0) do
+    (_, choices') <- runChooseT choices
+    unless (null choices') $ chooseN iid n choices'
 
 chooseUpToNM :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM iid n done choices = do

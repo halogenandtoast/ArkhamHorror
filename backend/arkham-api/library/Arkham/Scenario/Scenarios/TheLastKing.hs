@@ -197,18 +197,19 @@ instance RunMessage TheLastKing where
       clueCounts <- traverse (field ActClues) =<< select AnyAct
       investigators <- allInvestigatorIds
       let
-        extraXp = ceiling @Double (fromIntegral (sum clueCounts) / 2)
+        extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
         (assignedXp, remainingXp) = quotRem extraXp (length investigators)
         assignXp amount iid =
           resolutionModifier attrs iid
             $ XPModifier "Clues that were on the act deck when the game ended" amount
-      eachInvestigator (assignXp assignedXp)
+      for_ investigators (assignXp assignedXp)
 
-      lead <- getLead
-      chooseNM lead remainingXp do
-        for_ investigators \iid -> do
-          name <- field InvestigatorName iid
-          labeled ("Choose " <> display name <> " to gain 1 additional XP") $ lift $ assignXp 1 iid
+      when (remainingXp > 0) do
+        lead <- getLead
+        chooseNM lead remainingXp do
+          for_ investigators \iid -> do
+            name <- field InvestigatorName iid
+            labeled ("Choose " <> display name <> " to gain 1 additional XP") $ lift $ assignXp 1 iid
 
       -- Assign XP now that the modifiers exist
       doStep 1 msg

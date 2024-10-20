@@ -10,7 +10,7 @@ import { useWebSocket, useClipboard } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
 import * as Arkham from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers';
-import { fetchGame, undoChoice } from '@/arkham/api'
+import { fetchGame, undoChoice, undoScenarioChoice } from '@/arkham/api'
 import * as Api from '@/arkham/api'
 import Draggable from '@/components/Draggable.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -261,6 +261,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
+  if (event.key === 'U') {
+    if (!import.meta.env.PROD) {
+      undoScenario()
+      return
+    }
+  }
+
   if (event.key === 'D') {
     debug.toggle()
     return
@@ -338,13 +345,13 @@ async function undo() {
   undoChoice(props.gameId)
 }
 
-/*async function undoScenario() {
+async function undoScenario() {
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
   uiLock.value = false
   undoScenarioChoice(props.gameId)
-}*/
+}
 
 const filingBug = ref(false)
 const submittingBug = ref(false)

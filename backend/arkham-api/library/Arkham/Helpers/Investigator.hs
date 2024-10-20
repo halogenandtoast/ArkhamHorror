@@ -15,6 +15,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
 import Arkham.GameValue
@@ -526,6 +527,14 @@ isEliminated iid =
 
 getHandCount :: HasGame m => InvestigatorId -> m Int
 getHandCount = fieldMap InvestigatorHand length
+
+canTriggerParallelRex :: HasGame m => InvestigatorId -> m Bool
+canTriggerParallelRex =
+  ( <=~>
+      ( InvestigatorIs "90078"
+          <> InvestigatorWhenCriteria (Criteria.HasNRemainingCurseTokens (atLeast 2))
+      )
+  )
 
 canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId

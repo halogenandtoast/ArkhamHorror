@@ -254,6 +254,9 @@ cluesOnThis = CluesOnThis . atLeast
 enemyExists :: EnemyMatcher -> Criterion
 enemyExists = EnemyCriteria . EnemyExists
 
+thisEnemy :: EnemyMatcher -> Criterion
+thisEnemy = EnemyCriteria . ThisEnemy
+
 anyInvestigatorExists :: [InvestigatorMatcher] -> Criterion
 anyInvestigatorExists = exists . AnyInvestigator
 

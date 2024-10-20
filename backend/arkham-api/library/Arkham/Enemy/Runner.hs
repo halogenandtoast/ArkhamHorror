@@ -1263,7 +1263,7 @@ instance RunMessage EnemyAttrs where
       willAttack <- elem iid <$> select (investigatorEngagedWith enemyId)
       when willAttack $ do
         modifiers' <- getModifiers enemyId
-        unless (CannotMakeAttacksOfOpportunity `elem` modifiers')
+        unless (any (`elem` modifiers') [CannotMakeAttacksOfOpportunity, CannotAttack])
           $ push
           $ EnemyWillAttack
           $ EnemyAttackDetails

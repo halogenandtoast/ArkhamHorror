@@ -31,7 +31,7 @@ instance RunMessage HeedTheDream2 where
         piles = go (3 :: Int) cards []
 
       let handleCard c = case c.owner of
-            Just iid' -> InvestigatorDrewPlayerCard iid' c
+            Just iid' -> InvestigatorDrewPlayerCardFrom iid' c Nothing
             _ -> error "missing owner?"
 
       let handleRest c = case c.owner of

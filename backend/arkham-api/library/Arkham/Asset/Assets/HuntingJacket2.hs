@@ -37,7 +37,7 @@ instance RunMessage HuntingJacket2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       for_ attrs.cardsUnderneath \case
-        PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+        PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
         EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
         _ -> error "impossible"
       pure a

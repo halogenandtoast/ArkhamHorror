@@ -55,7 +55,7 @@ import Arkham.Game.Helpers hiding (discoveredClues, windows)
 import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card (drawThisCard, extendedCardMatch)
+import Arkham.Helpers.Card (drawThisCardFrom, extendedCardMatch)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.SkillTest
@@ -2737,7 +2737,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   shuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
                   handleCardDraw c = do
                     let (before, _, after) = frame $ Window.DrawCard iid (toCard c) cardDraw.deck
-                    pure $ [before] <> drawThisCard iid c <> [after]
+                    pure $ [before] <> drawThisCardFrom iid c (Just cardDraw.deck) <> [after]
                 msgs <- if (not shuffleBackInEachWeakness) then concatMapM handleCardDraw allDrawn else pure []
                 player <- getPlayer iid
                 let
@@ -2796,9 +2796,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   & (deckL .~ Deck deck')
                   & (drawnCardsL .~ mempty)
                   & (foundCardsL . each %~ filter (`notElem` map toCard allDrawn))
-  InvestigatorDrewPlayerCard iid card | iid == investigatorId -> do
+  InvestigatorDrewPlayerCardFrom iid card mDeck | iid == investigatorId -> do
     hasForesight <- hasModifier iid (Foresight $ toTitle card)
-    whenDraw <- checkWindows [mkWhen $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]
+    mWhenDraw <- for mDeck \deck ->
+      checkWindows [mkWhen $ Window.DrawCard iid (toCard card) deck]
     if hasForesight
       then do
         canCancel <- (PlayerCard card) <=~> CanCancelRevelationEffect #any
@@ -2827,8 +2828,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               ]
              | playable
              ]
-          <> [Label "Draw normally" [whenDraw, Do msg]]
-      else pushAll [whenDraw, Do msg]
+          <> [Label "Draw normally" $ maybeToList mWhenDraw <> [Do msg]]
+      else pushAll $ maybeToList mWhenDraw <> [Do msg]
     let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     case toCardType card of
       EnemyType -> sendEnemy (toTitle a <> " drew Enemy") (toJSON $ toCard card)
@@ -2838,18 +2839,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       LocationType -> uiRevelation
       _ -> pure ()
     pure a
-  Do (InvestigatorDrewPlayerCard iid card) | iid == investigatorId -> do
-    afterDraw <- checkWindows [mkAfter $ Window.DrawCard iid (toCard card) (Deck.InvestigatorDeck iid)]
+  Do (InvestigatorDrewPlayerCardFrom iid card mdeck) | iid == investigatorId -> do
+    mAfterDraw <- for mdeck \deck ->
+      checkWindows [mkAfter $ Window.DrawCard iid (toCard card) deck]
     inLimit <- passesLimits iid (toCard card)
     if hasRevelation card && inLimit
       then
         if toCardType card == PlayerTreacheryType
-          then pushAll [DrewTreachery iid Nothing (toCard card), afterDraw]
-          else pushAll [Revelation iid $ CardIdSource card.id, afterDraw]
+          then pushAll $ DrewTreachery iid Nothing (toCard card) : maybeToList mAfterDraw
+          else pushAll $ Revelation iid (CardIdSource card.id) : maybeToList mAfterDraw
       else
         if toCardType card == PlayerEnemyType
-          then pushAll [DrewPlayerEnemy iid (toCard card), afterDraw]
-          else push afterDraw
+          then pushAll $ DrewPlayerEnemy iid (toCard card) : maybeToList mAfterDraw
+          else for_ mAfterDraw push
 
     let
       cardFilter :: IsCard c => [c] -> [c]
@@ -3288,7 +3290,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     liftRunMessage (AddToHandQuiet iid [card]) a
   AddToHand iid cards | iid == investigatorId -> do
     for_ (reverse cards) \case
-      PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+      PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
       EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
       VengeanceCard {} -> error "Can not add vengeance card to hand"
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
@@ -3304,7 +3306,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
     for_ (reverse cards) \case
-      PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+      PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
       EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
       VengeanceCard {} -> error "Can not add vengeance card to hand"
     when (isNothing $ a ^. searchL) do

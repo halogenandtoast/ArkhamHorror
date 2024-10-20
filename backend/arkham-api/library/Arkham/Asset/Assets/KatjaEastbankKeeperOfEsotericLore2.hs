@@ -41,7 +41,7 @@ instance RunMessage KatjaEastbankKeeperOfEsotericLore2 where
       focusCards attrs.cardsUnderneath \unfocus -> do
         chooseOne
           iid
-          [ targetLabel card [unfocus, InvestigatorDrewPlayerCard iid card]
+          [ targetLabel card [unfocus, InvestigatorDrewPlayerCardFrom iid card Nothing]
           | card <- onlyPlayerCards attrs.cardsUnderneath
           ]
       pure a

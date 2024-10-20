@@ -98,6 +98,10 @@ limitedAbility l a = a & abilityLimitL .~ l
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 
+noLimit :: Ability -> Ability
+noLimit = limitedAbility NoLimit
+{-# INLINE noLimit #-}
+
 groupLimit :: AbilityLimitType -> Ability -> Ability
 groupLimit lType = limitedAbility (GroupLimit lType 1)
 

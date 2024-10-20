@@ -873,8 +873,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure a
   Exile (CardIdTarget cid) -> do
-    let card = fromJustNote "must be in hand" $ find ((== cid) . toCardId) investigatorHand
-    push $ Exiled (CardIdTarget cid) card
+    for_ (find ((== cid) . toCardId) investigatorHand) \card -> do
+      push $ Exiled (CardIdTarget cid) card
     pure a
   Exiled (AssetTarget aid) _ -> do
     pushWhen (providedSlot a aid) $ RefillSlots a.id

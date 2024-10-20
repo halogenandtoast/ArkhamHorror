@@ -62,6 +62,18 @@ instance RunMessage ThePathToCarcosa where
       players <- allPlayers
       doubt <- getRecordCount Doubt
       conviction <- getRecordCount Conviction
+      slain <- getRecordSet VIPsSlain
+      let unslain =
+            recordedCardCodes
+              $ filter (`notElem` slain)
+              $ map
+                (recorded . toCardCode)
+                [ Enemies.constanceDumaine
+                , Enemies.jordanPerry
+                , Enemies.ishimaruHaruko
+                , Enemies.sebastienMoreau
+                , Enemies.ashleighClarke
+                ]
       push
         $ chooseOne
           lead
@@ -90,16 +102,18 @@ instance RunMessage ThePathToCarcosa where
               ]
           , Label
               "If these people are allowed to live, these horrors will only repeat themselves. We have to put an end to this. We have to kill them."
-              [ story players lunacysReward3
-              , Record YouSlayedTheMonstersAtTheDinnerParty
-              , RecordCount Conviction (conviction + 1)
-              , RemoveAllChaosTokens Cultist
-              , RemoveAllChaosTokens Tablet
-              , RemoveAllChaosTokens ElderThing
-              , AddChaosToken Cultist
-              , AddChaosToken Cultist
-              , NextCampaignStep Nothing
-              ]
+              $ [ story players lunacysReward3
+                , Record YouSlayedTheMonstersAtTheDinnerParty
+                ]
+              <> [recordSetInsert VIPsSlain unslain | notNull unslain]
+              <> [ RecordCount Conviction (conviction + 1)
+                 , RemoveAllChaosTokens Cultist
+                 , RemoveAllChaosTokens Tablet
+                 , RemoveAllChaosTokens ElderThing
+                 , AddChaosToken Cultist
+                 , AddChaosToken Cultist
+                 , NextCampaignStep Nothing
+                 ]
           ]
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do

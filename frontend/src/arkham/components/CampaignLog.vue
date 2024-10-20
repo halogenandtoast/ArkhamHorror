@@ -200,7 +200,7 @@ const emptyLog = computed(() => {
           </ul>
         </div>
         <ul>
-          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{toCapitalizedWords(setKey)}}
+          <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{t(setKey)}}
             <ul>
               <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut', 'circled': setValue.circled }">{{displayRecordValue(setKey, setValue)}}</li>
             </ul>

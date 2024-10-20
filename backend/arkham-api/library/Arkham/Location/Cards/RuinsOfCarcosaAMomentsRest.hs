@@ -13,7 +13,6 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaAMomentsRest = RuinsOfCarcosaAMomentsRest LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

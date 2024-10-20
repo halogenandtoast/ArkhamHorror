@@ -625,6 +625,9 @@ chooseOrRunOne iid msgs = do
 continue :: ReverseQueue m => InvestigatorId -> [Message] -> m ()
 continue iid msgs = Arkham.Message.Lifted.chooseOne iid [Label "Continue" msgs]
 
+prompt_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
+prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label lbl []]
+
 aspect
   :: (ReverseQueue m, IsAspect a b, IsMessage b, Sourceable source)
   => InvestigatorId
@@ -1403,6 +1406,14 @@ afterSkillTest
 afterSkillTest body = do
   msgs <- evalQueueT body
   insertAfterMatching msgs (== EndSkillTestWindow)
+
+afterSearch
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
+afterSearch body = do
+  msgs <- evalQueueT body
+  insertAfterMatching msgs \case
+    FinishedSearch {} -> True
+    _ -> False
 
 delayIfSkillTest
   :: (HasGame (t m), MonadTrans t, HasQueue Message m, HasQueue Message (t m))

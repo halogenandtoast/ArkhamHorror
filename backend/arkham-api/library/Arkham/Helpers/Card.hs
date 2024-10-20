@@ -14,6 +14,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Deck
 import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
@@ -157,11 +158,11 @@ getCardEntityTarget card = case toCardType card of
 -- NOTE: this used to call drawThisPlayerCard but we changed that because we
 -- weren't triggering Foresight (1). If we have to revert this, remember to
 -- check foresight (1).
-drawThisCard :: IsCard card => InvestigatorId -> card -> [Message]
-drawThisCard iid card = case toCard card of
-  c@(PlayerCard pc) -> [InvestigatorDrewPlayerCard iid pc, ResolvedCard iid c]
+drawThisCardFrom :: IsCard card => InvestigatorId -> card -> Maybe DeckSignifier -> [Message]
+drawThisCardFrom iid card mdeck = case toCard card of
+  c@(PlayerCard pc) -> [InvestigatorDrewPlayerCardFrom iid pc mdeck, ResolvedCard iid c]
   EncounterCard _ -> error "Not yet implemented"
-  VengeanceCard c -> drawThisCard iid c
+  VengeanceCard c -> drawThisCardFrom iid c mdeck
 
 -- drawThisPlayerCard :: InvestigatorId -> PlayerCard -> [Message]
 -- drawThisPlayerCard iid card = case toCardType card of

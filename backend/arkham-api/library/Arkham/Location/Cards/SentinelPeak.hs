@@ -30,7 +30,7 @@ instance RunMessage SentinelPeak where
       pushWhen (here && Hex `member` toTraits card)
         $ chooseOne player [targetLabel attrs [assignDamage iid attrs 1]]
       pure l
-    InvestigatorDrewPlayerCard iid card -> do
+    InvestigatorDrewPlayerCardFrom iid card _ -> do
       here <- iid `isAt` attrs
       player <- getPlayer iid
       pushWhen (here && Hex `member` toTraits card)

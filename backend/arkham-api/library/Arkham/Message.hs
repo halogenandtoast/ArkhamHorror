@@ -726,7 +726,7 @@ data Message
       [Target]
   | InvestigatorDrawEnemy InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
-  | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
+  | InvestigatorDrewPlayerCardFrom InvestigatorId PlayerCard (Maybe DeckSignifier)
   | InvestigatorEliminated InvestigatorId
   | InvestigatorKilled Source InvestigatorId
   | InvestigatorMulligan InvestigatorId
@@ -1095,6 +1095,9 @@ instance FromJSON Message where
       "AssetDamageWithCheck" -> do
         (a, b, c, d, e) <- o .: "contents"
         pure $ DealAssetDamageWithCheck a b c d e
+      "InvestigatorDrewPlayerCard" -> do
+        (a, b) <- o .: "contents"
+        pure $ InvestigatorDrewPlayerCardFrom a b Nothing
       "ReportXp" -> do
         ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
       _ -> $(mkParseJSON defaultOptions ''Message) (Object o)

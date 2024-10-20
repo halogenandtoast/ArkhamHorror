@@ -4,8 +4,6 @@ module Arkham.Location.Cards.ChapelAtticSpectral_175 (
 )
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
@@ -14,7 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -29,18 +27,10 @@ instance HasAbilities ChapelAtticSpectral_175 where
   getAbilities (ChapelAtticSpectral_175 a) =
     withRevealedAbilities
       a
-      [ restrictedAbility a 1 Here
-          $ ForcedAbility
-          $ DrawCard Timing.After You (BasicCardMatch NonWeakness) (DeckOf You)
+      [ restrictedAbility a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
       , mkAbility a 2
-          $ ReactionAbility
-            ( SkillTestResult
-                Timing.After
-                You
-                (WhileInvestigating $ LocationWithId $ toId a)
-                (SuccessResult AnyValue)
-            )
-            Free
+          $ freeReaction
+          $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult AnyValue)
       , withTooltip "Discard a random card from beneath Chapel Attic."
           $ restrictedAbility a 3 hauntedCriteria Haunted
       ]

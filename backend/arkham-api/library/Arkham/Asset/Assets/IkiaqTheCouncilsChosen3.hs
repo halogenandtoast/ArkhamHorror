@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Card (drawThisCard)
+import Arkham.Helpers.Card (drawThisCardFrom)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
@@ -49,7 +49,7 @@ instance RunMessage IkiaqTheCouncilsChosen3 where
       let cardIds = toResult @[CardId] attrs.meta
       let weaknesses = filter ((`elem` cardIds) . toCardId) attrs.cardsUnderneath
       for_ weaknesses \weakness -> for_ (toCardOwner weakness) \owner ->
-        pushAll $ drawThisCard owner weakness
+        pushAll $ drawThisCardFrom owner weakness Nothing
       IkiaqTheCouncilsChosen3
         <$> lift (runMessage msg $ attrs & cardsUnderneathL %~ filter (`notElem` weaknesses))
     _ -> IkiaqTheCouncilsChosen3 <$> liftRunMessage msg attrs

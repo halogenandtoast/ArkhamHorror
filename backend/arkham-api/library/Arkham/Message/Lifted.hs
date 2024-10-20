@@ -1563,8 +1563,8 @@ quietCancelCardDraw card = do
   lift $ Msg.removeAllMessagesMatching \case
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
     InvestigatorDrewEncounterCard _ c -> c.id == card.id
-    Do (InvestigatorDrewPlayerCard _ c) -> c.id == card.id
-    InvestigatorDrewPlayerCard _ c -> c.id == card.id
+    Do (InvestigatorDrewPlayerCardFrom _ c _) -> c.id == card.id
+    InvestigatorDrewPlayerCardFrom _ c _ -> c.id == card.id
     DrewTreachery _ _ c -> c.id == card.id
     DrewPlayerEnemy _ c -> c.id == card.id
     Revelation _ (CardIdSource cid) -> cid == card.id
@@ -1866,7 +1866,7 @@ placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid 
 drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 drawCard iid card = case toCard card of
   EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
-  PlayerCard pc -> push $ InvestigatorDrewPlayerCard iid pc
+  PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
   VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
 
 resign :: ReverseQueue m => InvestigatorId -> m ()

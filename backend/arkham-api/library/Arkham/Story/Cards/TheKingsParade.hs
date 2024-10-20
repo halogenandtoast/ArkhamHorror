@@ -29,4 +29,11 @@ instance RunMessage TheKingsParade where
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace
         ]
       pure s
+    PassedThisSkillTest _ (isSource attrs -> True) -> do
+      hastur <- selectJust $ EnemyWithTitle "Hastur"
+      investigatorIds <- select $ investigatorEngagedWith hastur
+      pushAll
+        $ Exhaust (EnemyTarget hastur)
+        : [DisengageEnemy iid' hastur | iid' <- investigatorIds]
+      pure s
     _ -> TheKingsParade <$> runMessage msg attrs

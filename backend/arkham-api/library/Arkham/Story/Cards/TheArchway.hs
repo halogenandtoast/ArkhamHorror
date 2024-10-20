@@ -29,4 +29,8 @@ instance RunMessage TheArchway where
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace
         ]
       pure s
+    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
+      canHeal <- canHaveHorrorHealed attrs iid
+      pushWhen canHeal $ HealHorror (toTarget iid) (toSource attrs) n
+      pure s
     _ -> TheArchway <$> runMessage msg attrs

@@ -50,8 +50,4 @@ instance RunMessage DimStreetsTheArchway where
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.theArchway
       pure . DimStreetsTheArchway $ attrs & canBeFlippedL .~ False
-    PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
-      canHeal <- canHaveHorrorHealed attrs iid
-      pushWhen canHeal $ HealHorror (toTarget iid) (toSource attrs) n
-      pure l
     _ -> DimStreetsTheArchway <$> runMessage msg attrs

@@ -1,14 +1,10 @@
-module Arkham.Location.Cards.ShoresOfHali (
-  shoresOfHali,
-  ShoresOfHali (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ShoresOfHali (shoresOfHali, ShoresOfHali (..)) where
 
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -18,12 +14,9 @@ newtype ShoresOfHali = ShoresOfHali LocationAttrs
 
 shoresOfHali :: LocationCard ShoresOfHali
 shoresOfHali =
-  locationWith
-    ShoresOfHali
-    Cards.shoresOfHali
-    3
-    (PerPlayer 2)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith ShoresOfHali Cards.shoresOfHali 3 (PerPlayer 2)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance RunMessage ShoresOfHali where
   runMessage msg (ShoresOfHali attrs) = case msg of

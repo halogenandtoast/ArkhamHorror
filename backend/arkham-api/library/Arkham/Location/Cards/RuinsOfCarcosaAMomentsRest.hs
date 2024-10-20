@@ -3,8 +3,6 @@ module Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest (
   RuinsOfCarcosaAMomentsRest (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
@@ -12,6 +10,7 @@ import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 import Arkham.Timing qualified as Timing
@@ -22,23 +21,17 @@ newtype RuinsOfCarcosaAMomentsRest = RuinsOfCarcosaAMomentsRest LocationAttrs
 
 ruinsOfCarcosaAMomentsRest :: LocationCard RuinsOfCarcosaAMomentsRest
 ruinsOfCarcosaAMomentsRest =
-  locationWith
-    RuinsOfCarcosaAMomentsRest
-    Cards.ruinsOfCarcosaAMomentsRest
-    2
-    (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith RuinsOfCarcosaAMomentsRest Cards.ruinsOfCarcosaAMomentsRest 2 (PerPlayer 1)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasAbilities RuinsOfCarcosaAMomentsRest where
   getAbilities (RuinsOfCarcosaAMomentsRest a) =
     withBaseAbilities
       a
       [ mkAbility a 1
-          $ ForcedAbility
-          $ DiscoveringLastClue
-            Timing.After
-            You
-            (LocationWithId $ toId a)
+          $ forced
+          $ DiscoveringLastClue #after You (be a)
       ]
 
 instance RunMessage RuinsOfCarcosaAMomentsRest where

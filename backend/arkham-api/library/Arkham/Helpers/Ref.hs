@@ -11,6 +11,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
 import Arkham.Source
+import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Treachery.Types (Field (..))
 
@@ -25,6 +26,7 @@ targetToMaybeCard = \case
   EventTarget aid -> fieldMay EventCard aid
   SkillTarget aid -> fieldMay SkillCard aid
   EnemyTarget aid -> fieldMay EnemyCard aid
+  StoryTarget aid -> fieldMay StoryCard aid
   TreacheryTarget aid -> fieldMay TreacheryCard aid
   LocationTarget aid -> fieldMay LocationCard aid
   SearchedCardTarget cId -> Just <$> getCard cId

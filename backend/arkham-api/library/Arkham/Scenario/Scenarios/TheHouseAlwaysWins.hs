@@ -5,7 +5,6 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
-import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Cards qualified as Locations
@@ -58,11 +57,10 @@ instance RunMessage TheHouseAlwaysWins where
       gather Set.NaomisCrew
       gather Set.Rats
 
-      cloverClubPitBoss <- genCard Enemies.cloverClubPitBoss
       startAt =<< place Locations.laBellaLuna
       cloverClubLounge <- place Locations.cloverClubLounge
       placeAll [Locations.cloverClubBar, Locations.cloverClubCardroom]
-      createEnemyAt_ cloverClubPitBoss cloverClubLounge
+      enemyAt_ Enemies.cloverClubPitBoss cloverClubLounge
 
       setAside
         [ Locations.darkenedHall

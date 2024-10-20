@@ -1,5 +1,6 @@
 module Arkham.Story.Cards.TheArchway (TheArchway (..), theArchway) where
 
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations

@@ -23,10 +23,12 @@ instance RunMessage OnTheHunt where
       search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, ShuffleBackIn)] #any (defer attrs IsDraw)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
-      drawEncounterCard iid attrs
+      prompt_ iid "No Cards were found."
+      afterSearch $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      drawEncounterCard iid attrs
+      prompt_ iid "No Cards were found."
+      afterSearch $ drawEncounterCard iid attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
@@ -36,6 +38,8 @@ instance RunMessage OnTheHunt where
           targets enemyCards \card -> do
             searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
             push $ InvestigatorDrewEncounterCard iid card
-        else drawEncounterCard iid attrs
+        else do
+          prompt_ iid "No enemies were found."
+          afterSearch $ drawEncounterCard iid attrs
       pure e
     _ -> OnTheHunt <$> liftRunMessage msg attrs

@@ -1110,10 +1110,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   MoveAction iid lid _cost False | iid == investigatorId -> do
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
-    -- exclude additional costs because they will have been paid by the action
     canMove <- withoutModifier a CannotMove
+    revealed <- field LocationRevealed lid
+    costToEnterUnrevealed <- field LocationCostToEnterUnrevealed lid
     pushAll
-      $ (guard canMove *> resolve (Move ((move (toSource a) iid lid) {movePayAdditionalCosts = False})))
+      $ ( guard canMove
+            *> resolve
+              ( Move
+                  ( (move (toSource a) iid lid)
+                      { moveAdditionalEnterCosts = if revealed then Free else costToEnterUnrevealed
+                      }
+                  )
+              )
+        )
       <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
@@ -1185,7 +1194,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     mods' <- getModifiers destinationLocationId
                     pcosts <-
                       filterM ((destinationLocationId <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-                    pure $ concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
+                    pure $ concatMap snd pcosts
+                      <> mconcat [c | AdditionalCostToEnter c <- mods']
+                      <> moveAdditionalEnterCosts movement
                   else pure mempty
 
               let
@@ -1195,6 +1206,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     batchedTimings batchId (Window.Leaving iid from) & \case
                       (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
                   Nothing -> (Nothing, Nothing, Nothing)
+                mWouldMove = case mFromLocation of
+                  Just from ->
+                    batchedTimings batchId (Window.WouldMove iid source from destinationLocationId) & \case
+                      (whens, _, _) -> Just whens
+                  Nothing -> Nothing
                 (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
 
               -- Windows we need to check as understood:
@@ -1202,6 +1218,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               -- when {leaving} -> atIf {leaving} -> after {leaving} -> before {entering} -> atIf {entering} / when {move} -> atIf {move} -> Reveal Location -> after but before enemy engagement {entering} -> Check Enemy Engagement -> after {entering, move}
               -- move but before enemy engagement is handled in MoveTo
 
+              mRunWouldMove <- case mWouldMove of
+                Just wouldMove -> Just <$> checkWindows [wouldMove]
+                Nothing -> pure Nothing
               mRunWhenLeaving <- case mWhenLeaving of
                 Just whenLeaving -> Just <$> checkWindows [whenLeaving]
                 Nothing -> pure Nothing
@@ -1218,7 +1237,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
 
               pushBatched batchId
-                $ maybeToList mRunWhenLeaving
+                $ maybeToList mRunWouldMove
+                <> maybeToList mRunWhenLeaving
                 <> maybeToList mRunAtIfLeaving
                 <> [ PayAdditionalCost iid batchId leaveCosts
                    , WhenCanMove

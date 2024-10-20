@@ -207,6 +207,7 @@ data Cost
   | AdditionalActionCost -- use the plural instead as this is internal
   | AdditionalActionsCost
   | AdditionalActionsCostThatReducesResourceCostBy Int Cost
+  | CostToEnterUnrevealed Cost
   | AssetClueCost Text AssetMatcher GameValue
   | ClueCost GameValue
   | ClueCostX
@@ -316,6 +317,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
   GroupClueCostX -> "X {perPlayer} clues as a group"
   ChooseEnemyCost _ -> "Choose an enemy"
   ChooseExtendedCardCost _ -> "Choose a card that matches"

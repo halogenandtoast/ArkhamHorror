@@ -2,6 +2,7 @@
 
 module Arkham.Movement where
 
+import Arkham.Cost
 import Arkham.Id
 import Arkham.Matcher
 import {-# SOURCE #-} Arkham.Message (Message)
@@ -18,6 +19,7 @@ data Movement = Movement
   , moveCancelable :: Bool
   , movePayAdditionalCosts :: Bool
   , moveAfter :: [Message]
+  , moveAdditionalEnterCosts :: Cost
   }
   deriving stock (Show, Eq, Data)
 
@@ -49,6 +51,7 @@ move (toSource -> moveSource) (toTarget -> moveTarget) lid =
     , moveCancelable = True
     , movePayAdditionalCosts = True
     , moveAfter = []
+    , moveAdditionalEnterCosts = Free
     }
 
 moveToMatch
@@ -66,6 +69,7 @@ moveToMatch (toSource -> moveSource) (toTarget -> moveTarget) matcher =
     , moveCancelable = True
     , movePayAdditionalCosts = True
     , moveAfter = []
+    , moveAdditionalEnterCosts = Free
     }
 
 moveTowardsMatching
@@ -83,6 +87,7 @@ moveTowardsMatching (toSource -> moveSource) (toTarget -> moveTarget) matcher =
     , moveCancelable = True
     , movePayAdditionalCosts = True
     , moveAfter = []
+    , moveAdditionalEnterCosts = Free
     }
 
 moveToLocationMatcher :: Movement -> LocationMatcher
@@ -95,4 +100,17 @@ destinationToLocationMatcher = \case
 
 $(deriveJSON defaultOptions ''MovementMeans)
 $(deriveJSON defaultOptions ''Destination)
-$(deriveJSON defaultOptions ''Movement)
+$(deriveToJSON defaultOptions ''Movement)
+
+instance FromJSON Movement where
+  parseJSON = withObject "Movement" \o -> do
+    moveSource <- o .: "moveSource"
+    moveTarget <- o .: "moveTarget"
+    moveDestination <- o .: "moveDestination"
+    moveMeans <- o .: "moveMeans"
+    moveCancelable <- o .: "moveCancelable"
+    movePayAdditionalCosts <- o .: "movePayAdditionalCosts"
+    moveAfter <- o .: "moveAfter"
+    moveAdditionalEnterCosts <- o .:? "moveAdditionalEnterCosts" .!= Free
+
+    pure Movement {..}

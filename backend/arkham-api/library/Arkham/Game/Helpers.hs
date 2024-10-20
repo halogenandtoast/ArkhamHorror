@@ -938,7 +938,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
 
     passesLimits' <- passesLimits iid c
     let
-      additionalCosts = flip mapMaybe cardModifiers $ \case
+      additionalCosts = flip mapMaybe cardModifiers \case
         AdditionalCost x -> Just x
         _ -> Nothing
       sealedChaosTokenCost = flip mapMaybe (setToList $ cdKeywords pcDef) $ \case
@@ -2429,6 +2429,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                 (_, Just fromLid) ->
                   locationMatches iid source window' fromLid fromMatcher
                 _ -> noMatch
+            , locationMatches iid source window' toLid toMatcher
+            ]
+        _ -> noMatch
+    Matcher.WouldMove timing whoMatcher sourceMatcher fromMatcher toMatcher ->
+      guardTiming timing $ \case
+        Window.WouldMove iid' source' fromLid toLid -> do
+          andM
+            [ matchWho iid iid' whoMatcher
+            , sourceMatches source' sourceMatcher
+            , case fromMatcher of
+                Matcher.Anywhere -> isMatch
+                _ -> locationMatches iid source window' fromLid fromMatcher
             , locationMatches iid source window' toLid toMatcher
             ]
         _ -> noMatch

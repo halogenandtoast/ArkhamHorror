@@ -489,11 +489,11 @@ function onDrop(event: DragEvent) {
     top: 10%;
   }
   &:deep(.poolItem img) {
-    width: 25px !important;
+    width: 30px !important;
   }
 
   &:deep(.poolItem) {
-    width: 25px !important;
+    width: 30px !important;
   }
 
   pointer-events: none;

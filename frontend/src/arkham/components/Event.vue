@@ -89,7 +89,7 @@ const choose = (index: number) => emits('choose', index)
 </script>
 
 <template>
-  <div class="event">
+  <div class="event" :class="{ attached }">
     <img
       :src="image"
       :class="{ 'event--can-interact': cardAction !== -1, exhausted, attached }"

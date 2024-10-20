@@ -167,7 +167,6 @@ import Arkham.Location.Locations (
   hereticsGravesSpectral_171Effect,
   longWayAroundEffect,
   montmartre209Effect,
-  narrowShaftEffect,
   restaurantEffect,
   tenAcreMeadow_246Effect,
   unvisitedIsleMossCoveredStepsEffect,
@@ -382,7 +381,7 @@ allEffects =
     , ("03155", SomeEffect fightOrFlightEffect)
     , ("03158", SomeEffect callingInFavorsEffect)
     , ("03209", SomeEffect montmartre209Effect)
-    , ("03254", SomeEffect narrowShaftEffect)
+    , ("03254", SomeEffect $ noop "03254")
     , ("03306", SomeEffect eideticMemory3Effect)
     , ("04004", SomeEffect $ noop "04004")
     , ("04029", SomeEffect mistsOfRlyehEffect)

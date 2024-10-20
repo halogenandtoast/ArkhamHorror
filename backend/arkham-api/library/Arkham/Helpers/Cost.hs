@@ -309,11 +309,17 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
           excludeCards <- case source of
             CardIdSource cid -> (: []) <$> getCard cid
             _ -> pure mempty
-          fmap (filter (`cardMatch` cardMatcher) . filter (`notElem` excludeCards) . concat)
+          fmap
+            ( filterBy
+                [ (`cardMatch` (cardMatcher <> Matcher.DiscardableCard))
+                , (`notElem` excludeCards)
+                ]
+                . concat
+            )
             . traverse (field InvestigatorHand)
             =<< select whoMatcher
         FromPlayAreaOf whoMatcher -> do
-          assets <- select $ Matcher.AssetControlledBy whoMatcher
+          assets <- select $ Matcher.AssetControlledBy whoMatcher <> Matcher.DiscardableAsset
           filterCards cardMatcher <$> traverse (field AssetCard) assets
         CostZones zs -> concatMapM getCards zs
     (>= n) . length <$> getCards zone

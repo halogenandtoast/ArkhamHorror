@@ -29,6 +29,7 @@ rexMurphyParallel =
 instance HasAbilities RexMurphyParallel where
   getAbilities (RexMurphyParallel a) =
     [ restrictedAbility a 1 Self
+        $ ForcedWhen isForced
         $ freeReaction
         $ oneOf
           [ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
@@ -37,6 +38,11 @@ instance HasAbilities RexMurphyParallel where
               $ WouldAddChaosTokensToChaosBag #when (atLeast 2) #curse
           ]
     ]
+   where
+    isForced =
+      if lookupMetaKeyWithDefault "forced" False a
+        then NoRestriction
+        else Never
 
 instance HasChaosTokenValue RexMurphyParallel where
   getChaosTokenValue iid ElderSign (RexMurphyParallel attrs) | iid == toId attrs = do
@@ -48,6 +54,13 @@ instance HasChaosTokenValue RexMurphyParallel where
 
 instance RunMessage RexMurphyParallel where
   runMessage msg i@(RexMurphyParallel attrs) = runQueueT $ case msg of
+    InvestigatorPlaceCluesOnLocation iid _source n -> do
+      clues <- field InvestigatorClues iid
+      attrs' <- liftRunMessage msg (deleteMetaKey "forced" attrs)
+      pure
+        $ if n > clues
+          then RexMurphyParallel $ insertMetaKey "forced" attrs'
+          else RexMurphyParallel attrs'
     ElderSignEffect (is attrs -> True) -> do
       n <- selectCount $ RevealedChaosTokens $ ChaosTokenFaceIs #curse
       drawCardsIfCan attrs.id (#elderSign :: Source) n
@@ -94,7 +107,7 @@ instance RunMessage RexMurphyParallel where
                   ]
             else doStep mandatoryTimes msg
         _ -> pure ()
-      pure i
+      pure $ RexMurphyParallel $ deleteMetaKey "forced" attrs
     DoStep n (UseCardAbility iid (isSource attrs -> True) 1 [w] _) -> do
       case windowType w of
         Window.WouldPlaceClueOnLocation _ lid source clues -> do

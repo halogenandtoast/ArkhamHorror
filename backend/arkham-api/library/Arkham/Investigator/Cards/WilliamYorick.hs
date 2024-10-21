@@ -2,14 +2,13 @@ module Arkham.Investigator.Cards.WilliamYorick where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Game.Helpers
-import Arkham.Helpers.Effect
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
@@ -37,30 +36,22 @@ instance HasAbilities WilliamYorick where
     ]
 
 instance RunMessage WilliamYorick where
-  runMessage msg i@(WilliamYorick attrs) = case msg of
+  runMessage msg i@(WilliamYorick attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
-      let
-        windows'' = nub $ windows' <> [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
-        targets = filter ((== AssetType) . toCardType) (investigatorDiscard attrs)
-        playCardMsgs c =
-          [UnfocusCards, addToHand iid c]
-            <> if isFastCard c
-              then [InitiatePlayCard iid c Nothing NoPayment windows'' False]
-              else [PayCardCost iid c windows'']
-      playableTargets <-
-        filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) windows'' . PlayerCard) targets
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards (map toCard $ investigatorDiscard attrs)
-        , chooseOne
-            player
-            [targetLabel (toCardId card) (playCardMsgs $ PlayerCard card) | card <- playableTargets]
-        ]
+      let windows'' = nub $ windows' <> [mkWhen Window.NonFast, mkWhen (Window.DuringTurn iid)]
+      playableCards <-
+        filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) windows'')
+          $ filterCards (card_ #asset) (map toCard $ investigatorDiscard attrs)
+
+      focusCards (map toCard $ investigatorDiscard attrs) \unfocus -> do
+        chooseTargetM iid playableCards \card -> do
+          push unfocus
+          playCardPayingCost iid card
       pure i
-    ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
-      push $ createCardEffect Cards.williamYorick Nothing (toSource ElderSign) iid
+    ElderSignEffect iid | iid == toId attrs -> do
+      createCardEffect Cards.williamYorick Nothing (toSource ElderSign) iid
       pure i
-    _ -> WilliamYorick <$> runMessage msg attrs
+    _ -> WilliamYorick <$> liftRunMessage msg attrs
 
 newtype WilliamYorickEffect = WilliamYorickEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -71,21 +62,21 @@ williamYorickEffect :: EffectArgs -> WilliamYorickEffect
 williamYorickEffect = cardEffect WilliamYorickEffect Cards.williamYorick
 
 instance RunMessage WilliamYorickEffect where
-  runMessage msg e@(WilliamYorickEffect attrs) = case msg of
-    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ ->
-      case effectTarget attrs of
-        InvestigatorTarget iid -> do
-          modifiers' <- getModifiers (InvestigatorTarget iid)
-          unless (CardsCannotLeaveYourDiscardPile `elem` modifiers') $ do
-            discards <- field InvestigatorDiscard iid
-            player <- getPlayer iid
-            when (notNull discards) do
-              pushAll
-                [ FocusCards (map toCard discards)
-                , chooseOne player $ Done "Do not return card to hand"
-                    : [targetLabel (toCardId card) [UnfocusCards, addToHand iid $ PlayerCard card] | card <- discards]
-                ]
-          pure e
-        _ -> pure e
-    SkillTestEnds _ _ _ -> e <$ push (DisableEffect $ effectId attrs)
-    _ -> WilliamYorickEffect <$> runMessage msg attrs
+  runMessage msg e@(WilliamYorickEffect attrs) = runQueueT case msg of
+    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ _ -> do
+      void $ runMaybeT do
+        iid <- hoistMaybe attrs.target.investigator
+        liftGuardM $ withoutModifier iid CardsCannotLeaveYourDiscardPile
+        discards <- lift $ field InvestigatorDiscard iid
+        guard $ notNull discards
+        lift do
+          focusCards (map toCard discards) \unfocus -> do
+            chooseOneM iid do
+              labeled "Do not return card to hand" $ push unfocus
+              for_ discards \card -> do
+                targeting card do
+                  push unfocus
+                  addToHand iid (only $ PlayerCard card)
+      disableReturn e
+    SkillTestEnds _ _ _ -> disableReturn e
+    _ -> WilliamYorickEffect <$> liftRunMessage msg attrs

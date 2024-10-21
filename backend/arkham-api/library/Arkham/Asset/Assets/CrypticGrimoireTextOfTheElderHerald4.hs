@@ -7,7 +7,6 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
-import Arkham.Card
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 import Arkham.SkillTest.Step
@@ -42,7 +41,7 @@ instance RunMessage CrypticGrimoireTextOfTheElderHerald4 where
       n <- count ((== #curse) . (.face)) <$> getSkillTestResolvedChaosTokens
       push $ AddUses (attrs.ability 1) attrs.id Secret n
       pure a
-    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> c) _ -> do
-      pushM $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId c) 1)
+    UseCardAbility iid (isSource attrs -> True) 2 (cardPlayed -> c) _ -> do
+      pushM $ costModifier (attrs.ability 1) iid (ReduceCostOf (CardWithId c.id) 1)
       pure a
     _ -> CrypticGrimoireTextOfTheElderHerald4 <$> runMessage msg attrs

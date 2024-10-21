@@ -20,6 +20,7 @@ import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
 import Arkham.Helpers.Source
@@ -535,6 +536,12 @@ canTriggerParallelRex =
           <> InvestigatorWhenCriteria (Criteria.HasNRemainingCurseTokens (atLeast 2))
       )
   )
+
+getCanPlaceCluesOnLocationCount :: HasGame m => InvestigatorId -> m Int
+getCanPlaceCluesOnLocationCount iid = do
+  canRex <- canTriggerParallelRex iid
+  m <- if canRex then (`div` 2) <$> getRemainingCurseTokens else pure 0
+  (+ m) <$> field InvestigatorClues iid
 
 canHaveHorrorHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType . InvestigatorWithId

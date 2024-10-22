@@ -3,6 +3,7 @@ module Arkham.Location.Cards.AlchemyLabs (alchemyLabs, AlchemyLabs (..)) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
+import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigate
@@ -29,15 +30,20 @@ instance HasAbilities AlchemyLabs where
     withRevealedAbilities
       attrs
       [ withTooltip
-          "{action}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able."
+          ( "{action}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able"
+              <> (if canTake then "" else " (YOU CANNOT)")
+              <> "."
+          )
           $ investigateAbility attrs 1 mempty Here
       ]
+   where
+    canTake = any (`cardMatch` cardIs Cards.alchemicalConcoction) (locationCardsUnderneath attrs)
 
 instance RunMessage AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
+      pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
       maid <- selectOne $ assetIs Cards.alchemicalConcoction

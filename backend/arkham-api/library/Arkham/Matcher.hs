@@ -370,6 +370,11 @@ basicCardIs = basic . cardIs
 hasCard :: HasCardCode a => a -> CardListMatcher
 hasCard = HasCard . cardIs
 
+-- ** Source Helpers **
+
+sourceOwnedBy :: (AsId iid, IdOf iid ~ InvestigatorId) => iid -> SourceMatcher
+sourceOwnedBy = SourceOwnedBy . InvestigatorWithId . asId
+
 -- ** Replacements
 
 replaceThisCard :: Data a => CardId -> a -> a

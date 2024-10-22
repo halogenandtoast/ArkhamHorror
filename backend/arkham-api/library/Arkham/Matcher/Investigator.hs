@@ -103,7 +103,7 @@ data InvestigatorMatcher
   | InvestigatorHasCardWithHorror
   | InvestigatorWithDoom ValueMatcher
   | InvestigatorWithHorror ValueMatcher
-  | InvestigatorWithHealableHorror
+  | InvestigatorWithHealableHorror Source
   | InvestigatorWithRemainingSanity ValueMatcher
   | InvestigatorWithResources ValueMatcher
   | InvestigatorWithSpendableResources ValueMatcher

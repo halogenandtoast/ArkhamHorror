@@ -2149,8 +2149,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     let overHealDamage = max 0 (health - a.healthDamage)
     let overHealSanity = max 0 (sanity - a.sanityDamage)
-    pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id overHealDamage
-    pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id overHealSanity
+
+    pushWhen (overHealDamage > 0) $ ExcessHealDamage a.id source overHealDamage
+    pushWhen (overHealSanity > 0) $ ExcessHealHorror a.id source overHealSanity
 
     when (health > 0 || sanity > 0) do
       pushM
@@ -2179,6 +2180,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   HealDamage (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
     cannotHealDamage <- hasModifier a CannotHealDamage
+    let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]
+    canHealAtFull <-
+      if null canHealAtFullSources
+        then pure False
+        else sourceMatches source (mconcat canHealAtFullSources)
     unless cannotHealDamage do
       let n = sum [x | HealingTaken x <- mods]
       let amount = amount' + n
@@ -2186,7 +2192,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       dmgTreacheries <-
         selectWithField TreacheryCard $ treacheryInThreatAreaOf iid <> TreacheryWithModifier IsPointOfDamage
       if null dmgTreacheries
-        then pushAll [whenWindow, Do msg]
+        then do
+          let remainingDamage = investigatorHealthDamage a - sum (toList investigatorAssignedHealthHeal)
+          when (remainingDamage > 0 || canHealAtFull) do
+            pushAll [whenWindow, Do msg]
         else do
           player <- getPlayer iid
           push
@@ -2201,13 +2210,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   Do (HealDamage (InvestigatorTarget iid) source amount) | iid == investigatorId -> do
     cannotHealDamage <- hasModifier a CannotHealDamage
-    if cannotHealDamage
-      then pure a
-      else do
-        push $ AssignedHealing (toTarget a)
-        afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
-        push afterWindow
-        liftRunMessage (RemoveTokens source (toTarget a) #damage amount) a
+    unless cannotHealDamage do
+      pushAll [HealDamageDelayed (InvestigatorTarget iid) source amount, ApplyHealing source]
+    -- if cannotHealDamage
+    --   then pure a
+    --   else do
+    --     push $ AssignedHealing (toTarget a)
+    --     afterWindow <- checkWindows [mkAfter $ Window.Healed DamageType (toTarget a) source amount]
+    --     push afterWindow
+    --     liftRunMessage (RemoveTokens source (toTarget a) #damage amount) a
+    pure a
   HealDamageDelayed (isTarget a -> True) source n -> do
     cannotHealDamage <- hasModifier a CannotHealDamage
     if cannotHealDamage
@@ -2271,10 +2283,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       let additionalTargets =
             guard (null onlyTargets)
               *> [targetLabel t [HealHorror t source 1] | HealHorrorAsIfOnInvestigator t x <- mods, x > 0]
+
+      let remainingHorror = investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
       if null additionalTargets && null onlyTargets
-        then push $ Do msg
+        then do
+          let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher DamageType <- mods]
+          canHealAtFull <-
+            if null canHealAtFullSources
+              then pure False
+              else sourceMatches source (mconcat canHealAtFullSources)
+          when (remainingHorror > 0 || canHealAtFull) do
+            push $ Do msg
         else do
-          let remainingHorror = investigatorSanityDamage a - sum (toList investigatorAssignedSanityHeal)
           player <- getPlayer a.id
           pushAll
             [ chooseOne player

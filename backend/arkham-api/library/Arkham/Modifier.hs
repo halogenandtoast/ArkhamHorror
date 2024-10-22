@@ -180,7 +180,7 @@ data ModifierType
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
   | CannotRevealCards
-  | CanHealAtFull DamageType
+  | CanHealAtFull SourceMatcher DamageType
   | CannotHealHorror
   | CannotHealDamage
   | CannotHealHorrorOnOtherCards Target
@@ -500,6 +500,11 @@ $( do
           parseJSON = withObject "ModifierType" \v -> do
             tag :: Text <- v .: "tag"
             case tag of
+              "CanHealAtFull" -> do
+                contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+                case contents of
+                  Left n -> pure $ CanHealAtFull AnySource n
+                  Right (s, n) -> pure $ CanHealAtFull s n
               "CanBecomeFastOrReduceCostOf" -> do
                 contents <- v .: "contents"
                 pure $ uncurry ChuckFergus2Modifier contents

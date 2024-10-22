@@ -1,16 +1,11 @@
-module Arkham.Skill.Cards.Daredevil2 (
-  daredevil2,
-  Daredevil2 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.Daredevil2 (daredevil2, Daredevil2 (..)) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 
@@ -28,7 +23,7 @@ instance RunMessage Daredevil2 where
         $ RevealUntilFirst iid (toSource attrs) (InvestigatorDeck iid)
         $ CommittableCard (InvestigatorWithId iid) (basic $ #rogue <> #skill)
       Daredevil2 <$> runMessage msg attrs
-    RequestedPlayerCard iid (isSource attrs -> True) mcard (map toCard -> rest) -> do
+    RevealedCards iid (isSource attrs -> True) _ mcard (map toCard -> rest) -> do
       player <- getPlayer iid
       pushAll $ case mcard of
         Nothing ->

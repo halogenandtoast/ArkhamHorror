@@ -34,6 +34,7 @@ import Arkham.Helpers.Use
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
+  EventMatcher (EventAttachedToAsset),
  )
 import Arkham.Message qualified as Msg
 import Arkham.Projection
@@ -463,6 +464,7 @@ instance RunMessage AssetAttrs where
       pure $ a & exiledL .~ True
     RemoveFromPlay source | isSource a source -> do
       attachedAssets <- select $ AssetAttachedToAsset $ AssetWithId (toId a)
+      attachedEvents <- select $ EventAttachedToAsset $ AssetWithId (toId a)
       windowMsg <-
         checkWindows
           ( (`mkWindow` Window.LeavePlay (toTarget a))
@@ -472,6 +474,7 @@ instance RunMessage AssetAttrs where
         $ windowMsg
         : [UnsealChaosToken token | token <- assetSealedChaosTokens]
           <> [Discard Nothing GameSource (toTarget a') | a' <- attachedAssets]
+          <> [Discard Nothing GameSource (toTarget a') | a' <- attachedEvents]
           <> [RemovedFromPlay source]
       pure a
     PlaceInBonded _iid card -> do

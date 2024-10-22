@@ -106,6 +106,9 @@ discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
 exhaustedPayments :: Payment -> [Target]
 exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
 
+removedPayments :: Payment -> [Target]
+removedPayments = concat . toListOf (cosmos . _RemovePayment)
+
 instance HasField "discards" Payment [(Zone, Card)] where
   getField = discardPayments
 
@@ -179,6 +182,11 @@ _DiscardCardPayment = prism' DiscardCardPayment $ \case
 _ExhaustPayment :: Prism' Payment [Target]
 _ExhaustPayment = prism' ExhaustPayment $ \case
   ExhaustPayment x -> Just x
+  _ -> Nothing
+
+_RemovePayment :: Prism' Payment [Target]
+_RemovePayment = prism' RemovePayment $ \case
+  RemovePayment x -> Just x
   _ -> Nothing
 
 _ResourcePayment :: Prism' Payment Int

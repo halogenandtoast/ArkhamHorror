@@ -1,5 +1,6 @@
 module Arkham.Event.Events.SpectralRazor2 (spectralRazor2, spectralRazor2Effect, SpectralRazor2 (..)) where
 
+import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -8,7 +9,6 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
-import Arkham.Strategy
 
 newtype SpectralRazor2 = SpectralRazor2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -41,7 +41,7 @@ instance RunMessage SpectralRazor2 where
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       createCardEffect Cards.spectralRazor2 Nothing attrs iid
       onRevealChaosTokenEffect sid IsSymbol attrs attrs do
-        eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)
+        atEndOfTurn attrs iid $ addToHand iid (only $ toCard attrs)
       pushM $ mkChooseFight sid iid attrs
       pure e
     _ -> SpectralRazor2 <$> liftRunMessage msg attrs

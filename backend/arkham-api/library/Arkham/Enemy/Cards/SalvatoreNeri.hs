@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.SalvatoreNeri (
-  salvatoreNeri,
-  SalvatoreNeri (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SalvatoreNeri (salvatoreNeri, SalvatoreNeri (..)) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
@@ -11,7 +6,8 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade)
 import Arkham.Helpers.Investigator
 import Arkham.Modifier qualified as Modifier
-import Arkham.SkillType
+import Arkham.Prelude
+import Control.Monad.Fail
 
 newtype SalvatoreNeri = SalvatoreNeri EnemyAttrs
   deriving anyclass IsEnemy
@@ -21,18 +17,17 @@ salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
 
 instance HasModifiersFor SalvatoreNeri where
-  getModifiersFor (EnemyTarget eid) (SalvatoreNeri attrs) | eid == toId attrs = do
-    mAction <- getSkillTestAction
-    miid <- getSkillTestInvestigator
-    case (miid, mAction) of
-      (Just iid, Just Action.Evade) -> do
-        evadeValue <- getSkillValue SkillAgility iid
-        toModifiers attrs [Modifier.EnemyEvade evadeValue]
-      (Just iid, Just Action.Fight) -> do
-        fightValue <- getSkillValue SkillCombat iid
-        toModifiers attrs [Modifier.EnemyFight fightValue]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (SalvatoreNeri attrs) = maybeModified attrs do
+    guard $ isTarget attrs target
+    iid <- MaybeT getSkillTestInvestigator
+    MaybeT getSkillTestAction >>= \case
+      Action.Evade -> do
+        evadeValue <- baseSkillValueFor #agility (Just #evade) iid
+        pure [Modifier.EnemyEvade evadeValue]
+      Action.Fight -> do
+        fightValue <- baseSkillValueFor #combat (Just #fight) iid
+        pure [Modifier.EnemyFight fightValue]
+      _ -> fail "Not valid action type"
 
 instance RunMessage SalvatoreNeri where
   runMessage msg (SalvatoreNeri attrs) = SalvatoreNeri <$> runMessage msg attrs

@@ -3284,6 +3284,8 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       LocationTarget lid -> elem lid <$> select locationMatcher
       ProxyTarget (LocationTarget lid) _ ->
         elem lid <$> select locationMatcher
+      BothTarget (LocationTarget lid1) (LocationTarget lid2) -> do
+        selectAny $ locationMatcher <> Matcher.mapOneOf Matcher.LocationWithId [lid1, lid2]
       _ -> pure False
     _ -> pure False
   Matcher.SkillTestOnTreachery treacheryMatcher -> case st.source.treachery of

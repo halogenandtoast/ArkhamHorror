@@ -213,7 +213,7 @@ instance RunMessage ThePallidMask where
           enemies <- select $ ReadyEnemy <> mapOneOf withTrait [Ghoul, Geist] <> enemyAtLocationWith iid
           chooseTargetM iid enemies \enemy -> initiateEnemyAttack enemy attrs iid
         else do
-          enemies <- select $ mapOneOf $ withTrait [Ghoul, Geist] <> enemyAtLocationWith iid
+          enemies <- select $ mapOneOf withTrait [Ghoul, Geist] <> enemyAtLocationWith iid
           chooseTargetM iid enemies \enemy -> do
             ready enemy
             initiateEnemyAttack enemy attrs iid

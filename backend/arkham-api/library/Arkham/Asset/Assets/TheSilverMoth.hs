@@ -26,7 +26,9 @@ instance RunMessage TheSilverMoth where
   runMessage msg t@(TheSilverMoth attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        labeled "Put The Silver Moth into play in your threat area" $ putCardIntoPlay iid attrs
+        labeled "Put The Silver Moth into play in your threat area" do
+          putCardIntoPlay iid attrs
+          checkDefeated attrs iid
         whenM (lift $ can.shuffle.deck iid) do
           labeled "Take 1 horror and shuffle it into your deck" do
             assignHorror iid attrs 1

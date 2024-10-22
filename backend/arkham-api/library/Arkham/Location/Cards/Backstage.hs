@@ -27,11 +27,7 @@ instance HasModifiersFor Backstage where
 
 instance HasAbilities Backstage where
   getAbilities (Backstage attrs) =
-    extendRevealed
-      attrs
-      [ mkAbility attrs 1 $ forced $ RevealLocation #when Anyone (be attrs)
-      , restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 2
-      ]
+    extendRevealed1 attrs $ mkAbility attrs 1 $ forced $ RevealLocation #when Anyone (be attrs)
 
 instance RunMessage Backstage where
   runMessage msg l@(Backstage attrs) = runQueueT $ case msg of

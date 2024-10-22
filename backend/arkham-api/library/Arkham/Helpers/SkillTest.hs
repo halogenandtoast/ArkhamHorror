@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action
+import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken
@@ -112,6 +113,13 @@ getSkillTestMatchingSkillIcons = maybe mempty keysSet <$> getsSkillTest skillTes
 
 isInvestigation :: HasGame m => m Bool
 isInvestigation = (== Just #investigate) <$> getSkillTestAction
+
+isInvestigationOf :: HasGame m => LocationMatcher -> m Bool
+isInvestigationOf matcher =
+  isJust <$> runMaybeT do
+    LocationTarget lid <- MaybeT getSkillTestTarget
+    Action.Investigate <- MaybeT getSkillTestAction
+    liftGuardM $ lid <=~> matcher
 
 isParley :: HasGame m => m Bool
 isParley =

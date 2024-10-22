@@ -3,18 +3,17 @@ module Arkham.Enemy.Cards.TheOrganistDrapedInMystery (
   TheOrganistDrapedInMystery (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheOrganistDrapedInMystery where
@@ -24,7 +23,7 @@ instance HasModifiersFor TheOrganistDrapedInMystery where
 
 instance HasAbilities TheOrganistDrapedInMystery where
   getAbilities (TheOrganistDrapedInMystery attrs) =
-    withBaseAbilities attrs [mkAbility attrs 1 $ ForcedAbility $ PhaseEnds #after #enemy]
+    extend1 attrs $ mkAbility attrs 1 $ forced $ PhaseEnds #when #enemy
 
 theOrganistDrapedInMystery :: EnemyCard TheOrganistDrapedInMystery
 theOrganistDrapedInMystery =

@@ -117,9 +117,16 @@ isInvestigation = (== Just #investigate) <$> getSkillTestAction
 isInvestigationOf :: HasGame m => LocationMatcher -> m Bool
 isInvestigationOf matcher =
   isJust <$> runMaybeT do
-    LocationTarget lid <- MaybeT getSkillTestTarget
     Action.Investigate <- MaybeT getSkillTestAction
+    LocationTarget lid <- MaybeT getSkillTestTarget
     liftGuardM $ lid <=~> matcher
+
+isFightWith :: HasGame m => EnemyMatcher -> m Bool
+isFightWith matcher =
+  isJust <$> runMaybeT do
+    Action.Fight <- MaybeT getSkillTestAction
+    EnemyTarget eid <- MaybeT getSkillTestTarget
+    liftGuardM $ eid <=~> matcher
 
 isParley :: HasGame m => m Bool
 isParley =

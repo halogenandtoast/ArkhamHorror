@@ -210,10 +210,10 @@ instance RunMessage ThePallidMask where
     ResolveChaosToken _ Tablet iid -> do
       if isEasyStandard attrs
         then do
-          enemies <- select $ ReadyEnemy <> mapOneOf EnemyWithTrait [Ghoul, Geist]
+          enemies <- select $ ReadyEnemy <> mapOneOf withTrait [Ghoul, Geist] <> enemyAtLocationWith iid
           chooseTargetM iid enemies \enemy -> initiateEnemyAttack enemy attrs iid
         else do
-          enemies <- select $ mapOneOf EnemyWithTrait [Ghoul, Geist]
+          enemies <- select $ mapOneOf $ withTrait [Ghoul, Geist] <> enemyAtLocationWith iid
           chooseTargetM iid enemies \enemy -> do
             ready enemy
             initiateEnemyAttack enemy attrs iid

@@ -61,4 +61,7 @@ instance Semigroup SourceMatcher where
   x <> SourceMatches xs = SourceMatches $ x : xs
   x <> y = SourceMatches [x, y]
 
+instance Monoid SourceMatcher where
+  mempty = AnySource
+
 $(deriveJSON defaultOptions ''SourceMatcher)

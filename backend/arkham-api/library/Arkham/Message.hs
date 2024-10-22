@@ -662,8 +662,8 @@ data Message
   | HealAllHorror Target Source
   | ReportXp XpBreakdown
   | HealAllDamageAndHorror Target Source
-  | ExcessHealDamage InvestigatorId Int
-  | ExcessHealHorror InvestigatorId Int
+  | ExcessHealDamage InvestigatorId Source Int
+  | ExcessHealHorror InvestigatorId Source Int
   | HealDamage Target Source Int
   | HealHorror Target Source Int
   | HealDamageDelayed Target Source Int
@@ -1086,6 +1086,16 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "ExcessHealHorror" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (i, n) -> pure $ ExcessHealHorror i GameSource n
+          Right (i, s, n) -> pure $ ExcessHealHorror i s n
+      "ExcessHealDamage" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (i, n) -> pure $ ExcessHealDamage i GameSource n
+          Right (i, s, n) -> pure $ ExcessHealDamage i s n
       "RunWindow" -> do
         (_a :: Value, b) <- o .: "contents"
         pure $ CheckWindows b

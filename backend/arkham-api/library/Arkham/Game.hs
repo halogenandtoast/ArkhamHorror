@@ -840,10 +840,17 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithDamage gameValueMatcher -> flip filterM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfDamage
       gameValueMatches (attr investigatorHealthDamage i + t) gameValueMatcher
-    InvestigatorWithHealableHorror -> flip filterM as $ \i -> do
+    InvestigatorWithHealableHorror source -> flip filterM as $ \i -> do
       t <- selectCount $ treacheryInThreatAreaOf i.id <> TreacheryWithModifier IsPointOfHorror
       mods <- getModifiers i.id
-      let onSelf = (attr investigatorSanityDamage i + t) > 0 || CanHealAtFull #horror `elem` mods
+
+      let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher HorrorType <- mods]
+      canHealAtFull <-
+        if null canHealAtFullSources
+          then pure False
+          else sourceMatches source (mconcat canHealAtFullSources)
+
+      let onSelf = (attr investigatorSanityDamage i + t) > 0 || canHealAtFull
       mFoolishness <-
         selectOne
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
@@ -943,35 +950,28 @@ getInvestigatorsMatching matcher = do
           let cards = findWithDefault [] (toId i) $ skillTestCommittedCards st
           skillTestCount <- count (`elem` skillIcons) <$> concatMapM iconsForCard cards
           gameValueMatches skillTestCount valueMatcher
-    HealableInvestigator _source damageType matcher' -> flip filterM as $ \i -> do
+    HealableInvestigator source damageType matcher' -> flip filterM as $ \i -> do
       mods <- getActiveInvestigatorModifiers
+      let canHealAtFullSources = [sourceMatcher | CanHealAtFull sourceMatcher dType <- mods, dType == damageType]
+      canHealAtFull <-
+        if null canHealAtFullSources
+          then pure False
+          else sourceMatches source (mconcat canHealAtFullSources)
+      let
+        healGuardMatcher =
+          case damageType of
+            HorrorType -> InvestigatorWithAnyHorror
+            DamageType -> InvestigatorWithAnyDamage
+      let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
       case damageType of
         DamageType -> do
           if CannotAffectOtherPlayersWithPlayerEffectsExceptDamage `elem` mods
-            then
-              elem (toId i)
-                <$> select
-                  ( matcher'
-                      <> You
-                      <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithModifier (CanHealAtFull damageType)]
-                  )
-            else
-              elem (toId i)
-                <$> select
-                  (matcher' <> oneOf [InvestigatorWithAnyDamage, InvestigatorWithModifier (CanHealAtFull damageType)])
+            then elem (toId i) <$> select (healGuard $ matcher' <> You)
+            else elem (toId i) <$> select (healGuard matcher')
         HorrorType -> do
           if CannotHealHorror `elem` mods
-            then
-              elem (toId i)
-                <$> select
-                  ( matcher'
-                      <> You
-                      <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithModifier (CanHealAtFull damageType)]
-                  )
-            else
-              elem (toId i)
-                <$> select
-                  (matcher' <> oneOf [InvestigatorWithAnyHorror, InvestigatorWithModifier (CanHealAtFull damageType)])
+            then elem (toId i) <$> select (healGuard $ matcher' <> You)
+            else elem (toId i) <$> select (healGuard $ matcher')
     InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithKey key -> flip filterM as $ \i ->

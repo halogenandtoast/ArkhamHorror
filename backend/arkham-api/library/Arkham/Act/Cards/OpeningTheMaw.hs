@@ -27,7 +27,7 @@ instance HasAbilities OpeningTheMaw where
             $ ActionAbility []
             $ ActionCost 1
             <> GroupClueCost
-              (Static 1)
+              (PerPlayer 1)
               (locationIs Locations.mouthOfKnYanTheCavernsMaw)
         , restrictedAbility
             a

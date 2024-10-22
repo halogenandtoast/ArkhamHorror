@@ -31,6 +31,7 @@ instance HasModifiersFor TelescopicSight3 where
     guard $ #fight `elem` ability.actions
     lid <- MaybeT $ selectOne $ locationWithInvestigator iid
     engaged <- lift $ selectAny $ enemyEngagedWith iid
+    let handleTaboo = if tabooed TabooList19 a then id else (<> not_ (enemyEngagedWith a.owner))
     pure
       $ if engaged && not (tabooed TabooList19 a)
         then [EnemyFightActionCriteria $ CriteriaOverride Never]
@@ -40,10 +41,10 @@ instance HasModifiersFor TelescopicSight3 where
               $ CriteriaOverride
               $ EnemyCriteria
               $ ThisEnemy
+              $ handleTaboo
               $ EnemyWithoutModifier CannotBeAttacked
               <> NonEliteEnemy
               <> at_ (orConnected (be lid))
-              <> not_ (enemyEngagedWith a.owner)
           ]
   getModifiersFor _ _ = pure []
 
@@ -52,7 +53,7 @@ instance HasAbilities TelescopicSight3 where
     AttachedToAsset aid _ ->
       [ restricted a 1 ControlsThis
           $ ReactionAbility
-            (ActivateAbility #when You $ AssetAbility (AssetWithId aid) <> #fight)
+            (ActivateAbility #when (You <> UnengagedInvestigator) $ AssetAbility (AssetWithId aid) <> #fight)
             (exhaust a)
       ]
     _ -> []

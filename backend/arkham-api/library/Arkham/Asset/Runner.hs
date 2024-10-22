@@ -41,6 +41,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
+import Arkham.Zone qualified as Zone
 import Control.Lens (non)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -486,6 +487,8 @@ instance RunMessage AssetAttrs where
           _ -> False
         push $ RemoveFromGame (toTarget a)
       pure a
+    RemovedFromPlay (isSource a -> True) -> do
+      pure $ a & placementL .~ OutOfPlay Zone.RemovedZone
     PlaceKey (isTarget a -> True) k -> do
       pure $ a & (keysL %~ insertSet k)
     HealAllDamage (isTarget a -> True) source | assetDamage a > 0 -> do

@@ -915,7 +915,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
     enemyIds <-
-      select
+      withAlteredGame withoutCanModifiers
+        $ select
         $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
     player <- getPlayer investigatorId
     push

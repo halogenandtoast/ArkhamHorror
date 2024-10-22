@@ -38,7 +38,7 @@ instance HasAbilities WishEater where
 
 instance RunMessage WishEater where
   runMessage msg a@(WishEater attrs) = case msg of
-    CardEnteredPlay iid card | toCardId attrs == toCardId card -> do
+    CardIsEnteringPlay iid card | toCardId attrs == toCardId card -> do
       emptyVessel <- selectJust $ assetIs Cards.emptyVessel4
       charges <- fieldMap AssetUses (findWithDefault 0 Charge) emptyVessel
       attrs' <- runMessage msg attrs

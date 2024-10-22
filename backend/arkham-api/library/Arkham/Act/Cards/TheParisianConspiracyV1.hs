@@ -1,15 +1,11 @@
-module Arkham.Act.Cards.TheParisianConspiracyV1 (
-  TheParisianConspiracyV1 (..),
-  theParisianConspiracyV1,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheParisianConspiracyV1 (TheParisianConspiracyV1 (..), theParisianConspiracyV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -17,17 +13,11 @@ newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
 
 theParisianConspiracyV1 :: ActCard TheParisianConspiracyV1
 theParisianConspiracyV1 =
-  act (1, A) TheParisianConspiracyV1 Cards.theParisianConspiracyV1
-    $ Just
-    $ GroupClueCost (PerPlayer 2) Anywhere
+  act (1, A) TheParisianConspiracyV1 Cards.theParisianConspiracyV1 $ groupClueCost (PerPlayer 2)
 
 instance HasAbilities TheParisianConspiracyV1 where
   getAbilities (TheParisianConspiracyV1 a) =
-    [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
-        $ Objective
-        $ forced
-        $ RoundEnds #when
-    ]
+    extend1 a $ restricted a 1 (DoomCountIs $ atLeast 3) (Objective $ forced $ RoundEnds #when)
 
 instance RunMessage TheParisianConspiracyV1 where
   runMessage msg a@(TheParisianConspiracyV1 attrs) = case msg of

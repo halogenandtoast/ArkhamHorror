@@ -17,19 +17,11 @@ newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
 
 theParisianConspiracyV2 :: ActCard TheParisianConspiracyV2
 theParisianConspiracyV2 =
-  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2
-    $ Just
-    $ GroupClueCost (PerPlayer 2) Anywhere
+  act (1, A) TheParisianConspiracyV2 Cards.theParisianConspiracyV2 $ groupClueCost (PerPlayer 2)
 
 instance HasAbilities TheParisianConspiracyV2 where
   getAbilities (TheParisianConspiracyV2 a) =
-    withBaseAbilities
-      a
-      [ restrictedAbility a 1 (DoomCountIs $ AtLeast $ Static 3)
-          $ Objective
-          $ ForcedAbility
-          $ RoundEnds #when
-      ]
+    extend1 a $ restricted a 1 (DoomCountIs $ atLeast 3) (Objective $ forced $ RoundEnds #when)
 
 instance RunMessage TheParisianConspiracyV2 where
   runMessage msg a@(TheParisianConspiracyV2 attrs) = case msg of

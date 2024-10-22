@@ -161,7 +161,7 @@ instance RunMessage RunicAxe where
               EnemyTarget eid -> do
                 enemies <- select $ enemyEngagedWith iid <> not_ (EnemyWithId eid)
                 for_ enemies \eid' -> push $ EnemyDamage eid' $ Msg.delayDamage $ Msg.attack (attrs.ability 1) furyCount
-                pushAll $ Msg.checkDefeated attrs <$> enemies
+                pushAll $ Msg.checkDefeated (attrs.ability 1) <$> enemies
               _ -> pure ()
 
       pure a

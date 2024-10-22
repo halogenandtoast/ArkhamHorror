@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.EmptyVessel4 (
-  emptyVessel4,
-  EmptyVessel4 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.EmptyVessel4 (emptyVessel4, EmptyVessel4 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 
 newtype EmptyVessel4 = EmptyVessel4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

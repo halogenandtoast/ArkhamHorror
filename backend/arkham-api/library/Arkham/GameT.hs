@@ -4,7 +4,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
-import Arkham.Message
+import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random

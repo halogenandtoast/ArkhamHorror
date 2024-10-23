@@ -42,7 +42,11 @@ instance HasAbilities UnfinishedBusiness_D where
 instance RunMessage UnfinishedBusiness_D where
   runMessage msg s@(UnfinishedBusiness_D attrs) = case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      pure . UnfinishedBusiness_D $ attrs & placementL .~ InThreatArea iid
+      pure
+        . UnfinishedBusiness_D
+        $ attrs
+        & (placementL .~ InThreatArea iid)
+        & (removeAfterResolutionL .~ False)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       player <- getPlayer iid
       push

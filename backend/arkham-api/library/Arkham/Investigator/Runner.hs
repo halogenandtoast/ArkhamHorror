@@ -2758,8 +2758,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   allDrawn = investigatorDrawnCards <> drawn
                   shuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
                   handleCardDraw c = do
-                    let (before, _, after) = frame $ Window.DrawCard iid (toCard c) cardDraw.deck
-                    pure $ [before] <> drawThisCardFrom iid c (Just cardDraw.deck) <> [after]
+                    -- after is handled
+                    before <- checkWhen $ Window.DrawCard iid (toCard c) cardDraw.deck
+                    pure $ [before] <> drawThisCardFrom iid c (Just cardDraw.deck)
                 msgs <- if (not shuffleBackInEachWeakness) then concatMapM handleCardDraw allDrawn else pure []
                 player <- getPlayer iid
                 let

@@ -70,6 +70,8 @@ import Arkham.Token
 import Arkham.Trait
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
+import Data.Function (on)
+import Data.List (nubBy)
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
@@ -145,8 +147,8 @@ instance RunMessage LocationAttrs where
     FailedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
       push $ Failed (Action.Investigate, toTarget a) iid source actual n
       pure a
-    PlaceUnderneath target cards | isTarget a target -> do
-      pure $ a & cardsUnderneathL <>~ cards
+    PlaceUnderneath (isTarget a -> True) cards -> do
+      pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
     SetLocationLabel lid label' | lid == locationId -> do
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do

@@ -27,10 +27,10 @@ instance RunMessage Flare1 where
             sid <- getRandom
             skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
             chooseFightEnemy sid iid attrs
+            exile attrs
         labeled "Search for Ally" do
           push $ CheckAttackOfOpportunity iid False
           chooseTargetM iid investigators \x -> search x e x [fromTopOfDeck 9] #ally (defer e IsNotDraw)
-      exile attrs
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       targetCount <- getTotalSearchTargets iid cards 1
@@ -40,5 +40,6 @@ instance RunMessage Flare1 where
           targets cards \card -> do
             push unfocus
             putCardIntoPlay iid card
+            exile attrs
       pure e
     _ -> Flare1 <$> liftRunMessage msg attrs

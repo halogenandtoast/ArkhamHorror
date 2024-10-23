@@ -19,6 +19,7 @@ import { Source } from '@/arkham/types/Source';
 import { Message } from '@/arkham/types/Message';
 import { waitForImagesToLoad, imgsrc, pluralize } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
+import { useSettings } from '@/stores/settings';
 import Act from '@/arkham/components/Act.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
@@ -38,6 +39,7 @@ import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
+import { storeToRefs } from 'pinia';
 
 // types
 interface RefWrapper<T> {
@@ -61,7 +63,9 @@ const upgradeDeck = computed(() => Object.values(props.game.question).some((q) =
 const choose = async (idx: number) => emit('choose', idx)
 
 //Refs
-const splitView = ref(false)
+const settingsStore = useSettings()
+const { splitView } = storeToRefs(settingsStore)
+const { toggleSplitView } = settingsStore
 const needsInit = ref(true)
 const showChaosBag = ref(false)
 const showOutOfPlay = ref(false)
@@ -105,7 +109,7 @@ addEntry({
   icon: ViewColumnsIcon,
   content: "Split View",
   nested: 'view',
-  action: () => splitView.value = !splitView.value
+  action: toggleSplitView
 })
 
 // Computed

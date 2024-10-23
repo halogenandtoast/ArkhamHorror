@@ -757,7 +757,6 @@ runGameMessage msg g = case msg of
                 , enemyKeys = enemyKeys oldAttrs
                 , enemySpawnedBy = enemySpawnedBy oldAttrs
                 , enemyDiscardedBy = enemyDiscardedBy oldAttrs
-                , enemyOriginalCardCode = enemyOriginalCardCode oldAttrs
                 }
 
     pushWhen (replaceStrategy == DefaultReplace)

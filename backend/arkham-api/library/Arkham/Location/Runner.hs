@@ -307,7 +307,7 @@ instance RunMessage LocationAttrs where
               ]
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
-    RevealLocation miid lid | lid == locationId -> do
+    RevealLocation miid lid | lid == locationId && not locationRevealed -> do
       mods <- getModifiers (toTarget a)
       let maxFloodLevel =
             if CannotBeFlooded `elem` mods

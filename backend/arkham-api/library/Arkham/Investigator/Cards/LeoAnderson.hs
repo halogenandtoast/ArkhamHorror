@@ -72,6 +72,7 @@ instance RunMessage LeoAnderson where
       pure . LeoAnderson $ attrs `with` Meta (Just card)
     ResetMetadata (isTarget attrs -> True) ->
       pure . LeoAnderson $ attrs `with` Meta Nothing
+    ResetGame -> LeoAnderson . (`with` Meta Nothing) <$> runMessage msg attrs
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       push $ search iid attrs attrs [fromTopOfDeck 3] #ally (DrawFound iid 1)
       pure i

@@ -131,4 +131,5 @@ instance RunMessage LukeRobinson where
     EndTurn _ -> do
       attrs' <- liftRunMessage msg attrs
       pure $ LukeRobinson (attrs' `with` Meta True)
+    ResetGame -> LukeRobinson . (`with` Meta True) <$> liftRunMessage msg attrs
     _ -> LukeRobinson . (`with` meta) <$> liftRunMessage msg attrs

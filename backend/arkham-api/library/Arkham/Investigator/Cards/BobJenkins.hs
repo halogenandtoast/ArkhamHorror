@@ -104,6 +104,7 @@ instance RunMessage BobJenkins where
           checkWindows [mkWhen (Window.PlayCard iid c)]
           push $ PayCardCost iid c windows'
           pure i
+    ResetGame -> BobJenkins <$> (liftRunMessage msg $ attrs & setMeta Null)
     _ -> do
       let revealedCards = getRevealedCards attrs.meta
       -- remove any cards no longer in hand

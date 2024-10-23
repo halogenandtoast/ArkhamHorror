@@ -14,7 +14,7 @@ import Arkham.Message (uiToRun)
 newtype MontereyJack = MontereyJack InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 montereyJack :: InvestigatorCard MontereyJack
 montereyJack =
@@ -28,7 +28,8 @@ instance HasAbilities MontereyJack where
     [ restrictedAbility
         attrs
         1
-        (Self <> youExist (oneOf [can.draw.cards, can.gain.resources, DistanceFromRoundStart (atLeast 1)]))
+        ( Self <> youExist (oneOf [can.draw.cards, can.gain.resources] <> DistanceFromRoundStart (atLeast 1))
+        )
         $ freeReaction (TurnEnds #when You)
     ]
 

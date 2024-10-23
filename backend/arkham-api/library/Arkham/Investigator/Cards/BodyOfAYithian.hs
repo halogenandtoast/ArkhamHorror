@@ -4,9 +4,11 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
+import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Yithian))
+import Data.Aeson (Result (..))
 
 newtype YithianMetadata = YithianMetadata {originalBody :: Value}
   deriving stock (Show, Eq, Generic, Data)
@@ -44,4 +46,9 @@ instance RunMessage BodyOfAYithian where
     UseCardAbility _iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) card DoubleSkillIcons
       pure i
-    _ -> BodyOfAYithian . (`with` meta) <$> liftRunMessage msg attrs
+    _ -> do
+      case fromJSON @Investigator (originalBody meta) of
+        Error _ -> error "the original mind of the Yithian is lost"
+        Success original -> do
+          original' <- liftRunMessage (Blanked msg) (overAttrs (const attrs) original)
+          pure $ BodyOfAYithian $ toAttrs original' `with` meta

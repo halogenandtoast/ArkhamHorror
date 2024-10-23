@@ -1,7 +1,7 @@
 module Arkham.Classes.RunMessage.Internal where
 
 import Arkham.GameT
-import Arkham.Message
+import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Control.Monad.Trans
 

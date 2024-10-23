@@ -1,21 +1,15 @@
-module Arkham.Asset.Assets.LolaSantiago3 (
-  lolaSantiago3,
-  LolaSantiago3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.LolaSantiago3 (lolaSantiago3, LolaSantiago3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Cost.FieldCost
-import Arkham.Discover
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Modifier
 
 newtype LolaSantiago3 = LolaSantiago3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lolaSantiago3 :: AssetCard LolaSantiago3
@@ -33,8 +27,8 @@ instance HasAbilities LolaSantiago3 where
     ]
 
 instance RunMessage LolaSantiago3 where
-  runMessage msg a@(LolaSantiago3 attrs) = case msg of
+  runMessage msg a@(LolaSantiago3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure a
-    _ -> LolaSantiago3 <$> runMessage msg attrs
+    _ -> LolaSantiago3 <$> liftRunMessage msg attrs

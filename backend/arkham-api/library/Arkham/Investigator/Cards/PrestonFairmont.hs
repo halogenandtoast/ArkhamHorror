@@ -17,7 +17,7 @@ import Arkham.Projection
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 prestonFairmont :: InvestigatorCard PrestonFairmont
 prestonFairmont =
@@ -53,6 +53,7 @@ instance RunMessage PrestonFairmont where
         $ Label "Resolve normally" []
         : [Label "Automatically succeed" [SpendResources iid 2, PassSkillTest] | hasResources]
       pure i
+    Blanked msg'@(SpendResources iid _) | iid == toId attrs -> runMessage msg' i
     SpendResources iid n | iid == toId attrs -> do
       familyInheritance <- selectJust $ assetIs Assets.familyInheritance
       familyInheritanceResources <- field AssetResources familyInheritance

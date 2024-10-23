@@ -15,7 +15,12 @@ createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =
   let this = lookupEvent (toCardCode a) iid eid (toCardId a)
    in overAttrs
-        ( \attrs -> attrs {eventCustomizations = customizations, eventTaboo = tabooList, eventMutated = mutated}
+        ( \attrs ->
+            attrs
+              { eventCustomizations = customizations
+              , eventTaboo = tabooList
+              , eventMutated = mutated
+              }
         )
         this
  where

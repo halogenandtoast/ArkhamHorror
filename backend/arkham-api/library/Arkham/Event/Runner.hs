@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Event.Runner (
   module X,
@@ -164,7 +164,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
           _ -> n
         _ -> cur
 
-      afterPlay = foldl' modifyAfterPlay eventAfterPlay mods
+      afterPlay = traceShowId $ foldl' modifyAfterPlay (traceShowId eventAfterPlay) mods
 
     after <- checkWindows [mkAfter (Window.PlayEventDiscarding eventController (toId a))]
 

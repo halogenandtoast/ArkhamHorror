@@ -13,14 +13,16 @@ newtype AllIn5 = AllIn5 SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allIn5 :: SkillCard AllIn5
-allIn5 =
-  skillWith
-    AllIn5
-    Cards.allIn5
-    (\a -> if tabooed TabooList18 a then a {skillAfterPlay = RemoveThisFromGame} else a)
+allIn5 = skill AllIn5 Cards.allIn5
 
 instance RunMessage AllIn5 where
   runMessage msg s@(AllIn5 attrs) = case msg of
+    InvestigatorCommittedSkill _ skillId | skillId == attrs.id -> do
+      attrs' <- runMessage msg attrs
+      pure
+        $ AllIn5
+        $ attrs'
+        & if tabooed TabooList18 attrs' then afterPlayL .~ RemoveThisFromGame else id
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
       push $ DrawCards iid $ withCardDrawRule ShuffleBackInEachWeakness $ newCardDraw attrs iid 5
       pure s

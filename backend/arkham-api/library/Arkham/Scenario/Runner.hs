@@ -1051,24 +1051,29 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
 
     player <- getPlayer iid
 
-    push
-      $ chooseOne player
-      $ [ targetLabel
+    let
+      matches =
+        [ targetLabel
           (toCardId card)
           [FoundAndDrewEncounterCard iid FromDiscard card]
         | includeDiscard == IncludeDiscard
         , card <- matchingDiscards
         ]
-      <> [ targetLabel
-          (toCardId card)
-          [FoundAndDrewEncounterCard iid FromEncounterDeck card]
-         | card <- matchingDeckCards
-         ]
-    -- TODO: show where focused cards are from
-    push
-      $ FocusCards
-      $ map EncounterCard matchingDeckCards
-      <> map EncounterCard matchingDiscards
+          <> [ targetLabel
+              (toCardId card)
+              [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+             | card <- matchingDeckCards
+             ]
+
+    if null matches
+      then push $ chooseOne player [Label "No matches found" []]
+      else do
+        push $ chooseOne player matches
+        -- TODO: show where focused cards are from
+        push
+          $ FocusCards
+          $ map EncounterCard matchingDeckCards
+          <> map EncounterCard matchingDiscards
     pure a
   DrawEncounterCards target n -> do
     let (cards, encounterDeck) = draw n scenarioEncounterDeck

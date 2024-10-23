@@ -13,6 +13,7 @@ import Arkham.Act.Runner as X (
   IsAct,
   Message (..),
   act,
+  actWith,
   getLeadPlayer,
   getSetAsideCard,
   isSide,

@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Event.Events.AWatchfulPeace3 (aWatchfulPeace3, AWatchfulPeace3 (..)) where
 
 import Arkham.Event.Cards qualified as Cards

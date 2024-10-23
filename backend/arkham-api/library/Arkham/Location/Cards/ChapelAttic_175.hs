@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Location.Cards.ChapelAttic_175 (chapelAttic_175, ChapelAttic_175 (..)) where
 
 import Arkham.Ability

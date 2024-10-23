@@ -169,6 +169,7 @@ instance RunMessage TheWagesOfSin where
           recordCount HereticsWereUnleashedUntoArkham n
           when (n <= 3) $ recordSetInsert MementosDiscovered [WispOfSpectralMist]
           allGainXp attrs
+          endOfScenario
         _ -> error "invalid resolution"
       pure s
     _ -> TheWagesOfSin <$> liftRunMessage msg attrs

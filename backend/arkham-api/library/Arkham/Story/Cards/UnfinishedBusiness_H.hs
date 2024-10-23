@@ -46,7 +46,11 @@ instance HasAbilities UnfinishedBusiness_H where
 instance RunMessage UnfinishedBusiness_H where
   runMessage msg s@(UnfinishedBusiness_H attrs) = case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      pure . UnfinishedBusiness_H $ attrs & placementL .~ InThreatArea iid
+      pure
+        . UnfinishedBusiness_H
+        $ attrs
+        & (placementL .~ InThreatArea iid)
+        & (removeAfterResolutionL .~ False)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasCards <-
         fieldP

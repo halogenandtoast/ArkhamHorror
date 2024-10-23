@@ -1,10 +1,6 @@
-module Arkham.Location.Cards.ChapelAttic_175 (
-  chapelAttic_175,
-  ChapelAttic_175 (..),
-)
-where
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
-import Arkham.Prelude
+module Arkham.Location.Cards.ChapelAttic_175 (chapelAttic_175, ChapelAttic_175 (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -14,7 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -27,20 +23,12 @@ chapelAttic_175 = location ChapelAttic_175 Cards.chapelAttic_175 4 (Static 0)
 
 instance HasAbilities ChapelAttic_175 where
   getAbilities (ChapelAttic_175 a) =
-    withRevealedAbilities
+    extendRevealed
       a
-      [ restrictedAbility a 1 Here
-          $ ForcedAbility
-          $ DrawCard Timing.After You (BasicCardMatch NonWeakness) (DeckOf You)
+      [ restrictedAbility a 1 Here $ forced $ DrawCard #after You (basic NonWeakness) (DeckOf You)
       , mkAbility a 2
-          $ ReactionAbility
-            ( SkillTestResult
-                Timing.After
-                You
-                (WhileInvestigating $ LocationWithId $ toId a)
-                (SuccessResult AnyValue)
-            )
-            Free
+          $ freeReaction
+          $ SkillTestResult #after You (WhileInvestigating $ be a) (SuccessResult AnyValue)
       ]
 
 toDrawn :: [Window] -> Card

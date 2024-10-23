@@ -1889,7 +1889,7 @@ huntedByCorsairs =
 
 zoogBurrow :: CardDef
 zoogBurrow =
-  (treachery "06109" "Zoog Burrow" Dreamlands 1)
+  (treachery "06109" "Zoog Burrow" Zoogs 1)
     { cdCardTraits = singleton Hazard
     }
 

@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.Haste2 (
-  haste2,
-  Haste2 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Haste2 (haste2, Haste2 (..)) where
 
 import Arkham.Ability
 import Arkham.Action (Action)
@@ -14,6 +8,7 @@ import Arkham.Card
 import Arkham.Helpers.Investigator
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
@@ -70,7 +65,7 @@ instance RunMessage Haste2 where
       canPlay <- canDo iid #play
       push
         $ chooseOne player
-        $ map (\ab -> AbilityLabel iid ab (defaultWindows iid) [] []) available
+        $ map (\ab -> AbilityLabel iid (decreaseAbilityActionCost ab 1) (defaultWindows iid) [] []) available
         <> [ ComponentLabel (InvestigatorComponent iid ResourceToken) [TakeResources iid 1 (toSource a') False]
            | canAffordTakeResources
            , canTakeResource

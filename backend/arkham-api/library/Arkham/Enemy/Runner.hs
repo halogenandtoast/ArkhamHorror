@@ -890,7 +890,7 @@ instance RunMessage EnemyAttrs where
         $ a
         & attackingL
         ?~ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
-    PerformEnemyAttack eid | eid == enemyId -> do
+    PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- getModifiers (attackTarget details)
       sourceModifiers <- getModifiers (sourceToTarget $ attackSource details)

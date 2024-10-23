@@ -617,13 +617,16 @@ placeDoomOnAgendaAndCheckAdvance n = push $ PlaceDoomOnAgenda n CanAdvance
 revertAgenda :: (ReverseQueue m, AsId a, IdOf a ~ AgendaId) => a -> m ()
 revertAgenda a = push $ RevertAgenda (asId a)
 
-chooseOrRunOne :: ReverseQueue m => InvestigatorId -> [UI Message] -> m ()
+chooseOrRunOne :: (ReverseQueue m, HasCallStack) => InvestigatorId -> [UI Message] -> m ()
 chooseOrRunOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOrRunOne player msgs
 
 continue :: ReverseQueue m => InvestigatorId -> [Message] -> m ()
-continue iid msgs = Arkham.Message.Lifted.chooseOne iid [Label "Continue" msgs]
+continue iid = prompt iid "Continue"
+
+prompt :: ReverseQueue m => InvestigatorId -> Text -> [Message] -> m ()
+prompt iid lbl msgs = Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
 
 prompt_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
 prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label lbl []]

@@ -26,11 +26,15 @@ instance RunMessage KickingTheHornetsNest where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
-      chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
-        targets enemyCards \card -> do
-          searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
-          push $ InvestigatorDrewEncounterCard iid card
-          handleTarget iid attrs (toCardId card)
+      focusCards cards \unfocus -> do
+        when (null enemyCards) do
+          prompt iid "No enemies found" [unfocus]
+        chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
+          targets enemyCards \card -> do
+            searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+            push $ InvestigatorDrewEncounterCard iid card
+            handleTarget iid attrs (toCardId card)
+            push unfocus
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       discoverAtYourLocation NotInvestigate iid attrs 1

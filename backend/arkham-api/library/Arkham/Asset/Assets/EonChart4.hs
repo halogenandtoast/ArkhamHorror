@@ -105,9 +105,10 @@ instance RunMessage EonChart4 where
             ]
           <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards']
 
-      chooseOrRunOne iid
-        $ [Label "Move" [DoStep 3 msg] | #move `elem` actions']
-        <> [Label "Evade" [DoStep 4 msg] | #evade `elem` actions']
-        <> [Label "Investigate" [DoStep 5 msg] | #investigate `elem` actions']
+      when (any (`elem` actions') [#move, #evade, #investigate]) do
+        chooseOrRunOne iid
+          $ [Label "Move" [DoStep 3 msg] | #move `elem` actions']
+          <> [Label "Evade" [DoStep 4 msg] | #evade `elem` actions']
+          <> [Label "Investigate" [DoStep 5 msg] | #investigate `elem` actions']
       pure a
     _ -> EonChart4 <$> liftRunMessage msg attrs

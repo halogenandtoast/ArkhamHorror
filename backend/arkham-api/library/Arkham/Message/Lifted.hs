@@ -1068,6 +1068,16 @@ chooseFightEnemyMatch
   -> m ()
 chooseFightEnemyMatch sid iid source = mkChooseFightMatch sid iid source >=> push . toMessage
 
+chooseFightEnemyMatchEdit
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> EnemyMatcher
+  -> (ChooseFight -> ChooseFight)
+  -> m ()
+chooseFightEnemyMatchEdit sid iid source mtch f = mkChooseFightMatch sid iid source mtch >>= push . toMessage . f
+
 chooseEvadeEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseEvadeEnemy sid iid = mkChooseEvade sid iid >=> push . toMessage

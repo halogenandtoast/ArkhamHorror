@@ -52,4 +52,7 @@ instance RunMessage UrsulaDowns where
               $ [Msg.chooseOne player $ targetLabels targets (only . Move . move attrs attrs)]
           ]
       pure $ UrsulaDowns $ attrs `with` Metadata False
+    ResetGame -> do
+      attrs' <- liftRunMessage msg attrs
+      pure $ UrsulaDowns $ attrs' `with` Metadata False
     _ -> UrsulaDowns . (`with` metadata) <$> liftRunMessage msg attrs

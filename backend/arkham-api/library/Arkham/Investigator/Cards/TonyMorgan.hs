@@ -103,4 +103,5 @@ instance RunMessage TonyMorgan where
       bountyContracts <- selectJust $ assetIs Assets.bountyContracts
       push $ AddUses #elderSign bountyContracts Bounty 1
       pure i
+    ResetGame -> TonyMorgan . (`with` Meta False) <$> runMessage msg attrs
     _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs

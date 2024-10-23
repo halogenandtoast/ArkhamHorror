@@ -904,10 +904,16 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
 
     ac <- getActionCost attrs (cdActions pcDef)
 
+    let
+      isDuringTurnWindow = \case
+        (windowType -> Window.DuringTurn iid') -> iid == iid'
+        _ -> False
+      doAsIfTurn = any isDuringTurnWindow windows'
+
     canEvade <- withGrantedActions iid GameSource ac do
       if (#evade `elem` cdActions pcDef)
         then
-          if inFastWindow
+          if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
                 $ hasEvadeActions iid (Matcher.DuringTurn Matcher.You) (defaultWindows iid <> windows')
@@ -917,7 +923,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     canFight <- withGrantedActions iid GameSource ac do
       if (#fight `elem` pcDef.actions)
         then
-          if inFastWindow
+          if inFastWindow || doAsIfTurn
             then
               asIfTurn iid
                 $ hasFightActions

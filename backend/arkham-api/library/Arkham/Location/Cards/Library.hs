@@ -1,37 +1,28 @@
-module Arkham.Location.Cards.Library (
-  library,
-  Library (..),
-)
-where
+module Arkham.Location.Cards.Library (library, Library (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Action qualified as Action
 import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype Library = Library LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 library :: LocationCard Library
 library = location Library Cards.library 6 (PerPlayer 1)
 
 instance HasModifiersFor Library where
-  getModifiersFor (LocationTarget lid) (Library attrs) | lid == toId attrs = do
-    mAction <- getSkillTestAction
-    mSource <- getSkillTestSource
-    mInvestigator <- getSkillTestInvestigator
-    case (mAction, mSource, mInvestigator) of
-      (Just Action.Investigate, Just source, Just iid) | isSource attrs source -> do
-        hasTabletKey <- iid <=~> InvestigatorWithKey TabletKey
-        toModifiers attrs [ShroudModifier (-3) | locationRevealed attrs && hasTabletKey]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (Library attrs) = maybeModified attrs do
+    guard $ isTarget attrs target
+    guard $ attrs.revealed
+    iid <- MaybeT getSkillTestInvestigator
+    liftGuardM $ isInvestigating iid attrs.id
+    liftGuardM $ iid <=~> InvestigatorWithKey TabletKey
+    pure [ShroudModifier (-3)]
 
 instance RunMessage Library where
   runMessage msg (Library attrs) = Library <$> runMessage msg attrs

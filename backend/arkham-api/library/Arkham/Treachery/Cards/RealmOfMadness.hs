@@ -1,19 +1,14 @@
-module Arkham.Treachery.Cards.RealmOfMadness (
-  realmOfMadness,
-  RealmOfMadness (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.RealmOfMadness (realmOfMadness, RealmOfMadness (..)) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype RealmOfMadness = RealmOfMadness TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -22,50 +17,30 @@ newtype RealmOfMadness = RealmOfMadness TreacheryAttrs
 realmOfMadness :: TreacheryCard RealmOfMadness
 realmOfMadness = treachery RealmOfMadness Cards.realmOfMadness
 
-assetMatcher :: AssetMatcher
-assetMatcher = DiscardableAsset <> AssetWithTrait Item <> AssetControlledBy You
+assetMatcher :: InvestigatorId -> AssetMatcher
+assetMatcher iid = DiscardableAsset <> assetControlledBy iid
 
 instance RunMessage RealmOfMadness where
-  runMessage msg t@(RealmOfMadness attrs) = case msg of
+  runMessage msg t@(RealmOfMadness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       horror <- field InvestigatorHorror iid
-      hasAssets <- selectAny assetMatcher
-      hasDiscardableCards <-
-        fieldP
-          InvestigatorHand
-          (any (`cardMatch` NonWeakness))
-          iid
-      push
-        $ if horror > 0 && (hasAssets || hasDiscardableCards)
-          then RevelationChoice iid (toSource attrs) horror
-          else InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2
+      hasAssets <- selectAny $ assetMatcher iid
+      hasDiscardableCards <- fieldP InvestigatorHand (any (`cardMatch` DiscardableCard)) iid
+      if horror > 0 && (hasAssets || hasDiscardableCards)
+        then doStep horror msg
+        else assignHorror iid attrs 2
       pure t
-    RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
-      assets <- selectWithField AssetCost assetMatcher
-      handDiscardableCards <-
-        fieldMap
-          InvestigatorHand
-          (filter (`cardMatch` NonWeakness))
-          iid
-      let
-        discardAsset (asset, cost) =
-          targetLabel
-            asset
-            [toDiscardBy iid attrs asset, RevelationChoice iid (toSource attrs) (n - cost)]
-        discardHandCard card =
-          TargetLabel
-            (CardIdTarget $ toCardId card)
-            [ toDiscardBy iid attrs (toCardId card)
-            , RevelationChoice
-                iid
-                (toSource attrs)
-                (n - maybe 0 toPrintedCost (cdCost $ toCardDef card))
-            ]
-      player <- getPlayer iid
-      unless (null assets && null handDiscardableCards)
-        $ push
-        $ chooseOne player
-        $ map discardAsset assets
-        <> map discardHandCard handDiscardableCards
+    DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n > 0 -> do
+      assets <- selectWithField AssetCost $ assetMatcher iid
+      handDiscardableCards <- fieldMap InvestigatorHand (filterCards DiscardableCard) iid
+
+      chooseOneM iid do
+        for_ assets \(asset, cost) -> do
+          targeting asset do
+            toDiscardBy iid attrs asset
+            doStep (n - cost) msg'
+        targets handDiscardableCards \card -> do
+          toDiscardBy iid attrs (toCardId card)
+          doStep (n - card.printedCost) msg'
       pure t
-    _ -> RealmOfMadness <$> runMessage msg attrs
+    _ -> RealmOfMadness <$> liftRunMessage msg attrs

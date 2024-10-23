@@ -146,4 +146,7 @@ instance RunMessage Subject5U21 where
           when canHealHorror do
             labeled "Heal 1 horror" $ healHorror attrs eid 1
       pure i
+    ResetGame -> do
+      attrs' <- liftRunMessage msg attrs
+      pure $ Subject5U21 $ attrs' `with` Meta []
     _ -> Subject5U21 . (`with` meta) <$> liftRunMessage msg attrs

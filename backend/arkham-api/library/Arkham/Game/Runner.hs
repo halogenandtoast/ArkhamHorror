@@ -455,11 +455,11 @@ runGameMessage msg g = case msg of
   PayForAbility ability windows' -> do
     acId <- getRandom
     iid <- toId <$> getActiveInvestigator
-    imods <- getModifiers iid
+    -- imods <- getModifiers iid
     modifiers' <- getModifiers (AbilityTarget iid ability)
     -- TODO: we might want to check the ability index and source
     let
-      isMovement = abilityIs ability #move
+      -- isMovement = abilityIs ability #move
       isInvestigate = abilityIs ability #investigate
       isResign = abilityIs ability #resign
 
@@ -469,27 +469,27 @@ runGameMessage msg g = case msg of
         DelayAdditionalCosts -> pure True
         DelayAdditionalCostsWhen c -> passesCriteria iid Nothing ability.source ability.source [] c
 
-    leaveCosts <-
-      if isMovement && not doDelayAdditionalCosts
-        then do
-          mlocation <- getMaybeLocation iid
-          case mlocation of
-            Nothing -> pure []
-            Just lid -> do
-              mods' <- getModifiers lid
-              pure [c | AdditionalCostToLeave c <- mods']
-        else pure []
+    -- leaveCosts <-
+    --   if isMovement && not doDelayAdditionalCosts
+    --     then do
+    --       mlocation <- getMaybeLocation iid
+    --       case mlocation of
+    --         Nothing -> pure []
+    --         Just lid -> do
+    --           mods' <- getModifiers lid
+    --           pure [c | AdditionalCostToLeave c <- mods']
+    --     else pure []
 
-    -- TODO: we might care about other sources here
-    enterCosts <-
-      if isMovement && not doDelayAdditionalCosts
-        then case abilitySource ability of
-          LocationSource lid -> do
-            mods' <- getModifiers lid
-            pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-            pure $ map snd pcosts <> [c | AdditionalCostToEnter c <- mods']
-          _ -> pure []
-        else pure []
+    -- -- TODO: we might care about other sources here
+    -- enterCosts <-
+    --   if isMovement && not doDelayAdditionalCosts
+    --     then case abilitySource ability of
+    --       LocationSource lid -> do
+    --         mods' <- getModifiers lid
+    --         pcosts <- filterM ((lid <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
+    --         pure $ map snd pcosts <> [c | AdditionalCostToEnter c <- mods']
+    --       _ -> pure []
+    --     else pure []
 
     investigateCosts <-
       if isInvestigate && not doDelayAdditionalCosts
@@ -535,7 +535,7 @@ runGameMessage msg g = case msg of
               fixEnemy
                 $ mconcat
                   ( costF (abilityCost ability)
-                      : additionalCosts ++ leaveCosts ++ enterCosts ++ investigateCosts ++ resignCosts
+                      : additionalCosts ++ investigateCosts ++ resignCosts
                   )
           , activeCostPayments = Cost.NoPayment
           , activeCostTarget = ForAbility ability

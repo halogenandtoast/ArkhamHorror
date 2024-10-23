@@ -1,9 +1,9 @@
 module Arkham.Act.Cards.ArkhamAsylum (ArkhamAsylum (..), arkhamAsylum) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
-import Arkham.Prelude
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Type
 import Arkham.SkillType
@@ -24,36 +24,29 @@ instance HasAbilities ArkhamAsylum where
   getAbilities (ArkhamAsylum attrs) = getAbilities attrs
 
 instance RunMessage ArkhamAsylum where
-  runMessage msg a@(ArkhamAsylum attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(ArkhamAsylum attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       let metadata = toResult (actMeta attrs)
       let skills = setFromList [#combat, #agility, #intellect] `difference` chosenSkills metadata
-      lead <- getLeadPlayer
-      investigators <- getInvestigatorIds
+      lead <- getLead
+      investigators <- getInvestigators
       sid <- getRandom
-      push
-        $ chooseOne lead
-        $ [ Label
-            ("Any investigator tests " <> tshow sk)
-            [ chooseOrRunOne
-                lead
-                [targetLabel iid [beginSkillTest sid iid attrs attrs sk (Fixed 4)] | iid <- investigators]
-            ]
-          | sk <- setToList skills
-          ]
-        <> [ Label
-              "You knock her over and grab the keys"
-              [Remember YouTookTheKeysByForce, advanceActDeck attrs]
-           ]
-
+      chooseOneM lead do
+        for_ (setToList skills) \sk -> do
+          labeled ("Any investigator tests " <> format sk) do
+            chooseOrRunOneM lead do
+              for_ investigators \iid -> do
+                targeting iid $ beginSkillTest sid iid attrs attrs sk (Fixed 4)
+        labeled "You knock her over and grab the keys" do
+          remember YouTookTheKeysByForce
+          advanceActDeck attrs
       pure a
     FailedSkillTest _ _ source Initiator {} (SkillSkillTest st) _ | isSource attrs source -> do
-      insertAfterMatching
-        [AdvanceAct (toId attrs) source AdvancedWithClues]
-        (== SkillTestApplyResultsAfter)
+      afterSkillTest do
+        push $ AdvanceAct (toId attrs) source AdvancedWithClues
       let metadata = toResult (actMeta attrs)
       pure $ ArkhamAsylum $ attrs & metaL .~ toJSON (insertSet st $ chosenSkills metadata)
     PassedSkillTest _ _ source Initiator {} _ _ | isSource attrs source -> do
-      insertAfterMatching [advanceActDeck attrs] (== SkillTestApplyResultsAfter)
+      afterSkillTest $ advanceActDeck attrs
       pure a
-    _ -> ArkhamAsylum <$> runMessage msg attrs
+    _ -> ArkhamAsylum <$> liftRunMessage msg attrs

@@ -26,6 +26,7 @@ instance RunMessage CurseOfYig where
   runMessage msg t@(CurseOfYig attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
+      checkDefeated attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getVengeanceInVictoryDisplay

@@ -11,14 +11,16 @@ newtype Hallow3 = Hallow3 EventAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hallow3 :: EventCard Hallow3
-hallow3 =
-  eventWith
-    Hallow3
-    Cards.hallow3
-    (\a -> if tabooed TabooList19 a then a {eventAfterPlay = RemoveThisFromGame} else a)
+hallow3 = event Hallow3 Cards.hallow3
 
 instance RunMessage Hallow3 where
   runMessage msg e@(Hallow3 attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | attrs.cardId == card.id -> do
+      attrs' <- liftRunMessage msg attrs
+      pure
+        $ Hallow3
+        $ attrs'
+        & if tabooed TabooList19 attrs' then afterPlayL .~ RemoveThisFromGame else id
     PlayThisEvent iid eid | eid == toId attrs -> do
       ts <-
         foldAllM

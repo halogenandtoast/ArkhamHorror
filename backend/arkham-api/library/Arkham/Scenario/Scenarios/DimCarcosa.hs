@@ -170,6 +170,10 @@ instance RunMessage DimCarcosa where
       openedThePathBelow <- getHasRecord YouOpenedThePathBelow
       startAt $ if openedThePathBelow then shoresOfHali else darkSpires
 
+      eachInvestigator \iid ->
+        placeTokens attrs iid #horror
+          =<< fieldMap InvestigatorSanity (`div` 2) iid
+
       theManInThePallidMask <- getCampaignStoryCard Enemies.theManInThePallidMask
       push $ RemoveFromBearersDeckOrDiscard theManInThePallidMask
 

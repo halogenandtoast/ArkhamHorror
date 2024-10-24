@@ -1,14 +1,11 @@
-module Arkham.Event.Events.BlindingLight2 (blindingLight2, blindingLight2Effect, BlindingLight2 (..)) where
+module Arkham.Event.Events.BlindingLight2 (blindingLight2, BlindingLight2 (..)) where
 
-import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
-import Arkham.ChaosToken
-import Arkham.Effect.Import
 import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Message qualified as Msg
-import Arkham.Window qualified as Window
+import Arkham.Helpers.SkillTest (withSkillTestEnemyTarget)
+import Arkham.Matcher
 
 newtype BlindingLight2 = BlindingLight2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -19,36 +16,14 @@ blindingLight2 = event BlindingLight2 Cards.blindingLight2
 
 instance RunMessage BlindingLight2 where
   runMessage msg e@(BlindingLight2 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      createCardEffect Cards.blindingLight2 Nothing attrs iid
-      createCardEffect Cards.blindingLight2 Nothing attrs sid
+      onRevealChaosTokenEffect sid (oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]) attrs iid do
+        push $ LoseActions iid (toSource attrs) 1
+        assignHorror iid attrs 1
       aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
-    _ -> BlindingLight2 <$> liftRunMessage msg attrs
-
-newtype BlindingLight2Effect = BlindingLight2Effect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-blindingLight2Effect :: EffectArgs -> BlindingLight2Effect
-blindingLight2Effect = cardEffect BlindingLight2Effect Cards.blindingLight2
-
-instance RunMessage BlindingLight2Effect where
-  runMessage msg e@(BlindingLight2Effect attrs) = runQueueT $ case msg of
-    RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      when (token.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) do
-        push
-          $ If
-            (Window.RevealChaosTokenEffect iid token attrs.id)
-            [LoseActions iid attrs.source 1, Msg.assignHorror iid attrs 1]
-        disable attrs
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      withSkillTestEnemyTarget (nonAttackEnemyDamage iid 2)
       pure e
-    PassedSkillTest iid (Just Action.Evade) _ (Initiator (EnemyTarget eid)) _ _ -> do
-      case attrs.target of
-        SkillTestTarget _ -> do
-          nonAttackEnemyDamage iid 2 eid
-          disableReturn e
-        _ -> pure e
-    SkillTestEnds _ _ _ -> disableReturn e
-    _ -> BlindingLight2Effect <$> liftRunMessage msg attrs
+    _ -> BlindingLight2 <$> liftRunMessage msg attrs

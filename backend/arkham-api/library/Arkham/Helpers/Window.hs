@@ -241,6 +241,7 @@ getRevealedChaosTokens = \case
   [] -> []
   ((windowType -> Window.SkillTestEnded st) : _) -> st.revealedChaosTokens
   ((windowType -> Window.RevealChaosTokensDuringSkillTest _ _ ts) : _) -> ts
+  ((windowType -> Window.RevealChaosToken _ t) : rest) -> t : getRevealedChaosTokens rest
   (_ : rest) -> getRevealedChaosTokens rest
 
 getRevealedLocation :: [Window] -> LocationId

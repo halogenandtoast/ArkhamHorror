@@ -2738,13 +2738,14 @@ runGameMessage msg g = case msg of
             VengeanceCard _ -> error "Vengeance card"
     pure g
   Discard miid source (TreacheryTarget tid) -> do
-    card <- field TreacheryCard tid
-    iid <- maybe getActiveInvestigatorId pure miid
-    let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
-    wouldDo
-      (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
-      (Window.WouldBeDiscarded (TreacheryTarget tid))
-      (Window.Discarded (Just iid) source card)
+    mcard <- fieldMay TreacheryCard tid
+    for_ mcard \card -> do
+      iid <- maybe getActiveInvestigatorId pure miid
+      let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
+      wouldDo
+        (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
+        (Window.WouldBeDiscarded (TreacheryTarget tid))
+        (Window.Discarded (Just iid) source card)
 
     pure g
   UpdateHistory iid historyItem -> do

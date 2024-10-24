@@ -50,7 +50,7 @@ instance RunMessage SearchingTheUnnamable where
       -- Place each investigator and the set-aside The Unnamable enemy at the
       -- topmost Mysterious Stairs location, revealing it.
       for_ (take 1 mysteriousStairs) $ \topmostStairs -> do
-        pushAll [MoveAllTo (toSource attrs) topmostStairs]
+        for_ investigators \iid -> push $ PlaceInvestigator iid (AtLocation topmostStairs)
         for_ mTheUnnamable $ \theUnnamable -> do
           push $ PlaceEnemy theUnnamable (AtLocation topmostStairs)
 

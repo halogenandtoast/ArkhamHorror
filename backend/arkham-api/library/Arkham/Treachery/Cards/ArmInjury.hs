@@ -34,13 +34,15 @@ instance RunMessage ArmInjury where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iid' <- selectJust TurnInvestigator
-      turnModifier
-        iid'
-        (attrs.ability 1)
-        iid
-        (CannotTakeAction $ AnyActionTarget $ map IsAction [#fight, #activate])
-      pure . ArmInjury $ setMeta False attrs
+      selectOne TurnInvestigator >>= \case
+        Nothing -> pure t
+        Just iid' -> do
+          turnModifier
+            iid'
+            (attrs.ability 1)
+            iid
+            (CannotTakeAction $ AnyActionTarget $ map IsAction [#fight, #activate])
+          pure . ArmInjury $ setMeta False attrs
     EndTurn _ -> do
       pure . ArmInjury $ setMeta True attrs
     _ -> ArmInjury <$> liftRunMessage msg attrs

@@ -32,10 +32,12 @@ instance RunMessage Panic where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iid' <- selectJust TurnInvestigator
-      turnModifier iid' (attrs.ability 1) iid
-        $ CannotTakeAction
-        $ AnyActionTarget [#play, #engage, #resource]
-      pure . Panic $ setMeta False attrs
+      selectOne TurnInvestigator >>= \case
+        Nothing -> pure t
+        Just iid' -> do
+          turnModifier iid' (attrs.ability 1) iid
+            $ CannotTakeAction
+            $ AnyActionTarget [#play, #engage, #resource]
+          pure . Panic $ setMeta False attrs
     EndTurn _ -> pure . Panic $ setMeta True attrs
     _ -> Panic <$> liftRunMessage msg attrs

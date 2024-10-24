@@ -18,7 +18,7 @@ instance HasModifiersFor Stupor where
 
 instance HasAbilities Stupor where
   getAbilities (Stupor a) =
-    [ restrictedAbility a 1 injuryCriteria
+    [ restricted a 1 injuryCriteria
         $ forced
         $ ActivateAbility #after You
         $ oneOf [#parley, #draw, #investigate]
@@ -32,10 +32,12 @@ instance RunMessage Stupor where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iid' <- selectJust TurnInvestigator
-      turnModifier iid' (attrs.ability 1) iid
-        $ CannotTakeAction
-        $ AnyActionTarget [#parley, #draw, #investigate]
-      pure . Stupor $ setMeta False attrs
+      selectOne TurnInvestigator >>= \case
+        Nothing -> pure t
+        Just iid' -> do
+          turnModifier iid' (attrs.ability 1) iid
+            $ CannotTakeAction
+            $ AnyActionTarget [#parley, #draw, #investigate]
+          pure . Stupor $ setMeta False attrs
     EndTurn _ -> pure . Stupor $ setMeta True attrs
     _ -> Stupor <$> liftRunMessage msg attrs

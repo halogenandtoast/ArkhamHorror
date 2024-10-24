@@ -32,10 +32,12 @@ instance RunMessage LegInjury where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      iid' <- selectJust TurnInvestigator
-      turnModifier iid' (attrs.ability 1) iid
-        $ CannotTakeAction
-        $ AnyActionTarget [#move, #resign, #evade]
-      pure . LegInjury $ setMeta False attrs
+      selectOne TurnInvestigator >>= \case
+        Nothing -> pure t
+        Just iid' -> do
+          turnModifier iid' (attrs.ability 1) iid
+            $ CannotTakeAction
+            $ AnyActionTarget [#move, #resign, #evade]
+          pure . LegInjury $ setMeta False attrs
     EndTurn _ -> pure . LegInjury $ setMeta True attrs
     _ -> LegInjury <$> liftRunMessage msg attrs

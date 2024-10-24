@@ -71,7 +71,12 @@ wardOfRadiance =
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Insight, Blessed]
     , cdFastWindow =
-        Just $ DrawCard #when Anyone (CanCancelRevelationEffect $ basic NonWeaknessTreachery) EncounterDeck
+        Just
+          $ DrawCard
+            #when
+            (affectsOthers $ InvestigatorAt YourLocation)
+            (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
+            EncounterDeck
     }
 
 keepFaith :: CardDef

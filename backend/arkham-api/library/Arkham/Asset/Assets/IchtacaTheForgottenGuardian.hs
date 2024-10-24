@@ -10,7 +10,6 @@ import Arkham.Asset.Runner
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
 import Arkham.Damage
-import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Placement
@@ -26,17 +25,20 @@ ichtacaTheForgottenGuardian =
 
 instance HasModifiersFor IchtacaTheForgottenGuardian where
   getModifiersFor (InvestigatorTarget iid) (IchtacaTheForgottenGuardian a) | controlledBy a iid = do
-    maybeModified a do
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      action <- MaybeT getSkillTestAction
-      case action of
-        Action.Fight -> do
-          combatValue <- lift $ maybe 1 (const 2) <$> getVictoryPoints eid
-          pure [SkillModifier #combat combatValue]
-        Action.Evade -> do
-          agilityValue <- lift $ maybe 1 (const 2) <$> getVengeancePoints eid
-          pure [SkillModifier #agility agilityValue]
-        _ -> pure []
+    mTarget <- getSkillTestTarget
+    mAction <- getSkillTestAction
+
+    agility <- case (mTarget, mAction) of
+      (Just (EnemyTarget eid), Just Action.Evade) -> do
+        maybe 1 (const 2) <$> getVengeancePoints eid
+      _ -> pure 1
+
+    combat <- case (mTarget, mAction) of
+      (Just (EnemyTarget eid), Just Action.Fight) -> do
+        maybe 1 (const 2) <$> getVengeancePoints eid
+      _ -> pure 1
+
+    modified a [SkillModifier #combat combat, SkillModifier #agility agility]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities IchtacaTheForgottenGuardian where

@@ -1,32 +1,25 @@
-module Arkham.Enemy.Cards.SavioCorvi (
-  savioCorvi,
-  SavioCorvi (..),
-) where
+module Arkham.Enemy.Cards.SavioCorvi (savioCorvi, SavioCorvi (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 
 newtype SavioCorvi = SavioCorvi EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 savioCorvi :: EnemyCard SavioCorvi
 savioCorvi = enemy SavioCorvi Cards.savioCorvi (3, Static 5, 3) (1, 1)
 
 instance HasModifiersFor SavioCorvi where
-  getModifiersFor (EnemyTarget eid) (SavioCorvi attrs) | eid == toId attrs = do
-    enemyLocation <- field EnemyLocation (toId attrs)
-    case enemyLocation of
-      Nothing -> pure []
-      Just loc -> do
-        acrossLocationId <- getAcrossLocation loc
-        toModifiers attrs [HunterConnectedTo acrossLocationId]
-  getModifiersFor _ _ = pure []
+  getModifiersFor target (SavioCorvi attrs) = maybeModified attrs do
+    guard $ isTarget attrs target
+    loc <- MaybeT $ field EnemyLocation attrs.id
+    across <- MaybeT $ getAcrossLocation loc
+    pure [HunterConnectedTo across]
 
 instance RunMessage SavioCorvi where
   runMessage msg (SavioCorvi attrs) = SavioCorvi <$> runMessage msg attrs

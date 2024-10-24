@@ -33,7 +33,8 @@ instance HasModifiersFor CarnevaleSentinel where
 instance RunMessage CarnevaleSentinel where
   runMessage msg (CarnevaleSentinel attrs) = case msg of
     InvestigatorDrawEnemy iid eid | eid == toId attrs -> do
-      lid <- getJustLocation iid
-      acrossLocationId <- getAcrossLocation lid
-      CarnevaleSentinel <$> runMessage msg (attrs & spawnAtL ?~ SpawnAt (LocationWithId acrossLocationId))
+      mAcrossLocationId <- maybe (pure Nothing) getAcrossLocation =<< getMaybeLocation iid
+
+      CarnevaleSentinel
+        <$> runMessage msg (attrs & spawnAtL ?~ SpawnAt (maybe Nowhere LocationWithId mAcrossLocationId))
     _ -> CarnevaleSentinel <$> runMessage msg attrs

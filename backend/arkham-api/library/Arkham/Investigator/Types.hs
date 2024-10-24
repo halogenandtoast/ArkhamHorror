@@ -47,6 +47,7 @@ import Arkham.Trait
 import Control.Lens (_Just)
 import Data.Aeson.TH
 import Data.Data
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import GHC.Records
 
@@ -319,6 +320,12 @@ data InvestigatorSearch = MkInvestigatorSearch
   , searchingDrawnCards :: [Card]
   }
   deriving stock (Show, Eq, Data)
+
+instance HasField "foundCards" InvestigatorSearch (Map Zone [Card]) where
+  getField = searchingFoundCards
+
+instance HasField "allFoundCards" InvestigatorSearch [Card] where
+  getField = concat . Map.elems . searchingFoundCards
 
 investigatorDoom :: InvestigatorAttrs -> Int
 investigatorDoom = countTokens Doom . investigatorTokens

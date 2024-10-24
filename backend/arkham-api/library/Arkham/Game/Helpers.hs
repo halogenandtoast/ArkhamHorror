@@ -2136,7 +2136,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM [matchWho iid who whoMatcher, matchPhase p phaseMatcher]
         _ -> noMatch
     Matcher.AmongSearchedCards whoMatcher -> case wType of
-      Window.AmongSearchedCards _ who -> matchWho iid who whoMatcher
+      Window.AmongSearchedCards _ who -> do
+        field InvestigatorSearch who >>= \case
+          Nothing -> pure False
+          Just search' ->
+            andM
+              [ maybe False (`elem` search'.allFoundCards) <$> sourceToMaybeCard source
+              , matchWho iid who whoMatcher
+              ]
       _ -> noMatch
     Matcher.WouldDiscardFromHand timing whoMatcher sourceMatcher ->
       guardTiming timing $ \case

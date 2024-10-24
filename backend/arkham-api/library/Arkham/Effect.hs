@@ -114,8 +114,6 @@ import Arkham.Event.Events (
   bideYourTimeEffect,
   bindMonster2Effect,
   blackMarket2Effect,
-  blindingLight2Effect,
-  blindingLightEffect,
   callingInFavorsEffect,
   cheapShot2Effect,
   dawnStar1Effect,
@@ -347,8 +345,8 @@ allEffects :: Map CardCode SomeEffect
 allEffects =
   mapFromList
     [ ("01060", SomeEffect $ noop "01060")
-    , ("01066", SomeEffect blindingLightEffect)
-    , ("01069", SomeEffect blindingLight2Effect)
+    , ("01066", SomeEffect $ noop "01066")
+    , ("01069", SomeEffect $ noop "01069")
     , ("01074", SomeEffect $ noop "01074")
     , ("02028", SomeEffect riteOfSeekingEffect)
     , ("02031", SomeEffect bindMonster2Effect)

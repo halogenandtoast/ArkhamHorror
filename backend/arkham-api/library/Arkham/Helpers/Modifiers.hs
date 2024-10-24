@@ -52,6 +52,13 @@ ignoreActionCost
   -> m a
 ignoreActionCost iid = withModifiers iid (toModifiers GameSource [ActionsAreFree])
 
+ignoreCommitOneRestriction
+  :: HasGame m
+  => InvestigatorId
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+ignoreCommitOneRestriction iid = withModifiers iid (toModifiers GameSource [IgnoreCommitOneRestriction])
+
 withModifiers
   :: (HasGame m, Targetable target)
   => target

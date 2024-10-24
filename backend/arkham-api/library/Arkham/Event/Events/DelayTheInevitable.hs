@@ -20,8 +20,8 @@ delayTheInevitable = event DelayTheInevitable Cards.delayTheInevitable
 
 instance HasAbilities DelayTheInevitable where
   getAbilities (DelayTheInevitable a) =
-    [ restrictedAbility a 1 ControlsThis $ freeReaction (DealtDamageOrHorror #when AnySource You)
-    , restrictedAbility a 2 ControlsThis $ forced $ PhaseEnds #when #mythos
+    [ restricted a 1 ControlsThis $ freeReaction (DealtDamageOrHorror #when AnySource You)
+    , restricted a 2 ControlsThis $ forced $ PhaseEnds #when #mythos
     ]
 
 getDamageAndHorror :: [Window] -> (Int, Int)

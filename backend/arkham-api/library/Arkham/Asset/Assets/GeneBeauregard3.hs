@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 
 newtype GeneBeauregard3 = GeneBeauregard3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 geneBeauregard3 :: AssetCard GeneBeauregard3
@@ -42,14 +42,15 @@ instance HasAbilities GeneBeauregard3 where
 instance RunMessage GeneBeauregard3 where
   runMessage msg a@(GeneBeauregard3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      let connectedLocation = ConnectedTo (locationWithInvestigator iid)
       option1 <-
-        andM [selectAny $ locationWithInvestigator iid <> LocationWithAnyClues, selectAny ConnectedLocation]
-      option2 <- selectAny $ ConnectedLocation <> LocationWithAnyClues
-      option3 <- selectAny $ NonEliteEnemy <> enemyAtLocationWith iid <> EnemyCanEnter ConnectedLocation
+        andM [selectAny $ locationWithInvestigator iid <> LocationWithAnyClues, selectAny connectedLocation]
+      option2 <- selectAny $ connectedLocation <> LocationWithAnyClues
+      option3 <- selectAny $ NonEliteEnemy <> enemyAtLocationWith iid <> EnemyCanEnter connectedLocation
       option4 <-
         selectAny
           $ NonEliteEnemy
-          <> EnemyAt ConnectedLocation
+          <> EnemyAt connectedLocation
           <> EnemyCanEnter (locationWithInvestigator iid)
       player <- getPlayer iid
       let chooseOption = HandleAbilityOption iid (toSource attrs)
@@ -64,7 +65,7 @@ instance RunMessage GeneBeauregard3 where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 1 -> do
       yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
-      connected <- select ConnectedLocation
+      connected <- select $ ConnectedTo (locationWithInvestigator iid)
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -74,8 +75,8 @@ instance RunMessage GeneBeauregard3 where
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 2 -> do
-      yourLocation <- selectJust $ locationWithInvestigator iid <> LocationWithAnyClues
-      connected <- select ConnectedLocation
+      yourLocation <- selectJust $ locationWithInvestigator iid
+      connected <- select $ ConnectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -86,7 +87,7 @@ instance RunMessage GeneBeauregard3 where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 3 -> do
       enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
-      connected <- select ConnectedLocation
+      connected <- select $ ConnectedTo (locationWithInvestigator iid)
       player <- getPlayer iid
       push
         $ chooseOrRunOne
@@ -99,7 +100,7 @@ instance RunMessage GeneBeauregard3 where
 
       pure a
     HandleAbilityOption iid (isSource attrs -> True) 4 -> do
-      enemies <- select $ EnemyAt ConnectedLocation <> NonEliteEnemy
+      enemies <- select $ at_ (ConnectedTo (locationWithInvestigator iid)) <> NonEliteEnemy
       location <- getJustLocation iid
       player <- getPlayer iid
       push

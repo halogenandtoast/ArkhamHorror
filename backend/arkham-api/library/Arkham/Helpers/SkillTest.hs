@@ -447,7 +447,7 @@ getIsCommittable a c = do
                 [ not perilous
                 , CannotCommitToOtherInvestigatorsSkillTests `notElem` modifiers'
                 , isJust mlid && (mlid == otherLocation || otherLocationOk)
-                , not alreadyCommitted
+                , not alreadyCommitted || IgnoreCommitOneRestriction `elem` modifiers'
                 ]
           else pure True
       if not allowedToCommit

@@ -5,7 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Modifiers (ignoreCommitOneRestriction)
+import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -31,14 +32,14 @@ instance RunMessage AstronomicalAtlas3 where
       lookAt iid (attrs.ability 1) iid [(FromTopOfDeck 1, PutBack)] #any (defer attrs IsNotDraw)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      committable <- ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
       withSkillTest \sid ->
         focusCards attrs.cardsUnderneath $ \unfocus -> do
           chooseOrRunOneM iid do
-            for_ attrs.cardsUnderneath \card -> do
-              targeting card do
-                push unfocus
-                skillTestModifier sid attrs card (IfSuccessfulModifier ReturnToHandAfterTest)
-                push $ SkillTestCommitCard iid card
+            targets committable \card -> do
+              push unfocus
+              skillTestModifier sid attrs card (IfSuccessfulModifier ReturnToHandAfterTest)
+              push $ SkillTestCommitCard iid card
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       focusCards cards \unfocus -> continue iid [unfocus, Do msg]

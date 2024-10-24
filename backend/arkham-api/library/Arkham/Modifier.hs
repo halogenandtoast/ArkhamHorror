@@ -332,6 +332,7 @@ data ModifierType
   | RevealChaosTokensBeforeCommittingCards
   | MayIgnoreAttacksOfOpportunity
   | IgnoreAttacksOfOpportunity
+  | IgnoreCommitOneRestriction
   | SanityModifier Int
   | SearchDepth Int
   | LookAtDepth Int

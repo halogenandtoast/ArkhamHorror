@@ -1267,7 +1267,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _) | iid == iid' && iid == toId a -> do
     pushM $ checkWindows [mkWhen (Window.WouldFailSkillTest iid)]
     pure a
-  CancelDamage iid n | iid == investigatorId -> do
+  CancelDamage iid n | iid == investigatorId -> lift do
     withQueue_ \queue -> flip map queue $ \case
       Msg.InvestigatorDamage iid' s damage' horror' ->
         Msg.InvestigatorDamage iid' s (max 0 (damage' - n)) horror'
@@ -1275,7 +1275,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         InvestigatorDoAssignDamage iid' s t matcher' (max 0 (damage' - n)) horror' aa b
       other -> other
     pure a
-  CancelHorror iid n | iid == investigatorId -> do
+  CancelHorror iid n | iid == investigatorId -> lift do
     withQueue_ \queue -> flip map queue $ \case
       Msg.InvestigatorDamage iid' s damage' horror' ->
         Msg.InvestigatorDamage iid' s damage' (max 0 (horror' - n))

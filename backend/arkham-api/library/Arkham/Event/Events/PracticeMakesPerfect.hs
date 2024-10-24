@@ -2,7 +2,7 @@ module Arkham.Event.Events.PracticeMakesPerfect where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), ignoreCommitOneRestriction)
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Matcher
 import Arkham.Strategy
@@ -22,7 +22,7 @@ instance RunMessage PracticeMakesPerfect where
         $ defer attrs IsNotDraw
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
-      committable <- filterM (getIsCommittable iid) cards
+      committable <- ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) cards
       withSkillTest \sid -> do
         chooseOneM iid do
           when (null committable) $ labeled "No cards found" nothing

@@ -339,6 +339,9 @@ addToHand i (toCard -> c) = AddToHand i [c]
 drawToHand :: IsCard a => InvestigatorId -> a -> Message
 drawToHand i (toCard -> c) = DrawToHand i [c]
 
+drawToHandFrom :: (IsCard a, IsDeck deck) => InvestigatorId -> deck -> a -> Message
+drawToHandFrom i (toDeck -> deck) (toCard -> c) = DrawToHandFrom i deck [c]
+
 shuffleIntoDeck :: (IsDeck deck, Targetable target) => deck -> target -> Message
 shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck target
 

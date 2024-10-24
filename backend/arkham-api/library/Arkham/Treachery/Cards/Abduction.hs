@@ -22,12 +22,12 @@ instance RunMessage Abduction where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- selectTargets $ assetControlledBy iid <> #ally <> DiscardableAsset
       case allies of
-        [] -> push $ LoseAllResources iid
+        [] -> push $ LoseAllResources iid (toSource attrs)
         targets -> do
           player <- getPlayer iid
           push
             $ chooseOne player
-            $ [ Label "Lose all resources" [LoseAllResources iid]
+            $ [ Label "Lose all resources" [LoseAllResources iid (toSource attrs)]
               , Label
                   "Discard an Ally asset you control"
                   [chooseOne player $ targetLabels targets (only . toDiscardBy iid attrs)]

@@ -63,7 +63,7 @@ instance RunMessage TheShadowBehindYou where
           ]
         <> [ Label
             "Lose all resources"
-            [LoseAllResources iid, Msg.toDiscardBy iid (attrs.ability 2) attrs]
+            [LoseAllResources iid (attrs.ability 1), Msg.toDiscardBy iid (attrs.ability 2) attrs]
            | hasResources
            ]
       pure t

@@ -3900,7 +3900,8 @@ getCanMoveToLocations iid source = do
           flip filterM ls $ \l -> do
             mods' <- getModifiers l
             pcosts <- filterM ((l <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
-            baseEnter <- field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
+            revealed' <- field LocationRevealed l
+            baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed l -- Added for cards like Nimble
             let extraCostsToEnter = baseEnter <> concatMap snd pcosts <> mconcat [c | AdditionalCostToEnter c <- mods']
             getCanAffordCost iid source [#move] [] (extraCostsToLeave <> extraCostsToEnter)
     else pure []

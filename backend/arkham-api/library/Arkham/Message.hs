@@ -403,6 +403,7 @@ data Message
   | DebugAddToHand InvestigatorId CardId
   | DrawFocusedToHand InvestigatorId Target Zone CardId
   | DrawToHand InvestigatorId [Card]
+  | DrawToHandFrom InvestigatorId DeckSignifier [Card]
   | AddToHandQuiet InvestigatorId [Card] -- used for playing cards
   | ReturnToHand InvestigatorId Target
   | -- Adding Cards to Deck

@@ -1,10 +1,4 @@
-module Arkham.Event.Events.OccultEvidence (
-  occultEvidence,
-  OccultEvidence (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Events.OccultEvidence (occultEvidence, OccultEvidence (..)) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -18,6 +12,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Research))
 
@@ -43,7 +38,7 @@ instance RunMessage OccultEvidence where
       hasClues <- maybe (pure False) (fieldSome LocationClues) mLocation
       let source = toAbilitySource attrs 1
       pushAll
-        $ [RemoveCardFromSearch iid (toCardId attrs), DrawToHand iid [toCard attrs]]
+        $ [RemoveCardFromSearch iid (toCardId attrs), DrawToHandFrom iid (Deck.toDeck iid) [toCard attrs]]
         <> [ Msg.DiscoverClues iid $ discover lid source 1 | canDiscoverClues && hasClues, lid <- toList mLocation
            ]
       pure e

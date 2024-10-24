@@ -112,6 +112,17 @@ import Data.UUID (nil)
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
+zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
+zoneToDeck iid = \case
+  Zone.FromDeck -> Just $ Deck.toDeck iid
+  Zone.FromTopOfDeck {} -> Just $ Deck.toDeck iid
+  Zone.FromBottomOfDeck {} -> Just $ Deck.toDeck iid
+  Zone.FromHand -> Nothing
+  Zone.FromDiscard -> Nothing
+  Zone.FromPlay -> Nothing
+  Zone.FromOutOfPlay {} -> Nothing
+  Zone.FromCollection -> Nothing
+
 overMetaKey
   :: forall a
    . (HasCallStack, ToJSON a, FromJSON a)
@@ -1193,12 +1204,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               enterCosts <- do
                 if movePayAdditionalCosts movement
                   then do
+                    revealed' <- field LocationRevealed destinationLocationId
+                    baseEnter <- mwhen (not revealed') <$> field LocationCostToEnterUnrevealed destinationLocationId
+
                     mods' <- getModifiers destinationLocationId
                     pcosts <-
                       filterM ((destinationLocationId <=~>) . fst) [(ma, c) | AdditionalCostToEnterMatching ma c <- imods]
                     pure $ concatMap snd pcosts
                       <> mconcat [c | AdditionalCostToEnter c <- mods']
                       <> moveAdditionalEnterCosts movement
+                      <> baseEnter
                   else pure mempty
 
               let
@@ -3325,6 +3340,24 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
       & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
+  DrawToHandFrom iid deck cards | iid == investigatorId -> do
+    let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
+    push before
+    for_ (reverse cards) \case
+      PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just deck)
+      EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+      VengeanceCard {} -> error "Can not add vengeance card to hand"
+    when (isNothing $ a ^. searchL) do
+      push after
+    assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
+    pure
+      $ a
+      & (cardsUnderneathL %~ filter (`notElem` cards))
+      & (slotsL %~ flip (foldr removeFromSlots) assetIds)
+      & (discardL %~ filter ((`notElem` cards) . PlayerCard))
+      & (foundCardsL . each %~ filter (`notElem` cards))
+      & (bondedCardsL %~ filter (`notElem` cards))
+      & (searchL . _Just . searchingDrawnCardsL %~ (<> cards))
   DrawToHand iid cards | iid == investigatorId -> do
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
@@ -3394,7 +3427,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         fromJustNote "missing card"
           $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
       foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
-    push $ drawToHand iid' card
+    push $ case zoneToDeck a.id cardSource of
+      Nothing -> drawToHand iid' card
+      Just deck -> drawToHandFrom iid' deck card
     pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
   CommitCard _ card -> do
     pure $ a & foundCardsL . each %~ filter (/= card) & discardL %~ filter ((/= card) . toCard)

@@ -12,16 +12,11 @@ getCnidathqua :: HasGame m => m (Maybe EnemyId)
 getCnidathqua = selectOne $ enemyIs Cards.cnidathqua
 
 -- | An across location will be 4 locations away
-getAcrossLocation :: (HasCallStack, HasGame m) => LocationId -> m LocationId
+getAcrossLocation :: HasGame m => LocationId -> m (Maybe LocationId)
 getAcrossLocation lid = do
   clockwiseMap <- getClockwiseMap
-  pure
-    $ foldl'
-      (\lid' _ -> withMissingError $ lookup lid' clockwiseMap)
-      lid
-      range
+  pure $ foldl' (\mlid' _ -> (`lookup` clockwiseMap) =<< mlid') (Just lid) range
  where
-  withMissingError = fromJustNote "Could not traverse connected locations"
   range :: [Int]
   range = [1 .. 4]
 

@@ -338,6 +338,8 @@ const toggleSidebar = function () {
 
 // Undo
 async function undo() {
+  processing.value = true
+  if (game.value) game.value.question = {}
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
@@ -346,6 +348,8 @@ async function undo() {
 }
 
 async function undoScenario() {
+  processing.value = true
+  if (game.value) game.value.question = {}
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []

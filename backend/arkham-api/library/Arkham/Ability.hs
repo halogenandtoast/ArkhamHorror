@@ -17,6 +17,7 @@ import Arkham.Criteria as X
 import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Card.CardCode
+import Arkham.Constants
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -67,7 +68,9 @@ abilityIsActionAbility a = case abilityType a of
   _ -> False
 
 abilityIsActivate :: Ability -> Bool
-abilityIsActivate a = not (abilityIndex a >= 100 && abilityIndex a <= 102) && abilityIsActionAbility a
+abilityIsActivate a = abilityIndex a `notElem` notActivateIndexes && abilityIsActionAbility a
+ where
+  notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage]
 
 abilityIsFastAbility :: Ability -> Bool
 abilityIsFastAbility a = case abilityType a of
@@ -257,7 +260,7 @@ abilityTypeActions = \case
   ReactionAbility {} -> []
   CustomizationReaction {} -> []
   ConstantReaction {} -> []
-  ActionAbility actions _ -> #activate : actions
+  ActionAbility actions _ -> if #play `elem` actions then actions else #activate : actions
   ActionAbilityWithSkill actions _ _ -> #activate : actions
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []

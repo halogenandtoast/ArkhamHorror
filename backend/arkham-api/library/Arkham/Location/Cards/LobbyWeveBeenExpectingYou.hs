@@ -11,7 +11,6 @@ import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
@@ -33,18 +32,14 @@ instance HasAbilities LobbyWeveBeenExpectingYou where
       attrs
       [ withTooltip
         "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
-        $ restrictedAbility
-          (proxied (LocationMatcherSource $ LocationWithTitle "Lodge Gates") attrs)
-          1
-          (OnLocation $ LocationWithTitle "Lodge Gates")
-          (ActionAbility [#parley] $ ActionCost 1)
+        $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 (OnLocation "Lodge Gates")
+        $ ActionAbility [#parley] (ActionCost 1)
       | unrevealed attrs
       ]
 
 instance RunMessage LobbyWeveBeenExpectingYou where
   runMessage msg l@(LobbyWeveBeenExpectingYou attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _
-      | isSource attrs source && unrevealed attrs -> do
-          push $ RevealLocation (Just iid) (toId attrs)
-          pure l
+    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && unrevealed attrs -> do
+      push $ RevealLocation (Just iid) (toId attrs)
+      pure l
     _ -> LobbyWeveBeenExpectingYou <$> runMessage msg attrs

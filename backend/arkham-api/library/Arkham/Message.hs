@@ -751,7 +751,7 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
-  | LoseAllResources InvestigatorId
+  | LoseAllResources InvestigatorId Source
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
@@ -1097,6 +1097,11 @@ instance FromJSON Message where
         case contents of
           Left (i, n) -> pure $ ExcessHealDamage i GameSource n
           Right (i, s, n) -> pure $ ExcessHealDamage i s n
+      "LoseAllResources" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left i -> pure $ LoseAllResources i GameSource
+          Right (i, s) -> pure $ LoseAllResources i s
       "RunWindow" -> do
         (_a :: Value, b) <- o .: "contents"
         pure $ CheckWindows b

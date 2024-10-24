@@ -752,7 +752,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & discardF
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
-    when (handDiscard.amount > 0) do
+    when (handDiscard.amount > 0 || (handDiscard.strategy == DiscardAll && notNull investigatorHand)) do
       wouldDiscard <- checkWhen $ Window.WouldDiscardFromHand investigatorId handDiscard.source
       pushAll [wouldDiscard, Do msg]
     pure a
@@ -793,8 +793,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Discard _ _ (SearchedCardTarget cardId) -> do
     pure $ a & foundCardsL . each %~ filter ((/= cardId) . toCardId)
   DiscardHand iid source | iid == investigatorId -> do
-    pushAll $ map (DiscardCard iid source . toCardId) investigatorHand
-    pure a
+    liftRunMessage (DiscardFromHand $ discardAll iid source AnyCard) a
   DiscardCard iid source cardId | iid == investigatorId -> do
     let card = fromJustNote "must be in hand" $ find ((== cardId) . toCardId) investigatorHand
     inMulligan <- getInMulligan
@@ -2945,7 +2944,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
     pure a
   Do (LoseResources iid source n) | iid == investigatorId -> liftRunMessage (RemoveTokens source (toTarget a) #resource n) a
-  LoseAllResources iid | iid == investigatorId -> pure $ a & tokensL %~ removeAllTokens Resource
+  LoseAllResources iid source | iid == investigatorId -> do
+    liftRunMessage (LoseResources iid source $ a.resources) a
   TakeResources iid n source True | iid == investigatorId -> do
     let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability

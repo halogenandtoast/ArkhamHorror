@@ -3969,7 +3969,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> map ((\f -> f windows [] []) . AbilityLabel iid) actions
           <> effectActions
     pure a
-  PlayerWindow iid additionalActions isAdditional | iid /= investigatorId -> do
+  PlayerWindow iid additionalActions isAdditional | iid /= investigatorId && a.inGame -> do
     let windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow]
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions

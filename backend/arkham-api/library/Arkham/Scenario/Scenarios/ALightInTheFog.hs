@@ -26,13 +26,7 @@ newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aLightInTheFog :: Difficulty -> ALightInTheFog
-aLightInTheFog difficulty =
-  scenario
-    ALightInTheFog
-    "07231"
-    "A Light in the Fog"
-    difficulty
-    []
+aLightInTheFog difficulty = scenario ALightInTheFog "07231" "A Light in the Fog" difficulty []
 
 instance HasChaosTokenValue ALightInTheFog where
   getChaosTokenValue iid tokenFace (ALightInTheFog attrs) = case tokenFace of

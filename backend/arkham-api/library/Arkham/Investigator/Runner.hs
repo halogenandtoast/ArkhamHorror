@@ -728,8 +728,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   AddToDiscard iid pc | iid == investigatorId -> do
     let
       discardF = case cdWhenDiscarded (toCardDef pc) of
-        ToDiscard -> discardL %~ (pc :)
-        ToBonded -> bondedCardsL %~ (toCard pc :)
+        ToDiscard -> discardL %~ nub . (pc :)
+        ToBonded -> bondedCardsL %~ nub . (toCard pc :)
         ToSetAside -> id
 
     when (cdWhenDiscarded (toCardDef pc) == ToSetAside) do

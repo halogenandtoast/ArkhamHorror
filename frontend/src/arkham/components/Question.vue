@@ -514,7 +514,7 @@ const cardPiles = computed(() => {
   <div v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'" class="standalone-label">
       {{label(question.label)}}
   </div>
-  <div v-if="doneLabel && !inSkillTest">
+  <div v-if="doneLabel">
     <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
   </div>
 </template>

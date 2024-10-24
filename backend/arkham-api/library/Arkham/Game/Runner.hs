@@ -1004,6 +1004,7 @@ runGameMessage msg g = case msg of
                 (RemoveFromGame (SkillTarget skillId), Nothing)
               AbsoluteRemoveThisFromGame ->
                 (RemoveFromGame (SkillTarget skillId), Nothing)
+              PlaceThisBeneath target -> (Msg.PlaceUnderneath target [toCard skill], Nothing)
               ReturnThisToHand ->
                 (ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId), Nothing)
               ShuffleThisBackIntoDeck ->

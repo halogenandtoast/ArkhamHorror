@@ -18,7 +18,7 @@ newtype LegsOfAtlachNacha_348 = LegsOfAtlachNacha_348 EnemyAttrs
 
 instance HasModifiersFor LegsOfAtlachNacha_348 where
   getModifiersFor target (LegsOfAtlachNacha_348 attrs) | attrs `is` target = do
-    x <- maybe (pure 0) (fieldJust LocationShroud) =<< selectOne (locationWithEnemy attrs)
+    x <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< selectOne (locationWithEnemy attrs)
     toModifiers attrs [CannotMakeAttacksOfOpportunity, DoNotExhaustEvaded, Mod.EnemyFight x]
   getModifiersFor _ _ = pure []
 

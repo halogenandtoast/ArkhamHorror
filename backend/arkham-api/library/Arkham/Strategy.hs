@@ -70,6 +70,7 @@ data AfterPlayStrategy
   | ReturnThisToHand
   | AbsoluteRemoveThisFromGame
   | DevourThis InvestigatorId
+  | PlaceThisBeneath Target
   deriving stock (Show, Eq, Ord, Data)
 
 data ChosenCardStrategy
@@ -118,7 +119,8 @@ instance FromJSON AfterPlayStrategy where
         "ShuffleThisBackIntoDeck" -> pure ShuffleThisBackIntoDeck
         "ReturnThisToHand" -> pure ReturnThisToHand
         "AbsoluteRemoveThisFromGame" -> pure AbsoluteRemoveThisFromGame
-        "DevourThis" -> DevourThis <$> o .: "investigatorId"
+        "DevourThis" -> DevourThis <$> o .: "contents"
+        "PlaceThisBeneath" -> PlaceThisBeneath <$> o .: "contents"
         _ -> fail "invalid AfterPlayStrategy"
 
 $(deriveJSON defaultOptions ''ChosenCardStrategy)

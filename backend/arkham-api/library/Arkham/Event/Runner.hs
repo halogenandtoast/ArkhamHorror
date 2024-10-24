@@ -172,6 +172,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       then push $ RemoveEvent $ toId a
       else case eventPlacement of
         Unplaced -> case afterPlay of
+          PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
@@ -183,6 +184,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             push $ RemovedFromPlay (toSource a)
             push $ Devoured iid' c
         Limbo -> case afterPlay of
+          PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
           ExileThis -> pushAll [after, Exile (toTarget a)]
           RemoveThisFromGame -> push (RemoveEvent $ toId a)
@@ -194,6 +196,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
             push $ RemovedFromPlay (toSource a)
             push $ Devoured iid' c
         _ -> case afterPlay of
+          PlaceThisBeneath target -> pushAll [PlaceUnderneath target [toCard a]]
           AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
           DevourThis iid' -> do
             c <- field EventCard a.id
@@ -209,6 +212,11 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure $ a & placementL .~ Limbo
   PlaceUnderneath (isTarget a -> True) cards -> do
     pure $ a & cardsUnderneathL <>~ cards
+  PlaceUnderneath _ cards -> do
+    pure
+      $ if toCard a `elem` cards
+        then a & afterPlayL .~ AbsoluteRemoveThisFromGame
+        else a
   AddToDiscard _ c -> do
     pure $ a & cardsUnderneathL %~ filter (/= toCard c)
   CommitCard _ card -> do

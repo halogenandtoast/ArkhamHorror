@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiWayIf #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
 
@@ -47,47 +48,48 @@ record TheDreamQuest key = push $ InTheDreamQuest (Record key)
 record TheWebOfDreams key = push $ InTheWebOfDreams (Record key)
 
 setCampaignPart
-  :: ReverseQueue m
-  => CampaignPart
-  -> TheDreamEaters
-  -> CampaignStep
-  -> m TheDreamEaters
+  :: ReverseQueue m => CampaignPart -> TheDreamEaters -> CampaignStep -> m TheDreamEaters
 setCampaignPart part c@(TheDreamEaters attrs) step =
   if (toResult @Metadata attrs.meta).mode == PartialMode part
     then do
       push $ CampaignStep step
       pure c
     else do
-      investigators <- allInvestigators
-      currentPlayers <- for investigators \i -> do
-        player <- getPlayer i
-        iattrs <- getAttrs @Investigator i
-        pure (player, iattrs)
+      if (toResult @Metadata attrs.meta).part == part
+        then do
+          push $ CampaignStep step
+          pure c
+        else do
+          investigators <- allInvestigators
+          currentPlayers <- for investigators \i -> do
+            player <- getPlayer i
+            iattrs <- getAttrs @Investigator i
+            pure (player, iattrs)
 
-      let meta = toResult @Metadata attrs.meta
-          newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
-          newMeta =
-            meta
-              { currentCampaignMode = Just part
-              , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
-              , currentCampaignPlayers = meta.otherCampaignPlayers
-              , otherCampaignPlayers = mapFromList currentPlayers
-              }
+          let meta = toResult @Metadata attrs.meta
+              newAttrs = fromJustNote "not full campaign" (otherCampaignAttrs meta)
+              newMeta =
+                meta
+                  { currentCampaignMode = Just part
+                  , otherCampaignAttrs = Just $ attrs {campaignMeta = Null}
+                  , currentCampaignPlayers = meta.otherCampaignPlayers
+                  , otherCampaignPlayers = mapFromList currentPlayers
+                  }
 
-      for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
-        let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
-        push $ SetInvestigator pid i
+          for_ (mapToList $ otherCampaignPlayers meta) \(pid, iattrs) -> do
+            let i = overAttrs (const iattrs) $ lookupInvestigator (toId iattrs) pid
+            push $ SetInvestigator pid i
 
-      push $ CampaignStep step
+          push $ CampaignStep step
 
-      pure
-        $ TheDreamEaters
-          ( newAttrs
-              { campaignCompletedSteps = campaignCompletedSteps attrs
-              , campaignStep = campaignStep attrs
-              , campaignMeta = toJSON newMeta
-              }
-          )
+          pure
+            $ TheDreamEaters
+              ( newAttrs
+                  { campaignCompletedSteps = campaignCompletedSteps attrs
+                  , campaignStep = campaignStep attrs
+                  , campaignMeta = toJSON newMeta
+                  }
+              )
 
 getHasRecord :: HasGame m => CampaignPart -> CampaignLogKey -> m Bool
 getHasRecord part key = do
@@ -486,10 +488,10 @@ instance RunMessage TheDreamEaters where
                       [InTheWebOfDreams (Record TheBlackCatWarnedTheOthers)]
                   ]
 
-            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2)
+            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2) -- Mark 2
       CampaignStep (InterludeStepPart 2 _ 2) -> do
         -- TheDreamQuest
-        story theOneironauts2
+        story theOneironauts2 -- Mark 3
         notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
         randolphEludedCapture <- getHasRecord TheDreamQuest RandolphEludedCapture
 
@@ -774,9 +776,10 @@ instance RunMessage TheDreamEaters where
             Nothing -> error "called with no other campaign attrs"
             Just otherAttrs -> do
               TheDreamEaters otherAttrs' <- lift (defaultCampaignRunner msg' (TheDreamEaters otherAttrs))
+              let meta' = meta {otherCampaignAttrs = Just otherAttrs'}
               pure
                 $ TheDreamEaters
-                $ attrs {campaignMeta = toJSON $ meta {otherCampaignAttrs = Just otherAttrs'}}
+                $ attrs {campaignMeta = toJSON meta'}
       InTheWebOfDreams msg' -> do
         case currentCampaignMode meta of
           Nothing -> lift (defaultCampaignRunner msg' c)
@@ -785,7 +788,8 @@ instance RunMessage TheDreamEaters where
             Nothing -> error "called with no other campaign attrs"
             Just otherAttrs -> do
               TheDreamEaters otherAttrs' <- lift (defaultCampaignRunner msg' (TheDreamEaters otherAttrs))
+              let meta' = meta {otherCampaignAttrs = Just otherAttrs'}
               pure
                 $ TheDreamEaters
-                $ attrs {campaignMeta = toJSON $ meta {otherCampaignAttrs = Just otherAttrs'}}
+                $ attrs {campaignMeta = toJSON meta'}
       _ -> lift (defaultCampaignRunner msg c)

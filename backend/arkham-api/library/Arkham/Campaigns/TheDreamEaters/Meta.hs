@@ -37,3 +37,8 @@ data Metadata = Metadata
 
 instance HasField "mode" Metadata CampaignMode where
   getField = campaignMode
+
+instance HasField "part" Metadata CampaignPart where
+  getField meta = case meta.mode of
+    PartialMode part -> part
+    FullMode -> fromJustNote "missing campaign part" (currentCampaignMode meta)

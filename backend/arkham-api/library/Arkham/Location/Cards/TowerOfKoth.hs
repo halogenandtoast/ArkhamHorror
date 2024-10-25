@@ -11,7 +11,7 @@ newtype TowerOfKoth = TowerOfKoth LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 towerOfKoth :: LocationCard TowerOfKoth
-towerOfKoth = location TowerOfKoth Cards.towerOfKoth 5 (Static 0)
+towerOfKoth = locationWith TowerOfKoth Cards.towerOfKoth 5 (Static 0) (canBeFlippedL .~ True)
 
 instance HasAbilities TowerOfKoth where
   getAbilities (TowerOfKoth attrs) = extendRevealed attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]

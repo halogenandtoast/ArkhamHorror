@@ -506,7 +506,7 @@ const cardPiles = computed(() => {
         class="button"
         @click="choose(index)"
       >
-        Use <i :class="`icon${choice.skillType}`">: {{choice.label}}</i>
+        Use <i :class="`icon${choice.skillType}`"></i>: {{choice.label}}
       </a>
 
     </template>

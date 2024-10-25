@@ -40,9 +40,9 @@ pointOfNoReturn difficulty =
     "06247"
     "Point of No Return"
     difficulty
-    [ "enchantedWoodsStoneTrapdoor towerOfKoth     seaOfBones  peaksOfThok seaOfPitch1"
-    , "vaultsOfZin                 cityOfGugs      valeOfPnath seaOfPitch2 ."
-    , "plainOfTheGhouls            cragOfTheGhouls .           seaOfPitch3 seaOfPitch4"
+    [ "enchantedWoods   towerOfKoth     seaOfBones  peaksOfThok seaOfPitch1"
+    , "vaultsOfZin      cityOfGugs      valeOfPnath seaOfPitch2 ."
+    , "plainOfTheGhouls cragOfTheGhouls .           seaOfPitch3 seaOfPitch4"
     ]
 
 instance HasChaosTokenValue PointOfNoReturn where
@@ -165,13 +165,13 @@ instance RunMessage PointOfNoReturn where
       case r of
         NoResolution -> push R2
         Resolution 1 -> do
-          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolution1"
+          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolutions.resolution1"
           n <- scenarioCount Distortion
           incrementRecordCount StepsOfTheBridge n
           allGainXp attrs
           endOfScenario
         Resolution 2 -> do
-          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolution2"
+          story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolutions.resolution2"
           lead <- getLead
           forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
           n <- scenarioCount Distortion

@@ -342,6 +342,9 @@ storyIs = StoryIs . toCardCode
 cardIs :: HasCardCode a => a -> CardMatcher
 cardIs = CardWithCardCode . toCardCode
 
+cardsAre :: HasCardCode a => [a] -> CardMatcher
+cardsAre = mapOneOf cardIs
+
 fromSets :: [EncounterSet] -> CardMatcher
 fromSets = oneOf . map CardFromEncounterSet
 

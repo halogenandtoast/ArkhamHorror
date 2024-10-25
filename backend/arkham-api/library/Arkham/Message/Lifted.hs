@@ -175,6 +175,9 @@ placeLabeledLocations lbl cards = Msg.placeLabeledLocations lbl cards >>= \(lids
 placeLabeledLocation_ :: ReverseQueue m => Text -> Card -> m ()
 placeLabeledLocation_ lbl card = Msg.placeLabeledLocation lbl card >>= \(_, msg) -> push msg
 
+placeLabeledLocation :: ReverseQueue m => Text -> Card -> m LocationId
+placeLabeledLocation lbl card = Msg.placeLabeledLocation lbl card >>= \(lid, msg) -> push msg >> pure lid
+
 placeLabeledLocationsFrom
   :: ReverseQueue m => Text -> Int -> [Card] -> m [LocationId]
 placeLabeledLocationsFrom lbl n cards = Msg.placeLabeledLocationsFrom lbl n cards >>= \(lids, msgs) -> pushAll msgs $> lids

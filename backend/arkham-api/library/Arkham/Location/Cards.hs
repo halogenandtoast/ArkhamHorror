@@ -353,6 +353,7 @@ allLocationCards =
       , historicalSocietyReadingRoom
       , historicalSocietyRecordOffice_129
       , historicalSocietyRecordOffice_138
+      , holdingCells
       , holeInTheWall
       , hotelRoof
       , houseInTheReeds_210
@@ -6917,6 +6918,18 @@ pumpRoom =
     NoSymbol
     []
     ALightInTheFog
+
+holdingCells :: CardDef
+holdingCells =
+  victory 1
+    $ singleSided
+    $ location
+      "07252"
+      "Holding Cells"
+      [Cave]
+      T
+      [Squiggle, Square, Diamond]
+      ALightInTheFog
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

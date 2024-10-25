@@ -1,18 +1,14 @@
-module Arkham.Act.Cards.TheUnvisitedIsle (
-  TheUnvisitedIsle (..),
-  theUnvisitedIsle,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheUnvisitedIsle (TheUnvisitedIsle (..), theUnvisitedIsle) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.CampaignLogKey
-import Arkham.Classes
 import Arkham.Field
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message (StoryMode (..))
 import Arkham.Movement
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map
@@ -25,22 +21,10 @@ theUnvisitedIsle :: ActCard TheUnvisitedIsle
 theUnvisitedIsle = act (1, A) TheUnvisitedIsle Cards.theUnvisitedIsle (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance RunMessage TheUnvisitedIsle where
-  runMessage msg a@(TheUnvisitedIsle attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(TheUnvisitedIsle attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      eachInvestigator \iid -> push $ ForInvestigator iid msg
       investigators <- getInvestigators
-
-      paired <- zip investigators <$> selectShuffled (SetAsideCardMatch "Unvisited Isle")
-      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
-      locationMessages <- flip concatMapM paired $ \(investigator, unvisitedIsle) -> do
-        (lid, placement) <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
-        pure
-          $ placement
-          : PutLocationInFrontOf investigator lid
-          : Move
-            ( uncancellableMove
-                $ move attrs investigator lid
-            )
-          : [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
 
       -- We need to resolve all dealt cards in player order so we build a map first
       storyMap <-
@@ -49,15 +33,20 @@ instance RunMessage TheUnvisitedIsle where
           <$> selectShuffled (UnderScenarioReferenceMatch StoryCard)
 
       -- then for each player in player order we get the corresponding story cards and resolve them
-      let
-        storyMessages = flip concatMap investigators $ \investigator ->
-          let stories = Map.findWithDefault [] investigator storyMap
-           in map (\s -> ReadStory investigator s ResolveIt Nothing) stories
+      for_ investigators \investigator -> do
+        let stories = Map.findWithDefault [] investigator storyMap
+        pushAll $ map (\s -> ReadStory investigator s ResolveIt Nothing) stories
 
-      pushAll
-        $ locationMessages
-        <> storyMessages
-        <> [advanceActDeck attrs]
-
+      advanceActDeck attrs
       pure a
-    _ -> TheUnvisitedIsle <$> runMessage msg attrs
+    ForInvestigator iid (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      paired <- take 1 <$> selectShuffled (SetAsideCardMatch "Unvisited Isle")
+      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
+      for_ paired \unvisitedIsle -> do
+        lid <- placeLabeledLocation "unvisitedIsle" unvisitedIsle
+        pushAll
+          $ PutLocationInFrontOf iid lid
+          : Move (uncancellableMove $ move attrs iid lid)
+          : [UpdateLocation lid (LocationBrazier ?=. Lit) | sidedWithTheCoven]
+      pure a
+    _ -> TheUnvisitedIsle <$> liftRunMessage msg attrs

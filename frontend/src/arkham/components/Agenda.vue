@@ -125,7 +125,7 @@ const debug = useDebug()
       v-for="(card, idx) in cardsNextTo"
       class="card card--sideways"
       :key="idx"
-      :src="cardImage(card)"
+      :src="imgsrc(cardImage(card))"
     />
     <AbilityButton
       v-for="ability in abilities"

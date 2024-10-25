@@ -1123,19 +1123,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
     canMove <- withoutModifier a CannotMove
-    revealed <- field LocationRevealed lid
-    costToEnterUnrevealed <- field LocationCostToEnterUnrevealed lid
-    pushAll
-      $ ( guard canMove
-            *> resolve
-              ( Move
-                  ( (move (toSource a) iid lid)
-                      { moveAdditionalEnterCosts = if revealed then Free else costToEnterUnrevealed
-                      }
-                  )
-              )
-        )
-      <> [afterWindowMsg]
+    pushAll $ (guard canMove *> resolve (Move $ move a iid lid)) <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
     canMove <- withoutModifier a CannotMove
@@ -1199,7 +1187,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                       pure $ mconcat [c | AdditionalCostToLeave c <- mods']
                     else pure mempty
 
-              -- TODO: we might care about other sources here
               enterCosts <- do
                 if movePayAdditionalCosts movement
                   then do

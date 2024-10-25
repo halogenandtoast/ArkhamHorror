@@ -20,6 +20,7 @@ import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Window qualified as Window
 
 newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -130,5 +131,8 @@ instance RunMessage ALightInTheFog where
             then increaseThisFloodLevel lid
             else when (isHardExpert attrs) $ assignHorror iid Cultist 1
         _ -> pure ()
+      pure s
+    ForInvestigator iid (ScenarioSpecific "captured" _) -> do
+      checkWhen $ Window.ScenarioEvent "captured" (toJSON iid)
       pure s
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

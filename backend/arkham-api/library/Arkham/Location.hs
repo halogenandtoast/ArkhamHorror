@@ -682,6 +682,7 @@ allLocations =
     , SomeLocationCard theMoonRoom
     , SomeLocationCard sunkenArchives
     , SomeLocationCard pumpRoom
+    , SomeLocationCard holdingCells
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

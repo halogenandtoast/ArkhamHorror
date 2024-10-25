@@ -209,6 +209,7 @@ data WindowMatcher
   | EntersThreatArea Timing Who CardMatcher
   | ScenarioCountIncremented Timing ScenarioCountKey
   | WindowWhen Criterion WindowMatcher
+  | ScenarioEvent Timing Text
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher

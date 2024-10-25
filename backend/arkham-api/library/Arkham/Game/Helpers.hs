@@ -2026,6 +2026,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
+    Matcher.ScenarioEvent timing eKey -> guardTiming timing \case
+      Window.ScenarioEvent eKey' _ -> pure $ eKey == eKey'
+      _ -> noMatch
     Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostResources who source' _ ->
         andM

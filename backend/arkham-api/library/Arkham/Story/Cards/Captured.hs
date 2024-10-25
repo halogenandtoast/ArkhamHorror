@@ -1,7 +1,4 @@
-module Arkham.Story.Cards.Captured
-  ( Captured(..)
-  , captured
-  ) where
+module Arkham.Story.Cards.Captured (Captured (..), captured) where
 
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted

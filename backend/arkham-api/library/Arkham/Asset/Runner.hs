@@ -417,7 +417,7 @@ instance RunMessage AssetAttrs where
             ResolvedAbility ab -> ab.source == s && ab.index == i
             MoveWithSkillTest (ResolvedAbility ab) -> ab.source == s && ab.index == i
             _ -> False
-          CardIdSource cid -> insertAfterMatching [afterLast] \case
+          CardIdSource cid -> insertAfterMatching [MoveWithSkillTest afterLast] \case
             ResolvedPlayCard _ c' -> cid == c'.id
             ResolvedAbility _ -> True
             MoveWithSkillTest (ResolvedAbility _) -> True
@@ -428,10 +428,10 @@ instance RunMessage AssetAttrs where
               MoveWithSkillTest (ResolvedAbility _) -> True
               _ -> False
             case mAbility of
-              Nothing -> insertAfterMatching [afterLast] \case
+              Nothing -> insertAfterMatching [MoveWithSkillTest afterLast] \case
                 FinishedEvent e' -> e == e'
                 _ -> False
-              Just msg' -> insertAfterMatching [afterLast] (== msg')
+              Just msg' -> insertAfterMatching [MoveWithSkillTest afterLast] (== msg')
           _ -> pure ()
       runQueueT do
         let (before, _, after) = frame $ Window.SpentToken source (toTarget a) useType' n

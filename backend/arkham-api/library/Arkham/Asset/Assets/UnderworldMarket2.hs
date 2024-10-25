@@ -67,7 +67,7 @@ instance RunMessage UnderworldMarket2 where
                 [ SpendResources iid 1
                 , Msg.chooseOne
                     player
-                    [ targetLabel card [AddToHand iid [card], choosePlaceOnBottom cs]
+                    [ targetLabel card $ AddToHand iid [card] : [choosePlaceOnBottom cs | notNull cs]
                     | (card, cs) <- eachWithRest xs
                     ]
                 , unfocus

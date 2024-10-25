@@ -208,9 +208,6 @@ const classObject = computed(() => {
   }
   return {
     'zeroed-ability-button': isZeroedActionAbility.value && isNeutralAbility.value,
-    'ability-button': isSingleActionAbility.value && isNeutralAbility.value,
-    'double-ability-button': isDoubleActionAbility.value,
-    'triple-ability-button': isTripleActionAbility.value,
     'fast-ability-button': isFastActionAbility.value,
     'reaction-ability-button': isReactionAbility.value,
     'forced-ability-button': isForcedAbility.value,

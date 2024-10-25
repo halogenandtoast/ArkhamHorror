@@ -24,7 +24,7 @@ instance RunMessage LostInVenice where
             Nothing -> assignDamage iid attrs 2
             Just acrossLocationId -> do
               chooseOneM iid do
-                labeled "Take 2 damage" $ assignDamage iid attrs 2
+                labeled "Take 2 horror" $ assignHorror iid attrs 2
                 labeled "Move to the location across from you" $ moveTo attrs iid acrossLocationId
       pure t
     _ -> LostInVenice <$> liftRunMessage msg attrs

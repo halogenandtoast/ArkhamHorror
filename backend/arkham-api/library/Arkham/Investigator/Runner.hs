@@ -2240,24 +2240,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     if cannotHealDamage
       then pure a
       else pure $ a & assignedHealthHealL %~ insertWith (+) source n
-  HealHorrorWithAdditional (InvestigatorTarget iid) source amount | iid == investigatorId -> do
+  HealHorrorWithAdditional (InvestigatorTarget iid) _source amount | iid == investigatorId -> do
     -- exists to have no callbacks, and to be resolved with AdditionalHealHorror
     cannotHealHorror <- hasModifier a CannotHealHorror
     if cannotHealHorror
       then pure a
       else do
-        -- TODO: HERE
-        -- healInvestigator = componentLabel HorrorToken thing [HealDamage thing source 1]
-
         let totalHealed = min amount (investigatorSanityDamage a)
-        a' <-
-          if amount > 0
-            then liftRunMessage (RemoveTokens source (toTarget a) #horror totalHealed) a
-            else pure a
-        pure
-          $ a'
-          & (horrorHealedL .~ totalHealed)
-          & (unhealedHorrorThisRoundL %~ min 0 . subtract totalHealed)
+        pure $ a & (horrorHealedL .~ totalHealed)
   AdditionalHealHorror (InvestigatorTarget iid) source additional | iid == investigatorId -> do
     -- exists to have Callbacks for the total, get from investigatorHorrorHealed
     -- TODO: HERE  MAYBE
@@ -2265,20 +2255,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     if cannotHealHorror
       then pure $ a & horrorHealedL .~ 0
       else do
-        afterWindow <-
-          checkWindows
-            [ mkAfter
-                $ Window.Healed HorrorType (toTarget a) source (investigatorHorrorHealed + additional)
-            ]
-        push afterWindow
-        a' <-
-          if additional > 0
-            then liftRunMessage (RemoveTokens source (toTarget a) #horror additional) a
-            else pure a
-        pure
-          $ a'
-          & (horrorHealedL .~ 0)
-          & (unhealedHorrorThisRoundL %~ min 0 . subtract additional)
+        push $ HealHorror (toTarget iid) source (view horrorHealedL a + additional)
+        pure $ a & (horrorHealedL .~ 0)
   HealHorror (InvestigatorTarget iid) source amount' | iid == investigatorId -> do
     mods <- getModifiers a
     let n = sum [x | HealingTaken x <- mods]
@@ -2338,7 +2316,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 : [Do (HealHorrorDelayed (InvestigatorTarget iid) source (n - 1)) | n - 1 > 0]
               | (t, c) <- hrrTreacheries
               ]
-            <> [Label "Heal remaining horror normally" [Do msg] | investigatorSanityDamage a > 0]
+            <> [ Label "Heal remaining horror normally" [Do (HealHorror (toTarget iid) source n)]
+               | investigatorSanityDamage a > 0
+               ]
     pure a
   Do (HealHorror (isTarget a -> True) source n) -> do
     cannotHealHorror <- hasModifier a CannotHealHorror

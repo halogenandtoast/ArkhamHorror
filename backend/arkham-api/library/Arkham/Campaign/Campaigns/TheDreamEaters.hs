@@ -1,5 +1,4 @@
 {-# LANGUAGE MultiWayIf #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Campaign.Campaigns.TheDreamEaters (TheDreamEaters (..), theDreamEaters) where
 
@@ -488,10 +487,10 @@ instance RunMessage TheDreamEaters where
                       [InTheWebOfDreams (Record TheBlackCatWarnedTheOthers)]
                   ]
 
-            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2) -- Mark 2
+            setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2)
       CampaignStep (InterludeStepPart 2 _ 2) -> do
         -- TheDreamQuest
-        story theOneironauts2 -- Mark 3
+        story theOneironauts2
         notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
         randolphEludedCapture <- getHasRecord TheDreamQuest RandolphEludedCapture
 

@@ -24,7 +24,7 @@ instance RunMessage ExploringTheMoon where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       placeSetAsideLocation_ Locations.cavernsBeneathTheMoonDarkSide
       theBlackCore <- placeSetAsideLocation Locations.theBlackCore
-      createSetAsideEnemyWith Enemies.moonLizard theBlackCore \c -> c {enemyCreationExhausted = True}
+      createSetAsideEnemyWith_ Enemies.moonLizard theBlackCore \c -> c {enemyCreationExhausted = True}
       shuffleEncounterDiscardBackIn
       advanceActDeck attrs
       pure a

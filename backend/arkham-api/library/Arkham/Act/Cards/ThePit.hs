@@ -22,7 +22,7 @@ thePit = act (1, A) ThePit Cards.thePit (groupClueCost $ Static 3)
 instance RunMessage ThePit where
   runMessage msg a@(ThePit attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      createSetAsideEnemy Enemies.theAmalgam =<< getLead
+      createSetAsideEnemy_ Enemies.theAmalgam =<< getLead
       shuffleSetAsideIntoEncounterDeck
         $ mapOneOf cardIs [Treacheries.blindsense, Treacheries.fromTheDepths]
 

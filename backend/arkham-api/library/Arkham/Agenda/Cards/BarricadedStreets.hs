@@ -3,10 +3,8 @@ module Arkham.Agenda.Cards.BarricadedStreets (BarricadedStreets (..), barricaded
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
-import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Coastal, Suspect))
 
@@ -32,8 +30,7 @@ instance RunMessage BarricadedStreets where
   runMessage msg a@(BarricadedStreets attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       selectEach (LocationWithTrait Coastal) (push . IncreaseFloodLevel)
-      shuffleCardsIntoDeck Deck.EncounterDeck
-        =<< getSetAsideCardsMatching (mapOneOf cardIs [Enemies.ravagerFromTheDeep, Enemies.youngDeepOne])
+      shuffleSetAsideIntoEncounterDeck [Enemies.ravagerFromTheDeep, Enemies.youngDeepOne]
       shuffleEncounterDiscardBackIn
       advanceAgendaDeck attrs
       pure a

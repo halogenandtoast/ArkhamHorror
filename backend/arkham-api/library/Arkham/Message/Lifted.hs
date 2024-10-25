@@ -443,19 +443,30 @@ createEnemyAtLocationMatching c matcher = do
   pure eid
 
 createSetAsideEnemy
-  :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
+  :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m EnemyId
 createSetAsideEnemy def creation = createSetAsideEnemyWith def creation id
+
+createSetAsideEnemy_
+  :: (ReverseQueue m, IsEnemyCreationMethod creation) => CardDef -> creation -> m ()
+createSetAsideEnemy_ def creation = createSetAsideEnemyWith_ def creation id
 
 createSetAsideEnemyWith
   :: (ReverseQueue m, IsEnemyCreationMethod creation)
   => CardDef
   -> creation
   -> (EnemyCreation Message -> EnemyCreation Message)
-  -> m ()
+  -> m EnemyId
 createSetAsideEnemyWith def creation f = do
   card <- getSetAsideCard def
-  msg <- Msg.createEnemy card creation
-  push $ toMessage (f msg)
+  createEnemyWith card creation f
+
+createSetAsideEnemyWith_
+  :: (ReverseQueue m, IsEnemyCreationMethod creation)
+  => CardDef
+  -> creation
+  -> (EnemyCreation Message -> EnemyCreation Message)
+  -> m ()
+createSetAsideEnemyWith_ def creation f = void $ createSetAsideEnemyWith def creation f
 
 createEnemyWith
   :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
@@ -1917,3 +1928,10 @@ temporaryModifier target source modType body = do
   msgs <- evalQueueT body
   pushAll $ CreateEffect builder {effectBuilderEffectId = Just effectId}
     : msgs <> [DisableEffect effectId]
+
+discardAllClues
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => source
+  -> investigator
+  -> m ()
+discardAllClues source investigator = push $ InvestigatorDiscardAllClues (toSource source) (asId investigator)

@@ -1,13 +1,12 @@
 module Arkham.Event.Events.FoolMeOnce1 (foolMeOnce1, FoolMeOnce1 (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Id
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window hiding (DrawCard, PlaceUnderneath)
@@ -26,14 +25,14 @@ getTreachery [] = error "impossible"
 
 instance HasAbilities FoolMeOnce1 where
   getAbilities (FoolMeOnce1 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ restricted attrs 1 ControlsThis
         $ ReactionAbility
           (DrawCard #when Anyone (basic $ mapOneOf cardIs $ eventCardsUnderneath attrs) AnyDeck)
           (discardCost attrs)
     ]
 
 instance RunMessage FoolMeOnce1 where
-  runMessage msg e@(FoolMeOnce1 attrs) = case msg of
+  runMessage msg e@(FoolMeOnce1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       let (batchId, treachery) = getTreachery attrs.windows
       card <- field TreacheryCard treachery
@@ -44,7 +43,7 @@ instance RunMessage FoolMeOnce1 where
         , PlaceUnderneath (toTarget attrs) [card]
         ]
       pure e
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ CancelNext (toSource attrs) RevelationMessage
+    UseCardAbility _ (isSource attrs -> True) 1 (cardDrawn -> treachery) _ -> do
+      cancelRevelation (attrs.ability 1) treachery
       pure e
-    _ -> FoolMeOnce1 <$> runMessage msg attrs
+    _ -> FoolMeOnce1 <$> liftRunMessage msg attrs

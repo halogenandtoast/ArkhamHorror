@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Asset.Assets.Showmanship (showmanship, showmanshipEffect, Showmanship (..)) where
 
 import Arkham.Ability
@@ -48,7 +46,7 @@ instance HasModifiersFor ShowmanshipEffect where
     guard $ attrs.target == target
     EffectMetaTarget t <- hoistMaybe attrs.metadata
     abilities <- lift getActiveAbilities
-    guard $ any (\ability -> maybe False (`isTarget` t) ability.source.asset) (traceShowId abilities)
+    guard $ any (\ability -> maybe False (`isTarget` t) ability.source.asset) abilities
     pure [SkillModifier sType 2 | sType <- allSkills]
 
 instance RunMessage ShowmanshipEffect where

@@ -413,16 +413,19 @@ instance RunMessage AssetAttrs where
         -- with when we actually issue the resolved play card message
         afterLast <- checkAfter $ Window.AttackOrEffectSpentLastUse source (toTarget a) useType'
         case source of
-          AbilitySource s i -> insertAfterMatching [afterLast] \case
+          AbilitySource s i -> insertAfterMatching [MoveWithSkillTest afterLast] \case
             ResolvedAbility ab -> ab.source == s && ab.index == i
+            MoveWithSkillTest (ResolvedAbility ab) -> ab.source == s && ab.index == i
             _ -> False
           CardIdSource cid -> insertAfterMatching [afterLast] \case
             ResolvedPlayCard _ c' -> cid == c'.id
             ResolvedAbility _ -> True
+            MoveWithSkillTest (ResolvedAbility _) -> True
             _ -> False
           EventSource e -> do
             mAbility <- findFromQueue \case
               ResolvedAbility _ -> True
+              MovedWithSkillTest (ResolvedAbility _) -> True
               _ -> False
             case mAbility of
               Nothing -> insertAfterMatching [afterLast] \case

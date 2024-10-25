@@ -112,8 +112,7 @@ instance RunMessage ALightInTheFog where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
         Cultist -> afterSkillTest $ doStep 1 msg
-        Tablet -> do
-          whenAny (locationWithInvestigator iid <> FloodedLocation) do
+        Tablet -> whenAny (locationWithInvestigator iid <> FloodedLocation) do
             assignDamage iid Tablet $ if isEasyStandard attrs then 1 else 2
         ElderThing | isEasyStandard attrs -> withLocationOf iid \lid -> do
           nearest <- select (NearestEnemyTo iid UnengagedEnemy)
@@ -129,8 +128,7 @@ instance RunMessage ALightInTheFog where
           canIncreaseFloodLevel <- lid <=~> CanHaveFloodLevelIncreased 
           if canIncreaseFloodLevel
             then increaseThisFloodLevel lid
-            else when (isHardExpert attrs) do
-              assignHorror iid Cultist 1
+            else when (isHardExpert attrs) $ assignHorror iid Cultist 1
         _ -> pure ()
       pure s
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

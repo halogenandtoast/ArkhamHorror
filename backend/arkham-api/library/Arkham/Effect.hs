@@ -419,7 +419,7 @@ allEffects =
     , ("05230", SomeEffect telescopicSight3Effect)
     , ("05239", SomeEffect theLoversVIEffect)
     , ("05251", SomeEffect unvisitedIsleStandingStonesEffect)
-    , ("05255", SomeEffect unvisitedIsleMossCoveredStepsEffect)
+    , ("05254", SomeEffect unvisitedIsleMossCoveredStepsEffect)
     , ("05262", SomeEffect gavriellasFateEffect)
     , ("05263", SomeEffect jeromesFateEffect)
     , ("05264", SomeEffect pennysFateEffect)

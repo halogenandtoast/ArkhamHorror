@@ -175,7 +175,7 @@ instance RunMessage AThousandShapesOfHorror where
         NoResolution -> push R2
         Resolution 1 -> do
           investigators <- allInvestigators
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution1"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution1"
           record RandolphSurvivedTheDescent
           record TheInvestigatorsPossessTheSilverKey
           addCampaignCardToDeckChoice investigators Assets.theSilverKey
@@ -184,16 +184,16 @@ instance RunMessage AThousandShapesOfHorror where
           endOfScenario
         Resolution 2 -> do
           recoveredAStrangeKey <- remembered RecoveredAStrangeKey
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution2"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution2"
           push $ if recoveredAStrangeKey then R3 else R4
         Resolution 3 -> do
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution3"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution3"
           record RandolphSurvivedTheDescent
           allGainXp attrs
           addChaosToken Skull
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolution4"
+          story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution4"
           record RandolphDidNotSurviveTheDescent
           removeCampaignCard Assets.randolphCarterChainedToTheWakingWorld
           allGainXp attrs

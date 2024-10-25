@@ -186,10 +186,13 @@ const abilityLabel = computed(() => {
   }
 
   if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
-    const { actions } = ability.value.type
+    const { actions, cost } = ability.value.type
+    const total = totalActionCost(cost)
     if (actions.length === 1) {
-      return actions[0]
+      return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${actions[0]}`
     }
+
+    return replaceIcons("{action}".repeat(totalActionCost(cost)))
   }
 
   if (isHaunted.value === true) {
@@ -227,7 +230,8 @@ const classObject = computed(() => {
     :class="classObject"
     @click="$emit('choose', ability)"
     v-tooltip="!isButtonText && tooltip"
-    >{{abilityLabel}}</button>
+    v-html="abilityLabel"
+    ></button>
 </template>
 
 <style lang="scss" scoped>

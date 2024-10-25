@@ -4070,7 +4070,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           _ -> False
       resolveAbility =
         [SetActiveInvestigator iid | iid /= activeInvestigator]
-          <> [PayForAbility ability windows, ResolvedAbility ability]
+          <> [PayForAbility ability windows, MoveWithSkillTest (ResolvedAbility ability)]
           <> [SetActiveInvestigator activeInvestigator | iid /= activeInvestigator]
     player <- getPlayer iid
 

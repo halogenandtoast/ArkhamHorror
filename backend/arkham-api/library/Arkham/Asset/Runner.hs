@@ -425,7 +425,7 @@ instance RunMessage AssetAttrs where
           EventSource e -> do
             mAbility <- findFromQueue \case
               ResolvedAbility _ -> True
-              MovedWithSkillTest (ResolvedAbility _) -> True
+              MoveWithSkillTest (ResolvedAbility _) -> True
               _ -> False
             case mAbility of
               Nothing -> insertAfterMatching [afterLast] \case

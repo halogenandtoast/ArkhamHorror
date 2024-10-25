@@ -2684,9 +2684,9 @@ runGameMessage msg g = case msg of
         runMessage (RemoveAsset aid) g
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
-  ResolvedAbility _ -> do
+  ResolvedAbility ab -> do
     let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
-    pure $ g & activeAbilitiesL %~ drop 1 & removedEntitiesF
+    pure $ g & activeAbilitiesL %~ filter (/= ab) & removedEntitiesF
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _source _card -> do

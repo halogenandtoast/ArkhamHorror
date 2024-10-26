@@ -176,27 +176,27 @@ ul.tabs__header > li.tab--selected {
 }
 
 .tab--Guardian {
-  background-color: var(--guardian-dark);
+  background-color: var(--guardian-extra-dark);
 }
 
 .tab--Seeker {
-  background-color: var(--seeker-dark);
+  background-color: var(--seeker-extra-dark);
 }
 
 .tab--Rogue {
-  background-color: var(--rogue-dark);
+  background-color: var(--rogue-extra-dark);
 }
 
 .tab--Mystic {
-  background-color: var(--mystic-dark);
+  background-color: var(--mystic-extra-dark);
 }
 
 .tab--Survivor {
-  background-color: var(--survivor-dark);
+  background-color: var(--survivor-extra-dark);
 }
 
 .tab--Neutral {
-  background-color: var(--neutral-dark);
+  background-color: var(--neutral-extra-dark);
 }
 
 .tab--active-player {

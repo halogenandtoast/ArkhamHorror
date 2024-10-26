@@ -228,27 +228,27 @@ h2 {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
   &.survivor {
-    border: 3px solid var(--survivor);
+    border: 3px solid var(--survivor-extra-dark);
   }
 
   &.guardian {
-    border: 3px solid var(--guardian);
+    border: 3px solid var(--guardian-extra-dark);
   }
 
   &.mystic {
-    border: 3px solid var(--mystic);
+    border: 3px solid var(--mystic-extra-dark);
   }
 
   &.seeker {
-    border: 3px solid var(--seeker);
+    border: 3px solid var(--seeker-extra-dark);
   }
 
   &.rogue {
-    border: 3px solid var(--rogue);
+    border: 3px solid var(--rogue-extra-dark);
   }
 
   &.neutral {
-    border: 3px solid var(--neutral);
+    border: 3px solid var(--neutral-extra-dark);
   }
 }
 

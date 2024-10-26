@@ -313,7 +313,7 @@ async function start() {
     border: 0;
     width: 100%;
     &:hover {
-      background: darken(#6E8640, 7%);
+      background: hsl(80, 35%, 32%);
     }
   }
   button[disabled] {
@@ -386,11 +386,11 @@ input[type=radio] {
 input[type=radio] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
-  &:hover {
-    background-color: desaturate(#6E8640, 20%);
-  }
+  background-color: hsl(80, 5%, 39%);
   border-color: #ddd;
+  &:hover {
+    background-color: hsl(80, 15%, 39%);
+  }
 }
 
 input[type=radio]:checked + label {
@@ -405,9 +405,9 @@ input[type=checkbox] {
 input[type=checkbox] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 5%, 39%);
   &:hover {
-    background-color: desaturate(#6E8640, 20%);
+    background-color: hsl(80, 15%, 39%);
   }
 
   &.invert {
@@ -422,7 +422,7 @@ input[type=checkbox] + label {
 input[type=checkbox]:checked + label {
   background: #6E8640;
   &.invert {
-    background-color: desaturate(#6E8640, 30%);
+    background-color: hsl(80, 5%, 39%);
   }
 }
 
@@ -438,7 +438,7 @@ input[type=image] {
 }
 
 .invert[type=checkbox]:checked + label {
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 5%, 39%);
 }
 
 header {
@@ -477,8 +477,8 @@ header {
   display: grid;
   gap: 10px;
   line-height: 0;
-
   grid-template-columns: repeat(auto-fill, calc((1 / 6 * 100%) - 9px));
+  margin-bottom: 10px;
 
   @media (max-width: 1500px) {
     grid-template-columns: repeat(auto-fill, calc((1 / 3 * 100%) - 7px));
@@ -487,7 +487,6 @@ header {
   img {
     width: 100%;
   }
-  margin-bottom: 10px;
 }
 
 .campaign-box:not(.selected-campaign) {

@@ -760,15 +760,16 @@ onUnmounted(() => {
 }
 
 .sidebar {
-  @media (max-width: 800px) {
-    display: none;
-  }
   height: 100%;
   width: 25vw;
   max-width: 300px;
   display: flex;
   flex-direction: column;
   background: #d0d9dc;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 
   @media (prefers-color-scheme: dark) {
     background: #1C1C1C;

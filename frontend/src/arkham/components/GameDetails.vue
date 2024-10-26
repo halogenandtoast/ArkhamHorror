@@ -77,10 +77,10 @@ h2 {
   border-radius: 3px;
   margin-bottom: 10px;
   a {
-    color: lighten(#365488, 10%);
+    color: #4a6594;
     font-weight: bolder;
     &:hover {
-      color: lighten(#365488, 20%);
+      color: #5e76a0;
     }
   }
 }

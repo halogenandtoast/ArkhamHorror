@@ -60,7 +60,7 @@ async function join() {
     border: 0;
     width: 100%;
     &:hover {
-      background: darken(#6E8640, 7%);
+      background: hsl(80, 35%, 32%);
     }
   }
   button[disabled] {

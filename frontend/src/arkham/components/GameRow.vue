@@ -129,7 +129,7 @@ h2 {
     color: var(--title);
     font-weight: bolder;
     &:hover {
-      color: lighten(#365488, 20%);
+      color: #5e76a0;
     }
   }
 }

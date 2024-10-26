@@ -229,11 +229,11 @@ input[type=radio] {
 input[type=radio] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
-  &:hover {
-    background-color: desaturate(#6E8640, 20%);
-  }
+  background-color: hsl(80, 5%, 39%);
   border-color: #ddd;
+  &:hover {
+    background-color: hsl(80, 15%, 39%);
+  }
 }
 
 input[type=radio]:checked + label {
@@ -248,9 +248,9 @@ input[type=checkbox] {
 input[type=checkbox] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 5%, 39%);
   &:hover {
-    background-color: desaturate(#6E8640, 20%);
+    background-color: hsl(80, 15%, 39%);
   }
 
   &.invert {
@@ -265,7 +265,7 @@ input[type=checkbox] + label {
 input[type=checkbox]:checked + label {
   background: #6E8640;
   &.invert {
-    background-color: desaturate(#6E8640, 30%);
+    background-color: hsl(80, 5%, 39%);
   }
 }
 
@@ -277,6 +277,6 @@ input[type=checkbox]:checked + label {
 }
 
 .invert[type=checkbox]:checked + label {
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 15%, 39%);
 }
 </style>

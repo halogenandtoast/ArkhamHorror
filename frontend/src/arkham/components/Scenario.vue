@@ -1025,7 +1025,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
     }
   }
   > div:nth-of-type(2n) {
-    background: lighten(#484E51, 10%);
+    background: #5a6062;
     &:hover {
       background: rgba(0, 0, 0, 0.5);
     }
@@ -1049,6 +1049,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
   display: flex;
   flex-direction: column;
   position: relative;
+
   .depth {
     position: absolute;
     bottom: 0;
@@ -1104,11 +1105,11 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
+  pointer-events: none;
+
   * {
     transform: scale(0.6);
   }
-
-  pointer-events: none;
 }
 
 .tarot-card {
@@ -1175,7 +1176,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
 
 // We lower the margin so things line up a bit better.
 [data-scenario='c06333'] .location-cards:deep(.location-container) {
-margin: 20px !important;
+  margin: 20px !important;
 }
 
 .buttons-row {
@@ -1203,6 +1204,7 @@ margin: 20px !important;
   padding: 10px;
   gap: 2px;
   flex-wrap: wrap;
+
   .card-row-card {
     position: relative;
   }
@@ -1245,6 +1247,7 @@ margin: 20px !important;
   height: calc(var(--card-width) / var(--card-aspect));
   align-self: flex-start;
   justify-content: center;
+
   img {
     width: 20px;
   }

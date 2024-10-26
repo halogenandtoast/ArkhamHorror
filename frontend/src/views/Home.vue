@@ -116,7 +116,7 @@ h2 {
     border: 0;
     width: 100%;
     &:hover {
-      background: darken(#6E8640, 7%);
+      background: hsl(80, 35%, 32%);
     }
   }
 }
@@ -203,7 +203,7 @@ header {
     font-size: 1em;
     font-weight: bolder;
     &:hover {
-      background: darken(#6E8640, 7%);
+      background: hsl(80, 35%, 32%);
     }
   }
 }

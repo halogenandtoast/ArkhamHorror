@@ -107,7 +107,7 @@ const abilities = computed(() => {
 
 <style scoped lang="scss">
 .story--can-interact {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   border-radius: 15px;
   cursor: pointer;
 }

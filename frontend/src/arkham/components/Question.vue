@@ -593,7 +593,7 @@ section {
   color: #222;
   max-width: 50vw;
   text-align: justify;
-  background: linear-gradient(#DFDAD8, darken(#DFDAD8, 10%));
+  background: linear-gradient(#DFDAD8, #c9c4c2);
   padding: 10px;
   margin: 10px 10px 0 10px;
   border-radius: 5px;
@@ -714,7 +714,7 @@ button:hover {
   }
 
   img.active {
-    border: 1px solid $select;
+    border: 1px solid var(--select);
     cursor: pointer;
   }
 }

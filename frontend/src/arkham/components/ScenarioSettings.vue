@@ -201,7 +201,7 @@ h2 {
 
 button {
   width: 100%;
-  background-color: $button1;
+  background-color: var(--button-1);
   border: 0;
   text-transform: uppercase;
   color: white;

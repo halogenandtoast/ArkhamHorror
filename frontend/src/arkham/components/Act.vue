@@ -270,7 +270,7 @@ const isOtherEncounterCard = computed(() => {
 
 .card-container:not(.act--objective) {
   .act--can-interact {
-    border: 2px solid $select;
+    border: 2px solid var(--select);
     cursor: pointer;
   }
 }

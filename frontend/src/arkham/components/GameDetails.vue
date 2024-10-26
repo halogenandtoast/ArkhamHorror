@@ -155,27 +155,27 @@ h2 {
   margin-right: 10px;
 
   &.survivor {
-    border: 3px solid $survivor;
+    border: 3px solid var(--survivor);
   }
 
   &.guardian {
-    border: 3px solid $guardian;
+    border: 3px solid var(--guardian);
   }
 
   &.mystic {
-    border: 3px solid $mystic;
+    border: 3px solid var(--mystic);
   }
 
   &.seeker {
-    border: 3px solid $seeker;
+    border: 3px solid var(--seeker);
   }
 
   &.rogue {
-    border: 3px solid $rogue;
+    border: 3px solid var(--rogue);
   }
 
   &.neutral {
-    border: 3px solid $neutral;
+    border: 3px solid var(--neutral);
   }
 }
 

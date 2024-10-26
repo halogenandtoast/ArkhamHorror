@@ -13,13 +13,6 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@import "@/styles/_variables.scss";`
-      }
-    }
-  },
   server: {
     port: 8080,
     proxy: {

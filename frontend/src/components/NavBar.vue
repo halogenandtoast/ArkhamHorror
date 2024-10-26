@@ -58,7 +58,7 @@ async function logout() {
 
   a {
     font-weight: bold;
-    color: $spooky-green;
+    color: var(--spooky-green);
     text-decoration: none;
     &:hover {
       color: #6E8640;

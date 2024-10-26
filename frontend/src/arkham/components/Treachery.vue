@@ -134,7 +134,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 }
 
 .treachery--can-interact {
-  border: 2px solid $select;
+  border: 2px solid var(--select);
   cursor:pointer;
 }
 

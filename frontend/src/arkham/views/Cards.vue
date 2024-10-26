@@ -406,10 +406,10 @@ const setSet = (set: CardSet) => {
 
 a {
   font-weight: bold;
-  color: $spooky-green;
+  color: var(--spooky-green);
   text-decoration: none;
   &:hover {
-    color: $spooky-green-light;
+    color: var(--spooky-green)-light;
   }
 }
 

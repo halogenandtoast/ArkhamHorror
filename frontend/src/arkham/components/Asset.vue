@@ -332,7 +332,7 @@ const assetStory = computed(() => {
 
 .asset--can-interact {
   img {
-    border: 2px solid $select;
+    border: 2px solid var(--select);
     cursor:pointer;
   }
 }

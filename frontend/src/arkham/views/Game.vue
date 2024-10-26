@@ -719,7 +719,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.action { border: 5px solid $select; border-radius: 15px; }
+.action { border: 5px solid var(--select); border-radius: 15px; }
 
 #game {
   width: 100vw;

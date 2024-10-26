@@ -112,7 +112,7 @@ const choose = (index: number) => emits('choose', index)
 }
 
 .skill--can-interact {
-  border: 2px solid $select;
+  border: 2px solid var(--select);
   cursor:pointer;
 }
 

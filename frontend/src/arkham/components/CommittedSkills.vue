@@ -83,7 +83,7 @@ function skillId(card: Card) {
 }
 
 .skill--can-interact {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   cursor: pointer;
 }
 </style>

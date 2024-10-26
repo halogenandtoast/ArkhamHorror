@@ -94,7 +94,7 @@ const debug = useDebug()
   width: var(--card-width);
 }
 .can-interact {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   cursor: pointer;
 }
 

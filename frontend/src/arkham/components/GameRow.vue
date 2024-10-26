@@ -228,27 +228,27 @@ h2 {
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
   &.survivor {
-    border: 3px solid $survivor;
+    border: 3px solid var(--survivor);
   }
 
   &.guardian {
-    border: 3px solid $guardian;
+    border: 3px solid var(--guardian);
   }
 
   &.mystic {
-    border: 3px solid $mystic;
+    border: 3px solid var(--mystic);
   }
 
   &.seeker {
-    border: 3px solid $seeker;
+    border: 3px solid var(--seeker);
   }
 
   &.rogue {
-    border: 3px solid $rogue;
+    border: 3px solid var(--rogue);
   }
 
   &.neutral {
-    border: 3px solid $neutral;
+    border: 3px solid var(--neutral);
   }
 }
 

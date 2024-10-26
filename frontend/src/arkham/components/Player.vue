@@ -849,7 +849,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
 
 .tarot-card {
   &.can-interact {
-    border: 2px solid $select;
+    border: 2px solid var(--select);
   }
 }
 

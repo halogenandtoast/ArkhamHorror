@@ -365,6 +365,7 @@ body {
   --card-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
   --select: #ff00ff;
+  --select-dark: #d400d4;
 
   @media (max-width: 800px) {
     --card-width: 40px;

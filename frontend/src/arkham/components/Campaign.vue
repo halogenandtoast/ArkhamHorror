@@ -154,11 +154,11 @@ const questionHash = computed(() => {
 
 .portrait--can-move {
   cursor: pointer;
-  border: 3px solid $select;
+  border: 3px solid var(--select);
 }
 
 .location--can-move-to {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   cursor: pointer;
 }
 

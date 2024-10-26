@@ -435,11 +435,11 @@ i.action {
 }
 
 .investigator--can-interact {
-  border: 2px solid $select;
+  border: 2px solid var(--select);
   cursor: pointer;
   &--portrait {
     cursor: pointer;
-    border: 3px solid $select;
+    border: 3px solid var(--select);
   }
 }
 
@@ -449,66 +449,66 @@ i.action {
 }
 
 .guardianAction {
-  color: $guardian !important;
+  color: var(--guardian) !important;
 }
 
 .survivorAction {
-  color: $survivor !important;
+  color: var(--survivor) !important;
 }
 
 .mysticAction {
-  color: $mystic !important;
+  color: var(--mystic) !important;
 }
 
 .seekerAction {
-  color: $seeker !important;
+  color: var(--seeker) !important;
 }
 
 .rogueAction {
-  color: $rogue !important;
+  color: var(--rogue) !important;
 }
 
 .neutralAction {
-  color: $neutral !important;
+  color: var(--neutral) !important;
 }
 
 .guardianActionButton {
-  background-color: $guardian !important;
+  background-color: var(--guardian) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
 }
 
 .seekerActionButton {
-  background-color: $seeker !important;
+  background-color: var(--seeker) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
 }
 
 .rogueActionButton {
-  background-color: $rogue !important;
+  background-color: var(--rogue) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
 }
 
 .mysticActionButton {
-  background-color: $mystic !important;
+  background-color: var(--mystic) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
 }
 
 .survivorActionButton {
-  background-color: $survivor !important;
+  background-color: var(--survivor) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
 }
 
 .neutralActionButton {
-  background-color: $neutral !important;
+  background-color: var(--neutral) !important;
   border: 0;
   border-radius: 2px;
   margin: 0 2px;
@@ -539,26 +539,26 @@ i.action {
 }
 
 .willpower {
-  background-color: $guardian;
+  background-color: var(--guardian-dark);
   color: white;
   text-align: center;
   border-top-left-radius: 5px;
 }
 
 .intellect {
-  background-color: $mystic;
+  background-color: var(--mystic-dark);
   color: white;
   text-align: center;
 }
 
 .combat {
-  background-color: $survivor;
+  background-color: var(--survivor-dark);
   color: white;
   text-align: center;
 }
 
 .agility {
-  background-color: $rogue;
+  background-color: var(--rogue-dark);
   color: white;
   text-align: center;
   border-top-right-radius: 5px;
@@ -624,7 +624,7 @@ i.action {
 
 .skip-triggers-button {
   transition: all 0.2s ease-in;
-  background-color: $select;
+  background-color: var(--select);
   color: white;
   border: 0;
   border-radius: 2px;
@@ -635,7 +635,7 @@ i.action {
   }
 
   &:not([disabled]):hover {
-    background-color: darken($select, 17%);
+    background-color: var(--select-dark);
   }
 }
 

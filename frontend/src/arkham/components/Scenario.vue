@@ -889,11 +889,11 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
 
 .portrait--can-move {
   cursor: pointer;
-  border: 3px solid $select;
+  border: 3px solid var(--select);
 }
 
 .location--can-move-to {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   cursor: pointer;
 }
 
@@ -1093,7 +1093,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
 
 .can-interact {
   background: rgba(0, 0, 0, 0.5);
-  outline: 2px solid $select;
+  outline: 2px solid var(--select);
   cursor: pointer;
 }
 

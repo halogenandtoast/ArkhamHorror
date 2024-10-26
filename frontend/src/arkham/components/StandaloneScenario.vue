@@ -134,7 +134,7 @@ const questionHash = computed(() => {
 }
 
 .game {
-  background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
+  background-image: linear-gradient(#ced3d4, #E5EAEC);
   width: 100%;
   z-index: 1;
 }
@@ -153,11 +153,11 @@ const questionHash = computed(() => {
 
 .portrait--can-move {
   cursor: pointer;
-  border: 3px solid $select;
+  border: 3px solid var(--select);
 }
 
 .location--can-move-to {
-  border: 3px solid $select;
+  border: 3px solid var(--select);
   cursor: pointer;
 }
 

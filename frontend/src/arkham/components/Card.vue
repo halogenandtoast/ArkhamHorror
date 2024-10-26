@@ -146,7 +146,7 @@ const hasPool = computed(() => {
   display: inline-block;
 
   &--can-interact {
-    border: 2px solid $select;
+    border: 2px solid var(--select);
     cursor: pointer;
   }
 }

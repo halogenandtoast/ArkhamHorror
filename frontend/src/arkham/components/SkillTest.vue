@@ -504,9 +504,9 @@ button {
   transition: all 0.2s ease-in;
   border: 0;
   padding: 10px;
-  background-color: darken($select, 30%);
+  background-color: var(--select-dark-30);
   &:hover {
-    background-color: darken($select, 20%);
+    background-color: var(--select-dark-20);
   }
   color: #EEE;
 }
@@ -636,9 +636,9 @@ i.iconSkillAgility {
     padding: 10px;
     margin: 0 !important;
     border-radius: 0;
-    background-color: darken($select, 30%);
+    background-color: var(--select-dark-30);
     &:hover {
-      background-color: darken($select, 20%);
+      background-color: var(--select-dark-20);
     }
     color: #EEE;
   }

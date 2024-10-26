@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype TwentyFiveAutomatic2 = TwentyFiveAutomatic2 AssetAttrs
   deriving anyclass IsAsset
@@ -42,7 +43,7 @@ instance RunMessage TwentyFiveAutomatic2 where
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
-      chooseFightEnemy sid iid (attrs.ability 1)
+      let ab = fromJustNote "impossible" $ getAbilities a !!? 0
+      chooseOneM iid $ abilityLabeled iid (decreaseAbilityActionCost ab 1) nothing
       pure a
     _ -> TwentyFiveAutomatic2 <$> liftRunMessage msg attrs

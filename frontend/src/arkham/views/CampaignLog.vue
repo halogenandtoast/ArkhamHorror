@@ -60,7 +60,7 @@ h1 {
   text-align: center;
 
   &:hover {
-    background: darken(#6E8640, 20%);
+    background-color: hsl(80, 35%, 19%);
   }
 }
 </style>

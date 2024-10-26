@@ -135,6 +135,8 @@ const choose = (index: number) => emits('choose', index)
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
+  z-index: 1;
+  pointer-events: none;
   * {
     transform: scale(0.6);
   }
@@ -146,8 +148,6 @@ const choose = (index: number) => emits('choose', index)
     width: 20px;
     height: auto;
   }
-  z-index: 1;
-  pointer-events: none;
 }
 
 .attached .card {

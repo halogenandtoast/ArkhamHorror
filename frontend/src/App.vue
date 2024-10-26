@@ -366,6 +366,8 @@ body {
 
   --select: #ff00ff;
   --select-dark: #d400d4;
+  --select-dark-20: #cc00cc;
+  --select-dark-30: #b200b2;
 
   @media (max-width: 800px) {
     --card-width: 40px;

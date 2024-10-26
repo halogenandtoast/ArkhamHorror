@@ -290,7 +290,7 @@ const chosenDeckTabooList = computed(() => {
     border: 0;
     width: 100%;
     &:hover {
-      background: darken(#6E8640, 7%);
+      background: hsl(80, 35%, 32%);
     }
   }
   button[disabled] {
@@ -354,9 +354,9 @@ input[type=radio] {
 input[type=radio] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 5%, 39%);
   &:hover {
-    background-color: desaturate(#6E8640, 20%);
+    background-color: hsl(80, 15%, 39%);
   }
   border-color: #ddd;
 }
@@ -373,9 +373,9 @@ input[type=checkbox] {
 input[type=checkbox] + label {
   display:inline-block;
   padding: 4px 12px;
-  background-color: desaturate(#6E8640, 30%);
+  background-color: hsl(80, 5%, 39%);
   &:hover {
-    background-color: desaturate(#6E8640, 20%);
+    background-color: hsl(80, 15%, 39%);
   }
 
   border-color: #ddd;

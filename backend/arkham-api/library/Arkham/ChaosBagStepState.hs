@@ -36,6 +36,7 @@ data ChaosBagStep
       , tokenStrategy :: ChaosTokenStrategy
       , steps :: [ChaosBagStepState]
       , tokenGroups :: [[ChaosToken]]
+      , chooseAndThen :: Maybe ChaosBagStep
       }
   | ChooseMatch
       { source :: Source
@@ -44,6 +45,7 @@ data ChaosBagStep
       , steps :: [ChaosBagStepState]
       , tokenGroups :: [[ChaosToken]]
       , tokenMatcher :: ChaosTokenMatcher
+      , chooseAndThen :: Maybe ChaosBagStep
       }
   | ChooseMatchChoice
       { steps :: [ChaosBagStepState]

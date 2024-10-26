@@ -1,9 +1,4 @@
-module Arkham.Event.Events.DarkProphecy (
-  darkProphecy,
-  DarkProphecy (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.DarkProphecy (darkProphecy, DarkProphecy (..)) where
 
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
@@ -12,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Window
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Taboo
 import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkWindow)
@@ -32,12 +28,18 @@ instance RunMessage DarkProphecy where
             checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
           pushAll
             [ ReplaceCurrentDraw drawSource iid
-                $ ChooseMatch (toSource attrs) 1 ResolveChoice (replicate 5 $ Undecided Draw) []
-                $ if tabooed TabooList20 attrs
-                  then not_ (ChaosTokenFaceIs ElderSign) <> IsSymbol
-                  else
-                    ChaosTokenMatchesAny
-                      (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
+                $ ChooseMatch
+                  (toSource attrs)
+                  1
+                  ResolveChoice
+                  (replicate 5 $ Undecided Draw)
+                  []
+                  ( flip ChaosTokenMatchesOrElse AnyChaosToken
+                      $ if tabooed TabooList20 attrs
+                        then not_ (ChaosTokenFaceIs ElderSign) <> IsSymbol
+                        else ChaosTokenMatchesAny (map ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail])
+                  )
+                  Nothing
             , ignoreWindow
             ]
           pure e

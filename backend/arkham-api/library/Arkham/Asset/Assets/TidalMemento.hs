@@ -63,7 +63,7 @@ instance RunMessage TidalMemento where
           , UnsealChaosToken token
           , ObtainChaosToken token
           , ReplaceCurrentDraw (toSource attrs) iid
-              $ Choose (toSource attrs) 1 ResolveChoice [Resolved [token]] []
+              $ Choose (toSource attrs) 1 ResolveChoice [Resolved [token]] [] Nothing
           ]
         pure a
     _ -> TidalMemento <$> liftRunMessage msg attrs

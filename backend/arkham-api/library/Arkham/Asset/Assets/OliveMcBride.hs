@@ -38,6 +38,7 @@ instance RunMessage OliveMcBride where
           ResolveChoice
           [Undecided Draw, Undecided Draw, Undecided Draw]
           []
+          Nothing
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure a
     _ -> OliveMcBride <$> liftRunMessage msg attrs

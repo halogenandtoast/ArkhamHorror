@@ -248,7 +248,7 @@ h2 {
   }
 
   &.neutral {
-    border: 3px solid var(--neutral-extra-dark);
+    border: 3px solid var(--neutral);
   }
 }
 

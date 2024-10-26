@@ -449,27 +449,27 @@ i.action {
 }
 
 .guardianAction {
-  color: var(--guardian) !important;
+  color: var(--guardian-extra-dark) !important;
 }
 
 .survivorAction {
-  color: var(--survivor) !important;
+  color: var(--survivor-extra-dark) !important;
 }
 
 .mysticAction {
-  color: var(--mystic) !important;
+  color: var(--mystic-extra-dark) !important;
 }
 
 .seekerAction {
-  color: var(--seeker) !important;
+  color: var(--seeker-extra-dark) !important;
 }
 
 .rogueAction {
-  color: var(--rogue) !important;
+  color: var(--rogue-extra-dark) !important;
 }
 
 .neutralAction {
-  color: var(--neutral) !important;
+  color: var(--neutral-extra-dark) !important;
 }
 
 .guardianActionButton {

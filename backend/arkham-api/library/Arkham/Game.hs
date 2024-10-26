@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -3538,7 +3538,15 @@ instance Query ChaosTokenMatcher where
       if includeSealed matcher
         then getAllChaosTokens
         else if isInfestation then getInfestationTokens else getBagChaosTokens
-    filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+    case matcher of
+      ChaosTokenMatchesOrElse matcher' orElseMatch -> do
+        results <- filterM (go matcher') ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+        if null (traceShowId results)
+          then
+            ( traceShowId <$> filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+            )
+          else pure results
+      _ -> filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
    where
     includeSealed = \case
       IncludeSealed _ -> True
@@ -3572,6 +3580,7 @@ instance Query ChaosTokenMatcher where
             <> maybeToList (infestationCurrentToken bag)
     go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
+      ChaosTokenMatchesOrElse {} -> error "This matcher can not be nested"
       RevealedChaosTokens m -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of

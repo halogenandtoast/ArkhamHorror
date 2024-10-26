@@ -39,7 +39,7 @@ instance RunMessage GrotesqueStatue4 where
         checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
       pushAll
         [ ReplaceCurrentDraw drawSource iid
-            $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] []
+            $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] [] Nothing
         , ignoreWindow
         ]
       pure a

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine, JacquelineFine (..)) where
 
 import Arkham.Ability
@@ -55,10 +57,19 @@ getSteps = \case
 instance RunMessage JacquelineFine where
   runMessage msg i@(JacquelineFine attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
-      steps <- maybe [] getSteps <$> getChaosBagChoice
+      mchoice <- getChaosBagChoice
+      let steps = maybe [] getSteps mchoice
+      let
+        nested =
+          mchoice >>= \case
+            Resolved {} -> Nothing
+            Decided s -> Just s
+            Undecided s -> Just s
+            Deciding s -> Just s
 
       push
         $ ReplaceEntireDraw drawSource iid
+        $ traceShowId
         $ ChooseMatchChoice
           (steps <> [Undecided Draw, Undecided Draw])
           []
@@ -66,14 +77,14 @@ instance RunMessage JacquelineFine where
             ( ChaosTokenFaceIs #autofail
             ,
               ( "Cancel 1 {autofail} token"
-              , ChooseMatch (attrs.ability 1) 1 CancelChoice [] [] #autofail
+              , ChooseMatch (attrs.ability 1) 1 CancelChoice [] [] #autofail nested
               )
             )
           ,
             ( ChaosTokenFaceIsNot #autofail
             ,
               ( "Cancel 2 non-{autofail} tokens"
-              , ChooseMatch (attrs.ability 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot #autofail)
+              , ChooseMatch (attrs.ability 1) 2 CancelChoice [] [] (ChaosTokenFaceIsNot #autofail) nested
               )
             )
           ]

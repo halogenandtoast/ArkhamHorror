@@ -27,6 +27,7 @@ data ChaosTokenMatcher
   | SealedOnAsset AssetMatcher ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
+  | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not ChaosTokenMatcher where

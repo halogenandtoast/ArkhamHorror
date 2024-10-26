@@ -44,7 +44,7 @@ instance RunMessage Premonition where
         : map UnsealChaosToken ts
           <> map ObtainChaosToken ts
           <> [ ReplaceCurrentDraw (toSource attrs) iid
-                $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] []
+                $ Choose (toSource attrs) 1 ResolveChoice [Resolved ts] [] Nothing
              ]
       toDiscardBy iid (attrs.ability 1) attrs
       pure e

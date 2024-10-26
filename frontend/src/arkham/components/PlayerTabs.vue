@@ -162,7 +162,8 @@ ul.tabs__header > li {
   color: white;
   filter: contrast(50%);
   border-radius: 5px 5px 0 0;
-  display: flex;
+  display: inline-flex;
+  align-items: center;
   span {
     display: block;
     width: fit-content;
@@ -196,7 +197,7 @@ ul.tabs__header > li.tab--selected {
 }
 
 .tab--Neutral {
-  background-color: var(--neutral-extra-dark);
+  background-color: var(--neutral-dark);
 }
 
 .tab--active-player {
@@ -229,6 +230,7 @@ ul.tabs__header > li.tab--selected {
 }
 
 .switch-investigators {
+  height: 100%;
   background: none;
   border: none;
   color: white;
@@ -266,6 +268,12 @@ ul.tabs__header > li.tab--selected {
 
 ul.tabs__header > li.inactive {
   filter: grayscale(100%);
+  &:before {
+    font-family: "ArkhamIcons";
+    content: "\e912";
+    font-size: 0.8em;
+    margin-left: 5px;
+  }
 }
 
 .glow-effect {

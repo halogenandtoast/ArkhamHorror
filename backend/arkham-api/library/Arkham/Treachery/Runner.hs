@@ -64,11 +64,17 @@ instance RunMessage TreacheryAttrs where
     Msg.UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     Msg.RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
-    Msg.InvestigatorEliminated iid | InvestigatorTarget iid `elem` treacheryAttachedTarget a -> do
-      push $ toDiscard GameSource a
-      pure a
-    Msg.InvestigatorEliminated iid | Just iid == treacheryOwner -> do
-      push $ toDiscard GameSource a
+    Msg.InvestigatorEliminated iid -> do
+      let owned = Just iid == treacheryOwner
+      let
+        shouldDiscard = case a.placement of
+          InThreatArea iid' -> iid == iid'
+          InPlayArea iid' -> iid == iid'
+          HiddenInHand iid' -> iid == iid'
+          AttachedToInvestigator iid' -> iid == iid'
+          _ -> False
+
+      pushWhen (shouldDiscard || owned) $ toDiscard GameSource a
       pure a
     PlaceTreachery tid placement | tid == treacheryId -> do
       for_ placement.attachedTo \target ->

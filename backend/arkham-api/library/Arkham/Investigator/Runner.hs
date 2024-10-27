@@ -774,11 +774,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   | c <- filterCards handDiscard.filter cs
                   ]
         DiscardAll -> do
-          push
-            $ chooseOneAtATime player
-            $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
-              | c <- filterCards handDiscard.filter cs
-              ]
+          let cards = filterCards handDiscard.filter cs
+
+          when (notNull cards) do
+            push
+              $ chooseOneAtATime player
+              $ [ targetLabel c [DiscardCard investigatorId handDiscard.source c.id]
+                | c <- cards
+                ]
         DiscardRandom -> do
           -- only cards actually in hand
           let filtered = filterCards handDiscard.filter investigatorHand

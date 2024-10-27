@@ -22,6 +22,7 @@ lookupEncounterCardDef cardCode =
 allEncounterCards :: Map CardCode CardDef
 allEncounterCards =
   allEncounterEnemyCards
+    <> allSpecialEnemyCards
     <> allLocationCards
     <> allSpecialLocationCards
     <> allEncounterTreacheryCards

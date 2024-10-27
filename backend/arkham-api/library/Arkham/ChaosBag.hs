@@ -26,7 +26,7 @@ import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWhen)
+import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 
@@ -721,9 +721,13 @@ instance RunMessage ChaosBag where
           checkWindowMsgs <- case miid of
             Nothing -> pure []
             Just iid ->
-              pure
+              (\x y -> [x, y])
                 <$> checkWindows
                   [ mkWhen (Window.RevealChaosToken iid token)
+                  | token <- tokens'
+                  ]
+                <*> checkWindows
+                  [ mkAfter (Window.RevealChaosToken iid token)
                   | token <- tokens'
                   ]
           for_ miid $ \iid -> do

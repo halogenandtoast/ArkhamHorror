@@ -17,6 +17,11 @@ pattern AbilityInvestigate <- 101
   where
     AbilityInvestigate = 101
 
+pattern AbilityMove :: Int
+pattern AbilityMove <- 102
+  where
+    AbilityMove = 102
+
 pattern AbilityEvade :: Int
 pattern AbilityEvade <- 101
   where

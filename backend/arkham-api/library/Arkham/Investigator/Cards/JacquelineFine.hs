@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine, JacquelineFine (..)) where
 
 import Arkham.Ability
@@ -69,7 +67,6 @@ instance RunMessage JacquelineFine where
 
       push
         $ ReplaceEntireDraw drawSource iid
-        $ traceShowId
         $ ChooseMatchChoice
           (steps <> [Undecided Draw, Undecided Draw])
           []

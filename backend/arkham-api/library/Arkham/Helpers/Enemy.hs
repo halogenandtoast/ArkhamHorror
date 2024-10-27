@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -14,15 +15,23 @@ import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Helpers.Message (
-  Message (DefeatEnemy, EnemySpawnAtLocationMatching, EnemySpawnEngagedWith, PlaceEnemy),
+  Message (
+    DefeatEnemy,
+    EnemySpawnAtLocationMatching,
+    EnemySpawnEngagedWith,
+    PlaceEnemy,
+    ShuffleBackIntoEncounterDeck,
+    Surge
+  ),
   placeLocation,
   resolve,
+  toDiscard,
  )
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Id
-import Arkham.Keyword
+import Arkham.Keyword hiding (Surge)
 import Arkham.Matcher hiding (canEnterLocation)
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
@@ -55,7 +64,9 @@ spawnAt eid _ (SpawnEngagedWith investigatorMatcher) = do
   pushAll $ resolve (EnemySpawnEngagedWith eid investigatorMatcher)
 spawnAt eid _ (SpawnPlaced placement) = do
   push $ PlaceEnemy eid placement
-spawnAt _ _ (SpawnAtFirst []) = error "must have something"
+spawnAt eid miid (SpawnAtFirst []) = do
+  attrs <- getAttrs @Enemy eid
+  noSpawn attrs miid
 spawnAt eid miid (SpawnAtFirst (x : xs)) = case x of
   SpawnAt matcher -> do
     willMatch <- selectAny matcher
@@ -80,6 +91,15 @@ spawnAt eid miid SpawnAtRandomSetAsideLocation = do
           [Window.EnemyAttemptsToSpawnAt eid $ LocationWithId locationId]
           <> resolve
             (EnemySpawnAtLocationMatching miid (LocationWithId locationId) eid)
+
+noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
+noSpawn attrs miid = do
+  let noSpawnMsg = case enemyUnableToSpawn attrs of
+        DiscardIfUnableToSpawn -> toDiscard GameSource (toId attrs)
+        ShuffleBackInIfUnableToSpawn -> ShuffleBackIntoEncounterDeck (toTarget attrs)
+  pushAll $ noSpawnMsg
+    : [ Surge iid (toSource attrs) | enemySurgeIfUnableToSpawn attrs, iid <- toList miid
+      ]
 
 getModifiedDamageAmount :: HasGame m => EnemyAttrs -> DamageAssignment -> m Int
 getModifiedDamageAmount EnemyAttrs {..} damageAssignment = do

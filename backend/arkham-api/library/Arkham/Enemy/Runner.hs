@@ -151,15 +151,6 @@ getPreyMatcher a = do
   applyModifier _ (ForcePrey p) = p
   applyModifier p _ = p
 
-noSpawn :: HasQueue Message m => EnemyAttrs -> Maybe InvestigatorId -> m ()
-noSpawn attrs miid = do
-  let noSpawnMsg = case enemyUnableToSpawn attrs of
-        DiscardIfUnableToSpawn -> toDiscard GameSource (toId attrs)
-        ShuffleBackInIfUnableToSpawn -> ShuffleBackIntoEncounterDeck (toTarget attrs)
-  pushAll $ noSpawnMsg
-    : [ Surge iid (toSource attrs) | enemySurgeIfUnableToSpawn attrs, iid <- toList miid
-      ]
-
 isSwarm :: EnemyAttrs -> Bool
 isSwarm attrs = case enemyPlacement attrs of
   AsSwarm {} -> True

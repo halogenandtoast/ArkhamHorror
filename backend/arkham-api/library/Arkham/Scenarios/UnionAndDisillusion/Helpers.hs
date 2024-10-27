@@ -39,14 +39,17 @@ circleTest
 circleTest sid iid source target skillTypes n =
   push
     $ BeginSkillTest
-    $ buildSkillTest
-      sid
-      iid
-      source
-      target
-      (AndSkillTest skillTypes)
-      (AndSkillBaseValue skillTypes)
-      (SkillTestDifficulty n)
+    $ ( buildSkillTest
+          sid
+          iid
+          source
+          target
+          (AndSkillTest skillTypes)
+          (AndSkillBaseValue skillTypes)
+          (SkillTestDifficulty n)
+      )
+      { skillTestAction = Just Circle
+      }
 
 passedCircleTest :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationAttrs -> m ()
 passedCircleTest iid attrs = do

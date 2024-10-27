@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (
   module Arkham.Game.Helpers,
   module X,
@@ -3300,7 +3302,7 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       $ skillTestRevealedChaosTokens st
   Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
   Matcher.SkillTestWithAction actionMatcher -> case skillTestAction st of
-    Just action -> actionMatches iid action actionMatcher
+    Just action -> actionMatches iid (traceShowId action) (traceShowId actionMatcher)
     Nothing -> pure False
   Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
     Just Action.Investigate -> case skillTestTarget st of

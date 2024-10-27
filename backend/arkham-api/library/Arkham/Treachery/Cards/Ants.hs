@@ -21,20 +21,20 @@ instance RunMessage Ants where
   runMessage msg t@(Ants attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+      push $ revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ RevelationChoice iid (toSource attrs) n
+    FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
+      push $ DoStep n msg
       pure t
-    RevelationChoice iid (isSource attrs -> True) n | n > 0 -> do
+    DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ Label "Discard hand card" [toMessage $ chooseAndDiscardCard iid attrs]
+        $ Label "Discard hand card" [toMessage $ randomDiscard iid attrs, DoStep (n - 1) msg']
         : [ Label
             "Discard a card from your play area"
-            [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset]
+            [ChooseAndDiscardAsset iid (toSource attrs) DiscardableAsset, DoStep (n - 1) msg']
           | hasDiscardableAssets
           ]
       pure t

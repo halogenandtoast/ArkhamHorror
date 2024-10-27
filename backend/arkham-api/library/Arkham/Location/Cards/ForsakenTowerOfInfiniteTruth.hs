@@ -42,7 +42,7 @@ instance RunMessage ForsakenTowerOfInfiniteTruth where
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
       sid <- getRandom
-      push $ EvadeEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #willpower False
+      push $ EvadeEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #intellect False
       pure l
     Successful (Action.Evade, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
       discardWhisperingChaos attrs

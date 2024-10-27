@@ -1442,6 +1442,14 @@ afterSearch body = do
     FinishedSearch {} -> True
     _ -> False
 
+afterEvade
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
+afterEvade body = do
+  msgs <- evalQueueT body
+  insertAfterMatching msgs \case
+    AfterEvadeEnemy {} -> True
+    _ -> False
+
 delayIfSkillTest
   :: (HasGame (t m), MonadTrans t, HasQueue Message m, HasQueue Message (t m))
   => QueueT Message (t m) a
@@ -1491,6 +1499,9 @@ ready = push . Msg.ready
 
 exhaustThis :: (ReverseQueue m, Targetable target) => target -> m ()
 exhaustThis = push . Msg.Exhaust . toTarget
+
+readyThis :: (ReverseQueue m, Targetable target) => target -> m ()
+readyThis = push . Msg.Ready . toTarget
 
 uiEffect
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

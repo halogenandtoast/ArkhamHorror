@@ -8,7 +8,8 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
+import Arkham.Helpers.SkillTest (getSkillTestId, getSkillTestSkillTypes, withSkillTest)
 import Arkham.Matcher hiding (DuringTurn, RevealChaosToken, SkillTestEnded)
 import Arkham.Modifier
 
@@ -56,20 +57,22 @@ eyeOfTheDjinnVesselOfGoodAndEvil2Effect =
     (setEffectMeta False)
 
 instance RunMessage EyeOfTheDjinnVesselOfGoodAndEvil2Effect where
-  runMessage msg e@(EyeOfTheDjinnVesselOfGoodAndEvil2Effect attrs) = case msg of
-    RevealChaosToken (SkillTestSource sid) _ token | maybe False (isTarget sid) attrs.metaTarget -> do
-      case attrs.target of
-        AssetTarget aid ->
-          when (token.face == #bless) do
-            exhausted <- aid <!=~> AssetReady
-            when exhausted $ pushAll [disable attrs, Ready (toTarget aid)]
-        InvestigatorTarget iid ->
-          when (token.face == #curse) do
+  runMessage msg e@(EyeOfTheDjinnVesselOfGoodAndEvil2Effect attrs) = runQueueT $ case msg of
+    RevealChaosToken _ _ token -> do
+      void $ runMaybeT do
+        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        current <- MaybeT getSkillTestId
+        guard $ sid == current
+        lift $ case attrs.target of
+          AssetTarget aid -> when (token.face == #bless) do
+            whenM (aid <!=~> AssetReady) do
+              disable attrs
+              readyThis aid
+          InvestigatorTarget iid -> when (token.face == #curse) do
             send "Gained 1 action from Eye of the Djinn"
-            pushAll [disable attrs, GainActions iid attrs.source 1]
-        _ -> error "Invalid target"
+            disable attrs
+            gainActions iid attrs.source 1
+          _ -> error "Invalid target"
       pure e
-    SkillTestEnded sid | maybe False (isTarget sid) attrs.metaTarget -> do
-      push $ disable attrs
-      pure e
-    _ -> EyeOfTheDjinnVesselOfGoodAndEvil2Effect <$> runMessage msg attrs
+    SkillTestEnded sid | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
+    _ -> EyeOfTheDjinnVesselOfGoodAndEvil2Effect <$> liftRunMessage msg attrs

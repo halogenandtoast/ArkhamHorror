@@ -1,15 +1,22 @@
-module Arkham.Asset.Assets.ShroudOfShadows4 (shroudOfShadows4, shroudOfShadows4Effect, ShroudOfShadows4 (..)) where
+module Arkham.Asset.Assets.ShroudOfShadows4 (
+  shroudOfShadows4,
+  shroudOfShadows4Effect,
+  ShroudOfShadows4 (..),
+) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Evade
+import Arkham.Game.Helpers (getConnectedMoveLocations)
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Matcher hiding (EnemyEvaded, RevealChaosToken)
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype ShroudOfShadows4 = ShroudOfShadows4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,29 +27,24 @@ shroudOfShadows4 = asset ShroudOfShadows4 Cards.shroudOfShadows4
 
 instance HasAbilities ShroudOfShadows4 where
   getAbilities (ShroudOfShadows4 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ActionAbilityWithSkill [#evade] #willpower
         $ ActionCost 1
         <> assetUseCost a Charge 1
     ]
 
 instance RunMessage ShroudOfShadows4 where
-  runMessage msg a@(ShroudOfShadows4 attrs) = case msg of
+  runMessage msg a@(ShroudOfShadows4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       sid <- getRandom
-      chooseEvade <-
-        aspect
-          iid
-          source
-          (#willpower `InsteadOf` #agility)
-          (setTarget attrs <$> mkChooseEvade sid iid source)
-      enabled <- skillTestModifier sid source iid (SkillModifier #willpower 2)
-      pushAll
-        $ [ enabled
-          , createCardEffect Cards.shroudOfShadows4 Nothing source sid
-          ]
-        <> leftOr chooseEvade
+      skillTestModifier sid source iid (SkillModifier #willpower 2)
+      createCardEffect Cards.shroudOfShadows4 (effectMetaTarget sid) source iid
+      aspect
+        iid
+        source
+        (#willpower `InsteadOf` #agility)
+        (setTarget attrs <$> mkChooseEvade sid iid source)
       pure a
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       nonElite <- elem eid <$> select NonEliteEnemy
@@ -50,15 +52,9 @@ instance RunMessage ShroudOfShadows4 where
       pure a
     WillMoveEnemy enemyId (Successful (Action.Evade, _) iid _ target _) | isTarget attrs target -> do
       choices <- select $ ConnectedFrom (locationWithInvestigator iid) <> LocationCanBeEnteredBy enemyId
-      player <- getPlayer iid
-      let
-        enemyMoveChoices =
-          chooseOne player [targetLabel choice [EnemyMove enemyId choice] | choice <- choices]
-      insertAfterMatching [enemyMoveChoices] \case
-        AfterEvadeEnemy {} -> True
-        _ -> False
+      afterEvade $ chooseTargetM iid choices $ push . EnemyMove enemyId
       pure a
-    _ -> ShroudOfShadows4 <$> runMessage msg attrs
+    _ -> ShroudOfShadows4 <$> liftRunMessage msg attrs
 
 newtype ShroudOfShadows4Effect = ShroudOfShadows4Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -68,33 +64,30 @@ shroudOfShadows4Effect :: EffectArgs -> ShroudOfShadows4Effect
 shroudOfShadows4Effect = cardEffect ShroudOfShadows4Effect Cards.shroudOfShadows4
 
 instance RunMessage ShroudOfShadows4Effect where
-  runMessage msg e@(ShroudOfShadows4Effect attrs) = case msg of
-    RevealChaosToken (SkillTestSource sid) iid token | isTarget sid attrs.target -> do
-      let
-        handleIt assetId = do
-          when (token.face == #curse) do
-            targets <- getConnectedMoveLocations iid (toSource attrs)
-            stillInPlay <- selectAny $ AssetWithId assetId
-            player <- getPlayer iid
-            pushAll
-              $ [ chooseOrRunOne
-                  player
-                  $ [Label "Place 1 Charge on Shroud of Shadows4" [AddUses attrs.source assetId Charge 1] | stillInPlay]
-                  <> [ Label
-                        "Move to a connecting location"
-                        [ chooseOne
-                            player
-                            [targetLabel target [Move $ move attrs.source iid target] | target <- targets]
-                        ]
-                     ]
-                | stillInPlay || notNull targets
-                ]
-      case attrs.source of
-        AbilitySource (AssetSource assetId) 1 -> handleIt assetId
-        AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
-        _ -> error "wrong source"
+  runMessage msg e@(ShroudOfShadows4Effect attrs) = runQueueT $ case msg of
+    RevealChaosToken _ _ token -> do
+      void $ runMaybeT do
+        iid <- hoistMaybe attrs.target.investigator
+        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        current <- MaybeT getSkillTestId
+        guard $ sid == current
+        lift do
+          let
+            handleIt assetId = do
+              when (token.face == #curse) do
+                locations <- getConnectedMoveLocations iid attrs.source
+                stillInPlay <- selectAny $ AssetWithId assetId
+                when (stillInPlay || notNull locations) do
+                  chooseOrRunOneM iid do
+                    when stillInPlay do
+                      labeled "Place 1 Charge on Shroud of Shadows4" do
+                        push $ AddUses attrs.source assetId Charge 1
+                      labeled "Move to a connecting location" do
+                        chooseTargetM iid locations $ moveTo attrs.source iid
+          case attrs.source of
+            AbilitySource (AssetSource assetId) 1 -> handleIt assetId
+            AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
+            _ -> error "wrong source"
       pure e
-    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-      push (disable attrs)
-      pure e
-    _ -> ShroudOfShadows4Effect <$> runMessage msg attrs
+    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
+    _ -> ShroudOfShadows4Effect <$> liftRunMessage msg attrs

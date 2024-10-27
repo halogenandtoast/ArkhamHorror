@@ -136,15 +136,16 @@ instance RunMessage WhereTheGodsDwell where
             (placeDoomOnAgendaAndCheckAdvance 1)
         Tablet -> do
           nyarlathoteps <- select $ EnemyWithPlacement (StillInHand iid) <> EnemyWithTitle "Nyarlathotep"
-          chooseOne
-            iid
-            [ targetLabel
-              nyarlathotep
-              [ InitiateEnemyAttack $ enemyAttack nyarlathotep TabletEffect iid
-              , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+          when (notNull nyarlathoteps)
+            $ chooseOne
+              iid
+              [ targetLabel
+                nyarlathotep
+                [ InitiateEnemyAttack $ enemyAttack nyarlathotep TabletEffect iid
+                , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
+                ]
+              | nyarlathotep <- nyarlathoteps
               ]
-            | nyarlathotep <- nyarlathoteps
-            ]
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

@@ -94,13 +94,20 @@ runScenarioSetup
 runScenarioSetup f attrs body =
   f
     . (.attrs)
-    <$> execStateT (body.unScenarioBuilderT >> shuffleEncounterDeck) (ScenarioBuilderState attrs [])
+    <$> execStateT
+      (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
+      (ScenarioBuilderState attrs [])
 
 shuffleEncounterDeck :: (MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do
   encounterDeck <- use (attrsL . encounterDeckL)
   shuffledEncounterDeck <- withDeckM shuffleM encounterDeck
   attrsL . encounterDeckL .= shuffledEncounterDeck
+
+clearCards :: MonadState ScenarioBuilderState m => m ()
+clearCards = do
+  attrsL . encounterDeckL .= Deck []
+  attrsL . discardL .= []
 
 gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
 gather encounterSet = do

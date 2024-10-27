@@ -26,7 +26,7 @@ instance RunMessage Accursed where
       when (n > 0) do
         chooseAmount iid "Add up to 3 {curse} tokens to the chaos bag" "{curse} tokens" 0 (min 3 n) attrs
       Accursed <$> liftRunMessage msg attrs
-    ResolveAmounts _iid (getChoiceAmount "{curse} tokens" -> n) (isTarget attrs -> True) | n > 0 -> do
-      addCurseTokens n
+    ResolveAmounts iid (getChoiceAmount "{curse} tokens" -> n) (isTarget attrs -> True) | n > 0 -> do
+      addCurseTokens (Just iid) n
       pure s
     _ -> Accursed <$> liftRunMessage msg attrs

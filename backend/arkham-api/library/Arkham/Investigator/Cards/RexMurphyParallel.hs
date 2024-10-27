@@ -35,7 +35,7 @@ instance HasAbilities RexMurphyParallel where
           [ WindowWhen (HasNRemainingCurseTokens $ atLeast 2)
               $ WouldPlaceClueOnLocation #when You YourLocation (atLeast 1)
           , WindowWhen (exists $ You <> InvestigatorAt Anywhere <> InvestigatorWithAnyClues)
-              $ WouldAddChaosTokensToChaosBag #when (atLeast 2) #curse
+              $ WouldAddChaosTokensToChaosBag #when (Just You) (atLeast 2) #curse
           ]
     ]
    where
@@ -81,7 +81,7 @@ instance RunMessage RexMurphyParallel where
                   | x <- [mandatoryTimes .. (mandatoryTimes + optionalTimes)]
                   ]
             else doStep mandatoryTimes msg
-        Window.WouldAddChaosTokensToChaosBag tokens -> do
+        Window.WouldAddChaosTokensToChaosBag _ tokens -> do
           let numCurse = count (== #curse) tokens
           numClues <- field InvestigatorClues iid
           n <- getRemainingCurseTokens
@@ -124,7 +124,7 @@ instance RunMessage RexMurphyParallel where
                     }
                 ]
             push $ Would batchId [would, InvestigatorPlaceCluesOnLocation iid source remainingClues]
-        Window.WouldAddChaosTokensToChaosBag tokens -> do
+        Window.WouldAddChaosTokensToChaosBag mWho tokens -> do
           push $ CancelBatch $ Window.getBatchId [w]
           push $ InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) n
           -- we need to check if we need to recreate the window
@@ -133,7 +133,7 @@ instance RunMessage RexMurphyParallel where
             batchId <- getRandom
             would <-
               Msg.checkWindows
-                [ (Window.mkWhen (Window.WouldAddChaosTokensToChaosBag remainingTokens))
+                [ (Window.mkWhen (Window.WouldAddChaosTokensToChaosBag mWho remainingTokens))
                     { windowBatchId = Just batchId
                     }
                 ]

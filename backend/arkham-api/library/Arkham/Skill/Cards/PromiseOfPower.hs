@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.PromiseOfPower ( promiseOfPower, PromiseOfPower (..),) where
+module Arkham.Skill.Cards.PromiseOfPower (promiseOfPower, PromiseOfPower (..)) where
 
 import Arkham.Helpers.ChaosBag
 import Arkham.Skill.Cards qualified as Cards
@@ -17,7 +17,7 @@ instance RunMessage PromiseOfPower where
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       n <- getRemainingCurseTokens
       if n > 0
-        then addCurseTokens 1
+        then addCurseTokens (Just iid) 1
         else assignHorror iid attrs 2
       PromiseOfPower <$> liftRunMessage msg attrs
     _ -> PromiseOfPower <$> liftRunMessage msg attrs

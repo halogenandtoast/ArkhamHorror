@@ -1726,12 +1726,12 @@ chaosTokenEffect
 chaosTokenEffect (toSource -> source) token modifier =
   Msg.pushM $ Msg.chaosTokenEffect source token modifier
 
-addCurseTokens :: ReverseQueue m => Int -> m ()
-addCurseTokens n = do
+addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
+addCurseTokens mWho n = do
   batchId <- getId
   would <-
     Msg.checkWindows
-      [ (Window.mkWhen $ Window.WouldAddChaosTokensToChaosBag $ replicate n #curse)
+      [ (Window.mkWhen $ Window.WouldAddChaosTokensToChaosBag mWho $ replicate n #curse)
           { Window.windowBatchId = Just batchId
           }
       ]

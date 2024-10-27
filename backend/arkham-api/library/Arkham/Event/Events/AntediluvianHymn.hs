@@ -1,10 +1,10 @@
 module Arkham.Event.Events.AntediluvianHymn (antediluvianHymn, AntediluvianHymn (..)) where
 
+import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Strategy
 import Arkham.Zone
 
@@ -28,7 +28,7 @@ instance RunMessage AntediluvianHymn where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       n <- getRemainingCurseTokens
-      addCurse <- evalQueueT $ addCurseTokens 1
+      addCurse <- evalQueueT $ addCurseTokens (Just iid) 1
       focusCards cards \unfocus -> do
         chooseUpToN
           iid

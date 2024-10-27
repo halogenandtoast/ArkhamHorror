@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AccursedFollower ( accursedFollower, AccursedFollower (..),) where
+module Arkham.Enemy.Cards.AccursedFollower (accursedFollower, AccursedFollower (..)) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -23,7 +23,7 @@ instance HasAbilities AccursedFollower where
 
 instance RunMessage AccursedFollower where
   runMessage msg e@(AccursedFollower attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addCurseTokens 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addCurseTokens (Just iid) 1
       pure e
     _ -> AccursedFollower <$> liftRunMessage msg attrs

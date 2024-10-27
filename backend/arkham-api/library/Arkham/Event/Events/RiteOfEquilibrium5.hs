@@ -41,7 +41,9 @@ instance RunMessage RiteOfEquilibrium5 where
           batchId <- getRandom
           would <-
             Msg.checkWindows
-              [ (mkWhen (Window.WouldAddChaosTokensToChaosBag $ replicate x #curse)) {windowBatchId = Just batchId}
+              [ (mkWhen (Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate x #curse))
+                  { windowBatchId = Just batchId
+                  }
               ]
           pure $ Would batchId $ would : replicate x (AddChaosToken #curse)
 

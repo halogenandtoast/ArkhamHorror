@@ -29,8 +29,8 @@ instance HasAbilities CrypticGrimoireUntranslated where
 
 instance RunMessage CrypticGrimoireUntranslated where
   runMessage msg a@(CrypticGrimoireUntranslated attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      addCurseTokens 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      addCurseTokens (Just iid) 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       n <- min 5 <$> getRemainingBlessTokens

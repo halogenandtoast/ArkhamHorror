@@ -1811,10 +1811,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , gameValueMatches n valueMatcher
           ]
       _ -> noMatch
-    Matcher.WouldAddChaosTokensToChaosBag timing valueMatcher face -> guardTiming timing \case
-      Window.WouldAddChaosTokensToChaosBag tokens -> do
+    Matcher.WouldAddChaosTokensToChaosBag timing mWhoMatcher valueMatcher face -> guardTiming timing \case
+      Window.WouldAddChaosTokensToChaosBag mWho tokens -> do
         let matchCount = count (== face) tokens
-        gameValueMatches matchCount valueMatcher
+        andM
+          [ gameValueMatches matchCount valueMatcher
+          , maybe
+              (pure True)
+              (\whoMatcher -> maybe (pure False) (\who -> matchWho iid who whoMatcher) mWho)
+              mWhoMatcher
+          ]
       _ -> noMatch
     Matcher.RevealChaosTokensDuringSkillTest timing whoMatcher skillTestMatcher chaosTokenMatcher -> guardTiming timing \case
       Window.RevealChaosTokensDuringSkillTest who st chaosTokens -> do

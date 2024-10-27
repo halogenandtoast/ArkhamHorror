@@ -13,8 +13,8 @@ dreadCurse = treachery DreadCurse Cards.dreadCurse
 
 instance RunMessage DreadCurse where
   runMessage msg t@(DreadCurse attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> do
+    Revelation iid (isSource attrs -> True) -> do
       n <- min 5 <$> getRemainingCurseTokens
-      addCurseTokens n 
+      addCurseTokens (Just iid) n
       pure t
     _ -> DreadCurse <$> liftRunMessage msg attrs

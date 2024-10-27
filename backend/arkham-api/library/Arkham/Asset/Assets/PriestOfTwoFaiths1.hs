@@ -31,7 +31,7 @@ instance RunMessage PriestOfTwoFaiths1 where
       chooseOrRunOneM iid do
         when (n > 0) do
           labeled "Add 1 {curse} token to the chaos bag" do
-            addCurseTokens 1
+            addCurseTokens (Just iid) 1
           labeled "Discard Priest of Two Faiths" $ toDiscardBy iid (attrs.ability 2) attrs
       pure a
     _ -> PriestOfTwoFaiths1 <$> liftRunMessage msg attrs

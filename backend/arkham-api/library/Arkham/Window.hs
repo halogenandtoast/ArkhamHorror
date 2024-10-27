@@ -227,7 +227,7 @@ data WindowType
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int
   | WouldPlaceClueOnLocation InvestigatorId LocationId Source Int
-  | WouldAddChaosTokensToChaosBag [ChaosTokenFace]
+  | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId
   | WouldSearchDeck InvestigatorId DeckSignifier
@@ -298,7 +298,22 @@ data WindowType
 $( do
     isDirect <- deriveJSON defaultOptions ''IsDirect
     result <- deriveJSON defaultOptions ''Result
-    windowType <- deriveJSON defaultOptions ''WindowType
+    toWindowType <- deriveToJSON defaultOptions ''WindowType
+
+    fromWindowType <-
+      [d|
+        instance FromJSON WindowType where
+          parseJSON = withObject "WindowType" \o -> do
+            tag :: Text <- o .: "tag"
+            case tag of
+              "WouldAddChaosTokensToChaosBag" -> do
+                contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+                case contents of
+                  Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
+                  Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs
+              _ -> $(mkParseJSON defaultOptions ''WindowType) (Object o)
+        |]
+
     window <- deriveJSON defaultOptions ''Window
-    pure $ concat [isDirect, result, windowType, window]
+    pure $ concat [isDirect, result, toWindowType, fromWindowType, window]
  )

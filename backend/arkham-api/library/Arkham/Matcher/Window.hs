@@ -145,7 +145,7 @@ data WindowMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher
   | WouldPlaceClueOnLocation Timing Who Where ValueMatcher
-  | WouldAddChaosTokensToChaosBag Timing ValueMatcher ChaosTokenFace
+  | WouldAddChaosTokensToChaosBag Timing (Maybe Who) ValueMatcher ChaosTokenFace
   | PlacedCounter Timing Who SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnLocation Timing Where SourceMatcher CounterMatcher ValueMatcher
   | PlacedCounterOnEnemy Timing EnemyMatcher SourceMatcher CounterMatcher ValueMatcher
@@ -254,5 +254,10 @@ instance FromJSON WindowMatcher where
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of
           Left (a, b, c) -> pure $ EnemyAttackedSuccessfully a b AnySource c
+          Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+      "WouldAddChaosTokensToChaosBag" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ WouldAddChaosTokensToChaosBag a Nothing b c
           Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
       _ -> genericParseJSON defaultOptions (Object o)

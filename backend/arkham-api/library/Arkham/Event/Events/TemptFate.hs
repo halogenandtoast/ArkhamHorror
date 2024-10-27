@@ -17,7 +17,7 @@ instance RunMessage TemptFate where
       b <- min 3 <$> getRemainingBlessTokens
       c <- min 3 <$> getRemainingCurseTokens
       pushAll $ replicate b (AddChaosToken #bless)
-      addCurseTokens c
+      addCurseTokens (Just iid) c
       drawCardsIfCan iid attrs 1
       pure e
     _ -> TemptFate <$> liftRunMessage msg attrs

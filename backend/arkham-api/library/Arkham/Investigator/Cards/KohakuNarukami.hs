@@ -42,7 +42,7 @@ instance RunMessage KohakuNarukami where
         when (bOut > 0 && length bIn <= length cIn) do
           labeled "Add 1 {bless} token" $ push (AddChaosToken #bless)
         when (cOut > 0 && length cIn <= length bIn) do
-          labeled "Add 1 {curse} token" $ addCurseTokens 1
+          labeled "Add 1 {curse} token" $ addCurseTokens (Just iid) 1
         when (length bIn >= 2 && length cIn >= 2) do
           labeled
             "Remove 2 {bless} tokens and 2 {curse} tokens from the chaos bag to take an additional action this turn"
@@ -52,6 +52,6 @@ instance RunMessage KohakuNarukami where
       b <- getRemainingBlessTokens
       c <- getRemainingCurseTokens
       pushWhen (b > 0) $ AddChaosToken #bless
-      when (c > 0) $ addCurseTokens 1
+      when (c > 0) $ addCurseTokens (Just iid) 1
       pure i
     _ -> KohakuNarukami <$> liftRunMessage msg attrs

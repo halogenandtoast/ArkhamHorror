@@ -20,6 +20,7 @@ instance HasModifiersFor YithianPresence where
     mlid <- selectOne $ locationWithInvestigator iid
     modified a
       $ guard yithianPresent
+      *> [CannotInvestigateLocation lid | lid <- maybeToList mlid]
       *> ( CannotTriggerAbilityMatching AbilityOnEncounterCard
             : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
          )

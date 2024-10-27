@@ -42,7 +42,7 @@ instance HasAbilities TheCarnevaleConspiracy where
             ( UnderneathCardCount
                 (EqualTo $ Static 3)
                 (UnderActDeck <> UnderAgendaDeck)
-                (cardIs Assets.innocentReveler)
+                (oneOf [cardIs Assets.innocentReveler, CardWithTitle "Masked Carnevale-Goer"])
             )
             $ ForcedAbility AnyWindow
         ]

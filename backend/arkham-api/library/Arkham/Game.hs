@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -37,6 +37,7 @@ import Arkham.Classes
 import Arkham.Classes.HasDistance
 import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
+import Arkham.Constants
 import Arkham.Cost qualified as Cost
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Damage
@@ -1260,7 +1261,13 @@ abilityMatches a@Ability {..} = \case
   AbilityOneOf (x : xs) -> do
     result <- abilityMatches a x
     if result then pure True else abilityMatches a (AbilityOneOf xs)
-  AbilityOnEncounterCard -> abilitySource `sourceMatches` M.EncounterCardSource
+  AbilityOnEncounterCard ->
+    andM
+      [ pure
+          $ abilityIndex
+          `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove]
+      , abilitySource `sourceMatches` M.EncounterCardSource
+      ]
   AbilityOnCard cardMatcher -> sourceMatches abilitySource (M.SourceWithCard cardMatcher)
 
 getAbilitiesMatching :: HasGame m => AbilityMatcher -> m [Ability]
@@ -1330,7 +1337,12 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityWindow windowMatcher -> pure $ filter ((== windowMatcher) . abilityWindow) as
     AbilityMatches xs -> foldM go as xs
     AbilityOneOf xs -> nub . concat <$> traverse (go as) xs
-    AbilityOnEncounterCard -> filterM (\a -> a.source `sourceMatches` M.EncounterCardSource) as
+    AbilityOnEncounterCard ->
+      filterM (\a -> a.source `sourceMatches` M.EncounterCardSource)
+        $ filter
+          ( \a -> a.index `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove]
+          )
+          as
     AbilityOnCard cardMatcher -> filterM (\a -> a.source `sourceMatches` M.SourceWithCard cardMatcher) as
 
 getGameAbilities :: HasGame m => m [Ability]
@@ -3541,10 +3553,8 @@ instance Query ChaosTokenMatcher where
     case matcher of
       ChaosTokenMatchesOrElse matcher' orElseMatch -> do
         results <- filterM (go matcher') ((if inTokenPool matcher then [] else tokens) <> tokenPool)
-        if null (traceShowId results)
-          then
-            ( traceShowId <$> filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
-            )
+        if null results
+          then filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
           else pure results
       _ -> filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
    where

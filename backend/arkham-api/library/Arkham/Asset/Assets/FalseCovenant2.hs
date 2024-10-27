@@ -29,7 +29,7 @@ instance RunMessage FalseCovenant2 where
       cancelChaosToken token
       pushAll
         [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
-        , ReturnChaosTokens [token]
+        , ReturnChaosTokensToPool [token]
         , UnfocusChaosTokens
         , DrawAnotherChaosToken iid
         ]

@@ -1,0 +1,21 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2 (-4 instead if you have no sanity remaining).",
+      "cultist": "Reveal another token. If you fail, take 1 horror.",
+      "tablet": "-3. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
+      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of horror on you.",
+      "cultist": "Reveal another token. If you fail, take 2 horror.",
+      "tablet": "-5. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
+      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+    }
+  },
+  "xp": {
+    "resolution1": "Truimphed over his or her own self—the most dangerous of foes.",
+    "resolution2": "Learned the truth behind The King in Yellow.",
+    "resolution3": "Learned the truth behind The King in Yellow."
+  }
+}

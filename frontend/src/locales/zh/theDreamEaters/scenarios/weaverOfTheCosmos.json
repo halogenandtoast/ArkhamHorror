@@ -1,0 +1,53 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest amount of doom on a location in play.",
+      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
+      "tablet": "0. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
+      "elderThing": "-3. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the amount of doom on locations in play.",
+      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
+      "tablet": "-1. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
+      "elderThing": "-4. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+    }
+  },
+  "intro": {
+    "title": "Scenario IV–B: Weaver of the Cosmos",
+    "body": "<p>Everything has led to this. Virgil’s writings, your companions’ never-ending sleep, St. Mary’s, the black cat, all of it. You have no choice but to press on. This transdimensional space is home to a creature that would obliterate your world and replace it with a new reality, a nightmarescape of pitch-black darkness and creatures that prey on your kind. If you cannot stop its weaving, there will be no Earth left to wake up to. You have to do something, even if it means your end.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "_If no resolution was reached because each investigator was defeated:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "You clutch a silken thread, the only thing keeping you from plummeting through the endless depths of the void."
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "You scramble for hours in the dark, sticky, web-infested void between worlds. When you reach the end of the bridge of cosmic webs, you are met with a terrible sight. The void that once surrounded you fades into a dusky evening, and a familiar skyline of clustering gambrel roofs stands before you. To your dismay, the entirety of the town has been infested by the brood of Atlach-Nacha. Thick webbing extends from the gloomy streets to the tallest rooftops. Spiders and ghasts prowl through the city’s once-busy avenues, seeking human prey to devour—or worse, to imprison forever in cocoons of unbreakable web. You drop to your knees, overtaken by despair. How far does this corruption reach? Is it just Arkham, or…?"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "In the distance, you can see the tower that loomed behind the spider god as it spun its web, the entrance beckoning you closer. You recall the Tower of Koth in the Underworld and the way to the surface. Is this the root of that same tower? Does it penetrate through this world-between- worlds? If so, you might be able to escape. Instead of climbing back the way you came, you swing your web from side to side and make a leap through the void, landing at the base of the tower. Then you begin the long climb up—above the surface of the Sea of Pitch, under the ground below the City of Gugs, then farther upward still. Finally, after miles and miles of restless travel, you push aside the stone slab at the top of the tower, and you emerge in the Enchanted Wood. You seal the entrance behind you. Nothing from the hellish Underworld can follow you here. For the first time since entering the Dreamlands, you breathe a sigh of relief. Recalling the first chapter’s of Virgil Gray’s story, you follow a narrow path through the woods until you reach a staircase of solid stone that ascends into the clouds. It is time to return home."
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "You have stopped the spider god from completing its web, but in the process, you have cut off your only means of escape as well. You are fated to wander this hellish world-between-worlds, searching in vain for any hope of escape. Your only solace is that you have prevented this cruel future from being that of every person on Earth. Perhaps if you still possessed the Silver Key, you might have had a way out. Try as you might, in this dismal, cavernous void below the bottomless Sea of Pitch, you cannot muster the will to forge your own."
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "You have stopped the spider god from completing its web, but in the process, you have cut off the quickest way for you to return home. So, with your task complete, you begin the long climb toward reality. You are lucky that remnants of the web-bridge still remain intact, or you would have been stranded in this hellish world between worlds. It takes many hours for you to retrace your steps to the Underworld. You eventually emerge from the thick, tar-like Sea of Pitch, close to the shoreline. To your dismay, you realize that you are on the opposite shore of the sea from the dark vale from which you once embarked. With no way to cross the deadly sea, you’ll have to find another way out of this barren expanse. Days pass as you continue to explore the Underworld, reaching darker and more forbidden lands as you travel deeper and deeper below the crust of the Earth’s Dreamlands. Though you eventually find a stairway up, it is very different from the one leading to the Unnamable: a spiraling, otherworldly series of steps that reach dizzying heights and break all laws of reality. When you reach the top, your heart sinks. There is no sign of Arkham here. You are greeted instead by a strange, ruined city and its half-human denizens. The creatures inform you that you have reached the lost city of “Sarkomand.” It appears your return journey is far from over."
+    }
+  },
+  "theSpiderQueen1": "<p><b>The Spider Queen 1:</b> You climb a precipice of stone and behold the enormity of the spider’s bridge and the thing astride it: Atlach-Nacha, god of spiders, accompanied by its horde of weavers. The many-legged monstrosities continuously intertwine strands of cosmic web, toiling endlessly with nightmarish fervor. As the awful creatures weave each thread, you feel reality and dreams distort, collide, and crash together. In the distance, waves of dream break upon the rocks of reality, and reality collapses upon itself into the surging, amorphous dream. You can barely comprehend the strange, shifting vistas. A sticky web hangs off the side of your vantage point, like a silken ladder leading down to your doom.</p>",
+  "theSpiderQueen2": "<p><b>The Spider Queen 2:</b> You are about to climb down the web to the platform below, when you hear the black cat’s voice from behind your companion, Randolph. “Drop it,” the voice commands. A sinister grin spreads across Randolph’s face as he drops a jagged onyx blade, which clatters to the ground.</p><p>“So you have seen through my mask?” he says. “No matter. You will complete this errand upon which I have sent you, regardless. Your world depends on it.”</p><p>Bewildered, you ask why Randolph is acting this way. The black cat jumps onto your shoulder and perches there, its gaze never leaving your erstwhile companion. “I figured it out a little while ago. He’s not Randolph. He never was. Just an interloper in Randolph’s skin.”</p><p>“Interloper?” Randolph thunders with anger. “You, cat, are the interloper! Yes, I know what you are. This is not your place. But enough talk.” A smile crawls along his lips once more. “You have a task to perform. Goodbye, then…for now.” With his warning complete, Not- Randolph walks off of the edge of the platform and falls into oblivion.</p>",
+  "theSpiderQueen3": "<p><b>The Spider Queen 3:</b> You begin to climb down the web to the platform below, from which you can reach the edge of the bridge and Atlach-Nacha itself. Halfway down, the suspended platform jolts and starts to sway violently from side to side. You grip the silken threads tightly, hoping that the sticky web will keep you from falling. You look to Randolph to make sure he is okay, and it is then that you notice he is not climbing above you as you had suspected he would. You look up to find your companion scowling at you from above, a blade of onyx in his hands. He has cut a segment of the web upon which you are climbing. You have no time to ask what he is doing before he severs the web completely. You plummet to the rocks below, landing painfully on your back. When you look back up at Randolph, his countenance has changed.</p><p>“Foolish mortals. I was never going to allow you to save your companions. You have an errand of mine to run, and that is your sole purpose. If you wish to live, complete this task for me.” He peers across at the unfathomable spider that looms before you. “I shall be the one to claim your world—not that thing.” Then, Not-Randolph simply turns and walks away.</p>",
+  "theSpiderQueen4": "<p><b>The Spider Queen 4:</b> The creature is close to completing its design. Its legs move about swiftly, spinning thread after thread of cosmic silk with unearthly determination. It scarcely even recognizes your presence. Perhaps if you can sever its legs, or tear apart the webbing on which it stands…</p>",
+  "xp": {
+    "resolution1": "Prevented the Dreamlands and reality from merging."
+  }
+}

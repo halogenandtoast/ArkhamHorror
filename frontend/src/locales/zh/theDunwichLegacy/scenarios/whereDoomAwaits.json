@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you are at an _Altered_ location).",
+      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
+      "tablet": "-2 (-4 instead if it is Agenda 2).",
+      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+    },
+    "hardExpert": {
+      "skull": "-2 (-5 instead if you are at an _Altered_ location).",
+      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
+      "tablet": "-3. If it is Agenda 2, you automatically fail instead.",
+      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+    }
+  }
+}

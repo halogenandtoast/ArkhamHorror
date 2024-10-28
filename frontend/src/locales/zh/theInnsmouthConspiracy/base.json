@@ -1,0 +1,104 @@
+{
+  "interlude1": {
+    "part1": {
+      "title": "Interlude I: Puzzle Pieces",
+      "body": "<p>You have no idea who this woman is or how she knows you, yet she seems comfortable and familiar with you. You strain your memory trying to think of how you might have met, but it’s no use. You’re certain she is a complete stranger. Having woken up in a cold, wet prison with no memories, you aren’t feeling very sociable. Your fear and distrust must show, because the woman backs off and narrows her eyes. “What is it? What’s wrong?”</p><p>You respond by asking the woman if you know her. “You truly don’t remember? Well, that’s going to complicate things. What do you recall? Do you remember anything?”</p><p>You relate to the woman the flashes of recollection that you experienced earlier…</p>"
+    },
+    "aMeetingWithThomasDawson": {
+      "title": "If a meeting with Thomas Dawson is listed under “Memories Recovered”:",
+      "body": "<p>You put two and two together and ask if the woman is Miss Harper. “Ah, so you do remember me?” she asks with a playful smirk, but you shake your head in response and explain that you only remember being hired by a man named Thomas Dawson to find her. “But that was…oh. You have forgotten a lot, haven’t you? Speaking of Dawson, where is he? Did you see him down there?”</p><p>Your thoughts turn to the twisted, mangled face that triggered your flashback. Agent Harper’s expression turns dour as she watches your eyes. “…I see. I wish he hadn’t come to this forsaken town. Those brutes are going to pay for this.” You ask who she thinks is responsible for Dawson’s death, and she raises her eyebrows in response. “Right, you don’t remember. As far as I know, the last time anybody saw either of you was just before you visited the Esoteric Order of Dagon. Draw your own conclusions.”</p>"
+    },
+    "noMemoriesRecovered": {
+      "title": "If nothing is listed under “Memories Recovered”:",
+      "body": "<p>You shake your head. You remember nothing. “That’s going to make this difficult,” the woman says with a sigh. “All right. Well, I’ll tell you what I know. I am Agent Elina Harper. My understanding is that you were hired by my boss, Agent Thomas Dawson, thanks to your deeper understanding of…well, of things that don’t really make sense to the rest of us.” You ask what task you were hired to perform, and the woman smirks. “You were hired to find me, actually. The Order wasn’t all too happy about that. It’s a bit of a long story. Let’s get out of here first, and then I can catch you up on all that.”</p>"
+    },
+    "aBattleWithAHorrifyingDevil": {
+      "title": "If a battle with a horrifying devil is listed under “Memories Recovered”:",
+      "body": "<p>You tell Agent Harper about your battle with some kind of aquatic creature. “Devil Reef,” she says, shuddering. “Whatever is going on in this town, Devil Reef is at the heart of it. Let’s hope we don’t have to head back that way anytime soon…and let’s hope that thing stays dead.”</p>"
+    },
+    "aDecisionToStickTogether": {
+      "title": "If a decision to stick together is listed under “Memories Recovered”:",
+      "body": "<p>“So you and Dawson were looking for me together, then? Interesting.” She considers this for a moment. “I guess even the extraordinary Captain Dawson can be rattled from time to time. It’s somewhat gratifying to know he cared that much about finding me. Still…” her gaze wanders toward the horizon. “All right, Dawson. I’ll make sure you didn’t die in vain. I’ll burn this whole town to the ground if I have to.”</p>"
+    },
+    "anEncounterWithASecretCult": {
+      "title": "If an encounter with a secret cult is listed under “Memories Recovered”:",
+      "body": "<p>You describe your memory from inside some kind of cult headquarters. “Sounds like that must have taken place inside the Esoteric Order of Dagon building on the north side of town,” Agent Harper reasons. “That organization is vile: I just know it. I have no evidence to bring back, though, and it sounds like you’ve forgotten everything you learned.” She curses under her breath.</p>"
+    },
+    "part2": {
+      "title": "Interlude I: Puzzle Pieces",
+      "body": "<p>You point to the strange, crimson horizon behind Agent Harper and note aloud the alignment of the sun and the moon. “That began just after you and Agent Dawson entered the Order’s headquarters,” she explains. “That was almost three days ago. I have no idea what it means, but I can’t imagine it is anything good. All of Innsmouth’s been locked tight lately. Not a soul in sight. You’re lucky I figured out where to look for you.”</p><p>Your mind reels. The last thing you remember before waking up in that dank pit was enjoying a pleasant late-summer’s eve in Arkham. Now you’re in another town altogether, and your memory is filled with gaping holes. You wonder aloud what the date is, and Agent Harper replies: “It’s the twenty-fourth of September. I don’t know when exactly you arrived in Innsmouth or how much of your memory is missing. Isn’t there anything else you remember? Anything at all?”</p><p>The water sloshes against your feet as you struggle to remember. In minutes, the tide has risen several inches, and there’s no sign of it slowing down. You fix your gaze on the woman who stands before you—her weary eyes, her disheveled clothes, the red marks on her wrists—and something triggers in your recollection.</p><p>“Wake up. We’re almost there.” The memory lurks at the precipice of your consciousness, threatening to draw you into the darkness. “Hey. Wake up, I said.” You clutch your forehead as searing pain bounces throughout your skull. “Wake up, dammit!”</p><p>Darkness pulls at the edges of your vision. More memories come flooding back…</p>"
+    },
+    "xp": {
+      "aMeetingWithThomasDawson": "A meeting with Thomas Dawson",
+      "aBattleWithAHorrifyingDevil": "A battle with a horrifying devil",
+      "aDecisionToStickTogether": "A decision to stick together",
+      "anEncounterWithASecretCult": "An encounter with a secret cult"
+    }
+  },
+  "interlude2": {
+    "theSyzygy1": {
+      "title": "The Syzygy 1",
+      "body": "<p><b>The Syzygy 1:</b> Light flashes in your mind. Shadows drown your thoughts as the memory fades. You are lying once again on the rocky beach off the coast, your skull pounding in agony. Agent Harper leans over you with worry etched in her brow. “Hey! Hey, you finally awake?”</p><p>You sit up, your muscles aching. It looks like the tide rose several more inches while you were out. The cold water laps at your ankles and soaks into your shoes. “What happened?” she says. “What did you see?”</p>"
+    },
+    "theSyzygy2": {
+      "title": "The Syzygy 2",
+      "body": "<p><b>The Syzygy 2:</b> You tell Harper you remember your mission to find her, but that after a week of searching, you hadn’t been able to do so. The last thing you remember was somebody slipping a notebook under your hotel room door with some information regarding an organization called the “Esoteric Order of Dagon.”</p><p>“Oh. Yeah, that was me. Sorry I couldn’t stick around and chat, but I had some other business to attend to,” she explains. She tells you that after several days in captivity, she finally managed to get the upper hand against her captor and free herself, but she was injured in the process. As if to prove her story, she opens her trenchcoat, and you see dark bloodstains seeping through her button-up shirt. Several bandages peek out beneath the fabric. “Just barely missed my kidney. Lucky me, eh?”</p><p>You complain that you were wasting your time searching high and low for her, and she scoffs. “Hardly! You learned more in one week than I did in two. I knew that you were onto something, and I wanted to help out, but I was still being followed. So I dropped off the one solid bit of research I’d found and laid low for a while. It was you who did the rest, really.” Sadly, you remember nothing of “the rest.”</p>"
+    },
+    "theSyzygy3": {
+      "title": "The Syzygy 3",
+      "body": "<p><b>The Syzygy 3:</b> You tell Harper you remember your mission to find her and the interrogation of her kidnapper. She grins. “Thanks again for that, by the way. I really did have things under control, though,” she jokes. “Do you remember anything after that?”</p><p>You shake your head. The last thing you remember was the mention of an organization called the “Esoteric Order of Dagon.”</p><p>Harper mutters a curse under her breath. “That’s unfortunate. But amnesia or not, at least I know I can trust you. Whether you remember it or not, you’ve come through for me in the past.”</p>"
+    },
+    "theSyzygy4": {
+      "title": "The Syzygy 4",
+      "body": "<p><b>The Syzygy 4:</b> “Don’t worry,” she says, “I’ll catch you up. There’s a lot you still don’t remember.” Just then, a resounding crash of thunder echoes on the eastern horizon, and a powerful wave smashes against the jetties. The sky is a deep crimson red behind blackening storm clouds that swirl around the sun and the moon. The celestial bodies hang together in perfect alignment. “That can’t be good.” Harper’s lips turn rigid with concern. “Okay, new plan. Let’s get back to Innsmouth. I’ll explain what I know along the way.”</p>"
+    }
+  },
+  "interlude3": {
+    "beneathTheWaves1": {
+      "title": "Beneath the Waves 1",
+      "body": "<p>You bounce through your memories, struggling to return to the present. You remember a dark cell. A knife at your throat. A man with wide, unblinking eyes, wearing a long hooded robe. “Oceiros,” another voice calls, “these ones were found in Dagon’s lair as well. We believe they were the ones snooping around Devil Reef.”</p><p>Oceiros nods. The knife at your throat digs deeper. “Take what they have stolen to the lighthouse at once,” he commands. “It is time to begin our great work. None will disrupt the Order’s business ever again.”</p><p>Your mind snaps back to the present. The rumbling of an automobile engine grows as your senses return. Agent Harper grips your shoulder and peers into your eyes. “Another vision,” she utters with a hint of surprise. “Do you remember something? What was it?”</p><p>You shake the ache from your pounding skull and ask Harper if the name Oceiros means anything. “Oceiros Marsh? He’s the keeper of the old lighthouse on Falcon Point,” she replies. “Why? What did you see?”</p>"
+    },
+    "purpleKey": "<p>You describe the idol found in the undersea grotto. Agent Harper nods along with you. “I remember seeing something like that in some of the notes I found while you were off investigating the reef. It depicts some kind of ancient deity—something those vile creatures worship.” Her voice lowers to little more than a whisper. “Something I suspect is no myth.” You ask where the idol is now, and she shakes her head. “I suspect it was taken from you when you were thrown into that pit,” she replies.</p>",
+    "whiteKey": "<p>You recall the strange mantle you found submerged in the depths of Devil Reef. “Yes, I remember seeing that,” Harper says with a snap of her fingers. “One of the ‘priests’ in that accursed Esoteric Order of Dagon wore it when I first arrived in Innsmouth. It must have been taken to the lighthouse with the rest of your belongings when you were captured at the Order’s headquarters. If we’re lucky, it’ll still be there…”</p>",
+    "blackKey": "<p>You tell Agent Harper about the temple with the two statues you discovered within Devil Reef, and about the crown you stole. “That sounds like the ‘Headdress of Y’ha-nthlei’ I read about while I was researching the Order. I’m impressed you were able to make off with it. Whatever it is, it sounds pretty important to the Order. Although I still have no clue what ‘Y’ha-nthlei’ is.” You remark that you don’t have the crown anymore, and she nods. “It must have been taken from you and brought to the lighthouse with the rest of your things before you lost your memories,” she explains.</p>",
+    "noKeys": "<p>You struggle to remember anything of value beyond your initial exploration of the reef. You recall the uncanny creatures you fought, the various islands you explored, and the steadily rising tides, but no more. Secrets must be hidden in those reefs, but either you were unable to find them, or you simply don’t recall. Your head throbs with pain as you struggle to summon memories from the void within your mind. “That’s okay,” Agent Harper says, placing a hand on your shoulder. “We’ll figure this out together.”</p>",
+    "beneathTheWaves2": "<p>“It seems your memories are starting to return,” Agent Harper says with a tentative grin. “How do you feel?”</p><p>You struggle to find a reply that fits. Part of you is relieved to have your memories returning, but the rest of you wishes they hadn’t been so vivid. You wonder once more if you should simply take this opportunity to drive back to Arkham and never set foot in Innsmouth again. Then your gaze meets Harper’s, and you see the fierce resolve within her eyes. The same resolve that stirs in you.</p><p>You say nothing, but she seems to understand. “This must be a lot to take in. For now, let’s focus on getting to Falcon Point. If what you say is true, and Oceiros is part of the Esoteric Order of Dagon, there should be answers there.” She looks over her shoulder, peering into the western horizon. The sun dips just below the treeline, bathing the sky in deep scarlet. “Something tells me this isn’t over.”</p>",
+    "xp": {
+      "purpleKey": "The idol was brough to the lighthouse.",
+      "whiteKey": "The mantle was brought to the lighthouse.",
+      "blackKey": "The headdress was brought to the lighthouse."
+    }
+  },
+  "memoriesRecovered": {
+    "aMeetingWithThomasDawson": "A Meeting with Thomas Dawson",
+    "aBattleWithAHorrifyingDevil": "A Battle with a Horrifying Devil",
+    "aDecisionToStickTogether": "A Decision to Stick Together",
+    "anEncounterWithASecretCult": "An Encounter with a Secret Cult",
+    "anIntervention": "An Intervention",
+    "aJailbreak": "A Jailbreak",
+    "aDealWithJoeSargent": "A Deal with Joe Sargent",
+    "aFollowedLead": "A Followed Lead",
+    "discoveryOfAStrangeIdol": "Discovery of a Strange Idol",
+    "discoveryOfAnUnholyMantle": "Discovery of an Unholy Mantle",
+    "discoveryOfAMythicalRelic": "Discovery of a Mythical Relic"
+  },
+  "possibleHideouts": {
+    "innsmouthJail": "Innsmouth Jail",
+    "shorewardSlums": "Shoreward Slums",
+    "sawboneAlley": "Sawbone Alley",
+    "theHouseOnWaterStreet": "The House on Water Street",
+    "esotericOrderOfDagon": "Esoteric Order of Dagon",
+    "newChurchGreen": "New Church Green"
+  },
+  "possibleSuspects": {
+    "brianBurnham": "Brian Burnham",
+    "barnabasMarsh": "Barnabas Marsh",
+    "otheraGilman": "Othera Gilman",
+    "zadokAllen": "Zadok Allen",
+    "joyceLittle": "Joyce Little",
+    "robertFriendly": "Robert Friendly"
+  },
+  "labels": {
+    "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
+  }
+}

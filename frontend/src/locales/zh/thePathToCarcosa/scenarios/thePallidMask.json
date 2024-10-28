@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of locations away from the starting location you are (max 5).",
+      "cultist": "-2. If this token is revealed during an attack, and this skill test is successful, this attack deals 1 less damage.",
+      "tablet": "-2. If there is a ready _Ghoul_ or _Geist_ enemy at your location, it attacks you (if there is more than one, choose one).",
+      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the number of locations away from the starting location you are.",
+      "cultist": "-3. If this token is revealed during an attack and this skill test is successful, this attack deals no damage.",
+      "tablet": "-3. If there is a _Ghoul_ or _Geist_ enemy at your location, it readies and attacks you (if there is more than one, choose one).",
+      "elderThing": "-4. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of Signs of the Gods the investigators have uncovered.",
+      "cultist": "Reveal another token. If this token is revealed during an investigation and this skill test fails, increase that location's shroud by 1 for the remainder of the round.",
+      "tablet": "-2. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
+      "elderThing": "+2. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of Signs of the Gods the investigators have uncovered.",
+      "cultist": "Reveal another token. If this token is revealed during an investigation and this skill test fails, increase that location's shroud by 2 for the remainder of the round.",
+      "tablet": "-3. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
+      "elderThing": "+1. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
+    }
+  }
+}

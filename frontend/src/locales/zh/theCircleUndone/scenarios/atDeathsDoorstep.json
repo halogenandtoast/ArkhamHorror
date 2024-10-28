@@ -1,0 +1,14 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if your location is haunted).",
+      "tablet": "-2. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location.",
+      "elderThing": "-2. If there is a _Spectral_ enemy at your location, take 1 damage."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if your location is haunted).",
+      "tablet": "-3. If this is an attack or evasion attempt, resolve each haunted ability on your location.",
+      "elderThing": "-4. If there is a _Spectral_ enemy at your location, take 1 damage and 1 horror."
+    }
+  }
+}

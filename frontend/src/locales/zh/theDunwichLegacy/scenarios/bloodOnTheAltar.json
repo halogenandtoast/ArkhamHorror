@@ -1,0 +1,20 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each location in play with no encounter card underneath it (max -4).",
+      "cultist": "-2. If you fail, add 1 clue from the token pool to your location.",
+      "tablet": "-2. If you are in the Hidden Chamber, reveal another token.",
+      "elderThing": "-3. If you fail, place 1 doom on the current agenda."
+    },
+    "hardExpert": {
+      "skull": "-1 for each location in play with no encounter card underneath it.",
+      "cultist": "-4. If you fail, add 1 clue from the token pool to your location.",
+      "tablet": "-3. Reveal another token.",
+      "elderThing": "-3. Place 1 doom on the current agenda."
+    }
+  },
+  "xp": {
+    "bonus": "Gains insight into the hidden world of the Mythos."
+  }
+}
+

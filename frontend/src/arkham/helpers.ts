@@ -1,5 +1,6 @@
 import ita from '@/digests/ita.json'
 import es from '@/digests/es.json'
+import zh from '@/digests/zh.json'
 
 export function toCapitalizedWords(name: string) {
   // const words = name.match(/[A-Z]+[a-z']+/g) || [];
@@ -35,14 +36,23 @@ export function imgsrc(src: string) {
     case 'es': {
       const exists = es.includes(path)
       return exists ? `${baseUrl}/img/arkham/es/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
-
+    }
+    case 'zh': {
+      const exists = zh.includes(path)
+      return exists ? `${baseUrl}/img/arkham/zh/${src.replace(/^\//, '')}` : `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
     }
     default: return `${baseUrl}/img/arkham/${src.replace(/^\//, '')}`
   }
 }
 
 export function pluralize(w: string, n: number) {
-  return `${n} ${w}${n == 1 ? '' : 's'}`
+  const language = localStorage.getItem('language') || 'en'
+  switch (language) {
+    case 'zh': {
+      return `${n}${w}${n == 1 ? '' : ''}`
+    }
+    default: return `${n} ${w}${n == 1 ? '' : 's'}`
+  }
 }
 
 export function formatContent(body:string) {

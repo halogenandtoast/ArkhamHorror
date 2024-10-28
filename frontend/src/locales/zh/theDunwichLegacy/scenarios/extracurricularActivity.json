@@ -1,0 +1,18 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. If you fail, discard the top 3 cards of your deck.",
+      "cultist": "-1 (-3 instead if there are 10 or more cards in your discard pile).",
+      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+    },
+    "hardExpert": {
+      "skull": "-2. If you fail, discard the top 5 cards of your deck.",
+      "cultist": "-1 (-5 instead if there are 10 or more cards in your discard pile).",
+      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+    }
+  },
+  "xp": {
+    "noResolution": "Reflects on the night’s events.",
+    "resolution4": "Reflects on the night’s events."
+  }
+}

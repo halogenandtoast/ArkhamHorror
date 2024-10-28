@@ -1,0 +1,18 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2. You may spend 2 resources to treat this token as a 0, instead.",
+      "cultist": "-3. If you succeed, gain 3 resources.",
+      "tablet": "-2. If you fail, discard 3 resources."
+    },
+    "hardExpert": {
+      "skull": "-3. You may spend 3 resources to treat this token as a 0, instead.",
+      "cultist": "-3. If you fail, discard 3 resources.",
+      "tablet": "-2. Discard 3 resources."
+    }
+  },
+  "xp": {
+    "resolution1": "Reflects on the night’s events.",
+    "resolution4": "Reflects on the night’s events."
+  }
+}

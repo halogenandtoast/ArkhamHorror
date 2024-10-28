@@ -1,0 +1,24 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. If you fail, randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it.",
+      "cultist": "-X. X is the amount of horror on you.",
+      "tablet": "-X. X is the base shroud value of your location.",
+      "elderThing": "0. Either randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it, or this test automatically fails instead."
+    },
+    "hardExpert": {
+      "skull": "Reveal another token. If you fail, randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it. (Limit once per test.)",
+      "cultist": "-X. X is the amount of horror on you. If you fail, take 1 horror.",
+      "tablet": "-X. X is the base shroud value of your location. If you fail, take 1 horror.",
+      "elderThing": "0. Either randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it, or this test automatically fails instead."
+    }
+  },
+  "remembered": {
+    "setAFireInTheKitchen": "Set a fire in the kitchen",
+    "incitedAFightAmongstThePatients": "Incited a fight amongst the patients",
+    "distractedTheGuards": "Distracted the guards",
+    "releasedADangerousPatient": "Released a dangerous patient",
+    "knowTheGuardsPatrols": "Know the guards' patrols",
+    "recalledTheWayOut": "Recalled the way out"
+  }
+}

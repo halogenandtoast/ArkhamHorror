@@ -65,7 +65,7 @@ const isInvestigate = computed(() => isAction("Investigate"))
 const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
-const display = computed(() => !isAction("Move") || props.showMove)
+const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove)
 const isSingleActionAbility = computed(() => {
   if (!ability.value) {
     return false

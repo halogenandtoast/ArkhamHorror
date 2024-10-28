@@ -40,7 +40,7 @@ instance RunMessage SanctumDoorwayCeremonyRoom where
         selectAny $ investigatorAt (toId attrs) <> InvestigatorWithKey SkullKey
       unless cancelEffect $ do
         investigators <- select $ investigatorAt $ toId attrs
-        assets <- select $ assetAt $ toId attrs
+        assets <- select $ assetAt (toId attrs) <> AssetWithSanity
         pushAll
           $ [InvestigatorDirectDamage iid (toAbilitySource attrs 1) 0 1 | iid <- investigators]
           <> [DealAssetDirectDamage aid (toAbilitySource attrs 1) 0 1 | aid <- assets]

@@ -1,0 +1,34 @@
+{
+  "about": "关于",
+  "activeGames": "活跃中的游戏",
+  "cancel": "取消",
+  "cards": "卡牌",
+  "continue": "继续",
+  "debugGame": "调试游戏",
+  "doDeleteGame": "你确定要删除这场游戏吗？",
+  "email": "邮箱",
+  "finishedGames": "已完成的游戏",
+  "forgotPassword": "忘记密码",
+  "home": "主页",
+  "invalidEmailOrPassword": "无效的邮箱或密码",
+  "language": "语言",
+  "logIn": "登录",
+  "myDecks": "我的牌组",
+  "newGame": "新游戏",
+  "newPassword": "新密码",
+  "password": "密码",
+  "passwordResetRequested": "密码重置已请求",
+  "passwordUpdatedSuccessfully": "密码已成功更新",
+  "register": "注册",
+  "resetPassword": "重置密码",
+  "settings": "设置",
+  "updatePassword": "更新密码",
+  "username": "用户名",
+  "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
+  "labels": {
+    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck"
+  },
+  "tooltips": {
+    "takeControlOfKey": "Take control of {key} key"
+  }
+}

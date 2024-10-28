@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2 (-4 instead if you are at a _Bayou_ location).",
+      "cultist": "-2. If the Rougarou is in your location, reveal another token.",
+      "tablet": "Reveal another token. If you fail, until the end of the round, you cannot move.",
+      "elderThing": "-4. If the Rougarou is at your location, it attacks you."
+    },
+    "hardExpert": {
+      "skull": "-3 (-6 instead if you are at a _Bayou_ location).",
+      "cultist": "-3. If the Rougarou is in your location, reveal another token.",
+      "tablet": "Reveal another token. If you fail, until the end of the round, you cannot move.",
+      "elderThing": "-4. If the Rougarou is at your location or a connecting location, it attacks you."
+    }
+  }
+}

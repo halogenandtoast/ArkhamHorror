@@ -1,0 +1,14 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if you are engaged with a _Staff_ enemy).",
+      "cultist": "Reveal another chaos token. If you fail and it is agenda 2 or 3, make an infestation test.",
+      "elderThing": "-X. X is the number of infested locations."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if you are engaged with a _Staff_ enemy).",
+      "cultist": "Reveal another chaos token. If it is agenda 2 or 3, make an infestation test.",
+      "elderThing": "-X. X is 1 higher than the number of infested locations."
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X . X is the number of locations with doom on them.",
+      "elderThing": "-4. If you fail, place 1 doom on your location."
+    },
+    "hardExpert": {
+      "skull": "-X . X is the total amount of doom on locations.",
+      "elderThing": "-6. Place 1 doom on your location."
+    }
+  }
+}

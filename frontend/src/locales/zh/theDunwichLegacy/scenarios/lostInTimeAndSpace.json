@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each _Extradimensional_ location in play (max -5).",
+      "cultist": "Reveal another token. If you fail, after this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
+      "tablet": "-3. If Yog-Sothoth is in play, it attacks you after this skill test.",
+      "elderSign": "-X. X is the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+    },
+    "hardExpert": {
+      "skull": "-1 for each _Extradimensional_ location in play.",
+      "cultist": "Reveal another token. After this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
+      "tablet": "-5. If Yog-Sothoth is in play, it attacks you after this skill test.",
+      "elderSign": "-X. X is twice the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+    }
+  }
+}

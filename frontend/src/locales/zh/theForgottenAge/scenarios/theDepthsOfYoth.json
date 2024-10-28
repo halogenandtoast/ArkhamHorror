@@ -1,0 +1,19 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current depth level.",
+      "cultist": "Reveal another token. If you fail, each _Serpent_ enemy at your location or a connecting location heals 2 damage.",
+      "tablet": "Reveal another token. If you fail, place 1 clue on your location (from the token pool).",
+      "elderThing": "-2. If there are 3 or more vengeance points in the victory display, you automatically fail this test, instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the current depth level. If you fail, take 1 horror.",
+      "cultist": "Reveal another token. If you fail, each _Serpent_ enemy at your location or a connecting location heals 2 damage.",
+      "tablet": "Reveal another token. If you fail, place 1 clue on your location (from the token pool).",
+      "elderThing": "-4. If there are 3 or more vengeance points in the victory display, you automatically fail this test, instead."
+    }
+  },
+  "xp": {
+    "depth": "Depth Level"
+  }
+}

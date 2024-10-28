@@ -1,10 +1,10 @@
 module Arkham.Location.Cards.SouthChurch_299 (southChurch_299, SouthChurch_299 (..)) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 
 newtype SouthChurch_299 = SouthChurch_299 LocationAttrs
@@ -18,20 +18,19 @@ instance HasAbilities SouthChurch_299 where
   getAbilities (SouthChurch_299 attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (withBreaches attrs Here)
+      [ restricted attrs 1 (withBreaches attrs Here)
           $ actionAbilityWithCost (DiscardAssetCost AnyAsset)
       , withTooltip "You hide through the night." $ locationResignAction attrs
       ]
 
 instance RunMessage SouthChurch_299 where
-  runMessage msg l@(SouthChurch_299 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(SouthChurch_299 attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       let breachCount = countLocationBreaches attrs
       act <- selectJust AnyAct
       pushAll
-        [ drawEncounterCard iid attrs
-        , RemoveBreaches (toTarget attrs) breachCount
+        [ RemoveBreaches (toTarget attrs) breachCount
         , PlaceBreaches (toTarget act) breachCount
         ]
       pure l
-    _ -> SouthChurch_299 <$> runMessage msg attrs
+    _ -> SouthChurch_299 <$> liftRunMessage msg attrs

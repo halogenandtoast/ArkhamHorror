@@ -1,16 +1,12 @@
-module Arkham.Location.Cards.Southside_294 (
-  southside_294,
-  Southside_294 (..),
-)
-where
+module Arkham.Location.Cards.Southside_294 (southside_294, Southside_294 (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Trait (Trait (Power))
 
@@ -23,28 +19,24 @@ southside_294 = location Southside_294 Cards.southside_294 1 (Static 0)
 
 instance HasAbilities Southside_294 where
   getAbilities (Southside_294 attrs) =
-    let breachCount = countLocationBreaches attrs
-     in withRevealedAbilities
-          attrs
-          [fastAbility attrs 1 Free (Here <> mwhen (breachCount > 0) EncounterDeckIsNotEmpty)]
+    extendRevealed1 attrs
+      $ fastAbility attrs 1 Free (withBreaches attrs $ Here <> EncounterDeckIsNotEmpty)
 
 instance RunMessage Southside_294 where
-  runMessage msg l@(Southside_294 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ DiscardTopOfEncounterDeck iid 3 (toAbilitySource attrs 1) (Just $ toTarget attrs)
+  runMessage msg l@(Southside_294 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ DiscardTopOfEncounterDeck iid 3 (attrs.ability 1) (Just $ toTarget attrs)
       pure l
     DiscardedTopOfEncounterDeck iid cards (isSource attrs -> True) (isTarget attrs -> True) -> do
-      let powerTreacheries = filter ((`cardMatch` CardWithTrait Power) . toCard) cards
+      let powerTreacheries = filterCards (CardWithTrait Power) cards
       act <- selectJust AnyAct
-      player <- getPlayer iid
-      pushAll
-        $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
-        <> ( guard (notNull powerTreacheries)
-              *> [ FocusCards (toCard <$> cards)
-                 , chooseOrRunOne
-                    player
-                    [targetLabel (toCardId card) [UnfocusCards, InvestigatorDrewEncounterCard iid card] | card <- cards]
-                 ]
-           )
+      pushAll $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
+
+      focusCards cards \unfocus -> do
+        chooseOneM iid do
+          when (null powerTreacheries) $ labeled "Continue" $ push unfocus
+          targets powerTreacheries \card -> do
+            push unfocus
+            drawCard iid card
       pure l
-    _ -> Southside_294 <$> runMessage msg attrs
+    _ -> Southside_294 <$> liftRunMessage msg attrs

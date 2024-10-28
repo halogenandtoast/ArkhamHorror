@@ -1,0 +1,19 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy.",
+      "cultist": "-2. If you do not succeed by at least 1, take 1 damage.",
+      "tablet": "-2. If you do not succeed by at least 1, place 1 doom on the nearest _Cultist_ enemy.",
+      "elderThing": "-2. If you fail, lose 1 of your clues."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of doom in play.",
+      "cultist": "-2. If you do not succeed by at least 2, take 1 direct damage.",
+      "tablet": "-2. If you do not succeed by at least 2, place 1 doom on each _Cultist_ enemy.",
+      "elderThing": "-3. If you fail, lose 1 of your clues."
+    }
+  },
+  "xp": {
+    "bonus": "Gains insight into the schemes of the Brotherhood."
+  }
+}

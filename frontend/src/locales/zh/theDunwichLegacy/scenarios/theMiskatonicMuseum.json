@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 instead if Hunting Horror is at your location.)",
+      "cultist": "-1. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
+      "tablet": "-2. Return 1 of your clues to your current location.",
+      "elderThing": "-3. If you fail, discard an asset you control."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 instead if Hunting Horror is at your location.)",
+      "cultist": "-3. If you fail, search the encounter deck, discard pile, and the void for Hunting Horror and spawn it at your location, if able.",
+      "tablet": "-4. If Hunting Horror is at your location, it immediately attacks you.",
+      "elderThing": "-5. If you fail, discard an asset you control."
+    }
+  }
+}

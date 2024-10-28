@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of vengeance points in the victory display.",
+      "cultist": "-X. X is the number of locations in play (max 5).",
+      "tablet": "-X. X is the number of cards in the exploration deck (max 5).",
+      "elderThing": "-2. If you are poisoned, this test automatically fails instead."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 higher than the number of vengeance points in the victory display.",
+      "cultist": "-X. X is the number of locations in play.",
+      "tablet": "-X. X is the number of cards in the exploration deck (min 3).",
+      "elderThing": "-3. If you are poisoned, this test automatically fails instead. If you are not poisoned and you fail, put a set-aside Poisoned weakness into play in your threat area."
+    }
+  }
+}

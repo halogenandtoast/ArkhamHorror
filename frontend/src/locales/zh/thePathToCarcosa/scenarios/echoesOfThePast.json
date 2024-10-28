@@ -1,0 +1,19 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the highest number of doom on an enemy in play.",
+      "cultist": "-2. If you fail, place 1 doom on the nearest enemy.",
+      "tablet": "-2. If you fail, discard a random card from your hand.",
+      "elderThing": "-2. If you fail and there is an enemy at your location, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is the total number of doom on enemies in play.",
+      "cultist": "-4. Place 1 doom on the nearest enemy.",
+      "tablet": "-4. Discard a random card from your hand.",
+      "elderThing": "-4. If there is an enemy at your location, take 1 horror."
+    }
+  },
+  "xp": {
+    "resolution4": "Gains insight into the machinations of The King in Yellow."
+  }
+}

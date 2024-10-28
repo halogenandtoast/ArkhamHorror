@@ -71,9 +71,8 @@ instance RunMessage StrangeRelicsMariasInformation where
               (toSource attrs)
            ]
       pure a
-    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target ->
-      do
-        when (toCardType card == TreacheryType) $ do
-          push $ InvestigatorDrewEncounterCard iid card
-        pure a
+    DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do
+      when (toCardType card == TreacheryType) $ do
+        push $ InvestigatorDrewEncounterCard iid card
+      pure a
     _ -> StrangeRelicsMariasInformation <$> runMessage msg attrs

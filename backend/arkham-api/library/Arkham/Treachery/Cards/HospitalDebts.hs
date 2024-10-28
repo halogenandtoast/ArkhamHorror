@@ -17,9 +17,12 @@ hospitalDebts = treachery HospitalDebts Cards.hospitalDebts
 
 instance HasAbilities HospitalDebts where
   getAbilities (HospitalDebts a) =
-    limitedAbility
-      (PlayerLimit PerRound 2)
-      (restricted a 1 (OnSameLocation <> youExist InvestigatorWithAnyResources) $ FastAbility Free)
+    wantsSkillTest
+      (maybe (NotSkillTest AnySkillTest) (SkillTestOfInvestigator . InvestigatorWithId) a.owner)
+      ( limitedAbility (PlayerLimit PerRound 2)
+          $ restricted a 1 (OnSameLocation <> youExist InvestigatorWithAnyResources)
+          $ FastAbility Free
+      )
       : [ restricted a 2 (ResourcesOnThis $ lessThan 6) $ forcedOnElimination iid
         | iid <- toList a.inThreatAreaOf
         ]

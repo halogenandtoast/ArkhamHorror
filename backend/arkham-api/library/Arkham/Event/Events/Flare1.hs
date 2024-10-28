@@ -34,8 +34,8 @@ instance RunMessage Flare1 where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       targetCount <- getTotalSearchTargets iid cards 1
+      when (null cards) $ continue iid []
       focusCards cards \unfocus -> do
-        when (null cards) $ continue iid [unfocus]
         chooseNM iid targetCount do
           targets cards \card -> do
             push unfocus

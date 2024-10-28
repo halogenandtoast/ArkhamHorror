@@ -215,7 +215,7 @@ instance HasAbilities EnemyAttrs where
           ( OnSameLocation
               <> AnyCriterion
                 [ Negate $ EnemyCriteria $ ThisEnemy AloofEnemy
-                , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith Anyone
+                , EnemyCriteria $ ThisEnemy $ EnemyIsEngagedWith You
                 ]
               <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
               <> CanAttack

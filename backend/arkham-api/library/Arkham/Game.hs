@@ -2958,12 +2958,7 @@ enemyMatcherFilter = \case
           )
           modifiers'
     notElem (toId enemy)
-      <$> select
-        ( oneOf $ EnemyWithModifier CannotBeEvaded
-            : not_ EnemyWithEvade
-            : [AloofEnemy <> not_ (EnemyIsEngagedWith Anyone) | IgnoreAloof `notElem` modifiers']
-              <> enemyFilters
-        )
+      <$> select (oneOf $ EnemyWithModifier CannotBeEvaded : not_ EnemyWithEvade : enemyFilters)
   CanEvadeEnemyWithOverride override -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers (EnemyTarget $ toId enemy)

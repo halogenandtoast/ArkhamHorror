@@ -192,6 +192,7 @@ export type Ability = {
   source: Source
   tooltip: string | null
   displayAsAction: boolean
+  index: number
 }
 
 export const abilityDecoder = JsonDecoder.object(
@@ -199,5 +200,6 @@ export const abilityDecoder = JsonDecoder.object(
     type: abilityTypeDecoder,
     source: sourceDecoder,
     tooltip: JsonDecoder.nullable(JsonDecoder.string),
-    displayAsAction: JsonDecoder.boolean
+    displayAsAction: JsonDecoder.boolean,
+    index: JsonDecoder.number
   }, 'Ability')

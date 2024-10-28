@@ -31,7 +31,7 @@ instance HasAbilities TheGreatWebVastWeb where
       [ restrictedAbility
           attrs
           1
-          (Here <> not_ (OnAct 1) <> CluesOnThis (GreaterThanOrEqualTo (PerPlayer 1)))
+          (Here <> not_ (OnAct 1) <> not_ (CluesOnThis $ GreaterThanOrEqualTo (PerPlayer 1)))
           $ ActionAbility [#move]
           $ ActionCost 1
       ]

@@ -87,7 +87,7 @@ instance RunMessage ActAttrs where
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
     PlaceBreaches (isTarget a -> True) n -> do
-      let total = maybe 0 (+ n) actBreaches
+      let total = maybe n (+ n) actBreaches
       pure $ a & breachesL ?~ total
     RemoveBreaches (isTarget a -> True) n -> do
       wouldDoEach
@@ -98,7 +98,7 @@ instance RunMessage ActAttrs where
         (Window.RemovedBreaches (toTarget a))
         (Window.RemovedBreach (toTarget a))
       pure a
-    DoBatch _ (RemoveBreaches (isTarget a -> True) n) -> do
+    Do (RemoveBreaches (isTarget a -> True) n) -> do
       pure $ a & breachesL %~ fmap (max 0 . subtract n)
     UseCardAbility
       iid

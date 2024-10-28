@@ -124,6 +124,11 @@ const isOtherEncounterCard = computed(() => {
   return ["04134b", "04137b"].includes(cardCode.value)
 })
 
+const breaches = computed(() => {
+  const {breaches} = props.act
+  return breaches ?? 0
+})
+
 </script>
 
 <template>
@@ -167,6 +172,7 @@ const isOtherEncounterCard = computed(() => {
         type="clue"
         :amount="act.clues"
       />
+      <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
     </div>
   </div>
 </template>

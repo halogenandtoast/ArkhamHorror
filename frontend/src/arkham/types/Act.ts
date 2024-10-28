@@ -11,6 +11,7 @@ export type Act = {
   deckId: number
   sequence: ActSequence
   treacheries: string[]
+  breaches: number | null;
 }
 
 export const actSequenceDecoder = JsonDecoder.
@@ -23,4 +24,5 @@ export const actDecoder = JsonDecoder.object<Act>({
   deckId: JsonDecoder.number,
   sequence: actSequenceDecoder,
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
+  breaches: JsonDecoder.nullable(JsonDecoder.number),
 }, 'Act');

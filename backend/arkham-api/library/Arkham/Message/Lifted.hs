@@ -1205,10 +1205,10 @@ focusChaosTokens tokens f = do
   push $ FocusChaosTokens tokens
   f UnfocusChaosTokens
 
-focusCards :: ReverseQueue m => [Card] -> (Message -> m ()) -> m ()
+focusCards :: (ReverseQueue m, IsCard a) => [a] -> (Message -> m ()) -> m ()
 focusCards [] _ = pure ()
 focusCards cards f = do
-  push $ FocusCards cards
+  push $ FocusCards $ toCard <$> cards
   f UnfocusCards
 
 checkWindows :: ReverseQueue m => [Window] -> m ()

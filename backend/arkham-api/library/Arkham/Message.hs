@@ -344,6 +344,7 @@ data Message
   | Devour InvestigatorId
   | Devoured InvestigatorId Card
   | MoveWithSkillTest Message
+  | MovedWithSkillTest SkillTestId Message
   | NextSkillTest SkillTestId
   | AddSubscriber Target
   | WithSource Source Message

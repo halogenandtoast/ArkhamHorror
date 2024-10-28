@@ -104,6 +104,7 @@ dealAdditionalHorror iid amount additionalMessages = do
   mMsg <- findFromQueue $ \case
     InvestigatorDamage iid' _ _ n | iid' == iid -> n > 0
     InvestigatorDoAssignDamage iid' _ _ _ _ n [] [] | iid' == iid -> n > 0
+    CheckDefeated _ (InvestigatorTarget iid') -> iid == iid'
     _ -> False
   case mMsg of
     Just horrorMsg -> do
@@ -121,6 +122,7 @@ dealAdditionalHorror iid amount additionalMessages = do
               (n + amount)
               []
               []
+          CheckDefeated source target -> PlaceAdditionalDamage target source 0 amount
           _ -> error "impossible"
       replaceMessage horrorMsg $ newMsg : additionalMessages
     Nothing -> throwIO $ InvalidState "No horror occured"
@@ -592,7 +594,7 @@ handleSkillTestNesting sid msg a action = do
         msgs <- popMessagesMatching \case
           MoveWithSkillTest _ -> True
           _ -> False
-        insertAfterMatching (msg : msgs) (== EndSkillTestWindow)
+        insertAfterMatching (msg : map (MovedWithSkillTest sid) msgs) (== EndSkillTestWindow)
       pure a
     else do
       mapQueue \case

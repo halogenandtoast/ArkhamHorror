@@ -61,9 +61,9 @@ instance RunMessage JacquelineFine where
         nested =
           mchoice >>= \case
             Resolved {} -> Nothing
-            Decided s -> Just s
-            Undecided s -> Just s
-            Deciding s -> Just s
+            Decided s -> guard (s /= Draw) $> s
+            Undecided s -> guard (s /= Draw) $> s
+            Deciding s -> guard (s /= Draw) $> s
 
       push
         $ ReplaceEntireDraw drawSource iid

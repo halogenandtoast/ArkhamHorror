@@ -27,6 +27,6 @@ instance RunMessage DeathApproaches where
       chooseOrRunOne iid $ targetLabels investigators $ only . Msg.placeInThreatArea attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      Msg.dealAdditionalHorror iid 2 [Msg.toDiscardBy iid (attrs.ability 1) attrs]
+      dealAdditionalHorror iid 2 [Msg.toDiscardBy iid (attrs.ability 1) attrs]
       pure t
     _ -> DeathApproaches <$> liftRunMessage msg attrs

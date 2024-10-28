@@ -416,16 +416,19 @@ instance RunMessage AssetAttrs where
           AbilitySource s i -> insertAfterMatching [MoveWithSkillTest afterLast] \case
             ResolvedAbility ab -> ab.source == s && ab.index == i
             MoveWithSkillTest (ResolvedAbility ab) -> ab.source == s && ab.index == i
+            MovedWithSkillTest _ (ResolvedAbility ab) -> ab.source == s && ab.index == i
             _ -> False
           CardIdSource cid -> insertAfterMatching [MoveWithSkillTest afterLast] \case
             ResolvedPlayCard _ c' -> cid == c'.id
             ResolvedAbility _ -> True
             MoveWithSkillTest (ResolvedAbility _) -> True
+            MovedWithSkillTest _ (ResolvedAbility _) -> True
             _ -> False
           EventSource e -> do
             mAbility <- findFromQueue \case
               ResolvedAbility _ -> True
               MoveWithSkillTest (ResolvedAbility _) -> True
+              MovedWithSkillTest _ (ResolvedAbility _) -> True
               _ -> False
             case mAbility of
               Nothing -> insertAfterMatching [MoveWithSkillTest afterLast] \case

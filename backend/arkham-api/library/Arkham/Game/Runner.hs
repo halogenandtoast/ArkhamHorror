@@ -2139,6 +2139,7 @@ runGameMessage msg g = case msg of
         ActTarget aid -> AttachedToAct aid
         AgendaTarget aid -> AttachedToAgenda aid
         InvestigatorTarget iid -> InThreatArea iid
+        AgendaDeckTarget -> NextToAgenda
         _ -> error $ "unhandled attach target : " <> show target
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
@@ -2636,6 +2637,10 @@ runGameMessage msg g = case msg of
           ]
     pure $ g & (if ignoreRevelation then activeCardL .~ Nothing else id)
   MoveWithSkillTest msg' -> do
+    -- No skill test showed up so just run this
+    push msg'
+    pure g
+  MovedWithSkillTest _ msg' -> do
     -- No skill test showed up so just run this
     push msg'
     pure g

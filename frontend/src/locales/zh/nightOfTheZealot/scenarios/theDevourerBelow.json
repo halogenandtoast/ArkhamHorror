@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of _Monster_ enemies in play.",
-      "cultist": "-2. Place 1 doom on the nearest enemy.",
-      "tablet": "-3. If there is a _Monster_ enemy at your location, take 1 damage.",
-      "elderThing": "-5. If there is an _Ancient One_ enemy in play, reveal another token."
+      "skull": "-X。X是场上_怪物_敌人数量。",
+      "cultist": "-2。在最近的敌人上放置1个毁灭标记。",
+      "tablet": "-3。如果你所在地点有一个_怪物_敌人，则你受到1点伤害。",
+      "elderThing": "-5。如果场上有_古神_，再抽取1个混乱标记。"
     },
     "hardExpert": {
-      "skull": "-3. If you fail, after this skill test, search the encounter deck and discard pile for a _Monster_ enemy, and draw it. Shuffle the encounter deck.",
-      "cultist": "-4. Place 2 doom on the nearest enemy.",
-      "tablet": "-5. If there is a _Monster_ enemy at your location, take 1 damage and 1 horror.",
-      "elderThing": "-7. If there is an _Ancient One_ enemy in play, reveal another token."
+      "skull": "-3。如果失败，在技能检定后，查找遭遇牌堆和弃牌堆，将一张_怪物_敌人打出。混洗遭遇牌堆。",
+      "cultist": "-4。在最近的敌人上放置2个毁灭标记。",
+      "tablet": "-5。如果你所在地点有一个_怪物_敌人，则你受到1点伤害和1点恐惧。",
+      "elderThing": "-7。如果场上有_古神_，再抽取1个混乱标记。"
     }
   }
 }

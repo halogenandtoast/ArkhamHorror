@@ -1,14 +1,14 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy in play.",
-      "cultist": "-2. Place 1 doom on the nearest _Cultist_ enemy.",
-      "tablet": "-3. If you fail, place 1 of your clues on your location."
+      "skull": "-X。场上带有最多毁灭标记的_异教徒_，其毁灭标记个数为X。",
+      "cultist": "-2。在最近的一个_异教徒_上放置1个毁灭标记。",
+      "tablet": "-3。如果失败，将你的1线索放到所在地点。"
     },
     "hardExpert": {
-      "skull": "-X. X is the total number of doom in play.",
-      "cultist": "-2. Place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
-      "tablet": "-4. If you fail, place all your clues on your location."
+      "skull": "-X。X是场上毁灭标记总数。",
+      "cultist": "-2。场上每个_异教徒_上各放置1个毁灭标记。如果场上没有_异教徒_，再抽取1个混乱标记。",
+      "tablet": "-4。如果失败，将你所有线索放到所在地点。"
     }
   }
 }

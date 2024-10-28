@@ -2,11 +2,12 @@ module Arkham.Asset.Assets.WellConnected3 (wellConnected3, wellConnected3Effect,
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.SkillTest (getSkillTestId, getSkillTestInvestigator, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype WellConnected3 = WellConnected3 AssetAttrs
@@ -21,19 +22,21 @@ instance HasAbilities WellConnected3 where
     [ wantsSkillTest (YourSkillTest #any)
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility (exhaust a)
-    , playerLimit PerRound $ restrictedAbility a 2 ControlsThis $ FastAbility $ ResourceCost 2
+    , playerLimit PerRound
+        $ controlledAbility a 2 (thisExists a AssetExhausted)
+        $ FastAbility
+        $ ResourceCost 2
     ]
 
 instance RunMessage WellConnected3 where
-  runMessage msg a@(WellConnected3 attrs) = case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 _ _ -> do
-      withSkillTest \sid ->
-        push $ createCardEffect Cards.wellConnected3 Nothing (toSource attrs) sid
+  runMessage msg a@(WellConnected3 attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      withSkillTest $ createCardEffect Cards.wellConnected3 Nothing attrs
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ Ready (toTarget attrs)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      readyThis attrs
       pure a
-    _ -> WellConnected3 <$> runMessage msg attrs
+    _ -> WellConnected3 <$> liftRunMessage msg attrs
 
 newtype WellConnected3Effect = WellConnected3Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -53,8 +56,6 @@ instance HasModifiersFor WellConnected3Effect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage WellConnected3Effect where
-  runMessage msg e@(WellConnected3Effect attrs) = case msg of
-    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-      push (DisableEffect attrs.id)
-      pure e
-    _ -> WellConnected3Effect <$> runMessage msg attrs
+  runMessage msg e@(WellConnected3Effect attrs) = runQueueT $ case msg of
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e
+    _ -> WellConnected3Effect <$> liftRunMessage msg attrs

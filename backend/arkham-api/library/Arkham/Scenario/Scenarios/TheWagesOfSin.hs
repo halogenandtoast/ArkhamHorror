@@ -103,7 +103,8 @@ instance RunMessage TheWagesOfSin where
       setAgendaDeck [Agendas.theHangedManXII, Agendas.deathsApproach]
       setActDeck [Acts.inPursuitOfTheDead, Acts.inPursuitOfTheLiving]
 
-      setExtraEncounterDeck SpectralEncounterDeck =<< amongGathered (CardWithTrait Spectral)
+      setExtraEncounterDeck SpectralEncounterDeck
+        =<< amongGathered (CardWithTrait Spectral <> not_ #location)
 
       heretics <-
         pickN

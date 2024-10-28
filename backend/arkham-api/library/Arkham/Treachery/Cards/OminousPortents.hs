@@ -31,4 +31,7 @@ instance RunMessage OminousPortents where
         labeled "Test {willpower} (3). If you fail take 2 horror." do
           revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignHorror iid attrs 2
+      pure t
     _ -> OminousPortents <$> liftRunMessage msg attrs

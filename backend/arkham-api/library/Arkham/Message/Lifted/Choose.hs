@@ -51,7 +51,15 @@ chooseSomeM iid txt choices = do
   unless (null choices') do
     case label of
       Nothing -> chooseSome iid txt choices'
-      Just l -> questionLabel l iid $ ChooseSome choices'
+      Just l -> questionLabel l iid $ ChooseSome (Done txt : choices')
+
+chooseSome1M :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
+chooseSome1M iid txt choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseSome1 iid txt choices'
+      Just l -> questionLabel l iid $ ChooseSome1 txt choices'
 
 chooseOneFromEachM :: ReverseQueue m => InvestigatorId -> [ChooseT m a] -> m ()
 chooseOneFromEachM iid choices = do

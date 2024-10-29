@@ -35,13 +35,14 @@ import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.EncounterCard.Source
 import Arkham.Enemy.Creation
-import Arkham.Enemy.Types (Enemy, Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..), enemyHealth)
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -1312,7 +1313,8 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pure $ a & tarotCardsL . each %~ map rotate
   After (EnemyDefeated eid _ _ _) -> do
     eattrs <- getAttrs @Enemy eid
-    enemyHealth <- fieldJust EnemyHealth eid
+    printedHealth <- maybe (pure 0) getPlayerCountValue (enemyHealth eattrs)
+    enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do
     pure $ a & setAsideCardsL <>~ cards

@@ -235,12 +235,20 @@ instance RunMessage ThePallidMask where
       story story'
       record YouKnowTheSiteOfTheGate
 
-      chooseSomeM lead "Done having investigators read Act II" do
-        targets investigators \iid -> do
-          recordSetInsert ReadActII [unInvestigatorId iid]
-          searchCollectionForRandom iid attrs
+      if length investigators == 1
+        then do
+          recordSetInsert ReadActII [unInvestigatorId lead]
+          searchCollectionForRandom lead attrs
             $ BasicWeaknessCard
             <> mapOneOf CardWithTrait [Madness, Pact]
+        else chooseSome1M lead "Done having investigators read Act II" do
+          questionLabeled "Choose who will read Act II of The King in Yellow"
+          targets investigators \iid -> do
+            recordSetInsert ReadActII [unInvestigatorId iid]
+            searchCollectionForRandom iid attrs
+              $ BasicWeaknessCard
+              <> mapOneOf CardWithTrait [Madness, Pact]
+
       removeAllChaosTokens Cultist
       removeAllChaosTokens Tablet
       removeAllChaosTokens ElderThing

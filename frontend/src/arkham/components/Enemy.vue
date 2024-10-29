@@ -349,6 +349,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   display: flex;
   align-self: flex-start;
   align-items: flex-end;
+  z-index: 15;
   :deep(img) {
     width: 20px;
     height: auto;

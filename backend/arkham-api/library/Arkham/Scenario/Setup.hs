@@ -17,10 +17,11 @@ import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
-import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
+import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, getLead, hasBSide, isDoubleSided)
 import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
@@ -258,9 +259,12 @@ placeGroupChooseN n groupName = sampleN n >=> placeGroup groupName
 
 startAt :: ReverseQueue m => LocationId -> ScenarioBuilderT m ()
 startAt lid = do
-  reveal lid
+  lead <- getLead
   attrs <- gets (.attrs)
-  moveAllTo attrs lid
+  lift $ chooseOneM lead do
+    targeting lid do
+      reveal lid
+      moveAllTo attrs lid
 
 -- Does not handle extra encounter decks
 addToEncounterDeck

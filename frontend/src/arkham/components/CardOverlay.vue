@@ -207,7 +207,6 @@ const evade = computed(() => {
 
 const swarm = computed(() => {
   if (!hoveredElement.value) return null
-  console.log(hoveredElement.value.dataset.swarm);
   return hoveredElement.value.dataset.swarm
 })
 

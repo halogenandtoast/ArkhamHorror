@@ -13,6 +13,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -72,14 +73,19 @@ instance RunMessage CurtainCall where
       investigators <- allInvestigatorIds
       mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       for_ mLola \lola -> do
-        reveal backstage
-        moveTo_ attrs lola backstage
+        chooseOneM lola do
+          targeting backstage do
+            reveal backstage
+            moveTo_ attrs lola backstage
 
       let theatreInvestigators = maybe investigators (`deleteFirst` investigators) mLola
 
       unless (null theatreInvestigators) do
-        reveal theatre
-        for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
+        lead <- getLead
+        chooseOneM lead do
+          targeting theatre do
+            reveal theatre
+            for_ theatreInvestigators \iid -> moveTo_ attrs iid theatre
 
       setAside
         [ Enemies.royalEmissary

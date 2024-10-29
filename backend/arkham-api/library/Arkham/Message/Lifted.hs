@@ -1,6 +1,7 @@
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.Ability
+import Arkham.Act.Sequence qualified as Act
 import Arkham.Act.Types (ActAttrs (actDeckId))
 import Arkham.Action (Action)
 import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
@@ -619,6 +620,9 @@ advanceAgendaDeck attrs = push $ AdvanceAgendaDeck (agendaDeckId attrs) (toSourc
 advanceActDeck :: ReverseQueue m => ActAttrs -> m ()
 advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
+advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
+advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)
+
 shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
 shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
 
@@ -676,6 +680,11 @@ chooseSome :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
 chooseSome iid done msgs = do
   player <- getPlayer iid
   push $ Msg.chooseSome player done msgs
+
+chooseSome1 :: ReverseQueue m => InvestigatorId -> Text -> [UI Message] -> m ()
+chooseSome1 iid done msgs = do
+  player <- getPlayer iid
+  push $ Msg.chooseSome1 player done msgs
 
 selectOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable (QueryElement matcher), Query matcher, Sourceable source)

@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheKingInTatters (
-  TheKingInTatters (..),
-  theKingInTatters,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheKingInTatters (TheKingInTatters (..), theKingInTatters) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -13,8 +8,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype TheKingInTatters = TheKingInTatters ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -25,14 +20,11 @@ theKingInTatters = act (3, A) TheKingInTatters Cards.theKingInTatters Nothing
 
 instance HasAbilities TheKingInTatters where
   getAbilities (TheKingInTatters a) =
-    [ restrictedAbility
-        a
-        1
-        (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
+    [ restricted a 1 (OnLocation $ LocationWithoutClues <> LocationCanBeFlipped)
         $ FastAbility Free
     , mkAbility a 2
-        $ ForcedAbility
-        $ EnemyWouldBeDefeated Timing.When
+        $ forced
+        $ EnemyWouldBeDefeated #when
         $ EnemyWithTitle "Hastur"
     ]
 

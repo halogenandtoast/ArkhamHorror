@@ -786,6 +786,7 @@ h2 {
   text-transform: uppercase;
   color: white;
   background-color: #222;
+  padding: 10px;
 }
 
 .dropdown {

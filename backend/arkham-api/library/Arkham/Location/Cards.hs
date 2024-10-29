@@ -7465,7 +7465,7 @@ basement =
 
 betweenWorlds :: CardDef
 betweenWorlds =
-  location "xbetween" "Between Worlds" [Hex] NoSymbol [] ShatteredAeons
+  location "xbetween" "Between Worlds" [Otherworld] NoSymbol [] ShatteredAeons
 
 emptySpace :: CardDef
 emptySpace =

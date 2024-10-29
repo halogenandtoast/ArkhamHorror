@@ -57,6 +57,7 @@ calculate = go
       maybe (go fallback) getAgendaStep mAgenda
     AssetFieldCalculation aid fld -> field fld aid
     InvestigatorFieldCalculation iid fld -> field fld iid
+    InvestigatorsFieldCalculation matcher fld -> getSum <$> selectAgg Sum fld matcher
     InvestigatorHandLengthCalculation iid -> fieldMap InvestigatorHand length iid
     InvestigatorKeyCountCalculation matcher -> length <$> selectAgg id InvestigatorKeys matcher
     EnemyMaybeFieldCalculation eid fld -> fromMaybe 0 . join <$> fieldMay fld eid

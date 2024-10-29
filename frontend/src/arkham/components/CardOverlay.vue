@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
+import { BugAntIcon } from '@heroicons/vue/20/solid'
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
@@ -204,6 +205,12 @@ const evade = computed(() => {
   return hoveredElement.value.dataset.evade
 })
 
+const swarm = computed(() => {
+  if (!hoveredElement.value) return null
+  console.log(hoveredElement.value.dataset.swarm);
+  return hoveredElement.value.dataset.swarm
+})
+
 const upsideDown = computed(() => {
   return hoveredElement.value?.classList.contains('Reversed') ?? false
 })
@@ -301,6 +308,7 @@ const getImage = (el: HTMLElement): string | null => {
       />
       <div v-for="entry in crossedOff" :key="entry" class="crossed-off" :class="{ [toCamelCase(entry)]: true }"></div>
     </div>
+    <span class="swarm" v-if="swarm"><BugAntIcon aria-hidden="true" /></span>
     <span class="fight" v-if="fight">{{ fight }}</span>
     <span class="health" v-if="health">{{ health }}</span>
     <span class="evade" v-if="evade">{{ evade }}</span>
@@ -335,7 +343,7 @@ const getImage = (el: HTMLElement): string | null => {
 </template>
 
 <style scoped lang="scss">
-.fight, .evade, .health {
+.fight, .evade, .health, .swarm {
   font-family: "Teutonic";
   position: absolute;
   color: white;
@@ -346,6 +354,12 @@ const getImage = (el: HTMLElement): string | null => {
     -1px 1px 0 #000,
     -1px -1px 0 #000,
     1px -1px 0 #000;
+}
+
+.swarm {
+  inset: 0;
+  width: var(--card-width);
+  height: auto;
 }
 
 .fight {

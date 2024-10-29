@@ -71,6 +71,8 @@ const swarmEnemies = computed(() =>
   Object.values(props.game.enemies).filter((e) => e.placement.tag === 'AsSwarm' && e.placement.swarmHost === props.enemy.id)
 )
 
+const isSwarm = computed(() => props.enemy.placement.tag === 'AsSwarm')
+
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
     return true
@@ -186,7 +188,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 </script>
 
 <template>
-  <div class="enemy--outer">
+  <div class="enemy--outer" :class="{showAbilities}">
     <div class="enemy">
       <Story v-if="enemyStory" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
@@ -203,6 +205,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               :data-horror="enemy.sanityDamage"
               :data-victory="gainedVictory"
               :data-keywords="addedKeywords"
+              :data-swarm="isSwarm"
               @click="clicked"
             />
             <img v-else
@@ -212,6 +215,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               class="card enemy"
               :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
+              :data-swarm="isSwarm || undefined"
               @click="clicked"
             />
           </div>
@@ -328,7 +332,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   display: flex;
   flex-direction: column;
   position: relative;
-  z-index: 0;
+  z-index: 5;
   isolation: isolate;
 }
 
@@ -403,12 +407,23 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-evenly;
-  z-index: -1000;
+  &:hover {
+    .enemy--swarming {
+      margin-left: 5px;
+    }
+  }
+
+  &:has(.enemy--swarming.showAbilities) {
+    .enemy--swarming {
+      margin-left: 5px;
+    }
+  }
+
+  .enemy--swarming {
+    margin-left: calc((var(--card-width) / 1.5) * -1);
+  }
 }
 
-.enemy--swarming {
-  margin-left: calc((var(--card-width) / 1.5) * -1);
-}
 
 .enemy--outer {
   isolation: isolate;

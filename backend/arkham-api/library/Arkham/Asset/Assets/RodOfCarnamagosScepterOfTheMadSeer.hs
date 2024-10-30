@@ -46,6 +46,7 @@ instance RunMessage RodOfCarnamagosScepterOfTheMadSeer where
           case nonEmpty rots of
             Just rots' -> do
               rot <- sample rots'
+              obtainCard rot
               push $ CreateEventAt iid rot (AttachedToEnemy eid)
             _ -> pure ()
       push $ ResetChaosTokens source

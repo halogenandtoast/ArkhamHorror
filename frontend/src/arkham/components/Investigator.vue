@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import Draggable from '@/components/Draggable.vue';
+import CardView from '@/arkham/components/Card.vue';
 import { useDebug } from '@/arkham/debug'
+import { PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { TokenType } from '@/arkham/types/Token'
@@ -12,6 +15,7 @@ import type { Modifier } from '@/arkham/types/Modifier'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import { useMenu } from '@/composeable/menu';
 
 export interface Props {
   choices: Message[]
@@ -27,6 +31,20 @@ const emit = defineEmits(['showCards', 'choose'])
 const id = computed(() => props.investigator.id)
 const debug = useDebug()
 const debugging = ref(false)
+
+const { addEntry, removeEntry } = useMenu()
+const showBonded = ref(false)
+
+if (props.playerId == props.investigator.playerId) {
+  addEntry({
+    id: "viewBonded",
+    icon: PaperClipIcon,
+    content: "View Bonded",
+    shortcut: "b",
+    nested: 'view',
+    action: () => showBonded.value = !showBonded.value
+  })
+}
 
 function canActivateAbility(c: Message): boolean {
   if (c.tag  === MessageType.ABILITY_LABEL) {
@@ -395,6 +413,16 @@ function onDrop(event: DragEvent) {
         tooltip="Leyline"
       />
     </div>
+
+    <Draggable v-if="showBonded">
+      <template #handle><header><h2>Bonded</h2></header></template>
+      <div class="card-row-cards">
+        <div v-for="card in investigator.bondedCards" :key="card.id" class="card-row-card">
+          <CardView :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
+        </div>
+      </div>
+      <button class="close button" @click="showBonded = false">Close</button>
+    </Draggable>
   </div>
 </template>
 
@@ -655,5 +683,27 @@ i.action {
 .investigator--can-interact ~ .card-overlay {
   top: 2px;
   left: 2px;
+}
+
+.card-row-cards {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+.close {
+  width: 100%;
+  background: var(--button-2);
+  display: inline;
+  border: 0;
+  color: white;
+  padding: 0.5em;
+  text-transform: uppercase;
+
+  &:hover {
+    background: var(--button-2-highlight);
+  }
 }
 </style>

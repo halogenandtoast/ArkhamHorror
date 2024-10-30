@@ -49,7 +49,7 @@ instance RunMessage RodOfCarnamagosScepterOfTheMadSeer2 where
               iid
               curses
               "Done attaching Rots"
-              [targetLabel rot [CreateEventAt iid rot (AttachedToEnemy eid)] | rot <- rots]
+              [targetLabel rot [ObtainCard rot, CreateEventAt iid rot (AttachedToEnemy eid)] | rot <- rots]
             push unfocus
       push $ ResetChaosTokens source
       pure a

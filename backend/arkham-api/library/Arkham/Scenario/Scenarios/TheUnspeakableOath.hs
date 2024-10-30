@@ -177,8 +177,8 @@ instance RunMessage TheUnspeakableOath where
         ]
       setAgendaDeck [Agendas.lockedInside, Agendas.torturousDescent, Agendas.hisDomain]
 
-      addExtraDeck LunaticsDeck =<< shuffle =<< amongGathered (CardWithTrait Lunatic)
-      addExtraDeck MonstersDeck =<< shuffle =<< amongGathered (CardWithTrait Monster)
+      addExtraDeck LunaticsDeck =<< shuffle =<< amongGathered (CardWithTrait Lunatic <> #enemy)
+      addExtraDeck MonstersDeck =<< shuffle =<< amongGathered (CardWithTrait Monster <> #enemy)
     ResolveChaosToken _ Skull iid -> do
       when (isHardExpert attrs) $ drawAnotherChaosToken iid
       pure s

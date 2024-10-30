@@ -133,6 +133,7 @@ export type Investigator = {
   skills: string[];
   discard: CardContents[];
   hand: Card[];
+  bondedCards: Card[];
   deck: CardContents[];
   decks: [string, Card[]][];
   treacheries: string[];
@@ -230,6 +231,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  bondedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   deck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   hunchDeck: JsonDecoder.optional(JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]')),

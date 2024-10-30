@@ -34,6 +34,6 @@ instance RunMessage FrenchHill_291 where
     PassedSkillTest _iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do
       let n' = min (maybe 0 countBreaches $ locationBreaches attrs) n
       act <- selectJust AnyAct
-      pushAll [RemoveBreaches (toTarget attrs) n', PlaceBreaches (toTarget act) n]
+      pushAll [RemoveBreaches (toTarget attrs) n', PlaceBreaches (toTarget act) n']
       pure l
     _ -> FrenchHill_291 <$> runMessage msg attrs

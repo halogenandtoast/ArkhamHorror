@@ -45,7 +45,7 @@ instance RunMessage TheNightHowls where
         Just card -> push $ AddCardToDeckForCampaign iid card
         Nothing -> sufferMentalTrauma iid 1
       pure a
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       placeDoom (attrs.ability 1) attrs
         =<< selectCount (EnemyWithTrait Witch <> at_ (locationIs Locations.witchesCircle))
       pure a

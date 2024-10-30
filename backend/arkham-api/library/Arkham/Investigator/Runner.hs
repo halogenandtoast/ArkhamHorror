@@ -1922,6 +1922,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
       & (cardsUnderneathL %~ filter ((/= card) . toCard))
       & (foundCardsL . each %~ filter (/= card))
+      & (bondedCardsL %~ filter ((/= card) . toCard))
   PutCampaignCardIntoPlay iid cardDef | iid == investigatorId -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of

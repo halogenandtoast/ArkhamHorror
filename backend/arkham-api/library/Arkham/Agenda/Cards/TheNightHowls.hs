@@ -1,18 +1,12 @@
-module Arkham.Agenda.Cards.TheNightHowls (
-  TheNightHowls (..),
-  theNightHowls,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheNightHowls (TheNightHowls (..), theNightHowls) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Scenario (getIsStandalone)
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Curse, Omen, Witch))
 
 newtype TheNightHowls = TheNightHowls AgendaAttrs
@@ -24,56 +18,35 @@ theNightHowls = agenda (2, A) TheNightHowls Cards.theNightHowls (Static 12)
 
 instance HasAbilities TheNightHowls where
   getAbilities (TheNightHowls a) =
-    [ restrictedAbility a 1 (EnemyCriteria $ EnemyExists $ EnemyWithTrait Witch)
-        $ ForcedAbility
-        $ RoundEnds Timing.AtIf
+    [ restrictedAbility a 1 (exists $ EnemyWithTrait Witch <> at_ (locationIs Locations.witchesCircle))
+        $ forced
+        $ RoundEnds #at
     ]
 
 instance RunMessage TheNightHowls where
-  runMessage msg a@(TheNightHowls attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigatorIds
+  runMessage msg a@(TheNightHowls attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       isStandalone <- getIsStandalone
-      msgs <-
-        if isStandalone
-          then pure [SufferTrauma iid 0 1 | iid <- iids]
-          else do
-            alreadyIncludedMap <-
-              matchingCardsAlreadyInDeck
-                $ CardWithOneOf
-                $ map
-                  CardWithTrait
-                  [Omen, Curse]
-            pure
-              $ [ SearchCollectionForRandom iid (toSource attrs)
-                  $ BasicWeaknessCard
-                  <> CardWithOneOf (map CardWithTrait [Omen, Curse])
-                  <> excludeMatcher
-                | iid <- iids
-                , let cardCodes = findWithDefault mempty iid alreadyIncludedMap
-                , let
-                    excludeMatcher =
-                      if null cardCodes
-                        then AnyCard
-                        else
-                          NotCard
-                            ( CardWithOneOf
-                                $ map CardWithCardCode
-                                $ setToList
-                                  cardCodes
-                            )
-                ]
-      pushAll
-        $ msgs
-        <> [AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)]
+      if isStandalone
+        then eachInvestigator (`sufferMentalTrauma` 1)
+        else do
+          alreadyIncludedMap <- matchingCardsAlreadyInDeck $ mapOneOf CardWithTrait [Omen, Curse]
+          eachInvestigator $ \iid -> do
+            let cardCodes = setToList $ findWithDefault mempty iid alreadyIncludedMap
+            let excludeMatcher = if null cardCodes then AnyCard else not_ (mapOneOf CardWithCardCode cardCodes)
+            searchCollectionForRandom iid attrs
+              $ BasicWeaknessCard
+              <> mapOneOf withTrait [Omen, Curse]
+              <> excludeMatcher
+      advanceAgendaDeck attrs
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       case mcard of
         Just card -> push $ AddCardToDeckForCampaign iid card
-        Nothing -> push $ SufferTrauma iid 0 1
+        Nothing -> sufferMentalTrauma iid 1
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      witchCount <- selectCount $ EnemyWithTrait Witch
-      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) witchCount
+      placeDoom (attrs.ability 1) attrs
+        =<< selectCount (EnemyWithTrait Witch <> at_ (locationIs Locations.witchesCircle))
       pure a
-    _ -> TheNightHowls <$> runMessage msg attrs
+    _ -> TheNightHowls <$> liftRunMessage msg attrs

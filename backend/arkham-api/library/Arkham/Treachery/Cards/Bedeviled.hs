@@ -24,13 +24,8 @@ instance HasModifiersFor Bedeviled where
   getModifiersFor (SkillTestTarget _) (Bedeviled attrs) = maybeModified attrs do
     source <- MaybeT getSkillTestSource
     investigator <- MaybeT getSkillTestInvestigator
-    guard $ isSource attrs source && treacheryInThreatArea investigator attrs
-    guardM
-      $ lift
-      $ selectAny
-      $ ExhaustedEnemy
-      <> EnemyWithTrait Witch
-      <> enemyAtLocationWith investigator
+    guard $ isSource attrs source
+    liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith investigator
     pure [SkillTestAutomaticallySucceeds]
   getModifiersFor _ _ = pure []
 
@@ -44,7 +39,7 @@ instance RunMessage Bedeviled where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      revelationSkillTest sid iid attrs #willpower (Fixed 3)
+      beginSkillTest sid iid attrs iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

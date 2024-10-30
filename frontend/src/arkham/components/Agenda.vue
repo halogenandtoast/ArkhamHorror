@@ -111,6 +111,10 @@ const debug = useDebug()
         :src="image"
       />
       <div class="pool" v-if="!agenda.flipped">
+        <template v-if="debug.active">
+          <button @click="debug.send(game.id, {tag: 'RemoveTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">-</button>
+        </template>
+
         <PoolItem
           type="doom"
           :amount="agenda.doom"

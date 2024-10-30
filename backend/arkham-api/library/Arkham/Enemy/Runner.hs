@@ -804,7 +804,7 @@ instance RunMessage EnemyAttrs where
       for_ alternateSuccess $ \target' ->
         push $ Successful (Action.Evade, toTarget a) iid source target' n
       pure a
-    FailedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isTarget a target -> do
+    FailedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isActionTarget a target -> do
       whenWindow <- checkWindows [mkWhen $ Window.FailEvadeEnemy iid enemyId n]
       afterWindow <- checkWindows [mkAfter $ Window.FailEvadeEnemy iid enemyId n]
       pushAll

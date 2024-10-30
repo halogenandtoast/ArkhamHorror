@@ -4,15 +4,15 @@ module Arkham.Enemy.Cards.WatcherFromAnotherDimension (
 )
 where
 
-import Arkham.Prelude
-
-import Arkham.Attack
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Constants
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Enemy
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message.Lifted.Placement
+import Arkham.Modifier
 import Arkham.Placement
 
 newtype WatcherFromAnotherDimension = WatcherFromAnotherDimension EnemyAttrs
@@ -29,43 +29,39 @@ watcherFromAnotherDimension =
     (spawnAtL ?~ NoSpawn)
 
 instance HasAbilities WatcherFromAnotherDimension where
-  getAbilities (WatcherFromAnotherDimension a) = case enemyPlacement a of
+  getAbilities (WatcherFromAnotherDimension a) = case a.placement of
     StillInHand iid ->
-      [ restrictedAbility
+      [ restricted
           a
           AbilityAttack
-          ( exists (You <> InvestigatorWithId iid)
-              <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
+          ( youExist (InvestigatorWithId iid)
+              <> thisEnemy (EnemyWithoutModifier CannotBeAttacked)
               <> CanAttack
           )
-          $ ActionAbility [#fight] (ActionCost 1)
-      , restrictedAbility
-          a
-          AbilityEvade
-          (exists (You <> InvestigatorWithId iid))
-          $ ActionAbility [#evade] (ActionCost 1)
-      , mkAbility a 1 $ ForcedAbility $ Matcher.DeckHasNoCards #when (You <> InvestigatorWithId iid)
+          fightAction_
+      , restricted a AbilityEvade (youExist $ InvestigatorWithId iid) evadeAction_
+      , mkAbility a 1 $ forced $ Matcher.DeckHasNoCards #when (You <> InvestigatorWithId iid)
       ]
     _ -> getAbilities a
 
 instance RunMessage WatcherFromAnotherDimension where
-  runMessage msg e@(WatcherFromAnotherDimension attrs) = case msg of
+  runMessage msg e@(WatcherFromAnotherDimension attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      pushAll [PlaceEnemy (toId e) (StillInHand iid)]
+      place attrs (StillInHand iid)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
+      initiateEnemyAttack attrs attrs iid
       pure e
-    Successful (action, _) iid _ (isTarget attrs -> True) _ | action `elem` [#fight, #evade] -> do
-      case enemyPlacement attrs of
+    Successful (action, (isTarget attrs -> True)) iid _ _ _ | action `elem` [#fight, #evade] -> do
+      case attrs.placement of
         StillInHand _ -> do
-          push $ toDiscardBy iid (toSource attrs) attrs
+          toDiscardBy iid (toSource attrs) attrs
           pure e
-        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
-    FailedSkillTest iid (Just action) _ (Initiator (isTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do
-      case enemyPlacement attrs of
+        _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs
+    FailedSkillTest iid (Just action) _ (Initiator (isActionTarget attrs -> True)) _ _ | action `elem` [#fight, #evade] -> do
+      case attrs.placement of
         StillInHand _ -> do
           push $ EnemySpawnAtLocationMatching (Just iid) (locationWithInvestigator iid) (toId attrs)
           pure e
-        _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
-    _ -> WatcherFromAnotherDimension <$> runMessage msg attrs
+        _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs
+    _ -> WatcherFromAnotherDimension <$> liftRunMessage msg attrs

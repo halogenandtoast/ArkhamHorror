@@ -35,7 +35,7 @@ instance RunMessage ImpromptuBarrier where
     ChosenEvadeEnemy sid (isSource attrs -> True) eid -> do
       pushM $ skillTestModifier sid attrs eid (EnemyEvade (-1))
       pure e
-    Successful (Action.Evade, EnemyTarget enemyId) iid _ (isTarget attrs -> True) n -> do
+    Successful (Action.Evade, EnemyTarget enemyId) iid source (isTarget attrs -> True) n -> do
       enemies <-
         map fst
           . filter (maybe False (<= n) . snd)
@@ -45,7 +45,7 @@ instance RunMessage ImpromptuBarrier where
       chooseEvade <-
         toMessage . setTarget attrs <$> mkChooseEvadeMatch sid iid attrs (oneOf $ map EnemyWithId enemies)
       pushAll
-        $ EnemyEvaded iid enemyId
+        $ Successful (Action.Evade, EnemyTarget enemyId) iid source (toTarget enemyId) n
         : [ chooseOne
             player
             [ Label "Do not evade another enemy" []

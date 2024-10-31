@@ -41,8 +41,6 @@ import Arkham.Agenda.Agendas (
  )
 import Arkham.Asset.Assets (
   aceOfRods1Effect,
-  alchemicalTransmutation2Effect,
-  alchemicalTransmutationEffect,
   arbiterOfFatesEffect,
   armageddon4Effect,
   armageddonEffect,
@@ -68,7 +66,6 @@ import Arkham.Asset.Assets (
   ineffableTruth3Effect,
   ineffableTruth5Effect,
   ineffableTruthEffect,
-  libraryDocent1Effect,
   lockpicks1Effect,
   lockpicksEffect,
   luckyDice2Effect,
@@ -79,7 +76,6 @@ import Arkham.Asset.Assets (
   mistsOfRlyeh4Effect,
   mistsOfRlyehEffect,
   mrPeabodyEffect,
-  oldBookOfLore3Effect,
   pnakoticManuscripts5Effect,
   prismaticSpectaclesLensToTheOtherworld2Effect,
   riteOfSeekingEffect,
@@ -164,7 +160,6 @@ import Arkham.Location.Locations (
   enchantedWoodsLostWoodsEffect,
   hereticsGravesSpectral_171Effect,
   longWayAroundEffect,
-  montmartre209Effect,
   restaurantEffect,
   tenAcreMeadow_246Effect,
   unvisitedIsleMossCoveredStepsEffect,
@@ -271,15 +266,16 @@ createEndOfTurnEffect source iid messages = do
   pure (eid, buildEndOfTurnEffect eid source iid messages)
 
 createSurgeEffect
-  :: (MonadRandom m, Sourceable source, Targetable target)
+  :: (MonadRandom m, Sourceable source, Targetable target, HasGame m)
   => source
   -> target
   -> m (EffectId, Effect)
 createSurgeEffect (toSource -> source) (toTarget -> target) = do
   eid <- getRandom
+  builder <- makeEffectBuilder "surge" Nothing source target
   pure
     ( eid
-    , Effect $ surgeEffect (eid, makeEffectBuilder "surge" Nothing source target)
+    , Effect $ surgeEffect (eid, builder)
     )
 
 instance RunMessage Effect where
@@ -367,7 +363,7 @@ allEffects =
     , ("03024", SomeEffect fieldworkEffect)
     , ("03029", SomeEffect sleightOfHandEffect)
     , ("03031", SomeEffect lockpicks1Effect)
-    , ("03032", SomeEffect alchemicalTransmutationEffect)
+    , ("03032", SomeEffect $ noop "03032")
     , ("03033", SomeEffect uncageTheSoulEffect)
     , ("03047a", SomeEffect theStrangerACityAflameEffect)
     , ("03047b", SomeEffect theStrangerThePathIsMineEffect)
@@ -378,7 +374,7 @@ allEffects =
     , ("03153", SomeEffect stormOfSpiritsEffect)
     , ("03155", SomeEffect fightOrFlightEffect)
     , ("03158", SomeEffect callingInFavorsEffect)
-    , ("03209", SomeEffect montmartre209Effect)
+    , ("03209", SomeEffect $ noop "03209")
     , ("03254", SomeEffect $ noop "03254")
     , ("03306", SomeEffect eideticMemory3Effect)
     , ("04004", SomeEffect $ noop "04004")
@@ -435,7 +431,7 @@ allEffects =
     , ("06195", SomeEffect thirtyFiveWinchesterEffect)
     , ("06201", SomeEffect spectralRazorEffect)
     , ("06278", SomeEffect surprisingFind1Effect)
-    , ("06279", SomeEffect oldBookOfLore3Effect)
+    , ("06279", SomeEffect $ noop "06279")
     , ("06319", SomeEffect restlessJourneyFallacyEffect)
     , ("06320", SomeEffect restlessJourneyHardshipEffect)
     , ("06321", SomeEffect restlessJourneyLiesEffect)
@@ -480,13 +476,13 @@ allEffects =
     , ("10129", SomeEffect bideYourTimeEffect)
     , ("10131", SomeEffect dawnStar1Effect)
     , ("50044", SomeEffect jeremiahPierceEffect)
-    , ("52007", SomeEffect alchemicalTransmutation2Effect)
+    , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)
     , ("53007", SomeEffect mistsOfRlyeh2Effect)
     , ("54006", SomeEffect wellConnected3Effect)
     , ("60101", SomeEffect nathanielChoEffect)
     , ("60103", SomeEffect tommyMalloyEffect)
-    , ("60220", SomeEffect libraryDocent1Effect)
+    , ("60220", SomeEffect $ noop "60220")
     , ("60232", SomeEffect miskatonicArchaeologyFunding4Effect)
     , ("60301", SomeEffect winifredHabbamockEffect)
     , ("60305", SomeEffect lockpicksEffect)

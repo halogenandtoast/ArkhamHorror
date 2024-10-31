@@ -29,7 +29,7 @@ instance RunMessage SlipAway2 where
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 1 -> do
       pushWhen (n >= 3)
-        $ createCardEffect Cards.slipAway2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
+        =<< createCardEffect Cards.slipAway2 (Just $ EffectMetaTarget (toTarget $ toCardId attrs)) attrs iid
       mTarget <- getSkillTestTarget
       case mTarget of
         Just (EnemyTarget enemyId) -> do

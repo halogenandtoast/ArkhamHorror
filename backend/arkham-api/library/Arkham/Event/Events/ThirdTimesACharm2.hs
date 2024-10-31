@@ -21,7 +21,7 @@ instance RunMessage ThirdTimesACharm2 where
   runMessage msg e@(ThirdTimesACharm2 attrs) = case msg of
     PlayThisEvent _iid eid | eid == toId attrs -> do
       withSkillTest \sid ->
-        push $ createCardEffect Cards.thirdTimesACharm2 (Just $ EffectInt 2) attrs sid
+        push =<< createCardEffect Cards.thirdTimesACharm2 (Just $ EffectInt 2) attrs sid
       pure e
     _ -> ThirdTimesACharm2 <$> runMessage msg attrs
 

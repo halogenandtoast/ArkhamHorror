@@ -101,7 +101,7 @@ instance RunMessage EmpiricalHypothesis where
       push $ drawCards iid (toAbilitySource attrs 2) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      push $ createCardEffect Cards.empiricalHypothesis Nothing attrs iid
+      push =<< createCardEffect Cards.empiricalHypothesis Nothing attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 4 -> do
       push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 4) 1
@@ -132,7 +132,7 @@ instance RunMessage EmpiricalHypothesis where
       pure a
     HandleAbilityOption iid (isSource attrs -> True) n -> do
       let meta = toResult (assetMeta attrs)
-      push $ createCardEffect Cards.empiricalHypothesis (Just $ EffectInt n) attrs iid
+      push =<< createCardEffect Cards.empiricalHypothesis (Just $ EffectInt n) attrs iid
       pure $ EmpiricalHypothesis $ attrs & metaL .~ toJSON (meta <> [n])
     _ -> EmpiricalHypothesis <$> runMessage msg attrs
 

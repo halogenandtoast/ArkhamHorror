@@ -3,6 +3,7 @@ module Arkham.Helpers.Ref where
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
@@ -27,6 +28,7 @@ targetToMaybeCard = \case
   SkillTarget aid -> fieldMay SkillCard aid
   EnemyTarget aid -> fieldMay EnemyCard aid
   StoryTarget aid -> fieldMay StoryCard aid
+  EffectTarget eid -> join <$> fieldMay EffectCard eid
   TreacheryTarget aid -> fieldMay TreacheryCard aid
   LocationTarget aid -> fieldMay LocationCard aid
   SearchedCardTarget cId -> Just <$> getCard cId

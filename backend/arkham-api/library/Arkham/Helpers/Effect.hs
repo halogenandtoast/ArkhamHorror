@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Effect.Types (EffectBuilder (..), Field (..))
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Message
 import Arkham.Projection
@@ -23,21 +24,23 @@ lookupEffectCard eid = do
   pure $ lookupCardDef cardCode
 
 createCardEffect
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => CardDef
   -> Maybe (EffectMetadata Window Message)
   -> source
   -> target
-  -> Message
-createCardEffect def mMeta (toSource -> source) (toTarget -> target) = CreateEffect $ makeEffectBuilder (toCardCode def) mMeta source target
+  -> m Message
+createCardEffect def mMeta (toSource -> source) (toTarget -> target) = do
+  mcard <- sourceToMaybeCard source
+  builder <- makeEffectBuilder (toCardCode def) mMeta source target
+  pure $ CreateEffect $ builder {effectBuilderCardId = toCardId <$> mcard}
 
 createMaxEffect
-  :: CardDef
+  :: HasGame m
+  => CardDef
   -> Int
   -> EffectWindow
-  -> Message
-createMaxEffect def n ew =
-  CreateEffect
-    $ (makeEffectBuilder "maxef" (effectInt n) GameSource (CardCodeTarget $ toCardCode def))
-      { effectBuilderWindow = Just ew
-      }
+  -> m Message
+createMaxEffect def n ew = do
+  builder <- makeEffectBuilder "maxef" (effectInt n) GameSource (CardCodeTarget $ toCardCode def)
+  pure $ CreateEffect $ builder {effectBuilderWindow = Just ew}

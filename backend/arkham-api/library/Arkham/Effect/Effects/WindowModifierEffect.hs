@@ -41,6 +41,7 @@ windowModifierEffect' eid metadata effectWindow source target =
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = mSkillTest
+      , effectCardId = Nothing
       }
  where
   mSkillTest = case (metadata, source, target, effectWindow) of

@@ -19,7 +19,7 @@ fightOrFlight = event FightOrFlight Cards.fightOrFlight
 instance RunMessage FightOrFlight where
   runMessage msg e@(FightOrFlight attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ createCardEffect Cards.fightOrFlight Nothing attrs iid
+      push =<< createCardEffect Cards.fightOrFlight Nothing attrs iid
       pure e
     _ -> FightOrFlight <$> runMessage msg attrs
 

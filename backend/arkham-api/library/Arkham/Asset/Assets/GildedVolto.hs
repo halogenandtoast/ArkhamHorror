@@ -29,7 +29,7 @@ instance HasAbilities GildedVolto where
 instance RunMessage GildedVolto where
   runMessage msg a@(GildedVolto attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.gildedVolto Nothing (attrs.ability 1) iid
+      push =<< createCardEffect Cards.gildedVolto Nothing (attrs.ability 1) iid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       skillTest <- getJustSkillTest

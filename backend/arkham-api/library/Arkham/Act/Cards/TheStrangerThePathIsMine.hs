@@ -42,14 +42,15 @@ instance RunMessage TheStrangerThePathIsMine where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       theManInThePallidMask <- getTheManInThePallidMask
       mlid <- selectOne $ LocationWithEnemy $ EnemyWithId theManInThePallidMask
-      card <- flipCard <$> genCard (toCardDef attrs)
-      for_ mlid $ \lid ->
+      for_ mlid $ \lid -> do
+        card <- flipCard <$> genCard (toCardDef attrs)
+        enabled <- createCardEffect Cards.theStrangerThePathIsMine Nothing attrs attrs
         pushAll
           [ AddChaosToken Tablet
           , AddChaosToken Tablet
           , PlaceHorror (toSource attrs) (toTarget lid) 1
           , PlaceNextTo ActDeckTarget [card]
-          , createCardEffect Cards.theStrangerThePathIsMine Nothing attrs attrs
+          , enabled
           , advanceActDeck attrs
           ]
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding

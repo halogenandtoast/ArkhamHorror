@@ -1,12 +1,11 @@
 module Arkham.Skill.Cards.Fey1 (fey1, fey1Effect, Fey1 (..)) where
 
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Effect.Runner
-import Arkham.Prelude
+import Arkham.Effect.Import
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
+import Arkham.Skill.Types (Field (SkillCard, SkillOwner))
 
 newtype Fey1 = Fey1 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -16,11 +15,11 @@ fey1 :: SkillCard Fey1
 fey1 = skill Fey1 Cards.fey1
 
 instance RunMessage Fey1 where
-  runMessage msg (Fey1 attrs) = case msg of
+  runMessage msg (Fey1 attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
-      push $ createCardEffect Cards.fey1 Nothing attrs iid
-      Fey1 <$> runMessage msg attrs
-    _ -> Fey1 <$> runMessage msg attrs
+      createCardEffect Cards.fey1 Nothing attrs iid
+      Fey1 <$> liftRunMessage msg attrs
+    _ -> Fey1 <$> liftRunMessage msg attrs
 
 newtype Fey1Effect = Fey1Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -30,7 +29,7 @@ fey1Effect :: EffectArgs -> Fey1Effect
 fey1Effect = cardEffectWith Fey1Effect Cards.fey1 (setEffectMeta False)
 
 instance RunMessage Fey1Effect where
-  runMessage msg e@(Fey1Effect attrs) = case msg of
+  runMessage msg e@(Fey1Effect attrs) = runQueueT $ case msg of
     RevealChaosToken _ _ token -> do
       pure $ if token.face == #curse then Fey1Effect $ setEffectMeta True attrs else e
     SkillTestEnded _ -> do
@@ -38,14 +37,10 @@ instance RunMessage Fey1Effect where
       (card, owner) <- case attrs.source of
         SkillSource s -> (,) <$> field SkillCard s <*> field SkillOwner s
         _ -> error "Expected SkillSource"
-      player <- getPlayer owner
-      pushAll $ disable attrs
-        : [ chooseOne
-            player
-            [ Label "Return Fey to hand" [ReturnToHand owner (CardIdTarget $ toCardId card)]
-            , Label "Do not return" []
-            ]
-          | shouldReturn
-          ]
+      disable attrs
+      when shouldReturn do
+        chooseOneM owner do
+          labeled "Return Fey to hand" $ returnToHand owner card
+          labeled "Do not return" nothing
       pure e
-    _ -> Fey1Effect <$> runMessage msg attrs
+    _ -> Fey1Effect <$> liftRunMessage msg attrs

@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.LodgeNeophyte (
-  lodgeNeophyte,
-  LodgeNeophyte (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.LodgeNeophyte (lodgeNeophyte, LodgeNeophyte (..)) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -11,6 +6,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 

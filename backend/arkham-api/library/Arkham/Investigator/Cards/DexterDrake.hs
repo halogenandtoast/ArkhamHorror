@@ -1,25 +1,17 @@
-module Arkham.Investigator.Cards.DexterDrake (
-  dexterDrake,
-  dexterDrakeEffect,
-  DexterDrake (..),
-)
-where
+module Arkham.Investigator.Cards.DexterDrake (dexterDrake, dexterDrakeEffect, DexterDrake (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Effect qualified as Msg
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (Discarded, DuringTurn)
-import Arkham.Name
+import Arkham.Message.Lifted.Choose
+import Arkham.Name hiding (labeled)
 import Arkham.Placement
-import Arkham.Window (defaultWindows)
 
 newtype DexterDrake = DexterDrake InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -75,22 +67,19 @@ instance RunMessage DexterDrake where
                 (inHandOf attrs.id <> basic (#asset <> not_ (CardWithTitle $ toTitle card)))
             , inHandOf iid <> basic (cardIs Assets.occultScraps)
             ]
-      chooseOrRunOne
-        iid
-        [ targetLabel (toCardId c)
-          $ [ Msg.createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
-            , PayCardCost iid c $ defaultWindows iid
-            ]
-        | c <- cards
-        ]
+      chooseOrRunOneM iid do
+        targets cards \c -> do
+          createCardEffect Cards.dexterDrake Nothing attrs (toCardId c)
+          playCardPayingCost iid c
       pure i
     ElderSignEffect iid | iid == toId attrs -> do
       assets <- select $ AssetWithPlacement (InPlayArea iid) <> AssetCanLeavePlayByNormalMeans
       when (notNull assets) do
-        drawing <- Msg.drawCardsIfCan iid attrs 1
-        chooseOne iid
-          $ Label "Do no return an asset" []
-          : [targetLabel asset $ ReturnToHand iid (toTarget asset) : maybeToList drawing | asset <- assets]
+        chooseOneM iid do
+          labeled "Do no return an asset" nothing
+          targets assets \asset -> do
+            push $ ReturnToHand iid (toTarget asset)
+            drawCardsIfCan iid attrs 1
       pure i
     _ -> DexterDrake <$> liftRunMessage msg attrs
 
@@ -103,7 +92,7 @@ dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
 dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
 
 instance HasModifiersFor DexterDrakeEffect where
-  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs) | effectTarget attrs == target = do
+  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs) | attrs.target == target = do
     card <- getCard cid
     toModifiers attrs
       $ [ReduceCostOf (CardWithId cid) 1]
@@ -111,8 +100,7 @@ instance HasModifiersFor DexterDrakeEffect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage DexterDrakeEffect where
-  runMessage msg e@(DexterDrakeEffect attrs) = case msg of
-    ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs -> do
-      push $ DisableEffect (toId attrs)
-      pure e
-    _ -> DexterDrakeEffect <$> runMessage msg attrs
+  runMessage msg e@(DexterDrakeEffect attrs) = runQueueT $ case msg of
+    ResolvedCard _ card | CardIdTarget (toCardId card) == attrs.target -> do
+      disableReturn e
+    _ -> DexterDrakeEffect <$> liftRunMessage msg attrs

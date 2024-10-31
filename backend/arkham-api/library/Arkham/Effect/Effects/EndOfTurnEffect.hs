@@ -35,6 +35,7 @@ endOfTurnEffect' eid source iid msgs =
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing
+      , effectCardId = Nothing
       }
 
 instance HasModifiersFor EndOfTurnEffect

@@ -1,17 +1,19 @@
 module Arkham.Asset.Assets.MistsOfRlyeh (mistsOfRlyeh, MistsOfRlyeh (..), mistsOfRlyehEffect) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.ChaosToken
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Evade
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
-import Arkham.Window qualified as Window
 
 newtype MistsOfRlyeh = MistsOfRlyeh AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,22 +23,20 @@ mistsOfRlyeh :: AssetCard MistsOfRlyeh
 mistsOfRlyeh = asset MistsOfRlyeh Cards.mistsOfRlyeh
 
 instance HasAbilities MistsOfRlyeh where
-  getAbilities (MistsOfRlyeh a) = [restrictedAbility a 1 ControlsThis $ evadeAction $ assetUseCost a Charge 1]
+  getAbilities (MistsOfRlyeh a) = [restricted a 1 ControlsThis $ evadeAction $ assetUseCost a Charge 1]
 
 instance RunMessage MistsOfRlyeh where
-  runMessage msg a@(MistsOfRlyeh attrs) = case msg of
+  runMessage msg a@(MistsOfRlyeh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseEvade <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
-      pushAll
-        $ [ createCardEffect Cards.mistsOfRlyeh (effectInt 1) source sid
-          , createCardEffect Cards.mistsOfRlyeh (effectInt 2) source sid
-          ]
-        <> chooseEvade
+      let tokens = oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]
+      onRevealChaosTokenEffect sid tokens attrs attrs do
+        chooseAndDiscardCard iid (attrs.ability 1)
+      createCardEffect Cards.mistsOfRlyeh Nothing source sid
+      aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
       pure a
-    _ -> MistsOfRlyeh <$> runMessage msg attrs
+    _ -> MistsOfRlyeh <$> liftRunMessage msg attrs
 
 newtype MistsOfRlyehEffect = MistsOfRlyehEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -46,41 +46,18 @@ mistsOfRlyehEffect :: EffectArgs -> MistsOfRlyehEffect
 mistsOfRlyehEffect = cardEffect MistsOfRlyehEffect Cards.mistsOfRlyeh
 
 instance RunMessage MistsOfRlyehEffect where
-  runMessage msg e@(MistsOfRlyehEffect attrs@EffectAttrs {..}) = case msg of
-    RevealChaosToken _ iid token | attrs.metaInt == Just 1 -> do
-      whenJustM getSkillTest \st -> do
-        let triggers =
-              token.face
-                `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
-                && iid
-                == st.investigator
-                && isTarget st attrs.target
-        when triggers do
-          pushAll
-            [ If
-                (Window.RevealChaosTokenEffect iid token effectId)
-                [toMessage $ chooseAndDiscardCard iid effectSource]
-            , DisableEffect effectId
-            ]
-      pure e
-    SkillTestEnds sid _ _ | attrs.metaInt == Just 2 && isTarget sid attrs.target -> do
+  runMessage msg e@(MistsOfRlyehEffect attrs) = runQueueT $ case msg of
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
       whenJustM getSkillTestInvestigator \iid -> do
         mSkillTestResult <- fmap skillTestResult <$> getSkillTest
         case mSkillTestResult of
           Just (SucceededBy _ _) -> do
             unblockedConnectedLocationIds <- getAccessibleLocations iid attrs
-            player <- getPlayer iid
-            let
-              moveOptions =
-                chooseOrRunOne player
-                  $ [Label "Do not move to a connecting location" []]
-                  <> [ targetLabel lid [Move $ move attrs iid lid]
-                     | lid <- unblockedConnectedLocationIds
-                     ]
-            pushAll [moveOptions, DisableEffect effectId]
-          _ -> push $ DisableEffect effectId
+            chooseOrRunOneM iid do
+              labeled "Do not move to a connecting location" nothing
+              targets unblockedConnectedLocationIds $ moveTo attrs iid
+          _ -> pure ()
+        disable attrs
       pure e
-    SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-      push $ DisableEffect effectId
-      pure e
-    _ -> MistsOfRlyehEffect <$> runMessage msg attrs
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e
+    _ -> MistsOfRlyehEffect <$> liftRunMessage msg attrs

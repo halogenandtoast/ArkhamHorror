@@ -43,10 +43,11 @@ instance RunMessage TheLoversVI where
                         (selectOne $ OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
                         (selectOne $ enemyIs Enemies.theSpectralWatcher)
                     )
+            enabled <- createCardEffect Cards.theLoversVI Nothing attrs ScenarioTarget
             pushAll
               [ PlaceTokens (toSource attrs) (toTarget theSpectralWatcher) LostSoul takenByTheWatcher
               , PlaceNextTo AgendaDeckTarget [card]
-              , createCardEffect Cards.theLoversVI Nothing attrs ScenarioTarget
+              , enabled
               , advanceAgendaDeck attrs
               ]
           else pushAll [advanceAgendaDeck attrs]

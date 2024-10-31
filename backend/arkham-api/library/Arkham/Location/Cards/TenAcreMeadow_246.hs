@@ -1,14 +1,18 @@
-module Arkham.Location.Cards.TenAcreMeadow_246 (tenAcreMeadow_246, tenAcreMeadow_246Effect, TenAcreMeadow_246 (..)) where
+module Arkham.Location.Cards.TenAcreMeadow_246 (
+  tenAcreMeadow_246,
+  tenAcreMeadow_246Effect,
+  TenAcreMeadow_246 (..),
+) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (tenAcreMeadow_246)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Runner (locationEnemiesWithTrait, pattern RemoveClues)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait
 
 newtype TenAcreMeadow_246 = TenAcreMeadow_246 LocationAttrs
@@ -21,37 +25,26 @@ tenAcreMeadow_246 =
 
 instance HasAbilities TenAcreMeadow_246 where
   getAbilities (TenAcreMeadow_246 attrs) =
-    withRevealedAbilities
-      attrs
-      [ groupLimit PerGame
-          $ restrictedAbility
-            attrs
-            1
-            (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination))
-            (FastAbility Free)
-      ]
+    extendRevealed1 attrs
+      $ groupLimit PerGame
+      $ restricted
+        attrs
+        1
+        (Here <> exists (EnemyAt YourLocation <> withTrait Abomination))
+        (FastAbility Free)
 
 instance RunMessage TenAcreMeadow_246 where
-  runMessage msg l@(TenAcreMeadow_246 attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(TenAcreMeadow_246 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       abominations <- locationEnemiesWithTrait attrs Abomination
       when
         (null abominations)
         (throwIO $ InvalidState "should not have been able to use this ability")
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel
-              eid
-              [ PlaceClues (toAbilitySource attrs 1) (toTarget eid) 1
-              , createCardEffect Cards.tenAcreMeadow_246 Nothing (attrs.ability 1) eid
-              ]
-            | eid <- abominations
-            ]
-        ]
+      chooseTargetM iid abominations \eid -> do
+        placeClues (attrs.ability 1) eid 1
+        createCardEffect Cards.tenAcreMeadow_246 Nothing (attrs.ability 1) eid
       pure l
-    _ -> TenAcreMeadow_246 <$> runMessage msg attrs
+    _ -> TenAcreMeadow_246 <$> liftRunMessage msg attrs
 
 newtype TenAcreMeadow_246Effect = TenAcreMeadow_246Effect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -61,8 +54,8 @@ tenAcreMeadow_246Effect :: EffectArgs -> TenAcreMeadow_246Effect
 tenAcreMeadow_246Effect = cardEffect TenAcreMeadow_246Effect Cards.tenAcreMeadow_246
 
 instance RunMessage TenAcreMeadow_246Effect where
-  runMessage msg e@(TenAcreMeadow_246Effect attrs) = case msg of
+  runMessage msg e@(TenAcreMeadow_246Effect attrs) = runQueueT $ case msg of
     EndRound -> do
-      pushAll [RemoveClues (toSource attrs) (effectTarget attrs) 1, disable attrs]
-      pure e
-    _ -> TenAcreMeadow_246Effect <$> runMessage msg attrs
+      push $ RemoveClues attrs.source attrs.target 1
+      disableReturn e
+    _ -> TenAcreMeadow_246Effect <$> liftRunMessage msg attrs

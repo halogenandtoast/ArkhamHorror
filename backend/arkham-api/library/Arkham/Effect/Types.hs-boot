@@ -2,6 +2,7 @@ module Arkham.Effect.Types where
 
 import Arkham.Prelude
 
+data Effect
 data EffectAttrs
 
 instance Show EffectAttrs

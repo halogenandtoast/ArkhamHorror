@@ -31,8 +31,9 @@ instance RunMessage AlejandroVela where
   runMessage msg e@(AlejandroVela attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
+      enabled <- createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) sid
       pushAll
-        [ createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) sid
+        [ enabled
         , parley sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 5)
         ]
       pure e

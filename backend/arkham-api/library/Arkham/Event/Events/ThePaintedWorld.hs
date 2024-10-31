@@ -36,17 +36,14 @@ instance RunMessage ThePaintedWorld where
         filterM
           (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) playableWindows)
           candidates
+      enabled <- createCardEffect Cards.thePaintedWorld Nothing (toCardId attrs) (toCardId attrs)
+
       push
         $ InitiatePlayCardAsChoose
           iid
           (toCard attrs)
           playableCards
-          [ createCardEffect
-              Cards.thePaintedWorld
-              Nothing
-              (CardIdSource $ toCardId attrs)
-              (CardIdTarget $ toCardId attrs)
-          ]
+          [enabled]
           LeaveChosenCard
           NoPayment
           playableWindows

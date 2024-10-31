@@ -37,7 +37,7 @@ instance RunMessage ExposeWeakness1 where
       mtarget <- getSkillTestTarget
       case mtarget of
         Just (EnemyTarget enemyId) ->
-          push $ createCardEffect Cards.exposeWeakness1 (Just $ EffectInt n) attrs enemyId
+          push =<< createCardEffect Cards.exposeWeakness1 (Just $ EffectInt n) attrs enemyId
         _ -> error "had to have an enemy"
       pure e
     _ -> ExposeWeakness1 <$> runMessage msg attrs

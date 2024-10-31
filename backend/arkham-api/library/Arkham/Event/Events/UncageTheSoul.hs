@@ -31,17 +31,11 @@ instance RunMessage UncageTheSoul where
           (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
           results
       player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel
-              (toCardId c)
-              [ createCardEffect Cards.uncageTheSoul Nothing attrs (toCardId c)
-              , PayCardCost iid c windows''
-              ]
-            | c <- cards
-            ]
-        ]
+      choices <- for cards \c -> do
+        enabled <- createCardEffect Cards.uncageTheSoul Nothing attrs (toCardId c)
+        pure $ targetLabel (toCardId c) [enabled, PayCardCost iid c windows'']
+
+      push $ chooseOne player choices
       pure e
     _ -> UncageTheSoul <$> runMessage msg attrs
 

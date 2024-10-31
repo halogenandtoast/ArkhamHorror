@@ -33,8 +33,9 @@ instance RunMessage IchtacaScionOfYig where
   runMessage msg e@(IchtacaScionOfYig attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       sid <- getRandom
+      enabled <- createCardEffect Cards.ichtacaScionOfYig Nothing attrs sid
       pushAll
-        [ createCardEffect Cards.ichtacaScionOfYig Nothing attrs sid
+        [ enabled
         , parley sid iid attrs attrs #intellect (Fixed 5)
         ]
       pure e

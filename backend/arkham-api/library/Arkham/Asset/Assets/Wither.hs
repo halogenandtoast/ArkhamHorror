@@ -1,14 +1,15 @@
 module Arkham.Asset.Assets.Wither (wither, witherEffect, Wither (..)) where
 
 import Arkham.Ability
-import Arkham.Aspect
+import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
 import Arkham.Effect.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers (effectModifiers)
 import Arkham.Matcher (InvestigatorMatcher (TurnInvestigator))
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Window qualified as Window
 
 newtype Wither = Wither AssetAttrs
@@ -20,20 +21,17 @@ wither = asset Wither Cards.wither
 
 instance HasAbilities Wither where
   getAbilities (Wither a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1)]
+    [restricted a 1 ControlsThis $ ActionAbilityWithSkill [#fight] #willpower (ActionCost 1)]
 
 instance RunMessage Wither where
-  runMessage msg a@(Wither attrs) = case msg of
+  runMessage msg a@(Wither attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <-
-        leftOr <$> aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
-      pushAll
-        $ createCardEffect Cards.wither (effectMetaTarget sid) source iid
-        : chooseFight
+      createCardEffect Cards.wither (effectMetaTarget sid) source iid
+      aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
-    _ -> Wither <$> runMessage msg attrs
+    _ -> Wither <$> liftRunMessage msg attrs
 
 newtype WitherEffect = WitherEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)

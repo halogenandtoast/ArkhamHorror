@@ -22,7 +22,7 @@ instance RunMessage Deduction2 where
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _ n | sid == skillId -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
-        let effectMessage = createCardEffect Cards.deduction2 (Just $ EffectMetaTarget (toTarget lid)) attrs iid
+        effectMessage <- createCardEffect Cards.deduction2 (effectMetaTarget lid) attrs iid
         pushAll $ replicate (if n >= 2 then 2 else 1) effectMessage
       pure s
     _ -> Deduction2 <$> runMessage msg attrs

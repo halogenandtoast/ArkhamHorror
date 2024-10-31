@@ -18,9 +18,10 @@ instance RunMessage TidesOfFate where
   runMessage msg e@(TidesOfFate attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
       tokens <- select $ ChaosTokenFaceIs #curse
+      enabled <- createCardEffect Cards.tidesOfFate Nothing attrs iid
       pushAll
         $ replicate (length tokens) (SwapChaosToken #curse #bless)
-        <> [createCardEffect Cards.tidesOfFate Nothing attrs iid]
+        <> [enabled]
       pure e
     _ -> TidesOfFate <$> runMessage msg attrs
 

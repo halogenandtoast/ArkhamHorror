@@ -5,7 +5,6 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Query (selectAssetController)
 import Arkham.Matcher
 import Arkham.Taboo
@@ -27,15 +26,9 @@ instance RunMessage SleightOfHand where
             else if tabooed TabooList15 attrs then (CardFillsLessSlots 2 #hand <>) else id
       cards <-
         select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (tabooMatcher #item)
-      chooseOne
-        iid
-        [ targetLabel
-          card
-          [ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
-          , Msg.createCardEffect Cards.sleightOfHand Nothing attrs card
-          ]
-        | card <- cards
-        ]
+      chooseTargetM iid cards \card -> do
+        push $ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
+        createCardEffect Cards.sleightOfHand Nothing attrs card
       pure e
     _ -> SleightOfHand <$> liftRunMessage msg attrs
 

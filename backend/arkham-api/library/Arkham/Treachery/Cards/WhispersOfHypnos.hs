@@ -34,14 +34,10 @@ instance RunMessage WhispersOfHypnos where
 
       let skills = filter (`notElem` usedSkills) [#willpower, #intellect, #combat, #agility]
       when (notNull skills) $ do
-        push
-          $ chooseOrRunOne
-            player
-            [ SkillLabel
-              sType
-              [createCardEffect Cards.whispersOfHypnos (Just $ EffectMetaSkill sType) attrs attrs]
-            | sType <- skills
-            ]
+        choices <- for skills \sType -> do
+          enabled <- createCardEffect Cards.whispersOfHypnos (Just $ EffectMetaSkill sType) attrs attrs
+          pure $ SkillLabel sType [enabled]
+        push $ chooseOrRunOne player choices
       pure t
     _ -> WhispersOfHypnos <$> runMessage msg attrs
 

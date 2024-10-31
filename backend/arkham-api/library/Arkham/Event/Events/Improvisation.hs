@@ -27,11 +27,8 @@ instance RunMessage Improvisation where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       let drawing = drawCards iid attrs 1
       player <- getPlayer iid
-      pushAll
-        [ switchRole player iid
-        , createCardEffect Cards.improvisation Nothing attrs iid
-        , drawing
-        ]
+      enabled <- createCardEffect Cards.improvisation Nothing attrs iid
+      pushAll [switchRole player iid, enabled, drawing]
       pure e
     _ -> Improvisation <$> runMessage msg attrs
 

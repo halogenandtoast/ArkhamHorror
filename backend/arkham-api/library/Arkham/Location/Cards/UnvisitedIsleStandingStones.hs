@@ -55,7 +55,7 @@ instance RunMessage UnvisitedIsleStandingStones where
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push $ createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
+        push =<< createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

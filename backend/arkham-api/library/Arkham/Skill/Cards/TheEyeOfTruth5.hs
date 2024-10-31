@@ -33,10 +33,11 @@ instance RunMessage TheEyeOfTruth5 where
       case source of
         TreacherySource tid -> do
           card <- field TreacheryCard tid
+          enabled <- createCardEffect Cards.theEyeOfTruth5 Nothing attrs (toCardId card)
           pushAll
             [ AddToVictory (toTarget tid)
             , AddToVictory (toTarget attrs)
-            , createCardEffect Cards.theEyeOfTruth5 Nothing attrs (toCardId card)
+            , enabled
             ]
         _ -> pure ()
       pure s

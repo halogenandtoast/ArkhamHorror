@@ -26,10 +26,11 @@ instance RunMessage ImDoneRunnin where
   runMessage msg e@(ImDoneRunnin attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid)
+      enabled <- createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)
       pushAll
         $ map (Ready . EnemyTarget) enemies
         <> [EngageEnemy iid enemy Nothing False | enemy <- enemies]
-        <> [createCardEffect Cards.imDoneRunnin Nothing (toSource attrs) (InvestigatorTarget iid)]
+        <> [enabled]
       pure e
     _ -> ImDoneRunnin <$> runMessage msg attrs
 

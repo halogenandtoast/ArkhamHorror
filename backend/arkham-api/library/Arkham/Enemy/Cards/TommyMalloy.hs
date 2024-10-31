@@ -40,7 +40,7 @@ instance HasAbilities TommyMalloy where
 instance RunMessage TommyMalloy where
   runMessage msg e@(TommyMalloy attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.tommyMalloy Nothing (attrs.ability 1) attrs
+      push =<< createCardEffect Cards.tommyMalloy Nothing (attrs.ability 1) attrs
       pure e
     _ -> TommyMalloy <$> runMessage msg attrs
 

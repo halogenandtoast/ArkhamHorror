@@ -160,13 +160,9 @@ instance RunMessage UndimensionedAndUnseen where
       drawAnotherChaosToken iid
       pure s
     ResolveChaosToken drawnToken Tablet _ -> do
-      push
-        $ CreateEffect
-        $ makeEffectBuilder
-          "02236"
-          Nothing
-          (ChaosTokenSource drawnToken)
-          (ChaosTokenTarget drawnToken)
+      builder <-
+        makeEffectBuilder "02236" Nothing (ChaosTokenSource drawnToken) (ChaosTokenTarget drawnToken)
+      push $ CreateEffect builder
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       getSkillTestAction >>= \case

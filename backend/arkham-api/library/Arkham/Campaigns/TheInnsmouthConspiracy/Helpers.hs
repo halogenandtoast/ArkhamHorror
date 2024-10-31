@@ -67,8 +67,10 @@ setThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()
 setThisFloodLevel location level = push $ SetFloodLevel (asId location) level
 
-struggleForAir :: (Sourceable a, HasQueue Message m) => a -> InvestigatorId -> m ()
-struggleForAir a iid = push $ CreateEffect $ makeEffectBuilder "noair" Nothing a iid
+struggleForAir :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
+struggleForAir a iid = do
+  builder <- makeEffectBuilder "noair" Nothing a iid
+  push $ CreateEffect builder
 
 whenRecoveredMemory :: HasGame m => Memory -> m () -> m ()
 whenRecoveredMemory memory action = whenM (hasMemory memory) action

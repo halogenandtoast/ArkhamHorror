@@ -32,22 +32,22 @@ instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label
+
+      choices <- for [0 .. enemySanityDamage] \discardCount -> do
+        enabled <- createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
+        pure
+          $ Label
             ( "Discard the top "
                 <> tshow discardCount
                 <> " cards and take "
                 <> tshow (enemySanityDamage - discardCount)
                 <> " horror"
             )
-            $ [ createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
-              , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
-              ]
-            <> [assignHorror iid (attrs.ability 1) (5 - discardCount) | (5 - discardCount) > 0]
-          | discardCount <- [0 .. enemySanityDamage]
-          ]
+          $ [ enabled
+            , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
+            ]
+          <> [assignHorror iid (attrs.ability 1) (5 - discardCount) | (5 - discardCount) > 0]
+      push $ chooseOne player choices
       pure e
     _ -> YogSothoth <$> runMessage msg attrs
 

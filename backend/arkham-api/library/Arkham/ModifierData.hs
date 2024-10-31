@@ -79,6 +79,7 @@ data SkillTestMetadata = SkillTestMetadata
   { stmModifiedSkillValue :: Int
   , stmModifiedDifficulty :: Int
   , stmSkills :: [SkillType]
+  , stmModifiers :: [Modifier]
   }
   deriving stock (Show, Eq, Generic)
 

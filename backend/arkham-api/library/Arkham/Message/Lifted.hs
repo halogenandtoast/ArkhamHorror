@@ -869,7 +869,7 @@ createCardEffect
   -> source
   -> target
   -> m ()
-createCardEffect def mMeta source target = push $ Msg.createCardEffect def mMeta source target
+createCardEffect def mMeta source target = push =<< Msg.createCardEffect def mMeta source target
 
 phaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
@@ -1774,7 +1774,7 @@ updateMax def n ew = do
   mEffect <-
     selectOne $ EffectWithCardCode "maxef" <> EffectWithTarget (CardCodeTarget $ toCardCode def)
   case mEffect of
-    Nothing -> push $ Msg.createMaxEffect def n ew
+    Nothing -> push =<< Msg.createMaxEffect def n ew
     Just effect -> do
       meta <- field EffectMeta effect
       case meta of
@@ -1944,10 +1944,19 @@ temporaryModifier
   -> ModifierType
   -> QueueT Message m ()
   -> m ()
-temporaryModifier target source modType body = do
+temporaryModifier target source modType = temporaryModifiers target source [modType]
+
+temporaryModifiers
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  => target
+  -> source
+  -> [ModifierType]
+  -> QueueT Message m ()
+  -> m ()
+temporaryModifiers target source modTypes body = do
   effectId <- getRandom
-  ems <- Msg.effectModifiers source [modType]
-  let builder = Msg.makeEffectBuilder "wmode" (Just ems) source target
+  ems <- Msg.effectModifiers source modTypes
+  builder <- Msg.makeEffectBuilder "wmode" (Just ems) source target
   msgs <- evalQueueT body
   pushAll $ CreateEffect builder {effectBuilderEffectId = Just effectId}
     : msgs <> [DisableEffect effectId]

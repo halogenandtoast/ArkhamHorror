@@ -21,7 +21,7 @@ instance HasAbilities Fieldwork where
 instance RunMessage Fieldwork where
   runMessage msg a@(Fieldwork attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.fieldwork Nothing (attrs.ability 1) iid
+      push =<< createCardEffect Cards.fieldwork Nothing (attrs.ability 1) iid
       pure a
     _ -> Fieldwork <$> runMessage msg attrs
 

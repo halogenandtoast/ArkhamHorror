@@ -24,9 +24,10 @@ instance HasAbilities JeremiahPierce where
 instance RunMessage JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enabled <- createCardEffect Cards.jeremiahPierce Nothing (attrs.ability 1) iid
       pushAll
         [ AddToVictory (toTarget attrs)
-        , createCardEffect Cards.jeremiahPierce Nothing (attrs.ability 1) iid
+        , enabled
         ]
       pure e
     _ -> JeremiahPierce <$> runMessage msg attrs

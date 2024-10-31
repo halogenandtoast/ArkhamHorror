@@ -92,13 +92,7 @@ instance RunMessage TheYithianRelic where
         aPocketInTime <- selectJust $ locationIs Locations.aPocketInTime
         alejandro <- getSetAsideCard Enemies.alejandroVela
         pushM $ createEnemyAt_ alejandro aPocketInTime Nothing
-      push
-        $ createCardEffect
-          Cards.theYithianRelic
-          Nothing
-          (toSource attrs)
-          ScenarioTarget
-
+      push =<< createCardEffect Cards.theYithianRelic Nothing (toSource attrs) ScenarioTarget
       pure a
     _ -> TheYithianRelic <$> runMessage msg attrs
 

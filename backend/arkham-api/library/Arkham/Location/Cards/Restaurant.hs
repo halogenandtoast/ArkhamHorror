@@ -27,18 +27,15 @@ instance HasAbilities Restaurant where
   getAbilities (Restaurant attrs) =
     withRevealedAbilities
       attrs
-      [ playerLimit PerGame $ restrictedAbility attrs 1 Here $ actionAbilityWithCost $ ResourceCost 2
-      , restrictedAbility
-          attrs
-          2
-          (Here <> AllLocationsMatch Anywhere (RevealedLocation <> LocationWithoutClues))
+      [ playerLimit PerGame $ restricted attrs 1 Here $ actionAbilityWithCost $ ResourceCost 2
+      , restricted attrs 2 (Here <> AllLocationsMatch Anywhere (RevealedLocation <> LocationWithoutClues))
           $ FastAbility Free
       ]
 
 instance RunMessage Restaurant where
   runMessage msg l@(Restaurant attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.restaurant Nothing (toAbilitySource attrs 1) iid
+      push =<< createCardEffect Cards.restaurant Nothing (toAbilitySource attrs 1) iid
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       n <- perPlayer 1

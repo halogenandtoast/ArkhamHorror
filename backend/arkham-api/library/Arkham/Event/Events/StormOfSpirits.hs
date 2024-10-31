@@ -28,9 +28,8 @@ instance RunMessage StormOfSpirits where
       chooseFight <-
         leftOr
           <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)
-      pushAll
-        $ createCardEffect Cards.stormOfSpirits (effectMetaTarget sid) attrs iid
-        : chooseFight
+      enabled <- createCardEffect Cards.stormOfSpirits (effectMetaTarget sid) attrs iid
+      pushAll $ enabled : chooseFight
       pure e
     Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       let

@@ -25,19 +25,13 @@ hatchetMan = skill HatchetMan Cards.hatchetMan
 
 instance RunMessage HatchetMan where
   runMessage msg s@(HatchetMan attrs) = case msg of
-    PassedSkillTest _ (Just Action.Evade) _ (isTarget attrs -> True) _ _ ->
-      do
-        target <- getSkillTestTarget
-        case target of
-          Just (EnemyTarget eid) ->
-            push
-              $ createCardEffect
-                Cards.hatchetMan
-                Nothing
-                (toSource attrs)
-                (EnemyTarget eid)
-          _ -> pure ()
-        pure s
+    PassedSkillTest _ (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
+      target <- getSkillTestTarget
+      case target of
+        Just (EnemyTarget eid) ->
+          push =<< createCardEffect Cards.hatchetMan Nothing attrs eid
+        _ -> pure ()
+      pure s
     _ -> HatchetMan <$> runMessage msg attrs
 
 newtype HatchetManEffect = HatchetManEffect EffectAttrs

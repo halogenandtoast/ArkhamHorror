@@ -4,15 +4,14 @@ module Arkham.Asset.Assets.CharlesRossEsq (
   CharlesRossEsq (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Trait
 
@@ -39,12 +38,12 @@ instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) = [restrictedAbility attrs 1 ControlsThis $ FastAbility $ exhaust attrs]
 
 instance RunMessage CharlesRossEsq where
-  runMessage msg a@(CharlesRossEsq attrs) = case msg of
+  runMessage msg a@(CharlesRossEsq attrs) = runQueueT $ case msg of
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
       -- TODO: we may want to track the investigator instead of the asset
-      push $ createCardEffect Cards.charlesRossEsq Nothing source attrs
+      createCardEffect Cards.charlesRossEsq Nothing source attrs
       pure a
-    _ -> CharlesRossEsq <$> runMessage msg attrs
+    _ -> CharlesRossEsq <$> liftRunMessage msg attrs
 
 newtype CharlesRossEsqEffect = CharlesRossEsqEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -55,7 +54,7 @@ charlesRossEsqEffect = cardEffect CharlesRossEsqEffect Cards.charlesRossEsq
 
 instance HasModifiersFor CharlesRossEsqEffect where
   getModifiersFor (InvestigatorTarget iid) (CharlesRossEsqEffect attrs) =
-    case effectSource attrs of
+    case attrs.source of
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
@@ -68,14 +67,14 @@ instance HasModifiersFor CharlesRossEsqEffect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage CharlesRossEsqEffect where
-  runMessage msg e@(CharlesRossEsqEffect attrs) = case msg of
-    CardEnteredPlay iid card -> case effectSource attrs of
+  runMessage msg e@(CharlesRossEsqEffect attrs) = runQueueT $ case msg of
+    CardEnteredPlay iid card -> case attrs.source of
       AssetSource aid -> do
         assetLid <- field AssetLocation aid
         investigatorLid <- field InvestigatorLocation iid
-        pushWhen
+        when
           (isJust assetLid && assetLid == investigatorLid && cardMatch card (#asset <> CardWithTrait Item))
           (disable attrs)
         pure e
       _ -> error "Invalid source"
-    _ -> CharlesRossEsqEffect <$> runMessage msg attrs
+    _ -> CharlesRossEsqEffect <$> liftRunMessage msg attrs

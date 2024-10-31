@@ -36,7 +36,7 @@ instance RunMessage Yaotl1 where
   runMessage msg a@(Yaotl1 attrs) = case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ createCardEffect Cards.yaotl1 Nothing (attrs.ability 1) sid
+        push =<< createCardEffect Cards.yaotl1 Nothing (attrs.ability 1) sid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing

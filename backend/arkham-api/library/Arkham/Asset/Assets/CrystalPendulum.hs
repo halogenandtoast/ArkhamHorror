@@ -42,7 +42,7 @@ instance RunMessage CrystalPendulum where
       pushM $ chooseAmounts player "Name a number" (MaxAmountTarget 1000) [("Number", (0, 1000))] attrs
       pure a
     ResolveAmounts iid (getChoiceAmount "Number" -> n) (isTarget attrs -> True) -> do
-      push $ createCardEffect Cards.crystalPendulum (Just $ EffectInt n) (toAbilitySource attrs 1) iid
+      push =<< createCardEffect Cards.crystalPendulum (Just $ EffectInt n) (toAbilitySource attrs 1) iid
       pure a
     _ -> CrystalPendulum <$> runMessage msg attrs
 

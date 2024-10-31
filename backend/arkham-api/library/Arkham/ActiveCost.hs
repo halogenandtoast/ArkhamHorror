@@ -1071,17 +1071,20 @@ instance RunMessage ActiveCost where
           pure c
         ForCard isPlayAction card -> do
           modifiers' <- (<>) <$> getModifiers iid <*> getModifiers card
+          let cardDef = toCardDef card
+          enabled <-
+            createCardEffect
+              cardDef
+              (Just $ EffectCost acId)
+              (BothSource (InvestigatorSource iid) (CardIdSource card.id))
+              (toCardId card)
+
           let
-            cardDef = toCardDef card
             modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
             actions = [Action.Play | isPlayAction == IsPlayAction] <> cardDef.actions
             mEffect =
               guard cardDef.beforeEffect
-                *> [ createCardEffect
-                      cardDef
-                      (Just $ EffectCost acId)
-                      (BothSource (InvestigatorSource iid) (CardIdSource card.id))
-                      (toCardId card)
+                *> [ enabled
                    , CheckAdditionalCosts acId
                    ]
           batchId <- getRandom

@@ -5,15 +5,14 @@ module Arkham.Treachery.Cards.MysteriesOfTheLodge (
 ) where
 
 import Arkham.Action qualified as Action
-import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Cultist))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype MysteriesOfTheLodge = MysteriesOfTheLodge TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -23,52 +22,36 @@ mysteriesOfTheLodge :: TreacheryCard MysteriesOfTheLodge
 mysteriesOfTheLodge = treachery MysteriesOfTheLodge Cards.mysteriesOfTheLodge
 
 instance RunMessage MysteriesOfTheLodge where
-  runMessage msg t@(MysteriesOfTheLodge attrs) = case msg of
+  runMessage msg t@(MysteriesOfTheLodge attrs) = runQueueT $ case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <-
         select $ NearestEnemyTo iid $ EnemyWithTrait Cultist <> EnemyWithoutModifier CannotPlaceDoomOnThis
       case enemies of
-        [] -> push $ gainSurge attrs
+        [] -> gainSurge attrs
         xs -> do
-          player <- getPlayer iid
-          pushAll
-            [ chooseOne
-                player
-                [ targetLabel
-                  eid
-                  [ PlaceDoom (toSource attrs) (EnemyTarget eid) 1
-                  , createCardEffect Cards.mysteriesOfTheLodge Nothing source (EnemyTarget eid)
-                  ]
-                | eid <- xs
-                ]
-            ]
+          chooseTargetM iid xs \eid -> do
+            placeDoom attrs eid 1
+            createCardEffect Cards.mysteriesOfTheLodge Nothing source (EnemyTarget eid)
       pure t
-    _ -> MysteriesOfTheLodge <$> runMessage msg attrs
+    _ -> MysteriesOfTheLodge <$> liftRunMessage msg attrs
 
 newtype MysteriesOfTheLodgeEffect = MysteriesOfTheLodgeEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mysteriesOfTheLodgeEffect :: EffectArgs -> MysteriesOfTheLodgeEffect
-mysteriesOfTheLodgeEffect =
-  cardEffect MysteriesOfTheLodgeEffect Cards.mysteriesOfTheLodge
+mysteriesOfTheLodgeEffect = cardEffect MysteriesOfTheLodgeEffect Cards.mysteriesOfTheLodge
 
 instance HasModifiersFor MysteriesOfTheLodgeEffect where
-  getModifiersFor (SkillTestTarget _) (MysteriesOfTheLodgeEffect a) = do
-    mTarget <- getSkillTestTarget
-    mAction <- getSkillTestAction
-    toModifiers a $ case (mTarget, mAction) of
-      (Just target, Just action)
-        | target == effectTarget a
-        , action `elem` [Action.Fight, Action.Evade, Action.Parley] ->
-            [Difficulty 2]
-      _ -> []
+  getModifiersFor (SkillTestTarget _) (MysteriesOfTheLodgeEffect a) = maybeModified a do
+    target <- MaybeT getSkillTestTarget
+    guard $ target == a.target
+    action <- MaybeT getSkillTestAction
+    guard $ action `elem` [Action.Fight, Action.Evade, Action.Parley]
+    pure [Difficulty 2]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MysteriesOfTheLodgeEffect where
-  runMessage msg e@(MysteriesOfTheLodgeEffect attrs@EffectAttrs {..}) =
-    case msg of
-      EndRound -> do
-        push (DisableEffect effectId)
-        pure e
-      _ -> MysteriesOfTheLodgeEffect <$> runMessage msg attrs
+  runMessage msg e@(MysteriesOfTheLodgeEffect attrs) = runQueueT $ case msg of
+    EndRound -> disableReturn e
+    _ -> MysteriesOfTheLodgeEffect <$> liftRunMessage msg attrs

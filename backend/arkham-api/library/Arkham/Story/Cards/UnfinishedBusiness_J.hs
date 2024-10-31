@@ -42,21 +42,23 @@ instance RunMessage UnfinishedBusiness_J where
             <> [ReplaceCard (toCardId attrs) (toCard attrs), AddToVictory (toTarget attrs)]
         else case mEnemy of
           Just enemy -> do
+            enabled <- createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
             afterStoryResolution
               attrs
               [ RemoveStory $ toId attrs
-              , createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
+              , enabled
               , InitiateEnemyAttack $ enemyAttack enemy attrs iid
               ]
           Nothing -> do
             let card = lookupCard Enemies.heretic_I (toCardId attrs)
             creation <- createEnemy card (storyPlacement attrs)
             let enemy = enemyCreationEnemyId creation
+            enabled <- createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
             afterStoryResolution
               attrs
               [ RemoveStory $ toId attrs
               , toMessage creation
-              , createCardEffect Cards.unfinishedBusiness_J Nothing attrs (toTarget enemy)
+              , enabled
               , InitiateEnemyAttack $ enemyAttack enemy attrs iid
               ]
 

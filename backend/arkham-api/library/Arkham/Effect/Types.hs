@@ -8,11 +8,13 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
+import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
+import {-# SOURCE #-} Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Json
 import Arkham.Message
@@ -43,6 +45,7 @@ class
 
 data instance Field Effect :: Type -> Type where
   EffectCardCode :: Field Effect CardCode
+  EffectCard :: Field Effect (Maybe Card)
   EffectAbilities :: Field Effect [Ability]
   EffectMeta :: Field Effect (Maybe (EffectMetadata Window Message))
 
@@ -69,6 +72,7 @@ data EffectBuilder = EffectBuilder
   , effectBuilderExtraMetadata :: Value
   , effectBuilderSkillTest :: Maybe SkillTestId
   , effectBuilderEffectId :: Maybe EffectId
+  , effectBuilderCardId :: Maybe CardId
   }
   deriving stock (Show, Eq, Data)
 
@@ -77,6 +81,7 @@ data EffectAttrs = EffectAttrs
   , effectCardCode :: CardCode
   , effectTarget :: Target
   , effectSource :: Source
+  , effectCardId :: Maybe CardId
   , effectTraits :: Set Trait
   , effectMetadata :: Maybe (EffectMetadata Window Message)
   , effectWindow :: Maybe EffectWindow
@@ -175,6 +180,7 @@ baseAttrs cardCode eid EffectBuilder {..} =
     , effectFinished = effectBuilderFinished
     , effectExtraMetadata = effectBuilderExtraMetadata
     , effectSkillTest = effectBuilderSkillTest
+    , effectCardId = effectBuilderCardId
     }
 
 targetL :: Lens' EffectAttrs Target
@@ -272,25 +278,28 @@ setEffectMeta :: ToJSON a => a -> EffectAttrs -> EffectAttrs
 setEffectMeta a = extraL .~ toJSON a
 
 makeEffectBuilder
-  :: (Sourceable source, Targetable target)
+  :: (Sourceable source, Targetable target, HasGame m)
   => CardCode
   -> Maybe (EffectMetadata Window Message)
   -> source
   -> target
-  -> EffectBuilder
-makeEffectBuilder cardCode meffectMetadata (toSource -> source) (toTarget -> target) =
-  EffectBuilder
-    { effectBuilderSource = source
-    , effectBuilderTarget = target
-    , effectBuilderCardCode = cardCode
-    , effectBuilderMetadata = meffectMetadata
-    , effectBuilderTraits = mempty
-    , effectBuilderWindow = Nothing
-    , effectBuilderFinished = False
-    , effectBuilderExtraMetadata = Null
-    , effectBuilderSkillTest = mSkillTest
-    , effectBuilderEffectId = Nothing
-    }
+  -> m EffectBuilder
+makeEffectBuilder cardCode meffectMetadata rawSource@(toSource -> source) (toTarget -> target) = do
+  mcard <- sourceToMaybeCard rawSource
+  pure
+    $ EffectBuilder
+      { effectBuilderSource = source
+      , effectBuilderTarget = target
+      , effectBuilderCardCode = cardCode
+      , effectBuilderMetadata = meffectMetadata
+      , effectBuilderTraits = mempty
+      , effectBuilderWindow = Nothing
+      , effectBuilderFinished = False
+      , effectBuilderExtraMetadata = Null
+      , effectBuilderSkillTest = mSkillTest
+      , effectBuilderEffectId = Nothing
+      , effectBuilderCardId = toCardId <$> mcard
+      }
  where
   mSkillTest = case (meffectMetadata, source, target, effectWindow) of
     (Just (EffectMetaTarget (SkillTestTarget sid)), _, _, _) -> Just sid

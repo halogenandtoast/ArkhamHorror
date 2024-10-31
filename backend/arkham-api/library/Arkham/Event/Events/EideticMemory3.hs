@@ -33,17 +33,14 @@ instance RunMessage EideticMemory3 where
       playableCards <-
         filterM (getIsPlayable iid (toSource attrs) (UnpaidCost NoAction) playableWindows) candidates
       canAffectOthers <- can.affect.otherPlayers iid
+      enabled <- createCardEffect Cards.eideticMemory3 Nothing (toCardId attrs) (toCardId attrs)
+
       push
         $ InitiatePlayCardAsChoose
           iid
           (toCard attrs)
           playableCards
-          [ createCardEffect
-              Cards.eideticMemory3
-              Nothing
-              (CardIdSource $ toCardId attrs)
-              (CardIdTarget $ toCardId attrs)
-          ]
+          [enabled]
           (if canAffectOthers then RemoveChosenCardFromGame else LeaveChosenCard)
           NoPayment
           playableWindows

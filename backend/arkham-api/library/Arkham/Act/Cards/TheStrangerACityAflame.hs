@@ -37,12 +37,13 @@ instance RunMessage TheStrangerACityAflame where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       theatre <- selectJust (LocationWithTitle "Theatre")
       card <- flipCard <$> genCard (toCardDef attrs)
+      enabled <- createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
       pushAll
         [ AddChaosToken Cultist
         , AddChaosToken Cultist
         , PlaceHorror (toSource attrs) (toTarget theatre) 1
         , PlaceNextTo ActDeckTarget [card]
-        , createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
+        , enabled
         , advanceActDeck attrs
         ]
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding

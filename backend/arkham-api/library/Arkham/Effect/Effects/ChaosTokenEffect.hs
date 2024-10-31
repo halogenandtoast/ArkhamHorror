@@ -34,6 +34,7 @@ chaosTokenEffect' eid metadata source chaosToken =
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing
+      , effectCardId = Nothing
       }
 
 instance HasModifiersFor ChaosTokenEffect where

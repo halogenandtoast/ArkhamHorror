@@ -56,9 +56,10 @@ instance RunMessage InfiltratingTheLodge where
     AdvanceAct actId _ _ | toId attrs == actId -> do
       mInnerSanctum <- selectOne $ locationIs Locations.innerSanctum
       card <- flipCard <$> genCard (toCardDef attrs)
+      enabled <- createCardEffect Cards.infiltratingTheLodge Nothing (toSource attrs) ScenarioTarget
       let rest =
             [ PlaceNextTo ActDeckTarget [card]
-            , createCardEffect Cards.infiltratingTheLodge Nothing (toSource attrs) ScenarioTarget
+            , enabled
             , advanceActDeck attrs
             ]
       case mInnerSanctum of

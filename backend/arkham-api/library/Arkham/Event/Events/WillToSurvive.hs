@@ -24,7 +24,7 @@ willToSurvive = event WillToSurvive Cards.willToSurvive
 instance RunMessage WillToSurvive where
   runMessage msg e@(WillToSurvive attrs) = case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      push $ createCardEffect Cards.willToSurvive Nothing (toSource attrs) (InvestigatorTarget iid)
+      push =<< createCardEffect Cards.willToSurvive Nothing attrs iid
       pure e
     _ -> WillToSurvive <$> runMessage msg attrs
 

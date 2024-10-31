@@ -44,9 +44,10 @@ instance RunMessage JeromesFate where
       if disappearedIntoTheMist && onTrail
         then do
           jerome <- getSetAsideCard Assets.jeromeDavids
+          enabled <- createCardEffect Cards.jeromesFate Nothing attrs iid
           pushAll
             [ RemoveStory (toId attrs)
-            , createCardEffect Cards.jeromesFate Nothing attrs iid
+            , enabled
             , TakeControlOfSetAsideAsset iid jerome
             , Record JeromeIsAlive
             ]

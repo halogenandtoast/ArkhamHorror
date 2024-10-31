@@ -42,14 +42,11 @@ instance RunMessage TheRedDepths where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
       card <- flipCard <$> genCard (toCardDef attrs)
+      enabled <- createCardEffect Cards.theRedDepths Nothing attrs ScenarioTarget
       pushAll
         $ enemyMsgs
         <> [ PlaceNextTo ActDeckTarget [card]
-           , createCardEffect
-              Cards.theRedDepths
-              Nothing
-              (toSource attrs)
-              ScenarioTarget
+           , enabled
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
            ]
       pure a

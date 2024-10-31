@@ -25,5 +25,8 @@ disable = push . Msg.disable
 disableReturn :: (ReverseQueue m, Entity a, EntityAttrs a ~ EffectAttrs) => a -> m a
 disableReturn a = disable (toAttrs a) >> pure a
 
+finishedEffect :: EffectAttrs -> EffectAttrs
+finishedEffect = Msg.finishedL .~ True
+
 getEffectMetaDefault :: FromJSON a => a -> EffectAttrs -> a
 getEffectMetaDefault a attrs = toResultDefault a $ attrs ^. extraL

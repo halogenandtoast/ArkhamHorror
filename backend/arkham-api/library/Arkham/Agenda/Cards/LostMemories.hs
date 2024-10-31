@@ -46,11 +46,12 @@ instance RunMessage LostMemories where
               ]
           else pure []
       let drawing = map (\iid -> drawCards iid attrs 2) hasPendant
+      enabled <- createCardEffect Cards.lostMemories Nothing (toSource attrs) ScenarioTarget
       pushAll
         $ ShuffleEncounterDiscardBackIn
         : custodianMessages
           <> drawing
-          <> [ createCardEffect Cards.lostMemories Nothing (toSource attrs) ScenarioTarget
+          <> [ enabled
              , advanceAgendaDeck attrs
              ]
       pure a

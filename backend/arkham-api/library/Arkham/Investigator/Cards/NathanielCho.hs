@@ -45,12 +45,12 @@ getEnemyId = \case
 instance RunMessage NathanielCho where
   runMessage msg a@(NathanielCho attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 (getEnemyId -> eid) _ -> do
-      push $ createCardEffect Cards.nathanielCho Nothing attrs eid
+      push =<< createCardEffect Cards.nathanielCho Nothing attrs eid
       pure a
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mAction <- getSkillTestAction
-      pushWhen (mAction == Just #fight)
-        $ createCardEffect Cards.nathanielCho Nothing attrs attrs
+      when (mAction == Just #fight) do
+        push =<< createCardEffect Cards.nathanielCho Nothing attrs attrs
       pure a
     _ -> NathanielCho <$> runMessage msg attrs
 

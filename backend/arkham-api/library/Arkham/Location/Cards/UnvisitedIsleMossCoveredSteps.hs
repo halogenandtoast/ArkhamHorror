@@ -51,7 +51,7 @@ instance RunMessage UnvisitedIsleMossCoveredSteps where
       circleTest sid iid (attrs.ability 1) attrs [#combat, #agility] (Fixed 10)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid
+      push =<< createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

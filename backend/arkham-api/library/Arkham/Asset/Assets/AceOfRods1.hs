@@ -1,17 +1,12 @@
-module Arkham.Asset.Assets.AceOfRods1 (
-  aceOfRods1,
-  aceOfRods1Effect,
-  AceOfRods1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.AceOfRods1 (aceOfRods1, aceOfRods1Effect, AceOfRods1 (..)) where
 
 import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Effect.Import
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Modifier
 import Arkham.SkillType
 
 newtype AceOfRods1 = AceOfRods1 AssetAttrs
@@ -28,17 +23,15 @@ instance HasAbilities AceOfRods1 where
     ]
 
 instance RunMessage AceOfRods1 where
-  runMessage msg a@(AceOfRods1 attrs) = case msg of
+  runMessage msg a@(AceOfRods1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll
-        [ RemoveFromGame (toTarget attrs)
-        , createCardEffect Cards.aceOfRods1 Nothing attrs iid
-        ]
+      removeFromGame attrs
+      createCardEffect Cards.aceOfRods1 Nothing attrs iid
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ putCardIntoPlay iid attrs
+      putCardIntoPlay iid attrs
       pure a
-    _ -> AceOfRods1 <$> runMessage msg attrs
+    _ -> AceOfRods1 <$> liftRunMessage msg attrs
 
 newtype Meta = Meta {active :: Bool}
   deriving stock (Show, Eq, Generic)
@@ -54,11 +47,11 @@ aceOfRods1Effect =
 
 instance HasModifiersFor AceOfRods1Effect where
   getModifiersFor target (AceOfRods1Effect (a `With` meta))
-    | target == effectTarget a
+    | target == a.target
     , active meta =
         toModifiers a [SkillModifier sType 2 | sType <- allSkills]
   getModifiersFor target (AceOfRods1Effect (a `With` meta))
-    | target == effectTarget a
+    | target == a.target
     , not (active meta) =
         toModifiers
           a
@@ -70,15 +63,13 @@ instance HasModifiersFor AceOfRods1Effect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage AceOfRods1Effect where
-  runMessage msg e@(AceOfRods1Effect (attrs `With` meta)) =
-    case msg of
-      UseEffectAction iid eid _ | eid == toId attrs -> do
-        push $ GainActions iid (toSource attrs) 1
-        pure $ AceOfRods1Effect (attrs `with` Meta True)
-      FinishAction -> do
-        pushWhen (active meta) $ disableEffect attrs
-        pure e
-      EndTurn iid | toTarget iid == effectTarget attrs -> do
-        push $ disableEffect attrs
-        pure e
-      _ -> AceOfRods1Effect . (`with` meta) <$> runMessage msg attrs
+  runMessage msg e@(AceOfRods1Effect (attrs `With` meta)) = runQueueT $ case msg of
+    UseEffectAction iid eid _ | eid == toId attrs -> do
+      push $ GainActions iid (toSource attrs) 1
+      pure $ AceOfRods1Effect (attrs `with` Meta True)
+    FinishAction -> do
+      when (active meta) $ disable attrs
+      pure e
+    EndTurn iid | isTarget iid attrs.target -> do
+      disableReturn e
+    _ -> AceOfRods1Effect . (`with` meta) <$> liftRunMessage msg attrs

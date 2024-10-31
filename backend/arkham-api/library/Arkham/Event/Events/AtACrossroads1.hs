@@ -3,8 +3,7 @@ module Arkham.Event.Events.AtACrossroads1 (atACrossroads1, atACrossroads1Effect,
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Effect qualified as Msg
-import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
 
 newtype AtACrossroads1 = AtACrossroads1 EventAttrs
@@ -20,17 +19,15 @@ instance RunMessage AtACrossroads1 where
       selectOneToHandle iid attrs $ affectsOthers Anyone
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
-      mDrawCards <- Msg.drawCardsIfCan iid' attrs 3
-      chooseOne
-        iid
-        [ Label
-            "The chosen investigator must immediately take an action as if it were their turn, then discards 1 card at random from their hand."
-            [PlayerWindow iid' [] True, toMessage $ Msg.randomDiscard iid' attrs]
-        , Label
-            "The chosen investigator loses 1 action during their next turn, then draws 3 cards."
-            $ Msg.createCardEffect Cards.atACrossroads1 Nothing attrs iid'
-            : (maybeToList mDrawCards)
-        ]
+      chooseOneM iid do
+        labeled
+          "The chosen investigator must immediately take an action as if it were their turn, then discards 1 card at random from their hand."
+          do
+            push $ PlayerWindow iid' [] True
+            randomDiscard iid' attrs
+        labeled "The chosen investigator loses 1 action during their next turn, then draws 3 cards." do
+          createCardEffect Cards.atACrossroads1 Nothing attrs iid'
+          drawCardsIfCan iid' attrs 3
       pure e
     _ -> AtACrossroads1 <$> liftRunMessage msg attrs
 

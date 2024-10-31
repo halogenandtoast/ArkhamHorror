@@ -43,10 +43,11 @@ instance RunMessage TheStrangerTheShoresOfHali where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       privateLocations <- selectTargets $ LocationWithTrait Private
       card <- flipCard <$> genCard (toCardDef attrs)
+      enabled <- createCardEffect Cards.theStrangerTheShoresOfHali Nothing attrs attrs
       pushAll
         $ [AddChaosToken ElderThing, AddChaosToken ElderThing]
         <> [PlaceHorror (toSource attrs) l 1 | l <- privateLocations]
-        <> [ createCardEffect Cards.theStrangerTheShoresOfHali Nothing attrs attrs
+        <> [ enabled
            , PlaceNextTo ActDeckTarget [card]
            , advanceActDeck attrs
            ]

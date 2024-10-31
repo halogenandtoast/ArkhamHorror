@@ -44,9 +44,10 @@ instance RunMessage PennysFate where
       if disappearedIntoTheMist && onTrail
         then do
           penny <- getSetAsideCard Assets.pennyWhite
+          enabled <- createCardEffect Cards.pennysFate Nothing attrs iid
           pushAll
             [ RemoveStory (toId attrs)
-            , createCardEffect Cards.pennysFate Nothing attrs iid
+            , enabled
             , TakeControlOfSetAsideAsset iid penny
             , Record PennyIsAlive
             ]

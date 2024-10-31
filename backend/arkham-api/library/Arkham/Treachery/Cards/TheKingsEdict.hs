@@ -21,8 +21,7 @@ instance RunMessage TheKingsEdict where
   runMessage msg t@(TheKingsEdict attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       cultists <- select $ EnemyWithTrait Cultist
-      cultistsWithClues <-
-        select $ EnemyWithTrait Cultist <> EnemyAt LocationWithAnyClues
+      cultistsWithClues <- select $ EnemyWithTrait Cultist <> EnemyAt LocationWithAnyClues
       msgs <- case cultistsWithClues of
         [] -> pure [gainSurge attrs]
         xs -> concatForM xs $ \cultist -> do
@@ -30,7 +29,8 @@ instance RunMessage TheKingsEdict where
           pure $ do
             lid <- maybeToList mlid
             [RemoveClues (toSource attrs) (toTarget lid) 1, PlaceClues (toSource attrs) (toTarget cultist) 1]
-      pushAll $ msgs <> map (createCardEffect Cards.theKingsEdict Nothing source) cultists
+      effects <- for cultists (createCardEffect Cards.theKingsEdict Nothing source)
+      pushAll $ msgs <> effects
       pure t
     _ -> TheKingsEdict <$> runMessage msg attrs
 

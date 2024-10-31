@@ -38,7 +38,7 @@ instance RunMessage MiskatonicArchaeologyFunding4 where
       pushAll $ replicate 2 (AddSlot iid AllySlot (slot attrs))
       MiskatonicArchaeologyFunding4 <$> runMessage msg attrs
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ createCardEffect Cards.miskatonicArchaeologyFunding4 Nothing attrs iid
+      push =<< createCardEffect Cards.miskatonicArchaeologyFunding4 Nothing attrs iid
       pure a
     _ -> MiskatonicArchaeologyFunding4 <$> runMessage msg attrs
 

@@ -46,7 +46,7 @@ instance RunMessage DaisysToteBagAdvanced where
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility _ (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do
-      push $ createCardEffect Cards.daisysToteBagAdvanced Nothing (attrs.ability 1) card
+      push =<< createCardEffect Cards.daisysToteBagAdvanced Nothing (attrs.ability 1) card
       pure a
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs
 

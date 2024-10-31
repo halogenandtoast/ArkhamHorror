@@ -1,22 +1,17 @@
-module Arkham.Asset.Assets.OldBookOfLore3 (
-  OldBookOfLore3 (..),
-  oldBookOfLore3,
-  oldBookOfLore3Effect,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.OldBookOfLore3 (OldBookOfLore3 (..), oldBookOfLore3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Capability
-import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Game.Helpers hiding (reduceCostOf)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Strategy
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
@@ -34,29 +29,20 @@ instance HasAbilities OldBookOfLore3 where
     ]
 
 instance RunMessage OldBookOfLore3 where
-  runMessage msg a@(OldBookOfLore3 attrs) = case msg of
+  runMessage msg a@(OldBookOfLore3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select $ affectsOthers $ colocatedWith iid
-      let source = toAbilitySource attrs 1
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ targetLabels investigators \iid' -> do
-          only $ search iid' source iid' [fromTopOfDeck 3] #any (defer attrs IsDraw)
+      chooseOrRunOneM iid do
+        targets investigators \iid' -> do
+          search iid' (attrs.ability 1) iid' [fromTopOfDeck 3] #any (defer attrs IsDraw)
       pure a
     SearchFound _ (isTarget attrs -> True) (Deck.InvestigatorDeck iid') targetCards -> do
       -- TODO after search is an entity we can fix this as this is gross
-      push (DoStep 1 msg)
-      let source = toAbilitySource attrs 1
+      let source = attrs.ability 1
       additionalTargets <- getAdditionalSearchTargets iid'
-      player <- getPlayer iid'
-      push
-        $ chooseN
-          player
-          (min (length targetCards) (1 + additionalTargets))
-          [ targetLabel (toCardId card) [HandleTargetChoice iid' source (CardIdTarget $ toCardId card)]
-          | card <- targetCards
-          ]
+      chooseNM iid' (min (length targetCards) (1 + additionalTargets)) do
+        targets targetCards (handleTarget iid' source)
+      doStep 1 msg
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       push $ DrawFocusedToHand iid (toTarget iid) FromDeck cid
@@ -68,46 +54,21 @@ instance RunMessage OldBookOfLore3 where
         -- if we play a card we remove it from the target cards and recurse
         hand <- field InvestigatorHand iid'
         let cards = filter (`elem` hand) targetCards
-        let windows' = [mkWhen (Window.DuringTurn iid)]
         let source = attrs.ability 1
+        let windows' = [mkWhen (Window.DuringTurn iid)]
 
         when (hasUses attrs) $ do
           choices <- forMaybeM cards \card -> do
-            spendableResources <- (+ 2) <$> getSpendableResources iid'
-            playable <-
-              getIsPlayableWithResources iid' source spendableResources (UnpaidCost NoAction) windows' card
-            pure
-              $ guard playable
-              $> targetLabel
-                (toCardId card)
-                [ SpendUses source (toTarget attrs) Secret 1
-                , createCardEffect Cards.oldBookOfLore3 Nothing attrs (toCardId card)
-                , PayCardCost iid' card windows'
-                , DoStep 1 (SearchFound iid target deck (deleteFirst card targetCards))
-                ]
-
-          player <- getPlayer iid
-          pushIfAny choices
-            $ chooseOne player (Label "Do not spend any secrets to play any cards" [] : choices)
-
+            resources <- (+ 2) <$> getSpendableResources iid'
+            playable <- getIsPlayableWithResources iid' source resources (UnpaidCost NoAction) windows' card
+            pure $ guard playable $> card
+          when (notNull choices) do
+            chooseOneM iid do
+              labeled "Do not spend any secrets to play any cards" nothing
+              targets choices \card -> do
+                push $ SpendUses source (toTarget attrs) Secret 1
+                reduceCostOf attrs card 2
+                playCardPayingCost iid' card
+                doStep 1 $ SearchFound iid target deck (deleteFirst card targetCards)
         pure a
-    _ -> OldBookOfLore3 <$> runMessage msg attrs
-
-newtype OldBookOfLore3Effect = OldBookOfLore3Effect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-oldBookOfLore3Effect :: EffectArgs -> OldBookOfLore3Effect
-oldBookOfLore3Effect = cardEffect OldBookOfLore3Effect Cards.oldBookOfLore3
-
-instance HasModifiersFor OldBookOfLore3Effect where
-  getModifiersFor target@(CardIdTarget cid) (OldBookOfLore3Effect attrs) | attrs.target `is` target = do
-    toModifiers attrs [ReduceCostOf (CardWithId cid) 2]
-  getModifiersFor _ _ = pure []
-
-instance RunMessage OldBookOfLore3Effect where
-  runMessage msg e@(OldBookOfLore3Effect attrs) = case msg of
-    ResolvedCard _ card | CardIdTarget (toCardId card) == attrs.target -> do
-      push $ disable attrs
-      pure e
-    _ -> OldBookOfLore3Effect <$> runMessage msg attrs
+    _ -> OldBookOfLore3 <$> liftRunMessage msg attrs

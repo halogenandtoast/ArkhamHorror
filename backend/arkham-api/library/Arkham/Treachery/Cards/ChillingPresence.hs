@@ -27,8 +27,9 @@ instance RunMessage ChillingPresence where
   runMessage msg t@(ChillingPresence attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
+      enabled <- createCardEffect Cards.chillingPresence Nothing attrs sid
       pushAll
-        [ createCardEffect Cards.chillingPresence Nothing attrs sid
+        [ enabled
         , revelationSkillTest sid iid attrs #willpower (Fixed 3)
         ]
 

@@ -5,7 +5,6 @@ import Arkham.Cost.Status qualified as Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Query (selectAssetController)
 import Arkham.Matcher
 
@@ -20,15 +19,9 @@ instance RunMessage HitAndRun where
   runMessage msg e@(HitAndRun attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (#ally <> #asset)
-      chooseOne
-        iid
-        [ targetLabel
-          card
-          [ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
-          , Msg.createCardEffect Cards.hitAndRun Nothing attrs card
-          ]
-        | card <- cards
-        ]
+      chooseTargetM iid cards \card -> do
+        push $ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
+        createCardEffect Cards.hitAndRun Nothing attrs card
       pure e
     _ -> HitAndRun <$> liftRunMessage msg attrs
 

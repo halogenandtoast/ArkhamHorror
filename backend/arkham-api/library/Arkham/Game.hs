@@ -392,6 +392,7 @@ withSkillTestMetadata st = do
   stmModifiedSkillValue <- getSkillTestModifiedSkillValue
   stmSkills <- getSkillTestSkillTypes
   stmModifiedDifficulty <- fromJustNote "impossible" <$> getSkillTestDifficulty
+  stmModifiers <- getFullModifiers st
   pure $ st `with` SkillTestMetadata {..}
 
 withInvestigatorConnectionData
@@ -4185,6 +4186,7 @@ instance Projection Effect where
     case fld of
       EffectAbilities -> pure $ getAbilities e
       EffectCardCode -> pure $ effectCardCode $ toAttrs e
+      EffectCard -> traverse getCard (effectCardId $ toAttrs e)
       EffectMeta -> pure $ attr effectMetadata e
 
 eventField :: HasGame m => Event -> Field Event a -> m a

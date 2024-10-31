@@ -75,8 +75,8 @@ instance RunMessage PennyWhite where
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mSkillTest <- getSkillTest
       for_ mSkillTest $ \skillTest ->
-        pushWhen (skillTestIsRevelation skillTest)
-          $ createCardEffect Cards.pennyWhite Nothing (toSource attrs) (toTarget attrs)
+        when (skillTestIsRevelation skillTest) do
+          push =<< createCardEffect Cards.pennyWhite Nothing (toSource attrs) (toTarget attrs)
       pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
       push $ FinishedWithMulligan iid

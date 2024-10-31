@@ -34,9 +34,10 @@ instance RunMessage Mesmerize where
           player <- getPlayer iid
           case maskedCarnevaleGoers of
             [] -> push $ chooseOne player [Label "Surge" [gainSurge attrs]]
-            xs ->
+            xs -> do
+              enabled <- createCardEffect Cards.mesmerize Nothing attrs iid
               pushAll
-                [ createCardEffect Cards.mesmerize Nothing attrs iid
+                [ enabled
                 , chooseOne player $ targetLabels xs (only . Flip iid (toSource attrs))
                 ]
       pure t

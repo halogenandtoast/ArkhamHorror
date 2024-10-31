@@ -44,9 +44,10 @@ instance RunMessage GavriellasFate where
       if disappearedIntoTheMist && onTrail
         then do
           gavriella <- getSetAsideCard Assets.gavriellaMizrah
+          enabled <- createCardEffect Cards.gavriellasFate Nothing attrs iid
           pushAll
             [ RemoveStory (toId attrs)
-            , createCardEffect Cards.gavriellasFate Nothing attrs iid
+            , enabled
             , TakeControlOfSetAsideAsset iid gavriella
             , Record GavriellaIsAlive
             ]

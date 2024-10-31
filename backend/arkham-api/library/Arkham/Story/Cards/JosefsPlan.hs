@@ -22,8 +22,9 @@ instance RunMessage JosefsPlan where
   runMessage msg s@(JosefsPlan attrs) = case msg of
     ResolveStory _ _ story' | story' == toId attrs -> do
       josefMeiger <- selectJust $ enemyIs Enemies.josefMeiger
+      enabled <- createCardEffect Cards.josefsPlan Nothing attrs attrs
       pushAll
-        [ createCardEffect Cards.josefsPlan Nothing attrs attrs
+        [ enabled
         , RemoveAllDoom (toSource attrs) (toTarget josefMeiger)
         , DisengageEnemyFromAll josefMeiger
         ]

@@ -74,7 +74,7 @@ const yourModifiers = computed(() => {
 
 const modifiers = computed(() =>
   [...(props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).
-    filter(shouldRender), ...yourModifiers.value]) 
+    filter(shouldRender), ...yourModifiers.value, ...(props.skillTest.modifiers ?? [])]) 
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
@@ -294,6 +294,10 @@ const tokenEffects = computed(() => {
         <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier" :data-image-id="modifierSource(modifier)">
           <template v-if="modifier.type.tag === 'CannotCommitCards'">
             <span>{{cannotCommitCardsToWords(modifier.type)}}</span>
+          </template>
+          <template v-if="modifier.type.tag === 'Difficulty'">
+            <span>+{{modifier.type.contents}}</span>
+            Difficulty
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>

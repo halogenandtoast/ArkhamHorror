@@ -30,7 +30,7 @@ instance HasAbilities EnchantedWoodsLostWoods where
 instance RunMessage EnchantedWoodsLostWoods where
   runMessage msg l@(EnchantedWoodsLostWoods attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.enchantedWoodsLostWoods Nothing (toAbilitySource attrs 1) iid
+      push =<< createCardEffect Cards.enchantedWoodsLostWoods Nothing (toAbilitySource attrs 1) iid
       pure l
     _ -> EnchantedWoodsLostWoods <$> runMessage msg attrs
 

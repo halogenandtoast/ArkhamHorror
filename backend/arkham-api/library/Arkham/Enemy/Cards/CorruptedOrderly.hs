@@ -29,7 +29,7 @@ instance HasAbilities CorruptedOrderly where
 instance RunMessage CorruptedOrderly where
   runMessage msg e@(CorruptedOrderly attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ createCardEffect Cards.corruptedOrderly Nothing (attrs.ability 1) attrs
+      push =<< createCardEffect Cards.corruptedOrderly Nothing (attrs.ability 1) attrs
       pure e
     _ -> CorruptedOrderly <$> runMessage msg attrs
 

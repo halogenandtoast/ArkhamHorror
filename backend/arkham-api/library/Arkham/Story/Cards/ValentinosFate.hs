@@ -44,9 +44,10 @@ instance RunMessage ValentinosFate where
       if disappearedIntoTheMist && onTrail
         then do
           valentino <- getSetAsideCard Assets.valentinoRivas
+          enabled <- createCardEffect Cards.valentinosFate Nothing attrs iid
           pushAll
             [ RemoveStory (toId attrs)
-            , createCardEffect Cards.valentinosFate Nothing attrs iid
+            , enabled
             , TakeControlOfSetAsideAsset iid valentino
             , Record ValentinoIsAlive
             ]

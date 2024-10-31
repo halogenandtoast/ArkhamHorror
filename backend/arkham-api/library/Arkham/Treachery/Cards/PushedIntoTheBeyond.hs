@@ -1,15 +1,17 @@
-module Arkham.Treachery.Cards.PushedIntoTheBeyond (PushedIntoTheBeyond (..), pushedIntoTheBeyond, pushedIntoTheBeyondEffect) where
+module Arkham.Treachery.Cards.PushedIntoTheBeyond (
+  PushedIntoTheBeyond (..),
+  pushedIntoTheBeyond,
+  pushedIntoTheBeyondEffect,
+) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Exception
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,26 +21,21 @@ pushedIntoTheBeyond :: TreacheryCard PushedIntoTheBeyond
 pushedIntoTheBeyond = treachery PushedIntoTheBeyond Cards.pushedIntoTheBeyond
 
 instance RunMessage PushedIntoTheBeyond where
-  runMessage msg t@(PushedIntoTheBeyond attrs) = case msg of
+  runMessage msg t@(PushedIntoTheBeyond attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      targets <-
+      choices <-
         selectWithField AssetCardCode
           $ assetControlledBy iid
           <> AssetNonStory
           <> AssetCanLeavePlayByNormalMeans
-      player <- getPlayer iid
-      pushWhen (notNull targets)
-        $ chooseOne
-          player
-          [ targetLabel
-            aid
-            [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid)
-            , createCardEffect Cards.pushedIntoTheBeyond (Just (EffectCardCodes [cardCode])) attrs iid
-            ]
-          | (aid, cardCode) <- targets
-          ]
+      when (notNull choices) do
+        chooseOneM iid do
+          for_ choices \(aid, cardCode) ->
+            targeting aid do
+              shuffleIntoDeck iid aid
+              createCardEffect Cards.pushedIntoTheBeyond (Just (EffectCardCodes [cardCode])) attrs iid
       pure t
-    _ -> PushedIntoTheBeyond <$> runMessage msg attrs
+    _ -> PushedIntoTheBeyond <$> liftRunMessage msg attrs
 
 newtype PushedIntoTheBeyondEffect = PushedIntoTheBeyondEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
@@ -48,14 +45,14 @@ pushedIntoTheBeyondEffect :: EffectArgs -> PushedIntoTheBeyondEffect
 pushedIntoTheBeyondEffect = cardEffect PushedIntoTheBeyondEffect Cards.pushedIntoTheBeyond
 
 instance RunMessage PushedIntoTheBeyondEffect where
-  runMessage msg e@(PushedIntoTheBeyondEffect attrs) = case msg of
-    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == toId attrs -> do
+  runMessage msg e@(PushedIntoTheBeyondEffect attrs) = runQueueT $ case msg of
+    CreatedEffect eid _ _ (InvestigatorTarget iid) | eid == attrs.id -> do
       push $ DiscardTopOfDeck iid 3 attrs.source (Just $ EffectTarget eid)
       pure e
-    DiscardedTopOfDeck iid cards _ (EffectTarget eid) | eid == toId attrs -> do
+    DiscardedTopOfDeck iid cards _ (EffectTarget eid) | eid == attrs.id -> do
       case attrs.metadata of
         Just (EffectCardCodes [x]) -> do
-          pushWhen (x `elem` map (cdCardCode . toCardDef) cards) (assignHorror iid attrs.source 2)
+          when (x `elem` map (cdCardCode . toCardDef) cards) (assignHorror iid attrs.source 2)
         _ -> throwIO (InvalidState "Must have one card as the target")
       pure e
-    _ -> PushedIntoTheBeyondEffect <$> runMessage msg attrs
+    _ -> PushedIntoTheBeyondEffect <$> liftRunMessage msg attrs

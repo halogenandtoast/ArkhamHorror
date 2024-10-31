@@ -19,7 +19,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Debug
-import Arkham.Effect.Types
+import {-# SOURCE #-} Arkham.Effect.Types
 import Arkham.Enemy.Types
 import Arkham.Event.Types
 import Arkham.Game.Base as X

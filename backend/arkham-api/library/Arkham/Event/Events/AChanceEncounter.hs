@@ -9,7 +9,6 @@ import Arkham.Cost
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 
@@ -25,15 +24,10 @@ instance RunMessage AChanceEncounter where
     InvestigatorPlayEvent iid eid _ windows' _ | eid == attrs.id -> do
       discards <- select $ #ally <> InDiscardOf (affectsOthers can.have.cards.leaveDiscard)
       focusCards discards \unfocus -> do
-        chooseOne
-          iid
-          [ targetLabel
-            card
-            [ PutCardIntoPlay iid card Nothing NoPayment windows'
-            , Msg.createCardEffect Cards.aChanceEncounter Nothing attrs card
-            ]
-          | card <- discards
-          ]
+        chooseOneM iid do
+          targets discards \card -> do
+            push $ PutCardIntoPlay iid card Nothing NoPayment windows'
+            createCardEffect Cards.aChanceEncounter Nothing attrs card
         push unfocus
       pure e
     _ -> AChanceEncounter <$> liftRunMessage msg attrs

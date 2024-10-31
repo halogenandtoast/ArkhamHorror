@@ -38,7 +38,7 @@ instance RunMessage MystifyingSong where
         CheckWindows ws -> any isAfterAgendaWouldAdvanceWindow ws
         Do (CheckWindows ws) -> any isAfterAgendaWouldAdvanceWindow ws
         _ -> False
-      push $ createCardEffect Cards.mystifyingSong Nothing (toSource attrs) (InvestigatorTarget iid)
+      push =<< createCardEffect Cards.mystifyingSong Nothing attrs iid
       pure e
     _ -> MystifyingSong <$> runMessage msg attrs
 

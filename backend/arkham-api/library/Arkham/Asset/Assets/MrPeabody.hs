@@ -2,10 +2,11 @@ module Arkham.Asset.Assets.MrPeabody (mrPeabody, mrPeabodyEffect, MrPeabody (..)
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Effect.Import
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Trait (Trait (Passageway))
 
 newtype MrPeabody = MrPeabody AssetAttrs
@@ -19,18 +20,12 @@ instance HasAbilities MrPeabody where
   getAbilities (MrPeabody attrs) = [restrictedAbility attrs 1 ControlsThis $ actionAbilityWithCost (exhaust attrs)]
 
 instance RunMessage MrPeabody where
-  runMessage msg a@(MrPeabody attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg a@(MrPeabody attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <- select Anywhere
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel target [createCardEffect Cards.mrPeabody Nothing source target]
-          | target <- locations
-          ]
+      chooseTargetM iid locations $ createCardEffect Cards.mrPeabody Nothing (attrs.ability 1)
       pure a
-    _ -> MrPeabody <$> runMessage msg attrs
+    _ -> MrPeabody <$> liftRunMessage msg attrs
 
 newtype MrPeabodyEffect = MrPeabodyEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -45,8 +40,6 @@ instance HasModifiersFor MrPeabodyEffect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage MrPeabodyEffect where
-  runMessage msg e@(MrPeabodyEffect attrs) = case msg of
-    Ready (AssetTarget aid) | AssetSource aid == effectSource attrs -> do
-      push $ disable attrs
-      pure e
-    _ -> MrPeabodyEffect <$> runMessage msg attrs
+  runMessage msg e@(MrPeabodyEffect attrs) = runQueueT $ case msg of
+    Ready (AssetTarget aid) | isSource aid attrs.source -> disableReturn e
+    _ -> MrPeabodyEffect <$> liftRunMessage msg attrs

@@ -82,11 +82,17 @@ export type ModifierType
   | UseEncounterDeck
   | CannotCommitCards
   | DoNotDrawConnection
+  | Difficulty
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
   skillType: string
   value: number
+}
+
+export type Difficulty = {
+  tag: "Difficulty"
+  contents: number
 }
 
 export type BaseSkill = {
@@ -181,6 +187,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.isExactly('BaseSkill'),
       contents: JsonDecoder.number
     }, 'BaseSkill'),
+  JsonDecoder.object<Difficulty>(
+    {
+      tag: JsonDecoder.isExactly('Difficulty'),
+      contents: JsonDecoder.number
+    }, 'Difficulty'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.isExactly('DiscoveredClues'),

@@ -2,6 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export type SkillTestStep
   = "DetermineSkillOfTestStep"
@@ -58,6 +59,7 @@ export type SkillTest = {
   step: SkillTestStep;
   baseValue: SkillTestBaseValue;
   result: null | { tag: string };
+  modifiers?: Modifier[];
 }
 
 export type SkillTestResults = {
@@ -103,6 +105,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     step: JsonDecoder.failover({ tag: "DetermineSkillOfTestStep" }, skillTestStepDecoder),
     baseValue: baseValueDecoder,
     result: JsonDecoder.nullable(JsonDecoder.object({ tag: JsonDecoder.string }, 'SkillTestResult')),
+    modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   },
   'SkillTest',
 );

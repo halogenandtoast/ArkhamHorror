@@ -39,6 +39,7 @@ onRevealChaosTokenEffect' eid skillTestId matchr source target msgs =
       , effectFinished = False
       , effectExtraMetadata = toJSON matchr
       , effectSkillTest = Just skillTestId
+      , effectCardId = Nothing
       }
 
 instance HasModifiersFor OnRevealChaosTokenEffect

@@ -26,7 +26,7 @@ instance RunMessage Pilfer3 where
       pushAll $ enabled : leftOr investigation
       pure e
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n | n >= 2 -> do
-      push $ createCardEffect Cards.pilfer3 (effectMetaTarget $ toCardId attrs) attrs iid
+      push =<< createCardEffect Cards.pilfer3 (effectMetaTarget $ toCardId attrs) attrs iid
       pure e
     _ -> Pilfer3 <$> runMessage msg attrs
 

@@ -27,7 +27,7 @@ instance RunMessage WellConnected where
   runMessage msg a@(WellConnected attrs) = case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
-        push $ createCardEffect Cards.wellConnected Nothing (toSource attrs) sid
+        push =<< createCardEffect Cards.wellConnected Nothing (toSource attrs) sid
       pure a
     _ -> WellConnected <$> runMessage msg attrs
 

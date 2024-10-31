@@ -131,6 +131,9 @@ enemy_ = id
 
 instance Plated EnemyMatcher
 
+instance IsLabel "swarming" EnemyMatcher where
+  fromLabel = SwarmingEnemy
+
 instance IsLabel "exhausted" EnemyMatcher where
   fromLabel = ExhaustedEnemy
 

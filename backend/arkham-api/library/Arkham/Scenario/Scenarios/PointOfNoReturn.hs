@@ -145,13 +145,14 @@ instance RunMessage PointOfNoReturn where
               $ ReadyEnemy
               <> oneOf
                 [EnemyAt (locationWithInvestigator iid), EnemyAt $ ConnectedFrom (locationWithInvestigator iid)]
-          chooseOne
-            iid
-            [ targetLabel
-              enemy
-              [EnemyEngageInvestigator enemy iid, InitiateEnemyAttack $ enemyAttack enemy attrs iid]
-            | enemy <- enemies
-            ]
+          when (notNull enemies) do
+            chooseOne
+              iid
+              [ targetLabel
+                enemy
+                [EnemyEngageInvestigator enemy iid, InitiateEnemyAttack $ enemyAttack enemy attrs iid]
+              | enemy <- enemies
+              ]
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

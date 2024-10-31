@@ -17,7 +17,8 @@ deathApproaches = treachery DeathApproaches Cards.deathApproaches
 
 instance HasAbilities DeathApproaches where
   getAbilities (DeathApproaches attrs) = case attrs.inThreatAreaOf of
-    Just iid -> [mkAbility attrs 1 $ forced $ DealtHorror #when AnySource $ InvestigatorWithId iid]
+    Just iid ->
+      [mkAbility attrs 1 $ forced $ InvestigatorWouldTakeHorror #when (InvestigatorWithId iid) AnySource]
     _ -> []
 
 instance RunMessage DeathApproaches where

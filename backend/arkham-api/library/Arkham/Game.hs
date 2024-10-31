@@ -2006,7 +2006,10 @@ getLocationsMatching lmatcher = do
       pure $ filter ((== Just brazier) . attr locationBrazier) ls
     LocationWithBreaches valueMatcher -> do
       filterM
-        ((`gameValueMatches` valueMatcher) . maybe 0 Breach.countBreaches . attr locationBreaches)
+        ( (`gameValueMatches` valueMatcher)
+            . maybe 0 Breach.countBreaches
+            . attr locationBreaches
+        )
         ls
     FloodedLocation ->
       filterM (fieldMap LocationFloodLevel (`elem` [Just FullyFlooded, Just PartiallyFlooded]) . toId) ls

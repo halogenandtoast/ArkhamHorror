@@ -21,9 +21,11 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp (XpBonus (WithBonus))
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message.Lifted (interludeXpAll)
 import Arkham.Name
 import Arkham.Trait (Trait (SilverTwilight))
 
@@ -144,14 +146,16 @@ instance RunMessage TheCircleUndone where
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
-      iids <- allInvestigatorIds
       players <- allPlayers
       lead <- getLeadPlayer
+
+      gainXp <-
+        evalQueueT
+          $ interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
       let
         showThePriceOfProgress4 = mInterludeKey == Just ThePriceOfProgress4
         showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
         showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
-        gainXp = map (\i -> GainXP i (toSource attrs) 2) iids
         lodgeChoices =
           [ Label "\"I refuse to be part of this\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 7)]
           , Label "\"I agree\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 8)]
@@ -169,10 +173,10 @@ instance RunMessage TheCircleUndone where
                  ]
            )
         <> ( guard showThePriceOfProgress5
-              *> [ Record TheInvestigatorsRescuedJosef
-                 , storyWithChooseOne lead players thePriceOfProgress5 lodgeChoices
-                 ]
-              <> gainXp
+              *> ( Record TheInvestigatorsRescuedJosef
+                    : gainXp
+                      <> [storyWithChooseOne lead players thePriceOfProgress5 lodgeChoices]
+                 )
            )
         <> ( guard showThePriceOfProgress6
               *> [Record JosefIsAliveAndWell, storyWithChooseOne lead players thePriceOfProgress6 lodgeChoices]

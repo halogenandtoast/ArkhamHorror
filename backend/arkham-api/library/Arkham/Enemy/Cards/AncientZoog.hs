@@ -1,14 +1,9 @@
-module Arkham.Enemy.Cards.AncientZoog (
-  ancientZoog,
-  AncientZoog (..),
-)
-where
+module Arkham.Enemy.Cards.AncientZoog (ancientZoog, AncientZoog (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Zoog))
 
@@ -18,37 +13,25 @@ newtype AncientZoog = AncientZoog EnemyAttrs
 
 ancientZoog :: EnemyCard AncientZoog
 ancientZoog =
-  enemyWith
-    AncientZoog
-    Cards.ancientZoog
-    (3, Static 3, 3)
-    (1, 1)
-    ( spawnAtL
-        ?~ SpawnAtFirst
-          [ SpawnAt $ LocationWithUnrevealedTitle "Enchanted Woods" <> UnrevealedLocation
-          , SpawnAt $ LocationWithUnrevealedTitle "Enchanted Woods"
-          ]
-    )
+  enemyWith AncientZoog Cards.ancientZoog (3, Static 3, 3) (1, 1)
+    $ spawnAtL
+    ?~ SpawnAtFirst
+      [ SpawnAt $ LocationWithUnrevealedTitle "Enchanted Woods" <> UnrevealedLocation
+      , SpawnAt $ LocationWithUnrevealedTitle "Enchanted Woods"
+      ]
 
 instance HasAbilities AncientZoog where
   getAbilities (AncientZoog x) =
-    withBaseAbilities x
-      $ [ restrictedAbility
-            x
-            1
-            ( exists (ReadyEnemy <> EnemyWithId (toId x))
-                <> exists (EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm)
-            )
-            $ ForcedAbility
-            $ PhaseBegins #when #enemy
-        ]
+    extend1 x
+      $ restricted x 1 (thisExists x #ready <> exists (withTrait Zoog <> #swarming <> NotEnemy IsSwarm))
+      $ forced
+      $ PhaseBegins #when #enemy
 
 instance RunMessage AncientZoog where
-  runMessage msg e@(AncientZoog attrs) = case msg of
+  runMessage msg e@(AncientZoog attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      zoogs <- select $ EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm
       lead <- getLead
-      for_ zoogs $ \zoog ->
+      selectEach (withTrait Zoog <> #swarming <> NotEnemy IsSwarm) \zoog -> do
         push $ PlaceSwarmCards lead zoog 1
       pure e
-    _ -> AncientZoog <$> runMessage msg attrs
+    _ -> AncientZoog <$> liftRunMessage msg attrs

@@ -2963,10 +2963,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   RemoveTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ subtractTokens token n
   DoBatch _ (EmptyDeck iid mDrawing) | iid == investigatorId -> do
+    player <- getPlayer iid
     pushAll
       $ [EmptyDeck iid mDrawing]
       <> maybeToList mDrawing
-      <> [assignHorror iid EmptyDeckSource 1]
+      <> [chooseOne player [Label "Your deck is empty, take 1 horror" [assignHorror iid EmptyDeckSource 1]]]
     pure a
   EmptyDeck iid _ | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)

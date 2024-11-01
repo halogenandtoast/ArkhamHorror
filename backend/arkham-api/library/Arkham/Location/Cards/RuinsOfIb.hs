@@ -1,11 +1,12 @@
 module Arkham.Location.Cards.RuinsOfIb (ruinsOfIb, RuinsOfIb (..)) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (RevealChaosToken)
+import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Story
 
 newtype RuinsOfIb = RuinsOfIb LocationAttrs
@@ -19,26 +20,25 @@ instance HasAbilities RuinsOfIb where
   getAbilities (RuinsOfIb attrs) =
     veiled
       attrs
-      [ restrictedAbility
-          attrs
-          1
-          ( DuringSkillTest (WhileInvestigating $ LocationWithId $ toId attrs)
-              <> exists (AssetControlledBy You <> DiscardableAsset)
-          )
-          $ ForcedAbility
+      [ groupLimit PerTestOrAbility
+          $ restricted
+            attrs
+            1
+            ( DuringSkillTest (WhileInvestigating $ be attrs)
+                <> exists (AssetControlledBy You <> DiscardableAsset)
+            )
+          $ forced
           $ RevealChaosToken #after You
           $ oneOf [#skull, #cultist]
       ]
 
 instance RunMessage RuinsOfIb where
-  runMessage msg l@(RuinsOfIb attrs) = case msg of
+  runMessage msg l@(RuinsOfIb attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> DiscardableAsset
-      player <- getPlayer iid
-      push
-        $ chooseOne player [targetLabel asset [toDiscardBy iid (attrs.ability 1) asset] | asset <- assets]
+      chooseTargetM iid assets $ toDiscardBy iid (attrs.ability 1)
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.ghostsOfTheDead
       pure . RuinsOfIb $ attrs & canBeFlippedL .~ False
-    _ -> RuinsOfIb <$> runMessage msg attrs
+    _ -> RuinsOfIb <$> liftRunMessage msg attrs

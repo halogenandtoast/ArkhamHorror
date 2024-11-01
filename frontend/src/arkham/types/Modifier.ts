@@ -78,6 +78,7 @@ export type ModifierType
   | DiscoveredClues
   | SkillTestResultValueModifier
   | CancelEffects
+  | CannotPerformSkillTest
   | GainVictory
   | OtherModifier
   | SkillModifier
@@ -99,6 +100,10 @@ export type Difficulty = {
 
 export type CancelEffects = {
   tag: "CancelEffects"
+}
+
+export type CannotPerformSkillTest = {
+  tag: "CannotPerformSkillTest"
 }
 
 export type BaseSkill = {
@@ -217,6 +222,10 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
     {
       tag: JsonDecoder.isExactly('CancelEffects')
     }, 'CancelEffects'),
+  JsonDecoder.object<CannotPerformSkillTest>(
+    {
+      tag: JsonDecoder.isExactly('CannotPerformSkillTest')
+    }, 'CannotPerformSkillTest'),
   JsonDecoder.object<DamageDealt>(
     {
       tag: JsonDecoder.isExactly('DamageDealt'),

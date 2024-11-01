@@ -303,6 +303,9 @@ const tokenEffects = computed(() => {
           <template v-if="modifier.type.tag === 'CancelEffects'">
             <span class="text">Cancel Effects</span>
           </template>
+          <template v-if="modifier.type.tag === 'CannotPerformSkillTest'">
+            <span class="text">Cannot Perform Skill Test</span>
+          </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />

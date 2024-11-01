@@ -31,6 +31,7 @@ import Arkham.Location.Runner as X (
   revealedConnectedMatchersL,
   setMeta,
   symbolLabel,
+  veiled,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,

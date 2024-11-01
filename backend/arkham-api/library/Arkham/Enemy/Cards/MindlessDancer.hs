@@ -3,9 +3,12 @@ module Arkham.Enemy.Cards.MindlessDancer (mindlessDancer, MindlessDancer (..)) w
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
+import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Window qualified as Window
 
 newtype MindlessDancer = MindlessDancer EnemyAttrs
@@ -37,4 +40,10 @@ instance RunMessage MindlessDancer where
       checkWhen $ Window.MovedFromHunter attrs.id
       push $ HunterMove (toId attrs)
       pure e
+    PlaceCosmos _ lid (CosmosLocation pos _) -> do
+      emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
+      case attrs.placement of
+        AtLocation lid' | lid' == emptySpace -> do
+          pure $ MindlessDancer $ attrs & placementL .~ AtLocation lid
+        _ -> pure e
     _ -> MindlessDancer <$> liftRunMessage msg attrs

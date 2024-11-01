@@ -56,12 +56,7 @@ instance RunMessage SixthSense4Effect where
             locations <-
               selectWithField
                 LocationShroud
-                ( RevealedLocation
-                    <> LocationMatchAny
-                      [ LocationWithDistanceFrom n Anywhere
-                      | n <- [1 .. 2]
-                      ]
-                )
+                (LocationWithDistanceFromAtMost 2 (locationWithInvestigator iid) RevealedLocation)
                 <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
 
             locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do

@@ -12,6 +12,7 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Card.Settings
+import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
@@ -272,6 +273,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorBondedCards :: [Card]
   , investigatorMeta :: Value
   , investigatorUnhealedHorrorThisRound :: Int
+  , investigatorSealedChaosTokens :: [ChaosToken]
   , -- handling liquid courage
     investigatorHorrorHealed :: Int
   , -- the forgotten age
@@ -609,6 +611,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorBondedCards <- o .: "bondedCards"
     investigatorMeta <- o .: "meta"
     investigatorUnhealedHorrorThisRound <- o .: "unhealedHorrorThisRound"
+    investigatorSealedChaosTokens <- o .:? "sealedChaosTokens" .!= []
     investigatorHorrorHealed <- o .: "horrorHealed"
     investigatorSupplies <- o .: "supplies"
     investigatorDrawnCards <- o .: "drawnCards"

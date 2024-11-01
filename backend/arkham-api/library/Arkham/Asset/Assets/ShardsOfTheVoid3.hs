@@ -5,7 +5,6 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Fight
 import Arkham.Helpers.SkillTest
@@ -49,7 +48,7 @@ instance RunMessage ShardsOfTheVoid3 where
           skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           pushAll
             [ SealChaosToken token
-            , SealedChaosToken token (toCard attrs)
+            , SealedChaosToken token (toTarget attrs)
             ]
       pure a
     _ -> ShardsOfTheVoid3 <$> liftRunMessage msg attrs

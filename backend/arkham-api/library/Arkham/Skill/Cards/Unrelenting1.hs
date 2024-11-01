@@ -1,10 +1,5 @@
-module Arkham.Skill.Cards.Unrelenting1 (
-  unrelenting1,
-  Unrelenting1 (..),
-)
-where
+module Arkham.Skill.Cards.Unrelenting1 (unrelenting1, Unrelenting1 (..)) where
 
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Helpers.ChaosBag
@@ -34,7 +29,7 @@ instance RunMessage Unrelenting1 where
             [ TargetLabel
               (ChaosTokenFaceTarget $ token.face)
               [ SealChaosToken token
-              , SealedChaosToken token (toCard attrs)
+              , SealedChaosToken token (toTarget attrs)
               ]
             | token <- filter ((/= #autofail) . (.face)) chaosTokensInBag
             ]

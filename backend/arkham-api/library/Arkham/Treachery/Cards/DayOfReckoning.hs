@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.DayOfReckoning (dayOfReckoning, DayOfReckoning (..)) where
 
-import Arkham.Card
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
@@ -19,6 +18,6 @@ instance RunMessage DayOfReckoning where
       selectWhenNotNull AnyAgenda \agendas -> do
         chooseOrRunOne iid $ targetLabels agendas $ only . Msg.attachTreachery attrs
         selectOne (ChaosTokenFaceIs #eldersign) >>= traverse_ \token -> do
-          pushAll [SealChaosToken token, SealedChaosToken token (toCard attrs)]
+          pushAll [SealChaosToken token, SealedChaosToken token (toTarget attrs)]
       pure t
     _ -> DayOfReckoning <$> liftRunMessage msg attrs

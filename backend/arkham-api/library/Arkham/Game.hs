@@ -630,6 +630,13 @@ getInvestigatorsMatching matcher = do
   includeEliminated _ = False
   go [] = const (pure [])
   go as = \case
+    InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
+      filterM
+        ( fmap (>= 0)
+            . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
+            . attr investigatorSealedChaosTokens
+        )
+        as
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
     InvestigatorWithAnyFailedSkillTestsThisTurn -> flip filterM as \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed

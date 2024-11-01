@@ -14,6 +14,7 @@ import Arkham.Key
 import Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
+import Arkham.Matcher.ChaosToken
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.Location
@@ -58,6 +59,7 @@ data InvestigatorMatcher
   | InvestigatorCanBeAssignedHorrorBy InvestigatorId
   | InvestigatorCanMoveTo Source LocationMatcher
   | InvestigatorWithToken Token
+  | InvestigatorWithSealedChaosToken ChaosTokenMatcher
   | You
   | ThatInvestigator
   | UnengagedInvestigator

@@ -177,6 +177,7 @@ instance Targetable TreacheryAttrs where
   toTarget = TreacheryTarget . toId
   isTarget TreacheryAttrs {treacheryId} (TreacheryTarget tid) =
     treacheryId == tid
+  isTarget attrs (CardIdTarget cid) = toCardId attrs == cid
   isTarget _ _ = False
 
 instance Sourceable TreacheryAttrs where

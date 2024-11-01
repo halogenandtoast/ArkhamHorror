@@ -94,6 +94,7 @@ allInvestigatorCards =
       , zoeySamarasParallel
       , montereyJackParallel
       , rexMurphyParallel
+      , fatherMateoParallel
       , jennyBarnesParallel
       ]
 
@@ -638,6 +639,10 @@ montereyJackParallel =
 rexMurphyParallel :: CardDef
 rexMurphyParallel =
   investigator "90078" ("Rex Murphy" <:> "The Reporter") Seeker [Reporter, Cursed]
+
+fatherMateoParallel :: CardDef
+fatherMateoParallel =
+  investigator "90081" ("Father Mateo" <:> "The Priest") Mystic [Believer, Warden]
 
 jennyBarnesParallel :: CardDef
 jennyBarnesParallel =

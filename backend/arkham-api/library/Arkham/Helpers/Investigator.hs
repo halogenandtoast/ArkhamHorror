@@ -348,6 +348,7 @@ investigator f cardDef Stats {..} =
                 , investigatorBondedCards = mempty
                 , investigatorMeta = Null
                 , investigatorUnhealedHorrorThisRound = 0
+                , investigatorSealedChaosTokens = []
                 , investigatorUsedAbilities = mempty
                 , investigatorUsedAdditionalActions = mempty
                 , investigatorMulligansTaken = 0

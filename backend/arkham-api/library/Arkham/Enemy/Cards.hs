@@ -1772,7 +1772,7 @@ beingsOfIb =
   (enemy "06148" "Beings of Ib" TheSearchForKadath 1)
     { cdCardTraits = setFromList [Monster, Elite]
     , cdVictoryPoints = Just 1
-    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Swarming (Static 1)]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter, Keyword.Swarming (PerPlayer 1)]
     }
 
 priestOfAThousandMasks :: CardDef

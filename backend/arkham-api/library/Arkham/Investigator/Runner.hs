@@ -306,6 +306,12 @@ runWindow attrs windows actions playableCards = do
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
+  SealedChaosToken token (isTarget a -> True) -> do
+    pure $ a & sealedChaosTokensL %~ (token :)
+  UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+  ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
+  RemoveAllChaosTokens face -> do
+    pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
   UpdateGlobalSetting iid s | iid == a.id -> do
     pure $ a & settingsL %~ updateGlobalSetting s
   UpdateCardSetting iid cCode s | iid == a.id -> do

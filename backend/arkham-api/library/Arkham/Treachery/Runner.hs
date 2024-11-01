@@ -59,7 +59,7 @@ instance Be TreacheryAttrs TreacheryMatcher where
 
 instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = case msg of
-    Msg.SealedChaosToken token card | toCardId card == toCardId a -> do
+    Msg.SealedChaosToken token (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     Msg.UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     Msg.RemoveAllChaosTokens face -> do

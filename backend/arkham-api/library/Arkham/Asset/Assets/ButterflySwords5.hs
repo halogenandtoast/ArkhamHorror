@@ -38,16 +38,14 @@ instance RunMessage ButterflySwords5 where
             chooseOne iid [Label "Do not exhaust" [], Label "Exhaust to do +1 damage" msgs]
 
           pure $ ButterflySwords5 $ setMeta @Int (n + 1) attrs
-    AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ | not attrs.exhausted -> do
+    AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ -> do
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
-      oncePerAbility attrs 1 $ afterSkillTest $ forInvestigator iid msg
-      pure a
-    ForInvestigator iid (AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _) | not attrs.exhausted -> do
-      sid <- getRandom
-      canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
-      fight <- evalQueueT do
-        skillTestModifier sid attrs iid $ AddSkillValue #agility
-        chooseFightEnemy sid iid (attrs.ability 1)
-      chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]
+      oncePerAbility attrs 1 do
+        sid <- getRandom
+        canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
+        fight <- evalQueueT do
+          skillTestModifier sid attrs iid $ AddSkillValue #agility
+          chooseFightEnemy sid iid (attrs.ability 1)
+        chooseOrRunOne iid $ Label "Do not fight again" [] : [Label "Fight again" fight | canFight]
       pure a
     _ -> ButterflySwords5 <$> liftRunMessage msg attrs

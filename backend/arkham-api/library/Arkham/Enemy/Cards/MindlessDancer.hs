@@ -1,17 +1,11 @@
-module Arkham.Enemy.Cards.MindlessDancer (
-  mindlessDancer,
-  MindlessDancer (..),
-)
-where
+module Arkham.Enemy.Cards.MindlessDancer (mindlessDancer, MindlessDancer (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Modifier
 import Arkham.Window qualified as Window
 
 newtype MindlessDancer = MindlessDancer EnemyAttrs
@@ -20,39 +14,27 @@ newtype MindlessDancer = MindlessDancer EnemyAttrs
 
 mindlessDancer :: EnemyCard MindlessDancer
 mindlessDancer =
-  enemyWith
-    MindlessDancer
-    Cards.mindlessDancer
-    (6, Static 5, 3)
-    (2, 1)
-    ( spawnAtL
-        ?~ SpawnAt (IncludeEmptySpace $ FarthestLocationFromYou $ locationIs Locations.emptySpace)
-    )
+  enemyWith MindlessDancer Cards.mindlessDancer (6, Static 5, 3) (2, 1)
+    $ spawnAtL
+    ?~ SpawnAt (IncludeEmptySpace $ FarthestLocationFromYou $ locationIs Locations.emptySpace)
 
 instance HasAbilities MindlessDancer where
   getAbilities (MindlessDancer a) =
-    withBaseAbilities a
-      $ [ limitedAbility (GroupLimit PerRound 1)
-            $ mkAbility a 1
-            $ ForcedAbility
-            $ EnemyMovedTo Timing.After (IncludeEmptySpace $ locationIs Locations.emptySpace) MovedViaHunter
-            $ EnemyWithId (toId a)
-        ]
+    extend1 a
+      $ groupLimit PerRound
+      $ mkAbility a 1
+      $ forced
+      $ EnemyMovedTo #after (IncludeEmptySpace $ locationIs Locations.emptySpace) MovedViaHunter (be a)
 
 instance HasModifiersFor MindlessDancer where
-  getModifiersFor target (MindlessDancer attrs) | isTarget attrs target = toModifiers attrs [CanEnterEmptySpace]
+  getModifiersFor target (MindlessDancer attrs) | isTarget attrs target = do
+    toModifiers attrs [CanEnterEmptySpace]
   getModifiersFor _ _ = pure []
 
 instance RunMessage MindlessDancer where
-  runMessage msg e@(MindlessDancer attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      pushAll
-        $ [ CheckWindows
-              [ Window.mkWindow
-                  Timing.When
-                  (Window.MovedFromHunter $ toId attrs)
-              ]
-          , HunterMove (toId attrs)
-          ]
+  runMessage msg e@(MindlessDancer attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      checkWhen $ Window.MovedFromHunter attrs.id
+      push $ HunterMove (toId attrs)
       pure e
-    _ -> MindlessDancer <$> runMessage msg attrs
+    _ -> MindlessDancer <$> liftRunMessage msg attrs

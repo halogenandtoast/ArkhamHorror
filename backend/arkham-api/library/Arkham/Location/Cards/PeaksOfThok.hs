@@ -12,7 +12,7 @@ newtype PeaksOfThok = PeaksOfThok LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peaksOfThok :: LocationCard PeaksOfThok
-peaksOfThok = location PeaksOfThok Cards.peaksOfThok 3 (Static 0)
+peaksOfThok = locationWith PeaksOfThok Cards.peaksOfThok 3 (Static 0) (canBeFlippedL .~ True)
 
 instance HasAbilities PeaksOfThok where
   getAbilities (PeaksOfThok attrs) =
@@ -29,15 +29,14 @@ instance RunMessage PeaksOfThok where
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      when (locationCanBeFlipped attrs)
-        $ flipOver iid attrs
+      when (locationCanBeFlipped attrs) $ flipOver iid attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 2) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      assignDamage iid (toAbilitySource attrs 2) 1
+      assignDamage iid (attrs.ability 2) 1
       pure l
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.inhabitantsOfTheVale

@@ -48,6 +48,7 @@ const shouldRender = (mod: Modifier) => {
   const { type } = mod
   if (!('tag' in type)) return false
   if (type.tag === 'DiscoveredClues') return true
+  if (type.tag === 'CancelEffects') return true
   if (type.tag === 'DamageDealt') return true
   if (type.tag === 'AnySkillValue') return true
   if (type.tag === 'SkillModifier') return true
@@ -298,6 +299,9 @@ const tokenEffects = computed(() => {
           <template v-if="modifier.type.tag === 'Difficulty'">
             <span>+{{modifier.type.contents}}</span>
             Difficulty
+          </template>
+          <template v-if="modifier.type.tag === 'CancelEffects'">
+            <span class="text">Cancel Effects</span>
           </template>
           <template v-if="modifier.type.tag === 'DiscoveredClues'">
             <span>+{{modifier.type.contents}}</span>

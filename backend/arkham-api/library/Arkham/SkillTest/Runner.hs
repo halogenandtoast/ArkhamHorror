@@ -687,19 +687,22 @@ instance RunMessage SkillTest where
                in [failed target | target <- skillTestSubscribers <> tokenSubscribers]
                     <> [failed (Initiator skillTestTarget)]
 
-          if needsChoice
-            then do
-              lead <- getLeadPlayer
+          targetMods <- getModifiers skillTestTarget
+          let cancelled = CancelEffects `elem` modifiers' && EffectsCannotBeCanceled `notElem` targetMods
+          unless cancelled do
+            if needsChoice
+              then do
+                lead <- getLeadPlayer
 
-              push
-                $ chooseOrRunOne
-                  lead
-                  [ targetLabel resolver
-                    $ SetSkillTestResolveFailureInvestigator resolver
-                    : handleChoice resolver
-                  | resolver <- investigatorsToResolveFailure
-                  ]
-            else pushAll $ handleChoice skillTestResolveFailureInvestigator
+                push
+                  $ chooseOrRunOne
+                    lead
+                    [ targetLabel resolver
+                      $ SetSkillTestResolveFailureInvestigator resolver
+                      : handleChoice resolver
+                    | resolver <- investigatorsToResolveFailure
+                    ]
+              else pushAll $ handleChoice skillTestResolveFailureInvestigator
         Unrun -> pure ()
 
       pure $ s & stepL .~ ApplySkillTestResultsStep

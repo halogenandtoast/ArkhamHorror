@@ -562,3 +562,9 @@ getSkillTestDifficultyDifferenceFromBaseValue iid skillTest = do
 
 withSkillTest :: HasGame m => (SkillTestId -> m ()) -> m ()
 withSkillTest = whenJustM getSkillTestId
+
+getCanCancelSkillTestEffects :: HasGame m => m Bool
+getCanCancelSkillTestEffects = do
+  getSkillTestTarget >>= \case
+    Nothing -> pure False
+    Just target -> withoutModifier target EffectsCannotBeCanceled

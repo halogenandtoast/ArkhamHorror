@@ -1,18 +1,7 @@
-module Arkham.Skill.Cards.NeitherRainNorSnow (
-  neitherRainNorSnow,
-  NeitherRainNorSnow (..),
-) where
+module Arkham.Skill.Cards.NeitherRainNorSnow (neitherRainNorSnow, NeitherRainNorSnow (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Helpers.Window
-import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
-import Arkham.Timing qualified as Timing
-import Arkham.Window (mkWindow)
-import Arkham.Window qualified as Window
+import Arkham.Skill.Import.Lifted
 
 newtype NeitherRainNorSnow = NeitherRainNorSnow SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -22,13 +11,8 @@ neitherRainNorSnow :: SkillCard NeitherRainNorSnow
 neitherRainNorSnow = skill NeitherRainNorSnow Cards.neitherRainNorSnow
 
 instance RunMessage NeitherRainNorSnow where
-  runMessage msg s@(NeitherRainNorSnow attrs) = case msg of
+  runMessage msg s@(NeitherRainNorSnow attrs) = runQueueT $ case msg of
     When (FailedSkillTest _ _ _ target _ _) | isTarget attrs target -> do
-      ignoreWindow <-
-        checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-      removeAllMessagesMatching \case
-        FailedSkillTest {} -> True
-        _ -> False
-      push ignoreWindow
+      cancelSkillTestEffects attrs
       pure s
-    _ -> NeitherRainNorSnow <$> runMessage msg attrs
+    _ -> NeitherRainNorSnow <$> liftRunMessage msg attrs

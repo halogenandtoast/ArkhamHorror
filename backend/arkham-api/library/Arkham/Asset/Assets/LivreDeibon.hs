@@ -1,18 +1,14 @@
-module Arkham.Asset.Assets.LivreDeibon (
-  livreDeibon,
-  LivreDeibon (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.LivreDeibon (livreDeibon, LivreDeibon (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype LivreDeibon = LivreDeibon AssetAttrs
@@ -39,16 +35,13 @@ instance HasAbilities LivreDeibon where
     ]
 
 instance RunMessage LivreDeibon where
-  runMessage msg a@(LivreDeibon attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(LivreDeibon attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       handCards <- field InvestigatorHand iid
-      let drawing = drawCards iid (attrs.ability 1) 1
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ targetLabel (toCardId c) [drawing, PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)]
-          | c <- onlyPlayerCards handCards
-          ]
+      topOfDeck <- take 1 . unDeck <$> field InvestigatorDeck iid
+      chooseTargetM iid (onlyPlayerCards handCards) \c -> do
+        push $ PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
+        addToHand iid topOfDeck
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       deckCards <- fieldMap InvestigatorDeck unDeck iid
@@ -56,4 +49,4 @@ instance RunMessage LivreDeibon where
         [] -> error "Missing deck card"
         x : _ -> push $ SkillTestCommitCard iid $ PlayerCard x
       pure a
-    _ -> LivreDeibon <$> runMessage msg attrs
+    _ -> LivreDeibon <$> liftRunMessage msg attrs

@@ -198,7 +198,7 @@ instance RunMessage EnemyAttrs where
       pure $ updateEnemy [upd] a
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     EndPhase -> pure $ a & movedFromHunterKeywordL .~ False
-    SealedChaosToken token card | card.id == a.cardId -> do
+    SealedChaosToken token (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)

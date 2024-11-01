@@ -2,14 +2,12 @@ module Arkham.Investigator.Cards.WendyAdamsParallel (wendyAdamsParallel, WendyAd
 
 import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestTarget, withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype WendyAdamsParallel = WendyAdamsParallel InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -52,12 +50,11 @@ instance RunMessage WendyAdamsParallel where
       whenJustM getSkillTestTarget \case
         EnemyTarget eid -> do
           inBag <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
-          card <- field EnemyCard eid
           push $ FocusChaosTokens inBag
           chooseOneM iid do
             targets inBag \token -> do
               push $ SealChaosToken token
-              push $ SealedChaosToken token card
+              push $ SealedChaosToken token (toTarget eid)
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i
@@ -66,12 +63,11 @@ instance RunMessage WendyAdamsParallel where
         EnemyTarget eid -> do
           revealedTokens <-
             filter ((`elem` [CurseToken, BlessToken]) . (.face)) <$> getSkillTestRevealedChaosTokens
-          card <- field EnemyCard eid
           push $ FocusChaosTokens revealedTokens
           chooseUpToNM iid (length revealedTokens) "Done sealing tokens" do
             targets revealedTokens \token -> do
               push $ SealChaosToken token
-              push $ SealedChaosToken token card
+              push $ SealedChaosToken token (toTarget eid)
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i

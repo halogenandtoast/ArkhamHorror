@@ -1,6 +1,5 @@
 module Arkham.Event.Events.RadiantSmite1 (radiantSmite1, RadiantSmite1 (..)) where
 
-import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
@@ -42,7 +41,7 @@ instance RunMessage RadiantSmite1 where
     ResolveAmounts _iid (getChoiceAmount "Bless Tokens" -> n) (isTarget attrs -> True) -> do
       blessedTokens <- take n <$> select (ChaosTokenFaceIs #bless)
       for_ blessedTokens $ \blessedToken -> do
-        pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (toCard attrs)]
+        pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (toTarget attrs)]
       pure e
     Msg.EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       pure $ RadiantSmite1 $ attrs & sealedChaosTokensL %~ filter ((/= #bless) . (.face))

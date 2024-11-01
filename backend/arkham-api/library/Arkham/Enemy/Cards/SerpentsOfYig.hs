@@ -5,7 +5,6 @@ module Arkham.Enemy.Cards.SerpentsOfYig (
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -33,6 +32,6 @@ instance RunMessage SerpentsOfYig where
       chaosTokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       let mElderSignToken = find ((== ElderSign) . chaosTokenFace) chaosTokens
       for_ mElderSignToken $ \chaosToken -> do
-        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (toCard attrs)]
+        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (toTarget attrs)]
       pure e
     _ -> SerpentsOfYig <$> runMessage msg attrs

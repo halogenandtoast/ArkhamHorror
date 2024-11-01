@@ -40,7 +40,7 @@ instance RunMessage FluteOfTheOuterGods4 where
       let x = totalResourcePayment payment
       curseTokens <- take x <$> select (ChaosTokenFaceIs #curse)
       for_ curseTokens $ \token -> do
-        pushAll [SealChaosToken token, SealedChaosToken token (toCard attrs)]
+        pushAll [SealChaosToken token, SealedChaosToken token (toTarget attrs)]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveableEnemies <-

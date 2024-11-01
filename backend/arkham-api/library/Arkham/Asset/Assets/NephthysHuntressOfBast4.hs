@@ -7,7 +7,6 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Helpers.Modifiers
@@ -45,7 +44,7 @@ instance RunMessage NephthysHuntressOfBast4 where
   runMessage msg a@(NephthysHuntressOfBast4 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
       for_ tokens $ \token ->
-        pushAll [SealChaosToken token, SealedChaosToken token $ toCard attrs]
+        pushAll [SealChaosToken token, SealedChaosToken token $ toTarget attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)

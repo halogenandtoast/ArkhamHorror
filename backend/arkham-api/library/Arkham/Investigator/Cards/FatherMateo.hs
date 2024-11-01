@@ -24,7 +24,7 @@ instance HasAbilities FatherMateo where
   getAbilities (FatherMateo a) =
     [ playerLimit PerGame
         $ restrictedAbility a 1 Self
-        $ freeReaction (Matcher.RevealChaosToken #after (affectsOthers Anyone) #autofail)
+        $ freeReaction (Matcher.RevealChaosToken #when (affectsOthers Anyone) #autofail)
     ]
 
 instance HasChaosTokenValue FatherMateo where

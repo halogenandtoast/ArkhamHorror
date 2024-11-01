@@ -1,7 +1,6 @@
 module Arkham.Event.Events.Premonition (premonition, Premonition (..)) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.Event.Cards qualified as Cards
@@ -34,7 +33,7 @@ instance RunMessage Premonition where
       pure e
     RequestedChaosTokens (isSource attrs -> True) _ ts -> do
       pushAll
-        $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toCard attrs)]) ts
+        $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toTarget attrs)]) ts
         <> [ResetChaosTokens (toSource attrs)]
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do

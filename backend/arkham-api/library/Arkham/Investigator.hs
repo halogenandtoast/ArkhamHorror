@@ -154,6 +154,7 @@ allInvestigators =
       , SomeInvestigatorCard zoeySamarasParallel
       , SomeInvestigatorCard montereyJackParallel
       , SomeInvestigatorCard rexMurphyParallel
+      , SomeInvestigatorCard fatherMateoParallel
       , SomeInvestigatorCard jennyBarnesParallel
       ]
 

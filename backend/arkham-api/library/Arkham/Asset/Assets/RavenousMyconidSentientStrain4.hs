@@ -37,12 +37,12 @@ instance HasAbilities RavenousMyconidSentientStrain4 where
         $ oneOf
           [ DrawCard
               #when
-              (You <> InvestigatorAt (LocationWithShroud $ lessThan $ a.use Growth))
+              (You <> at_ (LocationWithShroud $ atMost $ a.use Growth))
               (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
               EncounterDeck
           , DrawCard
               #when
-              (affectsOthers $ not_ You <> InvestigatorAt (LocationWithShroud $ lessThan $ a.use Growth))
+              (affectsOthers $ not_ You <> at_ (LocationWithShroud $ atMost $ a.use Growth))
               (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery <> NonPeril)
               EncounterDeck
           ]

@@ -32,7 +32,7 @@ instance RunMessage KickingTheHornetsNest where
         chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
           targets enemyCards \card -> do
             searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
-            push $ InvestigatorDrewEncounterCard iid card
+            createEnemy_ card iid
             handleTarget iid attrs (toCardId card)
             push unfocus
       pure e

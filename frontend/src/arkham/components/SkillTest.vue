@@ -307,6 +307,9 @@ const tokenEffects = computed(() => {
             <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`clue.png`)" />
           </template>
+          <template v-if="modifier.type.tag === 'SkillTestResultValueModifier'">
+            <span class="text">Result</span> <span>{{modifier.type.contents > 0 ? '+' : ''}}{{modifier.type.contents}}</span>
+          </template>
           <template v-if="modifier.type.tag === 'DamageDealt'">
             <span>+{{modifier.type.contents}}</span>
             <img :src="imgsrc(`damage.png`)" />
@@ -366,7 +369,7 @@ const tokenEffects = computed(() => {
           Succeeded by {{(testResult ?? 0) + (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </span>
         <span v-else-if="testResult !== null">
-          Failed by {{testResult - (skillTestResults.skillTestResultsResultModifiers || 0)}}
+          Failed by {{testResult + (skillTestResults.skillTestResultsResultModifiers || 0)}}
         </span>
       </div>
 

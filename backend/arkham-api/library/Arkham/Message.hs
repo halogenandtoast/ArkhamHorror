@@ -907,6 +907,7 @@ data Message
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedChaosTokenStrategy
   | RunSkillTest InvestigatorId
   | RecalculateSkillTestResults
+  | RecalculateSkillTestResultsCanChangeAutomatic Bool
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch

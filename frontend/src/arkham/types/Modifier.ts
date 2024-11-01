@@ -76,6 +76,7 @@ export type ModifierType
   | CannotEnter
   | DamageDealt
   | DiscoveredClues
+  | SkillTestResultValueModifier
   | CancelEffects
   | GainVictory
   | OtherModifier
@@ -112,6 +113,11 @@ export type DoNotDrawConnection = {
 
 export type DiscoveredClues = {
   tag: "DiscoveredClues"
+  contents: number
+}
+
+export type SkillTestResultValueModifier = {
+  tag: "SkillTestResultValueModifier"
   contents: number
 }
 
@@ -202,6 +208,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.isExactly('DiscoveredClues'),
       contents: JsonDecoder.number
     }, 'DiscoveredClues'),
+  JsonDecoder.object<SkillTestResultValueModifier>(
+    {
+      tag: JsonDecoder.isExactly('SkillTestResultValueModifier'),
+      contents: JsonDecoder.number
+    }, 'SkillTestResultValueModifier'),
   JsonDecoder.object<CancelEffects>(
     {
       tag: JsonDecoder.isExactly('CancelEffects')

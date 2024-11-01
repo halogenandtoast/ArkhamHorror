@@ -245,6 +245,7 @@ data ModifierType
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled
+  | CancelEffects
   | EnemyCannotEngage InvestigatorId
   | EnemyEvade Int
   | EnemyEvadeActionCriteria CriteriaOverride

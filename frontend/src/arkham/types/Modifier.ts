@@ -76,6 +76,7 @@ export type ModifierType
   | CannotEnter
   | DamageDealt
   | DiscoveredClues
+  | CancelEffects
   | GainVictory
   | OtherModifier
   | SkillModifier
@@ -93,6 +94,10 @@ export type BaseSkillOf = {
 export type Difficulty = {
   tag: "Difficulty"
   contents: number
+}
+
+export type CancelEffects = {
+  tag: "CancelEffects"
 }
 
 export type BaseSkill = {
@@ -197,6 +202,10 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.isExactly('DiscoveredClues'),
       contents: JsonDecoder.number
     }, 'DiscoveredClues'),
+  JsonDecoder.object<CancelEffects>(
+    {
+      tag: JsonDecoder.isExactly('CancelEffects')
+    }, 'CancelEffects'),
   JsonDecoder.object<DamageDealt>(
     {
       tag: JsonDecoder.isExactly('DamageDealt'),

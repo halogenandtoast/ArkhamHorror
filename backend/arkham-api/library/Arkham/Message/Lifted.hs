@@ -1967,3 +1967,11 @@ discardAllClues
   -> investigator
   -> m ()
 discardAllClues source investigator = push $ InvestigatorDiscardAllClues (toSource source) (asId investigator)
+
+cancelSkillTestEffects :: (Sourceable source, ReverseQueue m) => source -> m ()
+cancelSkillTestEffects source = do
+  Msg.withSkillTest \sid -> do
+    canCancelSkillTestEffects <- Msg.getCanCancelSkillTestEffects
+    when canCancelSkillTestEffects do
+      skillTestModifier sid source sid CancelEffects
+      cancelledOrIgnoredCardOrGameEffect source

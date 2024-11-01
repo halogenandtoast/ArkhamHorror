@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.WhatMustBeDone (
-  WhatMustBeDone (..),
-  whatMustBeDone,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.WhatMustBeDone (WhatMustBeDone (..), whatMustBeDone) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -16,6 +11,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Data.List qualified as List
 
@@ -50,6 +46,9 @@ instance RunMessage WhatMustBeDone where
   runMessage msg a@(WhatMustBeDone attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
       push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
+      pure a
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      push $ advancedWithOther attrs
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards

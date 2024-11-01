@@ -34,10 +34,10 @@ instance RunMessage GrannyOrne where
       withSkillTest \sid ->
         chooseOneM iid do
           labeled "Fail by 1 less" do
-            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
+            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
             push RecalculateSkillTestResults
           labeled "Fail by 1 more" do
-            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
+            skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
             push RecalculateSkillTestResults
       pure a
     _ -> GrannyOrne <$> liftRunMessage msg attrs

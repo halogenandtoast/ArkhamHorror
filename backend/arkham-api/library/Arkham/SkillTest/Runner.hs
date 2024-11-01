@@ -80,7 +80,9 @@ calculateSkillTestResultsData s = do
 autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty Nothing False
+  mods <- getModifiers s
+  let x = getSum $ mconcat [Sum n | SkillTestResultValueModifier n <- mods]
+  pure $ SkillTestResultsData 0 0 0 modifiedSkillTestDifficulty (guard (x /= 0) $> x) False
 
 subtractSkillIconCount :: HasGame m => SkillTest -> m Int
 subtractSkillIconCount SkillTest {..} =
@@ -661,7 +663,7 @@ instance RunMessage SkillTest where
         modifySkillTestResult r (SkillTestResultValueModifier n) = case r of
           Unrun -> Unrun
           SucceededBy b m -> SucceededBy b (max 0 (m + n))
-          FailedBy b m -> FailedBy b (max 0 (m + n))
+          FailedBy b m -> FailedBy b (max 0 (m - n))
         modifySkillTestResult r _ = r
       tokenSubscribers <- concatForM skillTestRevealedChaosTokens \token -> do
         faces <- getModifiedChaosTokenFaces [token]
@@ -790,15 +792,42 @@ instance RunMessage SkillTest where
           _ -> True
         push $ RunSkillTest skillTestInvestigator
         pure s
-    RecalculateSkillTestResults -> do
-      results <- calculateSkillTestResultsData s
+    RecalculateSkillTestResults -> runMessage (RecalculateSkillTestResultsCanChangeAutomatic False) s
+    RecalculateSkillTestResultsCanChangeAutomatic canChange -> do
+      let
+        isAutomatic =
+          if canChange
+            then NonAutomatic
+            else case skillTestResult of
+              FailedBy fType _ -> fType
+              SucceededBy fType _ -> fType
+              _ -> NonAutomatic
+
+      results <- case skillTestResult of
+        FailedBy Automatic _ | not canChange -> autoFailSkillTestResultsData s
+        _ -> calculateSkillTestResultsData s
+
       push $ SkillTestResults results
       modifiedSkillValue' <- totalModifiedSkillValue s
       let
         result =
           if skillTestResultsSuccess results
-            then SucceededBy NonAutomatic (modifiedSkillValue' - skillTestResultsDifficulty results)
-            else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
+            then
+              let
+                succeededBy =
+                  if isAutomatic == Automatic
+                    then modifiedSkillValue'
+                    else (modifiedSkillValue' - skillTestResultsDifficulty results)
+               in
+                SucceededBy isAutomatic succeededBy
+            else
+              let
+                failedBy =
+                  if isAutomatic == Automatic
+                    then skillTestResultsDifficulty results
+                    else skillTestResultsDifficulty results - modifiedSkillValue'
+               in
+                FailedBy isAutomatic failedBy
       pure $ s & resultL .~ result
     RunSkillTest _ -> do
       results <- calculateSkillTestResultsData s

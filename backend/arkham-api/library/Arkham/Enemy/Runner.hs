@@ -566,8 +566,8 @@ instance RunMessage EnemyAttrs where
           pathIds' <- withModifiers loc (toModifiers a additionalConnections) do
             concatForM destinationLocationIds
               $ select
-              . (LocationCanBeEnteredBy enemyId <>)
               . locationMatcherModifier
+              . (LocationCanBeEnteredBy enemyId <>)
               . ClosestPathLocation loc
 
           pathIds <- withModifiers loc (toModifiers a additionalConnections) do
@@ -576,8 +576,8 @@ instance RunMessage EnemyAttrs where
                 barricadedPathIds <-
                   concatForM destinationLocationIds
                     $ select
-                    . (LocationCanBeEnteredBy enemyId <>)
                     . locationMatcherModifier
+                    . (LocationCanBeEnteredBy enemyId <>)
                     . ClosestUnbarricadedPathLocation loc
                 pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
               else pure pathIds'
@@ -613,7 +613,7 @@ instance RunMessage EnemyAttrs where
           let locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
 
           destinationLocationIds <-
-            select $ NearestLocationToLocation loc (locationMatcherModifier lMatcher)
+            select $ locationMatcherModifier $ NearestLocationToLocation loc lMatcher
 
           lead <- getLeadPlayer
           pathIds <-

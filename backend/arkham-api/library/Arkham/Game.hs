@@ -2277,9 +2277,8 @@ getAssetsMatching matcher = do
       pure $ filter (null . attr assetSealedChaosTokens) as
     AssetWithSealedChaosTokens n chaosTokenMatcher -> do
       filterM
-        ( fmap (traceShowId . (>= n))
+        ( fmap (>= n)
             . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
-            . traceShowId
             . attr assetSealedChaosTokens
         )
         as

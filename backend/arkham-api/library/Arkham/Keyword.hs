@@ -12,7 +12,11 @@ import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
-data Sealing = Sealing ChaosTokenMatcher | SealUpTo Int ChaosTokenMatcher | SealUpToX ChaosTokenMatcher
+data Sealing
+  = Sealing ChaosTokenMatcher
+  | SealUpTo Int ChaosTokenMatcher
+  | SealUpToX ChaosTokenMatcher
+  | SealOneOf (NonEmpty Sealing)
   deriving stock (Show, Eq, Ord, Data, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -187,6 +187,14 @@ chooseTargetM
   -> m ()
 chooseTargetM iid ts action = chooseOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
 
+chooseOrRunTargetM
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId
+  -> [target]
+  -> (target -> QueueT Message m ())
+  -> m ()
+chooseOrRunTargetM iid ts action = chooseOrRunOneM iid $ unterminated $ for_ ts \t -> targeting t (action t)
+
 chooseSelectM
   :: (ReverseQueue m, Targetable (QueryElement query), Query query)
   => InvestigatorId

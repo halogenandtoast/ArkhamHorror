@@ -478,4 +478,6 @@ allEnemies =
       SomeEnemyCard sacrificialBeast
     , --- Ire of the Void
       SomeEnemyCard vengefulHound
+    , --- Aura of Faith
+      SomeEnemyCard serpentsOfYigAdvanced
     ]

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -632,7 +632,7 @@ getInvestigatorsMatching matcher = do
   go as = \case
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
       filterM
-        ( fmap (>= 0)
+        ( fmap (traceShowId . (> 0))
             . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
             . attr investigatorSealedChaosTokens
         )
@@ -3456,6 +3456,7 @@ instance Projection Investigator where
       InvestigatorPlayerId -> pure investigatorPlayerId
       InvestigatorName -> pure investigatorName
       InvestigatorTaboo -> pure investigatorTaboo
+      InvestigatorSealedChaosTokens -> pure investigatorSealedChaosTokens
       InvestigatorRemainingActions -> pure investigatorRemainingActions
       InvestigatorAdditionalActions -> getAdditionalActions attrs
       InvestigatorHealth -> do
@@ -3569,6 +3570,7 @@ instance Query ChaosTokenMatcher where
       IncludeTokenPool m -> includeSealed m
       SealedOnAsset _ _ -> True
       SealedOnEnemy _ _ -> True
+      SealedOnInvestigator _ _ -> True
       _ -> False
     includeTokenPool = \case
       IncludeSealed m -> includeTokenPool m
@@ -3608,6 +3610,10 @@ instance Query ChaosTokenMatcher where
       NotChaosToken m -> fmap not . go m
       SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id EnemySealedChaosTokens enemyMatcher
+        isMatch' <- go chaosTokenMatcher t
+        pure $ isMatch' && t `elem` sealedTokens
+      SealedOnInvestigator investigatorMatcher chaosTokenMatcher -> \t -> do
+        sealedTokens <- selectAgg id InvestigatorSealedChaosTokens investigatorMatcher
         isMatch' <- go chaosTokenMatcher t
         pure $ isMatch' && t `elem` sealedTokens
       SealedOnAsset assetMatcher chaosTokenMatcher -> \t -> do

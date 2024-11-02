@@ -181,10 +181,13 @@ drawThisCardFrom iid card mdeck = case toCard card of
 playIsValidAfterSeal :: HasGame m => InvestigatorId -> Card -> m Bool
 playIsValidAfterSeal iid c = do
   tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
-  let sealChaosTokenMatchers = flip mapMaybe (setToList c.keywords) \case
-        Keyword.Seal sealing -> case sealing of
-          Sealing matcher -> Just matcher
-          SealUpTo _ matcher -> Just matcher
-          SealUpToX _ -> Nothing
-        _ -> Nothing
+  let
+    sealingToMatcher = \case
+      Sealing matcher -> Just matcher
+      SealOneOf (m1 :| rest) -> Just $ oneOf $ mapMaybe sealingToMatcher (m1 : rest)
+      SealUpTo _ matcher -> Just matcher
+      SealUpToX _ -> Nothing
+    sealChaosTokenMatchers = flip mapMaybe (setToList c.keywords) \case
+      Keyword.Seal sealing -> sealingToMatcher sealing
+      _ -> Nothing
   allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers

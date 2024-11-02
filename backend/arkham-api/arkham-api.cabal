@@ -1133,6 +1133,7 @@ library
       Arkham.Asset.Assets.TheChthonianStone
       Arkham.Asset.Assets.TheChthonianStone3
       Arkham.Asset.Assets.TheCodexOfAges
+      Arkham.Asset.Assets.TheCodexOfAgesAdvanced
       Arkham.Asset.Assets.TheCouncilsCoffer2
       Arkham.Asset.Assets.TheCustodian
       Arkham.Asset.Assets.TheDevilXV
@@ -1593,6 +1594,7 @@ library
       Arkham.Enemy.Cards.SerpentFromYoth
       Arkham.Enemy.Cards.SerpentOfTenochtitlan
       Arkham.Enemy.Cards.SerpentsOfYig
+      Arkham.Enemy.Cards.SerpentsOfYigAdvanced
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
       Arkham.Enemy.Cards.SethBishop

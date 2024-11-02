@@ -12,6 +12,7 @@ import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import type { Modifier } from '@/arkham/types/Modifier'
+import Token from '@/arkham/components/Token.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
@@ -305,6 +306,7 @@ function onDrop(event: DragEvent) {
             @dragover.prevent="dragover($event)"
             @dragenter.prevent
           />
+          <Token v-for="(sealedToken, index) in investigator.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
         </div>
       </div>
 
@@ -705,5 +707,12 @@ i.action {
   &:hover {
     background: var(--button-2-highlight);
   }
+}
+
+.sealed {
+  position: absolute;
+  width: calc(var(--card-width) / 2);
+  left: 0;
+  top: calc(var(--card-width) / 2);
 }
 </style>

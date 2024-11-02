@@ -88,6 +88,7 @@ class
 type InvestigatorCard a = CardBuilder PlayerId a
 
 data instance Field Investigator :: Type -> Type where
+  InvestigatorSealedChaosTokens :: Field Investigator [ChaosToken]
   InvestigatorTaboo :: Field Investigator (Maybe TabooList)
   InvestigatorName :: Field Investigator Name
   InvestigatorRemainingActions :: Field Investigator Int
@@ -168,6 +169,7 @@ instance FromJSON (SomeField Investigator) where
   parseJSON = withText "Field Investigator" $ \case
     "InvestigatorName" -> pure $ SomeField InvestigatorName
     "InvestigatorTaboo" -> pure $ SomeField InvestigatorTaboo
+    "InvestigatorSealedChaosTokens" -> pure $ SomeField InvestigatorSealedChaosTokens
     "InvestigatorRemainingActions" -> pure $ SomeField InvestigatorRemainingActions
     "InvestigatorAdditionalActions" -> pure $ SomeField InvestigatorAdditionalActions
     "InvestigatorHealth" -> pure $ SomeField InvestigatorHealth

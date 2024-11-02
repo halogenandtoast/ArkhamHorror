@@ -196,12 +196,14 @@ createActiveCostForAdditionalCardCosts iid card = do
     additionalCosts = flip mapMaybe mods $ \case
       AdditionalCost c -> Just c
       _ -> Nothing
+    sealingToCost = \case
+      Sealing matcher -> Just $ Cost.SealCost matcher
+      SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
+      SealOneOf (m1 :| rest) -> Just $ Cost.OrCost $ mapMaybe sealingToCost (m1 : rest)
+      SealUpToX _ -> Nothing
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal sealing -> case sealing of
-          Sealing matcher -> Just $ Cost.SealCost matcher
-          SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
-          SealUpToX _ -> Nothing
+        Keyword.Seal sealing -> sealingToCost sealing
         _ -> Nothing
     cost = mconcat $ additionalCosts <> sealChaosTokenCosts
 
@@ -281,12 +283,14 @@ createActiveCostForCard iid card isPlayAction windows' = do
     actions = case cdActions (toCardDef card) of
       [] -> [Action.Play | isPlayAction == IsPlayAction]
       as -> as
+    sealingToCost = \case
+      Sealing matcher -> Just $ Cost.SealCost matcher
+      SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
+      SealOneOf (m1 :| rest) -> Just $ Cost.OrCost $ mapMaybe sealingToCost (m1 : rest)
+      SealUpToX _ -> Nothing
     sealChaosTokenCosts =
       flip mapMaybe (setToList $ cdKeywords $ toCardDef card) $ \case
-        Keyword.Seal sealing -> case sealing of
-          Sealing matcher -> Just $ Cost.SealCost matcher
-          SealUpTo n matcher -> Just $ Cost.UpTo (Fixed n) $ Cost.SealCost matcher
-          SealUpToX _ -> Nothing
+        Keyword.Seal sealing -> sealingToCost sealing
         _ -> Nothing
 
     resourceCost =

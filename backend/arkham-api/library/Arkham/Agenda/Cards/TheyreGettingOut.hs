@@ -1,19 +1,13 @@
-module Arkham.Agenda.Cards.TheyreGettingOut (
-  TheyreGettingOut (..),
-  theyreGettingOut,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheyreGettingOut (TheyreGettingOut (..), theyreGettingOut) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Act
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
-import Arkham.Trait
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -24,29 +18,31 @@ theyreGettingOut = agenda (3, A) TheyreGettingOut Cards.theyreGettingOut (Static
 
 instance HasAbilities TheyreGettingOut where
   getAbilities (TheyreGettingOut x) =
-    [ forcedAbility x 1 $ PhaseEnds #when #enemy
-    , forcedAbility x 2 (RoundEnds #when)
-        `withCriteria` exists
-          (UnengagedEnemy <> withTrait Ghoul <> NotEnemy (EnemyAt "Parlor"))
+    [ restricted
+        x
+        1
+        (exists (UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")) <> exists (location_ "Parlor"))
+        $ forced (PhaseEnds #when #enemy)
+    , restricted x 2 (exists $ enemy_ $ at_ (oneOf ["Parlor", "Hallway"]) <> #ghoul)
+        $ forced (RoundEnds #when)
     ]
 
 instance RunMessage TheyreGettingOut where
-  runMessage msg a@(TheyreGettingOut attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(TheyreGettingOut attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
       actSequence <- getCurrentActStep
-      let resolution = if actSequence `elem` [1, 2] then Resolution 3 else NoResolution
-      push $ ScenarioResolution resolution
+      push $ if actSequence `elem` [1, 2] then R3 else ScenarioResolution NoResolution
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lead <- getLeadPlayer
-      enemiesToMove <- select $ UnengagedEnemy <> withTrait Ghoul <> NotEnemy (EnemyAt "Parlor")
+      enemiesToMove <- select $ UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")
 
-      pushIfAny enemiesToMove
-        $ chooseOneAtATime lead
-        $ targetLabels enemiesToMove (\enemy -> only $ MoveToward (toTarget enemy) "Parlor")
+      when (notNull enemiesToMove) do
+        lead <- getLead
+        chooseOneAtATimeM lead do
+          targets enemiesToMove \enemy -> moveTowardsMatching (attrs.ability 1) enemy "Parlor"
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      ghoulCount <- selectCount $ withTrait Ghoul <> EnemyAt (LocationMatchAny ["Parlor", "Hallway"])
-      push $ PlaceDoomOnAgenda ghoulCount CanNotAdvance
+      ghoulCount <- selectCount $ enemy_ $ #ghoul <> at_ (oneOf ["Parlor", "Hallway"])
+      placeDoomOnAgenda ghoulCount
       pure a
-    _ -> TheyreGettingOut <$> runMessage msg attrs
+    _ -> TheyreGettingOut <$> liftRunMessage msg attrs

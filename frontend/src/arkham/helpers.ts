@@ -74,9 +74,12 @@ export function replaceIcons(body: string) {
     replace(/{mystic}/g, '<span class="mystic-icon"></span>').
     replace(/{survivor}/g, '<span class="survivor-icon"></span>').
     replace(/{elderSign}/g, '<span class="elder-sign"></span>').
+    replace(/{autoFail}/g, '<span class="auto-fail"></span>').
     replace(/{skull}/g, '<span class="skull-icon"></span>').
-    replace(/{curse}/g, '<span class="curse-icon"></span>').
+    replace(/{tablet}/g, '<span class="tablet-icon"></span>').
+    replace(/{elderThing}/g, '<span class="elder-thing-icon"></span>').
     replace(/{bless}/g, '<span class="bless-icon"></span>').
+    replace(/{curse}/g, '<span class="curse-icon"></span>').
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 

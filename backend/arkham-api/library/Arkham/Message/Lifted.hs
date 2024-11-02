@@ -14,6 +14,7 @@ import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
@@ -1975,3 +1976,13 @@ cancelSkillTestEffects source = do
     when canCancelSkillTestEffects do
       skillTestModifier sid source sid CancelEffects
       cancelledOrIgnoredCardOrGameEffect source
+
+resolveChaosTokens
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [ChaosToken] -> m ()
+resolveChaosTokens iid source tokens = do
+  pushAll
+    $ map UnsealChaosToken tokens
+    <> map ObtainChaosToken tokens
+    <> [ ReplaceCurrentDraw (toSource source) iid
+          $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
+       ]

@@ -542,7 +542,7 @@ displayCostType = \case
     Leyline -> tshow n <> "-" <> tshow m <> " Leylines"
   UpTo (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
   UpTo _ c -> displayCostType c <> " up to X times"
-  SealCost _ -> "Seal token"
+  SealCost chaosTokenMatcher -> "Seal " <> toDisplay chaosTokenMatcher
   SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"
   SealChaosTokenCost _ -> "Seal token"
   ReleaseChaosTokenCost _ -> "Release a chaos token sealed here"

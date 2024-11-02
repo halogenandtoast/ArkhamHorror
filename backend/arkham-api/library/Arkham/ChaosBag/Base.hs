@@ -20,7 +20,8 @@ data ChaosBag = ChaosBag
 
 allChaosBagChaosTokens :: ChaosBag -> [ChaosToken]
 allChaosBagChaosTokens ChaosBag {..} =
-  chaosBagChaosTokens
+  nub
+    $ chaosBagChaosTokens
     <> chaosBagSetAsideChaosTokens
     <> chaosBagRevealedChaosTokens
 

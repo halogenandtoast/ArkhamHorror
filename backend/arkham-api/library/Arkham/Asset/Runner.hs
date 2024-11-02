@@ -180,6 +180,8 @@ instance RunMessage AssetAttrs where
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
+    SealedChaosToken token _ -> do
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
     RemoveAllChaosTokens face -> do

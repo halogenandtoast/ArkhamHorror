@@ -239,6 +239,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               :playerId="playerId"
               :game="game"
               @choose="choose"
+              class="sealed"
             />
           </div>
 
@@ -347,12 +348,17 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
   top: 10%;
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   align-self: flex-start;
   align-items: flex-end;
   z-index: 15;
   :deep(img) {
     width: 20px;
     height: auto;
+  }
+
+  :deep(.token-container) {
+    width: 20px;
   }
 
   pointer-events: none;

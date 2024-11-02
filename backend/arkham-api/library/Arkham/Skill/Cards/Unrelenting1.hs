@@ -12,8 +12,7 @@ newtype Unrelenting1 = Unrelenting1 SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 unrelenting1 :: SkillCard Unrelenting1
-unrelenting1 =
-  skill Unrelenting1 Cards.unrelenting1
+unrelenting1 = skill Unrelenting1 Cards.unrelenting1
 
 instance RunMessage Unrelenting1 where
   runMessage msg s@(Unrelenting1 attrs) = case msg of

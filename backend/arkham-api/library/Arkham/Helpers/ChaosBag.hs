@@ -41,7 +41,7 @@ getSealedChaosTokens =
       ]
 
 getAllChaosTokens :: HasGame m => m [ChaosToken]
-getAllChaosTokens = concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]
+getAllChaosTokens = nub . concat <$> sequence [getBagChaosTokens, getSealedChaosTokens]
 
 getChaosBagChoice :: HasGame m => m (Maybe ChaosBagStepState)
 getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice

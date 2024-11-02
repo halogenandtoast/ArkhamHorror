@@ -18,6 +18,7 @@ tabooListModify = \case
   TabooList20 -> tabooList20Modify
   TabooList21 -> tabooList21Modify
   TabooList22 -> tabooList22Modify
+  TabooList23 -> tabooList23Modify
 
 tabooList15Modify :: CardDef -> CardDef
 tabooList15Modify cdef = case toCardCode cdef of
@@ -63,6 +64,11 @@ tabooList21Modify cdef = case toCardCode cdef of
 tabooList22Modify :: CardDef -> CardDef
 tabooList22Modify cdef = case toCardCode cdef of
   _ -> tabooList21Modify cdef
+
+tabooList23Modify :: CardDef -> CardDef
+tabooList23Modify cdef = case toCardCode cdef of
+  "08113" -> cdef {cdDeckRestrictions = [CampaignModeOnly]}
+  _ -> tabooList22Modify cdef
 
 tabooed :: HasField "taboo" a (Maybe TabooList) => TabooList -> a -> Bool
 tabooed tbl = maybe False (>= tbl) . getField @"taboo"

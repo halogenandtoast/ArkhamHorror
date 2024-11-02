@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -3797,7 +3797,7 @@ instance Query ExtendedCardMatcher where
             OnlyInvestigator imatcher ->
               getSkillTestInvestigator >>= \case
                 Nothing -> pure False
-                Just iid -> iid <=~> imatcher
+                Just iid -> iid <=~> maybe imatcher (`replaceYouMatcher` imatcher) card.owner
             OnlyCardCommittedToTest -> do
               allCommittedCards <- selectAll InvestigatorCommittedCards Anyone
               let committedCardTitles = map toTitle allCommittedCards

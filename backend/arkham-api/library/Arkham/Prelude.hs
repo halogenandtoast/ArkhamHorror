@@ -433,3 +433,6 @@ shuffleIn x xs = shuffleM (x : xs)
 removeRandom :: (MonadRandom m, Eq a) => [a] -> m [a]
 removeRandom [] = pure []
 removeRandom (x : xs) = snd <$> sampleWithRest (x :| xs)
+
+class ToDisplay a where
+  toDisplay :: a -> Text

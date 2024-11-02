@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Prelude
 import Data.Aeson.TH
+import Data.Text qualified as T
 import GHC.OverloadedLabels
 
 data ChaosTokenMatcher
@@ -31,6 +32,27 @@ data ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance ToDisplay ChaosTokenMatcher where
+  toDisplay = \case
+    WithNegativeModifier -> "Chaos token with negative modifier"
+    ChaosTokenFaceIs face -> toDisplay face
+    ChaosTokenFaceIsNot face -> "not " <> toDisplay face
+    ChaosTokenMatchesAny inner -> "one of: " <> T.intercalate "," (map toDisplay inner)
+    AnyChaosToken -> "any chaos token"
+    IsSymbol -> "symbol chaos token"
+    InTokenPool inner -> toDisplay inner <> " in the token pool"
+    ChaosTokenMatches inner -> toSentence $ map toDisplay inner
+    IncludeSealed inner -> toDisplay inner <> " in all play areas"
+    IncludeTokenPool inner -> toDisplay inner
+    WouldReduceYourSkillValueToZero -> "chaos token that would reduce you skill value to zero"
+    IsInfestationToken inner -> toDisplay inner
+    NotChaosToken inner -> "not " <> toDisplay inner
+    SealedOnAsset _ inner -> toDisplay inner <> " sealed on a relevant asset"
+    SealedOnEnemy _ inner -> toDisplay inner <> " sealed on a relevant enemy"
+    SealedOnInvestigator _ inner -> toDisplay inner <> " sealed on a relevant enemy"
+    RevealedChaosTokens inner -> toDisplay inner <> " among revealed"
+    ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

@@ -632,7 +632,7 @@ getInvestigatorsMatching matcher = do
   go as = \case
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
       filterM
-        ( fmap (traceShowId . (> 0))
+        ( fmap (> 0)
             . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
             . attr investigatorSealedChaosTokens
         )
@@ -2277,8 +2277,9 @@ getAssetsMatching matcher = do
       pure $ filter (null . attr assetSealedChaosTokens) as
     AssetWithSealedChaosTokens n chaosTokenMatcher -> do
       filterM
-        ( fmap (>= n)
+        ( fmap (traceShowId . (>= n))
             . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
+            . traceShowId
             . attr assetSealedChaosTokens
         )
         as

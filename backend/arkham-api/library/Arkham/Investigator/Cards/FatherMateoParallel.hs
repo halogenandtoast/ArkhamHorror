@@ -18,7 +18,6 @@ fatherMateoParallel =
   investigator FatherMateoParallel Cards.fatherMateoParallel
     $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 3, combat = 2, agility = 3}
 
--- When an investigator would reveal a chaos token: Resolve the token sealed on them instead. Release that token.
 instance HasAbilities FatherMateoParallel where
   getAbilities (FatherMateoParallel a) =
     [ playerLimit PerRound
@@ -64,12 +63,13 @@ instance RunMessage FatherMateoParallel where
       pure i
     UseCardAbility iid (isSource attrs -> True) 2 (wouldRevealChaosToken -> iid') _ -> do
       selectForMaybeM (SealedOnInvestigator (InvestigatorWithId iid') #bless) \token -> do
-        pushAll
-          [ UnsealChaosToken token
-          , ObtainChaosToken token
-          , ReplaceCurrentDraw (toSource attrs) iid
-              $ Choose (toSource attrs) 1 ResolveChoice [Resolved [token]] [] Nothing
-          ]
+        push
+          $ ReplaceCurrentDraw (attrs.ability 2) iid
+          $ Choose (attrs.ability 2) 1 ResolveChoice [Resolved [token]] [] Nothing
+      pure i
+    ResolveChaosToken drawnToken face iid' | face == #bless -> do
+      whenM (drawnToken <=~> SealedOnInvestigator (InvestigatorWithId iid') #bless) do
+        push $ UnsealChaosToken drawnToken
       pure i
     ElderSignEffect (is attrs -> True) -> do
       hasBless <- selectAny $ ChaosTokenFaceIs #bless

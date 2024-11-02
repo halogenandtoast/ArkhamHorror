@@ -43,6 +43,27 @@ instance ToGameLoggerFormat ChaosToken where
 instance ToGameLoggerFormat ChaosTokenFace where
   format c = "{token:\"" <> tshow c <> "\"}"
 
+instance ToDisplay ChaosTokenFace where
+  toDisplay = \case
+    PlusOne -> "+1"
+    Zero -> "0"
+    MinusOne -> "-1"
+    MinusTwo -> "-2"
+    MinusThree -> "-3"
+    MinusFour -> "-4"
+    MinusFive -> "-5"
+    MinusSix -> "-6"
+    MinusSeven -> "-7"
+    MinusEight -> "-8"
+    Skull -> "{skull}"
+    Cultist -> "{cultist}"
+    Tablet -> "{tablet}"
+    ElderThing -> "{elderThing}"
+    AutoFail -> "{autoFail}"
+    ElderSign -> "{elderSign}"
+    CurseToken -> "{curse}"
+    BlessToken -> "{bless}"
+
 instance HasField "id" ChaosToken ChaosTokenId where
   getField = chaosTokenId
 

@@ -816,7 +816,14 @@ instance RunMessage ChaosBag where
     SetChaosTokenAside token -> do
       pure $ c & setAsideChaosTokensL %~ (<> [token])
     UnsealChaosToken token -> do
-      pure $ c & chaosTokensL %~ (token :)
+      pure
+        $ c
+        & chaosTokensL
+        %~ (token :)
+        & setAsideChaosTokensL
+        %~ filter (/= token)
+        & revealedChaosTokensL
+        %~ filter (/= token)
     RemoveAllChaosTokens face ->
       pure
         $ c

@@ -474,7 +474,7 @@ getIsCommittable a c = do
                       EnemyTarget eid -> andM [pure $ skillTestAction skillTest == Just #evade, eid <=~> matcher]
                       _ -> pure False
                     MaxOnePerTest -> pure $ toTitle card `notElem` committedCardTitles
-                    OnlyInvestigator matcher -> iid <=~> matcher
+                    OnlyInvestigator matcher -> iid <=~> replaceYouMatcher a matcher
                     OnlyCardCommittedToTest -> pure $ null committedCardTitles
                     OnlyYourTest -> pure $ iid == a
                     OnlyTestDuringYourTurn -> iid <=~> TurnInvestigator

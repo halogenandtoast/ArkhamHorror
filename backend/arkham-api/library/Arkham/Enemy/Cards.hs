@@ -74,6 +74,7 @@ allPlayerEnemyCards =
       , vengefulShade
       , sacrificialBeast
       , vengefulHound
+      , serpentsOfYigAdvanced
       ]
 
 allEncounterEnemyCards :: Map CardCode CardDef
@@ -2605,6 +2606,14 @@ vengefulHound =
   (weakness "98009" "Vengeful Hound")
     { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
     , cdKeywords = singleton Keyword.Replacement
+    }
+
+serpentsOfYigAdvanced :: CardDef
+serpentsOfYigAdvanced =
+  (weakness "90083" "Serpents of Yig")
+    { cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Advanced]
+    , cdRevelation = IsRevelation
     }
 
 flyingPolyp :: CardDef

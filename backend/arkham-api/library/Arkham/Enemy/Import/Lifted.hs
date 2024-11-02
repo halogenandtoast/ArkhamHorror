@@ -22,6 +22,7 @@ import Arkham.Enemy.Runner as X (
   placementL,
   preyL,
   push,
+  pushAll,
   pushM,
   setMeta,
   spawnAtL,
@@ -48,7 +49,6 @@ import Arkham.Target as X
 import Arkham.Classes.HasQueue (
   HasQueue,
   evalQueueT,
-  pushAll,
   replaceAllMessagesMatching,
  )
 import Arkham.Matcher (LocationMatcher (EmptyLocation))

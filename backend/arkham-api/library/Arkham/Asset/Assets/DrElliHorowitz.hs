@@ -48,12 +48,15 @@ instance RunMessage DrElliHorowitz where
       tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       let
         validAfterSeal c = do
-          let sealChaosTokenMatchers = flip mapMaybe (setToList c.keywords) \case
-                Keyword.Seal sealing -> case sealing of
-                  Sealing matcher -> Just matcher
-                  SealUpTo _ matcher -> Just matcher
-                  SealUpToX _ -> Nothing
-                _ -> Nothing
+          let
+            sealingToMatcher = \case
+              Sealing matcher -> Just matcher
+              SealUpTo _ matcher -> Just matcher
+              SealOneOf (m1 :| rest) -> Just $ oneOf $ mapMaybe sealingToMatcher (m1 : rest)
+              SealUpToX _ -> Nothing
+            sealChaosTokenMatchers = flip mapMaybe (setToList c.keywords) \case
+              Keyword.Seal sealing -> sealingToMatcher sealing
+              _ -> Nothing
           allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers
       validCardsAfterSeal <- filterM validAfterSeal validCards
       if null validCardsAfterSeal

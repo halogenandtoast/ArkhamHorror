@@ -705,6 +705,7 @@ allPlayerAssetCards =
       , theChthonianStone
       , theChthonianStone3
       , theCodexOfAges
+      , theCodexOfAgesAdvanced
       , theCouncilsCoffer2
       , theCustodian
       , theDevilXv

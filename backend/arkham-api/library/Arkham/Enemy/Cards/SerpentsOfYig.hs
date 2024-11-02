@@ -1,15 +1,10 @@
-module Arkham.Enemy.Cards.SerpentsOfYig (
-  serpentsOfYig,
-  SerpentsOfYig (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SerpentsOfYig (serpentsOfYig, SerpentsOfYig (..)) where
 
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
 

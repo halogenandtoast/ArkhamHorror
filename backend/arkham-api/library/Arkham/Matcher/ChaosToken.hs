@@ -6,6 +6,7 @@ import Arkham.ChaosToken.Types
 import Arkham.ChaosToken.Types qualified as ChaosToken
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import {-# SOURCE #-} Arkham.Matcher.Enemy
+import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Prelude
 import Data.Aeson.TH
 import GHC.OverloadedLabels
@@ -26,6 +27,7 @@ data ChaosTokenMatcher
   | NotChaosToken ChaosTokenMatcher
   | SealedOnAsset AssetMatcher ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
+  | SealedOnInvestigator InvestigatorMatcher ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)

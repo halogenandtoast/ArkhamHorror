@@ -1222,6 +1222,8 @@ allAssets =
       SomeAssetCard zoeysCrossAdvanced
     , --- Relics of the Past
       SomeAssetCard trustyBullwhipAdvanced
+    , --- Aura of Faith
+      SomeAssetCard theCodexOfAgesAdvanced
     , --- Pistols and Pearls
       SomeAssetCard jennysTwin45sAdvanced
     , -- Promo

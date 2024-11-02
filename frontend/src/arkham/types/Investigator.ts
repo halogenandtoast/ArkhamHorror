@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
+import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
@@ -73,13 +74,13 @@ export type InvestigatorDetails = {
 //   }
 //   deriving stock (Show, Eq, Generic, Data)
 //   deriving anyclass (ToJSON, FromJSON)
-// 
+//
 // data GlobalSettings = GlobalSettings
 //   { ignoreUnrelatedSkillTestTriggers :: Bool
 //   }
 //   deriving stock (Show, Eq, Generic, Data)
 //   deriving anyclass (ToJSON, FromJSON)
-// 
+//
 // data PerCardSettings = PerCardSettings
 //   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
 //   }
@@ -141,6 +142,7 @@ export type Investigator = {
   resigned: boolean;
   additionalActions: AdditionalActionType[];
   cardsUnderneath: Card[];
+  sealedChaosTokens: ChaosToken[];
   foundCards: Record<string, Card[]>;
   xp: number;
   supplies: string[];
@@ -243,6 +245,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   resigned: JsonDecoder.boolean,
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
+  sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   foundCards: JsonDecoder.nullable(investigatorSearchDecoder).map((search) => search?.searchingFoundCards || {}),
   xp: JsonDecoder.number,
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),

@@ -215,6 +215,12 @@ dealtHorror [] = 0
 dealtHorror ((windowType -> Window.WouldTakeDamageOrHorror _ _ _ n) : _) = n
 dealtHorror (_ : xs) = dealtDamage xs
 
+wouldRevealChaosToken :: HasCallStack => [Window] -> InvestigatorId
+wouldRevealChaosToken =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.WouldRevealChaosToken _ who) -> Just who
+    _ -> Nothing
+
 enters
   :: (Be investigator InvestigatorMatcher, Be location LocationMatcher)
   => Timing

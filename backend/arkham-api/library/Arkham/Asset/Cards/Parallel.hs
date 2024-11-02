@@ -142,6 +142,21 @@ trustyBullwhipAdvanced =
       , cdSlots = [#hand]
       }
 
+theCodexOfAgesAdvanced :: CardDef
+theCodexOfAgesAdvanced =
+  signature "90081"
+    $ (asset "90082" ("The Codex of Ages" <:> "finis omnium nunc est") 2 Neutral)
+      { cdSkills = [#willpower, #intellect, #wild]
+      , cdCardTraits = setFromList [Item, Relic, Tome, Blessed]
+      , cdUnique = True
+      , cdSlots = [#hand]
+      , cdKeywords =
+          setFromList
+            [ Keyword.Advanced
+            , Keyword.Seal (Keyword.SealOneOf $ Keyword.Sealing #eldersign :| [Keyword.SealUpTo 3 #bless])
+            ]
+      }
+
 jennysTwin45sAdvanced :: CardDef
 jennysTwin45sAdvanced =
   signature "90084"

@@ -1,6 +1,8 @@
 module Arkham.Investigator.Cards.FatherMateoParallel (fatherMateoParallel, FatherMateoParallel (..)) where
 
 import Arkham.Ability
+import Arkham.ChaosBagStepState
+import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
@@ -29,6 +31,9 @@ instance HasAbilities FatherMateoParallel where
               <> ChaosTokenCountIs #bless (atLeast 1)
           )
           (FastAbility Free)
+    , restricted a 2 Self
+        $ freeReaction
+        $ WouldRevealChaosToken #when (InvestigatorWithSealedChaosToken #bless)
     ]
 
 instance HasChaosTokenValue FatherMateoParallel where
@@ -38,16 +43,18 @@ instance HasChaosTokenValue FatherMateoParallel where
 
 instance RunMessage FatherMateoParallel where
   runMessage msg i@(FatherMateoParallel attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> liftRunMessage (Do msg) i
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      push $ Do msg
+      pure i
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
       investigators <-
         select
           $ affectsOthers
           $ at_ (locationWithInvestigator iid)
           <> not_ (InvestigatorWithSealedChaosToken #bless)
-      chooseTargetM iid investigators $ handleTarget iid (attrs.ability 1)
+      chooseOrRunTargetM iid investigators $ handleTarget iid (attrs.ability 1)
       pure i
-    HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       tokens <- select $ ChaosTokenFaceIs #bless
       focusChaosTokens tokens \unfocus -> do
         chooseTargetM iid tokens \t -> do
@@ -55,7 +62,14 @@ instance RunMessage FatherMateoParallel where
           push $ SealedChaosToken t (toTarget iid')
           push unfocus
       pure i
-    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+    UseCardAbility iid (isSource attrs -> True) 2 (wouldRevealChaosToken -> iid') _ -> do
+      selectForMaybeM (SealedOnInvestigator (InvestigatorWithId iid') #bless) \token -> do
+        pushAll
+          [ UnsealChaosToken token
+          , ObtainChaosToken token
+          , ReplaceCurrentDraw (toSource attrs) iid
+              $ Choose (toSource attrs) 1 ResolveChoice [Resolved [token]] [] Nothing
+          ]
       pure i
     ElderSignEffect (is attrs -> True) -> do
       hasBless <- selectAny $ ChaosTokenFaceIs #bless

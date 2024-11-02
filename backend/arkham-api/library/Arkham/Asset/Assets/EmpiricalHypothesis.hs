@@ -17,6 +17,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Projection
+import Arkham.Taboo
 
 newtype EmpiricalHypothesis = EmpiricalHypothesis AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,7 +29,8 @@ empiricalHypothesis = assetWith EmpiricalHypothesis Cards.empiricalHypothesis (m
 instance HasAbilities EmpiricalHypothesis where
   getAbilities (EmpiricalHypothesis a) =
     [ restrictedAbility a 1 ControlsThis $ ForcedAbility $ RoundBegins #when
-    , withTooltip "{fast} Spend 1 evidence: Draw 1 card."
+    , (if tabooed TabooList23 a then limitedAbility (PlayerLimit PerRound 2) else id)
+        $ withTooltip "{fast} Spend 1 evidence: Draw 1 card."
         $ restrictedAbility a 2 (CanDrawCards <> exists matcher)
         $ FastAbility
         $ assetUseCost a Evidence 1

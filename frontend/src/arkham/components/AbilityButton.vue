@@ -65,7 +65,7 @@ const isInvestigate = computed(() => isAction("Investigate"))
 const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
-const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove)
+const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove) && abilityLabel != ""
 const isSingleActionAbility = computed(() => {
   if (!ability.value) {
     return false
@@ -145,7 +145,13 @@ const abilityLabel = computed(() => {
 
   if (props.ability.tag === MessageType.ABILITY_LABEL) {
     if (props.ability.ability.displayAsAction ?? false) {
-      return ""
+      const { actions, cost } = ability.value.type
+      const total = totalActionCost(cost)
+      return replaceIcons("{action}".repeat(totalActionCost(cost)))
+      if (actions.length === 1) {
+        return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${actions[0]}`
+      }
+
     }
   }
 

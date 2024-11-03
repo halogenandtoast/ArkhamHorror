@@ -18,7 +18,7 @@ instance HasModifiersFor RiotWhistle where
       a
       [ GiveAdditionalAction
           $ AdditionalAction "Riot Whistle" (toSource a)
-          $ ActionRestrictedAdditionalAction #evade
+          $ ActionRestrictedAdditionalAction #engage
       ]
   getModifiersFor _ _ = pure []
 

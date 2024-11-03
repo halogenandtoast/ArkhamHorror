@@ -6,14 +6,11 @@ import Arkham.Location.Import.Lifted
 import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype LighthouseStairwell = LighthouseStairwell LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lighthouseStairwell :: LocationCard LighthouseStairwell
 lighthouseStairwell = location LighthouseStairwell Cards.lighthouseStairwell 3 (PerPlayer 1)
-
-instance HasModifiersFor LighthouseStairwell where
-  getModifiersFor target (LighthouseStairwell attrs) = preventDrawConnections target attrs
 
 instance HasAbilities LighthouseStairwell where
   getAbilities (LighthouseStairwell attrs) =

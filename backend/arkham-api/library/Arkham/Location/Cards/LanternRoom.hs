@@ -6,14 +6,11 @@ import Arkham.Location.Import.Lifted
 import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype LanternRoom = LanternRoom LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lanternRoom :: LocationCard LanternRoom
 lanternRoom = location LanternRoom Cards.lanternRoom 2 (PerPlayer 2)
-
-instance HasModifiersFor LanternRoom where
-  getModifiersFor target (LanternRoom attrs) = preventDrawConnections target attrs
 
 instance HasAbilities LanternRoom where
   getAbilities (LanternRoom attrs) =

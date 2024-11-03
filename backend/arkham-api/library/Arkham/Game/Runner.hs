@@ -1594,6 +1594,8 @@ runGameMessage msg g = case msg of
         pure $ g & entitiesL . treacheriesL %~ deleteMap aid
       LocationTarget aid -> pure $ g & entitiesL . locationsL %~ deleteMap aid
       _ -> error $ "Unhandled quiet removal of target: " <> show target
+  RemoveFromGame (StoryTarget sid) -> do
+    pure $ g & entitiesL . storiesL %~ deleteMap sid
   RemoveFromGame (AssetTarget aid) -> do
     card <- field AssetCard aid
     runMessage

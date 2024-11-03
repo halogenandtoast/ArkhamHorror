@@ -6924,7 +6924,7 @@ holdingCells =
   victory 1
     $ singleSided
     $ location
-      "07252"
+      "07252b"
       "Holding Cells"
       [Cave]
       T

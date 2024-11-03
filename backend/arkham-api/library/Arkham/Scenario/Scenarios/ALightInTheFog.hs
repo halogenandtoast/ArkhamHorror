@@ -4,27 +4,46 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Log
 import Arkham.Helpers.Investigator (withLocationOf)
-import Arkham.Message.Lifted.Choose
+import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers (maybeModified, ModifierType(..), setActiveDuringSetup)
+import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword (Keyword(Aloof))
-import Arkham.Modifier
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.ALightInTheFog.Helpers
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.SortedPair
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Window qualified as Window
+
+newtype Meta = Meta {captured :: [InvestigatorId]}
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor ALightInTheFog where
+  getModifiersFor (InvestigatorTarget iid) (ALightInTheFog a) = maybeModified a do
+    Meta meta <- hoistMaybe $ maybeResult a.meta
+    guard $ iid `elem` meta
+    pure [CannotMove, CannotFight AnyEnemy, CannotBeEngaged, ScenarioModifier "captured"]
+  getModifiersFor (LocationTarget lid) (ALightInTheFog a) = map setActiveDuringSetup <$> maybeModified a do
+    pos <- MaybeT $ field LocationPosition lid
+    connected <- lift $ select $ LocationInRow pos.row
+    pure [DoNotDrawConnection $ sortedPair lid connectedId | connectedId <- connected]
+  getModifiersFor _ _ = pure []
 
 aLightInTheFog :: Difficulty -> ALightInTheFog
 aLightInTheFog difficulty = scenario ALightInTheFog "07231" "A Light in the Fog" difficulty []
@@ -133,6 +152,6 @@ instance RunMessage ALightInTheFog where
         _ -> pure ()
       pure s
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do
-      checkWhen $ Window.ScenarioEvent "captured" (toJSON iid)
-      pure s
+      let Meta capturedInvestigators = toResultDefault (Meta []) attrs.meta
+      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (Meta $ nub $ iid : capturedInvestigators)
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

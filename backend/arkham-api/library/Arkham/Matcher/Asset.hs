@@ -162,6 +162,9 @@ instance IsLabel "item" AssetMatcher where
 instance IsLabel "mystic" AssetMatcher where
   fromLabel = AssetWithClass Mystic
 
+instance IsLabel "hand" AssetMatcher where
+  fromLabel = AssetInSlot #hand
+
 instance IsLabel "exhausted" AssetMatcher where
   fromLabel = AssetExhausted
 

@@ -1,11 +1,13 @@
-module Arkham.Location.Cards.SunkenGrottoLowerDepths
-  ( sunkenGrottoLowerDepths
-  , SunkenGrottoLowerDepths(..)
-  )
+module Arkham.Location.Cards.SunkenGrottoLowerDepths (
+  sunkenGrottoLowerDepths,
+  SunkenGrottoLowerDepths (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype SunkenGrottoLowerDepths = SunkenGrottoLowerDepths LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,5 +21,6 @@ instance HasAbilities SunkenGrottoLowerDepths where
     extendRevealed attrs []
 
 instance RunMessage SunkenGrottoLowerDepths where
-  runMessage msg (SunkenGrottoLowerDepths attrs) = runQueueT $ case msg of
+  runMessage msg l@(SunkenGrottoLowerDepths attrs) = runQueueT $ case msg of
+    PlaceGrid (GridLocation pos lid) | lid == attrs.id -> setConnectedInRow pos l
     _ -> SunkenGrottoLowerDepths <$> liftRunMessage msg attrs

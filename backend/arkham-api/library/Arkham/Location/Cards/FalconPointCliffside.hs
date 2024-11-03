@@ -6,14 +6,11 @@ import Arkham.Location.Import.Lifted
 import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype FalconPointCliffside = FalconPointCliffside LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 falconPointCliffside :: LocationCard FalconPointCliffside
 falconPointCliffside = location FalconPointCliffside Cards.falconPointCliffside 1 (PerPlayer 1)
-
-instance HasModifiersFor FalconPointCliffside where
-  getModifiersFor target (FalconPointCliffside attrs) = preventDrawConnections target attrs
 
 instance HasAbilities FalconPointCliffside where
   getAbilities (FalconPointCliffside attrs) =

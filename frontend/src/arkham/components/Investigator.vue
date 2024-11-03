@@ -178,6 +178,10 @@ const showDevoured = (e: Event) => emit('showCards', e, devoured, "Devoured", fa
 
 const modifiers = computed(() => props.investigator.modifiers)
 
+const captured = computed(() => {
+  return modifiers.value?.some((m) => m.type.tag === "ScenarioModifier" && m.type.contents === "captured") ?? false
+})
+
 const ethereal = computed(() => {
   return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Ethereal") ?? false
 })
@@ -278,7 +282,7 @@ function onDrop(event: DragEvent) {
     <img
       :src="portraitImage"
       class="portrait"
-      :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging }"
+      :class="{ 'investigator--can-interact--portrait': investigatorAction !== -1, ethereal, dragging, captured }"
       :draggable="debug.active"
       @click="$emit('choose', investigatorAction)"
       @dragstart="startDrag($event)"
@@ -714,5 +718,9 @@ i.action {
   width: calc(var(--card-width) / 2);
   left: 0;
   top: calc(var(--card-width) / 2);
+}
+
+.captured {
+  rotate: 90deg;
 }
 </style>

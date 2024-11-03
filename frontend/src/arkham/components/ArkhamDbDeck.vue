@@ -9,7 +9,7 @@ function loadDeck() {
   if (!deck.value) return
   model.value = null
 
-  const arkhamDbRegex = /https:\/\/arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
+  const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
   const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/
   
   let matches

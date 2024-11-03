@@ -86,6 +86,7 @@ export type ModifierType
   | CannotCommitCards
   | DoNotDrawConnection
   | Difficulty
+  | ScenarioModifier
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -96,6 +97,11 @@ export type BaseSkillOf = {
 export type Difficulty = {
   tag: "Difficulty"
   contents: number
+}
+
+export type ScenarioModifier = {
+  tag: "ScenarioModifier"
+  contents: string
 }
 
 export type CancelEffects = {
@@ -208,6 +214,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.isExactly('Difficulty'),
       contents: JsonDecoder.number
     }, 'Difficulty'),
+  JsonDecoder.object<ScenarioModifier>(
+    {
+      tag: JsonDecoder.isExactly('ScenarioModifier'),
+      contents: JsonDecoder.string
+    }, 'ScenarioModifier'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.isExactly('DiscoveredClues'),

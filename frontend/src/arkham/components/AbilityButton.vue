@@ -65,7 +65,74 @@ const isInvestigate = computed(() => isAction("Investigate"))
 const isFight = computed(() => isAction("Fight"))
 const isEvade = computed(() => isAction("Evade"))
 const isEngage = computed(() => isAction("Engage"))
+
+const abilityLabel = computed(() => {
+  // don't use isButtonText
+  if (isButtonText.value && tooltip.value) {
+    return tooltip.value.content
+  }
+
+  if (props.ability.tag === MessageType.ABILITY_LABEL) {
+    if (props.ability.ability.displayAsAction ?? false) {
+      const { cost } = ability.value.type
+      return replaceIcons("{action}".repeat(totalActionCost(cost)))
+    }
+  }
+
+  if (props.ability.tag === MessageType.EVADE_LABEL) {
+    return "Evade"
+  }
+
+  if (props.ability.tag === MessageType.FIGHT_LABEL) {
+    return "Fight"
+  }
+
+  if (props.ability.tag === MessageType.ENGAGE_LABEL) {
+    return "Engage"
+  }
+
+  if (isForcedAbility.value === true) {
+    return "Forced"
+  }
+
+  if (isObjective.value === true) {
+    return "Objective"
+  }
+
+  if (ability.value && ability.value.type.tag === "CustomizationReaction") {
+    return ability.value.type.label
+  }
+
+  if (ability.value && ability.value.type.tag === "ConstantReaction") {
+    return ability.value.type.label
+  }
+
+  if (ability.value && ability.value.type.tag === "ServitorAbility") {
+    return ability.value.type.action
+  }
+
+  if (isReactionAbility.value === true) {
+    return ""
+  }
+
+  if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
+    const { actions, cost } = ability.value.type
+    const total = totalActionCost(cost)
+    if (actions.length === 1) {
+      return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${actions[0]}`
+    }
+
+    return replaceIcons("{action}".repeat(totalActionCost(cost)))
+  }
+
+  if (isHaunted.value === true) {
+    return "Haunted"
+  }
+
+  return ""
+})
 const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove) && abilityLabel != ""
+
 const isSingleActionAbility = computed(() => {
   if (!ability.value) {
     return false
@@ -137,76 +204,6 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
-const abilityLabel = computed(() => {
-  // don't use isButtonText
-  if (isButtonText.value && tooltip.value) {
-    return tooltip.value.content
-  }
-
-  if (props.ability.tag === MessageType.ABILITY_LABEL) {
-    if (props.ability.ability.displayAsAction ?? false) {
-      const { actions, cost } = ability.value.type
-      const total = totalActionCost(cost)
-      return replaceIcons("{action}".repeat(totalActionCost(cost)))
-      if (actions.length === 1) {
-        return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${actions[0]}`
-      }
-
-    }
-  }
-
-  if (props.ability.tag === MessageType.EVADE_LABEL) {
-    return "Evade"
-  }
-
-  if (props.ability.tag === MessageType.FIGHT_LABEL) {
-    return "Fight"
-  }
-
-  if (props.ability.tag === MessageType.ENGAGE_LABEL) {
-    return "Engage"
-  }
-
-  if (isForcedAbility.value === true) {
-    return "Forced"
-  }
-
-  if (isObjective.value === true) {
-    return "Objective"
-  }
-
-  if (ability.value && ability.value.type.tag === "CustomizationReaction") {
-    return ability.value.type.label
-  }
-
-  if (ability.value && ability.value.type.tag === "ConstantReaction") {
-    return ability.value.type.label
-  }
-
-  if (ability.value && ability.value.type.tag === "ServitorAbility") {
-    return ability.value.type.action
-  }
-
-  if (isReactionAbility.value === true) {
-    return ""
-  }
-
-  if (ability.value && (ability.value.type.tag === "ActionAbility" || ability.value.type.tag === "ActionAbilityWithBefore" || ability.value.type.tag === "ActionAbilityWithSkill")) {
-    const { actions, cost } = ability.value.type
-    const total = totalActionCost(cost)
-    if (actions.length === 1) {
-      return `${total > 0 ? replaceIcons("{action}".repeat(total)) : ""}${actions[0]}`
-    }
-
-    return replaceIcons("{action}".repeat(totalActionCost(cost)))
-  }
-
-  if (isHaunted.value === true) {
-    return "Haunted"
-  }
-
-  return ""
-})
 
 const classObject = computed(() => {
   if (isButtonText.value) {

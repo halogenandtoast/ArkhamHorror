@@ -11,6 +11,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Investigator.Types (Field (InvestigatorKeys))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenarios.ALightInTheFog.Helpers
@@ -28,12 +29,17 @@ unchangingAsTheSea =
 
 -- Ability is no-op
 instance HasAbilities UnchangingAsTheSea where
-  getAbilities (UnchangingAsTheSea a) = [mkAbility a 2 $ forced $ AgendaAdvances #when (AgendaWithId a.id)]
-
--- Then, put random set-aside Tidal Tunnel locations into play until there are exactly 4 locations on each row, except for the row with the Lantern Room. (See Campaign Guide for diagram.)
+  getAbilities (UnchangingAsTheSea a) =
+    guard (onSide A a)
+      *> [ mkAbility a 1 $ forced $ ScenarioEvent #when "captured"
+         , mkAbility a 2 $ forced $ AgendaAdvances #when (AgendaWithId a.id)
+         ]
 
 instance RunMessage UnchangingAsTheSea where
   runMessage msg a@(UnchangingAsTheSea attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ AdvanceAgenda attrs.id
+      pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         captured iid
@@ -49,11 +55,22 @@ instance RunMessage UnchangingAsTheSea where
       void $ placeLocationCardInGrid (Pos 2 (-2)) Locations.sunkenGrottoLowerDepths
       void $ placeLocationCardInGrid (Pos 2 (-3)) Locations.sunkenGrottoFinalDepths
 
-      let positions = [Pos 0 (-2), Pos 1 (-2), Pos 3 (-2), Pos 0 (-3), Pos 1 (-3), Pos 3 (-3)]
+      {- FOURMOLU_DISABLE -}
+      let
+        positions =
+          [ Pos 0 (-1), Pos 1 (-1), Pos 3 (-1)
+          , Pos 0 (-2), Pos 1 (-2), Pos 3 (-2)
+          , Pos 0 (-3), Pos 1 (-3), Pos 3 (-3)
+          ]
+      {- FOURMOLU_ENABLE -}
 
       tidalTunnels <- shuffle =<< getSetAsideCardsMatching (CardWithTitle "Tidal Tunnel")
 
-      for_ (zip positions tidalTunnels) (void . uncurry placeLocationInGrid)
+      for_ (zip positions tidalTunnels) \(pos, tunnel) -> do
+        loc <- placeLocationInGrid pos tunnel
+        push $ UpdateLocation loc (Update LocationConnectsTo mempty)
+        push $ UpdateLocation loc (Update LocationConnectedMatchers [LocationInRow pos.row])
+        push $ UpdateLocation loc (Update LocationRevealedConnectedMatchers [LocationInRow pos.row])
 
       push $ AdvanceToAct 1 Acts.worshippersOfTheDeep Act.A (toSource attrs)
       advanceAgendaDeck attrs

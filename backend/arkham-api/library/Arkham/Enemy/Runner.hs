@@ -228,7 +228,8 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemySpawn miid lid eid | eid == enemyId -> do
       locations' <- select $ IncludeEmptySpace Anywhere
-      if lid `notElem` locations'
+      canEnter <- eid <=~> EnemyCanEnter (LocationWithId lid)
+      if lid `notElem` locations' || not canEnter
         then push (toDiscard GameSource eid)
         else do
           keywords <- getModifiedKeywords a

@@ -25,7 +25,11 @@ instance RunMessage DeepOneAssault where
       enemiesToEngage <-
         select
           $ enemy_
-          $ oneOf [at_ (locationWithInvestigator iid), at_ (ConnectedFrom $ locationWithInvestigator iid)]
+          $ oneOf
+            [ at_ (locationWithInvestigator iid)
+            , at_ (ConnectedFrom $ locationWithInvestigator iid)
+                <> EnemyCanEnter (locationWithInvestigator iid)
+            ]
           <> withTrait DeepOne
       chooseOneAtATimeM iid do
         for_ enemiesToEngage $ \enemy ->

@@ -12,6 +12,7 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Brazier
+import Arkham.Location.Grid
 import Arkham.LocationSymbol
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
@@ -135,6 +136,7 @@ data LocationMatcher
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
   | LocationInRow Int
+  | LocationInPosition Pos
   | LocationWhenCriteria Criterion
   | -- | Must be replaced
     ThatLocation

@@ -2047,6 +2047,8 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` rear) . toId) ls
     LocationInRow n -> do
       pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
+    LocationInPosition pos -> do
+      pure $ filter (maybe False (== pos) . attr locationPosition) ls
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case

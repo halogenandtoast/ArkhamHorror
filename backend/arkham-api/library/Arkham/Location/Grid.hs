@@ -17,7 +17,7 @@ nTimes 1 f = f
 nTimes n f = f . nTimes (n - 1) f
 
 data Pos = Pos Int Int
-  deriving stock (Eq, Show, Generic, Data)
+  deriving stock (Eq, Show, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 positionRow :: Pos -> Int

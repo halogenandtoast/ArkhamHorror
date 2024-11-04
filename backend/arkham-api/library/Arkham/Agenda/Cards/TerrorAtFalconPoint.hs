@@ -1,7 +1,4 @@
-module Arkham.Agenda.Cards.TerrorAtFalconPoint (
-  TerrorAtFalconPoint (..),
-  terrorAtFalconPoint,
-) where
+module Arkham.Agenda.Cards.TerrorAtFalconPoint (TerrorAtFalconPoint (..), terrorAtFalconPoint) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted

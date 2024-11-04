@@ -1,11 +1,10 @@
-module Arkham.Location.Cards.TheMoonRoom
-  ( theMoonRoom
-  , TheMoonRoom(..)
-  )
-where
+module Arkham.Location.Cards.TheMoonRoom (theMoonRoom, TheMoonRoom (..)) where
 
+import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype TheMoonRoom = TheMoonRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -15,8 +14,13 @@ theMoonRoom :: LocationCard TheMoonRoom
 theMoonRoom = location TheMoonRoom Cards.theMoonRoom 0 (Static 0)
 
 instance HasAbilities TheMoonRoom where
-  getAbilities (TheMoonRoom attrs) =
-    extendRevealed attrs []
+  getAbilities (TheMoonRoom a) =
+    extendRevealed
+      a
+      [ withTooltip "You don one of the the empty diving suits and dive into the reflecting pool"
+          $ resignAction a
+          `withCriteria` thisExists a (not_ FloodedLocation)
+      ]
 
 instance RunMessage TheMoonRoom where
   runMessage msg (TheMoonRoom attrs) = runQueueT $ case msg of

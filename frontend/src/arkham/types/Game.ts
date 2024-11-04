@@ -40,7 +40,18 @@ export type GameDetails = {
   name: string;
   investigators: InvestigatorDetails[];
   otherInvestigators: InvestigatorDetails[];
+  multiplayerVariant: MultiplayerVariant;
 }
+
+export type MultiplayerVariant = 'WithFriends' | 'Solo'
+
+const multiplayerVariantDecoder = JsonDecoder.oneOf<MultiplayerVariant>(
+  [
+    JsonDecoder.isExactly('WithFriends'),
+    JsonDecoder.isExactly('Solo'),
+  ],
+  'MultiplayerVariant'
+);
 
 export type GameDetailsEntry = GameDetails & { tag: "game" }| { error: string, tag: "error" }
 
@@ -158,6 +169,7 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
     name: JsonDecoder.string,
     investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
+    multiplayerVariant: multiplayerVariantDecoder,
   },
   'GameDetails',
 );

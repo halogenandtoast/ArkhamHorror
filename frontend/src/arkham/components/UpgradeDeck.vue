@@ -157,6 +157,7 @@ const tabooList = function (investigator: Investigator) {
       case "TabooList20": return "2.0 (Aug 26, 2022)"
       case "TabooList21": return "2.1 (Aug 30, 2023)"
       case "TabooList22": return "2.2 (Feb 20, 2024)"
+      case "TabooList23": return "2.3 (Oct 24, 2024)"
       default: return "Unknown Taboo List"
     }
   }

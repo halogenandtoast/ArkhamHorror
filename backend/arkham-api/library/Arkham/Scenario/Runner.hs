@@ -1194,6 +1194,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   RemoveLocation lid -> do
     investigatorIds <-
       select $ Matcher.InvestigatorAt $ Matcher.LocationWithId lid
+
     windowMsgs <- for investigatorIds $ \iid ->
       checkWindows
         $ ( `mkWindow`

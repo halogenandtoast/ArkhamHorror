@@ -17,7 +17,7 @@ import Arkham.Location.Cards qualified as Location
 import Arkham.Location.Types (Field (..), LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (
-  Message (PlacedLocationDirection, RemoveLocation, SetLayout, SetLocationLabel, SpendClues),
+  Message (PlacedLocationDirection, SetLayout, SetLocationLabel, SpendClues),
  )
 import Arkham.Message.Lifted
 import Arkham.Prelude
@@ -130,7 +130,7 @@ advanceRoad = do
         if shouldStop
           then pure layout
           else do
-            selectEach (mapOneOf (LocationWithLabel . Label) xs) $ push . RemoveLocation
+            selectEach (mapOneOf (LocationWithLabel . Label) xs) removeLocation
             go mStopAt
               $ map (\(GridTemplateRow row) -> GridTemplateRow . T.unwords . drop 1 $ T.words row) layout
 

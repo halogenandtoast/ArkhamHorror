@@ -55,6 +55,7 @@ import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
@@ -1986,3 +1987,6 @@ resolveChaosTokens iid source tokens = do
     <> [ ReplaceCurrentDraw (toSource source) iid
           $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
+
+removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+removeLocation (asId -> lid) = maybe (push $ RemoveLocation lid) (\_ -> addToVictory lid) =<< field LocationVictory lid

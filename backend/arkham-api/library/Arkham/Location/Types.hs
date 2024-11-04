@@ -93,6 +93,7 @@ data instance Field Location :: Type -> Type where
   LocationTraits :: Field Location (Set Trait)
   LocationUnrevealedName :: Field Location Name
   LocationVengeance :: Field Location (Maybe Int)
+  LocationVictory :: Field Location (Maybe Int)
   LocationPosition :: Field Location (Maybe Pos)
   LocationCostToEnterUnrevealed :: Field Location Cost
 
@@ -134,6 +135,7 @@ fieldLens = \case
   LocationAbilities -> virtual
   LocationPrintedSymbol -> virtual
   LocationVengeance -> virtual
+  LocationVictory -> virtual
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -190,6 +192,7 @@ instance FromJSON (SomeField Location) where
     "LocationTraits" -> pure $ SomeField LocationTraits
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance
+    "LocationVictory" -> pure $ SomeField LocationVictory
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     _ -> error "no such field"

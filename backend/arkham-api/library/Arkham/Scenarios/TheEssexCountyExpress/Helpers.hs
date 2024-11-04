@@ -1,14 +1,13 @@
 module Arkham.Scenarios.TheEssexCountyExpress.Helpers where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Direction
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Prelude
 
-leftmostLocation :: HasGame m => LocationId -> m LocationId
-leftmostLocation lid = do
-  mlid' <- selectOne $ LocationInDirection LeftOf $ LocationWithId lid
-  maybe (pure lid) leftmostLocation mlid'
+leftmostLocation :: HasGame m => m LocationId
+leftmostLocation = go =<< selectJust (LocationWithTitle "Engine Car")
+ where
+  go lid = maybe (pure lid) go =<< selectOne (LocationInDirection LeftOf $ LocationWithId lid)

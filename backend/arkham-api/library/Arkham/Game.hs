@@ -3159,6 +3159,7 @@ instance Projection Location where
       LocationAbilities -> pure $ getAbilities l
       LocationPrintedSymbol -> pure locationSymbol
       LocationVengeance -> pure $ cdVengeancePoints $ toCardDef attrs
+      LocationVictory -> pure $ cdVictoryPoints $ toCardDef attrs
       LocationConnectedLocations -> setFromList <$> select (ConnectedFrom $ LocationWithId lid)
 
 instance Projection Asset where

@@ -1,16 +1,7 @@
-module Arkham.Agenda.Cards.TheMawWidens (
-  TheMawWidens (..),
-  theMawWidens,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheMawWidens (TheMawWidens (..), theMawWidens) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
-import Arkham.Agenda.Runner
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Helpers.Investigator
+import Arkham.Agenda.Import.Lifted
 import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs
@@ -21,14 +12,10 @@ theMawWidens :: AgendaCard TheMawWidens
 theMawWidens = agenda (2, A) TheMawWidens Cards.theMawWidens (Static 3)
 
 instance RunMessage TheMawWidens where
-  runMessage msg a@(TheMawWidens attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      lead <- getLead
-      investigatorIds <- getInvestigatorIds
-      lid <- leftmostLocation =<< getJustLocation lead
-      pushAll
-        $ RemoveLocation lid
-        : [InvestigatorDiscardAllClues (toSource attrs) iid | iid <- investigatorIds]
-          <> [advanceAgendaDeck attrs]
+  runMessage msg a@(TheMawWidens attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      removeLocation =<< leftmostLocation
+      eachInvestigator $ discardAllClues attrs
+      advanceAgendaDeck attrs
       pure a
-    _ -> TheMawWidens <$> runMessage msg attrs
+    _ -> TheMawWidens <$> liftRunMessage msg attrs

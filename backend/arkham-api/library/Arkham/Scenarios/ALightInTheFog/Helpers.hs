@@ -22,17 +22,21 @@ floodBottommost_ :: ReverseQueue m => Int -> m ()
 floodBottommost_ = void . floodBottommost
 
 floodBottommost :: ReverseQueue m => Int -> m Bool
-floodBottommost = go (-3)
+floodBottommost n' = do
+  x <- selectCount CanHaveFloodLevelIncreased
+  if x < n'
+    then pure False
+    else do
+      go (-3) n'
+      pure True
  where
-  go _ 0 = pure True
-  go 0 _ = pure False
+  go _ 0 = pure ()
   go row n = do
     ls <- select $ LocationInRow row <> CanHaveFloodLevelIncreased
     if length ls > n
       then do
         lead <- getLead
         chooseNM lead n $ targets ls increaseThisFloodLevel
-        pure True
       else do
         for_ ls increaseThisFloodLevel
         go (row + 1) (n - length ls)

@@ -22,7 +22,7 @@ data Metadata = Metadata
 newtype DanielaReyes = DanielaReyes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 danielaReyes :: InvestigatorCard DanielaReyes
 danielaReyes =
@@ -71,8 +71,8 @@ instance RunMessage DanielaReyes where
 
       pure i
     PerformEnemyAttack eid -> do
-      field EnemyAttacking eid >>= \case
-        Just details | isTarget attrs details.target -> do
+      fieldMay EnemyAttacking eid >>= \case
+        Just (Just details) | isTarget attrs details.target -> do
           let meta = toResult attrs.meta
           pure
             . DanielaReyes

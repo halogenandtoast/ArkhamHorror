@@ -362,7 +362,7 @@ withLocationConnectionData inner@(With target _) = do
         [ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
         , EnemyWithPlacement $ AttachedToLocation $ toId target
         ]
-  lmAssets <- select $ AssetAtLocation $ toId target
+  lmAssets <- select $ AssetWithPlacement $ AtLocation (toId target)
   lmEvents <-
     select
       $ oneOf
@@ -2170,10 +2170,7 @@ getAssetsMatching matcher = do
           _ -> Nothing
       pure $ filter ((`elem` aids) . toId) as
     AssetAtLocation lid -> flip filterM as $ \a ->
-      case assetPlacement (toAttrs a) of
-        AtLocation lid' -> pure $ lid == lid'
-        AttachedToLocation lid' -> pure $ lid == lid'
-        _ -> pure False
+      maybe False (== lid) <$> field AssetLocation a.id
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . attr assetIsStory) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as

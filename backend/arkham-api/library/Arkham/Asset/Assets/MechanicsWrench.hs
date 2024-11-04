@@ -16,7 +16,9 @@ mechanicsWrench = asset MechanicsWrench Cards.mechanicsWrench
 
 instance HasAbilities MechanicsWrench where
   getAbilities (MechanicsWrench attrs) =
-    [ controlledAbility attrs 1 (exists $ EnemyAt YourLocation <> EnemyCanAttack You)
+    [ wantsSkillTest
+        (maybe (NotSkillTest AnySkillTest) (SkillTestOfInvestigator . InvestigatorWithId) attrs.owner)
+        $ controlledAbility attrs 1 (exists $ EnemyAt YourLocation <> EnemyCanAttack You)
         $ FastAbility (exhaust attrs)
     , controlledAbility
         attrs

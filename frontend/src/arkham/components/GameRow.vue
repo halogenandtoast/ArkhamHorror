@@ -57,6 +57,7 @@ const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring
             <img class="campaign-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
           </div>
           <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+          <div v-if="game.multiplayerVariant === 'Solo'" class="solo">Solo</div>
         </div>
         <div v-if="campaign && scenario" class="scenario-details">
           <img class="scenario-icon" :src="imgsrc(`sets/${scenario.id.replace('c', '')}.png`)" />
@@ -415,5 +416,10 @@ h2 {
   overflow: hidden;
   max-width: 0;
   opacity: 0;
+}
+
+.solo {
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
 }
 </style>

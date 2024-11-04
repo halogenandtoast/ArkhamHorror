@@ -163,6 +163,7 @@ data GameDetails = GameDetails
   , name :: Text
   , investigators :: [InvestigatorDetails]
   , otherInvestigators :: [InvestigatorDetails]
+  , multiplayerVariant :: MultiplayerVariant
   }
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
@@ -221,6 +222,7 @@ getApiV1ArkhamGamesR = do
                     These c _ -> campaignOtherInvestigators (toJSON c.meta)
                  in
                   map (\i -> InvestigatorDetails i.id i.classSymbol) ins
+            , multiplayerVariant = arkhamGameRawMultiplayerVariant game
             }
       Error e -> FailedGameDetails ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
 

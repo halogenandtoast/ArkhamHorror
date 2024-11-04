@@ -515,6 +515,9 @@ setCardAside = push . Msg.SetAsideCards . (: [])
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
 
+removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
+removeChaosToken = push . RemoveChaosToken
+
 removeAllChaosTokens :: ReverseQueue m => ChaosTokenFace -> m ()
 removeAllChaosTokens = push . RemoveAllChaosTokens
 
@@ -1902,9 +1905,6 @@ shuffleSetAsideIntoScenarioDeck key matcher = do
 
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
 setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
-
-removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
-removeChaosToken token = push $ Msg.RemoveChaosToken token
 
 moveTowardsMatching
   :: (Targetable target, Sourceable source, ReverseQueue m)

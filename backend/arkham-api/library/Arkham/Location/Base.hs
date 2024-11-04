@@ -91,6 +91,9 @@ instance HasField "position" LocationAttrs (Maybe Pos) where
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
 
+instance HasField "floodLevel" LocationAttrs (Maybe FloodLevel) where
+  getField = locationFloodLevel
+
 instance HasField "label" LocationAttrs Text where
   getField = locationLabel
 

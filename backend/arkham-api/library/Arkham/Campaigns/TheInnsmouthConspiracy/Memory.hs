@@ -14,5 +14,6 @@ data Memory
   | DiscoveryOfAStrangeIdol
   | DiscoveryOfAnUnholyMantle
   | DiscoveryOfAMythicalRelic
+  | AConversationWithMrMoore
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -18,7 +18,7 @@ lanternRoom = location LanternRoom Cards.lanternRoom 2 (PerPlayer 2)
 
 instance HasModifiersFor LanternRoom where
   getModifiersFor target (LanternRoom attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded]
+    modified attrs [CannotBeFlooded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities LanternRoom where

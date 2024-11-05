@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { watch, ref, computed } from 'vue'
+import { watch, ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { useRoute } from 'vue-router'
 import type { User } from '@/types'
 import { useRouter } from 'vue-router'
 import * as Arkham from '@/arkham/types/Deck'
@@ -14,6 +15,18 @@ import sideStoriesJSON from '@/arkham/data/side-stories.json'
 
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.getCurrentUser)
+const route = useRoute();
+const queryParams = route.query;
+
+onMounted(async () => {
+  if (queryParams.alpha !== undefined) {
+    localStorage.setItem('alpha', 'true')
+  }
+})
+
+const alpha = computed(() => {
+  return queryParams.alpha !== undefined || localStorage.getItem('alpha') === 'true'
+})
 
 type GameMode = 'Campaign' | 'Standalone' | 'SideStory'
 
@@ -38,7 +51,7 @@ const sideStories = computed(() => sideStoriesJSON)
 const dev = import.meta.env.PROD ? false : true
 
 const campaigns = computed(() => campaignJSON.filter((c) => {
-  if (c.dev && !dev) return false
+  if (c.dev && !dev && !alpha.value) return false
 
   return c.beta || c.alpha
     ? currentUser.value && currentUser.value.beta

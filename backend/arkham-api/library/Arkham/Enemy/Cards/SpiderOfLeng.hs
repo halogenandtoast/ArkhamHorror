@@ -3,7 +3,6 @@ module Arkham.Enemy.Cards.SpiderOfLeng (spiderOfLeng, SpiderOfLeng (..)) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Message (createEnemy, toMessage)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -29,8 +28,7 @@ instance RunMessage SpiderOfLeng where
         else chooseOneAtATimeM lead $ targets swarmsOfSpiders \eid -> push $ PlaceSwarmCards lead eid 1
       pure e
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do
-      creation <- createEnemy card (locationWithEnemy attrs.id)
-      abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) creation.enemy NoInitialSwarm
-      push $ toMessage creation
+      this <- createEnemy card (locationWithEnemy attrs.id)
+      abilityModifier (AbilityRef (toSource attrs) 1) (attrs.ability 1) this NoInitialSwarm
       pure e
     _ -> SpiderOfLeng <$> liftRunMessage msg attrs

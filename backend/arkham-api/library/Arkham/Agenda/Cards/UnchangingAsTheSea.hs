@@ -44,7 +44,7 @@ instance RunMessage UnchangingAsTheSea where
       eachInvestigator \iid -> do
         captured iid
         push $ ForInvestigator iid msg -- holding cells might not be in play so we delay
-      selectForMaybeM (enemyIs Enemies.oceirosMarsh) \oceiros -> do
+      selectForMaybeM (InPlayEnemy $ enemyIs Enemies.oceirosMarsh) \oceiros -> do
         removeFromGame oceiros
         setCardAside =<< field EnemyCard oceiros
       shuffleSetAsideIntoEncounterDeck [Treacheries.takenCaptive]

@@ -2955,6 +2955,7 @@ library
       Arkham.Message
       Arkham.Message.Lifted
       Arkham.Message.Lifted.Choose
+      Arkham.Message.Lifted.CreateEnemy
       Arkham.Message.Lifted.Placement
       Arkham.Message.Lifted.Queue
       Arkham.Message.Lifted.SkillTest

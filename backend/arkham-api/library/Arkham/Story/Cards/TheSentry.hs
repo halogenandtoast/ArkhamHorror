@@ -1,14 +1,14 @@
 module Arkham.Story.Cards.TheSentry (TheSentry (..), theSentry) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Creation
 import Arkham.Game.Helpers (perPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (story)
+import Arkham.Message.Lifted.CreateEnemy
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Runner hiding (createEnemy, createEnemyWith)
 
 newtype TheSentry = TheSentry StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -28,15 +28,14 @@ instance RunMessage TheSentry where
       pure s
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       gugSentinelCard <- getSetAsideCard Enemies.gugSentinel
-      creation <- createEnemy gugSentinelCard iid
-      push $ toMessage creation
-      placeClues attrs creation.enemy =<< perPlayer 1
+      runCreateEnemyT gugSentinelCard iid \sentinel -> do
+        afterCreate $ placeClues attrs sentinel =<< perPlayer 1
       pure s
     PassedThisSkillTest _ (isSource attrs -> True) -> do
       cityOfGugs <- selectJust $ locationIs Locations.cityOfGugs
       gugSentinelCard <- getSetAsideCard Enemies.gugSentinel
-      creation <- createEnemy gugSentinelCard cityOfGugs
-      push $ toMessage $ creation {enemyCreationExhausted = True}
-      placeClues attrs creation.enemy =<< perPlayer 1
+      runCreateEnemyT gugSentinelCard cityOfGugs \sentinel -> do
+        createExhausted
+        placeClues attrs sentinel =<< perPlayer 1
       pure s
     _ -> TheSentry <$> liftRunMessage msg attrs

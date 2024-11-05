@@ -107,6 +107,7 @@ data EnemyMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher
+  | InPlayEnemy EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
   | IncludeOutOfPlayEnemy EnemyMatcher
   | EnemyWithPlacement Placement

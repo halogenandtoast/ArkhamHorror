@@ -500,6 +500,13 @@ createEnemy_
   -> m ()
 createEnemy_ card creation = void $ createEnemyWith card creation id
 
+createEnemy
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> m EnemyId
+createEnemy card creation = createEnemyWith card creation id
+
 spawnEnemy :: (ReverseQueue m, IsCard card) => card -> m EnemyId
 spawnEnemy card = createEnemyWith card () id
 

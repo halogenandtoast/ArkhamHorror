@@ -2,15 +2,23 @@ module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTh
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence
+import Arkham.Exception
+import Arkham.Act.Types (Field(ActKeys))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Investigator (withLocationOf, getMaybeLocation)
 import Arkham.Helpers.Log
+import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Card
 import Arkham.Helpers.Modifiers (maybeModified, ModifierType(..), setActiveDuringSetup)
 import Arkham.Id
+import Arkham.I18n
+import Arkham.Agenda.Types (Field(AgendaSequence))
+import Arkham.Resolution
 import Arkham.Key
 import Arkham.Keyword (Keyword(Aloof))
 import Arkham.Location.Cards qualified as Locations
@@ -26,9 +34,25 @@ import Arkham.SortedPair
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
 
-newtype Meta = Meta {captured :: [InvestigatorId]}
+data Meta = Meta
+  { captured :: [InvestigatorId]
+  , resignedInMoonRoom :: [InvestigatorId]
+  , relicsAddedToHand :: [CardDef]
+  }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+emptyMeta :: Meta
+emptyMeta = Meta [] [] []
+
+capturedL :: Lens' Meta [InvestigatorId]
+capturedL = lens Arkham.Scenario.Scenarios.ALightInTheFog.captured \m x -> m { captured = x }
+
+resignedInMoonRoomL :: Lens' Meta [InvestigatorId]
+resignedInMoonRoomL = lens resignedInMoonRoom \m x -> m { resignedInMoonRoom = x }
+
+relicsAddedToHandL :: Lens' Meta [CardDef]
+relicsAddedToHandL = lens relicsAddedToHand \m x -> m { relicsAddedToHand = x }
 
 newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
   deriving anyclass IsScenario
@@ -36,7 +60,7 @@ newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
 
 instance HasModifiersFor ALightInTheFog where
   getModifiersFor (InvestigatorTarget iid) (ALightInTheFog a) = maybeModified a do
-    Meta meta <- hoistMaybe $ maybeResult a.meta
+    Meta meta _ _ <- hoistMaybe $ maybeResult a.meta
     guard $ iid `elem` meta
     pure [CannotMove, CannotFight AnyEnemy, CannotBeEngaged, ScenarioModifier "captured"]
   getModifiersFor (LocationTarget lid) (ALightInTheFog a) = map setActiveDuringSetup <$> maybeModified a do
@@ -152,9 +176,58 @@ instance RunMessage ALightInTheFog where
         _ -> pure ()
       pure s
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do
-      let Meta capturedInvestigators = toResultDefault (Meta []) attrs.meta
-      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (Meta $ nub $ iid : capturedInvestigators)
+      let meta = toResultDefault emptyMeta attrs.meta
+      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (meta & capturedL %~ (nub . (iid :)))
     ForInvestigator iid (ScenarioSpecific "free" _) -> do
-      let Meta capturedInvestigators = toResultDefault (Meta []) attrs.meta
-      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (Meta $ deleteFirst iid capturedInvestigators)
+      let meta = toResultDefault emptyMeta attrs.meta
+      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (meta & capturedL %~ deleteFirst iid)
+    ScenarioResolution resolution -> scope "resolutions" do
+      let meta = toResultDefault emptyMeta attrs.meta
+      let
+        defaultResolution = do
+          actKeys <- field ActKeys =<< selectJust AnyAct
+          recordWhen (BlackKey `elem` actKeys) TheInvestigatorsPossessAMapOfYhaNthlei
+          recordWhen (RedKey `elem` actKeys) TheInvestigatorsPossessTheKeyToYhaNthlei
+
+          investigators <- allInvestigators
+          for_ (meta ^. relicsAddedToHandL) (addCampaignCardToDeckChoice investigators)
+          allGainXp attrs
+          endOfScenario
+      case resolution of
+        NoResolution -> do
+          step <- agendaStep <$> selectJustField AgendaSequence AnyAgenda
+          push $ if step < AgendaStep 4 then R4 else R3
+        Resolution 1 -> do
+          story $ i18nWithTitle "resolution1"
+          for_ (meta ^. resignedInMoonRoomL) \iid -> push $ RecordForInvestigator iid PossessesADivingSuit
+          defaultResolution
+        Resolution 2 -> do
+          story $ i18nWithTitle "resolution2"
+          defaultResolution
+        Resolution 3 -> do
+          story $ i18nWithTitle "resolution3"
+          eachInvestigator (kill attrs)
+          gameOver
+        Resolution 4 -> do
+          story $ i18nWithTitle "resolution4"
+          defaultResolution
+        _ -> throw $ UnknownResolution resolution
+      pure s
+    Resign iid -> do
+      getMaybeLocation iid >>= \case
+        Nothing -> pure s
+        Just lid -> do
+          isMoonRoom <- lid <=~> locationIs Locations.theMoonRoom
+          if isMoonRoom
+            then do
+              let meta = toResultDefault emptyMeta attrs.meta
+              pure $ ALightInTheFog $ attrs & metaL .~ toJSON (meta & resignedInMoonRoomL %~ (nub . (iid :)))
+            else pure s
+    AddToHand _ cards -> do
+      let relics = map toCardDef $ filterCards (mapOneOf cardIs [Assets.headdressOfYhaNthlei, Assets.awakenedMantle, Assets.wavewornIdol]) cards
+      if null relics
+        then pure s
+        else  do
+          let meta = toResultDefault emptyMeta attrs.meta
+          pure $ ALightInTheFog $ attrs & metaL .~ toJSON (meta & relicsAddedToHandL %~ (nub . (relics <>)))
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

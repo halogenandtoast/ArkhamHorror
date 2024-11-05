@@ -2579,6 +2579,16 @@ enemyMatcherFilter = \case
       _ -> False
   IncludeOmnipotent matcher -> enemyMatcherFilter matcher
   IncludeOutOfPlayEnemy matcher -> enemyMatcherFilter matcher
+  InPlayEnemy matcher -> do
+    let
+      inOutOfPlayZone = \case
+        OutOfPlay _ -> True
+        _ -> False
+    andM
+      . sequence
+        [ pure . not . inOutOfPlayZone . attr enemyPlacement
+        , enemyMatcherFilter matcher
+        ]
   OutOfPlayEnemy outOfPlayZone matcher -> do
     let
       inOutOfPlayZone = \case

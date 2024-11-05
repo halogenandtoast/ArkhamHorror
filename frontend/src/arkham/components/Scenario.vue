@@ -509,7 +509,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
           :key="scenarioDeck[0]"
           v-for="[,scenarioDeck] in scenarioDecks"
         />
-        <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" :playerId="playerId" />
+        <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @show="showVictoryDisplay" @choose="choose" :playerId="playerId" />
         <div class="scenario-encounter-decks">
 
           <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">

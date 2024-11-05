@@ -7,8 +7,8 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 newtype AgendaStep = AgendaStep {unAgendaStep :: Int}
-  deriving stock (Data)
-  deriving newtype (Eq)
+  deriving stock Data
+  deriving newtype (Eq, Ord)
 
 agendaStep :: AgendaSequence -> AgendaStep
 agendaStep (Sequence num _) = AgendaStep num

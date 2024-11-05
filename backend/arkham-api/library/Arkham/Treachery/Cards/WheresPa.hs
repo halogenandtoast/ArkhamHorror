@@ -3,13 +3,12 @@ module Arkham.Treachery.Cards.WheresPa (wheresPa, WheresPa (..)) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Deck qualified as Deck
-import Arkham.Enemy.Creation
-import Arkham.Helpers.Message (createEnemy)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Helpers.Scenario (getEncounterDeckKey)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Message.Lifted.CreateEnemy
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -44,14 +43,14 @@ instance RunMessage WheresPa where
       for_ mcard $ \card -> do
         let ownerId = fromJustNote "has to be set" attrs.owner
         connectedLocations <- selectAny $ ConnectedFrom (locationWithInvestigator ownerId)
-        enemyCreation <-
-          createEnemy
-            card
-            $ if connectedLocations
+        let
+          location =
+            if connectedLocations
               then ConnectedFrom (locationWithInvestigator ownerId)
               else locationWithInvestigator ownerId
-        push $ toMessage $ enemyCreation {enemyCreationInvestigator = Just ownerId}
-        attachTreachery attrs (enemyCreationEnemyId enemyCreation)
+        runCreateEnemyT card location \enemyId -> do
+          setCreationInvestigator ownerId
+          afterCreate $ attachTreachery attrs enemyId
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       directHorror iid (attrs.ability 1) 1

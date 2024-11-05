@@ -12,12 +12,10 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Message (createEnemy)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Message (toMessage)
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 import Data.List.NonEmpty qualified as NE
@@ -92,8 +90,9 @@ instance RunMessage JourneyAcrossTheBridge where
 
       case locationIds of
         _ :| [loc2, _, loc4, _, loc3, _, loc1] -> do
-          for_ (zip atlachNacha [Global, AtLocation loc1, AtLocation loc2, AtLocation loc3, AtLocation loc4]) $ \(part, placement) ->
-            push . toMessage =<< createEnemy part placement
+          for_
+            (zip atlachNacha [Global, AtLocation loc1, AtLocation loc2, AtLocation loc3, AtLocation loc4])
+            (uncurry createEnemy_)
         _ -> error "wrong number of locations"
 
       push

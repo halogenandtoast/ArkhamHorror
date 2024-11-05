@@ -242,6 +242,25 @@ selectMax fld matcher = do
       filterM (fmap (== maxValue) . field fld) results
     else pure []
 
+selectMaybeMax
+  :: ( QueryElement matcher ~ EntityId attrs
+     , Num a
+     , Query matcher
+     , Projection attrs
+     , HasGame m
+     , Ord a
+     )
+  => Field attrs (Maybe a)
+  -> matcher
+  -> m [QueryElement matcher]
+selectMaybeMax fld matcher = do
+  maxValue <- maybeFieldMax fld matcher
+  if maxValue > 0
+    then do
+      results <- select matcher
+      filterM (fmap (== Just maxValue) . field fld) results
+    else pure []
+
 selectOne
   :: (HasCallStack, Query a, HasGame m)
   => a

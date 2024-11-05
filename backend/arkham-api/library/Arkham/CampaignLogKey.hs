@@ -283,6 +283,9 @@ data CampaignLogKey
   | TheHeaddressWasBroughtToTheLighthouse
   | TheInvestigatorsReachedFalconPointBeforeSunrise
   | TheInvestigatorsReachedFalconPointAfterSunrise
+  | PossessesADivingSuit
+  | TheInvestigatorsPossessAMapOfYhaNthlei
+  | TheInvestigatorsPossessTheKeyToYhaNthlei
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

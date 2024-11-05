@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
+import Enemy from '@/arkham/components/Enemy.vue';
 
 export interface Props {
   game: Game
@@ -11,7 +12,13 @@ export interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['show'])
+const emit = defineEmits(['show', 'choose'])
+
+const choose = async (idx: number) => emit('choose', idx)
+
+const enemiesInVictoryDisplay = computed(() => {
+  return Object.values(props.game.enemies).filter((e) => e.placement.tag === 'OutOfPlay' && (['VictoryDisplayZone'] as string[]).includes(e.placement.contents))
+})
 const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
 const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Card${props.victoryDisplay.length === 1 ? '' : 's'}`)
@@ -20,12 +27,22 @@ const showVictoryDisplay = () => emit('show')
 </script>
 i
 <template>
-  <div v-if="topOfVictoryDisplay" class="victory-display">
-    <div class="victory-display-card">
+  <div v-if="topOfVictoryDisplay || enemiesInVictoryDisplay.length > 0" class="victory-display">
+    <div v-if="topOfVictoryDisplay" class="victory-display-card">
       <CardView :game="game" :card="topOfVictoryDisplay" :playerId="playerId" />
+
     </div>
 
-    <button @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
+    <Enemy
+      v-for="enemy in enemiesInVictoryDisplay"
+      :enemy="enemy"
+      :game="game"
+      :playerId="playerId"
+      @choose="choose"
+    />
+
+
+    <button v-if="topOfVictoryDisplay" @click="showVictoryDisplay">{{viewVictoryDisplayLabel}}</button>
   </div>
 </template>
 

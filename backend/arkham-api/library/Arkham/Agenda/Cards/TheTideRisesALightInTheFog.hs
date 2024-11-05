@@ -9,9 +9,11 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card (findUniqueCard)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 import Arkham.Movement
 import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.Trait (Trait (FalconPoint))
+import Arkham.Zone
 
 newtype TheTideRisesALightInTheFog = TheTideRisesALightInTheFog AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -20,14 +22,16 @@ newtype TheTideRisesALightInTheFog = TheTideRisesALightInTheFog AgendaAttrs
 theTideRisesALightInTheFog :: AgendaCard TheTideRisesALightInTheFog
 theTideRisesALightInTheFog = agenda (3, A) TheTideRisesALightInTheFog Cards.theTideRisesALightInTheFog (Static 10)
 
--- Find the 4 bottommost locations that can have their flood levels increased. Increase each of their flood levels.
-
 instance RunMessage TheTideRisesALightInTheFog where
   runMessage msg a@(TheTideRisesALightInTheFog attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      oceirosMarsh <- findUniqueCard Enemies.oceirosMarsh
+      selectOne (OutOfPlayEnemy VictoryDisplayZone $ enemyIs Enemies.oceirosMarsh) >>= \case
+        Just oceirosMarsh -> place oceirosMarsh =<< selectJust (locationIs Locations.sunkenGrottoUpperDepths)
+        Nothing -> do
+          oceirosMarsh <- findUniqueCard Enemies.oceirosMarsh
+          createEnemyAtLocationMatching_ oceirosMarsh (locationIs Locations.sunkenGrottoUpperDepths)
+
       upperDepths <- selectJust $ locationIs Locations.sunkenGrottoUpperDepths
-      createEnemyAtLocationMatching_ oceirosMarsh (locationIs Locations.sunkenGrottoUpperDepths)
       selectEach (InvestigatorAt (LocationWithTrait FalconPoint)) \iid -> do
         moveTo_ attrs iid upperDepths
 

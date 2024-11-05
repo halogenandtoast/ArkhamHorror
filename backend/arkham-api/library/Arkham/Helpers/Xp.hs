@@ -15,6 +15,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Source
 import Arkham.Xp
+import Arkham.Zone (OutOfPlayZone (VictoryDisplayZone))
 import GHC.Records
 
 toGainXp :: (HasGame m, Sourceable source) => source -> m [(InvestigatorId, Int)] -> m [Message]
@@ -27,7 +28,8 @@ getXpWithBonus :: forall m. (HasCallStack, HasGame m) => Int -> m [(Investigator
 getXpWithBonus bonus = do
   victoryPileVictory <- toVictory =<< getVictoryDisplay
   locationVictory <- toVictory =<< select (RevealedLocation <> LocationWithoutClues)
-  let initialAmount = bonus + getSum (victoryPileVictory <> locationVictory)
+  enemyVictory <- toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
+  let initialAmount = bonus + getSum (victoryPileVictory <> locationVictory <> enemyVictory)
   investigatorIds <- allInvestigatorIds
   for investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
@@ -75,6 +77,8 @@ instance HasField "flatten" XpBonus [XpBonus] where
 generateXpReport :: forall m. (HasCallStack, HasGame m) => XpBonus -> m XpBreakdown
 generateXpReport bonus = do
   victoryPileVictory <- fmap (map AllGainXp) . toVictory =<< scenarioField ScenarioVictoryDisplay
+  enemyVictory <-
+    fmap (map AllGainXp) . toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
   locationVictory <-
     fmap (map AllGainXp) . toVictory =<< select (RevealedLocation <> LocationWithoutClues)
   investigatorIds <- allInvestigatorIds
@@ -86,6 +90,7 @@ generateXpReport bonus = do
     $ [ InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- bonus.flatten, iid <- investigatorIds
       ]
     <> victoryPileVictory
+    <> enemyVictory
     <> locationVictory
     <> fromModifiers
  where

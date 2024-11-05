@@ -1,23 +1,34 @@
-module Arkham.Location.Cards.ShrineToHydra
-  ( shrineToHydra
-  , ShrineToHydra(..)
-  )
-where
+module Arkham.Location.Cards.ShrineToHydra (shrineToHydra, ShrineToHydra (..)) where
 
+import Arkham.Ability
+import Arkham.Helpers.Modifiers
+import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype ShrineToHydra = ShrineToHydra LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shrineToHydra :: LocationCard ShrineToHydra
-shrineToHydra = location ShrineToHydra Cards.shrineToHydra 0 (Static 0)
+shrineToHydra = location ShrineToHydra Cards.shrineToHydra 5 (PerPlayer 2)
+
+instance HasModifiersFor ShrineToHydra where
+  getModifiersFor target (ShrineToHydra attrs) | isTarget attrs target = maybeModified attrs do
+    liftGuardM $ selectAny $ at_ (be attrs) <> InvestigatorWithKey GreenKey
+    pure [ShroudModifier (-3)]
+  getModifiersFor (InvestigatorTarget _) (ShrineToHydra attrs) = do
+    modified attrs [CannotDiscoverCluesExceptAsResultOfInvestigation (be attrs)]
+  getModifiersFor _ _ = pure []
 
 instance HasAbilities ShrineToHydra where
-  getAbilities (ShrineToHydra attrs) =
-    extendRevealed attrs []
+  getAbilities (ShrineToHydra a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance RunMessage ShrineToHydra where
-  runMessage msg (ShrineToHydra attrs) = runQueueT $ case msg of
+  runMessage msg l@(ShrineToHydra attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeKey attrs RedKey
+      pure l
     _ -> ShrineToHydra <$> liftRunMessage msg attrs

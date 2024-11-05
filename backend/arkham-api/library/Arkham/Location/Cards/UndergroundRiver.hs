@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.UndergroundRiver (undergroundRiver, UndergroundRiver (..)) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers
@@ -24,7 +25,8 @@ instance HasAbilities UndergroundRiver where
     extendRevealed attrs [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone (be attrs)]
 
 instance RunMessage UndergroundRiver where
-  runMessage msg (UndergroundRiver attrs) = runQueueT $ case msg of
+  runMessage msg l@(UndergroundRiver attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      pure $ UndergroundRiver $ attrs & floodLevelL ?~ PartiallyFlooded
+      increaseThisFloodLevelTo attrs PartiallyFlooded
+      pure l
     _ -> UndergroundRiver <$> liftRunMessage msg attrs

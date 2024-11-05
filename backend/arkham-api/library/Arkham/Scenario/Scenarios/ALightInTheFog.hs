@@ -154,4 +154,7 @@ instance RunMessage ALightInTheFog where
     ForInvestigator iid (ScenarioSpecific "captured" _) -> do
       let Meta capturedInvestigators = toResultDefault (Meta []) attrs.meta
       pure $ ALightInTheFog $ attrs & metaL .~ toJSON (Meta $ nub $ iid : capturedInvestigators)
+    ForInvestigator iid (ScenarioSpecific "free" _) -> do
+      let Meta capturedInvestigators = toResultDefault (Meta []) attrs.meta
+      pure $ ALightInTheFog $ attrs & metaL .~ toJSON (Meta $ deleteFirst iid capturedInvestigators)
     _ -> ALightInTheFog <$> liftRunMessage msg attrs

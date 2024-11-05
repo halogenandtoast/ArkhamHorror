@@ -28,5 +28,19 @@
       "title": "Resolution 1",
       "body": "<p><b>Resolution 1:</b> With daylight fading and the tide rising to swallow the various islands off the coast of Innsmouth, you decide to make your way back to the harbor with your discoveries. “Found what yer lookin’ for?” Mr. Moore asks once you’ve made it to the coast safely.</p><p>Truth be told, you’re not completely sure. What you found was startling. The coves and tidal caverns of Devil Reef were home not just to relics of the Esoteric Order of Dagon, but also to a horde of strange creatures: hybrids between fish, man, and monster. You might have escaped with your life, but the horrors you saw in those caves will stay with you forever. Sharp, jagged teeth—blood-stained altars—unholy prayers—signs of a coming catastrophe—it still haunts you even after your escape.</p><p>But is Innsmouth truly safe? Is any land at all?</p>"
     }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the number of keys the investigators control.",
+      "cultist": "-2. If you fail and this is an attack or evasion attempt against a _Deep One_ enemy, it engages you. (If it is already engaged with you, it disengages first, then re-engages you.)",
+      "tablet": "-3. If you fail and you are not in a vehicle, take 1 damage.",
+      "elderThing": "-4. If you fail and your location has a key on it, take 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the number of keys the investigators control.",
+      "cultist": "-3. If this is an attack or evasion attempt against a _Deep One_ enemy, it engages you. (If it is already engaged with you, it disengages first, then re-engages you.)",
+      "tablet": "-4. If you are not in a vehicle, take 1 damage.",
+      "elderThing": "-5. If your location has a key on it, take 1 horror."
+    }
   }
 }

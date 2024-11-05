@@ -2704,6 +2704,7 @@ enemyMatcherFilter = \case
   EnemyOneOf ms -> \enemy -> anyM (`enemyMatcherFilter` enemy) ms
   EnemyWithTrait t -> fmap (member t) . field EnemyTraits . toId
   EnemyWithoutTrait t -> fmap (notMember t) . field EnemyTraits . toId
+  EnemyWithAnyKey -> pure . notNull . attr enemyKeys
   EnemyWithKeyword k -> \enemy -> do
     keywords <- setToList <$> field EnemyKeywords (toId enemy)
     mods <- getModifiers (toId enemy)

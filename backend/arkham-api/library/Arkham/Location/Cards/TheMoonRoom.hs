@@ -1,7 +1,9 @@
 module Arkham.Location.Cards.TheMoonRoom (theMoonRoom, TheMoonRoom (..)) where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -20,8 +22,14 @@ instance HasAbilities TheMoonRoom where
       [ withTooltip "You don one of the the empty diving suits and dive into the reflecting pool"
           $ resignAction a
           `withCriteria` thisExists a (not_ FloodedLocation)
+      , restricted a 2 (thisExists a (not_ FullyFloodedLocation))
+          $ forced
+          $ RevealLocation #after Anyone (be a)
       ]
 
 instance RunMessage TheMoonRoom where
-  runMessage msg (TheMoonRoom attrs) = runQueueT $ case msg of
+  runMessage msg l@(TheMoonRoom attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      increaseThisFloodLevelTo attrs PartiallyFlooded
+      pure l
     _ -> TheMoonRoom <$> liftRunMessage msg attrs

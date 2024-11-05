@@ -54,6 +54,7 @@ data EnemyMatcher
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword
+  | EnemyWithAnyKey
   | EnemyWithClues ValueMatcher
   | EnemyWithEqualFields (Field Enemy Int) (Field Enemy Int)
   | EnemyWithNonZeroField (Field Enemy Int)

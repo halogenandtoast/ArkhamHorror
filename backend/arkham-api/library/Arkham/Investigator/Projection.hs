@@ -49,3 +49,6 @@ instance HasField "filter" (QueueT Message GameT [Card]) (CardMatcher -> QueueT 
 
 instance HasField "keys" InvestigatorId (QueueT Message GameT (Set ArkhamKey)) where
   getField = field InvestigatorKeys
+
+instance HasField "remainingActions" InvestigatorId (QueueT Message GameT Int) where
+  getField = field InvestigatorRemainingActions

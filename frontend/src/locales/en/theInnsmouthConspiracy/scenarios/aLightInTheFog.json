@@ -6,5 +6,23 @@
   "flashback12": {
     "title": "Flashback XII",
     "body": "<p>You peer up at Falcon Point lighthouse, but from much farther below. You are aboard Mr. Moore’s fishing vessel, during your voyage to Devil Reef several weeks earlier. The ship sways back and forth as angry waves thrash against its hull. “’Fraid it’s gon’ be a bit rocky,” the ship captain shouts over the crashing of the tumultuous sea. “Weather’s been awful wild of late. Strange tides an’ stranger winds.”</p><p>But still you stare up at the ominous lighthouse, its beacon a guiding light, a warning sign, or both. Curious what knowledge he might have, you ask Mr. Moore about the lighthouse. “That ol’ thing? Been there longer’n Innsmouth itself. Marsh family’s kept it runnin’ as long as I remember. Oceiros is keeper now. Strange fella, that Oceiros. They say the only place in town he visits is the Order o’ Dagon hall by New Church Green.” He shakes his head.</p><p>You wonder if there are more secrets inside that lighthouse than meets the eye. Mr. Moore seems to note your curiosity. “I’ve heard them Marshes’ve carved out caverns beneath the lighthouse goin’ all the way down to sea level an’ beyond,” he claims. “Dunno if that’s true, but sometimes when I’m out ta sea I’ve seen groups of ‘em up by the cliffside, all wavin’ an’ kneelin’ like they’re prayin’ or something. Never really paid it much mind, but...” his voice grows quieter. “Jus’ thought you oughta know.”</p><p>You nod and thank him. If what he’s saying is true, perhaps you should give this lighthouse a visit. You make a mental note to research more about Falcon Point once you return to town.</p><p>When your mind snaps back to the present, you recall the legwork you’d done after your expedition to Devil Reef, and the information you found on the vast network of tunnels beneath the lighthouse..."
+  },
+  "flashback13": {
+    "title": "Flashback XIII",
+    "body": "<p>You speak with one of the many sailors who frequent a ramshackle tavern by the docks of Innsmouth, somewhere in the southeastern slums of the decrepit seaport. He’s found his own little corner of the pub in which to hide and drown himself in alcohol. So much the better—you’d prefer to keep your investigation quiet.</p><p>You jot down notes as the drunken man rambles on about the creatures he’s seen swimming off the coast and prowling around the reefs. “Deep Ones,” he names them. “Caught one in my net once,” he blabbers through slurred speech. “She an’ her eggs—tha’s right!—’er eggs, bigger’n your fist, an’ squirmin’ an’ wrigglin’, too!”</p><p>Absorbed in the ritual of telling a tale for his fellow sailors, he elaborates: “She had one of ’em in her arms. Tiny little devil, with bulgin’, hateful eyes. Couldn’t stand the sight of it. I threw the net o’er as soon as I realized what I’d caught, an’ came right back ’ere. If I had my way I’d never sail ’gain.”</p><p>You mull this new information over in your head. If this man speaks the truth, these creatures seem to have a lifecycle similar to that of a fish. But then, what is the purpose of the uncanny hybrid creatures you have seen skulking about the town? Are they but figments of your frightened imagination? Or is there a much more sinister part of this lifecycle that you are missing?</p>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. If your location is flooded, reveal an additional chaos token.",
+      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location.",
+      "tablet": "-3. If you fail this test and your location is flooded, take 1 damage.",
+      "elderThing": "-4. If you fail, move the nearest ready unengaged enemy once toward your location. It loses aloof during this movement."
+    },
+    "hardExpert": {
+      "skull": "-2. If your location is flooded, reveal an additional chaos token.",
+      "cultist": "-2. If you fail, after this test ends, increase the flood level of your location (if you cannot, take 1 horror instead).",
+      "tablet": "-3. If you fail this test and your location is flooded, take 2 damage.",
+      "elderThing": "-4. Move the nearest unengaged enemy once toward your location. It loses aloof during this movement."
+    }
   }
 }

@@ -47,7 +47,7 @@ floodBottommost n' = do
         for_ ls increaseThisFloodLevel
         go (row + 1) (n - length ls)
 
-data Flashback = Flashback12
+data Flashback = Flashback12 | Flashback13
 
 flashback :: ReverseQueue m => InvestigatorId -> Flashback -> m ()
 flashback iid f = case f of
@@ -65,3 +65,15 @@ flashback iid f = case f of
       push unfocus
     lead <- getLead
     push . GainClues lead ScenarioSource =<< perPlayer 1
+  Flashback13 -> do
+    scenarioI18n $ story $ i18nWithTitle "flashback13"
+    recoverMemory TheLifecycleOfADeepOne
+    tokens <-
+      nubBy ((==) `on` (.face))
+        . sort
+        <$> select @ChaosTokenMatcher (oneOf [#cultist, #tablet, #elderthing])
+    focusChaosTokens tokens \unfocus -> do
+      chooseOneM iid do
+        questionLabeled "Choose token to remove from the chaos bag for the remainder of the campaign"
+        targets tokens $ removeChaosToken . (.face)
+      push unfocus

@@ -16,7 +16,9 @@ import Arkham.Key
 import Arkham.Location.FloodLevel
 import Arkham.Location.Types (Field (LocationFloodLevel))
 import Arkham.Matcher
-import Arkham.Message (Message (CreateEffect, IncreaseFloodLevel, SetFloodLevel))
+import Arkham.Message (
+  Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel, SetFloodLevel),
+ )
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
@@ -62,6 +64,17 @@ getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel
 increaseThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
 increaseThisFloodLevel location = push $ IncreaseFloodLevel (asId location)
+
+decreaseThisFloodLevel
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+decreaseThisFloodLevel location = push $ DecreaseFloodLevel (asId location)
+
+increaseThisFloodLevelTo
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()
+increaseThisFloodLevelTo location newFloodLevel = do
+  floodLevel <- fieldWithDefault Unflooded LocationFloodLevel location
+  when (floodLevel < newFloodLevel) do
+    push $ IncreaseFloodLevel (asId location)
 
 setThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()

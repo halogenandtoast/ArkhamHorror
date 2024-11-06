@@ -1,7 +1,4 @@
-module Arkham.Game.Helpers (
-  module Arkham.Game.Helpers,
-  module X,
-) where
+module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
 
@@ -865,13 +862,22 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       _ -> anyM (getCanAffordCost iid source (cdActions $ toCardDef c) windows') alternateResourceCosts
 
     let
+      auxiliaryCosts =
+        case costStatus of
+          AuxiliaryCost x _ -> [x]
+          _ -> []
+
+      auxiliaryResourceCosts = totalResourceCost (mconcat auxiliaryCosts)
       replaceThisCardSource :: Data a => a -> a
       replaceThisCardSource = over biplate (replaceThisCard c)
-      canAffordCost' = modifiedCardCost <= (availableResources + additionalResources)
+      canAffordCost' = modifiedCardCost + auxiliaryResourceCosts <= availableResources + additionalResources
       canAffordCost =
         if canAffordCost'
           then canAffordCost'
-          else modifiedCardCostWithChuckFergus <= (availableResources + additionalResources)
+          else
+            modifiedCardCostWithChuckFergus
+              + auxiliaryResourceCosts
+              <= (availableResources + additionalResources)
       needsChuckFergus = not canAffordCost' && canAffordCost
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
@@ -983,11 +989,12 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     -- PaidCost -> pure . max 0 . subtract 1
     -- But we removed it because it conflicted with additional action costs
     let
-      actionCost =
-        case costStatus of
-          PaidCost -> const 0 ac
-          UnpaidCost NoAction -> max 0 $ subtract 1 ac
-          UnpaidCost NeedsAction -> ac
+      goActionCost = \case
+        PaidCost -> const 0 ac
+        UnpaidCost NoAction -> max 0 $ subtract 1 ac
+        UnpaidCost NeedsAction -> ac
+        AuxiliaryCost _ inner -> goActionCost inner
+      actionCost = goActionCost costStatus
 
     -- Warning: We check if the source is GameSource, this affects the
     -- PlayableCardWithCostReduction matcher currently only used by Dexter
@@ -999,6 +1006,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           | actionCost > 0 && source /= GameSource && not inFastWindow
           ]
         <> additionalCosts
+        <> auxiliaryCosts
         <> investigateCosts
         <> resignCosts
         <> sealedChaosTokenCost
@@ -1011,11 +1019,18 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
           possibleSlots <- getPotentialSlots c iid
           pure $ null $ cdSlots pcDef \\ possibleSlots
 
+    let
+      goNoAction = \case
+        UnpaidCost NoAction -> True
+        AuxiliaryCost _ inner -> goNoAction inner
+        _ -> False
+      noAction = goNoAction costStatus
+
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
       && (none prevents modifiers)
-      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins)
+      && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction)
       && ( (#evade `notElem` pcDef.actions)
             || canEvade
             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
@@ -1530,13 +1545,22 @@ passesCriteria iid mcard source' requestor windows' = \case
         traitsToMatch ->
           filter (any (`elem` traitsToMatch) . toTraits) discards
     pure $ notNull filteredDiscards
-  Criteria.CanAffordCostIncrease n -> case mcard of
-    Just (card, UnpaidCost _) -> do
-      cost <- getModifiedCardCost iid card
-      resources <- getSpendableResources iid
-      pure $ resources >= cost + n
-    Just (_, PaidCost) -> pure True
-    Nothing -> error $ "no card for CanAffordCostIncrease: " <> show source
+  Criteria.CanAffordCostIncrease n -> do
+    let
+      go :: HasGame n => Maybe (Card, CostStatus) -> n Bool
+      go = \case
+        Just (card, AuxiliaryCost aux inner) -> do
+          withModifiers
+            card
+            (modified GameSource [IncreaseCostOf (Matcher.CardWithId card.id) $ totalResourceCost aux])
+            $ go (Just (card, inner))
+        Just (card, UnpaidCost _) -> do
+          cost <- getModifiedCardCost iid card
+          resources <- getSpendableResources iid
+          pure $ resources >= cost + n
+        Just (_, PaidCost) -> pure True
+        Nothing -> error $ "no card for CanAffordCostIncrease: " <> show source
+    go mcard
   Criteria.CardInDiscard discardSignifier cardMatcher -> do
     let
       investigatorMatcher = case discardSignifier of

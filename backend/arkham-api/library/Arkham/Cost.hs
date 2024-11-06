@@ -38,11 +38,6 @@ totalActionCost (ActionCost n) = n
 totalActionCost (Costs xs) = sum $ map totalActionCost xs
 totalActionCost _ = 0
 
-totalResourceCost :: Cost -> Int
-totalResourceCost (ResourceCost n) = n
-totalResourceCost (Costs xs) = sum $ map totalResourceCost xs
-totalResourceCost _ = 0
-
 totalResourcePayment :: Payment -> Int
 totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 
@@ -301,6 +296,14 @@ data Cost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
+
+_ResourceCost :: Prism' Cost Int
+_ResourceCost = prism' ResourceCost $ \case
+  ResourceCost x -> Just x
+  _ -> Nothing
+
+totalResourceCost :: Cost -> Int
+totalResourceCost = sumOf (cosmos . _ResourceCost)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n

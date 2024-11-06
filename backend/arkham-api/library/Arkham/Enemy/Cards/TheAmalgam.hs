@@ -49,6 +49,7 @@ instance RunMessage TheAmalgam where
         labeledI18n "theAmalgamAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 2) iid
       pure e
     UseThisAbility _ (isSource attrs -> True) 3 -> do
+      cancelEnemyDefeat attrs.id
       push $ PlaceEnemyOutOfPlay TheDepths attrs.id
       pure e
     PlaceEnemyOutOfPlay TheDepths eid | eid == attrs.id -> do

@@ -757,6 +757,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure
       $ a
       & (deckL %~ Deck . filter (/= pc) . unDeck)
+      & (handL %~ filter (/= toCard pc))
+      & (cardsUnderneathL %~ filter (/= toCard pc))
       & discardF
       & (foundCardsL . each %~ filter (/= PlayerCard pc))
   DiscardFromHand handDiscard | handDiscard.investigator == investigatorId -> do
@@ -3056,11 +3058,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
   BeforeSkillTest skillTest | skillTestInvestigator skillTest == toId a -> do
-    skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
-    push
-      $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
-        then StartSkillTest investigatorId
-        else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
+    mSkillTestId <- getSkillTestId
+    when (maybe False (== skillTest.id) mSkillTestId) do
+      skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
+      push
+        $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
+          then StartSkillTest investigatorId
+          else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
     pure a
   CommitToSkillTest skillTest _ | skillTestInvestigator skillTest == toId a -> do
     investigators <- getInvestigators

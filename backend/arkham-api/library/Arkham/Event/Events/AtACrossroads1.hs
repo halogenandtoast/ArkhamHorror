@@ -23,7 +23,7 @@ instance RunMessage AtACrossroads1 where
         labeled
           "The chosen investigator must immediately take an action as if it were their turn, then discards 1 card at random from their hand."
           do
-            push $ PlayerWindow iid' [] True
+            takeActionAsIfTurn iid' attrs
             randomDiscard iid' attrs
         labeled "The chosen investigator loses 1 action during their next turn, then draws 3 cards." do
           createCardEffect Cards.atACrossroads1 Nothing attrs iid'

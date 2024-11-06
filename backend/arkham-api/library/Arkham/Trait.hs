@@ -129,6 +129,7 @@ data Trait
   | Jungle
   | Kadath
   | Key
+  | Lair
   | Lead
   | Leng
   | Lodge

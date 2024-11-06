@@ -2,6 +2,9 @@ module Arkham.Location.Cards.TheMoonRoom (theMoonRoom, TheMoonRoom (..)) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Constants
+import Arkham.Investigator.Projection ()
+import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers (resignAction)
@@ -32,4 +35,9 @@ instance RunMessage TheMoonRoom where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       increaseThisFloodLevelTo attrs PartiallyFlooded
       pure l
+    UseThisAbility iid (isSource attrs -> True) ResignAbility -> do
+      ks <- iid.keys
+      act <- selectJust AnyAct
+      for_ (filter (`elem` [RedKey, BlackKey]) (toList ks)) (placeKey act)
+      TheMoonRoom <$> liftRunMessage msg attrs
     _ -> TheMoonRoom <$> liftRunMessage msg attrs

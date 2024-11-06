@@ -242,6 +242,12 @@ allAgendas =
     , SomeAgendaCard unchangingAsTheSea
     , SomeAgendaCard theTideRisesALightInTheFog
     , SomeAgendaCard terrorAtFalconPoint
+    , --- The Lair of Dagon
+      SomeAgendaCard theInitiationV1
+    , SomeAgendaCard theInitiationV2
+    , SomeAgendaCard whatLurksBelowV1
+    , SomeAgendaCard whatLurksBelowV2
+    , SomeAgendaCard theRitualAdvances
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

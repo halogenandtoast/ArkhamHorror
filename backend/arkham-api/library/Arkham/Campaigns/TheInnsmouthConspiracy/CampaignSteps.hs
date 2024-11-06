@@ -31,3 +31,8 @@ pattern ALightInTheFog :: CampaignStep
 pattern ALightInTheFog <- ScenarioStep "07231"
   where
     ALightInTheFog = ScenarioStep "07231"
+
+pattern TheLairOfDagon :: CampaignStep
+pattern TheLairOfDagon <- ScenarioStep "07274"
+  where
+    TheLairOfDagon = ScenarioStep "07274"

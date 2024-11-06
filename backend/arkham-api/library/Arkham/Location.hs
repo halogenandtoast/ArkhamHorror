@@ -683,6 +683,16 @@ allLocations =
     , SomeLocationCard sunkenArchives
     , SomeLocationCard pumpRoom
     , SomeLocationCard holdingCells
+    , --- The Lair of Dagon [lod]
+      SomeLocationCard grandEntryway
+    , SomeLocationCard hallOfBlood
+    , SomeLocationCard hallOfTheDeep
+    , SomeLocationCard foulCorridors
+    , SomeLocationCard hallOfLoyalty
+    , SomeLocationCard hallOfRebirth
+    , SomeLocationCard hallOfSilence
+    , SomeLocationCard doorwayToTheDepths
+    , SomeLocationCard lairOfDagon
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

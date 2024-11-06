@@ -476,12 +476,18 @@ allTreacheries =
     , SomeTreacheryCard iCantSee
     , SomeTreacheryCard eyesInTheTrees
     , SomeTreacheryCard theyreCatchingUp
-    , --- A Light in the Fog
+    , --- A Light in the Fog [lif]
       SomeTreacheryCard hideousLullaby
     , SomeTreacheryCard kissOfBrine
     , SomeTreacheryCard totality
     , SomeTreacheryCard worthHisSalt
     , SomeTreacheryCard takenCaptive
+    , --- The Lair of Dagon [lod]
+      SomeTreacheryCard fulfillTheOaths
+    , SomeTreacheryCard secretGathering
+    , SomeTreacheryCard esotericRitual
+    , SomeTreacheryCard heraldsOfTheDeep
+    , SomeTreacheryCard stoneBarrier
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

@@ -167,6 +167,7 @@ allActCards =
       , theEndlessStairs
       , theEscape
       , theFinalDescent
+      , theFirstOath
       , theFourKeys
       , theGateOpens
       , theGuardedRuins
@@ -190,11 +191,13 @@ allActCards =
       , theReturnTrip
       , theSchemesDemise
       , theSearchForAgentHarper
+      , theSecondOath
       , theSpectralRealm
       , theStrangerACityAflame
       , theStrangerThePathIsMine
       , theStrangerTheShoresOfHali
       , theThingInTheRobes
+      , theThirdOath
       , theTrialOfNashtAndKamanThah
       , theUnvisitedIsle
       , theWayOut
@@ -788,6 +791,15 @@ findingThePath = act "07237" "Finding the Path" 2 ALightInTheFog
 
 worshippersOfTheDeep :: CardDef
 worshippersOfTheDeep = act "07238" "Worshippers of the Deep" 3 ALightInTheFog
+
+theFirstOath :: CardDef
+theFirstOath = act "07280" "The First Oath" 1 TheLairOfDagon
+
+theSecondOath :: CardDef
+theSecondOath = act "07281" "The Second Oath" 2 TheLairOfDagon
+
+theThirdOath :: CardDef
+theThirdOath = act "07282" "The Third Oath" 3 TheLairOfDagon
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

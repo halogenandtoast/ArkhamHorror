@@ -23,5 +23,19 @@
       "resign": "You decide to lay low for a while.",
       "ability2": "{'{fast}'} Spend 2 resources: <strong>Move.</strong> Move to a connecting <strong><i>Innsmouth</i></strong> location."
     }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current agenda number.",
+      "cultist": "-2. If you fail, place 1 doom on the nearest enemy.",
+      "tablet": "-3. If you fail, take 1 horror.",
+      "elderThing": "-4. If you fail, place 1 of your clues on your location."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current agenda number.",
+      "cultist": "-2. Place 1 doom on the nearest enemy (2 doom instead if you failed).",
+      "tablet": "-3. Take 1 horror (1 horror and 1 damage instead if you failed).",
+      "elderThing": "-4. Place 1 of your clues on your location (2 clues instead if you failed)."
+    }
   }
 }

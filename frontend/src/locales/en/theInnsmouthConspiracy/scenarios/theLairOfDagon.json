@@ -18,5 +18,19 @@
   "intro5": {
     "title": "Scenario VII: The Lair of Dagon",
     "body": "<p><b>Intro 5:</b> Creeeak. Agent Dawson creaks open the large doors serving as the entrance to the building, and you follow close behind. Inside, the halls are dark and eerily still. Only the faint sound of trickling water lingers in the air. “It’s quiet. I guess there are no ceremonies going on tonight. That’s good,” Dawson says as the front door closes behind you. He turns on his flashlight and illuminates a nearby doorway. “We should split up. We’ll be able to cover more ground that way. See if you can figure out what they’re hiding here. I’ll meet up with you later.” You nod and head in the opposite direction…</p>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 for each key on this card.",
+      "cultist": "0. Reveal an additional chaos token. If you reveal 1 or more {curse} tokens during this test, you automatically fail.",
+      "tablet": "-3. If you fail, place each key you control on your location.",
+      "elderThing": "-4. If you fail, add 1 {curse} token to the chaos bag."
+    },
+    "hardExpert": {
+      "skull": "-2 for each key on this card.",
+      "cultist": "-2. Reveal an additional chaos token. If you reveal 1 or more {curse} tokens during this test, you automatically fail.",
+      "tablet": "-3. Place each key you control on your location and take 1 damage.",
+      "elderThing": "-4. Add 2 {curse} tokens to the chaos bag."
+    }
   }
 }

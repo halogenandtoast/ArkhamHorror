@@ -4343,6 +4343,7 @@ instance Projection Scenario where
       ScenarioChaosBag -> pure scenarioChaosBag
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
       ScenarioSetAsideKeys -> pure scenarioSetAsideKeys
+      ScenarioKeys -> pure scenarioKeys
       ScenarioName -> pure scenarioName
       ScenarioMeta -> pure scenarioMeta
       ScenarioTokens -> pure scenarioTokens

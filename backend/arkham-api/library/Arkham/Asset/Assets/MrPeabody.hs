@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Asset.Assets.MrPeabody (mrPeabody, mrPeabodyEffect, MrPeabody (..)) where
 
 import Arkham.Ability
@@ -41,5 +43,5 @@ instance HasModifiersFor MrPeabodyEffect where
 
 instance RunMessage MrPeabodyEffect where
   runMessage msg e@(MrPeabodyEffect attrs) = runQueueT $ case msg of
-    Ready (AssetTarget aid) | isSource aid attrs.source -> disableReturn e
+    Ready target | maybe False (`isTarget` target) attrs.source.asset -> disableReturn e
     _ -> MrPeabodyEffect <$> liftRunMessage msg attrs

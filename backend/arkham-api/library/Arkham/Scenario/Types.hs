@@ -72,6 +72,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioChaosBag :: Field Scenario ChaosBag
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioSetAsideKeys :: Field Scenario (Set ArkhamKey)
+  ScenarioKeys :: Field Scenario (Set ArkhamKey)
   ScenarioName :: Field Scenario Name
   ScenarioMeta :: Field Scenario Value
   ScenarioStoryCards :: Field Scenario (Map InvestigatorId [PlayerCard])
@@ -119,6 +120,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioResolvedStories :: [StoryId]
   , scenarioDecksLayout :: [GridTemplateRow]
   , scenarioSetAsideKeys :: Set ArkhamKey
+  , scenarioKeys :: Set ArkhamKey
   , scenarioMeta :: Value
   , scenarioUsesGrid :: Bool
   , scenarioTokens :: Tokens
@@ -266,6 +268,7 @@ scenario f cardCode name difficulty layout =
       , scenarioResolvedStories = mempty
       , scenarioDecksLayout = ["agenda1 act1"]
       , scenarioSetAsideKeys = mempty
+      , scenarioKeys = mempty
       , scenarioMeta = Null
       , scenarioUsesGrid = False
       , scenarioTokens = mempty
@@ -371,6 +374,7 @@ instance FromJSON ScenarioAttrs where
     scenarioResolvedStories <- o .: "resolvedStories"
     scenarioDecksLayout <- o .: "decksLayout"
     scenarioSetAsideKeys <- o .: "setAsideKeys"
+    scenarioKeys <- o .:? "keys" .!= mempty
     scenarioMeta <- o .: "meta"
     scenarioUsesGrid <- o .: "usesGrid"
     scenarioTokens <- o .: "tokens"

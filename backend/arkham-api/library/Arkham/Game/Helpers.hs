@@ -947,7 +947,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         else pure False
 
     canInvestigate <-
-      ((#investigate `elem` cdActions pcDef) &&)
+      ((#investigate `elem` pcDef.actions) &&)
         <$> (maybe (pure False) (<=~> Matcher.InvestigatableLocation) =<< field InvestigatorLocation iid)
 
     passesLimits' <- passesLimits iid c

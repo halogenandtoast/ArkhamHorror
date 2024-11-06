@@ -15,6 +15,7 @@ import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Helpers.Modifiers (effectModifiers)
+import Arkham.Helpers.Ref (sourceToMaybeCard)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -244,7 +245,7 @@ createChaosTokenEffect effectMetadata source token = do
   pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
 createOnRevealChaosTokenEffect
-  :: MonadRandom m
+  :: (MonadRandom m, HasGame m)
   => SkillTestId
   -> ChaosTokenMatcher
   -> Source
@@ -253,7 +254,9 @@ createOnRevealChaosTokenEffect
   -> m (EffectId, Effect)
 createOnRevealChaosTokenEffect sid matchr source target messages = do
   eid <- getRandom
-  pure (eid, buildOnRevealChaosTokenEffect eid sid matchr source target messages)
+  mCardId <- toCardId <$$> sourceToMaybeCard source
+  let effect = buildOnRevealChaosTokenEffect eid sid matchr source target messages
+  pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
 createEndOfTurnEffect
   :: MonadRandom m

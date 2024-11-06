@@ -21,5 +21,6 @@ cancelEnemyDefeat eid = do
       RemoveFromPlay (EnemySource eid') -> eid == eid'
       RemovedFromPlay (EnemySource eid') -> eid == eid'
       EnemyDefeated eid' _ _ _ -> eid == eid'
+      After (EnemyDefeated eid' _ _ _) -> eid == eid'
       _ -> False
   withQueue_ $ filter (not . isDiscardEnemy)

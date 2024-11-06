@@ -17,7 +17,7 @@ newtype ThePit = ThePit ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 thePit :: ActCard ThePit
-thePit = act (1, A) ThePit Cards.thePit (groupClueCost $ Static 3)
+thePit = act (1, A) ThePit Cards.thePit (groupClueCost $ PerPlayer 3)
 
 instance RunMessage ThePit where
   runMessage msg a@(ThePit attrs) = runQueueT $ case msg of

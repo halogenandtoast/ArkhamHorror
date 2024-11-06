@@ -2046,8 +2046,12 @@ runGameMessage msg g = case msg of
         <> [SetActiveInvestigator (g ^. activeInvestigatorIdL)]
       pure $ g & (skillTestL ?~ skillTest)
   BeforeSkillTest skillTest -> do
-    player <- getPlayer skillTest.investigator
-    pure $ g & activeInvestigatorIdL .~ skillTest.investigator & activePlayerIdL .~ player
+    mSkillTestId <- getSkillTestId
+    if maybe False (== skillTest.id) mSkillTestId
+      then do
+        player <- getPlayer skillTest.investigator
+        pure $ g & activeInvestigatorIdL .~ skillTest.investigator & activePlayerIdL .~ player
+      else pure g
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
     assetId <- getRandom

@@ -1963,7 +1963,10 @@ runGameMessage msg g = case msg of
   AllDrawEncounterCard -> do
     investigators <- filterM (fmap not . isEliminated) =<< getInvestigatorsInOrder
     push $ SetActiveInvestigator $ g ^. activeInvestigatorIdL
-    for_ (reverse investigators) \iid -> do
+    for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
+    pure g
+  ForInvestigator iid AllDrawEncounterCard -> do
+    whenM (not <$> isEliminated iid) do
       player <- getPlayer iid
       push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
     pure g

@@ -887,7 +887,7 @@ instance RunMessage EnemyAttrs where
     PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- getModifiers (attackTarget details)
-      sourceModifiers <- getModifiers (sourceToTarget $ attackSource details)
+      sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
 
       let
         applyModifiers cards (CancelAttacksByEnemies c n) = do

@@ -10,6 +10,7 @@ import Arkham.Game.Helpers (chaosTokenMatches)
 import Arkham.Id
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
+import Arkham.Window qualified as Window
 
 newtype OnRevealChaosTokenEffect = OnRevealChaosTokenEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -46,7 +47,7 @@ instance HasModifiersFor OnRevealChaosTokenEffect
 
 instance RunMessage OnRevealChaosTokenEffect where
   runMessage msg e@(OnRevealChaosTokenEffect attrs) = runQueueT $ case msg of
-    RevealChaosToken _ _ token -> do
+    RevealChaosToken _ iid token -> do
       void $ runMaybeT do
         matchr <- hoistMaybe $ maybeResult $ effectExtraMetadata attrs
         liftGuardM $ chaosTokenMatches token matchr
@@ -55,7 +56,12 @@ instance RunMessage OnRevealChaosTokenEffect where
         case attrs.metadata of
           Just (EffectMessages msgs) -> lift do
             push $ DisableEffect attrs.id
-            pushAll msgs
+            case attrs.source of
+              EventSource eid -> push $ If (Window.RevealChaosTokenEventEffect iid [token] eid) msgs
+              AbilitySource inner _n -> case inner of
+                AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
+                _ -> error "Unhandled source for token effect"
+              _ -> error "Unhandled source for token effect"
           _ -> pure ()
       pure e
     SkillTestEnds _ _ _ -> do

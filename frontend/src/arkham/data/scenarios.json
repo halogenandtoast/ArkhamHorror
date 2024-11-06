@@ -311,5 +311,10 @@
         { "key": "TheHeaddressWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
         { "key": "TheTideHasGrownStronger", "type": "ToggleKey", "content": false }
       ]
+  },
+  {
+      "id": "07274",
+      "name": "A Lair of Dagon",
+      "campaign": "07"
   }
 ]

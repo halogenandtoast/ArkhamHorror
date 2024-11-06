@@ -614,6 +614,24 @@ favorOfTheSun1 =
       , cdUnique = True
       }
 
+yhanthleiStatusMysteriousRelic :: CardDef
+yhanthleiStatusMysteriousRelic =
+  (storyAsset "07300" ("Y'ha-nthlei Status" <:> "Mysterious Relic") 1 TheLairOfDagon)
+    { cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07300b"
+    }
+
+yhanthleiStatusDynamicRelic :: CardDef
+yhanthleiStatusDynamicRelic =
+  (storyAsset "07300b" ("Y'ha-nthlei Status" <:> "Dynamic Relic") 1 TheLairOfDagon)
+    { cdCardTraits = setFromList [Item, Relic, Blessed]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07300"
+    }
+
 holySpear5 :: CardDef
 holySpear5 =
   (asset "07302" "Holy Spear" 4 Guardian)

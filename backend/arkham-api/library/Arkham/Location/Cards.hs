@@ -234,6 +234,7 @@ allLocationCards =
       , dimlyLitRoad_c
       , diningCar
       , diningRoom
+      , doorwayToTheDepths
       , dormitories
       , downstairsDoorwayDen
       , downstairsDoorwayParlor
@@ -301,6 +302,7 @@ allLocationCards =
       , forsakenTowerOfLifeAndDeath
       , forsakenTowerOfPrimevalLight
       , forsakenTowerOfTheQueenOfNight
+      , foulCorridors
       , foulSwamp
       , foyer
       , foyerMurderAtTheExcelsiorHotel
@@ -318,14 +320,20 @@ allLocationCards =
       , gilmanHouseInTooDeep
       , gondola
       , grandChamber
+      , grandEntryway
       , grandGuignol
       , grandRue
       , graveyard
       , greatLibrary
       , greenRoom
       , guestHall
+      , hallOfBlood
       , hallOfHeresy
       , hallOfIdolatry
+      , hallOfLoyalty
+      , hallOfRebirth
+      , hallOfSilence
+      , hallOfTheDeep
       , hallsOfPnakotusEasternCorridors
       , hallsOfPnakotusNorthernCorridors
       , hallsOfPnakotusWesternCorridors
@@ -383,6 +391,7 @@ allLocationCards =
       , laBellaLuna
       , laboratoryOfTheGreatRace
       , labyrinthOfBones
+      , lairOfDagon
       , lakeXochimilco_182
       , lakeXochimilco_183
       , landlordsQuarters
@@ -6930,6 +6939,127 @@ holdingCells =
       T
       [Squiggle, Square, Diamond]
       ALightInTheFog
+
+grandEntryway :: CardDef
+grandEntryway =
+  location
+    "07283"
+    "Grand Entryway"
+    [GroundFloor]
+    Triangle
+    [Square, Star, Plus, Trefoil]
+    TheLairOfDagon
+
+hallOfBlood :: CardDef
+hallOfBlood =
+  locationWithUnrevealed
+    "07284"
+    "First Floor Hall"
+    [GroundFloor]
+    Trefoil
+    [Triangle]
+    "Hall of Blood"
+    [GroundFloor]
+    Square
+    [Triangle]
+    TheLairOfDagon
+
+hallOfTheDeep :: CardDef
+hallOfTheDeep =
+  victory 1
+    $ locationWithUnrevealed
+      "07285"
+      "First Floor Hall"
+      [GroundFloor]
+      Trefoil
+      [Triangle]
+      "Hall of the Deep"
+      [GroundFloor]
+      Plus
+      [Triangle]
+      TheLairOfDagon
+
+foulCorridors :: CardDef
+foulCorridors =
+  locationWithUnrevealed
+    "07286"
+    "Foul Corridors"
+    [SecondFloor]
+    Star
+    [Triangle, Heart, Moon, Equals, Hourglass]
+    "Foul Corridors"
+    [SecondFloor, Passageway]
+    Star
+    [Triangle, Heart, Moon, Equals, Hourglass]
+    TheLairOfDagon
+
+hallOfLoyalty :: CardDef
+hallOfLoyalty =
+  victory 1
+    $ locationWithUnrevealed
+      "07287"
+      "Second Floor Hall"
+      [SecondFloor]
+      Hourglass
+      [Star]
+      "Hall of Loyalty"
+      [SecondFloor]
+      Equals
+      [Star]
+      TheLairOfDagon
+
+hallOfRebirth :: CardDef
+hallOfRebirth =
+  locationWithUnrevealed
+    "07288"
+    "Second Floor Hall"
+    [SecondFloor]
+    Hourglass
+    [Star]
+    "Hall of Rebirth"
+    [SecondFloor]
+    Heart
+    [Star]
+    TheLairOfDagon
+
+hallOfSilence :: CardDef
+hallOfSilence =
+  locationWithUnrevealed
+    "07289"
+    "Third Floor Hall"
+    [ThirdFloor]
+    Moon
+    [Star]
+    "Hall of Silence"
+    [ThirdFloor]
+    Moon
+    [Star]
+    TheLairOfDagon
+
+doorwayToTheDepths :: CardDef
+doorwayToTheDepths =
+  locationWithUnrevealed
+    "07290"
+    "Tidal Tunnel"
+    [Cave]
+    NoSymbol
+    []
+    "Doorway to the Depths"
+    [Cave]
+    Circle
+    [Diamond]
+    TheLairOfDagon
+
+lairOfDagon :: CardDef
+lairOfDagon =
+  victory 1
+    $ location
+      "07291"
+      "Lair of Dagon"
+      [Yhanthlei, Lair]
+      Diamond
+      [Circle]
+      TheLairOfDagon
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

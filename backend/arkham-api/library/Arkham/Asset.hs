@@ -759,6 +759,9 @@ allAssets =
       SomeAssetCard favorOfTheMoon1
     , SomeAssetCard favorOfTheSun1
     , SomeAssetCard purifyingCorruption4
+    , --- encounter [lod]
+      SomeAssetCard yhanthleiStatusMysteriousRelic
+    , SomeAssetCard yhanthleiStatusDynamicRelic
     , -- Into the Maelstrom
       --- guardian [itm]
       SomeAssetCard holySpear5

@@ -238,6 +238,7 @@ allEncounterTreacheryCards =
       , endlessWeaving
       , entombed
       , ephemeralExhibits
+      , esotericRitual
       , evilPast
       , expulsion
       , extradimensionalVisions
@@ -253,6 +254,7 @@ allEncounterTreacheryCards =
       , fromTheDepths
       , frozenInFear
       , frozenInFearAPhantomOfTruth
+      , fulfillTheOaths
       , furtiveLocals
       , giftOfMadnessMisery
       , giftOfMadnessPity
@@ -263,6 +265,7 @@ allEncounterTreacheryCards =
       , graveLight
       , graveLightSpectral
       , harvestedBrain
+      , heraldsOfTheDeep
       , hideousLullaby
       , horrorsFromTheDeep
       , huntedByByakhee
@@ -347,6 +350,7 @@ allEncounterTreacheryCards =
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
+      , secretGathering
       , secretsInTheAttic
       , secretsOfTheBeyond
       , serpentsCall
@@ -370,6 +374,7 @@ allEncounterTreacheryCards =
       , spiresOfCarcosa
       , spiritsTorment
       , stalkedInTheDark
+      , stoneBarrier
       , stowaway
       , straitjacket
       , strangeSigns
@@ -2301,6 +2306,36 @@ takenCaptive :: CardDef
 takenCaptive =
   (treachery "07260" "Taken Captive" ALightInTheFog 2)
     { cdCardTraits = singleton Scheme
+    }
+
+fulfillTheOaths :: CardDef
+fulfillTheOaths =
+  (treachery "07295" "Fulfill the Oaths" TheLairOfDagon 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+secretGathering :: CardDef
+secretGathering =
+  (treachery "07296" "Secret Gathering" TheLairOfDagon 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+esotericRitual :: CardDef
+esotericRitual =
+  (treachery "07297" "Esoteric Ritual" TheLairOfDagon 3)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+heraldsOfTheDeep :: CardDef
+heraldsOfTheDeep =
+  (treachery "07298" "Heralds of the Deep" TheLairOfDagon 3)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+stoneBarrier :: CardDef
+stoneBarrier =
+  (treachery "07299" "Stone Barrier" TheLairOfDagon 2)
+    { cdCardTraits = setFromList [Obstacle]
     }
 
 theHarbinger :: CardDef

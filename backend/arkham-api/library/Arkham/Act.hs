@@ -284,6 +284,10 @@ allActs =
       SomeActCard theLighthouse
     , SomeActCard findingThePath
     , SomeActCard worshippersOfTheDeep
+    , --- The Lair of Dagon
+      SomeActCard theFirstOath
+    , SomeActCard theSecondOath
+    , SomeActCard theThirdOath
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

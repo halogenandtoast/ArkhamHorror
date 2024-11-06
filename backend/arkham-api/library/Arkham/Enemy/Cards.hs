@@ -92,6 +92,7 @@ allEncounterEnemyCards =
       , anetteMasonReincarnatedEvil
       , angryMob
       , apexStrangleweed
+      , apostleOfDagon
       , arkhamOfficer
       , ashleighClarke
       , asylumGorger
@@ -117,6 +118,7 @@ allEncounterEnemyCards =
       , catsFromSaturn
       , catsOfUlthar
       , cellKeeper
+      , cerenerianDeepOne
       , cloverClubPitBoss
       , cnidathqua
       , conglomerationOfSpheres
@@ -131,6 +133,8 @@ allEncounterEnemyCards =
       , crazedShoggoth
       , creatureOutOfDemhe
       , cultistOfTheEnclave
+      , dagonAwakenedAndEnraged
+      , dagonDeepInSlumber
       , danielChesterfield
       , darkYoungHost
       , deepOneBull
@@ -2227,6 +2231,40 @@ deepOneHatchling =
   (enemy "07255" "Deep One Hatchling" ALightInTheFog 4)
     { cdCardTraits = setFromList [Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Surge]
+    }
+
+dagonDeepInSlumber :: CardDef
+dagonDeepInSlumber =
+  (enemy "07292" ("Dagon" <:> "Deep in Slumber") TheLairOfDagon 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07292b"
+    }
+
+dagonAwakenedAndEnraged :: CardDef
+dagonAwakenedAndEnraged =
+  (enemy "07292b" ("Dagon" <:> "Awakened and Enraged") TheLairOfDagon 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Massive]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07292"
+    }
+
+apostleOfDagon :: CardDef
+apostleOfDagon =
+  (enemy "07293" "Apostle of Dagon" TheLairOfDagon 1)
+    { cdCardTraits = setFromList [Humanoid, Hybrid, Cultist]
+    , cdVictoryPoints = Just 1
+    }
+
+cerenerianDeepOne :: CardDef
+cerenerianDeepOne =
+  (enemy "07294" "Cerenerian Deep One" TheLairOfDagon 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 mobGoons :: CardDef

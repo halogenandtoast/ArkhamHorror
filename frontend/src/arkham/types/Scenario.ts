@@ -205,6 +205,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c07163": return "theInnsmouthConspiracy.devilReef"
     case "c07198": return "theInnsmouthConspiracy.horrorInHighGear"
     case "c07231": return "theInnsmouthConspiracy.aLightInTheFog"
+    case "c07274": return "theInnsmouthConspiracy.theLairOfDagon"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

@@ -141,6 +141,8 @@ allAgendaCards =
       , theHierophantV
       , theHouseWithNoName
       , theInfestationSpreads
+      , theInitiationV1
+      , theInitiationV2
       , theJunglesHeart
       , theLonelyCaverns
       , theLoversVI
@@ -149,6 +151,7 @@ allAgendaCards =
       , theNightHowls
       , theOldOnesHunger
       , theRedDepths
+      , theRitualAdvances
       , theRitualBegins
       , theRitualBeginsBlackStarsRise
       , theRougarouFeeds
@@ -186,6 +189,8 @@ allAgendaCards =
       , undergroundMuscle
       , vengeance
       , vengeanceAwaits
+      , whatLurksBelowV1
+      , whatLurksBelowV2
       , whatsGoingOn
       , wheelOfFortuneX
       ]
@@ -634,6 +639,21 @@ theTideRisesALightInTheFog = agenda "07234" "The Tide Rises" 3 ALightInTheFog
 
 terrorAtFalconPoint :: CardDef
 terrorAtFalconPoint = agenda "07235" "Terror at Falcon Point" 4 ALightInTheFog
+
+theInitiationV1 :: CardDef
+theInitiationV1 = agenda "07275" "The Initiation (v. I)" 1 TheLairOfDagon
+
+theInitiationV2 :: CardDef
+theInitiationV2 = agenda "07276" "The Initiation (v. II)" 1 TheLairOfDagon
+
+whatLurksBelowV1 :: CardDef
+whatLurksBelowV1 = agenda "07277" "What Lurks Below (v. I)" 2 TheLairOfDagon
+
+whatLurksBelowV2 :: CardDef
+whatLurksBelowV2 = agenda "07278" "What Lurks Below (v. II)" 2 TheLairOfDagon
+
+theRitualAdvances :: CardDef
+theRitualAdvances = agenda "07279" "The Ritual Advances" 3 TheLairOfDagon
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

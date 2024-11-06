@@ -137,6 +137,7 @@ data EncounterSet
   | DevilReef
   | HorrorInHighGear
   | ALightInTheFog
+  | TheLairOfDagon
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

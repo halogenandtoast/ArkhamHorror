@@ -405,6 +405,11 @@ allEnemies =
       SomeEnemyCard oceirosMarsh
     , SomeEnemyCard deepOneNursemaid
     , SomeEnemyCard deepOneHatchling
+    , --- The Lair of Dagon [lod]
+      SomeEnemyCard dagonDeepInSlumber
+    , SomeEnemyCard dagonAwakenedAndEnraged
+    , SomeEnemyCard apostleOfDagon
+    , SomeEnemyCard cerenerianDeepOne
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

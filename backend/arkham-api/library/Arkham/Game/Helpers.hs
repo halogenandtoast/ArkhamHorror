@@ -218,7 +218,7 @@ getCanPerformAbility !iid !ws !ability = do
     [ getCanAffordCost iid (toSource ability) actions ws cost
     , meetsActionRestrictions iid ws ability
     , anyM (\window -> windowMatches iid (toSource ability) window (abilityWindow ability)) ws
-    , passesCriteria iid Nothing ability.source ability.requestor ws criteria
+    , withActiveInvestigator iid $ passesCriteria iid Nothing ability.source ability.requestor ws criteria
     , allM (getCanAffordCost iid (abilitySource ability) actions ws) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability
     ]

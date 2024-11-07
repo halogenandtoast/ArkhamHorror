@@ -24,6 +24,8 @@ import Arkham.Target
 import Arkham.Window
 import Control.Monad.Random
 
+withActiveInvestigator
+  :: HasGame m => InvestigatorId -> (forall t. (MonadTrans t, HasGame (t m)) => t m a) -> m a
 withModifiers'
   :: (Targetable target, HasGame m)
   => target

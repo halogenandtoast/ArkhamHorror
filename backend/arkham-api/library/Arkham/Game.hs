@@ -3054,7 +3054,7 @@ enemyMatcherFilter = \case
               . sequence
                 [ pure . (`abilityIs` Action.Engage)
                 , getCanPerformAbility iid [window]
-                    . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                    . (`decreaseAbilityActionCost` 1)
                     . overrideFunc
                 ]
           )

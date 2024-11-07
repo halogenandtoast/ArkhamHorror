@@ -22,7 +22,12 @@ kymaniJones =
 
 instance HasAbilities KymaniJones where
   getAbilities (KymaniJones x) =
-    [ restrictedAbility x 1 (Self <> exists (CanEngageEnemy (toSource x) <> ExhaustedEnemy))
+    [ restrictedAbility
+        x
+        1
+        ( Self
+            <> exists (CanEngageEnemy (x.ability 1) <> ExhaustedEnemy <> at_ (locationWithInvestigator x.id))
+        )
         $ FastAbility Free
     , restrictedAbility x 2 Self
         $ freeReaction
@@ -37,7 +42,8 @@ instance HasChaosTokenValue KymaniJones where
 instance RunMessage KymaniJones where
   runMessage msg i@(KymaniJones attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ CanEngageEnemy (attrs.ability 1) <> ExhaustedEnemy
+      enemies <-
+        select $ CanEngageEnemy (attrs.ability 1) <> ExhaustedEnemy <> at_ (locationWithInvestigator iid)
       chooseOne iid [targetLabel enemy [EngageEnemy iid enemy Nothing False] | enemy <- enemies]
       pure i
     UseThisAbility iid (isSource attrs -> True) 2 -> do

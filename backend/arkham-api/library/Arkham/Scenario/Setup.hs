@@ -154,7 +154,18 @@ setAside as = do
       Just card -> do
         attrsL . encounterDeckL %= filter (/= card)
         pure $ toCard card
-      Nothing -> notFoundInDeck a
+      Nothing -> do
+        card <- notFoundInDeck a
+        otherCardsL %= filter (/= toCard card)
+
+        for_ (cdOtherSide $ toCardDef card) \otherSide -> do
+          otherCardsBefore <- use otherCardsL
+          otherCardsL %= filter ((`notElem` [otherSide, toCardCode card]) . toCardCode)
+
+          otherCardsAfter <- use otherCardsL
+          when (otherCardsBefore == otherCardsAfter) do
+            error "Card not found in encounter deck or other cards"
+        pure card
 
   attrsL . setAsideCardsL %= (<> cards)
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (map toCardDef cards)

@@ -330,6 +330,7 @@ danielChesterfield =
     , cdUnique = True
     , cdCardType = EncounterAssetType
     , cdDoubleSided = True
+    , cdOtherSide = Just "03182b"
     , cdSlots = [#ally]
     }
 

@@ -358,6 +358,13 @@ _EncounterCard _ other = pure other
 onlyEncounterCards :: [Card] -> [EncounterCard]
 onlyEncounterCards = mapMaybe (preview _EncounterCard)
 
+newtype RevealedCard = RevealedCard Card
+
+instance Named RevealedCard where
+  toName (RevealedCard card) =
+    let def = toCardDef card
+     in fromMaybe (cdName def) (cdRevealedName def)
+
 instance Named Card where
   toName = toName . toCardDef
 

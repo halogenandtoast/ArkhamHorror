@@ -1,5 +1,6 @@
 module Arkham.Helpers.Xp where
 
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Helpers.Card
@@ -100,5 +101,5 @@ generateXpReport bonus = do
   toVictory :: ConvertToCard c => [c] -> m [XpDetail]
   toVictory = mapMaybeM toEntry
   toEntry c = do
-    card <- convertToCard c
+    card <- RevealedCard <$> convertToCard c
     XpDetail XpFromVictoryDisplay (toTitle card) <$$> getVictoryPoints c

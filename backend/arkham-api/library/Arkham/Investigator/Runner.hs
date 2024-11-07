@@ -345,7 +345,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             usedAbilities'
     pure $ a & usedAbilitiesL .~ usedAbilities''
   EndOfScenario {} -> do
-    pure $ a & handL .~ mempty
+    pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False
   ResetGame ->
     pure
       $ (cbCardBuilder (investigator id (toCardDef a) (getAttrStats a)) nullCardId investigatorPlayerId)

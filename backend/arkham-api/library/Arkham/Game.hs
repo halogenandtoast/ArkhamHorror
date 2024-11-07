@@ -161,6 +161,7 @@ import Arkham.Story.Types (Field (..), StoryAttrs (..))
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Treachery.Types (
   Field (..),
   Treachery,
@@ -875,9 +876,16 @@ getInvestigatorsMatching matcher = do
           $ assetIs Assets.foolishnessFoolishCatOfUlthar
           <> assetControlledBy i.id
           <> AssetWithHorror
+      mRationalThought <-
+        selectOne $ treacheryIs Treacheries.rationalThought <> treacheryInThreatAreaOf i.id
       foolishness <-
         maybe (pure False) (fieldMapM AssetHorror (`gameValueMatches` gameValueMatcher)) mFoolishness
-      pure $ onSelf || foolishness
+      rationalThought <-
+        maybe
+          (pure False)
+          (fieldMapM TreacheryTokens ((`gameValueMatches` gameValueMatcher) . Token.countTokens #horror))
+          mRationalThought
+      pure $ onSelf || foolishness || rationalThought
     InvestigatorWithRemainingSanity gameValueMatcher ->
       flip filterM as $ field InvestigatorRemainingSanity . toId >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorThatMovedDuringTurn -> flip filterM as $ \i -> do

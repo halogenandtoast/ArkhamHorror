@@ -200,6 +200,15 @@ withModifiers' (toTarget -> target) mods body = do
     modifiers' = insertWith (<>) target mods' modifiers
   runReaderT body $ game & modifiersL .~ modifiers'
 
+withActiveInvestigator
+  :: HasGame m
+  => InvestigatorId
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+withActiveInvestigator iid body = do
+  game <- getGame
+  runReaderT body $ game & activeInvestigatorIdL .~ iid
+
 getActiveAbilities :: HasGame m => m [Ability]
 getActiveAbilities = gameActiveAbilities <$> getGame
 

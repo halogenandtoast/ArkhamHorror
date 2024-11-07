@@ -125,8 +125,29 @@ isFightWith :: HasGame m => EnemyMatcher -> m Bool
 isFightWith matcher =
   isJust <$> runMaybeT do
     Action.Fight <- MaybeT getSkillTestAction
-    EnemyTarget eid <- MaybeT getSkillTestTarget
+    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
     liftGuardM $ eid <=~> matcher
+
+isEvadeWith :: HasGame m => EnemyMatcher -> m Bool
+isEvadeWith matcher =
+  isJust <$> runMaybeT do
+    Action.Evade <- MaybeT getSkillTestAction
+    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+    liftGuardM $ eid <=~> matcher
+
+isEvading :: (HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m Bool
+isEvading enemy =
+  isJust <$> runMaybeT do
+    Action.Evade <- MaybeT getSkillTestAction
+    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+    guard $ asId enemy == eid
+
+isFighting :: (HasGame m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> m Bool
+isFighting enemy =
+  isJust <$> runMaybeT do
+    Action.Fight <- MaybeT getSkillTestAction
+    eid <- hoistMaybe . (.enemy) =<< MaybeT getSkillTestTarget
+    guard $ asId enemy == eid
 
 isParley :: HasGame m => m Bool
 isParley =

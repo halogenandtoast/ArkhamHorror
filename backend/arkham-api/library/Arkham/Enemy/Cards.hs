@@ -914,6 +914,7 @@ danielChesterfield =
       { cdCardTraits = setFromList [Humanoid, Lunatic, Elite]
       , cdVictoryPoints = Just 1
       , cdDoubleSided = True
+      , cdOtherSide = Just "03182a"
       }
 
 asylumGorger :: CardDef

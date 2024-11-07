@@ -2952,7 +2952,7 @@ enemyMatcherFilter = \case
               . sequence
                 [ pure . (`abilityIs` Action.Evade)
                 , getCanPerformAbility iid [window]
-                    . (`applyAbilityModifiers` [ActionCostModifier (-1)])
+                    . (`decreaseAbilityActionCost` 1)
                     . overrideFunc
                 ]
           )

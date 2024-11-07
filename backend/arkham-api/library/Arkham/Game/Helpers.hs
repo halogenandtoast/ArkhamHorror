@@ -258,12 +258,8 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     Objective aType -> go aType
     ForcedWhen _ aType -> go aType
     ActionAbilityWithSkill actions _ cost -> go $ ActionAbility actions cost
-    ActionAbility [] _ -> matchWho iid iid Matcher.TurnInvestigator
-    ActionAbility actions _ -> do
-      isTurn <- matchWho iid iid Matcher.TurnInvestigator
-      if not isTurn
-        then pure False
-        else anyM (canDoAction iid ab) actions
+    ActionAbility [] _ -> pure True
+    ActionAbility actions _ -> anyM (canDoAction iid ab) actions
     FastAbility' _ [] -> pure True
     FastAbility' _ actions -> anyM (canDoAction iid ab) actions
     CustomizationReaction {} -> pure True

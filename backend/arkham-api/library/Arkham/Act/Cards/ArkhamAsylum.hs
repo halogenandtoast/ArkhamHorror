@@ -13,15 +13,12 @@ newtype Metadata = Metadata {chosenSkills :: Set SkillType}
 
 newtype ArkhamAsylum = ArkhamAsylum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamAsylum :: ActCard ArkhamAsylum
 arkhamAsylum =
   actWith (1, A) ArkhamAsylum Cards.arkhamAsylum (groupClueCost $ PerPlayer 3)
     $ (metaL .~ (toJSON $ Metadata mempty))
-
-instance HasAbilities ArkhamAsylum where
-  getAbilities (ArkhamAsylum attrs) = getAbilities attrs
 
 instance RunMessage ArkhamAsylum where
   runMessage msg a@(ArkhamAsylum attrs) = runQueueT $ case msg of

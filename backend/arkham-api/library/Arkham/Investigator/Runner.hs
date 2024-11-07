@@ -1054,7 +1054,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> error "multiple overrides found"
     enemyIds <-
       select
-        $ foldr applyMatcherModifiers (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
+        $ foldr
+          applyMatcherModifiers
+          (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers)
+          modifiers
     player <- getPlayer a.id
     push
       $ chooseOne

@@ -7,11 +7,15 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Log
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Field (ScenarioKeys))
 import Arkham.Scenarios.TheLairOfDagon.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -33,10 +37,12 @@ theLairOfDagon difficulty =
 
 instance HasChaosTokenValue TheLairOfDagon where
   getChaosTokenValue iid tokenFace (TheLairOfDagon attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- length <$> scenarioField ScenarioKeys
+      pure $ toChaosTokenValue attrs Skull n (n * 2)
+    Cultist -> pure $ toChaosTokenValue attrs Skull 0 (-2)
+    Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
+    ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage TheLairOfDagon where
@@ -124,4 +130,22 @@ instance RunMessage TheLairOfDagon where
           JoyceLittle -> setAside [Enemies.joyceLittleBookshopOwner]
           RobertFriendly -> setAside [Enemies.robertFriendlyDisgruntledDockworker]
         pure ()
+    ResolveChaosToken _ Cultist iid -> do
+      drawAnotherChaosToken iid
+      withSkillTest \sid -> onRevealChaosTokenEffect sid #curse Cultist sid failSkillTest
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      when (isHardExpert attrs) do
+        withLocationOf iid \lid -> do
+          ks <- iid.keys
+          for_ ks $ placeKey lid
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> do
+          withLocationOf iid \lid -> do
+            ks <- iid.keys
+            for_ ks $ placeKey lid
+        _ -> pure ()
+      pure s
     _ -> TheLairOfDagon <$> liftRunMessage msg attrs

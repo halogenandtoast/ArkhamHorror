@@ -372,7 +372,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       _ -> pure mempty
     cards <-
       mapMaybe (preview _PlayerCard) . filter (`notElem` excludeCards) <$> field InvestigatorHand iid
-    (>= n) <$> countM (`extendedCardMatch` extendedCardMatcher) cards
+    (>= n)
+      <$> countM (`extendedCardMatch` (Matcher.basic Matcher.DiscardableCard <> extendedCardMatcher)) cards
   HandDiscardAnyNumberCost extendedCardMatcher -> do
     excludeCards <- case source of
       CardIdSource cid -> (: []) <$> getCard cid

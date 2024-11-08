@@ -6,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Direction
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 
 newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,7 +28,7 @@ instance RunMessage HelplessPassenger where
   runMessage msg a@(HelplessPassenger attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       withLocationOf iid \lid -> do
-        attach attrs =<< selectOrDefault lid (LocationInDirection LeftOf $ LocationWithId lid)
+        place attrs =<< selectOrDefault lid (LocationInDirection LeftOf $ LocationWithId lid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       takeControlOfAsset iid attrs

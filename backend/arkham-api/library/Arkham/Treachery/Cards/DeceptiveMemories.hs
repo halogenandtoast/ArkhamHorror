@@ -16,10 +16,10 @@ deceptiveMemories = treachery DeceptiveMemories Cards.deceptiveMemories
 
 instance HasAbilities DeceptiveMemories where
   getAbilities (DeceptiveMemories a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
+    [ restricted a 1 (InThreatAreaOf You)
         $ forced
         $ EntersThreatArea #after You (NotCard $ CardWithId $ toCardId a)
-    , skillTestAbility $ restrictedAbility a 2 Here actionAbility
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage DeceptiveMemories where

@@ -364,7 +364,12 @@ withLocationConnectionData inner@(With target _) = do
         [ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
         , EnemyWithPlacement $ AttachedToLocation $ toId target
         ]
-  lmAssets <- select $ AssetWithPlacement $ AtLocation (toId target)
+  lmAssets <-
+    select
+      $ oneOf
+        [ AssetWithPlacement $ AtLocation (toId target)
+        , AssetWithPlacement $ AttachedToLocation (toId target)
+        ]
   lmEvents <-
     select
       $ oneOf

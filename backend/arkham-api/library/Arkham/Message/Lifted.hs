@@ -2017,4 +2017,8 @@ resolveChaosTokens iid source tokens = do
        ]
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
-removeLocation (asId -> lid) = maybe (push $ RemoveLocation lid) (\_ -> addToVictory lid) =<< field LocationVictory lid
+removeLocation (asId -> lid) = do
+  noClues <- lid <=~> LocationWithoutClues
+  if noClues
+    then maybe (push $ RemoveLocation lid) (\_ -> addToVictory lid) =<< field LocationVictory lid
+    else push $ RemoveLocation lid

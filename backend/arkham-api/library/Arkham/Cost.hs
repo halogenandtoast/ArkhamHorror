@@ -21,6 +21,7 @@ import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.Customization
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Key
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.SkillType
@@ -230,6 +231,7 @@ data Cost
   | RevealCost CardId
   | Costs [Cost]
   | OrCost [Cost]
+  | SpendKeyCost ArkhamKey
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
@@ -328,6 +330,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  SpendKeyCost k -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
   GroupClueCostX -> "X {perPlayer} clues as a group"
   ChooseEnemyCost _ -> "Choose an enemy"

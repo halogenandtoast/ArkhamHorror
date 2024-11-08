@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FindingThePath = FindingThePath ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -55,6 +56,8 @@ instance RunMessage FindingThePath where
         push $ UpdateLocation loc (Update LocationConnectsTo mempty)
         push $ UpdateLocation loc (Update LocationConnectedMatchers [LocationInRow pos.row])
         push $ UpdateLocation loc (Update LocationRevealedConnectedMatchers [LocationInRow pos.row])
+
+      shuffleSetAsideIntoEncounterDeck [Treacheries.takenCaptive]
 
       push $ AdvanceToAgenda 1 Agendas.theTideRisesALightInTheFog Agenda.A (toSource attrs)
       placeDoomOnAgenda . getSum =<< selectAgg Sum AgendaDoom AnyAgenda

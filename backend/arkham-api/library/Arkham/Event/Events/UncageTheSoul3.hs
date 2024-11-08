@@ -7,7 +7,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getIsPlayableWithResources)
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Matcher hiding (AssetCard, PlayCard)
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Window (defaultWindows)
 

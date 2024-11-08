@@ -287,6 +287,8 @@ data CampaignLogKey
   | TheInvestigatorsPossessAMapOfYhaNthlei
   | TheInvestigatorsPossessTheKeyToYhaNthlei
   | DagonHasAwakened
+  | DagonStillSlumbers
+  | TheOrdersRitualWasDisrupted
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

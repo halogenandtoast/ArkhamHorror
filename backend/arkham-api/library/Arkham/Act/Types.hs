@@ -18,6 +18,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
+import Control.Monad.Fail
 import Data.Data
 import GHC.Records
 
@@ -47,6 +48,37 @@ data instance Field Act :: Type -> Type where
   ActCard :: Field Act Card
   ActUsedWheelOfFortuneX :: Field Act Bool
   ActKeys :: Field Act (Set ArkhamKey)
+
+deriving stock instance Show (Field Act typ)
+deriving stock instance Ord (Field Act typ)
+
+instance Typeable a => Data (Field Act a) where
+  gunfold _ _ _ = error "gunfold(Act)"
+  toConstr _ = error "toConstr(Act)"
+  dataTypeOf _ = error "dataTypeOf(Act)"
+
+instance ToJSON (Field Act typ) where
+  toJSON = toJSON . show
+
+instance Typeable typ => FromJSON (Field Act typ) where
+  parseJSON x = do
+    z <- parseJSON @(SomeField Act) x
+    case z of
+      SomeField (f :: Field Act k) -> case eqT @typ @k of
+        Just Refl -> pure f
+        Nothing -> error "type mismatch"
+
+instance FromJSON (SomeField Act) where
+  parseJSON = withText "Field Act" $ \case
+    "ActSequence" -> pure $ SomeField ActSequence
+    "ActClues" -> pure $ SomeField ActClues
+    "ActFlipped" -> pure $ SomeField ActFlipped
+    "ActDeckId" -> pure $ SomeField ActDeckId
+    "ActAbilities" -> pure $ SomeField ActAbilities
+    "ActCard" -> pure $ SomeField ActCard
+    "ActUsedWheelOfFortuneX" -> pure $ SomeField ActUsedWheelOfFortuneX
+    "ActKeys" -> pure $ SomeField ActKeys
+    _ -> fail "unknown field"
 
 data ActAttrs = ActAttrs
   { actId :: ActId

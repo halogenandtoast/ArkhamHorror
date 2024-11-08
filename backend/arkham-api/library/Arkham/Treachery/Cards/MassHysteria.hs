@@ -1,13 +1,9 @@
-module Arkham.Treachery.Cards.MassHysteria (
-  massHysteria,
-  MassHysteria (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.MassHysteria (massHysteria, MassHysteria (..)) where
 
 import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Treachery.Cards qualified as Cards
@@ -24,9 +20,7 @@ instance RunMessage MassHysteria where
   runMessage msg t@(MassHysteria attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       hasLocation <- isJust <$> field InvestigatorLocation iid
-      anyMaskedCarnevaleGoers <-
-        selectAny
-          (AssetWithTitle "Masked Carnevale-Goer")
+      anyMaskedCarnevaleGoers <- selectAny (AssetWithTitle "Masked Carnevale-Goer")
       player <- getPlayer iid
       let take2damage = InvestigatorAssignDamage iid source DamageAny 2 0
       if hasLocation && anyMaskedCarnevaleGoers
@@ -45,7 +39,7 @@ instance RunMessage MassHysteria where
       clockwiseLocations <- getClockwiseLocations locationId
       shuffled <- shuffleM maskedCarnevaleGoers
       pushAll
-        [ AttachAsset aid (LocationTarget lid)
+        [ PlaceAsset aid (AtLocation lid)
         | (aid, lid) <- zip shuffled clockwiseLocations
         ]
       pure t

@@ -257,6 +257,7 @@ data WindowType
   | CancelChaosToken InvestigatorId ChaosToken
   | RevealChaosTokenEffect InvestigatorId ChaosToken EffectId
   | RevealChaosTokenEventEffect InvestigatorId [ChaosToken] EventId
+  | RevealChaosTokenTreacheryEffect InvestigatorId [ChaosToken] TreacheryId
   | RevealChaosTokenAssetAbilityEffect InvestigatorId [ChaosToken] AssetId
   | RevealChaosTokenWithNegativeModifier InvestigatorId ChaosToken
   | WouldPerformRevelationSkillTest InvestigatorId SkillTestId

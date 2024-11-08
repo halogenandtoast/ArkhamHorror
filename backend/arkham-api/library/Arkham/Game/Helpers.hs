@@ -83,7 +83,7 @@ import Arkham.Source
 import Arkham.Story.Types (Field (..))
 import Arkham.Target
 import Arkham.Timing qualified as Timing
-import Arkham.Trait (Trait (Spell), toTraits)
+import Arkham.Trait (toTraits)
 import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
@@ -271,7 +271,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     AbilityEffect {} -> pure True
     ServitorAbility _ -> pure True
 
-canDoAction :: HasGame m => InvestigatorId -> Ability -> Action -> m Bool
+canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Fight -> case abilitySource of
     EnemySource eid -> do
@@ -281,9 +281,8 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         then pure False
         else do
           mods <- getModifiers eid
-          mCardCode <- toCardCode <$$> sourceToMaybeCard (abilityRequestor ab)
           let restrictions = concat [rs | CanOnlyBeAttackedByAbilityOn rs <- mods]
-          pure $ null restrictions || maybe False (`elem` restrictions) mCardCode
+          pure $ null restrictions || ab.cardCode `elem` restrictions
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab)
       let
@@ -1182,24 +1181,24 @@ passesCriteria iid mcard source' requestor windows' = \case
     case source' of
       AssetSource trueMagick -> do
         attrs <- getAttrs @Asset trueMagick
-        hand <-
-          fieldMap
-            InvestigatorHand
-            (filter (`cardMatch` (Matcher.CardWithType AssetType <> Matcher.CardWithTrait Spell)))
-            iid
+        hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
         let
           replaceAssetId = const attrs.id
           replaceAssetIds = over biplate replaceAssetId
         let handEntities =
               map
-                (overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'}) . (`createAsset` attrs.id))
+                ( \c ->
+                    overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                      $ createAsset c
+                      $ unsafeFromCardId c.id
+                )
                 hand
         let handAbilities =
               map
                 ( \ab -> case ab.source of
                     AssetSource aid ->
                       overCost replaceAssetIds
-                        $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeMakeCardId $ unAssetId aid)}
+                        $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeToCardId aid)}
                     _ -> error "wrong source"
                 )
                 (concatMap getAbilities handEntities)
@@ -1968,6 +1967,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM
             [ pure $ chaosTokenFace token `elem` tokens
             , pure $ lookupCard cardCode nullCardId `cardMatch` cardMatcher
+            , matchWho iid who whoMatcher
+            ]
+        Window.RevealChaosTokenTreacheryEffect who tokens' treacheryId -> do
+          card <- field TreacheryCard treacheryId
+          andM
+            [ pure $ any ((`elem` tokens) . chaosTokenFace) tokens'
+            , pure $ card `cardMatch` cardMatcher
             , matchWho iid who whoMatcher
             ]
         Window.RevealChaosTokenEventEffect who tokens' eventId -> do

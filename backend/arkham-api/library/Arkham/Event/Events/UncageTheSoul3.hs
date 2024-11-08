@@ -54,7 +54,7 @@ instance RunMessage UncageTheSoul3 where
             )
       chooseTargetM iid cards \c -> do
         addToHandQuiet iid (only c)
-        reduceCostOf attrs card 3
+        reduceCostOf attrs c 3
         playCardPayingCost iid c
       pure e
     _ -> UncageTheSoul3 <$> liftRunMessage msg attrs

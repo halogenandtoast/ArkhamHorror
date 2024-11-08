@@ -286,6 +286,7 @@ data CampaignLogKey
   | PossessesADivingSuit
   | TheInvestigatorsPossessAMapOfYhaNthlei
   | TheInvestigatorsPossessTheKeyToYhaNthlei
+  | DagonHasAwakened
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

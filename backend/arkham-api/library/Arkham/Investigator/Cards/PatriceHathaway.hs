@@ -35,7 +35,6 @@ instance RunMessage PatriceHathaway where
       discards <- filterCards DiscardableCard <$> attrs.hand
       chooseOneAtATimeM attrs.id $ targets discards $ discardCard attrs attrs
       doStep 1 msg
-      forTarget attrs $ doStep 2 AllDrawCardAndResource
       pure i
     DoStep 1 (SendMessage (isTarget attrs -> True) AllDrawCardAndResource) | attrs.inGame -> do
       drawCardsIfCan attrs ScenarioSource . (`subtract` 5) . length =<< attrs.hand

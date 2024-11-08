@@ -349,6 +349,10 @@ findAndDrawEncounterCard
   :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
 findAndDrawEncounterCard iid matcher = push $ Msg.findAndDrawEncounterCard iid matcher
 
+findAndDrawEncounterCardFromEncounterDeck
+  :: (ReverseQueue m, IsCardMatcher a) => InvestigatorId -> a -> m ()
+findAndDrawEncounterCardFromEncounterDeck iid matcher = push $ Msg.findAndDrawEncounterCardFromEncounterDeck iid matcher
+
 findEncounterCard
   :: forall cardMatcher target m
    . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)

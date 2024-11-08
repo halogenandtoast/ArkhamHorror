@@ -444,6 +444,9 @@ directHorror iid (toSource -> source) horror = InvestigatorDirectDamage iid sour
 findAndDrawEncounterCard :: IsCardMatcher a => InvestigatorId -> a -> Message
 findAndDrawEncounterCard investigator cardMatcher = FindAndDrawEncounterCard investigator (toCardMatcher cardMatcher) IncludeDiscard
 
+findAndDrawEncounterCardFromEncounterDeck :: IsCardMatcher a => InvestigatorId -> a -> Message
+findAndDrawEncounterCardFromEncounterDeck investigator cardMatcher = FindAndDrawEncounterCard investigator (toCardMatcher cardMatcher) ExcludeDiscard
+
 ready :: Targetable target => target -> Message
 ready = Ready . toTarget
 

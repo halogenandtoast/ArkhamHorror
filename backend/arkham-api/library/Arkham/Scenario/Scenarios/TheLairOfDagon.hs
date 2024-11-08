@@ -2,18 +2,25 @@ module Arkham.Scenario.Scenarios.TheLairOfDagon (TheLairOfDagon (..), theLairOfD
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Agenda.Sequence
+import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Log
+import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioKeys))
 import Arkham.Scenarios.TheLairOfDagon.Helpers
@@ -121,15 +128,22 @@ instance RunMessage TheLairOfDagon where
         _ -> replicateM_ 5 $ addChaosToken #curse
 
       whenRecoveredMemory AJailbreak do
-        mSuspect <- maybeResult <$$> getCircledRecord PossibleSuspects
-        for_ (join mSuspect) \case
+        mSuspect <- (maybeResult =<<) <$> getCircledRecord PossibleSuspects
+        for_ mSuspect \case
           BrianBurnham -> setAside [Enemies.brianBurnhamWantsOut]
           BarnabasMarsh -> setAside [Enemies.barnabasMarshTheChangeIsUponHim]
           OtheraGilman -> setAside [Enemies.otheraGilmanProprietessOfTheHotel]
           ZadokAllen -> setAside [Enemies.zadokAllenDrunkAndDisorderly]
           JoyceLittle -> setAside [Enemies.joyceLittleBookshopOwner]
           RobertFriendly -> setAside [Enemies.robertFriendlyDisgruntledDockworker]
-        pure ()
+
+      if aDecisionToStickTogether
+        then do
+          lead <- getLead
+          investigators <- getInvestigators
+          thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
+          chooseTargetM lead investigators (`takeControlOfAsset` thomasDawson)
+        else setAside [Assets.thomasDawsonSoldierInANewWar]
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       withSkillTest \sid -> onRevealChaosTokenEffect sid #curse Cultist sid failSkillTest
@@ -139,6 +153,12 @@ instance RunMessage TheLairOfDagon where
         withLocationOf iid \lid -> do
           ks <- iid.keys
           for_ ks $ placeKey lid
+          assignDamage iid Tablet 1
+      pure s
+    ResolveChaosToken _ ElderThing _iid -> do
+      when (isHardExpert attrs) do
+        n <- min 2 <$> getRemainingCurseTokens
+        replicateM_ n $ addChaosToken #curse
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
@@ -146,6 +166,16 @@ instance RunMessage TheLairOfDagon where
           withLocationOf iid \lid -> do
             ks <- iid.keys
             for_ ks $ placeKey lid
+        ElderThing | isEasyStandard attrs -> do
+          n <- getRemainingCurseTokens
+          when (n > 0) $ addChaosToken #curse
         _ -> pure ()
       pure s
+    HandleNoRemainingInvestigators (isTarget attrs -> True) -> do
+      selectOne AnyAgenda >>= \case
+        Nothing -> TheLairOfDagon <$> liftRunMessage msg attrs
+        Just aid ->
+          field AgendaSequence aid >>= \case
+            Sequence 3 B -> pure s
+            _ -> TheLairOfDagon <$> liftRunMessage msg attrs
     _ -> TheLairOfDagon <$> liftRunMessage msg attrs

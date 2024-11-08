@@ -22,7 +22,7 @@ newtype SecretsOfTheSeaV1 = SecretsOfTheSeaV1 AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secretsOfTheSeaV1 :: AgendaCard SecretsOfTheSeaV1
-secretsOfTheSeaV1 = agenda (1, A) SecretsOfTheSeaV1 Cards.secretsOfTheSeaV1 (Static 12)
+secretsOfTheSeaV1 = agenda (1, A) SecretsOfTheSeaV1 Cards.secretsOfTheSeaV1 (Static 9)
 
 instance HasAbilities SecretsOfTheSeaV1 where
   getAbilities (SecretsOfTheSeaV1 a) = [needsAir a 1]

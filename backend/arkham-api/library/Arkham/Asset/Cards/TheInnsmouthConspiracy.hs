@@ -621,6 +621,7 @@ yhanthleiStatusMysteriousRelic =
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "07300b"
+    , cdCardType = EncounterAssetType
     }
 
 yhanthleiStatusDynamicRelic :: CardDef
@@ -630,6 +631,7 @@ yhanthleiStatusDynamicRelic =
     , cdUnique = True
     , cdDoubleSided = True
     , cdOtherSide = Just "07300"
+    , cdCardType = EncounterAssetType
     }
 
 holySpear5 :: CardDef

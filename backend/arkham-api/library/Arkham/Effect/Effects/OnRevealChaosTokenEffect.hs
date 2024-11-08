@@ -60,8 +60,9 @@ instance RunMessage OnRevealChaosTokenEffect where
               EventSource eid -> push $ If (Window.RevealChaosTokenEventEffect iid [token] eid) msgs
               AbilitySource inner _n -> case inner of
                 AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
-                _ -> error "Unhandled source for token effect"
-              _ -> error "Unhandled source for token effect"
+                other -> error $ "Unhandled ability source for token effect: " <> show other
+              TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
+              other -> error $ "Unhandled source for token effect: " <> show other
           _ -> pure ()
       pure e
     SkillTestEnds _ _ _ -> do

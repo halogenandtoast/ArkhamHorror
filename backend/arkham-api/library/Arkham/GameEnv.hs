@@ -67,7 +67,7 @@ instance CardGen GameT where
 instance HasGameRef GameEnv where
   gameRefL = lens gameEnvGame $ \m x -> m {gameEnvGame = x}
 
-getCard :: HasGame m => CardId -> m Card
+getCard :: (HasCallStack, HasGame m) => CardId -> m Card
 getCard cardId = do
   g <- getGame
   case lookup cardId (gameCards g) of

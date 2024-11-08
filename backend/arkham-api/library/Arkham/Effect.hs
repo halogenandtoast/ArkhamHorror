@@ -142,7 +142,6 @@ import Arkham.Event.Events (
   thirdTimesACharm2Effect,
   tidesOfFateEffect,
   toeToToeEffect,
-  uncageTheSoulEffect,
   vantagePointEffect,
   willToSurviveEffect,
   writtenInTheStarsEffect,
@@ -367,7 +366,7 @@ allEffects =
     , ("03029", SomeEffect sleightOfHandEffect)
     , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect $ noop "03032")
-    , ("03033", SomeEffect uncageTheSoulEffect)
+    , ("03033", SomeEffect $ noop "03033")
     , ("03047a", SomeEffect theStrangerACityAflameEffect)
     , ("03047b", SomeEffect theStrangerThePathIsMineEffect)
     , ("03047c", SomeEffect theStrangerTheShoresOfHaliEffect)

@@ -1,14 +1,10 @@
 module Arkham.Enemy.Cards.LodgeNeophyte (lodgeNeophyte, LodgeNeophyte (..)) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype LodgeNeophyte = LodgeNeophyte EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -16,38 +12,28 @@ newtype LodgeNeophyte = LodgeNeophyte EnemyAttrs
 
 lodgeNeophyte :: EnemyCard LodgeNeophyte
 lodgeNeophyte =
-  enemyWith
-    LodgeNeophyte
-    Cards.lodgeNeophyte
-    (3, Static 1, 2)
-    (0, 1)
-    (spawnAtL ?~ SpawnAt EmptyLocation)
+  enemyWith LodgeNeophyte Cards.lodgeNeophyte (3, Static 1, 2) (0, 1)
+    $ spawnAtL
+    ?~ SpawnAt EmptyLocation
 
 instance HasAbilities LodgeNeophyte where
   getAbilities (LodgeNeophyte a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 CanPlaceDoomOnThis
-          $ ForcedAbility
-          $ EnemySpawns Timing.After Anywhere
-          $ EnemyWithId
-          $ toId a
-      , skillTestAbility
-          $ restrictedAbility a 2 OnSameLocation
-          $ ActionAbility [Action.Parley]
-          $ ActionCost 1
+      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
+      , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
       ]
 
 instance RunMessage LodgeNeophyte where
-  runMessage msg e@(LodgeNeophyte attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      e <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1)
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      sid <- getRandom
-      push $ parley sid iid attrs attrs SkillWillpower (Fixed 2)
+  runMessage msg e@(LodgeNeophyte attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeDoom (attrs.ability 1) attrs 1
       pure e
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ RemoveAllDoom (toAbilitySource attrs 2) (toTarget attrs)
-        pure e
-    _ -> LodgeNeophyte <$> runMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      sid <- getRandom
+      parley sid iid attrs attrs #willpower (Fixed 2)
+      pure e
+    PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
+      push $ RemoveAllDoom (attrs.ability 2) (toTarget attrs)
+      pure e
+    _ -> LodgeNeophyte <$> liftRunMessage msg attrs

@@ -6,7 +6,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getIsPlayableWithResources)
 import Arkham.Helpers.Cost (getSpendableResources)
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher hiding (AssetCard, PlayCard)
 import Arkham.Modifier
 import Arkham.Projection
@@ -34,14 +33,12 @@ instance RunMessage UncageTheSoul3 where
             , inDiscardOf iid <> basic (oneOf [#spell, #ritual])
             ]
       if null results
-        then chooseOrRunOneToHandle iid attrs assets'
+        then chooseTargetM iid assets' $ toDiscardBy iid attrs
         else unless (null assets) do
-          chooseOne iid $ Label "Do not discard asset" []
-            : targetLabels assets (only . handleTargetChoice iid attrs)
+          chooseOneM iid do
+            labeled "Do not discard asset" nothing
+            targets assets $ toDiscardBy iid attrs
       doStep 1 msg
-      pure e
-    HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      toDiscardBy iid attrs aid
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       let ws = defaultWindows iid
@@ -56,8 +53,8 @@ instance RunMessage UncageTheSoul3 where
                 ]
             )
       chooseTargetM iid cards \c -> do
-        push $ AddToHandQuiet iid [c]
-        costModifier attrs c (ReduceCostOf (CardWithId c.id) 3)
-        push $ PayCardCost iid c ws
+        addToHandQuiet iid (only c)
+        reduceCostOf attrs card 3
+        playCardPayingCost iid c
       pure e
     _ -> UncageTheSoul3 <$> liftRunMessage msg attrs

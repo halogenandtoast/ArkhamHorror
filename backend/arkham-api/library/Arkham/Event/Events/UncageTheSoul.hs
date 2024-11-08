@@ -1,17 +1,12 @@
-module Arkham.Event.Events.UncageTheSoul (uncageTheSoul, uncageTheSoulEffect, UncageTheSoul (..)) where
+module Arkham.Event.Events.UncageTheSoul (uncageTheSoul, UncageTheSoul (..)) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Event.Import.Lifted
+import Arkham.Game.Helpers (getIsPlayableWithResources, getSpendableResources)
 import Arkham.Matcher hiding (PlayCard)
-import Arkham.Prelude
-import Arkham.Trait
-import Arkham.Window (mkWhen)
-import Arkham.Window qualified as Window
+import Arkham.Window (defaultWindows)
 
 newtype UncageTheSoul = UncageTheSoul EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -21,39 +16,20 @@ uncageTheSoul :: EventCard UncageTheSoul
 uncageTheSoul = event UncageTheSoul Cards.uncageTheSoul
 
 instance RunMessage UncageTheSoul where
-  runMessage msg e@(UncageTheSoul attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      let windows'' = nub $ windows' <> map mkWhen [Window.DuringTurn iid, Window.NonFast, Window.FastPlayerWindow]
+  runMessage msg e@(UncageTheSoul attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      let windows'' = nub $ attrs.windows <> defaultWindows iid
       availableResources <- getSpendableResources iid
-      results <- select $ inHandOf iid <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
       cards <-
         filterM
           (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
-          results
-      player <- getPlayer iid
-      choices <- for cards \c -> do
-        enabled <- createCardEffect Cards.uncageTheSoul Nothing attrs (toCardId c)
-        pure $ targetLabel (toCardId c) [enabled, PayCardCost iid c windows'']
+          =<< select (inHandOf iid <> basic (oneOf [#spell, #ritual]))
 
-      push $ chooseOne player choices
+      focusCards cards \unfocus -> do
+        chooseTargetM iid cards \card -> do
+          push unfocus
+          reduceCostOf attrs card 3
+          playCardPayingCost iid card
+
       pure e
-    _ -> UncageTheSoul <$> runMessage msg attrs
-
-newtype UncageTheSoulEffect = UncageTheSoulEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-uncageTheSoulEffect :: EffectArgs -> UncageTheSoulEffect
-uncageTheSoulEffect = cardEffect UncageTheSoulEffect Cards.uncageTheSoul
-
-instance HasModifiersFor UncageTheSoulEffect where
-  getModifiersFor target@(CardIdTarget cid) (UncageTheSoulEffect attrs) | effectTarget attrs == target = do
-    toModifiers attrs [ReduceCostOf (CardWithId cid) 3]
-  getModifiersFor _ _ = pure []
-
-instance RunMessage UncageTheSoulEffect where
-  runMessage msg e@(UncageTheSoulEffect attrs) = case msg of
-    ResolvedCard _ card | CardIdTarget (toCardId card) == effectTarget attrs -> do
-      push $ disable attrs
-      pure e
-    _ -> UncageTheSoulEffect <$> runMessage msg attrs
+    _ -> UncageTheSoul <$> liftRunMessage msg attrs

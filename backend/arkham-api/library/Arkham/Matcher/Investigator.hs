@@ -33,6 +33,12 @@ import Arkham.Trait (Trait)
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 
+class IsInvestigatorMatcher a where
+  toInvestigatorMatcher :: a -> InvestigatorMatcher
+
+instance IsInvestigatorMatcher InvestigatorId where
+  toInvestigatorMatcher = InvestigatorWithId
+
 type Who = InvestigatorMatcher
 instance IsMatcher InvestigatorMatcher
 instance Be InvestigatorMatcher InvestigatorMatcher where

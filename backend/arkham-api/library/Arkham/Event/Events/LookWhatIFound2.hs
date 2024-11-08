@@ -1,12 +1,9 @@
 module Arkham.Event.Events.LookWhatIFound2 where
 
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 
 newtype LookWhatIFound2 = LookWhatIFound2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -16,21 +13,12 @@ lookWhatIFound2 :: EventCard LookWhatIFound2
 lookWhatIFound2 = event LookWhatIFound2 Cards.lookWhatIFound2
 
 instance RunMessage LookWhatIFound2 where
-  runMessage msg e@(LookWhatIFound2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      pushAll
-        [ ResolveEvent iid eid Nothing windows'
-        , ResolveEvent iid eid Nothing windows'
-        ]
+  runMessage msg e@(LookWhatIFound2 attrs) = runQueueT $ case msg of
+    PlayThisEvent _iid (is attrs -> True) -> do
+      twice $ do_ msg
       pure e
-    ResolveEvent iid eid _ _ | eid == toId attrs -> do
-      locations <- select $ oneOf [YourLocation, ConnectedLocation] <> LocationWithAnyClues
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel lid [Msg.DiscoverClues iid $ discover lid (toSource attrs) 1]
-          | lid <- locations
-          ]
+    Do (PlayThisEvent iid (is attrs -> True)) -> do
+      locations <- select $ orConnected iid <> LocationWithAnyClues
+      chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid attrs lid 1
       pure e
-    _ -> LookWhatIFound2 <$> runMessage msg attrs
+    _ -> LookWhatIFound2 <$> liftRunMessage msg attrs

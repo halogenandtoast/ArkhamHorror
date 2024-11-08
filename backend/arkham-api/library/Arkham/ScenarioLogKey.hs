@@ -73,6 +73,9 @@ data ScenarioLogKey
   | -- | Where the Gods Dwell
     ManeuveredThePriestCloser
   | StunnedThePriest
+  | -- | The Lair of Dagon
+    UnlockedTheEntranceToTheCaves
+  | UnlockedTheFinalDepths
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

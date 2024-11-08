@@ -66,6 +66,7 @@ getCanAffordCost_
   -> Cost
   -> m Bool
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
+  SpendKeyCost k -> fieldMap InvestigatorKeys (elem k) iid
   CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c
   UnpayableCost -> pure False
   ChooseEnemyCost mtcr -> selectAny mtcr

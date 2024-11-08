@@ -359,6 +359,7 @@ withLocationConnectionData inner@(With target _) = do
   lmInvestigators <- select $ investigatorAt $ toId target
   lmEnemies <-
     select
+      $ IncludeOmnipotent
       $ oneOf
         [ EnemyAt $ IncludeEmptySpace $ LocationWithId $ toId target
         , EnemyWithPlacement $ AttachedToLocation $ toId target

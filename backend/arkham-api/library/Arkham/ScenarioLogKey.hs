@@ -75,6 +75,7 @@ data ScenarioLogKey
   | StunnedThePriest
   | -- | The Lair of Dagon
     UnlockedTheEntranceToTheCaves
+  | UnlockedTheThirdFloor
   | UnlockedTheFinalDepths
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood

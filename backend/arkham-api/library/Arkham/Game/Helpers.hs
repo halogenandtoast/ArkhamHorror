@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -899,11 +901,18 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
         (foldl' handleCriteriaReplacement (replaceThisCardSource $ cdCriteria pcDef) cardModifiers)
 
+    let
+      debug :: Show a => String -> a -> a
+      debug s t = trace (s <> ": " <> show t) t
+
     inFastWindow <-
-      maybe
-        (pure False)
-        (cardInFastWindows iid source c windows')
-        (cdFastWindow pcDef <|> canBecomeFastWindow)
+      debug "total"
+        <$> maybe
+          (pure False)
+          (fmap (debug "inFast") <$> cardInFastWindows iid source c windows')
+          (debug "full" $ cdFastWindow pcDef <|> canBecomeFastWindow)
+
+    inFastWindow `seq` pure ()
 
     ac <- getActionCost attrs (cdActions pcDef)
 
@@ -1021,7 +1030,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NoAction -> True
         AuxiliaryCost _ inner -> goNoAction inner
         _ -> False
-      noAction = goNoAction costStatus
+      noAction = if isNothing (cdFastWindow pcDef) then goNoAction costStatus else False
 
     pure
       $ (cdCardType pcDef /= SkillType)

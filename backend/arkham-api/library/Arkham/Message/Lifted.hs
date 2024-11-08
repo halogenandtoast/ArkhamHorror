@@ -868,6 +868,15 @@ addToHand iid (toList -> cards) = do
   for_ cards obtainCard
   push $ AddToHand iid (map toCard cards)
 
+addToHandQuiet
+  :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => InvestigatorId
+  -> cards
+  -> m ()
+addToHandQuiet iid (toList -> cards) = do
+  for_ cards obtainCard
+  push $ AddToHandQuiet iid (map toCard cards)
+
 returnToHand :: (Targetable a, ReverseQueue m) => InvestigatorId -> a -> m ()
 returnToHand iid = push . ReturnToHand iid . toTarget
 
@@ -1591,6 +1600,9 @@ discoverAt isInvestigate iid s lid n = do
 
 doStep :: ReverseQueue m => Int -> Message -> m ()
 doStep n msg = push $ Msg.DoStep n msg
+
+do_ :: ReverseQueue m => Message -> m ()
+do_ msg = push $ Msg.Do msg
 
 twice :: ReverseQueue m => m () -> m ()
 twice = repeated 2

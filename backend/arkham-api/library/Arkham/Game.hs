@@ -3902,7 +3902,10 @@ instance Query ExtendedCardMatcher where
       BasicCardMatch cm -> pure $ filter (`cardMatch` cm) cs
       InHandOf who -> do
         iids <- select who
-        cards <- concatMapM (field InvestigatorHand) iids
+        cards <-
+          (<>)
+            <$> concatMapM (field InvestigatorHand) iids
+            <*> concatMapM getAsIfInHandCards iids
         pure $ filter (`elem` cards) cs
       InDeckOf who -> do
         iids <- select who

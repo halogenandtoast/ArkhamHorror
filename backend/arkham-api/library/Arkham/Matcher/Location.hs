@@ -174,6 +174,9 @@ class IsLocationMatcher a where
 instance IsLocationMatcher LocationMatcher where
   toLocationMatcher = id
 
+instance IsLocationMatcher InvestigatorId where
+  toLocationMatcher = LocationWithInvestigator . toInvestigatorMatcher
+
 instance IsLocationMatcher LocationId where
   toLocationMatcher = LocationWithId
 

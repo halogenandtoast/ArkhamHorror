@@ -208,7 +208,9 @@ instance RunMessage TheCityOfArchives where
           story resolution1
           record logEntry
           allGainXpWithBonus attrs bonusXp
-          endOfScenarioThen $ InterludeStep 4 (guard resignedWithTheCustodian $> TheCustodianWasUnderControl)
+          endOfScenarioThen
+            $ UpgradeDeckStep
+            $ InterludeStep 4 (guard resignedWithTheCustodian $> TheCustodianWasUnderControl)
         _ -> error "Invalid resolution"
       pure s
     _ -> TheCityOfArchives <$> liftRunMessage msg attrs

@@ -1,6 +1,12 @@
 module Arkham.Matcher.Investigator where
 
+import Arkham.Id
 import Arkham.Prelude
+
+class IsInvestigatorMatcher a where
+  toInvestigatorMatcher :: a -> InvestigatorMatcher
+
+instance IsInvestigatorMatcher InvestigatorId
 
 type Who = InvestigatorMatcher
 data InvestigatorMatcher

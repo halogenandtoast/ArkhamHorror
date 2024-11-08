@@ -899,18 +899,11 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         (passesCriteria iid (Just (c, costStatus)) source' (CardIdSource c.id) windows')
         (foldl' handleCriteriaReplacement (replaceThisCardSource $ cdCriteria pcDef) cardModifiers)
 
-    let
-      debug :: Show a => String -> a -> a
-      debug s t = trace (s <> ": " <> show t) t
-
     inFastWindow <-
-      debug "total"
-        <$> maybe
-          (pure False)
-          (fmap (debug "inFast") <$> cardInFastWindows iid source c windows')
-          (debug "full" $ cdFastWindow pcDef <|> canBecomeFastWindow)
-
-    inFastWindow `seq` pure ()
+      maybe
+        (pure False)
+        (cardInFastWindows iid source c windows')
+        (cdFastWindow pcDef <|> canBecomeFastWindow)
 
     ac <- getActionCost attrs (cdActions pcDef)
 

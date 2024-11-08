@@ -925,7 +925,12 @@ payCost msg c iid skipAdditionalCosts cost = do
           ForCost card' -> (/= card')
       cards <-
         filterM
-          (andM . sequence [pure . notCostCard . PlayerCard, (`extendedCardMatch` extendedCardMatcher)])
+          ( andM
+              . sequence
+                [ pure . notCostCard . PlayerCard
+                , (`extendedCardMatch` (basic DiscardableCard <> extendedCardMatcher))
+                ]
+          )
           handCards
       push
         $ chooseN

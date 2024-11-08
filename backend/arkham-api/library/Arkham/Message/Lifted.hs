@@ -1508,7 +1508,7 @@ gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
-  push $ PlayerWindow iid [] True
+  push $ PlayerWindow iid [] False
 
 nonAttackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 nonAttackEnemyDamage source damage enemy = do

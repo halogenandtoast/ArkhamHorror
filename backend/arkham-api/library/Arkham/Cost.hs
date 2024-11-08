@@ -232,6 +232,7 @@ data Cost
   | Costs [Cost]
   | OrCost [Cost]
   | SpendKeyCost ArkhamKey
+  | GroupSpendKeyCost ArkhamKey LocationMatcher
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
@@ -331,6 +332,7 @@ data DynamicUseCostValue = DrawnCardsValue
 displayCostType :: Cost -> Text
 displayCostType = \case
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"
+  GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
   GroupClueCostX -> "X {perPlayer} clues as a group"
   ChooseEnemyCost _ -> "Choose an enemy"

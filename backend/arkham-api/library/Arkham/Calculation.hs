@@ -2,6 +2,7 @@
 
 module Arkham.Calculation where
 
+import {-# SOURCE #-} Arkham.Act.Types (Act)
 import {-# SOURCE #-} Arkham.Asset.Types (Asset)
 import Arkham.CampaignLogKey
 import Arkham.Card.Id
@@ -39,6 +40,7 @@ data GameCalculation
   | CountTreacheries TreacheryMatcher
   | CurrentAgendaStepCalculation GameCalculation
   | AssetFieldCalculation AssetId (Field Asset Int)
+  | ActFieldCalculation ActId (Field Act Int)
   | InvestigatorFieldCalculation InvestigatorId (Field Investigator Int)
   | InvestigatorsFieldCalculation InvestigatorMatcher (Field Investigator Int)
   | InvestigatorKeyCountCalculation InvestigatorMatcher

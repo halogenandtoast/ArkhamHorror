@@ -187,6 +187,9 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    GroupSpendKeyCost key _ -> do
+      push $ PlaceKey ScenarioTarget key
+      pure c
     SpendKeyCost key -> do
       push $ PlaceKey ScenarioTarget key
       pure c

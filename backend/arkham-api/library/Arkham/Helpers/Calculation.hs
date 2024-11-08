@@ -56,6 +56,7 @@ calculate = go
       mAgenda <- selectOne AnyAgenda
       maybe (go fallback) getAgendaStep mAgenda
     AssetFieldCalculation aid fld -> field fld aid
+    ActFieldCalculation aid fld -> field fld aid
     InvestigatorFieldCalculation iid fld -> field fld iid
     InvestigatorsFieldCalculation matcher fld -> getSum <$> selectAgg Sum fld matcher
     InvestigatorHandLengthCalculation iid -> fieldMap InvestigatorHand length iid

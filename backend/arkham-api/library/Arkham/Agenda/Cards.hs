@@ -37,6 +37,7 @@ allAgendaCards =
       , bidingItsTime
       , breakingThrough
       , callingForthTheOldOnes
+      , celestialAlignment
       , chaosAtTheCarnevale
       , chaosInTheCloverClub
       , chaosIncarnate
@@ -136,6 +137,7 @@ allAgendaCards =
       , theFestivitiesBegin
       , theFinalCountdown
       , theFirstNight
+      , theFlood
       , theHangedManXII
       , theHermitIX
       , theHierophantV
@@ -186,6 +188,7 @@ allAgendaCards =
       , timeIsRunningShort
       , torturousDescent
       , unchangingAsTheSea
+      , underTheSurface
       , undergroundMuscle
       , vengeance
       , vengeanceAwaits
@@ -654,6 +657,15 @@ whatLurksBelowV2 = agenda "07278" "What Lurks Below (v. II)" 2 TheLairOfDagon
 
 theRitualAdvances :: CardDef
 theRitualAdvances = agenda "07279" "The Ritual Advances" 3 TheLairOfDagon
+
+underTheSurface :: CardDef
+underTheSurface = agenda "07312" "Under the Surface" 1 IntoTheMaelstrom
+
+celestialAlignment :: CardDef
+celestialAlignment = agenda "07313" "Celestial Alignment" 2 IntoTheMaelstrom
+
+theFlood :: CardDef
+theFlood = agenda "07314" "The Flood" 3 IntoTheMaelstrom
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

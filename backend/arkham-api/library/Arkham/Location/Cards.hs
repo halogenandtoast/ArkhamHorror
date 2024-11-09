@@ -207,9 +207,10 @@ allLocationCards =
       , cyclopeanRuins_176a
       , cyclopeanRuins_176b
       , dancersMist
+      , darkAbyss
       , darkHollow
-      , darkenedHall
       , darkSpires
+      , darkenedHall
       , deconstructionRoom
       , deepBelowYourHouse
       , deepOneGrotto_175a
@@ -316,6 +317,7 @@ allLocationCards =
       , gardenDistrict
       , gardensOfLuxembourg
       , gareDOrsay
+      , gatewayToYhanthlei
       , gilmanHouse
       , gilmanHouseInTooDeep
       , gondola
@@ -392,6 +394,8 @@ allLocationCards =
       , laboratoryOfTheGreatRace
       , labyrinthOfBones
       , lairOfDagon
+      , lairOfDagonIntoTheMaelstrom
+      , lairOfHydra
       , lakeXochimilco_182
       , lakeXochimilco_183
       , landlordsQuarters
@@ -464,6 +468,7 @@ allLocationCards =
       , officeMurderAtTheExcelsiorHotel
       , officeSpectral
       , onyxGates
+      , onyxGuardians
       , operaGarnier212
       , operaGarnier213
       , operatingRoom
@@ -574,6 +579,7 @@ allLocationCards =
       , southside_295
       , stMarysHospital
       , stairwell
+      , statuesInTheDeep
       , stepsOfYhagharl
       , stepsOfYoth
       , stoneAltar
@@ -583,11 +589,14 @@ allLocationCards =
       , studentUnion
       , study
       , studyAberrantGateway
+      , submergedTemple
       , suiteBalcony
       , sunkenArchives
       , sunkenGrottoFinalDepths
       , sunkenGrottoLowerDepths
       , sunkenGrottoUpperDepths
+      , sunkenHalls
+      , syzygyChamber
       , tearThroughSpace
       , tearThroughTime
       , templeOfTheFang
@@ -649,6 +658,7 @@ allLocationCards =
       , ulthar
       , undergroundRiver
       , undergroundRuins
+      , underseaCorridors
       , underwaterCavern
       , unfamiliarChamber
       , unmarkedTomb
@@ -668,6 +678,7 @@ allLocationCards =
       , valusia
       , vastPassages
       , vault
+      , vaultOfRiches
       , vaultsOfZin
       , velmasDiner
       , venetianGarden
@@ -7060,6 +7071,149 @@ lairOfDagon =
       Diamond
       [Circle]
       TheLairOfDagon
+
+darkAbyss :: CardDef
+darkAbyss =
+  quantity 2
+    $ locationWithUnrevealed
+      "07319"
+      "Tidal Tunnel"
+      [Cave]
+      NoSymbol
+      []
+      "Dark Abyss"
+      [Cave]
+      NoSymbol
+      []
+      IntoTheMaelstrom
+
+gatewayToYhanthlei :: CardDef
+gatewayToYhanthlei =
+  location
+    "07320"
+    "Gateway to Y'ha-nthlei"
+    [Yhanthlei, Otherworld]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+sunkenHalls :: CardDef
+sunkenHalls =
+  locationWithUnrevealed
+    "07321"
+    "Y'ha-nthlei"
+    [Yhanthlei]
+    NoSymbol
+    []
+    "Sunken Halls"
+    [Yhanthlei]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+vaultOfRiches :: CardDef
+vaultOfRiches =
+  locationWithUnrevealed
+    "07322"
+    "Y'ha-nthlei"
+    [Yhanthlei]
+    NoSymbol
+    []
+    "Vault of Riches"
+    [Yhanthlei]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+underseaCorridors :: CardDef
+underseaCorridors =
+  locationWithUnrevealed
+    "07323"
+    "Y'ha-nthlei"
+    [Yhanthlei]
+    NoSymbol
+    []
+    "Undersea Corridors"
+    [Yhanthlei]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+statuesInTheDeep :: CardDef
+statuesInTheDeep =
+  locationWithUnrevealed
+    "07324"
+    "Y'ha-nthlei Sanctum"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    "Statues in the Deep"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+submergedTemple :: CardDef
+submergedTemple =
+  locationWithUnrevealed
+    "07325"
+    "Y'ha-nthlei Sanctum"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    "Submerged Temple"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+syzygyChamber :: CardDef
+syzygyChamber =
+  locationWithUnrevealed
+    "07326"
+    "Y'ha-nthlei Sanctum"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    "Syzygy Chamber"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+onyxGuardians :: CardDef
+onyxGuardians =
+  locationWithUnrevealed
+    "07327"
+    "Y'ha-nthlei Sanctum"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    "Onyx Guardians"
+    [Yhanthlei, Sanctum]
+    NoSymbol
+    []
+    IntoTheMaelstrom
+
+lairOfDagonIntoTheMaelstrom :: CardDef
+lairOfDagonIntoTheMaelstrom =
+  location
+    "07328"
+    ("Lair of Dagon" <:> "Sanctuary of Father Dagon")
+    [Yhanthlei, Lair]
+    NoSymbol
+    []
+    TheLairOfDagon
+
+lairOfHydra :: CardDef
+lairOfHydra =
+  location
+    "07329"
+    ("Lair of Hydra" <:> "High Temple of Mother Hydra")
+    [Yhanthlei, Lair]
+    NoSymbol
+    []
+    TheLairOfDagon
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -316,5 +316,10 @@
       "id": "07274",
       "name": "A Lair of Dagon",
       "campaign": "07"
+  },
+  {
+      "id": "07311",
+      "name": "Into the Maelstrom",
+      "campaign": "07"
   }
 ]

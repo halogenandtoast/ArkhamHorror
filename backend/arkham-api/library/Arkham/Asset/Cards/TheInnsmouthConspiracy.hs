@@ -692,3 +692,10 @@ jacobMorrisonCostGuardCaptain3 =
     , cdLevel = Just 3
     , cdUnique = True
     }
+
+divingSuit :: CardDef
+divingSuit =
+  (storyAsset "07338" "Diving Suit" 4 IntoTheMaelstrom)
+    { cdCardTraits = setFromList [Item, Armor]
+    , cdCardType = EncounterAssetType
+    }

@@ -59,6 +59,7 @@ library
       Arkham.Act.Cards.AtTheStationInShadowedTalons
       Arkham.Act.Cards.AtTheStationTrainTracks
       Arkham.Act.Cards.Awakening
+      Arkham.Act.Cards.BackIntoTheDepths
       Arkham.Act.Cards.BeginnersLuck
       Arkham.Act.Cards.BeyondDreams
       Arkham.Act.Cards.BeyondTheGrave
@@ -70,6 +71,9 @@ library
       Arkham.Act.Cards.BreakingAndEntering
       Arkham.Act.Cards.CampusSafety
       Arkham.Act.Cards.CavernOfTheForgottenAge
+      Arkham.Act.Cards.CityOfTheDeepV1
+      Arkham.Act.Cards.CityOfTheDeepV2
+      Arkham.Act.Cards.CityOfTheDeepV3
       Arkham.Act.Cards.CloseTheRift
       Arkham.Act.Cards.ContainingTheOutbreak
       Arkham.Act.Cards.CrossingTheThreshold
@@ -268,6 +272,7 @@ library
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
       Arkham.Agenda.Cards.CallingForthTheOldOnes
+      Arkham.Agenda.Cards.CelestialAlignment
       Arkham.Agenda.Cards.ChaosAtTheCarnevale
       Arkham.Agenda.Cards.ChaosIncarnate
       Arkham.Agenda.Cards.ChaosInTheCloverClub
@@ -367,6 +372,7 @@ library
       Arkham.Agenda.Cards.TheFestivitiesBegin
       Arkham.Agenda.Cards.TheFinalCountdown
       Arkham.Agenda.Cards.TheFirstNight
+      Arkham.Agenda.Cards.TheFlood
       Arkham.Agenda.Cards.TheHangedManXII
       Arkham.Agenda.Cards.TheHermitIX
       Arkham.Agenda.Cards.TheHierophantV
@@ -418,6 +424,7 @@ library
       Arkham.Agenda.Cards.TorturousDescent
       Arkham.Agenda.Cards.UnchangingAsTheSea
       Arkham.Agenda.Cards.UndergroundMuscle
+      Arkham.Agenda.Cards.UnderTheSurface
       Arkham.Agenda.Cards.Vengeance
       Arkham.Agenda.Cards.VengeanceAwaits
       Arkham.Agenda.Cards.WhatLurksBelowV1
@@ -633,6 +640,7 @@ library
       Arkham.Asset.Assets.DissectionTools
       Arkham.Asset.Assets.Divination1
       Arkham.Asset.Assets.Divination4
+      Arkham.Asset.Assets.DivingSuit
       Arkham.Asset.Assets.DoubleDouble4
       Arkham.Asset.Assets.DownTheRabbitHole
       Arkham.Asset.Assets.DowsingRod
@@ -1406,6 +1414,7 @@ library
       Arkham.Enemy.Cards.AngryMob
       Arkham.Enemy.Cards.ApexStrangleweed
       Arkham.Enemy.Cards.ApostleOfDagon
+      Arkham.Enemy.Cards.AquaticAbomination
       Arkham.Enemy.Cards.ArkhamOfficer
       Arkham.Enemy.Cards.AshleighClarke
       Arkham.Enemy.Cards.AsylumGorger
@@ -1448,7 +1457,10 @@ library
       Arkham.Enemy.Cards.CreatureOutOfDemhe
       Arkham.Enemy.Cards.CultistOfTheEnclave
       Arkham.Enemy.Cards.DagonAwakenedAndEnraged
+      Arkham.Enemy.Cards.DagonAwakenedAndEnragedIntoTheMaelstrom
       Arkham.Enemy.Cards.DagonDeepInSlumber
+      Arkham.Enemy.Cards.DagonDeepInSlumberIntoTheMaelstrom
+      Arkham.Enemy.Cards.DagonsBrood
       Arkham.Enemy.Cards.DanielChesterfield
       Arkham.Enemy.Cards.DarkYoungHost
       Arkham.Enemy.Cards.DeepOneBull
@@ -1510,6 +1522,9 @@ library
       Arkham.Enemy.Cards.HuntingHorror
       Arkham.Enemy.Cards.HuntingNightgaunt
       Arkham.Enemy.Cards.HybridAssassin
+      Arkham.Enemy.Cards.HydraAwakenedAndEnraged
+      Arkham.Enemy.Cards.HydraDeepInSlumber
+      Arkham.Enemy.Cards.HydrasBrood
       Arkham.Enemy.Cards.Ichtaca
       Arkham.Enemy.Cards.IchtacaScionOfYig
       Arkham.Enemy.Cards.IcyGhoul
@@ -2442,6 +2457,7 @@ library
       Arkham.Location.Cards.CyclopeanRuins_176a
       Arkham.Location.Cards.CyclopeanRuins_176b
       Arkham.Location.Cards.DancersMist
+      Arkham.Location.Cards.DarkAbyss
       Arkham.Location.Cards.DarkenedHall
       Arkham.Location.Cards.DarkHollow
       Arkham.Location.Cards.DarkSpires
@@ -2552,6 +2568,7 @@ library
       Arkham.Location.Cards.GardenDistrict
       Arkham.Location.Cards.GardensOfLuxembourg
       Arkham.Location.Cards.GareDOrsay
+      Arkham.Location.Cards.GatewayToYhanthlei
       Arkham.Location.Cards.GilmanHouse
       Arkham.Location.Cards.GilmanHouseInTooDeep
       Arkham.Location.Cards.Gondola
@@ -2628,6 +2645,8 @@ library
       Arkham.Location.Cards.LaboratoryOfTheGreatRace
       Arkham.Location.Cards.LabyrinthOfBones
       Arkham.Location.Cards.LairOfDagon
+      Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom
+      Arkham.Location.Cards.LairOfHydra
       Arkham.Location.Cards.LakeXochimilco_182
       Arkham.Location.Cards.LakeXochimilco_183
       Arkham.Location.Cards.LandlordsQuarters
@@ -2700,6 +2719,7 @@ library
       Arkham.Location.Cards.OfficeMurderAtTheExcelsiorHotel
       Arkham.Location.Cards.OfficeSpectral
       Arkham.Location.Cards.OnyxGates
+      Arkham.Location.Cards.OnyxGuardians
       Arkham.Location.Cards.OperaGarnier212
       Arkham.Location.Cards.OperaGarnier213
       Arkham.Location.Cards.OperatingRoom
@@ -2809,6 +2829,7 @@ library
       Arkham.Location.Cards.SouthsideHistoricalSociety
       Arkham.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Location.Cards.Stairwell
+      Arkham.Location.Cards.StatuesInTheDeep
       Arkham.Location.Cards.StepsOfYhagharl
       Arkham.Location.Cards.StepsOfYoth
       Arkham.Location.Cards.StMarysHospital
@@ -2819,11 +2840,14 @@ library
       Arkham.Location.Cards.StudentUnion
       Arkham.Location.Cards.Study
       Arkham.Location.Cards.StudyAberrantGateway
+      Arkham.Location.Cards.SubmergedTemple
       Arkham.Location.Cards.SuiteBalcony
       Arkham.Location.Cards.SunkenArchives
       Arkham.Location.Cards.SunkenGrottoFinalDepths
       Arkham.Location.Cards.SunkenGrottoLowerDepths
       Arkham.Location.Cards.SunkenGrottoUpperDepths
+      Arkham.Location.Cards.SunkenHalls
+      Arkham.Location.Cards.SyzygyChamber
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
       Arkham.Location.Cards.TempleOfTheFang
@@ -2885,6 +2909,7 @@ library
       Arkham.Location.Cards.Ulthar
       Arkham.Location.Cards.UndergroundRiver
       Arkham.Location.Cards.UndergroundRuins
+      Arkham.Location.Cards.UnderseaCorridors
       Arkham.Location.Cards.UnderwaterCavern
       Arkham.Location.Cards.UnfamiliarChamber
       Arkham.Location.Cards.UnmarkedTomb
@@ -2904,6 +2929,7 @@ library
       Arkham.Location.Cards.Valusia
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.Vault
+      Arkham.Location.Cards.VaultOfRiches
       Arkham.Location.Cards.VaultsOfZin
       Arkham.Location.Cards.VelmasDiner
       Arkham.Location.Cards.VenetianGarden
@@ -3026,6 +3052,7 @@ library
       Arkham.Scenario.Scenarios.HorrorInHighGear
       Arkham.Scenario.Scenarios.InTheClutchesOfChaos
       Arkham.Scenario.Scenarios.InTooDeep
+      Arkham.Scenario.Scenarios.IntoTheMaelstrom
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
@@ -3099,6 +3126,7 @@ library
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.InTooDeep.Helpers
+      Arkham.Scenarios.IntoTheMaelstrom.Helpers
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText

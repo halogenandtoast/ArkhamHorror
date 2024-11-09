@@ -773,6 +773,8 @@ allAssets =
     , SomeAssetCard luckyDice3
     , --- survivor [itm]
       SomeAssetCard jacobMorrisonCostGuardCaptain3
+    , --- encounter [itm]
+      SomeAssetCard divingSuit
     , -- Edge of the Earth
       --- signature [eote]
       SomeAssetCard mechanicsWrench

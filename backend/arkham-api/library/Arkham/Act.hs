@@ -288,6 +288,11 @@ allActs =
       SomeActCard theFirstOath
     , SomeActCard theSecondOath
     , SomeActCard theThirdOath
+    , --- Into the Maelstrom
+      SomeActCard backIntoTheDepths
+    , SomeActCard cityOfTheDeepV1
+    , SomeActCard cityOfTheDeepV2
+    , SomeActCard cityOfTheDeepV3
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

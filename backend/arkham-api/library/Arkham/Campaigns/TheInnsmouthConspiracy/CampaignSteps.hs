@@ -36,3 +36,8 @@ pattern TheLairOfDagon :: CampaignStep
 pattern TheLairOfDagon <- ScenarioStep "07274"
   where
     TheLairOfDagon = ScenarioStep "07274"
+
+pattern IntoTheMaelstrom :: CampaignStep
+pattern IntoTheMaelstrom <- ScenarioStep "07311"
+  where
+    IntoTheMaelstrom = ScenarioStep "07311"

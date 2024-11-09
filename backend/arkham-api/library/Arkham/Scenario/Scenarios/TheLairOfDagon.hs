@@ -15,15 +15,18 @@ import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioKeys))
 import Arkham.Scenarios.TheLairOfDagon.Helpers
+import Arkham.Trait (Trait (Suspect))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheLairOfDagon = TheLairOfDagon ScenarioAttrs
@@ -178,4 +181,35 @@ instance RunMessage TheLairOfDagon where
           field AgendaSequence aid >>= \case
             Sequence 3 B -> pure s
             _ -> TheLairOfDagon <$> liftRunMessage msg attrs
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          record DagonHasAwakened
+          push R1
+        Resolution 1 -> do
+          allGainXp attrs
+
+          gateKeeperDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ CardWithTrait Suspect)
+          recordWhen gateKeeperDefeated TheGatekeeperHasBeenDefeated
+          storyWithChooseOne
+            (i18nWithTitle "resolution1")
+            [ Label "Tell Oceiros nothing" [R2]
+            , Label "Lie to Oceiros" [R3]
+            , Label "Tell Oceiros everything" [R4]
+            ]
+        Resolution 2 -> do
+          story $ i18nWithTitle "resolution2"
+          addChaosToken #elderthing
+          endOfScenario
+        Resolution 3 -> do
+          story $ i18nWithTitle "resolution3"
+          addChaosToken #tablet
+          endOfScenario
+        Resolution 4 -> do
+          story $ i18nWithTitle "resolution4"
+          addChaosToken #cultist
+          endOfScenario
+        _ -> error "Invalid resolution"
+      pure s
     _ -> TheLairOfDagon <$> liftRunMessage msg attrs

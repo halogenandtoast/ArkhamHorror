@@ -289,6 +289,9 @@ data CampaignLogKey
   | DagonHasAwakened
   | DagonStillSlumbers
   | TheOrdersRitualWasDisrupted
+  | TheGatekeeperHasBeenDefeated
+  | TheGuardianOfYhanthleiIsDispatched
+  | TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

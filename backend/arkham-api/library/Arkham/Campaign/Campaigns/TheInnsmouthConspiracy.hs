@@ -8,10 +8,12 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
 import Arkham.ChaosToken
+import Arkham.Helpers.Campaign (getOwner, withOwner)
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.I18n
+import Arkham.Message.Lifted.Choose
 import Arkham.Source
 
 newtype TheInnsmouthConspiracy = TheInnsmouthConspiracy CampaignAttrs
@@ -39,6 +41,8 @@ instance IsCampaign TheInnsmouthConspiracy where
     InterludeStep 3 _ -> Just (UpgradeDeckStep HorrorInHighGear)
     HorrorInHighGear -> Just ALightInTheFog
     ALightInTheFog -> Just TheLairOfDagon
+    TheLairOfDagon -> Just (InterludeStep 4 Nothing)
+    InterludeStep 4 _ -> Just (UpgradeDeckStep IntoTheMaelstrom)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -126,6 +130,37 @@ instance RunMessage TheInnsmouthConspiracy where
           record TheHeaddressWasBroughtToTheLighthouse
 
       story $ i18n "beneathTheWaves2"
+
+      nextCampaignStep
+      pure c
+    CampaignStep (InterludeStep 4 _) -> scope "interlude4" do
+      story $ i18n "hiddenTruths"
+
+      terrorDead <- getHasRecord TheTerrorOfDevilReefIsDead
+      lifecycleKnown <- hasMemory TheLifecycleOfADeepOne
+
+      when (terrorDead && lifecycleKnown) do
+        story $ i18n "guardianDispatched"
+        record TheGuardianOfYhanthleiIsDispatched
+
+      gatekeeperDefeated <- getHasRecord TheGatekeeperHasBeenDefeated
+      someRelic <-
+        orM
+          $ map
+            (fmap isJust . getOwner)
+            [Assets.awakenedMantle, Assets.headdressOfYhaNthlei, Assets.wavewornIdol]
+
+      when (gatekeeperDefeated && someRelic) do
+        story $ i18n "rightfulKeeper"
+        record TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
+
+      removeCampaignCard Assets.thomasDawsonSoldierInANewWar
+      withOwner Assets.elinaHarperKnowsTooMuch \iid -> do
+        chooseOneM iid do
+          labeled "Add Elina Harper to your deck" do
+            addCampaignCardToDeck iid Assets.elinaHarperKnowsTooMuch
+          labeled "Do not add Elina Harper to your deck" do
+            removeCampaignCard Assets.elinaHarperKnowsTooMuch
 
       nextCampaignStep
       pure c

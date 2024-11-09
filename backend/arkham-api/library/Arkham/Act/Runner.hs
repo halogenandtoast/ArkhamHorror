@@ -35,6 +35,7 @@ import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Matcher hiding (FastPlayerWindow, InvestigatorResigned)
 import Arkham.Tarot
+import Arkham.Token (Token (Clue))
 import Arkham.Window hiding (InvestigatorResigned)
 import Arkham.Window qualified as Window
 
@@ -84,6 +85,9 @@ instance RunMessage ActAttrs where
       push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
       pure a
     PlaceClues _ (ActTarget aid) n | aid == actId -> do
+      let totalClues = n + actClues
+      pure $ a {actClues = totalClues}
+    MoveTokens _ _ (ActTarget aid) Clue n | aid == actId -> do
       let totalClues = n + actClues
       pure $ a {actClues = totalClues}
     PlaceBreaches (isTarget a -> True) n -> do

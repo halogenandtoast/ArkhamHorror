@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
+import Key from '@/arkham/components/Key.vue';
 
 const cardOverlay = ref<HTMLElement | null>(null)
 const hoveredElement = ref<HTMLElement | null>(null)
@@ -175,6 +176,13 @@ const fight = computed(() => {
   return hoveredElement.value.dataset.fight
 })
 
+const spentKeys = computed(() => {
+  if (!hoveredElement.value) return []
+  if (!hoveredElement.value.dataset) return []
+  if (!hoveredElement.value.dataset.spentKeys) return []
+  return JSON.parse(hoveredElement.value.dataset.spentKeys)
+})
+
 const health = computed(() => {
   if (!hoveredElement.value) return null
   return hoveredElement.value.dataset.health
@@ -319,6 +327,9 @@ const getImage = (el: HTMLElement): string | null => {
     <img class="horror horror-1" v-if="horror && horror >= 1" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-2" v-if="horror && horror >= 2" :src="imgsrc('horror-overlay.png')"/>
     <img class="horror horror-3" v-if="horror && horror >= 3" :src="imgsrc('horror-overlay.png')"/>
+    <div class="spent-keys" v-if="spentKeys.length > 0">
+      <Key v-for="key in spentKeys" :key="key" :name="key" />
+    </div>
     <div v-if="customizationsCard" class="customizations-wrapper" :class="{mutated}">
       <img :src="customizationsCard" />
       <div v-for="label in customizationLabels" :key="label[0]" :class="`label label-${cardCode} ${label[0]}`">
@@ -2019,5 +2030,20 @@ const getImage = (el: HTMLElement): string | null => {
 .theHouseOnWaterStreet { top: 80%; width: 50%; }
 .esotericOrderOfDagon { top: 84.2%; width: 50%; }
 .newChurchGreen { top: 88.7%; }
+
+.spent-keys {
+  position: absolute;
+  bottom: 17%;
+  inset-inline: 40px;
+  margin-inline: auto;
+  display: flex;
+  gap: 2px;
+
+  &:deep(img) {
+    border-radius: 2px;
+    width: 25px;
+    height: 25px;
+  }
+}
 
 </style>

@@ -272,6 +272,9 @@ instance HasField "ability" EnemyAttrs (Int -> Source) where
 instance HasField "doom" EnemyAttrs Int where
   getField = countTokens Doom . enemyTokens
 
+instance HasField "resources" EnemyAttrs Int where
+  getField = countTokens Resource . enemyTokens
+
 data Enemy = forall a. IsEnemy a => Enemy a
 
 instance AsId Enemy where

@@ -2,10 +2,13 @@ module Arkham.Location.Cards.HallOfLoyalty (hallOfLoyalty, HallOfLoyalty (..)) w
 
 import Arkham.Ability
 import Arkham.Capability
+import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Investigator
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype HallOfLoyalty = HallOfLoyalty LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -34,6 +37,17 @@ instance HasAbilities HallOfLoyalty where
 
 instance RunMessage HallOfLoyalty where
   runMessage msg l@(HallOfLoyalty attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseNM iid 3 do
+        whenM (canHaveHorrorHealed (attrs.ability 1) iid) do
+          labeled "Heal 1 damage" $ healDamage iid (attrs.ability 1) 1
+        whenM (can.draw.cards iid) do
+          labeled "Draw 2 cards" $ drawCardsIfCan iid (attrs.ability 1) 2
+        whenM (can.gain.resources iid) do
+          labeled "Gain 3 resources" $ gainResourcesIfCan iid (attrs.ability 1) 3
+        n <- min 4 <$> getRemainingBlessTokens
+        when (n > 0) do
+          let label = if n == 4 then "Add 4 {bless} tokens" else "Add 4 (actual " <> tshow n <> ") {bless} token"
+          labeled label $ repeated n $ addChaosToken #bless
       pure l
     _ -> HallOfLoyalty <$> liftRunMessage msg attrs

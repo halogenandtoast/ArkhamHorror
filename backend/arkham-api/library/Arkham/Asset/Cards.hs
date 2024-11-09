@@ -827,8 +827,8 @@ allEncounterAssetCards =
       , thomasDawsonsCarStopped
       , elinaHarpersCarRunning
       , elinaHarpersCarStopped
-      , yhanthleiStatusMysteriousRelic
-      , yhanthleiStatusDynamicRelic
+      , yhanthleiStatueMysteriousRelic
+      , yhanthleiStatueDynamicRelic
       ]
 
 allSpecialPlayerAssetCards :: Map CardCode CardDef

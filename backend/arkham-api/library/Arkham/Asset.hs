@@ -760,8 +760,8 @@ allAssets =
     , SomeAssetCard favorOfTheSun1
     , SomeAssetCard purifyingCorruption4
     , --- encounter [lod]
-      SomeAssetCard yhanthleiStatusMysteriousRelic
-    , SomeAssetCard yhanthleiStatusDynamicRelic
+      SomeAssetCard yhanthleiStatueMysteriousRelic
+    , SomeAssetCard yhanthleiStatueDynamicRelic
     , -- Into the Maelstrom
       --- guardian [itm]
       SomeAssetCard holySpear5

@@ -614,8 +614,8 @@ favorOfTheSun1 =
       , cdUnique = True
       }
 
-yhanthleiStatusMysteriousRelic :: CardDef
-yhanthleiStatusMysteriousRelic =
+yhanthleiStatueMysteriousRelic :: CardDef
+yhanthleiStatueMysteriousRelic =
   (storyAsset "07300" ("Y'ha-nthlei Status" <:> "Mysterious Relic") 1 TheLairOfDagon)
     { cdCardTraits = setFromList [Item, Relic, Cursed]
     , cdUnique = True
@@ -624,8 +624,8 @@ yhanthleiStatusMysteriousRelic =
     , cdCardType = EncounterAssetType
     }
 
-yhanthleiStatusDynamicRelic :: CardDef
-yhanthleiStatusDynamicRelic =
+yhanthleiStatueDynamicRelic :: CardDef
+yhanthleiStatueDynamicRelic =
   (storyAsset "07300b" ("Y'ha-nthlei Status" <:> "Dynamic Relic") 1 TheLairOfDagon)
     { cdCardTraits = setFromList [Item, Relic, Blessed]
     , cdUnique = True

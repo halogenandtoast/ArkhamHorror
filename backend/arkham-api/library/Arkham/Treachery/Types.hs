@@ -82,6 +82,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacherySealedChaosTokens :: [ChaosToken]
   , treacheryTaboo :: Maybe TabooList
   , treacheryMutated :: Maybe Text -- for art
+  , treacheryExhausted :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -95,6 +96,12 @@ instance AsId TreacheryAttrs where
 
 instance HasField "id" TreacheryAttrs TreacheryId where
   getField = treacheryId
+
+instance HasField "exhausted" TreacheryAttrs Bool where
+  getField = treacheryExhausted
+
+instance HasField "ready" TreacheryAttrs Bool where
+  getField = not . treacheryExhausted
 
 instance HasField "taboo" TreacheryAttrs (Maybe TabooList) where
   getField = treacheryTaboo
@@ -276,6 +283,7 @@ treacheryWith f cardDef g =
             , treacherySealedChaosTokens = []
             , treacheryTaboo = Nothing
             , treacheryMutated = Nothing
+            , treacheryExhausted = False
             }
     }
 
@@ -362,4 +370,25 @@ makeLensesWith suffixedFields ''TreacheryAttrs
 setMeta :: ToJSON a => a -> TreacheryAttrs -> TreacheryAttrs
 setMeta a = metaL .~ toJSON a
 
-$(deriveJSON (aesonOptions $ Just "treachery") ''TreacheryAttrs)
+$(deriveToJSON (aesonOptions $ Just "treachery") ''TreacheryAttrs)
+
+instance FromJSON TreacheryAttrs where
+  parseJSON = withObject "TreacheryAttrs" \o -> do
+    treacheryId <- o .: "id"
+    treacheryCardId <- o .: "cardId"
+    treacheryCardCode <- o .: "cardCode"
+    treacheryOwner <- o .: "owner"
+    treacheryTokens <- o .: "tokens"
+    treacheryPlacement <- o .: "placement"
+    treacheryCanBeCommitted <- o .: "canBeCommitted"
+    treacheryDrawnBy <- o .: "drawnBy"
+    treacheryDrawnFrom <- o .: "drawnFrom"
+    treacheryResolved <- o .: "resolved"
+    treacheryDiscardedBy <- o .: "discardedBy"
+    treacheryMeta <- o .: "meta"
+    treacherySealedChaosTokens <- o .: "sealedChaosTokens"
+    treacheryTaboo <- o .: "taboo"
+    treacheryMutated <- o .: "mutated"
+    treacheryExhausted <- o .:? "exhausted" .!= False
+
+    pure TreacheryAttrs {..}

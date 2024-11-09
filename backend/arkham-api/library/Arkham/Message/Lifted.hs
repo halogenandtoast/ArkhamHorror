@@ -2022,3 +2022,6 @@ removeLocation (asId -> lid) = do
   if noClues
     then maybe (push $ RemoveLocation lid) (\_ -> addToVictory lid) =<< field LocationVictory lid
     else push $ RemoveLocation lid
+
+chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+chooseAndDiscardAsset iid source = push $ ChooseAndDiscardAsset iid (toSource source) AnyAsset

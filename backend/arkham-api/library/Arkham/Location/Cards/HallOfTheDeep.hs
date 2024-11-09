@@ -26,7 +26,7 @@ instance HasAbilities HallOfTheDeep where
 instance RunMessage HallOfTheDeep where
   runMessage msg l@(HallOfTheDeep attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.yhanthleiStatusMysteriousRelic
+      takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.yhanthleiStatueMysteriousRelic
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       increaseThisFloodLevel attrs

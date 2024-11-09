@@ -115,7 +115,7 @@ instance RunMessage TheLairOfDagon where
         , Treacheries.syzygy
         , Treacheries.tidalAlignment
         , Treacheries.tidalAlignment
-        , Assets.yhanthleiStatusMysteriousRelic
+        , Assets.yhanthleiStatueMysteriousRelic
         , Enemies.apostleOfDagon
         , Enemies.dagonDeepInSlumber
         ]

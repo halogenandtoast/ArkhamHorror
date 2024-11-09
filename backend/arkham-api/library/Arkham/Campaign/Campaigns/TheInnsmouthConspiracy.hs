@@ -27,7 +27,6 @@ theInnsmouthConspiracy difficulty =
     "The Innsmouth Conspiracy"
     difficulty
     (chaosBagContents difficulty)
- where
 
 instance IsCampaign TheInnsmouthConspiracy where
   nextStep a = case campaignStep (toAttrs a) of

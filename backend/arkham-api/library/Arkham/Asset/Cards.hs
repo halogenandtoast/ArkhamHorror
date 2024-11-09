@@ -801,6 +801,7 @@ allEncounterAssetCards =
       [ adamLynch
       , alchemicalConcoction
       , bearTrap
+      , divingSuit
       , fishingNet
       , haroldWalsted
       , helplessPassenger

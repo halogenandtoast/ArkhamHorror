@@ -138,6 +138,7 @@ data EncounterSet
   | HorrorInHighGear
   | ALightInTheFog
   | TheLairOfDagon
+  | IntoTheMaelstrom
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

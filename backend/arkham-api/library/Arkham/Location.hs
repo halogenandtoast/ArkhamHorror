@@ -693,6 +693,18 @@ allLocations =
     , SomeLocationCard hallOfSilence
     , SomeLocationCard doorwayToTheDepths
     , SomeLocationCard lairOfDagon
+    , --- Into the Maelstrom [itm]
+      SomeLocationCard darkAbyss
+    , SomeLocationCard gatewayToYhanthlei
+    , SomeLocationCard sunkenHalls
+    , SomeLocationCard vaultOfRiches
+    , SomeLocationCard underseaCorridors
+    , SomeLocationCard statuesInTheDeep
+    , SomeLocationCard submergedTemple
+    , SomeLocationCard syzygyChamber
+    , SomeLocationCard onyxGuardians
+    , SomeLocationCard lairOfDagonIntoTheMaelstrom
+    , SomeLocationCard lairOfHydra
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

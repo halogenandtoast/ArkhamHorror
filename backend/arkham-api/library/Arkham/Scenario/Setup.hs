@@ -164,7 +164,7 @@ setAside as = do
 
           otherCardsAfter <- use otherCardsL
           when (otherCardsBefore == otherCardsAfter) do
-            error "Card not found in encounter deck or other cards"
+            error $ "Card not found in encounter deck or other cards: " <> (show $ cdOtherSide $ toCardDef card)
         pure card
 
   attrsL . setAsideCardsL %= (<> cards)

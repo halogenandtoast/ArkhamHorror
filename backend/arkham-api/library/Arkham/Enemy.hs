@@ -410,6 +410,14 @@ allEnemies =
     , SomeEnemyCard dagonAwakenedAndEnraged
     , SomeEnemyCard apostleOfDagon
     , SomeEnemyCard cerenerianDeepOne
+    , --- Into the Maelstrom [itm]
+      SomeEnemyCard dagonDeepInSlumberIntoTheMaelstrom
+    , SomeEnemyCard dagonAwakenedAndEnragedIntoTheMaelstrom
+    , SomeEnemyCard hydraDeepInSlumber
+    , SomeEnemyCard hydraAwakenedAndEnraged
+    , SomeEnemyCard aquaticAbomination
+    , SomeEnemyCard dagonsBrood
+    , SomeEnemyCard hydrasBrood
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons

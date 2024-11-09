@@ -93,6 +93,7 @@ allEncounterEnemyCards =
       , angryMob
       , apexStrangleweed
       , apostleOfDagon
+      , aquaticAbomination
       , arkhamOfficer
       , ashleighClarke
       , asylumGorger
@@ -134,7 +135,10 @@ allEncounterEnemyCards =
       , creatureOutOfDemhe
       , cultistOfTheEnclave
       , dagonAwakenedAndEnraged
+      , dagonAwakenedAndEnragedIntoTheMaelstrom
       , dagonDeepInSlumber
+      , dagonDeepInSlumberIntoTheMaelstrom
+      , dagonsBrood
       , danielChesterfield
       , darkYoungHost
       , deepOneBull
@@ -191,6 +195,9 @@ allEncounterEnemyCards =
       , huntingHorror
       , huntingNightgaunt
       , hybridAssassin
+      , hydraAwakenedAndEnraged
+      , hydraDeepInSlumber
+      , hydrasBrood
       , ichtaca
       , ichtacaScionOfYig
       , icyGhoul
@@ -2264,6 +2271,65 @@ apostleOfDagon =
 cerenerianDeepOne :: CardDef
 cerenerianDeepOne =
   (enemy "07294" "Cerenerian Deep One" TheLairOfDagon 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+dagonDeepInSlumberIntoTheMaelstrom :: CardDef
+dagonDeepInSlumberIntoTheMaelstrom =
+  (enemy "07330" ("Dagon" <:> "Deep in Slumber") IntoTheMaelstrom 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07330b"
+    }
+
+dagonAwakenedAndEnragedIntoTheMaelstrom :: CardDef
+dagonAwakenedAndEnragedIntoTheMaelstrom =
+  (enemy "07330b" ("Dagon" <:> "Awakened and Enraged") IntoTheMaelstrom 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07330"
+    }
+
+hydraDeepInSlumber :: CardDef
+hydraDeepInSlumber =
+  (enemy "07331" ("Hydra" <:> "Deep in Slumber") IntoTheMaelstrom 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07331b"
+    }
+
+hydraAwakenedAndEnraged :: CardDef
+hydraAwakenedAndEnraged =
+  (enemy "07331b" ("Hydra" <:> "Awakened and Enraged") IntoTheMaelstrom 1)
+    { cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
+    , cdUnique = True
+    , cdDoubleSided = True
+    , cdOtherSide = Just "07330"
+    }
+
+aquaticAbomination :: CardDef
+aquaticAbomination =
+  (enemy "07332" "Aquatic Abomination" IntoTheMaelstrom 1)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+dagonsBrood :: CardDef
+dagonsBrood =
+  (enemy "07333" "Dagon's Brood" IntoTheMaelstrom 2)
+    { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+hydrasBrood :: CardDef
+hydrasBrood =
+  (enemy "07334" "Hydra's Brood" IntoTheMaelstrom 2)
     { cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
     , cdKeywords = setFromList [Keyword.Hunter]
     }

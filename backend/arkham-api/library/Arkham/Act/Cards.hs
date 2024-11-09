@@ -37,6 +37,7 @@ allActCards =
       , atTheStationInShadowedTalons
       , atTheStationTrainTracks
       , awakening
+      , backIntoTheDepths
       , beginnersLuck
       , beyondDreams
       , beyondTheGrave
@@ -48,6 +49,9 @@ allActCards =
       , breakingAndEntering
       , campusSafety
       , cavernOfTheForgottenAge
+      , cityOfTheDeepV1
+      , cityOfTheDeepV2
+      , cityOfTheDeepV3
       , closeTheRift
       , containingTheOutbreak
       , crossingTheThreshold
@@ -800,6 +804,18 @@ theSecondOath = act "07281" "The Second Oath" 2 TheLairOfDagon
 
 theThirdOath :: CardDef
 theThirdOath = act "07282" "The Third Oath" 3 TheLairOfDagon
+
+backIntoTheDepths :: CardDef
+backIntoTheDepths = act "07315" "Back into the Depths" 1 IntoTheMaelstrom
+
+cityOfTheDeepV1 :: CardDef
+cityOfTheDeepV1 = act "07316" "City of the Deep (v.I)" 2 IntoTheMaelstrom
+
+cityOfTheDeepV2 :: CardDef
+cityOfTheDeepV2 = act "07317" "City of the Deep (v.II)" 2 IntoTheMaelstrom
+
+cityOfTheDeepV3 :: CardDef
+cityOfTheDeepV3 = act "07318" "City of the Deep (v.III)" 2 IntoTheMaelstrom
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

@@ -248,6 +248,10 @@ allAgendas =
     , SomeAgendaCard whatLurksBelowV1
     , SomeAgendaCard whatLurksBelowV2
     , SomeAgendaCard theRitualAdvances
+    , --- Into the Maelstrom
+      SomeAgendaCard underTheSurface
+    , SomeAgendaCard celestialAlignment
+    , SomeAgendaCard theFlood
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

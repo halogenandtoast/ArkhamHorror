@@ -276,6 +276,7 @@ const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
 const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
 const keys = computed(() => props.scenario.setAsideKeys)
+const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
 const locations = computed(() => Object.values(props.game.locations).
   filter((a) => a.inFrontOf === null && a.label !== "cosmos"))
@@ -612,12 +613,18 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
         />
 
         <div class="scenario-guide">
-          <img
-            class="card"
-            :src="scenarioGuide"
-          />
-          <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
-          <PoolItem class="signOfTheGods" v-if="signOfTheGods" type="resource" :amount="signOfTheGods" />
+          <div class="scenario-guide-card">
+            <img
+              class="card"
+              :src="scenarioGuide"
+              :data-spent-keys="JSON.stringify(spentKeys)"
+            />
+            <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
+            <div class="spent-keys" v-if="spentKeys.length > 0">
+              <Key v-for="key in spentKeys" :key="key" :name="key" />
+            </div>
+            <PoolItem class="signOfTheGods" v-if="signOfTheGods" type="resource" :amount="signOfTheGods" />
+          </div>
           <div class="pool" v-if="hasPool">
             <PoolItem v-if="resources && resources > 0" type="resource" :amount="resources" />
           </div>
@@ -1232,6 +1239,25 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
   display: flex;
   flex-direction: row;
   gap: 2px;
+}
+
+.scenario-guide-card {
+  position: relative;
+}
+
+.spent-keys {
+  pointer-events: none;
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  position: absolute;
+  bottom: 20px;
+  inset-inline: 5px;
+  margin-inline: auto;
+
+  &:deep(img) {
+    width: 10px;
+  }
 }
 
 .zoomer {

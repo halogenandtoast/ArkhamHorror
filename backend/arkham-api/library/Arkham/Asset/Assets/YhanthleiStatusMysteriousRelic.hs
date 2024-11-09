@@ -1,7 +1,7 @@
-module Arkham.Asset.Assets.YhanthleiStatusMysteriousRelic
-  ( yhanthleiStatusMysteriousRelic
-  , YhanthleiStatusMysteriousRelic(..)
-  )
+module Arkham.Asset.Assets.YhanthleiStatusMysteriousRelic (
+  yhanthleiStatusMysteriousRelic,
+  YhanthleiStatusMysteriousRelic (..),
+)
 where
 
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +12,9 @@ newtype YhanthleiStatusMysteriousRelic = YhanthleiStatusMysteriousRelic AssetAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yhanthleiStatusMysteriousRelic :: AssetCard YhanthleiStatusMysteriousRelic
-yhanthleiStatusMysteriousRelic = asset YhanthleiStatusMysteriousRelic Cards.yhanthleiStatusMysteriousRelic
+yhanthleiStatusMysteriousRelic =
+  assetWith YhanthleiStatusMysteriousRelic Cards.yhanthleiStatusMysteriousRelic
+    $ (isStoryL .~ True)
 
 instance RunMessage YhanthleiStatusMysteriousRelic where
   runMessage msg (YhanthleiStatusMysteriousRelic attrs) = runQueueT $ case msg of

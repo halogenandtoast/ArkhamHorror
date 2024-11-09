@@ -54,6 +54,7 @@ export type Scenario = {
   cardsNextToAgendaDeck: Card[];
   setAsideCards: Card[];
   setAsideKeys: ArkhamKey[];
+  keys: ArkhamKey[];
   chaosBag: ChaosBag;
   discard: CardContents[];
   victoryDisplay: Card[];
@@ -105,6 +106,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   cardsNextToActDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToActDeck'),
   cardsNextToAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'CardsNextToAgendaDeck'),
   setAsideKeys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),

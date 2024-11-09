@@ -1,12 +1,18 @@
 module Arkham.Enemy.Cards.DagonDeepInSlumber (dagonDeepInSlumber, DagonDeepInSlumber (..)) where
 
+import Arkham.Ability
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Key
+import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (..))
 
 newtype DagonDeepInSlumber = DagonDeepInSlumber EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dagonDeepInSlumber :: EnemyCard DagonDeepInSlumber
 dagonDeepInSlumber =
@@ -18,6 +24,31 @@ instance HasModifiersFor DagonDeepInSlumber where
     guard $ isTarget a target
     pure [Omnipotent]
 
+instance HasAbilities DagonDeepInSlumber where
+  getAbilities (DagonDeepInSlumber a) =
+    [ restricted a 1 OnSameLocation
+        $ forced
+        $ SkillTestResult #after You AnySkillTest #failure
+    , restricted a 2 OnSameLocation
+        $ actionAbilityWithCost
+          (OrCost $ map SpendKeyCost [BlackKey, RedKey, GreenKey, BlueKey, WhiteKey, YellowKey, PurpleKey])
+    ]
+
 instance RunMessage DagonDeepInSlumber where
-  runMessage msg (DagonDeepInSlumber attrs) = runQueueT $ case msg of
+  runMessage msg e@(DagonDeepInSlumber attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeTokens (attrs.ability 1) attrs #resource 1
+      doStep 1 msg
+      pure e
+    DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
+      n <- getGameValue (StaticWithPerPlayer 2 1)
+      when (attrs.resources >= n) $ flipOver iid attrs
+      pure e
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      removeTokens (attrs.ability 1) attrs #resource 1
+      pure e
+    Flip _ _ (isTarget attrs -> True) -> do
+      awakened <- genCard Cards.dagonAwakenedAndEnraged
+      push $ ReplaceEnemy attrs.id awakened Swap
+      pure e
     _ -> DagonDeepInSlumber <$> liftRunMessage msg attrs

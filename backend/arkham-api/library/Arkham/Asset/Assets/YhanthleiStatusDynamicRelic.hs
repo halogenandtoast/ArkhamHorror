@@ -1,7 +1,7 @@
-module Arkham.Asset.Assets.YhanthleiStatusDynamicRelic
-  ( yhanthleiStatusDynamicRelic
-  , YhanthleiStatusDynamicRelic(..)
-  )
+module Arkham.Asset.Assets.YhanthleiStatusDynamicRelic (
+  yhanthleiStatusDynamicRelic,
+  YhanthleiStatusDynamicRelic (..),
+)
 where
 
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +12,9 @@ newtype YhanthleiStatusDynamicRelic = YhanthleiStatusDynamicRelic AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yhanthleiStatusDynamicRelic :: AssetCard YhanthleiStatusDynamicRelic
-yhanthleiStatusDynamicRelic = asset YhanthleiStatusDynamicRelic Cards.yhanthleiStatusDynamicRelic
+yhanthleiStatusDynamicRelic =
+  assetWith YhanthleiStatusDynamicRelic Cards.yhanthleiStatusDynamicRelic
+    $ (isStoryL .~ True)
 
 instance RunMessage YhanthleiStatusDynamicRelic where
   runMessage msg (YhanthleiStatusDynamicRelic attrs) = runQueueT $ case msg of

@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.Intrepid (
-  intrepid,
-  Intrepid (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Intrepid (intrepid, Intrepid (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype Intrepid = Intrepid AssetAttrs
   deriving anyclass IsAsset

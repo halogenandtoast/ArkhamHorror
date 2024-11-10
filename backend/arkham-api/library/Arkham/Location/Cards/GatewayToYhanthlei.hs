@@ -1,10 +1,7 @@
-module Arkham.Location.Cards.GatewayToYhanthlei
-  ( gatewayToYhanthlei
-  , GatewayToYhanthlei(..)
-  )
-where
+module Arkham.Location.Cards.GatewayToYhanthlei (gatewayToYhanthlei, GatewayToYhanthlei (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype GatewayToYhanthlei = GatewayToYhanthlei LocationAttrs
@@ -12,7 +9,7 @@ newtype GatewayToYhanthlei = GatewayToYhanthlei LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gatewayToYhanthlei :: LocationCard GatewayToYhanthlei
-gatewayToYhanthlei = location GatewayToYhanthlei Cards.gatewayToYhanthlei 2 (Static 0)
+gatewayToYhanthlei = locationWith GatewayToYhanthlei Cards.gatewayToYhanthlei 2 (Static 0) connectsToAdjacent
 
 instance HasAbilities GatewayToYhanthlei where
   getAbilities (GatewayToYhanthlei attrs) =

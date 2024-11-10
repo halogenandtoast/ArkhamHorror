@@ -33,28 +33,28 @@ trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metad
 
 -- This tooltip is handled specially
 instance HasAbilities TrueMagickReworkingReality5 where
-  getAbilities (TrueMagickReworkingReality5 (With attrs _)) =
+  getAbilities (TrueMagickReworkingReality5 (With attrs (Metadata Nothing))) =
     [ withTooltip "Use True Magick"
       $ doesNotProvokeAttacksOfOpportunity
       $ controlledAbility attrs 1 HasTrueMagick aform
     | aform <- [ActionAbility [] mempty, FastAbility Free, freeReaction AnyWindow]
     ]
+  getAbilities _ = []
 
 instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of
     Do BeginRound -> do
       pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL %~ replenish #charge 1
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
-      hand <- fieldMap InvestigatorHand (filterCards @CardMatcher (#asset <> #spell)) iid
+      hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))
       let setUses otherAttrs = otherAttrs {assetTokens = attrs.tokens}
       choices <- forMaybeM hand \card -> do
         tmpAbilities <-
           filterM
             (getCanPerformAbility iid ws)
-            [ adjustCost $ ab {abilitySource = proxy (unsafeMakeCardId $ unAssetId aid) attrs}
-            | ab <- getAbilities (overAttrs setUses $ createAsset card $ unsafeFromCardId card.id)
-            , aid <- maybeToList (preview _AssetSource ab.source)
+            [ adjustCost $ ab {abilitySource = proxy (CardIdSource card.id) attrs}
+            | ab <- getAbilities (overAttrs setUses $ createAsset card attrs.id)
             ]
         pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
 
@@ -68,22 +68,23 @@ instance RunMessage TrueMagickReworkingReality5 where
       pure $ TrueMagickReworkingReality5 $ With attrs meta
     UseCardAbility iid (ProxySource (CardIdSource cid) (isSource attrs -> True)) n ws p -> do
       card <- getCard cid
-      let iasset = overAttrs (const (attrs {assetCardCode = card.cardCode})) (createAsset card attrs.id)
+      assetId <- getRandom
+      let iasset = overAttrs (const (attrs {assetCardCode = card.cardCode})) (createAsset card assetId)
       iasset' <- lift $ runMessage (UseCardAbility iid (toSource attrs) n ws p) iasset
-      pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
+      pure $ TrueMagickReworkingReality5 $ With attrs (Metadata $ Just iasset')
     ResolvedAbility ab -> do
       case ab.source of
         ProxySource _ (isSource attrs -> True) ->
-          pure
-            $ TrueMagickReworkingReality5
-            $ With (attrs {assetCardCode = Cards.trueMagickReworkingReality5.cardCode}) (Metadata Nothing)
+          pure $ TrueMagickReworkingReality5 $ With attrs (Metadata Nothing)
         _ -> case currentAsset meta of
           Just iasset -> do
             iasset' <- lift $ runMessage msg iasset
-            pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
+            pure
+              $ TrueMagickReworkingReality5
+              $ With attrs (Metadata $ Just iasset')
           Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs
     _ -> case currentAsset meta of
       Just iasset -> do
         iasset' <- lift $ runMessage msg iasset
-        pure $ TrueMagickReworkingReality5 $ With (toAttrs iasset') (Metadata $ Just iasset')
+        pure $ TrueMagickReworkingReality5 $ With attrs (Metadata $ Just iasset')
       Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs

@@ -50,6 +50,7 @@ data EnemyMatcher
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
   | EnemyCanEnter LocationMatcher
+  | EnemyCanSpawnIn LocationMatcher
   | EnemyCanMove
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher
   | EnemyWithoutTrait Trait

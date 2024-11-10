@@ -2626,6 +2626,16 @@ enemyMatcherFilter = \case
       flip noneM mods \case
         CannotBeEnteredBy matcher -> enemyMatcherFilter matcher enemy
         _ -> pure False
+  EnemyCanSpawnIn locationMatcher -> \enemy -> do
+    mods <- getModifiers (toId enemy)
+    let noSpawn = [matcher | CannotSpawnIn matcher <- mods]
+
+    locations <-
+      if null noSpawn
+        then select locationMatcher
+        else select $ locationMatcher <> not_ (mconcat noSpawn)
+
+    pure $ notNull locations
   EnemyCanBeDamagedBySource source -> \enemy -> do
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case

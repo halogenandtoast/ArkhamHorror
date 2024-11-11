@@ -1542,6 +1542,7 @@ getLocationsMatching lmatcher = do
         pure . notNull $ List.intersect investigators lmInvestigators
     RevealedLocation -> pure $ filter isRevealed ls
     UnrevealedLocation -> pure $ filter (not . isRevealed) ls
+    LocationWithAnyKeys -> filterM (fieldMap LocationKeys notNull . toId) ls
     LocationWithClues gameValueMatcher -> do
       filterM (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher)) ls
     LocationWithDoom gameValueMatcher -> do
@@ -3136,6 +3137,7 @@ instance Projection Location where
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationLabel -> pure locationLabel
       LocationTokens -> pure locationTokens
+      LocationKeys -> pure $ locationKeys
       LocationClues -> pure $ locationClues attrs
       LocationRevealClues -> pure locationRevealClues
       LocationResources -> pure $ locationResources attrs

@@ -3,9 +3,11 @@ module Arkham.Scenario.Scenarios.IntoTheMaelstrom (IntoTheMaelstrom (..), intoTh
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
@@ -15,6 +17,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Trait (Trait (Yhanthlei))
 
 newtype IntoTheMaelstrom = IntoTheMaelstrom ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -31,10 +34,15 @@ intoTheMaelstrom difficulty =
 
 instance HasChaosTokenValue IntoTheMaelstrom where
   getChaosTokenValue iid tokenFace (IntoTheMaelstrom attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- selectCount $ not_ FloodedLocation <> withTrait Yhanthlei
+      pure
+        $ if n >= 4
+          then toChaosTokenValue attrs Skull 3 4
+          else toChaosTokenValue attrs Skull 1 2
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 3 4
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 4 5
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 5 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage IntoTheMaelstrom where
@@ -65,22 +73,22 @@ instance RunMessage IntoTheMaelstrom where
       when possessTheKey do
         chooseOneM lead do
           questionLabeled "Choose an investigator to take control of the blue key"
-          targets investigators \iid -> placeKey iid BlueKey
+          targets investigators (`placeKey` BlueKey)
 
       when possessAMap do
         chooseOneM lead do
           questionLabeled "Choose an investigator to take control of the red key"
-          targets investigators \iid -> placeKey iid RedKey
+          targets investigators (`placeKey` RedKey)
 
       when guardianDispatched do
         chooseOneM lead do
           questionLabeled "Choose an investigator to take control of the green key"
-          targets investigators \iid -> placeKey iid GreenKey
+          targets investigators (`placeKey` GreenKey)
 
       when recognized do
         chooseOneM lead do
           questionLabeled "Choose an investigator to take control of the yellow key"
-          targets investigators \iid -> placeKey iid YellowKey
+          targets investigators (`placeKey` YellowKey)
 
       let
         ks =
@@ -90,7 +98,7 @@ instance RunMessage IntoTheMaelstrom where
             <> [YellowKey | not recognized]
       otherKs <- shuffle [PurpleKey, WhiteKey, BlackKey]
 
-      setAsideKeys . map UnrevealedKey . take 4 =<< shuffle (ks <> otherKs)
+      setAsideKeys . map UnrevealedKey =<< shuffle (take 4 $ ks <> otherKs)
 
       startAt =<< placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
       tidalTunnels <- amongGathered (CardWithTitle "Tidal Tunnel")
@@ -116,4 +124,24 @@ instance RunMessage IntoTheMaelstrom where
             else Enemies.dagonDeepInSlumberIntoTheMaelstrom
         , Enemies.hydraDeepInSlumber
         ]
+
+      setAside =<< amongGathered #location
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
+      case token.face of
+        Cultist -> placeDoomOnAgendaAndCheckAdvance 1
+        Tablet -> do
+          mlid <- getMaybeLocation iid
+          case mlid of
+            Nothing -> assignDamage iid Tablet 1
+            Just lid -> do
+              canIncrease <- lid <=~> CanHaveFloodLevelIncreased
+              chooseOrRunOneM iid do
+                when canIncrease do
+                  labeled "Increase the flood level of your location" $ increaseThisFloodLevel lid
+                labeled "Take 1 damage" $ assignDamage iid Tablet 1
+        ElderThing -> do
+          withLocationOf iid \lid -> do
+            whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1
+        _ -> pure ()
+      pure s
     _ -> IntoTheMaelstrom <$> liftRunMessage msg attrs

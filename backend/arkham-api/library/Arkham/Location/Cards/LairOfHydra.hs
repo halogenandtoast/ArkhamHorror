@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.LairOfHydra
-  ( lairOfHydra
-  , LairOfHydra(..)
-  )
+module Arkham.Location.Cards.LairOfHydra (
+  lairOfHydra,
+  LairOfHydra (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype LairOfHydra = LairOfHydra LocationAttrs
@@ -12,7 +13,7 @@ newtype LairOfHydra = LairOfHydra LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lairOfHydra :: LocationCard LairOfHydra
-lairOfHydra = location LairOfHydra Cards.lairOfHydra 0 (Static 0)
+lairOfHydra = locationWith LairOfHydra Cards.lairOfHydra 0 (Static 0) connectsToAdjacent
 
 instance HasAbilities LairOfHydra where
   getAbilities (LairOfHydra attrs) =

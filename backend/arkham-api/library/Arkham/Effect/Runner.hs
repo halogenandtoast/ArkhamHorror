@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Effect.Runner (intFromMetadata, module X) where
 
@@ -82,6 +82,10 @@ instance RunMessage EffectAttrs where
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
     NextSkillTest sid -> pure $ replaceNextSkillTest sid a
+    RepeatSkillTest sid st | isEndOfWindow a (EffectSkillTestWindow st.id) -> do
+      if st.source == a.source
+        then pure $ a {effectWindow = Just $ EffectSkillTestWindow sid}
+        else pure a
     UpdateEffectMeta eid meta | eid == effectId -> do
       pure $ a {effectMetadata = Just meta}
     _ -> pure a

@@ -38,7 +38,7 @@ instance RunMessage TheNightHowls where
               $ BasicWeaknessCard
               <> mapOneOf withTrait [Omen, Curse]
               <> excludeMatcher
-      advanceAgendaDeck attrs
+      eachInvestigator (kill attrs)
       pure a
     RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
       case mcard of

@@ -49,6 +49,7 @@ data LocationMatcher
   | LocationWithSymbol LocationSymbol
   | LocationLeavingPlay
   | LocationWithAdjacentBarrier
+  | LocationWithAnyKeys
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher

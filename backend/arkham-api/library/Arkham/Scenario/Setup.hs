@@ -222,6 +222,7 @@ placeLabeled lbl def = do
 placeInGrid :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m LocationId
 placeInGrid pos def = do
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]
+  otherCardsL %= deleteFirstMatch ((== def) . toCardDef)
   placeLocationCardInGrid pos def
 
 placeInGrid_ :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m ()

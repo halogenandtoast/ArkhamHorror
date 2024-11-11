@@ -1,10 +1,8 @@
-module Arkham.Location.Cards.SunkenHalls
-  ( sunkenHalls
-  , SunkenHalls(..)
-  )
-where
+module Arkham.Location.Cards.SunkenHalls (sunkenHalls, SunkenHalls (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype SunkenHalls = SunkenHalls LocationAttrs
@@ -12,7 +10,10 @@ newtype SunkenHalls = SunkenHalls LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenHalls :: LocationCard SunkenHalls
-sunkenHalls = location SunkenHalls Cards.sunkenHalls 2 (PerPlayer 1)
+sunkenHalls =
+  locationWith SunkenHalls Cards.sunkenHalls 2 (PerPlayer 1)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ PartiallyFlooded)
 
 instance HasAbilities SunkenHalls where
   getAbilities (SunkenHalls attrs) =

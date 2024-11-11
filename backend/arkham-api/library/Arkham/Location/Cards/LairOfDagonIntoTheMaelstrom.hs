@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom
-  ( lairOfDagonIntoTheMaelstrom
-  , LairOfDagonIntoTheMaelstrom(..)
-  )
+module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom (
+  lairOfDagonIntoTheMaelstrom,
+  LairOfDagonIntoTheMaelstrom (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype LairOfDagonIntoTheMaelstrom = LairOfDagonIntoTheMaelstrom LocationAttrs
@@ -12,7 +13,13 @@ newtype LairOfDagonIntoTheMaelstrom = LairOfDagonIntoTheMaelstrom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lairOfDagonIntoTheMaelstrom :: LocationCard LairOfDagonIntoTheMaelstrom
-lairOfDagonIntoTheMaelstrom = location LairOfDagonIntoTheMaelstrom Cards.lairOfDagonIntoTheMaelstrom 0 (Static 0)
+lairOfDagonIntoTheMaelstrom =
+  locationWith
+    LairOfDagonIntoTheMaelstrom
+    Cards.lairOfDagonIntoTheMaelstrom
+    0
+    (Static 0)
+    connectsToAdjacent
 
 instance HasAbilities LairOfDagonIntoTheMaelstrom where
   getAbilities (LairOfDagonIntoTheMaelstrom attrs) =

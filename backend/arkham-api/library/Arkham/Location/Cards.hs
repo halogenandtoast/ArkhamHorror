@@ -7099,45 +7099,48 @@ gatewayToYhanthlei =
 
 sunkenHalls :: CardDef
 sunkenHalls =
-  locationWithUnrevealed
-    "07321"
-    "Y'ha-nthlei"
-    [Yhanthlei]
-    NoSymbol
-    []
-    "Sunken Halls"
-    [Yhanthlei]
-    NoSymbol
-    []
-    IntoTheMaelstrom
+  quantity 2
+    $ locationWithUnrevealed
+      "07321"
+      "Y'ha-nthlei"
+      [Yhanthlei]
+      NoSymbol
+      []
+      "Sunken Halls"
+      [Yhanthlei]
+      NoSymbol
+      []
+      IntoTheMaelstrom
 
 vaultOfRiches :: CardDef
 vaultOfRiches =
-  locationWithUnrevealed
-    "07322"
-    "Y'ha-nthlei"
-    [Yhanthlei]
-    NoSymbol
-    []
-    "Vault of Riches"
-    [Yhanthlei]
-    NoSymbol
-    []
-    IntoTheMaelstrom
+  quantity 2
+    $ locationWithUnrevealed
+      "07322"
+      "Y'ha-nthlei"
+      [Yhanthlei]
+      NoSymbol
+      []
+      "Vault of Riches"
+      [Yhanthlei]
+      NoSymbol
+      []
+      IntoTheMaelstrom
 
 underseaCorridors :: CardDef
 underseaCorridors =
-  locationWithUnrevealed
-    "07323"
-    "Y'ha-nthlei"
-    [Yhanthlei]
-    NoSymbol
-    []
-    "Undersea Corridors"
-    [Yhanthlei]
-    NoSymbol
-    []
-    IntoTheMaelstrom
+  quantity 3
+    $ locationWithUnrevealed
+      "07323"
+      "Y'ha-nthlei"
+      [Yhanthlei]
+      NoSymbol
+      []
+      "Undersea Corridors"
+      [Yhanthlei]
+      NoSymbol
+      []
+      IntoTheMaelstrom
 
 statuesInTheDeep :: CardDef
 statuesInTheDeep =
@@ -7203,7 +7206,7 @@ lairOfDagonIntoTheMaelstrom =
     [Yhanthlei, Lair]
     NoSymbol
     []
-    TheLairOfDagon
+    IntoTheMaelstrom
 
 lairOfHydra :: CardDef
 lairOfHydra =
@@ -7213,7 +7216,7 @@ lairOfHydra =
     [Yhanthlei, Lair]
     NoSymbol
     []
-    TheLairOfDagon
+    IntoTheMaelstrom
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

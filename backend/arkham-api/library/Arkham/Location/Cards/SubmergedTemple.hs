@@ -1,10 +1,8 @@
-module Arkham.Location.Cards.SubmergedTemple
-  ( submergedTemple
-  , SubmergedTemple(..)
-  )
-where
+module Arkham.Location.Cards.SubmergedTemple (submergedTemple, SubmergedTemple (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype SubmergedTemple = SubmergedTemple LocationAttrs
@@ -12,7 +10,10 @@ newtype SubmergedTemple = SubmergedTemple LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 submergedTemple :: LocationCard SubmergedTemple
-submergedTemple = location SubmergedTemple Cards.submergedTemple 0 (Static 0)
+submergedTemple =
+  locationWith SubmergedTemple Cards.submergedTemple 0 (Static 0)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ FullyFlooded)
 
 instance HasAbilities SubmergedTemple where
   getAbilities (SubmergedTemple attrs) =

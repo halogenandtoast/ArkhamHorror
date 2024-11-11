@@ -1,10 +1,8 @@
-module Arkham.Location.Cards.UnderseaCorridors
-  ( underseaCorridors
-  , UnderseaCorridors(..)
-  )
-where
+module Arkham.Location.Cards.UnderseaCorridors (underseaCorridors, UnderseaCorridors (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype UnderseaCorridors = UnderseaCorridors LocationAttrs
@@ -12,7 +10,10 @@ newtype UnderseaCorridors = UnderseaCorridors LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 underseaCorridors :: LocationCard UnderseaCorridors
-underseaCorridors = location UnderseaCorridors Cards.underseaCorridors 0 (Static 0)
+underseaCorridors =
+  locationWith UnderseaCorridors Cards.underseaCorridors 0 (Static 0)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ PartiallyFlooded)
 
 instance HasAbilities UnderseaCorridors where
   getAbilities (UnderseaCorridors attrs) =

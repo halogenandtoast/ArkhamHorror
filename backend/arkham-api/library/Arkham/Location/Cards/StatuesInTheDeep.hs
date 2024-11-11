@@ -1,10 +1,8 @@
-module Arkham.Location.Cards.StatuesInTheDeep
-  ( statuesInTheDeep
-  , StatuesInTheDeep(..)
-  )
-where
+module Arkham.Location.Cards.StatuesInTheDeep (statuesInTheDeep, StatuesInTheDeep (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype StatuesInTheDeep = StatuesInTheDeep LocationAttrs
@@ -12,7 +10,10 @@ newtype StatuesInTheDeep = StatuesInTheDeep LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 statuesInTheDeep :: LocationCard StatuesInTheDeep
-statuesInTheDeep = location StatuesInTheDeep Cards.statuesInTheDeep 0 (Static 0)
+statuesInTheDeep =
+  locationWith StatuesInTheDeep Cards.statuesInTheDeep 0 (Static 0)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ FullyFlooded)
 
 instance HasAbilities StatuesInTheDeep where
   getAbilities (StatuesInTheDeep attrs) =

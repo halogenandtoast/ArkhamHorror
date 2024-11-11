@@ -3215,6 +3215,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.HighestShroud _ -> locationId <=~> matcher
     Matcher.LocationWithDamage {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
+    Matcher.LocationWithAnyKeys -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->

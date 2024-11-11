@@ -19,6 +19,7 @@ import Arkham.Direction
 import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
+import Arkham.Key
 import Arkham.Keyword
 import Arkham.Label qualified as L
 import Arkham.Location.Base as X
@@ -96,6 +97,7 @@ data instance Field Location :: Type -> Type where
   LocationVictory :: Field Location (Maybe Int)
   LocationPosition :: Field Location (Maybe Pos)
   LocationCostToEnterUnrevealed :: Field Location Cost
+  LocationKeys :: Field Location (Set ArkhamKey)
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -103,6 +105,7 @@ deriving stock instance Ord (Field Location typ)
 fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
   LocationTokens -> tokensL
+  LocationKeys -> keysL
   LocationClues -> tokensL . at Clue . non 0
   LocationRevealClues -> revealCluesL
   LocationResources -> tokensL . at Resource . non 0
@@ -189,6 +192,7 @@ instance FromJSON (SomeField Location) where
     "LocationRevealedConnectedMatchers" -> pure $ SomeField LocationRevealedConnectedMatchers
     "LocationShroud" -> pure $ SomeField LocationShroud
     "LocationTokens" -> pure $ SomeField LocationTokens
+    "LocationKeys" -> pure $ SomeField LocationKeys
     "LocationTraits" -> pure $ SomeField LocationTraits
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance

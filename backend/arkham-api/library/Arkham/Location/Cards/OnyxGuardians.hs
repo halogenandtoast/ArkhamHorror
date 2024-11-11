@@ -1,10 +1,12 @@
-module Arkham.Location.Cards.OnyxGuardians
-  ( onyxGuardians
-  , OnyxGuardians(..)
-  )
+module Arkham.Location.Cards.OnyxGuardians (
+  onyxGuardians,
+  OnyxGuardians (..),
+)
 where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype OnyxGuardians = OnyxGuardians LocationAttrs
@@ -12,7 +14,10 @@ newtype OnyxGuardians = OnyxGuardians LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onyxGuardians :: LocationCard OnyxGuardians
-onyxGuardians = location OnyxGuardians Cards.onyxGuardians 0 (Static 0)
+onyxGuardians =
+  locationWith OnyxGuardians Cards.onyxGuardians 0 (Static 0)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ FullyFlooded)
 
 instance HasAbilities OnyxGuardians where
   getAbilities (OnyxGuardians attrs) =

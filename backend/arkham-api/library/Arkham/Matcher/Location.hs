@@ -58,6 +58,7 @@ data LocationMatcher
   | Nowhere
   | HauntedLocation
   | EmptyLocation
+  | SameLocation
   | LocationWithToken Token
   | ConnectedFrom LocationMatcher
   | UnbarricadedConnectedFrom LocationMatcher

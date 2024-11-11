@@ -61,6 +61,7 @@ instance RunMessage OnRevealChaosTokenEffect where
               AbilitySource inner _n -> case inner of
                 AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
                 other -> error $ "Unhandled ability source for token effect: " <> show other
+              AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
               TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
               other -> error $ "Unhandled source for token effect: " <> show other
           _ -> pure ()

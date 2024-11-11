@@ -51,4 +51,5 @@ instance RunMessage DagonDeepInSlumber where
       awakened <- genCard Cards.dagonAwakenedAndEnraged
       push $ ReplaceEnemy attrs.id awakened Swap
       pure e
+    EnemyCheckEngagement eid | eid == attrs.id -> pure e
     _ -> DagonDeepInSlumber <$> liftRunMessage msg attrs

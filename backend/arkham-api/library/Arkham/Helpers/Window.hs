@@ -141,6 +141,12 @@ engagedEnemy =
     (windowType -> Window.EnemyEngaged _ eid) -> Just eid
     _ -> Nothing
 
+enteringEnemy :: HasCallStack => [Window] -> EnemyId
+enteringEnemy =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.EnemyEnters eid _) -> Just eid
+    _ -> Nothing
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case

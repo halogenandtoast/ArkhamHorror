@@ -1243,6 +1243,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.NotYetRecorded key -> do
     recorded <- getHasRecord key
     pure $ not recorded
+  Criteria.HasRecord key -> getHasRecord key
   Criteria.DuringPhase phaseMatcher -> do
     p <- getPhase
     matchPhase p phaseMatcher
@@ -1877,6 +1878,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AnyWindow -> isMatch
     Matcher.FloodLevelChanged timing whereMatcher -> guardTiming timing \case
       Window.FloodLevelChanged where' _ _ -> locationMatches iid source window' where' whereMatcher
+      _ -> noMatch
+    Matcher.FloodLevelIncreased timing whereMatcher -> guardTiming timing \case
+      Window.FloodLevelChanged where' fl1 fl2 | fl2 > fl1 -> locationMatches iid source window' where' whereMatcher
       _ -> noMatch
     Matcher.FirstTimeParleyingThisRound timing whoMatcher -> guardTiming timing \case
       Window.FirstTimeParleyingThisRound who -> matchWho iid who whoMatcher
@@ -3216,6 +3220,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithDamage {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
     Matcher.LocationWithAnyKeys -> locationId <=~> matcher
+    Matcher.LocationWithKey _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->

@@ -209,6 +209,7 @@ data Criterion
   | CanMoveTo LocationMatcher
   | TabooCriteria TabooList Criterion Criterion
   | NotYetRecorded CampaignLogKey
+  | HasRecord CampaignLogKey
   | HasHistory HistoryType InvestigatorMatcher HistoryMatcher
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher

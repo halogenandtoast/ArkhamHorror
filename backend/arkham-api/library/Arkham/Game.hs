@@ -1543,6 +1543,7 @@ getLocationsMatching lmatcher = do
     RevealedLocation -> pure $ filter isRevealed ls
     UnrevealedLocation -> pure $ filter (not . isRevealed) ls
     LocationWithAnyKeys -> filterM (fieldMap LocationKeys notNull . toId) ls
+    LocationWithKey k -> filterM (fieldMap LocationKeys (elem k) . toId) ls
     LocationWithClues gameValueMatcher -> do
       filterM (field LocationClues . toId >=> (`gameValueMatches` gameValueMatcher)) ls
     LocationWithDoom gameValueMatcher -> do

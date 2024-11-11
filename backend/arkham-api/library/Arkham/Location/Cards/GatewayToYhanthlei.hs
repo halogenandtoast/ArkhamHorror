@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.GatewayToYhanthlei (gatewayToYhanthlei, GatewayToYhanthlei (..)) where
 
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
@@ -9,7 +10,10 @@ newtype GatewayToYhanthlei = GatewayToYhanthlei LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gatewayToYhanthlei :: LocationCard GatewayToYhanthlei
-gatewayToYhanthlei = locationWith GatewayToYhanthlei Cards.gatewayToYhanthlei 2 (Static 0) connectsToAdjacent
+gatewayToYhanthlei =
+  locationWith GatewayToYhanthlei Cards.gatewayToYhanthlei 2 (Static 0)
+    $ connectsToAdjacent
+    . (floodLevelL ?~ PartiallyFlooded)
 
 instance HasAbilities GatewayToYhanthlei where
   getAbilities (GatewayToYhanthlei attrs) =

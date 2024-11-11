@@ -1,7 +1,7 @@
-module Arkham.Enemy.Cards.HydraAwakenedAndEnraged
-  ( hydraAwakenedAndEnraged
-  , HydraAwakenedAndEnraged(..)
-  )
+module Arkham.Enemy.Cards.HydraAwakenedAndEnraged (
+  hydraAwakenedAndEnraged,
+  HydraAwakenedAndEnraged (..),
+)
 where
 
 import Arkham.Enemy.Cards qualified as Cards
@@ -12,7 +12,13 @@ newtype HydraAwakenedAndEnraged = HydraAwakenedAndEnraged EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hydraAwakenedAndEnraged :: EnemyCard HydraAwakenedAndEnraged
-hydraAwakenedAndEnraged = enemy HydraAwakenedAndEnraged Cards.hydraAwakenedAndEnraged (0, Static 1, 0) (0, 0)
+hydraAwakenedAndEnraged =
+  enemyWith
+    HydraAwakenedAndEnraged
+    Cards.hydraAwakenedAndEnraged
+    (7, Static 1, 4)
+    (2, 1)
+    (healthL .~ Nothing)
 
 instance RunMessage HydraAwakenedAndEnraged where
   runMessage msg (HydraAwakenedAndEnraged attrs) = runQueueT $ case msg of

@@ -231,6 +231,7 @@ data Cost
   | RevealCost CardId
   | Costs [Cost]
   | OrCost [Cost]
+  | PlaceKeyCost Target ArkhamKey
   | SpendKeyCost ArkhamKey
   | GroupSpendKeyCost ArkhamKey LocationMatcher
   | DamageCost Source Target Int
@@ -247,6 +248,7 @@ data Cost
   | DoomCost Source Target Int
   | EnemyDoomCost Int EnemyMatcher
   | EnemyAttackCost EnemyId
+  | RemoveEnemyDamageCost GameValue EnemyMatcher
   | ExileCost Target
   | HandDiscardCost Int ExtendedCardMatcher
   | HandDiscardAnyNumberCost ExtendedCardMatcher
@@ -331,7 +333,9 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"
+  PlaceKeyCost _ k -> "Place " <> keyName k <> " Key"
   GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
   GroupClueCostX -> "X {perPlayer} clues as a group"

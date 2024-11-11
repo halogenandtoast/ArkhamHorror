@@ -16,5 +16,6 @@ data Memory
   | DiscoveryOfAMythicalRelic
   | AConversationWithMrMoore
   | TheLifecycleOfADeepOne
+  | AStingingBetrayal
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

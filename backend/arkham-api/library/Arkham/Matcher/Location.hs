@@ -10,6 +10,7 @@ import Arkham.Direction
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
 import Arkham.Id
+import Arkham.Key
 import Arkham.Label
 import Arkham.Location.Brazier
 import Arkham.Location.Grid
@@ -50,6 +51,7 @@ data LocationMatcher
   | LocationLeavingPlay
   | LocationWithAdjacentBarrier
   | LocationWithAnyKeys
+  | LocationWithKey ArkhamKey
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher

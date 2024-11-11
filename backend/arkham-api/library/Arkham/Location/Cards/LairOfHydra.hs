@@ -1,24 +1,50 @@
-module Arkham.Location.Cards.LairOfHydra (
-  lairOfHydra,
-  LairOfHydra (..),
-)
-where
+module Arkham.Location.Cards.LairOfHydra (lairOfHydra, LairOfHydra (..)) where
 
+import Arkham.Ability
+import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (AncientOne, Sanctum))
 
 newtype LairOfHydra = LairOfHydra LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lairOfHydra :: LocationCard LairOfHydra
 lairOfHydra = locationWith LairOfHydra Cards.lairOfHydra 0 (Static 0) connectsToAdjacent
 
+instance HasModifiersFor LairOfHydra where
+  getModifiersFor target (LairOfHydra a) = maybeModified a do
+    guard $ isTarget a target
+    n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
+    guard $ n > 0
+    pure [ShroudModifier (-n)]
+
 instance HasAbilities LairOfHydra where
-  getAbilities (LairOfHydra attrs) =
-    extendRevealed attrs []
+  getAbilities (LairOfHydra a) =
+    extendRevealed1 a
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists
+              ( EnemyWithTrait AncientOne
+                  <> mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
+              )
+        )
+      $ actionAbilityWithCost (OrCost $ map (PlaceKeyCost (toTarget a)) [BlackKey, PurpleKey, WhiteKey])
 
 instance RunMessage LairOfHydra where
-  runMessage msg (LairOfHydra attrs) = runQueueT $ case msg of
+  runMessage msg l@(LairOfHydra attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemies <-
+        select
+          $ mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
+      chooseTargetM iid enemies $ nonAttackEnemyDamage (attrs.ability 1) 3
+      pure l
     _ -> LairOfHydra <$> liftRunMessage msg attrs

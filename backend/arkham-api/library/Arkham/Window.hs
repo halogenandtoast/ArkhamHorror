@@ -125,6 +125,7 @@ data WindowType
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
   | FloodLevelChanged LocationId FloodLevel FloodLevel
+  | FloodLevelIncreased LocationMatcher
   | FirstTimeParleyingThisRound InvestigatorId
   | AttachCard (Maybe InvestigatorId) Card Target
   | ActAdvance ActId

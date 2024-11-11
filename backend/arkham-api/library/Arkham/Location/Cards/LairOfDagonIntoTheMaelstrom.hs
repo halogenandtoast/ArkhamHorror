@@ -4,12 +4,17 @@ module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom (
 )
 where
 
+import Arkham.Ability
+import Arkham.CampaignLogKey
+import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Trait (Trait (Sanctum))
 
 newtype LairOfDagonIntoTheMaelstrom = LairOfDagonIntoTheMaelstrom LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lairOfDagonIntoTheMaelstrom :: LocationCard LairOfDagonIntoTheMaelstrom
@@ -17,13 +22,32 @@ lairOfDagonIntoTheMaelstrom =
   locationWith
     LairOfDagonIntoTheMaelstrom
     Cards.lairOfDagonIntoTheMaelstrom
-    0
-    (Static 0)
+    6
+    (PerPlayer 3)
     connectsToAdjacent
 
+instance HasModifiersFor LairOfDagonIntoTheMaelstrom where
+  getModifiersFor target (LairOfDagonIntoTheMaelstrom a) = maybeModified a do
+    guard $ isTarget a target
+    n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
+    guard $ n > 0
+    pure [ShroudModifier (-n)]
+
 instance HasAbilities LairOfDagonIntoTheMaelstrom where
-  getAbilities (LairOfDagonIntoTheMaelstrom attrs) =
-    extendRevealed attrs []
+  getAbilities (LairOfDagonIntoTheMaelstrom a) =
+    extendRevealed
+      a
+      [ groupLimit PerGame
+          $ restricted
+            a
+            1
+            ( foldMap
+                (exists . LocationWithKey)
+                [BlueKey, RedKey, GreenKey, YellowKey, PurpleKey, WhiteKey, BlackKey]
+                <> HasRecord TheOrdersRitualWasDisrupted
+            )
+          $ FastAbility Free
+      ]
 
 instance RunMessage LairOfDagonIntoTheMaelstrom where
   runMessage msg (LairOfDagonIntoTheMaelstrom attrs) = runQueueT $ case msg of

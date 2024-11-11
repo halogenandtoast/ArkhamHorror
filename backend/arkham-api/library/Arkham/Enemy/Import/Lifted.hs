@@ -36,6 +36,7 @@ import Arkham.Message as X (
   Message (..),
   StoryMode (..),
   pattern FailedThisSkillTest,
+  pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
   pattern UseThisAbility,
  )

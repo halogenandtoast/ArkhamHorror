@@ -265,11 +265,6 @@ pattern YourLocation <- LocationWithInvestigator You
   where
     YourLocation = LocationWithInvestigator You
 
-pattern SameLocation :: LocationMatcher
-pattern SameLocation <- YourLocation
-  where
-    SameLocation = YourLocation
-
 pattern NotYourLocation :: LocationMatcher
 pattern NotYourLocation <- NotLocation YourLocation
   where

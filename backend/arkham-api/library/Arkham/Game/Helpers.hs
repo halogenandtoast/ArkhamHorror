@@ -3236,10 +3236,14 @@ locationMatches investigatorId source window locationId matcher' = do
         pure $ locationId == lid
       _ -> error "invalid window for LocationLeavingPlay"
     Matcher.SameLocation -> do
-      mlid' <- case source of
-        EnemySource eid -> field EnemyLocation eid
-        AssetSource aid -> field AssetLocation aid
-        _ -> error $ "can't detect same location for source " <> show source
+      let
+        getSameLocationSource = \case
+          EnemySource eid -> field EnemyLocation eid
+          AssetSource aid -> field AssetLocation aid
+          AbilitySource s _ -> getSameLocationSource s
+          _ -> error $ "can't detect same location for source " <> show source
+
+      mlid' <- getSameLocationSource source
       pure $ Just locationId == mlid'
     Matcher.YourLocation -> do
       yourLocationId <- field InvestigatorLocation investigatorId

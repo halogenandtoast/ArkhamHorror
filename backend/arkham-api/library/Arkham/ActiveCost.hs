@@ -193,6 +193,9 @@ payCost msg c iid skipAdditionalCosts cost = do
     SpendKeyCost key -> do
       push $ PlaceKey ScenarioTarget key
       pure c
+    PlaceKeyCost target key -> do
+      push $ PlaceKey target key
+      pure c
     CostToEnterUnrevealed _ -> do
       -- we don't pay this directly, it must be unwrapped elsewhere
       pure c
@@ -467,6 +470,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       enemies <- select matcher
       push $ chooseOrRunOne player [targetLabel enemy [placeDoom source enemy x] | enemy <- enemies]
       withPayment $ DoomPayment x
+    RemoveEnemyDamageCost x matcher -> do
+      n <- getGameValue x
+      enemies <- select $ matcher <> EnemyWithDamage (atLeast n)
+      push
+        $ chooseOrRunOne
+          player
+          [targetLabel enemy [RemoveTokens source (toTarget enemy) #damage n] | enemy <- enemies]
+      pure c
     DoomCost _ (AgendaMatcherTarget matcher) x -> do
       agendas <- selectMap AgendaTarget matcher
       pushAll [PlaceDoom source target x | target <- agendas]

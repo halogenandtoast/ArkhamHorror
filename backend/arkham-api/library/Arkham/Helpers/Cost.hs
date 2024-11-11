@@ -66,7 +66,11 @@ getCanAffordCost_
   -> Cost
   -> m Bool
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
+  RemoveEnemyDamageCost x matcher -> do
+    n <- getGameValue x
+    selectAny $ matcher <> Matcher.EnemyWithDamage (Matcher.atLeast n)
   SpendKeyCost k -> fieldMap InvestigatorKeys (elem k) iid
+  PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
   GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
   CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c
   UnpayableCost -> pure False

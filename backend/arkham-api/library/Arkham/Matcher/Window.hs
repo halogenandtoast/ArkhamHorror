@@ -46,6 +46,7 @@ data WindowMatcher
   | VehicleLeaves Timing AssetMatcher LocationMatcher
   | VehicleEnters Timing AssetMatcher LocationMatcher
   | FloodLevelChanged Timing LocationMatcher
+  | FloodLevelIncreased Timing LocationMatcher
   | FirstTimeParleyingThisRound Timing Who
   | SpentUses Timing Who SourceMatcher UseType AssetMatcher ValueMatcher
   | AttackOrEffectSpentLastUse Timing SourceMatcher TargetMatcher UseType

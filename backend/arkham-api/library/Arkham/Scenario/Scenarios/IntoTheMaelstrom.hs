@@ -201,12 +201,12 @@ instance RunMessage IntoTheMaelstrom where
         Resolution 4 -> do
           story $ i18nWithTitle "resolution4"
           record AgentHarpersMissionIsComplete
-          eachInvestigator \iid -> gainXp iid ScenarioSource "Bonus Experience" 3
+          eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 5 -> do
           story $ i18nWithTitle "resolution5"
           record TheRichesOfTheDeepAreLostForever
-          eachInvestigator \iid -> gainXp iid ScenarioSource "Bonus Experience" 3
+          eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 6 -> do
           story $ i18nWithTitle "resolution6"

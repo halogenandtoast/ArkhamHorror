@@ -9,6 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
@@ -112,7 +113,7 @@ instance RunMessage IntoTheMaelstrom where
       setAsideKeys . map UnrevealedKey =<< shuffle (take 4 $ ks <> otherKs)
 
       gatewayToYhanthlei <- placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
-      tidalTunnels <- amongGathered (CardWithTitle "Tidal Tunnel")
+      tidalTunnels <- shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
 
       for_
         ( zip
@@ -176,9 +177,13 @@ instance RunMessage IntoTheMaelstrom where
                 ]
             )
             addToVictory
-          allGainXp attrs
-          eachInvestigator (`sufferPhysicalTrauma` 2)
           shatteredTheAlignment <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV1
+          conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
+          conspiracyDismantled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV3
+          if shatteredTheAlignment && (conspiracyFulfilled || conspiracyDismantled)
+            then allGainXpWithBonus attrs $ toBonus "bonus" 3
+            else allGainXp attrs
+          eachInvestigator (`sufferPhysicalTrauma` 2)
           push $ if shatteredTheAlignment then R2 else R3
         Resolution 2 -> do
           story $ i18nWithTitle "resolution2"
@@ -201,12 +206,12 @@ instance RunMessage IntoTheMaelstrom where
         Resolution 4 -> do
           story $ i18nWithTitle "resolution4"
           record AgentHarpersMissionIsComplete
-          eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
+          -- eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 5 -> do
           story $ i18nWithTitle "resolution5"
           record TheRichesOfTheDeepAreLostForever
-          eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
+          -- eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 6 -> do
           story $ i18nWithTitle "resolution6"

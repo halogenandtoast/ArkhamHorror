@@ -2476,7 +2476,7 @@ runGameMessage msg g = case msg of
       _ -> pure ()
     if hasForesight
       then do
-        canCancel <- (EncounterCard card) <=~> CanCancelRevelationEffect #any
+        canCancel <- EncounterCard card <=~> CanCancelRevelationEffect #any
         if canCancel
           then do
             player <- getPlayer iid

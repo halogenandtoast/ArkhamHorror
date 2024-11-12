@@ -16,7 +16,7 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey
 
 newtype SleepingCar = SleepingCar LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sleepingCar :: LocationCard SleepingCar
@@ -32,7 +32,7 @@ instance HasModifiersFor SleepingCar where
   getModifiersFor target (SleepingCar l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
         Just leftLocation -> do
-          clueCount <- field LocationClues leftLocation
+          clueCount <- sum <$> traverse (field LocationClues) leftLocation
           toModifiers l [Blocked | not locationRevealed && clueCount > 0]
         Nothing -> pure []
   getModifiersFor _ _ = pure []

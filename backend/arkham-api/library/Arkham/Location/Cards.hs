@@ -6626,7 +6626,7 @@ deepOneGrotto_175a :: CardDef
 deepOneGrotto_175a =
   locationWithUnrevealed
     "07175a"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []
@@ -6640,7 +6640,7 @@ deepOneGrotto_175b :: CardDef
 deepOneGrotto_175b =
   locationWithUnrevealed
     "07175b"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []
@@ -6654,7 +6654,7 @@ cyclopeanRuins_176a :: CardDef
 cyclopeanRuins_176a =
   locationWithUnrevealed
     "07176a"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []
@@ -6668,7 +6668,7 @@ cyclopeanRuins_176b :: CardDef
 cyclopeanRuins_176b =
   locationWithUnrevealed
     "07176b"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []
@@ -6682,7 +6682,7 @@ templeOfTheUnion_177a :: CardDef
 templeOfTheUnion_177a =
   locationWithUnrevealed
     "07177a"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []
@@ -6696,7 +6696,7 @@ templeOfTheUnion_177b :: CardDef
 templeOfTheUnion_177b =
   locationWithUnrevealed
     "07177b"
-    "Tidal Tunnel"
+    "Unfathomable Depths"
     [Cave, Yhanthlei]
     NoSymbol
     []

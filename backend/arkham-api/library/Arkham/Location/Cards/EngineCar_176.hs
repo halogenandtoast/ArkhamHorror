@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype EngineCar_176 = EngineCar_176 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 engineCar_176 :: LocationCard EngineCar_176
@@ -34,7 +34,7 @@ instance HasModifiersFor EngineCar_176 where
   getModifiersFor target (EngineCar_176 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
         Just leftLocation -> do
-          clueCount <- field LocationClues leftLocation
+          clueCount <- sum <$> traverse (field LocationClues) leftLocation
           toModifiers l [Blocked | not locationRevealed && clueCount > 0]
         Nothing -> pure []
   getModifiersFor _ _ = pure []

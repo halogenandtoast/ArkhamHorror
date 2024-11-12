@@ -4,7 +4,6 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.ChaosToken
-import Arkham.Classes.GameLogger (format)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query (select)
 import Arkham.Helpers.Modifiers
@@ -83,4 +82,4 @@ flashback iid f = case f of
     recoverMemory AJailbreak
     chooseOneM iid do
       for_ [Cultist, Tablet, ElderThing] \face ->
-        labeled ("Remove " <> format face) $ removeChaosToken face
+        labeled ("Remove " <> toDisplay face) $ removeChaosToken face

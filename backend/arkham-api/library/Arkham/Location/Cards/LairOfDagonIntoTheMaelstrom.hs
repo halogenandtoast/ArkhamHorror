@@ -11,6 +11,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 import Arkham.Trait (Trait (Sanctum))
 
 newtype LairOfDagonIntoTheMaelstrom = LairOfDagonIntoTheMaelstrom LocationAttrs
@@ -50,5 +51,8 @@ instance HasAbilities LairOfDagonIntoTheMaelstrom where
       ]
 
 instance RunMessage LairOfDagonIntoTheMaelstrom where
-  runMessage msg (LairOfDagonIntoTheMaelstrom attrs) = runQueueT $ case msg of
+  runMessage msg l@(LairOfDagonIntoTheMaelstrom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      flashback iid Flashback14
+      pure l
     _ -> LairOfDagonIntoTheMaelstrom <$> liftRunMessage msg attrs

@@ -42,6 +42,7 @@ instance IsCampaign TheInnsmouthConspiracy where
     ALightInTheFog -> Just TheLairOfDagon
     TheLairOfDagon -> Just (InterludeStep 4 Nothing)
     InterludeStep 4 _ -> Just (UpgradeDeckStep IntoTheMaelstrom)
+    IntoTheMaelstrom -> Just EpilogueStep
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -162,5 +163,31 @@ instance RunMessage TheInnsmouthConspiracy where
             removeCampaignCard Assets.elinaHarperKnowsTooMuch
 
       nextCampaignStep
+      pure c
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      story $ i18nWithTitle "epilogue1"
+      memories <- getRecordSet MemoriesRecovered
+      if all
+        ((`elem` memories) . recorded)
+        [ AMeetingWithThomasDawson
+        , ABattleWithAHorrifyingDevil
+        , ADecisionToStickTogether
+        , AnEncounterWithASecretCult
+        , ADealWithJoeSargent
+        , AFollowedLead
+        , AnIntervention
+        , AJailbreak
+        , DiscoveryOfAStrangeIdol
+        , DiscoveryOfAnUnholyMantle
+        , DiscoveryOfAMysticalRelic
+        , AConversationWithMrMoore
+        , TheLifecycleOfADeepOne
+        , AStingingBetrayal
+        ]
+        then do
+          record TheHorribleTruth
+          story $ i18nWithTitle "flashback15"
+        else story $ i18nWithTitle "epilogue2"
+
       pure c
     _ -> lift $ defaultCampaignRunner msg c

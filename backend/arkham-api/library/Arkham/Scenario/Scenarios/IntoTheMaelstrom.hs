@@ -111,7 +111,7 @@ instance RunMessage IntoTheMaelstrom where
 
       setAsideKeys . map UnrevealedKey =<< shuffle (take 4 $ ks <> otherKs)
 
-      startAt =<< placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
+      gatewayToYhanthlei <- placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
       tidalTunnels <- amongGathered (CardWithTitle "Tidal Tunnel")
 
       for_
@@ -134,9 +134,12 @@ instance RunMessage IntoTheMaelstrom where
             then Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom
             else Enemies.dagonDeepInSlumberIntoTheMaelstrom
         , Enemies.hydraDeepInSlumber
+        , Acts.cityOfTheDeepV2
+        , Acts.cityOfTheDeepV3
         ]
 
       setAside =<< amongGathered #location
+      startAt gatewayToYhanthlei
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
         Cultist -> placeDoomOnAgendaAndCheckAdvance 1

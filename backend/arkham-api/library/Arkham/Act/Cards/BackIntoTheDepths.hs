@@ -29,7 +29,7 @@ instance HasAbilities BackIntoTheDepths where
               <> foldMap (exists . InvestigatorWithKey) [BlueKey, RedKey, YellowKey, GreenKey]
           )
           $ Objective
-          $ forced AnyWindow
+          $ FastAbility Free
       ]
 
 instance RunMessage BackIntoTheDepths where

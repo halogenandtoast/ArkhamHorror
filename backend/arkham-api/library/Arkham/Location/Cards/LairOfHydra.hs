@@ -15,7 +15,7 @@ newtype LairOfHydra = LairOfHydra LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lairOfHydra :: LocationCard LairOfHydra
-lairOfHydra = locationWith LairOfHydra Cards.lairOfHydra 0 (Static 0) connectsToAdjacent
+lairOfHydra = locationWith LairOfHydra Cards.lairOfHydra 6 (PerPlayer 3) connectsToAdjacent
 
 instance HasModifiersFor LairOfHydra where
   getModifiersFor target (LairOfHydra a) = maybeModified a do

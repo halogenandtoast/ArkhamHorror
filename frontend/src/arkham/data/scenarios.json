@@ -320,6 +320,13 @@
   {
       "id": "07311",
       "name": "Into the Maelstrom",
-      "campaign": "07"
+      "campaign": "07",
+      "settings": [
+        { "key": "TheInvestigatorsPossessTheKeyToYhaNthlei", "type": "ToggleKey", "content": true },
+        { "key": "TheInvestigatorsPossessAMapOfYhaNthlei", "type": "ToggleKey", "content": true },
+        { "key": "TheGuardianOfYhanthleiIsDispatched", "type": "ToggleKey", "content": true },
+        { "key": "TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper", "type": "ToggleKey", "content": true },
+        { "key": "TheOrdersRitualWasDisrupted", "type": "ToggleKey", "content": false }
+      ]
   }
 ]

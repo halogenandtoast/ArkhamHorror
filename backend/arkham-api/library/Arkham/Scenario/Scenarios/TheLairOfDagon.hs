@@ -85,6 +85,15 @@ instance RunMessage TheLairOfDagon where
     DoStep 5 PreScenarioSetup -> do
       story $ i18nWithTitle "intro5"
       pure s
+    StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
+      pure s
     Setup -> runScenarioSetup TheLairOfDagon attrs do
       gather Set.TheLairOfDagon
       gather Set.AgentsOfDagon

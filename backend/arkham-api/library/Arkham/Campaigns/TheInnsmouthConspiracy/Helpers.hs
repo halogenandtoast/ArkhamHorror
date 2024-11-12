@@ -54,7 +54,11 @@ needsAir a n =
   restricted
     a
     n
-    (youExist $ at_ FullyFloodedLocation <> not_ (InVehicleMatching $ assetIs Assets.fishingVessel))
+    ( youExist
+        $ at_ FullyFloodedLocation
+        <> not_ (InVehicleMatching $ assetIs Assets.fishingVessel)
+        <> not_ (HasMatchingAsset $ assetIs Assets.divingSuit)
+    )
     $ forced
     $ TurnBegins #when You
 

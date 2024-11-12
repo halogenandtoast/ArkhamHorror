@@ -123,6 +123,7 @@ data LocationMatcher
   | HighestShroud LocationMatcher
   | FloodedLocation
   | FullyFloodedLocation
+  | PartiallyFloodedLocation
   | CanHaveFloodLevelIncreased
   | -- | start destination / end destination
     LocationWithLowerPrintedShroudThan LocationMatcher

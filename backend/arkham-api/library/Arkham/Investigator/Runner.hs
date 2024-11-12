@@ -1303,7 +1303,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   InvestigatorDirectDamage iid source damage horror | iid == toId a -> do
     unless (investigatorDefeated || investigatorResigned) do
       mods <- getModifiers a
-      let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
+      let horrorToCancel =
+            if any (`elem` mods) [CannotCancelHorror, CannotCancelHorrorFrom source]
+              then 0
+              else sum [n | WillCancelHorror n <- mods]
       let horror' = max 0 (horror - horrorToCancel)
       pushAll
         $ [ CheckWindows
@@ -1329,7 +1332,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       if TreatAllDamageAsDirect `elem` mods
         then push $ InvestigatorDirectDamage iid source damage horror
         else do
-          let horrorToCancel = if CannotCancelHorror `elem` mods then 0 else sum [n | WillCancelHorror n <- mods]
+          let horrorToCancel =
+                if any (`elem` mods) [CannotCancelHorror, CannotCancelHorrorFrom source]
+                  then 0
+                  else sum [n | WillCancelHorror n <- mods]
           let horror' = max 0 (horror - horrorToCancel)
           pushAll
             $ [ CheckWindows

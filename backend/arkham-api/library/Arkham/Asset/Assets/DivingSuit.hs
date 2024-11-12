@@ -1,15 +1,38 @@
-module Arkham.Asset.Assets.DivingSuit ( divingSuit , DivingSuit(..)) where
+module Arkham.Asset.Assets.DivingSuit (divingSuit, DivingSuit (..)) where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Matcher
+import Arkham.Modifier
 
 newtype DivingSuit = DivingSuit AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 divingSuit :: AssetCard DivingSuit
 divingSuit = asset DivingSuit Cards.divingSuit
 
+instance HasModifiersFor DivingSuit where
+  getModifiersFor target (DivingSuit a) =
+    modified a [NonDirectDamageMustBeAssignToThisN 1 | isTarget a target]
+
+instance HasAbilities DivingSuit where
+  getAbilities (DivingSuit a) =
+    [ restricted a 1 ControlsThis
+        $ forced
+        $ InvestigatorWouldTakeDamage #when You AnySource IsNonDirectDamage
+    , restricted a 2 ControlsThis
+        $ forced
+        $ AssetLeavesPlay #when (be a)
+    ]
+
 instance RunMessage DivingSuit where
-  runMessage msg (DivingSuit attrs) = runQueueT $ case msg of
+  runMessage msg a@(DivingSuit attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      -- handled by modifier
+      pure a
+    UseThisAbility _iid (isSource attrs -> True) 2 -> do
+      removeFromGame attrs
+      pure a
     _ -> DivingSuit <$> liftRunMessage msg attrs

@@ -21,6 +21,7 @@ import Arkham.SkillType
 import Arkham.Token
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
+import Data.Map.Strict qualified as Map
 import GHC.Records
 
 data LocationAttrs = LocationAttrs
@@ -36,7 +37,7 @@ data LocationAttrs = LocationAttrs
   , locationRevealedSymbol :: LocationSymbol
   , locationConnectedMatchers :: [LocationMatcher]
   , locationRevealedConnectedMatchers :: [LocationMatcher]
-  , locationDirections :: Map Direction LocationId
+  , locationDirections :: Map Direction [LocationId]
   , locationConnectsTo :: Set Direction
   , locationCardsUnderneath :: [Card]
   , locationCostToEnterUnrevealed :: Cost
@@ -132,7 +133,7 @@ instance FromJSON LocationAttrs where
     locationRevealedSymbol <- o .: "revealedSymbol"
     locationConnectedMatchers <- o .: "connectedMatchers"
     locationRevealedConnectedMatchers <- o .: "revealedConnectedMatchers"
-    locationDirections <- o .: "directions"
+    locationDirections <- o .: "directions" <|> (Map.map (: []) <$> o .: "directions")
     locationConnectsTo <- o .: "connectsTo"
     locationCardsUnderneath <- o .: "cardsUnderneath"
     locationCostToEnterUnrevealed <- o .: "costToEnterUnrevealed"

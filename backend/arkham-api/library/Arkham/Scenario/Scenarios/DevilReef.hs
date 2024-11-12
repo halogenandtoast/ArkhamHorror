@@ -123,17 +123,7 @@ instance RunMessage DevilReef where
           , Locations.saltMarshes
           , Locations.blackReef
           ]
-      addExtraDeck TidalTunnelDeck
-        =<< shuffle
-          [ Locations.boneRiddenPit
-          , Locations.fishGraveyard
-          , Locations.underwaterCavern
-          , Locations.underwaterCavern
-          , Locations.tidalPool
-          , Locations.tidalPool
-          , Locations.undergroundRiver
-          , Locations.undergroundRiver
-          ]
+      addExtraDeck TidalTunnelDeck =<< shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
     PlaceKey (InvestigatorTarget iid) PurpleKey -> do
       selectForMaybeM (assetIs Assets.wavewornIdol) $ takeControlOfAsset iid
       DevilReef <$> liftRunMessage msg attrs

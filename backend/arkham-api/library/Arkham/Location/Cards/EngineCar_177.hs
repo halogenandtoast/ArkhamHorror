@@ -12,7 +12,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype EngineCar_177 = EngineCar_177 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 engineCar_177 :: LocationCard EngineCar_177
@@ -28,7 +28,7 @@ instance HasModifiersFor EngineCar_177 where
   getModifiersFor target (EngineCar_177 l@LocationAttrs {..})
     | isTarget l target = case lookup LeftOf locationDirections of
         Just leftLocation -> do
-          clueCount <- field LocationClues leftLocation
+          clueCount <- sum <$> traverse (field LocationClues) leftLocation
           toModifiers l [Blocked | not locationRevealed && clueCount > 0]
         Nothing -> pure []
   getModifiersFor _ _ = pure []

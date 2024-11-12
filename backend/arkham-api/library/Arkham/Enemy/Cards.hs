@@ -2045,6 +2045,7 @@ robertFriendlyDisgruntledDockworker =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 zadokAllenDrunkAndDisorderly :: CardDef
@@ -2054,6 +2055,7 @@ zadokAllenDrunkAndDisorderly =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 brianBurnhamWantsOut :: CardDef
@@ -2063,6 +2065,7 @@ brianBurnhamWantsOut =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 barnabasMarshTheChangeIsUponHim :: CardDef
@@ -2072,6 +2075,7 @@ barnabasMarshTheChangeIsUponHim =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 joyceLittleBookshopOwner :: CardDef
@@ -2081,6 +2085,7 @@ joyceLittleBookshopOwner =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 otheraGilmanProprietessOfTheHotel :: CardDef
@@ -2090,6 +2095,7 @@ otheraGilmanProprietessOfTheHotel =
       { cdCardTraits = setFromList [Humanoid, Suspect, Elite]
       , cdKeywords = singleton Keyword.Aloof
       , cdVictoryPoints = Just 0
+      , cdRevelation = IsRevelation
       }
 
 priestOfDagon :: CardDef

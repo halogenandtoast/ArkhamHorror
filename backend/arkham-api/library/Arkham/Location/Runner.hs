@@ -72,6 +72,7 @@ import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window
 import Data.Function (on)
 import Data.List (nubBy)
+import Data.Map.Strict qualified as Map
 
 pattern AfterFailedInvestigate :: InvestigatorId -> Target -> Message
 pattern AfterFailedInvestigate iid target <-
@@ -152,7 +153,7 @@ instance RunMessage LocationAttrs where
     SetLocationLabel lid label' | lid == locationId -> do
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do
-      pure $ a & (directionsL %~ insertMap direction lid)
+      pure $ a & (directionsL %~ Map.insertWith (<>) direction [lid])
     PlacedLocationDirection lid direction lid2 | lid == locationId -> do
       let
         reversedDirection = case direction of
@@ -161,11 +162,11 @@ instance RunMessage LocationAttrs where
           Above -> Below
           Below -> Above
 
-      pure $ a & (directionsL %~ insertMap reversedDirection lid2)
+      pure $ a & (directionsL %~ Map.insertWith (<>) reversedDirection [lid2])
     LocationMoved lid | lid == locationId -> do
       pure $ a & (directionsL .~ mempty)
     LocationMoved lid | lid /= locationId -> do
-      pure $ a & (directionsL %~ filterMap (/= lid))
+      pure $ a & (directionsL %~ filterMap (/= []) . Map.map (filter (/= lid)))
     PutLocationInFrontOf iid lid | lid == locationId -> do
       pure $ a & inFrontOfL ?~ iid
     PutLocationInCenter lid | lid == locationId -> do
@@ -407,7 +408,7 @@ instance RunMessage LocationAttrs where
     EndPhase -> do
       pure $ a & breachesL %~ fmap Breach.resetIncursion
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
-    RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= lid)
+    RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= []) . Map.map (filter (/= lid))
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of

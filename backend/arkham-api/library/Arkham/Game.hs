@@ -1586,7 +1586,7 @@ getLocationsMatching lmatcher = do
       selectAny $ treacheryAt (toId l) <> matcher
     LocationInDirection direction matcher -> do
       starts <- getLocationsMatching matcher
-      let matches' = mapMaybe (lookup direction . attr locationDirections) starts
+      let matches' = concat $ mapMaybe (lookup direction . attr locationDirections) starts
       pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromInvestigator investigatorMatcher matcher -> do
       miid <- selectOne investigatorMatcher

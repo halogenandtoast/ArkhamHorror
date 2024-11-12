@@ -16,7 +16,7 @@ cerenerianDeepOne =
     $ (preyL .~ Prey (InvestigatorWithLowestSkill #willpower UneliminatedInvestigator))
 
 instance HasAbilities CerenerianDeepOne where
-  getAbilities (CerenerianDeepOne a) = extend a [restricted a 1 HasRemainingCurseTokens $ forced $ EnemyEngaged #after You (be a)]
+  getAbilities (CerenerianDeepOne a) = extend1 a $ restricted a 1 HasRemainingCurseTokens $ forced $ EnemyEngaged #after You (be a)
 
 instance RunMessage CerenerianDeepOne where
   runMessage msg e@(CerenerianDeepOne attrs) = runQueueT $ case msg of

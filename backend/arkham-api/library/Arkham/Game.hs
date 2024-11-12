@@ -2039,6 +2039,8 @@ getLocationsMatching lmatcher = do
       filterM (fieldMap LocationFloodLevel (`elem` [Just FullyFlooded, Just PartiallyFlooded]) . toId) ls
     FullyFloodedLocation ->
       filterM (fieldMap LocationFloodLevel (== Just FullyFlooded) . toId) ls
+    PartiallyFloodedLocation ->
+      filterM (fieldMap LocationFloodLevel (== Just PartiallyFlooded) . toId) ls
     CanHaveFloodLevelIncreased -> do
       let
         maxFloodLevel l = do

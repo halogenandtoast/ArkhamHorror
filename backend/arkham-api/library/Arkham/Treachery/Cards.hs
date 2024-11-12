@@ -201,6 +201,7 @@ allEncounterTreacheryCards =
       , closeWatch
       , collapsingReality
       , conspiracyOfBlood
+      , conspiracyOfDeepOnes
       , corrosion
       , crashingFloods
       , creepingDarkness
@@ -384,6 +385,7 @@ allEncounterTreacheryCards =
       , terrorInTheNight
       , terrorFromBeyond
       , terrorUnleashed
+      , thalassophobia
       , theCreaturesTracks
       , theCultsSearch
       , theEndIsNigh
@@ -406,6 +408,7 @@ allEncounterTreacheryCards =
       , toughCrowd
       , toweringBeasts
       , trappedSpirits
+      , treacherousDepths
       , twinSuns
       , twistOfFate
       , twistedToHisWill
@@ -2336,6 +2339,26 @@ stoneBarrier :: CardDef
 stoneBarrier =
   (treachery "07299" "Stone Barrier" TheLairOfDagon 2)
     { cdCardTraits = setFromList [Obstacle]
+    }
+
+treacherousDepths :: CardDef
+treacherousDepths =
+  (treachery "07335" "Treacherous Depths" IntoTheMaelstrom 3)
+    { cdCardTraits = setFromList [Hazard]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+conspiracyOfDeepOnes :: CardDef
+conspiracyOfDeepOnes =
+  (treachery "07336" "Conspiracy of Deep Ones" IntoTheMaelstrom 2)
+    { cdCardTraits = setFromList [Scheme]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+thalassophobia :: CardDef
+thalassophobia =
+  (treachery "07337" "Thalassophobia" IntoTheMaelstrom 2)
+    { cdCardTraits = setFromList [Terror]
     }
 
 theHarbinger :: CardDef

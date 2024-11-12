@@ -292,6 +292,14 @@ data CampaignLogKey
   | TheGatekeeperHasBeenDefeated
   | TheGuardianOfYhanthleiIsDispatched
   | TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
+  | TheInvestigatorsEscapedYhanthlei
+  | ThePlotOfTheDeepOnesWasThwarted
+  | TheFloodHasBegun
+  | AgentHarpersMissionIsComplete
+  | TheRichesOfTheDeepAreLostForever
+  | AgentHarpersMissionIsCompleteButAtWhatCost
+  | TheRichesOfTheDeepAreLostForeverButAtWhatCost
+  | TheDeepOnesHaveFloodedTheEarth
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

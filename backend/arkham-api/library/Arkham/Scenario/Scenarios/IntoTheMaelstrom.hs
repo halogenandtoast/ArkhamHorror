@@ -9,12 +9,14 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IntoTheMaelstrom.Helpers
 import Arkham.Trait (Trait (Yhanthlei))
@@ -48,7 +50,16 @@ instance HasChaosTokenValue IntoTheMaelstrom where
 instance RunMessage IntoTheMaelstrom where
   runMessage msg s@(IntoTheMaelstrom attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithTitle "intro"
+      pure s
+    StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup IntoTheMaelstrom attrs do
       setUsesGrid
@@ -143,5 +154,72 @@ instance RunMessage IntoTheMaelstrom where
           withLocationOf iid \lid -> do
             whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1
         _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          push R8
+        Resolution 1 -> do
+          story $ i18nWithTitle "resolution1"
+          record TheInvestigatorsEscapedYhanthlei
+          selectEach
+            ( mapOneOf
+                enemyIs
+                [ Enemies.dagonDeepInSlumberIntoTheMaelstrom
+                , Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom
+                , Enemies.hydraDeepInSlumber
+                , Enemies.hydraAwakenedAndEnraged
+                ]
+            )
+            addToVictory
+          allGainXp attrs
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          shatteredTheAlignment <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV1
+          push $ if shatteredTheAlignment then R2 else R3
+        Resolution 2 -> do
+          story $ i18nWithTitle "resolution2"
+          record ThePlotOfTheDeepOnesWasThwarted
+          conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
+          if conspiracyFulfilled
+            then push R4
+            else do
+              conspiracyDismantled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV3
+              if conspiracyDismantled
+                then push R5
+                else endOfScenario
+        Resolution 3 -> do
+          story $ i18nWithTitle "resolution3"
+          record TheFloodHasBegun
+          conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
+          if conspiracyFulfilled
+            then push R6
+            else push R7
+        Resolution 4 -> do
+          story $ i18nWithTitle "resolution4"
+          record AgentHarpersMissionIsComplete
+          eachInvestigator \iid -> gainXp iid ScenarioSource "Bonus Experience" 3
+          endOfScenario
+        Resolution 5 -> do
+          story $ i18nWithTitle "resolution5"
+          record TheRichesOfTheDeepAreLostForever
+          eachInvestigator \iid -> gainXp iid ScenarioSource "Bonus Experience" 3
+          endOfScenario
+        Resolution 6 -> do
+          story $ i18nWithTitle "resolution6"
+          record AgentHarpersMissionIsCompleteButAtWhatCost
+          eachInvestigator (`sufferMentalTrauma` 2)
+          gameOver
+        Resolution 7 -> do
+          story $ i18nWithTitle "resolution7"
+          record TheRichesOfTheDeepAreLostForeverButAtWhatCost
+          eachInvestigator (`sufferMentalTrauma` 2)
+          gameOver
+        Resolution 8 -> do
+          story $ i18nWithTitle "resolution8"
+          record TheDeepOnesHaveFloodedTheEarth
+          eachInvestigator (kill attrs)
+          gameOver
+        _ -> error "Unknown resolution"
       pure s
     _ -> IntoTheMaelstrom <$> liftRunMessage msg attrs

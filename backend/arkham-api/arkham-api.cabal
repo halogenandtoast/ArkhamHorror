@@ -3458,6 +3458,7 @@ library
       Arkham.Treachery.Cards.CloseWatch
       Arkham.Treachery.Cards.CollapsingReality
       Arkham.Treachery.Cards.ConspiracyOfBlood
+      Arkham.Treachery.Cards.ConspiracyOfDeepOnes
       Arkham.Treachery.Cards.Corrosion
       Arkham.Treachery.Cards.CoverUp
       Arkham.Treachery.Cards.CoverUpAdvanced
@@ -3702,6 +3703,7 @@ library
       Arkham.Treachery.Cards.TerrorFromBeyond
       Arkham.Treachery.Cards.TerrorInTheNight
       Arkham.Treachery.Cards.TerrorUnleashed
+      Arkham.Treachery.Cards.Thalassophobia
       Arkham.Treachery.Cards.The13thVision
       Arkham.Treachery.Cards.TheBellTolls
       Arkham.Treachery.Cards.TheCreaturesTracks
@@ -3732,6 +3734,7 @@ library
       Arkham.Treachery.Cards.ToughCrowd
       Arkham.Treachery.Cards.ToweringBeasts
       Arkham.Treachery.Cards.TrappedSpirits
+      Arkham.Treachery.Cards.TreacherousDepths
       Arkham.Treachery.Cards.TwinSuns
       Arkham.Treachery.Cards.TwistedToHisWill
       Arkham.Treachery.Cards.TwistOfFate

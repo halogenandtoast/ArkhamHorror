@@ -488,6 +488,10 @@ allTreacheries =
     , SomeTreacheryCard esotericRitual
     , SomeTreacheryCard heraldsOfTheDeep
     , SomeTreacheryCard stoneBarrier
+    , --- Into the Maelstrom [itm]
+      SomeTreacheryCard treacherousDepths
+    , SomeTreacheryCard conspiracyOfDeepOnes
+    , SomeTreacheryCard thalassophobia
     , -- Edge of the Earth
       -- signature
       SomeTreacheryCard theHarbinger

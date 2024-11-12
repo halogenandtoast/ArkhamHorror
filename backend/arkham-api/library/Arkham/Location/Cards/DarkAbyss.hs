@@ -21,7 +21,7 @@ instance HasAbilities DarkAbyss where
   getAbilities (DarkAbyss a) =
     extendRevealed
       a
-      [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+      [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
       , restricted a 2 (exists $ orConnected (be a) <> CanHaveFloodLevelIncreased)
           $ forced
           $ DiscoveringLastClue #after Anyone (be a)

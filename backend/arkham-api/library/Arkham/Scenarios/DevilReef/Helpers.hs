@@ -36,7 +36,7 @@ flashback iid f = case f of
     takeControlOfSetAsideAsset iid awakenedMantle
   Flashback11 -> do
     scenarioI18n $ story $ i18nWithTitle "flashback11"
-    recoverMemory DiscoveryOfAMythicalRelic
+    recoverMemory DiscoveryOfAMysticalRelic
     placeKey iid BlackKey
     headdressOfYhaNthlei <- getSetAsideCard Assets.headdressOfYhaNthlei
     takeControlOfSetAsideAsset iid headdressOfYhaNthlei

@@ -1707,6 +1707,10 @@ runGameMessage msg g = case msg of
     card <- field EventCard eid
     pushAll $ windows [Window.AddedToVictory card]
     pure $ g & (entitiesL . eventsL %~ deleteMap eid) -- we might not want to remove here?
+  AddToVictory (ActTarget aid) -> do
+    card <- field ActCard aid
+    pushAll $ windows [Window.AddedToVictory card]
+    pure $ g & (entitiesL . actsL %~ deleteMap aid) -- we might not want to remove here?
   AddToVictory (StoryTarget sid) -> do
     card <- field StoryCard sid
     pushAll $ windows [Window.AddedToVictory card]

@@ -18,7 +18,9 @@ tidalPool = locationWith TidalPool Cards.tidalPool 3 (PerPlayer 1) connectsToAdj
 
 instance HasAbilities TidalPool where
   getAbilities (TidalPool attrs) =
-    extendRevealed attrs [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone (be attrs)]
+    extendRevealed
+      attrs
+      [restricted attrs 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be attrs)]
 
 instance HasModifiersFor TidalPool where
   getModifiersFor target (TidalPool attrs) | isTarget attrs target = do

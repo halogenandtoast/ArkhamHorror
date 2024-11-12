@@ -300,6 +300,7 @@ data CampaignLogKey
   | AgentHarpersMissionIsCompleteButAtWhatCost
   | TheRichesOfTheDeepAreLostForeverButAtWhatCost
   | TheDeepOnesHaveFloodedTheEarth
+  | TheHorribleTruth
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

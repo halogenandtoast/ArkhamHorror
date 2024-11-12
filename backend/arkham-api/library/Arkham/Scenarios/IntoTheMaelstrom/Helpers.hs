@@ -7,7 +7,7 @@ import Arkham.Classes.HasQueue (push)
 import Arkham.Helpers.Query (getLead, getSetAsideCard)
 import Arkham.I18n
 import Arkham.Id
-import Arkham.Message (Message (SetActDeckCards))
+import Arkham.Message (Message (AddAct, SetActDeckCards))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
@@ -29,9 +29,11 @@ flashback _iid f = case f of
     chooseOneM lead do
       labeled
         "Help Agent Harper complete her mission. Put the set-aside City of the Deep (v. II) into play next to the current act. It provides a new alternate objective."
-        $ push
-        $ SetActDeckCards 2 [actV2]
+        do
+          push $ SetActDeckCards 2 [actV2]
+          push $ AddAct 2 actV2
       labeled
         "Defy Agent Harper. Search each player’s hand, deck, discard pile, and all play areas for Elina Harper and remove her from the game. Put the set-aside City of the Deep (v. III) into play next to the current act. It provides a new alternate objective."
-        $ push
-        $ SetActDeckCards 2 [actV3]
+        do
+          push $ SetActDeckCards 2 [actV3]
+          push $ AddAct 2 actV3

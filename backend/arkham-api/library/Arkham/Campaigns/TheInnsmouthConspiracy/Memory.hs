@@ -13,7 +13,7 @@ data Memory
   | AFollowedLead
   | DiscoveryOfAStrangeIdol
   | DiscoveryOfAnUnholyMantle
-  | DiscoveryOfAMythicalRelic
+  | DiscoveryOfAMysticalRelic
   | AConversationWithMrMoore
   | TheLifecycleOfADeepOne
   | AStingingBetrayal

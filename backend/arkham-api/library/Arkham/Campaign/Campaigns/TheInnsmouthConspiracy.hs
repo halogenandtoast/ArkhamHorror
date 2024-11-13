@@ -134,7 +134,7 @@ instance RunMessage TheInnsmouthConspiracy where
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 4 _) -> scope "interlude4" do
-      story $ i18n "hiddenTruths"
+      story $ i18nWithTitle "hiddenTruths"
 
       terrorDead <- getHasRecord TheTerrorOfDevilReefIsDead
       lifecycleKnown <- hasMemory TheLifecycleOfADeepOne
@@ -188,6 +188,7 @@ instance RunMessage TheInnsmouthConspiracy where
           record TheHorribleTruth
           story $ i18nWithTitle "flashback15"
         else story $ i18nWithTitle "epilogue2"
+      gameOver
 
       pure c
     _ -> lift $ defaultCampaignRunner msg c

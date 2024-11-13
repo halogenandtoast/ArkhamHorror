@@ -51,6 +51,15 @@ instance RunMessage ThePitOfDespair where
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       pure s
+    StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
+      setChaosTokens
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
+        ]
+      {- FOURMOLU_ENABLE -}
+      pure s
     Setup -> runScenarioSetup ThePitOfDespair attrs do
       gather Set.ThePitOfDespair
       gather Set.CreaturesOfTheDeep

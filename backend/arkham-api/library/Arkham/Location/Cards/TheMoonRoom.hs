@@ -24,7 +24,7 @@ instance HasAbilities TheMoonRoom where
       a
       [ withTooltip "You don one of the the empty diving suits and dive into the reflecting pool"
           $ resignAction a
-          `withCriteria` thisExists a (not_ FloodedLocation)
+          `withCriteria` (Here <> thisExists a (not_ FloodedLocation))
       , restricted a 2 (thisExists a (not_ FullyFloodedLocation))
           $ forced
           $ RevealLocation #after Anyone (be a)

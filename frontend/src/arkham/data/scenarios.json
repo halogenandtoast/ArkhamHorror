@@ -315,7 +315,19 @@
   {
       "id": "07274",
       "name": "A Lair of Dagon",
-      "campaign": "07"
+      "campaign": "07",
+      "settings": [
+        { "key": "TheMissionFailed", "type": "ToggleKey", "content": true },
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A decision to stick together", "key": "ADecisionToStickTogether", "content": false },
+            { "label": "An encounter with a secret cult", "key": "AnEncounterWithASecretCult", "content": false },
+            { "label": "A jailbreak", "key": "AJailbreak", "content": false }
+          ]
+        }
+      ]
   },
   {
       "id": "07311",

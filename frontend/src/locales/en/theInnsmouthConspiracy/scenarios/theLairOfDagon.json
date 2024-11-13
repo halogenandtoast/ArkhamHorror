@@ -54,5 +54,10 @@
       "tablet": "-3. Place each key you control on your location and take 1 damage.",
       "elderThing": "-4. Add 2 {curse} tokens to the chaos bag."
     }
+  },
+  "remembered": {
+    "unlockedTheEntranceToTheCaves": "Unlocked the entrance to the caves",
+    "unlockedTheThirdFloor": "Unlocked the third floor",
+    "unlockedTheFinalDepths": "Unlocked the final depths"
   }
 }

@@ -17,6 +17,7 @@ newChurchGreen = location NewChurchGreen Cards.newChurchGreen 3 (PerPlayer 2)
 instance HasAbilities NewChurchGreen where
   getAbilities (NewChurchGreen a) =
     extendRevealed1 a
+      $ groupLimit PerGame
       $ restricted
         a
         1

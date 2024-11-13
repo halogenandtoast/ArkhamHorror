@@ -26,7 +26,8 @@
   "username": "Username",
   "usernameOrEmailAlreadyTaken": "Username or Email already taken",
   "labels": {
-    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck"
+    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck",
+    "takeControlOfKey": "Take control of key"
   },
   "tooltips": {
     "takeControlOfKey": "Take control of {key} key"

@@ -31,7 +31,7 @@ instance RunMessage LodgeNeophyte where
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      parley sid iid attrs attrs #willpower (Fixed 2)
+      parley sid iid (attrs.ability 2) attrs #willpower (Fixed 2)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do
       push $ RemoveAllDoom (attrs.ability 2) (toTarget attrs)

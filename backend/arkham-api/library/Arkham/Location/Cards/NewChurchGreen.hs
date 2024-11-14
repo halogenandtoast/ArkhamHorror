@@ -29,6 +29,6 @@ instance RunMessage NewChurchGreen where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cards <- take 1 <$> getLeadsDeck
       focusCards cards \unfocus -> continue iid [unfocus]
-      for_ cards \card -> when (isNothing card.victoryPoints) (discard card)
+      for_ cards \card -> whenNothing card.victoryPoints (discard card)
       pure l
     _ -> NewChurchGreen <$> liftRunMessage msg attrs

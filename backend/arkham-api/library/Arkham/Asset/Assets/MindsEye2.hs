@@ -1,15 +1,10 @@
-module Arkham.Asset.Assets.MindsEye2 (
-  mindsEye2,
-  MindsEye2 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.MindsEye2 (mindsEye2, MindsEye2 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MindsEye2 = MindsEye2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,12 +16,12 @@ mindsEye2 = asset MindsEye2 Cards.mindsEye2
 -- TODO: This window should be better
 instance HasAbilities MindsEye2 where
   getAbilities (MindsEye2 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ restricted attrs 1 ControlsThis
         $ ReactionAbility
           ( InitiatedSkillTest #when You (SkillTypeOneOf [#intellect, #combat, #agility]) AnySkillTestValue #any
           )
           (assetUseCost attrs Secret 1)
-    , restrictedAbility attrs 2 ControlsThis
+    , restricted attrs 2 ControlsThis
         $ FastAbility
         $ HandDiscardCost 1
         $ basic

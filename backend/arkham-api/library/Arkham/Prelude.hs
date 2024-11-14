@@ -378,6 +378,9 @@ instance Foldable Only where
 forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
 forMaybeM xs f = catMaybes <$> traverse f xs
 
+whenNothing :: Applicative m => Maybe a -> m () -> m ()
+whenNothing ma body = when (isNothing ma) body
+
 whenJustM :: Monad m => m (Maybe a) -> (a -> m ()) -> m ()
 whenJustM mma f = mma >>= traverse_ f
 

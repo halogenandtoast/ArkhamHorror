@@ -216,6 +216,7 @@ instance RunMessage SkillTest where
         $ s
           { skillTestType = stType
           , skillTestBaseValue = stBaseValue
+          , skillTestIconValues = iconValuesForSkillTestType stType
           }
     SetSkillTestTarget target -> do
       pure $ s {skillTestTarget = target}

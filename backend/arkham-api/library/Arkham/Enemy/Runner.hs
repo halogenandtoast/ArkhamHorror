@@ -956,15 +956,15 @@ instance RunMessage EnemyAttrs where
         _ -> error "Unhandled"
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do
-      let updatedDetails = fromJustNote "missing attack details" enemyAttacking
-      keywords <- getModifiedKeywords a
-      afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
-      pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
-      pushAll $ afterAttacksWindow : attackAfter updatedDetails
-      when (attackType details == AttackOfOpportunity) do
-        case attackTarget details of
-          InvestigatorTarget iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
-          _ -> pure ()
+      for_ enemyAttacking \updatedDetails -> do
+        keywords <- getModifiedKeywords a
+        afterAttacksWindow <- checkAfter $ Window.EnemyAttacks updatedDetails
+        pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
+        pushAll $ afterAttacksWindow : attackAfter updatedDetails
+        when (attackType details == AttackOfOpportunity) do
+          case attackTarget details of
+            InvestigatorTarget iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
+            _ -> pure ()
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n

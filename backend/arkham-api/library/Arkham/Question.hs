@@ -147,7 +147,7 @@ data Question msg
   | ChooseUpgradeDeck
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
-  | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg}
+  | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg, readCards :: Maybe [CardCode]}
   | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg]}
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings

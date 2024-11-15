@@ -304,6 +304,7 @@ data CampaignLogKey
   | -- | Edge of the Earth
     TheInvestigatorsConvincedDyerToAllowTheExpedition
   | TheInvestigatorsDidNotBelieveDyersReport
+  | ExpeditionTeam
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

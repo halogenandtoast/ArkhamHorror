@@ -3,7 +3,7 @@ module Arkham.Asset.Cards.Import (module X) where
 import Arkham.Asset.Cards.Base as X
 import Arkham.Asset.Uses as X hiding (Key, Lead)
 import Arkham.Calculation as X
-import Arkham.CampaignLogKey as X
+import Arkham.CampaignLogKey as X hiding (ExpeditionTeam)
 import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Cost as X

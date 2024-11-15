@@ -59,6 +59,7 @@ export type Read = {
   tag: QuestionType.READ
   flavorText: FlavorText
   readChoices: ReadChoices
+  readCards: string[] | null;
 }
 
 type Supply
@@ -283,7 +284,8 @@ export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   {
     tag: JsonDecoder.isExactly(QuestionType.READ),
     flavorText: flavorTextDecoder,
-    readChoices: readChoicesDecoder
+    readChoices: readChoicesDecoder,
+    readCards: JsonDecoder.optional(JsonDecoder.array(JsonDecoder.string, 'CardCodes[]'))
   },
   'Read',
 );

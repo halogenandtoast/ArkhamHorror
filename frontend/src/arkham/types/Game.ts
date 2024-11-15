@@ -119,7 +119,7 @@ export function choices(game: Game, playerId: string): Message[] {
       case 'QuestionLabel':
         return toContents(q.question);
       case 'Read':
-        return q.readChoices;
+        return q.readChoices.contents;
       case 'PickSupplies':
         return q.choices;
       default:

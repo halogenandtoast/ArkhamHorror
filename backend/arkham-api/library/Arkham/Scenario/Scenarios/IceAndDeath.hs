@@ -1,5 +1,7 @@
 module Arkham.Scenario.Scenarios.IceAndDeath (IceAndDeath (..), iceAndDeath) where
 
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
@@ -21,14 +23,30 @@ instance HasChaosTokenValue IceAndDeath where
     ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+expeditionTeam :: NonEmpty CardDef
+expeditionTeam =
+  Assets.drAmyKenslerProfessorOfBiology
+    :| [ Assets.professorWilliamDyerProfessorOfGeology
+       , Assets.danforthBrilliantStudent
+       , Assets.roaldEllsworthIntrepidExplorer
+       , Assets.takadaHirokoAeroplaneMechanic
+       , Assets.averyClaypoolAntarcticGuide
+       , Assets.drMalaSinhaDaringPhysician
+       , Assets.jamesCookieFredericksDubiousChoice
+       , Assets.eliyahAshevakDogHandler
+       ]
+
 instance RunMessage IceAndDeath where
   runMessage msg s@(IceAndDeath attrs) = runQueueT $ scenarioI18n $ case msg of
+    StartCampaign -> do
+      recordSetInsert ExpeditionTeam $ map (.cardCode) expeditionTeam
+      pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "iceAndDeath"
       doStep 1 PreScenarioSetup
       pure s
     DoStep 1 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1"
+      story $ i18nWithTitle "iceAndDeathPart1Intro1"
 
       selectAny (investigatorIs Investigators.winifredHabbamock) >>= \case
         True -> doStep 2 PreScenarioSetup
@@ -36,15 +54,17 @@ instance RunMessage IceAndDeath where
 
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart2"
+      story $ i18nWithTitle "iceAndDeathPart1Intro2"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart3"
+      story $ i18nWithTitle "iceAndDeathPart1Intro3"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart4"
+      story $ i18nWithTitle "iceAndDeathPart1Intro4"
+      killed <- sample expeditionTeam
+      crossOutRecordSetEntries ExpeditionTeam [killed.cardCode]
       pure s
     Setup -> runScenarioSetup IceAndDeath attrs do
       gather Set.IceAndDeath

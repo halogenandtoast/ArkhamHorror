@@ -4602,8 +4602,8 @@ runMessages mLogger = do
           AskMap askMap -> do
             -- Read might have only one player being prompted so we need to find the active player
             let current = g ^. activePlayerIdL
-            let whenBeingQuestioned (pid, Read _ (BasicReadChoices choices)) = guard (notNull choices) $> pid
-                whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices)) = guard (notNull choices) $> pid
+            let whenBeingQuestioned (pid, Read _ (BasicReadChoices choices) _) = guard (notNull choices) $> pid
+                whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices) _) = guard (notNull choices) $> pid
                 whenBeingQuestioned (pid, _) = Just pid
             let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
             let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)

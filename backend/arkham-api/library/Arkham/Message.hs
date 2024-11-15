@@ -119,13 +119,21 @@ resolve msg = [When msg, msg, After msg]
 story :: [PlayerId] -> FlavorText -> Message
 story pids flavor =
   AskMap
-    (mapFromList [(pid, Read flavor $ BasicReadChoices [Label "$continue" []]) | pid <- pids])
+    (mapFromList [(pid, Read flavor (BasicReadChoices [Label "$continue" []]) Nothing) | pid <- pids])
+
+storyWithCards :: [CardDef] -> [PlayerId] -> FlavorText -> Message
+storyWithCards cardDefs pids flavor =
+  AskMap
+    $ mapFromList
+      [ (pid, Read flavor (BasicReadChoices [Label "$continue" []]) (Just $ map (.cardCode) cardDefs))
+      | pid <- pids
+      ]
 
 storyWithChooseOne :: PlayerId -> [PlayerId] -> FlavorText -> [UI Message] -> Message
 storyWithChooseOne lead pids flavor choices =
   AskMap
     ( mapFromList
-        [(pid, Read flavor $ BasicReadChoices $ if pid == lead then choices else []) | pid <- pids]
+        [(pid, Read flavor (BasicReadChoices $ if pid == lead then choices else []) Nothing) | pid <- pids]
     )
 
 data AdvancementMethod = AdvancedWithClues | AdvancedWithOther

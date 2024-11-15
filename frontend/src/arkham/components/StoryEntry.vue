@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
+import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
 import type { Read } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
@@ -23,6 +24,8 @@ const format = function(body: string) {
 const maybeFormat = function(body: string) {
   return body.startsWith("$") ? t(tformat(body)) : body
 }
+
+const readCards = computed(() => props.question.readCards || [])
 
 const readChoices = computed(() => {
   switch (props.question.readChoices.tag) {
@@ -58,12 +61,15 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
     <div class="entry">
       <h1 v-if="question.flavorText.title">{{maybeFormat(question.flavorText.title)}}</h1>
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
-      <div v-if="formatted" v-html="$t(formatted)"></div>
-      <p v-else
-        v-for="(paragraph, index) in question.flavorText.body"
-        :key="index"
-        v-html="format(paragraph)"
-        ></p>
+      <div class="entry-body">
+        <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+        <div class="entry-text" v-if="formatted" v-html="$t(formatted)"></div>
+        <p v-else
+          v-for="(paragraph, index) in question.flavorText.body"
+          :key="index"
+          v-html="format(paragraph)"
+          ></p>
+      </div>
     </div>
     <div class="options">
       <button
@@ -149,6 +155,26 @@ button {
     font-family: "ArkhamIcons";
     content: "\E91A";
     margin-right: 10px;
+  }
+}
+
+.card {
+  flex-basis: 30%;
+  height: fit-content;
+  border-radius: 15px;
+}
+
+.entry-text {
+  flex: 1;
+}
+
+.entry-body {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  p {
+    flex: 1;
   }
 }
 </style>

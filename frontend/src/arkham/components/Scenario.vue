@@ -322,7 +322,7 @@ watchEffect(() => {
     switch (source.tag) {
       case "TreacherySource": {
        return outOfPlayEnemies.value.some((e) => {
-          if (source.contents) return e.treacheries.includes(source.contents)  
+          if (source.contents) return e.treacheries.includes(source.contents)
           return false
        })
       }
@@ -330,9 +330,10 @@ watchEffect(() => {
     }
   }
   const isOutOfPlayChoice = (c: Message) => {
-    if (c.tag !== "AbilityLabel") return false 
+    if (c.tag !== "AbilityLabel") return false
     return isOutOfPlaySource(c.ability.source)
   }
+  console.log(choices.value)
   const needsShowOutOfPlay = choices.value.some(isOutOfPlayChoice)
   forcedShowOutOfPlay.value = needsShowOutOfPlay
 })

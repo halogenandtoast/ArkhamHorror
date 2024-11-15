@@ -1,6 +1,6 @@
 module Arkham.Scenarios.IceAndDeath.Helpers where
 
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.I18n
 import Arkham.Prelude
 

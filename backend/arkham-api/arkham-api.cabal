@@ -497,6 +497,7 @@ library
       Arkham.Asset.Assets.AstronomicalAtlas3
       Arkham.Asset.Assets.Augur
       Arkham.Asset.Assets.AugustLindquist
+      Arkham.Asset.Assets.AveryClaypoolAntarcticGuide
       Arkham.Asset.Assets.AwakenedMantle
       Arkham.Asset.Assets.AzureFlame
       Arkham.Asset.Assets.AzureFlame3
@@ -600,6 +601,7 @@ library
       Arkham.Asset.Assets.DaisysToteBag
       Arkham.Asset.Assets.DaisysToteBagAdvanced
       Arkham.Asset.Assets.DamningTestimony
+      Arkham.Asset.Assets.DanforthBrilliantStudent
       Arkham.Asset.Assets.DanielChesterfield
       Arkham.Asset.Assets.DarioElAmin
       Arkham.Asset.Assets.DarkHorse
@@ -646,6 +648,7 @@ library
       Arkham.Asset.Assets.DowsingRod
       Arkham.Asset.Assets.DowsingRod4
       Arkham.Asset.Assets.DragonPole
+      Arkham.Asset.Assets.DrAmyKenslerProfessorOfBiology
       Arkham.Asset.Assets.DrawingThin
       Arkham.Asset.Assets.DrCharlesWestIIIKnowsHisPurpose
       Arkham.Asset.Assets.DreamDiary
@@ -656,6 +659,7 @@ library
       Arkham.Asset.Assets.DrElliHorowitz
       Arkham.Asset.Assets.DrFrancisMorgan
       Arkham.Asset.Assets.DrHenryArmitage
+      Arkham.Asset.Assets.DrMalaSinhaDaringPhysician
       Arkham.Asset.Assets.DrMilanChristopher
       Arkham.Asset.Assets.DrShivaniMaheswaran
       Arkham.Asset.Assets.DrWilliamTMaleson
@@ -672,6 +676,7 @@ library
       Arkham.Asset.Assets.ElinaHarperKnowsTooMuch
       Arkham.Asset.Assets.ElinaHarpersCarRunning
       Arkham.Asset.Assets.ElinaHarpersCarStopped
+      Arkham.Asset.Assets.EliyahAshevakDogHandler
       Arkham.Asset.Assets.ElleRubashPurifyingPurpose2
       Arkham.Asset.Assets.EmbezzledTreasure
       Arkham.Asset.Assets.EmpiricalHypothesis
@@ -834,6 +839,7 @@ library
       Arkham.Asset.Assets.IshimaruHaruko
       Arkham.Asset.Assets.JacobMorrisonCostGuardCaptain3
       Arkham.Asset.Assets.JakeWilliams
+      Arkham.Asset.Assets.JamesCookieFredericksDubiousChoice
       Arkham.Asset.Assets.JazzMulligan
       Arkham.Asset.Assets.JennysTwin45s
       Arkham.Asset.Assets.JennysTwin45sAdvanced
@@ -995,6 +1001,7 @@ library
       Arkham.Asset.Assets.PriestOfTwoFaiths1
       Arkham.Asset.Assets.PrismaticSpectaclesLensToTheOtherworld2
       Arkham.Asset.Assets.ProfessorWarrenRice
+      Arkham.Asset.Assets.ProfessorWilliamDyerProfessorOfGeology
       Arkham.Asset.Assets.ProfessorWilliamWebbFinderOfHiddenConnections
       Arkham.Asset.Assets.ProfessorWilliamWebbFinderOfHiddenConnections2
       Arkham.Asset.Assets.ProphesiaeProfanaAtlasOfTheUnknowable5
@@ -1033,6 +1040,7 @@ library
       Arkham.Asset.Assets.RiteOfSeeking2
       Arkham.Asset.Assets.RiteOfSeeking4
       Arkham.Asset.Assets.RitualCandles
+      Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorer
       Arkham.Asset.Assets.RobesOfEndlessNight
       Arkham.Asset.Assets.RobesOfEndlessNight2
       Arkham.Asset.Assets.RodOfAnimalism1
@@ -1135,6 +1143,7 @@ library
       Arkham.Asset.Assets.Switchblade
       Arkham.Asset.Assets.Switchblade2
       Arkham.Asset.Assets.SwordCane
+      Arkham.Asset.Assets.TakadaHirokoAeroplaneMechanic
       Arkham.Asset.Assets.TalismanOfProtection
       Arkham.Asset.Assets.TeachingsOfTheOrder
       Arkham.Asset.Assets.TennesseeSourMash
@@ -1270,6 +1279,7 @@ library
       Arkham.Calculation
       Arkham.Campaign
       Arkham.Campaign.Campaigns
+      Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Campaign.Campaigns.TheCircleUndone
@@ -1284,6 +1294,8 @@ library
       Arkham.Campaign.Types
       Arkham.CampaignLog
       Arkham.CampaignLogKey
+      Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
+      Arkham.Campaigns.EdgeOfTheEarth.Helpers
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.Helpers
@@ -3050,6 +3062,7 @@ library
       Arkham.Scenario.Scenarios.ForTheGreaterGood
       Arkham.Scenario.Scenarios.HeartOfTheElders
       Arkham.Scenario.Scenarios.HorrorInHighGear
+      Arkham.Scenario.Scenarios.IceAndDeath
       Arkham.Scenario.Scenarios.InTheClutchesOfChaos
       Arkham.Scenario.Scenarios.InTooDeep
       Arkham.Scenario.Scenarios.IntoTheMaelstrom
@@ -3123,6 +3136,7 @@ library
       Arkham.Scenarios.ForTheGreaterGood.Story
       Arkham.Scenarios.HeartOfTheElders.Story
       Arkham.Scenarios.HorrorInHighGear.Helpers
+      Arkham.Scenarios.IceAndDeath.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Helpers
       Arkham.Scenarios.InTheClutchesOfChaos.Story
       Arkham.Scenarios.InTooDeep.Helpers

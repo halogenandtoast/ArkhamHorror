@@ -43,6 +43,7 @@ instance RunMessage TwistOfFate where
           AutoFail -> (Sum 0, Sum 2)
           CurseToken -> (Sum 0, Sum 0)
           BlessToken -> (Sum 0, Sum 0)
+          FrostToken -> (Sum 0, Sum 0)
 
       continue iid
         $ [InvestigatorAssignDamage iid source DamageAny damage horror | damage > 0 || horror > 0]

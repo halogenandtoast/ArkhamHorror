@@ -288,8 +288,11 @@ handleAnswer Game {..} playerId = \case
     -> [Message]
   go f q response = case q of
     QuestionLabel lbl mCard q' -> go (QuestionLabel lbl mCard) q' response
-    Read t qs -> case qs !!? qrChoice response of
-      Nothing -> [Ask playerId $ f $ Read t qs]
+    Read t (BasicReadChoices qs) -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ Read t $ BasicReadChoices qs]
+      Just msg -> [uiToRun msg]
+    Read t (LeadInvestigatorMustDecide qs) -> case qs !!? qrChoice response of
+      Nothing -> [Ask playerId $ f $ Read t $ LeadInvestigatorMustDecide qs]
       Just msg -> [uiToRun msg]
     ChooseOne qs -> case qs !!? qrChoice response of
       Nothing -> [Ask playerId $ f $ ChooseOne qs]

@@ -882,6 +882,16 @@ allAssets =
     , SomeAssetCard heavyFurs
     , SomeAssetCard sledDog
     , SomeAssetCard rodOfAnimalism1
+    , --- Expedition Team [eote]
+      SomeAssetCard professorWilliamDyerProfessorOfGeology
+    , SomeAssetCard danforthBrilliantStudent
+    , SomeAssetCard eliyahAshevakDogHandler
+    , SomeAssetCard drMalaSinhaDaringPhysician
+    , SomeAssetCard averyClaypoolAntarcticGuide
+    , SomeAssetCard jamesCookieFredericksDubiousChoice
+    , SomeAssetCard drAmyKenslerProfessorOfBiology
+    , SomeAssetCard roaldEllsworthIntrepidExplorer
+    , SomeAssetCard takadaHirokoAeroplaneMechanic
     , -- The Scarlet Keys
       --- signature
       SomeAssetCard bonesaw

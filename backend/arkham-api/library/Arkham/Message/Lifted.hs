@@ -253,6 +253,16 @@ story flavor = do
   players <- allPlayers
   push $ Msg.story players flavor
 
+storyWithCard :: ReverseQueue m => CardDef -> FlavorText -> m ()
+storyWithCard _ flavor = do
+  players <- allPlayers
+  push $ Msg.story players flavor
+
+storyWithCards :: ReverseQueue m => [CardDef] -> FlavorText -> m ()
+storyWithCards _ flavor = do
+  players <- allPlayers
+  push $ Msg.story players flavor
+
 storyOnly :: ReverseQueue m => [InvestigatorId] -> FlavorText -> m ()
 storyOnly [] _ = pure ()
 storyOnly iids flavor = do

@@ -77,6 +77,7 @@ allPlayerAssetCards =
       , astronomicalAtlas3
       , augur
       , augustLindquist
+      , averyClaypoolAntarcticGuide
       , awakenedMantle
       , azureFlame
       , azureFlame3
@@ -150,20 +151,20 @@ allPlayerAssetCards =
       , chicagoTypewriter4
       , chuckFergus2
       , chuckFergus5
-      , clarityOfMind
-      , clarityOfMind3
       , clairvoyance
       , clairvoyance3
       , clairvoyance5
+      , clarityOfMind
+      , clarityOfMind3
       , claspOfBlackOnyx
       , cleaningKit
       , cleaningKit3
       , closeTheCircle1
       , coltVestPocket
       , coltVestPocket2
-      , cornered2
       , combatTraining1
       , combatTraining3
+      , cornered2
       , crafty3
       , crypticGrimoireTextOfTheElderGuardian4
       , crypticGrimoireTextOfTheElderHerald4
@@ -177,6 +178,7 @@ allPlayerAssetCards =
       , daisysToteBag
       , daisysToteBagAdvanced
       , damningTestimony
+      , danforthBrilliantStudent
       , darioElAmin
       , darkHorse
       , darkHorse5
@@ -220,21 +222,23 @@ allPlayerAssetCards =
       , downTheRabbitHole
       , dowsingRod
       , dowsingRod4
+      , drAmyKenslerProfessorOfBiology
       , drCharlesWestIiiKnowsHisPurpose
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
+      , drMalaSinhaDaringPhysician
       , drMilanChristopher
       , drShivaniMaheswaran
       , drWilliamTMaleson
       , drWilliamTMaleson2
       , dragonPole
       , drawingThin
-      , dreamEnhancingSerum
       , dreamDiary
       , dreamDiaryDreamsOfAChild3
       , dreamDiaryDreamsOfAMadman3
       , dreamDiaryDreamsOfAnExplorer3
+      , dreamEnhancingSerum
       , duke
       , earlSawyer
       , earthlySerenity1
@@ -245,6 +249,7 @@ allPlayerAssetCards =
       , eldritchSophist
       , eldritchTongue
       , elinaHarperKnowsTooMuch
+      , eliyahAshevakDogHandler
       , elleRubashPurifyingPurpose2
       , embezzledTreasure
       , empiricalHypothesis
@@ -354,10 +359,10 @@ allPlayerAssetCards =
       , hallowedMirror3
       , handcuffs
       , handcuffs2
-      , harlanEarnstone
       , hardKnocks
       , hardKnocks2
       , hardKnocks4
+      , harlanEarnstone
       , haste2
       , hatchet1
       , hawkEyeFoldingCamera
@@ -401,6 +406,7 @@ allPlayerAssetCards =
       , investments
       , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
+      , jamesCookieFredericksDubiousChoice
       , jennysTwin45s
       , jennysTwin45sAdvanced
       , jeremiahKirbyArcticArchaeologist
@@ -556,6 +562,7 @@ allPlayerAssetCards =
       , priestOfTwoFaiths1
       , prismaticSpectaclesLensToTheOtherworld2
       , professorWarrenRice
+      , professorWilliamDyerProfessorOfGeology
       , professorWilliamWebbFinderOfHiddenConnections
       , professorWilliamWebbFinderOfHiddenConnections2
       , prophesiaeProfanaAtlasOfTheUnknowable5
@@ -593,6 +600,7 @@ allPlayerAssetCards =
       , riteOfSeeking2
       , riteOfSeeking4
       , ritualCandles
+      , roaldEllsworthIntrepidExplorer
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rodOfAnimalism1
@@ -692,6 +700,7 @@ allPlayerAssetCards =
       , switchblade
       , switchblade2
       , swordCane
+      , takadaHirokoAeroplaneMechanic
       , talismanOfProtection
       , teachingsOfTheOrder
       , tennesseeSourMash
@@ -793,6 +802,7 @@ allPlayerAssetCards =
       , zoeysCrossAdvanced
       ]
 
+-- with encounter backs
 allEncounterAssetCards :: Map CardCode CardDef
 allEncounterAssetCards =
   mapFromList

@@ -413,8 +413,11 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 .swarm {
   display: flex;
   flex-direction: row-reverse;
+  width: fit-content;
   justify-content: space-evenly;
   &:hover {
+    flex-wrap: wrap;
+
     .enemy--swarming {
       margin-left: 5px;
     }

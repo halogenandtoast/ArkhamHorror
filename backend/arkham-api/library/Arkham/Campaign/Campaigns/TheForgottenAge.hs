@@ -588,7 +588,7 @@ instance RunMessage TheForgottenAge where
                         | otherwise = "You suffer no ill-effects"
                      in
                       [ FocusChaosTokens tokens
-                      , Ask player $ Read qLabel [Label "Continue" []]
+                      , Ask player $ Read qLabel $ BasicReadChoices [Label "Continue" []]
                       , UnfocusChaosTokens
                       ]
                         <> [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience

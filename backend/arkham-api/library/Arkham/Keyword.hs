@@ -44,6 +44,7 @@ data Keyword
   | Customizable
   | Advanced
   | Replacement
+  | Partner
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

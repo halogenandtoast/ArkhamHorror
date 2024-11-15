@@ -17,6 +17,7 @@ import Arkham.Target
 import Arkham.Tarot
 import Arkham.Text
 import Arkham.Window
+import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.UUID (nil)
 
@@ -146,11 +147,14 @@ data Question msg
   | ChooseUpgradeDeck
   | ChooseDeck
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
-  | Read {flavorText :: FlavorText, readChoices :: [UI msg]}
+  | Read {flavorText :: FlavorText, readChoices :: ReadChoices msg}
   | PickSupplies {pointsRemaining :: Int, chosenSupplies :: [Supply], choices :: [UI msg]}
   | DropDown {options :: [(Text, msg)]}
   | PickScenarioSettings
   | PickCampaignSettings
+  deriving stock (Show, Eq, Data)
+
+data ReadChoices msg = BasicReadChoices [UI msg] | LeadInvestigatorMustDecide [UI msg]
   deriving stock (Show, Eq, Data)
 
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
@@ -180,28 +184,41 @@ mapTargetLabel f = map (\c -> targetLabel c (f c))
 mapTargetLabelWith :: Targetable target => (c -> target) -> (c -> [msg]) -> [c] -> [UI msg]
 mapTargetLabelWith g f = map (uncurry targetLabel . (g &&& f))
 
-$(deriveJSON defaultOptions ''GameTokenType)
-$(deriveJSON defaultOptions ''Component)
-$(deriveToJSON defaultOptions ''PaymentAmountChoice)
-instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where
-  parseJSON = withObject "PaymentAmountChoice" $ \o -> do
-    choiceId <- o .:? "choiceId" .!= nil
-    investigatorId <- o .: "investigatorId"
-    minBound <- o .: "minBound"
-    maxBound <- o .: "maxBound"
-    title <- o .: "title"
-    message <- o .: "message"
-    pure PaymentAmountChoice {..}
-$(deriveJSON defaultOptions ''ChoosePlayerChoice)
-$(deriveToJSON defaultOptions ''AmountChoice)
-instance FromJSON AmountChoice where
-  parseJSON = withObject "AmountChoice" $ \o -> do
-    choiceId <- o .:? "choiceId" .!= nil
-    label <- o .: "label"
-    minBound <- o .: "minBound"
-    maxBound <- o .: "maxBound"
-    pure AmountChoice {..}
-$(deriveJSON defaultOptions ''AmountTarget)
-$(deriveJSON defaultOptions ''PileCard)
-$(deriveJSON defaultOptions ''UI)
-$(deriveJSON defaultOptions ''Question)
+concat
+  [ deriveJSON defaultOptions ''GameTokenType
+  , deriveJSON defaultOptions ''Component
+  , deriveToJSON defaultOptions ''PaymentAmountChoice
+  , [d|
+      instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where
+        parseJSON = withObject "PaymentAmountChoice" $ \o -> do
+          choiceId <- o .:? "choiceId" .!= nil
+          investigatorId <- o .: "investigatorId"
+          minBound <- o .: "minBound"
+          maxBound <- o .: "maxBound"
+          title <- o .: "title"
+          message <- o .: "message"
+          pure PaymentAmountChoice {..}
+      |]
+  , deriveJSON defaultOptions ''ChoosePlayerChoice
+  , deriveToJSON defaultOptions ''AmountChoice
+  , [d|
+      instance FromJSON AmountChoice where
+        parseJSON = withObject "AmountChoice" $ \o -> do
+          choiceId <- o .:? "choiceId" .!= nil
+          label <- o .: "label"
+          minBound <- o .: "minBound"
+          maxBound <- o .: "maxBound"
+          pure AmountChoice {..}
+      |]
+  , deriveJSON defaultOptions ''AmountTarget
+  , deriveJSON defaultOptions ''PileCard
+  , deriveToJSON defaultOptions ''ReadChoices
+  , [d|
+      instance FromJSON msg => FromJSON (ReadChoices msg) where
+        parseJSON (Array xs) = BasicReadChoices <$> parseJSON (Array xs)
+        parseJSON (Object o) = $(mkParseJSON defaultOptions ''ReadChoices) (Object o)
+        parseJSON other = fail $ "Unexpected json type: " <> show other
+      |]
+  , deriveJSON defaultOptions ''UI
+  , deriveJSON defaultOptions ''Question
+  ]

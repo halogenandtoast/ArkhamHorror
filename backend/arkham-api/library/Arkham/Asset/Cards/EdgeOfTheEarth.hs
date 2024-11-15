@@ -812,3 +812,93 @@ rodOfAnimalism1 =
     , cdLevel = Just 1
     , cdUnique = True
     }
+
+professorWilliamDyerProfessorOfGeology :: CardDef
+professorWilliamDyerProfessorOfGeology =
+  (storyAsset "08714" ("Professor William Dyer" <:> "Professor of Geology") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+danforthBrilliantStudent :: CardDef
+danforthBrilliantStudent =
+  (storyAsset "08715" ("Danforth" <:> "Brilliant Student") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 5
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+eliyahAshevakDogHandler :: CardDef
+eliyahAshevakDogHandler =
+  (storyAsset "08716" ("Eliyah Ashevak" <:> "Dog Handler") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+drMalaSinhaDaringPhysician :: CardDef
+drMalaSinhaDaringPhysician =
+  (storyAsset "08717" ("Dr. Mala Sinha" <:> "Daring Physician") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+averyClaypoolAntarcticGuide :: CardDef
+averyClaypoolAntarcticGuide =
+  (storyAsset "08718" ("Avery Claypool" <:> "Antarctic Guide") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 5
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+jamesCookieFredericksDubiousChoice :: CardDef
+jamesCookieFredericksDubiousChoice =
+  (storyAsset "08719" ("James \"Cookie\" Fredericks" <:> "Dubious Choice") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Veteran, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Ammo 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+drAmyKenslerProfessorOfBiology :: CardDef
+drAmyKenslerProfessorOfBiology =
+  (storyAsset "08720" ("Dr. Amy Kensler" <:> "Professor of Biology") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Miskatonic]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+roaldEllsworthIntrepidExplorer :: CardDef
+roaldEllsworthIntrepidExplorer =
+  (storyAsset "08721" ("Roald Ellsworth" <:> "Intrepid Explorer") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 5
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+takadaHirokoAeroplaneMechanic :: CardDef
+takadaHirokoAeroplaneMechanic =
+  (storyAsset "08722" ("Takada Hiroko" <:> "Aeroplane Mechanic") 1 ExpeditionTeam)
+    { cdCardTraits = setFromList [Ally, Wayfarer]
+    , cdCardType = AssetType
+    , cdUses = uses Resource 9
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }

@@ -63,6 +63,7 @@ instance ToDisplay ChaosTokenFace where
     ElderSign -> "{elderSign}"
     CurseToken -> "{curse}"
     BlessToken -> "{bless}"
+    FrostToken -> "{frost}"
 
 instance HasField "id" ChaosToken ChaosTokenId where
   getField = chaosTokenId
@@ -92,6 +93,7 @@ data ChaosTokenFace
   | ElderSign
   | CurseToken
   | BlessToken
+  | FrostToken
   deriving stock (Bounded, Enum, Show, Eq, Ord, Data)
 
 instance IsLabel "+1" ChaosTokenFace where
@@ -148,6 +150,9 @@ instance IsLabel "bless" ChaosTokenFace where
 instance IsLabel "curse" ChaosTokenFace where
   fromLabel = CurseToken
 
+instance IsLabel "frost" ChaosTokenFace where
+  fromLabel = FrostToken
+
 allChaosTokenFaces :: [ChaosTokenFace]
 allChaosTokenFaces = [minBound ..]
 
@@ -171,6 +176,7 @@ isNumberChaosToken = \case
   ElderSign -> False
   CurseToken -> False
   BlessToken -> False
+  FrostToken -> False
 
 isEvenChaosToken :: ChaosTokenFace -> Bool
 isEvenChaosToken = \case
@@ -192,6 +198,7 @@ isEvenChaosToken = \case
   ElderSign -> False
   CurseToken -> False
   BlessToken -> False
+  FrostToken -> False
 
 isOddChaosToken :: ChaosTokenFace -> Bool
 isOddChaosToken = \case
@@ -213,6 +220,7 @@ isOddChaosToken = \case
   ElderSign -> False
   CurseToken -> False
   BlessToken -> False
+  FrostToken -> False
 
 isSymbolChaosToken :: ChaosTokenFace -> Bool
 isSymbolChaosToken = \case
@@ -234,6 +242,7 @@ isSymbolChaosToken = \case
   ElderSign -> True
   CurseToken -> True
   BlessToken -> True
+  FrostToken -> True
 
 isNonNegativeChaosToken :: ChaosTokenFace -> Bool
 isNonNegativeChaosToken = \case
@@ -255,6 +264,7 @@ isNonNegativeChaosToken = \case
   ElderSign -> False
   BlessToken -> False
   CurseToken -> False
+  FrostToken -> False
 
 isNegativeChaosToken :: ChaosTokenFace -> Bool
 isNegativeChaosToken = not . isNonNegativeChaosToken
@@ -281,6 +291,7 @@ chaosTokenToFaceValue = \case
   ElderSign -> 0
   CurseToken -> 0
   BlessToken -> 0
+  FrostToken -> 0
 
 chaosTokenLabel :: ChaosTokenFace -> Text
 chaosTokenLabel = \case
@@ -302,6 +313,7 @@ chaosTokenLabel = \case
   ElderSign -> "Elder Sign"
   CurseToken -> "Curse"
   BlessToken -> "Bless"
+  FrostToken -> "Frost"
 
 $(deriveJSON defaultOptions ''ChaosTokenModifier)
 $(deriveJSON defaultOptions ''ChaosTokenFace)

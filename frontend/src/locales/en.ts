@@ -7,6 +7,7 @@ import theForgottenAge from '@/locales/en/theForgottenAge'
 import theCircleUndone from '@/locales/en/theCircleUndone'
 import theDreamEaters from '@/locales/en/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/en/theInnsmouthConspiracy'
+import edgeOfTheEarth from '@/locales/en/edgeOfTheEarth'
 import standalone from '@/locales/en/standalone'
 
-export default {...base, ...campaignLog, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, standalone}
+export default {...base, ...campaignLog, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

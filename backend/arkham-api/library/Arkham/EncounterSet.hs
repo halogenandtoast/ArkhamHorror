@@ -139,6 +139,30 @@ data EncounterSet
   | ALightInTheFog
   | TheLairOfDagon
   | IntoTheMaelstrom
+  | AgentsOfTheUnknown
+  | CityOfTheElderThings
+  | CreaturesInTheIce
+  | DeadlyWeather
+  | ElderThings
+  | ExpeditionTeam
+  | FatalMirage
+  | HazardsOfAntarctica
+  | IceAndDeath
+  | LeftBehind
+  | LostInTheNight
+  | MemorialsOfTheLost
+  | Miasma
+  | NamelessHorrors
+  | Penguins
+  | SeepingNightmares
+  | Shoggoths
+  | SilenceAndMystery
+  | StirringInTheDeep
+  | Tekelili
+  | TheCrash
+  | TheGreatSeal
+  | TheHeartOfMadness
+  | ToTheForbiddenPeaks
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow

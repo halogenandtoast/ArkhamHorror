@@ -24,12 +24,25 @@ const maybeFormat = function(body: string) {
   return body.startsWith("$") ? t(tformat(body)) : body
 }
 
-const readChoices = props.question.readChoices.reduce<{ label: string, index: number}[]>((acc, v, i) => {
-  if ("label" in v) {
-    return [...acc, { label: v.label, index: i }]
+const readChoices = computed(() => {
+  switch (props.question.readChoices.tag) {
+    case "BasicReadChoices":
+      return props.question.readChoices.contents.reduce<{ label: string, index: number}[]>((acc, v, i) => {
+        if ("label" in v) {
+          return [...acc, { label: v.label, index: i }]
+        }
+        return acc
+      }, [] as { label: string, index: number }[])
+
+    case "LeadInvestigatorMustDecide":
+      return props.question.readChoices.contents.reduce<{ label: string, index: number}[]>((acc, v, i) => {
+        if ("label" in v) {
+          return [...acc, { label: v.label, index: i }]
+        }
+        return acc
+      }, [] as { label: string, index: number }[])
   }
-  return acc
-}, [] as { label: string, index: number }[])
+})
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 

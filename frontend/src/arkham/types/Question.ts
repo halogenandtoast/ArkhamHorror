@@ -58,7 +58,7 @@ export type FlavorText = {
 export type Read = {
   tag: QuestionType.READ
   flavorText: FlavorText
-  readChoices: Message[]
+  readChoices: ReadChoices
 }
 
 type Supply
@@ -263,11 +263,27 @@ export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.ob
   'FlavorText',
 );
 
+export type ReadChoices
+  = { tag: "BasicReadChoices", contents: Message[] }
+  | { tag: "LeadInvestigatorMustDecide", contents: Message [] }
+
+
+export const readChoicesDecoder: JsonDecoder.Decoder<ReadChoices> = JsonDecoder.oneOf<ReadChoices>( [
+  JsonDecoder.object({
+    tag: JsonDecoder.isExactly('BasicReadChoices'),
+    contents: JsonDecoder.array(messageDecoder, 'Message[]')
+  }, 'BasicReadChoices'),
+  JsonDecoder.object({
+    tag: JsonDecoder.isExactly('LeadInvestigatorMustDecide'),
+    contents: JsonDecoder.array(messageDecoder, 'Message[]')
+    }, 'LeadInvestigatorMustDecide')
+], 'ReadChoices');
+
 export const readDecoder: JsonDecoder.Decoder<Read> = JsonDecoder.object<Read>(
   {
     tag: JsonDecoder.isExactly(QuestionType.READ),
     flavorText: flavorTextDecoder,
-    readChoices: JsonDecoder.array(messageDecoder, 'Message[]')
+    readChoices: readChoicesDecoder
   },
   'Read',
 );

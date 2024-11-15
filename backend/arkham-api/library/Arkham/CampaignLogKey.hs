@@ -301,6 +301,9 @@ data CampaignLogKey
   | TheRichesOfTheDeepAreLostForeverButAtWhatCost
   | TheDeepOnesHaveFloodedTheEarth
   | TheHorribleTruth
+  | -- | Edge of the Earth
+    TheInvestigatorsConvincedDyerToAllowTheExpedition
+  | TheInvestigatorsDidNotBelieveDyersReport
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

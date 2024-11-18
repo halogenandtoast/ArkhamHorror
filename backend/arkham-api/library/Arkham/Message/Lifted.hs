@@ -906,6 +906,19 @@ createCardEffect
   -> m ()
 createCardEffect def mMeta source target = push =<< Msg.createCardEffect def mMeta source target
 
+createCardEffectCapture
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => CardDef
+  -> Maybe (EffectMetadata Window Message)
+  -> source
+  -> target
+  -> m EffectId
+createCardEffectCapture def mMeta source target = do
+  effectId <- getRandom
+  builder <- Msg.makeEffectBuilder def.cardCode mMeta source target
+  push $ Msg.CreateEffect builder {effectBuilderEffectId = Just effectId}
+  pure effectId
+
 phaseModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 phaseModifier source target modifier = Msg.pushM $ Msg.phaseModifier source target modifier

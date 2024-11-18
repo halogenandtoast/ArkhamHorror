@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Act.Cards.TheRescue (TheRescue (..), theRescue) where
 
 import Arkham.Ability

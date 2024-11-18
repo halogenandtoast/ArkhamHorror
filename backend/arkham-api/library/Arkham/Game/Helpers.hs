@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -273,7 +275,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
 
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
-  Action.Fight -> case abilitySource of
+  Action.Fight -> case traceShowId abilitySource of
     EnemySource eid -> do
       modifiers' <- getModifiers iid
       let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']
@@ -282,7 +284,13 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
         else do
           mods <- getModifiers eid
           let restrictions = concat [rs | CanOnlyBeAttackedByAbilityOn rs <- mods]
-          pure $ null restrictions || ab.cardCode `elem` restrictions
+          if null restrictions
+            then pure True
+            else case ab.requestor.asset of
+              Just aid -> do
+                cardCode <- field AssetCardCode aid
+                pure $ cardCode `elem` restrictions
+              _ -> pure False
     _ -> do
       modifiers <- getModifiers (AbilityTarget iid ab)
       let

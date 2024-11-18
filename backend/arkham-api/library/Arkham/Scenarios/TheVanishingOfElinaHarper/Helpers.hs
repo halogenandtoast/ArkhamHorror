@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers where
 
 import Arkham.Ability

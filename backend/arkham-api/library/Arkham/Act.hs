@@ -293,6 +293,9 @@ allActs =
     , SomeActCard cityOfTheDeepV1
     , SomeActCard cityOfTheDeepV2
     , SomeActCard cityOfTheDeepV3
+    , -- Edge of the Earth
+      --- The Crash
+      SomeActCard searchForACampSite
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

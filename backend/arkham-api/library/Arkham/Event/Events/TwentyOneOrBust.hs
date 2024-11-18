@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Event.Events.TwentyOneOrBust (
   twentyOneOrBust,
   TwentyOneOrBust (..),

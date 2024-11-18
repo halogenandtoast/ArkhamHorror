@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Treachery.Cards.ForcedIntoHiding (forcedIntoHiding, ForcedIntoHiding (..)) where
 
 import Arkham.Classes

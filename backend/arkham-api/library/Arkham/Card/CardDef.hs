@@ -157,11 +157,15 @@ data CardDef = CardDef
   , cdOtherSide :: Maybe CardCode
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
+  , cdMeta :: Map Text Value
   }
   deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where
   getField = cdAttackOfOpportunityModifiers
+
+instance HasField "meta" CardDef (Map Text Value) where
+  getField = cdMeta
 
 instance HasField "actions" CardDef [Action] where
   getField = cdActions
@@ -264,6 +268,7 @@ emptyCardDef cCode name cType =
     , cdOtherSide = Nothing
     , cdWhenDiscarded = ToDiscard
     , cdCanCommitWhenNoIcons = False
+    , cdMeta = mempty
     }
 
 instance IsCardMatcher CardDef where
@@ -405,5 +410,7 @@ instance FromJSON CardDef where
     cdWhenDiscarded <- o .: "whenDiscarded"
     cdCanCommitWhenNoIcons <-
       o .:? "canCommitWhenNoIcons" .!= (cdSkills == [] && cdCardType == SkillType)
+    cdMeta <-
+      o .:? "meta" .!= mempty
 
     pure CardDef {..}

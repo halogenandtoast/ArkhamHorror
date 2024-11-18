@@ -64,6 +64,9 @@ data EnemyAttrs = EnemyAttrs
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId
 
+instance HasField "sanityDamage" EnemyAttrs Int where
+  getField = enemySanityDamage
+
 instance HasField "keys" EnemyAttrs (Set ArkhamKey) where
   getField = enemyKeys
 

@@ -32,6 +32,9 @@ instance IsCampaign EdgeOfTheEarth where
 
 instance RunMessage EdgeOfTheEarth where
   runMessage msg c@(EdgeOfTheEarth _attrs) = runQueueT $ campaignI18n $ case msg of
+    StartCampaign -> do
+      recordSetInsert ExpeditionTeam $ map (.cardCode) expeditionTeam
+      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> do
       story $ i18nWithTitle "prologue"
       storyWithChooseOneM (i18nWithTitle "prologue1") do

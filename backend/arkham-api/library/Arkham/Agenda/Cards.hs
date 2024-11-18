@@ -43,6 +43,7 @@ allAgendaCards =
       , chaosIncarnate
       , cityOfBlood
       , cityOfTheGreatRace
+      , coldWelcome
       , crossroadsOfFate
       , deadOfNight
       , deathsApproach
@@ -70,6 +71,7 @@ allAgendaCards =
       , hospitalOfHorrors
       , hotPursuit
       , humanityFading
+      , intoTheWhite
       , intruders
       , inEveryShadow
       , itAwaits
@@ -100,6 +102,7 @@ allAgendaCards =
       , returnToPredatorOrPrey
       , riseOfTheGhouls
       , rollingBackwards
+      , runningOutOfTime
       , sacrificeForTheDeep
       , secretsBetterLeftHidden
       , secretsOfTheSeaV1
@@ -666,6 +669,15 @@ celestialAlignment = agenda "07313" "Celestial Alignment" 2 IntoTheMaelstrom
 
 theFlood :: CardDef
 theFlood = agenda "07314" "The Flood" 3 IntoTheMaelstrom
+
+coldWelcome :: CardDef
+coldWelcome = agenda "08520" "Cold Welcome" 1 TheCrash
+
+intoTheWhite :: CardDef
+intoTheWhite = agenda "08521" "Into the White" 2 TheCrash
+
+runningOutOfTime :: CardDef
+runningOutOfTime = agenda "08522" "Running Out of Time" 3 TheCrash
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

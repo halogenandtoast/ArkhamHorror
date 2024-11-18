@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Asset.Assets.RavenousMyconidNurturingStrain4 (
   ravenousMyconidNurturingStrain4,
   RavenousMyconidNurturingStrain4 (..),

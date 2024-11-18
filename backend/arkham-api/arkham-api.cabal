@@ -157,6 +157,7 @@ library
       Arkham.Act.Cards.Row
       Arkham.Act.Cards.Run
       Arkham.Act.Cards.SaracenicScript
+      Arkham.Act.Cards.SearchForACampSite
       Arkham.Act.Cards.SearchForAlejandro
       Arkham.Act.Cards.SearchForTheBrotherhood
       Arkham.Act.Cards.SearchForThePatient
@@ -278,6 +279,7 @@ library
       Arkham.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Agenda.Cards.CityOfBlood
       Arkham.Agenda.Cards.CityOfTheGreatRace
+      Arkham.Agenda.Cards.ColdWelcome
       Arkham.Agenda.Cards.CrossroadsOfFate
       Arkham.Agenda.Cards.DeadOfNight
       Arkham.Agenda.Cards.DeathsApproach
@@ -306,6 +308,7 @@ library
       Arkham.Agenda.Cards.HotPursuit
       Arkham.Agenda.Cards.HumanityFading
       Arkham.Agenda.Cards.InEveryShadow
+      Arkham.Agenda.Cards.IntoTheWhite
       Arkham.Agenda.Cards.Intruders
       Arkham.Agenda.Cards.ItAwaits
       Arkham.Agenda.Cards.JourneyAcrossTheDreamlands
@@ -335,6 +338,7 @@ library
       Arkham.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Agenda.Cards.RiseOfTheGhouls
       Arkham.Agenda.Cards.RollingBackwards
+      Arkham.Agenda.Cards.RunningOutOfTime
       Arkham.Agenda.Cards.SacrificeForTheDeep
       Arkham.Agenda.Cards.SecretsBetterLeftHidden
       Arkham.Agenda.Cards.SecretsOfTheSeaV1
@@ -1501,6 +1505,7 @@ library
       Arkham.Enemy.Cards.GhoulFromTheDepths
       Arkham.Enemy.Cards.GhoulMinion
       Arkham.Enemy.Cards.GhoulPriest
+      Arkham.Enemy.Cards.GlacialPhantasm
       Arkham.Enemy.Cards.GoatSpawn
       Arkham.Enemy.Cards.GrapplingHorror
       Arkham.Enemy.Cards.GraveEater
@@ -1573,6 +1578,7 @@ library
       Arkham.Enemy.Cards.MadPatient
       Arkham.Enemy.Cards.MalevolentSpirit
       Arkham.Enemy.Cards.Maniac
+      Arkham.Enemy.Cards.ManifestationOfMadness
       Arkham.Enemy.Cards.MariaDeSilvaKnowsMoreThanSheLetsOn
       Arkham.Enemy.Cards.MarshGug
       Arkham.Enemy.Cards.MindlessDancer
@@ -1643,6 +1649,7 @@ library
       Arkham.Enemy.Cards.ShadowHound
       Arkham.Enemy.Cards.SilasBishop
       Arkham.Enemy.Cards.SilverTwilightAcolyte
+      Arkham.Enemy.Cards.SkitteringNonsense
       Arkham.Enemy.Cards.SlimeCoveredDhole
       Arkham.Enemy.Cards.SlitheringDhole
       Arkham.Enemy.Cards.SpawnOfHali
@@ -1661,6 +1668,7 @@ library
       Arkham.Enemy.Cards.SwiftByakhee
       Arkham.Enemy.Cards.TemporalDevourer
       Arkham.Enemy.Cards.TenebrousNightgaunt
+      Arkham.Enemy.Cards.TerrorOfTheStarsBringerOfIceAndDeath
       Arkham.Enemy.Cards.TheAmalgam
       Arkham.Enemy.Cards.TheCrawlingMist
       Arkham.Enemy.Cards.TheExperiment
@@ -2374,6 +2382,7 @@ library
       Arkham.Location.Cards.BalconyAtDeathsDoorstep
       Arkham.Location.Cards.BalconySpectral
       Arkham.Location.Cards.Ballroom
+      Arkham.Location.Cards.BarrierCamp
       Arkham.Location.Cards.Basement
       Arkham.Location.Cards.BasementHall
       Arkham.Location.Cards.BaseOfTheHill
@@ -2402,6 +2411,7 @@ library
       Arkham.Location.Cards.BridgeOverNKai
       Arkham.Location.Cards.BrightCanyon
       Arkham.Location.Cards.Broadmoor
+      Arkham.Location.Cards.BroadSnowdrifts
       Arkham.Location.Cards.BrokenPassage
       Arkham.Location.Cards.BrokenSteps_289
       Arkham.Location.Cards.BrokenSteps_290
@@ -2461,8 +2471,10 @@ library
       Arkham.Location.Cards.Courtyard
       Arkham.Location.Cards.Coyoacan
       Arkham.Location.Cards.CragOfTheGhouls
+      Arkham.Location.Cards.CrashSite
       Arkham.Location.Cards.CrumblingPrecipice
       Arkham.Location.Cards.CryptOfTheSepulchralLamp
+      Arkham.Location.Cards.CrystallineCavern
       Arkham.Location.Cards.CrystalPillars
       Arkham.Location.Cards.CuriositieShoppe
       Arkham.Location.Cards.CursedShores
@@ -2573,7 +2585,9 @@ library
       Arkham.Location.Cards.FrankElwoodsRoom
       Arkham.Location.Cards.FrenchHill_290
       Arkham.Location.Cards.FrenchHill_291
+      Arkham.Location.Cards.FrigidCave
       Arkham.Location.Cards.FrontPorchEntryway
+      Arkham.Location.Cards.FrozenShores
       Arkham.Location.Cards.FrozenSpring
       Arkham.Location.Cards.Gallery
       Arkham.Location.Cards.Garden
@@ -2632,6 +2646,8 @@ library
       Arkham.Location.Cards.HouseInTheReeds_210
       Arkham.Location.Cards.HouseInTheReeds_211
       Arkham.Location.Cards.HumanitiesBuilding
+      Arkham.Location.Cards.IcebreakerLanding
+      Arkham.Location.Cards.IcyWastes
       Arkham.Location.Cards.IdolChamber
       Arkham.Location.Cards.IlekVad
       Arkham.Location.Cards.InfinityOfDarkness
@@ -2765,6 +2781,7 @@ library
       Arkham.Location.Cards.PlateauOfLengWhereTheGodsDwell
       Arkham.Location.Cards.Pnakotus
       Arkham.Location.Cards.PorteDeLAvancee
+      Arkham.Location.Cards.PrecariousIceSheet
       Arkham.Location.Cards.PrismaticCascade
       Arkham.Location.Cards.PrivateRoom
       Arkham.Location.Cards.PumpRoom
@@ -2773,6 +2790,7 @@ library
       Arkham.Location.Cards.RailroadStation
       Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
+      Arkham.Location.Cards.RemnantsOfLakesCamp
       Arkham.Location.Cards.Restaurant
       Arkham.Location.Cards.ReturnToAttic
       Arkham.Location.Cards.ReturnToCellar
@@ -2784,6 +2802,7 @@ library
       Arkham.Location.Cards.Rivertown_292
       Arkham.Location.Cards.Rivertown_293
       Arkham.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Location.Cards.RockyCrags
       Arkham.Location.Cards.Room212
       Arkham.Location.Cards.Room225
       Arkham.Location.Cards.Room245
@@ -2834,6 +2853,7 @@ library
       Arkham.Location.Cards.SkaiRiver
       Arkham.Location.Cards.SlaughteredWoods
       Arkham.Location.Cards.SleepingCar
+      Arkham.Location.Cards.SnowGraves
       Arkham.Location.Cards.SouthChurch_298
       Arkham.Location.Cards.SouthChurch_299
       Arkham.Location.Cards.Southside_294
@@ -2914,6 +2934,7 @@ library
       Arkham.Location.Cards.TrainTracks
       Arkham.Location.Cards.TrappersCabin
       Arkham.Location.Cards.TrapRoom
+      Arkham.Location.Cards.TreacherousPath
       Arkham.Location.Cards.TrophyRoom
       Arkham.Location.Cards.TrophyRoomSpectral
       Arkham.Location.Cards.TwilightAbyss
@@ -3426,7 +3447,9 @@ library
       Arkham.Treachery.Cards.AncestralFear
       Arkham.Treachery.Cards.AncientEvils
       Arkham.Treachery.Cards.AngeredSpirits
+      Arkham.Treachery.Cards.AntarcticWind
       Arkham.Treachery.Cards.Ants
+      Arkham.Treachery.Cards.Apeirophobia
       Arkham.Treachery.Cards.AquaticAmbush
       Arkham.Treachery.Cards.ArcaneBarrier
       Arkham.Treachery.Cards.ArmInjury
@@ -3490,6 +3513,7 @@ library
       Arkham.Treachery.Cards.DaemonicPiping
       Arkham.Treachery.Cards.Damned
       Arkham.Treachery.Cards.DanceOfTheYellowKing
+      Arkham.Treachery.Cards.DarkAurora
       Arkham.Treachery.Cards.DarkFuture
       Arkham.Treachery.Cards.DayOfReckoning
       Arkham.Treachery.Cards.DeadlyFate
@@ -3571,6 +3595,7 @@ library
       Arkham.Treachery.Cards.HuntingShadow
       Arkham.Treachery.Cards.Hypochondria
       Arkham.Treachery.Cards.ICantSee
+      Arkham.Treachery.Cards.IceShaft
       Arkham.Treachery.Cards.IllOmen
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted
@@ -3580,6 +3605,7 @@ library
       Arkham.Treachery.Cards.InternalInjury
       Arkham.Treachery.Cards.Inundated
       Arkham.Treachery.Cards.Kidnapped
+      Arkham.Treachery.Cards.KindredMist
       Arkham.Treachery.Cards.KissOfBrine
       Arkham.Treachery.Cards.LawOfYgirothChaos
       Arkham.Treachery.Cards.LawOfYgirothDiscord
@@ -3638,6 +3664,8 @@ library
       Arkham.Treachery.Cards.Pitfall
       Arkham.Treachery.Cards.Poisoned
       Arkham.Treachery.Cards.PoisonousSpores
+      Arkham.Treachery.Cards.PolarMirage
+      Arkham.Treachery.Cards.PolarVortex
       Arkham.Treachery.Cards.PossessionMurderous
       Arkham.Treachery.Cards.PossessionTorturous
       Arkham.Treachery.Cards.PossessionTraitorous
@@ -3713,6 +3741,13 @@ library
       Arkham.Treachery.Cards.Syzygy
       Arkham.Treachery.Cards.TakenCaptive
       Arkham.Treachery.Cards.TasteOfLifeblood
+      Arkham.Treachery.Cards.Tekelili_223
+      Arkham.Treachery.Cards.Tekelili_224
+      Arkham.Treachery.Cards.Tekelili_225
+      Arkham.Treachery.Cards.Tekelili_226
+      Arkham.Treachery.Cards.Tekelili_227
+      Arkham.Treachery.Cards.Tekelili_228
+      Arkham.Treachery.Cards.Tekelili_229
       Arkham.Treachery.Cards.TerribleSecret
       Arkham.Treachery.Cards.TerrorFromBeyond
       Arkham.Treachery.Cards.TerrorInTheNight
@@ -3739,6 +3774,7 @@ library
       Arkham.Treachery.Cards.ThreadsOfReality
       Arkham.Treachery.Cards.ThriceDamnedCuriosity
       Arkham.Treachery.Cards.ThroughTheGates
+      Arkham.Treachery.Cards.ThroughTheIce
       Arkham.Treachery.Cards.TidalAlignment
       Arkham.Treachery.Cards.TimelineDestabilization
       Arkham.Treachery.Cards.ToFightTheBlackWind
@@ -3785,6 +3821,7 @@ library
       Arkham.Treachery.Cards.WhispersInYourHeadDoubt
       Arkham.Treachery.Cards.WhispersInYourHeadDread
       Arkham.Treachery.Cards.WhispersOfHypnos
+      Arkham.Treachery.Cards.Whiteout
       Arkham.Treachery.Cards.WillOfTheSpiderMother
       Arkham.Treachery.Cards.WindowToAnotherTime
       Arkham.Treachery.Cards.WondrousLands
@@ -3797,6 +3834,7 @@ library
       Arkham.Treachery.Cards.WrackedByTime
       Arkham.Treachery.Cards.Yaztaroth
       Arkham.Treachery.Cards.YithianPresence
+      Arkham.Treachery.Cards.ZeroVisibility
       Arkham.Treachery.Cards.ZoogBurrow
       Arkham.Treachery.Helpers
       Arkham.Treachery.Import.Lifted
@@ -3849,6 +3887,7 @@ library
       FunctionalDependencies
       GADTs
       LambdaCase
+      MultiWayIf
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedLabels
@@ -3961,6 +4000,7 @@ executable arkham-api
       FunctionalDependencies
       GADTs
       LambdaCase
+      MultiWayIf
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedLabels
@@ -4173,6 +4213,7 @@ test-suite spec
       FunctionalDependencies
       GADTs
       LambdaCase
+      MultiWayIf
       NoImplicitPrelude
       NoMonomorphismRestriction
       OverloadedLabels

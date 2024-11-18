@@ -149,17 +149,14 @@ getFightableEnemyIds iid (toSource -> source) = do
       <$> select (EnemyAt $ LocationWithId locationId)
   investigatorEnemyIds <- select $ EnemyIsEngagedWith $ InvestigatorWithId iid
   aloofEnemyIds <- select $ AloofEnemy <> EnemyAt (LocationWithId locationId)
-  let
-    potentials =
-      nub (investigatorEnemyIds <> (enemyIds \\ aloofEnemyIds))
+  let potentials = nub (investigatorEnemyIds <> (enemyIds \\ aloofEnemyIds))
   flip filterM potentials $ \eid -> do
     modifiers' <- getModifiers (EnemyTarget eid)
     not
       <$> anyM
         ( \case
-            Modifier.CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
-              (AssetSource aid) ->
-                (`notMember` cardCodes) <$> field AssetCardCode aid
+            Modifier.CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
+              Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
               _ -> pure True
             Modifier.CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
               not <$> sourceMatches source sourceMatcher

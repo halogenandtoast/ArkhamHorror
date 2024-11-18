@@ -252,6 +252,11 @@ allAgendas =
       SomeAgendaCard underTheSurface
     , SomeAgendaCard celestialAlignment
     , SomeAgendaCard theFlood
+    , -- Edge of the Earth
+      --- The Crash
+      SomeAgendaCard coldWelcome
+    , SomeAgendaCard intoTheWhite
+    , SomeAgendaCard runningOutOfTime
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

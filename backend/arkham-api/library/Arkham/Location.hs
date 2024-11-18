@@ -705,6 +705,21 @@ allLocations =
     , SomeLocationCard onyxGuardians
     , SomeLocationCard lairOfDagonIntoTheMaelstrom
     , SomeLocationCard lairOfHydra
+    , -- Edge of the Earth
+      --- Ice and Death
+      SomeLocationCard crashSite
+    , SomeLocationCard frozenShores
+    , SomeLocationCard treacherousPath
+    , SomeLocationCard precariousIceSheet
+    , SomeLocationCard broadSnowdrifts
+    , SomeLocationCard icyWastes
+    , SomeLocationCard rockyCrags
+    , SomeLocationCard snowGraves
+    , SomeLocationCard icebreakerLanding
+    , SomeLocationCard frigidCave
+    , SomeLocationCard barrierCamp
+    , SomeLocationCard remnantsOfLakesCamp
+    , SomeLocationCard crystallineCavern
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

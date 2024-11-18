@@ -2886,9 +2886,8 @@ enemyMatcherFilter = \case
             _ -> error "multiple overrides found"
         excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
         sourceIsExcluded <- flip anyM enemyModifiers \case
-          CanOnlyBeAttackedByAbilityOn cardCodes -> case source of
-            AssetSource aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
-            AbilitySource (AssetSource aid) _ -> (`notMember` cardCodes) <$> field AssetCardCode aid
+          CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
+            Just aid -> (`notMember` cardCodes) <$> field AssetCardCode aid
             _ -> pure True
           CannotBeAttackedByPlayerSourcesExcept sourceMatcher ->
             not <$> sourceMatches source sourceMatcher

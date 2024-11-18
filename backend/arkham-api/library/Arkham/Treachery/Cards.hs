@@ -169,7 +169,9 @@ allEncounterTreacheryCards =
       , alteredBeast
       , ancestralFear
       , ancientEvils
+      , antarcticWind
       , ants
+      , apeirophobia
       , aquaticAmbush
       , arcaneBarrier
       , arousingSuspicions
@@ -213,6 +215,7 @@ allEncounterTreacheryCards =
       , cursedSwamp
       , daemonicPiping
       , danceOfTheYellowKing
+      , darkAurora
       , deadlyFate
       , deathApproaches
       , deceptiveMemories
@@ -274,6 +277,7 @@ allEncounterTreacheryCards =
       , huntedDown
       , huntingShadow
       , iCantSee
+      , iceShaft
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
@@ -281,6 +285,7 @@ allEncounterTreacheryCards =
       , insatiableBloodlust
       , inundated
       , kidnapped
+      , kindredMist
       , kissOfBrine
       , lawOfYgirothChaos
       , lawOfYgirothDiscord
@@ -327,6 +332,8 @@ allEncounterTreacheryCards =
       , passageIntoTheVeil
       , pitfall
       , poisonousSpores
+      , polarMirage
+      , polarVortex
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous
@@ -382,6 +389,13 @@ allEncounterTreacheryCards =
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
+      , tekelili_223
+      , tekelili_224
+      , tekelili_225
+      , tekelili_226
+      , tekelili_227
+      , tekelili_228
+      , tekelili_229
       , terrorInTheNight
       , terrorFromBeyond
       , terrorUnleashed
@@ -400,6 +414,7 @@ allEncounterTreacheryCards =
       , theZealotsSeal
       , theyreCatchingUp
       , threadsOfReality
+      , throughTheIce
       , tidalAlignment
       , timelineDestabilization
       , toilAndTrouble
@@ -439,6 +454,7 @@ allEncounterTreacheryCards =
       , whispersInYourHeadDoubt
       , whispersInYourHeadDread
       , whispersOfHypnos
+      , whiteout
       , willOfTheSpiderMother
       , windowToAnotherTime
       , wondrousLands
@@ -449,6 +465,7 @@ allEncounterTreacheryCards =
       , wracked
       , wrackedByTime
       , yithianPresence
+      , zeroVisibility
       , zoogBurrow
       ]
 
@@ -2407,6 +2424,108 @@ stupor :: CardDef
 stupor =
   (basicWeakness "08133" "Stupor")
     { cdCardTraits = singleton Madness
+    }
+
+apeirophobia :: CardDef
+apeirophobia =
+  (treachery "08516" "Apeirophobia" IceAndDeath 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+zeroVisibility :: CardDef
+zeroVisibility =
+  (treachery "08517" "Zero Visibility" IceAndDeath 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+kindredMist :: CardDef
+kindredMist =
+  (treachery "08691" "Kindred Mist" CreaturesInTheIce 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+antarcticWind :: CardDef
+antarcticWind =
+  (treachery "08692" "Antarctic Wind" DeadlyWeather 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+whiteout :: CardDef
+whiteout =
+  (treachery "08693" "Whiteout" DeadlyWeather 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+polarVortex :: CardDef
+polarVortex =
+  (treachery "08694" "Polar Vortex" DeadlyWeather 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+iceShaft :: CardDef
+iceShaft =
+  (treachery "08698" "Ice Shaft" HazardsOfAntarctica 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+throughTheIce :: CardDef
+throughTheIce =
+  (treachery "08699" "Through the Ice" HazardsOfAntarctica 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+polarMirage :: CardDef
+polarMirage =
+  (treachery "08712" "Polar Mirage" SilenceAndMystery 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+darkAurora :: CardDef
+darkAurora =
+  (treachery "08713" "Dark Aurora" SilenceAndMystery 3)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+tekelili_223 :: CardDef
+tekelili_223 =
+  (treachery "08723" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_224 :: CardDef
+tekelili_224 =
+  (treachery "08724" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_225 :: CardDef
+tekelili_225 =
+  (treachery "08725" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_226 :: CardDef
+tekelili_226 =
+  (treachery "08726" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_227 :: CardDef
+tekelili_227 =
+  (treachery "08727" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_228 :: CardDef
+tekelili_228 =
+  (treachery "08728" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
+    }
+
+tekelili_229 :: CardDef
+tekelili_229 =
+  (treachery "08729" "Tekeli-li" Tekelili 3)
+    { cdCardTraits = setFromList [Madness]
     }
 
 selflessToAFault :: CardDef

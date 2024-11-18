@@ -503,6 +503,29 @@ allTreacheries =
     , SomeTreacheryCard legInjury
     , SomeTreacheryCard panic
     , SomeTreacheryCard stupor
+    , --- Ice and Death [eote]
+      SomeTreacheryCard apeirophobia
+    , SomeTreacheryCard zeroVisibility
+    , --- Creatures in the Ice [eote]
+      SomeTreacheryCard kindredMist
+    , --- Deadly Weather [eote]
+      SomeTreacheryCard antarcticWind
+    , SomeTreacheryCard whiteout
+    , SomeTreacheryCard polarVortex
+    , --- Hazards of Antarctica [eote]
+      SomeTreacheryCard iceShaft
+    , SomeTreacheryCard throughTheIce
+    , --- Silence and Mystery [eote]
+      SomeTreacheryCard polarMirage
+    , SomeTreacheryCard darkAurora
+    , --- Tekeli-li [eote]
+      SomeTreacheryCard tekelili_223
+    , SomeTreacheryCard tekelili_224
+    , SomeTreacheryCard tekelili_225
+    , SomeTreacheryCard tekelili_226
+    , SomeTreacheryCard tekelili_227
+    , SomeTreacheryCard tekelili_228
+    , SomeTreacheryCard tekelili_229
     , -- The Scarlet Keys
       -- signature
       SomeTreacheryCard selflessToAFault

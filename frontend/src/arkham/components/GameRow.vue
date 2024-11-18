@@ -138,8 +138,6 @@ h2 {
 .campaign-icon-container {
   display: flex;
   align-items: center;
-  margin-right: 20px;
-  margin-left: 10px;
   width: 50px;
 }
 
@@ -153,7 +151,6 @@ h2 {
 
 .scenario-icon {
   height: 30px;
-  margin: 0 20px 0 10px;
   filter: invert(100%);
 }
 
@@ -163,7 +160,6 @@ h2 {
 
 .game-delete {
   transition: all 0.5s;
-  margin: 0 10px;
   position: relative;
   align-self: center;
   display: flex;
@@ -179,10 +175,7 @@ h2 {
 .scenario-details {
   justify-content: flex-end;
   display: flex;
-  margin-left: auto;
-  padding: 5px 10px;
-  margin-left: 10px;
-  margin-right: 10px;
+  gap: 10px;
   border-radius: 10px;
   align-items: center;
   span {
@@ -195,7 +188,6 @@ h2 {
     justify-content: flex-start;
     img {
       margin: 0;
-      margin-right: 10px;
     }
   }
 }
@@ -225,7 +217,6 @@ h2 {
   height:50px;
   overflow: hidden;
   border-radius: 5px;
-  margin-right: 10px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
 
   &.survivor {
@@ -298,6 +289,7 @@ h2 {
 
 .main-details, .extra-details {
   display: flex;
+  gap: 10px;
   align-items: center;
 }
 
@@ -307,6 +299,7 @@ h2 {
 
 .game-title {
   display: flex;
+  gap: 10px;
   flex-direction: row;
   align-items: center;
   padding: 10px;
@@ -379,7 +372,6 @@ h2 {
   background: rgba(0, 0, 0, 0.5);
   border-radius: 10px;
   text-transform: uppercase;
-  margin-right: 10px;
 }
 
 .delete-buttons {

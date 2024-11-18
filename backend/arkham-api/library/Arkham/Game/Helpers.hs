@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -275,7 +273,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
 
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
-  Action.Fight -> case traceShowId abilitySource of
+  Action.Fight -> case abilitySource of
     EnemySource eid -> do
       modifiers' <- getModifiers iid
       let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']

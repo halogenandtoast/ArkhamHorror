@@ -2470,7 +2470,7 @@ iceShaft =
 
 throughTheIce :: CardDef
 throughTheIce =
-  (treachery "08699" "Through the Ice" HazardsOfAntarctica 3)
+  (treachery "08699" "Through the Ice" HazardsOfAntarctica 2)
     { cdCardTraits = setFromList [Hazard]
     }
 
@@ -2500,31 +2500,31 @@ tekelili_224 =
 
 tekelili_225 :: CardDef
 tekelili_225 =
-  (treachery "08725" "Tekeli-li" Tekelili 3)
+  (treachery "08725" "Tekeli-li" Tekelili 2)
     { cdCardTraits = setFromList [Madness]
     }
 
 tekelili_226 :: CardDef
 tekelili_226 =
-  (treachery "08726" "Tekeli-li" Tekelili 3)
+  (treachery "08726" "Tekeli-li" Tekelili 2)
     { cdCardTraits = setFromList [Madness]
     }
 
 tekelili_227 :: CardDef
 tekelili_227 =
-  (treachery "08727" "Tekeli-li" Tekelili 3)
+  (treachery "08727" "Tekeli-li" Tekelili 2)
     { cdCardTraits = setFromList [Madness]
     }
 
 tekelili_228 :: CardDef
 tekelili_228 =
-  (treachery "08728" "Tekeli-li" Tekelili 3)
+  (treachery "08728" "Tekeli-li" Tekelili 2)
     { cdCardTraits = setFromList [Madness]
     }
 
 tekelili_229 :: CardDef
 tekelili_229 =
-  (treachery "08729" "Tekeli-li" Tekelili 3)
+  (treachery "08729" "Tekeli-li" Tekelili 2)
     { cdCardTraits = setFromList [Madness]
     }
 

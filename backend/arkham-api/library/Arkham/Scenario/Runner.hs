@@ -390,7 +390,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       if tokenModifier == AutoFailModifier
         then push FailSkillTest
         else do
-          when (token `elem` [#curse, #bless]) do
+          when (token `elem` [#curse, #bless, #frost]) do
             shouldRevealAnother <- withoutModifier (ChaosTokenTarget drawnToken) DoNotRevealAnotherChaosToken
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
     pure a
@@ -661,6 +661,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckL %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
+      & (decksL . each %~ filterOutCards)
   RequestSetAsideCard target cardCode -> do
     let
       (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards

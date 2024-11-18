@@ -305,8 +305,7 @@ instance RunMessage SkillTest where
               (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
           else RevealSkillTestChaosTokens iid
       for_ chaosTokenFaces $ \chaosTokenFace -> do
-        let
-          revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosTokenFace
+        let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosTokenFace
         pushAll
           [ When revealMsg
           , CheckWindows [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
@@ -314,18 +313,12 @@ instance RunMessage SkillTest where
           , After revealMsg
           ]
       pure $ s & (setAsideChaosTokensL %~ (<> chaosTokenFaces))
-    RevealChaosToken SkillTestSource {} iid token -> do
-      pushM $ checkWindows [mkAfter $ Window.RevealChaosToken iid token]
+    RevealChaosToken SkillTestSource {} _iid token -> do
       pure
         $ s
-        & revealedChaosTokensL
-        %~ (<> [token])
-        & toResolveChaosTokensL
-        %~ nub
-        . (<> [token])
-        & setAsideChaosTokensL
-        %~ nub
-        . (<> [token])
+        & (revealedChaosTokensL %~ (<> [token]))
+        & (toResolveChaosTokensL %~ nub . (<> [token]))
+        & (setAsideChaosTokensL %~ nub . (<> [token]))
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to
       -- cancel the modifiers but retain the effects so the effects are queued,

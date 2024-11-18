@@ -4,8 +4,11 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Capability
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -43,10 +46,14 @@ iceAndDeath difficulty =
 
 instance HasChaosTokenValue IceAndDeath where
   getChaosTokenValue iid tokenFace (IceAndDeath attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <-
+        fromMaybe 0 <$> runMaybeT do
+          lid <- MaybeT $ getMaybeLocation iid
+          MaybeT $ shelterValue lid
+      pure $ toChaosTokenValue attrs Skull ((n + 1) `div` 2) n
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage IceAndDeath where
@@ -123,4 +130,22 @@ instance RunMessage IceAndDeath where
         Expert -> placeDoomOnAgenda 2
         Hard -> placeDoomOnAgenda 1
         _ -> pure ()
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Cultist -> do
+          let x = if isEasyStandard attrs then 1 else n
+          tekelili <- take x <$> getScenarioDeck TekeliliDeck
+          canModifyDeck <- can.manipulate.deck iid
+          if null tekelili || not canModifyDeck
+            then assignHorror iid Cultist x
+            else do
+              shuffleCardsIntoDeck iid tekelili
+              when (length tekelili < x) $ assignHorror iid Cultist (x - length tekelili)
+        Tablet -> push $ DiscardTopOfDeck iid n (toSource Tablet) (Just $ toTarget attrs)
+        _ -> pure ()
+      pure s
+    DiscardedTopOfDeck iid cards (isSource Tablet -> True) (isTarget attrs -> True) -> do
+      let weaknesses = filter (`cardMatch` WeaknessCard) cards
+      when (notNull weaknesses) $ addToHand iid weaknesses
+      pure s
     _ -> IceAndDeath <$> liftRunMessage msg attrs

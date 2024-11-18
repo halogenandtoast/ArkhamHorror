@@ -1459,6 +1459,10 @@ getLocationsMatching lmatcher = do
     LocationIsInFrontOf investigatorMatcher -> do
       investigators <- select investigatorMatcher
       filterM (fmap (maybe False (`elem` investigators)) . field LocationInFrontOf . toId) ls
+    ConnectedToSetAsideLocation -> do
+      setAsideLocations <- getSetAsideCardsMatching #location
+      let symbols = concatMap (cdLocationConnections . toCardDef) setAsideLocations
+      pure $ filter ((`elem` symbols) . toLocationSymbol) ls
     HighestShroud matcher' -> do
       ls' <- go ls matcher'
       if null ls'

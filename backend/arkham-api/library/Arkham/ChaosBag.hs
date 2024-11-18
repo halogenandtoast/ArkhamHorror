@@ -531,17 +531,18 @@ instance RunMessage ChaosBag where
       tokens'' <- traverse createChaosToken tokens'
       blessTokens <- replicateM 10 $ createChaosToken #bless
       curseTokens <- replicateM 10 $ createChaosToken #curse
+      frostTokens <- replicateM (8 - count (== #frost) tokens') $ createChaosToken #frost
       pure
         $ c
         & (chaosTokensL .~ tokens'')
         & (setAsideChaosTokensL .~ mempty)
-        & (tokenPoolL .~ blessTokens <> curseTokens)
+        & (tokenPoolL .~ blessTokens <> curseTokens <> frostTokens)
     ReturnChaosTokensToPool tokensToPool -> do
       pure
         $ c
         & (chaosTokensL %~ filter (`notElem` tokensToPool))
         & (setAsideChaosTokensL %~ filter (`notElem` tokensToPool))
-        & (tokenPoolL <>~ filter ((`elem` [#bless, #curse]) . (.face)) tokensToPool)
+        & (tokenPoolL <>~ filter ((`elem` [#bless, #curse, #frost]) . (.face)) tokensToPool)
     PassSkillTest -> do
       removeAllMessagesMatching \case
         NextChaosBagStep {} -> True
@@ -572,6 +573,7 @@ instance RunMessage ChaosBag where
               if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
           | token.face == #curse -> do
               if returnAllCursed then pure True else hasModifier token ReturnCursedToChaosBag
+          | token.face == #frost -> pure False
           | otherwise -> pure True
 
       let removeWindow ts = checkWindows [mkWhen $ Window.TokensWouldBeRemovedFromChaosBag ts]
@@ -794,6 +796,7 @@ instance RunMessage ChaosBag where
       token <- case chaosTokenFace of
         BlessToken -> pure $ fromMaybe (error "no more bless tokens") $ find ((== #bless) . (.face)) chaosBagTokenPool
         CurseToken -> pure $ fromMaybe (error "no more curse tokens") $ find ((== #curse) . (.face)) chaosBagTokenPool
+        FrostToken -> pure $ fromMaybe (error "no more frost tokens") $ find ((== #frost) . (.face)) chaosBagTokenPool
         _ -> createChaosToken chaosTokenFace
       pure $ c & chaosTokensL %~ (token :) & tokenPoolL %~ delete token
     SwapChaosToken originalFace newFace -> do

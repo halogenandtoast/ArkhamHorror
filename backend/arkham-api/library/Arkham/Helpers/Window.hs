@@ -147,6 +147,12 @@ enteringEnemy =
     (windowType -> Window.EnemyEnters eid _) -> Just eid
     _ -> Nothing
 
+entering :: HasCallStack => [Window] -> LocationId
+entering =
+  fromMaybe (error "missing enter window") . asum . map \case
+    (windowType -> Window.Entering _ lid) -> Just lid
+    _ -> Nothing
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case

@@ -671,13 +671,13 @@ theFlood :: CardDef
 theFlood = agenda "07314" "The Flood" 3 IntoTheMaelstrom
 
 coldWelcome :: CardDef
-coldWelcome = agenda "08520" "Cold Welcome" 1 TheCrash
+coldWelcome = agenda "08518" "Cold Welcome" 1 TheCrash
 
 intoTheWhite :: CardDef
-intoTheWhite = agenda "08521" "Into the White" 2 TheCrash
+intoTheWhite = agenda "08519" "Into the White" 2 TheCrash
 
 runningOutOfTime :: CardDef
-runningOutOfTime = agenda "08522" "Running Out of Time" 3 TheCrash
+runningOutOfTime = agenda "08520" "Running Out of Time" 3 TheCrash
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

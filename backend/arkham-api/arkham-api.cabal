@@ -1300,6 +1300,7 @@ library
       Arkham.CampaignLogKey
       Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
       Arkham.Campaigns.EdgeOfTheEarth.Helpers
+      Arkham.Campaigns.EdgeOfTheEarth.Supplies
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.Helpers

@@ -585,6 +585,20 @@ payCost msg c iid skipAdditionalCosts cost = do
     ScenarioResourceCost n -> do
       push $ RemoveTokens c.source ScenarioTarget Token.Resource n
       withPayment $ ResourcePayment n
+    AddFrostTokenCost n -> do
+      x <- min n <$> getRemainingFrostTokens
+      if x < n
+        then error "Not enough frost tokens"
+        else do
+          batchId <- getRandom
+          would <-
+            checkWindows
+              [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate x FrostToken)
+                  { windowBatchId = Just batchId
+                  }
+              ]
+          push $ Would batchId $ would : replicate x (AddChaosToken FrostToken)
+          withPayment $ AddFrostTokenPayment x
     AddCurseTokenCost n -> do
       x <- min n <$> getRemainingCurseTokens
       if x < n

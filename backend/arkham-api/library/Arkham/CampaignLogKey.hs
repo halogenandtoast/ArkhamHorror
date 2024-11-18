@@ -306,6 +306,7 @@ data CampaignLogKey
   | TheInvestigatorsDidNotBelieveDyersReport
   | ExpeditionTeam
   | WasKilledInThePlaneCrash
+  | SuppliesRecovered
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

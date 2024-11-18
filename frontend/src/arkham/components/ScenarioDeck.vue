@@ -21,6 +21,8 @@ const deckImage = computed(() => {
       return imgsrc("cards/03247b.avif");
     case 'TidalTunnelDeck':
       return imgsrc("cards/07048b.avif");
+    case 'TekeliliDeck':
+      return imgsrc("player_back.jpg");
     default:
       return imgsrc("back.png");
   }

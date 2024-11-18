@@ -333,7 +333,6 @@ watchEffect(() => {
     if (c.tag !== "AbilityLabel") return false
     return isOutOfPlaySource(c.ability.source)
   }
-  console.log(choices.value)
   const needsShowOutOfPlay = choices.value.some(isOutOfPlayChoice)
   forcedShowOutOfPlay.value = needsShowOutOfPlay
 })
@@ -473,6 +472,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
         <div v-if="debug.active" class="buttons buttons-row">
           <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add <span class="bless-icon"></span></button>
           <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add <span class="curse-icon"></span></button>
+          <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">Add <span class="frost-icon"></span></button>
         </div>
         <button class="button" @click="showChaosBag = false">Close</button>
       </Draggable>
@@ -1198,6 +1198,11 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
   .cursed {
     background-color: var(--cursed);
   }
+
+  .frost {
+    background-color: var(--frost);
+  }
+
 }
 
 .button {

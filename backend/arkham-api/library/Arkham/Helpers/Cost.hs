@@ -95,6 +95,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       Just difficulty -> do
         x <- getRemainingCurseTokens
         pure $ x >= difficulty
+  AddFrostTokenCost n -> do
+    x <- getRemainingFrostTokens
+    pure $ x >= n
   AddCurseTokenCost n -> do
     x <- getRemainingCurseTokens
     -- Are you Parallel Rex?

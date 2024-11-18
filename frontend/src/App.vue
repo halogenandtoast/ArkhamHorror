@@ -277,6 +277,13 @@ body {
   }
 }
 
+.frost-icon {
+  &:before {
+    font-family: "ArkhamSlim";
+    content: "\0062";
+  }
+}
+
 .wild-icon {
   &:before {
     font-family: "Arkham";
@@ -347,6 +354,7 @@ body {
 
   --blessed: #6a5720;
   --cursed: #270F31;
+  --frost: #39394C;
 
   --delete: #c13131;
   --background: #2e3440;

@@ -66,6 +66,7 @@ data LocationMatcher
   | ConnectedFrom LocationMatcher
   | UnbarricadedConnectedFrom LocationMatcher
   | ConnectedTo LocationMatcher
+  | ConnectedToSetAsideLocation
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
   | LocationWithVictory

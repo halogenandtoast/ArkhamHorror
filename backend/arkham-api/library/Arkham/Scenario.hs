@@ -597,6 +597,11 @@ instance HasChaosTokenValue Scenario where
         case chaosTokenFace of
           CurseToken -> pure $ ChaosTokenValue chaosTokenFace (NegativeModifier 2)
           BlessToken -> pure $ ChaosTokenValue chaosTokenFace (PositiveModifier 2)
+          FrostToken -> do
+            revealed <- map (.face) <$> getSkillTestRevealedChaosTokens
+            pure
+              $ ChaosTokenValue chaosTokenFace
+              $ if count (== #frost) revealed == 2 then AutoFailModifier else NegativeModifier 1
           _ -> getChaosTokenValue iid chaosTokenFace s
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario

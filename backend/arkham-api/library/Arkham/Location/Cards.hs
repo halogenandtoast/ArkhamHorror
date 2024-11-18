@@ -7339,7 +7339,7 @@ barrierCamp =
       "08512"
       "Barrier Camp"
       [Glacier, Uncharted]
-      Droplet
+      Moon
       [Droplet, Equals]
       IceAndDeath
 

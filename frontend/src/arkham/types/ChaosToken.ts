@@ -8,7 +8,7 @@ export type ChaosToken = {
   modifiers?: Modifier[];
 }
 
-export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign' | 'CurseToken' | 'BlessToken'
+export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign' | 'CurseToken' | 'BlessToken' | 'FrostToken'
 
 export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.isExactly('PlusOne'),
@@ -29,6 +29,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
   JsonDecoder.isExactly('ElderSign'),
   JsonDecoder.isExactly('CurseToken'),
   JsonDecoder.isExactly('BlessToken'),
+  JsonDecoder.isExactly('FrostToken'),
 ], 'TokenFace');
 
 export const chaosTokenDecoder = JsonDecoder.object<ChaosToken>({
@@ -75,6 +76,8 @@ export function chaosTokenImage(face: TokenFace): string {
       return imgsrc("ct_curse.png");
     case 'BlessToken':
       return imgsrc("ct_bless.png");
+    case 'FrostToken':
+      return imgsrc("ct_frost.png");
     default:
       return imgsrc("ct_blank.png");
   }

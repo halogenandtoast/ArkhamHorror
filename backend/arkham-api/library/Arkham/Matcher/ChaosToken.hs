@@ -60,6 +60,9 @@ instance Not ChaosTokenMatcher where
 instance IsLabel "any" ChaosTokenMatcher where
   fromLabel = AnyChaosToken
 
+instance IsLabel "frost" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs FrostToken
+
 instance IsLabel "skull" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs Skull
 

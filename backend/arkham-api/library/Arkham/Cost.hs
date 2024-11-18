@@ -145,6 +145,7 @@ data Payment
   | NoPayment
   | SupplyPayment Supply
   | AddCurseTokenPayment Int
+  | AddFrostTokenPayment Int
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Payment where
@@ -277,6 +278,7 @@ data Cost
   | UpTo GameCalculation Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
+  | AddFrostTokenCost Int
   | AddCurseTokenCost Int
   | AddCurseTokensCost Int Int
   | AddCurseTokensEqualToShroudCost
@@ -358,6 +360,7 @@ displayCostType = \case
   CostIfCustomization _ _ c -> displayCostType c
   AsIfAtLocationCost _ c -> displayCostType c
   ShuffleAttachedCardIntoDeckCost _ _ -> "Shuffle attached card into deck"
+  AddFrostTokenCost n -> "Add " <> tshow n <> " {frost} " <> pluralize n "token" <> "to the chaos bag"
   AddCurseTokenCost n -> "Add " <> tshow n <> " {curse} " <> pluralize n "token" <> "to the chaos bag"
   AddCurseTokensCost n m -> "Add " <> tshow n <> "-" <> tshow m <> " {curse} tokens to the chaos bag"
   AddCurseTokensEqualToShroudCost -> "Add {curse} tokens to the chaos bag equal to your location's shroud value"

@@ -41,6 +41,8 @@ function imageFor(tokenFace: string) {
       return imgsrc("ct_bless.png");
     case 'CurseToken':
       return imgsrc("ct_curse.png");
+    case 'FrostToken':
+      return imgsrc("ct_frost.png");
     default:
       return imgsrc("ct_blank.png");
   }

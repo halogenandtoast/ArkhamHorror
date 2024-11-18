@@ -62,7 +62,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['MementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts'];
+  const nonCardKeys = ['MementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'SuppliesRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -110,6 +110,13 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     const contents = value.contents || value.recordVal?.contents
     const hideout = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`theInnsmouthConspiracy.possibleHideouts.${hideout}`, hideout)
+  }
+
+  if (key === 'SuppliesRecovered') {
+    console.log(value);
+    const contents = value.contents || value.recordVal?.contents
+    const supply = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`edgeOfTheEarth.suppliesRecovered.${supply}`, supply)
   }
 
   const code = value.contents || value.recordVal?.contents

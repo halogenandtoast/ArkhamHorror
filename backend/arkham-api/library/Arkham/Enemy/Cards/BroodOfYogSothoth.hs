@@ -1,12 +1,13 @@
 module Arkham.Enemy.Cards.BroodOfYogSothoth (BroodOfYogSothoth (..), broodOfYogSothoth) where
 
-import Arkham.Classes
+import Arkham.Asset.Cards.TheDunwichLegacy qualified as Assets
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
 
 newtype BroodOfYogSothoth = BroodOfYogSothoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -18,15 +19,19 @@ broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1
 instance HasModifiersFor BroodOfYogSothoth where
   getModifiersFor target (BroodOfYogSothoth a) | isTarget a target = do
     healthModifier <- perPlayer 1
-    modified a [HealthModifier healthModifier, CanOnlyBeAttackedByAbilityOn (singleton "02254")]
+    modified
+      a
+      [ HealthModifier healthModifier
+      , CanOnlyBeAttackedByAbilityOn $ singleton $ Assets.esotericFormula.cardCode
+      ]
   getModifiersFor _ _ = pure []
 
 instance RunMessage BroodOfYogSothoth where
-  runMessage msg e@(BroodOfYogSothoth attrs) = case msg of
+  runMessage msg e@(BroodOfYogSothoth attrs) = runQueueT $ case msg of
     Msg.EnemyDamage eid (damageAssignmentSource -> (.asset) -> Just aid) | eid == enemyId attrs -> do
       isEsotericFormula <- aid <=~> AssetWithTitle "Esoteric Formula"
       if isEsotericFormula
-        then BroodOfYogSothoth <$> runMessage msg attrs
+        then BroodOfYogSothoth <$> liftRunMessage msg attrs
         else pure e
     Msg.EnemyDamage eid _ | eid == enemyId attrs -> pure e
-    _ -> BroodOfYogSothoth <$> runMessage msg attrs
+    _ -> BroodOfYogSothoth <$> liftRunMessage msg attrs

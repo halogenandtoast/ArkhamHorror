@@ -19,6 +19,7 @@ data ScenarioDeckKey
   | TidalTunnelDeck -- The Pit of Dispair
   | LeadsDeck -- The Vanishing of Elina Harper, Murder at the Excelsior Hotel
   | RoadDeck -- Horror in High Gear
+  | TekeliliDeck -- Edge of the Earth
   deriving stock (Show, Ord, Eq, Data)
 
 $(deriveJSON defaultOptions ''ScenarioDeckKey)

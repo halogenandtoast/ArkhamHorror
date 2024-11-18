@@ -135,6 +135,7 @@ allActCards =
       , row
       , run
       , saracenicScript
+      , searchForACampSite
       , searchForAlejandro
       , searchForTheBrotherhood
       , searchForThePatient
@@ -816,6 +817,9 @@ cityOfTheDeepV2 = (act "07317" "City of the Deep (v.II)" 2 IntoTheMaelstrom) {cd
 
 cityOfTheDeepV3 :: CardDef
 cityOfTheDeepV3 = (act "07318" "City of the Deep (v.III)" 2 IntoTheMaelstrom) {cdVictoryPoints = Just 2}
+
+searchForACampSite :: CardDef
+searchForACampSite = act "08521" "Search for a Camp Site" 1 TheCrash
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

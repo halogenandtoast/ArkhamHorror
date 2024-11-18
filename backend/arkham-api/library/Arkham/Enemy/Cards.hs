@@ -165,6 +165,7 @@ allEncounterEnemyCards =
       , ghoulFromTheDepths
       , ghoulMinion
       , ghoulPriest
+      , glacialPhantasm
       , goatSpawn
       , grapplingHorror
       , graveEater
@@ -233,6 +234,7 @@ allEncounterEnemyCards =
       , madPatient
       , malevolentSpirit
       , maniac
+      , manifestationOfMadness
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
       , mindlessDancer
@@ -294,6 +296,7 @@ allEncounterEnemyCards =
       , sethBishop
       , shadowHound
       , silasBishop
+      , skitteringNonsense
       , slimeCoveredDhole
       , slitheringDhole
       , spawnOfHali
@@ -311,6 +314,7 @@ allEncounterEnemyCards =
       , swiftByakhee
       , temporalDevourer
       , tenebrousNightgaunt
+      , terrorOfTheStarsBringerOfIceAndDeath
       , theAmalgam
       , theCrawlingMist
       , theExperiment
@@ -2345,6 +2349,35 @@ mobGoons =
   (weakness "08003" "Mob Goons")
     { cdCardTraits = setFromList [Humanoid, Criminal]
     , cdKeywords = singleton Keyword.Hunter
+    }
+
+skitteringNonsense :: CardDef
+skitteringNonsense =
+  (enemy "08515" "Skittering Nonsense" IceAndDeath 3)
+    { cdCardTraits = setFromList [Monster, Eidolon]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+terrorOfTheStarsBringerOfIceAndDeath :: CardDef
+terrorOfTheStarsBringerOfIceAndDeath =
+  (enemy "08522" ("Terror of the Stars" <:> "Bringer of Ice and Death") TheCrash 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+manifestationOfMadness :: CardDef
+manifestationOfMadness =
+  (enemy "08689" "Manifestation of Madness" CreaturesInTheIce 3)
+    { cdCardTraits = setFromList [Monster, Eidolon]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+glacialPhantasm :: CardDef
+glacialPhantasm =
+  (enemy "08690" "Glacial Phantasm" CreaturesInTheIce 2)
+    { cdCardTraits = setFromList [Monster, Eidolon]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 agentFletcher :: CardDef

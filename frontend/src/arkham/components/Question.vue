@@ -605,6 +605,23 @@ section {
   letter-spacing: .03em;
   max-height: 70vh;
   overflow: auto;
+
+  :deep(b) {
+    font-family: none;
+  }
+
+  :deep(.blue) {
+    border: 3px solid #3a4a69;
+    border-radius: 55px;
+    background-color: color-mix(in srgb, #3a4a69, transparent 90%);
+    box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
+    padding: 10px;
+
+    p:first-child {
+      margin-left: 35px;
+    }
+  }
+
 }
 
 .intro-text :deep(ul) {

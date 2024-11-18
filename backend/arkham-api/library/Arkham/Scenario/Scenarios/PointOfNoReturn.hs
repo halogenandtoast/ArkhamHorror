@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Scenario.Scenarios.PointOfNoReturn (PointOfNoReturn (..), pointOfNoReturn) where
 
 import Arkham.Act.Cards qualified as Acts

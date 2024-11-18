@@ -421,6 +421,13 @@ allEnemies =
     , -- Edge of the Earth
       -- signature
       SomeEnemyCard mobGoons
+    , -- Ice and Death [eote]
+      SomeEnemyCard skitteringNonsense
+    , -- The Crash [eote]
+      SomeEnemyCard terrorOfTheStarsBringerOfIceAndDeath
+    , -- Creatures in the Ice [eote]
+      SomeEnemyCard manifestationOfMadness
+    , SomeEnemyCard glacialPhantasm
     , -- The Scarlet Keys
       -- signature
       SomeEnemyCard agentFletcher

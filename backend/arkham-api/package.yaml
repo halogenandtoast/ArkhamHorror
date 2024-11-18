@@ -16,6 +16,7 @@ default-extensions:
 - FunctionalDependencies
 - GADTs
 - LambdaCase
+- MultiWayIf
 - NoImplicitPrelude
 - NoMonomorphismRestriction
 - OverloadedLabels

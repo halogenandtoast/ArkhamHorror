@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (WeaverOfTheCosmos (..), weaverOfTheCosmos) where
 
 import Arkham.Act.Cards qualified as Acts

@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Skill.Cards.Purified (purified, Purified (..)) where
 
 import Arkham.Helpers.ChaosBag (getRemainingBlessTokens)

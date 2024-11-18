@@ -73,6 +73,7 @@ data Trait
   | Dreamlands
   | Drifter
   | Dunwich
+  | Eidolon
   | Eldritch
   | Elite
   | Endtimes
@@ -99,6 +100,7 @@ data Trait
   | Geist
   | Ghast
   | Ghoul
+  | Glacier
   | Grant
   | Graveyard
   | GroundFloor
@@ -135,6 +137,7 @@ data Trait
   | Lodge
   | Lunatic
   | Madness
+  | Mainland
   | Manifold
   | Mask
   | Medic
@@ -146,6 +149,7 @@ data Trait
   | Mnar
   | Monster
   | Mountain
+  | Mountains
   | Mystery
   | NewOrleans
   | Nightgaunt
@@ -229,6 +233,7 @@ data Trait
   | Trap
   | Trick
   | Unbroken
+  | Uncharted
   | Unhallowed
   | Upgrade
   | Vale

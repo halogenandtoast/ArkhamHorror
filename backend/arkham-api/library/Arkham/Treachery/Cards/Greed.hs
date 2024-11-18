@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Treachery.Cards.Greed (greed, Greed (..)) where
 
 import Arkham.Investigator.Types (Field (..))

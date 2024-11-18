@@ -1,13 +1,14 @@
 module Arkham.Enemy.Cards.YogSothoth (yogSothoth, yogSothothEffect, YogSothoth (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Effect.Runner hiding (EnemyAttacks)
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass IsEnemy
@@ -18,59 +19,43 @@ yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evad
 
 instance HasModifiersFor YogSothoth where
   getModifiersFor target (YogSothoth a) | isTarget a target = do
-    healthModifier <- getPlayerCountValue (PerPlayer 6)
+    healthModifier <- perPlayer 6
     toModifiers a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities YogSothoth where
-  getAbilities (YogSothoth attrs) =
-    withBaseAbilities
-      attrs
-      [mkAbility attrs 1 $ freeReaction (EnemyAttacks #when You AnyEnemyAttack $ be attrs)]
+  getAbilities (YogSothoth a) =
+    extend1 a $ mkAbility a 1 $ freeReaction (EnemyAttacks #when You AnyEnemyAttack $ be a)
 
 instance RunMessage YogSothoth where
-  runMessage msg e@(YogSothoth attrs@EnemyAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-
-      choices <- for [0 .. enemySanityDamage] \discardCount -> do
-        enabled <- createCardEffect Cards.yogSothoth (Just $ EffectInt discardCount) source iid
-        pure
-          $ Label
-            ( "Discard the top "
-                <> tshow discardCount
+  runMessage msg e@(YogSothoth attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid $ for_ [0 .. attrs.sanityDamage] \n -> do
+        let label =
+              "Discard the top "
+                <> tshow n
                 <> " cards and take "
-                <> tshow (enemySanityDamage - discardCount)
+                <> tshow (attrs.sanityDamage - n)
                 <> " horror"
-            )
-          $ [ enabled
-            , DiscardTopOfDeck iid discardCount (toAbilitySource attrs 1) Nothing
-            ]
-          <> [assignHorror iid (attrs.ability 1) (5 - discardCount) | (5 - discardCount) > 0]
-      push $ chooseOne player choices
+        labeled label do
+          enemyAttackModifier (attrs.ability 1) attrs $ HorrorDealt (-n)
+          eid <- createCardEffectCapture Cards.yogSothoth (effectInt n) (attrs.ability 1) iid
+          push $ DiscardTopOfDeck iid n (attrs.ability 1) Nothing
+          disable eid
+          when (5 - n > 0) $ assignHorror iid (attrs.ability 1) (5 - n)
       pure e
-    _ -> YogSothoth <$> runMessage msg attrs
+    _ -> YogSothoth <$> liftRunMessage msg attrs
 
 newtype YogSothothEffect = YogSothothEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, HasModifiersFor, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yogSothothEffect :: EffectArgs -> YogSothothEffect
 yogSothothEffect = cardEffect YogSothothEffect Cards.yogSothoth
 
-instance HasModifiersFor YogSothothEffect where
-  getModifiersFor target (YogSothothEffect attrs) = case effectMetadata attrs of
-    Just (EffectInt n) -> case target of
-      EnemyTarget eid -> case effectSource attrs of
-        EnemySource eid' | eid' == eid -> do
-          toModifiers attrs [HorrorDealt (-n)]
-        _ -> pure []
-      _ -> pure []
-    _ -> pure []
-
 instance RunMessage YogSothothEffect where
-  runMessage msg e@(YogSothothEffect attrs) = case msg of
-    Msg.DeckHasNoCards iid _ | isTarget attrs (InvestigatorTarget iid) -> do
-      push (DrivenInsane iid)
+  runMessage msg e@(YogSothothEffect attrs) = runQueueT $ case msg of
+    Msg.DeckHasNoCards iid _ | isTarget iid attrs.target -> do
+      drivenInsane iid
       pure e
-    _ -> YogSothothEffect <$> runMessage msg attrs
+    _ -> YogSothothEffect <$> liftRunMessage msg attrs

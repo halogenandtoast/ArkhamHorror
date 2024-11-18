@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
-
 module Arkham.Event.Events.TheRavenQuill (theRavenQuill, TheRavenQuill (..)) where
 
 import Arkham.Ability

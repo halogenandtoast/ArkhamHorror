@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -661,7 +661,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckL %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
-      & (decksL . each %~ filterOutCards)
+      & (decksL . each %~ traceShowId . filterOutCards . traceShowId)
   RequestSetAsideCard target cardCode -> do
     let
       (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards
@@ -699,20 +699,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         Just (x : _) -> push (AddAgenda k x)
         _ -> pure ()
     pure a
-  AddCampaignCardToDeck iid cardDef -> do
+  AddCampaignCardToDeck iid card -> do
     standalone <- getIsStandalone
-    card <- genPlayerCard cardDef
-    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [PlayerCard card]
-    if standalone
-      then
-        pure
-          $ a
-          & storyCardsL
-          %~ insertWith
-            (<>)
-            iid
-            [card {pcOwner = Just iid}]
-      else pure a
+    let card' = overPlayerCard (setPlayerCardOwner iid) card
+    replaceCard card.id card'
+    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
+    pure $ if standalone then a & storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']) else a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck
     player <- getPlayer iid

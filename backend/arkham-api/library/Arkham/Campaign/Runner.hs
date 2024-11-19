@@ -30,10 +30,13 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Xp
+import Data.Aeson.Key qualified as Aeson
 import Data.Map.Strict qualified as Map
 
 defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
+  SetGlobal CampaignTarget k v -> do
+    pure $ updateAttrs a (storeL . at (Aeson.toText k) ?~ v)
   StartCampaign -> do
     -- [ALERT] StartCampaign
     players <- allPlayers
@@ -52,9 +55,9 @@ defaultCampaignRunner msg a = case msg of
     pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
-  AddCampaignCardToDeck iid cardDef -> do
-    card <- genPlayerCardWith cardDef (setPlayerCardOwner iid)
-    pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card])
+  AddCampaignCardToDeck iid card -> do
+    let card' = overPlayerCard (setPlayerCardOwner iid) card
+    pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']))
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->
       attrs

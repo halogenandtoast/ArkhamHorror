@@ -10,3 +10,9 @@ instance FromJSON Target
 instance Eq Target
 instance Ord Target
 instance Show Target
+
+class Targetable a where
+  toTarget :: a -> Target
+  isTarget :: a -> Target -> Bool
+  isTarget = (==) . toTarget
+  {-# MINIMAL toTarget #-}

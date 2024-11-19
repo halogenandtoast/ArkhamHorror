@@ -187,6 +187,9 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> do
+      push . shuffleCardsIntoDeck iid . take n =<< getScenarioDeck deckKey
+      pure c
     GroupSpendKeyCost key _ -> do
       push $ PlaceKey ScenarioTarget key
       pure c

@@ -153,6 +153,12 @@ entering =
     (windowType -> Window.Entering _ lid) -> Just lid
     _ -> Nothing
 
+attachedCard :: HasCallStack => [Window] -> Card
+attachedCard =
+  fromMaybe (error "missing Attach card window") . asum . map \case
+    (windowType -> Window.AttachCard _ card _) -> Just card
+    _ -> Nothing
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case

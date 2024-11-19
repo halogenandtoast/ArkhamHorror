@@ -107,6 +107,11 @@ instance CardGen m => CardGen (QueueT msg m) where
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
 
+overPlayerCard :: (PlayerCard -> PlayerCard) -> Card -> Card
+overPlayerCard f = \case
+  PlayerCard pc -> PlayerCard $ f pc
+  other -> other
+
 genPlayerCardWith :: (HasCardDef a, CardGen m) => a -> (PlayerCard -> PlayerCard) -> m PlayerCard
 genPlayerCardWith a f = do
   result <- f <$> genPlayerCard a
@@ -265,6 +270,9 @@ data Card
 
 instance HasField "victoryPoints" Card (Maybe Int) where
   getField = (.victoryPoints) . toCardDef
+
+instance HasField "name" Card Name where
+  getField = toName
 
 instance HasField "title" Card Text where
   getField = toTitle

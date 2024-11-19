@@ -1,13 +1,10 @@
 module Arkham.Treachery.Cards.FrozenInFear where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Helpers.Modifiers (ActionTarget (..), ModifierType (..), modified)
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype FrozenInFear = FrozenInFear TreacheryAttrs
   deriving anyclass IsTreachery
@@ -26,18 +23,19 @@ instance HasModifiersFor FrozenInFear where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities FrozenInFear where
-  getAbilities (FrozenInFear a) = [skillTestAbility $ restrictedAbility a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
+  getAbilities (FrozenInFear a) =
+    [skillTestAbility $ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage FrozenInFear where
-  runMessage msg t@(FrozenInFear attrs) = case msg of
+  runMessage msg t@(FrozenInFear attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ placeInThreatArea attrs iid
+      placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> FrozenInFear <$> runMessage msg attrs
+    _ -> FrozenInFear <$> liftRunMessage msg attrs

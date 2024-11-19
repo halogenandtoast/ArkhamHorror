@@ -136,6 +136,13 @@ allPlayerTreacheryCards =
       , smiteTheWickedAdvanced
       , starsOfHyades
       , stupor
+      , tekelili_223
+      , tekelili_224
+      , tekelili_225
+      , tekelili_226
+      , tekelili_227
+      , tekelili_228
+      , tekelili_229
       , terribleSecret
       , the13thVision
       , theBellTolls
@@ -389,13 +396,6 @@ allEncounterTreacheryCards =
       , syzygy
       , takenCaptive
       , tasteOfLifeblood
-      , tekelili_223
-      , tekelili_224
-      , tekelili_225
-      , tekelili_226
-      , tekelili_227
-      , tekelili_228
-      , tekelili_229
       , terrorInTheNight
       , terrorFromBeyond
       , terrorUnleashed
@@ -2488,44 +2488,58 @@ darkAurora =
 
 tekelili_223 :: CardDef
 tekelili_223 =
-  (treachery "08723" "Tekeli-li" Tekelili 3)
+  (weakness "08723" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 3
     }
 
 tekelili_224 :: CardDef
 tekelili_224 =
-  (treachery "08724" "Tekeli-li" Tekelili 3)
+  (weakness "08724" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 3
     }
 
 tekelili_225 :: CardDef
 tekelili_225 =
-  (treachery "08725" "Tekeli-li" Tekelili 2)
+  (weakness "08725" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 2
     }
 
 tekelili_226 :: CardDef
 tekelili_226 =
-  (treachery "08726" "Tekeli-li" Tekelili 2)
+  (weakness "08726" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 2
     }
 
 tekelili_227 :: CardDef
 tekelili_227 =
-  (treachery "08727" "Tekeli-li" Tekelili 2)
+  (weakness "08727" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 2
     }
 
 tekelili_228 :: CardDef
 tekelili_228 =
-  (treachery "08728" "Tekeli-li" Tekelili 2)
+  (weakness "08728" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 2
     }
 
 tekelili_229 :: CardDef
 tekelili_229 =
-  (treachery "08729" "Tekeli-li" Tekelili 2)
+  (weakness "08729" "Tekeli-li")
     { cdCardTraits = setFromList [Madness]
+    , cdEncounterSet = Just Tekelili
+    , cdEncounterSetQuantity = Just 2
     }
 
 selflessToAFault :: CardDef

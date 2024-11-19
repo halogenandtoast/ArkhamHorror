@@ -22,6 +22,22 @@ data ScenarioDeckKey
   | TekeliliDeck -- Edge of the Earth
   deriving stock (Show, Ord, Eq, Data)
 
+instance ToDisplay ScenarioDeckKey where
+  toDisplay = \case
+    CultistDeck -> "Cultist"
+    ExhibitDeck -> "Exhibit"
+    PotentialSacrifices -> "Potential Sacrifices"
+    LunaticsDeck -> "Lunatics"
+    MonstersDeck -> "Monsters"
+    CatacombsDeck -> "Catacombs"
+    ExplorationDeck -> "Exploration"
+    UnknownPlacesDeck -> "Unknown Places"
+    CosmosDeck -> "Cosmos"
+    TidalTunnelDeck -> "Tidal Tunnels"
+    LeadsDeck -> "Leads"
+    RoadDeck -> "Road"
+    TekeliliDeck -> "Tekeli-li"
+
 $(deriveJSON defaultOptions ''ScenarioDeckKey)
 
 instance ToJSONKey ScenarioDeckKey

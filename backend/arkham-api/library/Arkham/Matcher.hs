@@ -16,6 +16,7 @@ import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
@@ -372,6 +373,11 @@ basicCardIs = basic . cardIs
 
 hasCard :: HasCardCode a => a -> CardListMatcher
 hasCard = HasCard . cardIs
+
+-- ** Target Helpers **
+
+targetIs :: Targetable target => target -> TargetMatcher
+targetIs = TargetIs . toTarget
 
 -- ** Source Helpers **
 

@@ -111,6 +111,21 @@ getSetAsideEncounterSet encounterSet =
     ScenarioSetAsideCards
     (filter ((== Just encounterSet) . cdEncounterSet . toCardDef))
 
+getOrGenerateSetAsideCard :: (CardGen m, HasGame m) => CardDef -> m Card
+getOrGenerateSetAsideCard cardDef = maybe (genCard cardDef) pure =<< maybeGetSetAsideCard cardDef
+
+maybeGetSetAsideCard :: HasGame m => CardDef -> m (Maybe Card)
+maybeGetSetAsideCard def = do
+  mcard <- selectOne . SetAsideCardMatch $ cardIs def
+  case mcard of
+    Nothing -> pure Nothing
+    Just card ->
+      pure
+        $ Just
+        $ if cardCodeExactEq (toCardCode card) (toCardCode def)
+          then card
+          else lookupCard (toCardCode def) (toCardId card)
+
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
 maybeGetSetAsideEncounterCard def = do
   mcard <- selectOne . SetAsideCardMatch $ cardIs def

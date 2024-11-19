@@ -80,7 +80,7 @@ instance RunMessage FindingLadyEsprit where
         $ [chooseOne lead choices]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleCardsIntoDeck Deck.EncounterDeck curseOfTheRougarouSet
-           , AddCampaignCardToDeck leadId Treacheries.curseOfTheRougarou
+           , AddCampaignCardToDeck leadId curseOfTheRougarou
            , CreateWeaknessInThreatArea curseOfTheRougarou leadId
            , AdvanceActDeck actDeckId (toSource attrs)
            ]

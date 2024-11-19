@@ -24,6 +24,7 @@ import Arkham.Id
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
@@ -221,6 +222,7 @@ data Cost
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
   | ExhaustCost Target
+  | ShuffleTopOfScenarioDeckIntoYourDeck Int ScenarioDeckKey
   | ChooseEnemyCost EnemyMatcher
   | ChosenEnemyCost EnemyId
   | ChooseExtendedCardCost ExtendedCardMatcher
@@ -335,6 +337,7 @@ data DynamicUseCostValue = DrawnCardsValue
 
 displayCostType :: Cost -> Text
 displayCostType = \case
+  ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"
   PlaceKeyCost _ k -> "Place " <> keyName k <> " Key"

@@ -86,6 +86,8 @@ instance RunMessage TreacheryAttrs where
             : [Window.mkAfter $ Window.TreacheryEntersPlay tid | entersPlay]
         _ -> when entersPlay do
           pushM $ checkAfter $ Window.TreacheryEntersPlay tid
+      for_ placement.attachedTo \target ->
+        pushM $ checkWhen $ Window.AttachCard Nothing (toCard a) target
       pure $ a & placementL .~ placement
     PlaceTokens source (isTarget a -> True) token n -> do
       when (token == Doom && a.doom == 0) do

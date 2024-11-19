@@ -66,6 +66,7 @@ getCanAffordCost_
   -> Cost
   -> m Bool
 getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \case
+  ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> (>= n) . length <$> getScenarioDeck deckKey
   RemoveEnemyDamageCost x matcher -> do
     n <- getGameValue x
     selectAny $ matcher <> Matcher.EnemyWithDamage (Matcher.atLeast n)

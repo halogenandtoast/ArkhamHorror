@@ -1,19 +1,21 @@
 module Arkham.Message.Lifted.SkillTest where
 
-import Arkham.Prelude
+import Arkham.Calculation
 import Arkham.Card
-import Arkham.Classes.HasQueue
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Id
+import Arkham.Matcher
+import Arkham.Message.Lifted qualified as Lifted
+import Arkham.Modifier
+import Arkham.Prelude
+import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
-import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Calculation
-import Control.Monad.State
-import Control.Monad.Random
 import Arkham.Treachery.Import.Lifted qualified as Lifted (revelationSkillTest)
-import Arkham.Message.Lifted qualified as Lifted
+import Control.Monad.Random
+import Control.Monad.State
 
 data Origin where
   Origin :: (Sourceable a, Targetable a) => a -> Origin
@@ -57,32 +59,65 @@ instance MonadRandom m => MonadRandom (SkillTestT m) where
 
 instance Lifted.ReverseQueue m => Lifted.ReverseQueue (SkillTestT m)
 
-skillTest :: (Lifted.ReverseQueue m, Sourceable attrs, Targetable attrs) => InvestigatorId -> attrs -> SkillType -> GameCalculation -> SkillTestT m () -> m ()
+skillTest
+  :: (Lifted.ReverseQueue m, Sourceable attrs, Targetable attrs)
+  => InvestigatorId
+  -> attrs
+  -> SkillType
+  -> GameCalculation
+  -> SkillTestT m ()
+  -> m ()
 skillTest iid attrs skillType calculation action = do
   sid <- getRandom
-  SkillTestState {..} <- execStateT (runSkillTestT action) $ SkillTestState
-    { skillTestStateId = sid
-    , skillTestStateInvestigator = iid
-    , skillTestStateOrigin = Origin attrs
-    , skillTestStateSkillType = skillType
-    , skillTestStateCalculation = calculation
-    , skillTestStateIsRevelation = False
-    }
+  SkillTestState {..} <-
+    execStateT (runSkillTestT action)
+      $ SkillTestState
+        { skillTestStateId = sid
+        , skillTestStateInvestigator = iid
+        , skillTestStateOrigin = Origin attrs
+        , skillTestStateSkillType = skillType
+        , skillTestStateCalculation = calculation
+        , skillTestStateIsRevelation = False
+        }
   if skillTestStateIsRevelation
-    then Lifted.revelationSkillTest skillTestStateId skillTestStateInvestigator skillTestStateOrigin skillTestStateSkillType skillTestStateCalculation
-    else Lifted.beginSkillTest skillTestStateId skillTestStateInvestigator skillTestStateOrigin skillTestStateOrigin skillTestStateSkillType skillTestStateCalculation
+    then
+      Lifted.revelationSkillTest
+        skillTestStateId
+        skillTestStateInvestigator
+        skillTestStateOrigin
+        skillTestStateSkillType
+        skillTestStateCalculation
+    else
+      Lifted.beginSkillTest
+        skillTestStateId
+        skillTestStateInvestigator
+        skillTestStateOrigin
+        skillTestStateOrigin
+        skillTestStateSkillType
+        skillTestStateCalculation
 
-revelationSkillTest :: (Lifted.ReverseQueue m, Sourceable attrs, Targetable attrs) => InvestigatorId -> attrs -> SkillType -> GameCalculation -> SkillTestT m () -> m ()
+revelationSkillTest
+  :: (Lifted.ReverseQueue m, Sourceable attrs, Targetable attrs)
+  => InvestigatorId
+  -> attrs
+  -> SkillType
+  -> GameCalculation
+  -> SkillTestT m ()
+  -> m ()
 revelationSkillTest iid attrs skillType calculation action = do
   skillTest iid attrs skillType calculation $ do
     revelation
     action
 
-failOnReveal :: (Lifted.ReverseQueue m) => ChaosTokenMatcher -> SkillTestT m ()
+failOnReveal :: Lifted.ReverseQueue m => ChaosTokenMatcher -> SkillTestT m ()
 failOnReveal matcher = do
   sid <- gets skillTestStateId
   Origin attrs <- gets skillTestStateOrigin
   Lifted.failOnReveal matcher sid attrs
 
 revelation :: Monad m => SkillTestT m ()
-revelation = get >>= \st -> put st { skillTestStateIsRevelation = True }
+revelation = get >>= \st -> put st {skillTestStateIsRevelation = True}
+
+discoverAdditionalClues
+  :: (Lifted.ReverseQueue m, Sourceable source) => source -> InvestigatorId -> Int -> m ()
+discoverAdditionalClues source iid n = withSkillTest \sid -> Lifted.skillTestModifier sid source iid (DiscoveredClues n)

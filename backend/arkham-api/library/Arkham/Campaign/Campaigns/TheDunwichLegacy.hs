@@ -89,14 +89,12 @@ instance RunMessage TheDunwichLegacy where
               ]
             <> [GainXP iid CampaignSource 2 | iid <- investigatorIds]
             <> [NextCampaignStep Nothing]
-        else
+        else do
+          armitage <- genCard Assets.drHenryArmitage
           pushAll
             [ story players armitagesFate2
             , Record TheInvestigatorsRescuedDrHenryArmitage
-            , addCampaignCardToDeckChoice
-                lead
-                investigatorIds
-                Assets.drHenryArmitage
+            , addCampaignCardToDeckChoice lead investigatorIds armitage
             , NextCampaignStep Nothing
             ]
       pure c
@@ -108,12 +106,15 @@ instance RunMessage TheDunwichLegacy where
       drHenryArmitageUnowned <- isNothing <$> getOwner Assets.drHenryArmitage
       professorWarrenRiceUnowned <- isNothing <$> getOwner Assets.professorWarrenRice
       drFrancisMorganUnowned <- isNothing <$> getOwner Assets.drFrancisMorgan
+      powder <- genCard Assets.powderOfIbnGhazi
+      armitage <- genCard Assets.drHenryArmitage
+      rice <- genCard Assets.professorWarrenRice
+      morgan <- genCard Assets.drFrancisMorgan
+      whately <- genCard Assets.zebulonWhateley
+      sawyer <- genCard Assets.earlSawyer
       let
         addPowderOfIbnGhazi =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.powderOfIbnGhazi
+          addCampaignCardToDeckChoice lead investigatorIds powder
             <$ guard
               ( any
                   ((`notElem` sacrificedToYogSothoth) . recorded . toCardCode)
@@ -123,49 +124,34 @@ instance RunMessage TheDunwichLegacy where
                   ]
               )
         addDrHenryArmitage =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.drHenryArmitage
+          addCampaignCardToDeckChoice lead investigatorIds armitage
             <$ guard
               ( drHenryArmitageUnowned
                   && recorded (toCardCode Assets.drHenryArmitage)
                   `notElem` sacrificedToYogSothoth
               )
         addProfessorWarrenRice =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.professorWarrenRice
+          addCampaignCardToDeckChoice lead investigatorIds rice
             <$ guard
               ( professorWarrenRiceUnowned
                   && recorded (toCardCode Assets.professorWarrenRice)
                   `notElem` sacrificedToYogSothoth
               )
         addDrFrancisMorgan =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.drFrancisMorgan
+          addCampaignCardToDeckChoice lead investigatorIds morgan
             <$ guard
               ( drFrancisMorganUnowned
                   && recorded (toCardCode Assets.drFrancisMorgan)
                   `notElem` sacrificedToYogSothoth
               )
         addZebulonWhateley =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.zebulonWhateley
+          addCampaignCardToDeckChoice lead investigatorIds whately
             <$ guard
               ( recorded (toCardCode Assets.zebulonWhateley)
                   `notElem` sacrificedToYogSothoth
               )
         addEarlSawyer =
-          addCampaignCardToDeckChoice
-            lead
-            investigatorIds
-            Assets.earlSawyer
+          addCampaignCardToDeckChoice lead investigatorIds sawyer
             <$ guard
               ( recorded (toCardCode Assets.earlSawyer)
                   `notElem` sacrificedToYogSothoth
@@ -207,35 +193,36 @@ instance RunMessage TheDunwichLegacy where
       let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
       case option of
         TakeArmitage -> do
-          unless (sacrificed Assets.drHenryArmitage)
-            $ push
-            $ forceAddCampaignCardToDeckChoice lead investigators Assets.drHenryArmitage
+          unless (sacrificed Assets.drHenryArmitage) do
+            armitage <- genCard Assets.drHenryArmitage
+            push $ forceAddCampaignCardToDeckChoice lead investigators armitage
         TakeWarrenRice -> do
-          unless (sacrificed Assets.professorWarrenRice)
-            $ push
-            $ forceAddCampaignCardToDeckChoice lead investigators Assets.professorWarrenRice
+          unless (sacrificed Assets.professorWarrenRice) do
+            rice <- genCard Assets.professorWarrenRice
+            push $ forceAddCampaignCardToDeckChoice lead investigators rice
         TakeFrancisMorgan -> do
-          unless (sacrificed Assets.drFrancisMorgan)
-            $ push
-            $ forceAddCampaignCardToDeckChoice lead investigators Assets.drFrancisMorgan
-        TakeZebulonWhately -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.zebulonWhateley
-        TakeEarlSawyer -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.earlSawyer
+          unless (sacrificed Assets.drFrancisMorgan) do
+            morgan <- genCard Assets.drFrancisMorgan
+            push $ forceAddCampaignCardToDeckChoice lead investigators morgan
+        TakeZebulonWhately -> push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.zebulonWhateley
+        TakeEarlSawyer -> push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.earlSawyer
         TakePowderOfIbnGhazi -> do
-          when (campaignStep (toAttrs c) == UndimensionedAndUnseen)
-            $ push
-            $ forceAddCampaignCardToDeckChoice lead investigators Assets.powderOfIbnGhazi
+          when (campaignStep (toAttrs c) == UndimensionedAndUnseen) do
+            push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.powderOfIbnGhazi
         TakeTheNecronomicon -> do
           stolen <- getHasRecord TheNecronomiconWasStolen
-          unless stolen
-            $ push
-            $ forceAddCampaignCardToDeckChoice lead investigators Assets.theNecronomiconOlausWormiusTranslation
+          unless stolen do
+            push
+              . forceAddCampaignCardToDeckChoice lead investigators
+              =<< genCard Assets.theNecronomiconOlausWormiusTranslation
         AddAcrossTimeAndSpace -> do
+          acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
           push
             $ Ask lead
             $ ChooseSome1
               "Do not add Across Time and Space to any other decks"
-              [ PortraitLabel iid [AddCampaignCardToDeck iid Treacheries.acrossSpaceAndTime]
-              | iid <- investigators
+              [ PortraitLabel iid [AddCampaignCardToDeck iid acrossSpaceAndTime]
+              | (iid, acrossSpaceAndTime) <- zip investigators acrossSpaceAndTimes
               ]
         Cheated -> push $ AddChaosToken #elderthing
         _ -> error $ "Unhandled option: " <> show option

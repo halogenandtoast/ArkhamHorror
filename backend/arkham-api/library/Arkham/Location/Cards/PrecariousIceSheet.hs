@@ -12,7 +12,7 @@ newtype PrecariousIceSheet = PrecariousIceSheet LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 precariousIceSheet :: LocationCard PrecariousIceSheet
-precariousIceSheet = symbolLabel $ location PrecariousIceSheet Cards.precariousIceSheet 0 (Static 0)
+precariousIceSheet = symbolLabel $ location PrecariousIceSheet Cards.precariousIceSheet 4 (PerPlayer 1)
 
 instance HasAbilities PrecariousIceSheet where
   getAbilities (PrecariousIceSheet attrs) =

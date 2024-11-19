@@ -54,6 +54,7 @@ data instance Field Campaign :: Type -> Type where
   CampaignCampaignLog :: Field Campaign CampaignLog
   CampaignDecks :: Field Campaign (Map InvestigatorId (Deck PlayerCard))
   CampaignMeta :: Field Campaign Value
+  CampaignStore :: Field Campaign (Map Text Value)
 
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
@@ -69,6 +70,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignXpBreakdown :: [(CampaignStep, XpBreakdown)]
   , campaignModifiers :: Map InvestigatorId [Modifier]
   , campaignMeta :: Value
+  , campaignStore :: Map Text Value
   }
   deriving stock (Show, Eq, Generic)
 
@@ -86,6 +88,9 @@ instance HasField "difficulty" CampaignAttrs Difficulty where
 
 instance HasField "meta" CampaignAttrs Value where
   getField = campaignMeta
+
+instance HasField "store" CampaignAttrs (Map Text Value) where
+  getField = campaignStore
 
 instance HasField "id" Campaign CampaignId where
   getField = (.id) . toAttrs
@@ -129,6 +134,9 @@ stepL = lens campaignStep $ \m x -> m {campaignStep = x}
 metaL :: Lens' CampaignAttrs Value
 metaL = lens campaignMeta $ \m x -> m {campaignMeta = x}
 
+storeL :: Lens' CampaignAttrs (Map Text Value)
+storeL = lens campaignStore $ \m x -> m {campaignStore = x}
+
 resolutionsL :: Lens' CampaignAttrs (Map ScenarioId Resolution)
 resolutionsL = lens campaignResolutions $ \m x -> m {campaignResolutions = x}
 
@@ -149,7 +157,7 @@ instance Entity CampaignAttrs where
   overAttrs f = f
 
 addRandomBasicWeaknessIfNeeded
-  :: MonadRandom m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [CardDef])
+  :: CardGen m => ClassSymbol -> Int -> Deck PlayerCard -> m (Deck PlayerCard, [Card])
 addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
   let
     multiplayerFilter =
@@ -162,14 +170,10 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
     classOnlyFilter = not . any notForClass . cdDeckRestrictions
     weaknessFilter = and . sequence [multiplayerFilter, classOnlyFilter]
   runWriterT $ do
-    Deck <$> flip
-      filterM
-      (unDeck deck)
-      \card -> do
-        when
-          (toCardDef card == randomWeakness)
-          (sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= tell . pure)
-        pure $ toCardDef card /= randomWeakness
+    Deck <$> flip filterM (unDeck deck) \card -> do
+      when (toCardDef card == randomWeakness) do
+        sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= lift . genCard >>= tell . pure
+      pure $ toCardDef card /= randomWeakness
 
 campaignWith
   :: (CampaignAttrs -> a)
@@ -203,6 +207,7 @@ campaign f campaignId' name difficulty chaosBagContents =
       , campaignResolutions = mempty
       , campaignModifiers = mempty
       , campaignMeta = Null
+      , campaignStore = mempty
       , campaignXpBreakdown = mempty
       }
 
@@ -261,5 +266,6 @@ instance FromJSON CampaignAttrs where
     campaignXpBreakdown <- (oldBreakdown <$> o .: "xpBreakdown") <|> (o .:? "xpBreakdown" .!= mempty)
     campaignModifiers <- o .: "modifiers"
     campaignMeta <- o .: "meta"
+    campaignStore <- o .:? "store" .!= mempty
 
     pure CampaignAttrs {..}

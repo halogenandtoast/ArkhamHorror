@@ -121,6 +121,12 @@ isInvestigationOf matcher =
     LocationTarget lid <- MaybeT getSkillTestTarget
     liftGuardM $ lid <=~> matcher
 
+isSkillTestAt :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool
+isSkillTestAt location =
+  isJust <$> runMaybeT do
+    iid <- MaybeT getSkillTestInvestigator
+    liftGuardM $ asId location <=~> locationWithInvestigator iid
+
 isFightWith :: HasGame m => EnemyMatcher -> m Bool
 isFightWith matcher =
   isJust <$> runMaybeT do

@@ -321,6 +321,10 @@ instance IsCardMatcher CardMatcher where
   toCardMatcher = id
   {-# INLINE toCardMatcher #-}
 
+instance IsCardMatcher EncounterSet where
+  toCardMatcher = CardFromEncounterSet
+  {-# INLINE toCardMatcher #-}
+
 instance IsCardMatcher CardType where
   toCardMatcher = CardWithType
   {-# INLINE toCardMatcher #-}

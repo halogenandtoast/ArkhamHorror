@@ -1,7 +1,4 @@
-module Arkham.Campaign.Campaigns.TheCircleUndone (
-  TheCircleUndone (..),
-  theCircleUndone,
-) where
+module Arkham.Campaign.Campaigns.TheCircleUndone (TheCircleUndone (..), theCircleUndone) where
 
 import Arkham.Prelude
 
@@ -12,7 +9,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.Import
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Decklist
@@ -320,8 +317,8 @@ instance RunMessage TheCircleUndone where
       lead <- getLeadPlayer
       investigators <- allInvestigators
       case option of
-        TakeBlackBook -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.theBlackBook
-        TakePuzzleBox -> push $ forceAddCampaignCardToDeckChoice lead investigators Assets.puzzleBox
+        TakeBlackBook -> pushM $ forceAddCampaignCardToDeckChoice lead investigators <$> genCard Assets.theBlackBook
+        TakePuzzleBox -> pushM $ forceAddCampaignCardToDeckChoice lead investigators <$> genCard Assets.puzzleBox
         ProceedToInterlude3 -> pure ()
         _ -> error $ "Unhandled option: " <> show option
       pure c

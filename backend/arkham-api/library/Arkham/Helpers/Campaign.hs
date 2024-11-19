@@ -73,44 +73,40 @@ getCampaignMeta = do
     Success a -> pure a
     Error e -> error $ "Failed to parse campaign meta: " <> e
 
+getCampaignStore :: HasGame m => m (Map Text Value)
+getCampaignStore = campaignField CampaignStore
+
+stored :: forall a m. (HasCallStack, HasGame m, FromJSON a) => Text -> m (Maybe a)
+stored k = do
+  store <- getCampaignStore
+  pure $ case lookup k store of
+    Nothing -> Nothing
+    Just v -> case fromJSON v of
+      Success a -> Just a
+      Error e -> error $ "Failed to parse stored value: " <> e
+
 matchingCardsAlreadyInDeck
   :: HasGame m => CardMatcher -> m (Map InvestigatorId (Set CardCode))
 matchingCardsAlreadyInDeck matcher = do
   decks <- campaignField CampaignDecks
-  pure
-    $ Map.map
-      (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck)
-      decks
+  pure $ Map.map (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck) decks
 
 addCampaignCardToDeckChoice
-  :: PlayerId -> [InvestigatorId] -> CardDef -> Message
-addCampaignCardToDeckChoice leadPlayer investigators cardDef =
-  questionLabelWithCard
-    ("Add " <> display name <> " to a deck")
-    (toCardCode cardDef)
-    leadPlayer
+  :: PlayerId -> [InvestigatorId] -> Card -> Message
+addCampaignCardToDeckChoice leadPlayer investigators card =
+  questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
-    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator cardDef]
+    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator card]
       | investigator <- investigators
       ]
-    <> [Label ("Do not add " <> display name <> " to any deck") []]
- where
-  name = cdName cardDef
+    <> [Label ("Do not add " <> display card.name <> " to any deck") []]
 
 forceAddCampaignCardToDeckChoice
-  :: PlayerId -> [InvestigatorId] -> CardDef -> Message
-forceAddCampaignCardToDeckChoice _ [onlyId] cardDef =
-  AddCampaignCardToDeck
-    onlyId
-    cardDef
-forceAddCampaignCardToDeckChoice leadPlayer investigators cardDef =
-  questionLabelWithCard
-    ("Add " <> display name <> " to a deck")
-    (toCardCode cardDef)
-    leadPlayer
+  :: PlayerId -> [InvestigatorId] -> Card -> Message
+forceAddCampaignCardToDeckChoice _ [onlyId] card = AddCampaignCardToDeck onlyId card
+forceAddCampaignCardToDeckChoice leadPlayer investigators card =
+  questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
-      [ PortraitLabel investigator [AddCampaignCardToDeck investigator cardDef]
+      [ PortraitLabel investigator [AddCampaignCardToDeck investigator card]
       | investigator <- investigators
       ]
- where
-  name = cdName cardDef

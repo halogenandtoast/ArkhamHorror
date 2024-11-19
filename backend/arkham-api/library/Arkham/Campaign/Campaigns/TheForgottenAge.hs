@@ -319,12 +319,14 @@ instance RunMessage TheForgottenAge where
               . concat
               . toList
               $ campaignStoryCards attrs
+
+        vela <- getOrGenerateSetAsideCard Assets.alejandroVela
         pushAll
           $ [ story players expeditionsEnd2
             , Record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
             , Record TheInvestigatorsHaveEarnedAlejandrosTrust
             ]
-          <> [addCampaignCardToDeckChoice lead investigatorIds Assets.alejandroVela | not inADeckAlready]
+          <> [addCampaignCardToDeckChoice lead investigatorIds vela | not inADeckAlready]
           <> [AddChaosToken Tablet, CampaignStep (InterludeStepPart 2 mkey 4)]
         pure c
       CampaignStep (InterludeStepPart 2 mkey 3) -> do
@@ -566,20 +568,21 @@ instance RunMessage TheForgottenAge where
                     tokens
                 stuckAsYithian = any (`elem` [Cultist, Tablet, ElderThing, AutoFail]) tokens
               player <- getPlayer iid
-              pure (iid, player, outOfBody, stuckAsYithian, asChaosTokens)
+              treacheryCard <- genCard Treacheries.outOfBodyExperience
+              pure (iid, player, outOfBody, stuckAsYithian, asChaosTokens, treacheryCard)
 
             let
               yithians =
                 setFromList
                   $ mapMaybe
-                    ( \(iid, _, _, stuckAsYithian, _) ->
+                    ( \(iid, _, _, stuckAsYithian, _, _) ->
                         if stuckAsYithian then Just iid else Nothing
                     )
                     results
 
             pushAll
               $ concatMap
-                ( \(iid, player, outOfBody, stuckAsYithian, tokens) ->
+                ( \(iid, player, outOfBody, stuckAsYithian, tokens, treacheryCard) ->
                     let
                       qLabel
                         | stuckAsYithian =
@@ -591,7 +594,7 @@ instance RunMessage TheForgottenAge where
                       , Ask player $ Read qLabel (BasicReadChoices [Label "Continue" []]) Nothing
                       , UnfocusChaosTokens
                       ]
-                        <> [ AddCampaignCardToDeck iid Treacheries.outOfBodyExperience
+                        <> [ AddCampaignCardToDeck iid treacheryCard
                            | outOfBody
                            ]
                 )
@@ -772,6 +775,7 @@ instance RunMessage TheForgottenAge where
             Standard -> MinusFour
             Hard -> MinusFive
             Expert -> MinusSix
+        relic <- genCard Assets.relicOfAgesRepossessThePast
         pushAll
           $ [story players arcaneThrumming | foundTheMissingRelic]
           <> [story players growingConcern | not foundTheMissingRelic]
@@ -783,7 +787,7 @@ instance RunMessage TheForgottenAge where
           <> [ RemoveCampaignCard Assets.relicOfAgesForestallingTheFuture
              | readFinalDawning
              ]
-          <> [ AddCampaignCardToDeck iid Assets.relicOfAgesRepossessThePast
+          <> [ AddCampaignCardToDeck iid relic
              | readFinalDawning
              , iid <- maybeToList mRelicOfAgesOwner
              ]

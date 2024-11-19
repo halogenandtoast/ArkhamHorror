@@ -117,11 +117,11 @@ instance RunMessage ExtracurricularActivity where
       story resolution1
       record TheInvestigatorsRescuedProfessorWarrenRice
       addChaosToken Tablet
+      professorWarrenRice <- genCard Assets.professorWarrenRice
+
       chooseOne
         lead
-        [ Label
-            "Add Professor Warren Rice to your deck"
-            [AddCampaignCardToDeck lead Assets.professorWarrenRice]
+        [ Label "Add Professor Warren Rice to your deck" [AddCampaignCardToDeck lead professorWarrenRice]
         , Label "Do not add Professor Warren Rice to your deck" []
         ]
       allGainXp attrs

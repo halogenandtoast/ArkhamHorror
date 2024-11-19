@@ -3,16 +3,22 @@ module Arkham.Campaigns.EdgeOfTheEarth.Helpers where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.EncounterSet (EncounterSet (Tekelili))
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log hiding (recordSetInsert)
+import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted
+import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.Scenario.Setup
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
@@ -43,3 +49,23 @@ hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
 recoverSupply supply = recordSetInsert SuppliesRecovered [toJSON supply]
+
+getTekelili :: HasGame m => Int -> m [Card]
+getTekelili n = take n <$> getScenarioDeck TekeliliDeck
+
+addTekeliliDeck :: ReverseQueue m => ScenarioBuilderT m ()
+addTekeliliDeck = addExtraDeck TekeliliDeck =<< shuffle =<< gatherTekelili
+
+gatherTekelili :: (HasGame m, CardGen m) => m [Card]
+gatherTekelili = do
+  storyCards <- concat . toList <$> getCampaignStoryCards
+  let storyCardDefs = map toCardDef storyCards
+  let filteredDefs = foldl' (flip (deleteFirstMatch . (==))) defs storyCardDefs
+  concat <$> for filteredDefs \def ->
+    traverse genCard $ replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def
+ where
+  defs =
+    filter ((== Just Tekelili) . cdEncounterSet) $ toList allPlayerCards
+
+addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
+addTekelili iid = traverse_ (addCampaignCardToDeck iid)

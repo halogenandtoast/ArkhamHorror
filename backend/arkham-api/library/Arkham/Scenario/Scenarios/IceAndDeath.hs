@@ -124,7 +124,7 @@ instance RunMessage IceAndDeath where
       setAgendaDeck [Agendas.coldWelcome, Agendas.intoTheWhite, Agendas.runningOutOfTime]
       setActDeck [Acts.searchForACampSite]
 
-      addExtraDeck TekeliliDeck =<< shuffle =<< amongGathered (CardWithTitle "Tekeli-li")
+      addTekeliliDeck
 
       case attrs.difficulty of
         Expert -> placeDoomOnAgenda 2

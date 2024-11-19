@@ -405,7 +405,7 @@ data Message
   | AddDirectConnection LocationId LocationId
   | SetConnections LocationId [LocationMatcher]
   | SetFlippable LocationId Bool
-  | AddCampaignCardToDeck InvestigatorId CardDef
+  | AddCampaignCardToDeck InvestigatorId Card
   | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand

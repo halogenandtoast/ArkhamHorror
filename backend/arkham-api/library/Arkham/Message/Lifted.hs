@@ -80,6 +80,7 @@ import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Control.Monad.Trans.Class
+import Data.Aeson.Key qualified as Aeson
 
 setChaosTokens :: ReverseQueue m => [ChaosTokenFace] -> m ()
 setChaosTokens = push . SetChaosTokens
@@ -410,19 +411,32 @@ killRemaining (toSource -> source) = do
   gameOverIf (null resigned)
   pure remaining
 
-addCampaignCardToDeck :: ReverseQueue m => InvestigatorId -> CardDef -> m ()
-addCampaignCardToDeck investigator cardDef = push $ Msg.AddCampaignCardToDeck investigator cardDef
+class FetchCard a where
+  fetchCard :: ReverseQueue m => a -> m Card
 
-addCampaignCardToDeckChoice :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
-addCampaignCardToDeckChoice choices cardDef = do
+instance FetchCard CardDef where
+  fetchCard def = maybe (genCard def) pure =<< maybeGetSetAsideCard def
+
+instance FetchCard Card where
+  fetchCard = pure
+
+addCampaignCardToDeck :: (ReverseQueue m, FetchCard card) => InvestigatorId -> card -> m ()
+addCampaignCardToDeck investigator card = do
+  card' <- fetchCard card
+  push $ Msg.AddCampaignCardToDeck investigator card'
+
+addCampaignCardToDeckChoice :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> card -> m ()
+addCampaignCardToDeckChoice choices card = do
   lead <- getLeadPlayer
-  push $ Msg.addCampaignCardToDeckChoice lead choices cardDef
+  card' <- fetchCard card
+  push $ Msg.addCampaignCardToDeckChoice lead choices card'
 
 forceAddCampaignCardToDeckChoice
-  :: ReverseQueue m => [InvestigatorId] -> CardDef -> m ()
-forceAddCampaignCardToDeckChoice choices cardDef = do
+  :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> card -> m ()
+forceAddCampaignCardToDeckChoice choices card = do
   lead <- getLeadPlayer
-  push $ Msg.forceAddCampaignCardToDeckChoice lead choices cardDef
+  card' <- fetchCard card
+  push $ Msg.forceAddCampaignCardToDeckChoice lead choices card'
 
 defeatEnemy :: (ReverseQueue m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m ()
 defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> pushAll
@@ -1457,6 +1471,14 @@ payBatchCost batchId iid cost = push $ PayAdditionalCost iid batchId cost
 
 withCost :: ReverseQueue m => InvestigatorId -> Cost -> QueueT Message m () -> m ()
 withCost iid cost f = batched \batchId -> payBatchCost batchId iid cost >> f
+
+oncePerCampaign :: ReverseQueue m => Text -> m () -> m ()
+oncePerCampaign k body = do
+  stored @Bool k >>= \case
+    Nothing -> do
+      push $ SetGlobal CampaignTarget (Aeson.fromText k) (toJSON True)
+      body
+    Just _ -> pure ()
 
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()

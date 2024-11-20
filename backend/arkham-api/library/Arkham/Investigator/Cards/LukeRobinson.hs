@@ -58,7 +58,7 @@ getLukePlayable attrs windows' = do
 
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = runQueueT $ case msg of
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect iid | attrs `is` iid -> do
       gateBox <- selectJust $ assetIs Assets.gateBox
       push $ AddUses #elderSign gateBox Charge 1
       pure i

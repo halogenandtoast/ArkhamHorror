@@ -1,14 +1,11 @@
-module Arkham.Investigator.Cards.AshcanPeteSpec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Investigator.Cards.AshcanPeteSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher (assetIs)
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
@@ -30,12 +27,9 @@ spec = describe "\"Ashcan\" Pete" $ do
         , Exhaust (toTarget asset)
         , CheckWindows [fastPlayerWindow]
         ]
-      chooseOptionMatching
-        "activate ability"
-        ( \case
-            AbilityLabel {} -> True
-            _ -> False
-        )
+      chooseOptionMatching "activate ability" \case
+        AbilityLabel {} -> True
+        _ -> False
       chooseOnlyOption "discard card"
       chooseOnlyOption "ready asset"
       fieldAssert AssetExhausted (== False) asset

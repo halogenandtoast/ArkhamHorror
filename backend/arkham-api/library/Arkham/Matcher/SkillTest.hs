@@ -102,6 +102,9 @@ instance Semigroup SkillTestMatcher where
   x <> SkillTestMatches xs = SkillTestMatches $ x : xs
   x <> y = SkillTestMatches [x, y]
 
+instance Monoid SkillTestMatcher where
+  mempty = AnySkillTest
+
 data SkillTestResultMatcher
   = FailureResult ValueMatcher
   | SuccessResult ValueMatcher

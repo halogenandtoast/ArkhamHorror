@@ -25,6 +25,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Taboo.Types
 import Arkham.Trait
 import Arkham.Zone
+import Control.Lens (Plated, Prism', prism')
 import Data.Aeson.TH
 
 data DiscardSignifier = AnyPlayerDiscard | DiscardOf Who
@@ -239,6 +240,13 @@ data Criterion
   | HasCustomization Customization
   | IfYouOweBiancaDieKatz
   deriving stock (Show, Eq, Ord, Data)
+
+instance Plated Criterion
+
+_DuringSkillTest :: Prism' Criterion SkillTestMatcher
+_DuringSkillTest = prism' DuringSkillTest $ \case
+  DuringSkillTest x -> Just x
+  _ -> Nothing
 
 instance Not Criterion where
   not_ = Negate

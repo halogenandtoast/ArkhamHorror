@@ -42,9 +42,7 @@ spec = describe "Luke Robinson" do
       setChaosTokens [ElderSign]
       sid <- getRandom
       run $ beginSkillTest sid self #combat 100
-      skip
       startSkillTest
-      skip
       applyResults
       -- 3 initial plus 1 from elder sign
       gateBox.charges `shouldReturn` 4

@@ -1,9 +1,6 @@
-module Arkham.Treachery.Cards.Tekelili_228
-  ( tekelili_228
-  , Tekelili_228(..)
-  )
-where
+module Arkham.Treachery.Cards.Tekelili_228 (tekelili_228, Tekelili_228 (..)) where
 
+import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,5 +13,8 @@ tekelili_228 = treachery Tekelili_228 Cards.tekelili_228
 
 instance RunMessage Tekelili_228 where
   runMessage msg t@(Tekelili_228 attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      placeCluesOnLocation iid attrs 1
+      putOnBottomOfDeck iid TekeliliDeck attrs
+      pure t
     _ -> Tekelili_228 <$> liftRunMessage msg attrs

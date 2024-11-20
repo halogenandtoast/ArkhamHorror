@@ -194,6 +194,7 @@ import Arkham.Treachery.Treacheries (
   restlessJourneyFallacyEffect,
   restlessJourneyHardshipEffect,
   restlessJourneyLiesEffect,
+  tekelili_227Effect,
   theKingsEdictEffect,
   whispersOfHypnosEffect,
  )
@@ -460,6 +461,7 @@ allEffects =
     , ("08034", SomeEffect writtenInTheStarsEffect)
     , ("08055", SomeEffect blackMarket2Effect)
     , ("08087", SomeEffect snipe1Effect)
+    , ("08727", SomeEffect tekelili_227Effect)
     , ("09008", SomeEffect kymaniJonesEffect)
     , ("09009", SomeEffect grapplingHookEffect)
     , ("09029", SomeEffect oneInTheChamberEffect)

@@ -62,6 +62,9 @@ actionAbilityWithCost cost = ActionAbility [] (ActionCost 1 <> cost)
 freeReaction :: WindowMatcher -> AbilityType
 freeReaction window = ReactionAbility window Free
 
+triggered :: WindowMatcher -> Cost -> AbilityType
+triggered = ReactionAbility
+
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 

@@ -92,7 +92,12 @@ instance RunMessage Beguile where
               filter (and . sequence [abilityBasic, (== AbilityInvestigate) . abilityIndex])
                 <$> field LocationAbilities lid
             case abilities of
-              [x] -> push $ UseAbility iid (doesNotProvokeAttacksOfOpportunity x) (defaultWindows iid)
+              [x] ->
+                push
+                  $ UseAbility
+                    iid
+                    (doesNotProvokeAttacksOfOpportunity $ decreaseAbilityActionCost x 1)
+                    (defaultWindows iid)
               _ -> error "expected exactly 1 investigate action on location"
         _ -> error "Beguile: EnemyTarget not found"
       pure e

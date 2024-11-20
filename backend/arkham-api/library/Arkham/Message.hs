@@ -86,6 +86,7 @@ import Arkham.Window (Window, WindowType)
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
+import Data.UUID (nil)
 import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
@@ -1100,6 +1101,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "AddCampaignCardToDeck" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid card
+          Right (iid, cardDef :: CardDef) -> pure $ AddCampaignCardToDeck iid (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
       "SealedChaosToken" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

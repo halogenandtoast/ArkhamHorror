@@ -17,7 +17,8 @@ matchbox = assetWith Matchbox Cards.matchbox discardWhenNoUses
 
 instance HasAbilities Matchbox where
   getAbilities (Matchbox x) =
-    [ controlledAbility x 1 (DuringTurn $ affectsOthers Anyone)
+    [ wantsSkillTest (WhileInvestigating YourLocation)
+        $ controlledAbility x 1 (DuringTurn $ affectsOthers Anyone)
         $ FastAbility (exhaust x <> assetUseCost x Supply 1)
     ]
 

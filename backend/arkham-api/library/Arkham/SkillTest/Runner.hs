@@ -447,13 +447,7 @@ instance RunMessage SkillTest where
       if null additionalCosts
         then pushAll $ msgs <> [afterMsg]
         else do
-          canPay <-
-            getCanAffordCost
-              iid
-              (toSource s)
-              []
-              [mkWindow Timing.When Window.NonFast]
-              (mconcat additionalCosts)
+          canPay <- getCanAffordCost iid (toSource s) [] [mkWhen Window.NonFast] (mconcat additionalCosts)
           iid' <- getActiveInvestigatorId
           when canPay
             $ pushAll

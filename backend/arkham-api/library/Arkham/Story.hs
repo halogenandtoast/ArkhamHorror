@@ -62,6 +62,7 @@ allStories =
     , SomeStoryCard theFall
     , SomeStoryCard hastursEnd
     , SomeStoryCard yigsMercy
+    , SomeStoryCard anotherWay
     , SomeStoryCard josefsPlan
     , SomeStoryCard unfinishedBusiness_B
     , SomeStoryCard unfinishedBusiness_D

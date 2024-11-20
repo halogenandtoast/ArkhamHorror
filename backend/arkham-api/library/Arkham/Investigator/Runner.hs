@@ -281,7 +281,7 @@ runWindow attrs windows actions playableCards = do
         let
           applySettingsFilter ab =
             case ab.wantsSkillTest of
-              Nothing -> pure True
+              Nothing -> pure $ not globalSkip
               Just matcher ->
                 if globalSkip
                   then

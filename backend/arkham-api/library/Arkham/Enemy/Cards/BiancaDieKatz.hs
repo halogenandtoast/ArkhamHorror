@@ -15,20 +15,16 @@ newtype BiancaDieKatz = BiancaDieKatz (EnemyAttrs `With` Meta)
 
 biancaDieKatz :: EnemyCard BiancaDieKatz
 biancaDieKatz =
-  enemyWith
-    (BiancaDieKatz . (`with` Meta False))
-    Cards.biancaDieKatz
-    (3, Static 3, 3)
-    (2, 0)
-    (\a -> a & preyL .~ BearerOf (toId a))
+  enemyWith (BiancaDieKatz . (`with` Meta False)) Cards.biancaDieKatz (3, Static 3, 3) (2, 0)
+    $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasAbilities BiancaDieKatz where
   getAbilities (BiancaDieKatz (With attrs meta)) =
     extend
       attrs
-      [ restrictedAbility attrs 1 IfYouOweBiancaDieKatz
+      [ controlled attrs 1 IfYouOweBiancaDieKatz
           $ parleyAction (CalculatedResourceCost (AmountYouOweToBiancaDieKatz You))
-      , restrictedAbility attrs 2 (OwnsThis <> criteria) $ forced $ EnemyLeavesPlay #when (be attrs)
+      , controlled attrs 2 criteria $ forced $ EnemyLeavesPlay #when (be attrs)
       ]
    where
     criteria = if forcedDisabled meta then Never else NoRestriction

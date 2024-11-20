@@ -100,15 +100,12 @@ instance RunMessage ScenarioAttrs where
 runScenarioAttrs :: Runner ScenarioAttrs
 runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   ResetGame -> do
-    standalone <- getIsStandalone
-    when standalone $ do
-      investigatorIds <- allInvestigatorIds
-      for_ investigatorIds $ \iid -> do
-        deck <- fieldMap InvestigatorDeck unDeck iid
-        hand <- mapMaybe (preview _PlayerCard) <$> field InvestigatorHand iid
-        discard <- field InvestigatorDiscard iid
-        let deck' = deck <> hand <> discard
-        push $ LoadDeck iid (Deck deck')
+    whenM getIsStandalone do
+      for_ (mapToList scenarioPlayerDecks) $ \(iid, deck) -> do
+        let deckCardCodes = map toCardCode $ unDeck deck
+        let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
+        let investigatorStoryCards = filter ifShouldAdd $ findWithDefault [] iid scenarioStoryCards
+        push $ LoadDeck iid (Deck $ unDeck deck <> investigatorStoryCards)
     pure a
   BeginGame -> do
     mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening

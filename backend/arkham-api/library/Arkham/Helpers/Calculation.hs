@@ -130,9 +130,11 @@ calculate = go
       slots <- concatMapM (fieldMap InvestigatorSlots (findWithDefault [] slotType)) investigators
       pure $ count isEmptySlot slots
     AmountYouOweToBiancaDieKatz investigatorMatcher -> do
-      i <- selectJust investigatorMatcher
-      let
-        toResources = \case
-          (YouOweBiancaResources (Labeled _ iid') n) | i == iid' -> n
-          _ -> 0
-      sum . map toResources . toList <$> scenarioField ScenarioRemembered
+      selectOne investigatorMatcher >>= \case
+        Nothing -> pure 0
+        Just i -> do
+          let
+            toResources = \case
+              (YouOweBiancaResources (Labeled _ iid') n) | i == iid' -> n
+              _ -> 0
+          sum . map toResources . toList <$> scenarioField ScenarioRemembered

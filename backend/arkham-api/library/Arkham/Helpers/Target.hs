@@ -6,7 +6,7 @@ import Arkham.Card (toCardOwner)
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
@@ -22,6 +22,8 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.Target
 import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (Field (..))
+import Arkham.Zone (SomeZone (..), knownOutOfPlayZone, someZones)
+import Data.Proxy
 
 targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
 targetTraits = \case
@@ -35,7 +37,16 @@ targetTraits = \case
   CardIdTarget _ -> pure mempty
   CardCostTarget _ -> pure mempty
   EffectTarget _ -> pure mempty
-  EnemyTarget eid -> field EnemyTraits eid
+  EnemyTarget eid -> do
+    result <-
+      runMaybeT
+        $ asum
+        $ MaybeT (fieldMay EnemyTraits eid)
+        : [ MaybeT
+            $ fieldMay @(OutOfPlayEntity zone Enemy) (OutOfPlayEnemyField (knownOutOfPlayZone p) EnemyTraits) eid
+          | SomeZone p@(Proxy :: Proxy zone) <- someZones
+          ]
+    pure $ fromMaybe mempty result
   EventTarget eid -> field EventTraits eid
   InvestigatorTarget iid -> field InvestigatorTraits iid
   LocationTarget lid ->

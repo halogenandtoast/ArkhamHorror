@@ -6,6 +6,7 @@ import Arkham.Prelude hiding (to)
 
 import Arkham.ChaosToken.Types
 import Arkham.Target
+import Arkham.Zone qualified as Zone
 
 class Entity a where
   type EntityId a
@@ -76,11 +77,11 @@ instance Entity a => Entity (InDiscardEntity a) where
   toAttrs (InDiscardEntity a) = toAttrs a
   overAttrs f (InDiscardEntity a) = InDiscardEntity $ overAttrs f a
 
-newtype OutOfPlayEntity a = OutOfPlayEntity a
+newtype OutOfPlayEntity (zone :: Zone.OutOfPlayZone) a = OutOfPlayEntity a
 
-instance Entity a => Entity (OutOfPlayEntity a) where
-  type EntityId (OutOfPlayEntity a) = EntityId a
-  type EntityAttrs (OutOfPlayEntity a) = EntityAttrs a
+instance Entity a => Entity (OutOfPlayEntity zone a) where
+  type EntityId (OutOfPlayEntity zone a) = EntityId a
+  type EntityAttrs (OutOfPlayEntity zone a) = EntityAttrs a
   toId (OutOfPlayEntity a) = toId a
   toAttrs (OutOfPlayEntity a) = toAttrs a
   overAttrs f (OutOfPlayEntity a) = OutOfPlayEntity $ overAttrs f a

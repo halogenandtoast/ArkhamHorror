@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SerpentsIre (serpentsIre, SerpentsIre (..)) where
 
 import Arkham.Attack
 import Arkham.Classes
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -31,11 +31,16 @@ instance RunMessage SerpentsIre where
       serpents <-
         select $ OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent
       fightValue <-
-        maybeFieldMax
+        maybeFieldMax @(OutOfPlayEntity 'PursuitZone Enemy)
           (OutOfPlayEnemyField PursuitZone EnemyFight)
           (OutOfPlayEnemy PursuitZone $ EnemyWithTrait Serpent)
       choices <-
-        filterM (fieldMap (OutOfPlayEnemyField PursuitZone EnemyFight) (== Just fightValue)) serpents
+        filterM
+          ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+              (OutOfPlayEnemyField PursuitZone EnemyFight)
+              (== Just fightValue)
+          )
+          serpents
       if null choices
         then push $ gainSurge attrs
         else do

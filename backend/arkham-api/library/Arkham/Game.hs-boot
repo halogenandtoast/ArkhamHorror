@@ -35,6 +35,7 @@ import Arkham.Scenario.Types
 import Arkham.Skill.Types
 import Arkham.Story.Types
 import Arkham.Treachery.Types
+import Arkham.Zone
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -69,7 +70,7 @@ instance Projection (InDiscardEntity Asset)
 instance Projection Campaign
 instance Projection Effect
 instance Projection Enemy
-instance Projection (OutOfPlayEntity Enemy)
+instance KnownOutOfPlayZone zone => Projection (OutOfPlayEntity zone Enemy)
 instance Projection Event
 instance Projection (InHandEntity Event)
 instance Projection (InHandEntity Skill)

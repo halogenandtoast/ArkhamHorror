@@ -54,7 +54,8 @@ fieldPM
 fieldPM = fieldMapM
 
 fieldMap
-  :: (HasCallStack, HasGame m, Projection a)
+  :: forall a b typ m
+   . (HasCallStack, HasGame m, Projection a)
   => Field a typ
   -> (typ -> b)
   -> EntityId a

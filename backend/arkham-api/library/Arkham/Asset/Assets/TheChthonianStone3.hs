@@ -3,11 +3,10 @@ module Arkham.Asset.Assets.TheChthonianStone3 (
   TheChthonianStone3 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Asset.Uses
 import Arkham.ChaosToken
 import Arkham.Matcher
 import Arkham.Window qualified as Window
@@ -21,8 +20,8 @@ theChthonianStone3 = assetWith TheChthonianStone3 Cards.theChthonianStone3 (when
 
 instance HasAbilities TheChthonianStone3 where
   getAbilities (TheChthonianStone3 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringSkillTest AnySkillTest)
-        $ ForcedAbility
+    [ controlled a 1 (DuringSkillTest AnySkillTest)
+        $ forced
         $ RevealChaosToken #when You
         $ ChaosTokenFaceIs AutoFail
     ]

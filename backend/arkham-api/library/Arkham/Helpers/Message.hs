@@ -410,6 +410,9 @@ placeLabeledLocationsFrom lbl n cards = fmap fold
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing NoPayment (defaultWindows iid)
 
+putCardIntoPlayWithAdditionalCosts :: IsCard card => InvestigatorId -> card -> Message
+putCardIntoPlayWithAdditionalCosts iid (toCard -> card) = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment (defaultWindows iid)
+
 placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do
   idx <- getStartIndex (1 :: Int)

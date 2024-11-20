@@ -2503,11 +2503,14 @@ getStoriesMatching matcher = do
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
 
 getOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m Enemy
-getOutOfPlayEnemy outOfPlayZone eid = do
-  new <- mfilter isCorrectOutOfPlay . preview (entitiesL . enemiesL . ix eid) <$> getGame
-  pure $ fromJustNote missingEnemy new
+getOutOfPlayEnemy outOfPlayZone eid =
+  fromJustNote missingEnemy <$> getMaybeOutOfPlayEnemy outOfPlayZone eid
  where
   missingEnemy = "Unknown out of play enemy: " <> show eid
+
+getMaybeOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m (Maybe Enemy)
+getMaybeOutOfPlayEnemy outOfPlayZone eid = mfilter isCorrectOutOfPlay . preview (entitiesL . enemiesL . ix eid) <$> getGame
+ where
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
     _ -> False
@@ -3350,9 +3353,14 @@ instance Projection Act where
       ActFlipped -> pure actFlipped
       ActKeys -> pure actKeys
 
-instance Projection (OutOfPlayEntity Enemy) where
-  getAttrs _ = error "getAttrs: out of play enemy, do not know zone"
-  project _ = error "project: out of play enemy, do not know zone"
+instance KnownOutOfPlayZone zone => Projection (OutOfPlayEntity zone Enemy) where
+  getAttrs eid =
+    project @(OutOfPlayEntity zone Enemy) eid <&> \case
+      Just (OutOfPlayEntity enemy) -> toAttrs enemy
+      _ -> error $ "getAttrs on out of play enemy failed: " <> show (knownOutOfPlayZone (Proxy @zone))
+  project eid =
+    OutOfPlayEntity
+      <$$> getMaybeOutOfPlayEnemy (knownOutOfPlayZone (Proxy @zone)) eid
   field (OutOfPlayEnemyField outOfPlayZone f) = getEnemyField f <=< getOutOfPlayEnemy outOfPlayZone
 
 instance Projection Enemy where

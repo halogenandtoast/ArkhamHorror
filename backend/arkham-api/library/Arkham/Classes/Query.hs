@@ -156,7 +156,8 @@ selectAll
 selectAll p = select >=> fmap fold . traverse (field p)
 
 selectAgg'
-  :: ( Monoid monoid
+  :: forall attrs a b typ monoid m
+   . ( Monoid monoid
      , Query a
      , QueryElement a ~ EntityId attrs
      , Projection attrs
@@ -209,7 +210,8 @@ fieldMaxBy
 fieldMaxBy fld f matcher = selectAgg' (Max0 . f) fld matcher
 
 maybeFieldMax
-  :: ( QueryElement matcher ~ EntityId attrs
+  :: forall attrs a matcher m
+   . ( QueryElement matcher ~ EntityId attrs
      , Num a
      , Ord a
      , Query matcher

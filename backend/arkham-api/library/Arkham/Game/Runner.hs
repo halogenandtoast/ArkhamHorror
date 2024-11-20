@@ -2106,6 +2106,14 @@ runGameMessage msg g = case msg of
       . skillsL
       . at skillId
       ?~ overAttrs (\a -> a {skillPlacement = placement}) skill
+  PutCardIntoPlayWithAdditionalCosts iid card mTarget payment ws -> do
+    createActiveCostForAdditionalCardCosts iid card >>= \case
+      Nothing -> do
+        push $ PutCardIntoPlay iid card mTarget payment ws
+        pure g
+      Just cost -> do
+        pushAll [PutCardIntoPlay iid card mTarget payment ws, CreatedCost (activeCostId cost)]
+        pure $ g & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateAssetAt assetId card placement -> do
     let asset = createAsset card assetId
     iid <- getActiveInvestigatorId

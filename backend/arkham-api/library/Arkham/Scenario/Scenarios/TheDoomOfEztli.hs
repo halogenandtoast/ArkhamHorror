@@ -202,7 +202,10 @@ instance RunMessage TheDoomOfEztli where
           Nothing -> case setAsideHarbinger of
             Nothing -> pure ()
             Just harbinger -> do
-              damage <- field (OutOfPlayEnemyField SetAsideZone EnemyDamage) harbinger
+              damage <-
+                field @(OutOfPlayEntity 'SetAsideZone Enemy)
+                  (OutOfPlayEnemyField SetAsideZone EnemyDamage)
+                  harbinger
               recordCount TheHarbingerIsStillAlive damage
 
       investigatorDefeat attrs

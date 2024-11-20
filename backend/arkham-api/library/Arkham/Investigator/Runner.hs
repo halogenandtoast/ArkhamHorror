@@ -280,15 +280,14 @@ runWindow attrs windows actions playableCards = do
         let globalSkip = attrs.settings.globalSettings.ignoreUnrelatedSkillTestTriggers
         let
           applySettingsFilter ab =
-            case ab.wantsSkillTest of
-              Nothing -> pure $ not globalSkip
-              Just matcher ->
-                if globalSkip
-                  then
-                    getSkillTest >>= \case
-                      Just st -> skillTestMatches iid GameSource st matcher
-                      Nothing -> pure False
-                  else pure True
+            if not globalSkip
+              then pure True
+              else
+                getSkillTest >>= \case
+                  Nothing -> pure True
+                  Just st -> case ab.wantsSkillTest of
+                    Nothing -> pure $ not $ globalSkip && isFastAbility ab
+                    Just matcher -> skillTestMatches iid GameSource st matcher
         actions' <- filterM applySettingsFilter actions
         actionsWithMatchingWindows <-
           for actions' $ \ability@Ability {..} ->

@@ -24,7 +24,8 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
 import Arkham.Source
 import Arkham.Text (toI18n)
-import Control.Lens (over, set, transform)
+import Control.Lens (over, set, toListOf, transform)
+import Control.Lens qualified as Lens
 import Data.Data.Lens (biplate)
 import GHC.Records
 
@@ -120,7 +121,15 @@ selfAbility a n c = restrictedAbility a n (Self <> c)
 restrictedAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
-  (mkAbility entity idx type') {abilityCriteria = restriction}
+  (mkAbility entity idx type')
+    { abilityCriteria = restriction
+    , abilityWantsSkillTest = wantsSkillTestFromCriteria restriction
+    }
+
+wantsSkillTestFromCriteria :: Criterion -> Maybe SkillTestMatcher
+wantsSkillTestFromCriteria c = case toListOf (Lens.cosmos . _DuringSkillTest) c of
+  [] -> Nothing
+  _ -> Just AnySkillTest
 
 restricted
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
@@ -138,6 +147,7 @@ fastAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion ->
 fastAbility entity idx cost criteria =
   (mkAbility entity idx (FastAbility cost))
     { abilityCriteria = criteria
+    , abilityWantsSkillTest = wantsSkillTestFromCriteria criteria
     }
 
 fightAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion -> Ability
@@ -179,7 +189,7 @@ forcedAbility entity idx window =
 -- restricted criteria = abilityCriteriaL .~ criteria
 
 withCriteria :: Ability -> Criterion -> Ability
-withCriteria a c = a & abilityCriteriaL <>~ c
+withCriteria a c = a & abilityCriteriaL <>~ c & abilityWantsSkillTestL %~ maybe (wantsSkillTestFromCriteria c) pure
 
 restrict :: Criterion -> Ability -> Ability
 restrict = flip withCriteria

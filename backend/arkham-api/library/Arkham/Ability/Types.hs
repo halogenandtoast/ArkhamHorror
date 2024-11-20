@@ -114,6 +114,9 @@ abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
 abilityCriteriaL :: Lens' Ability Criterion
 abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 
+abilityWantsSkillTestL :: Lens' Ability (Maybe SkillTestMatcher)
+abilityWantsSkillTestL = lens abilityWantsSkillTest $ \m x -> m {abilityWantsSkillTest = x}
+
 abilityDoesNotProvokeAttacksOfOpportunityL :: Lens' Ability Bool
 abilityDoesNotProvokeAttacksOfOpportunityL =
   lens abilityDoesNotProvokeAttacksOfOpportunity

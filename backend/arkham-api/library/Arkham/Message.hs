@@ -545,6 +545,7 @@ data Message
   | CreatedCost ActiveCostId
   | CancelCost ActiveCostId
   | SetCost ActiveCostId Cost
+  | PaySealCost InvestigatorId CardId Cost
   | PayAdditionalCost InvestigatorId BatchId Cost
   | CheckAdditionalCosts ActiveCostId
   | PayCosts ActiveCostId
@@ -826,6 +827,7 @@ data Message
   | PlayerWindow InvestigatorId [UI Message] Bool
   | PutCampaignCardIntoPlay InvestigatorId CardDef
   | PutCardIntoPlay InvestigatorId Card (Maybe Target) Payment [Window]
+  | PutCardIntoPlayWithAdditionalCosts InvestigatorId Card (Maybe Target) Payment [Window]
   | PutCardOnTopOfDeck InvestigatorId DeckSignifier Card
   | PutOnTopOfDeck InvestigatorId DeckSignifier Target
   | PutCardOnBottomOfDeck InvestigatorId DeckSignifier Card

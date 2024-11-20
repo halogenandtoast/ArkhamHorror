@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -24,6 +24,7 @@ import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosBag ()
 import Arkham.ChaosToken
 import Arkham.Choose
+import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Classes.Query hiding (matches)
@@ -661,7 +662,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       & (encounterDeckL %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _2 %~ filter (`notElem` encounterCards))
       & (encounterDecksL . each . _1 %~ withDeck (filter (`notElem` encounterCards)))
-      & (decksL . each %~ traceShowId . filterOutCards . traceShowId)
+      & (decksL . each %~ filterOutCards)
   RequestSetAsideCard target cardCode -> do
     let
       (before, rest) = break ((== cardCode) . toCardCode) scenarioSetAsideCards
@@ -1003,7 +1004,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         else pure []
 
     voidEnemiesWithCards <-
-      forToSnd matchingVoidEnemies (field (OutOfPlayEnemyField Zone.VoidZone EnemyCard))
+      forToSnd
+        matchingVoidEnemies
+        (field @(OutOfPlayEntity 'Zone.VoidZone Enemy) (OutOfPlayEnemyField Zone.VoidZone EnemyCard))
 
     player <- getPlayer iid
 

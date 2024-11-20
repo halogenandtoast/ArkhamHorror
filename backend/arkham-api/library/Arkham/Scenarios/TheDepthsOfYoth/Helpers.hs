@@ -3,6 +3,7 @@ module Arkham.Scenarios.TheDepthsOfYoth.Helpers where
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types
@@ -58,13 +59,16 @@ getInPursuitEnemyWithHighestEvade
 getInPursuitEnemyWithHighestEvade = do
   inPursuit <- getInPursuitEnemies
   evadeValue <-
-    selectAgg'
+    selectAgg' @(OutOfPlayEntity 'PursuitZone Enemy)
       (Max0 . fromMaybe 0)
       (OutOfPlayEnemyField PursuitZone EnemyEvade)
       (OutOfPlayEnemy PursuitZone $ EnemyOneOf $ map EnemyWithId $ toList inPursuit)
   setFromList
     <$> filterM
-      (fieldMap (OutOfPlayEnemyField PursuitZone EnemyEvade) ((== Just evadeValue)))
+      ( fieldMap @(OutOfPlayEntity 'PursuitZone Enemy)
+          (OutOfPlayEnemyField PursuitZone EnemyEvade)
+          ((== Just evadeValue))
+      )
       (toList inPursuit)
 
 getInPursuitEnemies :: HasGame m => m [EnemyId]

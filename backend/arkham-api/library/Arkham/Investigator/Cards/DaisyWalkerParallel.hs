@@ -46,7 +46,7 @@ instance RunMessage DaisyWalkerParallel where
       allAbilities <- getAllAbilities
       let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
       let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets
-      let toLabel a = AbilityLabel iid a windows' [] []
+      let toLabel a = AbilityLabel iid (decreaseAbilityActionCost a 1) windows' [] []
       chooseOneAtATimeM iid do
         for_ pairs' \(tome, actions) -> do
           targeting tome do

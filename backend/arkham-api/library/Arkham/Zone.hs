@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Data.Aeson.TH
 import Data.Aeson.Types
+import Data.Proxy
 
 data OutOfPlayZone
   = VoidZone
@@ -15,6 +16,40 @@ data OutOfPlayZone
   | RemovedZone
   | TheDepths
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
+
+class KnownOutOfPlayZone a where
+  knownOutOfPlayZone :: Proxy (a :: OutOfPlayZone) -> OutOfPlayZone
+
+instance KnownOutOfPlayZone 'VoidZone where
+  knownOutOfPlayZone _ = VoidZone
+
+instance KnownOutOfPlayZone 'PursuitZone where
+  knownOutOfPlayZone _ = PursuitZone
+
+instance KnownOutOfPlayZone 'SetAsideZone where
+  knownOutOfPlayZone _ = SetAsideZone
+
+instance KnownOutOfPlayZone 'VictoryDisplayZone where
+  knownOutOfPlayZone _ = VictoryDisplayZone
+
+instance KnownOutOfPlayZone 'RemovedZone where
+  knownOutOfPlayZone _ = RemovedZone
+
+instance KnownOutOfPlayZone 'TheDepths where
+  knownOutOfPlayZone _ = TheDepths
+
+data SomeZone where
+  SomeZone :: KnownOutOfPlayZone zone => Proxy zone -> SomeZone
+
+someZones :: [SomeZone]
+someZones =
+  [ SomeZone (Proxy @'VoidZone)
+  , SomeZone (Proxy @'PursuitZone)
+  , SomeZone (Proxy @'SetAsideZone)
+  , SomeZone (Proxy @'VictoryDisplayZone)
+  , SomeZone (Proxy @'RemovedZone)
+  , SomeZone (Proxy @'TheDepths)
+  ]
 
 data Zone
   = FromHand

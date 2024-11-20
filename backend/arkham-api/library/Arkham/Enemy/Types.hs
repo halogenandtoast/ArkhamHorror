@@ -131,8 +131,8 @@ instance FromJSON (SomeField Enemy) where
     "EnemyAttacking" -> pure $ SomeField EnemyAttacking
     _ -> error "no such field"
 
-data instance Field (OutOfPlayEntity Enemy) :: Type -> Type where
-  OutOfPlayEnemyField :: OutOfPlayZone -> Field Enemy typ -> Field (OutOfPlayEntity Enemy) typ
+data instance Field (OutOfPlayEntity _ Enemy) :: Type -> Type where
+  OutOfPlayEnemyField :: OutOfPlayZone -> Field Enemy typ -> Field (OutOfPlayEntity zone Enemy) typ
 
 allEnemyCards :: Map CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards

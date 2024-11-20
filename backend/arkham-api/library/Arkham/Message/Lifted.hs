@@ -1233,7 +1233,7 @@ toDiscard
 toDiscard source target = push $ Msg.toDiscard source target
 
 putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
-putCardIntoPlay iid card = push $ Msg.putCardIntoPlay iid card
+putCardIntoPlay iid card = push $ Msg.putCardIntoPlayWithAdditionalCosts iid card
 
 putCampaignCardIntoPlay :: (ReverseQueue m, HasCardDef def) => InvestigatorId -> def -> m ()
 putCampaignCardIntoPlay iid def = push $ PutCampaignCardIntoPlay iid (toCardDef def)

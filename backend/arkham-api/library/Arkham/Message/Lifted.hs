@@ -1238,6 +1238,10 @@ putCardIntoPlay iid card = push $ Msg.putCardIntoPlayWithAdditionalCosts iid car
 putCampaignCardIntoPlay :: (ReverseQueue m, HasCardDef def) => InvestigatorId -> def -> m ()
 putCampaignCardIntoPlay iid def = push $ PutCampaignCardIntoPlay iid (toCardDef def)
 
+putOnBottomOfDeck
+  :: (ReverseQueue m, IsDeck deck, Targetable target) => InvestigatorId -> deck -> target -> m ()
+putOnBottomOfDeck iid deck target = push $ PutOnBottomOfDeck iid (toDeck deck) (toTarget target)
+
 gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n
@@ -2070,3 +2074,6 @@ removeLocation (asId -> lid) = do
 
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseAndDiscardAsset iid source = push $ ChooseAndDiscardAsset iid (toSource source) AnyAsset
+
+loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+loseActions iid source n = push $ LoseActions iid (toSource source) n

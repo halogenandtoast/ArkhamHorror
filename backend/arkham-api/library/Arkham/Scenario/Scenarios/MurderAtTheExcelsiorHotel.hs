@@ -27,6 +27,7 @@ import Arkham.Scenario.Helpers hiding (
   skillTestModifier,
  )
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
 import Arkham.Trait (Trait (Detective, Guest, Innocent, Madness, Police))
@@ -260,5 +261,9 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       let resetAttrs = toAttrs $ murderAtTheExcelsiorHotel attrs.difficulty
       pure
         . MurderAtTheExcelsiorHotel
-        $ resetAttrs {scenarioTimesPlayed = scenarioTimesPlayed attrs + 1}
+        $ resetAttrs
+          { scenarioTimesPlayed = scenarioTimesPlayed attrs + 1
+          , scenarioPlayerDecks = scenarioPlayerDecks attrs
+          , scenarioStoryCards = scenarioStoryCards attrs
+          }
     _ -> MurderAtTheExcelsiorHotel <$> liftRunMessage msg attrs

@@ -138,8 +138,7 @@ filterOutEnemyUiMessages eid = \case
 
 getInvestigatorsAtSameLocation :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getInvestigatorsAtSameLocation attrs = do
-  enemyLocation <- field EnemyLocation (toId attrs)
-  case enemyLocation of
+  field EnemyLocation (toId attrs) >>= \case
     Nothing -> pure []
     Just loc -> select $ investigatorAt loc
 

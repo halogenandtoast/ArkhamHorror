@@ -130,6 +130,10 @@ controlledAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 controlledAbility entity idx restriction = restrictedAbility entity idx (ControlsThis <> restriction)
 
+controlled
+  :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
+controlled = controlledAbility
+
 fastAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion -> Ability
 fastAbility entity idx cost criteria =
   (mkAbility entity idx (FastAbility cost))

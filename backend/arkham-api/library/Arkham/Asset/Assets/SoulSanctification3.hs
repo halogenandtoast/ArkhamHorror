@@ -24,8 +24,9 @@ instance HasModifiersFor SoulSanctification3 where
 
 instance HasAbilities SoulSanctification3 where
   getAbilities (SoulSanctification3 a) =
-    [ limitedAbility (PlayerLimit PerTestOrAbility 2)
-        $ controlledAbility a 1 DuringAnySkillTest
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ limitedAbility (PlayerLimit PerTestOrAbility 2)
+        $ controlled a 1 DuringAnySkillTest
         $ FastAbility (assetUseCost a Offering 1)
     ]
 
@@ -35,13 +36,13 @@ instance RunMessage SoulSanctification3 where
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       pure a
     ExcessHealDamage _iid source n -> do
-      controlled <- maybe (pure False) (sourceMatches source . sourceOwnedBy) attrs.controller
-      if controlled
+      isControlled <- maybe (pure False) (sourceMatches source . sourceOwnedBy) attrs.controller
+      if isControlled
         then liftRunMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
         else pure a
     ExcessHealHorror _iid source n -> do
-      controlled <- maybe (pure False) (sourceMatches source . sourceOwnedBy) attrs.controller
-      if controlled
+      isControlled <- maybe (pure False) (sourceMatches source . sourceOwnedBy) attrs.controller
+      if isControlled
         then liftRunMessage (PlaceTokens (toSource attrs) (toTarget attrs) Offering n) a
         else pure a
     _ -> SoulSanctification3 <$> liftRunMessage msg attrs

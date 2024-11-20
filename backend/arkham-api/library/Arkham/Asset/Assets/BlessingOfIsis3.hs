@@ -2,9 +2,11 @@ module Arkham.Asset.Assets.BlessingOfIsis3 (blessingOfIsis3, BlessingOfIsis3 (..
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
+import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype BlessingOfIsis3 = BlessingOfIsis3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,21 +17,22 @@ blessingOfIsis3 = asset BlessingOfIsis3 Cards.blessingOfIsis3
 
 instance HasAbilities BlessingOfIsis3 where
   getAbilities (BlessingOfIsis3 x) =
-    [ controlledAbility
-        x
-        1
-        (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #bless)
-        $ ReactionAbility (RevealChaosToken #when Anyone #bless) (exhaust x)
+    [ wantsSkillTest SkillTestAtYourLocation
+        $ controlled
+          x
+          1
+          (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #bless)
+        $ triggered (RevealChaosToken #when Anyone #bless) (exhaust x)
     ]
 
 instance RunMessage BlessingOfIsis3 where
-  runMessage msg a@(BlessingOfIsis3 attrs) = case msg of
+  runMessage msg a@(BlessingOfIsis3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> drawnToken) _ -> do
       withSkillTest \sid -> do
+        push $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken
         tokens <- nub . (drawnToken :) . filter ((== #bless) . (.face)) <$> getSkillTestRevealedChaosTokens
-        enabled <- for tokens \token -> do
+        for_ tokens \token -> do
           skillTestModifiers sid (attrs.ability 1) (ChaosTokenTarget token) $ ReturnBlessedToChaosBag
             : [ChaosTokenFaceModifier [#eldersign] | token == drawnToken]
-        pushAll $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken : enabled
       pure a
-    _ -> BlessingOfIsis3 <$> runMessage msg attrs
+    _ -> BlessingOfIsis3 <$> liftRunMessage msg attrs

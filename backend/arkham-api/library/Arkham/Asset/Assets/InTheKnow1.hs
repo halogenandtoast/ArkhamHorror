@@ -18,7 +18,7 @@ inTheKnow1 = asset InTheKnow1 Cards.inTheKnow1
 instance HasAbilities InTheKnow1 where
   getAbilities (InTheKnow1 attrs) =
     [ delayAdditionalCostsWhen (exists $ RevealedLocation <> InvestigatableLocation)
-        $ restrictedAbility attrs 1 ControlsThis (investigateAction $ assetUseCost attrs Secret 1)
+        $ restricted attrs 1 ControlsThis (investigateAction $ assetUseCost attrs Secret 1)
         & (abilityMetadataL ?~ InvestigateTargets RevealedLocation)
     ]
 
@@ -38,6 +38,6 @@ instance RunMessage InTheKnow1 where
             batching batchId do
               abilityModifier ability.ref (attrs.ability 1) iid (AsIfAt location)
               push $ PayAdditionalCost iid batchId costs
-              push $ UseAbility iid ability windows'
+              push $ UseAbility iid (decreaseAbilityActionCost ability 1) windows'
       pure a
     _ -> InTheKnow1 <$> liftRunMessage msg attrs

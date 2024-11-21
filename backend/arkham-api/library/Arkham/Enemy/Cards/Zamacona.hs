@@ -40,7 +40,7 @@ zamacona =
     Cards.zamacona
     (3, Static 3, 3)
     (1, 0)
-    (spawnAtL ?~ SpawnAtFirst [SpawnAt EmptyLocation, SpawnAt YourLocation])
+    (spawnAtL ?~ SpawnAtFirst [SpawnAt (NearestLocationToYou EmptyLocation), SpawnAt YourLocation])
 
 instance RunMessage Zamacona where
   runMessage msg (Zamacona (With attrs meta)) = runQueueT $ case msg of

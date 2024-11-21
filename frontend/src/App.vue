@@ -315,6 +315,7 @@ body {
 }
 
 :root {
+  transition-behavior: allow-discrete;
   --willpower: #2c7fc0;
   --intellect: #7c3c85;
   --combat: #ae4236;

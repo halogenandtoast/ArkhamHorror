@@ -158,6 +158,7 @@ data CardDef = CardDef
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
   , cdMeta :: Map Text Value
+  , cdTags :: [Text]
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -269,6 +270,7 @@ emptyCardDef cCode name cType =
     , cdWhenDiscarded = ToDiscard
     , cdCanCommitWhenNoIcons = False
     , cdMeta = mempty
+    , cdTags = []
     }
 
 instance IsCardMatcher CardDef where
@@ -412,5 +414,8 @@ instance FromJSON CardDef where
       o .:? "canCommitWhenNoIcons" .!= (cdSkills == [] && cdCardType == SkillType)
     cdMeta <-
       o .:? "meta" .!= mempty
+
+    cdTags <-
+      o .:? "tags" .!= []
 
     pure CardDef {..}

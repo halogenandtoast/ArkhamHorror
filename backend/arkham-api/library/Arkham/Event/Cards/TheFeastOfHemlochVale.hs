@@ -45,6 +45,7 @@ beguile =
       , cdCardTraits = setFromList [Trick]
       , cdFastWindow = Just $ DuringTurn You
       , cdCriteria = Just $ exists $ NonEliteEnemy <> EnemyAt YourLocation
+      , cdTags = ["parley"]
       }
 
 stouthearted :: CardDef
@@ -287,6 +288,7 @@ bankJob =
     , cdAdditionalCost = Just (ActionCost 1)
     }
 
+-- We don't reduce the cost in the criteria because it's part of the cost of false surrender.
 falseSurrender :: CardDef
 falseSurrender =
   (event "10070" "False Surrender" 1 Rogue)
@@ -296,7 +298,7 @@ falseSurrender =
     , cdCriteria =
         Just
           $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
-          <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
+          <> exists (PlayableCard (UnpaidCost NoAction) $ InHandOf You <> basic (#asset <> #weapon))
     }
 
 grift :: CardDef
@@ -344,6 +346,7 @@ snitch2 =
     , cdCriteria =
         Just
           $ exists (LocationWithDiscoverableCluesBy You <> oneOf [YourLocation, ConnectedFrom YourLocation])
+    , cdTags = ["parley"]
     }
 
 dirtyDeeds3 :: CardDef

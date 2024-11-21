@@ -41,7 +41,7 @@ instance HasModifiersFor EldritchTongueEffect where
         $ PlayableCard (UnpaidCost NeedsAction)
         $ inDiscardOf iid
         <> #event
-        <> #parley
+        <> oneOf [#parley, basic (CardTaggedWith "parley")]
       x <- hoistMaybe a.source.asset
       liftGuardM $ x <=~> AssetWithUseCount Charge (atLeast 1)
       pure
@@ -55,7 +55,12 @@ instance HasModifiersFor EldritchTongueEffect where
 instance RunMessage EldritchTongueEffect where
   runMessage msg e@(EldritchTongueEffect attrs) = runQueueT $ case msg of
     UseEffectAction iid eid ws | eid == toId attrs -> do
-      cards <- select $ PlayableCard (UnpaidCost NeedsAction) $ inDiscardOf iid <> #event <> #parley
+      cards <-
+        select
+          $ PlayableCard (UnpaidCost NeedsAction)
+          $ inDiscardOf iid
+          <> #event
+          <> oneOf [#parley, basic (CardTaggedWith "parley")]
       for_ attrs.source.asset \aid -> do
         focusCards cards \unfocus -> do
           chooseOneM iid do

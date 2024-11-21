@@ -284,6 +284,7 @@ abilityTypeActions = \case
   ServitorAbility action -> [action]
   Cosmos -> []
   Objective aType -> abilityTypeActions aType
+  DelayedAbility aType -> abilityTypeActions aType
   ForcedWhen _ aType -> abilityTypeActions aType
 
 abilityTypeCost :: AbilityType -> Cost
@@ -302,6 +303,7 @@ abilityTypeCost = \case
   Cosmos -> Free
   ServitorAbility _ -> Free
   Objective aType -> abilityTypeCost aType
+  DelayedAbility aType -> abilityTypeCost aType
   ForcedWhen _ aType -> abilityTypeCost aType
 
 modifyCost :: (Cost -> Cost) -> AbilityType -> AbilityType
@@ -326,6 +328,7 @@ modifyCost f = \case
   ServitorAbility action -> ServitorAbility action
   Cosmos -> Cosmos
   Objective aType' -> Objective $ modifyCost f aType'
+  DelayedAbility aType' -> DelayedAbility $ modifyCost f aType'
   ForcedWhen c aType' -> ForcedWhen c $ modifyCost f aType'
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
@@ -385,6 +388,7 @@ defaultAbilityWindow = \case
   ServitorAbility _ -> Matcher.DuringTurn You
   Cosmos -> AnyWindow
   Objective aType -> defaultAbilityWindow aType
+  DelayedAbility aType -> defaultAbilityWindow aType
   ForcedWhen _ aType -> defaultAbilityWindow aType
 
 isFastAbilityType :: AbilityType -> Bool
@@ -394,6 +398,7 @@ isFastAbilityType = \case
   SilentForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
   Objective aType -> isFastAbilityType aType
+  DelayedAbility aType -> isFastAbilityType aType
   ReactionAbility {} -> False
   CustomizationReaction {} -> False
   ConstantReaction {} -> False
@@ -411,6 +416,7 @@ isReactionAbilityType = \case
   ForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
   Objective aType -> isReactionAbilityType aType
+  DelayedAbility aType -> isReactionAbilityType aType
   FastAbility' {} -> False
   ReactionAbility {} -> True
   CustomizationReaction {} -> False
@@ -429,6 +435,7 @@ isSilentForcedAbilityType = \case
   ForcedAbility {} -> False
   ForcedAbilityWithCost {} -> False
   Objective aType -> isSilentForcedAbilityType aType
+  DelayedAbility aType -> isSilentForcedAbilityType aType
   FastAbility' {} -> False
   ReactionAbility {} -> False
   CustomizationReaction {} -> False
@@ -464,6 +471,7 @@ defaultAbilityLimit = \case
   ActionAbilityWithSkill {} -> NoLimit
   AbilityEffect {} -> NoLimit
   Objective aType -> defaultAbilityLimit aType
+  DelayedAbility aType -> defaultAbilityLimit aType
   Haunted -> NoLimit
   ServitorAbility _ -> NoLimit
   Cosmos -> NoLimit

@@ -16,8 +16,9 @@ familyInheritance = asset FamilyInheritance Cards.familyInheritance
 
 instance HasAbilities FamilyInheritance where
   getAbilities (FamilyInheritance a) =
-    [ controlledAbility a 1 (ResourcesOnThis (atLeast 1)) actionAbility
-    , restrictedAbility a 2 ControlsThis $ forced $ TurnBegins #when You
+    [ controlled a 1 (ResourcesOnThis (atLeast 1)) actionAbility
+    , restricted a 2 ControlsThis $ forced $ TurnBegins #when You
+    , controlled a 3 ControlsThis $ delayed $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage FamilyInheritance where
@@ -28,6 +29,8 @@ instance RunMessage FamilyInheritance where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ PlaceResources (attrs.ability 2) (toTarget attrs) 4
       pure a
-    EndTurn iid | Just iid == assetController attrs -> do
-      FamilyInheritance <$> runMessage msg (attrs & tokensL %~ removeAllTokens Token.Resource)
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      pure . FamilyInheritance $ attrs & tokensL %~ removeAllTokens Token.Resource
+    -- EndTurn iid | Just iid == assetController attrs -> do
+    --   FamilyInheritance <$> runMessage msg (attrs & tokensL %~ removeAllTokens Token.Resource)
     _ -> FamilyInheritance <$> runMessage msg attrs

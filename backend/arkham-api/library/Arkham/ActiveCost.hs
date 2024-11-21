@@ -143,6 +143,7 @@ startAbilityPayment
 startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType source provokeAttacksOfOpportunity =
   case abilityType of
     Objective aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
+    DelayedAbility aType -> startAbilityPayment activeCost iid window aType source provokeAttacksOfOpportunity
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()

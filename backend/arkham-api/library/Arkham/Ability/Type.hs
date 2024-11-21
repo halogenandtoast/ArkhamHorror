@@ -68,6 +68,9 @@ triggered = ReactionAbility
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 
+delayed :: AbilityType -> AbilityType
+delayed = DelayedAbility
+
 silent :: WindowMatcher -> AbilityType
 silent = SilentForcedAbility
 
@@ -89,6 +92,7 @@ data AbilityType
   | ActionAbilityWithSkill {actions :: [Action], skillType :: SkillType, cost :: Cost}
   | SilentForcedAbility {window :: WindowMatcher}
   | ForcedAbility {window :: WindowMatcher}
+  | DelayedAbility {abilityType :: AbilityType}
   | ForcedAbilityWithCost {window :: WindowMatcher, cost :: Cost}
   | AbilityEffect {actions :: [Action], cost :: Cost}
   | Objective {abilityType :: AbilityType}
@@ -112,6 +116,7 @@ instance HasCost AbilityType where
     ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window (f cost)
     AbilityEffect as cost -> AbilityEffect as (f cost)
     Objective abilityType -> Objective (overCost f abilityType)
+    DelayedAbility abilityType -> DelayedAbility (overCost f abilityType)
     Haunted -> Haunted
     Cosmos -> Cosmos
     ForcedWhen criteria abilityType -> ForcedWhen criteria (overCost f abilityType)
@@ -135,6 +140,7 @@ abilityTypeCostL f = \case
   ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window <$> f cost
   AbilityEffect as cost -> AbilityEffect as <$> f cost
   Objective abilityType -> Objective <$> abilityTypeCostL f abilityType
+  DelayedAbility abilityType -> DelayedAbility <$> abilityTypeCostL f abilityType
   ServitorAbility action -> pure $ ServitorAbility action
   Haunted -> pure Haunted
   Cosmos -> pure Cosmos

@@ -896,7 +896,7 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . agendasL %~ insertMap newAgendaId newAgenda . deleteMap aid1)
   ReplaceAct aid1 card -> do
-    actDeckId <- field ActDeckId aid1
+    actDeckId <- fromMaybe 1 <$> fieldMay ActDeckId aid1
     let newActId = ActId (toCardCode card)
     let newAct = either throw id $ lookupAct newActId actDeckId (toCardId card)
     pure

@@ -205,7 +205,7 @@ instance RunMessage TheForgottenAge where
             provisions <- fieldMap InvestigatorSupplies (filter (== Provisions)) iid
             pure $ map (iid,) provisions
         investigatorsWithBinocularsPairs <- for investigatorIds $ \iid -> do
-          binoculars <- fieldMap InvestigatorSupplies (elem Provisions) iid
+          binoculars <- fieldMap InvestigatorSupplies (elem Binoculars) iid
           player <- getPlayer iid
           pure (iid, player, binoculars)
         let

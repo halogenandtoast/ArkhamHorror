@@ -256,6 +256,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     Haunted -> pure False
     Cosmos -> pure False
     Objective aType -> go aType
+    DelayedAbility aType -> go aType
     ForcedWhen _ aType -> go aType
     ActionAbilityWithSkill actions _ cost -> go $ ActionAbility actions cost
     ActionAbility [] _ -> pure True
@@ -439,6 +440,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     AbilityEffect actions cost ->
       getCanAffordCost iid (toSource a) actions ws (f cost)
     Objective {} -> pure True
+    DelayedAbility inner -> go f inner
     ForcedWhen _ aType -> go f aType
 
 filterDepthSpecificAbilities :: HasGame m => [UsedAbility] -> m [UsedAbility]
@@ -515,6 +517,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             FastAbility' {} -> pure True
             AbilityEffect {} -> pure True
             Objective {} -> pure True
+            DelayedAbility inner -> go inner
             Haunted -> pure True
             Cosmos -> pure True
             ServitorAbility _ -> pure True -- should be disabled by the servitor
@@ -3636,6 +3639,7 @@ isForcedAbilityType iid source = \case
   ForcedAbility {} -> pure True
   ForcedAbilityWithCost {} -> pure True
   Objective aType -> isForcedAbilityType iid source aType
+  DelayedAbility aType -> isForcedAbilityType iid source aType
   FastAbility' {} -> pure False
   ReactionAbility {} -> pure False
   CustomizationReaction {} -> pure True -- TODO: Keep an eye on this

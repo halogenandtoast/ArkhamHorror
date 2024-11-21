@@ -1,14 +1,8 @@
-module Arkham.Skill.Cards.TakeHeart (
-  takeHeart,
-  TakeHeart (..),
-) where
+module Arkham.Skill.Cards.TakeHeart (takeHeart, TakeHeart (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype TakeHeart = TakeHeart SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -18,9 +12,9 @@ takeHeart :: SkillCard TakeHeart
 takeHeart = skill TakeHeart Cards.takeHeart
 
 instance RunMessage TakeHeart where
-  runMessage msg s@(TakeHeart attrs) = case msg of
+  runMessage msg s@(TakeHeart attrs) = runQueueT $ case msg of
     FailedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == toId attrs -> do
-      mdrawing <- drawCardsIfCan iid attrs 2
-      pushAll $ toList mdrawing <> [TakeResources iid 2 (toSource attrs) False]
+      drawCardsIfCan iid attrs 2
+      gainResourcesIfCan iid attrs 2
       pure s
-    _ -> TakeHeart <$> runMessage msg attrs
+    _ -> TakeHeart <$> liftRunMessage msg attrs

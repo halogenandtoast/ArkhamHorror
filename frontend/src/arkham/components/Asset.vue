@@ -6,6 +6,7 @@ import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
+import type { AbilityType } from '@/arkham/types/Ability';
 import { MessageType } from '@/arkham/types/Message';
 import DebugAsset from '@/arkham/components/debug/Asset.vue';
 import Key from '@/arkham/components/Key.vue';
@@ -171,7 +172,14 @@ async function chooseAbility(ability: number) {
 
 watch(abilities, (abilities) => {
   // ability is forced we must show
-  if (abilities.some(a => "ability" in a.contents && a.contents.ability.type.tag === "ForcedAbility")) {
+  let isForced = (type: AbilityType) => {
+    switch (type.tag) {
+      case "ForcedAbility": return true
+      case "DelayedAbility": return isForced(type.abilityType)
+      default: return false
+    }
+  }
+  if (abilities.some(a => "ability" in a.contents && isForced(a.contents.ability.type))) {
     showAbilities.value = true
   }
 

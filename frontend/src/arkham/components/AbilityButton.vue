@@ -95,6 +95,10 @@ const abilityLabel = computed(() => {
     return "Forced"
   }
 
+  if (isDelayedAbility.value === true) {
+    return "Delayed"
+  }
+
   if (isObjective.value === true) {
     return "Objective"
   }
@@ -200,6 +204,7 @@ const isObjective = computed(() => ability.value && ability.value.type.tag === "
 const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
 const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
 const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
+const isDelayedAbility = computed(() => ability.value && ability.value.type.tag === "DelayedAbility")
 const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
@@ -214,6 +219,7 @@ const classObject = computed(() => {
     'fast-ability-button': isFastActionAbility.value,
     'reaction-ability-button': isReactionAbility.value,
     'forced-ability-button': isForcedAbility.value,
+    'delayed-ability-button': isDelayedAbility.value,
     'investigate-button': isInvestigate.value,
     'fight-button': isFight.value,
     'evade-button': isEvade.value,
@@ -334,6 +340,12 @@ const classObject = computed(() => {
 }
 
 .forced-ability-button {
+  background-color: #222;
+  outline: 2px solid var(--select);
+  color: #fff;
+}
+
+.delayed-ability-button {
   background-color: #222;
   outline: 2px solid var(--select);
   color: #fff;

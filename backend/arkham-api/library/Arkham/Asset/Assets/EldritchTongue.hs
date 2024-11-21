@@ -66,12 +66,15 @@ instance RunMessage EldritchTongueEffect where
           chooseOneM iid do
             targets cards \card -> do
               push unfocus
-              addToHand iid (only card)
               eventModifiers
                 attrs.source
                 card
-                [SetAfterPlay AbsoluteRemoveThisFromGame, AdditionalCost $ UseCost (AssetWithId aid) Charge 1]
-              push $ PayCardCost iid card ws
+                [ SetAfterPlay AbsoluteRemoveThisFromGame
+                , AdditionalCost $ ActionCost 1 <> UseCost (AssetWithId aid) Charge 1
+                ]
+              playCardPayingCostWithWindows iid card ws
+              disable attrs
+              createCardEffect Cards.eldritchTongue Nothing attrs.source iid
       pure e
     RemovedFromPlay source | isSource source attrs.source -> disableReturn e
     _ -> EldritchTongueEffect <$> liftRunMessage msg attrs

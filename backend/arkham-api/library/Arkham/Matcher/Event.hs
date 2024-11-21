@@ -6,6 +6,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.ClassSymbol
 import Arkham.Id
+import Arkham.Matcher.Action
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
@@ -49,6 +50,7 @@ data EventMatcher
   | EventWithPlacement Placement
   | ActiveEvent
   | EventWithMetaKey Key
+  | EventIsAction ActionMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not EventMatcher where

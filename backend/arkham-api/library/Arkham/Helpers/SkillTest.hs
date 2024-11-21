@@ -160,6 +160,7 @@ isParley =
   orM
     [ (== Just #parley) <$> getSkillTestAction
     , any (`abilityIs` #parley) <$> getActiveAbilities
+    , selectAny $ EventIsAction #parley
     ]
 
 getIsBeingInvestigated :: HasGame m => LocationId -> m Bool

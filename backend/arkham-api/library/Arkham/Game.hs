@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (
   module Arkham.Game,
@@ -2404,6 +2404,10 @@ getEventsMatching matcher = do
     EventWithClass role -> pure $ filter (member role . cdClassSymbols . toCardDef) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventCardMatch cardMatcher -> filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
+    EventIsAction actionMatcher -> do
+      lead <- getLead
+      flip filterM as \e -> do
+        anyM (\a -> actionMatches lead a actionMatcher) (toCardDef e).actions
     EventWithMetaKey k -> flip filterM as \e -> do
       case attr eventMeta e of
         Object o ->

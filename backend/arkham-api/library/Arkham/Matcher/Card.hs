@@ -199,6 +199,7 @@ data CardMatcher
   | CardWithOddNumberOfWordsInTitle
   | CardWithEvenNumberOfWordsInTitle
   | CardWithAvailableCustomization
+  | CardTaggedWith Text
   deriving stock (Show, Eq, Ord, Data)
 
 instance Not CardMatcher where

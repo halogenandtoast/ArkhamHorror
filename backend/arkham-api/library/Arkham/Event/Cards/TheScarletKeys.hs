@@ -352,6 +352,7 @@ powerWord =
           , (Tonguetwister, 3)
           , (ThriceSpoken, 3)
           ]
+    , cdTags = ["parley"]
     }
 
 eldritchInitiation :: CardDef

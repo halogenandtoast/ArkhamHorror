@@ -5,6 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DeepOneBull = DeepOneBull EnemyAttrs

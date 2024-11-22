@@ -10,6 +10,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype JoeSargentRattletrapBusDriver = JoeSargentRattletrapBusDriver AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

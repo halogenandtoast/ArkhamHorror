@@ -7,6 +7,7 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Resolution
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs

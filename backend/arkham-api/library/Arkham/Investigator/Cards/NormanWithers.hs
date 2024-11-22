@@ -46,7 +46,7 @@ instance HasAbilities NormanWithers where
     [ restricted
         a
         1
-        (Self <> youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck)
+        (Self <> youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck <> NotSetup)
         (forced AnyWindow)
     ]
 

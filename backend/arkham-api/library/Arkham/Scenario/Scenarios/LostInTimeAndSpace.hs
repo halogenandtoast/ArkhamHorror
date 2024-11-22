@@ -15,6 +15,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

@@ -1337,6 +1337,7 @@ passesCriteria iid mcard source' requestor windows' = \case
           $ "Can not check if "
           <> show source
           <> " is in players threat area"
+  Criteria.NotSetup -> not <$> getInSetup
   Criteria.Self -> case source of
     InvestigatorSource iid' -> pure $ iid == iid'
     _ -> pure False

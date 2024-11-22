@@ -9,6 +9,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card (findUniqueCard)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Movement
 import Arkham.Scenarios.ALightInTheFog.Helpers

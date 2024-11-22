@@ -1,21 +1,14 @@
-module Arkham.Location.Cards.StepsOfYhagharl (
-  stepsOfYhagharl,
-  StepsOfYhagharl (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.StepsOfYhagharl (stepsOfYhagharl, StepsOfYhagharl (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Scenario.Types (Field (..))
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype StepsOfYhagharl = StepsOfYhagharl LocationAttrs
@@ -28,53 +21,44 @@ stepsOfYhagharl =
 
 instance HasAbilities StepsOfYhagharl where
   getAbilities (StepsOfYhagharl attrs) =
-    withBaseAbilities attrs
-      $ [ skillTestAbility
-          $ mkAbility attrs 1
-          $ ForcedAbility
-          $ Leaves Timing.When You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs $ skillTestAbility $ mkAbility attrs 1 $ forced $ Leaves #when You (be attrs)
 
 instance RunMessage StepsOfYhagharl where
-  runMessage msg l@(StepsOfYhagharl attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg l@(StepsOfYhagharl attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       encounterDiscard <- scenarioField ScenarioDiscard
-      for_ (find (member Madness . toTraits) encounterDiscard)
-        $ \madnessCard -> push $ InvestigatorDrewEncounterCard iid madnessCard
-      StepsOfYhagharl <$> runMessage msg attrs
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      for_ (find (member Madness . toTraits) encounterDiscard) \madnessCard ->
+        push $ InvestigatorDrewEncounterCard iid madnessCard
+      StepsOfYhagharl <$> liftRunMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) (InvestigatorTarget iid) SkillWillpower (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
       pure l
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> do
-          replaceMessageMatching
-            ( \case
-                MoveFrom _ iid' lid' -> iid == iid' && lid' == toId attrs
-                _ -> False
-            )
-            (const [])
-          replaceMessageMatching
-            ( \case
-                Will (MoveTo movement) | moveTarget movement == toTarget iid -> True
-                Will (Move movement) | moveTarget movement == toTarget iid -> True
-                _ -> False
-            )
-            (const [])
-          replaceMessageMatching
-            ( \case
-                After (Move movement) | moveTarget movement == toTarget iid -> True
-                _ -> False
-            )
-            (const [])
-          l
-            <$ replaceMessageMatching
-              ( \case
-                  MoveTo movement | moveTarget movement == toTarget iid -> True
-                  _ -> False
-              )
-              (const [ShuffleBackIntoEncounterDeck $ toTarget attrs])
-    _ -> StepsOfYhagharl <$> runMessage msg attrs
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      replaceMessageMatching
+        ( \case
+            MoveFrom _ iid' lid' -> iid == iid' && lid' == toId attrs
+            _ -> False
+        )
+        (const [])
+      replaceMessageMatching
+        ( \case
+            Will (MoveTo movement) | moveTarget movement == toTarget iid -> True
+            Will (Move movement) | moveTarget movement == toTarget iid -> True
+            _ -> False
+        )
+        (const [])
+      replaceMessageMatching
+        ( \case
+            After (Move movement) | moveTarget movement == toTarget iid -> True
+            _ -> False
+        )
+        (const [])
+      replaceMessageMatching
+        ( \case
+            MoveTo movement | moveTarget movement == toTarget iid -> True
+            _ -> False
+        )
+        (const [ShuffleBackIntoEncounterDeck $ toTarget attrs])
+      pure l
+    _ -> StepsOfYhagharl <$> liftRunMessage msg attrs

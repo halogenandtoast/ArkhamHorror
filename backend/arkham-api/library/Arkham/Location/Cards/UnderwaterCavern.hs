@@ -7,6 +7,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Trait (Trait (Cave))
 
 newtype UnderwaterCavern = UnderwaterCavern LocationAttrs

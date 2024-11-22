@@ -7,6 +7,7 @@ import Arkham.Investigator.Projection ()
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Trait (Trait (DeepOne))
 

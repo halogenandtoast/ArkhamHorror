@@ -6,6 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype TheWayOut = TheWayOut ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

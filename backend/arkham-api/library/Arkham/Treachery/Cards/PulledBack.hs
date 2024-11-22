@@ -5,6 +5,7 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Projection ()
 import Arkham.Location.Grid
+import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

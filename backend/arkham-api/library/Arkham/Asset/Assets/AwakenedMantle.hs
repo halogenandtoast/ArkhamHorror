@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype AwakenedMantle = AwakenedMantle AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

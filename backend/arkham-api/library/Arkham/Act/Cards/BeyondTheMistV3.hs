@@ -11,6 +11,7 @@ import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount, getSetAsideC
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 

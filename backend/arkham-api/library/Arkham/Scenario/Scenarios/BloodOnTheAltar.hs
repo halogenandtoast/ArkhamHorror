@@ -171,11 +171,11 @@ instance RunMessage BloodOnTheAltar where
           =<< shuffle
             ([zebulonWhateley, earlSawyer] <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage])
       ResolveChaosToken _ Tablet iid -> do
-        lid <- getJustLocation iid
-        isHiddenChamber <- (== "Hidden Chamber") . nameTitle <$> field LocationName lid
-        when
-          (isHardExpert attrs || (isEasyStandard attrs && isHiddenChamber))
-          (drawAnotherChaosToken iid)
+        if isHardExpert attrs
+          then drawAnotherChaosToken iid
+          else withLocationOf iid \lid -> do
+            isHiddenChamber <- (== "The Hidden Chamber") . nameTitle <$> field LocationName lid
+            when isHiddenChamber $ drawAnotherChaosToken iid
         pure s
       ResolveChaosToken _ ElderThing _ | isHardExpert attrs -> do
         agendaId <- selectJust AnyAgenda

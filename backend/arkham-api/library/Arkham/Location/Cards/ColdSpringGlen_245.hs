@@ -1,28 +1,21 @@
-module Arkham.Location.Cards.ColdSpringGlen_245 (
-  coldSpringGlen_245,
-  ColdSpringGlen_245 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ColdSpringGlen_245 (coldSpringGlen_245, ColdSpringGlen_245 (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
-import Arkham.Location.Runner hiding (ChosenRandomLocation)
+import Arkham.Location.Import.Lifted hiding (ChosenRandomLocation)
+import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_245 :: LocationCard ColdSpringGlen_245
-coldSpringGlen_245 =
-  location ColdSpringGlen_245 Cards.coldSpringGlen_245 2 (Static 0)
+coldSpringGlen_245 = location ColdSpringGlen_245 Cards.coldSpringGlen_245 2 (Static 0)
 
 instance HasModifiersFor ColdSpringGlen_245 where
   getModifiersFor (EnemyTarget eid) (ColdSpringGlen_245 attrs) = do
@@ -32,30 +25,27 @@ instance HasModifiersFor ColdSpringGlen_245 where
 
 instance HasAbilities ColdSpringGlen_245 where
   getAbilities (ColdSpringGlen_245 attrs) =
-    withBaseAbilities attrs
-      $ [ skillTestAbility
-          $ mkAbility attrs 1
-          $ ReactionAbility
-            (ChosenRandomLocation Timing.After $ LocationWithId $ toId attrs)
-            Free
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs
+      $ skillTestAbility
+      $ groupLimit PerWindow
+      $ mkAbility attrs 1
+      $ freeReaction
+      $ ChosenRandomLocation #after (be attrs)
 
 instance RunMessage ColdSpringGlen_245 where
-  runMessage msg l@(ColdSpringGlen_245 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(ColdSpringGlen_245 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs SkillAgility (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do
-      replaceMessageMatching
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      lift $ replaceMessageMatching
         \case
           Msg.ChosenRandomLocation _ lid -> lid == toId attrs
           _ -> False
         \case
           Msg.ChosenRandomLocation target lid
-            | lid == toId attrs ->
-                [ChooseRandomLocation target (singleton lid)]
+            | lid == toId attrs -> [ChooseRandomLocation target (singleton lid)]
           _ -> error "should be the matching message"
       pure l
-    _ -> ColdSpringGlen_245 <$> runMessage msg attrs
+    _ -> ColdSpringGlen_245 <$> liftRunMessage msg attrs

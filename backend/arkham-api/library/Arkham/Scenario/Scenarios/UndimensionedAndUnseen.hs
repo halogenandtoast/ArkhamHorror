@@ -159,9 +159,8 @@ instance RunMessage UndimensionedAndUnseen where
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s
-    ResolveChaosToken drawnToken Tablet _ -> do
-      builder <-
-        makeEffectBuilder "02236" Nothing (ChaosTokenSource drawnToken) (ChaosTokenTarget drawnToken)
+    ResolveChaosToken drawnToken Tablet iid -> do
+      builder <- makeEffectBuilder "02236" Nothing (ChaosTokenSource drawnToken) iid
       push $ CreateEffect builder
       pure s
     ResolveChaosToken _ ElderThing iid -> do

@@ -227,6 +227,7 @@ data Criterion
   | CanEnterThisVehicle
   | CanLeaveThisVehicle
   | InThisVehicle
+  | NotInEliminatedBearersThreatArea
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

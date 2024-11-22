@@ -3387,6 +3387,7 @@ getEnemyField f e = do
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
     EnemyAttacking -> pure enemyAttacking
+    EnemyBearer -> pure enemyBearer
     EnemyTokens -> pure enemyTokens
     EnemyDoom -> do
       countAllDoom <- attrs `hasModifier` CountAllDoomInPlay

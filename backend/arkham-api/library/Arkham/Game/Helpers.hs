@@ -1132,6 +1132,16 @@ passesCriteria iid mcard source' requestor windows' = \case
           InVehicle aid' | aid == aid' -> pure True
           _ -> pure False
       _ -> error $ "Unhandled vehicle source: " <> show source
+  Criteria.NotInEliminatedBearersThreatArea -> do
+    case source of
+      EnemySource eid -> do
+        field EnemyBearer eid >>= \case
+          Just iid' ->
+            field EnemyPlacement eid >>= \case
+              InThreatArea iid'' | iid' == iid'' -> iid' <=~> Matcher.UneliminatedInvestigator
+              _ -> pure True
+          _ -> error $ "No enemy bearer for enemy: " <> show eid
+      _ -> error $ "Unhandled bearer source: " <> show source
   Criteria.InThisVehicle -> do
     case source of
       AssetSource aid -> do

@@ -324,7 +324,7 @@ stirThePot =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Trick, Gambit]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
     }
 
 vamp :: CardDef
@@ -375,7 +375,7 @@ stirThePot5 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Trick, Gambit]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists $ EnemyAt YourLocation
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> CanParleyEnemy You
     , cdLevel = Just 5
     }
 

@@ -20,7 +20,7 @@ stirThePot5 = event StirThePot5 Cards.stirThePot5
 instance RunMessage StirThePot5 where
   runMessage msg e@(StirThePot5 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid
+      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> CanParleyEnemy (be iid)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom

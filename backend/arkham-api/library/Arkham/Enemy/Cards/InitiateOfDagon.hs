@@ -18,7 +18,7 @@ initiateOfDagon = enemyWith InitiateOfDagon Cards.initiateOfDagon (2, Static 1, 
 instance HasModifiersFor InitiateOfDagon where
   getModifiersFor target (InitiateOfDagon a) | isTarget a target = do
     maybeModified a do
-      liftGuardM $ fieldMap EnemyDoom (> 0) a.id
+      liftGuardM $ fieldMap EnemyDoom (== 0) a.id
       pure [EnemyFight 2, EnemyEvade 2]
   getModifiersFor _ _ = pure []
 

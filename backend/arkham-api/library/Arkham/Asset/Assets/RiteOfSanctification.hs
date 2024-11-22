@@ -40,7 +40,7 @@ instance HasAbilities RiteOfSanctification where
 
 getDetails :: [Window] -> (InvestigatorId, Card)
 getDetails [] = error "Wrong window"
-getDetails ((windowType -> Window.PlayCard iid card) : _) = (iid, card)
+getDetails ((windowType -> Window.PlayCard iid cardPlay) : _) = (iid, cardPlay.card)
 getDetails (_ : xs) = getDetails xs
 
 instance RunMessage RiteOfSanctification where

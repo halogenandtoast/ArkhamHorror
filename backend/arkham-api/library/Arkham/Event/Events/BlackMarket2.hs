@@ -86,9 +86,9 @@ instance RunMessage BlackMarket2Effect where
       if cdSkipPlayWindows (toCardDef card)
         then push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
         else do
-          checkWindows [Window.mkWhen (Window.PlayCard iid card)]
+          checkWindows [Window.mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
           push $ Arkham.Message.PlayCard iid card mtarget payment windows' asAction
-          checkWindows [Window.mkAfter (Window.PlayCard iid card)]
+          checkWindows [Window.mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
           push $ ResolvedPlayCard iid card
       pure e
     CardEnteredPlay _ card | attrs.target == CardIdTarget card.id -> do

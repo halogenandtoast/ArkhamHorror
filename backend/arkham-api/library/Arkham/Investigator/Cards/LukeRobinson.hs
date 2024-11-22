@@ -104,9 +104,9 @@ instance RunMessage LukeRobinson where
       let
         playCard :: ReverseQueue m => QueueT Message m ()
         playCard = when (not shouldSkip) do
-          checkWhen $ Window.PlayCard iid card
+          checkWhen $ Window.PlayCard iid $ Window.CardPlay card asAction
           push $ PlayCard iid card mtarget payment windows' asAction
-          checkAfter $ Window.PlayCard iid card
+          checkAfter $ Window.PlayCard iid $ Window.CardPlay card asAction
 
       lukePlayable <- getLukePlayable attrs windows'
 

@@ -6,16 +6,15 @@ module Arkham.Asset.Assets.DaisysToteBagAdvanced (
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
+import Arkham.Modifier
+import Arkham.Slot
 import Arkham.Trait
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced AssetAttrs
   deriving anyclass IsAsset
@@ -26,7 +25,7 @@ daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 
 instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
-    [ controlledAbility a 1 (DuringTurn You)
+    [ controlled a 1 (DuringTurn You)
         $ ReactionAbility (Matcher.PlayCard #when You (basic #tome))
         $ (exhaust a)
     ]
@@ -40,15 +39,15 @@ slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage DaisysToteBagAdvanced where
-  runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
+  runMessage msg a@(DaisysToteBagAdvanced attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
       pushAll $ replicate 2 (AddSlot iid HandSlot (slot attrs))
-      DaisysToteBagAdvanced <$> runMessage msg attrs
-    UseCardAbility _ (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do
-      push =<< createCardEffect Cards.daisysToteBagAdvanced Nothing (attrs.ability 1) card
+      DaisysToteBagAdvanced <$> liftRunMessage msg attrs
+    UseCardAbility _ (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      createCardEffect Cards.daisysToteBagAdvanced Nothing (attrs.ability 1) card
       pure a
-    _ -> DaisysToteBagAdvanced <$> runMessage msg attrs
+    _ -> DaisysToteBagAdvanced <$> liftRunMessage msg attrs
 
 newtype DaisysToteBagAdvancedEffect = DaisysToteBagAdvancedEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -63,8 +62,7 @@ instance HasModifiersFor DaisysToteBagAdvancedEffect where
   getModifiersFor _ _ = pure []
 
 instance RunMessage DaisysToteBagAdvancedEffect where
-  runMessage msg e@(DaisysToteBagAdvancedEffect attrs) = case msg of
-    CardEnteredPlay _ card | CardIdTarget (toCardId card) == attrs.target -> do
-      push $ disable attrs
-      pure e
-    _ -> DaisysToteBagAdvancedEffect <$> runMessage msg attrs
+  runMessage msg e@(DaisysToteBagAdvancedEffect attrs) = runQueueT $ case msg of
+    CardEnteredPlay _ card | CardIdTarget card.id == attrs.target -> do
+      disableReturn e
+    _ -> DaisysToteBagAdvancedEffect <$> liftRunMessage msg attrs

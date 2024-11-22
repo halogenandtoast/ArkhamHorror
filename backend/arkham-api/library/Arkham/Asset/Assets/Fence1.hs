@@ -4,13 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Modifier
-import Arkham.Timing qualified as Timing
-import Arkham.Trait
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype Fence1 = Fence1 AssetAttrs
   deriving anyclass IsAsset
@@ -26,15 +23,15 @@ instance HasModifiersFor Fence1 where
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringTurn You)
-        $ ReactionAbility (Matcher.PlayCard #when You (BasicCardMatch $ CardWithTrait Illicit))
+    [ controlled a 1 (DuringTurn You)
+        $ ReactionAbility (Matcher.PlayCard #when You (basic #illicit))
         $ exhaust a
     ]
 
 instance RunMessage Fence1 where
   runMessage msg a@(Fence1 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 [Window Timing.When (Window.PlayCard _ card) _] _ -> do
-      let source = toAbilitySource attrs 1
+    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      let source = attrs.ability 1
       if isFastCard card
         then costModifier source iid (ReduceCostOf (CardWithId $ toCardId card) 1)
         else cardResolutionModifier card source card (BecomesFast FastPlayerWindow)

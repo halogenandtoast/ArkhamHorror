@@ -2,13 +2,11 @@ module Arkham.Asset.Assets.TheFool03 (theFool03, TheFool03 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
+import Arkham.Modifier
 
 newtype TheFool03 = TheFool03 AssetAttrs
   deriving anyclass IsAsset
@@ -24,24 +22,16 @@ instance HasModifiersFor TheFool03 where
 
 instance HasAbilities TheFool03 where
   getAbilities (TheFool03 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (Matcher.PlayCard #when You (BasicCardMatch AnyCard))
-        $ exhaust a
-    , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
+    [ restricted a 1 ControlsThis $ ReactionAbility (Matcher.PlayCard #when You #any) (exhaust a)
+    , restricted a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 
-getCard :: [Window] -> Card
-getCard = \case
-  [] -> error "impossible"
-  ((windowType -> Window.PlayCard _ card) : _) -> card
-  (_ : rest) -> getCard rest
-
 instance RunMessage TheFool03 where
-  runMessage msg a@(TheFool03 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getCard -> card) _ -> do
-      pushM $ costModifier (toAbilitySource attrs 1) iid (ReduceCostOf (CardWithId $ toCardId card) 1)
+  runMessage msg a@(TheFool03 attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
+      costModifier (attrs.ability 1) iid (ReduceCostOf (CardWithId card.id) 1)
       pure a
     InHand _ (UseThisAbility iid (isSource attrs -> True) 2) -> do
-      push $ putCardIntoPlay iid attrs
+      putCardIntoPlay iid attrs
       pure a
-    _ -> TheFool03 <$> runMessage msg attrs
+    _ -> TheFool03 <$> liftRunMessage msg attrs

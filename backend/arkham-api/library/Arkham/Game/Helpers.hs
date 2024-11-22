@@ -3014,13 +3014,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.EncounterDeckRunsOutOfCards -> pure $ wType == Window.EncounterDeckRunsOutOfCards
     Matcher.PlayCard timing whoMatcher cardMatcher -> guardTiming timing $ \case
-      Window.PlayCard who card ->
+      Window.PlayCard who cardPlay ->
         andM
           [ matchWho iid who whoMatcher
           , case cardMatcher of
               Matcher.BasicCardMatch baseMatcher ->
-                pure $ cardMatch card baseMatcher
-              _ -> elem card <$> select cardMatcher
+                pure $ cardMatch cardPlay.card baseMatcher
+              _ -> elem cardPlay.card <$> select cardMatcher
           ]
       _ -> noMatch
     Matcher.PlayEventDiscarding timing whoMatcher eventMatcher -> guardTiming timing $ \case

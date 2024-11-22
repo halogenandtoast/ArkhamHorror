@@ -95,13 +95,10 @@ instance RunMessage BobJenkins where
       case toCardOwner c of
         Nothing -> error "No Card Owner"
         Just owner -> do
-          cardResolutionModifier
-            c
-            (attrs.ability 1)
-            owner
-            (CanSpendResourcesOnCardFromInvestigator (InvestigatorWithId iid) AnyCard)
+          cardResolutionModifier c (attrs.ability 1) owner
+            $ CanSpendResourcesOnCardFromInvestigator (InvestigatorWithId iid) AnyCard
           cardResolutionModifier c (attrs.ability 1) attrs (PlayableCardOf owner c)
-          checkWindows [mkWhen (Window.PlayCard iid c)]
+          checkWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay c False)]
           push $ PayCardCost iid c windows'
           pure i
     ResetGame -> BobJenkins <$> (liftRunMessage msg $ attrs & setMeta Null)

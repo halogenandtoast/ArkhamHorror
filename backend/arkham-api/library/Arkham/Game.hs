@@ -2855,10 +2855,12 @@ enemyMatcherFilter = \case
       AttachedToAsset placementId _ -> placementId `elem` placements
       _ -> False
   M.EnemyAt locationMatcher -> \enemy -> do
-    enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
-    case enemyLocation of
-      Nothing -> pure False
-      Just loc -> elem loc <$> select locationMatcher
+    if enemy.placement.isAttached
+      then pure False
+      else
+        field EnemyLocation (toId $ toAttrs enemy) >>= \case
+          Nothing -> pure False
+          Just loc -> elem loc <$> select locationMatcher
   CanFightEnemy source -> \enemy -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid

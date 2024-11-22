@@ -9,6 +9,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 
 newtype WorshippersOfTheDeep = WorshippersOfTheDeep ActAttrs

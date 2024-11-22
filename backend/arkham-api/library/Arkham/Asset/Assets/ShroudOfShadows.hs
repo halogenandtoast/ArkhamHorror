@@ -12,6 +12,7 @@ import Arkham.Game.Helpers (getConnectedMoveLocations)
 import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Matcher hiding (EnemyEvaded, RevealChaosToken)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 
 newtype ShroudOfShadows = ShroudOfShadows AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

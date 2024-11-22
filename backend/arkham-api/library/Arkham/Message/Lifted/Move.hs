@@ -1,0 +1,58 @@
+module Arkham.Message.Lifted.Move where
+
+import Arkham.Classes.HasQueue (push)
+import Arkham.Id
+import Arkham.Matcher.Location
+import Arkham.Message hiding (story)
+import Arkham.Message.Lifted.Queue
+import Arkham.Movement
+import Arkham.Movement qualified as Msg
+import Arkham.Prelude
+import Arkham.Source
+import Arkham.Target
+
+moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
+moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
+
+moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
+moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
+
+moveUntil
+  :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
+  => target
+  -> location
+  -> m ()
+moveUntil target location = push $ MoveUntil (asId location) (toTarget target)
+
+class AsMoveTo a where
+  asMoveTo :: Sourceable source => source -> InvestigatorId -> a -> Movement
+
+data MoveWrapper where
+  CannotCancel :: AsMoveTo a => a -> MoveWrapper
+
+instance AsMoveTo Movement where
+  asMoveTo _ _ = id
+
+instance AsMoveTo LocationId where
+  asMoveTo = move
+
+instance AsMoveTo MoveWrapper where
+  asMoveTo source iid = \case
+    CannotCancel inner -> uncancellableMove (asMoveTo source iid inner)
+
+-- No callbacks
+moveTo_
+  :: (ReverseQueue m, Sourceable source, AsMoveTo movement)
+  => source
+  -> InvestigatorId
+  -> movement
+  -> m ()
+moveTo_ (toSource -> source) iid = push . MoveTo . asMoveTo source iid
+
+moveTowardsMatching
+  :: (Targetable target, Sourceable source, ReverseQueue m)
+  => source
+  -> target
+  -> LocationMatcher
+  -> m ()
+moveTowardsMatching source target matcher = push $ Move $ Msg.moveTowardsMatching source target matcher

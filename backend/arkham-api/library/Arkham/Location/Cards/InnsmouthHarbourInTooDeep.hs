@@ -9,6 +9,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.InTooDeep.Helpers
 
 newtype InnsmouthHarbourInTooDeep = InnsmouthHarbourInTooDeep LocationAttrs

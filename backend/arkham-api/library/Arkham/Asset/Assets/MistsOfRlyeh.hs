@@ -12,6 +12,7 @@ import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
 

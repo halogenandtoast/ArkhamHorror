@@ -10,6 +10,7 @@ import Arkham.Helpers.Window (entering)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.IceAndDeath.Helpers
 
 newtype RunningOutOfTime = RunningOutOfTime AgendaAttrs

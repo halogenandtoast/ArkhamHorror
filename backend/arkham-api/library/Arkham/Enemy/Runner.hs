@@ -691,7 +691,8 @@ instance RunMessage EnemyAttrs where
             else do
               otherConnectedLocations <-
                 select $ ConnectedFrom (locationWithEnemy eid) <> LocationWithInvestigator Anyone
-              push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
+              when (notNull otherConnectedLocations) do
+                push $ chooseOrRunOne lead [targetLabel lid [EnemyMove eid lid] | lid <- otherConnectedLocations]
 
           push $ DisengageEnemyFromAll eid
       pure a

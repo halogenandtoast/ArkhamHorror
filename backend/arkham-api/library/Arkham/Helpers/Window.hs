@@ -129,6 +129,12 @@ discoveredLocation =
     (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
     _ -> Nothing
 
+locationLeavingPlay :: HasCallStack => [Window] -> LocationId
+locationLeavingPlay =
+  fromMaybe (error "missing locationLeavingPlay") . asum . map \case
+    (windowType -> Window.LeavePlay (LocationTarget lid)) -> Just lid
+    _ -> Nothing
+
 maybeDiscoveredLocation :: [Window] -> Maybe LocationId
 maybeDiscoveredLocation =
   asum . map \case

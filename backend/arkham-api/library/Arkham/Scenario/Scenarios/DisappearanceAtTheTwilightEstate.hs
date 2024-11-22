@@ -17,6 +17,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (chooseDecks)
+import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted

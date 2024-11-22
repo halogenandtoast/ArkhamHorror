@@ -5,6 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Movement (move)
 
 newtype PredatorOrPrey = PredatorOrPrey EventAttrs

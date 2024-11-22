@@ -13,6 +13,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype BeyondDreams = BeyondDreams ActAttrs

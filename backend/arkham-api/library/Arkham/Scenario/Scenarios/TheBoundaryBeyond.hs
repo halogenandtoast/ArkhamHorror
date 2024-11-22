@@ -20,6 +20,7 @@ import Arkham.Location.Types (Field (LocationName))
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution

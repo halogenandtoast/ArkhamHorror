@@ -1,24 +1,23 @@
 module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.Types (Field(ActKeys))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence
-import Arkham.Exception
-import Arkham.Act.Types (Field(ActKeys))
+import Arkham.Agenda.Types (Field(AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf, getMaybeLocation)
 import Arkham.Helpers.Log
-import Arkham.Helpers.Query (allInvestigators)
-import Arkham.Card
 import Arkham.Helpers.Modifiers (maybeModified, ModifierType(..), setActiveDuringSetup)
-import Arkham.Id
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.I18n
-import Arkham.Agenda.Types (Field(AgendaSequence))
-import Arkham.Resolution
+import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword (Keyword(Aloof))
 import Arkham.Location.Cards qualified as Locations
@@ -26,7 +25,9 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.ALightInTheFog.Helpers

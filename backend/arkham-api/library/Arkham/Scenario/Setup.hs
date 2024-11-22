@@ -18,6 +18,7 @@ import Arkham.Matcher hiding (assetAt)
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))

@@ -46,6 +46,7 @@ getWindowStack :: HasGame m => m [[Window]]
 getActionCanBeUndone :: HasGame m => m Bool
 getGameInAction :: HasGame m => m Bool
 getIgnoreCanModifiers :: HasGame m => m Bool
+getInSetup :: HasGame m => m Bool
 getHistory :: HasGame m => HistoryType -> InvestigatorId -> m History
 getHistoryField :: HasGame m => HistoryType -> InvestigatorId -> HistoryField k -> m k
 getJustSkillTest :: (HasGame m, HasCallStack) => m SkillTest

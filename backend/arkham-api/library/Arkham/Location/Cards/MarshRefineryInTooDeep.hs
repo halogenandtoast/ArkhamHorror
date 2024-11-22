@@ -11,6 +11,7 @@ import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.InTooDeep.Helpers
 
 newtype MarshRefineryInTooDeep = MarshRefineryInTooDeep LocationAttrs

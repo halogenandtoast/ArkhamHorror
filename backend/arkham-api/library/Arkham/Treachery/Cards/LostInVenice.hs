@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.LostInVenice (lostInVenice, LostInVenice (..)) whe
 
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Treachery.Cards qualified as Cards

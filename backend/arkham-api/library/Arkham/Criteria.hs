@@ -193,6 +193,7 @@ data Criterion
   | ScenarioDeckWithCard ScenarioDeckKey
   | EncounterDeckIsNotEmpty
   | EncounterDeckWith CardListMatcher
+  | NotSetup
   | Self
   | SetAsideCardExists CardMatcher
   | OutOfPlayEnemyExists OutOfPlayZone EnemyMatcher

@@ -61,8 +61,6 @@ import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
-import Arkham.Movement
-import Arkham.Movement qualified as Msg
 import Arkham.Phase (Phase)
 import Arkham.Placement
 import Arkham.Prelude hiding (pred)
@@ -204,23 +202,6 @@ placeLocationCardM = (>>= placeLocationCard)
 
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal = push . Msg.RevealLocation Nothing . asId
-
-moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
-moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
-
-moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
-moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
-
-moveUntil
-  :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
-  => target
-  -> location
-  -> m ()
-moveUntil target location = push $ MoveUntil (asId location) (toTarget target)
-
--- No callbacks
-moveTo_ :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
-moveTo_ (toSource -> source) iid lid = push $ MoveTo $ move source iid lid
 
 record :: ReverseQueue m => CampaignLogKey -> m ()
 record = push . Record
@@ -1985,14 +1966,6 @@ shuffleSetAsideIntoScenarioDeck key matcher = do
 setScenarioDeck :: ReverseQueue m => ScenarioDeckKey -> [Card] -> m ()
 setScenarioDeck key cards = push $ Msg.SetScenarioDeck key cards
 
-moveTowardsMatching
-  :: (Targetable target, Sourceable source, ReverseQueue m)
-  => source
-  -> target
-  -> LocationMatcher
-  -> m ()
-moveTowardsMatching source target matcher = push $ Move $ Msg.moveTowardsMatching source target matcher
-
 chooseUpgradeDeck :: ReverseQueue m => InvestigatorId -> m ()
 chooseUpgradeDeck iid = do
   pid <- getPlayer iid
@@ -2082,3 +2055,11 @@ loseActions iid source n = push $ LoseActions iid (toSource source) n
 
 requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 requestChaosTokens iid source n = push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
+
+withTimings :: ReverseQueue m => WindowType -> m () -> m ()
+withTimings w body = do
+  let (before, atIf, after) = Msg.timings w
+  checkWindows [before]
+  checkWindows [atIf]
+  body
+  checkWindows [after]

@@ -12,6 +12,7 @@ import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult

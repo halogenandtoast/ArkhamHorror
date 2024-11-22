@@ -17,7 +17,7 @@ newtype ThomasDawsonSoldierInANewWar = ThomasDawsonSoldierInANewWar AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thomasDawsonSoldierInANewWar :: AssetCard ThomasDawsonSoldierInANewWar
-thomasDawsonSoldierInANewWar = asset ThomasDawsonSoldierInANewWar Cards.thomasDawsonSoldierInANewWar
+thomasDawsonSoldierInANewWar = ally ThomasDawsonSoldierInANewWar Cards.thomasDawsonSoldierInANewWar (2, 3)
 
 instance HasModifiersFor ThomasDawsonSoldierInANewWar where
   getModifiersFor target (ThomasDawsonSoldierInANewWar a) = modified a $ case target of

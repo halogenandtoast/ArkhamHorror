@@ -674,6 +674,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll
         $ PlaceTokens (toSource a) (toTarget lid) Clue (investigatorClues a)
         : [PlaceKey (toTarget lid) k | k <- toList investigatorKeys]
+    -- if this investigator was the target of an enemy attack we need to remove them
+    let
+      isAttackingThisInvestigator = \case
+        EnemyAttack details -> isTarget iid details.target
+        _ -> False
+    let
+      isNotEliminatedChoice = \case
+        TargetLabel _ msgs -> none isAttackingThisInvestigator msgs
+        _ -> True
+    let removeEliminatedChoices = filter isNotEliminatedChoice
+    lift $ mapQueue \case
+      Ask who (ChooseOneAtATime choices) -> Ask who (ChooseOneAtATime $ removeEliminatedChoices choices)
+      other -> other
     pure
       $ a
       & (tokensL %~ (removeAllTokens Clue . removeAllTokens Resource))

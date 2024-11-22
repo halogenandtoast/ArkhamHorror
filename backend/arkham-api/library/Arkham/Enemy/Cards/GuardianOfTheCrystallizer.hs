@@ -33,6 +33,7 @@ instance HasAbilities GuardianOfTheCrystallizer where
             1
             ( Negate (exists $ assetIs Assets.crystallizerOfDreams)
                 <> Negate (exists $ EnemyWithPlacement Unplaced)
+                <> NotInEliminatedBearersThreatArea
             )
           $ ForcedAbility AnyWindow
       ]

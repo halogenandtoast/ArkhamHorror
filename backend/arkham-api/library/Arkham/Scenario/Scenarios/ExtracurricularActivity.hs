@@ -8,13 +8,13 @@ import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Campaign
+import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
+import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 import Arkham.Scenarios.ExtracurricularActivity.Helpers
@@ -113,17 +113,11 @@ instance RunMessage ExtracurricularActivity where
       endOfScenario
       pure s
     ScenarioResolution (Resolution 1) -> do
-      lead <- getLead
       story resolution1
       record TheInvestigatorsRescuedProfessorWarrenRice
       addChaosToken Tablet
-      professorWarrenRice <- genCard Assets.professorWarrenRice
-
-      chooseOne
-        lead
-        [ Label "Add Professor Warren Rice to your deck" [AddCampaignCardToDeck lead professorWarrenRice]
-        , Label "Do not add Professor Warren Rice to your deck" []
-        ]
+      investigators <- allInvestigators
+      addCampaignCardToDeckChoice investigators Assets.professorWarrenRice
       allGainXp attrs
       endOfScenario
       pure s

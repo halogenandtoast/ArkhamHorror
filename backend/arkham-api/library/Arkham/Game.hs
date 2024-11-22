@@ -1628,17 +1628,14 @@ getLocationsMatching lmatcher = do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
       matches' <- getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
-    LocationWithDistanceFrom distance matcher -> do
-      iids <- getInvestigatorIds
+    LocationWithDistanceFrom distance startMatcher matcher -> do
       candidates <- map toId <$> getLocationsMatching matcher
-      distances <- for iids $ \iid -> do
-        getMaybeLocation iid >>= \case
-          Just start ->
-            distanceSingletons
-              <$> evalStateT
-                (markDistances start (pure . (`elem` candidates)) mempty)
-                (LPState (pure start) (singleton start) mempty)
-          Nothing -> pure mempty
+      starts <- select startMatcher
+      distances <- for starts \start -> do
+        distanceSingletons
+          <$> evalStateT
+            (markDistances start (pure . (`elem` candidates)) mempty)
+            (LPState (pure start) (singleton start) mempty)
       let
         matches' =
           Map.findWithDefault

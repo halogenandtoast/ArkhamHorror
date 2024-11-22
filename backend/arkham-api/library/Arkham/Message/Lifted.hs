@@ -14,6 +14,7 @@ import Arkham.Calculation
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.Classes.GameLogger
@@ -68,6 +69,7 @@ import Arkham.Prelude hiding (pred)
 import Arkham.Projection
 import Arkham.Query
 import Arkham.Queue
+import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
@@ -2077,3 +2079,6 @@ chooseAndDiscardAsset iid source = push $ ChooseAndDiscardAsset iid (toSource so
 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n
+
+requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+requestChaosTokens iid source n = push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside

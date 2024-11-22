@@ -19,14 +19,16 @@ instance HasAbilities EsotericAtlas1 where
     [ controlledAbility
         a
         1
-        (CanMoveTo $ LocationWithDistanceFrom 2 RevealedLocation)
+        (CanMoveTo $ LocationWithDistanceFrom 2 YourLocation RevealedLocation)
         $ actionAbilityWithCost (assetUseCost a Secret 1)
     ]
 
 instance RunMessage EsotericAtlas1 where
   runMessage msg a@(EsotericAtlas1 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      locations <- getCanMoveToMatchingLocations iid attrs $ LocationWithDistanceFrom 2 RevealedLocation
+      locations <-
+        getCanMoveToMatchingLocations iid attrs
+          $ LocationWithDistanceFrom 2 (locationWithInvestigator iid) RevealedLocation
       player <- getPlayer iid
       push
         $ chooseOne

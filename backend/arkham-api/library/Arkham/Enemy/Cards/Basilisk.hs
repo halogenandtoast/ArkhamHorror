@@ -1,17 +1,10 @@
-module Arkham.Enemy.Cards.Basilisk (
-  basilisk,
-  Basilisk (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Basilisk (basilisk, Basilisk (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype Basilisk = Basilisk EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -21,26 +14,19 @@ basilisk :: EnemyCard Basilisk
 basilisk =
   enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
     $ spawnAtL
-    ?~ SpawnAt (LocationWithDistanceFrom 1 $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
+    ?~ SpawnAt (LocationWithDistanceFrom 1 (locationIs Locations.mouthOfKnYanTheCavernsMaw) Anywhere)
 
 instance HasAbilities Basilisk where
   getAbilities (Basilisk a) =
-    withBaseAbilities
-      a
-      [ limitedAbility (MaxPer Cards.basilisk PerRound 1)
-          $ mkAbility a 1
-          $ ForcedAbility
-          $ PlacedCounterOnLocation
-            Timing.After
-            (LocationWithTitle "Mouth of K'n-yan")
-            AnySource
-            ResourceCounter
-            AnyValue
-      ]
+    extend1 a
+      $ limitedAbility (MaxPer Cards.basilisk PerRound 1)
+      $ mkAbility a 1
+      $ forced
+      $ PlacedCounterOnLocation #after "Mouth of K'n-yan" AnySource #resource AnyValue
 
 instance RunMessage Basilisk where
-  runMessage msg e@(Basilisk attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       push $ ShuffleBackIntoEncounterDeck (toTarget attrs)
       pure e
-    _ -> Basilisk <$> runMessage msg attrs
+    _ -> Basilisk <$> liftRunMessage msg attrs

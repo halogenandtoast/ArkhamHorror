@@ -1627,18 +1627,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                 let n = sum [x | NonDirectDamageMustBeAssignToThisN x <- mods]
                 let mustAssignRemaining = n > 0 && health <= n && count (== toTarget aid) damageTargets < n
                 pure $ guard (NonDirectDamageMustBeAssignToThisFirst `elem` mods || mustAssignRemaining) $> aid
-              let onlyAssets = any (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
-              let targetCount =
-                    length healthDamageableAssets
-                      + ( if not onlyAssets
-                            then 1 + length healthDamageableInvestigators
-                            else length healthDamageableInvestigators
-                        )
-              let applyAll = targetCount == 1
+              let onlyAssets = filter (`elem` mustBeAssignedDamageFirstBeforeInvestigator) healthDamageableAssets
+              let
+                targetCount =
+                  if null onlyAssets
+                    then 1 + length healthDamageableAssets + length healthDamageableInvestigators
+                    else length onlyAssets
+              let applyAll = null onlyAssets && targetCount == 1
 
-              pure $ [damageInvestigator iid applyAll | not onlyAssets]
-                <> map (`damageAsset` applyAll) healthDamageableAssets
-                <> (guard (not onlyAssets) *> map (`damageInvestigator` applyAll) healthDamageableInvestigators)
+              pure $ [damageInvestigator iid applyAll | null onlyAssets]
+                <> map (`damageAsset` applyAll) (if null onlyAssets then healthDamageableAssets else onlyAssets)
+                <> (guard (null onlyAssets) *> map (`damageInvestigator` applyAll) healthDamageableInvestigators)
             DamageFromHastur -> do
               canBeAssignedDamage <- select $ AssetCanBeAssignedDamageBy iid <> AssetCanBeDamagedBySource source
               mustBeAssignedDamageFirstBeforeInvestigator <- forMaybeM canBeAssignedDamage $ \aid -> do

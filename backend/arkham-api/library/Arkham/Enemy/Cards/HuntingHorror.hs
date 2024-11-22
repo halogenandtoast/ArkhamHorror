@@ -1,17 +1,15 @@
 module Arkham.Enemy.Cards.HuntingHorror (huntingHorror, HuntingHorror (..)) where
 
 import Arkham.Ability
-import Arkham.ChaosBag.RevealStrategy
-import Arkham.ChaosToken
-import Arkham.Classes
+import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Runner (filterOutEnemyMessages)
+import Arkham.Helpers.ChaosBag.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Prelude
-import Arkham.RequestedChaosTokenStrategy
 import Arkham.Token
-import Arkham.Token qualified as Token
 
 newtype HuntingHorror = HuntingHorror EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -24,8 +22,8 @@ instance HasAbilities HuntingHorror where
   getAbilities (HuntingHorror x) =
     extend
       x
-      [ restrictedAbility x 1 (criteria <> exhaustedCriteria) $ forced $ PhaseBegins #when #enemy
-      , restrictedAbility x 2 criteria $ forced $ EnemyLeavesPlay #when (be x)
+      [ restricted x 1 (criteria <> exhaustedCriteria) $ forced $ PhaseBegins #when #enemy
+      , restricted x 2 criteria $ forced $ EnemyLeavesPlay #when (be x)
       ]
    where
     exhaustedCriteria = if x.ready then Never else NoRestriction
@@ -34,32 +32,33 @@ instance HasAbilities HuntingHorror where
       _ -> NoRestriction
 
 instance RunMessage HuntingHorror where
-  runMessage msg e@(HuntingHorror attrs@EnemyAttrs {..}) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ RequestChaosTokens (toAbilitySource attrs 1) Nothing (Reveal 1) SetAside
+  runMessage msg e@(HuntingHorror attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      requestChaosTokens iid (attrs.ability 1) 1
       pure e
-    RequestedChaosTokens (isSource attrs -> True) _ (map chaosTokenFace -> tokens) -> do
-      push $ ResetChaosTokens (toSource attrs)
-      pushWhen (any (`elem` tokens) [#skull, #cultist, #tablet, #elderthing, #autofail])
-        $ Ready (toTarget attrs)
+    RequestedChaosTokens (isSource attrs -> True) (Just iid) (map (.face) -> faces) -> do
+      chooseOneM iid do
+        labeled "Continue" do
+          when (any (`elem` faces) [#skull, #cultist, #tablet, #elderthing, #autofail]) $ readyThis attrs
+      resetChaosTokens (attrs.ability 1)
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ PlaceEnemyOutOfPlay VoidZone enemyId
+      push $ PlaceEnemyOutOfPlay VoidZone attrs.id
       pure e
-    EnemySpawnFromOutOfPlay VoidZone _miid _lid eid | eid == enemyId -> do
+    EnemySpawnFromOutOfPlay VoidZone _miid _lid eid | eid == attrs.id -> do
       pure
         . HuntingHorror
         $ attrs
-        & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
+        & (tokensL %~ removeAllTokens #doom . removeAllTokens #clue . removeAllTokens #damage)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)
-    PlaceEnemyOutOfPlay VoidZone eid | eid == enemyId -> do
-      withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
+    PlaceEnemyOutOfPlay VoidZone eid | eid == attrs.id -> do
+      lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
       pure
         . HuntingHorror
         $ attrs
-        & (tokensL %~ removeAllTokens Doom . removeAllTokens Clue . removeAllTokens Token.Damage)
+        & (tokensL %~ removeAllTokens #doom . removeAllTokens #clue . removeAllTokens #damage)
         & (placementL .~ OutOfPlay VoidZone)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)
-    _ -> HuntingHorror <$> runMessage msg attrs
+    _ -> HuntingHorror <$> liftRunMessage msg attrs

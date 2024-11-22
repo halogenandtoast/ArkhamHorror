@@ -60,7 +60,7 @@ instance RunMessage SmallFavor where
           $ NonEliteEnemy
           <> EnemyOneOf
             ( EnemyAt (locationWithInvestigator iid)
-                : [ EnemyAt (LocationWithDistanceFrom n Anywhere)
+                : [ EnemyAt (LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere)
                   | upToTwoAway
                   , n <- [1 .. 2]
                   ]

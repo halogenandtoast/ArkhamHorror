@@ -59,7 +59,8 @@ instance RunMessage Decoy where
           $ NonEliteEnemy
           <> oneOf
             ( at_ (locationWithInvestigator iid)
-                : [at_ (LocationWithDistanceFrom n Anywhere) | upToTwoAway, n <- [1 .. 2]]
+                : [ at_ (LocationWithDistanceFrom n (locationWithInvestigator iid) Anywhere) | upToTwoAway, n <- [1 .. 2]
+                  ]
             )
 
       let

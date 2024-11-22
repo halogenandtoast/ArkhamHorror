@@ -28,7 +28,7 @@ instance RunMessage GetOverHere where
         select
           $ NonEliteEnemy
           <> EnemyAt
-            (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m])
+            (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m Anywhere])
       player <- getPlayer iid
       sid <- getRandom
       pushAll

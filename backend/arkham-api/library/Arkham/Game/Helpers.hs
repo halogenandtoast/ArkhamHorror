@@ -1001,15 +1001,10 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         AuxiliaryCost _ inner -> goActionCost inner
       actionCost = goActionCost costStatus
 
-    -- Warning: We check if the source is GameSource, this affects the
-    -- PlayableCardWithCostReduction matcher currently only used by Dexter
-    -- Drake and De Vermis Mysteriis (2) which are non-action situations
     canAffordAdditionalCosts <-
       getCanAffordCost iid (CardIdSource c.id) c.actions windows'
         $ fold
-        $ [ ActionCost actionCost
-          | actionCost > 0 && source /= GameSource && not inFastWindow
-          ]
+        $ [ActionCost actionCost | actionCost > 0 && not inFastWindow]
         <> additionalCosts
         <> auxiliaryCosts
         <> investigateCosts
@@ -3229,7 +3224,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithoutClues -> locationId <=~> matcher
     Matcher.HighestShroud _ -> locationId <=~> matcher
     Matcher.LocationWithDamage {} -> locationId <=~> matcher
-    Matcher.LocationWithDistanceFrom _ _ -> locationId <=~> matcher
+    Matcher.LocationWithDistanceFrom {} -> locationId <=~> matcher
     Matcher.LocationWithAnyKeys -> locationId <=~> matcher
     Matcher.LocationWithKey _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->

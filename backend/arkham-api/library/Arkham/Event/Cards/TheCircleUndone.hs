@@ -165,7 +165,7 @@ intelReport =
                 <> exists
                   ( You
                       <> InvestigatorCanDiscoverCluesAt
-                        (LocationMatchAny [LocationWithDistanceFrom n LocationWithAnyClues | n <- [0 .. 2]])
+                        (LocationMatchAny [LocationWithDistanceFrom n YourLocation LocationWithAnyClues | n <- [0 .. 2]])
                   )
             ]
     , cdCardInHandEffects = True
@@ -273,7 +273,7 @@ decoy =
                       $ Criteria.CriteriaOverride
                       $ Criteria.EnemyCriteria
                       $ Criteria.EnemyExists
-                      $ oneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2]]
+                      $ oneOf [EnemyAt (LocationWithDistanceFrom n YourLocation Anywhere) | n <- [1 .. 2]]
                       <> NonEliteEnemy
                   )
             ]
@@ -309,7 +309,7 @@ smallFavor =
           $ Criteria.CanDealDamage
           <> Criteria.AnyCriterion
             [ exists $ EnemyAt YourLocation <> NonEliteEnemy
-            , exists (oneOf [EnemyAt (LocationWithDistanceFrom n Anywhere) | n <- [1 .. 2]])
+            , exists (oneOf [EnemyAt (LocationWithDistanceFrom n YourLocation Anywhere) | n <- [1 .. 2]])
                 <> Criteria.CanAffordCostIncrease 2
             ]
     , cdCardInHandEffects = True

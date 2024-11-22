@@ -1,14 +1,7 @@
-module Arkham.Event.Events.GetOverHere2 (
-  getOverHere2,
-  GetOverHere2 (..),
-)
-where
+module Arkham.Event.Events.GetOverHere2 (getOverHere2, GetOverHere2 (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.SkillType
@@ -22,25 +15,17 @@ getOverHere2 =
   event GetOverHere2 Cards.getOverHere2
 
 instance RunMessage GetOverHere2 where
-  runMessage msg e@(GetOverHere2 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(GetOverHere2 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == toId attrs -> do
       lid <- getJustLocation iid
       let m = LocationWithId lid
       enemies <-
         select
           $ NonEliteEnemy
-          <> EnemyAt (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m])
-      player <- getPlayer iid
+          <> EnemyAt (LocationMatchAny [m, ConnectedFrom m, ConnectedFrom (ConnectedFrom m)])
       sid <- getRandom
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-            enemy
-            [ EnemyEngageInvestigator enemy iid
-            , FightEnemy sid iid enemy (toSource attrs) Nothing SkillCombat False
-            ]
-          | enemy <- enemies
-          ]
+      chooseTargetM iid enemies \enemy -> do
+        push $ EnemyEngageInvestigator enemy iid
+        push $ FightEnemy sid iid enemy (toSource attrs) Nothing SkillCombat False
       pure e
-    _ -> GetOverHere2 <$> runMessage msg attrs
+    _ -> GetOverHere2 <$> liftRunMessage msg attrs

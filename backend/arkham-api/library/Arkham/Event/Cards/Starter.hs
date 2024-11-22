@@ -120,7 +120,7 @@ getOverHere2 =
           <> oneOf
             [ EnemyAt YourLocation <> oneOf [CanEngageEnemy ThisCard, CanFightEnemy ThisCard]
             , EnemyAt $ ConnectedFrom YourLocation
-            , EnemyAt $ LocationWithDistanceFrom 2 YourLocation
+            , EnemyAt $ LocationWithDistanceFrom 2 YourLocation Anywhere
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdLevel = Just 2

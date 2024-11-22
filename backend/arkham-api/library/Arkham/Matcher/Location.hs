@@ -70,7 +70,7 @@ data LocationMatcher
   | AccessibleFrom LocationMatcher
   | AccessibleTo LocationMatcher
   | LocationWithVictory
-  | LocationWithDistanceFrom Int LocationMatcher
+  | LocationWithDistanceFrom Int LocationMatcher LocationMatcher
   | -- | distance, start, end
     LocationWithDistanceFromAtMost Int LocationMatcher LocationMatcher
   | LocationWithDistanceFromAtLeast Int LocationMatcher LocationMatcher
@@ -217,4 +217,15 @@ instance Semigroup AnyLocationMatcher where
 instance Monoid AnyLocationMatcher where
   mempty = AnyLocationMatcher Nowhere
 
-$(deriveJSON defaultOptions ''LocationMatcher)
+$(deriveToJSON defaultOptions ''LocationMatcher)
+
+instance FromJSON LocationMatcher where
+  parseJSON = withObject "LocationMatcher" \o -> do
+    tag :: Text <- o .: "tag"
+    case tag of
+      "LocationWithDistanceFrom" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (distance, start, matcher) -> pure $ LocationWithDistanceFrom distance start matcher
+          Right (distance, matcher) -> pure $ LocationWithDistanceFrom distance Nowhere matcher
+      _ -> $(mkParseJSON defaultOptions ''LocationMatcher) (Object o)

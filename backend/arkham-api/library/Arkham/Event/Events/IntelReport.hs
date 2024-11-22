@@ -60,7 +60,7 @@ instance RunMessage IntelReport where
             select
               $ oneOf
               $ (locationWithInvestigator iid <> LocationWithAnyClues)
-              : [ LocationWithDistanceFrom n LocationWithAnyClues
+              : [ LocationWithDistanceFrom n (locationWithInvestigator iid) LocationWithAnyClues
                 | n <- [1 .. 2]
                 ]
           chooseOrRunOneM iid do

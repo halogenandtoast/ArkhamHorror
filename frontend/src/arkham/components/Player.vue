@@ -864,4 +864,9 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   flex-direction: row;
   gap: 5px;
 }
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+}
 </style>

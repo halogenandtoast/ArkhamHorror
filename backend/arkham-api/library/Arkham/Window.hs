@@ -120,6 +120,18 @@ pattern PlacedDamage source target n <- PlacedToken source target Damage n
 data IsDirect = IsDirect | IsNonDirect
   deriving stock (Show, Eq, Data)
 
+data CardPlay = CardPlay
+  { cardPlayedCard :: Card
+  , cardPlayedNeedsAction :: Bool
+  }
+  deriving stock (Show, Eq, Data)
+
+instance HasField "card" CardPlay Card where
+  getField = cardPlayedCard
+
+instance HasField "needsAction" CardPlay Bool where
+  getField = cardPlayedNeedsAction
+
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
   | VehicleLeaves AssetId LocationId
@@ -244,7 +256,7 @@ data WindowType
   | WouldRemoveBreaches Target
   | WouldRemoveBreach Target -- END Breaches
   | WouldPayCardCost InvestigatorId ActiveCostId BatchId Card
-  | PlayCard InvestigatorId Card
+  | PlayCard InvestigatorId CardPlay
   | PlayEventDiscarding InvestigatorId EventId
   | PutLocationIntoPlay InvestigatorId LocationId
   | LocationEntersPlay LocationId
@@ -297,25 +309,27 @@ data WindowType
     DoNotCheckWindow
   deriving stock (Show, Eq, Data)
 
-$( do
-    isDirect <- deriveJSON defaultOptions ''IsDirect
-    result <- deriveJSON defaultOptions ''Result
-    toWindowType <- deriveToJSON defaultOptions ''WindowType
-
-    fromWindowType <-
-      [d|
-        instance FromJSON WindowType where
-          parseJSON = withObject "WindowType" \o -> do
-            tag :: Text <- o .: "tag"
-            case tag of
-              "WouldAddChaosTokensToChaosBag" -> do
-                contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-                case contents of
-                  Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
-                  Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs
-              _ -> $(mkParseJSON defaultOptions ''WindowType) (Object o)
-        |]
-
-    window <- deriveJSON defaultOptions ''Window
-    pure $ concat [isDirect, result, toWindowType, fromWindowType, window]
- )
+mconcat
+  [ deriveJSON defaultOptions ''IsDirect
+  , deriveJSON defaultOptions ''CardPlay
+  , deriveJSON defaultOptions ''Result
+  , deriveToJSON defaultOptions ''WindowType
+  , [d|
+      instance FromJSON WindowType where
+        parseJSON = withObject "WindowType" \o -> do
+          tag :: Text <- o .: "tag"
+          case tag of
+            "PlayCard" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, c) -> pure $ PlayCard i (CardPlay c True)
+                Right (i, cp) -> pure $ PlayCard i cp
+            "WouldAddChaosTokensToChaosBag" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
+                Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs
+            _ -> $(mkParseJSON defaultOptions ''WindowType) (Object o)
+      |]
+  , deriveJSON defaultOptions ''Window
+  ]

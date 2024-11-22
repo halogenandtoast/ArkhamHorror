@@ -170,17 +170,22 @@ getAllAbilitiesSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> m Bool
 getAllAbilitiesSkippable attrs windows = allM (getWindowSkippable attrs windows) windows
 
 getWindowSkippable :: HasGame m => InvestigatorAttrs -> [Window] -> Window -> m Bool
-getWindowSkippable attrs ws (windowTiming &&& windowType -> (Timing.When, Window.PlayCard iid card@(PlayerCard pc))) | iid == toId attrs = do
-  allModifiers <- getModifiers card
-  cost <- getModifiedCardCost iid card
-  let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
-  andM
-    [ withAlteredGame withoutCanModifiers
-        $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
-    , if isFast
-        then pure True
-        else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
-    ]
+getWindowSkippable
+  attrs
+  ws
+  ( windowTiming &&& windowType ->
+      (Timing.When, Window.PlayCard iid (Window.CardPlay card@(PlayerCard pc) asAction))
+    ) | iid == toId attrs = do
+    allModifiers <- getModifiers card
+    cost <- getModifiedCardCost iid card
+    let isFast = isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- allModifiers]
+    andM
+      [ withAlteredGame withoutCanModifiers
+          $ getCanAffordCost (toId attrs) pc [#play] ws (ResourceCost cost)
+      , if isFast || not asAction
+          then pure True
+          else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
+      ]
 getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
   let
     excludeOne [] = []
@@ -1908,12 +1913,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         AsIfInHand card' -> card == card'
         _ -> False
     unless shouldSkip $ do
-      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
+      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
       if cdSkipPlayWindows (toCardDef card)
         then push $ PlayCard iid card mtarget payment windows' asAction
         else
           pushAll
-            [ CheckWindows [mkWhen (Window.PlayCard iid card)]
+            [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
             , PlayCard iid card mtarget payment windows' asAction
             , afterPlayCard
             , ResolvedPlayCard iid card

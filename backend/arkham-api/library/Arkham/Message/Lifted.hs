@@ -1753,7 +1753,7 @@ removeCardFromGame card = do
 playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
 playCardPayingCost iid card = do
   addToHand iid [card]
-  payCardCost iid card
+  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCost iid card
 
 payCardCost :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 payCardCost iid card = push $ Msg.PayCardCost iid (toCard card) (defaultWindows iid)
@@ -1761,6 +1761,7 @@ payCardCost iid card = push $ Msg.PayCardCost iid (toCard card) (defaultWindows 
 playCardPayingCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
 playCardPayingCostWithWindows iid card ws = do
   addToHand iid [card]
+  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCost iid card
   payCardCostWithWindows iid card ws
 
 payCardCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()

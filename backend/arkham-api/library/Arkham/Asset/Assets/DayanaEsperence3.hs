@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.DayanaEsperence3 (
-  dayanaEsperence3,
-  DayanaEsperence3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DayanaEsperence3 (dayanaEsperence3, DayanaEsperence3 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher hiding (EventCard, PlaceUnderneath, PlayCard)
+import Arkham.Prelude
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
@@ -34,17 +30,13 @@ instance HasModifiersFor DayanaEsperence3 where
 
 instance HasAbilities DayanaEsperence3 where
   getAbilities (DayanaEsperence3 a) =
-    [ controlledAbility
-        a
-        1
-        (ExtendedCardExists $ InHandOf You <> BasicCardMatch (NonWeakness <> #spell <> #event))
-        $ FastAbility Free
+    [ controlled a 1 (exists $ InHandOf You <> basic (NonWeakness <> #spell <> #event)) $ FastAbility Free
     ]
 
 instance RunMessage DayanaEsperence3 where
   runMessage msg a@(DayanaEsperence3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      cards <- select $ InHandOf You <> BasicCardMatch (NonWeakness <> #spell <> #event)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      cards <- select $ inHandOf iid <> basic (NonWeakness <> #spell <> #event)
 
       player <- getPlayer iid
       push
@@ -61,12 +53,12 @@ instance RunMessage DayanaEsperence3 where
           ]
       pure a
     InitiatePlayCard iid card mTarget payment windows' asAction | card `elem` assetCardsUnderneath attrs -> do
-      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid card)]
+      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
       if cdSkipPlayWindows (toCardDef card)
         then push $ PlayCard iid card mTarget payment windows' asAction
         else
           pushAll
-            [ CheckWindows [mkWhen (Window.PlayCard iid card)]
+            [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
             , PlayCard iid card mTarget payment windows' asAction
             , afterPlayCard
             ]

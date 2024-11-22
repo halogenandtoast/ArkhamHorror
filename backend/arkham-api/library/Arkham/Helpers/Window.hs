@@ -211,7 +211,7 @@ placedTokens t (_ : xs) = placedTokens t xs
 
 cardPlayed :: HasCallStack => [Window] -> Card
 cardPlayed [] = error "missing play card window"
-cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c
+cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c.card
 cardPlayed (_ : xs) = cardPlayed xs
 
 cardDrawn :: HasCallStack => [Window] -> Card

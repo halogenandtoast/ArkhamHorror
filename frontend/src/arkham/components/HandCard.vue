@@ -253,4 +253,9 @@ function oilPaintEffect(canvas, radius, intensity) {
     cursor: pointer;
   }
 }
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+}
 </style>

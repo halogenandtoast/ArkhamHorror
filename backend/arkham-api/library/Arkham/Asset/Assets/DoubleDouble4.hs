@@ -2,9 +2,11 @@ module Arkham.Asset.Assets.DoubleDouble4 (doubleDouble4, DoubleDouble4 (..)) whe
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (PlayCard)
+import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
+import Arkham.Window (defaultWindows)
 
 newtype DoubleDouble4 = DoubleDouble4 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,13 +19,17 @@ instance HasAbilities DoubleDouble4 where
   getAbilities (DoubleDouble4 a) =
     [ restrictedAbility a 1 ControlsThis
         $ ReactionAbility
-          (PlayCard #after You $ #event <> CardWithoutModifier RemoveFromGameInsteadOfDiscard)
+          ( PlayCard #after You
+              $ PlayableCard (UnpaidCost NoAction)
+              $ #event
+              <> CardWithoutModifier RemoveFromGameInsteadOfDiscard
+          )
           (exhaust a)
     ]
 
 instance RunMessage DoubleDouble4 where
-  runMessage msg a@(DoubleDouble4 attrs) = case msg of
+  runMessage msg a@(DoubleDouble4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card) _ -> do
-      pushAll [AddToHand iid [card], PutCardIntoPlay iid card Nothing NoPayment ws]
+      playCardPayingCostWithWindows iid card (nub $ ws <> defaultWindows iid)
       pure a
-    _ -> DoubleDouble4 <$> runMessage msg attrs
+    _ -> DoubleDouble4 <$> liftRunMessage msg attrs

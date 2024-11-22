@@ -1,21 +1,14 @@
-module Arkham.Asset.Assets.TheBlackBook (
-  theBlackBook,
-  TheBlackBook (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheBlackBook (theBlackBook, TheBlackBook (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (PlayCard)
-import Arkham.Card
+import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType ()
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype TheBlackBook = TheBlackBook AssetAttrs
   deriving anyclass IsAsset
@@ -25,23 +18,20 @@ theBlackBook :: AssetCard TheBlackBook
 theBlackBook = asset TheBlackBook Cards.theBlackBook
 
 instance HasModifiersFor TheBlackBook where
-  getModifiersFor (InvestigatorTarget iid) (TheBlackBook a)
-    | controlledBy a iid = do
-        sanity <- field InvestigatorRemainingSanity iid
-        toModifiers
-          a
-          [ SkillModifier #willpower 1
-          , SkillModifier #intellect 1
-          , CanReduceCostOf AnyCard sanity
-          ]
+  getModifiersFor (InvestigatorTarget iid) (TheBlackBook a) | controlledBy a iid = do
+    sanity <- field InvestigatorRemainingSanity iid
+    toModifiers
+      a
+      [ SkillModifier #willpower 1
+      , SkillModifier #intellect 1
+      , CanReduceCostOf AnyCard sanity
+      ]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TheBlackBook where
   getAbilities (TheBlackBook a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
-          (PlayCard Timing.When You (BasicCardMatch AnyCard))
-          (ExhaustCost (toTarget a) <> HorrorCostX (toSource a))
+    [ restricted a 1 ControlsThis
+        $ ReactionAbility (PlayCard #when You #any) (exhaust a <> HorrorCostX (toSource a))
     ]
 
 toHorror :: Payment -> Int
@@ -50,14 +40,9 @@ toHorror = \case
   Payments ps -> sum $ map toHorror ps
   _ -> 0
 
-windowToCard :: [Window] -> Card
-windowToCard [] = error "invalid"
-windowToCard ((windowType -> Window.PlayCard _ card) : _) = card
-windowToCard (_ : xs) = windowToCard xs
-
 instance RunMessage TheBlackBook where
-  runMessage msg a@(TheBlackBook attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (windowToCard -> card) (toHorror -> n) -> do
-      pushM $ reduceCostOf attrs card n
+  runMessage msg a@(TheBlackBook attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (cardPlayed -> card) (toHorror -> n) -> do
+      reduceCostOf attrs card n
       pure a
-    _ -> TheBlackBook <$> runMessage msg attrs
+    _ -> TheBlackBook <$> liftRunMessage msg attrs

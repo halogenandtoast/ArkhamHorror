@@ -63,6 +63,7 @@ export function replaceIcons(body: string) {
   return body.
     replace(/{action}/g, '<span class="action-icon"></span>').
     replace(/{fast}/g, '<span class="fast-icon"></span>').
+    replace(/{reaction}/g, '<span class="reaction-icon"></span>').
     replace(/{willpower}/g, '<span class="willpower-icon"></span>').
     replace(/{intellect}/g, '<span class="intellect-icon"></span>').
     replace(/{combat}/g, '<span class="combat-icon"></span>').

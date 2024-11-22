@@ -507,9 +507,9 @@ payCost msg c iid skipAdditionalCosts cost = do
         getPlayedCard (x : xs) = case x of
           (windowType -> Window.PlayCard _ card') -> card'
           _ -> getPlayedCard xs
-        card = getPlayedCard c.windows
+        cardPlay = getPlayedCard c.windows
       availableResources <- getSpendableResources iid
-      requiredResources <- getModifiedCardCost iid card
+      requiredResources <- getModifiedCardCost iid cardPlay.card
       let minimumHorror = max 1 (requiredResources - availableResources)
       sanity <- field InvestigatorRemainingSanity iid
       name <- fieldMap InvestigatorName toTitle iid

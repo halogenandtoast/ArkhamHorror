@@ -4078,6 +4078,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       mayIgnore =
         case abilitySource ability of
           LocationSource _ -> mayIgnoreLocationEffectsAndKeywords
+          ProxySource (LocationSource _) _ -> mayIgnoreLocationEffectsAndKeywords
           _ -> False
       resolveAbility =
         [SetActiveInvestigator iid | iid /= activeInvestigator]

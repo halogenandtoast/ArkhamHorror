@@ -139,7 +139,7 @@ instance RunMessage IceAndDeath where
           if null tekelili || not canModifyDeck
             then assignHorror iid Cultist x
             else do
-              shuffleCardsIntoDeck iid tekelili
+              addTekelili iid tekelili
               when (length tekelili < x) $ assignHorror iid Cultist (x - length tekelili)
         Tablet -> push $ DiscardTopOfDeck iid n (toSource Tablet) (Just $ toTarget attrs)
         _ -> pure ()

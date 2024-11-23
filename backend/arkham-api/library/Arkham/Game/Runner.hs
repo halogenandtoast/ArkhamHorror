@@ -571,6 +571,10 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createEndOfTurnEffect source iid message
     push $ CreatedEffect effectId Nothing source (toTarget iid)
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  CreateEndOfRoundEffect source message -> do
+    (effectId, effect) <- createEndOfRoundEffect source message
+    push $ CreatedEffect effectId Nothing source GameTarget
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
     effect <- getEffect effectId
     pure

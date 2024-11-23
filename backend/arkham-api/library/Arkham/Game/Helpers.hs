@@ -3238,6 +3238,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithDistanceFrom {} -> locationId <=~> matcher
     Matcher.LocationWithAnyKeys -> locationId <=~> matcher
     Matcher.LocationWithKey _ -> locationId <=~> matcher
+    Matcher.LocationWithMostInvestigators _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->

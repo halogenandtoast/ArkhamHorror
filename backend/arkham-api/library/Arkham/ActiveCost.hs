@@ -18,6 +18,7 @@ import Arkham.Asset.Types (
   ),
  )
 import Arkham.Attack
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers (addTekelili)
 import Arkham.Card
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
@@ -56,6 +57,7 @@ import Arkham.Matcher hiding (
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Scenario.Deck (ScenarioDeckKey (TekeliliDeck))
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Source
@@ -173,7 +175,7 @@ nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m, HasCallStack, MonadRandom m)
+   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
   => Message
   -> ActiveCost
   -> InvestigatorId
@@ -188,6 +190,9 @@ payCost msg c iid skipAdditionalCosts cost = do
   let pay = PayCost acId iid skipAdditionalCosts
   player <- getPlayer iid
   case cost of
+    ShuffleTopOfScenarioDeckIntoYourDeck n TekeliliDeck -> do
+      runQueueT $ addTekelili iid . take n =<< getScenarioDeck TekeliliDeck
+      pure c
     ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> do
       push . shuffleCardsIntoDeck iid . take n =<< getScenarioDeck deckKey
       pure c

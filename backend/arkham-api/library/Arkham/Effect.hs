@@ -258,6 +258,15 @@ createOnRevealChaosTokenEffect sid matchr source target messages = do
   let effect = buildOnRevealChaosTokenEffect eid sid matchr source target messages
   pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
+createEndOfRoundEffect
+  :: MonadRandom m
+  => Source
+  -> [Message]
+  -> m (EffectId, Effect)
+createEndOfRoundEffect source messages = do
+  eid <- getRandom
+  pure (eid, buildEndOfRoundEffect eid source messages)
+
 createEndOfTurnEffect
   :: MonadRandom m
   => Source
@@ -320,6 +329,11 @@ buildOnRevealChaosTokenEffect
   :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> [Message] -> Effect
 buildOnRevealChaosTokenEffect eid sid matchr source token msgs =
   Effect $ onRevealChaosTokenEffect' eid sid matchr source token msgs
+
+buildEndOfRoundEffect
+  :: EffectId -> Source -> [Message] -> Effect
+buildEndOfRoundEffect eid source msgs =
+  Effect $ endOfRoundEffect' eid source msgs
 
 buildEndOfTurnEffect
   :: EffectId -> Source -> InvestigatorId -> [Message] -> Effect

@@ -1569,6 +1569,9 @@ getLocationsMatching lmatcher = do
             ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
             )
             ls
+    LocationWithMostInvestigators locationMatcher -> do
+      matches' <- go ls locationMatcher
+      maxes <$> forToSnd matches' (selectCount . investigatorAt . toId)
     LocationWithMostClues locationMatcher -> do
       matches' <- go ls locationMatcher
       maxes <$> forToSnd matches' (pure . attr locationClues)

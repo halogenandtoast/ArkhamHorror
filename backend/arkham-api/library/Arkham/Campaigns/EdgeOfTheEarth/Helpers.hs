@@ -5,10 +5,12 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Deck (toDeck)
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log hiding (recordSetInsert)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
@@ -19,6 +21,8 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
+import Arkham.Treachery.Types (Field (TreacheryCardId))
+import Arkham.Window (WindowType (ScenarioEvent))
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
@@ -68,4 +72,14 @@ gatherTekelili = do
     filter ((== Just Tekelili) . cdEncounterSet) $ toList allPlayerCards
 
 addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
-addTekelili iid = traverse_ (addCampaignCardToDeck iid)
+addTekelili iid cards = batched \batchId -> do
+  checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
+  traverse_ (addCampaignCardToDeck iid) cards
+
+resolveTekelili
+  :: (ReverseQueue m, AsId tekelili, IdOf tekelili ~ TreacheryId) => InvestigatorId -> tekelili -> m ()
+resolveTekelili iid tekelili = do
+  cardId <- field TreacheryCardId (asId tekelili)
+  mods <- getModifiers cardId
+  let deck = if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods then toDeck iid else toDeck TekeliliDeck
+  putOnBottomOfDeck iid deck (asId tekelili)

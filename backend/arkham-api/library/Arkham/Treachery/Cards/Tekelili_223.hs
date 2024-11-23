@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.Tekelili_223 (tekelili_223, Tekelili_223 (..)) where
 
-import Arkham.Scenario.Deck
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -15,6 +15,6 @@ instance RunMessage Tekelili_223 where
   runMessage msg t@(Tekelili_223 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       assignHorror iid attrs 1
-      putOnBottomOfDeck iid TekeliliDeck attrs
+      resolveTekelili iid attrs
       pure t
     _ -> Tekelili_223 <$> liftRunMessage msg attrs

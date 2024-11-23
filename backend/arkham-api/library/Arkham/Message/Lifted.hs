@@ -1494,6 +1494,18 @@ atEndOfTurn a iid body = do
   msgs <- evalQueueT body
   push $ CreateEndOfTurnEffect (toSource a) iid msgs
 
+-- Usage:
+--      atEndOfRound iid do
+--        addToHand iid (toCard attrs)
+atEndOfRound
+  :: (Sourceable a, HasQueue Message m)
+  => a
+  -> QueueT Message m ()
+  -> m ()
+atEndOfRound a body = do
+  msgs <- evalQueueT body
+  push $ CreateEndOfRoundEffect (toSource a) msgs
+
 afterSkillTest
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
 afterSkillTest body = do
@@ -2064,3 +2076,6 @@ withTimings w body = do
   checkWindows [atIf]
   body
   checkWindows [after]
+
+cancelBatch :: ReverseQueue m => BatchId -> m ()
+cancelBatch bId = push $ CancelBatch bId

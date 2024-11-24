@@ -287,6 +287,9 @@ instance Is AssetAttrs AssetId where
 instance Be AssetAttrs AssetMatcher where
   be = AssetWithId . assetId
 
+instance HasField "placement" Asset Placement where
+  getField = (.placement) . toAttrs
+
 instance HasField "id" Asset AssetId where
   getField = (.id) . toAttrs
 

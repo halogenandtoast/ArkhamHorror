@@ -810,10 +810,8 @@ runGameMessage msg g = case msg of
           $ g
           & entitiesL
           . enemiesL
-          %~ deleteMap eid
-          & actionRemovedEntitiesL
-          . enemiesL
-          %~ insertEntity enemy
+          . ix eid
+          %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
   RemoveSkill sid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
@@ -1770,6 +1768,7 @@ runGameMessage msg g = case msg of
       & (turnPlayerInvestigatorIdL ?~ x)
       & (activeAbilitiesL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
+      & (entitiesL %~ clearRemovedEntities)
   ChoosePlayerOrder _ [x] [] -> do
     pure $ g & playerOrderL .~ [x]
   ChoosePlayerOrder _ [] (x : xs) -> do
@@ -2715,7 +2714,7 @@ runGameMessage msg g = case msg of
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
     let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
-    pure $ g & activeAbilitiesL %~ filter (/= ab) & removedEntitiesF
+    pure $ g & activeAbilitiesL %~ filter (/= ab) & removedEntitiesF & entitiesL %~ clearRemovedEntities
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _source _card -> do

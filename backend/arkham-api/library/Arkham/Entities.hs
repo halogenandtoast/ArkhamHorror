@@ -26,6 +26,7 @@ import Arkham.Investigator ()
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
+import Arkham.Placement
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
@@ -33,6 +34,8 @@ import Arkham.Story
 import Arkham.Target
 import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
+import Arkham.Zone
+import Data.Map.Strict qualified as Map
 import GHC.Records
 
 type EntityMap a = Map (EntityId a) a
@@ -55,11 +58,24 @@ data Entities = Entities
 instance HasField "investigators" Entities (Map InvestigatorId Investigator) where
   getField = entitiesInvestigators
 
+instance HasField "assets" Entities (Map AssetId Asset) where
+  getField = entitiesAssets
+
+instance HasField "enemies" Entities (Map EnemyId Enemy) where
+  getField = entitiesEnemies
+
 instance ToJSON Entities where
   toJSON = genericToJSON $ aesonOptions $ Just "entities"
 
 instance FromJSON Entities where
   parseJSON = genericParseJSON $ aesonOptions $ Just "entities"
+
+clearRemovedEntities :: Entities -> Entities
+clearRemovedEntities entities =
+  entities
+    { entitiesEnemies = Map.filter (\e -> e.placement /= OutOfPlay RemovedZone) entities.enemies
+    , entitiesAssets = Map.filter (\e -> e.placement /= OutOfPlay RemovedZone) entities.assets
+    }
 
 defaultEntities :: Entities
 defaultEntities =

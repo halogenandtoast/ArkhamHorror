@@ -520,7 +520,7 @@ instance RunMessage AssetAttrs where
           $ [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a) | assetDamage a > 0]
           <> [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a) | assetHorror a > 0]
       push afterWindow
-      pure $ a & tokensL %~ removeAllTokens Token.Horror
+      pure $ a & tokensL %~ removeAllTokens Token.Horror & tokensL %~ removeAllTokens Token.Damage
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       let placement = if isInPlayPlacement a.placement then a.placement else InPlayArea iid
       runMessage (PlaceAsset aid placement) a

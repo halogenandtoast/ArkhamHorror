@@ -35,12 +35,9 @@ instance HasAbilities Zamacona where
 
 zamacona :: EnemyCard Zamacona
 zamacona =
-  enemyWith
-    (Zamacona . (`with` Meta True))
-    Cards.zamacona
-    (3, Static 3, 3)
-    (1, 0)
-    (spawnAtL ?~ SpawnAtFirst [SpawnAt (NearestLocationToYou EmptyLocation), SpawnAt YourLocation])
+  enemyWith (Zamacona . (`with` Meta True)) Cards.zamacona (3, Static 3, 3) (1, 0)
+    $ spawnAtL
+    ?~ SpawnAtFirst [SpawnAt (NearestLocationToYou EmptyLocation), SpawnAt YourLocation]
 
 instance RunMessage Zamacona where
   runMessage msg (Zamacona (With attrs meta)) = runQueueT $ case msg of

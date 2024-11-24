@@ -269,7 +269,11 @@ investigate sid iid (toSource -> source) (toTarget -> target) sType n =
 getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
-  case source of
+  go source
+ where
+  go = \case
+    AbilitySource s _ -> go s
+    ProxySource inner1 inner2 -> orM [go inner1, go inner2]
     EnemySource _ -> pure True
     AgendaSource _ -> pure True
     LocationSource _ -> pure True

@@ -276,7 +276,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     SkillTestCost stsource sType n -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid stsource ScenarioTarget sType n
+      push $ beginSkillTest sid iid stsource (sourceToTarget stsource) sType n
       pure c
     AsIfAtLocationCost _ _ -> error "Can not be paid because withModifiers only HasGame, but can't adjust the queue"
     ShuffleAttachedCardIntoDeckCost target cardMatcher -> do

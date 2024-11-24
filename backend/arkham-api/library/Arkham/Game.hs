@@ -1847,7 +1847,7 @@ getLocationsMatching lmatcher = do
         if currentMatch
           then pure [start]
           else do
-            matchingLocationIds <- map toId <$> getLocationsMatching matcher
+            matchingLocationIds <- traceShowId . map toId <$> getLocationsMatching matcher
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
     NearestLocationTo iid matcher -> do

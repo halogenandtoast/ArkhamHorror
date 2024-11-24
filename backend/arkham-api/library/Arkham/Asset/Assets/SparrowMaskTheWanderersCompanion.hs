@@ -9,6 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers (windowMatches)
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -40,19 +41,32 @@ instance RunMessage SparrowMaskTheWanderersCompanion where
           labeled "Get +2 {agility}" $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 2)
       pure a
     Do (CheckWindows ws) -> do
-      when (attrs.use Offering < 2) do
-        for_ attrs.controller \iid -> do
-          shouldReplenish <-
-            anyM
-              ( \w ->
-                  windowMatches iid (toSource attrs) w
-                    $ oneOf
-                      [ DealtDamageOrHorror #after AnySource You
-                      , DealtDamage #after AnySource You
-                      , DealtHorror #after AnySource You
-                      ]
-              )
-              ws
-          when shouldReplenish $ placeTokens attrs attrs Offering 1
-      pure a
+      if attrs.use Offering < 2
+        then case attrs.controller of
+          Nothing -> pure a
+          Just iid -> do
+            shouldReplenish <-
+              anyM
+                ( \w ->
+                    windowMatches iid (toSource attrs) w
+                      $ oneOf
+                        [ DealtDamageOrHorror #after AnySource You
+                        , DealtDamage #after AnySource You
+                        , DealtHorror #after AnySource You
+                        ]
+                )
+                ws
+            depth <- getWindowDepth
+            let alreadyReplenished = isJust $ getAssetMetaDefault @(Maybe Int) Nothing attrs
+            if shouldReplenish && not alreadyReplenished
+              then do
+                placeTokens attrs attrs Offering 1
+                pure $ SparrowMaskTheWanderersCompanion $ attrs & setMeta (Just depth)
+              else pure a
+        else pure a
+    EndCheckWindow -> do
+      depth <- getWindowDepth
+      pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
+        Just d | depth <= d -> SparrowMaskTheWanderersCompanion $ attrs & setMeta @(Maybe Int) Nothing
+        _ -> a
     _ -> SparrowMaskTheWanderersCompanion <$> liftRunMessage msg attrs

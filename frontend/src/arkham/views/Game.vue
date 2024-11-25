@@ -1397,7 +1397,7 @@ button:hover .shortcut {
 .processing {
   z-index: 1000;
   position: absolute;
-  top: 45px;
+  top: 5px;
   left: 00px;
   width: 80px;
   filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);

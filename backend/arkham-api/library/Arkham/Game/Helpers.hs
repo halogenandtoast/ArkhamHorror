@@ -2752,7 +2752,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM
             [ matchWho iid who whoMatcher
             , orM
-                [ enemyMatches enemyId enemyMatcher
+                [ pure $ enemyMatcher == Matcher.AnyEnemy
+                , enemyMatches enemyId enemyMatcher
                 , enemyMatches enemyId (Matcher.OutOfPlayEnemy RemovedZone enemyMatcher)
                 ]
             ]

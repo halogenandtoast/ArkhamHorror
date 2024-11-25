@@ -198,6 +198,7 @@ watch (play, (newPlay) => {
 
 .controls {
   display: flex;
+  gap: 2px;
   button {
     flex: 1;
     width: 30px;

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { LottieAnimation } from "lottie-web-vue"
+import { useRouter } from 'vue-router'
 import processingJSON from "@/assets/processing.json"
 import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
@@ -67,6 +68,7 @@ const store = useCardStore()
 const userStore = useUserStore()
 const { copy } = useClipboard({ source })
 const { addEntry, menuItems } = useMenu()
+const router = useRouter()
 
 store.fetchCards()
 
@@ -708,6 +710,7 @@ onUnmounted(() => {
         </div>
         <div class="game-over" v-if="gameOver">
           <p>Game over</p>
+          <button class="replay-button" @click="router.push({name: 'ReplayGame', params: { gameId }})">Watch Replay</button>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" :playerId="playerId" />
         </div>
         <div class="sidebar" v-if="game.scenario === null">
@@ -1402,5 +1405,16 @@ button:hover .shortcut {
   width: 80px;
   filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);
   aspect-ratio: 1;
+}
+
+.replay-button {
+  padding: 10px;
+  width: 100%;
+  font-size: 1.2em;
+  border: 0;
+  background-color: var(--spooky-green);
+  &:hover {
+    background-color: var(--spooky-green-dark);
+  }
 }
 </style>

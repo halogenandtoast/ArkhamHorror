@@ -9,6 +9,7 @@ import GameLog from '@/arkham/components/GameLog.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
+import { PlayIcon, StopIcon, ForwardIcon, BackwardIcon, BackspaceIcon } from '@heroicons/vue/20/solid'
 
 export interface Props {
   gameId: string
@@ -54,6 +55,10 @@ const goBack = () => {
   if (currentStep.value > 0) {
     router.push({ query: { step: currentStep.value - 1 } })
   }
+}
+
+const restart = () => {
+  router.push({ query: { step: 0 } })
 }
 
 const goForward = () => {
@@ -113,11 +118,16 @@ watch (play, (newPlay) => {
       <div class="sidebar">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
-        <button v-if="!play" @click="play = true">Play</button>
-        <button v-else @click="play = false">Stop</button>
-        <button :disabled="processing" @click="step = 0">Start</button>
-        <button :disabled="processing" @click="step -= 1">Previous</button>
-        <button :disabled="processing" @click="step += 1">Next</button>
+        <div class="controls">
+          <button v-tooltip="'Restart'" :disabled="processing" @click="restart"><BackspaceIcon size="25" /></button>
+          <button v-tooltip="'Step back'" :disabled="processing" @click="goBack"><BackwardIcon size="25" /></button>
+          <button v-tooltip="'Play'" v-if="!play" @click="play = true"><PlayIcon size="25" /></button>
+          <button v-tooltip="'Stop'" v-else @click="play = false"><StopIcon size="25" /></button>
+          <button v-tooltip="'Step forward'" :disabled="processing" @click="goForward"><ForwardIcon size="25" /></button>
+        </div>
+        <div class="steps">
+          <p>{{currentStep}} / {{totalSteps}}</p>
+        </div>
       </div>
       <div v-if="gameOver">
         <p>Game over</p>
@@ -183,5 +193,27 @@ watch (play, (newPlay) => {
   width: 80px;
   filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);
   aspect-ratio: 1;
+}
+
+.controls {
+  display: flex;
+  button {
+    flex: 1;
+    width: 30px;
+    height: 30px;
+    :deep(svg) {
+      width: 25px;
+    }
+  }
+  height: 30px;
+  margin-inline: 10px;
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  p {
+    margin: 0;
+  }
 }
 </style>

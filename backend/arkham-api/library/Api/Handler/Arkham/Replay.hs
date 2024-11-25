@@ -14,11 +14,11 @@ data GetReplayJson = GetReplayJson
   , game :: PublicGame ArkhamGameId
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 newtype ReplayId = ReplayId {id :: ArkhamGameId}
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 getApiV1ArkhamGameReplayR :: ArkhamGameId -> Int -> Handler GetReplayJson
 getApiV1ArkhamGameReplayR gameId step = do
@@ -31,7 +31,7 @@ getApiV1ArkhamGameReplayR gameId step = do
     pure steps
   let gameJson = arkhamGameCurrentData ge
   let choices = map (arkhamStepChoice . entityVal) $ reverse $ drop step allChoices
-  let gameJson' = replayChoices gameJson $ map choicePatchDown choices
+  let gameJson' = replayChoices gameJson [mconcat $ map choicePatchDown choices]
 
   pure
     $ GetReplayJson

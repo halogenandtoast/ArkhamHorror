@@ -227,7 +227,7 @@ instance RunMessage EnemyAttrs where
       pure a
     EnemySpawn miid lid eid | eid == enemyId -> do
       locations' <- select $ IncludeEmptySpace Anywhere
-      canEnter <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ LocationWithId lid)
+      canEnter <- eid <=~> IncludeOmnipotent (EnemyCanSpawnIn $ IncludeEmptySpace $ LocationWithId lid)
       if lid `notElem` locations' || not canEnter
         then push (toDiscard GameSource eid)
         else do

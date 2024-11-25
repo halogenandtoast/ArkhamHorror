@@ -52,6 +52,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'DamageDealt') return true
   if (type.tag === 'AnySkillValue') return true
   if (type.tag === 'SkillModifier') return true
+  if (type.tag === 'ActionSkillModifier') return true
   if (type.tag === 'AddSkillValue') return true
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
@@ -325,6 +326,13 @@ const tokenEffects = computed(() => {
             ></i>
           </template>
           <template v-if="modifier.type.tag === 'SkillModifier'">
+            <span>+ {{modifier.type.value}}</span>
+            <i
+               :class="`${normalizeSkill(modifier.type.skillType)}-icon`"
+               :style="{ color: `var(--${normalizeSkill(modifier.type.skillType)})` }"
+            ></i>
+          </template>
+          <template v-if="modifier.type.tag === 'ActionSkillModifier'">
             <span>+ {{modifier.type.value}}</span>
             <i
                :class="`${normalizeSkill(modifier.type.skillType)}-icon`"

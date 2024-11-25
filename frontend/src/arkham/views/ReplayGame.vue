@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import { ref, provide, watch, computed } from 'vue'
+import { LottieAnimation } from "lottie-web-vue"
+import { useRouter } from 'vue-router'
+import processingJSON from "@/assets/processing.json"
+import { ref, provide, watch, computed, onMounted, onUnmounted } from 'vue'
 import * as Arkham from '@/arkham/types/Game'
 import { fetchGameReplay } from '@/arkham/api'
 import GameLog from '@/arkham/components/GameLog.vue'
@@ -18,26 +21,61 @@ const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
 const playerId = ref<string | null>(null)
 const gameLog = ref<readonly string[]>(Object.freeze([]))
-const step = ref(1)
 const totalSteps = ref(0)
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 const campaignLog = computed(() => game.value?.campaign?.log)
 const recorded = computed(() => campaignLog.value?.recorded ?? [])
 const recordedSets = computed(() => campaignLog.value?.recordedSets ?? [])
+const processing = ref(false)
 
-watch(step, currentStep => {
-  fetchGameReplay(props.gameId, currentStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
+const router = useRouter()
+const currentStep = computed(() => parseInt(router.currentRoute.value.query.step as string) || 0)
+
+
+watch(currentStep, nextStep => {
+  processing.value = true;
+  fetchGameReplay(props.gameId, nextStep).then(({ game: newGame, totalSteps: newTotalSteps }) => {
     ready.value = true;
     game.value = newGame;
     totalSteps.value = newTotalSteps
     gameLog.value = Object.freeze(newGame.log);
     playerId.value = newGame.activePlayerId;
+    processing.value = false;
   });
 }, {immediate: true})
+
+const handleKeyPress = (event: KeyboardEvent) => {
+  if (event.key === "ArrowLeft") goBack()
+  if (event.key === "ArrowRight") goForward()
+}
+
+const goBack = () => {
+  if (currentStep.value > 0) {
+    router.push({ query: { step: currentStep.value - 1 } })
+  }
+}
+
+const goForward = () => {
+  if (currentStep.value < totalSteps.value) {
+    router.push({ query: { step: currentStep.value + 1 } })
+  }
+}
+
+onMounted(() => document.addEventListener('keydown', handleKeyPress))
+onUnmounted(() => document.removeEventListener('keydown', handleKeyPress))
+
 </script>
 
 <template>
   <div id="game" v-if="ready && game && playerId">
+    <div v-if="processing" class="processing">
+      <LottieAnimation 
+        :animation-data="processingJSON"
+        :auto-play="true"
+        :loop="true"
+        :speed="1"
+        ref="anim" />
+    </div>
     <div class="game">
       <Campaign
         v-if="game.campaign"
@@ -55,9 +93,9 @@ watch(step, currentStep => {
       <div class="sidebar">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
-        <button @click="step = 0">Start</button>
-        <button @click="step -= 1">Previous</button>
-        <button @click="step += 1">Next</button>
+        <button :disabled="processing" @click="step = 0">Start</button>
+        <button :disabled="processing" @click="step -= 1">Previous</button>
+        <button :disabled="processing" @click="step += 1">Next</button>
       </div>
       <div v-if="gameOver">
         <p>Game over</p>
@@ -113,5 +151,15 @@ watch(step, currentStep => {
   display: flex;
   flex-direction: column;
   background: #d0d9dc;
+}
+
+.processing {
+  z-index: 1000;
+  position: absolute;
+  top: 45px;
+  left: 00px;
+  width: 80px;
+  filter: invert(48%) sepia(32%) saturate(393%) hue-rotate(37deg) brightness(92%) contrast(89%);
+  aspect-ratio: 1;
 }
 </style>

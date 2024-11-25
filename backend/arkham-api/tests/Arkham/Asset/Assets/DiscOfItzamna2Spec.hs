@@ -15,7 +15,7 @@ spec = describe "Disc of Itzamna (2)" $ do
       enemy <- testEnemy
       enemy `spawnAt` location
       useReaction
-      assert $ selectNone AnyEnemy
+      assert $ selectNone AnyInPlayEnemy
       scenarioField ScenarioDiscard `shouldMatchListM` onlyEncounterCards [toCard enemy]
 
   context "When a elite enemy spawns at your location" $ do

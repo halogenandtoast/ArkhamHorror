@@ -93,6 +93,9 @@ doesNotProvokeAttacksOfOpportunity :: Ability -> Ability
 doesNotProvokeAttacksOfOpportunity =
   set abilityDoesNotProvokeAttacksOfOpportunityL True
 
+noAOO :: Ability -> Ability
+noAOO = doesNotProvokeAttacksOfOpportunity
+
 displayAsAction :: Ability -> Ability
 displayAsAction = set abilityDisplayAsActionL True
 
@@ -342,7 +345,7 @@ applyAbilityCriteriaModifiers c modifiers = foldr applyCriterionModifier c modif
     OnLocation _ -> True
     _ -> False
   replaceEngagementCheck = \case
-    EnemyIsEngagedWith _ -> AnyEnemy
+    EnemyIsEngagedWith _ -> AnyInPlayEnemy
     other -> other
   handleEnemyCriterion = \case
     EnemyExists em -> EnemyExists $ over biplate (transform replaceEngagementCheck) em
@@ -480,6 +483,9 @@ defaultAbilityLimit = \case
 decreaseAbilityActionCost :: Ability -> Int -> Ability
 decreaseAbilityActionCost ab n =
   ab {Arkham.Ability.Types.abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}
+
+decrease_ :: Ability -> Int -> Ability
+decrease_ = decreaseAbilityActionCost
 
 wantsSkillTest :: SkillTestMatcher -> Ability -> Ability
 wantsSkillTest matcher ab = ab {abilityWantsSkillTest = Just matcher}

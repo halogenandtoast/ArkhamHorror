@@ -82,6 +82,7 @@ import Arkham.Matcher (
   locationWithInvestigator,
   oneOf,
   treacheryInThreatAreaOf,
+  pattern AnyInPlayEnemy,
   pattern AssetWithAnyClues,
  )
 import Arkham.Message qualified as Msg
@@ -951,7 +952,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canFightMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanFightEnemy source
+        [] -> if choose.overriden then AnyInPlayEnemy else CanFightEnemy source
         [o] -> CanFightEnemyWithOverride o
         _ -> error "multiple overrides found"
     enemyIds <-
@@ -1066,7 +1067,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         _ -> original
       applyMatcherModifiers _ n = n
       canEvadeMatcher = case overrides of
-        [] -> if choose.overriden then AnyEnemy else CanEvadeEnemy source
+        [] -> if choose.overriden then AnyInPlayEnemy else CanEvadeEnemy source
         [o] -> CanEvadeEnemyWithOverride o
         _ -> error "multiple overrides found"
     enemyIds <-

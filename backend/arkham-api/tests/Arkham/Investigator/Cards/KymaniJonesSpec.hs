@@ -20,7 +20,7 @@ spec = describe "Kymani Jones" $ do
       useReaction
       click "start skill test"
       click "apply results"
-      assertNone AnyEnemy
+      assertNone $ InPlayEnemy AnyEnemy
 
     it "Also works when nested" . gameTestWith kymaniJones $ \self -> do
       -- Kymani's Evade is 5 so we want +1
@@ -46,4 +46,4 @@ spec = describe "Kymani Jones" $ do
       useReaction
       click "start skill test"
       click "apply results"
-      assertNone AnyEnemy
+      assertNone $ InPlayEnemy AnyEnemy

@@ -5,9 +5,11 @@ import Arkham.Prelude
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.GameValue
+import Arkham.Id
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher.Types
 import Arkham.Modifier
+import Arkham.Source
 import Arkham.Timing
 import Arkham.Trait
 
@@ -194,6 +196,9 @@ pattern ControlledAsset <- AssetControlledBy Anyone
     ControlledAsset = AssetControlledBy Anyone
 
 -- ** Enemy Patterns **
+
+pattern AnyInPlayEnemy :: EnemyMatcher
+pattern AnyInPlayEnemy = InPlayEnemy AnyEnemy
 
 pattern IgnoreAloofFightable :: EnemyMatcher
 pattern IgnoreAloofFightable = EnemyMatchAll [EnemyAt YourLocation, CanBeAttackedBy You]
@@ -476,3 +481,10 @@ pattern EnemyEntersPlay :: Timing -> EnemyMatcher -> WindowMatcher
 pattern EnemyEntersPlay timing enemyMatcher <- EnemySpawns timing Anywhere enemyMatcher
   where
     EnemyEntersPlay timing enemyMatcher = EnemySpawns timing Anywhere enemyMatcher
+
+-- * Ability Helpers
+
+pattern BasicInvestigate :: LocationId -> AbilityMatcher
+pattern BasicInvestigate lid <- AbilityIs (LocationSource lid) 101
+  where
+    BasicInvestigate lid = AbilityIs (LocationSource lid) 101

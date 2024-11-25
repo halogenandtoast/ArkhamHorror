@@ -27,6 +27,7 @@ const campaignLog = computed(() => game.value?.campaign?.log)
 const recorded = computed(() => campaignLog.value?.recorded ?? [])
 const recordedSets = computed(() => campaignLog.value?.recordedSets ?? [])
 const processing = ref(false)
+const play = ref(false)
 
 const router = useRouter()
 const currentStep = computed(() => parseInt(router.currentRoute.value.query.step as string) || 0)
@@ -64,6 +65,25 @@ const goForward = () => {
 onMounted(() => document.addEventListener('keydown', handleKeyPress))
 onUnmounted(() => document.removeEventListener('keydown', handleKeyPress))
 
+const interval = ref<number | undefined>(undefined)
+
+watch (play, (newPlay) => {
+  if (newPlay) {
+    interval.value = setInterval(() => {
+      if(!processing.value) {
+        if (currentStep.value < totalSteps.value) {
+          router.push({ query: { step: currentStep.value + 1 } })
+        } else {
+          clearInterval(interval.value)
+          play.value = false
+        }
+      }
+    }, 2000)
+  } else {
+    clearInterval(interval.value)
+  }
+})
+
 </script>
 
 <template>
@@ -93,6 +113,8 @@ onUnmounted(() => document.removeEventListener('keydown', handleKeyPress))
       <div class="sidebar">
         <CardOverlay />
         <GameLog :game="game" :gameLog="gameLog" />
+        <button v-if="!play" @click="play = true">Play</button>
+        <button v-else @click="play = false">Stop</button>
         <button :disabled="processing" @click="step = 0">Start</button>
         <button :disabled="processing" @click="step -= 1">Previous</button>
         <button :disabled="processing" @click="step += 1">Next</button>

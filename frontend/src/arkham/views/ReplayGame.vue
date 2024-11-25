@@ -49,6 +49,7 @@ watch(currentStep, nextStep => {
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === "ArrowLeft") goBack()
   if (event.key === "ArrowRight") goForward()
+  if (event.key === " ") play.value = !play.value
 }
 
 const goBack = () => {

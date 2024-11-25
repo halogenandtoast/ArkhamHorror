@@ -21,8 +21,17 @@ import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
 
+class Of a b where
+  of_ :: a -> b
+
+instance Of InvestigatorId LocationMatcher where
+  of_ = locationWithInvestigator
+
 class Locatable a where
   at_ :: LocationMatcher -> a
+
+instance Locatable AbilityMatcher where
+  at_ = AbilityOnLocation
 
 instance Locatable InvestigatorMatcher where
   at_ = InvestigatorAt
@@ -383,6 +392,12 @@ targetIs = TargetIs . toTarget
 
 sourceOwnedBy :: (AsId iid, IdOf iid ~ InvestigatorId) => iid -> SourceMatcher
 sourceOwnedBy = SourceOwnedBy . InvestigatorWithId . asId
+
+-- ** Ability Helpers **
+
+performableAbilityWithoutActionBy :: InvestigatorId -> AbilityMatcher -> AbilityMatcher
+performableAbilityWithoutActionBy iid a =
+  PerformableAbilityBy (InvestigatorWithId iid) [ActionCostModifier (-1)] <> a
 
 -- ** Replacements
 

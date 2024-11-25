@@ -18,7 +18,7 @@ unexpectedAmbush = treachery UnexpectedAmbush Cards.unexpectedAmbush
 instance RunMessage UnexpectedAmbush where
   runMessage msg t@(UnexpectedAmbush attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      enemies <- select AnyEnemy
+      enemies <- select AnyInPlayEnemy
       sid <- getRandom
       if null enemies
         then push $ Msg.assignDamageAndHorror iid attrs 1 1

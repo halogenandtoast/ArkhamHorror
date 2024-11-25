@@ -179,6 +179,10 @@ targets
   :: (ReverseQueue m, Targetable target) => [target] -> (target -> QueueT Message m ()) -> ChooseT m ()
 targets ts action = unterminated $ for_ ts \t -> targeting t (action t)
 
+targetsM
+  :: (ReverseQueue m, Targetable target) => m [target] -> (target -> QueueT Message m ()) -> ChooseT m ()
+targetsM ts action = unterminated $ traverse_ (\t -> targeting t (action t)) =<< lift ts
+
 chooseTargetM
   :: (ReverseQueue m, Targetable target)
   => InvestigatorId

@@ -139,7 +139,7 @@ canEnterLocation eid lid = do
 getFightableEnemyIds :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do
   fightAnywhereEnemyIds <-
-    select AnyEnemy >>= filterM \eid -> do
+    select AnyInPlayEnemy >>= filterM \eid -> do
       modifiers' <- getModifiers (EnemyTarget eid)
       pure $ Modifier.CanBeFoughtAsIfAtYourLocation `elem` modifiers'
   locationId <- getJustLocation iid

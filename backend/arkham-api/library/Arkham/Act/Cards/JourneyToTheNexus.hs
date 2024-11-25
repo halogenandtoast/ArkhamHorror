@@ -56,7 +56,7 @@ instance RunMessage JourneyToTheNexus where
         then push R2
         else do
           allDefeated <- select $ NotInvestigator $ InvestigatorAt $ locationIs Locations.stepsOfYoth
-          enemies <- select AnyEnemy
+          enemies <- select AnyInPlayEnemy
           explorationDeck <- getExplorationDeck
           stepsOfYoth <- selectJust $ locationIs Locations.stepsOfYoth
           stepsOfYothCard <- field LocationCard stepsOfYoth

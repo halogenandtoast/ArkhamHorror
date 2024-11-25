@@ -35,7 +35,7 @@ instance RunMessage InhabitantsOfTheVale where
       createEnemyWith_ (toCard ec) valeOfPnath createExhausted
       pure s
     DoStep 1 (ResolveStory iid ResolveIt story') | story' == toId attrs -> do
-      enemies <- select AnyEnemy
+      enemies <- select AnyInPlayEnemy
       chooseOne
         iid
         [targetLabel enemy [PlaceClues (toSource attrs) (toTarget enemy) 2] | enemy <- enemies]

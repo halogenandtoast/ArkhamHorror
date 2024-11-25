@@ -44,7 +44,7 @@ instance RunMessage Hatchet1 where
     SkillTestEnds _ _ (isAbilitySource attrs 1 -> True) -> do
       whenJustM getSkillTestTarget \case
         EnemyTarget eid -> do
-          stillAlive <- eid <=~> AnyEnemy
+          stillAlive <- eid <=~> AnyInPlayEnemy
           when stillAlive do
             push $ LoseControlOfAsset attrs.id
             push $ PlaceAsset attrs.id (AttachedToEnemy eid)

@@ -8,10 +8,9 @@ import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.SkillTest
 import Arkham.Investigate
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Window (defaultWindows)
 
 newtype Duke = Duke AssetAttrs
@@ -22,11 +21,10 @@ duke :: AssetCard Duke
 duke = allyWith Duke Cards.duke (2, 3) noSlots
 
 instance HasModifiersFor Duke where
-  getModifiersFor (InvestigatorTarget iid) (Duke a) | controlledBy a iid = maybeModified a do
-    source <- MaybeT getSkillTestSource
-    guard $ isSource a source
-    action <- MaybeT getSkillTestAction
-    case action of
+  getModifiersFor (InvestigatorTarget iid) (Duke a) = maybeModified a do
+    guard $ controlledBy a iid
+    guardM $ isSource a <$> MaybeT getSkillTestSource
+    MaybeT getSkillTestAction >>= \case
       Action.Fight -> pure [BaseSkillOf #combat 4, DamageDealt 1]
       Action.Investigate -> pure [BaseSkillOf #intellect 4]
       _ -> pure []
@@ -45,45 +43,27 @@ instance RunMessage Duke where
       sid <- getRandom
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    UseCardAbility iid (isSource attrs -> True) 2 windows' _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      lid <- getJustLocation iid
-      accessibleLocationIds <- getAccessibleLocations iid source
-      investigateAbilities <-
-        field LocationAbilities lid >>= filterM \ab ->
-          (abilityIs ab #investigate &&)
-            <$> getCanPerformAbility iid (defaultWindows iid) (decreaseAbilityActionCost ab 1)
-      let
-        investigateActions =
-          map
-            ( (\f -> f windows' [] [])
-                . AbilityLabel iid
-                . ( \a' ->
-                      a'
-                        { abilityDoesNotProvokeAttacksOfOpportunity = True
-                        , abilitySource = ProxySource a'.source source
-                        }
-                  )
-                . (`decreaseAbilityActionCost` 1)
-            )
-            investigateAbilities
-      chooseOne iid
-        $ investigateActions
-        <> [ targetLabel lid' [Move $ move attrs iid lid', DoStep 1 msg]
-           | lid' <- accessibleLocationIds
-           ]
+      as <- select $ performableAbilityWithoutActionBy iid $ at_ (of_ iid) <> #basic <> #investigate
+      let convert ab = noAOO $ decrease_ (ab {abilitySource = ProxySource ab.source source}) 1
+      chooseOneM iid do
+        for_ as \ab -> abilityLabeled iid (convert ab) nothing
+        targetsM (getAccessibleLocations iid source) \lid' -> do
+          moveTo attrs iid lid'
+          doStep 1 msg
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 2) -> do
       lid <- getJustLocation iid
-      selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
-        whenM (getCanPerformAbility iid (defaultWindows iid) (decreaseAbilityActionCost ab 1)) do
+      selectForMaybeM (BasicInvestigate lid) \ab ->
+        whenM (getCanPerformAbility iid (defaultWindows iid) (decrease_ ab 1)) do
           sid <- getRandom
           investigate' <- mkInvestigateLocation sid iid attrs lid
           push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
-    UseThisAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) 101 -> do
-      selectOne (AbilityIs (LocationSource lid) 101) >>= traverse_ \ab ->
-        whenM (getCanPerformAbility iid (defaultWindows iid) $ decreaseAbilityActionCost ab 1) do
+    UseThisAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) _ -> do
+      selectForMaybeM (BasicInvestigate lid) \ab ->
+        whenM (getCanPerformAbility iid (defaultWindows iid) $ decrease_ ab 1) do
           sid <- getRandom
           pushM $ mkInvestigateLocation sid iid attrs lid
       pure a

@@ -79,6 +79,9 @@ instance IsLabel "fight" AbilityMatcher where
 instance IsLabel "action" AbilityMatcher where
   fromLabel = AbilityIsActionAbility
 
+instance IsLabel "basic" AbilityMatcher where
+  fromLabel = BasicAbility
+
 instance Not AbilityMatcher where
   not_ = NotAbility
 

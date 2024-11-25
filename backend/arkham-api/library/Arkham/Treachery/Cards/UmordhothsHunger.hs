@@ -27,7 +27,7 @@ instance RunMessage UmordhothsHunger where
           $ if handCount == 0
             then InvestigatorKilled (toSource attrs) iid
             else toMessage $ randomDiscard iid attrs
-      targets <- selectMap EnemyTarget AnyEnemy
+      targets <- selectMap EnemyTarget AnyInPlayEnemy
       pushAll
         (msgs <> [HealDamage target (toSource attrs) 1 | target <- targets])
       pure t

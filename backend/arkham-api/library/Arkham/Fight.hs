@@ -23,7 +23,7 @@ mkChooseFight sid iid source =
   pure
     $ ChooseFight
       { chooseFightInvestigator = iid
-      , chooseFightEnemyMatcher = AnyEnemy
+      , chooseFightEnemyMatcher = AnyInPlayEnemy
       , chooseFightSource = toSource source
       , chooseFightTarget = Nothing
       , chooseFightSkillType = #combat

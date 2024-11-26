@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget, isParley)
 import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Matcher
 
@@ -22,7 +22,7 @@ instance HasModifiersFor DirtyFighting2 where
       EnemyTarget eid <- MaybeT getSkillTestTarget
       liftGuardM $ eid <=~> ExhaustedEnemy
       action <- MaybeT getSkillTestAction
-      guard $ action `elem` [#fight, #evade, #parley]
+      liftGuardM $ orM [pure $ action `elem` [#fight, #evade, #parley], isParley]
       pure [AnySkillValue 2]
   getModifiersFor _ _ = pure []
 

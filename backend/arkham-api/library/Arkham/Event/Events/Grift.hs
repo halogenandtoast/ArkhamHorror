@@ -25,7 +25,7 @@ instance RunMessage Grift where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom
-      parley sid iid attrs iid #agility (Fixed 0)
+      parley sid iid attrs eid #agility (Fixed 0)
       pure . Grift $ With attrs (meta {chosenEnemy = Just eid})
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       gainResourcesIfCan iid attrs $ min 6 n

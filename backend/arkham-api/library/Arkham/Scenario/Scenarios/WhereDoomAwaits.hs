@@ -95,9 +95,7 @@ instance RunMessage WhereDoomAwaits where
       pure . WhereDoomAwaits $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup WhereDoomAwaits attrs do
       gather Set.WhereDoomAwaits
-      gather Set.Whippoorwills
       gather Set.BeastThralls
-      gather Set.Dunwich
       gather Set.Sorcery
       gather Set.BishopsThralls
       gather Set.StrikingFear
@@ -144,7 +142,7 @@ instance RunMessage WhereDoomAwaits where
       lead <- getLead
       whenHasRecord NaomiHasTheInvestigatorsBacks $ push $ GainClues lead (toSource attrs) 1
 
-      setAside $ Enemies.silasBishop : divergingPaths <> alteredPaths
+      setAside $ Enemies.sethBishop : divergingPaths <> alteredPaths
       setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
 
       useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop

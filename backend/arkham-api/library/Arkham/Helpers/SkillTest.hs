@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Helpers.SkillTest (module X, module Arkham.Helpers.SkillTest) where
 
 import Arkham.Prelude
@@ -532,7 +530,7 @@ getIsCommittable a c = do
                 cmods <- getModifiers (CardIdTarget $ toCardId c)
                 let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
                 affordable <- getCanAffordCost a (toSource a) [] [] costToCommit
-                skillIcons <- traceShowId <$> getSkillTestMatchingSkillIcons
+                skillIcons <- getSkillTestMatchingSkillIcons
 
                 pure
                   $ and

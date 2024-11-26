@@ -19,9 +19,10 @@ newtype JoeSargentRattletrapBusDriver = JoeSargentRattletrapBusDriver AssetAttrs
 -- Story assets do not enter play in the same way so we hard code the uses for now
 joeSargentRattletrapBusDriver :: AssetCard JoeSargentRattletrapBusDriver
 joeSargentRattletrapBusDriver =
-  assetWith
+  allyWith
     JoeSargentRattletrapBusDriver
     Cards.joeSargentRattletrapBusDriver
+    (1, 2)
     (tokensL . at Ticket ?~ 3)
 
 instance HasAbilities JoeSargentRattletrapBusDriver where

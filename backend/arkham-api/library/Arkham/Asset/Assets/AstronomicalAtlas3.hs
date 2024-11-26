@@ -23,6 +23,7 @@ instance HasAbilities AstronomicalAtlas3 where
   getAbilities (AstronomicalAtlas3 a) =
     [ controlledAbility a 1 (can.manipulate.deck You) $ FastAbility (exhaust a)
     , playerLimit PerTestOrAbility
+        $ wantsSkillTest AnySkillTest
         $ controlledAbility a 2 (exists $ #eligible <> CardIsBeneathAsset (be a)) (FastAbility Free)
     ]
 

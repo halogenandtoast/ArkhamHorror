@@ -45,7 +45,7 @@ instance RunMessage TokenOfFaith3 where
           sid <- getRandom
           chooseOne
             iid
-            [ Label "Attempt that skill test again" [RepeatSkillTest sid st]
+            [ Label "Attempt that skill test again" [RepeatSkillTest sid st.id]
             , Label "Do not attempt again" []
             ]
         _ -> pure ()

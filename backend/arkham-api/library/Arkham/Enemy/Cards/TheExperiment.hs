@@ -20,7 +20,7 @@ instance HasAbilities TheExperiment where
   getAbilities (TheExperiment x) =
     extend
       x
-      [ restrictedAbility x 1 (thisIs x #exhausted) $ forced $ PhaseBegins #when #enemy
+      [ restricted x 1 (thisIs x $ enemy_ #exhausted) $ forced $ PhaseBegins #when #enemy
       , mkAbility x 2 $ Objective $ forced $ EnemyDefeated #after You ByAny (be x)
       ]
 

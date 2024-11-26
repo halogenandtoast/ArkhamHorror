@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Matcher (
   module Arkham.Matcher,
   module Arkham.Matcher.Base,
@@ -9,8 +11,10 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Card.CardType
 import Arkham.Card.Id
-import Arkham.EncounterSet (EncounterSet)
+import Arkham.Criteria
 import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
@@ -21,11 +25,15 @@ import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
 
-class Of a b where
-  of_ :: a -> b
+instance IsLocationMatcher CardDef where
+  toLocationMatcher = locationIs
+  {-# INLINE toLocationMatcher #-}
 
-instance Of InvestigatorId LocationMatcher where
-  of_ = locationWithInvestigator
+instance Be InvestigatorId LocationMatcher where
+  be = locationWithInvestigator
+
+instance Be CardDef LocationMatcher where
+  be = locationIs
 
 class Locatable a where
   at_ :: LocationMatcher -> a
@@ -41,9 +49,6 @@ instance Locatable EnemyMatcher where
 
 instance Locatable AssetMatcher where
   at_ = AssetAt
-
-class IsMatcher matcher => Has matcher a where
-  has :: a -> matcher
 
 have :: Has matcher a => a -> matcher
 have = has
@@ -64,18 +69,6 @@ affectsOthers matcher =
     (You <> matcher)
     matcher
 
-class OneOf a where
-  oneOf :: [a] -> a
-
-mapOneOf :: OneOf b => (a -> b) -> [a] -> b
-mapOneOf f = oneOf . map f
-
-beOneOf :: (Be a b, OneOf b) => [a] -> b
-beOneOf = mapOneOf be
-
-notOneOf :: (Not a, OneOf a) => [a] -> a
-notOneOf = not_ . oneOf
-
 instance OneOf SourceMatcher where
   oneOf = SourceMatchesAny
 
@@ -90,12 +83,6 @@ instance OneOf ActionMatcher where
 
 instance OneOf ChaosTokenMatcher where
   oneOf = ChaosTokenMatchesAny
-
-instance OneOf ExtendedCardMatcher where
-  oneOf = ExtendedCardWithOneOf
-
-instance OneOf CardMatcher where
-  oneOf = CardWithOneOf
 
 instance OneOf WindowMatcher where
   oneOf = OrWindowMatcher
@@ -296,8 +283,8 @@ locationNotOneOf :: IsLocationMatcher a => [a] -> LocationMatcher
 locationNotOneOf = LocationNotOneOf . map toLocationMatcher
 {-# INLINE locationNotOneOf #-}
 
-orConnected :: IsLocationMatcher matcher => matcher -> LocationMatcher
-orConnected x = let m = toLocationMatcher x in oneOf [m, ConnectedTo m]
+orConnected :: Be matcher LocationMatcher => matcher -> LocationMatcher
+orConnected x = let m = be x in oneOf [m, ConnectedTo m]
 {-# INLINE orConnected #-}
 
 whileInvestigating :: (AsId a, IdOf a ~ LocationId) => a -> SkillTestMatcher
@@ -346,17 +333,6 @@ skillControlledBy = SkillControlledBy . InvestigatorWithId
 
 storyIs :: HasCardCode a => a -> StoryMatcher
 storyIs = StoryIs . toCardCode
-
--- ** Card Helpers **
-
-cardIs :: HasCardCode a => a -> CardMatcher
-cardIs = CardWithCardCode . toCardCode
-
-cardsAre :: HasCardCode a => [a] -> CardMatcher
-cardsAre = mapOneOf cardIs
-
-fromSets :: [EncounterSet] -> CardMatcher
-fromSets = oneOf . map CardFromEncounterSet
 
 -- ** Extended Card Helpers **
 
@@ -439,3 +415,39 @@ defaultRemoveDoomMatchers =
     , removeDoomEvents = AnyEvent
     , removeDoomSkills = AnySkill
     }
+
+instance Has InvestigatorMatcher CardDef where
+  has cardDef = case cdCardType cardDef of
+    AssetType -> HasMatchingAsset (assetIs cardDef)
+    EventType -> HasMatchingEvent (eventIs cardDef)
+    SkillType -> HasMatchingSkill (skillIs cardDef)
+    PlayerTreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
+    PlayerEnemyType -> error "invalid matcher"
+    TreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
+    EnemyType -> error "invalid matcher"
+    LocationType -> error "invalid matcher"
+    EncounterAssetType -> HasMatchingAsset (assetIs cardDef)
+    EncounterEventType -> HasMatchingEvent (eventIs cardDef)
+    ActType -> error "invalid matcher"
+    AgendaType -> error "invalid matcher"
+    StoryType -> error "invalid matcher"
+    InvestigatorType -> error "invalid matcher"
+    ScenarioType -> error "invalid matcher"
+
+instance Exists CardDef where
+  exists def = case cdCardType def of
+    AssetType -> exists $ assetIs def
+    EventType -> exists $ eventIs def
+    SkillType -> exists $ skillIs def
+    PlayerTreacheryType -> exists $ treacheryIs def
+    PlayerEnemyType -> exists $ enemyIs def
+    EnemyType -> exists $ enemyIs def
+    LocationType -> exists $ locationIs def
+    EncounterAssetType -> exists $ assetIs def
+    EncounterEventType -> exists $ eventIs def
+    ActType -> error "Not implemented"
+    AgendaType -> error "Not implemented"
+    StoryType -> exists $ storyIs def
+    TreacheryType -> exists $ treacheryIs def
+    InvestigatorType -> exists $ investigatorIs def
+    ScenarioType -> error "Not implemented"

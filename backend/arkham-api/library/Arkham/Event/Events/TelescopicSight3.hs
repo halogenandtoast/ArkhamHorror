@@ -44,7 +44,7 @@ instance HasModifiersFor TelescopicSight3 where
               $ handleTaboo
               $ EnemyWithoutModifier CannotBeAttacked
               <> NonEliteEnemy
-              <> at_ (orConnected (be lid))
+              <> at_ (orConnected lid)
           ]
   getModifiersFor _ _ = pure []
 

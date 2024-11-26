@@ -3083,74 +3083,77 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     afterWindow2 <- checkWindows [mkAfter (Window.CancelledOrIgnoredCardOrGameEffect source)]
     pushAll [whenWindow, whenWindow2, afterWindow2, afterWindow]
     pure a
-  BeforeSkillTest skillTest | skillTestInvestigator skillTest == toId a -> do
-    mSkillTestId <- getSkillTestId
-    when (maybe False (== skillTest.id) mSkillTestId) do
-      skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
-      push
-        $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
-          then StartSkillTest investigatorId
-          else CommitToSkillTest skillTest $ StartSkillTestButton investigatorId
-    pure a
-  CommitToSkillTest skillTest _ | skillTestInvestigator skillTest == toId a -> do
-    investigators <- getInvestigators
-    for_ investigators \i -> do
-      mustBeCommitted <- getMustBeCommittableCards i
-      for_ mustBeCommitted $ push . SkillTestCommitCard investigatorId
-    push $ Do msg
-    pure a
-  Do (CommitToSkillTest skillTest triggerMessage') | skillTestInvestigator skillTest == toId a -> do
-    let iid = skillTestInvestigator skillTest
-    committedCards <- field InvestigatorCommittedCards iid
-    uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
-    let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
-    actions <- getActions iid [window]
-
-    skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
-    committableCards <- getCommittableCards (toId a)
-    let
-      mustCommit = any (elem MustBeCommittedToYourTest . cdCommitRestrictions . toCardDef) committableCards
-      triggerMessage =
-        [ triggerMessage'
-        | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
-        ]
-      beginMessage = Do (CommitToSkillTest skillTest triggerMessage')
-    player <- getPlayer iid
-    if notNull committableCards || notNull uncommittableCards || notNull actions
-      then
+  BeforeSkillTest skillTestId -> do
+    getSkillTestInvestigator >>= traverse_ \iid' -> do
+      when (iid' == a.id) do
+        skillTestModifiers' <- getModifiers skillTestId
         push
+          $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
+            then StartSkillTest investigatorId
+            else CommitToSkillTest skillTestId $ StartSkillTestButton investigatorId
+    pure a
+  CommitToSkillTest _skillTestId _ -> do
+    getSkillTestInvestigator >>= traverse_ \iid' -> do
+      when (iid' == a.id) do
+        investigators <- getInvestigators
+        for_ investigators \i -> do
+          mustBeCommitted <- getMustBeCommittableCards i
+          for_ mustBeCommitted $ push . SkillTestCommitCard investigatorId
+        push $ Do msg
+    pure a
+  Do (CommitToSkillTest skillTestId triggerMessage') -> do
+    getSkillTest >>= traverse_ \skillTest -> do
+      let iid = skillTestInvestigator skillTest
+      when (iid == a.id) do
+        committedCards <- field InvestigatorCommittedCards iid
+        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
+        let window = mkWhen (Window.SkillTest $ skillTestType skillTest)
+        actions <- getActions iid [window]
+
+        skillTestModifiers' <- getModifiers (SkillTestTarget skillTest.id)
+        committableCards <- getCommittableCards (toId a)
+        let
+          mustCommit = any (elem MustBeCommittedToYourTest . cdCommitRestrictions . toCardDef) committableCards
+          triggerMessage =
+            [ triggerMessage'
+            | CannotPerformSkillTest `notElem` skillTestModifiers' && not mustCommit
+            ]
+          beginMessage = Do (CommitToSkillTest skillTestId triggerMessage')
+        player <- getPlayer iid
+        if notNull committableCards || notNull uncommittableCards || notNull actions
+          then
+            push
+              $ SkillTestAsk
+              $ chooseOne player
+              $ map
+                (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
+                committableCards
+              <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage]
+                 | card <- uncommittableCards
+                 ]
+              <> map
+                (\action -> AbilityLabel iid action [window] [] [beginMessage])
+                actions
+              <> triggerMessage
+          else
+            pushWhen (notNull triggerMessage)
+              $ SkillTestAsk
+              $ chooseOne player triggerMessage
+      when (iid /= a.id) do
+        committedCards <- field InvestigatorCommittedCards investigatorId
+        let beginMessage = Do (CommitToSkillTest skillTestId triggerMessage')
+        committableCards <- getCommittableCards a.id
+        uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
+        player <- getPlayer investigatorId
+        pushWhen (notNull committableCards || notNull uncommittableCards)
           $ SkillTestAsk
           $ chooseOne player
           $ map
-            (\card -> targetLabel (toCardId card) [SkillTestCommitCard iid card, beginMessage])
+            (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
             committableCards
-          <> [ targetLabel (toCardId card) [SkillTestUncommitCard iid card, beginMessage]
+          <> [ targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage]
              | card <- uncommittableCards
              ]
-          <> map
-            (\action -> AbilityLabel iid action [window] [] [beginMessage])
-            actions
-          <> triggerMessage
-      else
-        pushWhen (notNull triggerMessage)
-          $ SkillTestAsk
-          $ chooseOne player triggerMessage
-    pure a
-  Do (CommitToSkillTest skillTest triggerMessage) | skillTestInvestigator skillTest /= investigatorId -> do
-    committedCards <- field InvestigatorCommittedCards investigatorId
-    let beginMessage = Do (CommitToSkillTest skillTest triggerMessage)
-    committableCards <- getCommittableCards a.id
-    uncommittableCards <- filterM (`withoutModifier` MustBeCommitted) committedCards
-    player <- getPlayer investigatorId
-    pushWhen (notNull committableCards || notNull uncommittableCards)
-      $ SkillTestAsk
-      $ chooseOne player
-      $ map
-        (\card -> targetLabel (toCardId card) [SkillTestCommitCard investigatorId card, beginMessage])
-        committableCards
-      <> [ targetLabel (toCardId card) [SkillTestUncommitCard investigatorId card, beginMessage]
-         | card <- uncommittableCards
-         ]
     pure a
   CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
     pure $ a & skippedWindowL .~ False

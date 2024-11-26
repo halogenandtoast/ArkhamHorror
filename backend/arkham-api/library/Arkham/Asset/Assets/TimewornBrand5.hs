@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.TimewornBrand5 (timewornBrand5, TimewornBrand5 (..)) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Modifier
 import Arkham.Trait (Trait (Elite))
 
@@ -17,11 +18,11 @@ instance HasAbilities TimewornBrand5 where
   getAbilities (TimewornBrand5 a) =
     [ withTooltip
         "{action} If Timeworn Brand is ready: _Fight_. You get +2 {combat} and deal +1 damage for this attack."
-        $ controlledAbility a 1 (thisIs a #ready) fightAction_
+        $ controlled a 1 (thisIs a $ asset_ #ready) fightAction_
     , withTooltip
         "{action} Exhaust Timeworn Brand: _Fight_. Add your {willpower} to your skill value for this attack. This attack deals +3 damage. If this attack defeats an _Elite_ enemy, draw 3 cards. (Max once per game.)"
         $ limitedAbility (MaxPer Cards.timewornBrand5 PerGame 1)
-        $ restrictedAbility a 2 ControlsThis
+        $ restricted a 2 ControlsThis
         $ fightAction (exhaust a)
     ]
 

@@ -17,7 +17,7 @@ blessedBlade :: AssetCard BlessedBlade
 blessedBlade = asset BlessedBlade Cards.blessedBlade
 
 instance HasAbilities BlessedBlade where
-  getAbilities (BlessedBlade attrs) = [controlledAbility attrs 1 (exists $ be attrs <> #ready) fightAction_]
+  getAbilities (BlessedBlade attrs) = [controlled attrs 1 (thisIs attrs AssetReady) fightAction_]
 
 instance RunMessage BlessedBlade where
   runMessage msg a@(BlessedBlade attrs) = runQueueT $ case msg of

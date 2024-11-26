@@ -23,7 +23,7 @@ instance HasModifiersFor GuardianAngel where
   getModifiersFor (InvestigatorTarget iid) (GuardianAngel a) = maybeModified a do
     guard $ not (controlledBy a iid)
     location <- MaybeT $ field AssetLocation (toId a)
-    liftGuardM $ iid <=~> InvestigatorAt (orConnected $ be location)
+    liftGuardM $ iid <=~> InvestigatorAt (orConnected location)
     pure [CanAssignDamageToAsset a.id]
   getModifiersFor _ _ = pure []
 

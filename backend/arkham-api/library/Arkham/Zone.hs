@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Data.Aeson.TH
 import Data.Aeson.Types
 import Data.Proxy
+import GHC.OverloadedLabels
 
 data OutOfPlayZone
   = VoidZone
@@ -79,6 +80,15 @@ pattern FromVoid :: ScenarioZone
 pattern FromVoid <- FromOutOfPlayArea VoidZone
   where
     FromVoid = FromOutOfPlayArea VoidZone
+
+instance IsLabel "deck" ScenarioZone where
+  fromLabel = FromEncounterDeck
+
+instance IsLabel "discard" ScenarioZone where
+  fromLabel = FromEncounterDiscard
+
+instance IsLabel "void" ScenarioZone where
+  fromLabel = FromVoid
 
 allOutOfPlayZones :: [ScenarioZone]
 allOutOfPlayZones = map FromOutOfPlayArea [minBound .. maxBound]

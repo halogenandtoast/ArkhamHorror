@@ -2,10 +2,10 @@
 
 module Arkham.CommitRestriction where
 
-import Arkham.Prelude
-
 import Arkham.Action (Action)
-import Arkham.Matcher
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Investigator
+import Arkham.Prelude
 import Data.Aeson.TH
 
 data CommitRestriction

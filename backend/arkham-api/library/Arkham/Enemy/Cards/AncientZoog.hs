@@ -23,7 +23,10 @@ ancientZoog =
 instance HasAbilities AncientZoog where
   getAbilities (AncientZoog x) =
     extend1 x
-      $ restricted x 1 (thisExists x #ready <> exists (withTrait Zoog <> #swarming <> NotEnemy IsSwarm))
+      $ restricted
+        x
+        1
+        (thisIs x (enemy_ #ready) <> exists (withTrait Zoog <> #swarming <> NotEnemy IsSwarm))
       $ forced
       $ PhaseBegins #when #enemy
 

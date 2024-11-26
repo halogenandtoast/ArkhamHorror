@@ -1,7 +1,4 @@
-module Arkham.Act.Cards.StrangeOccurences (
-  StrangeOccurences (..),
-  strangeOccurences,
-) where
+module Arkham.Act.Cards.StrangeOccurences (StrangeOccurences (..), strangeOccurences) where
 
 import Arkham.Prelude
 

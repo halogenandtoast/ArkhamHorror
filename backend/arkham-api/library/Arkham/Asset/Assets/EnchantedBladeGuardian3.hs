@@ -53,7 +53,7 @@ instance RunMessage EnchantedBladeGuardian3 where
         let drawing = drawCards iid (toAbilitySource attrs 1) 1
         pushAll [drawing, HealHorror (toTarget iid) (attrs.ability 1) 1]
       pure a
-    RepeatSkillTest sid st | Just st.id == empowered meta -> do
+    RepeatSkillTest sid stId | Just stId == empowered meta -> do
       pure . EnchantedBladeGuardian3 $ attrs `with` Metadata (Just sid)
     SkillTestEnds sid _ _ | Just sid == empowered meta -> do
       pure . EnchantedBladeGuardian3 $ attrs `with` Metadata Nothing

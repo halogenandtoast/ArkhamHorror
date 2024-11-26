@@ -21,7 +21,9 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword (HasKeywords (..), Keyword)
 import Arkham.LocationSymbol
-import Arkham.Matcher
+import Arkham.Matcher.Base
+import Arkham.Matcher.Card
+import Arkham.Matcher.Window
 import Arkham.Name
 import Arkham.SkillType
 import Arkham.Slot
@@ -195,24 +197,6 @@ instance HasField "victoryPoints" CardDef (Maybe Int) where
 instance HasField "unique" CardDef Bool where
   getField = cdUnique
 
-instance Exists CardDef where
-  exists def = case cdCardType def of
-    AssetType -> exists $ assetIs def
-    EventType -> exists $ eventIs def
-    SkillType -> exists $ skillIs def
-    PlayerTreacheryType -> exists $ treacheryIs def
-    PlayerEnemyType -> exists $ enemyIs def
-    EnemyType -> exists $ enemyIs def
-    LocationType -> exists $ locationIs def
-    EncounterAssetType -> exists $ assetIs def
-    EncounterEventType -> exists $ eventIs def
-    ActType -> error "Not implemented"
-    AgendaType -> error "Not implemented"
-    StoryType -> exists $ storyIs def
-    TreacheryType -> exists $ treacheryIs def
-    InvestigatorType -> exists $ investigatorIs def
-    ScenarioType -> error "Not implemented"
-
 emptyCardDef :: CardCode -> Name -> CardType -> CardDef
 emptyCardDef cCode name cType =
   CardDef
@@ -281,10 +265,6 @@ instance IsCardMatcher [CardDef] where
   toCardMatcher = mapOneOf cardIs
   {-# INLINE toCardMatcher #-}
 
-instance IsLocationMatcher CardDef where
-  toLocationMatcher = locationIs
-  {-# INLINE toLocationMatcher #-}
-
 isSignature :: HasCardDef a => a -> Bool
 isSignature = any isSignatureDeckRestriction . cdDeckRestrictions . toCardDef
  where
@@ -335,24 +315,6 @@ instance HasCardCode CardDef where
   toCardCode = cdCardCode
 
 newtype Unrevealed a = Unrevealed a
-
-instance Has InvestigatorMatcher CardDef where
-  has cardDef = case cdCardType cardDef of
-    AssetType -> HasMatchingAsset (assetIs cardDef)
-    EventType -> HasMatchingEvent (eventIs cardDef)
-    SkillType -> HasMatchingSkill (skillIs cardDef)
-    PlayerTreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
-    PlayerEnemyType -> error "invalid matcher"
-    TreacheryType -> HasMatchingTreachery (treacheryIs cardDef)
-    EnemyType -> error "invalid matcher"
-    LocationType -> error "invalid matcher"
-    EncounterAssetType -> HasMatchingAsset (assetIs cardDef)
-    EncounterEventType -> HasMatchingEvent (eventIs cardDef)
-    ActType -> error "invalid matcher"
-    AgendaType -> error "invalid matcher"
-    StoryType -> error "invalid matcher"
-    InvestigatorType -> error "invalid matcher"
-    ScenarioType -> error "invalid matcher"
 
 $(deriveToJSON (aesonOptions $ Just "cd") ''CardDef)
 

@@ -6,7 +6,7 @@ module Arkham.Slot (module X, module Arkham.Slot) where
 import Arkham.Prelude
 
 import Arkham.Id
-import Arkham.Matcher
+import Arkham.Matcher.Card
 import Arkham.SlotType as X
 import Arkham.Source
 import Arkham.Trait (Trait)

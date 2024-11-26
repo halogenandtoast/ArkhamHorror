@@ -82,10 +82,13 @@ instance RunMessage EffectAttrs where
     ResolvedAbility ab | #move `elem` ab.actions && isEndOfWindow a EffectMoveWindow -> do
       a <$ push (DisableEffect effectId)
     NextSkillTest sid -> pure $ replaceNextSkillTest sid a
-    RepeatSkillTest sid st | isEndOfWindow a (EffectSkillTestWindow st.id) -> do
-      if st.source == a.source
-        then pure $ a {effectWindow = Just $ EffectSkillTestWindow sid}
-        else pure a
+    RepeatSkillTest sid stId | isEndOfWindow a (EffectSkillTestWindow stId) -> do
+      getSkillTest >>= \case
+        Nothing -> pure a
+        Just st ->
+          if st.id == stId && st.source == a.source
+            then pure $ a {effectWindow = Just $ EffectSkillTestWindow sid}
+            else pure a
     UpdateEffectMeta eid meta | eid == effectId -> do
       pure $ a {effectMetadata = Just meta}
     _ -> pure a

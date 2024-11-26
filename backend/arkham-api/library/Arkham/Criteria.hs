@@ -18,7 +18,27 @@ import Arkham.Direction (GridDirection)
 import Arkham.GameValue (GameValue (Static))
 import Arkham.History.Types (HistoryType)
 import Arkham.Key
-import Arkham.Matcher
+import Arkham.Matcher.Ability
+import Arkham.Matcher.Act
+import Arkham.Matcher.Agenda
+import Arkham.Matcher.Asset
+import Arkham.Matcher.Base
+import Arkham.Matcher.Card
+import Arkham.Matcher.ChaosToken
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Event
+import Arkham.Matcher.History
+import Arkham.Matcher.Investigator
+import Arkham.Matcher.Location
+import Arkham.Matcher.Patterns
+import Arkham.Matcher.Phase
+import Arkham.Matcher.Skill
+import Arkham.Matcher.SkillTest
+import Arkham.Matcher.Source
+import Arkham.Matcher.Story
+import Arkham.Matcher.Target
+import Arkham.Matcher.Treachery
+import Arkham.Matcher.Value
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey

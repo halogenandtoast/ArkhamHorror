@@ -17,6 +17,13 @@ moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
 moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
 
+enemyMoveTo
+  :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId location, IdOf location ~ LocationId)
+  => enemy
+  -> location
+  -> m ()
+enemyMoveTo enemy location = push $ EnemyMove (asId enemy) (asId location)
+
 moveUntil
   :: (ReverseQueue m, Targetable target, AsId location, IdOf location ~ LocationId)
   => target

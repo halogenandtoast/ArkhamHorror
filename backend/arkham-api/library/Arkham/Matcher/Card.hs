@@ -16,6 +16,7 @@ import Arkham.Keyword (Keyword)
 import Arkham.LocationSymbol
 import {-# SOURCE #-} Arkham.Matcher.Ability
 import {-# SOURCE #-} Arkham.Matcher.Asset
+import Arkham.Matcher.Base
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import {-# SOURCE #-} Arkham.Matcher.Location
 import Arkham.Matcher.Value
@@ -370,3 +371,20 @@ instance FromJSON ExtendedCardMatcher where
       "AnyCard" -> pure (BasicCardMatch AnyCard)
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
       _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
+
+-- ** Card Helpers **
+
+cardIs :: HasCardCode a => a -> CardMatcher
+cardIs = CardWithCardCode . toCardCode
+
+cardsAre :: HasCardCode a => [a] -> CardMatcher
+cardsAre = mapOneOf cardIs
+
+fromSets :: [EncounterSet] -> CardMatcher
+fromSets = oneOf . map CardFromEncounterSet
+
+instance OneOf ExtendedCardMatcher where
+  oneOf = ExtendedCardWithOneOf
+
+instance OneOf CardMatcher where
+  oneOf = CardWithOneOf

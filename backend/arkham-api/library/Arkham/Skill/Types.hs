@@ -117,6 +117,9 @@ sealedChaosTokensL = lens skillSealedChaosTokens $ \m x -> m {skillSealedChaosTo
 afterPlayL :: Lens' SkillAttrs AfterPlayStrategy
 afterPlayL = lens skillAfterPlay $ \m x -> m {skillAfterPlay = x}
 
+placementL :: Lens' SkillAttrs Placement
+placementL = lens skillPlacement $ \m x -> m {skillPlacement = x}
+
 allSkillCards :: Map CardCode CardDef
 allSkillCards = allPlayerSkillCards
 

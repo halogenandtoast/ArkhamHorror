@@ -101,6 +101,7 @@ import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
+import Arkham.Skill.Types qualified as Skill
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
 import Arkham.Source
@@ -817,7 +818,10 @@ runGameMessage msg g = case msg of
       if notNull (gameActiveAbilities g)
         then do
           skill <- getSkill sid
-          pure $ actionRemovedEntitiesL . skillsL %~ insertEntity skill
+          pure
+            $ actionRemovedEntitiesL
+            . skillsL
+            %~ insertEntity (overAttrs (Skill.placementL .~ OutOfPlay RemovedZone) skill)
         else pure id
     pure $ g & entitiesL . skillsL %~ deleteMap sid & removedEntitiesF
   When (RemoveEnemy enemy) -> do
@@ -958,7 +962,8 @@ runGameMessage msg g = case msg of
           _ -> id
 
     skills' <-
-      filterMapM (fieldMap SkillPlacement (== Limbo) . toId) $ g ^. entitiesL . skillsL
+      map (overAttrs (Skill.placementL .~ OutOfPlay RemovedZone))
+        <$> filterMapM (fieldMap SkillPlacement (== Limbo) . toId) (g ^. entitiesL . skillsL)
 
     skillPairs <- for (mapToList skills') $ \(skillId, skill) -> do
       card <- field SkillCard skillId
@@ -1038,12 +1043,7 @@ runGameMessage msg g = case msg of
               (\k _ -> k `notElem` skillsToRemove)
         )
       & (phaseHistoryL %~ insertHistory iid historyItem)
-      & ( actionRemovedEntitiesL
-            . skillsL
-            %~ foldr
-              (\s m -> Map.insert s.id s m)
-              skills'
-        )
+      & (actionRemovedEntitiesL . skillsL %~ Map.foldr' (\s m -> Map.insert s.id s m) skills')
       & setTurnHistory
   Msg.SkillTestEnded _ -> do
     pure

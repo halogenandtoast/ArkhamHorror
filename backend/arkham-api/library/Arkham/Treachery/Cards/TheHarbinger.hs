@@ -41,6 +41,6 @@ instance RunMessage TheHarbinger where
            ]
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll [ObtainCard (toCard attrs), toDiscardBy iid attrs attrs]
+      pushAll [ObtainCard (toCard attrs).id, toDiscardBy iid attrs attrs]
       pure t
     _ -> TheHarbinger <$> runMessage msg attrs

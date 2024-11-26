@@ -49,7 +49,7 @@ instance RunMessage UnderworldMarket2 where
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      push $ ObtainCard card
+      push $ ObtainCard cid
       deck' <- shuffleM (card : marketDeck meta)
       pure . UnderworldMarket2 . (`with` Meta deck') $ attrs
     UseThisAbility iid (isSource attrs -> True) 2 -> do

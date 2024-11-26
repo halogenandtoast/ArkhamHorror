@@ -28,9 +28,9 @@ instance RunMessage ThroughTheGates where
       (mcard, _) <- fieldMap InvestigatorDeck (drawCard . unDeck) iid
       for_ mcard $ \(toCard -> card) -> do
         if card `cardMatch` WeaknessCard
-          then pushAll [ObtainCard card, AddToHand iid [card]]
+          then pushAll [ObtainCard card.id, AddToHand iid [card]]
           else do
             send $ format (toCard attrs) <> " removed all copies of " <> format card <> " from the game"
-            pushAll [ObtainCard card, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
+            pushAll [ObtainCard card.id, RemoveAllCopiesOfCardFromGame iid (toCardCode card)]
       pure t
     _ -> ThroughTheGates <$> runMessage msg attrs

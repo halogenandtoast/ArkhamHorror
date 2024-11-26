@@ -535,7 +535,7 @@ data Message
   | CommitToSkillTest SkillTestId (UI Message)
   | Continue Text
   | CreateEffect EffectBuilder
-  | ObtainCard Card
+  | ObtainCard CardId
   | ObtainChaosToken ChaosToken
   | CreateEnemy (EnemyCreation Message)
   | CreateSkill SkillId Card InvestigatorId Placement
@@ -1104,6 +1104,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "ObtainCard" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (card :: Card) -> pure $ ObtainCard (toCardId card)
+          Right cardId -> pure $ ObtainCard cardId
       "BeforeSkillTest" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

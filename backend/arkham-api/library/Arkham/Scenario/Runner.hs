@@ -568,7 +568,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PlaceUnderneath AgendaDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
-        $ ObtainCard card
+        $ ObtainCard card.id
         : splitWithWindows
           (PlacedUnderneath AgendaDeckTarget card)
           [Window.PlaceUnderneath AgendaDeckTarget card]
@@ -576,16 +576,16 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   PlaceUnderneath ActDeckTarget cards -> do
     for_ cards $ \card ->
       pushAll
-        $ ObtainCard card
+        $ ObtainCard card.id
         : splitWithWindows
           (PlacedUnderneath ActDeckTarget card)
           [Window.PlaceUnderneath ActDeckTarget card]
     pure a
-  CardEnteredPlay _ card -> runMessage (ObtainCard card) a
-  ObtainCard card -> do
+  CardEnteredPlay _ card -> runMessage (ObtainCard card.id) a
+  ObtainCard cardId -> do
     let
       removeCard :: IsCard c => [c] -> [c]
-      removeCard = deleteFirstMatch ((== card) . toCard)
+      removeCard = deleteFirstMatch ((== cardId) . toCardId)
     pure
       $ a
       & (setAsideCardsL %~ removeCard)

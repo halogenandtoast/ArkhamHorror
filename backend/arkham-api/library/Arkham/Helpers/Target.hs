@@ -22,7 +22,7 @@ import Arkham.Skill.Types (Field (..))
 import Arkham.Target
 import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (Field (..))
-import Arkham.Zone (SomeZone (..), knownOutOfPlayZone, someZones)
+import Arkham.Zone (knownOutOfPlayZone, overOutOfPlayZones)
 import Data.Proxy
 
 targetTraits :: (HasCallStack, HasGame m) => Target -> m (Set Trait)
@@ -42,10 +42,9 @@ targetTraits = \case
       runMaybeT
         $ asum
         $ MaybeT (fieldMay EnemyTraits eid)
-        : [ MaybeT
+        : overOutOfPlayZones \(p :: Proxy zone) ->
+          MaybeT
             $ fieldMay @(OutOfPlayEntity zone Enemy) (OutOfPlayEnemyField (knownOutOfPlayZone p) EnemyTraits) eid
-          | SomeZone p@(Proxy :: Proxy zone) <- someZones
-          ]
     pure $ fromMaybe mempty result
   EventTarget eid -> field EventTraits eid
   InvestigatorTarget iid -> field InvestigatorTraits iid
@@ -58,7 +57,7 @@ targetTraits = \case
   ScenarioTarget -> pure mempty
   SkillTarget sid -> field SkillTraits sid
   SkillTestTarget {} -> pure mempty
-  TreacheryTarget tid -> field TreacheryTraits tid
+  TreacheryTarget tid -> fromMaybe mempty <$> fieldMay TreacheryTraits tid
   StoryTarget _ -> pure mempty
   TestTarget -> pure mempty
   ChaosTokenTarget _ -> pure mempty

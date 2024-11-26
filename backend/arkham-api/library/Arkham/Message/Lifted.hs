@@ -1769,7 +1769,7 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
     _ -> False
 
 obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
-obtainCard = push . ObtainCard . toCard
+obtainCard = push . ObtainCard . toCardId
 
 removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()
 removeCardFromGame card = do

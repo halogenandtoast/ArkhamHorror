@@ -58,7 +58,7 @@ instance RunMessage TriggerMan3 where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       c <- getCard cid
       assetId <- getRandom
-      push $ ObtainCard c
+      push $ ObtainCard c.id
       push $ CreateAssetAt assetId c $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

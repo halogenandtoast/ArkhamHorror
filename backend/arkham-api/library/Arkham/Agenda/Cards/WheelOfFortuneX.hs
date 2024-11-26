@@ -88,7 +88,7 @@ instance RunMessage WheelOfFortuneX where
               Just pos -> do
                 (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
                 pushAll
-                  [ ObtainCard card
+                  [ ObtainCard card.id
                   , placeEmptySpace
                   , PlaceCosmos iid emptySpace' (EmptySpace pos card)
                   , PlaceCosmos iid lid (CosmosLocation (updatePosition pos GridLeft) lid)

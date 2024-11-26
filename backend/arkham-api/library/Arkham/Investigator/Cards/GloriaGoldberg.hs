@@ -65,7 +65,7 @@ instance RunMessage GloriaGoldberg where
                     ]
                   <> [ Label
                       "Place it beneath Gloria Goldberg (max 3 cards beneath her)"
-                      [ObtainCard card, PlaceUnderneath (toTarget iid) [card]]
+                      [ObtainCard card.id, PlaceUnderneath (toTarget iid) [card]]
                      | cardsUnderneathCount < 3
                      ]
               ]

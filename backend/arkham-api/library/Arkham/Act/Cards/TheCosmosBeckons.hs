@@ -139,7 +139,7 @@ instance RunMessage TheCosmosBeckons where
           , placeThirdCosmos
           , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 2 0) thirdCosmos)
           ]
-        <> map (ObtainCard . toCard) playerCards
+        <> map (ObtainCard . toCardId) playerCards
         <> placeEmptySpaces
       pure a
     _ -> TheCosmosBeckons <$> runMessage msg attrs

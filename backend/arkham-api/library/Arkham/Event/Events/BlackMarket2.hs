@@ -47,7 +47,7 @@ instance RunMessage BlackMarket2 where
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
       cards <- fieldMap InvestigatorDeck (map toCard . take 1 . unDeck) iid'
-      pushAll $ map ObtainCard cards <> [SetAsideCards cards]
+      pushAll $ map (ObtainCard . toCardId) cards <> [SetAsideCards cards]
       pure . BlackMarket2 $ attrs & overMeta (map toCardId cards <>)
     _ -> BlackMarket2 <$> liftRunMessage msg attrs
 

@@ -101,7 +101,7 @@ instance RunMessage InfinityOfDarkness where
             Just pos -> do
               (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
               pushAll
-                [ ObtainCard card
+                [ ObtainCard card.id
                 , placeEmptySpace
                 , PlaceCosmos iid emptySpace' (EmptySpace pos card)
                 , PlaceCosmos iid (toId attrs) (CosmosLocation (updatePosition pos GridDown) (toId attrs))

@@ -22,7 +22,7 @@ instance RunMessage HeedTheDream2 where
       investigators <- select $ affectsOthers Anyone
       cards <- for investigators $ fieldMap InvestigatorDeck (take 3 . unDeck)
 
-      for_ (concat cards) (push . ObtainCard . toCard)
+      for_ (concat cards) (push . ObtainCard . toCardId)
 
       let
         go _ [] acc = acc

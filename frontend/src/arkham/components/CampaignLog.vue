@@ -113,7 +113,6 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
   }
 
   if (key === 'SuppliesRecovered') {
-    console.log(value);
     const contents = value.contents || value.recordVal?.contents
     const supply = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`edgeOfTheEarth.suppliesRecovered.${supply}`, supply)

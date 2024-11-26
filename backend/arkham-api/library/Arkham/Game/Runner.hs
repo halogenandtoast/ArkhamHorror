@@ -670,7 +670,7 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundCards cards -> pure $ g & foundCardsL .~ cards
-  ObtainCard card -> pure $ g & foundCardsL . each %~ deleteFirstMatch (== card)
+  ObtainCard cardId -> pure $ g & foundCardsL . each %~ deleteFirstMatch ((== cardId) . toCardId)
   AddFocusedToTopOfDeck iid EncounterDeckTarget cardId ->
     if null (gameFoundCards g)
       then do
@@ -979,7 +979,7 @@ runGameMessage msg g = case msg of
       pure
         $ if
           | DevourThis iid' <- afterPlay ->
-              (Run [ObtainCard (toCard skill), Devoured iid' (toCard skill)], Nothing)
+              (Run [ObtainCard (toCard skill).id, Devoured iid' (toCard skill)], Nothing)
           | ReturnToHandAfterTest `elem` mods ->
               ( ReturnToHand (skillOwner $ toAttrs skill) (SkillTarget skillId)
               , Nothing
@@ -1098,7 +1098,7 @@ runGameMessage msg g = case msg of
             else lift $ push (ClearFound $ foundKey cardSource) -- we don't remove anymore so nothing to do
         RemoveRestFromGame -> do
           -- Try to obtain, then don't add back
-          lift $ pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck foundCards
+          lift $ pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck foundCards
 
     pure g
   FinishedSearch -> do
@@ -1107,9 +1107,9 @@ runGameMessage msg g = case msg of
     let
       handleCard card = case card of
         PlayerCard pc -> case pc.owner of
-          Just iid -> pushAll [ObtainCard card, AddToDiscard iid pc]
-          Nothing -> push $ ObtainCard card
-        EncounterCard ec -> pushAll [ObtainCard card, AddToEncounterDiscard ec]
+          Just iid -> pushAll [ObtainCard card.id, AddToDiscard iid pc]
+          Nothing -> push $ ObtainCard card.id
+        EncounterCard ec -> pushAll [ObtainCard card.id, AddToEncounterDiscard ec]
         VengeanceCard vc -> handleCard vc
 
     handleCard =<< getCard cardId
@@ -2614,7 +2614,8 @@ runGameMessage msg g = case msg of
         let location = createLocation card locationId
 
         pushAll
-          $ PlacedLocation (toName location) (toCardCode card) locationId
+          $ ObtainCard card.id
+          : PlacedLocation (toName location) (toCardCode card) locationId
           : (guard (not ignoreRevelation) *> resolve (Revelation iid (LocationSource locationId)))
         pure $ g' & (entitiesL . locationsL . at locationId ?~ location)
       _ ->

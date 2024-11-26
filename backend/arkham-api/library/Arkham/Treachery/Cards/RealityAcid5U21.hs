@@ -180,7 +180,7 @@ instance RunMessage RealityAcid5U21 where
                   Just
                     $ ( investigator
                       , [ targetLabel x
-                          $ [ObtainCard x, Devoured iid (toCard x)]
+                          $ [ObtainCard x.id, Devoured iid (toCard x)]
                           <> [ShuffleDeck (Deck.InvestigatorDeck investigator) | x `elem` inDeck]
                         | x <- inDeck <> inHand <> inDiscard <> inPlay
                         ]

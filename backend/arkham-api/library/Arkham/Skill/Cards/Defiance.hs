@@ -4,6 +4,7 @@ import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Game.Helpers
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 
@@ -17,15 +18,18 @@ defiance = skill Defiance Cards.defiance
 instance RunMessage Defiance where
   runMessage msg s@(Defiance attrs) = runQueueT $ case msg of
     BeforeRevealChaosTokens -> do
-      chooseOneM (skillOwner attrs) do
-        labeled "Choose {skull}"
-          $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)
-        labeled "Choose {cultist}"
-          $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Cultist)
-        labeled "Choose {tablet}"
-          $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Tablet)
-        labeled "Choose {elderThing}"
-          $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget ElderThing)
+      case attrs.placement of
+        Limbo ->
+          chooseOneM (skillOwner attrs) do
+            labeled "Choose {skull}"
+              $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Skull)
+            labeled "Choose {cultist}"
+              $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Cultist)
+            labeled "Choose {tablet}"
+              $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget Tablet)
+            labeled "Choose {elderThing}"
+              $ createCardEffect Cards.defiance Nothing (toSource attrs) (ChaosTokenFaceTarget ElderThing)
+        _ -> pure ()
       pure s
     _ -> Defiance <$> liftRunMessage msg attrs
 
@@ -46,5 +50,5 @@ instance RunMessage DefianceEffect where
     ResolveChaosToken _drawnToken chaosTokenFace _ | not attrs.finished && ChaosTokenFaceTarget chaosTokenFace == attrs.target -> do
       cancelledOrIgnoredCardOrGameEffect attrs.source
       pure $ DefianceEffect $ finishedEffect attrs
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnded _ -> disableReturn e
     _ -> DefianceEffect <$> liftRunMessage msg attrs

@@ -18,7 +18,7 @@ instance RunMessage LiveAndLearn where
     InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AnySkillValue 2)
-      push $ RepeatSkillTest sid st
+      push $ RepeatSkillTest sid st.id
       pure e
     InvestigatorPlayEvent _ eid _ windows' _ | eid == toId attrs -> do
       error $ "Wrong windows: " <> show windows'

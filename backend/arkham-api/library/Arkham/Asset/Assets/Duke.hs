@@ -45,7 +45,7 @@ instance RunMessage Duke where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      as <- select $ performableAbilityWithoutActionBy iid $ at_ (of_ iid) <> #basic <> #investigate
+      as <- select $ performableAbilityWithoutActionBy iid $ at_ (be iid) <> #basic <> #investigate
       let convert ab = noAOO $ decrease_ (ab {abilitySource = ProxySource ab.source source}) 1
       chooseOneM iid do
         for_ as \ab -> abilityLabeled iid (convert ab) nothing

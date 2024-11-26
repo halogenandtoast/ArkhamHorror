@@ -130,7 +130,7 @@ getModifiedChaosTokenValue s t = do
 
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
-    RepeatSkillTest sid skillTest | skillTest.id == skillTestId -> do
+    RepeatSkillTest sid skillTestId' | skillTestId' == skillTestId -> do
       push
         $ BeginSkillTestWithPreMessages' []
         $ ( buildSkillTest
@@ -155,11 +155,11 @@ instance RunMessage SkillTest where
         & (revealedChaosTokensL %~ filter (`notElem` tokens))
         & (resolvedChaosTokensL %~ filter (`notElem` tokens))
         & (toResolveChaosTokensL %~ filter (`notElem` tokens))
-    BeforeSkillTest st | st.id == s.id -> do
+    BeforeSkillTest stId | stId == s.id -> do
       pure $ s & stepL .~ CommitCardsFromHandToSkillTestStep
     BeginSkillTestAfterFast -> do
       windowMsg <- checkWindows [mkWindow #when Window.FastPlayerWindow]
-      pushAll [windowMsg, BeforeSkillTest s, EndSkillTestWindow]
+      pushAll [windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
       mAbilityCardId <- case skillTestSource of
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
@@ -301,7 +301,7 @@ instance RunMessage SkillTest where
         $ if RevealChaosTokensBeforeCommittingCards `elem` skillTestModifiers'
           then
             CommitToSkillTest
-              s
+              s.id
               (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
           else RevealSkillTestChaosTokens iid
       for_ chaosTokenFaces $ \chaosTokenFace -> do
@@ -830,8 +830,13 @@ instance RunMessage SkillTest where
             else FailedBy NonAutomatic (skillTestResultsDifficulty results - modifiedSkillValue')
 
       pure $ s & resultL .~ result & stepL .~ DetermineSuccessOrFailureOfSkillTestStep
-    ChangeSkillTestType newSkillTestType newSkillTestBaseValue ->
-      pure $ s & typeL .~ newSkillTestType & baseValueL .~ newSkillTestBaseValue
+    ChangeSkillTestType newSkillTestType newSkillTestBaseValue -> do
+      let iconValues = iconValuesForSkillTestType newSkillTestType
+      pure
+        $ s
+        & (typeL .~ newSkillTestType)
+        & (baseValueL .~ newSkillTestBaseValue)
+        & (iconValuesL .~ iconValues)
     RemoveAllChaosTokens face -> do
       pure $ s & setAsideChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     SetSkillTestResolveFailureInvestigator iid -> do

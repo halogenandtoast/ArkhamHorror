@@ -12,7 +12,17 @@ import Arkham.GameValue
 import Arkham.Id
 import {-# SOURCE #-} Arkham.Investigator.Types (Investigator)
 import {-# SOURCE #-} Arkham.Location.Types (Location)
-import Arkham.Matcher
+import Arkham.Matcher.Act
+import Arkham.Matcher.Agenda
+import Arkham.Matcher.Asset
+import Arkham.Matcher.Card
+import Arkham.Matcher.ChaosToken
+import Arkham.Matcher.Enemy
+import Arkham.Matcher.Event
+import Arkham.Matcher.Investigator
+import Arkham.Matcher.Location
+import Arkham.Matcher.Skill
+import Arkham.Matcher.Treachery
 import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SlotType

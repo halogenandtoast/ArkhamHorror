@@ -354,12 +354,22 @@ findEncounterCard
   -> target
   -> cardMatcher
   -> m ()
-findEncounterCard iid target cardMatcher =
+findEncounterCard iid target cardMatcher = findEncounterCardIn iid target cardMatcher [FromEncounterDeck, FromEncounterDiscard]
+
+findEncounterCardIn
+  :: forall cardMatcher target m
+   . (ReverseQueue m, Targetable target, IsCardMatcher cardMatcher)
+  => InvestigatorId
+  -> target
+  -> cardMatcher
+  -> [ScenarioZone]
+  -> m ()
+findEncounterCardIn iid target cardMatcher scenarioZones =
   push
     $ Msg.FindEncounterCard
       iid
       (toTarget target)
-      [FromEncounterDeck, FromEncounterDiscard]
+      scenarioZones
       (toCardMatcher cardMatcher)
 
 beginSkillTest
@@ -523,6 +533,10 @@ spawnEnemy card = createEnemyWith card () id
 
 spawnEnemy_ :: (ReverseQueue m, IsCard card) => card -> m ()
 spawnEnemy_ = void . spawnEnemy
+
+spawnEnemyAt_
+  :: (ReverseQueue m, IsCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
+spawnEnemyAt_ card location = push $ SpawnEnemyAt (toCard card) (asId location)
 
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
@@ -2079,3 +2093,6 @@ withTimings w body = do
 
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
+
+sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
+sendMessage target msg = push $ SendMessage (toTarget target) msg

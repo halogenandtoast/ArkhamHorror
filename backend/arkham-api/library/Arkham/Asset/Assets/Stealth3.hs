@@ -19,7 +19,10 @@ stealth3 = asset Stealth3 Cards.stealth3
 
 instance HasAbilities Stealth3 where
   getAbilities (Stealth3 attrs) =
-    [controlledAbility attrs 1 (DuringTurn You) $ FastAbility' (exhaust attrs) [#evade]]
+    [ wantsSkillTest AnySkillTest
+        $ controlledAbility attrs 1 (DuringTurn You)
+        $ FastAbility' (exhaust attrs) [#evade]
+    ]
 
 instance HasModifiersFor Stealth3 where
   getModifiersFor (EnemyTarget eid) (Stealth3 attrs) = maybeModified attrs do

@@ -22,7 +22,7 @@ instance HasAbilities DarkAbyss where
     extendRevealed
       a
       [ restricted a 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be a)
-      , restricted a 2 (exists $ orConnected (be a) <> CanHaveFloodLevelIncreased)
+      , restricted a 2 (exists $ orConnected a <> CanHaveFloodLevelIncreased)
           $ forced
           $ DiscoveringLastClue #after Anyone (be a)
       ]

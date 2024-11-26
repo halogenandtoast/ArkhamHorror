@@ -47,7 +47,7 @@ getBlockedFrom (Meta meta) lid = do
       | otherwise = do
           next <- filterBy [unblocked current, (`Set.notMember` visited)] <$> getConnectedLocations current
           bfs (Set.insert current visited) (queue <> next)
-  select . not_ . beOneOf =<< bfs Set.empty [lid]
+  select . not_ . beOneOf @_ @LocationMatcher  =<< bfs Set.empty [lid]
 
 instance HasModifiersFor InTooDeep where
   getModifiersFor (InvestigatorTarget iid) (InTooDeep a) = maybeModified a do

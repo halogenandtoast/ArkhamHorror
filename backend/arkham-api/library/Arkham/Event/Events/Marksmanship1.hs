@@ -51,7 +51,7 @@ instance HasModifiersFor Marksmanship1 where
           $ EnemyFightActionCriteria
           $ CriteriaOverride
           $ EnemyCriteria
-          $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected $ be lid))
+          $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected lid))
       ]
   getModifiersFor _ _ = pure []
 

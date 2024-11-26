@@ -12,7 +12,7 @@ import {-# SOURCE #-} Arkham.Card.EncounterCard
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
-import Arkham.Matcher
+import Arkham.Matcher.Agenda
 import Arkham.Phase
 import Arkham.Tarot
 import Arkham.Trait

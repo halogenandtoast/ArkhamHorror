@@ -127,6 +127,9 @@ instance HasField "placement" TreacheryAttrs Placement where
 instance HasField "doom" TreacheryAttrs Int where
   getField = countTokens Doom . treacheryTokens
 
+instance HasField "drawnBy" TreacheryAttrs InvestigatorId where
+  getField = treacheryDrawnBy
+
 treacheryDoom :: TreacheryAttrs -> Int
 treacheryDoom = countTokens Doom . treacheryTokens
 

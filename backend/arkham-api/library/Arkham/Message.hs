@@ -480,7 +480,7 @@ data Message
   | AttackEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
   | BeforeRevealChaosTokens
   | AfterRevealChaosTokens
-  | BeforeSkillTest SkillTest
+  | BeforeSkillTest SkillTestId
   | ChangeSkillTestType SkillTestType SkillTestBaseValue
   | IncreaseSkillTestDifficulty Int
   | -- Game State Control
@@ -492,7 +492,7 @@ data Message
   | ReplaceSkillTestSkill FromSkillType ToSkillType
   | BeginSkillTestWithPreMessages Bool [Message] SkillTest
   | BeginSkillTestWithPreMessages' [Message] SkillTest
-  | RepeatSkillTest SkillTestId SkillTest
+  | RepeatSkillTest SkillTestId SkillTestId
   | BeginSkillTestAfterFast
   | SetSkillTestTarget Target
   | SetSkillTestResolveFailureInvestigator InvestigatorId
@@ -532,7 +532,7 @@ data Message
   | ChosenRandomLocation Target LocationId
   | ChooseChaosTokenGroups Source InvestigatorId ChaosBagStep
   | CommitCard InvestigatorId Card
-  | CommitToSkillTest SkillTest (UI Message)
+  | CommitToSkillTest SkillTestId (UI Message)
   | Continue Text
   | CreateEffect EffectBuilder
   | ObtainCard Card
@@ -1104,6 +1104,21 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "BeforeSkillTest" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left st -> pure $ BeforeSkillTest (skillTestId st)
+          Right stId -> pure $ BeforeSkillTest stId
+      "RepeatSkillTest" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (stId, st) -> pure $ RepeatSkillTest stId (skillTestId st)
+          Right (stId, stId') -> pure $ RepeatSkillTest stId stId'
+      "CommitToSkillTest" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (st, uim) -> pure $ CommitToSkillTest (skillTestId st) uim
+          Right (stId, uim) -> pure $ CommitToSkillTest stId uim
       "AddCampaignCardToDeck" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

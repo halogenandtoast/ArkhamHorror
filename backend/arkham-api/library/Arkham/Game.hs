@@ -3146,7 +3146,9 @@ instance Projection Location where
     l <- getLocation lid
     let attrs@LocationAttrs {..} = toAttrs l
     case f of
-      LocationCostToEnterUnrevealed -> pure locationCostToEnterUnrevealed
+      LocationCostToEnterUnrevealed -> do
+        blank <- hasModifier attrs Blank
+        pure $ if blank then Free else locationCostToEnterUnrevealed
       LocationPosition -> pure locationPosition
       LocationInFrontOf -> pure locationInFrontOf
       LocationInvestigateSkill -> pure locationInvestigateSkill

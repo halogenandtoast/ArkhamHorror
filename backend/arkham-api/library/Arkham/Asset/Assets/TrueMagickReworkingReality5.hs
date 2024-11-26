@@ -36,10 +36,10 @@ instance HasAbilities TrueMagickReworkingReality5 where
   getAbilities (TrueMagickReworkingReality5 (With attrs (Metadata Nothing))) =
     [ withTooltip "Use True Magick"
       $ doesNotProvokeAttacksOfOpportunity
-      $ controlledAbility attrs 1 HasTrueMagick aform
+      $ controlled attrs 1 HasTrueMagick aform
     | aform <- [ActionAbility [] mempty, FastAbility Free, freeReaction AnyWindow]
     ]
-  getAbilities _ = []
+  getAbilities (TrueMagickReworkingReality5 (With _ (Metadata (Just inner)))) = getAbilities inner
 
 instance RunMessage TrueMagickReworkingReality5 where
   runMessage msg (TrueMagickReworkingReality5 (With attrs meta)) = runQueueT $ case msg of

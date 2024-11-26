@@ -6,6 +6,7 @@ where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Creation
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
@@ -43,7 +44,7 @@ instance RunMessage InnsmouthSquareInTooDeep where
   runMessage msg l@(InnsmouthSquareInTooDeep attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       innsmouthShoggoth <- getSetAsideCard Enemies.innsmouthShoggoth
-      createEnemyAt_ innsmouthShoggoth attrs.id
+      createEnemyWith_ innsmouthShoggoth attrs.id createExhausted
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       mods <- getModifiers attrs.id

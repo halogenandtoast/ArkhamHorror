@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted
+import Arkham.Treachery.Import.Lifted hiding (movementModifier)
 
 newtype ArcaneBarrier = ArcaneBarrier TreacheryAttrs
   deriving anyclass (IsTreachery, HasAbilities)

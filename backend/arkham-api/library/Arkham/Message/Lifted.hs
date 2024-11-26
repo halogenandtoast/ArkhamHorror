@@ -1379,6 +1379,14 @@ eventModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 eventModifiers source target modifiers = Msg.pushM $ Msg.eventModifiers source target modifiers
 
+movementModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> ModifierType
+  -> m ()
+movementModifier source target modifier = Msg.pushM $ Msg.movementModifier source target modifier
+
 dealAdditionalDamage
   :: (HasQueue Message m, MonadTrans t) => InvestigatorId -> Int -> [Message] -> t m ()
 dealAdditionalDamage iid amount additionalMessages = lift $ Msg.dealAdditionalDamage iid amount additionalMessages

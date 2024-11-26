@@ -48,7 +48,7 @@ instance RunMessage BindersJarInterdimensionalPrison1 where
   runMessage msg a@(BindersJarInterdimensionalPrison1 (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
       card <- field EnemyCard eid
-      push $ ObtainCard card
+      push $ ObtainCard card.id
       push $ PlaceUnderneath (toTarget attrs) [card]
       pure a
     PlaceUnderneath _ [c] -> do

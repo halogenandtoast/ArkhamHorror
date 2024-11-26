@@ -86,7 +86,7 @@ instance RunMessage DianaStanley where
         _ -> pure $ not (cdPermanent $ toCardDef card)
       pushAll
         $ [removeMsg | canLeavePlay]
-        <> (guard canLeavePlay *> [ObtainCard card, PlaceUnderneath (toTarget attrs) [card]])
+        <> (guard canLeavePlay *> [ObtainCard card.id, PlaceUnderneath (toTarget attrs) [card]])
         <> [ drawCards iid (attrs.ability 1) 1
            , TakeResources iid 1 (attrs.ability 1) False
            ]

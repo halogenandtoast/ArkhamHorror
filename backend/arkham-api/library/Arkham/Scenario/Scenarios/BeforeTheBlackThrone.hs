@@ -151,7 +151,7 @@ instance RunMessage BeforeTheBlackThrone where
           , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 2 1) firstCosmos)
           , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 2 (-1)) secondCosmos)
           ]
-        <> map (ObtainCard . toCard) cards
+        <> map (ObtainCard . toCardId) cards
 
       for_ emptySpaces $ \(pos, card) -> do
         emptySpace' <- placeLocationCard Locations.emptySpace

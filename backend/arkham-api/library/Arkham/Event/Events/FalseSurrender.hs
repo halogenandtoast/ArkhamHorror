@@ -40,7 +40,9 @@ instance RunMessage FalseSurrender where
         <> basic (#asset <> #weapon)
       pure . FalseSurrender $ With attrs (Meta $ Just eid)
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
-      putCardIntoPlay iid =<< getCard cid
+      c <- getCard cid
+      reduceCostOf attrs c 1
+      playCardPayingCost iid c
       doStep 2 msg
       pure e
     DoStep 2 (HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid)) -> do
@@ -48,11 +50,7 @@ instance RunMessage FalseSurrender where
         let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]
         abilities <-
           filterM (getCanPerformAbility iid (defaultWindows iid))
-            =<< selectMap
-              nullifyActionCost
-              ( AbilityIsAction #fight
-                  <> AssetAbility (AssetWithId asset)
-              )
+            =<< selectMap nullifyActionCost (AbilityIsAction #fight <> AssetAbility (AssetWithId asset))
         when (notNull abilities) do
           chooseOneM iid do
             labeled "Take a fight action against that enemy" do

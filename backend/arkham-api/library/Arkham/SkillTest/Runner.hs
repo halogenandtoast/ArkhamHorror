@@ -515,7 +515,8 @@ instance RunMessage SkillTest where
         let mDevourer = listToMaybe [iid' | SetAfterPlay (DevourThis iid') <- mods]
         pure
           $ if
-            | Just iid' <- mDevourer -> Just (Run [ObtainCard $ toCard discard, Devoured iid' $ toCard discard])
+            | Just iid' <- mDevourer ->
+                Just (Run [ObtainCard discard.id, Devoured iid' $ toCard discard])
             | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods ->
                 Just (PutCardOnBottomOfDeck iid (Deck.InvestigatorDeck iid) (toCard discard))
             | ReturnToHandAfterTest `elem` mods -> Just $ AddToHand iid [toCard discard]

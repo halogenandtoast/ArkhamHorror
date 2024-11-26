@@ -141,7 +141,7 @@ instance RunMessage InAzathothsDomain where
           , placeFourthCosmos
           , PlaceCosmos lead fourthCosmos (CosmosLocation (Pos 3 (-1)) fourthCosmos)
           ]
-        <> map (ObtainCard . toCard) playerCards
+        <> map (ObtainCard . toCardId) playerCards
         <> placeEmptySpaces
       pure a
     _ -> InAzathothsDomain <$> runMessage msg attrs

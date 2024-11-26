@@ -449,7 +449,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   ReturnToHand iid (CardIdTarget cardId) | iid == investigatorId -> do
     card <- getCard cardId
-    pushAll [ObtainCard card, AddToHand iid [card]]
+    pushAll [ObtainCard card.id, AddToHand iid [card]]
     pure a
   CheckAdditionalActionCosts iid target action msgs | iid == investigatorId -> do
     mods <- getModifiers a
@@ -770,7 +770,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         ToSetAside -> id
 
     when (cdWhenDiscarded (toCardDef pc) == ToSetAside) do
-      pushAll [ObtainCard (toCard pc), SetAsideCards [toCard pc]]
+      pushAll [ObtainCard (toCard pc).id, SetAsideCards [toCard pc]]
 
     pure
       $ a
@@ -1950,15 +1950,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & deckUrlL .~ murl
   UpgradeDeck iid murl _ | iid == investigatorId -> do
     pure $ a & deckUrlL .~ murl
-  ObtainCard card -> do
+  ObtainCard cardId -> do
     pure
       $ a
-      & (handL %~ filter (/= card))
-      & (discardL %~ filter ((/= card) . toCard))
-      & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
-      & (cardsUnderneathL %~ filter ((/= card) . toCard))
-      & (foundCardsL . each %~ filter (/= card))
-      & (bondedCardsL %~ filter ((/= card) . toCard))
+      & (handL %~ filter ((/= cardId) . toCardId))
+      & (discardL %~ filter ((/= cardId) . toCardId))
+      & (deckL %~ Deck . filter ((/= cardId) . toCardId) . unDeck)
+      & (cardsUnderneathL %~ filter ((/= cardId) . toCardId))
+      & (foundCardsL . each %~ filter ((/= cardId) . toCardId))
+      & (bondedCardsL %~ filter ((/= cardId) . toCardId))
   PutCampaignCardIntoPlay iid cardDef | iid == investigatorId -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
@@ -3516,7 +3516,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       PutBack -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back
-        pushAll $ map ObtainCard $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)
+        pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)
 
     push (SearchEnded iid)
     pure

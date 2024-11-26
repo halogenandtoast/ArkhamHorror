@@ -18,6 +18,9 @@ data OutOfPlayZone
   | TheDepths
   deriving stock (Show, Eq, Ord, Enum, Bounded, Data)
 
+overOutOfPlayZones :: (forall a. KnownOutOfPlayZone a => Proxy a -> b) -> [b]
+overOutOfPlayZones f = map (\(SomeZone p) -> f p) someZones
+
 class KnownOutOfPlayZone a where
   knownOutOfPlayZone :: Proxy (a :: OutOfPlayZone) -> OutOfPlayZone
 

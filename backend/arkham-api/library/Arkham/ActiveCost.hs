@@ -263,7 +263,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             [ FocusCards cards
             , chooseOne
                 player
-                [ targetLabel (CardIdTarget $ toCardId card) [ObtainCard card, AddToEncounterDiscard ec]
+                [ targetLabel (CardIdTarget $ toCardId card) [ObtainCard card.id, AddToEncounterDiscard ec]
                 | card@(EncounterCard ec) <- cards
                 ]
             ]

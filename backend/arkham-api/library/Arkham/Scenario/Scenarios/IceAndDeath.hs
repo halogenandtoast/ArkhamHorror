@@ -3,15 +3,26 @@ module Arkham.Scenario.Scenarios.IceAndDeath (IceAndDeath (..), iceAndDeath) whe
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator (getMaybeLocation)
+import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
+import Arkham.Helpers.Log (getCampaignLog)
+import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Xp (toBonus)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Placement
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
@@ -61,6 +72,7 @@ instance RunMessage IceAndDeath where
     PreScenarioSetup -> do
       story $ i18nWithTitle "iceAndDeath"
       doStep 1 PreScenarioSetup
+      eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep 1 PreScenarioSetup -> do
       story $ i18nWithTitle "iceAndDeathPart1Intro1"
@@ -81,7 +93,7 @@ instance RunMessage IceAndDeath where
     DoStep 4 PreScenarioSetup -> do
       story $ i18nWithTitle "iceAndDeathPart1Intro4"
       killed <- sample expeditionTeam
-      crossOutRecordSetEntries ExpeditionTeam [killed.cardCode]
+      push $ SetPartnerStatus killed.cardCode Eliminated
       recordSetInsert WasKilledInThePlaneCrash [killed.cardCode]
       if
         | killed == Assets.professorWilliamDyerProfessorOfGeology ->
@@ -97,6 +109,26 @@ instance RunMessage IceAndDeath where
         | killed == Assets.drAmyKenslerProfessorOfBiology -> story $ i18n "amyKenslerKilledInPlaneCrash"
         | otherwise -> error "Invalid card in expedition team"
 
+      pure s
+    ForInvestigator iid PreScenarioSetup -> do
+      partners <- view partnersL <$> getCampaignLog
+      unless (null partners) do
+        chooseOneM iid do
+          questionLabeled "Choose a partner for this scenario"
+          labeled "Do not take a partner" nothing
+          for_ (mapToList partners) \(cardCode, partner) -> do
+            inPlay <- selectAny $ assetIs cardCode
+            when (not inPlay && partner.status `elem` [Safe, Resolute]) do
+              cardLabeled cardCode $ handleTarget iid ScenarioSource (CardCodeTarget cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- genCard def
+        assetId <- createAssetAt card (InPlayArea iid)
+        partners <- view partnersL <$> getCampaignLog
+        for_ (lookup cardCode partners) \partner -> do
+          pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+          pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup IceAndDeath attrs do
       gather Set.IceAndDeath
@@ -147,5 +179,35 @@ instance RunMessage IceAndDeath where
     DiscardedTopOfDeck iid cards (isSource Tablet -> True) (isTarget attrs -> True) -> do
       let weaknesses = filter (`cardMatch` WeaknessCard) cards
       when (notNull weaknesses) $ addToHand iid weaknesses
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          locations <- selectWithField Location.LocationCard LocationWithoutClues
+
+          if null locations
+            then do
+              record Camp_CrashSite
+              allGainXpWithBonus attrs $ toBonus "bonus" 3
+            else do
+              lead <- getLead
+              chooseOneM lead do
+                for_ locations \(location, card) -> do
+                  for_ (lookup card.cardCode camps) \camp ->
+                    targeting location do
+                      record camp
+                      allGainXpWithBonus attrs $ toBonus "bonus" (max 3 $ fromMaybe 0 $ getShelterValue card)
+        Resolution 1 -> do
+          story $ i18nWithTitle "resolution1"
+          sv <- max 3 . fromMaybe 0 <$> getCurrentShelterValue
+          allGainXpWithBonus attrs $ toBonus "bonus" sv
+        _ -> error "Unknown resolution"
+      endOfScenario
+      pure s
+    Resign iid -> do
+      withLocationOf iid \lid -> do
+        card <- field Location.LocationCard lid
+        for_ (lookup card.cardCode camps) record
       pure s
     _ -> IceAndDeath <$> liftRunMessage msg attrs

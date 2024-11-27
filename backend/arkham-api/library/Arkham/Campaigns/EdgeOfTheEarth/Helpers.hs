@@ -83,3 +83,9 @@ resolveTekelili iid tekelili = do
   mods <- getModifiers cardId
   let deck = if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods then toDeck iid else toDeck TekeliliDeck
   putOnBottomOfDeck iid deck (asId tekelili)
+
+getShelterValue :: HasCardCode a => a -> Maybe Int
+getShelterValue a = do
+  def <- lookupCardDef (toCardCode a)
+  val <- lookup "shelter" (cdMeta def)
+  maybeResult val

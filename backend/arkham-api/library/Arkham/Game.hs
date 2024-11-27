@@ -2104,7 +2104,12 @@ getAssetsMatching matcher = do
   assets <- toList . view (entitiesL . assetsL) <$> getGame
   filterMatcher assets matcher
  where
-  canBeDiscarded = and . sequence [attr assetCanLeavePlayByNormalMeans, not . cdPermanent . toCardDef]
+  canBeDiscarded =
+    and
+      . sequence
+        [ attr assetCanLeavePlayByNormalMeans
+        , not . cdPermanent . toCardDef
+        ]
   filterMatcher [] = const (pure [])
   filterMatcher as = \case
     VehicleWithInvestigator imatcher -> do

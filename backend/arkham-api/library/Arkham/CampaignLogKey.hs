@@ -307,6 +307,19 @@ data CampaignLogKey
   | ExpeditionTeam
   | WasKilledInThePlaneCrash
   | SuppliesRecovered
+  | Camp_CrashSite
+  | Camp_FrozenShores
+  | Camp_TreacherousPath
+  | Camp_PrecariousIceSheet
+  | Camp_BoardSnowdrifts
+  | Camp_IcyWastes
+  | Camp_RockyCrags
+  | Camp_SnowGraves
+  | Camp_IcebreakerLanding
+  | Camp_FrigidCave
+  | Camp_BarrierCamp
+  | Camp_RemnantsOfLakesCamp
+  | Camp_CrystallineCavern
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -20,6 +20,7 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
+import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (replaceThisCard)
 import Arkham.Matcher.Asset (AssetMatcher (AssetWithId))
 import Arkham.Matcher.Base (Be (..))
@@ -450,7 +451,7 @@ assetWith f cardDef g =
             , assetExhausted = False
             , assetExiled = False
             , assetTokens = mempty
-            , assetCanLeavePlayByNormalMeans = True
+            , assetCanLeavePlayByNormalMeans = Keyword.Partner `notElem` cdKeywords cardDef
             , assetWhenNoUses = Nothing
             , assetIsStory = False
             , assetCardsUnderneath = []

@@ -1,12 +1,16 @@
 module Arkham.Campaign.Campaigns.EdgeOfTheEarth (EdgeOfTheEarth (..), edgeOfTheEarth) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Import.Lifted
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.ChaosToken
 import Arkham.Message.Lifted.Choose
+import Arkham.Projection
+import Arkham.Target
 
 newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -31,10 +35,13 @@ instance IsCampaign EdgeOfTheEarth where
     _ -> Nothing
 
 instance RunMessage EdgeOfTheEarth where
-  runMessage msg c@(EdgeOfTheEarth _attrs) = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(EdgeOfTheEarth attrs) = runQueueT $ campaignI18n $ case msg of
     StartCampaign -> do
-      recordSetInsert ExpeditionTeam $ map (.cardCode) expeditionTeam
-      lift $ defaultCampaignRunner msg c
+      let addPartner partner = logL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+      lift
+        $ defaultCampaignRunner msg
+        $ EdgeOfTheEarth
+        $ foldl' (flip addPartner) attrs expeditionTeam
     CampaignStep PrologueStep -> do
       story $ i18nWithTitle "prologue"
       storyWithChooseOneM (i18nWithTitle "prologue1") do
@@ -71,4 +78,24 @@ instance RunMessage EdgeOfTheEarth where
         $ i18n "williamDyer"
       nextCampaignStep
       pure c
+    SetPartnerStatus cCode status -> do
+      pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status
+    When (AssetDefeated _ aid) -> do
+      cCode <- field AssetCardCode aid
+      pushWhen (cCode `elem` map (.cardCode) expeditionTeam) $ SetPartnerStatus cCode Eliminated
+      pure c
+    RemoveFromGame (AssetTarget aid) -> do
+      cCode <- field AssetCardCode aid
+      if cCode `elem` map (.cardCode) expeditionTeam
+        then do
+          damage <- field AssetDamage aid
+          horror <- field AssetHorror aid
+          pure
+            $ EdgeOfTheEarth
+            $ attrs
+            & logL
+            . partnersL
+            . ix cCode
+            %~ (\partner -> partner & damageL .~ damage & horrorL .~ horror)
+        else pure c
     _ -> lift $ defaultCampaignRunner msg c

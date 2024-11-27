@@ -7,6 +7,7 @@ import Arkham.Campaign.Runner as X (
   campaign,
   campaignStep,
   defaultCampaignRunner,
+  logL,
   push,
   pushAll,
   pushWhen,

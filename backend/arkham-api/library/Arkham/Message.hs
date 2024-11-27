@@ -1091,6 +1091,7 @@ data Message
   | IncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | ChoosingDecks
   | DoneChoosingDecks
+  | SetPartnerStatus CardCode PartnerStatus
   | -- Commit
     Do Message
   | DoBatch BatchId Message

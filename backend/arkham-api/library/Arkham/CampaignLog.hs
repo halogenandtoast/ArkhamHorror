@@ -1,11 +1,33 @@
-module Arkham.CampaignLog where
+{-# LANGUAGE TemplateHaskell #-}
 
-import Arkham.Prelude
+module Arkham.CampaignLog where
 
 import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
+import Arkham.Card.CardCode
 import Arkham.Json
+import Arkham.Prelude
+import Data.Aeson.TH
 import GHC.Records
+
+data PartnerStatus = Eliminated | Resolute | Mia | Safe | Victim | CannotTake | TheEntity
+  deriving stock (Show, Generic, Eq, Data)
+
+data CampaignLogPartner = CampaignLogPartner
+  { campaignLogPartnerDamage :: Int
+  , campaignLogPartnerHorror :: Int
+  , campaignLogPartnerStatus :: PartnerStatus
+  }
+  deriving stock (Show, Generic, Eq, Data)
+
+instance HasField "status" CampaignLogPartner PartnerStatus where
+  getField = campaignLogPartnerStatus
+
+instance HasField "damage" CampaignLogPartner Int where
+  getField = campaignLogPartnerDamage
+
+instance HasField "horror" CampaignLogPartner Int where
+  getField = campaignLogPartnerHorror
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: Set CampaignLogKey
@@ -14,6 +36,7 @@ data CampaignLog = CampaignLog
   , campaignLogRecordedSets :: Map CampaignLogKey [SomeRecorded]
   , campaignLogOrderedKeys :: [CampaignLogKey]
   , campaignLogOptions :: Set CampaignOption
+  , campaignLogPartners :: Map CardCode CampaignLogPartner
   }
   deriving stock (Show, Generic, Eq, Data)
 
@@ -32,6 +55,7 @@ instance Semigroup CampaignLog where
       , campaignLogRecordedSets = campaignLogRecordedSets a <> campaignLogRecordedSets b
       , campaignLogOrderedKeys = campaignLogOrderedKeys a <> campaignLogOrderedKeys b
       , campaignLogOptions = campaignLogOptions a <> campaignLogOptions b
+      , campaignLogPartners = campaignLogPartners a <> campaignLogPartners b
       }
 
 instance Monoid CampaignLog where
@@ -45,35 +69,7 @@ emptyCampaignLog CampaignLog {..} =
     && null campaignLogRecordedSets
     && null campaignLogOrderedKeys
     && null campaignLogOptions
-
-recordedL :: Lens' CampaignLog (Set CampaignLogKey)
-recordedL = lens campaignLogRecorded $ \m x -> m {campaignLogRecorded = x}
-
-optionsL :: Lens' CampaignLog (Set CampaignOption)
-optionsL = lens campaignLogOptions $ \m x -> m {campaignLogOptions = x}
-
-crossedOutL :: Lens' CampaignLog (Set CampaignLogKey)
-crossedOutL =
-  lens campaignLogCrossedOut $ \m x -> m {campaignLogCrossedOut = x}
-
-recordedSetsL :: Lens' CampaignLog (Map CampaignLogKey [SomeRecorded])
-recordedSetsL =
-  lens campaignLogRecordedSets $ \m x -> m {campaignLogRecordedSets = x}
-
-recordedCountsL :: Lens' CampaignLog (Map CampaignLogKey Int)
-recordedCountsL =
-  lens campaignLogRecordedCounts $ \m x -> m {campaignLogRecordedCounts = x}
-
-orderedKeysL :: Lens' CampaignLog [CampaignLogKey]
-orderedKeysL =
-  lens campaignLogOrderedKeys $ \m x -> m {campaignLogOrderedKeys = x}
-
-instance ToJSON CampaignLog where
-  toJSON = genericToJSON $ aesonOptions $ Just "campaignLog"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "campaignLog"
-
-instance FromJSON CampaignLog where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "campaignLog"
+    && null campaignLogPartners
 
 mkCampaignLog :: CampaignLog
 mkCampaignLog =
@@ -84,7 +80,27 @@ mkCampaignLog =
     , campaignLogRecordedSets = mempty
     , campaignLogOrderedKeys = mempty
     , campaignLogOptions = mempty
+    , campaignLogPartners = mempty
     }
+
+mconcat
+  [ makeLensesWith (suffixedWithFields "campaignLog") ''CampaignLog
+  , makeLensesWith (suffixedWithFields "campaignLogPartner") ''CampaignLogPartner
+  , deriveJSON defaultOptions ''PartnerStatus
+  , deriveJSON (aesonOptions $ Just "campaignLogPartner") ''CampaignLogPartner
+  , deriveToJSON (aesonOptions $ Just "campaignLog") ''CampaignLog
+  ]
+
+instance FromJSON CampaignLog where
+  parseJSON = withObject "CampaignLog" \o -> do
+    campaignLogRecorded <- o .: "recorded"
+    campaignLogCrossedOut <- o .: "crossedOut"
+    campaignLogRecordedCounts <- o .: "recordedCounts"
+    campaignLogRecordedSets <- o .: "recordedSets"
+    campaignLogOrderedKeys <- o .: "orderedKeys"
+    campaignLogOptions <- o .: "options"
+    campaignLogPartners <- o .:? "partners" .!= mempty
+    pure $ CampaignLog {..}
 
 setCampaignLogKey :: CampaignLogKey -> CampaignLog -> CampaignLog
 setCampaignLogKey key = recordedL %~ insertSet key

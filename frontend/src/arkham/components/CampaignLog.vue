@@ -56,6 +56,7 @@ const campaignLog = ref(mainLog)
 const recorded = computed(() => campaignLog.value.recorded)
 const recordedSets = computed(() => campaignLog.value.recordedSets)
 const recordedCounts = computed(() => campaignLog.value.recordedCounts)
+const partners = computed(() => campaignLog.value.partners)
 const hasSupplies = computed(() => Object.values(props.game.investigators).some((i) => i.supplies.length > 0))
 
 const loadedCards = ref<CardDef[]>([]);
@@ -215,6 +216,27 @@ const emptyLog = computed(() => {
         <ul>
           <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
         </ul>
+        <div v-if="Object.values(partners).length > 0" class="partners box">
+          <h3 class="title">Expedition Team</h3>
+          <div class="partners-content">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Damage</th>
+                  <th>Horror</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="[cCode, partner] in Object.entries(partners)" :key="cCode" class="partner" :class="{ [partner.status]: true }">
+                  <td>{{cardCodeToTitle(cCode)}}</td>
+                  <td>{{partner.damage}}</td>
+                  <td>{{partner.horror}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -320,4 +342,33 @@ h3.title {
   font-family: teutonic, sans-serif;
   margin-bottom: 10px;
 }
+
+table {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 5px;
+
+  thead, tbody, tr {
+    display: contents;
+  }
+}
+
+.partner td {
+  background: var(--box-background);
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  padding: 10px;
+  color: var(--title);
+}
+
+tr td:not(:first-child) {
+  text-align: right;
+}
+
+.Eliminated td {
+  text-decoration: line-through;
+  background: darkred;
+}
+
 </style>

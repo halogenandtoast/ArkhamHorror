@@ -265,6 +265,7 @@ data WindowType
   | RevealChaosToken InvestigatorId ChaosToken
   | RevealChaosTokensDuringSkillTest InvestigatorId SkillTest [ChaosToken]
   | TokensWouldBeRemovedFromChaosBag [ChaosToken]
+  | ResolvesTreachery InvestigatorId TreacheryId
   | ResolvesChaosToken InvestigatorId ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken
   | CancelChaosToken InvestigatorId ChaosToken

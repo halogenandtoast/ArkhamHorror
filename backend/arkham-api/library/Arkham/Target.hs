@@ -89,6 +89,10 @@ instance HasField "investigator" Target (Maybe InvestigatorId) where
     ProxyTarget t _ -> t.investigator
     _ -> Nothing
 
+target_ :: Target -> Target
+target_ = id
+{-# INLINE target_ #-}
+
 bothTarget :: (Targetable a, Targetable b) => a -> b -> Target
 bothTarget a b = BothTarget (toTarget a) (toTarget b)
 

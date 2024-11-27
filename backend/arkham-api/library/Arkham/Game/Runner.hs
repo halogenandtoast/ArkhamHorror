@@ -2698,7 +2698,10 @@ runGameMessage msg g = case msg of
       & setTurnHistory
   SetActiveCard c -> pure $ g & activeCardL ?~ c
   UnsetActiveCard -> pure $ g & activeCardL .~ Nothing
-  AfterRevelation {} -> pure $ g & activeCardL .~ Nothing
+  AfterRevelation iid treacheryId -> do
+    afterResolve <- checkAfter $ Window.ResolvesTreachery iid treacheryId
+    push afterResolve
+    pure $ g & activeCardL .~ Nothing
   AddCardEntity card -> do
     let
       iid = view activeInvestigatorIdL g

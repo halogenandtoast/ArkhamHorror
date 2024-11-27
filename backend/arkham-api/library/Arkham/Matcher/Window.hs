@@ -100,6 +100,7 @@ data WindowMatcher
   | EnemyEngaged Timing Who EnemyMatcher
   | MythosStep WindowMythosStepMatcher
   | LocationEntersPlay Timing LocationMatcher
+  | ResolvesTreachery Timing Who TreacheryMatcher
   | TreacheryEntersPlay Timing TreacheryMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher

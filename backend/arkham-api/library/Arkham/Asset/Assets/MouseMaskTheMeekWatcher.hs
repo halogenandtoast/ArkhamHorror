@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Asset.Assets.MouseMaskTheMeekWatcher (
   mouseMaskTheMeekWatcher,
   MouseMaskTheMeekWatcher (..),
@@ -67,6 +69,6 @@ instance RunMessage MouseMaskTheMeekWatcher where
     EndCheckWindow -> do
       depth <- getWindowDepth
       pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
-        Just d | depth <= d -> MouseMaskTheMeekWatcher $ attrs & setMeta @(Maybe Int) Nothing
+        Just d | depth < d -> MouseMaskTheMeekWatcher $ attrs & setMeta @(Maybe Int) Nothing
         _ -> a
     _ -> MouseMaskTheMeekWatcher <$> liftRunMessage msg attrs

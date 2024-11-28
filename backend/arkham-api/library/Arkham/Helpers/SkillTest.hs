@@ -163,11 +163,15 @@ isParley =
     , selectAny $ EventIsAction #parley
     ]
 
-getIsBeingInvestigated :: HasGame m => LocationId -> m Bool
+getIsBeingInvestigated
+  :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m Bool
 getIsBeingInvestigated lid = do
   mTarget <- getSkillTestTarget
   mAction <- getSkillTestAction
-  pure $ mAction == Just #investigate && mTarget == Just (LocationTarget lid)
+  pure
+    $ mAction
+    == Just #investigate
+    && maybe False (\target -> Just (asId lid) == target.location) mTarget
 
 revelationSkillTest
   :: Sourceable source

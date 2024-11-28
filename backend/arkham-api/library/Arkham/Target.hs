@@ -77,6 +77,13 @@ instance HasField "enemy" Target (Maybe EnemyId) where
     ProxyTarget t _ -> t.enemy
     _ -> Nothing
 
+instance HasField "location" Target (Maybe LocationId) where
+  getField = \case
+    LocationTarget aid -> Just aid
+    ProxyTarget (CardIdTarget _) t -> t.location
+    ProxyTarget t _ -> t.location
+    _ -> Nothing
+
 instance HasField "investigator" Target (Maybe InvestigatorId) where
   getField = \case
     InvestigatorTarget aid -> Just aid

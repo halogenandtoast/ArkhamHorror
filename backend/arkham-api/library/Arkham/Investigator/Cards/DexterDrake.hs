@@ -43,7 +43,7 @@ instance HasAbilities DexterDrake where
         $ AssetWithDifferentTitleFromAtLeastOneCardInHand
           You
           (PlayableCardWithCostReduction NoAction 1 #asset)
-          AnyAsset
+          (AssetControlledBy You)
     ]
 
 instance HasChaosTokenValue DexterDrake where

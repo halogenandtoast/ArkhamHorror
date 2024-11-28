@@ -18,7 +18,7 @@ instance RunMessage TheDirgeOfReason where
       playerClueCount <- field InvestigatorClues iid
 
       pushWhen (playerClueCount > 0)
-        $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) playerClueCount
+        $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) (min 2 playerClueCount)
 
       when (playerClueCount < 2) do
         assignHorror iid attrs 1

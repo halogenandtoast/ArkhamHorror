@@ -174,7 +174,6 @@ import Arkham.Treachery.Types (
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
-import Control.Monad (mfilter)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
@@ -2518,7 +2517,9 @@ getOutOfPlayEnemy outOfPlayZone eid =
   missingEnemy = "Unknown out of play enemy: " <> show eid
 
 getMaybeOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m (Maybe Enemy)
-getMaybeOutOfPlayEnemy outOfPlayZone eid = mfilter isCorrectOutOfPlay . preview (entitiesL . enemiesL . ix eid) <$> getGame
+getMaybeOutOfPlayEnemy outOfPlayZone eid = do
+  menemy <- preview (entitiesL . enemiesL . ix eid) <$> getGame
+  pure $ maybe Nothing (\e -> guard (isCorrectOutOfPlay e) $> e) menemy
  where
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone

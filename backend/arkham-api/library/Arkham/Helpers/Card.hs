@@ -33,6 +33,7 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Types
+import Data.Proxy
 
 isDiscardable :: Card -> Bool
 isDiscardable = not . isWeakness
@@ -59,13 +60,17 @@ extendedCardMatch (toCard -> c) matcher =
   selectAny (basic (CardWithId c.id) <> matcher)
 
 class ConvertToCard a where
-  convertToCard :: HasGame m => a -> m Card
+  convertToCard :: (HasCallStack, HasGame m) => a -> m Card
 
 instance ConvertToCard TreacheryId where
   convertToCard = getEntityCard @Treachery
 
 instance ConvertToCard EnemyId where
-  convertToCard = getEntityCard @Enemy
+  convertToCard eid =
+    fmap (fromJustNote ("Could not convert entity: " <> show eid) . asum)
+      $ sequence
+      $ getEntityCardMaybe @Enemy eid
+      : overOutOfPlayZones (\(_ :: Proxy zone) -> getEntityCardMaybe @(OutOfPlayEntity zone Enemy) eid)
 
 instance ConvertToCard AssetId where
   convertToCard = getEntityCard @Asset
@@ -82,9 +87,11 @@ instance ConvertToCard CardId where
 class (Projection a, Entity a) => CardEntity a where
   cardField :: Field a Card
 
-getEntityCard
-  :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m Card
+getEntityCard :: forall a m. (HasCallStack, CardEntity a, HasGame m) => EntityId a -> m Card
 getEntityCard = field (cardField @a)
+
+getEntityCardMaybe :: forall a m. (CardEntity a, HasGame m) => EntityId a -> m (Maybe Card)
+getEntityCardMaybe = fieldMay (cardField @a)
 
 instance CardEntity Treachery where
   cardField = TreacheryCard
@@ -92,13 +99,16 @@ instance CardEntity Treachery where
 instance CardEntity Enemy where
   cardField = EnemyCard
 
+instance KnownOutOfPlayZone zone => CardEntity (OutOfPlayEntity zone Enemy) where
+  cardField = OutOfPlayEnemyField (knownOutOfPlayZone (Proxy @zone)) EnemyCard
+
 instance CardEntity Asset where
   cardField = AssetCard
 
 instance CardEntity Location where
   cardField = LocationCard
 
-getCardField :: (ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
+getCardField :: (HasCallStack, ConvertToCard c, HasGame m) => (CardDef -> a) -> c -> m a
 getCardField f c = f . toCardDef <$> convertToCard c
 
 getVictoryPoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)

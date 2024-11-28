@@ -136,6 +136,8 @@ instance FromJSON (SomeField Enemy) where
 data instance Field (OutOfPlayEntity _ Enemy) :: Type -> Type where
   OutOfPlayEnemyField :: OutOfPlayZone -> Field Enemy typ -> Field (OutOfPlayEntity zone Enemy) typ
 
+deriving stock instance Show (Field (OutOfPlayEntity zone Enemy) typ)
+
 allEnemyCards :: Map CardCode CardDef
 allEnemyCards = allPlayerEnemyCards <> allEncounterEnemyCards <> allSpecialEnemyCards
 

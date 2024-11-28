@@ -25,7 +25,7 @@ instance HasModifiersFor HemisphericMap3 where
                 [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
           n
             | n >= 2 ->
-                [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
+                [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
           _ -> []
   getModifiersFor _ _ = pure []
 

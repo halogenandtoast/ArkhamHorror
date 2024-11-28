@@ -476,27 +476,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           pushAll $ [PayForAbility (abilityEffect a [] $ mconcat additionalCosts) []] <> msgs
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
-    modifiers' <- getModifiers (toTarget a)
+    mods <- getModifiers a
     let
+      base = fromMaybe 5 $ listToMaybe [n | BaseStartingResources n <- mods]
       startingResources =
-        if CannotGainResources `elem` modifiers'
+        if CannotGainResources `elem` mods
           then 0
-          else
-            foldl'
-              ( \total -> \case
-                  StartingResources n -> max 0 (total + n)
-                  _ -> total
-              )
-              5
-              modifiers'
-      startingClues =
-        foldl'
-          ( \total -> \case
-              StartingClues n -> max 0 (total + n)
-              _ -> total
-          )
-          0
-          modifiers'
+          else max 0 $ getSum $ mconcat $ Sum base : [Sum n | StartingResources n <- mods]
+      startingClues = getSum $ mconcat [Sum n | StartingClues n <- mods]
     pure $ a & tokensL %~ (setTokens Resource startingResources . setTokens Clue startingClues)
   InvestigatorMulligan iid | iid == investigatorId -> do
     unableToMulligan <- hasModifier a CannotMulligan

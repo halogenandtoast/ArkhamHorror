@@ -2,7 +2,17 @@ module Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps where
 
 import Arkham.CampaignStep
 
-pattern IceAndDeath :: CampaignStep
-pattern IceAndDeath <- ScenarioStep "08501"
+pattern IceAndDeathPart1 :: CampaignStep
+pattern IceAndDeathPart1 <- ScenarioStep "08501a"
   where
-    IceAndDeath = ScenarioStep "08501"
+    IceAndDeathPart1 = ScenarioStep "08501a"
+
+pattern IceAndDeathPart2 :: CampaignStep
+pattern IceAndDeathPart2 <- ScenarioStep "08501b"
+  where
+    IceAndDeathPart2 = ScenarioStep "08501b"
+
+pattern IceAndDeathPart3 :: CampaignStep
+pattern IceAndDeathPart3 <- ScenarioStep "08501c"
+  where
+    IceAndDeathPart3 = ScenarioStep "08501c"

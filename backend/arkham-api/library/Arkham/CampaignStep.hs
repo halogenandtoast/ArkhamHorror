@@ -15,6 +15,7 @@ data CampaignStep
   | EpilogueStepPart Int
   | InvestigatorCampaignStep InvestigatorId CampaignStep
   | ResupplyPoint
+  | CheckpointStep Int
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 

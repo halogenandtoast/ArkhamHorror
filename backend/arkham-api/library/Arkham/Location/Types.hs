@@ -67,6 +67,7 @@ data instance Field Location :: Type -> Type where
   LocationBrazier :: Field Location (Maybe Brazier)
   LocationBreaches :: Field Location (Maybe BreachStatus)
   LocationCard :: Field Location Card
+  LocationCardCode :: Field Location CardCode
   LocationCardDef :: Field Location CardDef
   LocationCardId :: Field Location CardId
   LocationCardsUnderneath :: Field Location [Card]
@@ -134,6 +135,7 @@ fieldLens = \case
   LocationName -> virtual
   LocationConnectedLocations -> virtual
   LocationCardDef -> virtual
+  LocationCardCode -> virtual
   LocationCard -> virtual
   LocationAbilities -> virtual
   LocationPrintedSymbol -> virtual
@@ -169,6 +171,7 @@ instance FromJSON (SomeField Location) where
     "LocationBreaches" -> pure $ SomeField LocationBreaches
     "LocationCard" -> pure $ SomeField LocationCard
     "LocationCardDef" -> pure $ SomeField LocationCardDef
+    "LocationCardCode" -> pure $ SomeField LocationCardCode
     "LocationCardId" -> pure $ SomeField LocationCardId
     "LocationCardsUnderneath" -> pure $ SomeField LocationCardsUnderneath
     "LocationClues" -> pure $ SomeField LocationClues

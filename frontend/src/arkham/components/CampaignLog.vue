@@ -229,7 +229,7 @@ const emptyLog = computed(() => {
               </thead>
               <tbody>
                 <tr v-for="[cCode, partner] in Object.entries(partners)" :key="cCode" class="partner" :class="{ [partner.status]: true }">
-                  <td>{{cardCodeToTitle(cCode)}}</td>
+                  <td class="partner-name"><span class="name">{{cardCodeToTitle(cCode)}}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span></td>
                   <td>{{partner.damage}}</td>
                   <td>{{partner.horror}}</td>
                 </tr>
@@ -369,6 +369,25 @@ tr td:not(:first-child) {
 .Eliminated td {
   text-decoration: line-through;
   background: darkred;
+}
+
+.Mia td {
+  background: darkgoldenrod;
+}
+
+.partner-name {
+  display: flex;
+  gap: 10px;
+
+  .name {
+    flex: 1;
+  }
+}
+
+.status-mia {
+  background: rgba(0, 0, 0, 0.5);
+  padding-inline: 5px;
+  border-radius: 2px;
 }
 
 </style>

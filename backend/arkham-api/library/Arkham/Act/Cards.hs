@@ -179,6 +179,7 @@ allActCards =
       , theGuardiansInquiry
       , theIsleOfOriab
       , theLighthouse
+      , theLostExpedition
       , theKingInTatters
       , theKingsDecree
       , theMoonsCore
@@ -820,6 +821,9 @@ cityOfTheDeepV3 = (act "07318" "City of the Deep (v.III)" 2 IntoTheMaelstrom) {c
 
 searchForACampSite :: CardDef
 searchForACampSite = act "08521" "Search for a Camp Site" 1 TheCrash
+
+theLostExpedition :: CardDef
+theLostExpedition = act "08526" "The Lost Expedition" 2 LostInTheNight
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

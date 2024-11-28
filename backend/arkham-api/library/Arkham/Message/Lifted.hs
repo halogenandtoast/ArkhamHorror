@@ -237,6 +237,11 @@ story flavor = do
   players <- allPlayers
   push $ Msg.story players flavor
 
+storyWhen :: ReverseQueue m => Bool -> FlavorText -> m ()
+storyWhen cond flavor = when cond do
+  players <- allPlayers
+  push $ Msg.story players flavor
+
 storyWithCard :: ReverseQueue m => CardDef -> FlavorText -> m ()
 storyWithCard cardDef flavor = do
   players <- allPlayers

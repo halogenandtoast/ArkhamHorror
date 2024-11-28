@@ -356,6 +356,7 @@ data ModifierType
   | StartingClues Int
   | StartingHand Int
   | StartingResources Int
+  | BaseStartingResources Int
   | UpkeepResources Int
   | TopCardOfDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType

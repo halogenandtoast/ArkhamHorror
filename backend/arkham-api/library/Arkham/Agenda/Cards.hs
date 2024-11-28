@@ -24,6 +24,7 @@ allAgendaCards =
     $ map
       (toCardCode &&& id)
       [ aCreatureOfTheBayou
+      , aHarshWindBlows
       , aSinisterRealm
       , aTearInReality
       , aTrailOfTwists
@@ -83,6 +84,7 @@ allAgendaCards =
       , letTheStormRageTheVortexAbove
       , lockedInside
       , lostMemories
+      , madnessAndDeath
       , madnessCoils
       , madnessDies
       , madnessDrowns
@@ -126,6 +128,7 @@ allAgendaCards =
       , theChariotVII
       , theChaseIsOnV1
       , theChaseIsOnV2
+      , theChillOfNight
       , theCityFloods
       , theCloverClub
       , theCurseSpreads
@@ -678,6 +681,15 @@ intoTheWhite = agenda "08519" "Into the White" 2 TheCrash
 
 runningOutOfTime :: CardDef
 runningOutOfTime = agenda "08520" "Running Out of Time" 3 TheCrash
+
+aHarshWindBlows :: CardDef
+aHarshWindBlows = agenda "08523" "A Harsh Window Blows" 4 LostInTheNight
+
+theChillOfNight :: CardDef
+theChillOfNight = agenda "08524" "The Chill of Night" 5 LostInTheNight
+
+madnessAndDeath :: CardDef
+madnessAndDeath = agenda "08525" "Madness and Death" 6 LostInTheNight
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

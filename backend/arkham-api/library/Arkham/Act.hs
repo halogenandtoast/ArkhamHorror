@@ -296,6 +296,8 @@ allActs =
     , -- Edge of the Earth
       --- The Crash
       SomeActCard searchForACampSite
+    , --- Lost in the Night
+      SomeActCard theLostExpedition
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

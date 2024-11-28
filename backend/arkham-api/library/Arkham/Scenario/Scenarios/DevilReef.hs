@@ -11,11 +11,14 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isFightWith, isEvadeWith)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Key
+import Arkham.Trait (Trait(DeepOne))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -38,10 +41,12 @@ devilReef difficulty = scenario DevilReef "07163" "Devil Reef" difficulty []
 
 instance HasChaosTokenValue DevilReef where
   getChaosTokenValue iid tokenFace (DevilReef attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      ks <- selectAgg id InvestigatorKeys UneliminatedInvestigator
+      pure $ toChaosTokenValue attrs Skull (length ks) (length ks + 1)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage DevilReef where
@@ -151,6 +156,38 @@ instance RunMessage DevilReef where
     PlaceKey target BlackKey -> do
       selectForMaybeM (assetIs Assets.headdressOfYhaNthlei) (`P.place` Near target)
       DevilReef <$> liftRunMessage msg attrs
+    ResolveChaosToken _ Cultist iid -> do
+      when (isHardExpert attrs) do
+        whenM (orM [isEvadeWith (withTrait DeepOne), isFightWith (withTrait DeepOne)]) do
+          getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+            engagedWithYou <- eid <=~> enemyEngagedWith iid
+            if engagedWithYou
+              then pushAll [DisengageEnemy iid eid, EnemyEngageInvestigator eid iid]
+              else push $ EnemyEngageInvestigator eid iid
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      when (isHardExpert attrs) do
+        whenM (iid <!=~> InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+      pure s
+    ResolveChaosToken _ ElderThing iid -> do
+      when (isHardExpert attrs) do
+        whenM (selectAny $ locationWithInvestigator iid <> LocationWithAnyKeys) do
+          assignHorror iid ElderThing 1
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      when (isEasyStandard attrs) do
+        case token.face of
+          Cultist -> whenM (orM [isEvadeWith (withTrait DeepOne), isFightWith (withTrait DeepOne)]) do
+            getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+              engagedWithYou <- eid <=~> enemyEngagedWith iid
+              if engagedWithYou
+                then pushAll [DisengageEnemy iid eid, EnemyEngageInvestigator eid iid]
+                else push $ EnemyEngageInvestigator eid iid
+          Tablet -> whenM (iid <!=~> InVehicleMatching AnyAsset) $ assignDamage iid Tablet 1
+          ElderThing -> whenM (selectAny $ locationWithInvestigator iid <> LocationWithAnyKeys) do
+            assignHorror iid ElderThing 1
+          _ -> pure ()
+      pure s
     ScenarioResolution resolution -> do
       case resolution of
         NoResolution -> push R1

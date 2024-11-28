@@ -78,6 +78,7 @@ instance Entity a => Entity (InDiscardEntity a) where
   overAttrs f (InDiscardEntity a) = InDiscardEntity $ overAttrs f a
 
 newtype OutOfPlayEntity (zone :: Zone.OutOfPlayZone) a = OutOfPlayEntity a
+  deriving stock Show
 
 instance Entity a => Entity (OutOfPlayEntity zone a) where
   type EntityId (OutOfPlayEntity zone a) = EntityId a

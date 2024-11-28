@@ -1694,7 +1694,12 @@ runGameMessage msg g = case msg of
     pushAll
       $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
       <> [RemoveEnemy eid]
-    pure g
+    pure
+      $ g
+      & entitiesL
+      . enemiesL
+      . ix eid
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
   DefeatedAddToVictory (EnemyTarget eid) -> do
     -- when defeated, removal is handled by the defeat effect
     card <- field EnemyCard eid
@@ -2720,7 +2725,12 @@ runGameMessage msg g = case msg of
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
     let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
-    pure $ g & activeAbilitiesL %~ filter (/= ab) & removedEntitiesF & entitiesL %~ clearRemovedEntities
+    let remainingAbilities = filter (/= ab) $ view activeAbilitiesL g
+    pure
+      $ g
+      & (activeAbilitiesL .~ remainingAbilities)
+      & removedEntitiesF
+      & (entitiesL %~ (if null remainingAbilities then clearRemovedEntities else id))
   Discarded (AssetTarget aid) _ (EncounterCard _) -> do
     runMessage (RemoveAsset aid) g
   Discarded (AssetTarget aid) _source _card -> do

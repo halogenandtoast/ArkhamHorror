@@ -623,10 +623,18 @@ scenarioCard cCode name ecSet =
 
 allScenarioCards :: Map CardCode CardDef
 allScenarioCards =
-  mapFromList $ flip map (mapToList allScenarios) $ \(c, SomeScenario s) -> do
+  mapFromList $ flip map (filter ((`notElem` duplicatedScenarios) . fst) $ mapToList allScenarios) $ \(c, SomeScenario s) -> do
     let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets
         name = scenarioName $ toAttrs $ Scenario (s Easy)
-    (c, scenarioCard c name ecSet)
+    (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
+
+duplicatedScenarios :: [CardCode]
+duplicatedScenarios = ["08501c"]
+
+normalizeCardCode :: CardCode -> CardCode
+normalizeCardCode = \case
+  "08501a" -> "08501"
+  other -> other
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =
@@ -686,8 +694,8 @@ allScenarios =
     , ("07311", SomeScenario intoTheMaelstrom)
     , ("08501a", SomeScenario iceAndDeathPart1)
     , ("08501b", SomeScenario iceAndDeathPart2)
-    , ("08501c", SomeScenario iceAndDeathPart1)
-    , ("50011", SomeScenario returnToTheGathering)
+    , -- , ("08501c", SomeScenario iceAndDeathPart3)
+      ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
     , ("81001", SomeScenario curseOfTheRougarou)

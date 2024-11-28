@@ -284,13 +284,10 @@ getIsScenarioAbility = do
     _ -> pure False
 
 getAttackedEnemy :: HasGame m => m (Maybe EnemyId)
-getAttackedEnemy = do
-  mTarget <- getSkillTestTarget
-  case mTarget of
-    Just (EnemyTarget eid) -> pure (Just eid)
-    Just (ProxyTarget (EnemyTarget eid) _) -> pure (Just eid)
-    Just _ -> pure Nothing
-    Nothing -> pure Nothing
+getAttackedEnemy = getSkillTestTargetedEnemy
+
+getSkillTestTargetedEnemy :: HasGame m => m (Maybe EnemyId)
+getSkillTestTargetedEnemy = join . fmap (.enemy) <$> getSkillTestTarget
 
 isInvestigating :: HasGame m => InvestigatorId -> LocationId -> m Bool
 isInvestigating iid lid =

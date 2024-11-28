@@ -2,10 +2,12 @@ module Arkham.Asset.Assets.TrackShoes (trackShoes, TrackShoes (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 
 newtype TrackShoes = TrackShoes AssetAttrs
   deriving anyclass IsAsset
@@ -20,21 +22,20 @@ instance HasModifiersFor TrackShoes where
   getModifiersFor _ _ = pure []
 
 instance HasAbilities TrackShoes where
-  getAbilities (TrackShoes attrs) =
+  getAbilities (TrackShoes a) =
     [ skillTestAbility
-        $ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility (MovedButBeforeEnemyEngagement #after You Anywhere) (exhaust attrs)
+        $ restricted a 1 ControlsThis
+        $ ReactionAbility (MovedButBeforeEnemyEngagement #after You Anywhere) (exhaust a)
     ]
 
 instance RunMessage TrackShoes where
-  runMessage msg a@(TrackShoes attrs) = case msg of
+  runMessage msg a@(TrackShoes attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      accessibleLocationIds <- getAccessibleLocations iid (attrs.ability 1)
-      player <- getPlayer iid
-      push $ chooseOne player [targetLabel lid [Move $ move attrs iid lid] | lid <- accessibleLocationIds]
+      accessible <- getAccessibleLocations iid (attrs.ability 1)
+      chooseTargetM iid accessible $ moveTo (attrs.ability 1) iid
       pure a
-    _ -> TrackShoes <$> runMessage msg attrs
+    _ -> TrackShoes <$> liftRunMessage msg attrs

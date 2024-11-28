@@ -243,7 +243,7 @@ explore iid source cardMatcher exploreRule matchCount = do
           ]
         <> msgs
 
-getVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m (Maybe Int)
+getVengeancePoints :: (HasCallStack, ConvertToCard c, HasGame m) => c -> m (Maybe Int)
 getVengeancePoints = getCardField cdVengeancePoints
 
 getHasVengeancePoints :: (ConvertToCard c, HasGame m) => c -> m Bool

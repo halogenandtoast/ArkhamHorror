@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint
+export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint | CheckpointStep
 
 export type PrologueStep = {
   tag: 'PrologueStep';
@@ -61,6 +61,19 @@ export const interludeStepDecoder = JsonDecoder.object<InterludeStep>(
   'InterludeStep',
 );
 
+export type CheckpointStep = {
+  tag: 'CheckpointStep';
+  contents: number;
+}
+
+export const checkpointStepDecoder = JsonDecoder.object<CheckpointStep>(
+  {
+    tag: JsonDecoder.isExactly('CheckpointStep'),
+    contents: JsonDecoder.number
+  },
+  'CheckpointStep',
+);
+
 export type UpgradeDeckStep = {
   tag: 'UpgradeDeckStep';
 }
@@ -78,6 +91,7 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
     resupplyPointStepDecoder,
     scenarioStepDecoder,
     interludeStepDecoder,
+    checkpointStepDecoder,
     upgradeStepDecoder,
     epilogueStepDecoder
   ],

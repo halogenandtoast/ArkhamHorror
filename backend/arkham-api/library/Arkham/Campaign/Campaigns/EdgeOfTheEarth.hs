@@ -8,8 +8,11 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.ChaosToken
+import Arkham.Helpers.Query (getLead)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
+import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Target
 
 newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
@@ -29,7 +32,8 @@ edgeOfTheEarth difficulty =
 
 instance IsCampaign EdgeOfTheEarth where
   nextStep a = case campaignStep (toAttrs a) of
-    PrologueStep -> Just IceAndDeath
+    PrologueStep -> Just IceAndDeathPart1
+    IceAndDeathPart1 -> Just (CheckpointStep 1)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -77,6 +81,51 @@ instance RunMessage EdgeOfTheEarth where
       storyWithCards [Assets.professorWilliamDyerProfessorOfGeology, Assets.danforthBrilliantStudent]
         $ i18n "williamDyer"
       nextCampaignStep
+      pure c
+    CampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
+      story $ i18nWithTitle "theDisappearance1"
+      sv <- fromJustNote "missing shelter" <$> getCurrentShelterValue
+      mia <- drop sv <$> (shuffle =<< getRemainingPartners)
+      if null mia
+        then doStep 2 msg
+        else do
+          lead <- getLead
+          chooseOneM lead do
+            labeled "They’re on their own." do
+              for_ mia \partner -> do
+                push $ SetPartnerStatus partner.cardCode Eliminated
+              doStep 2 msg
+            labeled "Go after the missing team members." do
+              for_ mia \partner -> do
+                push $ SetPartnerStatus partner.cardCode Mia
+              doStep 3 msg
+      pure c
+    DoStep 2 (CampaignStep (CheckpointStep 1)) -> do
+      story $ i18nWithTitle "theDisappearance2"
+      push $ CampaignStep (CheckpointStep 2)
+      pure c
+    DoStep 3 (CampaignStep (CheckpointStep 1)) -> do
+      story $ i18nWithTitle "theDisappearance3"
+      push $ CampaignStep IceAndDeathPart2
+      pure c
+    CampaignStep (CheckpointStep 2) -> scope "checkpoint2" do
+      story $ i18nWithTitle "theAttack1"
+      lead <- getLead
+      chooseOneM lead do
+        labeled "Run for your lives!" $ doStep 2 msg
+        labeled "Stand and fight!" $ doStep 3 msg
+      pure c
+    DoStep 2 (CampaignStep (CheckpointStep 2)) -> scope "checkpoint2" do
+      story $ i18nWithTitle "theAttack2"
+      record TheTeamFledToTheMountains
+      push $ CampaignStep $ InterludeStep 1 Nothing
+      pure c
+    DoStep 3 (CampaignStep (CheckpointStep 2)) -> scope "checkpoint2" do
+      story $ i18nWithTitle "theAttack3"
+      push $ CampaignStep IceAndDeathPart3
+      pure c
+    CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
+      story $ i18nWithTitle "restfulNight1"
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

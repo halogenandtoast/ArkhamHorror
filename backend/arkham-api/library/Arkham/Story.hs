@@ -109,5 +109,13 @@ allStories =
     , SomeStoryCard centerOfTheSea
     , SomeStoryCard findingAgentHarper
     , SomeStoryCard captured
+    , SomeStoryCard deadEnd
+    , SomeStoryCard cracksInTheIce
+    , SomeStoryCard somberRemains
+    , SomeStoryCard disappearingFootprints
+    , SomeStoryCard dissectedExplorer
+    , SomeStoryCard evilWithin
+    , SomeStoryCard bloodyEvidence
+    , SomeStoryCard madnessInside
     , SomeStoryCard realityAcid
     ]

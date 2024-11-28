@@ -304,7 +304,6 @@ data CampaignLogKey
   | -- | Edge of the Earth
     TheInvestigatorsConvincedDyerToAllowTheExpedition
   | TheInvestigatorsDidNotBelieveDyersReport
-  | ExpeditionTeam
   | WasKilledInThePlaneCrash
   | SuppliesRecovered
   | Camp_CrashSite
@@ -320,6 +319,8 @@ data CampaignLogKey
   | Camp_BarrierCamp
   | Camp_RemnantsOfLakesCamp
   | Camp_CrystallineCavern
+  | TheTeamFledToTheMountains
+  | LocationsRevealed
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

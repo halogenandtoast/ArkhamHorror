@@ -257,6 +257,10 @@ allAgendas =
       SomeAgendaCard coldWelcome
     , SomeAgendaCard intoTheWhite
     , SomeAgendaCard runningOutOfTime
+    , --- Lost in the Night
+      SomeAgendaCard aHarshWindBlows
+    , SomeAgendaCard theChillOfNight
+    , SomeAgendaCard madnessAndDeath
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

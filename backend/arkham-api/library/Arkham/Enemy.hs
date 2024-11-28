@@ -425,6 +425,16 @@ allEnemies =
       SomeEnemyCard skitteringNonsense
     , -- The Crash [eote]
       SomeEnemyCard terrorOfTheStarsBringerOfIceAndDeath
+    , -- Lost in the Night [eote]
+      SomeEnemyCard professorWilliamDyerProfessorOfGeology
+    , SomeEnemyCard danforthBrilliantStudent
+    , SomeEnemyCard eliyahAshevakDogHandler
+    , SomeEnemyCard drMalaSinhaDaringPhysician
+    , SomeEnemyCard averyClaypoolAntarcticGuide
+    , SomeEnemyCard jamesCookieFredericksDubiousChoice
+    , SomeEnemyCard drAmyKenslerProfessorOfBiology
+    , SomeEnemyCard roaldEllsworthIntrepidExplorer
+    , SomeEnemyCard takadaHirokoAeroplaneMechanic
     , -- Creatures in the Ice [eote]
       SomeEnemyCard manifestationOfMadness
     , SomeEnemyCard glacialPhantasm

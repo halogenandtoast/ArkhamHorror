@@ -3213,6 +3213,7 @@ instance Projection Location where
       LocationCardsUnderneath -> pure locationCardsUnderneath
       LocationCardId -> pure locationCardId
       -- virtual
+      LocationCardCode -> pure $ toCardCode attrs
       LocationCardDef -> pure $ toCardDef attrs
       LocationCard -> do
         let card = lookupCard locationCardCode locationCardId

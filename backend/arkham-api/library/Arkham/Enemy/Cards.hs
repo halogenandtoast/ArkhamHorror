@@ -98,6 +98,7 @@ allEncounterEnemyCards =
       , ashleighClarke
       , asylumGorger
       , atlachNacha
+      , averyClaypoolAntarcticGuide
       , avianThrall
       , azathoth
       , balefulReveler
@@ -139,6 +140,7 @@ allEncounterEnemyCards =
       , dagonDeepInSlumber
       , dagonDeepInSlumberIntoTheMaelstrom
       , dagonsBrood
+      , danforthBrilliantStudent
       , danielChesterfield
       , darkYoungHost
       , deepOneBull
@@ -151,8 +153,11 @@ allEncounterEnemyCards =
       , dimensionalShambler
       , discipleOfTheDevourer
       , donLagorio
+      , drAmyKenslerProfessorOfBiology
+      , drMalaSinhaDaringPhysician
       , eaterOfTheDepths
       , elisabettaMagro
+      , eliyahAshevakDogHandler
       , emergentMonstrosity
       , emergingDeepOne
       , eztliGuardian
@@ -208,6 +213,7 @@ allEncounterEnemyCards =
       , innsmouthTroublemaker
       , interstellarTraveler
       , ishimaruHaruko
+      , jamesCookieFredericksDubiousChoice
       , jeremiahPierce
       , jeromeDavids
       , jordanPerry
@@ -273,12 +279,14 @@ allEncounterEnemyCards =
       , priestOfAThousandMasks
       , priestOfDagon
       , priestessOfTheCoven
+      , professorWilliamDyerProfessorOfGeology
       , pursuingMotorcar
       , ravagerFromTheDeep
       , ravenousGhoul
       , relentlessDarkYoung
       , riftSeeker
       , roachSwarm
+      , roaldEllsworthIntrepidExplorer
       , robertFriendlyDisgruntledDockworker
       , royalEmissary
       , ruthTurner
@@ -312,6 +320,7 @@ allEncounterEnemyCards =
       , swarmOfRats
       , swarmOfSpiders
       , swiftByakhee
+      , takadaHirokoAeroplaneMechanic
       , temporalDevourer
       , tenebrousNightgaunt
       , terrorOfTheStarsBringerOfIceAndDeath
@@ -2363,6 +2372,80 @@ terrorOfTheStarsBringerOfIceAndDeath =
   (enemy "08522" ("Terror of the Stars" <:> "Bringer of Ice and Death") TheCrash 1)
     { cdCardTraits = setFromList [Monster, Eidolon, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+professorWilliamDyerProfessorOfGeology :: CardDef
+professorWilliamDyerProfessorOfGeology =
+  (enemy "08535" ("Professor William Dyer" <:> "Professor of Geology") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+danforthBrilliantStudent :: CardDef
+danforthBrilliantStudent =
+  (enemy "08536" ("Danforth" <:> "Brilliant Student") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+eliyahAshevakDogHandler :: CardDef
+eliyahAshevakDogHandler =
+  (enemy "08537" ("Eliyah Ashevak" <:> "Dog Handler") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+drMalaSinhaDaringPhysician :: CardDef
+drMalaSinhaDaringPhysician =
+  (enemy "08538" ("Dr. Mala Sinha" <:> "Daring Physician") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+averyClaypoolAntarcticGuide :: CardDef
+averyClaypoolAntarcticGuide =
+  (enemy "08539" ("Avery Claypool" <:> "Antarctic Guide") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+jamesCookieFredericksDubiousChoice :: CardDef
+jamesCookieFredericksDubiousChoice =
+  (enemy "08540" ("James \"Cookie\" Fredericks" <:> "Dubious Choice") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdKeywords = singleton Keyword.Retaliate
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+drAmyKenslerProfessorOfBiology :: CardDef
+drAmyKenslerProfessorOfBiology =
+  (enemy "08541" ("Dr. Amy Kensler" <:> "Professor of Biology") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+roaldEllsworthIntrepidExplorer :: CardDef
+roaldEllsworthIntrepidExplorer =
+  (enemy "08542" ("Roald Ellsworth" <:> "Intrepid Explorer") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
+    , cdVictoryPoints = Just 1
+    }
+
+takadaHirokoAeroplaneMechanic :: CardDef
+takadaHirokoAeroplaneMechanic =
+  (enemy "08543" ("Takada Hiroko" <:> "Aeroplane Mechanic") LostInTheNight 1)
+    { cdCardTraits = setFromList [Humanoid, Possessed, Elite]
+    , cdUnique = True
     , cdVictoryPoints = Just 1
     }
 

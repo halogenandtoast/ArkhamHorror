@@ -170,6 +170,7 @@ data Trait
   | Poison
   | Police
   | Port
+  | Possessed
   | Power
   | Practiced
   | PresentDay

@@ -93,6 +93,14 @@ allStoryCards =
       , centerOfTheSea
       , findingAgentHarper
       , captured
+      , deadEnd
+      , cracksInTheIce
+      , somberRemains
+      , disappearingFootprints
+      , dissectedExplorer
+      , evilWithin
+      , bloodyEvidence
+      , madnessInside
       , realityAcid
       ]
 
@@ -312,6 +320,30 @@ findingAgentHarper = story "07062" "Finding Agent Harper" TheVanishingOfElinaHar
 
 captured :: CardDef
 captured = story "07252" "Captured!" ALightInTheFog
+
+deadEnd :: CardDef
+deadEnd = story "08527" "Dead End" LostInTheNight
+
+cracksInTheIce :: CardDef
+cracksInTheIce = story "08528" "Cracks in the Ice" LostInTheNight
+
+somberRemains :: CardDef
+somberRemains = story "08529" "Somber Remains" LostInTheNight
+
+disappearingFootprints :: CardDef
+disappearingFootprints = story "08530" "Disappearing Footprints" LostInTheNight
+
+dissectedExplorer :: CardDef
+dissectedExplorer = story "08531" "Dissected Explorer" LostInTheNight
+
+evilWithin :: CardDef
+evilWithin = story "08532" "Evil Within" LostInTheNight
+
+bloodyEvidence :: CardDef
+bloodyEvidence = story "08533" "Bloody Evidence" LostInTheNight
+
+madnessInside :: CardDef
+madnessInside = story "08534" "Madness Inside" LostInTheNight
 
 realityAcid :: CardDef
 realityAcid =

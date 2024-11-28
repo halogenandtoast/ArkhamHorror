@@ -250,6 +250,7 @@ defaultCampaignRunner msg a = case msg of
         EpilogueStepPart _ -> EpilogueStep
         InvestigatorCampaignStep _ c -> normalizedCampaignStep c
         ResupplyPoint -> ResupplyPoint
+        CheckpointStep n -> CheckpointStep n
     pure $ updateAttrs a \attrs ->
       case campaignXpBreakdown attrs of
         (step, report') : rest

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.IceAndDeath (IceAndDeath (..), iceAndDeath) where
+module Arkham.Scenario.Scenarios.IceAndDeathPart1 (IceAndDeathPart1 (..), iceAndDeathPart1) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -9,15 +9,14 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
-import Arkham.Helpers.Log (getCampaignLog)
+import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Location
-import Arkham.Matcher
+import Arkham.Matcher hiding (InvestigatorResigned)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -28,15 +27,15 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Uncharted))
 
-newtype IceAndDeath = IceAndDeath ScenarioAttrs
+newtype IceAndDeathPart1 = IceAndDeathPart1 ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-iceAndDeath :: Difficulty -> IceAndDeath
-iceAndDeath difficulty =
-  scenario
-    IceAndDeath
-    "08501"
+iceAndDeathPart1 :: Difficulty -> IceAndDeathPart1
+iceAndDeathPart1 difficulty =
+  scenarioWith
+    IceAndDeathPart1
+    "08501a"
     "Ice and Death"
     difficulty
     [ "trefoil  .       .     .         .        .         plus"
@@ -54,9 +53,10 @@ iceAndDeath difficulty =
     , ".        .       .     squiggle  .        .         ."
     , ".        .       .     squiggle  .        .         ."
     ]
+    (referenceL .~ "08501")
 
-instance HasChaosTokenValue IceAndDeath where
-  getChaosTokenValue iid tokenFace (IceAndDeath attrs) = case tokenFace of
+instance HasChaosTokenValue IceAndDeathPart1 where
+  getChaosTokenValue iid tokenFace (IceAndDeathPart1 attrs) = case tokenFace of
     Skull -> do
       n <-
         fromMaybe 0 <$> runMaybeT do
@@ -67,10 +67,10 @@ instance HasChaosTokenValue IceAndDeath where
     Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
-instance RunMessage IceAndDeath where
-  runMessage msg s@(IceAndDeath attrs) = runQueueT $ scenarioI18n $ case msg of
+instance RunMessage IceAndDeathPart1 where
+  runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeath"
+      story $ i18nWithTitle "iceAndDeathPart1"
       doStep 1 PreScenarioSetup
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
@@ -111,26 +111,25 @@ instance RunMessage IceAndDeath where
 
       pure s
     ForInvestigator iid PreScenarioSetup -> do
-      partners <- view partnersL <$> getCampaignLog
+      partners <- getRemainingPartners
       unless (null partners) do
         chooseOneM iid do
           questionLabeled "Choose a partner for this scenario"
           labeled "Do not take a partner" nothing
-          for_ (mapToList partners) \(cardCode, partner) -> do
-            inPlay <- selectAny $ assetIs cardCode
-            when (not inPlay && partner.status `elem` [Safe, Resolute]) do
-              cardLabeled cardCode $ handleTarget iid ScenarioSource (CardCodeTarget cardCode)
+          for_ partners \partner -> do
+            inPlay <- selectAny $ assetIs partner.cardCode
+            when (not inPlay) do
+              cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       for_ (lookupCardDef cardCode) \def -> do
         card <- genCard def
         assetId <- createAssetAt card (InPlayArea iid)
-        partners <- view partnersL <$> getCampaignLog
-        for_ (lookup cardCode partners) \partner -> do
-          pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
-          pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+        partner <- getPartner cardCode
+        pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+        pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
-    Setup -> runScenarioSetup IceAndDeath attrs do
+    Setup -> runScenarioSetup IceAndDeathPart1 attrs do
       gather Set.IceAndDeath
       gather Set.TheCrash
       gather Set.DeadlyWeather
@@ -203,11 +202,16 @@ instance RunMessage IceAndDeath where
           sv <- max 3 . fromMaybe 0 <$> getCurrentShelterValue
           allGainXpWithBonus attrs $ toBonus "bonus" sv
         _ -> error "Unknown resolution"
+      locations <- selectField Location.LocationCardCode RevealedLocation
+      recordSetInsert LocationsRevealed locations
       endOfScenario
       pure s
-    Resign iid -> do
-      withLocationOf iid \lid -> do
-        card <- field Location.LocationCard lid
-        for_ (lookup card.cardCode camps) record
+    When (InvestigatorResigned iid) -> do
+      getCamp >>= \case
+        Nothing -> do
+          lid <- getJustLocation iid
+          card <- field Location.LocationCard lid
+          for_ (lookup card.cardCode camps) record
+        Just _ -> pure ()
       pure s
-    _ -> IceAndDeath <$> liftRunMessage msg attrs
+    _ -> IceAndDeathPart1 <$> liftRunMessage msg attrs

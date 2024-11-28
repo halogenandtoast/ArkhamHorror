@@ -29,6 +29,10 @@ const name = computed(() => {
     return `Interlude ${props.step.contents}`
   }
 
+  if (props.step.tag === 'CheckpointStep') {
+    return `Checkpoint ${props.step.contents}`
+  }
+
   if (props.step.tag === 'ResupplyPoint') {
     return "Resupply Point"
   }

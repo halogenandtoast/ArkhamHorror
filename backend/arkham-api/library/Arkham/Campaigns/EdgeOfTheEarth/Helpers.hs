@@ -1,6 +1,7 @@
 module Arkham.Campaigns.EdgeOfTheEarth.Helpers where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
@@ -23,6 +24,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
 import Arkham.Treachery.Types (Field (TreacheryCardId))
 import Arkham.Window (WindowType (ScenarioEvent))
+import GHC.Records
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
@@ -89,3 +91,53 @@ getShelterValue a = do
   def <- lookupCardDef (toCardCode a)
   val <- lookup "shelter" (cdMeta def)
   maybeResult val
+
+data Partner = Partner
+  { partnerCardCode :: CardCode
+  , partnerDamage :: Int
+  , partnerHorror :: Int
+  , partnerStatus :: PartnerStatus
+  }
+
+instance HasField "status" Partner PartnerStatus where
+  getField = partnerStatus
+
+instance HasField "damage" Partner Int where
+  getField = partnerDamage
+
+instance HasField "horror" Partner Int where
+  getField = partnerHorror
+
+instance HasField "cardCode" Partner CardCode where
+  getField = partnerCardCode
+
+instance HasCardCode Partner where
+  toCardCode = (.cardCode)
+
+getPartnersWithStatus :: HasGame m => (PartnerStatus -> Bool) -> m [Partner]
+getPartnersWithStatus f = do
+  partners <- view partnersL <$> getCampaignLog
+  pure $ flip mapMaybe (mapToList partners) \(cardCode, partner) -> do
+    guard $ f partner.status
+    pure
+      $ Partner
+        { partnerCardCode = cardCode
+        , partnerDamage = partner.damage
+        , partnerHorror = partner.horror
+        , partnerStatus = partner.status
+        }
+
+getRemainingPartners :: HasGame m => m [Partner]
+getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
+
+getPartner :: (HasGame m, HasCardCode a) => a -> m Partner
+getPartner (toCardCode -> cardCode) = do
+  partners <- view partnersL <$> getCampaignLog
+  pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners >>= \partner ->
+    pure
+      $ Partner
+        { partnerCardCode = cardCode
+        , partnerDamage = partner.damage
+        , partnerHorror = partner.horror
+        , partnerStatus = partner.status
+        }

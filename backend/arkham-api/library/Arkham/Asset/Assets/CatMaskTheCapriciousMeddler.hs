@@ -63,6 +63,6 @@ instance RunMessage CatMaskTheCapriciousMeddler where
     EndCheckWindow -> do
       depth <- getWindowDepth
       pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
-        Just d | depth <= d -> CatMaskTheCapriciousMeddler $ attrs & setMeta @(Maybe Int) Nothing
+        Just d | depth < d -> CatMaskTheCapriciousMeddler $ attrs & setMeta @(Maybe Int) Nothing
         _ -> a
     _ -> CatMaskTheCapriciousMeddler <$> liftRunMessage msg attrs

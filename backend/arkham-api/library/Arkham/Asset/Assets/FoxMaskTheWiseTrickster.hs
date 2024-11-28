@@ -63,6 +63,6 @@ instance RunMessage FoxMaskTheWiseTrickster where
     EndCheckWindow -> do
       depth <- getWindowDepth
       pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
-        Just d | depth <= d -> FoxMaskTheWiseTrickster $ attrs & setMeta @(Maybe Int) Nothing
+        Just d | depth < d -> FoxMaskTheWiseTrickster $ attrs & setMeta @(Maybe Int) Nothing
         _ -> a
     _ -> FoxMaskTheWiseTrickster <$> liftRunMessage msg attrs

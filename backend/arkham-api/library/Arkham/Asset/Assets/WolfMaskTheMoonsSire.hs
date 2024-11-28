@@ -59,6 +59,6 @@ instance RunMessage WolfMaskTheMoonsSire where
     EndCheckWindow -> do
       depth <- getWindowDepth
       pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
-        Just d | depth <= d -> WolfMaskTheMoonsSire $ attrs & setMeta @(Maybe Int) Nothing
+        Just d | depth < d -> WolfMaskTheMoonsSire $ attrs & setMeta @(Maybe Int) Nothing
         _ -> a
     _ -> WolfMaskTheMoonsSire <$> liftRunMessage msg attrs

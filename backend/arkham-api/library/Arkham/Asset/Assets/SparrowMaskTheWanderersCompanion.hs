@@ -67,6 +67,6 @@ instance RunMessage SparrowMaskTheWanderersCompanion where
     EndCheckWindow -> do
       depth <- getWindowDepth
       pure $ case getAssetMetaDefault @(Maybe Int) Nothing attrs of
-        Just d | depth <= d -> SparrowMaskTheWanderersCompanion $ attrs & setMeta @(Maybe Int) Nothing
+        Just d | depth < d -> SparrowMaskTheWanderersCompanion $ attrs & setMeta @(Maybe Int) Nothing
         _ -> a
     _ -> SparrowMaskTheWanderersCompanion <$> liftRunMessage msg attrs

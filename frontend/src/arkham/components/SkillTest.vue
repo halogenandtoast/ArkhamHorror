@@ -54,6 +54,7 @@ const shouldRender = (mod: Modifier) => {
   if (type.tag === 'SkillModifier') return true
   if (type.tag === 'ActionSkillModifier') return true
   if (type.tag === 'AddSkillValue') return true
+  if (type.tag === 'RevealAnotherChaosToken') return true
   if (type.tag === 'CannotCommitCards')
     return props.playerId == props.game.investigators[props.skillTest.investigator].playerId
   if (type.tag === 'OtherModifier' && type.contents === 'MayIgnoreLocationEffectsAndKeywords') return true
@@ -348,6 +349,9 @@ const tokenEffects = computed(() => {
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
             <span class="text">Skill test automatically succeeds</span>
+          </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
+            <span class="text">Reveal another chaos token</span>
           </template>
         </div>
       </div>

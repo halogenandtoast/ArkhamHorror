@@ -359,7 +359,9 @@ instance ToJSON Enemy where
   toJSON (Enemy a) = toJSON a
 
 instance HasAbilities Enemy where
-  getAbilities (Enemy a) = getAbilities a
+  getAbilities e@(Enemy a) = case e.placement of
+    OutOfPlay RemovedZone -> []
+    _ -> getAbilities a
 
 -- If the enemy has been defeated, we won't have removed it yet ourselves, but
 -- the printed effects should be disabled

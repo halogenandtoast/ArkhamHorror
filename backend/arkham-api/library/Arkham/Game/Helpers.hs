@@ -1840,6 +1840,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.TakeControlOfClues timing whoMatcher sourceMatcher -> guardTiming timing \case
+      Window.TakeControlOfClues who source' -> do
+        andM
+          [ matchWho iid who whoMatcher
+          , sourceMatches source' sourceMatcher
+          ]
+      _ -> noMatch
     Matcher.VehicleEnters timing assetMatcher whereMatcher -> guardTiming timing \case
       Window.VehicleEnters aid where' -> do
         andM
@@ -3698,6 +3705,12 @@ sourceMatches s = \case
   Matcher.SourceIsTreacheryEffect tm -> case s of
     TreacherySource tid -> elem tid <$> select tm
     _ -> pure False
+  Matcher.SourceIsEnemy em -> case s.enemy of
+    Nothing -> pure False
+    Just eid -> eid <=~> em
+  Matcher.SourceIsLocation lm -> case s.location of
+    Nothing -> pure False
+    Just lid -> lid <=~> lm
   Matcher.SourceIsAsset am ->
     let
       isAssetSource s' = case s' of

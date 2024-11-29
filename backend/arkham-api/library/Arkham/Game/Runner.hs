@@ -2528,6 +2528,14 @@ runGameMessage msg g = case msg of
     modifiers' <- getModifiers card
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
+      StoryType -> do
+        let storyId = StoryId card.cardCode
+        let story' = createStory card Nothing storyId
+        pushAll [afterDraw, ResolveStory iid ResolveIt storyId, UnsetActiveCard]
+        pure
+          $ g'
+          & (entitiesL . storiesL . at storyId ?~ story')
+          & (activeCardL ?~ toCard card)
       EnemyType -> do
         enemyId <- getRandom
         let enemy = createEnemy card enemyId

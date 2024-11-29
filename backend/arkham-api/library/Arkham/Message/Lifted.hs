@@ -1244,6 +1244,9 @@ putOnBottomOfDeck
   :: (ReverseQueue m, IsDeck deck, Targetable target) => InvestigatorId -> deck -> target -> m ()
 putOnBottomOfDeck iid deck target = push $ PutOnBottomOfDeck iid (toDeck deck) (toTarget target)
 
+putCardOnBottomOfDeck :: (ReverseQueue m, IsDeck deck) => InvestigatorId -> deck -> Card -> m ()
+putCardOnBottomOfDeck iid deck card = push $ PutCardOnBottomOfDeck iid (toDeck deck) card
+
 gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainResourcesIfCan iid source n = do
   mmsg <- Msg.gainResourcesIfCan iid source n

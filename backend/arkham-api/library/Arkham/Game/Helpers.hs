@@ -955,10 +955,26 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         <$> (maybe (pure False) (<=~> Matcher.InvestigatableLocation) =<< field InvestigatorLocation iid)
 
     passesLimits' <- passesLimits iid c
+
     let
-      additionalCosts = flip mapMaybe cardModifiers \case
-        AdditionalCost x -> Just x
-        _ -> Nothing
+      isPlayAction = \case
+        PaidCost -> False
+        UnpaidCost NoAction -> False
+        UnpaidCost NeedsAction -> True
+        AuxiliaryCost _ inner -> isPlayAction inner
+
+    additionalCosts <- flip mapMaybeM modifiers \case
+      AdditionalCost n -> pure (Just n)
+      AdditionalActionCostOf match n -> do
+        performedActions <- field InvestigatorActionsPerformed iid
+        takenActions <- field InvestigatorActionsTaken iid
+        let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
+        pure
+          $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
+          $> ActionCost n
+      _ -> pure Nothing
+
+    let
       sealingToCost = \case
         Keyword.Sealing matcher -> Just $ SealCost matcher
         Keyword.SealUpTo n matcher -> Just $ UpTo (Fixed n) (SealCost matcher)
@@ -970,9 +986,8 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
 
     investigateCosts <-
       if #investigate `elem` cdActions pcDef
-        then do
-          mLocation <- field InvestigatorLocation iid
-          case mLocation of
+        then
+          field InvestigatorLocation iid >>= \case
             Nothing -> pure []
             Just lid -> do
               mods <- getModifiers lid

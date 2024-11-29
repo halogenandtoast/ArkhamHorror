@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon, Prismati
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Helpers.Modifiers (ActionTarget (..), ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified)
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards

@@ -30,6 +30,7 @@ import Arkham.Investigator.Types (Field (..), Investigator, investigatorResource
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types (Location)
+import Arkham.Matcher.Target (matchTarget)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection

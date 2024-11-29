@@ -296,7 +296,7 @@ getSkillTestTargetedEnemy = join . fmap (.enemy) <$> getSkillTestTarget
 isInvestigating :: HasGame m => InvestigatorId -> LocationId -> m Bool
 isInvestigating iid lid =
   andM
-    [ (== Just (LocationTarget lid)) <$> getSkillTestTarget
+    [ (== Just lid) . join . fmap (.location) <$> getSkillTestTarget
     , (== Just #investigate) <$> getSkillTestAction
     , (== Just iid) <$> getSkillTestInvestigator
     ]

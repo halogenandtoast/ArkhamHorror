@@ -3,8 +3,6 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_130 (
   HistoricalSocietyHistoricalMuseum_130 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
@@ -13,11 +11,10 @@ import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype HistoricalSocietyHistoricalMuseum_130 = HistoricalSocietyHistoricalMuseum_130 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyHistoricalMuseum_130
@@ -31,8 +28,8 @@ historicalSocietyHistoricalMuseum_130 =
 
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_130 where
   getModifiersFor (InvestigatorTarget iid) (HistoricalSocietyHistoricalMuseum_130 a) = do
-    investigating <- isInvestigating iid (toId a)
-    toModifiers a [SkillCannotBeIncreased SkillIntellect | investigating]
+    investigating <- isInvestigating iid a.id
+    toModifiers a [SkillCannotBeIncreased #intellect | investigating]
   getModifiersFor _ _ = pure []
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where
@@ -40,17 +37,14 @@ instance HasAbilities HistoricalSocietyHistoricalMuseum_130 where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemySpawns
-          Timing.When
-          (LocationWithId $ toId attrs)
-          AnyEnemy
+        $ forced
+        $ EnemySpawns #when (be attrs) AnyEnemy
       | not (locationRevealed attrs)
       ]
 
 instance RunMessage HistoricalSocietyHistoricalMuseum_130 where
   runMessage msg l@(HistoricalSocietyHistoricalMuseum_130 attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          l <$ push (Msg.RevealLocation Nothing $ toId attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Msg.RevealLocation Nothing attrs.id
+      pure l
     _ -> HistoricalSocietyHistoricalMuseum_130 <$> runMessage msg attrs

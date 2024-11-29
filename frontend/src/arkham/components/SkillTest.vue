@@ -4,9 +4,11 @@ import Question from '@/arkham/components/Question.vue';
 import { useDebug } from '@/arkham/debug'
 import { computed, h } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
+import * as Cards from '@/arkham/types/Card';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
+import { Enemy } from '@/arkham/types/Enemy';
 import { ModifierType, Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
@@ -190,6 +192,24 @@ const targetCard = computed(() => {
   return props.game.cards[props.skillTest.targetCard]
 })
 
+type SwarmEnemy = Omit<Enemy, "placement"> & {
+  placement: { tag: "AsSwarm"; swarmHost: string; swarmCard: Cards.Card };
+};
+
+const swarmEnemy = computed<SwarmEnemy | null>(() => {
+  let enemy = Object.values(props.game.enemies).find((e): e is SwarmEnemy => {
+    if (e.placement.tag !== 'AsSwarm') return false
+    return e.placement.swarmCard.contents.id === props.skillTest.targetCard
+  })
+  if (!enemy) return null
+  return {...enemy}
+})
+
+const swarmHost = computed(() => {
+  if (!swarmEnemy.value) return null
+  return props.game.cards[props.game.enemies[swarmEnemy.value.placement.swarmHost].cardId]
+})
+
 const sourceCard = computed(() => {
   if (!props.skillTest.sourceCard) return null
   if (props.skillTest.sourceCard === props.skillTest.targetCard) return null
@@ -259,7 +279,15 @@ const tokenEffects = computed(() => {
         <div v-tooltip="'Skill test ends.'" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
       </div>
       <div class="skill-test-contents">
-        <Card v-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
+        <div v-if="swarmEnemy" class="target-card swarming">
+          <div class="swarm">
+            <img :src="imgsrc('player_back.jpg')" class="card" />
+          </div>
+          <div class="host">
+            <Card :game="game" :card="swarmHost" :revealed="true" playerId="" />
+          </div>
+        </div>
+        <Card v-else-if="targetCard" :game="game" :card="targetCard" class="target-card" :revealed="true" playerId="" />
         <div class="test-status">
           <div class="test-difficulty">
             <span class="difficulty">{{skillTest.modifiedDifficulty}}</span>
@@ -746,6 +774,29 @@ i.iconSkillAgility {
 .target-card {
   margin-left: calc(var(--card-width) + 5px);
 }
+
+.swarming {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+
+  .swarm img {
+    width: var(--card-width);
+    min-width: var(--card-width);
+    border-radius: 7px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
+    border-radius: 6px;
+  }
+
+  .host :deep(img) {
+    box-sizing: border-box;
+    border: 2px dashed var(--title);
+    border-radius: 7px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
+    border-radius: 6px;
+  }
+}
+
 
 .skills {
   display: flex;

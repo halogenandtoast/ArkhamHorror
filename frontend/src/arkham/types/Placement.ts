@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { cardDecoder, Card } from '@/arkham/types/Card';
 
 export type Placement
   = { tag: "InThreatArea", contents: string }
@@ -9,13 +10,13 @@ export type Placement
   | { tag: "AtLocation", contents: string }
   | { tag: "InVehicle", contents: string }
   | { tag: "AttachedToLocation", contents: string }
-  | { tag: "AsSwarm", swarmHost: string }
+  | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
   | { tag: "OtherPlacement", contents: string }
 
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
-  JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("AsSwarm"), swarmHost: JsonDecoder.string }, 'AsSwarm'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("AsSwarm"), swarmHost: JsonDecoder.string, swarmCard: cardDecoder }, 'AsSwarm'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("NextToAgenda")}, 'NextToAgenda'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("Limbo")}, 'Limbo'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.isExactly("AtLocation"), contents: JsonDecoder.string }, 'AtLocation'),

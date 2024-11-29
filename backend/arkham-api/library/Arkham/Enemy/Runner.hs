@@ -749,30 +749,15 @@ instance RunMessage EnemyAttrs where
       pushAll [whenWindow, Do msg, afterWindow]
       pure a
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
-      case enemyPlacement of
-        AsSwarm eid' _ -> do
-          push $ EnemyEvaded iid eid'
-          pure a
-        _ -> do
-          mods <- getModifiers iid
-          mlid <- field EnemyLocation eid
-          let
-            updatePlacement =
-              if DoNotDisengageEvaded `elem` mods
-                then id
-                else maybe id (\lid -> placementL .~ AtLocation lid) mlid
-            updateExhausted =
-              if DoNotExhaustEvaded `elem` mods
-                then id
-                else exhaustedL .~ True
-          pure $ a & updatePlacement & updateExhausted
+      mods <- getModifiers iid
+      pushWhen (DoNotExhaustEvaded `notElem` mods) $ Exhaust (toTarget a)
+      pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
+      pure a
     Exhaust (isTarget a -> True) -> do
       afterWindow <- checkWindows [mkAfter $ Window.Exhausts (toTarget a)]
       push afterWindow
       case enemyPlacement of
-        AsSwarm eid' _ -> do
-          others <- select $ SwarmOf eid' <> not_ (EnemyWithId $ toId a) <> ReadyEnemy
-          pushAll [Exhaust (toTarget other) | other <- others]
+        AsSwarm eid' _ -> push $ Exhaust (toTarget eid')
         _ -> do
           others <- select $ SwarmOf (toId a) <> ReadyEnemy
           pushAll [Exhaust (toTarget other) | other <- others]

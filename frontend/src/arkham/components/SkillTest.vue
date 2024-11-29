@@ -448,7 +448,10 @@ const tokenEffects = computed(() => {
 
 .skill-test-contents {
   padding: 10px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: center;
   gap: 5px;
   color: white;
   background-color: rgb(0, 0, 0, 0.6);

@@ -92,7 +92,8 @@ const allResolved = computed(() => {
     </div>
 
     <div class="token-choices-inner">
-      <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx">
+      <div v-for="(tokenChoice, idx) in tokenChoices" :key="idx" class="token-choice" :class="{ 'token-choice-multi': tokenChoice.tag === 'Resolved' && tokenChoice.tokens.length > 1 }">
+        <span v-if="tokenChoice.tag === 'Resolved' && tokenChoice.tokens.length > 1">Grouped</span>
         <template v-if="tokenChoice.tag ==='Resolved'">
           <Token v-for="(token, idx) in tokenChoice.tokens" :key="idx" :token="token" :game="game" :playerId="playerId" @choose="choose" />
         </template>
@@ -144,6 +145,7 @@ const allResolved = computed(() => {
   flex-direction: row;
   align-self: center;
   padding: 10px;
+  gap: 10px;
 }
 
 .token-prompt {
@@ -154,5 +156,19 @@ const allResolved = computed(() => {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   font-size: 1.2em;
+}
+
+.token-choice-multi {
+  border: 1px dashed #e0e0e0;
+  padding-inline: 10px;
+  padding-block: 5px;
+  color: var(--title);
+  text-transform: uppercase;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+
 }
 </style>

@@ -97,6 +97,7 @@ data LocationMatcher
   | InvestigatableLocation
   | LocationNotInPlay
   | LocationFartherFrom LocationId LocationMatcher
+  | LocationFartherFromMatching LocationId LocationId LocationMatcher
   | FarthestLocationFromLocation LocationId LocationMatcher
   | NearestLocationToLocation LocationId LocationMatcher
   | --                           ^ start

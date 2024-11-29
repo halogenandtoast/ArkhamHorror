@@ -3187,6 +3187,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.PartiallyFloodedLocation {} -> locationId <=~> matcher
     Matcher.CanHaveFloodLevelIncreased {} -> locationId <=~> matcher
     Matcher.LocationFartherFrom {} -> locationId <=~> matcher
+    Matcher.LocationFartherFromMatching {} -> locationId <=~> matcher
     Matcher.LocationBetween {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFromAtLeast {} -> locationId <=~> matcher
     Matcher.LocationWithAccessiblePath {} -> locationId <=~> matcher

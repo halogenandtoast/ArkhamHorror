@@ -626,15 +626,13 @@ allScenarioCards =
   mapFromList $ flip map (filter ((`notElem` duplicatedScenarios) . fst) $ mapToList allScenarios) $ \(c, SomeScenario s) -> do
     let ecSet = fromJustNote "you forgot to add the encounter set" $ lookup c scenarioEncounterSets
         name = scenarioName $ toAttrs $ Scenario (s Easy)
+        normalizeCardCode = \case
+          "08501a" -> "08501"
+          other -> other
     (normalizeCardCode c, scenarioCard (normalizeCardCode c) name ecSet)
 
 duplicatedScenarios :: [CardCode]
 duplicatedScenarios = ["08501c"]
-
-normalizeCardCode :: CardCode -> CardCode
-normalizeCardCode = \case
-  "08501a" -> "08501"
-  other -> other
 
 allScenarios :: Map CardCode SomeScenario
 allScenarios =

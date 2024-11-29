@@ -2100,7 +2100,8 @@ getLocationsMatching lmatcher = do
 
 guardYourLocation :: HasGame m => (LocationId -> m [a]) -> m [a]
 guardYourLocation body = do
-  mlid <- fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
+  mlid <-
+    fmap join . fieldMay InvestigatorLocation . view activeInvestigatorIdL =<< getGame
   case mlid of
     Nothing -> pure []
     Just lid -> body lid

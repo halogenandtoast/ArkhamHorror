@@ -18,7 +18,18 @@ polarMirage = treachery PolarMirage Cards.polarMirage
 
 -- TODO: Need to update for Frenzied Explorer and Lost Researcher
 instance HasAbilities PolarMirage where
-  getAbilities (PolarMirage a) = [mkAbility a 1 $ forced $ DiscoverClues #after You (locationWithTreachery a) AnyValue]
+  getAbilities (PolarMirage a) =
+    [ mkAbility a 1
+        $ forced
+        $ oneOf
+          [ DiscoverClues #after You (locationWithTreachery a) AnyValue
+          , TakeControlOfClues #after You
+              $ oneOf
+                [ SourceIsLocation (locationWithTreachery a)
+                , SourceIsEnemy (EnemyAt $ locationWithTreachery a)
+                ]
+          ]
+    ]
 
 instance RunMessage PolarMirage where
   runMessage msg t@(PolarMirage attrs) = runQueueT $ case msg of

@@ -2529,13 +2529,8 @@ runGameMessage msg g = case msg of
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
       StoryType -> do
-        let storyId = StoryId card.cardCode
-        let story' = createStory card Nothing storyId
-        pushAll [afterDraw, ResolveStory iid ResolveIt storyId, UnsetActiveCard]
-        pure
-          $ g'
-          & (entitiesL . storiesL . at storyId ?~ story')
-          & (activeCardL ?~ toCard card)
+        pushAll [afterDraw, ReadStory iid (toCard card) ResolveIt Nothing, UnsetActiveCard]
+        pure g'
       EnemyType -> do
         enemyId <- getRandom
         let enemy = createEnemy card enemyId

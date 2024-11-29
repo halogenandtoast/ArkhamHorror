@@ -8,6 +8,7 @@ import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Location
 import Arkham.Matcher.Treachery
 import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
@@ -21,6 +22,8 @@ data SourceMatcher
   | SourceIsTreacheryEffect TreacheryMatcher
   | SourceIsAsset AssetMatcher
   | SourceIsEvent EventMatcher
+  | SourceIsLocation LocationMatcher
+  | SourceIsEnemy EnemyMatcher
   | EncounterCardSource
   | SourceMatchesAny [SourceMatcher]
   | SourceOwnedBy InvestigatorMatcher

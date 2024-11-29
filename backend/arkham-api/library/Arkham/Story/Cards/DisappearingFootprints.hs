@@ -1,7 +1,4 @@
-module Arkham.Story.Cards.DisappearingFootprints
-  ( DisappearingFootprints(..)
-  , disappearingFootprints
-  ) where
+module Arkham.Story.Cards.DisappearingFootprints (DisappearingFootprints (..), disappearingFootprints) where
 
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
@@ -16,5 +13,7 @@ disappearingFootprints = story DisappearingFootprints Cards.disappearingFootprin
 instance RunMessage DisappearingFootprints where
   runMessage msg s@(DisappearingFootprints attrs) = runQueueT $ case msg of
     ResolveStory _ ResolveIt story' | story' == toId attrs -> do
+      removeChaosToken #frost
+      addToVictory attrs
       pure s
     _ -> DisappearingFootprints <$> liftRunMessage msg attrs

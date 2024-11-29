@@ -457,68 +457,30 @@ data Modifier = Modifier
   }
   deriving stock (Show, Eq, Ord, Data)
 
-data ActionTarget
-  = FirstOneOfPerformed [Action]
-  | IsAction Action
-  | EnemyAction Action EnemyMatcher
-  | IsAnyAction
-  | AnyActionTarget [ActionTarget]
-  deriving stock (Show, Eq, Ord, Data)
-
-instance IsLabel "parley" ActionTarget where
-  fromLabel = IsAction #parley
-
-instance IsLabel "play" ActionTarget where
-  fromLabel = IsAction #play
-
-instance IsLabel "engage" ActionTarget where
-  fromLabel = IsAction #engage
-
-instance IsLabel "resource" ActionTarget where
-  fromLabel = IsAction #resource
-
-instance IsLabel "draw" ActionTarget where
-  fromLabel = IsAction #draw
-
-instance IsLabel "move" ActionTarget where
-  fromLabel = IsAction #move
-
-instance IsLabel "evade" ActionTarget where
-  fromLabel = IsAction #evade
-
-instance IsLabel "investigate" ActionTarget where
-  fromLabel = IsAction #investigate
-
-instance IsLabel "resign" ActionTarget where
-  fromLabel = IsAction #resign
-
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
 
-$( do
-    actionTarget <- deriveJSON defaultOptions ''ActionTarget
-    deriveModifierTypeToJSON <- deriveToJSON defaultOptions ''ModifierType
-    fromJSONInstance <-
-      [d|
-        instance FromJSON ModifierType where
-          parseJSON = withObject "ModifierType" \v -> do
-            tag :: Text <- v .: "tag"
-            case tag of
-              "CanHealAtFull" -> do
-                contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
-                case contents of
-                  Left n -> pure $ CanHealAtFull AnySource n
-                  Right (s, n) -> pure $ CanHealAtFull s n
-              "CanBecomeFastOrReduceCostOf" -> do
-                contents <- v .: "contents"
-                pure $ uncurry ChuckFergus2Modifier contents
-              "XPModifier" -> do
-                contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
-                case contents of
-                  Left n -> pure $ XPModifier "Card Effect" n
-                  Right (s, n) -> pure $ XPModifier s n
-              _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
-        |]
-    deriveModifier <- deriveJSON (aesonOptions $ Just "modifier") ''Modifier
-    pure $ actionTarget <> deriveModifierTypeToJSON <> fromJSONInstance <> deriveModifier
- )
+mconcat
+  [ deriveToJSON defaultOptions ''ModifierType
+  , [d|
+      instance FromJSON ModifierType where
+        parseJSON = withObject "ModifierType" \v -> do
+          tag :: Text <- v .: "tag"
+          case tag of
+            "CanHealAtFull" -> do
+              contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+              case contents of
+                Left n -> pure $ CanHealAtFull AnySource n
+                Right (s, n) -> pure $ CanHealAtFull s n
+            "CanBecomeFastOrReduceCostOf" -> do
+              contents <- v .: "contents"
+              pure $ uncurry ChuckFergus2Modifier contents
+            "XPModifier" -> do
+              contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+              case contents of
+                Left n -> pure $ XPModifier "Card Effect" n
+                Right (s, n) -> pure $ XPModifier s n
+            _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
+      |]
+  , deriveJSON (aesonOptions $ Just "modifier") ''Modifier
+  ]

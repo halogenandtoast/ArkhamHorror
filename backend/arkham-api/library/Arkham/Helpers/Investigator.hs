@@ -27,7 +27,7 @@ import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
-import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned)
+import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned, matchTarget)
 import Arkham.Message (
   Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
  )

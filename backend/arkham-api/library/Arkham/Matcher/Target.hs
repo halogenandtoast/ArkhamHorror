@@ -2,6 +2,7 @@
 
 module Arkham.Matcher.Target where
 
+import Arkham.Action
 import Arkham.Matcher.Act
 import Arkham.Matcher.Agenda
 import {-# SOURCE #-} Arkham.Matcher.Asset
@@ -47,6 +48,14 @@ data TargetListMatcher
   | ExcludesTarget TargetMatcher
   | AnyTargetList
   deriving stock (Show, Eq, Ord, Data)
+
+matchTarget :: [[Action]] -> [[Action]] -> ActionTarget -> Action -> Bool
+matchTarget takenActions performedActions (AnyActionTarget as) a = any (\atarget -> matchTarget takenActions performedActions atarget a) as
+matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
+  action `elem` as && all (\a -> all (notElem a) performedActions) as
+matchTarget _ _ (IsAction a) action = action == a
+matchTarget _ _ (EnemyAction a _) action = action == a
+matchTarget _ _ IsAnyAction _ = True
 
 mconcat
   [ deriveJSON defaultOptions ''TargetMatcher

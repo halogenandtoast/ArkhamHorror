@@ -100,14 +100,6 @@ costPaymentsL = lens activeCostPayments $ \m x -> m {activeCostPayments = x}
 costSealedChaosTokensL :: Lens' ActiveCost [ChaosToken]
 costSealedChaosTokensL = lens activeCostSealedChaosTokens $ \m x -> m {activeCostSealedChaosTokens = x}
 
-matchTarget :: [[Action]] -> [[Action]] -> ActionTarget -> Action -> Bool
-matchTarget takenActions performedActions (AnyActionTarget as) a = any (\atarget -> matchTarget takenActions performedActions atarget a) as
-matchTarget _takenActions performedActions (FirstOneOfPerformed as) action =
-  action `elem` as && all (\a -> all (notElem a) performedActions) as
-matchTarget _ _ (IsAction a) action = action == a
-matchTarget _ _ (EnemyAction a _) action = action == a
-matchTarget _ _ IsAnyAction _ = True
-
 getActionCostModifier :: HasGame m => ActiveCost -> m Int
 getActionCostModifier ac = do
   let iid = ac.investigator

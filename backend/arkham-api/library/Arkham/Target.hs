@@ -7,12 +7,14 @@ module Arkham.Target (
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Ability.Types
+import Arkham.Action
 import {-# SOURCE #-} Arkham.Card
 import {-# SOURCE #-} Arkham.Card.EncounterCard
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Agenda
+import Arkham.Matcher.Enemy
 import Arkham.Phase
 import Arkham.Tarot
 import Arkham.Trait
@@ -206,7 +208,45 @@ _EnemyTarget :: Traversal' Target EnemyId
 _EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
 _EnemyTarget _ other = pure other
 
-$(deriveToJSON defaultOptions ''Target)
+data ActionTarget
+  = FirstOneOfPerformed [Action]
+  | IsAction Action
+  | EnemyAction Action EnemyMatcher
+  | IsAnyAction
+  | AnyActionTarget [ActionTarget]
+  deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "parley" ActionTarget where
+  fromLabel = IsAction #parley
+
+instance IsLabel "play" ActionTarget where
+  fromLabel = IsAction #play
+
+instance IsLabel "engage" ActionTarget where
+  fromLabel = IsAction #engage
+
+instance IsLabel "resource" ActionTarget where
+  fromLabel = IsAction #resource
+
+instance IsLabel "draw" ActionTarget where
+  fromLabel = IsAction #draw
+
+instance IsLabel "move" ActionTarget where
+  fromLabel = IsAction #move
+
+instance IsLabel "evade" ActionTarget where
+  fromLabel = IsAction #evade
+
+instance IsLabel "investigate" ActionTarget where
+  fromLabel = IsAction #investigate
+
+instance IsLabel "resign" ActionTarget where
+  fromLabel = IsAction #resign
+
+mconcat
+  [ deriveJSON defaultOptions ''ActionTarget
+  , deriveToJSON defaultOptions ''Target
+  ]
 
 instance FromJSON Target where
   parseJSON = withObject "Target" \o -> do

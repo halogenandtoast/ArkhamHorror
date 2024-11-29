@@ -1,16 +1,11 @@
-module Arkham.Enemy.Cards.InconspicuousZoog (
-  inconspicuousZoog,
-  InconspicuousZoog (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.InconspicuousZoog (inconspicuousZoog, InconspicuousZoog (..)) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype InconspicuousZoog = InconspicuousZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -18,25 +13,18 @@ newtype InconspicuousZoog = InconspicuousZoog EnemyAttrs
 
 inconspicuousZoog :: EnemyCard InconspicuousZoog
 inconspicuousZoog =
-  enemyWith
-    InconspicuousZoog
-    Cards.inconspicuousZoog
-    (2, Static 1, 2)
-    (1, 1)
-    (spawnAtL ?~ SpawnAt ConnectedLocation)
+  enemyWith InconspicuousZoog Cards.inconspicuousZoog (2, Static 1, 2) (1, 1)
+    $ spawnAtL
+    ?~ SpawnAt ConnectedLocation
 
 instance HasAbilities InconspicuousZoog where
   getAbilities (InconspicuousZoog x) =
-    withBaseAbilities
-      x
-      [ restrictedAbility x 1 isSwarmRestriction
-          $ ForcedAbility
-          $ EnemyDefeated #when You ByAny
-          $ EnemyWithId
-          $ toId x
-      ]
+    extend1 x
+      $ restricted x 1 isSwarmRestriction
+      $ forced
+      $ EnemyDefeated #when You ByAny (be x)
    where
-    isSwarmRestriction = case enemyPlacement x of
+    isSwarmRestriction = case x.placement of
       AsSwarm _ _ -> NoRestriction
       _ -> Never
 

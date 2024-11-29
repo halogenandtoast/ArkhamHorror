@@ -409,6 +409,10 @@ instance RunMessage LocationAttrs where
     UnrevealLocation lid | lid == locationId -> pure $ a & revealedL .~ False
     RemovedLocation lid -> pure $ a & directionsL %~ filterMap (/= []) . Map.map (filter (/= lid))
     UseResign iid source | isSource a source -> a <$ push (Resign iid)
+    InvestigatorDrewEncounterCard _iid ec -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))
+    InvestigatorDrewPlayerCardFrom _iid pc _ -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= pc.id) . (.id))
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of
         (EncounterCard card : rest) -> do

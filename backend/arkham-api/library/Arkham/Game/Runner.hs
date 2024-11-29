@@ -1980,7 +1980,7 @@ runGameMessage msg g = case msg of
     whenM (not <$> isEliminated iid) do
       player <- getPlayer iid
       push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
-    pure g
+    pure $ g & activeInvestigatorIdL .~ iid
   EndMythos -> do
     pushAll
       . (: [EndPhase, After EndPhase])

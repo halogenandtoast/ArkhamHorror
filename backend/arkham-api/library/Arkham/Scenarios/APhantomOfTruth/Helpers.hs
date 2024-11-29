@@ -9,6 +9,7 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Helpers
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
@@ -19,18 +20,26 @@ import Arkham.Source
 getTheOrganist :: HasGame m => m EnemyId
 getTheOrganist = selectJust $ EnemyWithTitle "The Organist"
 
-moveOrganistAwayFromNearestInvestigator :: HasGame m => m Message
+moveOrganistAwayFromNearestInvestigator :: HasGame m => m (Maybe Message)
 moveOrganistAwayFromNearestInvestigator = do
   organist <- getTheOrganist
   lead <- getLeadPlayer
-  lids <- select $ ConnectedFrom (LocationWithInvestigator $ NearestToEnemy $ EnemyWithId organist)
+  investigators <- select $ NearestToEnemy (be organist)
+  start <- selectJust $ locationWithEnemy organist
+
+  lids <-
+    concatForM investigators $ getMaybeLocation >=> \case
+      Nothing -> pure []
+      Just lid ->
+        select
+          $ LocationFartherFromMatching lid start
+          $ ConnectedTo (locationWithEnemy organist)
   emptyLids <- filterM (<=~> LocationWithoutInvestigators) lids
 
   let targets = if notNull emptyLids then emptyLids else lids
   pure
-    $ chooseOrRunOne
-      lead
-      [targetLabel lid [EnemyMove organist lid] | lid <- targets]
+    $ guard (notNull targets)
+    $> chooseOrRunOne lead [targetLabel lid [EnemyMove organist lid] | lid <- targets]
 
 disengageEachEnemyAndMoveToConnectingLocation
   :: (HasGame m, Sourceable source) => source -> m [Message]

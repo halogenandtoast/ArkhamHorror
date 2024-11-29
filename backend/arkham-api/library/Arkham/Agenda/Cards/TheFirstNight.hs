@@ -29,6 +29,6 @@ instance RunMessage TheFirstNight where
       pure a
     NextAdvanceAgendaStep (isSide B attrs -> True) 2 -> do
       organistMsg <- moveOrganistAwayFromNearestInvestigator
-      pushAll $ organistMsg : [advanceAgendaDeck attrs]
+      pushAll $ maybeToList organistMsg <> [advanceAgendaDeck attrs]
       pure a
     _ -> TheFirstNight <$> runMessage msg attrs

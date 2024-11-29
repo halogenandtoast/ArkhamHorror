@@ -39,7 +39,7 @@ instance RunMessage TheOrganistDrapedInMystery where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       iids <- select $ investigatorEngagedWith (toId attrs)
       if null iids
-        then push =<< moveOrganistAwayFromNearestInvestigator
+        then moveOrganistAwayFromNearestInvestigator >>= traverse_ push
         else pushAll [DisengageEnemy iid $ toId attrs | iid <- iids]
       pure e
     _ -> TheOrganistDrapedInMystery <$> runMessage msg attrs

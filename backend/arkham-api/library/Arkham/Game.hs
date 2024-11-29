@@ -1617,6 +1617,13 @@ getLocationsMatching lmatcher = do
               getDistance start pivot >>= \case
                 Nothing -> pure []
                 Just n -> filterM (fmap (maybe False (> n)) . getDistance start . toId) ls
+    LocationFartherFromMatching pivot start matcher -> do
+      if start == pivot
+        then go ls (not_ (LocationWithId start) <> matcher)
+        else
+          getDistance start pivot >>= \case
+            Nothing -> pure []
+            Just n -> filterM (fmap (maybe False (> n)) . getDistance pivot . toId) =<< go ls matcher
     CanEnterLocation investigatorMatcher -> do
       iid <- selectJust investigatorMatcher
       blocked <- go ls BlockedLocation

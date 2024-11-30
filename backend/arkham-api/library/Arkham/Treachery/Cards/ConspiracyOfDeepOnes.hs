@@ -18,7 +18,7 @@ instance RunMessage ConspiracyOfDeepOnes where
   runMessage msg t@(ConspiracyOfDeepOnes attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed $ 2 + n)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 
@@ -33,7 +32,7 @@ instance RunMessage JoyceLittleBookshopOwner where
       place attrs =<< selectJust (LocationWithTitle "The Little Bookshop")
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getId
+      sid <- genId
       parley sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

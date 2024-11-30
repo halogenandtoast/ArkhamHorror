@@ -30,7 +30,7 @@ instance RunMessage BuriedSecretsAdvanced where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (attrs.ability 1) <&> setTarget attrs
       pure t
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) _ -> do

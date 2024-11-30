@@ -33,7 +33,7 @@ instance RunMessage ExpeditionIntoTheWild where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
       iids <- getInvestigatorIds
-      sid <- getRandom
+      sid <- genId
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
           , ShuffleCardsIntoDeck Deck.EncounterDeck setAsideAgentsOfYig

@@ -28,7 +28,7 @@ instance RunMessage MysteriousGateway where
       lead <- getLeadPlayer
       investigatorIds <- select $ InvestigatorAt $ LocationWithTitle "Guest Hall"
       (holeInTheWallId, placeHoleInTheWall) <- placeSetAsideLocation Locations.holeInTheWall
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ placeHoleInTheWall
         , chooseOne

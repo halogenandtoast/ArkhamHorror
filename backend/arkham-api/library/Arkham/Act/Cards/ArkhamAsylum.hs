@@ -27,7 +27,7 @@ instance RunMessage ArkhamAsylum where
       let skills = setFromList [#combat, #agility, #intellect] `difference` chosenSkills metadata
       lead <- getLead
       investigators <- getInvestigators
-      sid <- getRandom
+      sid <- genId
       chooseOneM lead do
         for_ (setToList skills) \sk -> do
           labeled ("Any investigator tests " <> format sk) do

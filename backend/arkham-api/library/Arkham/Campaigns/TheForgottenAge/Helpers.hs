@@ -95,7 +95,7 @@ data ExploreRule = PlaceExplored | ReplaceExplored
 -- ReplaceExplored should actually place the location on "top"
 
 explore
-  :: (HasQueue Message m, HasGame m, MonadRandom m)
+  :: (HasQueue Message m, HasGame m, MonadRandom m, IdGen m)
   => InvestigatorId
   -> Source
   -> CardMatcher

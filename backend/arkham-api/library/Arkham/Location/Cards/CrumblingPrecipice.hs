@@ -25,11 +25,11 @@ instance HasAbilities CrumblingPrecipice where
 instance RunMessage CrumblingPrecipice where
   runMessage msg l@(CrumblingPrecipice attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 4)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) Initiator {} (SkillSkillTest sType) _ -> do
-      sid <- getRandom
+      sid <- genId
       case sType of
         SkillWillpower -> push $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
         SkillAgility -> push $ beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 2)

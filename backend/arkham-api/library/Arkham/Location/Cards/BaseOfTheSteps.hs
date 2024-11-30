@@ -37,7 +37,7 @@ instance HasAbilities BaseOfTheSteps where
 instance RunMessage BaseOfTheSteps where
   runMessage msg l@(BaseOfTheSteps attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ beginSkillTest
           sid

@@ -48,7 +48,7 @@ instance RunMessage ContainingTheOutbreak where
       1
       _
       (getPaidClues -> paidClues) -> do
-        sid <- getRandom
+        sid <- genId
         when paidClues $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
         beginSkillTest sid iid (toAbilitySource source 1) iid #willpower
           $ LocationMaybeFieldCalculation lid LocationShroud

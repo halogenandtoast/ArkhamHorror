@@ -38,7 +38,7 @@ instance RunMessage Persuasion where
               <> NonWeaknessEnemy
               <> canParleyEnemy iid
           player <- getPlayer iid
-          sid <- getRandom
+          sid <- genId
           pushAll
             [ chooseOne
                 player

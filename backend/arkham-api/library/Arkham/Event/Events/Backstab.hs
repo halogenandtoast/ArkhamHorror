@@ -16,7 +16,7 @@ backstab = event Backstab Cards.backstab
 instance RunMessage Backstab where
   runMessage msg e@(Backstab attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (DamageDealt 2)
       aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e

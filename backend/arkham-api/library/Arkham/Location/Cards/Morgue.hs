@@ -27,7 +27,7 @@ instance HasAbilities Morgue where
 instance RunMessage Morgue where
   runMessage msg l@(Morgue attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

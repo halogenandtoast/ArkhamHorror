@@ -43,14 +43,14 @@ import Data.Map.Strict qualified as Map
 
 instance CardGen GameT where
   genEncounterCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupEncounterCard (toCardDef a) cardId
     ref <- asks gameEnvGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId (EncounterCard card) (gameCards g)}, ())
     pure card
   genPlayerCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupPlayerCard (toCardDef a) cardId
     ref <- asks gameEnvGame
     atomicModifyIORef' ref $ \g ->
@@ -88,6 +88,7 @@ toGameEnv
      , HasQueue Message m
      , HasStdGen env
      , HasGameLogger m
+     , HasIdGen m
      , MonadReader env m
      )
   => m GameEnv
@@ -95,13 +96,14 @@ toGameEnv = do
   game <- view gameRefL
   gen <- view genL
   queueRef <- messageQueue
-  GameEnv game queueRef gen <$> getLogger
+  GameEnv game queueRef gen <$> idGenerator <*> getLogger
 
 runWithEnv
   :: ( HasGameRef env
      , HasQueue Message m
      , HasStdGen env
      , HasGameLogger m
+     , HasIdGen m
      , MonadReader env m
      )
   => GameT a

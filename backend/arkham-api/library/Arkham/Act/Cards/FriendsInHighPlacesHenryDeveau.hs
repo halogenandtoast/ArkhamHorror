@@ -78,7 +78,7 @@ instance RunMessage FriendsInHighPlacesHenryDeveau where
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide D attrs -> do
       alejandroVela <- getSetAsideCard Assets.alejandroVela
       henryDeveau <- selectJust $ enemyIs Enemies.henryDeveauAlejandrosKidnapper
-      assetId <- getRandom
+      assetId <- genId
       pushAll [CreateAssetAt assetId alejandroVela (AttachedToEnemy henryDeveau)]
       pure a
     _ -> FriendsInHighPlacesHenryDeveau <$> runMessage msg attrs

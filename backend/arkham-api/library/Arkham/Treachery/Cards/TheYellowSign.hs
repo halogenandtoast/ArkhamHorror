@@ -18,7 +18,7 @@ theYellowSign = treachery TheYellowSign Cards.theYellowSign
 instance RunMessage TheYellowSign where
   runMessage msg t@(TheYellowSign attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

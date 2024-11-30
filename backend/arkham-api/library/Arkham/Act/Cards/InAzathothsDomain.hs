@@ -9,7 +9,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field

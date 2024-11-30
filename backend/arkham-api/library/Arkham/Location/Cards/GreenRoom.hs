@@ -25,7 +25,7 @@ instance RunMessage GreenRoom where
   runMessage msg l@(GreenRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #intellect 3)
       investigate sid iid source
       push $ DiscardHand iid source

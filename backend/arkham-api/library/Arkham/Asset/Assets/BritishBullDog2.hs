@@ -26,7 +26,7 @@ instance HasAbilities BritishBullDog2 where
 instance RunMessage BritishBullDog2 where
   runMessage msg a@(BritishBullDog2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [AnySkillValue 2, DamageDealt 1, IgnoreAloof]
       fight <- mkChooseFight sid iid (attrs.ability 1)
       chooseOne

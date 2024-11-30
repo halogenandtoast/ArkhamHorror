@@ -45,14 +45,14 @@ instance RunMessage AtTheExhibitTheRelicsLocation where
             )
         Nothing -> do
           townHall <- getSetAsideCard Locations.townHall
-          locationId <- getRandom
+          locationId <- genId
           pure
             ( locationId
             , PlaceLocation locationId townHall
                 : [PlaceClues (toSource attrs) (LocationTarget locationId) n | deckCount <= 2]
             )
 
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         $ msgs
         <> [ CreateAssetAt assetId relicOfAges (AttachedToLocation townHallId)

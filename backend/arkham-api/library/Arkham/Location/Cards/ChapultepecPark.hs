@@ -31,7 +31,7 @@ instance RunMessage ChapultepecPark where
       push $ assignHorror iid attrs 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       push $ exploreTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

@@ -36,7 +36,7 @@ instance RunMessage MadnessCoils where
       let skills = setFromList [#willpower, #intellect] `difference` chosenSkills metadata
       lead <- getLead
       investigators <- getInvestigators
-      sid <- getRandom
+      sid <- genId
       chooseOneM lead do
         for_ (setToList skills) \sk -> do
           labeled ("Any investigator tests " <> format sk <> " (4)") do

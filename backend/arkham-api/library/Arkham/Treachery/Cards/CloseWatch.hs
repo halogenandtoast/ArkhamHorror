@@ -18,7 +18,7 @@ closeWatch = treachery CloseWatch Cards.closeWatch
 instance RunMessage CloseWatch where
   runMessage msg t@(CloseWatch attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

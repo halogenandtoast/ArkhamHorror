@@ -54,12 +54,12 @@ instance RunMessage FriendsInHighPlacesHenrysInformation where
       mTownHall <- selectOne $ locationIs Locations.townHall
       createAssetMessages <- case mTownHall of
         Just townHallId -> do
-          assetId <- getRandom
+          assetId <- genId
           pure [CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
         Nothing -> do
           townHall <- genCard Locations.townHall
           (townHallId, placeTownHall) <- placeLocation townHall
-          assetId <- getRandom
+          assetId <- genId
           pure [placeTownHall, CreateAssetAt assetId alejandroVela (AttachedToLocation townHallId)]
 
       pushAll

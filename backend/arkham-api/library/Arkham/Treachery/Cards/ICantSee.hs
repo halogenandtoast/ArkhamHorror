@@ -18,7 +18,7 @@ iCantSee = treachery ICantSee Cards.iCantSee
 instance RunMessage ICantSee where
   runMessage msg t@(ICantSee attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       field InvestigatorPlacement iid >>= \case
         InVehicle aid -> do
           driver <- fieldJust AssetDriver aid

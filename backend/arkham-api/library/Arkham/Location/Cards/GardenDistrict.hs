@@ -27,7 +27,7 @@ instance HasAbilities GardenDistrict where
 instance RunMessage GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 7)
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _

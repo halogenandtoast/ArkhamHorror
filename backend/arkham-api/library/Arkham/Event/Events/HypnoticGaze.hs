@@ -7,7 +7,6 @@ import Arkham.Enemy.Types hiding (EnemyDamage)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
-import Arkham.Id
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Taboo

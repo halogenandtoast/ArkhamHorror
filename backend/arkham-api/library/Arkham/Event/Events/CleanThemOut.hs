@@ -15,7 +15,7 @@ instance RunMessage CleanThemOut where
   runMessage msg e@(CleanThemOut attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       gainResourcesIfCan iid attrs 2
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid attrs
       pure e
     _ -> CleanThemOut <$> liftRunMessage msg attrs

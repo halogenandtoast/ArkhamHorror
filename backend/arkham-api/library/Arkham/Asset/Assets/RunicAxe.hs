@@ -87,7 +87,7 @@ instance RunMessage RunicAxe where
       let amount = if attrs `hasCustomization` Saga then 2 else 1
       pure . RunicAxe . (`with` meta) $ attrs & tokensL %~ replenishN Charge 4 amount
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
       if attrs `hasCustomization` InscriptionOfTheHunt && attrs.use Charge > 0
         then

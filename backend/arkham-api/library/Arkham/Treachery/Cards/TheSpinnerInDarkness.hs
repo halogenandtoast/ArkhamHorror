@@ -38,7 +38,7 @@ instance RunMessage TheSpinnerInDarkness where
         chooseOrRunOne iid [targetLabel enemy [Msg.attachTreachery attrs enemy] | enemy <- enemies]
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 1) iid s (Fixed 5)] | s <- allSkills]

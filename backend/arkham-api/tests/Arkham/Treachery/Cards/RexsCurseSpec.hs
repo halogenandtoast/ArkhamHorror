@@ -27,7 +27,7 @@ spec = describe "Rex's Curse" $ do
 
     didRunMessage <- didPassSkillTestBy investigator SkillIntellect 1
 
-    sid <- getRandom
+    sid <- genId
     pushAndRunAll
       [ SetChaosTokens [PlusOne]
       , loadDeck investigator [rexsCurse]
@@ -54,7 +54,7 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ gameTest $ \investigator -> do
     updateInvestigator investigator (intellectL .~ 5)
     rexsCurse <- genPlayerCard Cards.rexsCurse
-    sid <- getRandom
+    sid <- genId
     pushAndRunAll
       [ SetChaosTokens [MinusOne]
       , loadDeck investigator [rexsCurse]

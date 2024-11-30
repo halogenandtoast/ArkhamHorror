@@ -31,7 +31,7 @@ instance HasAbilities Bolas where
 instance RunMessage Bolas where
   runMessage msg e@(Bolas attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       aspect iid attrs (#combat `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     PassedThisSkillTest _iid (isSource attrs -> True) -> do

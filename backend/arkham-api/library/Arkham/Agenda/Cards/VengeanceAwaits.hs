@@ -52,7 +52,7 @@ instance RunMessage VengeanceAwaits where
             if isReturnTo
               then do
                 vaultOfEarthlyDemise <- genCard Treacheries.vaultOfEarthlyDemise
-                tid <- getRandom
+                tid <- genId
 
                 creation <- Msg.createEnemy umordhoth (OutOfPlay SetAsideZone)
                 pure

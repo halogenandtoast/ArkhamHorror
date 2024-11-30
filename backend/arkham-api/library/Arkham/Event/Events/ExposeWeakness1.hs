@@ -23,7 +23,7 @@ instance RunMessage ExposeWeakness1 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyWithFight
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

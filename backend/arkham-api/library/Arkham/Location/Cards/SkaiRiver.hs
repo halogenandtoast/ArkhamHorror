@@ -31,7 +31,7 @@ instance RunMessage SkaiRiver where
   runMessage msg l@(SkaiRiver attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

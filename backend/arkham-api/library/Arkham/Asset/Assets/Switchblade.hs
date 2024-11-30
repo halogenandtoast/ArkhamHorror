@@ -19,7 +19,7 @@ instance HasAbilities Switchblade where
 instance RunMessage Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

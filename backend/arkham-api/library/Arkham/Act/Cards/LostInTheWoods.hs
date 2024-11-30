@@ -88,7 +88,7 @@ instance RunMessage LostInTheWoods where
           Just (lid, _) -> do
             (enemyId, enemyCreation) <- createEnemyAt enemyCard lid Nothing
             player <- getPlayer iid
-            sid <- getRandom
+            sid <- genId
             pure
               [ enemyCreation
               , chooseOne

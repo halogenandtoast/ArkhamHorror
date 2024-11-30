@@ -9,7 +9,7 @@ spec = describe "Arcane Studies" $ do
     withProp @"willpower" 0 self
     withProp @"resources" 2 self
     arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #willpower 3
     useFastActionOf arcaneStudies 1
     useFastActionOf arcaneStudies 1
@@ -19,7 +19,7 @@ spec = describe "Arcane Studies" $ do
     withProp @"intellect" 0 self
     withProp @"resources" 2 self
     arcaneStudies <- self `putAssetIntoPlay` Assets.arcaneStudies
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #intellect 3
     useFastActionOf arcaneStudies 2
     useFastActionOf arcaneStudies 2

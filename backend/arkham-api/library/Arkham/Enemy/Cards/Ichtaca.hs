@@ -19,7 +19,7 @@ instance HasAbilities Ichtaca where
 instance RunMessage Ichtaca where
   runMessage msg e@(Ichtaca attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

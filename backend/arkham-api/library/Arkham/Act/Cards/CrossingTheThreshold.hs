@@ -6,7 +6,6 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait
@@ -35,7 +34,7 @@ instance RunMessage CrossingTheThreshold where
       pure . CrossingTheThreshold $ attrs `with` Metadata (Just iid)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       let iid = fromJustNote "no advancing investigator" $ advancingInvestigator metadata
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ beginSkillTest sid iid attrs iid #willpower (Fixed 4)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

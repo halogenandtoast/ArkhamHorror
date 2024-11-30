@@ -27,7 +27,7 @@ instance HasAbilities FogOverInnsmouth where
 instance RunMessage FogOverInnsmouth where
   runMessage msg t@(FogOverInnsmouth attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do

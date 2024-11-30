@@ -58,7 +58,7 @@ instance RunMessage SpringfieldM19034 where
                       ]
                 )
               else id
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFightMatch sid iid source (tabooExtend EnemyNotEngagedWithYou)
       enabled <-
         skillTestModifiers sid attrs iid $ DamageDealt 2

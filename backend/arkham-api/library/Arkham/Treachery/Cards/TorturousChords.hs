@@ -24,7 +24,7 @@ instance HasModifiersFor TorturousChords where
 instance RunMessage TorturousChords where
   runMessage msg t@(TorturousChords attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

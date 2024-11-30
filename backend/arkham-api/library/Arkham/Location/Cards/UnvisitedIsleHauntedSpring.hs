@@ -44,7 +44,7 @@ instance HasAbilities UnvisitedIsleHauntedSpring where
 instance RunMessage UnvisitedIsleHauntedSpring where
   runMessage msg l@(UnvisitedIsleHauntedSpring attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       circleTest sid iid (attrs.ability 1) attrs [#intellect, #agility] (Fixed 9)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

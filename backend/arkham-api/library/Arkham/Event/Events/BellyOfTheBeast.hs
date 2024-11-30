@@ -3,7 +3,6 @@ module Arkham.Event.Events.BellyOfTheBeast (bellyOfTheBeast, BellyOfTheBeast (..
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Window (Window (..))

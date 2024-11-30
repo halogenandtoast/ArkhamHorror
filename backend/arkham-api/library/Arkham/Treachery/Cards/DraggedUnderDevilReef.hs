@@ -44,7 +44,7 @@ instance RunMessage DraggedUnderDevilReef where
         _ -> pure ()
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         for_ [#combat, #agility] \skillType -> do
           skillLabeled skillType $ beginSkillTest sid iid (attrs.ability 1) iid skillType (Fixed 3)

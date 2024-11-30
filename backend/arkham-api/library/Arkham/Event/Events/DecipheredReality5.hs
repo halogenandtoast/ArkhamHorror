@@ -23,7 +23,7 @@ instance RunMessage DecipheredReality5 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       locationIds <- select RevealedLocation
       maxShroud <- maximum . ncons 0 <$> traverse (fieldMap LocationShroud (fromMaybe 0)) locationIds
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs sid (SetDifficulty maxShroud)
       push . Msg.toMessage =<< (mkInvestigate sid iid attrs <&> setTarget attrs)
       pure e

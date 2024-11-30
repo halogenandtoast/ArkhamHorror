@@ -25,7 +25,7 @@ instance RunMessage TrustyBullwhip where
   runMessage msg a@(TrustyBullwhip attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do

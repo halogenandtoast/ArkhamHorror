@@ -24,7 +24,7 @@ instance RunMessage WatchersGazeUnionAndDisillusion where
   runMessage msg t@(WatchersGazeUnionAndDisillusion attrs) = case msg of
     Revelation _iid (isSource attrs -> True) -> do
       investigators <- getInvestigators
-      sid <- getRandom
+      sid <- genId
       for_ investigators $ \iid ->
         push $ revelationSkillTest sid iid attrs #willpower (Fixed 5)
       pure t

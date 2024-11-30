@@ -20,7 +20,7 @@ import Arkham.Helpers.Message as X hiding (
   PhaseStep,
  )
 import Arkham.Helpers.SkillTest as X
-import Arkham.Id as X (AsId (..))
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Spawn as X
@@ -42,7 +42,6 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Placement
 import Arkham.History
-import Arkham.Id
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (
@@ -74,7 +73,7 @@ import Arkham.SkillType ()
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Trait
-import Arkham.Window (mkAfter, mkWhen)
+import Arkham.Window (mkAfter, mkAtIf, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, _Just)
 import Data.List qualified as List
@@ -1135,6 +1134,7 @@ instance RunMessage EnemyAttrs where
         defeatedBy = if defeatedByDamage then DefeatedByDamage source else DefeatedByOther source
       miid <- getSourceController source
       whenMsg <- checkWindows [mkWhen $ Window.EnemyDefeated miid defeatedBy eid]
+      atIfMsg <- checkWindows [mkAtIf $ Window.EnemyDefeated miid defeatedBy eid]
       afterMsg <- checkWindows [mkAfter $ Window.EnemyDefeated miid defeatedBy eid]
       victory <- getVictoryPoints eid
       mloc <- field EnemyLocation a.id
@@ -1149,7 +1149,7 @@ instance RunMessage EnemyAttrs where
       withQueue_ $ mapMaybe (filterOutEnemyMessages eid)
 
       pushAll
-        $ [whenMsg, When msg, After msg]
+        $ [whenMsg, atIfMsg, When msg, After msg]
         <> ( case miid of
               Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
               Nothing -> case mloc of
@@ -1356,7 +1356,7 @@ instance RunMessage EnemyAttrs where
           if cannotPlaceDoom
             then pure ()
             else do
-              batchId <- getRandom
+              batchId <- genId
               whenWindow <-
                 checkWindows
                   [(mkWhen $ Window.WouldPlaceDoom source target n) {Window.windowBatchId = Just batchId}]
@@ -1399,11 +1399,11 @@ instance RunMessage EnemyAttrs where
       pure $ a & placementL .~ placement
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ FightEnemy sid iid (toId a) (a.ability AbilityAttack) Nothing #combat False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ EvadeEnemy sid iid (toId a) (a.ability AbilityEvade) Nothing #agility False
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do

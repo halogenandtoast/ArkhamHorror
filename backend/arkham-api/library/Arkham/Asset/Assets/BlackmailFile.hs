@@ -26,7 +26,7 @@ instance HasAbilities BlackmailFile where
 instance RunMessage BlackmailFile where
   runMessage msg a@(BlackmailFile attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (chosenEnemyPayment -> Just eid) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) eid #willpower
         $ EnemyMaybeGameValueFieldCalculation eid EnemyHealthActual
       pure a

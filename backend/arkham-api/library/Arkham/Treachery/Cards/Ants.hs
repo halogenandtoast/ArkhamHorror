@@ -20,7 +20,7 @@ ants = treachery Ants Cards.ants
 instance RunMessage Ants where
   runMessage msg t@(Ants attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do

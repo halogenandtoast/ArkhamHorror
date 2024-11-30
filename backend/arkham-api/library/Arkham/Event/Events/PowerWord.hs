@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.SkillTest.Lifted (parley)
-import Arkham.Id
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
 import Arkham.Placement
 import Arkham.Projection
@@ -213,7 +212,7 @@ instance RunMessage PowerWord where
         then do
           case attrs.placement of
             AttachedToEnemy eid -> do
-              sid <- getRandom
+              sid <- genId
               parley sid iid (attrs.ability 1) eid #willpower (Fixed 3)
             _ -> error "invalid call"
         else runAbility iid attrs True

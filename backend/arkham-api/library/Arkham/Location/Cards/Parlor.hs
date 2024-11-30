@@ -40,7 +40,7 @@ instance RunMessage Parlor where
   runMessage msg l@(Parlor attrs) = case msg of
     UseThisAbility iid (isProxySource attrs -> True) 1 -> do
       aid <- selectJust $ assetIs Cards.litaChantler
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid attrs aid #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isSource attrs -> True) -> do

@@ -15,7 +15,7 @@ gangUp1 = event GangUp1 Cards.gangUp1
 instance RunMessage GangUp1 where
   runMessage msg e@(GangUp1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid
         $ ForEach (DifferentClassAmong $ ControlledBy You) [SkillModifier #combat 1, DamageDealt 1]
       chooseFightEnemy sid iid attrs

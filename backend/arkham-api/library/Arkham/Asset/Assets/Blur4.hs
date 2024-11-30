@@ -23,7 +23,7 @@ instance HasAbilities Blur4 where
 instance RunMessage Blur4 where
   runMessage msg a@(Blur4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOne
@@ -36,7 +36,7 @@ instance RunMessage Blur4 where
       case attrs.use Charge of
         0 -> pure ()
         1 -> do
-          charges <- namedUUID "Charges"
+          charges <- namedId "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         (min 2 -> x) ->
           chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget x) [("Charges", (1, x))] attrs

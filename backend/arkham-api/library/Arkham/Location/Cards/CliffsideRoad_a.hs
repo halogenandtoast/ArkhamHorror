@@ -41,7 +41,7 @@ instance RunMessage CliffsideRoad_a where
       n <- handleVehicleLeaves vehicle attrs.id 2
       when (n > 0) do
         driver <- fieldJust AssetDriver vehicle
-        sid <- getRandom
+        sid <- genId
         chooseOneM driver do
           for_ [#willpower, #agility] \sType -> do
             labeled ("Test " <> format sType <> "(" <> tshow n <> ")")

@@ -33,7 +33,7 @@ instance HasAbilities NathanWickMasterOfInitiation where
 instance RunMessage NathanWickMasterOfInitiation where
   runMessage msg e@(NathanWickMasterOfInitiation attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (toAbilitySource attrs 1) iid SkillWillpower (Fixed 3)
       pure e
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do

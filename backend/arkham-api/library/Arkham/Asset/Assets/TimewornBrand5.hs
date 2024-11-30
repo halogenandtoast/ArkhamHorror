@@ -30,13 +30,13 @@ instance RunMessage TimewornBrand5 where
   runMessage msg a@(TimewornBrand5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
       chooseFightEnemy sid iid source
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [AddSkillValue #willpower, DamageDealt 3]
       chooseFightEnemy sid iid source
       pure a

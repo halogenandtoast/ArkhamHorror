@@ -22,7 +22,7 @@ instance RunMessage StirThePot where
       selectOneToHandle iid attrs $ enemyAtLocationWith iid <> CanParleyEnemy (be iid)
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid attrs eid #intellect
         $ SumCalculation
           [EnemyFieldCalculation eid EnemyHealthDamage, EnemyFieldCalculation eid EnemySanityDamage]

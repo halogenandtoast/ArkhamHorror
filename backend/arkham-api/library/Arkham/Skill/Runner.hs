@@ -14,6 +14,7 @@ import Arkham.Helpers.Message as X hiding (
   RevealLocation,
  )
 import Arkham.Helpers.Query as X
+import Arkham.Id as X
 import Arkham.Skill.Types as X
 import Arkham.Source as X
 import Arkham.Target as X

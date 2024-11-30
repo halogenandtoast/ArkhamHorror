@@ -57,7 +57,7 @@ spec = describe "Crystallizer of Dreams" do
         self `playEvent` Events.workingAHunch
         useReaction
         [workingAHunch] <- crystallizerOfDreams.cardsUnderneath
-        sid <- getRandom
+        sid <- genId
         run $ beginSkillTest sid self #intellect 2
         commit workingAHunch
         startSkillTest

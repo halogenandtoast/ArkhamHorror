@@ -48,7 +48,7 @@ getClues [] = 0
 instance RunMessage TempleOfTheMoonLizard where
   runMessage msg l@(TempleOfTheMoonLizard attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

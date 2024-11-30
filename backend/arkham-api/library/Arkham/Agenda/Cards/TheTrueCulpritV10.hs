@@ -35,7 +35,7 @@ instance RunMessage TheTrueCulpritV10 where
   runMessage msg a@(TheTrueCulpritV10 attrs) = runQueueT $ case msg of
     UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
       leadAssets <- select $ AssetWithTrait Lead <> assetControlledBy iid
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         labeled
           "remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2"

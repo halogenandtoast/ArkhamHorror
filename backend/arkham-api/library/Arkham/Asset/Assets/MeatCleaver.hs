@@ -32,7 +32,7 @@ instance RunMessage MeatCleaver where
   runMessage msg a@(MeatCleaver attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       remainingSanity <- field InvestigatorRemainingSanity iid
       let n = if remainingSanity <= 3 then 2 else 1
       skillTestModifiers sid attrs iid $ SkillModifier #combat n : [DamageDealt 1 | paidHorror payments]

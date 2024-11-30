@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyAttacks)
 import Arkham.Attack
 import Arkham.Fight
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Window (Window, windowType)
@@ -34,14 +33,14 @@ instance RunMessage SurvivalKnife2 where
   runMessage msg a@(SurvivalKnife2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [SkillModifier #combat 2]
       pushAll [enabled, chooseFight]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toEnemy -> enemy) _ -> do
       let source = toAbilitySource attrs 2
-      sid <- getRandom
+      sid <- genId
       enabled <- skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
       pushAll
         [ enabled

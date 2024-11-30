@@ -47,7 +47,7 @@ instance RunMessage Fold where
       pure a
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && actSequence == Sequence 3 A -> do
       aid <- selectJust $ assetIs Cards.peterClover
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid source (AssetTarget aid) #willpower (Fixed 3)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) | actSequence == Sequence 3 A -> do

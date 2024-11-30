@@ -21,7 +21,7 @@ instance RunMessage Somniphobia where
       -- can't revelation because we need to update the skills map
       -- push $ revelationSkillTest iid attrs #willpower 5
 
-      sid <- getRandom
+      sid <- genId
       let card = toCard attrs
       let skillTest =
             (initSkillTest sid iid attrs iid #willpower (SkillTestDifficulty $ Fixed 5))

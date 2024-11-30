@@ -23,14 +23,14 @@ instance RunMessage Sledgehammer4 where
   runMessage msg a@(Sledgehammer4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
       pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [DamageDealt 5, SkillModifier #combat 5]
       pushAll [enabled, chooseFight]

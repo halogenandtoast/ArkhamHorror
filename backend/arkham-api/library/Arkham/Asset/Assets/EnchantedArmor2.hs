@@ -53,7 +53,7 @@ instance RunMessage EnchantedArmor2 where
     UseCardAbility _ (isSource attrs -> True) 1 (getTotal attrs -> (x, y)) _ -> do
       for_ attrs.owner \owner -> do
         stillAlive <- selectAny $ InvestigatorWithId owner
-        sid <- getRandom
+        sid <- genId
         pushWhen stillAlive
           $ beginSkillTest sid owner (attrs.ability 1) owner #willpower
           $ SumCalculation

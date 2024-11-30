@@ -31,7 +31,7 @@ instance HasAbilities TrackShoes where
 instance RunMessage TrackShoes where
   runMessage msg a@(TrackShoes attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

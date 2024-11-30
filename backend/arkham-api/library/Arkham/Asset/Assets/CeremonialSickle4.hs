@@ -21,7 +21,7 @@ instance HasAbilities CeremonialSickle4 where
 instance RunMessage CeremonialSickle4 where
   runMessage msg a@(CeremonialSickle4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         when attrs.ready do
           labeled

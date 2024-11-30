@@ -26,7 +26,7 @@ instance HasAbilities FeedTheMind3 where
 instance RunMessage FeedTheMind3 where
   runMessage msg a@(FeedTheMind3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 0)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

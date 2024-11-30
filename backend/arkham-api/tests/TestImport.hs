@@ -90,6 +90,7 @@ import Arkham.SkillTest.Type
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Elite))
+import Control.Monad.Random (getRandom)
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -149,6 +150,7 @@ data TestApp = TestApp
   { game :: IORef Game
   , messageQueueRef :: Queue Message
   , gen :: IORef StdGen
+  , idGen :: IORef Int
   , testLogger :: Maybe (Message -> IO ())
   , testGameLogger :: ClientMessage -> IO ()
   , debugLevel :: IORef Int
@@ -164,6 +166,7 @@ cloneTestApp testApp = do
       { game = game
       , messageQueueRef = messageQueueRef
       , gen = gen
+      , idGen = idGen testApp
       , testLogger = testLogger testApp
       , testGameLogger = testGameLogger testApp
       , debugLevel = debugLevel testApp
@@ -187,16 +190,24 @@ instance HasGame TestAppT where
     env <- get
     atomicModifyIORef (game env) (\x -> (x, x))
 
+instance HasIdGen TestAppT where
+  idGenerator = gets idGen
+
+instance IdGen TestAppT where
+  genId = do
+    ref <- gets idGen
+    liftIO $ atomicModifyIORef' ref $ \i -> (i + 1, coerce i)
+
 instance CardGen TestAppT where
   genEncounterCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupEncounterCard (toCardDef a) cardId
     ref <- gets game
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId (EncounterCard card) (gameCards g)}, ())
     pure card
   genPlayerCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupPlayerCard (toCardDef a) cardId
     ref <- gets game
     atomicModifyIORef' ref $ \g ->
@@ -225,6 +236,9 @@ instance HasQueue Message TestAppT where
 instance HasQueue Message (ReaderT TestApp TestAppT) where
   messageQueue = asks messageQueueRef
 
+instance HasIdGen (ReaderT TestApp TestAppT) where
+  idGenerator = asks idGen
+
 instance HasGameLogger TestAppT where
   getLogger = do
     logger <- gets testGameLogger
@@ -241,24 +255,24 @@ testScenario cardCode f = do
     . Scenario
     $ scenario (TheGathering . f) cardCode name Easy []
 
-buildEvent :: CardGen m => CardDef -> Investigator -> m Event
+buildEvent :: (CardGen m, IdGen m) => CardDef -> Investigator -> m Event
 buildEvent cardDef investigator = do
   card <- genCard cardDef
-  createEvent card (toId investigator) <$> getRandom
+  createEvent card (toId investigator) <$> genId
 
-buildEnemy :: HasCallStack => CardGen m => CardCode -> m Enemy
+buildEnemy :: HasCallStack => (IdGen m, CardGen m) => CardCode -> m Enemy
 buildEnemy cardCode = case lookupCardDef cardCode of
   Nothing -> error $ "Test used invalid card code" <> show cardCode
   Just def -> do
     card <- genCard def
-    lookupEnemy cardCode <$> getRandom <*> pure (toCardId card)
+    lookupEnemy cardCode <$> genId <*> pure (toCardId card)
 
 buildAsset
-  :: CardGen m => CardDef -> Maybe Investigator -> m Asset
+  :: (CardGen m, IdGen m) => CardDef -> Maybe Investigator -> m Asset
 buildAsset cardDef mOwner = do
   card <- genCard cardDef
   lookupAsset (toCardCode card)
-    <$> getRandom
+    <$> genId
     <*> pure (toId <$> mOwner)
     <*> pure (toCardId card)
 
@@ -451,7 +465,7 @@ testEnemyWithDef
   -> TestAppT Enemy
 testEnemyWithDef def attrsF = do
   card <- genCard def
-  enemyId <- getRandom
+  enemyId <- genId
   let enemy' =
         overAttrs (\attrs -> attrsF $ attrs {enemyHealthDamage = 0, enemySanityDamage = 0})
           $ lookupEnemy (toCardCode card) enemyId (toCardId card)
@@ -474,7 +488,7 @@ testAssetWithDef
   -> TestAppT Asset
 testAssetWithDef def attrsF owner = do
   card <- genCard def
-  assetId <- getRandom
+  assetId <- genId
   let
     asset' =
       overAttrs attrsF
@@ -515,7 +529,7 @@ testLocationWithDef
   -> TestAppT Location
 testLocationWithDef def attrsF = do
   card <- genCard def
-  locationId <- getRandom
+  locationId <- genId
   let location' = overAttrs attrsF $ lookupLocation (toCardCode card) locationId (toCardId card)
   env <- get
   runReaderT (overGame (entitiesL . Entities.locationsL %~ insertEntity location')) env
@@ -526,7 +540,7 @@ testInvestigator
   => CardDef
   -> m Investigator
 testInvestigator cardDef = do
-  playerId <- liftIO getRandom
+  playerId <- PlayerId <$> liftIO getRandom
   pure $ lookupInvestigator (InvestigatorId $ toCardCode cardDef) playerId
 
 {- | We use Jenny Barnes because here abilities are the least
@@ -760,8 +774,9 @@ gameTestFromFile fp body = do
   gameRef <- newIORef g
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
+  idGen <- newIORef $ gameNextId g
   debugLevelRef <- newIORef 0
-  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
+  let testApp = TestApp gameRef queueRef genRef idGen Nothing (pure . const ()) debugLevelRef
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
@@ -772,8 +787,9 @@ gameTestWith investigatorDef body = do
   gameRef <- newIORef g
   queueRef <- newQueue []
   genRef <- newIORef $ mkStdGen (gameSeed g)
+  idGen <- newIORef $ gameNextId g
   debugLevelRef <- newIORef 0
-  let testApp = TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef
+  let testApp = TestApp gameRef queueRef genRef idGen Nothing (pure . const ()) debugLevelRef
   runReaderT (overGameM preloadModifiers) testApp
   runTestApp testApp (body investigator)
 
@@ -793,6 +809,7 @@ newGame investigator = do
         , gameTurnHistory = mempty
         , gameTurnPlayerInvestigatorId = Just investigatorId
         , gameSeed = seed
+        , gameNextId = 1
         , gameSettings = defaultSettings
         , gameInitialSeed = seed
         , gameMode = That scenario'
@@ -847,9 +864,10 @@ newGame investigator = do
     gameRef <- newIORef game
     queueRef <- Queue <$> newIORef []
     genRef <- newIORef $ mkStdGen (gameSeed game)
+    idGen <- newIORef (gameNextId game)
     debugLevelRef <- newIORef 0
 
-    runTestApp (TestApp gameRef queueRef genRef Nothing (pure . const ()) debugLevelRef) $ do
+    runTestApp (TestApp gameRef queueRef genRef idGen Nothing (pure . const ()) debugLevelRef) $ do
       a1 <- testAgenda "01105" id
       let s'' = overAttrs (agendaStackL .~ IntMap.fromList [(1, [toCard a1, toCard a1])]) scenario'
       pure $ game {gameMode = That s''}

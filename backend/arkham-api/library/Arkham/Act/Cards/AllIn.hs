@@ -45,7 +45,7 @@ instance RunMessage AllIn where
       pure a
     UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && onSide A attrs -> do
       aid <- selectJust $ assetIs Assets.drFrancisMorgan
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid source aid #willpower (Fixed 3)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) | onSide A attrs -> do

@@ -24,7 +24,7 @@ instance RunMessage Flare1 where
       chooseOrRunOneM iid do
         when (notNull fightableEnemies) do
           labeled "Fight" do
-            sid <- getRandom
+            sid <- genId
             skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
             chooseFightEnemy sid iid attrs
             exile attrs

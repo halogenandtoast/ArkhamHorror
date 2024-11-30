@@ -31,7 +31,7 @@ instance RunMessage DreamsOfRlyeh where
       push $ placeInThreatArea attrs iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

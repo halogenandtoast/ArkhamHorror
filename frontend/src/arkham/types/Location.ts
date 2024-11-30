@@ -24,8 +24,8 @@ export const floodLevelDecoder: JsonDecoder.Decoder<FloodLevel> = JsonDecoder.on
 export type Location = {
   cardCode: string;
   label: string;
-  id: string;
-  cardId: string;
+  id: number;
+  cardId: number;
   tokens: Tokens;
   shroud: number;
   revealed: boolean;
@@ -36,7 +36,7 @@ export type Location = {
   events: string[];
   cardsUnderneath: Card[];
   modifiers: Modifier[];
-  connectedLocations: string[];
+  connectedLocations: number[];
   inFrontOf: string | null;
   brazier: Brazier | null;
   breaches: BreachStatus | null;
@@ -48,8 +48,8 @@ export const locationDecoder = JsonDecoder.object<Location>(
   {
     cardCode: JsonDecoder.string,
     label: JsonDecoder.string,
-    id: JsonDecoder.string,
-    cardId: JsonDecoder.string,
+    id: JsonDecoder.number,
+    cardId: JsonDecoder.number,
     tokens: tokensDecoder,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
@@ -60,7 +60,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
-    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
+    connectedLocations: JsonDecoder.array<string>(JsonDecoder.number, 'LocationId[]'),
     inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),

@@ -16,7 +16,7 @@ lightlessShadow = treachery LightlessShadow Cards.lightlessShadow
 instance RunMessage LightlessShadow where
   runMessage msg t@(LightlessShadow attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid source #agility
         $ SumCalculation [Fixed 1, ScenarioCount CurrentDepth]

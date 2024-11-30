@@ -30,7 +30,7 @@ instance RunMessage MistsOfRlyeh where
   runMessage msg a@(MistsOfRlyeh attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       let tokens = oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]
       onRevealChaosTokenEffect sid tokens attrs attrs do
         chooseAndDiscardCard iid (attrs.ability 1)

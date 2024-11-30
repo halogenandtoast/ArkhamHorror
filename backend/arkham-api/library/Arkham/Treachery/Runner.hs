@@ -27,6 +27,7 @@ import Arkham.Helpers.Message as X hiding (
  )
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.Placement as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
@@ -37,7 +38,6 @@ import Arkham.Treachery.Types as X
 import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Id
 import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Treachery (TreacheryMatcher (TreacheryWithId))
 import Arkham.Message qualified as Msg

@@ -42,7 +42,7 @@ instance RunMessage HoldingCells where
       checkWhen $ Window.ScenarioEvent "captured" (toJSON iid)
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         for_ [#combat, #agility] \sType ->
           skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 2)

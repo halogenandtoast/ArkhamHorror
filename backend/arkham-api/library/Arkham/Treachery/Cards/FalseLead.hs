@@ -20,7 +20,7 @@ instance RunMessage FalseLead where
     Revelation iid (isSource attrs -> True) -> do
       playerClueCount <- field InvestigatorClues iid
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ if playerClueCount == 0
           then chooseOne player [Label "Surge" [gainSurge attrs]]

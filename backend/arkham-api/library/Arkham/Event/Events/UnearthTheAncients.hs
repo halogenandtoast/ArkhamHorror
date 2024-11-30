@@ -39,7 +39,7 @@ instance RunMessage UnearthTheAncients where
           ]
       pure e
     ResolveEvent iid eid (Just (CardIdTarget cid)) _ | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       investigation <- mkInvestigate sid iid attrs <&> setTarget attrs
       card <- getCard cid
       enabled <- skillTestModifier sid attrs sid (SetDifficulty $ getCost card)

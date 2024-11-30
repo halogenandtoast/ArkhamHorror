@@ -42,7 +42,7 @@ instance HasAbilities Transmogrify where
 instance RunMessage Transmogrify where
   runMessage msg e@(Transmogrify attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       chooseEvadeEnemyWithSkillChoice sid iid attrs [#intellect, #agility]
       pure e
     When (PassedThisSkillTest _iid (isSource attrs -> True)) -> do

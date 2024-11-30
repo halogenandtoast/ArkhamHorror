@@ -19,7 +19,7 @@ instance HasAbilities ThievesKit where
 instance RunMessage ThievesKit where
   runMessage msg a@(ThievesKit attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
       chooseOne
         iid

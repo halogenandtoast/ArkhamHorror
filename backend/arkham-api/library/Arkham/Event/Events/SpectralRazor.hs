@@ -33,7 +33,7 @@ instance RunMessage SpectralRazor where
             labeled "Do not engage an enemy" $ doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       createCardEffect Cards.spectralRazor Nothing attrs iid
       chooseFightEnemy sid iid attrs

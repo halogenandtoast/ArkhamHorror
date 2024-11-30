@@ -28,7 +28,7 @@ instance HasAbilities BladeOfYothTheFathersIre where
 instance RunMessage BladeOfYothTheFathersIre where
   runMessage msg a@(BladeOfYothTheFathersIre attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> n) -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [AnySkillValue 2, DamageDealt n]
       chooseFightEnemyWithSkillChoice sid iid (attrs.ability 1) [#willpower, #combat]
       pure a

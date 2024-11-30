@@ -27,14 +27,14 @@ instance RunMessage Knife where
   runMessage msg a@(Knife attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
       pushAll [enabled, chooseFight]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
       pushAll [enabled, chooseFight]

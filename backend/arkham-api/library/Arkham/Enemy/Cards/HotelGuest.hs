@@ -45,7 +45,7 @@ instance RunMessage HotelGuest where
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

@@ -16,7 +16,7 @@ blackStarsRise = treachery BlackStarsRise Cards.blackStarsRise
 instance RunMessage BlackStarsRise where
   runMessage msg t@(BlackStarsRise attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #intellect (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

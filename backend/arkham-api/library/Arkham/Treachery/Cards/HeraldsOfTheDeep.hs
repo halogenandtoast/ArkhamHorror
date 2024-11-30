@@ -15,7 +15,7 @@ heraldsOfTheDeep = treachery HeraldsOfTheDeep Cards.heraldsOfTheDeep
 instance RunMessage HeraldsOfTheDeep where
   runMessage msg t@(HeraldsOfTheDeep attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       flooded <- selectAny $ locationWithInvestigator iid <> FloodedLocation
       revelationSkillTest sid iid attrs #willpower (Fixed $ if flooded then 5 else 3)
       pure t

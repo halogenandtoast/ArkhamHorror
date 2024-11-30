@@ -30,7 +30,7 @@ instance HasAbilities PrismaticSpectaclesLensToTheOtherworld2 where
 instance RunMessage PrismaticSpectaclesLensToTheOtherworld2 where
   runMessage msg a@(PrismaticSpectaclesLensToTheOtherworld2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       createCardEffect
         Cards.prismaticSpectaclesLensToTheOtherworld2

@@ -25,7 +25,7 @@ instance RunMessage Lupara3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let n = if justPlayed metadata then 2 else 1
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [DamageDealt n, SkillModifier #combat n]
       pushAll [enabled, chooseFight]

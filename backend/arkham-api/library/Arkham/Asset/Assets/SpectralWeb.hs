@@ -32,7 +32,7 @@ instance RunMessage SpectralWeb where
     UseCardAbility iid (isSource attrs -> True) 1 _ (toSpentClues -> x) -> do
       player <- getPlayer iid
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       choices <- for [#willpower, #combat] \sType -> do
         chooseFight <- toMessage . withSkillType sType <$> mkChooseFight sid iid source
         enabled <- skillTestModifiers sid source iid [AnySkillValue x, DamageDealt x]

@@ -32,7 +32,7 @@ instance HasAbilities IchtacaScionOfYig where
 instance RunMessage IchtacaScionOfYig where
   runMessage msg e@(IchtacaScionOfYig attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       enabled <- createCardEffect Cards.ichtacaScionOfYig Nothing attrs sid
       pushAll
         [ enabled

@@ -36,7 +36,7 @@ const revealedTokenAction = computed(() => {
 
       }
       if (c.target.tag === "ChaosTokenTarget" && c.target.contents) {
-        return props.token.id === (c.target.contents as { face: string, id: string }).id
+        return props.token.id === (c.target.contents as { face: string, id: number }).id
       }
     }
 

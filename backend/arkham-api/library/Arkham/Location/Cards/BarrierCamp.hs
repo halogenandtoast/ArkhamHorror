@@ -25,7 +25,7 @@ instance HasAbilities BarrierCamp where
 instance RunMessage BarrierCamp where
   runMessage msg l@(BarrierCamp attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) iid #willpower (Fixed 4)
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do

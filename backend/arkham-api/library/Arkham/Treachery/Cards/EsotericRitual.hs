@@ -18,7 +18,7 @@ esotericRitual = treachery EsotericRitual Cards.esotericRitual
 instance RunMessage EsotericRitual where
   runMessage msg t@(EsotericRitual attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

@@ -33,7 +33,7 @@ instance RunMessage Interrogate where
       let tabooMatcher = if tabooed TabooList21 attrs then id else (<> EnemyWithTrait Humanoid)
       enemies <- select $ tabooMatcher $ enemyAt location <> canParleyEnemy iid
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

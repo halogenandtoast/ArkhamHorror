@@ -30,7 +30,7 @@ instance RunMessage LodgeNeophyte where
       placeDoom (attrs.ability 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 2) attrs #willpower (Fixed 2)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do

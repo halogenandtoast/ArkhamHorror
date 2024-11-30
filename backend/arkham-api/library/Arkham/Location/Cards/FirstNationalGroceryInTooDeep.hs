@@ -50,7 +50,7 @@ instance RunMessage FirstNationalGroceryInTooDeep where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       choices <- mins <$> traverse (traverseToSnd (`getSkillValue` iid)) [minBound .. maxBound]
-      sid <- getRandom
+      sid <- genId
       chooseOrRunOneM iid do
         for_ choices \skill ->
           skillLabeled skill $ beginSkillTest sid iid (attrs.ability 2) iid skill (Fixed 2)

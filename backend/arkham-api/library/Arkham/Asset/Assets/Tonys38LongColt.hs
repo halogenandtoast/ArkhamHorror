@@ -43,7 +43,7 @@ instance RunMessage Tonys38LongColt where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifier sid source iid (DamageDealt 1)
       pushAll [enabled, chooseFight]

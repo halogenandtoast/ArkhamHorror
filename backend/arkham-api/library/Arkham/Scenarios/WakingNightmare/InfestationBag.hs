@@ -1,6 +1,7 @@
 module Arkham.Scenarios.WakingNightmare.InfestationBag where
 
 import Arkham.ChaosToken
+import Arkham.Id
 import Arkham.Prelude
 import Arkham.Story.Types
 import Data.Aeson (Result (..))
@@ -24,9 +25,9 @@ data InfestationBag = InfestationBag
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-initInfestationBag :: MonadRandom m => m InfestationBag
+initInfestationBag :: IdGen m => m InfestationBag
 initInfestationBag = do
-  rs <- getRandoms
+  rs <- genIds
   pure
     $ InfestationBag
       { infestationTokens =

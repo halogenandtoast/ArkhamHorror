@@ -27,7 +27,7 @@ instance RunMessage Shadowed where
             ]
         else do
           player <- getPlayer iid
-          sid <- getRandom
+          sid <- genId
           push
             $ chooseOrRunOne
               player

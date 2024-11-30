@@ -9,7 +9,7 @@ spec = describe "Hard Knocks" $ do
     withProp @"combat" 0 self
     withProp @"resources" 2 self
     hardKnocks <- self `putAssetIntoPlay` Assets.hardKnocks
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #combat 3
     useFastActionOf hardKnocks 1
     useFastActionOf hardKnocks 1
@@ -19,7 +19,7 @@ spec = describe "Hard Knocks" $ do
     withProp @"agility" 0 self
     withProp @"resources" 2 self
     hardKnocks <- self `putAssetIntoPlay` Assets.hardKnocks
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #agility 3
     useFastActionOf hardKnocks 2
     useFastActionOf hardKnocks 2

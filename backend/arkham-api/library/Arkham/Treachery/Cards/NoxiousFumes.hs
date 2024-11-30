@@ -23,7 +23,7 @@ instance RunMessage NoxiousFumes where
     Revelation iid (isSource attrs -> True) -> do
       investigators <- select $ colocatedWith iid
       investigatorPlayers <- traverse (traverseToSnd getPlayer) investigators
-      sid <- getRandom
+      sid <- genId
 
       pushAll
         [ chooseOne

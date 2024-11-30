@@ -23,7 +23,7 @@ instance RunMessage TheZealotsSeal where
       -- we must unshift this first for other effects happen before
       for_ investigatorIds $ \iid' -> do
         handCardCount <- fieldMap InvestigatorHand length iid'
-        sid <- getRandom
+        sid <- genId
         push
           $ if handCardCount <= 3
             then assignDamageAndHorror iid' attrs 1 1

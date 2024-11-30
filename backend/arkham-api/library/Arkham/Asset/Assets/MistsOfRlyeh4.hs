@@ -32,7 +32,7 @@ instance RunMessage MistsOfRlyeh4 where
   runMessage msg a@(MistsOfRlyeh4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.mistsOfRlyeh4 (effectInt 1) source sid
       createCardEffect Cards.mistsOfRlyeh4 (effectInt 2) source sid
       skillTestModifier sid source iid (SkillModifier #willpower 3)

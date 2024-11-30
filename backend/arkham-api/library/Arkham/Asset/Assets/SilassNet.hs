@@ -21,7 +21,7 @@ instance HasAbilities SilassNet where
 instance RunMessage SilassNet where
   runMessage msg a@(SilassNet attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseEvade sid iid (attrs.ability 1)
       pure a
     SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do

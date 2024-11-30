@@ -105,7 +105,7 @@ instance RunMessage Beguile where
       case attrs.placement.attachedTo of
         Just (EnemyTarget eid) ->
           field EnemyLocation eid >>= traverse_ \lid -> do
-            sid <- getRandom
+            sid <- genId
             chooseEvadeEnemyMatch sid iid (toSource iid) $ evadeOverride $ EnemyAt $ LocationWithId lid
         _ -> error "Beguile: EnemyTarget not found"
       pure e

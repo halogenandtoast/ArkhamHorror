@@ -38,7 +38,7 @@ instance HasAbilities TheGeistTrap where
 instance RunMessage TheGeistTrap where
   runMessage msg l@(TheGeistTrap attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect, #combat, #agility] (Fixed 20)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

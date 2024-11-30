@@ -80,6 +80,7 @@ data GameApp = GameApp
   , appQueue :: Queue Message
   , appGen :: IORef StdGen
   , appLogger :: ClientMessage -> IO ()
+  , appIdGen :: IORef Int
   }
 
 instance HasDebugLevel GameAppT where
@@ -88,16 +89,24 @@ instance HasDebugLevel GameAppT where
 instance HasGame GameAppT where
   getGame = readIORef =<< asks appGame
 
+instance HasIdGen GameAppT where
+  idGenerator = asks appIdGen
+
+instance IdGen GameAppT where
+  genId = do
+    ref <- asks appIdGen
+    liftIO $ atomicModifyIORef' ref $ \i -> (i + 1, coerce i)
+
 instance CardGen GameAppT where
   genEncounterCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupEncounterCard (toCardDef a) cardId
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId (EncounterCard card) (gameCards g)}, ())
     pure card
   genPlayerCard a = do
-    cardId <- unsafeMakeCardId <$> getRandom
+    cardId <- unsafeMakeCardId <$> genId
     let card = lookupPlayerCard (toCardDef a) cardId
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
@@ -116,7 +125,8 @@ newApp g logger msgs = do
   gameRef <- newIORef g
   queueRef <- newQueue msgs
   genRef <- newIORef (mkStdGen (gameSeed g))
-  pure $ GameApp gameRef queueRef genRef logger
+  idGen <- newIORef 1
+  pure $ GameApp gameRef queueRef genRef logger idGen
 
 instance HasStdGen GameApp where
   genL = lens appGen $ \m x -> m {appGen = x}

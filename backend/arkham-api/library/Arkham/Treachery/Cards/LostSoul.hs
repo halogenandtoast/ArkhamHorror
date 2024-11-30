@@ -18,7 +18,7 @@ instance RunMessage LostSoul where
   runMessage msg t@(LostSoul attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-      sid <- getRandom
+      sid <- genId
       push
         $ if moreConvictionThanDoubt
           then

@@ -18,7 +18,7 @@ instance RunMessage TheSecretMustBeKept where
   runMessage msg t@(TheSecretMustBeKept attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       -- max 3 decks so we subtract the number of decks in play from 3
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid source #willpower
         $ SumCalculation [Fixed 3, SubtractCalculation (Fixed 3) (CountActs AnyAct)]

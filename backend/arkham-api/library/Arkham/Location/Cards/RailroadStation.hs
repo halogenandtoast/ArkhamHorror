@@ -24,7 +24,7 @@ instance HasAbilities RailroadStation where
 instance RunMessage RailroadStation where
   runMessage msg l@(RailroadStation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

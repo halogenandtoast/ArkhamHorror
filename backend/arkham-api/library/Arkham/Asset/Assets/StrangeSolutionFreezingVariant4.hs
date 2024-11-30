@@ -36,7 +36,7 @@ instance HasModifiersFor StrangeSolutionFreezingVariant4 where
 instance RunMessage StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseEvade sid iid (attrs.ability 1)
       pure a
     _ -> StrangeSolutionFreezingVariant4 <$> runMessage msg attrs

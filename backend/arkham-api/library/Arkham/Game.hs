@@ -174,6 +174,7 @@ import Arkham.Treachery.Types (
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
+import Control.Monad.Random (getRandom)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Data.Aeson (Result (..))
@@ -219,6 +220,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameTurnHistory = mempty
         , gameInitialSeed = seed
         , gameSeed = seed
+        , gameNextId = 1
         , gameSettings = defaultSettings
         , gameMode = mode
         , gamePlayerCount = playerCount
@@ -297,13 +299,14 @@ addPlayer pid = do
 
 -- TODO: Rename this
 toExternalGame
-  :: MonadRandom m
+  :: (MonadRandom m, MonadIO m, HasIdGen m)
   => Game
   -> Map PlayerId (Question Message)
   -> m Game
 toExternalGame g mq = do
   newGameSeed <- getRandom
-  pure $ g {gameQuestion = mq, gameSeed = newGameSeed}
+  nextGameId <- liftIO . readIORef =<< idGenerator
+  pure $ g {gameQuestion = mq, gameSeed = newGameSeed, gameNextId = nextGameId}
 
 replayChoices :: Game -> [Diff.Patch] -> Game
 replayChoices currentGame choices = do
@@ -437,7 +440,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           ]
     case mLocation of
       Nothing -> pure $ inner `with` ConnectionData [] `with` additionalData
-      Just (LocationId uuid) | uuid == nil -> pure $ inner `with` ConnectionData [] `with` additionalData
+      Just (LocationId uuid) | uuid == 0 -> pure $ inner `with` ConnectionData [] `with` additionalData
       Just locationId -> do
         myou <- selectOne You -- maybe eliminated, and therefor no connections
         connectedLocationIds <- case myou of
@@ -826,7 +829,7 @@ getInvestigatorsMatching matcher = do
       case mlid of
         Nothing -> pure False
         Just lid ->
-          if lid == LocationId nil
+          if lid == LocationId 0
             then pure False
             else elem lid <$> select locationMatcher
     InvestigatorWithId iid -> flip filterM as $ pure . (== iid) . toId
@@ -4548,6 +4551,7 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
+     , HasIdGen m
      )
   => Maybe (Message -> IO ())
   -> m ()

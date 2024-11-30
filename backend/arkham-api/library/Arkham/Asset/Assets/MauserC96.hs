@@ -23,7 +23,7 @@ instance RunMessage MauserC96 where
   runMessage msg a@(MauserC96 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 1]
       pushAll [enabled, chooseFight]

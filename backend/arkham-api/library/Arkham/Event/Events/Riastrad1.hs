@@ -14,7 +14,7 @@ riastrad1 = event Riastrad1 Cards.riastrad1
 instance RunMessage Riastrad1 where
   runMessage msg e@(Riastrad1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       n <- min 3 <$> getRemainingCurseTokens
       when (n > 0) do
         chooseAmount

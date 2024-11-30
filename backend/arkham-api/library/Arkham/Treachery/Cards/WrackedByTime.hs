@@ -31,8 +31,8 @@ instance RunMessage WrackedByTime where
         select
           $ InvestigatorAt (LocationWithTrait Shattered)
           <> NotInvestigator (InvestigatorWithId iid)
-      others' <- traverse (\i -> (i,) <$> getRandom) others
-      sid1 <- getRandom
+      others' <- traverse (\i -> (i,) <$> genId) others
+      sid1 <- genId
       pushAll
         $ RevelationSkillTest sid1 iid (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 3)
         : [ RevelationSkillTest sid iid' (toSource attrs) SkillWillpower (SkillTestDifficulty $ Fixed 3)

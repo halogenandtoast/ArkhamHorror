@@ -37,7 +37,7 @@ instance HasAbilities PatientConfinementOccupiedCell where
 instance RunMessage PatientConfinementOccupiedCell where
   runMessage msg l@(PatientConfinementOccupiedCell attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 2)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

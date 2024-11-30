@@ -17,7 +17,7 @@ lostHumanity = treachery LostHumanity Cards.lostHumanity
 instance RunMessage LostHumanity where
   runMessage msg t@(LostHumanity attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ revelationSkillTest sid iid attrs #willpower (Fixed 5)
         , RevelationChoice iid (toSource attrs) 1

@@ -14,7 +14,7 @@ readTheSigns = event ReadTheSigns Cards.readTheSigns
 instance RunMessage ReadTheSigns where
   runMessage msg e@(ReadTheSigns attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers
         sid
         attrs

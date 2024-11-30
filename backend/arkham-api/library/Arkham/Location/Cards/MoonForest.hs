@@ -33,7 +33,7 @@ instance HasAbilities MoonForest where
 instance RunMessage MoonForest where
   runMessage msg l@(MoonForest attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 5)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
@@ -44,7 +44,7 @@ instance RunMessage MoonForest where
           reduceAlarmLevel (attrs.ability 1) iid
           pure $ MoonForest $ attrs & setMeta (meta {hasUsedSuccess = iid : hasUsedSuccess meta})
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseEvade sid iid (attrs.ability 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

@@ -31,7 +31,7 @@ instance RunMessage Blackjack2 where
   runMessage msg a@(Blackjack2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <-
         skillTestModifiers sid source iid [SkillModifier #combat 2, DoesNotDamageOtherInvestigator]

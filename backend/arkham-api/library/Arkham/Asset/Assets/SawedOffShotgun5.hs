@@ -19,7 +19,7 @@ instance HasAbilities SawedOffShotgun5 where
 instance RunMessage SawedOffShotgun5 where
   runMessage msg a@(SawedOffShotgun5 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

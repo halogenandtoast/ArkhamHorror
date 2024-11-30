@@ -38,7 +38,7 @@ instance RunMessage MechanicsWrench where
 
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
       chooseFightEnemyMatch sid iid (attrs.ability 2) AttackedYouSinceTheEndOfYourLastTurn
       pure a

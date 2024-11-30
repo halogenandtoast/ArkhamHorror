@@ -19,7 +19,7 @@ instance RunMessage MarkedByTheSign where
     Revelation iid (isSource attrs -> True) -> do
       theManInThePallidMaskIsInPlay <- selectAny $ enemyIs Cards.theManInThePallidMask
       let difficulty = if theManInThePallidMaskIsInPlay then 4 else 2
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed difficulty)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

@@ -17,7 +17,7 @@ chillFromBelow = treachery ChillFromBelow Cards.chillFromBelow
 instance RunMessage ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid source@(isSource attrs -> True) n -> do

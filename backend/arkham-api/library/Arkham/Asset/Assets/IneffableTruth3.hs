@@ -30,7 +30,7 @@ instance RunMessage IneffableTruth3 where
   runMessage msg a@(IneffableTruth3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.ineffableTruth3 (effectInt 1) source sid
       createCardEffect Cards.ineffableTruth3 (effectInt 2) source sid
       skillTestModifier sid source iid (SkillModifier #willpower 2)

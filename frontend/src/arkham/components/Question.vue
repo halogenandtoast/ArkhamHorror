@@ -292,7 +292,7 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 
-const cardIdImage = (cardId: string) => {
+const cardIdImage = (cardId: number) => {
   return (imgsrc(cardImage(props.game.cards[cardId])))
 }
 

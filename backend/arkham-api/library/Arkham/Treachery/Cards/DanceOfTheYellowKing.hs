@@ -20,7 +20,7 @@ instance RunMessage DanceOfTheYellowKing where
   runMessage msg t@(DanceOfTheYellowKing attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       anyLunatics <- selectAny $ EnemyWithTrait Lunatic
-      sid <- getRandom
+      sid <- genId
       push
         $ if anyLunatics
           then revelationSkillTest sid iid attrs #willpower (Fixed 3)

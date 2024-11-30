@@ -24,7 +24,7 @@ instance HasAbilities RemnantsOfLakesCamp where
 instance RunMessage RemnantsOfLakesCamp where
   runMessage msg l@(RemnantsOfLakesCamp attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 4)
       pure l
     PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do

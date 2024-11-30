@@ -34,7 +34,7 @@ instance HasAbilities DeconstructionRoom where
 instance RunMessage DeconstructionRoom where
   runMessage msg l@(DeconstructionRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ beginSkillTest
           sid

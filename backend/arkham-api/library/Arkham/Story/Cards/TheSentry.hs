@@ -23,7 +23,7 @@ instance RunMessage TheSentry where
       -- Spawn the set-aside Gug Sentinel enemy at this location, with 1  clues
       -- on it. Test  (3). If you succeed, Gug Sentinel enters play exhausted
       -- and unengaged. Otherwise, it enters play engaged with you.
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid attrs iid #agility (Fixed 3)
       pure s
     FailedThisSkillTest iid (isSource attrs -> True) -> do

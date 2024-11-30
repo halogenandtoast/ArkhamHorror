@@ -26,6 +26,7 @@ import Arkham.Agenda.Runner as X (
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
+import Arkham.Id as X
 import Arkham.Message as X (
   AgendaAdvancementMethod (..),
   CanAdvance (..),

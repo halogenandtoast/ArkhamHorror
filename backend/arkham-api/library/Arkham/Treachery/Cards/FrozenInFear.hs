@@ -32,7 +32,7 @@ instance RunMessage FrozenInFear where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

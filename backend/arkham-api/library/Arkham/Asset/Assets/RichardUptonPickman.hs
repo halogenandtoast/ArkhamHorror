@@ -41,7 +41,7 @@ instance RunMessage RichardUptonPickman where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [BaseSkillOf #combat 5, NoStandardDamage]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

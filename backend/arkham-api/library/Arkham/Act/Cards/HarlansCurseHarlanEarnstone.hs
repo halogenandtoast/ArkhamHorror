@@ -76,7 +76,7 @@ instance RunMessage HarlansCurseHarlanEarnstone where
     NextAdvanceActStep aid 1 | aid == actId attrs && onSide B attrs -> do
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       harlan <- selectJust $ enemyIs Enemies.harlanEarnstoneCrazedByTheCurse
-      assetId <- getRandom
+      assetId <- genId
       pushAll [CreateAssetAt assetId relicOfAges (AttachedToEnemy harlan)]
       pure a
     _ -> HarlansCurseHarlanEarnstone <$> runMessage msg attrs

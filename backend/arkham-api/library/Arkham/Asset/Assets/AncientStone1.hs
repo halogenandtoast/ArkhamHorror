@@ -29,7 +29,7 @@ instance HasAbilities AncientStone1 where
 instance RunMessage AncientStone1 where
   runMessage msg a@(AncientStone1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       investigation <- mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       enabled <- skillTestModifiers sid attrs investigation.location [ShroudModifier 3]
       pushAll

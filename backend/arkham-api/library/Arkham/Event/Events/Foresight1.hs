@@ -5,7 +5,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Modifiers
-import Arkham.Id
 import Arkham.Name
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window

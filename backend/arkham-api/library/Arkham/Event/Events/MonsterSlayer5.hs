@@ -20,7 +20,7 @@ monsterSlayer5 = event MonsterSlayer5 Cards.monsterSlayer5
 instance RunMessage MonsterSlayer5 where
   runMessage msg e@(MonsterSlayer5 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do

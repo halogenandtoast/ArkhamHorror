@@ -86,7 +86,6 @@ import Arkham.Window (Window, WindowType)
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
-import Data.UUID (nil)
 import GHC.OverloadedLabels
 
 messageType :: Message -> Maybe MessageType
@@ -256,7 +255,7 @@ pattern CancelRevelation source = CancelEachNext source [RevelationMessage]
 pattern PlayThisEvent :: InvestigatorId -> EventId -> Message
 pattern PlayThisEvent iid eid <- InvestigatorPlayEvent iid eid _ _ _
 
-getChoiceAmount :: Text -> [(NamedUUID, Int)] -> Int
+getChoiceAmount :: Text -> [(NamedId, Int)] -> Int
 getChoiceAmount key choices =
   let choicesMap = mapFromList @(Map Text Int) $ map (first nuName) choices
    in findWithDefault 0 key choicesMap
@@ -898,7 +897,7 @@ data Message
   | ReturnChaosTokensToPool [ChaosToken]
   | Resign InvestigatorId
   | ResignWith Target
-  | ResolveAmounts InvestigatorId [(NamedUUID, Int)] Target
+  | ResolveAmounts InvestigatorId [(NamedId, Int)] Target
   | ResolveEvent InvestigatorId EventId (Maybe Target) [Window]
   | ResolveEventChoice InvestigatorId EventId Int (Maybe Target) [Window]
   | ResolveSkill SkillId
@@ -1130,7 +1129,7 @@ instance FromJSON Message where
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
           Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid card
-          Right (iid, cardDef :: CardDef) -> pure $ AddCampaignCardToDeck iid (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
+          Right (iid, cardDef :: CardDef) -> pure $ AddCampaignCardToDeck iid (lookupCard cardDef.cardCode (unsafeMakeCardId 0))
       "SealedChaosToken" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of
@@ -1269,8 +1268,7 @@ chooseAmounts
   -> target
   -> m Message
 chooseAmounts pid label total choiceMap (toTarget -> target) = do
-  rs <- getRandoms
-  pure $ Ask pid (ChooseAmounts label total (amountChoices rs) target)
+  pure $ Ask pid (ChooseAmounts label total (amountChoices [1 ..]) target)
  where
   amountChoices rs = map toAmountChoice (zip rs choiceMap)
   toAmountChoice (choiceId, (l, (m, n))) = AmountChoice choiceId l m n

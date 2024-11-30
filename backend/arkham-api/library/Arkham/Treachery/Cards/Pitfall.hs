@@ -20,7 +20,7 @@ instance RunMessage Pitfall where
     Revelation iid source | isSource attrs source -> do
       card <- field TreacheryCard (toId attrs)
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOrRunOne player
         $ Label

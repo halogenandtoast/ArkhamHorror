@@ -21,7 +21,7 @@ instance HasAbilities Totality where
 instance RunMessage Totality where
   runMessage msg t@(Totality attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

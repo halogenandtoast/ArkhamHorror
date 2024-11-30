@@ -20,7 +20,7 @@ instance HasAbilities Chainsaw4 where
 instance RunMessage Chainsaw4 where
   runMessage msg a@(Chainsaw4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 2]
       pushAll [enabled, chooseFight]

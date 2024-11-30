@@ -6,7 +6,6 @@ import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 

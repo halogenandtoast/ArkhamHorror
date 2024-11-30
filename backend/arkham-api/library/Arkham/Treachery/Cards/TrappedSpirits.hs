@@ -31,7 +31,7 @@ instance HasModifiersFor TrappedSpirits where
 instance RunMessage TrappedSpirits where
   runMessage msg t@(TrappedSpirits attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

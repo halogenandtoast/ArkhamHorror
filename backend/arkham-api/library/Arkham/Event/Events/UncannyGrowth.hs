@@ -16,7 +16,7 @@ uncannyGrowth = event UncannyGrowth Cards.uncannyGrowth
 instance RunMessage UncannyGrowth where
   runMessage msg e@(UncannyGrowth attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do

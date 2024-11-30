@@ -120,9 +120,9 @@ genPlayerCardWith a f = do
 
 -- instance CardGen IO where
 --   genEncounterCard a =
---     lookupEncounterCard (toCardDef a) . unsafeMakeCardId <$> getRandom
+--     lookupEncounterCard (toCardDef a) . unsafeMakeCardId <$> genId
 --   genPlayerCard a =
---     lookupPlayerCard (toCardDef a) . unsafeMakeCardId <$> getRandom
+--     lookupPlayerCard (toCardDef a) . unsafeMakeCardId <$> genId
 --   replaceCard _ _ = pure ()
 
 genCard :: (HasCardDef a, CardGen m) => a -> m Card

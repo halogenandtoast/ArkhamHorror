@@ -42,7 +42,7 @@ instance RunMessage TokenOfFaith3 where
       pushAll $ replicate n $ AddChaosToken #bless
       case skillTestResult st of
         FailedBy {} -> do
-          sid <- getRandom
+          sid <- genId
           chooseOne
             iid
             [ Label "Attempt that skill test again" [RepeatSkillTest sid st.id]

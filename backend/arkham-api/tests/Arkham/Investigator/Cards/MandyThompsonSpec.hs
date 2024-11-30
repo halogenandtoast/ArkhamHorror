@@ -119,7 +119,7 @@ spec = describe "Mandy Thompson" $ do
       cards@(c1 : rest) <- testPlayerCards 3
       withProp @"deck" (Deck cards) self
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #agility 100
       skip
       chooseTarget c1
@@ -132,7 +132,7 @@ spec = describe "Mandy Thompson" $ do
       withProp @"agility" 0 self
       withProp @"deck" (Deck (manualDexterity : rest)) self
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #agility 2
       skip
       chooseTarget manualDexterity

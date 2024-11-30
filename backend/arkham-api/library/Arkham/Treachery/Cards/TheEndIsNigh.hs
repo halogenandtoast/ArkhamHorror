@@ -20,7 +20,7 @@ theEndIsNigh = treachery TheEndIsNigh Cards.theEndIsNigh
 instance RunMessage TheEndIsNigh where
   runMessage msg t@(TheEndIsNigh attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 1, CurrentAgendaStepCalculation (Fixed 4)]

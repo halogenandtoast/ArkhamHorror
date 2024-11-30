@@ -48,7 +48,7 @@ instance RunMessage SomethingBelow where
           placeClues attrs slitheringDhole 2
       pure s
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      treacheryId <- getRandom
+      treacheryId <- genId
       seaOfBones <- selectJust $ locationIs Locations.seaOfBones
       push $ AttachStoryTreacheryTo treacheryId (toCard ec) (toTarget seaOfBones)
       pure s

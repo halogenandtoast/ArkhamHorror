@@ -18,7 +18,7 @@ instance RunMessage RuinAndDestruction where
   runMessage msg t@(RuinAndDestruction attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       targetInvestigators <- select $ InvestigatorAt $ LocationWithEnemy $ EnemyWithTitle broodTitle
-      sid <- getRandom
+      sid <- genId
       pushAll
         $ [revelationSkillTest sid iid' source #agility (Fixed 3) | iid' <- targetInvestigators]
         <> [gainSurge attrs | null targetInvestigators]

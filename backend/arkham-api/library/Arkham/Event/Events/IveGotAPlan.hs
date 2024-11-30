@@ -17,7 +17,7 @@ iveGotAPlan = event IveGotAPlan Cards.iveGotAPlan
 instance RunMessage IveGotAPlan where
   runMessage msg e@(IveGotAPlan attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid
         $ ForEach
           (MaxCalculation (Fixed 3) (InvestigatorFieldCalculation iid InvestigatorClues))

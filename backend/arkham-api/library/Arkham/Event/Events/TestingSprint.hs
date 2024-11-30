@@ -3,7 +3,6 @@ module Arkham.Event.Events.TestingSprint (testingSprint, TestingSprint (..)) whe
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Id
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -49,7 +48,7 @@ instance RunMessage TestingSprint where
     HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
       let filterChoice (n, (x :| xs)) = (n,) <$> nonEmpty (deleteFirst lid (x : xs))
       let meta' = mapMaybe filterChoice (remainingLocations meta)
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigateLocation sid iid attrs lid
       pure . TestingSprint $ attrs `with` Meta meta'
     PassedThisSkillTest iid (isSource attrs -> True) -> do

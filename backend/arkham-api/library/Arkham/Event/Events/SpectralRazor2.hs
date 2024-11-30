@@ -37,7 +37,7 @@ instance RunMessage SpectralRazor2 where
             ]
       pure e
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       createCardEffect Cards.spectralRazor2 Nothing attrs iid
       onRevealChaosTokenEffect sid IsSymbol attrs attrs do

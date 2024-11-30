@@ -36,6 +36,7 @@ data Game = Game
   , gameInitialSeed :: Int
   , gameSettings :: Settings
   , gameSeed :: Int
+  , gameNextId :: Int
   , gameWindowDepth :: Int
   , gameWindowStack :: Maybe [[Window]]
   , gameRunWindows :: Bool

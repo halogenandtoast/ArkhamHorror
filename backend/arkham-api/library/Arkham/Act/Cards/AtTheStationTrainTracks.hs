@@ -32,7 +32,7 @@ instance RunMessage AtTheStationTrainTracks where
       trainTracks <- genCard Locations.trainTracks
       (locationId, placeTrainTracks) <- placeLocation trainTracks
       alejandroVela <- getSetAsideCard Assets.alejandroVela
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         [ placeTrainTracks
         , CreateAssetAt assetId alejandroVela (AttachedToLocation locationId)

@@ -28,7 +28,7 @@ instance RunMessage M1918Bar4 where
     UseCardAbility iid (isSource attrs -> True) 1 _ payments -> do
       let uses = totalUses payments
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [SkillModifier #combat uses, DamageDealt (uses - 1)]
       pushAll [enabled, chooseFight]

@@ -28,7 +28,7 @@ instance RunMessage RealmOfTorment where
       runHauntedAbilities iid
       pure t
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

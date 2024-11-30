@@ -39,7 +39,7 @@ instance RunMessage SickeningWebs where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

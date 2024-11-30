@@ -32,7 +32,7 @@ instance HasAbilities Hatchet1 where
 instance RunMessage Hatchet1 where
   runMessage msg a@(Hatchet1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

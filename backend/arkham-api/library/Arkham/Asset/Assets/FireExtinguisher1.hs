@@ -26,13 +26,13 @@ instance RunMessage FireExtinguisher1 where
   runMessage msg a@(FireExtinguisher1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #combat 1)
       chooseFightEnemy sid iid source
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #agility 3)
       createCardEffect Cards.fireExtinguisher1 Nothing source (SkillTestTarget sid)
       chooseEvadeEnemy sid iid source

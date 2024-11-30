@@ -24,7 +24,7 @@ instance HasAbilities FeedTheMind where
 instance RunMessage FeedTheMind where
   runMessage msg a@(FeedTheMind attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) (min 3 -> n) -> do

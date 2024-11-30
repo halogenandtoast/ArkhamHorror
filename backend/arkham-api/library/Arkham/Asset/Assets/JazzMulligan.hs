@@ -41,7 +41,7 @@ instance RunMessage JazzMulligan where
       push $ PlaceAsset assetId $ AtLocation lid
       pure a
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) (toTarget attrs) #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

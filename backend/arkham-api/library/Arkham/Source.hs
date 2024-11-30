@@ -21,7 +21,6 @@ import Arkham.Tarot
 import Arkham.Trait
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
-import Data.UUID (nil)
 import GHC.OverloadedLabels
 import GHC.Records
 
@@ -127,7 +126,7 @@ instance FromJSON Source where
         pure $ CardIdSource c.id
       "SkillTestSource" -> do
         eSkillTestId <- (Left <$> o .: "contents") <|> (Right <$> pure ())
-        pure $ either SkillTestSource (\_ -> SkillTestSource (SkillTestId nil)) eSkillTestId
+        pure $ either SkillTestSource (\_ -> SkillTestSource (SkillTestId 0)) eSkillTestId
       _ -> genericParseJSON defaultOptions (Object o)
 
 instance ToJSONKey Source

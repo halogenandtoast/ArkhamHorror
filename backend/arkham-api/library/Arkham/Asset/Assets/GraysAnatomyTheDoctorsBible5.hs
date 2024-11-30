@@ -39,7 +39,7 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
             , selectTargets $ affectsOthers $ colocatedWith iid
             ]
 
-      sid <- getRandom
+      sid <- genId
       chooseTargetM iid choices \t -> beginSkillTest sid iid (attrs.ability 1) t #intellect (Fixed 1)
       pure a
     PassedThisSkillTestBy _iid (isAbilitySource attrs 1 -> True) n -> do

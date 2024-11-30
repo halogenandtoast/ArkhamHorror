@@ -17,7 +17,7 @@ sweepingKick1 = event SweepingKick1 Cards.sweepingKick1
 instance RunMessage SweepingKick1 where
   runMessage msg e@(SweepingKick1 attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
       enabled <- skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
       pushAll [enabled, chooseFight]

@@ -20,7 +20,7 @@ extradimensionalVisions =
 instance RunMessage ExtradimensionalVisions where
   runMessage msg t@(ExtradimensionalVisions attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 2, DividedByCalculation (ScenarioInDiscardCountCalculation AnyCard) 10]

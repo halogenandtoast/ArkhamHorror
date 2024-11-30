@@ -107,7 +107,7 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
 
 export type Investigator = {
   deckSize?: number;
-  connectedLocations: string[];
+  connectedLocations: number[];
   modifiers?: Modifier[];
   name: Name;
   id: string;
@@ -124,31 +124,31 @@ export type Investigator = {
   tokens: Tokens;
   assignedHealthDamage: number;
   assignedSanityDamage: number;
-  location: string;
+  location: number;
   placement: Placement;
   remainingActions: number;
   endedTurn: boolean;
-  engagedEnemies: string[];
-  assets: string[];
-  events: string[];
-  skills: string[];
+  engagedEnemies: number[];
+  assets: number[];
+  events: number[];
+  skills: number[];
   discard: CardContents[];
   hand: Card[];
   bondedCards: Card[];
   deck: CardContents[];
   decks: [string, Card[]][];
-  treacheries: string[];
+  treacheries: number[];
   defeated: boolean;
   resigned: boolean;
   additionalActions: AdditionalActionType[];
   cardsUnderneath: Card[];
   sealedChaosTokens: ChaosToken[];
-  foundCards: Record<string, Card[]>;
+  foundCards: Record<number, Card[]>;
   xp: number;
   supplies: string[];
   keys: ArkhamKey[];
   hunchDeck?: CardContents[];
-  revealedHunchCard?: string | null;
+  revealedHunchCard?: number | null;
   devoured?: Card[]
   isYithian: boolean;
   mutated?: string;
@@ -182,11 +182,11 @@ export const slotDecoder = JsonDecoder.object<Slot>({
 }, 'Slot')
 
 type SlotContents = {
-  assets: string[]
+  assets: number[]
 }
 
 const slotContentsDecoder = JsonDecoder.object<SlotContents>({
-  assets: JsonDecoder.array(JsonDecoder.string, 'AssetId[]'),
+  assets: JsonDecoder.array(JsonDecoder.number, 'AssetId[]'),
 }, 'SlotContents')
 
 export const slotsDecoder = JsonDecoder.
@@ -222,14 +222,14 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   tokens: tokensDecoder,
   assignedHealthDamage: JsonDecoder.number,
   assignedSanityDamage: JsonDecoder.number,
-  location: placementDecoder.map((placement) => placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000"),
+  location: placementDecoder.map((placement) => placement.tag === "AtLocation" ? placement.contents : 0),
   placement: placementDecoder,
   remainingActions: JsonDecoder.number,
   endedTurn: JsonDecoder.boolean,
-  engagedEnemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-  assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
-  events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
-  skills: JsonDecoder.array<string>(JsonDecoder.string, 'SkillId[]'),
+  engagedEnemies: JsonDecoder.array<number>(JsonDecoder.number, 'EnemyId[]'),
+  assets: JsonDecoder.array<number>(JsonDecoder.number, 'AssetId[]'),
+  events: JsonDecoder.array<number>(JsonDecoder.number, 'EventId[]'),
+  skills: JsonDecoder.array<number>(JsonDecoder.number, 'SkillId[]'),
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
@@ -237,10 +237,10 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   deck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   hunchDeck: JsonDecoder.optional(JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]')),
-  revealedHunchCard: JsonDecoder.optional(JsonDecoder.nullable(JsonDecoder.string)),
+  revealedHunchCard: JsonDecoder.optional(JsonDecoder.nullable(JsonDecoder.number)),
   devoured: JsonDecoder.optional(JsonDecoder.array<Card>(cardDecoder, 'Card[]')),
   // traits: HashSet Trait,
-  treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
+  treacheries: JsonDecoder.array<number>(JsonDecoder.number, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
@@ -251,7 +251,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   deckSize: JsonDecoder.optional(JsonDecoder.number),
-  connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
+  connectedLocations: JsonDecoder.array<number>(JsonDecoder.number, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   isYithian: JsonDecoder.boolean,
   mutated: JsonDecoder.optional(JsonDecoder.string),

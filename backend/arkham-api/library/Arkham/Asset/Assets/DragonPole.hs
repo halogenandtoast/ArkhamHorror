@@ -34,7 +34,7 @@ instance RunMessage DragonPole where
       push $ AddSlot iid ArcaneSlot (Slot (toSource attrs) [])
       DragonPole <$> runMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     _ -> DragonPole <$> runMessage msg attrs

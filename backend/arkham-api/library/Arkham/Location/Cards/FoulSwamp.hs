@@ -39,7 +39,7 @@ instance RunMessage FoulSwamp where
         n = getSum $ horrorPayment payments
         source = toAbilitySource attrs 1
 
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid $ SkillModifier #willpower n
       beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 7)
       pure l

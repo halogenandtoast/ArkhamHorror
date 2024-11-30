@@ -4,6 +4,7 @@ import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Modifiers as X (toModifiers)
+import Arkham.Id as X
 import Arkham.Location.Helpers as X (adjacentLocations)
 import Arkham.Location.Runner as X (
   IsLocation,

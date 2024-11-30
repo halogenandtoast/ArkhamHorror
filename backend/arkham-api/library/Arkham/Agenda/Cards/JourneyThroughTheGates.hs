@@ -47,7 +47,7 @@ instance RunMessage JourneyThroughTheGates where
         else do
           for_ investigators $ \iid -> do
             player <- getPlayer iid
-            sid <- getRandom
+            sid <- genId
             push
               $ chooseOne
                 player

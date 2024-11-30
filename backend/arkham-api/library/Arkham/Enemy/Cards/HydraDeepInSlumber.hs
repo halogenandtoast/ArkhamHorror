@@ -55,7 +55,7 @@ instance RunMessage HydraDeepInSlumber where
       placeDoom (attrs.ability 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 4)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

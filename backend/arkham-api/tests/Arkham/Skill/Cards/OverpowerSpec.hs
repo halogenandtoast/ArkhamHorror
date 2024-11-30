@@ -15,7 +15,7 @@ spec = describe "Overpower" $ do
     self `addToHand` overpower
     withEach [(Zero, map toCard cards), (MinusOne, [])] $ \(token, expectedHand) -> do
       setChaosTokens [token]
-      sid <- getRandom
+      sid <- genId
       run $ beginSkillTest sid self #combat 2
       commit overpower
       startSkillTest

@@ -29,7 +29,7 @@ instance HasAbilities Flamethrower5 where
 instance RunMessage Flamethrower5 where
   runMessage msg a@(Flamethrower5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (SkillModifier #combat 4)
       enemies <- withMaybeMaxField Field.EnemyFight =<< select (enemyEngagedWith iid)
       chooseFightEnemyMatchEdit sid iid (attrs.ability 1) (beOneOf enemies) (setTarget attrs)

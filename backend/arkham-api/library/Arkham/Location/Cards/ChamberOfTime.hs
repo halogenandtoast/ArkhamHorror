@@ -35,7 +35,7 @@ instance RunMessage ChamberOfTime where
       case listToMaybe mRelicOfAges of
         Nothing -> error "Missing relic of ages"
         Just relicOfAges -> do
-          assetId <- getRandom
+          assetId <- genId
           pushAll
             [ CreateAssetAt assetId relicOfAges (AttachedToLocation $ toId attrs)
             , PlaceDoom (attrs.ability 1) (toTarget attrs) 1

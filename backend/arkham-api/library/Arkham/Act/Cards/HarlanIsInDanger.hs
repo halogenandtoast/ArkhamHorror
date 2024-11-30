@@ -29,7 +29,7 @@ instance RunMessage HarlanIsInDanger where
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       harlanEarnstone <- genCard Assets.harlanEarnstone
       easttown <- selectJust $ LocationWithTitle "Easttown"
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         [ CreateAssetAt assetId harlanEarnstone (AtLocation easttown)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

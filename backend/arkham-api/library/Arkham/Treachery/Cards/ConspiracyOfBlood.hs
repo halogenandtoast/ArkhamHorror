@@ -38,7 +38,7 @@ instance RunMessage ConspiracyOfBlood where
       attachTreachery attrs currentAgenda
       pure t
     UseThisAbility iid (ProxySource (EnemySource eid) source) 1 | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) eid #willpower (Fixed 4)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

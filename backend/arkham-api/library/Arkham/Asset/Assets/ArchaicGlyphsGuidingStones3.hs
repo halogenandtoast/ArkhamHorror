@@ -29,7 +29,7 @@ archaicGlyphsGuidingStones3 =
 instance RunMessage ArchaicGlyphsGuidingStones3 where
   runMessage msg a@(ArchaicGlyphsGuidingStones3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       pure a
     Successful (Action.Investigate, LocationTarget lid) iid _ (isTarget attrs -> True) n -> do

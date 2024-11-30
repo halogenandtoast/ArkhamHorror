@@ -38,7 +38,7 @@ instance HasAbilities FireAxe where
 instance RunMessage FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

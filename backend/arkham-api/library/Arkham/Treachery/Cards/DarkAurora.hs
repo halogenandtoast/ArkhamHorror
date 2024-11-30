@@ -13,7 +13,7 @@ darkAurora = treachery DarkAurora Cards.darkAurora
 instance RunMessage DarkAurora where
   runMessage msg t@(DarkAurora attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid #frost attrs iid do
         assignHorror iid attrs 1
       revelationSkillTest sid iid attrs #agility (Fixed 3)

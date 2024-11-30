@@ -15,7 +15,7 @@ fortuitousDiscovery = event FortuitousDiscovery Cards.fortuitousDiscovery
 instance RunMessage FortuitousDiscovery where
   runMessage msg e@(FortuitousDiscovery attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       x <- selectCount $ inDiscardOf iid <> basic (cardIs Cards.fortuitousDiscovery)
       skillTestModifiers sid (toSource attrs) iid [SkillModifier #intellect x, DiscoveredClues x]
       investigate sid iid attrs

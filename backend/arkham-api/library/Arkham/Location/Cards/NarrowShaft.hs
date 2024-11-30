@@ -42,7 +42,7 @@ instance HasAbilities NarrowShaft where
 instance RunMessage NarrowShaft where
   runMessage msg l@(NarrowShaft attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

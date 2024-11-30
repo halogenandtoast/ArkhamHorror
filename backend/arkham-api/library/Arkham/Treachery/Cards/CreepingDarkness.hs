@@ -43,7 +43,7 @@ instance RunMessage CreepingDarkness where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasTorches <- getHasSupply iid Torches
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOrRunOne player
         $ Label

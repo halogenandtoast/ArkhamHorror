@@ -36,7 +36,7 @@ instance RunMessage PrimordialGateway where
       push $ PlaceBreaches (toTarget location) amount
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) sType (Fixed 4)]

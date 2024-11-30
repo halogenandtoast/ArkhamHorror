@@ -31,7 +31,7 @@ instance HasAbilities KnightsHall where
 instance RunMessage KnightsHall where
   runMessage msg l@(KnightsHall attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> withSkillType #agility
       pure l
     Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _ | isSource attrs source -> do

@@ -44,7 +44,7 @@ instance RunMessage ForsakenTowerOfIllusionAndMyth where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ investigate
           sid

@@ -186,12 +186,12 @@ getPlacementLocation = \case
   NextToAgenda -> pure Nothing
 
 createActiveCostForAdditionalCardCosts
-  :: (MonadRandom m, HasGame m)
+  :: (IdGen m, HasGame m)
   => InvestigatorId
   -> Card
   -> m (Maybe ActiveCost)
 createActiveCostForAdditionalCardCosts iid card = do
-  acId <- getRandom
+  acId <- genId
   mods <- getModifiers (CardIdTarget $ toCardId card)
   let
     additionalCosts = flip mapMaybe mods $ \case
@@ -264,14 +264,14 @@ getActiveInvestigator :: HasGame m => m Investigator
 getActiveInvestigator = getGame >>= getInvestigator . gameActiveInvestigatorId
 
 createActiveCostForCard
-  :: (MonadRandom m, HasGame m)
+  :: (IdGen m, HasGame m)
   => InvestigatorId
   -> Card
   -> IsPlayAction
   -> [Window]
   -> m ActiveCost
 createActiveCostForCard iid card isPlayAction windows' = do
-  acId <- getRandom
+  acId <- genId
   allModifiers <-
     mconcat
       <$> sequence

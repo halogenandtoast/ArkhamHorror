@@ -44,8 +44,7 @@ import Control.Monad.Extra as X (
   partitionM,
   zipWithM_,
  )
-import Control.Monad.Random as X (MonadRandom, uniform)
-import Control.Monad.Random.Class as X (getRandom, getRandomR, getRandoms)
+import Control.Monad.Random as X (MonadRandom)
 import Control.Monad.Random.Strict as X (Random)
 import Control.Monad.Trans.Maybe as X (MaybeT (..), hoistMaybe, runMaybeT)
 import Data.Aeson (Result (..))
@@ -73,6 +72,7 @@ import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X hiding (shuffle)
 
+import Control.Monad.Random.Class (getRandomR)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Key
 import Data.Foldable (Foldable (foldMap), foldlM)

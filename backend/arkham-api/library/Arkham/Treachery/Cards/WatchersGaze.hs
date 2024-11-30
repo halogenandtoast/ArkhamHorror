@@ -17,7 +17,7 @@ instance RunMessage WatchersGaze where
   runMessage msg t@(WatchersGaze attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       investigatorsWithRevelers <- select $ HasMatchingAsset $ assetIs Assets.innocentReveler
-      sids <- getRandoms
+      sids <- genIds
       for_ (zip sids (nub $ iid : investigatorsWithRevelers)) \(sid, iid') ->
         revelationSkillTest sid iid' attrs #willpower (Fixed 4)
       pure t

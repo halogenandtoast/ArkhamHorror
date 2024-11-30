@@ -19,7 +19,7 @@ instance RunMessage Riptide where
     Revelation iid (isSource attrs -> True) -> do
       selectOne (locationWithInvestigator iid <> FloodedLocation) >>= \case
         Just lid -> do
-          sid <- getRandom
+          sid <- genId
           fieldWithDefault Unflooded LocationFloodLevel lid >>= \case
             Unflooded -> gainSurge attrs -- should be covered below
             PartiallyFlooded -> revelationSkillTest sid iid attrs #agility (Fixed 3)

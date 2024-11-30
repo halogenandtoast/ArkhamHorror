@@ -35,7 +35,7 @@ instance HasAbilities FarAboveYourHouse where
 instance RunMessage FarAboveYourHouse where
   runMessage msg l@(FarAboveYourHouse attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 4)
       pure l
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ n

@@ -83,25 +83,25 @@ data CardJson = CardJson
   , pack_code :: String
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 data UnknownCard = UnknownCard CardCode [(String, SrcLoc)]
-  deriving stock (Show)
+  deriving stock Show
 
 unknownCard :: HasCallStack => CardCode -> UnknownCard
 unknownCard code = UnknownCard code (getCallStack callStack)
 
 data MissingImplementation = MissingImplementation CardCode Name
-  deriving stock (Show)
+  deriving stock Show
 
 data NameMismatch = NameMismatch CardCode Name Name
-  deriving stock (Show)
+  deriving stock Show
 
 data QuantityMismatch = QuantityMismatch CardCode Name Int (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data UniqueMismatch = UniqueMismatch CardCode Name
-  deriving stock (Show)
+  deriving stock Show
 
 data CardCostMismatch
   = CardCostMismatch
@@ -109,13 +109,13 @@ data CardCostMismatch
       Name
       (Maybe Int)
       (Maybe CardCost)
-  deriving stock (Show)
+  deriving stock Show
 
 data VictoryMismatch = VictoryMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data XpMismatch = XpMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data EnemyStatsMismatch
   = EnemyStatsMismatch
@@ -123,7 +123,7 @@ data EnemyStatsMismatch
       Name
       (Maybe Int, Maybe GameValue, Maybe Int)
       (Maybe Int, Maybe GameValue, Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data AssetStatsMismatch
   = AssetStatsMismatch
@@ -131,7 +131,7 @@ data AssetStatsMismatch
       Name
       (Maybe Int, Maybe Int)
       (Maybe Int, Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data EnemyDamageMismatch
   = EnemyDamageMismatch
@@ -139,13 +139,13 @@ data EnemyDamageMismatch
       Name
       (Int, Int)
       (Int, Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data ClassMismatch = ClassMismatch CardCode Name [String] (Set ClassSymbol)
-  deriving stock (Show)
+  deriving stock Show
 
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
-  deriving stock (Show)
+  deriving stock Show
 
 data TraitsMismatch
   = TraitsMismatch
@@ -153,13 +153,13 @@ data TraitsMismatch
       Name
       (Set Trait)
       (Set Trait)
-  deriving stock (Show)
+  deriving stock Show
 
 data ShroudMismatch = ShroudMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data ClueMismatch = ClueMismatch CardCode Name Int Int
-  deriving stock (Show)
+  deriving stock Show
 
 instance Exception UnknownCard
 instance Exception MissingImplementation
@@ -454,7 +454,7 @@ getValidationResults cards = runValidateT $ do
   for_ (mapToList allEnemies) $
     \(ccode', SomeEnemyCard builder) -> do
       let ccode = normalizeCardCode ccode'
-      attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
+      attrs <- toAttrs . cbCardBuilder builder nullCardId <$> genId
       case lookup ccode cards of
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
@@ -489,7 +489,7 @@ getValidationResults cards = runValidateT $ do
   -- validate locations
   for_ (mapToList allLocations) $
     \(ccode, SomeLocationCard builder) -> do
-      attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
+      attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift genId
       case lookup ccode cards of
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
@@ -516,7 +516,7 @@ getValidationResults cards = runValidateT $ do
   for_ (mapToList allAssets) $
     \(ccode', SomeAssetCard builder) -> do
       attrs <-
-        toAttrs . cbCardBuilder builder nullCardId <$> ((,Just "01001") <$> lift getRandom)
+        toAttrs . cbCardBuilder builder nullCardId <$> ((,Just "01001") <$> lift genId)
       let ccode = normalizeCardCode ccode'
       case lookup ccode cards of
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)

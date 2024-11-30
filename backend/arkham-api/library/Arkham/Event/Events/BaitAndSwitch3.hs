@@ -8,7 +8,6 @@ import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Arkham.Movement
@@ -52,7 +51,7 @@ instance RunMessage BaitAndSwitch3 where
            ]
       pure e
     ResolveEventChoice iid eid n _ _ | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ setTarget attrs <$> mkChooseEvade sid iid attrs
       when (n == 2) $ skillTestModifier sid attrs iid $ EnemyEvadeActionCriteria override
       pure $ BaitAndSwitch3 (attrs `with` Metadata (Just n))

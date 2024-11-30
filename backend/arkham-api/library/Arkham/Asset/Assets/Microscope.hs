@@ -39,7 +39,7 @@ instance RunMessage Microscope where
       placeTokens (attrs.ability 1) attrs Evidence 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       when (attrs.use Evidence > 0) $ do
         skillTestModifier sid (attrs.ability 2) iid (SkillModifier #intellect $ min 3 $ attrs.use Evidence)
       pushM $ mkInvestigate sid iid (attrs.ability 2)

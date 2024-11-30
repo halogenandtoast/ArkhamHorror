@@ -64,7 +64,7 @@ instance RunMessage EnchantedBow2 where
               $ ThisEnemy
               $ NonEliteEnemy
               <> EnemyAt (ConnectedFrom (locationWithInvestigator iid))
-      sid <- getRandom
+      sid <- genId
       let fight = if n > 0 then mkChooseFightMatch sid iid source override else mkChooseFight sid iid source
       skillTestModifiers sid source iid
         $ [AnySkillValue 1, DamageDealt 1]

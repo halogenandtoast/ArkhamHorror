@@ -108,7 +108,6 @@ import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
-import Data.UUID (nil)
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -1141,7 +1140,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       ]
     pure a
   MoveAction iid lid _cost False | iid == investigatorId -> do
-    from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
+    from <- fromMaybe (LocationId 0) <$> field InvestigatorLocation iid
     afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
     canMove <- withoutModifier a CannotMove
     pushAll $ (guard canMove *> resolve (Move $ move a iid lid)) <> [afterWindowMsg]
@@ -1157,7 +1156,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             $ chooseOrRunOne player
             $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
         ToLocation destinationLocationId -> do
-          batchId <- getRandom
+          batchId <- genId
 
           let
             source = moveSource movement
@@ -3539,7 +3538,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     if searchType == Searching
       then wouldDo msg (Window.WouldSearchDeck iid deck) (Window.SearchedDeck iid deck)
       else do
-        batchId <- getRandom
+        batchId <- genId
         push $ DoBatch batchId msg
 
     pure a
@@ -3800,7 +3799,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     when (investigatorClues a > 0) do
       -- so this is a bit complicated, we want to move but trigger windows only once instead of 1 at a time, so we sneak in the number we've placed into the n value later on (called x)
       mlid <- field InvestigatorLocation iid
-      batchId <- getRandom
+      batchId <- genId
       mWould <- for mlid $ \lid -> do
         checkWindows
           [(mkWhen $ Window.WouldPlaceClueOnLocation iid lid source n) {windowBatchId = Just batchId}]

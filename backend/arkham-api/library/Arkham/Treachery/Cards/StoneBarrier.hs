@@ -41,7 +41,7 @@ instance RunMessage StoneBarrier where
         when isFlooded $ gainSurge attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         skillLabeled #agility $ beginSkillTest sid iid attrs iid #agility (Fixed 1)
         skillLabeled #combat $ beginSkillTest sid iid attrs iid #combat (Fixed 2)

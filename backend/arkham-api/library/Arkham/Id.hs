@@ -4,24 +4,30 @@ import Arkham.Prelude
 
 import Arkham.Card.CardCode
 
-data NamedUUID = NamedUUID
+data NamedId = NamedId
   { nuName :: Text
-  , nuUUID :: UUID
+  , nuId :: Int
   }
   deriving stock (Show, Generic, Ord, Eq, Data)
   deriving anyclass (ToJSON, FromJSON, FromJSONKey, ToJSONKey)
 
-namedUUID :: MonadRandom m => Text -> m NamedUUID
-namedUUID name = NamedUUID name <$> getRandom
+namedId :: IdGen m => Text -> m NamedId
+namedId name = NamedId name <$> genId
 
-getId :: (MonadRandom m, Random a) => m a
-getId = getRandom
+class Monad m => IdGen m where
+  genId :: Coercible Int a => m a
 
-newtype MovementId = MovementId UUID
+genIds :: (IdGen m, Coercible Int a) => m [a]
+genIds = (:) <$> genId <*> genIds
+
+class Monad m => HasIdGen m where
+  idGenerator :: m (IORef Int)
+
+newtype MovementId = MovementId Int
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
-newtype SkillTestId = SkillTestId UUID
+newtype SkillTestId = SkillTestId Int
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
@@ -37,7 +43,7 @@ newtype AgendaId = AgendaId {unAgendaId :: CardCode}
   deriving stock Data
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
-newtype AssetId = AssetId {unAssetId :: UUID}
+newtype AssetId = AssetId {unAssetId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
@@ -45,15 +51,15 @@ newtype CampaignId = CampaignId {unCampaignId :: Text}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString)
 
-newtype EffectId = EffectId {unEffectId :: UUID}
+newtype EffectId = EffectId {unEffectId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
-newtype EnemyId = EnemyId {unEnemyId :: UUID}
+newtype EnemyId = EnemyId {unEnemyId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
-newtype EventId = EventId {unEventId :: UUID}
+newtype EventId = EventId {unEventId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
@@ -61,7 +67,7 @@ newtype InvestigatorId = InvestigatorId {unInvestigatorId :: CardCode}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, IsString, HasCardCode)
 
-newtype LocationId = LocationId {unLocationId :: UUID}
+newtype LocationId = LocationId {unLocationId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
@@ -69,7 +75,7 @@ newtype ScenarioId = ScenarioId {unScenarioId :: CardCode}
   deriving stock Data
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
-newtype SkillId = SkillId {unSkillId :: UUID}
+newtype SkillId = SkillId {unSkillId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
@@ -77,25 +83,25 @@ newtype StoryId = StoryId {unStoryId :: CardCode}
   deriving stock Data
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
 
-newtype TreacheryId = TreacheryId {unTreacheryId :: UUID}
+newtype TreacheryId = TreacheryId {unTreacheryId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
 -- non entity-ids
 
-newtype ActiveCostId = ActiveCostId {unActiveCostId :: UUID}
+newtype ActiveCostId = ActiveCostId {unActiveCostId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
-newtype TokenId = TokenId {unTokenId :: UUID}
+newtype TokenId = TokenId {unTokenId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord)
 
-newtype CardDrawId = CardDrawId UUID
+newtype CardDrawId = CardDrawId Int
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
-newtype BatchId = BatchId {unBatchId :: UUID}
+newtype BatchId = BatchId {unBatchId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 

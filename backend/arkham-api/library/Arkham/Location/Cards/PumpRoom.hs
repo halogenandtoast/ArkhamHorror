@@ -21,7 +21,7 @@ instance HasAbilities PumpRoom where
 instance RunMessage PumpRoom where
   runMessage msg l@(PumpRoom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         for_ [#intellect, #agility] \sType ->
           skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 2)

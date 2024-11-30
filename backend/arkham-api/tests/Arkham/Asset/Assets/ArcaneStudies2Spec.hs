@@ -17,7 +17,7 @@ spec = describe "Arcane Studies (2)" $ do
         $ \attrs -> attrs {investigatorWillpower = 1, investigatorTokens = addTokens Resource 2 mempty}
       pushAndRun $ SetChaosTokens [Zero]
       putCardIntoPlay investigator Assets.arcaneStudies2
-      sid <- getRandom
+      sid <- genId
       pushAndRun $ beginSkillTest sid investigator SkillWillpower 3
       chooseOptionMatching
         "use ability"
@@ -48,7 +48,7 @@ spec = describe "Arcane Studies (2)" $ do
       didPassTest <- didPassSkillTestBy investigator SkillIntellect 0
       pushAndRun $ SetChaosTokens [Zero]
       putCardIntoPlay investigator Assets.arcaneStudies2
-      sid <- getRandom
+      sid <- genId
       pushAndRun $ beginSkillTest sid investigator SkillIntellect 3
       chooseOptionMatching
         "use ability"

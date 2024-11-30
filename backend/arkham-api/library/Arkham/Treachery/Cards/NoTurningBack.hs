@@ -65,7 +65,7 @@ instance RunMessage NoTurningBack where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       hasPickaxe <- getHasSupply iid Pickaxe
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOrRunOne player
         $ Label "Test {combat} (3)" [beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)]

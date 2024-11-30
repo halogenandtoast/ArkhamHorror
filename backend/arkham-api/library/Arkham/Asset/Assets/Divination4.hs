@@ -24,7 +24,7 @@ instance HasAbilities Divination4 where
 instance RunMessage Divination4 where
   runMessage msg a@(Divination4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       investigate' <- setTarget attrs <$> mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       chooseOne
@@ -37,7 +37,7 @@ instance RunMessage Divination4 where
       case attrs.use Charge of
         0 -> pure ()
         1 -> do
-          charges <- namedUUID "Charges"
+          charges <- namedId "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         (min 3 -> x) -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget x) [("Charges", (1, x))] attrs
       pushWhen (n == 0) $ discardFromHand iid (attrs.ability 1) DiscardChoose 2

@@ -43,7 +43,7 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
         select $ FarthestEnemyFromAll $ enemyIs Enemies.brotherhoodCultist
       deckCount <- getActDecksInPlayCount
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         $ map ((`HealAllDamage` toSource attrs) . toTarget) brotherhoodCultists
         <> [ chooseOrRunOne

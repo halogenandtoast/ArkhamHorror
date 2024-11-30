@@ -30,7 +30,7 @@ instance RunMessage RelicOfAgesRepossessThePast where
   runMessage msg a@(RelicOfAgesRepossessThePast (attrs `With` metadata)) =
     case msg of
       UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-        sid <- getRandom
+        sid <- genId
         let
           chooseSkillTest skillType = beginSkillTest sid iid (attrs.ability 1) iid skillType (Fixed 4)
         player <- getPlayer iid

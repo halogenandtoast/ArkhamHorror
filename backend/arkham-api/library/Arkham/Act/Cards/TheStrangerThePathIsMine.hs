@@ -75,7 +75,7 @@ instance HasAbilities TheStrangerThePathIsMineEffect where
 instance RunMessage TheStrangerThePathIsMineEffect where
   runMessage msg e@(TheStrangerThePathIsMineEffect attrs) = case msg of
     UseThisAbility iid p@(isProxySource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (AbilitySource p 1) attrs #agility (Fixed 4)
       pure e
     FailedThisSkillTest iid (isProxyAbilitySource attrs 1 -> True) -> do

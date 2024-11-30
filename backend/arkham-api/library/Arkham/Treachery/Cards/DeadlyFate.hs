@@ -18,7 +18,7 @@ deadlyFate = treachery DeadlyFate Cards.deadlyFate
 instance RunMessage DeadlyFate where
   runMessage msg t@(DeadlyFate attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

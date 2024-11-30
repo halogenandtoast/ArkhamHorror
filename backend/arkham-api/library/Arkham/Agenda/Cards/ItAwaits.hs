@@ -33,7 +33,7 @@ instance RunMessage ItAwaits where
         lead <- getLead
         theWraithRecognizesTheCrucifix <- WornCrucifix `inRecordSet` MementosDiscovered
         investigators <- getInvestigators
-        sid <- getRandom
+        sid <- genId
         pushAll
           $ ritualSuicideMessages
           <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]

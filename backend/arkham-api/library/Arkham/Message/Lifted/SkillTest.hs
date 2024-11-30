@@ -45,6 +45,9 @@ instance HasQueue msg m => HasQueue msg (SkillTestT m) where
 instance HasGame m => HasGame (SkillTestT m) where
   getGame = lift getGame
 
+instance IdGen m => IdGen (SkillTestT m) where
+  genId = lift genId
+
 instance CardGen m => CardGen (SkillTestT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
@@ -53,9 +56,9 @@ instance CardGen m => CardGen (SkillTestT m) where
 
 instance MonadRandom m => MonadRandom (SkillTestT m) where
   getRandom = lift getRandom
+  getRandoms = lift getRandoms
   getRandomR = lift . getRandomR
   getRandomRs = lift . getRandomRs
-  getRandoms = lift getRandoms
 
 instance Lifted.ReverseQueue m => Lifted.ReverseQueue (SkillTestT m)
 
@@ -68,7 +71,7 @@ skillTest
   -> SkillTestT m ()
   -> m ()
 skillTest iid attrs skillType calculation action = do
-  sid <- getRandom
+  sid <- genId
   SkillTestState {..} <-
     execStateT (runSkillTestT action)
       $ SkillTestState

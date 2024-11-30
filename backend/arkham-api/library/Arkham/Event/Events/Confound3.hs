@@ -20,7 +20,7 @@ instance RunMessage Confound3 where
       selectOneToHandle iid attrs $ enemyAtLocationWith iid <> EnemyWithEvade
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid attrs eid #intellect $ EnemyMaybeFieldCalculation eid EnemyEvade
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do

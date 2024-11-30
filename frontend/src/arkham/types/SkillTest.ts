@@ -51,8 +51,8 @@ export type SkillTest = {
   committedCards: Card[]
   source: Source;
   action: string | null;
-  targetCard?: string | null;
-  sourceCard?: string | null;
+  targetCard?: number | null;
+  sourceCard?: number | null;
   modifiedSkillValue: number;
   modifiedDifficulty: number;
   skills: SkillType[];
@@ -96,10 +96,10 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     revealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     resolvedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
-    committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
+    committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<number, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
-    targetCard: JsonDecoder.optional(JsonDecoder.string),
-    sourceCard: JsonDecoder.optional(JsonDecoder.string),
+    targetCard: JsonDecoder.optional(JsonDecoder.number),
+    sourceCard: JsonDecoder.optional(JsonDecoder.number),
     modifiedSkillValue: JsonDecoder.number,
     skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
     step: JsonDecoder.failover({ tag: "DetermineSkillOfTestStep" }, skillTestStepDecoder),

@@ -31,7 +31,7 @@ instance RunMessage TheWhiteShip where
   runMessage msg l@(TheWhiteShip attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       theCaptain <- getSetAsideCard Assets.theCaptain
-      assetId <- getRandom
+      assetId <- genId
       push $ CreateAssetAt assetId theCaptain (AtLocation attrs.id)
       pure l
     _ -> TheWhiteShip <$> runMessage msg attrs

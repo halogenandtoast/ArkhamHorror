@@ -29,7 +29,7 @@ instance HasModifiersFor MapTheArea where
 instance RunMessage MapTheArea where
   runMessage msg e@(MapTheArea attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         labeled "Add your {willpower}" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
         labeled "Add your {agility}" $ skillTestModifier sid attrs iid (AddSkillValue #agility)

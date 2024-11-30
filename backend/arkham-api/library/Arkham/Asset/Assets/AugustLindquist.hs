@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
 import Arkham.Matcher
 
 newtype AugustLindquist = AugustLindquist AssetAttrs

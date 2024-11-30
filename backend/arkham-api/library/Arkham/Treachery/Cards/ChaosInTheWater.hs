@@ -20,7 +20,7 @@ instance RunMessage ChaosInTheWater where
       innocentRevelerIds <- select $ assetIs Assets.innocentReveler
       investigatorsWithRevelers <-
         catMaybes <$> traverse (selectOne . HasMatchingAsset . AssetWithId) innocentRevelerIds
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ revelationSkillTest sid iid' source #agility (Fixed 4)
         | iid' <- nub (iid : investigatorsWithRevelers)

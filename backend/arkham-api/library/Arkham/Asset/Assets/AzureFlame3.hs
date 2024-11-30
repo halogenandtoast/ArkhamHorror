@@ -28,7 +28,7 @@ instance RunMessage AzureFlame3 where
   runMessage msg a@(AzureFlame3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [DamageDealt 1, SkillModifier #willpower 2]
       onRevealChaosTokenEffect sid (mapOneOf ChaosTokenFaceIs [ElderSign, PlusOne, Zero]) source sid do
         assignDamage iid source 1

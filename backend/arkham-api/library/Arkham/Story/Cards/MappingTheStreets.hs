@@ -21,7 +21,7 @@ instance RunMessage MappingTheStreets where
     ResolveStory iid _ story' | story' == toId attrs -> do
       hastur <- selectJust $ EnemyWithTitle "Hastur"
       n <- perPlayer 1
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ beginSkillTest sid iid attrs iid #intellect (Fixed 3)
         , Msg.EnemyDamage hastur $ storyDamage iid n

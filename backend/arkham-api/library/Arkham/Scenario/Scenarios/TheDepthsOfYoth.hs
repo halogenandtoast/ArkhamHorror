@@ -123,7 +123,7 @@ instance RunMessage TheDepthsOfYoth where
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       lead <- getLeadPlayer
-      choiceId <- getRandom
+      choiceId <- genId
       push
         $ questionLabel
           "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be."

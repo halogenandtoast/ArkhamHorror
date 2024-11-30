@@ -62,6 +62,7 @@ runWithEnv
      , HasQueue Message m
      , HasStdGen env
      , HasGameLogger m
+     , HasIdGen m
      , MonadReader env m
      )
   => GameT a

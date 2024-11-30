@@ -31,7 +31,7 @@ instance HasChaosTokenValue SkidsOTooleParallel where
 instance RunMessage SkidsOTooleParallel where
   runMessage msg i@(SkidsOTooleParallel attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalResourcePayment -> n) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ BeginSkillTest
         $ buildSkillTest

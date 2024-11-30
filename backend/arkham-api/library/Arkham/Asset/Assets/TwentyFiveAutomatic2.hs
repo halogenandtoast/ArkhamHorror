@@ -39,7 +39,7 @@ instance HasModifiersFor TwentyFiveAutomatic2 where
 instance RunMessage TwentyFiveAutomatic2 where
   runMessage msg a@(TwentyFiveAutomatic2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

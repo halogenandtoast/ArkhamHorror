@@ -25,7 +25,7 @@ instance RunMessage RiteOfSeeking2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
-      sid <- getRandom
+      sid <- genId
 
       createCardEffect Cards.riteOfSeeking (effectMetaTarget sid) source (InvestigationTarget iid lid) -- same effect as base
       skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 1]

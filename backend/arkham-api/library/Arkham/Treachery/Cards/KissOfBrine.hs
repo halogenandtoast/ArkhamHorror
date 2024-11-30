@@ -30,7 +30,7 @@ instance HasAbilities KissOfBrine where
 instance RunMessage KissOfBrine where
   runMessage msg t@(KissOfBrine attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #combat (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

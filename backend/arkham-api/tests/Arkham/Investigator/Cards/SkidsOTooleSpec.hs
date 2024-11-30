@@ -17,7 +17,7 @@ spec = describe "\"Skids\" O'Toole" $ do
   context "elder sign" $ do
     it "gains 2 resources on success" . gameTestWith skidsOToole $ \self -> do
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #agility 4
       click "apply results"
       self.resources `shouldReturn` 2

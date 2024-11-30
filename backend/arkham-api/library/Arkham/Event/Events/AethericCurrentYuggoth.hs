@@ -28,7 +28,7 @@ instance RunMessage AethericCurrentYuggoth where
         clues <- field AssetClues asset
         push $ MoveTokens (toSource attrs) (toSource asset) (toTarget iid) Clue clues
 
-      sid <- getRandom
+      sid <- genId
       chooseFightEnemyWithSkillChoice sid iid attrs [#combat, #intellect]
       drawCardsIfCan iid attrs 1
       fluxStabilizer <- selectJust $ assetIs Assets.fluxStabilizerActive

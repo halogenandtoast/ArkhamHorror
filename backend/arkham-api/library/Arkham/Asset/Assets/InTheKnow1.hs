@@ -31,7 +31,7 @@ instance RunMessage InTheKnow1 where
         mods <- getModifiers lid
         let costs = fold [m | AdditionalCostToInvestigate m <- mods]
         pure $ map (lid,costs,) investigateActions
-      batchId <- getRandom
+      batchId <- genId
       chooseOneM iid do
         for_ locationsWithInvestigate \(location, costs, ability) -> do
           targeting location do

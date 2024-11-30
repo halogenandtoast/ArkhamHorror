@@ -29,7 +29,7 @@ instance RunMessage FalseAwakening where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 1) iid s (Fixed $ 2 + n)] | s <- allSkills]

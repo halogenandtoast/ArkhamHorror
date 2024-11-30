@@ -18,7 +18,7 @@ wallsClosingIn = treachery WallsClosingIn Cards.wallsClosingIn
 instance RunMessage WallsClosingIn where
   runMessage msg t@(WallsClosingIn attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ InvestigatorLocationMaybeFieldCalculation iid LocationShroud

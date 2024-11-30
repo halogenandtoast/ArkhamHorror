@@ -76,7 +76,7 @@ instance RunMessage TheBeyondBleakNetherworld where
                       []
                       []
                   ]
-              assetId <- getRandom
+              assetId <- genId
               push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
             PlayerEnemyType -> do
               pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
@@ -130,7 +130,7 @@ instance RunMessage TheBeyondBleakNetherworld where
       case spiritDeck meta of
         [] -> pure a
         card : rest -> do
-          assetId <- getRandom
+          assetId <- genId
           push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
           pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
     Discarded _ _ card@(PlayerCard pc) -> do

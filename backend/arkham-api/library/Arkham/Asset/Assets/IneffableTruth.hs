@@ -26,7 +26,7 @@ instance RunMessage IneffableTruth where
   runMessage msg a@(IneffableTruth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid (oneOf [#eldersign, #"+1", #"0"]) attrs attrs do
         loseResources iid (attrs.ability 1) 1
 

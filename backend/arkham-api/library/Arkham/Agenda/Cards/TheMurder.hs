@@ -43,7 +43,7 @@ instance RunMessage TheMurder where
             res -> error $ "could not find correct number of arkham officers: " <> show res
 
         n <- getPlayerCount
-        assetId <- getRandom
+        assetId <- genId
 
         createOfficer1 <- createEnemyAt_ officer1 secondFloorHall Nothing
         createOfficer2 <- createEnemyAt_ officer2 foyer Nothing

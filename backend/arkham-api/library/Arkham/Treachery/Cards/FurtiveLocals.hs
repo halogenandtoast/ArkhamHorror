@@ -27,7 +27,7 @@ instance HasAbilities FurtiveLocals where
 instance RunMessage FurtiveLocals where
   runMessage msg t@(FurtiveLocals attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do

@@ -31,7 +31,7 @@ instance HasAbilities Bonesaw where
 instance RunMessage Bonesaw where
   runMessage msg a@(Bonesaw attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
@@ -45,7 +45,7 @@ instance RunMessage Bonesaw where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       investigators <- select $ HealableInvestigator (attrs.ability 2) #damage $ colocatedWith iid
-      sid <- getRandom
+      sid <- genId
       when (notNull investigators) do
         chooseOne
           iid

@@ -15,7 +15,7 @@ graspingHands = treachery GraspingHands Cards.graspingHands
 instance RunMessage GraspingHands where
   runMessage msg t@(GraspingHands attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

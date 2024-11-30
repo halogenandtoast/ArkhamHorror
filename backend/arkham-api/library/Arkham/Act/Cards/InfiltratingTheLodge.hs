@@ -16,7 +16,6 @@ import Arkham.Classes.HasGame
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
@@ -37,12 +36,12 @@ instance HasAbilities InfiltratingTheLodge where
   getAbilities (InfiltratingTheLodge attrs) =
     extend attrs [mkAbility attrs 1 $ freeReaction (EnemyEvaded #after You EnemyWithAnyDoom)]
 
-spawnNathanWick :: (MonadRandom m, HasGame m) => LocationId -> m [Message]
+spawnNathanWick :: (MonadRandom m, HasGame m, IdGen m) => LocationId -> m [Message]
 spawnNathanWick innerSanctum = do
   nathanWick <- getSetAsideCard Enemies.nathanWickMasterOfIndoctrination
   puzzleBox <- getSetAsideCard Assets.puzzleBox
   (nathanWickId, placeNathanWick) <- createEnemyAt nathanWick innerSanctum Nothing
-  puzzleBoxId <- getRandom
+  puzzleBoxId <- genId
   pure
     [ placeNathanWick
     , CreateAssetAt puzzleBoxId puzzleBox (AttachedToEnemy nathanWickId)

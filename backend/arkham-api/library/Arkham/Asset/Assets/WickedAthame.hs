@@ -24,7 +24,7 @@ instance HasAbilities WickedAthame where
 instance RunMessage WickedAthame where
   runMessage msg a@(WickedAthame attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (addedCurseTokenPayment -> x) -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat (x * 2))
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

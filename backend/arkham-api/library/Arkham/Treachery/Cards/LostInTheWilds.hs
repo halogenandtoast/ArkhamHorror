@@ -30,7 +30,7 @@ instance HasAbilities LostInTheWilds where
 instance RunMessage LostInTheWilds where
   runMessage msg t@(LostInTheWilds attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

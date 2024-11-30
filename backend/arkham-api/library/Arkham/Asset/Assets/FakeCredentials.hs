@@ -30,7 +30,7 @@ instance HasAbilities FakeCredentials where
 instance RunMessage FakeCredentials where
   runMessage msg a@(FakeCredentials (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (chosenEnemyPayment -> eid) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) iid #intellect
         $ SumCalculation [Fixed 1, AssetTokenCountCalculation attrs.id Suspicion]
       pure $ FakeCredentials $ With attrs (meta {chosenEnemy = eid})

@@ -49,7 +49,7 @@ instance RunMessage OnyxPentacle where
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       push $ Exhaust (toTarget attrs)
       placeDoom (attrs.ability 1) attrs 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 1
       evade <-
         mkChooseEvadeMatch sid iid (attrs.ability 1)
@@ -66,7 +66,7 @@ instance RunMessage OnyxPentacle where
           push evade
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      sid <- getRandom
+      sid <- genId
       evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOneM iid do
         labeled "Use your {willpower}" $ push $ withSkillType #willpower evade

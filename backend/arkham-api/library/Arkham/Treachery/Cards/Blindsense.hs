@@ -17,7 +17,7 @@ blindsense = treachery Blindsense Cards.blindsense
 instance RunMessage Blindsense where
   runMessage msg t@(Blindsense attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

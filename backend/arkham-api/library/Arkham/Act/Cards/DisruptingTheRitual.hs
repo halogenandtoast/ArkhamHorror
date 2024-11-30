@@ -28,7 +28,7 @@ instance RunMessage DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

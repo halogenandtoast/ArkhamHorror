@@ -29,7 +29,7 @@ instance RunMessage ExposeWeakness3 where
       enemies <- select (enemyAtLocationWith iid <> EnemyWithFight)
       let drawing = drawCards iid attrs 1
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ chooseOne
             player

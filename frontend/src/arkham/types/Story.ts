@@ -4,7 +4,7 @@ import { Target, targetDecoder } from '@/arkham/types/Target';
 import { ChaosToken, TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 
 export type InfestationToken = {
-  infestationTokenId: string
+  infestationTokenId: number
   infestationTokenFace: TokenFace
 }
 
@@ -22,7 +22,7 @@ type StoryMeta = {
 
 export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
   infestationTokenFace: tokenFaceDecoder,
-  infestationTokenId: JsonDecoder.string
+  infestationTokenId: JsonDecoder.number
 }, 'InfestationToken');
 
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
@@ -31,8 +31,8 @@ export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
 }, 'StoryMeta');
 
 export type Story = {
-  id: string
-  cardId: string
+  id: number
+  cardId: number
   placement: Placement
   otherSide: Target | null
   flipped: boolean
@@ -40,8 +40,8 @@ export type Story = {
 }
 
 export const storyDecoder = JsonDecoder.object<Story>({
-  id: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  id: JsonDecoder.number,
+  cardId: JsonDecoder.number,
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
   flipped: JsonDecoder.boolean,

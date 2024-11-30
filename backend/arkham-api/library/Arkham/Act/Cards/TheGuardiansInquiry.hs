@@ -29,7 +29,7 @@ instance RunMessage TheGuardiansInquiry where
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       mariaDeSilva <- genCard Assets.mariaDeSilva
       curiositieShoppe <- selectJust $ LocationWithTitle "Curiositie Shoppe"
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         [ CreateAssetAt assetId mariaDeSilva (AtLocation curiositieShoppe)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

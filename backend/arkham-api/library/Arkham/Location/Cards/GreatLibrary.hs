@@ -40,7 +40,7 @@ instance HasAbilities GreatLibrary where
 instance RunMessage GreatLibrary where
   runMessage msg l@(GreatLibrary attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid SkillIntellect (Fixed 3)
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do

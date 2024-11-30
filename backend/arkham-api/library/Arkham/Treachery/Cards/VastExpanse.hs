@@ -18,7 +18,7 @@ instance RunMessage VastExpanse where
   runMessage msg t@(VastExpanse attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       extradimensionalCount <- selectCount $ LocationWithTrait Extradimensional
-      sid <- getRandom
+      sid <- genId
       push
         $ if extradimensionalCount == 0
           then gainSurge attrs

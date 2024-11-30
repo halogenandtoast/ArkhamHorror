@@ -39,7 +39,7 @@ instance HasAbilities CandlelitTunnels where
 instance RunMessage CandlelitTunnels where
   runMessage msg l@(CandlelitTunnels attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure l
     PassedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do

@@ -22,7 +22,7 @@ instance HasAbilities ChemistrySet where
 instance RunMessage ChemistrySet where
   runMessage msg a@(ChemistrySet attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) 2 -> do

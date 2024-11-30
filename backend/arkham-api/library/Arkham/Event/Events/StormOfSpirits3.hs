@@ -25,7 +25,7 @@ stormOfSpirits3 = event StormOfSpirits3 Cards.stormOfSpirits3
 instance RunMessage StormOfSpirits3 where
   runMessage msg e@(StormOfSpirits3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (SkillModifier #willpower 2)
       createCardEffect Cards.stormOfSpirits3 Nothing attrs iid
       aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)

@@ -16,7 +16,7 @@ markedForDeath = treachery MarkedForDeath Cards.markedForDeath
 instance RunMessage MarkedForDeath where
   runMessage msg t@(MarkedForDeath attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #agility
         $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorHorror]

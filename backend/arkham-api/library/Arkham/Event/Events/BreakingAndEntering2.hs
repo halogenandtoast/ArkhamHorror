@@ -16,7 +16,7 @@ breakingAndEntering2 = event BreakingAndEntering2 Cards.breakingAndEntering2
 instance RunMessage BreakingAndEntering2 where
   runMessage msg e@(BreakingAndEntering2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #agility)
       pushM $ mkInvestigate sid iid attrs
       pure e

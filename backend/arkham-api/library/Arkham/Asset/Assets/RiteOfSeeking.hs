@@ -32,7 +32,7 @@ instance RunMessage RiteOfSeeking where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       lid <- getJustLocation iid
-      sid <- getRandom
+      sid <- genId
 
       createCardEffect Cards.riteOfSeeking (effectMetaTarget sid) source (InvestigationTarget iid lid)
       skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)

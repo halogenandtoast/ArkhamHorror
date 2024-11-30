@@ -42,7 +42,7 @@ instance HasAbilities AlchemyLabs where
 instance RunMessage AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do

@@ -23,7 +23,7 @@ instance RunMessage BlessedBlade where
   runMessage msg a@(BlessedBlade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid $ SkillModifier #combat 1
       onRevealChaosTokenEffect sid (oneOf [#bless, #eldersign]) attrs attrs do
         skillTestModifier sid source iid $ DamageDealt 1

@@ -9,7 +9,7 @@ spec = describe "Will to Survive (3)" $ do
     withProp @"intellect" 3 self
     setChaosTokens [AutoFail]
     self `playEvent` Events.willToSurvive3
-    sid <- getRandom
+    sid <- genId
     runSkillTest sid self #intellect 3
     assertPassedSkillTest
 
@@ -17,6 +17,6 @@ spec = describe "Will to Survive (3)" $ do
     withProp @"intellect" 3 self
     setChaosTokens [AutoFail]
     duringTurn self $ self `playEvent` Events.willToSurvive3
-    sid <- getRandom
+    sid <- genId
     runSkillTest sid self SkillIntellect 3
     assertFailedSkillTest

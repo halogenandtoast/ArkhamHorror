@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (allInvestigators)
 import Arkham.Classes.HasGame
 import Arkham.Damage
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 

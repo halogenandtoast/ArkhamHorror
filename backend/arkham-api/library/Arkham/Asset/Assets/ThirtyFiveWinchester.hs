@@ -31,7 +31,7 @@ instance RunMessage ThirtyFiveWinchester where
   runMessage msg a@(ThirtyFiveWinchester attrs) = runQueueT case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #combat 2)
       createCardEffect
         Cards.thirtyFiveWinchester

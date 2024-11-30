@@ -20,7 +20,7 @@ fangOfTyrthrha4 = event FangOfTyrthrha4 Cards.fangOfTyrthrha4
 instance RunMessage FangOfTyrthrha4 where
   runMessage msg e@(FangOfTyrthrha4 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [AddSkillToOtherSkill #agility #combat, DamageDealt 3]
       chooseFightEnemyMatch sid iid attrs
         $ CanFightEnemyWithOverride

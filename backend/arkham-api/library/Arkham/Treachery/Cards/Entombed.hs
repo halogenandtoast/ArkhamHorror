@@ -31,7 +31,7 @@ instance RunMessage Entombed where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       let
         difficulty = max 0 (4 - difficultyReduction metadata)
         testChoice sType =

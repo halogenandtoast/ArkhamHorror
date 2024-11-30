@@ -8,7 +8,6 @@ import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
-import Arkham.Id
 
 createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =

@@ -17,7 +17,7 @@ chaosManifest = treachery ChaosManifest Cards.chaosManifest
 instance RunMessage ChaosManifest where
   runMessage msg t@(ChaosManifest attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do

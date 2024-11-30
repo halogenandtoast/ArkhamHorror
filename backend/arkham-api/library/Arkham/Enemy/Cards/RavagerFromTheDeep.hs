@@ -35,7 +35,7 @@ instance HasAbilities RavagerFromTheDeep where
 instance RunMessage RavagerFromTheDeep where
   runMessage msg e@(RavagerFromTheDeep attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 2)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

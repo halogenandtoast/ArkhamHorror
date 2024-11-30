@@ -41,7 +41,7 @@ instance RunMessage ExploringPnakotus where
       yithianObservers <- select $ enemyIs Enemies.yithianObserver
       placements <- traverse placeLocation locations
       spawnLocation <- maybe (error "no locations") (fmap fst . sample) $ NE.nonEmpty placements
-      assetId <- getRandom
+      assetId <- genId
 
       pushAll
         $ map EnemyCheckEngagement yithianObservers

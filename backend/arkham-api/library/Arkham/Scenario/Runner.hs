@@ -8,6 +8,7 @@ module Arkham.Scenario.Runner (
 import Arkham.Prelude
 
 import Arkham.Helpers.Message as X hiding (EnemyDamage, InvestigatorDamage)
+import Arkham.Id as X
 import Arkham.Scenario.Types as X
 import Arkham.Source as X
 import Arkham.Target as X
@@ -49,7 +50,6 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Window
 import Arkham.History
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (mkLabel)
 import Arkham.Location.Grid
@@ -110,7 +110,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   BeginGame -> do
     mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
     for_ mFalseAwakening \falseAwakening -> do
-      tid <- getRandom
+      tid <- genId
       pushAll
         [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
         , PlaceDoom (toSource tid) (toTarget tid) 1
@@ -119,7 +119,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     mFalseAwakeningPointOfNoReturn <-
       getMaybeCampaignStoryCard Treacheries.falseAwakeningPointOfNoReturn
     for_ mFalseAwakeningPointOfNoReturn \falseAwakening -> do
-      tid <- getRandom
+      tid <- genId
       pushAll
         [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
         , PlaceDoom (toSource tid) (toTarget tid) 1
@@ -172,7 +172,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         filter
           (`cardMatch` (Matcher.CardWithType LocationType <> cardMatcher))
           scenarioSetAsideCards
-    locationId <- getRandom
+    locationId <- genId
     a <$ case matches of
       [] -> error "There were no locations with that name"
       (card : _) -> push (PlaceLocation locationId card)
@@ -772,7 +772,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
           (Window.WouldLookAtDeck iid Deck.EncounterDeck)
           (Window.LookedAtDeck iid Deck.EncounterDeck)
       Revealing -> do
-        batchId <- getRandom
+        batchId <- genId
         push $ DoBatch batchId msg
     pure a
   DoBatch batchId (Search sType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy) -> do

@@ -39,7 +39,7 @@ instance RunMessage EsotericOrderOfDagonInTooDeep where
       placeUnrevealedKeyOn attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 2) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

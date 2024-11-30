@@ -7,6 +7,7 @@ where
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Helpers.Query as X
+import Arkham.Id as X
 import Arkham.Message as X (
   Message (..),
   toMessage,
@@ -52,7 +53,6 @@ import Arkham.Treachery.Runner as X (
 
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
-import Arkham.Id
 import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Treachery.Helpers qualified as Msg

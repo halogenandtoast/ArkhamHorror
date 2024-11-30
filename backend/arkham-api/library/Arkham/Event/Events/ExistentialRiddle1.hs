@@ -29,7 +29,7 @@ instance RunMessage ExistentialRiddle1 where
       pure e
     HandleTargetChoice iid (is attrs -> True) (EnemyTarget eid) -> do
       handLength <- fieldMap InvestigatorHand length iid
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ SkillLabel sType [Msg.parley sid iid attrs eid sType (Fixed $ max 0 (8 - handLength))]

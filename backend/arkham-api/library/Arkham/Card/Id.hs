@@ -1,29 +1,28 @@
-module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId, unsafeCardIdToUUID, unsafeFromCardId, unsafeToCardId) where
+module Arkham.Card.Id (CardId, nullCardId, unsafeMakeCardId, unsafeCardIdToInt, unsafeFromCardId, unsafeToCardId) where
 
 import Arkham.Prelude
-import Data.UUID (nil)
 
-newtype CardId = CardId UUID
-  deriving stock (Data)
+newtype CardId = CardId Int
+  deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord)
 
 -- exports the constructor, but we only want to use this in CardGen
-unsafeMakeCardId :: UUID -> CardId
+unsafeMakeCardId :: Int -> CardId
 unsafeMakeCardId = CardId
 {-# INLINE unsafeMakeCardId #-}
 
-unsafeCardIdToUUID :: CardId -> UUID
-unsafeCardIdToUUID (CardId uuid) = uuid
-{-# INLINE unsafeCardIdToUUID #-}
+unsafeCardIdToInt :: CardId -> Int
+unsafeCardIdToInt (CardId cid) = cid
+{-# INLINE unsafeCardIdToInt #-}
 
-unsafeFromCardId :: Coercible UUID a => CardId -> a
-unsafeFromCardId (CardId uuid) = coerce uuid
+unsafeFromCardId :: Coercible Int a => CardId -> a
+unsafeFromCardId (CardId cid) = coerce cid
 {-# INLINE unsafeFromCardId #-}
 
-unsafeToCardId :: forall a. Coercible a UUID => a -> CardId
-unsafeToCardId a = coerce (coerce @a @UUID a)
+unsafeToCardId :: forall a. Coercible a Int => a -> CardId
+unsafeToCardId a = coerce (coerce @a @Int a)
 {-# INLINE unsafeToCardId #-}
 
 nullCardId :: CardId
-nullCardId = CardId nil
+nullCardId = CardId 0
 {-# INLINE nullCardId #-}

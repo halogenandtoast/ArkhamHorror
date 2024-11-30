@@ -30,7 +30,7 @@ instance HasAbilities AlejandroVela where
 instance RunMessage AlejandroVela where
   runMessage msg e@(AlejandroVela attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       enabled <- createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) sid
       pushAll
         [ enabled

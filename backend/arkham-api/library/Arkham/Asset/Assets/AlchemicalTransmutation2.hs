@@ -26,7 +26,7 @@ instance HasAbilities AlchemicalTransmutation2 where
 instance RunMessage AlchemicalTransmutation2 where
   runMessage msg a@(AlchemicalTransmutation2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       let tokens = oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]
       onRevealChaosTokenEffect sid tokens attrs attrs do
         assignDamage iid (attrs.ability 1) 1

@@ -59,7 +59,7 @@ instance HasAbilities OfficeMurderAtTheExcelsiorHotel where
 instance RunMessage OfficeMurderAtTheExcelsiorHotel where
   runMessage msg l@(OfficeMurderAtTheExcelsiorHotel attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 1) iid #intellect (Fixed 0)
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
@@ -91,7 +91,7 @@ instance RunMessage OfficeMurderAtTheExcelsiorHotel where
           ]
       pure l
     UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource p 1) iid #agility (Fixed 3)
       pure l
     PassedThisSkillTest iid source@(AbilitySource (ProxySource _ (isSource attrs -> True)) 1) -> do

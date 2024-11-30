@@ -23,7 +23,7 @@ instance HasAbilities Kidnapped where
 instance RunMessage Kidnapped where
   runMessage msg t@(Kidnapped attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ Label "Test {willpower} (4)" [Msg.revelationSkillTest sid iid attrs #willpower (Fixed 4)]

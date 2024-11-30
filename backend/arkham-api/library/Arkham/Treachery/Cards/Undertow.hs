@@ -31,7 +31,7 @@ instance RunMessage Undertow where
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         for_ [#combat, #agility] $ \skill ->
           skillLabeled skill $ beginSkillTest sid iid (attrs.ability 2) iid skill (Fixed 3)

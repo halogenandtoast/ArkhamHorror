@@ -38,7 +38,7 @@ instance RunMessage RiteOfEquilibrium5 where
 
       let
         addCurses x = do
-          batchId <- getRandom
+          batchId <- genId
           would <-
             Msg.checkWindows
               [ (mkWhen (Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate x #curse))

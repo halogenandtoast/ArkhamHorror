@@ -62,7 +62,7 @@ instance RunMessage DrElliHorowitz where
       if null validCardsAfterSeal
         then chooseOne iid [Label "No Cards Found" []]
         else do
-          assetId <- getRandom
+          assetId <- genId
           additionalTargets <- getAdditionalSearchTargets iid
           chooseN
             iid

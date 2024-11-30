@@ -6,6 +6,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (push)
 import Arkham.Deck (toDeck)
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import {-# SOURCE #-} Arkham.Game ()
@@ -16,6 +17,7 @@ import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.PlayerCard
 import Arkham.Prelude
@@ -141,3 +143,9 @@ getPartner (toCardCode -> cardCode) = do
         , partnerHorror = partner.horror
         , partnerStatus = partner.status
         }
+
+setPartnerStatus :: (ReverseQueue m, HasCardCode a) => a -> PartnerStatus -> m ()
+setPartnerStatus a = push . Msg.SetPartnerStatus (toCardCode a)
+
+partnerEliminated :: (ReverseQueue m, HasCardCode a) => a -> m ()
+partnerEliminated a = setPartnerStatus a Eliminated

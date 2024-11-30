@@ -6,8 +6,8 @@ import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export type Enemy = {
-  id: string;
-  cardId: string;
+  id: number;
+  cardId: number;
   cardCode: string;
   assignedDamage: number;
   tokens: Tokens;
@@ -41,8 +41,8 @@ export const gameValueDecoder = JsonDecoder.oneOf<GameValue>([
 ], 'GameValue')
 
 export const enemyDecoder = JsonDecoder.object<Enemy>({
-  id: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  id: JsonDecoder.number,
+  cardId: JsonDecoder.number,
   cardCode: JsonDecoder.string,
   fight: JsonDecoder.nullable(JsonDecoder.number),
   evade: JsonDecoder.nullable(JsonDecoder.number),

@@ -220,7 +220,7 @@ instance RunMessage FollowingLeads where
               room212 <- getJustLocationByName "Room 212"
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
               x <- getPlayerCount
-              tid <- getRandom
+              tid <- genId
               pushAll
                 $ [ SetCurrentAgendaDeck 1 [agenda]
                   , ShuffleCardsIntoDeck Deck.EncounterDeck staff
@@ -240,7 +240,7 @@ instance RunMessage FollowingLeads where
               room212 <- getJustLocationByName "Room 212"
               clues <- field AssetClues sinisterSolution
               harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
-              tid <- getRandom
+              tid <- genId
               pushAll
                 [ SetCurrentAgendaDeck 1 [agenda]
                 , RemoveClues (toSource attrs) (toTarget sinisterSolution) clues
@@ -278,7 +278,7 @@ instance RunMessage FollowingLeads where
       rest' <- shuffleM rest
 
       for_ (zip cards (emptyCrimeScenes' <> rest')) $ \(card, lid) -> do
-        assetId <- getRandom
+        assetId <- genId
         push $ CreateAssetAt assetId (toCard card) (AtLocation lid)
 
       pure a

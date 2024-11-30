@@ -38,10 +38,11 @@ putApiV1ArkhamPendingGameR gameId = do
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue currentQueue
   genRef <- newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
+  idGen <- newIORef (gameNextId arkhamGameCurrentData)
 
   pid <- runDB $ insert $ ArkhamPlayer userId gameId "00000"
 
-  runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) idGen) $ do
     addPlayer (PlayerId $ coerce pid)
     runMessages Nothing
 

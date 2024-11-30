@@ -27,7 +27,7 @@ instance RunMessage TrenchKnife where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemyCount <- selectCount $ enemyEngagedWith iid
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifier sid attrs iid (SkillModifier #combat enemyCount)
       pushAll [enabled, chooseFight]

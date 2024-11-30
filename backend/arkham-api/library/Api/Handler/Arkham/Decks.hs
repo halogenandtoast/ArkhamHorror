@@ -113,7 +113,8 @@ putApiV1ArkhamGameDecksR gameId = do
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue currentQueue
   genRef <- newIORef $ mkStdGen gameSeed
-  runGameApp (GameApp gameRef queueRef genRef $ pure . const ()) $ do
+  idGen <- newIORef gameNextId
+  runGameApp (GameApp gameRef queueRef genRef (pure . const ()) idGen) $ do
     msg <- case udpDeckUrl postData of
       Nothing -> pure $ Run []
       Just deckUrl -> do

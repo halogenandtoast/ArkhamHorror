@@ -24,7 +24,7 @@ instance RunMessage TheArchway where
         Nothing -> error "missing"
         Just xs -> sample xs
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheArchway
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ beginSkillTest sid iid attrs iid #intellect (Fixed 3)
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace

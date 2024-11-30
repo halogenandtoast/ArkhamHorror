@@ -43,13 +43,13 @@ instance HasAbilities LodgeJailor where
 instance RunMessage LodgeJailor where
   runMessage msg e@(LodgeJailor attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- getRandomKey
+      mKey <- genIdKey
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
         : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]
       pure e
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (toAbilitySource attrs 2) attrs SkillIntellect (Fixed 3)
       pure e
     PassedSkillTest iid _ (isAbilitySource attrs 2 -> True) SkillTestInitiatorTarget {} _ _ -> do

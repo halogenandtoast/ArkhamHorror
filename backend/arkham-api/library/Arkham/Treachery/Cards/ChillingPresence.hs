@@ -26,7 +26,7 @@ chillingPresence = treachery ChillingPresence Cards.chillingPresence
 instance RunMessage ChillingPresence where
   runMessage msg t@(ChillingPresence attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       enabled <- createCardEffect Cards.chillingPresence Nothing attrs sid
       pushAll
         [ enabled

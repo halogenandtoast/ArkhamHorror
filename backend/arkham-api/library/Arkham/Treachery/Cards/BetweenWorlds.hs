@@ -30,7 +30,7 @@ instance RunMessage BetweenWorlds where
           lookupEncounterCard Locations.betweenWorlds (toCardId attrs)
       nexus <- selectJust $ locationIs Locations.nexusOfNKai
       useLabel2 <- selectAny $ LocationWithLabel $ mkLabel "betweenWorlds1"
-      locationId <- getRandom
+      locationId <- genId
       pushAll
         [ PlaceLocation locationId (EncounterCard asLocation)
         , SetLocationLabel

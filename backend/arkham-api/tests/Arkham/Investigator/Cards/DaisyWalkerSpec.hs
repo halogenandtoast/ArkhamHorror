@@ -44,7 +44,7 @@ spec = describe "Daisy Walker" $ do
       withProp @"deck" (Deck deckCards) self
       self `putCardIntoPlay` Cards.oldBookOfLore
       self `putCardIntoPlay` Cards.medicalTexts
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 5
       click "apply results"
       self.hand `shouldMatchListM` map toCard deckCards

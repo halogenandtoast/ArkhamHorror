@@ -23,7 +23,7 @@ instance HasAbilities GravediggersShovel2 where
 instance RunMessage GravediggersShovel2 where
   runMessage msg a@(GravediggersShovel2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

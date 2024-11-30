@@ -10,7 +10,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Token qualified as Token

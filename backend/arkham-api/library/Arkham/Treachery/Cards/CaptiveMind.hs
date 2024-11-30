@@ -32,7 +32,7 @@ doDiscard iid source = do
 instance RunMessage CaptiveMind where
   runMessage msg t@(CaptiveMind attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 0)
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do

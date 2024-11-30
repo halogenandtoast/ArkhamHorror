@@ -39,7 +39,7 @@ instance HasAbilities InterviewRoomIchorFilledChamber where
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ n -> do

@@ -11,7 +11,7 @@ spec = describe "Opportunist" $ do
     self `addToHand` opportunist
     withEach [(Zero, True), (MinusOne, False)] $ \(token, backToHand) -> do
       setChaosTokens [token]
-      sid <- getRandom
+      sid <- genId
       run $ beginSkillTest sid self #intellect 0
       commit opportunist
       startSkillTest

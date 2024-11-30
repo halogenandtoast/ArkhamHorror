@@ -3,16 +3,16 @@ import { Customization, customizationsDecoder } from '@/arkham/types/Customizati
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
 export type Skill = {
-  id: string;
-  cardId: string;
+  id: number;
+  cardId: number;
   cardCode: string;
   customizations: Customization[];
   sealedChaosTokens: ChaosToken[];
 }
 
 export const skillDecoder = JsonDecoder.object<Skill>({
-  id: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  id: JsonDecoder.number,
+  cardId: JsonDecoder.number,
   cardCode: JsonDecoder.string,
   customizations: customizationsDecoder,
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),

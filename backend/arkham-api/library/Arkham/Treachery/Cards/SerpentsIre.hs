@@ -62,7 +62,7 @@ instance RunMessage SerpentsIre where
       spawned <- selectAny $ EnemyWithId eid
       if spawned
         then do
-          sid <- getRandom
+          sid <- genId
           push $ revelationSkillTest sid iid attrs #agility (EnemyMaybeFieldCalculation eid EnemyFight)
           pure . SerpentsIre $ attrs `with` Metadata (Just eid)
         else pure t

@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json'
 
-type TargetContents = string | { face: string, id: string }
+type TargetContents = string | number | { face: string, id: number }
 
 export type Target = {
   tag: string
@@ -14,7 +14,13 @@ export const targetDecoder = JsonDecoder.object<Target>(
     contents: JsonDecoder.optional(
       JsonDecoder.oneOf<TargetContents>(
         [ JsonDecoder.string,
-          JsonDecoder.object<TargetContents>({ face: JsonDecoder.string, id: JsonDecoder.string }, 'Token', { face: 'chaosTokenFace', id: 'chaosTokenId' })
+          JsonDecoder.number,
+          JsonDecoder.object<TargetContents>({ face: JsonDecoder.string, id: JsonDecoder.number }, 'Token', { face: 'chaosTokenFace', id: 'chaosTokenId' }),
+
+          JsonDecoder.succeed.chain((f) => {
+            console.log('Failed to decode message', f)
+            return JsonDecoder.fail(f)
+          })
         ], 'TargetContents')
     ),
   },

@@ -16,7 +16,7 @@ abduction = treachery Abduction Cards.abduction
 instance RunMessage Abduction where
   runMessage msg t@(Abduction attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

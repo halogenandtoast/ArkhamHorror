@@ -116,7 +116,7 @@ instance RunMessage RexMurphyParallel where
           -- we need to check if we need to recreate the window
           let remainingClues = clues - n
           when (remainingClues > 0) do
-            batchId <- getRandom
+            batchId <- genId
             would <-
               Msg.checkWindows
                 [ (Window.mkWhen (Window.WouldPlaceClueOnLocation iid lid source remainingClues))
@@ -130,7 +130,7 @@ instance RunMessage RexMurphyParallel where
           -- we need to check if we need to recreate the window
           let remainingTokens = foldr deleteFirst tokens (replicate @[ChaosTokenFace] (n * 2) #curse)
           unless (null remainingTokens) do
-            batchId <- getRandom
+            batchId <- genId
             would <-
               Msg.checkWindows
                 [ (Window.mkWhen (Window.WouldAddChaosTokensToChaosBag mWho remainingTokens))

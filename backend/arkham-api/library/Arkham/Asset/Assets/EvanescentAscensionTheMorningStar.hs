@@ -44,7 +44,7 @@ instance RunMessage EvanescentAscensionTheMorningStar where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       whenJustM getSkillTestInvestigator \iid' -> do
         withSkillTest \sid -> do
-          tokenId <- getRandom
+          tokenId <- genId
           x <- getChaosTokenValue iid' ElderSign iid'
           skillTestModifier sid (attrs.ability 1) sid (AddChaosTokenValue x)
           push

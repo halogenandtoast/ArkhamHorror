@@ -26,7 +26,7 @@ instance RunMessage Suggestion4 where
   runMessage msg a@(Suggestion4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       chooseEvade <- toMessage <$> mkChooseEvade sid iid source
       enabled <- skillTestModifier sid source iid (AddSkillValue #willpower)
       pushAll [enabled, chooseEvade]

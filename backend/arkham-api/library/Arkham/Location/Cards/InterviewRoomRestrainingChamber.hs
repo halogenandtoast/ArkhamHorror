@@ -27,7 +27,7 @@ instance RunMessage InterviewRoomRestrainingChamber where
   runMessage msg l@(InterviewRoomRestrainingChamber attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

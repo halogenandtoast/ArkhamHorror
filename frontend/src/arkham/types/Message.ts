@@ -57,7 +57,7 @@ export type CardPile = {
 }
 
 export type PileCard = {
-  cardId: string
+  cardId: number
   cardOwner: string | null
 }
 
@@ -108,7 +108,7 @@ export type InvestigatorComponent = {
 
 export type AssetComponent = {
   tag: "AssetComponent";
-  assetId: string;
+  assetId: number;
   tokenType: TokenType;
 }
 
@@ -127,7 +127,7 @@ export const investigatorComponentDecoder = JsonDecoder.object<InvestigatorCompo
 export const assetComponentDecoder = JsonDecoder.object<AssetComponent>(
   {
     tag: JsonDecoder.isExactly("AssetComponent"),
-    assetId: JsonDecoder.string,
+    assetId: JsonDecoder.number,
     tokenType: tokenTypeDecoder,
   }, 'InvestigatorComponent');
 
@@ -152,35 +152,35 @@ export type ComponentLabel = {
 
 export type FightLabel = {
   tag: MessageType.FIGHT_LABEL
-  enemyId: string
+  enemyId: number
 }
 
 export const fightLabelDecoder = JsonDecoder.object<FightLabel>(
   {
     tag: JsonDecoder.isExactly(MessageType.FIGHT_LABEL),
-    enemyId: JsonDecoder.string,
+    enemyId: JsonDecoder.number,
   }, 'FightLabel')
 
 export type EvadeLabel = {
   tag: MessageType.EVADE_LABEL
-  enemyId: string
+  enemyId: number
 }
 
 export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
   {
     tag: JsonDecoder.isExactly(MessageType.EVADE_LABEL),
-    enemyId: JsonDecoder.string,
+    enemyId: JsonDecoder.number,
   }, 'EvadeLabel')
 
 export type EngageLabel = {
   tag: MessageType.ENGAGE_LABEL
-  enemyId: string
+  enemyId: number
 }
 
 export const engageLabelDecoder = JsonDecoder.object<EngageLabel>(
   {
     tag: JsonDecoder.isExactly(MessageType.ENGAGE_LABEL),
-    enemyId: JsonDecoder.string,
+    enemyId: JsonDecoder.number,
   }, 'EngageLabel')
 
 export type GridLabel = {
@@ -282,7 +282,7 @@ export const labelDecoder = JsonDecoder.object<Label>(
 
 export const pileCardDecoder = JsonDecoder.object<PileCard>(
   {
-    cardId: JsonDecoder.string,
+    cardId: JsonDecoder.number,
     cardOwner: JsonDecoder.nullable(JsonDecoder.string)
   }, 'pileCardDecoder')
 
@@ -345,14 +345,14 @@ export const chaosTokenGroupChoiceDecoder = JsonDecoder.object<ChaosTokenGroupCh
 
 export type EffectActionButton = {
   tag: MessageType.EFFECT_ACTION_BUTTON
-  effectId: string
+  effectId: number
   tooltip: string
 }
 
 export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
   {
     tag: JsonDecoder.isExactly(MessageType.EFFECT_ACTION_BUTTON),
-    effectId: JsonDecoder.string,
+    effectId: JsonDecoder.number,
     tooltip: JsonDecoder.string
   }, 'EffectActionButton')
 
@@ -381,6 +381,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     effectActionButtonDecoder,
     skipTriggersDecoder,
     JsonDecoder.succeed.chain((f) => {
+      console.log('Failed to decode message', f)
       return JsonDecoder.fail(f)
     })
   ],

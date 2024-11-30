@@ -20,6 +20,9 @@ newtype CreateEnemyT m a = CreateEnemyT {unCreateEnemyT :: StateT (EnemyCreation
 instance HasGame m => HasGame (CreateEnemyT m) where
   getGame = lift getGame
 
+instance IdGen m => IdGen (CreateEnemyT m) where
+  genId = lift genId
+
 instance CardGen m => CardGen (CreateEnemyT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard

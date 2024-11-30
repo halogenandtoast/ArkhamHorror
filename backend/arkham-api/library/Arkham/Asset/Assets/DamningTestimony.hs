@@ -64,7 +64,7 @@ instance RunMessage DamningTestimony where
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       withLocationOf iid \lid -> do
         enemyLoc <- fieldJust EnemyLocation eid
-        sid <- getRandom
+        sid <- genId
         investigate' <- mkInvestigate sid iid (attrs.ability 1)
         investigatable <- enemyLoc <=~> InvestigatableLocation
         if attrs `hasCustomization` Surveil && enemyLoc /= lid && investigatable

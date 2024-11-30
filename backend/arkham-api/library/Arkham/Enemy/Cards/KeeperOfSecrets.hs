@@ -34,7 +34,7 @@ instance RunMessage KeeperOfSecrets where
       push $ placeDoom (toAbilitySource attrs 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 2) attrs #intellect (Fixed 3)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 2 -> True) -> do

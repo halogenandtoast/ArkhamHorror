@@ -27,7 +27,7 @@ instance HasAbilities Room245 where
 instance RunMessage Room245 where
   runMessage msg l@(Room245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       fieldMap InvestigatorDiscard headMay iid >>= \case
         Just topOfDiscard -> do
           skillTestModifier sid (attrs.ability 1) topOfDiscard.id PlaceOnBottomOfDeckInsteadOfDiscard

@@ -16,7 +16,7 @@ etherealForm2 = event EtherealForm2 Cards.etherealForm2
 instance RunMessage EtherealForm2 where
   runMessage msg e@(EtherealForm2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       onRevealChaosTokenEffect sid IsSymbol attrs attrs do
         eventModifier attrs attrs (SetAfterPlay ReturnThisToHand)

@@ -38,7 +38,7 @@ instance RunMessage TheBarrier where
       ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
       litaChantler <- getSetAsideCard Assets.litaChantler
       createGhoulPriest <- createEnemyAt_ ghoulPriest hallway Nothing
-      assetId <- getRandom
+      assetId <- genId
 
       pushAll
         [ RevealLocation Nothing parlor

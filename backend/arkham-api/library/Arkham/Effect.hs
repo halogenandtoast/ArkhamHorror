@@ -209,43 +209,43 @@ newtype NoEffect = NoEffect EffectAttrs
 instance RunMessage NoEffect where
   runMessage msg (NoEffect a) = NoEffect <$> runMessage msg a
 
-createEffect :: MonadRandom m => EffectBuilder -> m (EffectId, Effect)
+createEffect :: IdGen m => EffectBuilder -> m (EffectId, Effect)
 createEffect builder = do
-  eid <- maybe getRandom pure (effectBuilderEffectId builder)
+  eid <- maybe genId pure (effectBuilderEffectId builder)
   pure (eid, lookupEffect eid builder)
 
 createChaosTokenValueEffect
-  :: (HasGame m, MonadRandom m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
+  :: (HasGame m, IdGen m) => SkillTestId -> Int -> Source -> Target -> m (EffectId, Effect)
 createChaosTokenValueEffect sid n source target = do
-  eid <- getRandom
+  eid <- genId
   (eid,) <$> buildChaosTokenValueEffect sid eid n source target
 
 createWindowModifierEffect
-  :: MonadRandom m
+  :: IdGen m
   => EffectWindow
   -> EffectMetadata Window Message
   -> Source
   -> Target
   -> m (EffectId, Effect)
 createWindowModifierEffect effectWindow effectMetadata source target = do
-  eid <- getRandom
+  eid <- genId
   pure
     ( eid
     , buildWindowModifierEffect eid effectMetadata effectWindow source target
     )
 
 createChaosTokenEffect
-  :: MonadRandom m
+  :: IdGen m
   => EffectMetadata Window Message
   -> Source
   -> ChaosToken
   -> m (EffectId, Effect)
 createChaosTokenEffect effectMetadata source token = do
-  eid <- getRandom
+  eid <- genId
   pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
 createOnRevealChaosTokenEffect
-  :: (MonadRandom m, HasGame m)
+  :: (IdGen m, HasGame m)
   => SkillTestId
   -> ChaosTokenMatcher
   -> Source
@@ -253,37 +253,37 @@ createOnRevealChaosTokenEffect
   -> [Message]
   -> m (EffectId, Effect)
 createOnRevealChaosTokenEffect sid matchr source target messages = do
-  eid <- getRandom
+  eid <- genId
   mCardId <- toCardId <$$> sourceToMaybeCard source
   let effect = buildOnRevealChaosTokenEffect eid sid matchr source target messages
   pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
 
 createEndOfRoundEffect
-  :: MonadRandom m
+  :: IdGen m
   => Source
   -> [Message]
   -> m (EffectId, Effect)
 createEndOfRoundEffect source messages = do
-  eid <- getRandom
+  eid <- genId
   pure (eid, buildEndOfRoundEffect eid source messages)
 
 createEndOfTurnEffect
-  :: MonadRandom m
+  :: IdGen m
   => Source
   -> InvestigatorId
   -> [Message]
   -> m (EffectId, Effect)
 createEndOfTurnEffect source iid messages = do
-  eid <- getRandom
+  eid <- genId
   pure (eid, buildEndOfTurnEffect eid source iid messages)
 
 createSurgeEffect
-  :: (MonadRandom m, Sourceable source, Targetable target, HasGame m)
+  :: (Sourceable source, Targetable target, HasGame m, IdGen m)
   => source
   -> target
   -> m (EffectId, Effect)
 createSurgeEffect (toSource -> source) (toTarget -> target) = do
-  eid <- getRandom
+  eid <- genId
   builder <- makeEffectBuilder "surge" Nothing source target
   pure
     ( eid

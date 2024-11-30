@@ -25,7 +25,7 @@ instance HasAbilities ArkhamWoodsTwistingPaths where
 instance RunMessage ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) (BatchTarget batchId) #intellect (Fixed 3)
       pure l
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

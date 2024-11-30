@@ -42,7 +42,7 @@ instance HasAbilities KnightOfTheInnerCircle where
 instance RunMessage KnightOfTheInnerCircle where
   runMessage msg e@(KnightOfTheInnerCircle attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid SkillAgility (Fixed 4)
       pure e
     FailedSkillTest iid _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ -> do

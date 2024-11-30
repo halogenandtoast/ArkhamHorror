@@ -18,7 +18,7 @@ instance HasAbilities HarlanEarnstone where
 instance RunMessage HarlanEarnstone where
   runMessage msg a@(HarlanEarnstone attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) attrs #willpower (Fixed 4)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

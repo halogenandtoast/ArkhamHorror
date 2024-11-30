@@ -68,7 +68,7 @@ instance RunMessage TrueMagickReworkingReality5 where
       pure $ TrueMagickReworkingReality5 $ With attrs meta
     UseCardAbility iid (ProxySource (CardIdSource cid) (isSource attrs -> True)) n ws p -> do
       card <- getCard cid
-      assetId <- getRandom
+      assetId <- genId
       let iasset = overAttrs (const (attrs {assetCardCode = card.cardCode})) (createAsset card assetId)
       iasset' <- lift $ runMessage (UseCardAbility iid (toSource attrs) n ws p) iasset
       pure $ TrueMagickReworkingReality5 $ With attrs (Metadata $ Just iasset')

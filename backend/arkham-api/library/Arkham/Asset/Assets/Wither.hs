@@ -27,7 +27,7 @@ instance RunMessage Wither where
   runMessage msg a@(Wither attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.wither (effectMetaTarget sid) source iid
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a

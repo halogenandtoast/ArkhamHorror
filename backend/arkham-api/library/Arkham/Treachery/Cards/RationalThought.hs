@@ -16,7 +16,6 @@ import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window qualified as Window
-import Data.UUID qualified as UUID
 
 -- The metadata makes it so that the silent forced ability triggers only once
 newtype Metadata = Metadata {discarding :: Bool}
@@ -24,7 +23,7 @@ newtype Metadata = Metadata {discarding :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype RationalThought = RationalThought (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rationalThought :: TreacheryCard RationalThought
@@ -64,7 +63,7 @@ instance RunMessage RationalThought where
       pure . RationalThought . (`with` meta) $ attrs & tokensL %~ subtractTokens Horror amount
     HealHorrorDirectly (InvestigatorTarget iid) _ amount
       | unCardCode (unInvestigatorId iid)
-          == UUID.toText (unTreacheryId $ toId attrs) -> do
+          == tshow (unTreacheryId $ toId attrs) -> do
           -- USE ONLY WHEN NO CALLBACKS
           pure . RationalThought . (`with` meta) $ attrs & tokensL %~ subtractTokens Horror amount
     _ -> RationalThought . (`with` meta) <$> liftRunMessage msg attrs

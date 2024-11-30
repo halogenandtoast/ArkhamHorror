@@ -59,7 +59,7 @@ instance RunMessage ArchiveOfConduitsGatewayToAcheron4 where
           $ LocationWithToken Token.Leyline
           <> CanEnterLocation (InvestigatorWithId iid')
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       choices <- for locations \location -> do
         investigate' <- mkInvestigateLocation sid iid' (attrs.ability 2) location
         pure

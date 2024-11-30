@@ -19,7 +19,6 @@ import Arkham.Text
 import Arkham.Window
 import Control.Monad.Fail
 import Data.Aeson.TH
-import Data.UUID (nil)
 
 data Component
   = InvestigatorComponent {investigatorId :: InvestigatorId, tokenType :: GameTokenType}
@@ -98,7 +97,7 @@ data PileCard = PileCard
   deriving stock (Show, Eq, Data)
 
 data PaymentAmountChoice msg = PaymentAmountChoice
-  { choiceId :: UUID
+  { choiceId :: Int
   , investigatorId :: InvestigatorId
   , minBound :: Int
   , maxBound :: Int
@@ -108,7 +107,7 @@ data PaymentAmountChoice msg = PaymentAmountChoice
   deriving stock (Show, Eq, Data)
 
 data AmountChoice = AmountChoice
-  { choiceId :: UUID
+  { choiceId :: Int
   , label :: Text
   , minBound :: Int
   , maxBound :: Int
@@ -191,7 +190,7 @@ concat
   , [d|
       instance FromJSON msg => FromJSON (PaymentAmountChoice msg) where
         parseJSON = withObject "PaymentAmountChoice" $ \o -> do
-          choiceId <- o .:? "choiceId" .!= nil
+          choiceId <- o .:? "choiceId" .!= 0
           investigatorId <- o .: "investigatorId"
           minBound <- o .: "minBound"
           maxBound <- o .: "maxBound"
@@ -204,7 +203,7 @@ concat
   , [d|
       instance FromJSON AmountChoice where
         parseJSON = withObject "AmountChoice" $ \o -> do
-          choiceId <- o .:? "choiceId" .!= nil
+          choiceId <- o .:? "choiceId" .!= 0
           label <- o .: "label"
           minBound <- o .: "minBound"
           maxBound <- o .: "maxBound"

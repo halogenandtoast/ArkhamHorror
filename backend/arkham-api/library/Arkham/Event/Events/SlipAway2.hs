@@ -22,7 +22,7 @@ slipAway2 = event SlipAway2 Cards.slipAway2
 instance RunMessage SlipAway2 where
   runMessage msg e@(SlipAway2 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
       enabled <- skillTestModifier sid attrs iid (AddSkillValue #agility)
       pushAll [enabled, chooseEvade]

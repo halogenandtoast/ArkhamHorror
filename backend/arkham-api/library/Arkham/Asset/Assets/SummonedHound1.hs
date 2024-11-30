@@ -32,7 +32,7 @@ instance RunMessage SummonedHound1 where
       fightableEnemies <- select $ CanFightEnemy (toSource attrs)
       player <- getPlayer iid
       mLocation <- field InvestigatorLocation iid
-      sid <- getRandom
+      sid <- genId
       doFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       mDoInvestigate :: Maybe Investigate.Investigate <- case mLocation of
         Just lid -> do

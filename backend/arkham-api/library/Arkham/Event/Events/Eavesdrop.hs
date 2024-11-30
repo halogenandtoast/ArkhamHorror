@@ -39,7 +39,7 @@ instance RunMessage Eavesdrop where
         ]
       pure e
     HandleTargetChoice iid source (EnemyTarget eid) | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid attrs attrs #intellect (EnemyMaybeFieldCalculation eid EnemyEvade)
       pure e
     PassedSkillTest iid _ _ target _ _ | isTarget attrs target -> do

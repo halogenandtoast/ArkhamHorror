@@ -18,7 +18,7 @@ huntedByByakhee = treachery HuntedByByakhee Cards.huntedByByakhee
 instance RunMessage HuntedByByakhee where
   runMessage msg t@(HuntedByByakhee attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid source #agility (Fixed 6)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

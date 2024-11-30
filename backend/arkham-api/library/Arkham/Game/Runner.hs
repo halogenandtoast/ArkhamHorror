@@ -438,7 +438,7 @@ runGameMessage msg g = case msg of
   CancelCost acId -> do
     pure $ g & activeCostL %~ deleteMap acId
   PayAdditionalCost iid batchId cost -> do
-    acId <- getRandom
+    acId <- genId
     let
       activeCost =
         ActiveCost
@@ -453,7 +453,7 @@ runGameMessage msg g = case msg of
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
   PayForAbility ability windows' -> do
-    acId <- getRandom
+    acId <- genId
     iid <- toId <$> getActiveInvestigator
     -- imods <- getModifiers iid
     modifiers' <- getModifiers (AbilityTarget iid ability)
@@ -930,7 +930,7 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> case toCardType pc of
         SkillType -> do
-          skillId <- getRandom
+          skillId <- genId
           let hasInDiscardEffects = cdCardInDiscardEffects (toCardDef card)
           inDiscard <- selectAny $ inDiscardOf iid <> basic (CardWithId card.id)
 
@@ -1275,7 +1275,7 @@ runGameMessage msg g = case msg of
     case card of
       PlayerCard pc -> case toCardType pc of
         PlayerTreacheryType -> do
-          tid <- getRandom
+          tid <- genId
           let treachery = lookupTreachery (toCardCode pc) iid tid cardId
           let isPermanent = cdPermanent $ toCardDef treachery
           if isPermanent
@@ -1298,7 +1298,7 @@ runGameMessage msg g = case msg of
         AssetType -> do
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
-          aid <- maybe getRandom pure mAid
+          aid <- maybe genId pure mAid
           -- We need to start the placement as in play area so that CardEnteredPlay triggers only once
           asset <-
             overAttrs (\attrs -> attrs {assetController = Just iid})
@@ -1319,7 +1319,7 @@ runGameMessage msg g = case msg of
               if card `elem` investigatorHand (toAttrs investigator')
                 then Zone.FromHand
                 else Zone.FromDiscard
-          eid <- getRandom
+          eid <- genId
           let
             event' =
               flip overAttrs (createEvent pc iid eid) \attrs ->
@@ -1342,14 +1342,14 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard ec -> case toCardType ec of
         TreacheryType -> do
-          tid <- getRandom
+          tid <- genId
           let treachery = createTreachery card iid tid
           pushAll [CardEnteredPlay iid card, PlaceTreachery tid (InThreatArea iid)]
           pure $ g & (entitiesL . treacheriesL %~ insertMap tid treachery)
         EncounterAssetType -> do
           -- asset might have been put into play via revelation
           mAid <- selectOne $ AssetWithCardId cardId
-          aid <- maybe getRandom pure mAid
+          aid <- maybe genId pure mAid
           let asset = overAttrs (\attrs -> attrs {assetController = Just iid}) $ createAsset card aid
           pushAll
             [ InvestigatorPlayAsset iid aid
@@ -1362,7 +1362,7 @@ runGameMessage msg g = case msg of
     investigator <- getInvestigator iid
     send $ format investigator <> " drew " <> format card
     sendEnemy (toTitle investigator <> " drew Enemy") (toJSON card)
-    enemyId <- getRandom
+    enemyId <- genId
     let enemy = overAttrs (\e -> e {enemyBearer = Just iid}) (createEnemy card enemyId)
     pushAll
       [ RemoveCardFromHand iid (toCardId card)
@@ -1853,7 +1853,7 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phaseL .~ EnemyPhase
   EnemyAttackFromDiscard iid source card -> do
-    enemyId <- getRandom
+    enemyId <- genId
     let enemy = overAttrs (\a -> a {enemyPlacement = StillInEncounterDiscard}) (createEnemy card enemyId)
     pushAll
       [ EnemyWillAttack
@@ -2069,7 +2069,7 @@ runGameMessage msg g = case msg of
           else pure g
   CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
     lid <- selectJust locationMatcher
-    assetId <- getRandom
+    assetId <- genId
     push $ CreateAssetAt assetId cardCode $ AtLocation lid
     pure g
   ReadStory iid card storyMode mtarget -> do
@@ -2141,7 +2141,7 @@ runGameMessage msg g = case msg of
           & (entitiesL . assetsL . at assetId ?~ asset)
           & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateEventAt iid card placement -> do
-    eventId <- getRandom
+    eventId <- genId
     let event' = createEvent card iid eventId
     mCost <- createActiveCostForAdditionalCardCosts iid card
     case mCost of
@@ -2156,7 +2156,7 @@ runGameMessage msg g = case msg of
           & (entitiesL . eventsL . at eventId ?~ event')
           & (activeCostL %~ insertMap (activeCostId cost) cost)
   CreateWeaknessInThreatArea card iid -> do
-    treacheryId <- getRandom
+    treacheryId <- genId
     let treachery = createTreachery card iid treacheryId
     push (PlaceTreachery treacheryId (InThreatArea iid))
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
@@ -2175,7 +2175,7 @@ runGameMessage msg g = case msg of
         _ -> error $ "unhandled attach target : " <> show target
     pure $ g & entitiesL . treacheriesL . at treacheryId ?~ treachery
   TakeControlOfSetAsideAsset iid card -> do
-    assetId <- getRandom
+    assetId <- genId
     let asset = createAsset card assetId
     pushAll [TakeControlOfAsset iid assetId]
     pure $ g & entitiesL . assetsL . at assetId ?~ asset
@@ -2218,7 +2218,7 @@ runGameMessage msg g = case msg of
     g <$ push windowMsg
   -- TODO: CHECK SpawnEnemyAt and SpawnEnemyAtEngagedWith
   SpawnEnemyAt card lid -> do
-    enemyId <- getRandom
+    enemyId <- genId
     let enemy = createEnemy card enemyId
     pushAll
       [ Will (EnemySpawn Nothing lid enemyId)
@@ -2228,7 +2228,7 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & entitiesL . enemiesL . at enemyId ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
-    enemyId <- getRandom
+    enemyId <- genId
     let enemy = createEnemy card enemyId
     pushAll
       [ Will (EnemySpawn (Just iid) lid enemyId)
@@ -2436,7 +2436,7 @@ runGameMessage msg g = case msg of
       AssetType -> do
         pid <- getPlayer iid
         sendRevelation pid (toJSON $ toCard card)
-        assetId <- getRandom
+        assetId <- genId
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ resolve $ Revelation iid (AssetSource assetId)
@@ -2444,7 +2444,7 @@ runGameMessage msg g = case msg of
       EventType -> do
         pid <- getPlayer iid
         sendRevelation pid (toJSON $ toCard card)
-        eventId <- getRandom
+        eventId <- genId
         pushAll $ resolve $ Revelation iid (EventSource eventId)
         let
           recordLimit g'' = \case
@@ -2458,7 +2458,7 @@ runGameMessage msg g = case msg of
             (g & entitiesL . eventsL . at eventId ?~ createEvent card iid eventId)
             (cdLimits $ toCardDef card)
       PlayerEnemyType -> do
-        enemyId <- getRandom
+        enemyId <- genId
         let enemy = createEnemy card enemyId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll
@@ -2539,7 +2539,7 @@ runGameMessage msg g = case msg of
         pushAll [afterDraw, ReadStory iid (toCard card) ResolveIt Nothing, UnsetActiveCard]
         pure g'
       EnemyType -> do
-        enemyId <- getRandom
+        enemyId <- genId
         let enemy = createEnemy card enemyId
         pushAll
           $ [afterDraw, InvestigatorDrawEnemy iid enemyId]
@@ -2554,14 +2554,14 @@ runGameMessage msg g = case msg of
         pushAll [DrewTreachery iid (Just Deck.EncounterDeck) (toCard card)]
         pure g'
       EncounterAssetType -> do
-        assetId <- getRandom
+        assetId <- genId
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ afterDraw
           : (guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId))
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
-        eventId <- getRandom
+        eventId <- genId
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
         -- Event is assumed to have a revelation ability if drawn from encounter deck
@@ -2569,7 +2569,7 @@ runGameMessage msg g = case msg of
           : (guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId))
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
-        locationId <- getRandom
+        locationId <- genId
         let location = createLocation card locationId
 
         pushAll
@@ -2596,7 +2596,7 @@ runGameMessage msg g = case msg of
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of
       EnemyType -> do
-        enemyId <- getRandom
+        enemyId <- genId
         let enemy = createEnemy card enemyId
         pushAll
           $ [Revelation iid (EnemySource enemyId) | hasRevelation card && not ignoreRevelation]
@@ -2607,25 +2607,25 @@ runGameMessage msg g = case msg of
           & (activeCardL ?~ toCard card)
       TreacheryType -> do
         -- handles draw windows
-        treacheryId <- getRandom
+        treacheryId <- genId
         let treachery = createTreachery card iid treacheryId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ TreacherySource treacheryId)
         pure $ g' & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
       EncounterAssetType -> do
-        assetId <- getRandom
+        assetId <- genId
         let asset = createAsset card assetId
         -- Asset is assumed to have a revelation ability if drawn from encounter deck
         pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ AssetSource assetId)
         pure $ g' & (entitiesL . assetsL . at assetId ?~ asset)
       EncounterEventType -> do
-        eventId <- getRandom
+        eventId <- genId
         let owner = fromMaybe iid (toCardOwner card)
         let event' = createEvent card owner eventId
         pushAll $ guard (not ignoreRevelation) *> resolve (Revelation iid $ EventSource eventId)
         pure $ g' & (entitiesL . eventsL . at eventId ?~ event')
       LocationType -> do
-        locationId <- getRandom
+        locationId <- genId
         let location = createLocation card locationId
 
         pushAll
@@ -2640,7 +2640,7 @@ runGameMessage msg g = case msg of
           <> ": "
           <> show card
   DrewTreachery iid mdeck (EncounterCard card) -> do
-    treacheryId <- getRandom
+    treacheryId <- genId
     let
       treachery = overAttrs (drawnFromL .~ mdeck) $ createTreachery card iid treacheryId
       historyItem = HistoryItem HistoryTreacheriesDrawn [toCardCode treachery]
@@ -2688,7 +2688,7 @@ runGameMessage msg g = case msg of
   DrewTreachery iid _ (PlayerCard card) -> do
     pid <- getPlayer iid
     sendRevelation pid (toJSON $ toCard card)
-    treacheryId <- getRandom
+    treacheryId <- genId
     let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows
 
@@ -2729,7 +2729,7 @@ runGameMessage msg g = case msg of
   RemoveCardEntity card -> do
     case toCardType card of
       AssetType -> do
-        let aid = AssetId (unsafeCardIdToUUID $ toCardId card)
+        let aid = AssetId (unsafeCardIdToInt $ toCardId card)
         runMessage (RemoveAsset aid) g
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
@@ -2753,7 +2753,7 @@ runGameMessage msg g = case msg of
     case toCardType card of
       EventType -> do
         -- There is only one card, Astounding Revelation, that does this so we just hard code for now
-        let eventId = EventId $ unsafeCardIdToUUID cid
+        let eventId = EventId $ unsafeCardIdToInt cid
         let event' = lookupEvent (toCardCode card) iid eventId cid
         pure
           $ g

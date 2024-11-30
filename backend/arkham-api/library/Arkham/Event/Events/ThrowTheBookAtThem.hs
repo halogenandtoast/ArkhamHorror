@@ -5,7 +5,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Target
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Projection
@@ -28,7 +27,7 @@ instance RunMessage ThrowTheBookAtThem where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       x <- field AssetCost aid
-      sid <- getRandom
+      sid <- genId
       when (x > 0) $ skillTestModifier sid attrs iid (SkillModifier #combat x)
       chooseFightEnemy sid iid attrs
       pure . ThrowTheBookAtThem $ attrs `with` Meta (Just aid)

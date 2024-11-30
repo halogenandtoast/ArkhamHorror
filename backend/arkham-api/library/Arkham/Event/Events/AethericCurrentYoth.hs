@@ -29,7 +29,7 @@ instance RunMessage AethericCurrentYoth where
         clues <- field AssetClues asset
         push $ MoveTokens (toSource attrs) (toSource asset) (toTarget iid) Clue clues
 
-      sid <- getRandom
+      sid <- genId
       chooseEvadeEnemyWithSkillChoice sid iid attrs [#agility, #intellect]
       drawCardsIfCan iid attrs 1
       fluxStabilizer <- selectJust $ assetIs Assets.fluxStabilizerActive

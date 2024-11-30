@@ -10,9 +10,9 @@ import { Customization, customizationsDecoder } from '@/arkham/types/Customizati
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
 export type Asset = {
-  id: string;
+  id: number;
   cardCode: string;
-  cardId: string;
+  cardId: number;
   owner: string | null;
   health: number | null;
   sanity: number | null;
@@ -35,9 +35,9 @@ export type Asset = {
 }
 
 export const assetDecoder = JsonDecoder.object<Asset>({
-  id: JsonDecoder.string,
+  id: JsonDecoder.number,
   cardCode: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  cardId: JsonDecoder.number,
   owner: JsonDecoder.nullable(JsonDecoder.string),
   health: JsonDecoder.nullable(JsonDecoder.number),
   tokens: tokensDecoder,

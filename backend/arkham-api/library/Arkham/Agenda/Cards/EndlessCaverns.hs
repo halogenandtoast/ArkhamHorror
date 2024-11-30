@@ -40,7 +40,7 @@ instance RunMessage EndlessCaverns where
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       player <- getPlayer iid
       hasRope <- getHasSupply iid Rope
-      sid <- getRandom
+      sid <- genId
       unless hasRope
         $ push
         $ chooseOne

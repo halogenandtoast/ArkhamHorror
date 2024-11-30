@@ -36,7 +36,7 @@ instance RunMessage HuntedByCorsairs where
       pure t
     UseThisAbility iid source@(isProxySource attrs -> True) 2 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

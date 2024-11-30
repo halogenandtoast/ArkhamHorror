@@ -199,7 +199,7 @@ addCardEntityWith i f e card = case card of
     _ -> error "Unhandled"
   VengeanceCard _ -> error "vengeance card"
  where
-  uuid = unsafeCardIdToUUID (toCardId card)
+  uuid = unsafeCardIdToInt (toCardId card)
 
 instance RunMessage Entities where
   runMessage msg entities =

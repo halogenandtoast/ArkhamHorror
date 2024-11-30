@@ -14,7 +14,7 @@ shadowOfAtlachNacha = treachery ShadowOfAtlachNacha Cards.shadowOfAtlachNacha
 instance RunMessage ShadowOfAtlachNacha where
   runMessage msg t@(ShadowOfAtlachNacha attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest
         sid
         iid

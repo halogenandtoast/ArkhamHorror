@@ -30,7 +30,7 @@ instance HasModifiersFor DismalCurse where
 instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid source #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

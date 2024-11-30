@@ -22,7 +22,7 @@ instance RunMessage HideousLullaby where
       if null deepOnes
         then gainSurge attrs
         else do
-          sid <- getRandom
+          sid <- genId
           chooseTargetM iid deepOnes \deepOne ->
             beginSkillTest sid iid attrs iid #willpower (EnemyMaybeFieldCalculation deepOne EnemyFight)
       pure t

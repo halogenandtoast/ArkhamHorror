@@ -27,7 +27,7 @@ instance HasAbilities ConstanceDumaine where
 instance RunMessage ConstanceDumaine where
   runMessage msg a@(ConstanceDumaine attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

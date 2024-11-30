@@ -6,7 +6,6 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modified)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 

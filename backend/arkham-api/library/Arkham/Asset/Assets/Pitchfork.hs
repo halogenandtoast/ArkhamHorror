@@ -27,7 +27,7 @@ instance HasAbilities Pitchfork where
 instance RunMessage Pitchfork where
   runMessage msg a@(Pitchfork attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 1, DamageDealt 2]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

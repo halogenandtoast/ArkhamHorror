@@ -46,7 +46,7 @@ instance RunMessage TheTrueCulpritV4 where
     case msg of
       UseThisAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 -> do
         let source = toAbilitySource p 1
-        sid <- getRandom
+        sid <- genId
         chooseFight <-
           leftOr
             <$> aspect

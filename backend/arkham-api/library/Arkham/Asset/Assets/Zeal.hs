@@ -36,7 +36,7 @@ instance RunMessage Zeal where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
-      sid <- getRandom
+      sid <- genId
       discarded <- selectNone $ AssetWithId (toId attrs)
       catsInDiscard <-
         fieldMap InvestigatorDiscard (filterCards (oneOf [cardIs Cards.hope, cardIs Cards.augur])) iid

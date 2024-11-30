@@ -25,7 +25,7 @@ instance RunMessage Waylay where
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid <> ExhaustedEnemy <> EnemyWithEvade
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ chooseOne
             player

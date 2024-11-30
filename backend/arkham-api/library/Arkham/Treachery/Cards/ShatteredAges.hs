@@ -17,7 +17,7 @@ shatteredAges = treachery ShatteredAges Cards.shatteredAges
 instance RunMessage ShatteredAges where
   runMessage msg t@(ShatteredAges attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do

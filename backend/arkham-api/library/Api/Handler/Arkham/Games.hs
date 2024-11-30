@@ -248,6 +248,7 @@ postApiV1ArkhamGamesR = do
   newGameSeed <- liftIO getRandom
   genRef <- newIORef (mkStdGen newGameSeed)
   queueRef <- newQueue []
+  idGen <- newIORef 1
   now <- liftIO getCurrentTime
 
   let
@@ -263,7 +264,7 @@ postApiV1ArkhamGamesR = do
     pids <- replicateM repeatCount $ insert $ ArkhamPlayer userId gameId "00000"
     gameRef <- liftIO $ newIORef game
 
-    runGameApp (GameApp gameRef queueRef genRef (pure . const ())) $ do
+    runGameApp (GameApp gameRef queueRef genRef (pure . const ()) idGen) $ do
       for_ pids $ \pid -> addPlayer (PlayerId $ coerce pid)
       runMessages Nothing
 
@@ -310,9 +311,10 @@ updateGame response gameId userId writeChannel = do
   gameRef <- newIORef gameJson
   queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
   genRef <- newIORef $ mkStdGen gameSeed
+  idGen <- newIORef gameNextId
 
   runGameApp
-    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel))
+    (GameApp gameRef queueRef genRef (handleMessageLog logRef writeChannel) idGen)
     (runMessages Nothing)
 
   ge <- readIORef gameRef

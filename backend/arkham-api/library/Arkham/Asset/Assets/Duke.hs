@@ -40,7 +40,7 @@ instance HasAbilities Duke where
 instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
@@ -57,14 +57,14 @@ instance RunMessage Duke where
       lid <- getJustLocation iid
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) (decrease_ ab 1)) do
-          sid <- getRandom
+          sid <- genId
           investigate' <- mkInvestigateLocation sid iid attrs lid
           push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
     UseThisAbility iid (ProxySource (LocationSource lid) (isAbilitySource attrs 2 -> True)) _ -> do
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) $ decrease_ ab 1) do
-          sid <- getRandom
+          sid <- genId
           pushM $ mkInvestigateLocation sid iid attrs lid
       pure a
     _ -> Duke <$> liftRunMessage msg attrs

@@ -17,7 +17,7 @@ aTearInTime = treachery ATearInTime Cards.aTearInTime
 instance RunMessage ATearInTime where
   runMessage msg t@(ATearInTime attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n | n > 0 -> do

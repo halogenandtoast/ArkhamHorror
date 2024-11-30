@@ -36,7 +36,7 @@ instance RunMessage JennysTwin45sAdvanced where
         <$> liftRunMessage msg (attrs & printedUsesL .~ Uses Ammo (Fixed n) & tokensL .~ singletonMap Ammo n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
       chooseFightEnemy sid iid source
       pure a

@@ -24,7 +24,7 @@ instance HasAbilities CrystalPillars where
 instance RunMessage CrystalPillars where
   runMessage msg l@(CrystalPillars attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ beginSkillTest sid iid (attrs.ability 1) iid #willpower
         $ SumCalculation [Fixed 1, VengeanceCalculation]

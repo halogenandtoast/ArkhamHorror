@@ -17,7 +17,7 @@ cheapShot2 = event CheapShot2 Cards.cheapShot2
 instance RunMessage CheapShot2 where
   runMessage msg e@(CheapShot2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #agility)
       pushM $ mkChooseFight sid iid attrs
       pure e

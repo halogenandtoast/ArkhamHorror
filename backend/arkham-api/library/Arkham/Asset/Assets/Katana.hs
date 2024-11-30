@@ -24,7 +24,7 @@ instance HasAbilities Katana where
 instance RunMessage Katana where
   runMessage msg a@(Katana attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
@@ -38,7 +38,7 @@ instance RunMessage Katana where
             labeled "Do not exhaust" nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       chooseFightEnemyEdit sid iid (attrs.ability 2) (withSkillType #agility)
       pure a
     _ -> Katana <$> liftRunMessage msg attrs

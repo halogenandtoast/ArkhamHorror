@@ -26,7 +26,7 @@ instance RunMessage MedicalTexts where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let controllerId = getController attrs
       investigators <- select $ affectsOthers $ colocatedWith controllerId
-      sid <- getRandom
+      sid <- genId
       chooseOne iid
         $ targetLabels investigators
         $ \iid' -> only $ Msg.beginSkillTest sid iid (attrs.ability 1) iid' #intellect (Fixed 2)

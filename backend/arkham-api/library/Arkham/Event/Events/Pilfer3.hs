@@ -20,7 +20,7 @@ pilfer3 = event Pilfer3 Cards.pilfer3
 instance RunMessage Pilfer3 where
   runMessage msg e@(Pilfer3 attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       investigation <- aspect iid attrs (#agility `InsteadOf` #intellect) (mkInvestigate sid iid attrs)
       enabled <- skillTestModifier sid attrs (toTarget iid) (DiscoveredClues 2)
       pushAll $ enabled : leftOr investigation

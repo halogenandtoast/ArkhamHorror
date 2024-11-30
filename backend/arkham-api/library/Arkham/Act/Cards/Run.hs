@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner hiding (Run)
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillTest.Type
 import Arkham.SkillType
@@ -46,7 +45,7 @@ instance RunMessage Run where
         Nothing -> error "investigator should have advanced"
         Just iid -> do
           player <- getPlayer iid
-          sid <- getRandom
+          sid <- genId
           pushAll
             $ chooseOne
               player

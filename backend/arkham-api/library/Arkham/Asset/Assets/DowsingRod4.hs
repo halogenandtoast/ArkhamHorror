@@ -42,7 +42,7 @@ instance RunMessage DowsingRod4 where
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      sid <- getRandom
+      sid <- genId
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do

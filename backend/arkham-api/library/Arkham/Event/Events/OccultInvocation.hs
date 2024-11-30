@@ -18,7 +18,7 @@ instance RunMessage OccultInvocation where
   runMessage msg e@(OccultInvocation attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | attrs `is` eid -> do
       let n = totalDiscardCardPayments attrs.payment
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [DamageDealt n, SkillModifier #intellect n]
       aspect iid attrs (#intellect `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e

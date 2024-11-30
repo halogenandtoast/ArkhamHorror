@@ -32,7 +32,7 @@ instance RunMessage RelicOfAgesForestallingTheFuture where
   runMessage msg a@(RelicOfAgesForestallingTheFuture (attrs `With` metadata)) =
     case msg of
       UseThisAbility iid (isSource attrs -> True) 1 -> do
-        sid <- getRandom
+        sid <- genId
         let chooseSkillTest skillType = beginSkillTest sid iid attrs iid skillType (Fixed 4)
         player <- getPlayer iid
         push

@@ -32,7 +32,7 @@ instance RunMessage ShardsOfTheVoid3 where
   runMessage msg a@(ShardsOfTheVoid3 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid $ DamageDealt 1
         : [ ForEach
               (CountChaosTokens $ SealedOnAsset (be attrs) (ChaosTokenFaceIs Zero))

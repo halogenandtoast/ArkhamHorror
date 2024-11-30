@@ -22,7 +22,7 @@ instance RunMessage WingingIt where
   runMessage msg e@(WingingIt attrs) = case msg of
     InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
       lid <- fieldJust InvestigatorLocation iid
-      sid <- getRandom
+      sid <- genId
       modifiers <-
         if zone == Zone.FromDiscard
           then (: []) <$> skillTestModifier sid attrs iid (DiscoveredClues 1)

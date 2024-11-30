@@ -35,7 +35,7 @@ instance HasAbilities Gallery where
 instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = case msg of
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid SkillWillpower (Fixed 2)
       pure l
     FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ _ | isAbilitySource attrs 1 source -> do

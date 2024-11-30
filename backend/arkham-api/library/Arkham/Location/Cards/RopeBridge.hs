@@ -25,7 +25,7 @@ instance HasAbilities RopeBridge where
 instance RunMessage RopeBridge where
   runMessage msg l@(RopeBridge attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

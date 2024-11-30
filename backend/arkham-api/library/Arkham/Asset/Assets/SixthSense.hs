@@ -32,7 +32,7 @@ instance RunMessage SixthSense where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       lid <- getJustLocation iid
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.sixthSense (effectMetaTarget sid) source (InvestigationTarget iid lid)
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
@@ -60,7 +60,7 @@ instance RunMessage SixthSenseEffect where
               let costs = fold [m | AdditionalCostToInvestigate m <- mods]
               canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
               pure $ guard canAfford $> (location, costs)
-            batchId <- getRandom
+            batchId <- genId
             askQ <- evalQueueT $ chooseOneM iid do
               labeled "Do not choose other location" nothing
               for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do

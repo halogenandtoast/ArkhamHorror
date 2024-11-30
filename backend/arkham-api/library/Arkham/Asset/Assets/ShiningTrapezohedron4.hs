@@ -40,7 +40,7 @@ getWindowCard (_ : rest) = getWindowCard rest
 instance RunMessage ShiningTrapezohedron4 where
   runMessage msg a@(ShiningTrapezohedron4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getWindowCard -> (acId, _batchId, card)) _ -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest
         sid
         iid

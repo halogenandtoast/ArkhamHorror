@@ -9,7 +9,7 @@ spec = describe "Dig Deep" $ do
     withProp @"willpower" 0 self
     withProp @"resources" 2 self
     digDeep <- self `putAssetIntoPlay` Assets.digDeep
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #willpower 3
     useFastActionOf digDeep 1
     useFastActionOf digDeep 1
@@ -19,7 +19,7 @@ spec = describe "Dig Deep" $ do
     withProp @"agility" 0 self
     withProp @"resources" 2 self
     digDeep <- self `putAssetIntoPlay` Assets.digDeep
-    sid <- getRandom
+    sid <- genId
     run $ beginSkillTest sid self #agility 3
     useFastActionOf digDeep 2
     useFastActionOf digDeep 2

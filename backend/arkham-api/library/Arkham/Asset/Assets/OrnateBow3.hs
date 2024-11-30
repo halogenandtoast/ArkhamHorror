@@ -34,7 +34,7 @@ instance RunMessage OrnateBow3 where
   runMessage msg a@(OrnateBow3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
       enabled <- skillTestModifiers sid source iid [DamageDealt 2, SkillModifier #agility 2]
       pushAll $ enabled : leftOr chooseFight

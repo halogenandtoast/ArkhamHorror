@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
-import Arkham.Id
 import Arkham.Prelude
 
 newtype Metadata = Metadata {empowered :: Maybe SkillTestId}
@@ -26,7 +25,7 @@ instance RunMessage EnchantedBladeGuardian3 where
   runMessage msg a@(EnchantedBladeGuardian3 (attrs `With` meta)) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
       pushAll [enabled, chooseFight]

@@ -14,7 +14,7 @@ aTestOfWill2 = event ATestOfWill2 Cards.aTestOfWill2
 instance RunMessage ATestOfWill2 where
   runMessage msg e@(ATestOfWill2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       cancelRevelation attrs $ cardDrawn attrs.windows
       beginSkillTest sid iid attrs iid #willpower (Fixed 3)
       pure e

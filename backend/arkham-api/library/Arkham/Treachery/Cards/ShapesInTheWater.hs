@@ -28,7 +28,7 @@ instance RunMessage ShapesInTheWater where
               Unflooded -> 0
               PartiallyFlooded -> 1
               FullyFlooded -> 2
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed $ 2 + extra)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

@@ -23,7 +23,7 @@ instance RunMessage AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- aspect iid source (#intellect `InsteadOf` #combat) (mkChooseFight sid iid source)
       pushAll $ leftOr chooseFight
       pure a

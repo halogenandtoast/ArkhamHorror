@@ -35,7 +35,7 @@ instance HasAbilities ColdSpringGlen_245 where
 instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

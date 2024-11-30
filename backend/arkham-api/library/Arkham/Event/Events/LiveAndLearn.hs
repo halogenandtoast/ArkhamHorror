@@ -16,7 +16,7 @@ liveAndLearn = event LiveAndLearn Cards.liveAndLearn
 instance RunMessage LiveAndLearn where
   runMessage msg e@(LiveAndLearn attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.SkillTestEnded st] _ | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AnySkillValue 2)
       push $ RepeatSkillTest sid st.id
       pure e

@@ -17,7 +17,7 @@ fracturedConsciousness = treachery FracturedConsciousness Cards.fracturedConscio
 instance RunMessage FracturedConsciousness where
   runMessage msg t@(FracturedConsciousness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid #tablet attrs attrs failSkillTest
       revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t

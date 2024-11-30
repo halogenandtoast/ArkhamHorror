@@ -19,7 +19,7 @@ toeToToe = event ToeToToe Cards.toeToToe
 instance RunMessage ToeToToe where
   runMessage msg e@(ToeToToe attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       enemy <- fromJustNote "enemy should be set" <$> getMeta (toCardId attrs) "chosenEnemy"
       skillTestModifier sid attrs iid (DamageDealt 1)
       skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
@@ -38,7 +38,7 @@ toeToToeEffect = cardEffect ToeToToeEffect Cards.toeToToe
 instance RunMessage ToeToToeEffect where
   runMessage msg e@(ToeToToeEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ (BothSource (InvestigatorSource iid) cardSource) _target | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ toMessage . setTarget attrs <$> onlyChooseFight (mkChooseFight sid iid cardSource)
       pure e
     ChoseEnemy _sid _iid source enemy -> do

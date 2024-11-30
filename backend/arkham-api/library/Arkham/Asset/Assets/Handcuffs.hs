@@ -37,7 +37,7 @@ instance RunMessage Handcuffs where
   runMessage msg a@(Handcuffs attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseEvade <-
         leftOr
           <$> aspect

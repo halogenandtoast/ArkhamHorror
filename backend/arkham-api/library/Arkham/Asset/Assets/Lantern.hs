@@ -34,7 +34,7 @@ instance RunMessage Lantern where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- fieldJust InvestigatorLocation iid
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       investigation <- mkInvestigate sid iid source
       enabled <- skillTestModifier sid source lid (ShroudModifier (-1))
       pushAll [enabled, toMessage investigation]

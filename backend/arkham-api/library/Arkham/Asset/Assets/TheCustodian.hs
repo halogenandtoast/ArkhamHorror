@@ -31,7 +31,7 @@ instance RunMessage TheCustodian where
       for_ iids $ \iid -> push $ drawCards iid (toAbilitySource attrs 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (toAbilitySource attrs 2) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

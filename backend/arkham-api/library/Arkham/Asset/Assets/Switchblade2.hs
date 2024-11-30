@@ -21,7 +21,7 @@ instance RunMessage Switchblade2 where
   runMessage msg a@(Switchblade2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifier sid source iid (SkillModifier #combat 2)
       pushAll [enabled, chooseFight]

@@ -31,7 +31,7 @@ instance RunMessage Armageddon4 where
   runMessage msg a@(Armageddon4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #willpower 2]
       createCardEffect Cards.armageddon4 (effectMetaTarget sid) source iid
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)

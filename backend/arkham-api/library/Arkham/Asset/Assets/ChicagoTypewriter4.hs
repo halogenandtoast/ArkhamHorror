@@ -29,7 +29,7 @@ getActionsSpent _ = 0
 instance RunMessage ChicagoTypewriter4 where
   runMessage msg a@(ChicagoTypewriter4 attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getActionsSpent -> actionsSpent) -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
       enabled <-
         skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #combat (2 * actionsSpent)]

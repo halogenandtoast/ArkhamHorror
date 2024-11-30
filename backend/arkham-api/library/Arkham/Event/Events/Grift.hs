@@ -4,7 +4,6 @@ import Arkham.Attack
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 
 newtype Meta = Meta {chosenEnemy :: Maybe EnemyId}
@@ -24,7 +23,7 @@ instance RunMessage Grift where
       selectOneToHandle iid attrs $ EnemyAt (locationWithInvestigator iid) <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid attrs eid #agility (Fixed 0)
       pure . Grift $ With attrs (meta {chosenEnemy = Just eid})
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do

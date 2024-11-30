@@ -19,7 +19,7 @@ memoryOfOblivion = treachery MemoryOfOblivion Cards.memoryOfOblivion
 instance RunMessage MemoryOfOblivion where
   runMessage msg t@(MemoryOfOblivion attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid #elderthing attrs attrs failSkillTest
       chooseOneM iid do
         for_ [#willpower, #intellect] \skill -> skillLabeled skill $ revelationSkillTest sid iid attrs skill (Fixed 4)

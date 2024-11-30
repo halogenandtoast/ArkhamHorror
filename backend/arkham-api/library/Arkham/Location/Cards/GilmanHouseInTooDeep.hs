@@ -34,7 +34,7 @@ instance RunMessage GilmanHouseInTooDeep where
       placeUnrevealedKeyOn attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         for_ [#combat, #agility] \skill ->
           skillLabeled skill $ beginSkillTest sid iid (attrs.ability 2) iid skill (Fixed 2)

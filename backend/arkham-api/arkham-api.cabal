@@ -2199,7 +2199,6 @@ library
       Arkham.GameEnv
       Arkham.GameT
       Arkham.GameValue
-      Arkham.GHCI
       Arkham.Git
       Arkham.Helpers
       Arkham.Helpers.Ability
@@ -4256,7 +4255,8 @@ test-suite spec
   build-tool-depends:
       cards-discover:cards-discover
   build-depends:
-      arkham-api
+      MonadRandom
+    , arkham-api
     , base
     , containers
     , hspec

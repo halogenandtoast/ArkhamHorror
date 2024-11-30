@@ -39,15 +39,15 @@ instance HasAbilities Room225 where
 instance RunMessage Room225 where
   runMessage msg l@(Room225 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 1) iid #willpower (Fixed 3)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 2) iid #combat (Fixed 3)
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 3) iid #intellect (Fixed 3)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

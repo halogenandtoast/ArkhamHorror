@@ -49,7 +49,7 @@ instance RunMessage MysteriousStairs_186 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       choices <- mins <$> traverse (traverseToSnd (`getSkillValue` iid)) [minBound .. maxBound]
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOrRunOne
           player

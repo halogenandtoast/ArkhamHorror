@@ -16,7 +16,7 @@ twinSuns = treachery TwinSuns Cards.twinSuns
 instance RunMessage TwinSuns where
   runMessage msg t@(TwinSuns attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #intellect (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

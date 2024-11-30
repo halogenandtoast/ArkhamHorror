@@ -26,7 +26,7 @@ instance HasModifiersFor Backstab3 where
 instance RunMessage Backstab3 where
   runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ _ _ | eid == eventId -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (DamageDealt 2)
       aspect iid attrs (#agility `InsteadOf` #combat) (mkChooseFight sid iid attrs)
       pure e

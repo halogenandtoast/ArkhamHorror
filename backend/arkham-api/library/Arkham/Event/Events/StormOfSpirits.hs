@@ -24,7 +24,7 @@ stormOfSpirits = event StormOfSpirits Cards.stormOfSpirits
 instance RunMessage StormOfSpirits where
   runMessage msg e@(StormOfSpirits attrs) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <-
         leftOr
           <$> aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)

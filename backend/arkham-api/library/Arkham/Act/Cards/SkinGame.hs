@@ -37,7 +37,7 @@ instance RunMessage SkinGame where
       drFrancisMorgan <- genCard Assets.drFrancisMorgan
       cloverClubBarId <- getJustLocationByName "Clover Club Bar"
       vipAreaId <- getJustLocationByName "VIP Area"
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         $ if completedExtracurricularActivity
           then

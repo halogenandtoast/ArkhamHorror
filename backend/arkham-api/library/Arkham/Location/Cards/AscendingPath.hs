@@ -41,7 +41,7 @@ instance HasAbilities AscendingPath where
 instance RunMessage AscendingPath where
   runMessage msg l@(AscendingPath attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
       pure l
     Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do

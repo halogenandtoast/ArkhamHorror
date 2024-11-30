@@ -17,7 +17,7 @@ baitAndSwitch = event BaitAndSwitch Cards.baitAndSwitch
 instance RunMessage BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ setTarget attrs <$> mkChooseEvade sid iid attrs
       pure e
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do

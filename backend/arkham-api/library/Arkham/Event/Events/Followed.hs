@@ -19,7 +19,7 @@ followed = event Followed Cards.followed
 instance RunMessage Followed where
   runMessage msg e@(Followed attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       enemy <- fromJustNote "damage should be set" <$> getMeta (toCardId attrs) "enemy"
       skillTestModifiers
         sid

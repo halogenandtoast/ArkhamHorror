@@ -24,7 +24,7 @@ instance RunMessage Rolands38SpecialAdvanced where
       anyClues <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
       let source = attrs.ability 1
       let n = if anyClues then 4 else 2
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat n]
       chooseFightEnemy sid iid source
       pure a

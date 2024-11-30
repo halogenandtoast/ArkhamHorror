@@ -23,7 +23,7 @@ instance HasAbilities HenryDeveau where
 instance RunMessage HenryDeveau where
   runMessage msg a@(HenryDeveau attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

@@ -23,7 +23,7 @@ instance RunMessage Clairvoyance3 where
   runMessage msg a@(Clairvoyance3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [DiscoveredClues 1, SkillModifier #willpower 2]
       onRevealChaosTokenEffect sid (oneOf [#eldersign, #plusone, #zero]) attrs attrs do
         assignHorror iid source 1

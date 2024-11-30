@@ -28,7 +28,7 @@ instance RunMessage AzureFlame5 where
   runMessage msg a@(AzureFlame5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [DamageDealt 2, SkillModifier #willpower 3]
       createCardEffect Cards.azureFlame5 Nothing source sid
       onRevealChaosTokenEffect sid (mapOneOf ChaosTokenFaceIs [ElderSign, PlusOne, Zero]) source sid do

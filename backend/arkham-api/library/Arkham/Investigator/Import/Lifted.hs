@@ -5,6 +5,7 @@ module Arkham.Investigator.Import.Lifted (
 where
 
 import Arkham.Classes as X
+import Arkham.Id as X
 import Arkham.Investigator.Runner as X (
   ChaosTokenFace (ElderSign),
   ChaosTokenModifier (..),
@@ -15,9 +16,8 @@ import Arkham.Investigator.Runner as X (
   IsInvestigator,
   Stats (..),
   deckL,
-  resignedL,
-  defeatedL,
   decksL,
+  defeatedL,
   deleteMetaKey,
   insertMetaKey,
   investigator,
@@ -30,6 +30,7 @@ import Arkham.Investigator.Runner as X (
   pushIfAny,
   pushWhen,
   pushWhenM,
+  resignedL,
   setMeta,
   slotsL,
   startsWith,

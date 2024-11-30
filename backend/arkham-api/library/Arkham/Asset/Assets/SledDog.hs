@@ -49,7 +49,7 @@ instance RunMessage SledDog where
           ]
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 _ (getExhaustedCount -> x) -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers
         sid
         (attrs.ability 2)

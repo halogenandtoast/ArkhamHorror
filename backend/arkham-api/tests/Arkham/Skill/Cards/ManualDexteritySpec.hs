@@ -15,7 +15,7 @@ spec = describe "Manual Dexterity" $ do
     self `addToHand` manualDexterity
     withEach [(Zero, map toCard cards), (MinusOne, [])] $ \(token, expectedHand) -> do
       setChaosTokens [token]
-      sid <- getRandom
+      sid <- genId
       run $ beginSkillTest sid self #agility 2
       commit manualDexterity
       startSkillTest

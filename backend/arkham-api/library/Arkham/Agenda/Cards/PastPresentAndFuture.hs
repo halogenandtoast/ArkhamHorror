@@ -43,7 +43,7 @@ instance RunMessage PastPresentAndFuture where
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
       investigatorIds <- getInvestigatorIds
       lead <- getLead
-      sid <- getRandom
+      sid <- genId
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
           , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck (basic $ CardWithType LocationType)

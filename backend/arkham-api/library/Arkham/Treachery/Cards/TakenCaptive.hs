@@ -16,7 +16,7 @@ takenCaptive = treachery TakenCaptive Cards.takenCaptive
 instance RunMessage TakenCaptive where
   runMessage msg t@(TakenCaptive attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #agility (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

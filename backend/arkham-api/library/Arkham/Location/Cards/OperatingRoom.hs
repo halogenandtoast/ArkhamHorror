@@ -25,7 +25,7 @@ instance RunMessage OperatingRoom where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select $ affectsOthers $ investigatorAt attrs.id
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOrRunOne
           player

@@ -18,7 +18,7 @@ diabolicVoices = treachery DiabolicVoices Cards.diabolicVoices
 instance RunMessage DiabolicVoices where
   runMessage msg t@(DiabolicVoices attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 3, ScenarioInDiscardCountCalculation (cardIs Cards.diabolicVoices)]

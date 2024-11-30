@@ -15,7 +15,7 @@ instance RunMessage BurningTheMidnightOil where
   runMessage msg e@(BurningTheMidnightOil attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       gainResourcesIfCan iid attrs 2
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid attrs
       pure e
     _ -> BurningTheMidnightOil <$> liftRunMessage msg attrs

@@ -4,6 +4,7 @@ module Arkham.ChaosBag.Base where
 
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
+import Arkham.Id
 import Arkham.Json
 import Arkham.Prelude
 import Data.Aeson.TH
@@ -58,7 +59,7 @@ revealedChaosTokensL =
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m {chaosBagChoice = x}
 
-createChaosToken :: MonadRandom m => ChaosTokenFace -> m ChaosToken
+createChaosToken :: IdGen m => ChaosTokenFace -> m ChaosToken
 createChaosToken face = do
-  tokenId <- getRandom
+  tokenId <- genId
   pure $ ChaosToken tokenId face Nothing

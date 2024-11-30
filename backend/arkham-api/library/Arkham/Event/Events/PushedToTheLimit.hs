@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (defaultWindows)
@@ -35,7 +34,7 @@ instance RunMessage PushedToTheLimit where
             card
             [ unfocus
             , AddCardEntity card
-            , handleTargetChoice iid attrs (AssetId $ unsafeCardIdToUUID card.id)
+            , handleTargetChoice iid attrs (AssetId $ unsafeCardIdToInt card.id)
             , RemoveCardEntity card
             , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
             ]

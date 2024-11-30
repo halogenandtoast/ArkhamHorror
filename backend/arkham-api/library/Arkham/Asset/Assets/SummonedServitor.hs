@@ -104,7 +104,7 @@ instance RunMessage SummonedServitor where
         ]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #combat 4, IgnoreAloof, IgnoreRetaliate]
       chooseFightEnemyMatch
         sid
@@ -113,7 +113,7 @@ instance RunMessage SummonedServitor where
         (fightOverride $ EnemyAt $ locationWithAsset attrs.id)
       pure . SummonedServitor $ overMeta (<>) [Action.Fight] attrs
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 2) iid [BaseSkillOf #agility 4, IgnoreAlert]
       chooseEvadeEnemyMatch
         sid
@@ -123,7 +123,7 @@ instance RunMessage SummonedServitor where
       pure . SummonedServitor $ overMeta (<>) [Action.Evade] attrs
     UseThisAbility iid (isSource attrs -> True) 4 -> do
       lid <- selectJust $ locationWithAsset attrs.id
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 4) iid [BaseSkillOf #intellect 4]
       pushM $ mkInvestigateLocation sid iid (attrs.ability 4) lid
       pure . SummonedServitor $ overMeta (<>) [Action.Investigate] attrs

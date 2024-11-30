@@ -31,7 +31,7 @@ instance HasModifiersFor OneTwoPunch5 where
 instance RunMessage OneTwoPunch5 where
   runMessage msg e@(OneTwoPunch5 (attrs `With` metadata)) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
       enabled <- skillTestModifier sid attrs iid (DamageDealt 1)
       pushAll [enabled, chooseFight]
@@ -42,7 +42,7 @@ instance RunMessage OneTwoPunch5 where
         EnemyTarget eid -> do
           isStillAlive <- selectAny $ EnemyWithId eid
           player <- getPlayer iid
-          sid <- getRandom
+          sid <- genId
           enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 3, DamageDealt 2]
           push
             $ chooseOrRunOne player

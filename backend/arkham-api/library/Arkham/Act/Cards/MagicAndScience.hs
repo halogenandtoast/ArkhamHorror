@@ -10,7 +10,6 @@ import Arkham.Classes
 import Arkham.Direction
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
-import Arkham.Id
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))

@@ -22,7 +22,7 @@ instance HasAbilities CyclopeanHammer5 where
 instance RunMessage CyclopeanHammer5 where
   runMessage msg a@(CyclopeanHammer5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, AddSkillValue #willpower]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a

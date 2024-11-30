@@ -26,7 +26,7 @@ spec = describe "The Necronomicon" $ do
     it "treats elder sign tokens as auto fail" . gameTest $ \self -> do
       setup self
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #willpower 0
       assertFailedSkillTest
 

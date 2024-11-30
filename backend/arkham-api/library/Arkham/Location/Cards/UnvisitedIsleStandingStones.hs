@@ -50,7 +50,7 @@ instance HasAbilities UnvisitedIsleStandingStones where
 instance RunMessage UnvisitedIsleStandingStones where
   runMessage msg l@(UnvisitedIsleStandingStones attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 10)
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do

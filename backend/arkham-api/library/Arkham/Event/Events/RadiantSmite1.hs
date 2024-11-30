@@ -32,7 +32,7 @@ instance RunMessage RadiantSmite1 where
           [("Bless Tokens", (0, n))]
           attrs
 
-      sid <- getRandom
+      sid <- genId
       fight <- mkChooseFight sid iid attrs
       chooseOneM iid do
         labeled "Use {willpower}" $ push $ withSkillType #willpower fight

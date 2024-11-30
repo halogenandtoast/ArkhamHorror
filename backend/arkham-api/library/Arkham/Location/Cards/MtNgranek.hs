@@ -33,7 +33,7 @@ instance RunMessage MtNgranek where
       pure . MtNgranek $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

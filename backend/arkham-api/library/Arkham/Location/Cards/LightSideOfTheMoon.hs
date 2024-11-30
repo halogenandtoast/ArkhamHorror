@@ -27,7 +27,7 @@ instance HasAbilities LightSideOfTheMoon where
 instance RunMessage LightSideOfTheMoon where
   runMessage msg l@(LightSideOfTheMoon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 1) iid s (Fixed 1)]

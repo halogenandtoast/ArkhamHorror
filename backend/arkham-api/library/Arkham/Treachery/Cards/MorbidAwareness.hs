@@ -18,7 +18,7 @@ morbidAwareness = treachery MorbidAwareness Cards.morbidAwareness
 instance RunMessage MorbidAwareness where
   runMessage msg t@(MorbidAwareness attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SubtractCalculation (Fixed 6) (DistanceFromCalculation iid "Room 212")

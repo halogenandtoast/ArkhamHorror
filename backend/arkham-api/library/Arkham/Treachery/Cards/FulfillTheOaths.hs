@@ -15,13 +15,13 @@ instance RunMessage FulfillTheOaths where
   runMessage msg t@(FulfillTheOaths attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       n <- getCurrentActStep
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #agility (Fixed 3)
       when (n >= 2) do
-        sid2 <- getRandom
+        sid2 <- genId
         revelationSkillTest sid2 iid attrs #combat (Fixed 2)
       when (n >= 3) do
-        sid3 <- getRandom
+        sid3 <- genId
         revelationSkillTest sid3 iid attrs #intellect (Fixed 2)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

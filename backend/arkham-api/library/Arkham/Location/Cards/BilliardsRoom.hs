@@ -23,7 +23,7 @@ instance HasAbilities BilliardsRoom where
 instance RunMessage BilliardsRoom where
   runMessage msg l@(BilliardsRoom attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

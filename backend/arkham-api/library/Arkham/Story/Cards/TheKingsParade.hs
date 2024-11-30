@@ -23,7 +23,7 @@ instance RunMessage TheKingsParade where
         Nothing -> error "missing"
         Just xs -> sample xs
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheKingsParade
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ beginSkillTest sid iid attrs iid #combat (Fixed 2)
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace

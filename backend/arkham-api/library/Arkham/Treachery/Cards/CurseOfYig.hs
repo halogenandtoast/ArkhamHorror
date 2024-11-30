@@ -30,7 +30,7 @@ instance RunMessage CurseOfYig where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getVengeanceInVictoryDisplay
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed $ 2 + n)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

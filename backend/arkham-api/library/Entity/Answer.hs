@@ -20,7 +20,6 @@ import Arkham.Message
 import Data.Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
-import Data.UUID (UUID)
 import Foundation
 import Json
 import Safe (fromJustNote)
@@ -43,11 +42,11 @@ data QuestionResponse = QuestionResponse
   deriving stock (Show, Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  {parAmounts :: Map UUID Int}
+  {parAmounts :: Map Int Int}
   deriving stock (Show, Generic)
 
 newtype AmountsResponse = AmountsResponse
-  {arAmounts :: Map UUID Int}
+  {arAmounts :: Map Int Int}
   deriving stock (Show, Generic)
 
 instance FromJSON QuestionResponse where
@@ -243,17 +242,17 @@ handleAnswer Game {..} playerId = \case
   AmountsAnswer response -> case Map.lookup playerId gameQuestion of
     Just (ChooseAmounts _ _ choices target) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+      let toNamedId uuid = NamedId (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
+      let amounts = map (first toNamedId) $ Map.toList $ arAmounts response
       pure
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
     Just (QuestionLabel _ _ (ChooseAmounts _ _ choices target)) -> do
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
-      let toNamedUUID uuid = NamedUUID (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
+      let toNamedId uuid = NamedId (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedUUID) $ Map.toList $ arAmounts response
+      let amounts = map (first toNamedId) $ Map.toList $ arAmounts response
       pure
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]

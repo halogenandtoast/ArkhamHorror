@@ -38,7 +38,7 @@ instance RunMessage ShroudOfShadows4 where
   runMessage msg a@(ShroudOfShadows4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #willpower 2)
       createCardEffect Cards.shroudOfShadows4 (effectMetaTarget sid) source iid
       aspect

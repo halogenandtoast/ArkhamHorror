@@ -27,7 +27,7 @@ instance HasAbilities SawboneAlleyInTooDeep where
 instance RunMessage SawboneAlleyInTooDeep where
   runMessage msg l@(SawboneAlleyInTooDeep attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (GameValueCalculation $ PerPlayer 1)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

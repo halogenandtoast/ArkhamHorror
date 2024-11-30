@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
-import Arkham.Id
 import Arkham.Prelude
 
 newtype BrandOfCthugha1 = BrandOfCthugha1 AssetAttrs
@@ -20,7 +19,7 @@ instance HasAbilities BrandOfCthugha1 where
 instance RunMessage BrandOfCthugha1 where
   runMessage msg a@(BrandOfCthugha1 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       choices <- for [#willpower, #combat] \sType -> do
         chooseFight <- toMessage . withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
         enabled <- skillTestModifiers sid (attrs.ability 1) iid [SkillModifier sType 1, NoStandardDamage]
@@ -34,7 +33,7 @@ instance RunMessage BrandOfCthugha1 where
       case attrs.use Charge of
         0 -> pure ()
         1 -> do
-          charges <- namedUUID "Charges"
+          charges <- namedId "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         _ -> do
           player <- getPlayer iid

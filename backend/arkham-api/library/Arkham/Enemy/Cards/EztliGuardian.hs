@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Attack
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (PhaseStep)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Trait
 

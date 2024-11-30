@@ -42,7 +42,7 @@ instance RunMessage TwilightBlade where
   runMessage msg a@(TwilightBlade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseOneM iid do
         labeled "Use {willpower}" $ chooseFightEnemyEdit sid iid source (withSkillType #willpower)
         labeled "Use {combat}" $ chooseFightEnemy sid iid source

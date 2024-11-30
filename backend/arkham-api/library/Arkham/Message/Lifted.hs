@@ -441,7 +441,7 @@ defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> 
 
 createAsset :: (ReverseQueue m, IsCard card) => card -> m AssetId
 createAsset card = do
-  assetId <- getId
+  assetId <- genId
   push $ CreateAssetAt assetId (toCard card) Unplaced
   pure assetId
 
@@ -933,7 +933,7 @@ createCardEffectCapture
   -> target
   -> m EffectId
 createCardEffectCapture def mMeta source target = do
-  effectId <- getRandom
+  effectId <- genId
   builder <- Msg.makeEffectBuilder def.cardCode mMeta source target
   push $ Msg.CreateEffect builder {effectBuilderEffectId = Just effectId}
   pure effectId
@@ -1482,7 +1482,7 @@ abilityModifier ab source target modifier = Msg.pushM $ Msg.abilityModifier ab s
 
 batched :: ReverseQueue m => (BatchId -> QueueT Message m ()) -> m ()
 batched f = do
-  batchId <- getId
+  batchId <- genId
   msgs <- evalQueueT (f batchId)
   push $ Would batchId msgs
 
@@ -1859,7 +1859,7 @@ chaosTokenEffect (toSource -> source) token modifier =
 
 addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
 addCurseTokens mWho n = do
-  batchId <- getId
+  batchId <- genId
   would <-
     Msg.checkWindows
       [ (Window.mkWhen $ Window.WouldAddChaosTokensToChaosBag mWho $ replicate n #curse)
@@ -2038,7 +2038,7 @@ lookAtRevealed
 lookAtRevealed iid source target = push $ LookAtRevealed iid (toSource source) (toTarget target)
 
 temporaryModifier
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, IdGen m)
   => target
   -> source
   -> ModifierType
@@ -2047,14 +2047,14 @@ temporaryModifier
 temporaryModifier target source modType = temporaryModifiers target source [modType]
 
 temporaryModifiers
-  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m)
+  :: (Targetable target, Sourceable source, HasQueue Message m, MonadRandom m, HasGame m, IdGen m)
   => target
   -> source
   -> [ModifierType]
   -> QueueT Message m ()
   -> m ()
 temporaryModifiers target source modTypes body = do
-  effectId <- getRandom
+  effectId <- genId
   ems <- Msg.effectModifiers source modTypes
   builder <- Msg.makeEffectBuilder "wmode" (Just ems) source target
   msgs <- evalQueueT body

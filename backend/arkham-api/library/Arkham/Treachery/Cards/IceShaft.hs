@@ -13,7 +13,7 @@ iceShaft = treachery IceShaft Cards.iceShaft
 instance RunMessage IceShaft where
   runMessage msg t@(IceShaft attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid #frost attrs iid do
         assignDamage iid attrs 1
       revelationSkillTest sid iid attrs #agility (Fixed 3)

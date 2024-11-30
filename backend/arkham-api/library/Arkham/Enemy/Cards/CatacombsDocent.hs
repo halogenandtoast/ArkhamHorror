@@ -27,7 +27,7 @@ instance HasAbilities CatacombsDocent where
 instance RunMessage CatacombsDocent where
   runMessage msg e@(CatacombsDocent attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) attrs #intellect (Fixed 4)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

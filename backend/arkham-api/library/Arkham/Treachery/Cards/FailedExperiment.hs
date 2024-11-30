@@ -19,7 +19,7 @@ failedExperiment = treachery FailedExperiment Cards.failedExperiment
 instance RunMessage FailedExperiment where
   runMessage msg t@(FailedExperiment attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs (SkillTestTarget sid)
         $ CalculatedDifficulty
         $ CountAssets

@@ -15,7 +15,6 @@ import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

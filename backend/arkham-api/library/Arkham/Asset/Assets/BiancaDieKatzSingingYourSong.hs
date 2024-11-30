@@ -40,7 +40,7 @@ instance RunMessage BiancaDieKatzSingingYourSong where
       pure a
     ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) -> do
       moveTokens (attrs.ability 1) attrs iid Resource n
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) iid #agility (Fixed n)
       pure . BiancaDieKatzSingingYourSong $ attrs `with` Meta n
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

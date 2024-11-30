@@ -167,7 +167,7 @@ nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
 
 payCost
   :: forall m
-   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
+   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m, IdGen m)
   => Message
   -> ActiveCost
   -> InvestigatorId
@@ -267,7 +267,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       pushAll $ replicate n $ drawEncounterCard iid source
       pure c
     SkillTestCost stsource sType n -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid stsource (sourceToTarget stsource) sType n
       pure c
     AsIfAtLocationCost _ _ -> error "Can not be paid because withModifiers only HasGame, but can't adjust the queue"
@@ -319,7 +319,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             SealCost matcher -> selectCount matcher
             _ -> pure n
           name <- fieldMap InvestigatorName toTitle iid
-          choiceId <- getRandom
+          choiceId <- genId
           pushWhen canAfford
             $ Ask player
             $ ChoosePaymentAmounts
@@ -510,7 +510,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       let minimumHorror = max 1 (requiredResources - availableResources)
       sanity <- field InvestigatorRemainingSanity iid
       name <- fieldMap InvestigatorName toTitle iid
-      choiceId <- getRandom
+      choiceId <- genId
       push
         $ Ask player
         $ ChoosePaymentAmounts
@@ -555,7 +555,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> do
           resources <- getSpendableResources iid
           name <- fieldMap InvestigatorName toTitle iid
-          choiceId <- getRandom
+          choiceId <- genId
           push
             $ Ask player
             $ ChoosePaymentAmounts
@@ -571,7 +571,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> do
           resources <- getSpendableResources iid
           name <- fieldMap InvestigatorName toTitle iid
-          choiceId <- getRandom
+          choiceId <- genId
           push
             $ Ask player
             $ ChoosePaymentAmounts
@@ -591,7 +591,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       if x < n
         then error "Not enough frost tokens"
         else do
-          batchId <- getRandom
+          batchId <- genId
           would <-
             checkWindows
               [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate x FrostToken)
@@ -613,7 +613,7 @@ payCost msg c iid skipAdditionalCosts cost = do
                    )
           if canParallelRex
             then do
-              batchId <- getRandom
+              batchId <- genId
               push
                 $ Would batchId
                 $ chooseOne
@@ -629,7 +629,7 @@ payCost msg c iid skipAdditionalCosts cost = do
               withPayment $ AddCurseTokenPayment x
             else error "should not be here"
         else do
-          batchId <- getRandom
+          batchId <- genId
           would <-
             checkWindows
               [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate x CurseToken)
@@ -719,8 +719,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                   | sum (map (\(_, _, z) -> z) iidsWithResources) == x && null resourcesFromAssets ->
                       pushAll $ map (\(iid', _, z) -> SpendResources iid' z) iidsWithResources
                 _ -> do
-                  rs1 <- getRandoms
-                  rs2 <- getRandoms
+                  rs1 <- genIds
+                  rs2 <- genIds
                   push
                     $ Ask player
                     $ ChoosePaymentAmounts ("Pay " <> tshow x <> " resources") (Just $ TotalAmountTarget x)
@@ -840,7 +840,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       let maxUses = min uses m
 
       name <- fieldMap InvestigatorName toTitle iid
-      choiceId <- getRandom
+      choiceId <- genId
 
       push
         $ Ask player
@@ -926,7 +926,7 @@ payCost msg c iid skipAdditionalCosts cost = do
             then do
               for_ xs \(iid', _, cCount) -> push (PayCost acId iid' True (ClueCost (Static cCount)))
             else do
-              rs <- getRandoms
+              rs <- genIds
               let
                 paymentOptions =
                   map
@@ -981,7 +981,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           (andM . sequence [pure . notCostCard . PlayerCard, (`extendedCardMatch` extendedCardMatcher)])
           handCards
       name <- fieldMap InvestigatorName toTitle iid
-      choiceId <- getRandom
+      choiceId <- genId
       push
         $ Ask player
         $ ChoosePaymentAmounts
@@ -1124,7 +1124,7 @@ instance RunMessage ActiveCost where
                 *> [ enabled
                    , CheckAdditionalCosts acId
                    ]
-          batchId <- getRandom
+          batchId <- genId
           beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
           wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
           -- We only need to check attacks of opportunity if we spend actions,

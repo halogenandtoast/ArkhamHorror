@@ -22,7 +22,7 @@ instance RunMessage PsychicPull where
           c <- sample cards
           discardCard iid attrs c
           for_ c.cost \cost -> do
-            sid <- getRandom
+            sid <- genId
             revelationSkillTest sid iid attrs #willpower (Fixed $ toPrintedCost cost)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

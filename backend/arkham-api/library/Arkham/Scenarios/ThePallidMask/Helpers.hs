@@ -46,7 +46,7 @@ positionToLabel (x, y) = Label . pack $ "pos" <> fromI x <> fromI y
     | otherwise = show n
 
 placeAtDirection
-  :: (MonadRandom m, HasGame m) => Direction -> LocationAttrs -> m (Card -> m [Message])
+  :: (MonadRandom m, IdGen m, HasGame m) => Direction -> LocationAttrs -> m (Card -> m [Message])
 placeAtDirection direction attrs = do
   -- we need to determine what we are connected to based on our pos, the only way to do this is to get locations with labels
   let placedPosition = newPos direction (posLabelToPosition . mkLabel $ locationLabel attrs)
@@ -85,7 +85,7 @@ directionEmpty :: HasGame m => LocationAttrs -> Direction -> m Bool
 directionEmpty attrs dir = selectNone $ LocationInDirection dir (be attrs.id)
 
 toMaybePlacement
-  :: (MonadRandom m, HasGame m) => LocationAttrs -> Direction -> m (Maybe (Card -> m [Message]))
+  :: (MonadRandom m, HasGame m, IdGen m) => LocationAttrs -> Direction -> m (Maybe (Card -> m [Message]))
 toMaybePlacement attrs dir = do
   isEmpty <- directionEmpty attrs dir
   if isEmpty
@@ -93,7 +93,11 @@ toMaybePlacement attrs dir = do
     else pure Nothing
 
 placeDrawnLocations
-  :: (MonadRandom m, HasQueue Message m, HasGame m) => LocationAttrs -> [Card] -> [Direction] -> m ()
+  :: (MonadRandom m, HasQueue Message m, HasGame m, IdGen m)
+  => LocationAttrs
+  -> [Card]
+  -> [Direction]
+  -> m ()
 placeDrawnLocations attrs cards directions = do
   placements <- mapMaybeM (toMaybePlacement attrs) directions
   msgs <- concat <$> zipWithM ($) placements cards

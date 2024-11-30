@@ -26,6 +26,7 @@ import Arkham.Helpers.Message as X hiding (
   RevealChaosToken,
  )
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X

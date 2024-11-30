@@ -30,7 +30,7 @@ instance RunMessage SearchForAlejandro where
     AdvanceAct aid _ _ | aid == toId attrs && onSide D attrs -> do
       velmasDiner <- selectJust $ locationIs Locations.velmasDiner
       henryDeveau <- genCard Assets.henryDeveau
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         [ CreateAssetAt assetId henryDeveau (AtLocation velmasDiner)
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

@@ -28,7 +28,7 @@ instance RunMessage HoldUp where
   runMessage msg e@(HoldUp (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       selectOneToHandle iid attrs $ inHandOf iid <> #item <> #asset
-      sid <- getRandom
+      sid <- genId
       chooseFightEnemyEdit sid iid attrs (setTarget attrs)
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do

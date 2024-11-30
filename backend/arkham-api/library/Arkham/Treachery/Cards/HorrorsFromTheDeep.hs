@@ -28,7 +28,7 @@ instance RunMessage HorrorsFromTheDeep where
               Unflooded -> 0
               PartiallyFlooded -> 1
               FullyFlooded -> 2
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #agility (Fixed $ 2 + extra)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

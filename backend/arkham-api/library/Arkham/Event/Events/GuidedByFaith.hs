@@ -17,7 +17,7 @@ guidedByFaith = event GuidedByFaith Cards.guidedByFaith
 instance RunMessage GuidedByFaith where
   runMessage msg e@(GuidedByFaith attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid (oneOf [#bless, #eldersign]) attrs attrs do
         skillTestModifier sid attrs iid (DiscoveredClues 1)
       investigateWithSkillChoice sid iid attrs [#willpower, #intellect]

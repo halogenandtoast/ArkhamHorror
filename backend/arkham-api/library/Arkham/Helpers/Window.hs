@@ -39,9 +39,9 @@ checkWindows windows' = do
 windows :: [WindowType] -> [Message]
 windows windows' = [CheckWindows $ map (mkWindow timing) windows' | timing <- [#when, #at, #after]]
 
-wouldWindows :: MonadRandom m => WindowType -> m (BatchId, [Message])
+wouldWindows :: IdGen m => WindowType -> m (BatchId, [Message])
 wouldWindows window = do
-  batchId <- getRandom
+  batchId <- genId
   pure
     ( batchId
     , [ CheckWindows [Window timing window (Just batchId)]
@@ -81,7 +81,7 @@ pushBatch batchId msg = push $ Would batchId [msg]
 pushBatched :: HasQueue Message m => BatchId -> [Message] -> m ()
 pushBatched batchId msgs = push $ Would batchId msgs
 
-wouldDo :: (MonadRandom m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
+wouldDo :: (IdGen m, HasQueue Message m) => Message -> WindowType -> WindowType -> m ()
 wouldDo msg wouldWindow window = do
   (batchId, wouldWindowsMsgs) <- wouldWindows wouldWindow
   let framed = doBatch batchId msg window
@@ -91,7 +91,7 @@ wouldDo msg wouldWindow window = do
 windows to add a single one at a time
 -}
 wouldDoEach
-  :: (MonadRandom m, HasQueue Message m)
+  :: (IdGen m, HasQueue Message m)
   => Int
   -> Message
   -> WindowType -- outer would window

@@ -34,7 +34,7 @@ instance RunMessage ForbiddingShore where
   runMessage msg l@(ForbiddingShore attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

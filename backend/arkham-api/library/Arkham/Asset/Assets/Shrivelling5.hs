@@ -24,7 +24,7 @@ instance RunMessage Shrivelling5 where
   runMessage msg a@(Shrivelling5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid attrs iid [SkillModifier #willpower 3, DamageDealt 2]
       let tokens = [Skull, Cultist, Tablet, ElderThing, AutoFail]
       onRevealChaosTokenEffect sid (mapOneOf ChaosTokenFaceIs tokens) source sid do

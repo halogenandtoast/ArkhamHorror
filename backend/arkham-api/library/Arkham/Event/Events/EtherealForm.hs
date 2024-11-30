@@ -15,7 +15,7 @@ etherealForm = event EtherealForm Cards.etherealForm
 instance RunMessage EtherealForm where
   runMessage msg e@(EtherealForm attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
       chooseEvadeEnemy sid iid attrs
       pure e

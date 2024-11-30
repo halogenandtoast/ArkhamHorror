@@ -20,7 +20,7 @@ instance RunMessage PassageIntoTheVeil where
     Revelation iid source | isSource attrs source -> do
       huntingHorrorAtYourLocation <-
         selectAny $ enemyIs Enemies.huntingHorror <> at_ (locationWithInvestigator iid)
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid source #willpower
         $ Fixed (if huntingHorrorAtYourLocation then 5 else 3)

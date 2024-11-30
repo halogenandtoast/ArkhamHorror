@@ -33,7 +33,7 @@ instance RunMessage Nasht where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

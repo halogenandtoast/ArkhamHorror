@@ -23,7 +23,7 @@ instance HasAbilities Stealth where
 instance RunMessage Stealth where
   runMessage msg a@(Stealth attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
     ChosenEvadeEnemy sid source@(isSource attrs -> True) eid -> do

@@ -36,7 +36,7 @@ instance HasAbilities BrackishWaters where
 instance RunMessage BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

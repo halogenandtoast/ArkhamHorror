@@ -29,7 +29,7 @@ instance RunMessage StallForTime where
               This _ -> EnemyEvade
               That _ -> EnemyFight
               These evd fgt -> if evd < fgt then EnemyEvade else EnemyFight
-      sid <- getRandom
+      sid <- genId
       parley sid iid attrs eid #willpower $ EnemyMaybeFieldCalculation eid fld
       pure e
     PassedThisSkillTest _iid (isSource attrs -> True) -> do

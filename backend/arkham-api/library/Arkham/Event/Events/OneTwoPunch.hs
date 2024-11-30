@@ -23,7 +23,7 @@ oneTwoPunch = event (OneTwoPunch . (`with` Metadata True)) Cards.oneTwoPunch
 instance RunMessage OneTwoPunch where
   runMessage msg e@(OneTwoPunch (attrs `With` metadata)) = case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid attrs
       enabled <- skillTestModifier sid attrs iid (SkillModifier #combat 1)
       pushAll [enabled, chooseFight]
@@ -34,7 +34,7 @@ instance RunMessage OneTwoPunch where
         EnemyTarget eid -> do
           isStillAlive <- selectAny $ EnemyWithId eid
           player <- getPlayer iid
-          sid <- getRandom
+          sid <- genId
           enabled <- skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
           push
             $ chooseOrRunOne player

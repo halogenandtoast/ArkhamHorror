@@ -30,7 +30,7 @@ instance HasModifiersFor Kitchen where
 instance RunMessage Kitchen where
   runMessage msg l@(Kitchen attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
       pure l
     PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _

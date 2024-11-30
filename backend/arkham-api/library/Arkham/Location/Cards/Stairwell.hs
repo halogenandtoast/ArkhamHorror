@@ -33,7 +33,7 @@ instance RunMessage Stairwell where
   runMessage msg l@(Stairwell attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       basementLocations <- select $ LocationWithTrait Basement
-      sid <- getRandom
+      sid <- genId
       chooseTargetM iid basementLocations \basementLocation -> do
         moveTo (attrs.ability 1) iid basementLocation
         beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)

@@ -11,7 +11,7 @@ export type ProxySource = {
 export type OtherSource = {
   sourceTag: "OtherSource"
   tag: string
-  contents?: string
+  contents?: string | number
 }
 
 export type TarotSource = {
@@ -44,6 +44,7 @@ export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.
           tuple([sourceDecoder, JsonDecoder.number], 'proxySource').
           chain(([source,]) => "contents" in source ? JsonDecoder.succeed : JsonDecoder.fail("missing contents"))
       , JsonDecoder.optional(JsonDecoder.string)
+      , JsonDecoder.optional(JsonDecoder.number)
       ], 'OtherSource.contents'))
   },
   'OtherSource'

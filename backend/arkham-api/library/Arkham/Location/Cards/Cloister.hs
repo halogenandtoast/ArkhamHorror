@@ -21,7 +21,7 @@ instance HasAbilities Cloister where
 instance RunMessage Cloister where
   runMessage msg l@(Cloister attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

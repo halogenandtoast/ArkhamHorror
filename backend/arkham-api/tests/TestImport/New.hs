@@ -151,13 +151,13 @@ instance CanMoveTo LocationId where
 
 fightEnemy :: Investigator -> Enemy -> TestAppT SkillTestId
 fightEnemy i e = do
-  sid <- getRandom
+  sid <- genId
   run $ FightEnemy sid (toId i) (toId e) (toSource i) Nothing SkillCombat False
   pure sid
 
 evadeEnemy :: Investigator -> Enemy -> TestAppT ()
 evadeEnemy i e = do
-  sid <- getRandom
+  sid <- genId
   run $ EvadeEnemy sid (toId i) (toId e) (toSource i) Nothing SkillAgility False
 
 evadedEnemy :: Investigator -> Enemy -> TestAppT ()
@@ -165,7 +165,7 @@ evadedEnemy i e = run $ EnemyEvaded (toId i) (toId e)
 
 investigate :: Investigator -> Location -> TestAppT ()
 investigate i l = do
-  sid <- getRandom
+  sid <- genId
   run
     $ Investigate
     $ MkInvestigate
@@ -737,7 +737,7 @@ unlessSetting f body = do
 
 failSkillTest :: Investigator -> TestAppT ()
 failSkillTest self = do
-  sid <- getRandom
+  sid <- genId
   setChaosTokens [AutoFail]
   runSkillTest sid self #combat 1
   applyResults
@@ -788,7 +788,7 @@ assertHorrorIsDirect = do
 createWeaknessEnemy :: Investigator -> CardDef -> TestAppT Enemy
 createWeaknessEnemy self def = do
   card <- genCard def
-  enemyId <- getRandom
+  enemyId <- genId
   let enemy' =
         overAttrs (\attrs -> attrs {enemyBearer = Just (toId self)})
           $ lookupEnemy (toCardCode card) enemyId (toCardId card)
@@ -847,8 +847,7 @@ resolveAmounts self choices = do
         <> " to be in "
         <> show ns
 
-  rs <- getRandoms
-  run $ ResolveAmounts (toId self) (zipWith (\r -> first (`NamedUUID` r)) rs choices) target
+  run $ ResolveAmounts (toId self) (zipWith (\r -> first (`NamedId` r)) [1 ..] choices) target
 
 chooseFight :: TestAppT ()
 chooseFight = do

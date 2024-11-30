@@ -17,7 +17,7 @@ instance RunMessage TwistedToHisWill where
   runMessage msg t@(TwistedToHisWill attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       doomCount <- getDoomCount
-      sid <- getRandom
+      sid <- genId
       push
         $ if doomCount > 0
           then revelationSkillTest sid iid attrs #willpower DoomCountCalculation

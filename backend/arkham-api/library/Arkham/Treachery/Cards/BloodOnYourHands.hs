@@ -18,7 +18,7 @@ bloodOnYourHands = treachery BloodOnYourHands Cards.bloodOnYourHands
 instance RunMessage BloodOnYourHands where
   runMessage msg t@(BloodOnYourHands attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 2, VictoryDisplayCountCalculation $ basic $ CardWithTrait Innocent]

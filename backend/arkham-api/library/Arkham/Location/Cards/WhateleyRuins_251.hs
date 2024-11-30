@@ -34,7 +34,7 @@ instance HasAbilities WhateleyRuins_251 where
 instance RunMessage WhateleyRuins_251 where
   runMessage msg l@(WhateleyRuins_251 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

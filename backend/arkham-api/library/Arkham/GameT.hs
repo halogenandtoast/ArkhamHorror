@@ -4,6 +4,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import {-# SOURCE #-} Arkham.Game.Base
+import Arkham.Id
 import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Queue
@@ -14,6 +15,7 @@ data GameEnv = GameEnv
   { gameEnvGame :: IORef Game
   , gameEnvQueue :: Queue Message
   , gameRandomGen :: IORef StdGen
+  , gameIdGen :: IORef Int
   , gameLogger :: ClientMessage -> IO ()
   }
 
@@ -25,6 +27,14 @@ instance HasGame GameT where
 
 instance HasStdGen GameEnv where
   genL = lens gameRandomGen $ \m x -> m {gameRandomGen = x}
+
+instance HasIdGen GameT where
+  idGenerator = asks gameIdGen
+
+instance IdGen GameT where
+  genId = do
+    ref <- asks gameIdGen
+    liftIO $ atomicModifyIORef' ref $ \i -> (i + 1, coerce i)
 
 instance HasQueue Message GameT where
   messageQueue = asks gameEnvQueue

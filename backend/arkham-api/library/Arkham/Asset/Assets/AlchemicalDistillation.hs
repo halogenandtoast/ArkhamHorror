@@ -55,7 +55,7 @@ instance RunMessage AlchemicalDistillation where
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       empowered <- getMetaMaybe False attrs "empowered"
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) iid' #intellect (Fixed $ if empowered then 3 else 1)
       pure a
     PassedThisSkillTestBy _ (isAbilitySource attrs 1 -> True) n -> do

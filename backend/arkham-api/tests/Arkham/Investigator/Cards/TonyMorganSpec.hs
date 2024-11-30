@@ -32,7 +32,7 @@ spec = describe "Tony Morgan" do
     it "place 1 bounty on Bounty Contracts" . gameTestWith tonyMorgan $ \self -> do
       bountyContracts <- self `putAssetIntoPlay` Assets.bountyContracts
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #agility 100
       -- 6 starting plus 1 from elder sign
       fieldMap AssetUses (findWithDefault 0 Bounty) bountyContracts `shouldReturn` 7

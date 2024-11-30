@@ -81,7 +81,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       selectForMaybeM (investigatorIs Investigators.jeromeDavids) \jerome -> do
         moveTo_ attrs jerome office
-        tid1 <- getRandom
+        tid1 <- genId
         obscuringFog <- genCard Treacheries.obscuringFog
         push $ AttachStoryTreacheryTo tid1 obscuringFog (toTarget office)
         enemyAt_ Enemies.netherMist office
@@ -106,12 +106,12 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       whenAny (investigatorIs Investigators.valentinoRivas) do
         terrorInTheNight <- genCard Treacheries.terrorInTheNight
-        tid1 <- getRandom
+        tid1 <- genId
         push $ AttachStoryTreacheryTo tid1 terrorInTheNight (toTarget agendaId)
 
       whenAny (investigatorIs Investigators.pennyWhite) do
         whispersInTheDark <- genCard Treacheries.whispersInTheDark
-        tid2 <- getRandom
+        tid2 <- genId
         push $ AttachStoryTreacheryTo tid2 whispersInTheDark (toTarget agendaId)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do

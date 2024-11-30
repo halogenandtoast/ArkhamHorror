@@ -27,7 +27,7 @@ instance HasAbilities EliyahAshevakDogHandler where
 instance RunMessage EliyahAshevakDogHandler where
   runMessage msg a@(EliyahAshevakDogHandler attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #agility 6)
       chooseEvadeEnemy sid iid (attrs.ability 1)
       pure a

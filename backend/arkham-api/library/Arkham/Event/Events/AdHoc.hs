@@ -5,7 +5,6 @@ import Arkham.Card.Id
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement
@@ -54,7 +53,7 @@ instance RunMessage AdHoc where
             [IgnoreAllCosts]
       abilities <-
         selectMap adjustAbility
-          $ AssetAbility (AssetWithId $ AssetId $ unsafeCardIdToUUID card.id)
+          $ AssetAbility (AssetWithId $ AssetId $ unsafeCardIdToInt card.id)
           <> AbilityIsActionAbility
       abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
       chooseOne iid [AbilityLabel iid ab [] [] [] | ab <- abilities']

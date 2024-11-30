@@ -53,7 +53,11 @@ isActionTarget :: EnemyAttrs -> Target -> Bool
 isActionTarget attrs = isTarget attrs . toProxyTarget
 
 spawnAt
-  :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
+  :: (HasGame m, HasQueue Message m, MonadRandom m, IdGen m)
+  => EnemyId
+  -> Maybe InvestigatorId
+  -> SpawnAt
+  -> m ()
 spawnAt _ _ NoSpawn = pure ()
 spawnAt eid miid (SpawnAt locationMatcher) = do
   pushAll

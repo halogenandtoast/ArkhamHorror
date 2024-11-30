@@ -33,7 +33,7 @@ instance RunMessage AbyssalTome2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
 
-      sid <- getRandom
+      sid <- genId
       choices <- for [#intellect, #willpower, #combat] \sType -> do
         chooseFight <- withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
         pure $ SkillLabel sType [toMessage chooseFight]

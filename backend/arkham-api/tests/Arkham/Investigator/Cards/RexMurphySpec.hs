@@ -23,7 +23,7 @@ spec = describe "Rex Murphy" $ do
       cards <- testPlayerCards 3
       setChaosTokens [ElderSign]
       self `loadDeckCards` cards
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 2
       clickLabel "Automatically fail to draw 3"
       assertFailedSkillTest
@@ -34,7 +34,7 @@ spec = describe "Rex Murphy" $ do
       cards <- testPlayerCards 3
       setChaosTokens [ElderSign]
       self `loadDeckCards` cards
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 6 -- two higher
       clickLabel "Resolve normally"
       assertPassedSkillTest

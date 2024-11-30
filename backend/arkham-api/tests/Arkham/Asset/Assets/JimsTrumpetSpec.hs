@@ -14,7 +14,7 @@ spec = describe "Jim's Trumpet" $ do
       location <- testLocation
       setChaosTokens [Skull]
       self `moveTo` location
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 0
       useReaction
       click "choose self"
@@ -26,7 +26,7 @@ spec = describe "Jim's Trumpet" $ do
       location <- testLocation
       setChaosTokens [Skull]
       moveAllTo location
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 0
       useReaction
       click "choose investigator at same location"
@@ -38,7 +38,7 @@ spec = describe "Jim's Trumpet" $ do
       location <- testLocation
       setChaosTokens [Skull]
       moveAllTo location
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid investigator2 SkillIntellect 0
       useReaction
       click "choose investigator at same location"
@@ -54,7 +54,7 @@ spec = describe "Jim's Trumpet" $ do
       run $ placedLocation southside
       self `moveTo` rivertown
       investigator2 `moveTo` southside
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 0
       useReaction
       click "choose investigator at connected location"
@@ -70,7 +70,7 @@ spec = describe "Jim's Trumpet" $ do
       run $ placedLocation downtown
       self `moveTo` rivertown
       investigator2 `moveTo` downtown
-      sid <- getRandom
+      sid <- genId
       runSkillTest sid self #intellect 0
       chooseOnlyOption "apply results"
       investigator2.horror `shouldReturn` 1

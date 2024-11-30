@@ -25,7 +25,7 @@ instance RunMessage TrustyBullwhipAdvanced where
   runMessage msg a@(TrustyBullwhipAdvanced attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 2)
       aspect iid source (#agility `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a

@@ -19,7 +19,7 @@ instance RunMessage SecretGathering where
     Revelation iid (isSource attrs -> True) -> do
       n <- getRemainingCurseTokens
       when (n > 0) $ addCurseTokens (Just iid) 1
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

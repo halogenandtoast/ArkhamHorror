@@ -31,12 +31,12 @@ instance HasAbilities BindMonster2 where
 instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.bindMonster2 Nothing attrs sid
       aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       case attrs.attachedTo of
         Just target -> beginSkillTest sid iid (attrs.ability 1) target #willpower (Fixed 3)
         Nothing -> throwIO $ InvalidState "must be attached"

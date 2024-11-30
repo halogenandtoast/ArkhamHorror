@@ -3,7 +3,6 @@ module Arkham.Event.Events.Dodge2 (dodge2, Dodge2) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
-import Arkham.Id
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
   deriving stock (Show, Eq, Generic)
@@ -21,7 +20,7 @@ instance RunMessage Dodge2 where
     PlayThisEvent iid (is attrs -> True) -> do
       let currentAttack = getAttackDetails attrs.windows
       cancelAttack attrs currentAttack
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid attrs iid #agility $ Fixed 1
       pure $ Dodge2 (attrs `with` Metadata (Just currentAttack.enemy))
     PassedThisSkillTest _ (isSource attrs -> True) -> do

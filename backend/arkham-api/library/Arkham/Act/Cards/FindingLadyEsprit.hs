@@ -57,7 +57,7 @@ instance RunMessage FindingLadyEsprit where
         (locationId, locationPlacement) <- placeLocation card
         pure [locationPlacement, SetLocationLabel locationId label]
 
-      assetId <- getRandom
+      assetId <- genId
       pushAll
         $ [CreateAssetAt assetId ladyEsprit (AtLocation ladyEspritSpawnLocation)]
         <> concat placements

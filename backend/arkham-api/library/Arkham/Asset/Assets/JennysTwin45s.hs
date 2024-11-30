@@ -25,7 +25,7 @@ instance RunMessage JennysTwin45s where
         <$> runMessage msg (attrs & printedUsesL .~ Uses Ammo (Fixed n) & tokensL .~ singletonMap Ammo n)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <- skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #combat 2]
       pushAll [enabled, chooseFight]

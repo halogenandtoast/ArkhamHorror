@@ -21,7 +21,7 @@ instance HasAbilities OldShotgun2 where
 instance RunMessage OldShotgun2 where
   runMessage msg a@(OldShotgun2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 3, NoStandardDamage]
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a

@@ -58,7 +58,7 @@ instance RunMessage UnfinishedBusiness_D where
       pure s
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

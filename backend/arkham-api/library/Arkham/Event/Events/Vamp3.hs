@@ -3,7 +3,6 @@ module Arkham.Event.Events.Vamp3 (vamp3, Vamp3 (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
 
@@ -28,7 +27,7 @@ instance RunMessage Vamp3 where
       chooseSome iid "Done choosing skills" [SkillLabel s [ForSkillType s msg] | s <- skills]
       pure . Vamp3 $ attrs `with` meta {chosenEnemy = Just eid}
     ForSkillType sType (HandleTargetChoice iid (isSource attrs -> True) _) -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid attrs iid sType (Fixed 2)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do

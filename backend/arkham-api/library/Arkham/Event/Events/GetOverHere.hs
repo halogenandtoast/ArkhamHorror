@@ -30,7 +30,7 @@ instance RunMessage GetOverHere where
           <> EnemyAt
             (LocationMatchAny [m, ConnectedFrom m, LocationWithDistanceFrom 2 m Anywhere])
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ chooseOne
             player

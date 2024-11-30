@@ -19,7 +19,7 @@ instance RunMessage UnexpectedAmbush where
   runMessage msg t@(UnexpectedAmbush attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       enemies <- select AnyInPlayEnemy
-      sid <- getRandom
+      sid <- genId
       if null enemies
         then push $ Msg.assignDamageAndHorror iid attrs 1 1
         else

@@ -31,7 +31,7 @@ instance RunMessage LockedDoor where
         \locations -> chooseOrRunOne iid $ targetLabels locations $ only . Msg.attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       let chooseSkillTest sType = SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) attrs sType (Fixed 4)]
       chooseOne iid $ map chooseSkillTest [#combat, #agility]
       pure t

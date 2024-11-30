@@ -30,7 +30,7 @@ instance RunMessage TheManInThePallidMask where
   runMessage msg e@(TheManInThePallidMask attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
-        sid <- getRandom
+        sid <- genId
         skillTestModifier sid (attrs.ability 1) lid (ShroudModifier 2)
         push . toMessage =<< (mkInvestigate sid iid (attrs.ability 1) <&> setTarget attrs)
       pure e

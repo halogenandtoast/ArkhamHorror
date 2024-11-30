@@ -28,7 +28,7 @@ instance RunMessage LiquidCourage where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       iids <- select $ HealableInvestigator (toSource attrs) HorrorType $ colocatedWith iid
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       pushIfAny iids
         $ chooseOrRunOne
           player

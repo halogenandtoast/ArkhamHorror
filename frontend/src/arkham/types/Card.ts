@@ -61,7 +61,7 @@ export function toCardContents(card: Card | CardContents): CardContents {
 
 export type CardContents = {
   tag: "CardContents"
-  id: string
+  id: number
   cardCode: string
   isFlipped?: boolean
   tokens: Tokens
@@ -88,7 +88,7 @@ export type EncounterCard = {
 export const cardContentsDecoder = JsonDecoder.object<CardContents>(
   {
     tag: JsonDecoder.constant('CardContents'),
-    id: JsonDecoder.string,
+    id: JsonDecoder.number,
     cardCode: JsonDecoder.string,
     isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
     tokens: JsonDecoder.constant({}),

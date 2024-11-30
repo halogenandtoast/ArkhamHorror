@@ -41,7 +41,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       putCardIntoPlay ashcanPete Assets.duke
       duke <- selectJust $ assetIs Assets.duke
 
-      sid <- getRandom
+      sid <- genId
       pushAndRunAll
         [ SetChaosTokens [ElderSign]
         , Exhaust (toTarget duke)

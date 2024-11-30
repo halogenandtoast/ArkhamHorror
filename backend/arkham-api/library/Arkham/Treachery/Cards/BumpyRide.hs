@@ -18,7 +18,7 @@ bumpyRide = treachery BumpyRide Cards.bumpyRide
 instance RunMessage BumpyRide where
   runMessage msg t@(BumpyRide attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       field InvestigatorPlacement iid >>= \case
         InVehicle aid -> do
           driver <- fieldJust AssetDriver aid

@@ -42,7 +42,7 @@ instance RunMessage TheBlackCore where
       placeTokens (attrs.ability 1) attrs Depth (3 + n)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 2) iid s (Fixed 3)]

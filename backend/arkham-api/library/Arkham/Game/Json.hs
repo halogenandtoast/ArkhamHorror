@@ -24,6 +24,7 @@ instance FromJSON Game where
     gameInitialSeed <- o .: "gameInitialSeed"
     gameSettings <- o .: "gameSettings"
     gameSeed <- o .: "gameSeed"
+    gameNextId <- o .: "gameNextId"
     gameWindowDepth <- o .: "gameWindowDepth"
     gameWindowStack <- o .: "gameWindowStack"
     gameRunWindows <- o .: "gameRunWindows"

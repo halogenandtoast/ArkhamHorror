@@ -25,7 +25,7 @@ instance HasAbilities InnocentReveler where
 instance RunMessage InnocentReveler where
   runMessage msg a@(InnocentReveler attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) (toTarget attrs) #intellect (Fixed 2)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

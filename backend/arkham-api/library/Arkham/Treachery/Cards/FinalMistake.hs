@@ -19,7 +19,7 @@ instance RunMessage FinalMistake where
   runMessage msg t@(FinalMistake attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
       doom <- getSum <$> selectAgg Sum LocationDoom (locationWithInvestigator iid)
-      sid <- getRandom
+      sid <- genId
       enabled <- skillTestModifier sid source (SkillTestTarget sid) (Difficulty doom)
       pushAll
         [ enabled

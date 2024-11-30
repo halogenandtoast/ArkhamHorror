@@ -29,7 +29,7 @@ instance RunMessage LiquidCourage1 where
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       iids <- select $ HealableInvestigator (toAbilitySource attrs 1) HorrorType $ colocatedWith iid
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       pushWhen (notNull iids)
         $ chooseOrRunOne player
         $ [ targetLabel iid'

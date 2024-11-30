@@ -104,7 +104,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
   runMessage msg a@(HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- Todo extend this to full ability
-      sid <- getRandom
+      sid <- genId
       when (attrs `hasCustomization` EmpoweredConfiguration)
         $ skillTestModifier sid attrs iid (AnySkillValue 2)
       case manifest meta of
@@ -251,7 +251,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
       let cost = printedCardCost card
-      sid <- getRandom
+      sid <- genId
       chooseOne
         iid
         [ SkillLabel sType [Msg.beginSkillTest sid iid (attrs.ability 1) (toCardId card) sType (Fixed cost)]
@@ -259,7 +259,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
         ]
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n < 2 -> do
-      sid <- getRandom
+      sid <- genId
       doEvade <- Evade.mkChooseEvade sid iid attrs
       chooseOne
         iid

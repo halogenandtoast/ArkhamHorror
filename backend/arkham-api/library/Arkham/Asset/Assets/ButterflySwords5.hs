@@ -23,7 +23,7 @@ instance HasAbilities ButterflySwords5 where
 instance RunMessage ButterflySwords5 where
   runMessage msg a@(ButterflySwords5 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid attrs iid $ SkillModifier #combat 2
       chooseFightEnemy sid iid (attrs.ability 1)
       pure $ ButterflySwords5 $ setMeta @Int 0 attrs
@@ -41,7 +41,7 @@ instance RunMessage ButterflySwords5 where
     AfterSkillTestEnds (isAbilitySource attrs 1 -> True) _ _ -> do
       iid <- fromJustNote "no investigator" <$> getSkillTestInvestigator
       oncePerAbility attrs 1 do
-        sid <- getRandom
+        sid <- genId
         canFight <- hasFightActions iid (attrs.ability 1) (DuringTurn You) (defaultWindows iid)
         fight <- evalQueueT do
           skillTestModifier sid attrs iid $ AddSkillValue #agility

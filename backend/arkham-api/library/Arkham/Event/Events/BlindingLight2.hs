@@ -17,7 +17,7 @@ blindingLight2 = event BlindingLight2 Cards.blindingLight2
 instance RunMessage BlindingLight2 where
   runMessage msg e@(BlindingLight2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       onRevealChaosTokenEffect sid (oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]) attrs iid do
         push $ LoseActions iid (toSource attrs) 1
         assignHorror iid attrs 1

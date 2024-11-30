@@ -40,7 +40,7 @@ instance RunMessage Hope where
       catsInDiscard <-
         fieldMap InvestigatorDiscard (filterCards (oneOf [cardIs Cards.zeal, cardIs Cards.augur])) iid
       hopeCard <- field AssetCard (toId attrs)
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (BaseSkillOf #agility 5)
       when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
       pushM $ mkChooseEvade sid iid source

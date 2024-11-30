@@ -47,7 +47,7 @@ instance RunMessage MomentOfDoom where
   runMessage msg a@(MomentOfDoom attrs) = case msg of
     UseCardAbility iid p@(ProxySource _ (isSource attrs -> True)) 1 _ _ -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

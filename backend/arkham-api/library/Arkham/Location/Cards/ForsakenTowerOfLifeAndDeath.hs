@@ -41,7 +41,7 @@ instance RunMessage ForsakenTowerOfLifeAndDeath where
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
-      sid <- getRandom
+      sid <- genId
       push $ FightEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #willpower False
       pure l
     Successful (Action.Fight, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do

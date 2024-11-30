@@ -16,6 +16,7 @@ import Arkham.Helpers.Message as X (
   pattern R8,
  )
 import Arkham.Helpers.Scenario as X
+import Arkham.Id as X
 import Arkham.Message as X (Message (..))
 import Arkham.Message.Lifted as X hiding (setActDeck, setActDeckN, setAgendaDeck, setAgendaDeckN)
 import Arkham.Prelude as X

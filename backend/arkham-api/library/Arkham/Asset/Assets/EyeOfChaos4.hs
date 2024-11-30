@@ -31,7 +31,7 @@ instance RunMessage EyeOfChaos4 where
   runMessage msg a@(EyeOfChaos4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 1]
       createCardEffect Cards.eyeOfChaos4 (effectMetaTarget sid) source iid
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)

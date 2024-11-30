@@ -25,7 +25,6 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (defaultWindows)
-import Data.UUID (nil)
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = Run [InvestigatorPlayEvent (toId i) (toId e) Nothing [] FromHand, FinishedEvent (toId e)]
@@ -53,7 +52,7 @@ enemyAttack i e = EnemyAttack $ Attack.enemyAttack (toId e) e (toId i)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
-  FightEnemy (SkillTestId nil) (toId i) (toId e) (toSource i) Nothing SkillCombat False
+  FightEnemy (SkillTestId 0) (toId i) (toId e) (toSource i) Nothing SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (toId i) (toId e) Nothing False
@@ -83,7 +82,7 @@ investigate i l =
       , investigateSource = TestSource mempty
       , investigateTarget = Nothing
       , investigateIsAction = False
-      , investigateSkillTest = SkillTestId nil
+      , investigateSkillTest = SkillTestId 0
       }
 
 beginSkillTest :: SkillTestId -> Investigator -> SkillType -> Int -> Message
@@ -101,7 +100,7 @@ beginActionSkillTest :: Investigator -> Action -> Maybe Target -> SkillType -> I
 beginActionSkillTest i a mt sType n =
   BeginSkillTest
     $ ( initSkillTest
-          (SkillTestId nil)
+          (SkillTestId 0)
           (toId i)
           (TestSource mempty)
           target

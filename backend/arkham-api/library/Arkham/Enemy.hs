@@ -10,7 +10,6 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
-import Arkham.Id
 import Arkham.Matcher
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy

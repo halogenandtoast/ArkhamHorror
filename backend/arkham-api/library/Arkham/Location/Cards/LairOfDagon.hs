@@ -28,7 +28,7 @@ instance RunMessage LairOfDagon where
   runMessage msg l@(LairOfDagon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       choices <- mins <$> traverse (traverseToSnd (`getSkillValue` iid)) [minBound .. maxBound]
-      sid <- getRandom
+      sid <- genId
       chooseOrRunOneM iid do
         for_ choices \skill -> do
           skillLabeled skill $ beginSkillTest sid iid (attrs.ability 1) iid skill (Fixed 2)
@@ -37,7 +37,7 @@ instance RunMessage LairOfDagon where
       assignHorror iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       chooseOrRunOneM iid do
         for_ [#willpower, #agility] \skill -> do
           skillLabeled skill $ beginSkillTest sid iid (attrs.ability 2) iid skill (Fixed 3)

@@ -21,7 +21,7 @@ instance RunMessage EncephalonSignal where
   runMessage msg t@(EncephalonSignal attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
       mOtherworldlyMeddler <- selectOne $ enemyIs Enemies.otherworldlyMeddler
-      sid <- getRandom
+      sid <- genId
       pushAll
         $ [ PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) 1
           | otherworldlyMeddler <- toList mOtherworldlyMeddler

@@ -6,7 +6,6 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers

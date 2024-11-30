@@ -21,7 +21,7 @@ instance HasAbilities BlessedBlade4 where
 instance RunMessage BlessedBlade4 where
   runMessage msg a@(BlessedBlade4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 2, DamageDealt 1]
       skillTestModifier sid (attrs.ability 1) sid ReturnBlessedToChaosBag
       chooseFightEnemy sid iid (attrs.ability 1)

@@ -58,7 +58,7 @@ instance RunMessage UnspeakableOathCowardice where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = toAbilitySource attrs 2
       let matcher = ExhaustedEnemy <> UnengagedEnemy
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid (toAbilitySource attrs 2) iid evasionCriteria
       pushM $ toMessage . setTarget attrs <$> mkChooseEvadeMatch sid iid source matcher
       pure t

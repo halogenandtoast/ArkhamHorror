@@ -18,7 +18,7 @@ instance RunMessage VortexOfTime where
   runMessage msg t@(VortexOfTime attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
       investigatorsAtSentinelHills <- select $ InvestigatorAt $ LocationWithTrait SentinelHill
-      sid <- getRandom
+      sid <- genId
       pushAll
         [ revelationSkillTest sid iid source #willpower (Fixed 4)
         | iid <- investigatorsAtSentinelHills

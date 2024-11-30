@@ -17,7 +17,7 @@ strangeSigns = treachery StrangeSigns Cards.strangeSigns
 instance RunMessage StrangeSigns where
   runMessage msg t@(StrangeSigns attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push $ revelationSkillTest sid iid attrs #intellect (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

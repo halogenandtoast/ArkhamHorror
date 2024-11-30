@@ -24,7 +24,7 @@ instance HasAbilities Graveyard where
 instance RunMessage Graveyard where
   runMessage msg l@(Graveyard attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

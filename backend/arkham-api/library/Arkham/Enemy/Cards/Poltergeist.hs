@@ -31,7 +31,7 @@ instance HasModifiersFor Poltergeist where
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure e
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

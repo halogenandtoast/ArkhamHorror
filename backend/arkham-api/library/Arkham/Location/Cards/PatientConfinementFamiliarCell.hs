@@ -32,7 +32,7 @@ instance HasAbilities PatientConfinementFamiliarCell where
 instance RunMessage PatientConfinementFamiliarCell where
   runMessage msg l@(PatientConfinementFamiliarCell attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower
         $ InvestigatorFieldCalculation iid InvestigatorHorror

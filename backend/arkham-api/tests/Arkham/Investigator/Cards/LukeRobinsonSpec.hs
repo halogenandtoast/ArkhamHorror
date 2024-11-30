@@ -40,7 +40,7 @@ spec = describe "Luke Robinson" do
     it "places 1 charge on gate box" . gameTestWith lukeRobinson $ \self -> do
       gateBox <- self `putAssetIntoPlay` Assets.gateBox
       setChaosTokens [ElderSign]
-      sid <- getRandom
+      sid <- genId
       run $ beginSkillTest sid self #combat 100
       startSkillTest
       applyResults

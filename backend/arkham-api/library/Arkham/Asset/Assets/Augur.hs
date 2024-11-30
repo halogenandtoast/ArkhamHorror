@@ -40,7 +40,7 @@ instance RunMessage Augur where
       catsInDiscard <-
         fieldMap InvestigatorDiscard (filterCards (oneOf [cardIs Cards.zeal, cardIs Cards.hope])) iid
       augurCard <- field AssetCard (toId attrs)
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (BaseSkillOf #intellect 5)
       when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
       pushM $ mkInvestigate sid iid source

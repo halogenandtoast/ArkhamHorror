@@ -9,7 +9,6 @@ import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Projection
 import Arkham.Timing qualified as Timing

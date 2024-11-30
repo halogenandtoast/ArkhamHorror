@@ -25,7 +25,7 @@ instance HasAbilities Burglary2 where
 instance RunMessage Burglary2 where
   runMessage msg a@(Burglary2 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (toAbilitySource attrs 1) <&> setTarget attrs
       pure a
     Successful (Action.Investigate, _) iid _ (isTarget attrs -> True) (min 3 -> n) -> do

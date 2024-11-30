@@ -16,7 +16,7 @@ eagerForDeath = treachery EagerForDeath Cards.eagerForDeath
 instance RunMessage EagerForDeath where
   runMessage msg t@(EagerForDeath attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       push
         $ revelationSkillTest sid iid attrs #willpower
         $ SumCalculation [Fixed 2, InvestigatorFieldCalculation iid InvestigatorDamage]

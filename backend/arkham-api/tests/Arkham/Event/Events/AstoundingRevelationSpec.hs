@@ -36,7 +36,7 @@ spec = describe "Astounding Revelation" do
         withProp @"deck" (Deck [astoundingRevelation1, astoundingRevelation2]) self
         run
           $ search (toId self) (TestSource mempty) (toTarget self) [fromDeck] #any (DrawFound (toId self) 1)
-        useReactionOf (EventSource $ EventId $ unsafeCardIdToUUID $ toCardId astoundingRevelation1)
+        useReactionOf (EventSource $ EventId $ unsafeCardIdToInt $ toCardId astoundingRevelation1)
         chooseOnlyOption "Take resources"
         chooseOnlyOption "Add other to hand"
         self.resources `shouldReturn` 2

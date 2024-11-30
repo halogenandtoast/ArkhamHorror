@@ -30,7 +30,7 @@ instance RunMessage EnchantedBlade where
     UseCardAbility iid (isSource attrs -> True) 1 _ (getPaidUse -> paidUse) -> do
       let amount = if paidUse then 2 else 1
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       chooseFight <- toMessage <$> mkChooseFight sid iid source
       enabled <-
         skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]

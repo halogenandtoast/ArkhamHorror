@@ -31,7 +31,7 @@ instance HasAbilities SurprisingFind1 where
 instance RunMessage SurprisingFind1 where
   runMessage msg s@(SurprisingFind1 attrs) = runQueueT $ case msg of
     InSearch (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      skillId <- getRandom
+      skillId <- genId
       pushAll
         [RemoveCardFromSearch iid (toCardId attrs), CreateSkill skillId (toCard attrs) iid (InPlayArea iid)]
       pure s

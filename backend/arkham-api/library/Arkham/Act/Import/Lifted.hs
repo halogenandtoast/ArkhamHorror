@@ -41,6 +41,7 @@ import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X (extend, extend1)
 import Arkham.Helpers.Log as X (getHasRecord)
 import Arkham.Helpers.Query as X (getLead)
+import Arkham.Id as X
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Source as X
@@ -49,7 +50,6 @@ import Arkham.Text as X
 
 import Arkham.Card.CardDef
 import Arkham.Helpers.Act qualified as Msg
-import Arkham.Id
 import Arkham.Matcher
 
 advanceVia

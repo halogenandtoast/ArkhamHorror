@@ -22,7 +22,7 @@ instance RunMessage OldKeyring where
   runMessage msg a@(OldKeyring attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \lid -> do
-        sid <- getRandom
+        sid <- genId
         skillTestModifier sid (attrs.ability 1) lid (ShroudModifier (-2))
         pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a

@@ -33,7 +33,7 @@ instance RunMessage ShadowsDeepen where
       case mShadowSpawnedId of
         Just tid -> push $ PlaceResources (toAbilitySource attrs 1) (toTarget tid) 1
         Nothing -> do
-          tid <- getRandom
+          tid <- genId
           push $ AttachStoryTreacheryTo tid shadowSpawned (EnemyTarget eid)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do

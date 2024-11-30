@@ -20,7 +20,7 @@ instance RunMessage Apeirophobia where
     Revelation iid (isSource attrs -> True) -> do
       withLocationOf iid \lid -> do
         shelterValue lid >>= traverse_ \shelter -> do
-          sid <- getRandom
+          sid <- genId
           revelationSkillTest sid iid attrs #willpower (Fixed shelter)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do

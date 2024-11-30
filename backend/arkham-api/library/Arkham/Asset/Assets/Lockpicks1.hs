@@ -22,7 +22,7 @@ instance HasAbilities Lockpicks1 where
 instance RunMessage Lockpicks1 where
   runMessage msg a@(Lockpicks1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       createCardEffect Cards.lockpicks1 (effectMetaTarget sid) (attrs.ability 1) iid
       pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a

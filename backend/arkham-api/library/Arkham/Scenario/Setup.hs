@@ -72,6 +72,9 @@ instance MonadRandom m => MonadRandom (ScenarioBuilderT m) where
   getRandomR = lift . getRandomR
   getRandomRs = lift . getRandomRs
 
+instance IdGen m => IdGen (ScenarioBuilderT m) where
+  genId = lift genId
+
 instance CardGen m => CardGen (ScenarioBuilderT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard

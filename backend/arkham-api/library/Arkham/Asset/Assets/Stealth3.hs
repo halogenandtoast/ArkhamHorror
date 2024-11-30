@@ -36,7 +36,7 @@ instance HasModifiersFor Stealth3 where
 instance RunMessage Stealth3 where
   runMessage msg a@(Stealth3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ setTarget attrs <$> mkChooseEvade sid iid (attrs.ability 1)
       pure a
     AfterSkillTestEnds

@@ -100,6 +100,7 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
+     , HasIdGen m
      )
   => Maybe (Message -> IO ())
   -> m ()

@@ -10,7 +10,7 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 import GHC.Records
 
-newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: UUID}
+newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: Int}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
 

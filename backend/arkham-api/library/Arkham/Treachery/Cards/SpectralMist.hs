@@ -36,7 +36,7 @@ instance RunMessage SpectralMist where
       when (notNull targets) $ chooseOne iid $ targetLabels targets $ only . Msg.attachTreachery attrs
       SpectralMist <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 2)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

@@ -34,7 +34,7 @@ instance HasModifiersFor StrangeSolutionAcidicIchor4 where
 instance RunMessage StrangeSolutionAcidicIchor4 where
   runMessage msg a@(StrangeSolutionAcidicIchor4 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkChooseFight sid iid (attrs.ability 1)
       pure a
     _ -> StrangeSolutionAcidicIchor4 <$> runMessage msg attrs

@@ -34,7 +34,7 @@ instance RunMessage Overgrowth where
         pushWhen withoutOvergrowth $ attachTreachery attrs lid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       let chooseSkillTest sType = SkillLabel sType [beginSkillTest sid iid (attrs.ability 1) attrs sType (Fixed 4)]
       player <- getPlayer iid
       push $ chooseOne player $ map chooseSkillTest [#combat, #intellect]

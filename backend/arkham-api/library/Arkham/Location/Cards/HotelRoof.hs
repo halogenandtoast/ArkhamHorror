@@ -42,7 +42,7 @@ instance RunMessage HotelRoof where
   runMessage msg l@(HotelRoof attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player
@@ -51,7 +51,7 @@ instance RunMessage HotelRoof where
           ]
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 2) iid #willpower (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

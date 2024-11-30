@@ -6,7 +6,7 @@ import Arkham.Key
 import Arkham.Prelude
 import Arkham.Scenario.Types
 
-getRandomKey :: (HasGame m, MonadRandom m) => m (Maybe ArkhamKey)
-getRandomKey = do
+genIdKey :: (HasGame m, MonadRandom m) => m (Maybe ArkhamKey)
+genIdKey = do
   ks <- setToList <$> scenarioField ScenarioSetAsideKeys
   traverse sample $ nonEmpty ks

@@ -24,7 +24,7 @@ instance RunMessage Kukri where
   runMessage msg a@(Kukri attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      sid <- getRandom
+      sid <- genId
       skillTestModifier sid source iid (SkillModifier #combat 1)
       pushM $ mkChooseFight sid iid source
       pure a

@@ -19,7 +19,7 @@ pulledBack = treachery PulledBack Cards.pulledBack
 instance RunMessage PulledBack where
   runMessage msg t@(PulledBack attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

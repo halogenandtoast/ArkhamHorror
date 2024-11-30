@@ -45,7 +45,7 @@ drawEncounterCards :: Sourceable source => InvestigatorId -> source -> Int -> Me
 drawEncounterCards i source n = DrawCards i $ newCardDraw source Deck.EncounterDeck n
 
 drawCardsIfCan
-  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (IdGen m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator
   -> source
   -> Int
@@ -164,12 +164,12 @@ cancelHorror iid (toSource -> source) amount additionalMessages = do
     Nothing -> throwIO $ InvalidState "No horror occured"
 
 createEnemy
-  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  :: (IdGen m, IsCard card, IsEnemyCreationMethod creationMethod)
   => card
   -> creationMethod
   -> m (EnemyCreation Message)
 createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
-  enemyId <- getRandom
+  enemyId <- genId
   pure
     $ MkEnemyCreation
       { enemyCreationCard = card
@@ -183,7 +183,7 @@ createEnemy (toCard -> card) (toEnemyCreationMethod -> cMethod) = do
       }
 
 createEnemyWith
-  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  :: (IdGen m, IsCard card, IsEnemyCreationMethod creationMethod)
   => card
   -> creationMethod
   -> (EnemyCreation Message -> EnemyCreation Message)
@@ -193,77 +193,78 @@ createEnemyWith card creationMethod f = do
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
 createEnemyWith_
-  :: (MonadRandom m, IsCard card, IsEnemyCreationMethod creationMethod)
+  :: (IdGen m, IsCard card, IsEnemyCreationMethod creationMethod)
   => card
   -> creationMethod
   -> (EnemyCreation Message -> EnemyCreation Message)
   -> m Message
 createEnemyWith_ card creationMethod f = snd <$> createEnemyWith card creationMethod f
 
-createEnemyWithPlacement :: MonadRandom m => Card -> Placement -> m (EnemyId, Message)
+createEnemyWithPlacement :: IdGen m => Card -> Placement -> m (EnemyId, Message)
 createEnemyWithPlacement c placement = do
   creation <- createEnemy c placement
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyWithPlacement_ :: MonadRandom m => Card -> Placement -> m Message
+createEnemyWithPlacement_ :: IdGen m => Card -> Placement -> m Message
 createEnemyWithPlacement_ c placement = snd <$> createEnemyWithPlacement c placement
 
-createEnemyAt :: MonadRandom m => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
+createEnemyAt :: IdGen m => Card -> LocationId -> Maybe Target -> m (EnemyId, Message)
 createEnemyAt c lid mTarget = do
   creation <- createEnemy c lid
   pure (enemyCreationEnemyId creation, CreateEnemy $ creation {enemyCreationTarget = mTarget})
 
-createEnemyAt_ :: MonadRandom m => Card -> LocationId -> Maybe Target -> m Message
+createEnemyAt_ :: IdGen m => Card -> LocationId -> Maybe Target -> m Message
 createEnemyAt_ c lid mTarget = snd <$> createEnemyAt c lid mTarget
 
-createEnemyAtLocationMatching :: MonadRandom m => Card -> LocationMatcher -> m (EnemyId, Message)
+createEnemyAtLocationMatching :: IdGen m => Card -> LocationMatcher -> m (EnemyId, Message)
 createEnemyAtLocationMatching c matcher = do
   creation <- createEnemy c matcher
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyAtLocationMatching_ :: MonadRandom m => Card -> LocationMatcher -> m Message
+createEnemyAtLocationMatching_ :: IdGen m => Card -> LocationMatcher -> m Message
 createEnemyAtLocationMatching_ c matcher = snd <$> createEnemyAtLocationMatching c matcher
 
-createEnemyEngagedWithPrey :: MonadRandom m => Card -> m (EnemyId, Message)
+createEnemyEngagedWithPrey :: IdGen m => Card -> m (EnemyId, Message)
 createEnemyEngagedWithPrey c = do
   creation <- createEnemy c SpawnEngagedWithPrey
   pure (enemyCreationEnemyId creation, CreateEnemy creation)
 
-createEnemyEngagedWithPrey_ :: MonadRandom m => Card -> m Message
+createEnemyEngagedWithPrey_ :: IdGen m => Card -> m Message
 createEnemyEngagedWithPrey_ = fmap snd . createEnemyEngagedWithPrey
 
-placeLocation :: MonadRandom m => Card -> m (LocationId, Message)
+placeLocation :: IdGen m => Card -> m (LocationId, Message)
 placeLocation c = do
-  locationId <- getRandom
+  locationId <- genId
   pure (locationId, PlaceLocation locationId c)
 
-placeLocationInGrid :: MonadRandom m => Pos -> Card -> m (LocationId, Message)
+placeLocationInGrid :: IdGen m => Pos -> Card -> m (LocationId, Message)
 placeLocationInGrid pos c = do
-  locationId <- getRandom
+  locationId <- genId
   pure (locationId, Run [PlaceLocation locationId c, PlaceGrid (GridLocation pos locationId)])
 
-placeLocation_ :: MonadRandom m => Card -> m Message
+placeLocation_ :: IdGen m => Card -> m Message
 placeLocation_ = fmap snd . placeLocation
 
-placeSetAsideLocation :: (MonadRandom m, HasGame m) => CardDef -> m (LocationId, Message)
+placeSetAsideLocation :: (IdGen m, HasGame m) => CardDef -> m (LocationId, Message)
 placeSetAsideLocation = placeLocation <=< getSetAsideCard
 
-placeSetAsideLocation_ :: (MonadRandom m, HasGame m) => CardDef -> m Message
+placeSetAsideLocation_ :: (IdGen m, HasGame m) => CardDef -> m Message
 placeSetAsideLocation_ = placeLocation_ <=< getSetAsideCard
 
-placeSetAsideLocations :: (MonadRandom m, HasGame m) => [CardDef] -> m [Message]
+placeSetAsideLocations :: (IdGen m, HasGame m) => [CardDef] -> m [Message]
 placeSetAsideLocations = traverse placeSetAsideLocation_
 
-placeLocationCard :: (CardGen m, HasGame m) => CardDef -> m (LocationId, Message)
+placeLocationCard :: (CardGen m, HasGame m, IdGen m) => CardDef -> m (LocationId, Message)
 placeLocationCard = placeLocation <=< genCard
 
-placeLocationCardInGrid :: (CardGen m, HasGame m) => Pos -> CardDef -> m (LocationId, Message)
+placeLocationCardInGrid
+  :: (CardGen m, HasGame m, IdGen m) => Pos -> CardDef -> m (LocationId, Message)
 placeLocationCardInGrid pos = placeLocationInGrid pos <=< genCard
 
-placeLocationCard_ :: (HasGame m, CardGen m) => CardDef -> m Message
+placeLocationCard_ :: (HasGame m, CardGen m, IdGen m) => CardDef -> m Message
 placeLocationCard_ = placeLocation_ <=< genCard
 
-placeLocationCards_ :: (CardGen m, HasGame m) => [CardDef] -> m [Message]
+placeLocationCards_ :: (CardGen m, HasGame m, IdGen m) => [CardDef] -> m [Message]
 placeLocationCards_ = traverse placeLocationCard_
 
 scenarioResolution :: Int -> Message
@@ -361,7 +362,7 @@ findEncounterCard
 findEncounterCard iid (toTarget -> target) zones (toCardMatcher -> cardMatcher) =
   FindEncounterCard iid target zones cardMatcher
 
-placeLabeledLocationCards_ :: (HasGame m, CardGen m) => Text -> [CardDef] -> m [Message]
+placeLabeledLocationCards_ :: (HasGame m, CardGen m, IdGen m) => Text -> [CardDef] -> m [Message]
 placeLabeledLocationCards_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -373,14 +374,14 @@ placeLabeledLocationCards_ lbl cards = do
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
 placeLabeledLocationCards
-  :: (HasGame m, CardGen m) => Text -> [CardDef] -> m ([LocationId], [Message])
+  :: (HasGame m, CardGen m, IdGen m) => Text -> [CardDef] -> m ([LocationId], [Message])
 placeLabeledLocationCards lbl cards = fmap fold
   . concatForM (withIndex1 cards)
   $ \(idx, card) -> do
     (location, placement) <- placeLocationCard card
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
-placeLabeledLocations_ :: (HasGame m, CardGen m) => Text -> [Card] -> m [Message]
+placeLabeledLocations_ :: (HasGame m, IdGen m) => Text -> [Card] -> m [Message]
 placeLabeledLocations_ lbl cards = do
   startIndex <- getStartIndex 1
   concatForM (withIndexN startIndex cards) $ \(idx, card) -> do
@@ -392,7 +393,7 @@ placeLabeledLocations_ lbl cards = do
     if alreadyTaken then getStartIndex (n + 1) else pure n
 
 placeLabeledLocations
-  :: (HasGame m, CardGen m) => Text -> [Card] -> m ([LocationId], [Message])
+  :: (HasGame m, IdGen m) => Text -> [Card] -> m ([LocationId], [Message])
 placeLabeledLocations lbl cards = fmap fold
   . concatForM (withIndex1 cards)
   $ \(idx, card) -> do
@@ -400,7 +401,7 @@ placeLabeledLocations lbl cards = fmap fold
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow idx)])]
 
 placeLabeledLocationsFrom
-  :: (HasGame m, CardGen m) => Text -> Int -> [Card] -> m ([LocationId], [Message])
+  :: (HasGame m, IdGen m) => Text -> Int -> [Card] -> m ([LocationId], [Message])
 placeLabeledLocationsFrom lbl n cards = fmap fold
   . concatForM (withIndex cards)
   $ \(idx, card) -> do
@@ -413,7 +414,7 @@ putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing NoPaymen
 putCardIntoPlayWithAdditionalCosts :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlayWithAdditionalCosts iid (toCard -> card) = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment (defaultWindows iid)
 
-placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
+placeLabeledLocation :: (IdGen m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do
   idx <- getStartIndex (1 :: Int)
   (location, placement) <- placeLocation card
@@ -616,10 +617,10 @@ handleSkillTestNesting_
   -> t m ()
 handleSkillTestNesting_ sid msg action = handleSkillTestNesting sid msg () action
 
-createAssetAt :: MonadRandom m => Card -> Placement -> m (AssetId, Message)
+createAssetAt :: IdGen m => Card -> Placement -> m (AssetId, Message)
 createAssetAt c placement = do
-  assetId <- getRandom
+  assetId <- genId
   pure (assetId, CreateAssetAt assetId c placement)
 
-createAssetAt_ :: MonadRandom m => Card -> Placement -> m Message
+createAssetAt_ :: IdGen m => Card -> Placement -> m Message
 createAssetAt_ c placement = snd <$> createAssetAt c placement

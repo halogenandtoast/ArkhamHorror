@@ -38,7 +38,7 @@ instance HasAbilities LaboratoryOfTheGreatRace where
 instance RunMessage LaboratoryOfTheGreatRace where
   runMessage msg l@(LaboratoryOfTheGreatRace attrs) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       push $ beginSkillTest sid iid (toAbilitySource attrs 1) iid SkillAgility (Fixed 3)
       pure l
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->

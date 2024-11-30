@@ -44,7 +44,7 @@ instance RunMessage TheCouncilsCoffer2 where
         <> [Exile (toTarget attrs)]
       pure a
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      sid <- getRandom
+      sid <- genId
       let chooseSkillTest skillType = beginSkillTest sid iid (attrs.ability 1) iid skillType (Fixed 5)
       player <- getPlayer iid
       push

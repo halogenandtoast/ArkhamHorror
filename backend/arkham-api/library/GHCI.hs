@@ -27,6 +27,7 @@ import Data.Time
 import Data.UUID (UUID)
 import Data.UUID qualified as UUID
 import Database.Persist.Postgresql
+import Text.Read (read)
 
 instance IsString UUID where
   fromString = fromJust . UUID.fromString
@@ -35,10 +36,10 @@ instance IsString (Key ArkhamGame) where
   fromString = ArkhamGameKey . fromString
 
 instance IsString EventId where
-  fromString = EventId . fromString
+  fromString = EventId . read
 
 instance IsString LocationId where
-  fromString = LocationId . fromString
+  fromString = LocationId . read
 
 lookupGame :: Key ArkhamGame -> IO Game
 lookupGame gameId = do
@@ -57,12 +58,13 @@ runGameMessage :: UUID -> Message -> IO ()
 runGameMessage gameUUID msg = do
   let gameId = ArkhamGameKey gameUUID
   ArkhamGame {..} <- dbGhci $ get404 gameId
-  let Game {gameSeed} = arkhamGameCurrentData
+  let Game {gameSeed, gameNextId} = arkhamGameCurrentData
   gameRef <- newIORef arkhamGameCurrentData
   queueRef <- newQueue [msg]
   genRef <- newIORef (mkStdGen gameSeed)
+  idGen <- newIORef gameNextId
   runGameApp
-    (GameApp gameRef queueRef genRef $ pure . const ())
+    (GameApp gameRef queueRef genRef (pure . const ()) idGen)
     (runMessages Nothing)
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime

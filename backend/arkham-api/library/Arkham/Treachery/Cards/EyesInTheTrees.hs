@@ -19,7 +19,7 @@ eyesInTheTrees = treachery EyesInTheTrees Cards.eyesInTheTrees
 instance RunMessage EyesInTheTrees where
   runMessage msg t@(EyesInTheTrees attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      sid <- getRandom
+      sid <- genId
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) target@SkillTestInitiatorTarget {} sType n -> do

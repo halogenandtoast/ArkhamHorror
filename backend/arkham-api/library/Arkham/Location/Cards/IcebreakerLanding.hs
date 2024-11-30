@@ -26,7 +26,7 @@ instance HasAbilities IcebreakerLanding where
 instance RunMessage IcebreakerLanding where
   runMessage msg l@(IcebreakerLanding attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       parley sid iid (attrs.ability 1) iid #intellect (Fixed 4)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

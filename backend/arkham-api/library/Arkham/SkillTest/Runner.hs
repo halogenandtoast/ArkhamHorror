@@ -18,6 +18,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message
+import Arkham.Id
 import Arkham.Matcher hiding (IgnoreChaosToken, RevealChaosToken)
 import Arkham.Message qualified as Msg
 import Arkham.Projection
@@ -251,7 +252,7 @@ instance RunMessage SkillTest where
                 , RunSkillTest iid
                 ]
               for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
-                t <- getRandom
+                t <- genId
                 pushAll
                   $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid)))
         else

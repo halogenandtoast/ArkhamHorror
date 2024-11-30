@@ -48,7 +48,7 @@ instance RunMessage Punishment where
       assignDamage iid (attrs.ability 1) 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      sid <- getRandom
+      sid <- genId
       beginSkillTest sid iid (attrs.ability 2) attrs #willpower (Fixed 3)
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do

@@ -23,7 +23,7 @@ instance HasAbilities Divination1 where
 instance RunMessage Divination1 where
   runMessage msg a@(Divination1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       investigate' <- setTarget attrs <$> mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOne
@@ -36,7 +36,7 @@ instance RunMessage Divination1 where
       case attrs.use Charge of
         0 -> pure ()
         1 -> do
-          charges <- namedUUID "Charges"
+          charges <- namedId "Charges"
           push $ ResolveAmounts iid [(charges, 1)] (toTarget attrs)
         _ -> chooseAmounts iid "Amount of Charges to Spend" (MaxAmountTarget 2) [("Charges", (1, 2))] attrs
       when (n == 0) $ chooseAndDiscardCard iid (attrs.ability 1)

@@ -23,7 +23,7 @@ instance RunMessage GetOverHere2 where
         select
           $ NonEliteEnemy
           <> EnemyAt (LocationMatchAny [m, ConnectedFrom m, ConnectedFrom (ConnectedFrom m)])
-      sid <- getRandom
+      sid <- genId
       chooseTargetM iid enemies \enemy -> do
         push $ EnemyEngageInvestigator enemy iid
         push $ FightEnemy sid iid enemy (toSource attrs) Nothing SkillCombat False

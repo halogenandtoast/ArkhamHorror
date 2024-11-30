@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Game.Helpers
 import Arkham.Helpers.Card
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -45,7 +44,7 @@ instance RunMessage KnowledgeIsPower where
           ]
         <> [ targetLabel (toCardId card)
             $ [ AddCardEntity card
-              , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+              , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToInt $ toCardId card)
               , RemoveCardEntity card
               ]
             <> [ chooseOne

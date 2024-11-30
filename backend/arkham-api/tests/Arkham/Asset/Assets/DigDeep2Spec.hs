@@ -21,7 +21,7 @@ spec = describe "Dig Deep (2)" $ do
       didPassTest <- didPassSkillTestBy investigator SkillWillpower 0
 
       pushAndRun $ SetChaosTokens [Zero]
-      sid <- getRandom
+      sid <- genId
       pushAndRun $ beginSkillTest sid investigator SkillWillpower 3
       chooseOptionMatching
         "use ability"
@@ -55,7 +55,7 @@ spec = describe "Dig Deep (2)" $ do
       didPassTest <- didPassSkillTestBy investigator SkillAgility 0
 
       pushAndRun $ SetChaosTokens [Zero]
-      sid <- getRandom
+      sid <- genId
       pushAndRun $ beginSkillTest sid investigator SkillAgility 3
       chooseOptionMatching
         "use ability"

@@ -154,7 +154,7 @@ instance RunMessage TheInfestationBegins where
       pure s
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = infestationBag attrs
-      tokenId <- getRandom
+      tokenId <- genId
       let bag' = bag {infestationTokens = InfestationToken tokenId face : infestationTokens bag}
       pure $ TheInfestationBegins $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ChaosTokenCanceled _ _ _) -> do

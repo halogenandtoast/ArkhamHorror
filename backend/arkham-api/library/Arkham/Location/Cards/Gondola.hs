@@ -39,7 +39,7 @@ instance RunMessage Gondola where
       pure l
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       player <- getPlayer iid
-      sid <- getRandom
+      sid <- genId
       push
         $ chooseOne
           player

@@ -27,7 +27,7 @@ instance HasAbilities MarinersCompass where
 instance RunMessage MarinersCompass where
   runMessage msg a@(MarinersCompass attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      sid <- getRandom
+      sid <- genId
       pushM $ mkInvestigate sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

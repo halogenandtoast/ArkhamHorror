@@ -55,28 +55,13 @@ instance HasChaosTokenValue HorrorInHighGear where
 instance RunMessage HorrorInHighGear where
   runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
+      {- FOURMOLU_DISABLE -}
       setChaosTokens
-        [ PlusOne
-        , Zero
-        , Zero
-        , MinusOne
-        , MinusOne
-        , MinusOne
-        , MinusTwo
-        , MinusTwo
-        , MinusThree
-        , MinusFour
-        , Skull
-        , Skull
-        , Cultist
-        , Cultist
-        , Tablet
-        , Tablet
-        , ElderThing
-        , ElderThing
-        , AutoFail
-        , ElderSign
+        [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-4"
+        , Skull , Skull , Cultist , Cultist , Tablet , Tablet , ElderThing , ElderThing
+        , AutoFail , ElderSign
         ]
+      {- FOURMOLU_ENABLE -}
       pure s
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"

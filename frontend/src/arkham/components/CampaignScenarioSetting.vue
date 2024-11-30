@@ -52,7 +52,7 @@ const forceDisabled = (setting: CampaignSetting, option: ChooseKey) => {
 
 <template>
   <div class="settings-group">
-    <header><h3>{{step.key}}</h3></header>
+    <header><h3 class="title">{{step.key}}</h3></header>
     <div v-for="setting in activeSettings" :key="setting.key">
       <div v-if="setting.type === 'SetKey'">
         <div class="options">

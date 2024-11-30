@@ -16,11 +16,7 @@ youngPsychopath =
   enemy YoungPsychopath Cards.youngPsychopath (2, Static 2, 3) (1, 1)
 
 instance HasAbilities YoungPsychopath where
-  getAbilities (YoungPsychopath a) =
-    extend1 a
-      $ mkAbility a 1
-      $ forced
-      $ EnemyEngaged #after You (be a)
+  getAbilities (YoungPsychopath a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)
 
 instance RunMessage YoungPsychopath where
   runMessage msg e@(YoungPsychopath attrs) = runQueueT $ case msg of
@@ -28,6 +24,6 @@ instance RunMessage YoungPsychopath where
       chooseOneM iid do
         labeled "Take 1 Horror" $ assignHorror iid (attrs.ability 1) 1
         labeled "Young Psycopath gets +3 fight until the end of the investigation phase" do
-          phaseModifier (attrs.ability 1) attrs (Modifier.EnemyFight 3)
+          endOfPhaseModifier #investigation (attrs.ability 1) attrs (Modifier.EnemyFight 3)
       pure e
     _ -> YoungPsychopath <$> liftRunMessage msg attrs

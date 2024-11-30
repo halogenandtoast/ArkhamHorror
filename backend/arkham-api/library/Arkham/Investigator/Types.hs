@@ -402,6 +402,9 @@ instance HasField "settings" InvestigatorAttrs CardSettings where
 instance HasField "id" InvestigatorAttrs InvestigatorId where
   getField = investigatorId
 
+instance HasField "player" InvestigatorAttrs PlayerId where
+  getField = investigatorPlayerId
+
 instance HasField "inGame" InvestigatorAttrs Bool where
   getField attrs = not (investigatorDefeated attrs || investigatorResigned attrs)
 
@@ -446,6 +449,9 @@ data Investigator = forall a. IsInvestigator a => Investigator a
 instance AsId Investigator where
   type IdOf Investigator = InvestigatorId
   asId = toId
+
+instance HasField "player" Investigator PlayerId where
+  getField (Investigator a) = attr (.player) a
 
 instance HasField "placement" Investigator Placement where
   getField (Investigator a) = attr investigatorPlacement a

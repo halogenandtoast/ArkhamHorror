@@ -945,6 +945,7 @@ data Message
   | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace
   | SetActiveInvestigator InvestigatorId
+  | SetActivePlayer PlayerId
   | SetChaosTokens [ChaosTokenFace]
   | SetChaosTokensForScenario
   | Setup

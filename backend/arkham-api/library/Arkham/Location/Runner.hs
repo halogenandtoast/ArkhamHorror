@@ -291,8 +291,8 @@ instance RunMessage LocationAttrs where
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
-      lead <- getLead
-      pushM $ checkAfter $ Window.PutLocationIntoPlay lead lid
+      active <- getActiveInvestigatorId
+      pushM $ checkAfter $ Window.PutLocationIntoPlay active lid
       pushM $ checkAfter $ Window.LocationEntersPlay lid
       if locationRevealed
         then do

@@ -2400,6 +2400,11 @@ runGameMessage msg g = case msg of
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
   After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
+  SetActivePlayer pid -> do
+    let investigator =
+          fromJustNote "No such player"
+            $ find (\i -> i.player == pid) (toList $ g ^. entitiesL . investigatorsL)
+    pure $ g & activeInvestigatorIdL .~ investigator.id & activePlayerIdL .~ pid
   SetActiveInvestigator iid -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

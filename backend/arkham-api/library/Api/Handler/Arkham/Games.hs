@@ -301,7 +301,12 @@ updateGame response gameId userId writeChannel = do
   let playerId = fromMaybe activePlayer (answerPlayer response)
 
   logRef <- newIORef []
-  messages <- handleAnswer gameJson playerId response
+  answerMessages <- handleAnswer gameJson playerId response
+  let
+    messages =
+      [SetActivePlayer playerId | activePlayer /= playerId]
+        <> answerMessages
+        <> [SetActivePlayer activePlayer | activePlayer /= playerId]
   gameRef <- newIORef gameJson
   queueRef <- newQueue ((ClearUI : messages) <> currentQueue)
   genRef <- newIORef $ mkStdGen gameSeed

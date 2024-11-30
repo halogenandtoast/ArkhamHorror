@@ -1,19 +1,14 @@
-module Arkham.Act.Cards.BeyondTheWitchHouse (
-  BeyondTheWitchHouse (..),
-  beyondTheWitchHouse,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.BeyondTheWitchHouse (BeyondTheWitchHouse (..), beyondTheWitchHouse) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Types (Field (AgendaDoom))
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Projection
 
 newtype BeyondTheWitchHouse = BeyondTheWitchHouse ActAttrs
@@ -29,32 +24,28 @@ beyondTheWitchHouse =
     (Just $ GroupClueCost (PerPlayer 5) (locationIs Locations.witchHouseRuins))
 
 instance RunMessage BeyondTheWitchHouse where
-  runMessage msg a@(BeyondTheWitchHouse attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      siteOfTheSacrifice <- getSetAsideCard Locations.siteOfTheSacrifice
-      (siteId, sitePlacement) <- placeLocation siteOfTheSacrifice
+  runMessage msg a@(BeyondTheWitchHouse attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      site <- placeSetAsideLocation Locations.siteOfTheSacrifice
 
-      nahab <- findUniqueCard Enemies.nahab
-      (nahabId, createNahab) <- createEnemyAt nahab siteId Nothing
+      nahab <-
+        selectOne (enemyIs Enemies.nahab) >>= \case
+          Nothing -> findUniqueCard Enemies.nahab >>= (`createEnemyAt` site)
+          Just x -> x <$ enemyMoveTo x site
 
       step <- getCurrentAgendaStep
-      doomMessages <-
-        if step == 4
-          then do
-            agendaId <- selectJust AnyAgenda
-            agendaDoom <- field AgendaDoom agendaId
-            pure
-              [ RemoveAllDoom (toSource attrs) (toTarget agendaId)
-              , PlaceDoom (toSource attrs) (toTarget nahabId) agendaDoom
-              ]
-          else pure [PlaceDoom (toSource attrs) (toTarget nahabId) 2]
+      if step == 4
+        then do
+          agendaId <- selectJust AnyAgenda
+          agendaDoom <- field AgendaDoom agendaId
+          removeAllDoom attrs agendaId
+          placeDoom attrs nahab agendaDoom
+        else placeDoom attrs nahab 2
 
-      brownJenkin <- findUniqueCard Enemies.brownJenkin
-      createBrownJenkin <- createEnemyAt_ brownJenkin siteId Nothing
+      selectOne (enemyIs Enemies.brownJenkin) >>= \case
+        Nothing -> findUniqueCard Enemies.brownJenkin >>= (`createEnemyAt_` site)
+        Just brownJenkin -> enemyMoveTo brownJenkin site
 
-      pushAll
-        $ [sitePlacement, createNahab]
-        <> doomMessages
-        <> [createBrownJenkin, advanceActDeck attrs]
+      advanceActDeck attrs
       pure a
-    _ -> BeyondTheWitchHouse <$> runMessage msg attrs
+    _ -> BeyondTheWitchHouse <$> liftRunMessage msg attrs

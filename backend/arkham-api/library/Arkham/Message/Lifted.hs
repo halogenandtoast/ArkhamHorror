@@ -576,6 +576,9 @@ removeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeDoom source target n = push $ RemoveDoom (toSource source) (toTarget target) n
 
+removeAllDoom :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+removeAllDoom source target = push $ RemoveAllDoom (toSource source) (toTarget target)
+
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n

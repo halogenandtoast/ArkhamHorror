@@ -26,9 +26,9 @@
   "username": "用户名",
   "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
   "labels": {
-    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck"
+    "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌"
   },
   "tooltips": {
-    "takeControlOfKey": "Take control of {key} key"
+    "takeControlOfKey": "获得{key}钥匙的控制权"
   }
 }

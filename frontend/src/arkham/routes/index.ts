@@ -1,5 +1,7 @@
 import CampaignLog from '@/arkham/views/CampaignLog.vue';
 import Game from '@/arkham/views/Game.vue';
+import FixGames from '@/arkham/views/FixGames.vue';
+import GameRaw from '@/arkham/views/GameRaw.vue';
 import Deck from '@/arkham/views/Deck.vue';
 import Decks from '@/arkham/views/Decks.vue';
 import Cards from '@/arkham/views/Cards.vue';
@@ -45,10 +47,24 @@ export default [
     props: true,
   },
   {
+    path: '/games/fix',
+    name: 'FixGames',
+    component: FixGames,
+    meta: { requiresAuth: true, title: "Arkham Horror" },
+    props: true,
+  },
+  {
     path: '/games/:gameId/spectate',
     name: 'Spectate',
     component: Game,
     meta: { requiresAuth: true, title: "Arkham Horror: Spectate" },
+    props: (route: RouteLocationNormalized) => ({ ...route.params, spectate: true }),
+  },
+  {
+    path: '/games/:gameId/raw',
+    name: 'GameRaw',
+    component: GameRaw,
+    meta: { requiresAuth: true, title: "Arkham Horror: Raw" },
     props: (route: RouteLocationNormalized) => ({ ...route.params, spectate: true }),
   },
   {

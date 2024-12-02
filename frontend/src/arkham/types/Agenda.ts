@@ -5,7 +5,7 @@ export type Agenda = {
   // doomThreshold: GameValue;
   id: string;
   deckId: number;
-  treacheries: string[];
+  treacheries: number[];
   flipped: boolean;
 }
 
@@ -14,6 +14,6 @@ export const agendaDecoder = JsonDecoder.object<Agenda>({
   // doomThreshold: gameValueDecoder,
   id: JsonDecoder.string,
   deckId: JsonDecoder.number,
-  treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
+  treacheries: JsonDecoder.array<number>(JsonDecoder.number, 'TreacheryId[]'),
   flipped: JsonDecoder.boolean,
 }, 'Agenda');

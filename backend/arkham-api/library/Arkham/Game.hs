@@ -182,6 +182,7 @@ import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (emptyArray, parse, parseMaybe)
+import Data.IntMap.Strict qualified as IntMap
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
@@ -255,7 +256,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameEnemyMoving = Nothing
         , gameEnemyEvading = Nothing
         , gameActionCanBeUndone = False
-        , gameActionDiff = []
+        , gameActionDiff = mempty
         , gameInAction = False
         , gameActiveCost = mempty
         , gameInSetup = True
@@ -1650,7 +1651,7 @@ getLocationsMatching lmatcher = do
             (LPState (pure start) (singleton start) mempty)
       let
         matches' =
-          Map.findWithDefault
+          IntMap.findWithDefault
             []
             distance
             (foldr (unionWith (<>) . distanceAggregates) mempty distances)
@@ -4126,7 +4127,7 @@ markDistances
   => LocationId
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
-  -> StateT LPState m (Map Int [LocationId])
+  -> StateT LPState m (IntMap [LocationId])
 markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap
 
 markBarricadedDistances
@@ -4134,7 +4135,7 @@ markBarricadedDistances
   => LocationId
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
-  -> StateT LPState m (Map Int [LocationId])
+  -> StateT LPState m (IntMap [LocationId])
 markBarricadedDistances initialLocation target extraConnectionsMap =
   markDistancesWithInclusion True initialLocation target (const (pure True)) extraConnectionsMap
 
@@ -4145,7 +4146,7 @@ markDistancesWithInclusion
   -> (LocationId -> m Bool)
   -> (LocationId -> m Bool) -- can be included?
   -> Map LocationId [LocationId]
-  -> StateT LPState m (Map Int [LocationId])
+  -> StateT LPState m (IntMap [LocationId])
 markDistancesWithInclusion checkBarriers initialLocation target canInclude extraConnectionsMap = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
@@ -4199,14 +4200,14 @@ markDistancesWithInclusion checkBarriers initialLocation target canInclude extra
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-distanceSingletons :: Map Int [LocationId] -> Map LocationId Int
+distanceSingletons :: IntMap [LocationId] -> Map LocationId Int
 distanceSingletons hmap =
   foldr
     (\(n, lids) hmap' -> unions (hmap' : map (`singletonMap` n) lids))
     mempty
     (mapToList hmap)
 
-distanceAggregates :: Map LocationId Int -> Map Int [LocationId]
+distanceAggregates :: Map LocationId Int -> IntMap [LocationId]
 distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
  where
   convert = uncurry singletonMap . second pure . swap

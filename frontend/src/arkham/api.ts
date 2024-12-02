@@ -33,6 +33,22 @@ export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> 
       .then((gameData) => Promise.resolve({ playerId, game: gameData, multiplayerMode }));
   });
 
+export const fetchGameRaw = (gameId: string): Promise<any> => api
+  .get(`arkham/games/${gameId}/raw`)
+  .then((resp) => { return resp.data; });
+
+export const fetchGamesIds = (): Promise<any> => api
+  .get(`arkham/games/ids`)
+  .then((resp) => { return resp.data; });
+
+export const fetchGamesRaw = (): Promise<any> => api
+  .get(`arkham/games/raw`)
+  .then((resp) => { return resp.data; });
+
+export const postGameRaw = (gameId: string, game: any): Promise<any> => api
+  .post(`arkham/games/${gameId}/raw`, game)
+  .then((resp) => { return resp.data; });
+
 export const fetchGameReplay = (gameId: string, step: number): Promise<FetchReplay> => api
   .get(`arkham/games/${gameId}/replay/${step}`)
   .then((resp) => {

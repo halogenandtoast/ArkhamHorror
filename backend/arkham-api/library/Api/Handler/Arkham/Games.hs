@@ -274,7 +274,7 @@ postApiV1ArkhamGamesR = do
     let ag' = ag {arkhamGameCurrentData = updatedGame}
 
     replace gameId ag'
-    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff [])
+    insert_ $ ArkhamStep gameId (Choice mempty updatedQueue) 0 (ActionDiff mempty)
     pure $ toPublicGame (Entity gameId ag') mempty
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler ()

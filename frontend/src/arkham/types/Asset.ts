@@ -20,10 +20,10 @@ export type Asset = {
   exhausted: boolean;
   permanent: boolean;
   flipped: boolean;
-  events: string[];
-  treacheries: string[];
-  enemies: string[];
-  assets: string[];
+  events: number[];
+  treacheries: number[];
+  enemies: number[];
+  assets: number[];
   cardsUnderneath: Card[];
   sealedChaosTokens: ChaosToken[];
   keys: ArkhamKey[];
@@ -45,10 +45,10 @@ export const assetDecoder = JsonDecoder.object<Asset>({
   exhausted: JsonDecoder.boolean,
   permanent: JsonDecoder.boolean,
   flipped: JsonDecoder.boolean,
-  events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
-  enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-  treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-  assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
+  events: JsonDecoder.array<number>(JsonDecoder.number, 'EventId[]'),
+  enemies: JsonDecoder.array<number>(JsonDecoder.number, 'EnemyId[]'),
+  treacheries: JsonDecoder.array<number>(JsonDecoder.number, 'TreacheryId[]'),
+  assets: JsonDecoder.array<number>(JsonDecoder.number, 'AssetId[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),

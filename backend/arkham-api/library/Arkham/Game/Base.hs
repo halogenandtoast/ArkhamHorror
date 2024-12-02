@@ -84,7 +84,7 @@ data Game = Game
     gameQuestion :: Map PlayerId (Question Message)
   , -- handling time warp
     gameActionCanBeUndone :: Bool
-  , gameActionDiff :: [Diff.Patch]
+  , gameActionDiff :: Diff.Patch
   , gameInAction :: Bool
   , gameCards :: Map CardId Card
   , gameCardUses :: Map CardCode Int

@@ -1,9 +1,13 @@
 module Api.Handler.Arkham.Game.Debug (
+  getApiV1ArkhamGamesIdsR,
   getApiV1ArkhamGameExportR,
   postApiV1ArkhamGamesImportR,
   postApiV1ArkhamGamesFixR,
   getApiV1ArkhamGamesReloadR,
   getApiV1ArkhamGameReloadR,
+  getApiV1ArkhamGameRawR,
+  getApiV1ArkhamGamesRawR,
+  postApiV1ArkhamGameRawR,
 ) where
 
 import Api.Arkham.Export
@@ -13,15 +17,39 @@ import Arkham.Game
 import Conduit
 import Data.Text qualified as T
 import Data.Time.Clock
-import Database.Esqueleto.Experimental hiding (update)
+import Database.Esqueleto.Experimental
 import Database.Persist qualified as Persist
+import Entity.Arkham.GameRaw
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
-import Import hiding (delete, exists, on, (==.))
+import Import hiding (delete, exists, on, update, (=.), (==.))
 import Json
 import Safe (fromJustNote)
 import UnliftIO.Exception (catch, try)
+
+getApiV1ArkhamGamesIdsR :: Handler [ArkhamGameId]
+getApiV1ArkhamGamesIdsR = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  runDB $ selectKeysList @ArkhamGame [] []
+
+getApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ArkhamGameRaw
+getApiV1ArkhamGameRawR gameId = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  runDB $ get404 (coerce gameId)
+
+getApiV1ArkhamGamesRawR :: Handler [Entity ArkhamGameRaw]
+getApiV1ArkhamGamesRawR = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  runDB $ selectList [] []
+
+postApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
+postApiV1ArkhamGameRawR gameId = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  currentData <- requireCheckJsonBody
+  runDB $ update \g -> do
+    set g [ArkhamGameCurrentData =. val currentData]
+    where_ $ g.id ==. val gameId
 
 getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do

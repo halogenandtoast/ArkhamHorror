@@ -390,8 +390,8 @@ instance FromJSON TreacheryAttrs where
     treacheryDiscardedBy <- o .: "discardedBy"
     treacheryMeta <- o .: "meta"
     treacherySealedChaosTokens <- o .: "sealedChaosTokens"
-    treacheryTaboo <- o .: "taboo"
-    treacheryMutated <- o .: "mutated"
+    treacheryTaboo <- o .:? "taboo"
+    treacheryMutated <- o .:? "mutated"
     treacheryExhausted <- o .:? "exhausted" .!= False
 
     pure TreacheryAttrs {..}

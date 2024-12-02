@@ -13,10 +13,10 @@ export type Enemy = {
   tokens: Tokens;
   exhausted: boolean;
   engagedInvestigators: string[];
-  treacheries: string[];
-  assets: string[];
-  skills: string[];
-  events: string[];
+  treacheries: number[];
+  assets: number[];
+  skills: number[];
+  events: number[];
   asSelfLocation: string | null;
   sealedChaosTokens: ChaosToken[];
   placement: Placement;
@@ -62,10 +62,10 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   ).map(a => a.reduce((acc, v) => acc + v[1], 0)),
   exhausted: JsonDecoder.boolean,
   engagedInvestigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorIds[]'),
-  treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-  assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
-  skills: JsonDecoder.array<string>(JsonDecoder.string, 'SkillId[]'),
-  events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
+  treacheries: JsonDecoder.array<number>(JsonDecoder.number, 'TreacheryId[]'),
+  assets: JsonDecoder.array<number>(JsonDecoder.number, 'AssetId[]'),
+  skills: JsonDecoder.array<number>(JsonDecoder.number, 'SkillId[]'),
+  events: JsonDecoder.array<number>(JsonDecoder.number, 'EventId[]'),
   asSelfLocation: JsonDecoder.nullable(JsonDecoder.string),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   placement: placementDecoder,

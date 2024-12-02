@@ -30,10 +30,10 @@ export type Location = {
   shroud: number;
   revealed: boolean;
   investigators: string[];
-  enemies: string[];
-  treacheries: string[];
-  assets: string[];
-  events: string[];
+  enemies: number[];
+  treacheries: number[];
+  assets: number[];
+  events: number[];
   cardsUnderneath: Card[];
   modifiers: Modifier[];
   connectedLocations: number[];
@@ -54,13 +54,13 @@ export const locationDecoder = JsonDecoder.object<Location>(
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
-    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-    treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-    assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
-    events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
+    enemies: JsonDecoder.array<number>(JsonDecoder.number, 'EnemyId[]'),
+    treacheries: JsonDecoder.array<number>(JsonDecoder.number, 'TreacheryId[]'),
+    assets: JsonDecoder.array<number>(JsonDecoder.number, 'AssetId[]'),
+    events: JsonDecoder.array<number>(JsonDecoder.number, 'EventId[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
-    connectedLocations: JsonDecoder.array<string>(JsonDecoder.number, 'LocationId[]'),
+    connectedLocations: JsonDecoder.array<number>(JsonDecoder.number, 'LocationId[]'),
     inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),

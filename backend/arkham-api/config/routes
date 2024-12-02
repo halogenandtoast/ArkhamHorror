@@ -20,13 +20,15 @@
           /sync ApiV1ArkhamSyncDeckR POST
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
+        !/ids ApiV1ArkhamGamesIdsR GET
         !/import ApiV1ArkhamGamesImportR POST
         !/fix ApiV1ArkhamGamesFixR POST
         !/reload ApiV1ArkhamGamesReloadR GET
         !/old ApiV1ArkhamGamesOldR GET
+        !/raw ApiV1ArkhamGamesRawR GET
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT DELETE
-          /raw ApiV1ArkhamGameRawR PUT
+          /raw ApiV1ArkhamGameRawR GET PUT POST
           /join ApiV1ArkhamPendingGameR GET PUT
           /replay/#Int ApiV1ArkhamGameReplayR GET
           /decks ApiV1ArkhamGameDecksR PUT

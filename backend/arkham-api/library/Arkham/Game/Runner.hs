@@ -253,7 +253,7 @@ runGameMessage msg g = case msg of
       $ g
       & (inActionL .~ True)
       & (actionCanBeUndoneL .~ True)
-      & (actionDiffL .~ [])
+      & (actionDiffL .~ mempty)
   FinishAction -> do
     iid <- getActiveInvestigatorId
     let
@@ -265,15 +265,13 @@ runGameMessage msg g = case msg of
       $ g
       & (inActionL .~ False)
       & (actionCanBeUndoneL .~ False)
-      & (actionDiffL .~ [])
+      & (actionDiffL .~ mempty)
       & (inDiscardEntitiesL .~ mempty)
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   ActionCannotBeUndone -> pure $ g & actionCanBeUndoneL .~ False
   UndoAction -> do
-    -- gameActionDiff contains a list of diffs, in order, to revert the game
-    -- The gameActionDiff will be empty after this so we do not need the diffs to store any data
-    pure $ foldl' unsafePatch g (gameActionDiff g)
+    pure $ unsafePatch g (gameActionDiff g)
   EndOfGame mNextCampaignStep -> do
     window <- checkWindows [mkWhen Window.EndOfGame]
     push window
@@ -2948,5 +2946,5 @@ runPreGameMessage msg g = case msg of
 
 handleActionDiff :: Game -> Game -> Game
 handleActionDiff old new
-  | gameInAction new = new & actionDiffL %~ (diff new old :)
+  | gameInAction new = new & actionDiffL <>~ diff new old
   | otherwise = new

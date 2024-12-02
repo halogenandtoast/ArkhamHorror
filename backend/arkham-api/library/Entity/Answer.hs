@@ -18,6 +18,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
 import Data.Aeson
+import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Foundation
@@ -42,11 +43,11 @@ data QuestionResponse = QuestionResponse
   deriving stock (Show, Generic)
 
 newtype PaymentAmountsResponse = PaymentAmountsResponse
-  {parAmounts :: Map Int Int}
+  {parAmounts :: IntMap Int}
   deriving stock (Show, Generic)
 
 newtype AmountsResponse = AmountsResponse
-  {arAmounts :: Map Int Int}
+  {arAmounts :: IntMap Int}
   deriving stock (Show, Generic)
 
 instance FromJSON QuestionResponse where
@@ -244,7 +245,7 @@ handleAnswer Game {..} playerId = \case
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedId uuid = NamedId (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedId) $ Map.toList $ arAmounts response
+      let amounts = map (first toNamedId) $ IntMap.toList $ arAmounts response
       pure
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
@@ -252,7 +253,7 @@ handleAnswer Game {..} playerId = \case
       let nameMap = Map.fromList $ map (\(AmountChoice cId lbl _ _) -> (cId, lbl)) choices
       let toNamedId uuid = NamedId (Map.findWithDefault (error "Missing key") uuid nameMap) uuid
       let question' = Map.delete playerId gameQuestion
-      let amounts = map (first toNamedId) $ Map.toList $ arAmounts response
+      let amounts = map (first toNamedId) $ IntMap.toList $ arAmounts response
       pure
         $ ResolveAmounts (playerInvestigator gameEntities playerId) amounts target
         : [AskMap question' | not (Map.null question')]
@@ -263,7 +264,7 @@ handleAnswer Game {..} playerId = \case
         let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
         pure
           $ concatMap (\(cId, n) -> replicate n (Map.findWithDefault Noop cId costMap))
-          $ Map.toList (parAmounts response)
+          $ IntMap.toList (parAmounts response)
       _ -> error "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case

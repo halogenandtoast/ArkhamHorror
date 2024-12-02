@@ -39,7 +39,7 @@ instance PersistField Choice where
     fmapLeft f (Left a) = Left (f a)
     fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
-newtype ActionDiff = ActionDiff [Patch]
+newtype ActionDiff = ActionDiff Patch
   deriving newtype (ToJSON, FromJSON, Show)
 
 instance PersistFieldSql ActionDiff where

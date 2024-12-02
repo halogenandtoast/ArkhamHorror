@@ -370,6 +370,7 @@ instance FromJSON ExtendedCardMatcher where
     case t of
       "AnyCard" -> pure (BasicCardMatch AnyCard)
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
+      "CardWithTrait" -> BasicCardMatch . CardWithTrait <$> o .: "contents"
       _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
 
 -- ** Card Helpers **

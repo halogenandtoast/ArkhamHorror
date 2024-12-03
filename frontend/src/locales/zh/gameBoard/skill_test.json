@@ -1,0 +1,13 @@
+{
+    "fastPlayerWindow": "{'{fast}'} 玩家时间段",
+
+    "determineSkillOfTestStep": "决定检定所用的技能。检定开始。",
+    "commitCardsFromHandToSkillTestStep": "从手牌中投入卡牌。",
+    "revealChaosTokenStep": "抽取混乱标记。",
+    "resolveChaosSymbolEffectsStep": "结算混乱符号效果。",
+    "determineInvestigatorsModifiedSkillValueStep": "计算调查员修正后的技能值。",
+    "determineSuccessOrFailureOfSkillTestStep": "决定检定成功/失败。",
+    "applySkillTestResultsStep": "执行技能检定结果。",
+    "skillTestEndsStep": "技能检定结束。"
+
+}

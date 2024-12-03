@@ -22,7 +22,9 @@ sudo apt-get install build-essential curl libffi-dev libffi8ubuntu1 libgmp-dev l
 
 then install ghcup via the WSL way
 
+```
 curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
+```
 
 
 source the env file they tell you to and then install the correct ghc version, (currently 9.8.2) via `ghcup tui`,

@@ -263,20 +263,20 @@ const tokenEffects = computed(() => {
 <template>
   <Draggable>
     <template #handle>
-      <h2>Skill Test</h2>
+      <h2>{{ $t('skillTestTitle') }}</h2>
     </template>
     <div class="skill-test">
       <div class="steps">
-        <div v-tooltip="'Determine skill of test. Skill test of that type begins.'" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
-        <div v-tooltip="{content: formatContent('{fast} PLAYER WINDOW'), html: true }" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow1' }" v-html="formatContent('{fast}')" />
-        <div v-tooltip="'Commit cards from hand to skill test.'" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
-        <div v-tooltip="{content: formatContent('{fast} PLAYER WINDOW'), html: true}" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow2' }" v-html="formatContent('{fast}')" />
-        <div v-tooltip="'Reveal chaos token.'" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
-        <div v-tooltip="'Resolve chaos symbol effect(s).'" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
-        <div v-tooltip="'Determine investigator\'s modified skill value.'" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>
-        <div v-tooltip="'Determine success/failure of skill test.'" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
-        <div v-tooltip="'Apply skill test results.'" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
-        <div v-tooltip="'Skill test ends.'" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
+        <div v-tooltip="$t('skillTest.determineSkillOfTestStep')" class="step" :class="{ active: skillTest.step === 'DetermineSkillOfTestStep' }">ST.1</div>
+        <div v-tooltip="{content: formatContent(String($t('skillTest.fastPlayerWindow'))), html: true }" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow1' }" v-html="formatContent('{fast}')" />
+        <div v-tooltip="$t('skillTest.commitCardsFromHandToSkillTestStep')" class="step" :class="{ active: skillTest.step === 'CommitCardsFromHandToSkillTestStep' }">ST.2</div>
+        <div v-tooltip="{content: formatContent($t('skillTest.fastPlayerWindow')), html: true}" class="step" :class="{ active: skillTest.step === 'SkillTestFastWindow2' }" v-html="formatContent('{fast}')" />
+        <div v-tooltip="$t('skillTest.revealChaosTokenStep')" class="step" :class="{ active: skillTest.step === 'RevealChaosTokenStep' }">ST.3</div>
+        <div v-tooltip="$t('skillTest.resolveChaosSymbolEffectsStep')" class="step" :class="{ active: skillTest.step === 'ResolveChaosSymbolEffectsStep' }">ST.4</div>
+        <div v-tooltip="$t('skillTest.determineInvestigatorsModifiedSkillValueStep')" class="step" :class="{ active: skillTest.step === 'DetermineInvestigatorsModifiedSkillValueStep' }">ST.5</div>
+        <div v-tooltip="$t('skillTest.determineSuccessOrFailureOfSkillTestStep')" class="step" :class="{ active: skillTest.step === 'DetermineSuccessOrFailureOfSkillTestStep' }">ST.6</div>
+        <div v-tooltip="$t('skillTest.applySkillTestResultsStep')" class="step" :class="{ active: skillTest.step === 'ApplySkillTestResultsStep' }">ST.7</div>
+        <div v-tooltip="$t('skillTest.skillTestEndsStep')" class="step" :class="{ active: skillTest.step === 'SkillTestEndsStep' }">ST.8</div>
       </div>
       <div class="skill-test-contents">
         <div v-if="swarmEnemy" class="target-card swarming">

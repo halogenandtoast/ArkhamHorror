@@ -1,0 +1,13 @@
+{
+    "fastPlayerWindow": "{'{fast}'} PLAYER WINDOW",
+
+    "determineSkillOfTestStep": "Determine skill of test. Skill test of that type begins.",
+    "commitCardsFromHandToSkillTestStep": "Commit cards from hand to skill test.",
+    "revealChaosTokenStep": "Reveal chaos token.",
+    "resolveChaosSymbolEffectsStep": "Resolve chaos symbol effect(s).",
+    "determineInvestigatorsModifiedSkillValueStep": "Determine investigator's modified skill value.",
+    "determineSuccessOrFailureOfSkillTestStep": "Determine success/failure of skill test.",
+    "applySkillTestResultsStep": "Apply skill test results.",
+    "skillTestEndsStep": "Skill test ends."
+
+}

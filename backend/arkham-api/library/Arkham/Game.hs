@@ -1,11 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Game (
-  module Arkham.Game,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Game (module Arkham.Game, module X) where
 
 import Arkham.Ability hiding (you)
 import Arkham.Act
@@ -143,6 +138,7 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Placement qualified as Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
 import Arkham.Random
@@ -4823,6 +4819,7 @@ handleBlanked g = do
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
         Modifier _ Blank _ _ -> applyBlank (targetToSource target)
+        Modifier _ BlankExceptForcedAbilities _ _ -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 

@@ -124,7 +124,7 @@ packages:
     hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
 snapshots:
 - completed:
-    sha256: 24555e806afe039f8f2f87f156417047dd1255cf57a3fb0ff330ec78a4c02cf9
-    size: 664619
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/10/2.yaml
-  original: nightly-2024-10-02
+    sha256: f6666a91f63dae89e47da2be54f79c8819601dfacf53fd7015fec1454864892e
+    size: 678851
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/12/3.yaml
+  original: nightly-2024-12-03

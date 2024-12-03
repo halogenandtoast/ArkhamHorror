@@ -9,5 +9,6 @@ import theDreamEaters from '@/locales/zh/theDreamEaters'
 import theInnsmouthConspiracy from '@/locales/zh/theInnsmouthConspiracy'
 import edgeOfTheEarth from '@/locales/zh/edgeOfTheEarth'
 import standalone from '@/locales/zh/standalone'
+import gameBoard from '@/locales/zh/gameBoard/gameBoard'
 
-export default {...base, ...campaignLog, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}
+export default {...base, ...campaignLog, ...gameBoard, nightOfTheZealot, theDunwichLegacy, thePathToCarcosa, theForgottenAge, theCircleUndone, theDreamEaters, theInnsmouthConspiracy, edgeOfTheEarth, standalone}

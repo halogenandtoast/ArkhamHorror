@@ -709,49 +709,49 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
     <div class="phases">
       <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
         <div class="subphases">
-          <div v-tooltip.left="'Round begins. Mythos phase begins.'" :class="{'current': phaseStep?.contents === 'MythosPhaseBeginsStep' }">1.1</div>
-          <div v-tooltip.left="'Place 1 doom on the current agenda.'" :class="{'current': phaseStep?.contents === 'PlaceDoomOnAgendaStep'}">1.2</div>
-          <div v-tooltip.left="'Check doom threshold.'" :class="{'current': phaseStep?.contents === 'CheckDoomThresholdStep'}">1.3</div>
-          <div v-tooltip.left="'Each investigator draws 1 encounter card.'" :class="{'current': phaseStep?.contents === 'EachInvestigatorDrawsEncounterCardStep'}">1.4</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'MythosPhaseWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Mythos phase ends.'" :class="{'current': phaseStep?.contents === 'MythosPhaseEndsStep'}">1.5</div>
+          <div v-tooltip.left="$t('phase.mythosPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'MythosPhaseBeginsStep' }">1.1</div>
+          <div v-tooltip.left="$t('phase.placeDoomOnAgendaStep')" :class="{'current': phaseStep?.contents === 'PlaceDoomOnAgendaStep'}">1.2</div>
+          <div v-tooltip.left="$t('phase.checkDoomThresholdStep')" :class="{'current': phaseStep?.contents === 'CheckDoomThresholdStep'}">1.3</div>
+          <div v-tooltip.left="$t('phase.eachInvestigatorDrawsEncounterCardStep')" :class="{'current': phaseStep?.contents === 'EachInvestigatorDrawsEncounterCardStep'}">1.4</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'MythosPhaseWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.mythosPhaseEndsStep')" :class="{'current': phaseStep?.contents === 'MythosPhaseEndsStep'}">1.5</div>
         </div>
-        <div>Mythos</div>
+        <div>{{$t('phase.mythosPhase')}}</div>
       </div>
       <div class="phase" :class="{ 'active-phase': phase == 'InvestigationPhase' }">
         <div class="subphases">
-          <div v-tooltip.left="'Investigation phase begins.'" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsStep'}">2.1</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Next investigator\'s turn begins.'" :class="{'current': phaseStep?.contents === 'NextInvestigatorsTurnBeginsStep'}">2.2</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'NextInvestigatorsTurnBeginsWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Active investigator may take an action, if able. If an action was taken, return to previous player window. If no action was taken, proceed to 2.2.2.'" :class="{'current': phaseStep?.contents === 'InvestigatorTakesActionStep'}">2.2.1</div>
-          <div v-tooltip.left="'Investigator\'s turn ends. If an investigator has not yet taken a turn this phase, return to 2.2. If each investigator has taken a turn this phase, proceed to 2.3.'" :class="{'current': phaseStep?.contents === 'InvestigatorsTurnEndsStep'}">2.2.2</div>
-          <div v-tooltip.left="'Investigation phase ends.'" :class="{'current': phaseStep?.contents === 'InvestigationPhaseEndsStep'}">2.3</div>
+          <div v-tooltip.left="$t('phase.investigationPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsStep'}">2.1</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.nextInvestigatorsTurnBeginsStep')" :class="{'current': phaseStep?.contents === 'NextInvestigatorsTurnBeginsStep'}">2.2</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'NextInvestigatorsTurnBeginsWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.investigatorTakesActionStep')" :class="{'current': phaseStep?.contents === 'InvestigatorTakesActionStep'}">2.2.1</div>
+          <div v-tooltip.left="$t('phase.investigatorsTurnEndsStep')" :class="{'current': phaseStep?.contents === 'InvestigatorsTurnEndsStep'}">2.2.2</div>
+          <div v-tooltip.left="$t('phase.investigationPhaseEndsStep')" :class="{'current': phaseStep?.contents === 'InvestigationPhaseEndsStep'}">2.3</div>
         </div>
-        <div>Investigation</div>
+        <div>{{$t('phase.investigationPhase')}}</div>
       </div>
       <div class="phase" :class="{ 'active-phase': phase == 'EnemyPhase' }">
         <div class="subphases">
-          <div v-tooltip.left="'Enemy phase begins.'" :class="{'current': phaseStep?.contents === 'EnemyPhaseBeginsStep'}">3.1</div>
-          <div v-tooltip.left="'Hunter enemies move.'" :class="{'current': phaseStep?.contents === 'HunterEnemiesMoveStep'}">3.2</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'ResolveAttacksWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Next investigator resolves engaged enemy attacks. If an investigator has not yet resolved enemy attacks this phase, return to previous player window. After final investigator resolves engaged enemy attacks, proceed to next player window.'" :class="{'current': phaseStep?.contents === 'ResolveAttacksStep'}">3.3</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'AfterResolveAttacksWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Enemy phase ends.'" :class="{'current': phaseStep?.contents === 'EnemyPhaseEndsStep'}">3.4</div>
-        </div>
-        <div>Enemy</div>
+          <div v-tooltip.left="$t('phase.enemyPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'EnemyPhaseBeginsStep'}">3.1</div>
+          <div v-tooltip.left="$t('phase.hunterEnemiesMoveStep')" :class="{'current': phaseStep?.contents === 'HunterEnemiesMoveStep'}">3.2</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'ResolveAttacksWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.resolveAttacksStep')" :class="{'current': phaseStep?.contents === 'ResolveAttacksStep'}">3.3</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'AfterResolveAttacksWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.enemyPhaseEndsStep')" :class="{'current': phaseStep?.contents === 'EnemyPhaseEndsStep'}">3.4</div>
+        </div>  
+        <div>{{$t('phase.enemyPhase')}}</div>
       </div>
       <div class="phase" :class="{ 'active-phase': phase == 'UpkeepPhase' }">
         <div class="subphases">
-          <div v-tooltip.left="'Upkeep phase begins.'" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsStep'}">4.1</div>
-          <div v-tooltip.left="'PLAYER WINDOW'" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsWindow'}"><i class="fast-icon" /></div>
-          <div v-tooltip.left="'Reset actions.'" :class="{'current': phaseStep?.contents === 'ResetActionsStep'}">4.2</div>
-          <div v-tooltip.left="'Ready each exhausted card.'" :class="{'current': phaseStep?.contents === 'ReadyExhaustedStep'}">4.3</div>
-          <div v-tooltip.left="'Each investigator draws 1 card and gains 1 resource.'" :class="{'current': phaseStep?.contents === 'DrawCardAndGainResourceStep'}">4.4</div>
-          <div v-tooltip.left="'Each investigator checks hand size.'" :class="{'current': phaseStep?.contents === 'CheckHandSizeStep'}">4.5</div>
-          <div v-tooltip.left="'Upkeep phase ends. Round ends.'" :class="{'current': phaseStep?.contents === 'UpkeepPhaseEndsStep'}">4.6</div>
+          <div v-tooltip.left="$t('phase.upkeepPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsStep'}">4.1</div>
+          <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsWindow'}"><i class="fast-icon" /></div>
+          <div v-tooltip.left="$t('phase.resetActionsStep')" :class="{'current': phaseStep?.contents === 'ResetActionsStep'}">4.2</div>
+          <div v-tooltip.left="$t('phase.readyExhaustedStep')" :class="{'current': phaseStep?.contents === 'ReadyExhaustedStep'}">4.3</div>
+          <div v-tooltip.left="$t('phase.drawCardAndGainResourceStep')" :class="{'current': phaseStep?.contents === 'DrawCardAndGainResourceStep'}">4.4</div>
+          <div v-tooltip.left="$t('phase.checkHandSizeStep')" :class="{'current': phaseStep?.contents === 'CheckHandSizeStep'}">4.5</div>
+          <div v-tooltip.left="$t('phase.upkeepPhaseEndsStep')" :class="{'current': phaseStep?.contents === 'UpkeepPhaseEndsStep'}">4.6</div>
         </div>
-        <div>Upkeep</div>
+        <div>{{$t('phase.upkeepPhase')}}</div>
       </div>
     </div>
   </div>

@@ -9,6 +9,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Capability
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -17,7 +18,13 @@ newtype BootleggersHideaway_174a = BootleggersHideaway_174a LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bootleggersHideaway_174a :: LocationCard BootleggersHideaway_174a
-bootleggersHideaway_174a = location BootleggersHideaway_174a Cards.bootleggersHideaway_174a 4 (PerPlayer 1)
+bootleggersHideaway_174a =
+  locationWith
+    BootleggersHideaway_174a
+    Cards.bootleggersHideaway_174a
+    4
+    (PerPlayer 1)
+    connectsToAdjacent
 
 instance HasAbilities BootleggersHideaway_174a where
   getAbilities (BootleggersHideaway_174a a) =

@@ -3,10 +3,10 @@ module Arkham.Enemy.Cards.MindlessDancer (mindlessDancer, MindlessDancer (..)) w
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Window qualified as Window
@@ -31,9 +31,7 @@ instance HasAbilities MindlessDancer where
       $ EnemyMovedTo #after (IncludeEmptySpace $ locationIs Locations.emptySpace) MovedViaHunter (be a)
 
 instance HasModifiersFor MindlessDancer where
-  getModifiersFor target (MindlessDancer attrs) | isTarget attrs target = do
-    toModifiers attrs [CanEnterEmptySpace]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MindlessDancer attrs) = modifySelf attrs [CanEnterEmptySpace]
 
 instance RunMessage MindlessDancer where
   runMessage msg e@(MindlessDancer attrs) = runQueueT $ case msg of

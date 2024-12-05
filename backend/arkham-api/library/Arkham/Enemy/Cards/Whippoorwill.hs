@@ -11,17 +11,15 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype Whippoorwill = Whippoorwill EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 whippoorwill :: EnemyCard Whippoorwill
 whippoorwill = enemy Whippoorwill Cards.whippoorwill (2, Static 1, 4) (0, 1)
 
 instance HasModifiersFor Whippoorwill where
-  getModifiersFor (InvestigatorTarget iid) (Whippoorwill attrs) = do
-    affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId attrs)
-    toModifiers attrs [AnySkillValue (-1) | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Whippoorwill a) = do
+    modifySelect a (InvestigatorAt $ locationWithEnemy a) [AnySkillValue (-1)]
 
 instance RunMessage Whippoorwill where
   runMessage msg (Whippoorwill attrs) = Whippoorwill <$> runMessage msg attrs

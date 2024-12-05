@@ -1,7 +1,6 @@
 module Arkham.Skill.Cards.Leadership2 (leadership2, Leadership2 (..)) where
 
 import Arkham.Capability
-import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
@@ -15,12 +14,11 @@ leadership2 :: SkillCard Leadership2
 leadership2 = skill Leadership2 Cards.leadership2
 
 instance HasModifiersFor Leadership2 where
-  getModifiersFor (CardIdTarget cid) (Leadership2 attrs) | toCardId attrs == cid = do
-    maybeModified attrs do
+  getModifiersFor (Leadership2 attrs) = do
+    maybeModified_ attrs attrs.cardId do
       iid <- MaybeT getSkillTestInvestigator
       guard $ attrs.owner /= iid
       pure [AddSkillIcons [#willpower, #wild]]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Leadership2 where
   runMessage msg s@(Leadership2 attrs) = runQueueT $ case msg of

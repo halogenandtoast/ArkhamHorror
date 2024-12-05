@@ -18,12 +18,13 @@ deepDark :: TreacheryCard DeepDark
 deepDark = treachery DeepDark Cards.deepDark
 
 instance HasModifiersFor DeepDark where
-  getModifiersFor (LocationTarget _) (DeepDark a) = modified a [MaxCluesDiscovered 1]
-  getModifiersFor (InvestigatorTarget iid) (DeepDark a) = do
-    history <- getHistoryField RoundHistory iid HistoryCluesDiscovered
-    let xs = Map.keys $ Map.filter (> 0) history
-    modified a [CannotDiscoverCluesAt $ oneOf $ map LocationWithId xs | notNull xs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeepDark a) = do
+    locations <- modifySelect a Anywhere [MaxCluesDiscovered 1]
+    investigators <- modifySelectMapM a Anyone \iid -> do
+      history <- getHistoryField RoundHistory iid HistoryCluesDiscovered
+      let xs = Map.keys $ Map.filter (> 0) history
+      pure [CannotDiscoverCluesAt $ oneOf $ map LocationWithId xs | notNull xs]
+    pure $ locations <> investigators
 
 instance HasAbilities DeepDark where
   getAbilities (DeepDark a) =

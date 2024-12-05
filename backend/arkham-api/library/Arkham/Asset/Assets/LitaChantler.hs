@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.LitaChantler where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (attackedEnemy)
 import Arkham.Matcher
@@ -17,11 +17,9 @@ litaChantler :: AssetCard LitaChantler
 litaChantler = allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
 
 instance HasModifiersFor LitaChantler where
-  getModifiersFor (InvestigatorTarget iid) (LitaChantler a) = maybeModified a do
-    controllerId <- hoistMaybe a.controller
-    liftGuardM $ selectAny $ locationWithInvestigator iid <> locationWithInvestigator controllerId
-    pure [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LitaChantler a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifySelect a (InvestigatorAt $ locationWithInvestigator iid) [SkillModifier #combat 1]
 
 instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =

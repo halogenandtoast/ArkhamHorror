@@ -17,11 +17,9 @@ alejandrosPlight :: ActCard AlejandrosPlight
 alejandrosPlight = act (3, C) AlejandrosPlight Cards.alejandrosPlight Nothing
 
 instance HasModifiersFor AlejandrosPlight where
-  getModifiersFor (EnemyTarget eid) (AlejandrosPlight a) = do
-    isModified <- eid <=~> EnemyWithAsset (assetIs Assets.alejandroVela)
+  getModifiersFor (AlejandrosPlight a) = do
     n <- perPlayer 2
-    toModifiers a [HealthModifier n | isModified]
-  getModifiersFor _ _ = pure []
+    modifySelect a (EnemyWithAsset $ assetIs Assets.alejandroVela) [HealthModifier n]
 
 instance HasAbilities AlejandrosPlight where
   getAbilities (AlejandrosPlight a) =

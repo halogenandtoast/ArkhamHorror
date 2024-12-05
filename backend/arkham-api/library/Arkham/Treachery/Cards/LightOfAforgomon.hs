@@ -14,9 +14,8 @@ lightOfAforgomon :: TreacheryCard LightOfAforgomon
 lightOfAforgomon = treachery LightOfAforgomon Cards.lightOfAforgomon
 
 instance HasModifiersFor LightOfAforgomon where
-  getModifiersFor (InvestigatorTarget _) (LightOfAforgomon attrs) =
-    toModifiers attrs [TreatAllDamageAsDirect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LightOfAforgomon attrs) =
+    modifySelect attrs Anyone [TreatAllDamageAsDirect]
 
 instance RunMessage LightOfAforgomon where
   runMessage msg t@(LightOfAforgomon attrs) = runQueueT $ case msg of

@@ -21,9 +21,9 @@ toweringBeasts :: TreacheryCard ToweringBeasts
 toweringBeasts = treachery ToweringBeasts Cards.toweringBeasts
 
 instance HasModifiersFor ToweringBeasts where
-  getModifiersFor (EnemyTarget eid) (ToweringBeasts attrs) | treacheryOnEnemy eid attrs = do
-    modified attrs [EnemyFight 1, HealthModifier 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ToweringBeasts attrs) = case attrs.placement of
+    AttachedToEnemy eid -> modified_ attrs eid [EnemyFight 1, HealthModifier 1]
+    _ -> pure mempty
 
 instance RunMessage ToweringBeasts where
   runMessage msg t@(ToweringBeasts attrs) = case msg of

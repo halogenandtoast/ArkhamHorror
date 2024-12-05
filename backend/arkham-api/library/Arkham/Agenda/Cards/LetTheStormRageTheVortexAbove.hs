@@ -31,10 +31,9 @@ letTheStormRageTheVortexAbove =
     (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheVortexAbove where
-  getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheVortexAbove a) = do
-    card <- getCard cardId
-    toModifiers a [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LetTheStormRageTheVortexAbove a) = do
+    ancientEvils <- findAllCards (`isCard` Treacheries.ancientEvils)
+    modifyEach a ancientEvils [AddKeyword Keyword.Surge]
 
 instance HasAbilities LetTheStormRageTheVortexAbove where
   getAbilities (LetTheStormRageTheVortexAbove a) =

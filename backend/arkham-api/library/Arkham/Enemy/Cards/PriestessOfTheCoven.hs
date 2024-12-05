@@ -18,14 +18,14 @@ priestessOfTheCoven :: EnemyCard PriestessOfTheCoven
 priestessOfTheCoven = enemy PriestessOfTheCoven Cards.priestessOfTheCoven (2, Static 3, 2) (2, 0)
 
 instance HasModifiersFor PriestessOfTheCoven where
-  getModifiersFor target (PriestessOfTheCoven a) | isTarget a target = do
+  getModifiersFor (PriestessOfTheCoven a) = do
     witchCount <- length <$> findInDiscard (CardWithTrait Witch)
-    toModifiers a
-      $ guard (witchCount > 0)
-      *> [ Modifier.EnemyFight (min 3 witchCount)
-         , Modifier.EnemyEvade (min 3 witchCount)
-         ]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen
+      a
+      (witchCount > 0)
+      [ Modifier.EnemyFight (min 3 witchCount)
+      , Modifier.EnemyEvade (min 3 witchCount)
+      ]
 
 instance HasAbilities PriestessOfTheCoven where
   getAbilities (PriestessOfTheCoven a) = extend1 a $ mkAbility a 1 $ forced EncounterDeckRunsOutOfCards

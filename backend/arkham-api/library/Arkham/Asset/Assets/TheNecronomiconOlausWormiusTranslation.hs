@@ -8,10 +8,9 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.SkillType
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theNecronomiconOlausWormiusTranslation
@@ -26,9 +25,7 @@ instance HasAbilities TheNecronomiconOlausWormiusTranslation where
     [restrictedAbility a 1 ControlsThis $ ActionAbility [] $ ActionCost 1]
 
 instance HasModifiersFor TheNecronomiconOlausWormiusTranslation where
-  getModifiersFor (InvestigatorTarget iid) (TheNecronomiconOlausWormiusTranslation a) =
-    toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheNecronomiconOlausWormiusTranslation a) = controllerGets a [SkillModifier #intellect 1]
 
 instance RunMessage TheNecronomiconOlausWormiusTranslation where
   runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of

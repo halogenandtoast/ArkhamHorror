@@ -366,10 +366,10 @@ instance HasAbilities Enemy where
 -- If the enemy has been defeated, we won't have removed it yet ourselves, but
 -- the printed effects should be disabled
 instance HasModifiersFor Enemy where
-  getModifiersFor target (Enemy a) =
+  getModifiersFor (Enemy a) =
     if attr enemyDefeated a
       then pure mempty
-      else getModifiersFor target a
+      else getModifiersFor a
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

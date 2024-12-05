@@ -7,12 +7,12 @@ import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Game.Helpers (getPlayableCards, toModifiers, withModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Window (defaultWindows, mkWhen)
 import Arkham.Window qualified as Window
@@ -38,11 +38,10 @@ getRevealedCards :: Value -> Map InvestigatorId [CardId]
 getRevealedCards = fromMaybe mempty . parseMaybe parseRevealedCards
 
 instance HasModifiersFor BobJenkins where
-  getModifiersFor target (BobJenkins a) | a `is` target = do
-    toModifiers
+  getModifiersFor (BobJenkins a) =
+    modifySelf
       a
       [GiveAdditionalAction (AdditionalAction "Bob Jenkins" (toSource a) BobJenkinsAction)]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities BobJenkins where
   getAbilities (BobJenkins attrs) =

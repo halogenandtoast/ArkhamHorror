@@ -1,15 +1,13 @@
 module Arkham.Location.Cards.StoneArchways (stoneArchways, StoneArchways (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
@@ -24,24 +22,22 @@ stoneArchways =
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor StoneArchways where
-  getModifiersFor (LocationTarget lid) (StoneArchways attrs) = do
-    isUnrevealedAdjacent <-
-      lid <=~> (UnrevealedLocation <> oneOf [LocationInDirection dir (be attrs) | dir <- [minBound ..]])
-    toModifiers attrs [Blank | isUnrevealedAdjacent]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StoneArchways a) = do
+    modifySelect
+      a
+      (UnrevealedLocation <> oneOf [LocationInDirection dir (be a) | dir <- [minBound ..]])
+      [Blank]
 
 instance HasAbilities StoneArchways where
   getAbilities (StoneArchways attrs) =
-    extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 (notExists $ LocationInDirection RightOf (be attrs))
-          $ forced
-          $ RevealLocation #when Anyone (be attrs)
-      ]
+    extendRevealed1 attrs
+      $ restricted attrs 1 (notExists $ rightOf attrs)
+      $ forced
+      $ RevealLocation #when Anyone (be attrs)
 
 instance RunMessage StoneArchways where
-  runMessage msg l@(StoneArchways attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(StoneArchways attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
       pure l
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
@@ -52,4 +48,4 @@ instance RunMessage StoneArchways where
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l
-    _ -> StoneArchways <$> runMessage msg attrs
+    _ -> StoneArchways <$> liftRunMessage msg attrs

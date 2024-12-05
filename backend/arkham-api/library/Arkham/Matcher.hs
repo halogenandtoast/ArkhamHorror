@@ -15,6 +15,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.Criteria
+import Arkham.Direction
 import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
@@ -249,6 +250,14 @@ locationWithAsset = LocationWithAsset . AssetWithId . asId
 locationWithEnemy :: (AsId a, IdOf a ~ EnemyId) => a -> LocationMatcher
 locationWithEnemy = LocationWithEnemy . EnemyWithId . asId
 {-# INLINE locationWithEnemy #-}
+
+leftOf :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+leftOf = LocationInDirection LeftOf . LocationWithId . asId
+{-# INLINE leftOf #-}
+
+rightOf :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+rightOf = LocationInDirection RightOf . LocationWithId . asId
+{-# INLINE rightOf #-}
 
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId

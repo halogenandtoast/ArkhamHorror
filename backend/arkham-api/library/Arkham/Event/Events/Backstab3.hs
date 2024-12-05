@@ -6,7 +6,7 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource)
 
 newtype Backstab3 = Backstab3 EventAttrs
@@ -17,11 +17,10 @@ backstab3 :: EventCard Backstab3
 backstab3 = event Backstab3 Cards.backstab3
 
 instance HasModifiersFor Backstab3 where
-  getModifiersFor (InvestigatorTarget _) (Backstab3 attrs) = maybeModified attrs do
+  getModifiersFor (Backstab3 attrs) = maybeModified_ attrs attrs.controller do
     Fight <- MaybeT getSkillTestAction
     guardM $ MaybeT $ isSource attrs <$$> getSkillTestSource
     pure [DamageDealt 2]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Backstab3 where
   runMessage msg e@(Backstab3 attrs@EventAttrs {..}) = runQueueT $ case msg of

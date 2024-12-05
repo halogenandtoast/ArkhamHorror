@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype StubbornDetective = StubbornDetective EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 stubbornDetective :: EnemyCard StubbornDetective
@@ -20,10 +20,7 @@ stubbornDetective =
     $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasModifiersFor StubbornDetective where
-  getModifiersFor (InvestigatorTarget iid) (StubbornDetective a) = do
-    sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy $ toId a)
-    toModifiers a [Blank | sameLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StubbornDetective a) = modifySelect a (InvestigatorAt $ locationWithEnemy a) [Blank]
 
 instance RunMessage StubbornDetective where
   runMessage msg (StubbornDetective attrs) = StubbornDetective <$> runMessage msg attrs

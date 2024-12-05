@@ -2,30 +2,26 @@ module Arkham.Treachery.Cards.CursedLuck (CursedLuck (..), cursedLuck) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype CursedLuck = CursedLuck TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cursedLuck :: TreacheryCard CursedLuck
 cursedLuck = treachery CursedLuck Cards.cursedLuck
 
 instance HasModifiersFor CursedLuck where
-  getModifiersFor (InvestigatorTarget iid) (CursedLuck attrs) = do
-    mSkillTestSource <- getSkillTestSource
-    modified
-      attrs
-      [ AnySkillValue (-1)
-      | treacheryInThreatArea iid attrs && isJust mSkillTestSource
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CursedLuck attrs) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just _ -> inThreatAreaGets attrs [AnySkillValue (-1)]
 
 instance HasAbilities CursedLuck where
   getAbilities (CursedLuck x) =

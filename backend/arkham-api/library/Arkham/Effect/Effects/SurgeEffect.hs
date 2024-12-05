@@ -19,9 +19,8 @@ surgeEffect :: EffectArgs -> SurgeEffect
 surgeEffect = SurgeEffect . uncurry (baseAttrs "surge")
 
 instance HasModifiersFor SurgeEffect where
-  getModifiersFor target (SurgeEffect EffectAttrs {..}) | target == effectTarget = do
-    toModifiers effectSource [AddKeyword Keyword.Surge]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SurgeEffect EffectAttrs {..}) = do
+    modified_ effectSource effectTarget [AddKeyword Keyword.Surge]
 
 instance RunMessage SurgeEffect where
   runMessage msg e@(SurgeEffect attrs) = case msg of

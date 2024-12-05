@@ -5,11 +5,10 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
-import Arkham.Investigator.Projection
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher.Asset
+import Arkham.Matcher.Investigator
 import Arkham.Matcher.Window
-import Arkham.Placement
-import Arkham.Projection
 import Arkham.Scenarios.HorrorInHighGear.Helpers
 
 newtype TheChaseIsOnV1 = TheChaseIsOnV1 AgendaAttrs
@@ -20,11 +19,8 @@ theChaseIsOnV1 :: AgendaCard TheChaseIsOnV1
 theChaseIsOnV1 = agenda (1, A) TheChaseIsOnV1 Cards.theChaseIsOnV1 (Static 8)
 
 instance HasModifiersFor TheChaseIsOnV1 where
-  getModifiersFor (InvestigatorTarget iid) (TheChaseIsOnV1 a) = do
-    field InvestigatorPlacement iid >>= \case
-      InVehicle _ -> pure []
-      _ -> modified a [AdditionalActionCostOf #move 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheChaseIsOnV1 a) = do
+    modifySelect a (not_ $ InVehicleMatching AnyAsset) [AdditionalActionCostOf #move 2]
 
 instance HasAbilities TheChaseIsOnV1 where
   getAbilities (TheChaseIsOnV1 a) = [mkAbility a 1 $ forced $ RoundEnds #when]

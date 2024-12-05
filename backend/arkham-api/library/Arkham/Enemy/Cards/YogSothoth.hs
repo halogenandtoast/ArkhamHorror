@@ -5,7 +5,7 @@ import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -18,10 +18,9 @@ yogSothoth :: EnemyCard YogSothoth
 yogSothoth = enemyWith YogSothoth Cards.yogSothoth (4, Static 4, 0) (1, 5) (evadeL .~ Nothing)
 
 instance HasModifiersFor YogSothoth where
-  getModifiersFor target (YogSothoth a) | isTarget a target = do
+  getModifiersFor (YogSothoth a) = do
     healthModifier <- perPlayer 6
-    toModifiers a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier healthModifier, CannotMakeAttacksOfOpportunity, CannotBeEvaded]
 
 instance HasAbilities YogSothoth where
   getAbilities (YogSothoth a) =

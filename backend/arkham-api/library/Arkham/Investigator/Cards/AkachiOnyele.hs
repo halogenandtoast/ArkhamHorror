@@ -16,11 +16,11 @@ newtype AkachiOnyele = AkachiOnyele InvestigatorAttrs
   deriving stock Data
 
 instance HasModifiersFor AkachiOnyele where
-  getModifiersFor (AssetTarget aid) (AkachiOnyele attrs) = maybeModified attrs do
-    liftGuardM $ fieldMap AssetController (== Just attrs.id) aid
-    liftGuardM $ fieldMap AssetStartingUses (hasUsesFor Charge) aid
-    pure [AdditionalStartingUses 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AkachiOnyele a) =
+    modifySelect
+      a
+      (AssetControlledBy (InvestigatorWithId a.id) <> AssetWithUseType Charge)
+      [AdditionalStartingUses 1]
 
 akachiOnyele :: InvestigatorCard AkachiOnyele
 akachiOnyele =

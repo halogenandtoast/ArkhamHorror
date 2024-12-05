@@ -17,13 +17,12 @@ sharpVision1 :: SkillCard SharpVision1
 sharpVision1 = skill SharpVision1 Cards.sharpVision1
 
 instance HasModifiersFor SharpVision1 where
-  getModifiersFor target (SharpVision1 a) | a `is` target = do
+  getModifiersFor (SharpVision1 a) = do
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate)) -> toModifiers a [AddSkillIcons [#intellect, #intellect]]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate)) -> modifySelf a [AddSkillIcons [#intellect, #intellect]]
+      _ -> pure mempty
 
 instance RunMessage SharpVision1 where
   runMessage msg s@(SharpVision1 attrs) = case msg of

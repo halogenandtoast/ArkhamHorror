@@ -10,9 +10,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Types (getController)
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Projection
 
 newtype RavenousUncontrolledHunger = RavenousUncontrolledHunger AssetAttrs
@@ -26,10 +26,9 @@ instance HasAbilities RavenousUncontrolledHunger where
   getAbilities (RavenousUncontrolledHunger a) = [restrictedAbility a 1 ControlsThis $ forced $ TurnEnds #when You]
 
 instance HasModifiersFor RavenousUncontrolledHunger where
-  getModifiersFor (InvestigatorTarget iid) (RavenousUncontrolledHunger a) | a `controlledBy` iid = do
+  getModifiersFor (RavenousUncontrolledHunger a) = do
     n <- fieldMap AssetCardsUnderneath (min 5 . length) a.id
-    toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
-  getModifiersFor _ _ = pure []
+    controllerGets a [SkillModifier sType n | sType <- [minBound ..]]
 
 instance RunMessage RavenousUncontrolledHunger where
   runMessage msg a@(RavenousUncontrolledHunger attrs) = runQueueT $ case msg of

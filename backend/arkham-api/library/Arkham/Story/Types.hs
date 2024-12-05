@@ -145,7 +145,7 @@ instance HasAbilities Story where
   getAbilities (Story a) = getAbilities a
 
 instance HasModifiersFor Story where
-  getModifiersFor target (Story a) = getModifiersFor target a
+  getModifiersFor (Story a) = getModifiersFor a
 
 instance Entity Story where
   type EntityId Story = StoryId

@@ -145,197 +145,130 @@ tarotInvestigator card = do
     Just (GlobalTarot, _) -> Nothing
 
 instance HasModifiersFor TarotCard where
-  getModifiersFor target c@(TarotCard facing arcana) = do
+  getModifiersFor c@(TarotCard facing arcana) = do
     let source = TarotSource c
     case arcana of
-      TheFool0 ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            isDefeated <- iid <=~> Matcher.DefeatedInvestigator
-            toModifiers source
-              $ case facing of
-                Upright -> [XPModifier "The Fool 0" 2 | not isDefeated && affected]
-                Reversed -> [XPModifier "The Fool 0" (-2) | isDefeated && affected]
-          _ -> pure []
-      TheMagicianI ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            fmap (map setActiveDuringSetup)
-              . toModifiers source
-              $ case facing of
-                Upright -> [StartingResources 3 | affected]
-                Reversed -> guard affected *> (StartingResources (-3) : [CannotGainResources | firstTurn])
-          _ -> pure []
-      TheHighPriestessII ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            history <- getHistory TurnHistory iid
-            currentSkillTypes <- getSkillTestSkillTypes
-            let
-              skillTypes = concatMap fst $ historySkillTestsPerformed history
-              firstIntellectTest = #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
-            toModifiers source
-              $ case facing of
-                Upright -> [SkillModifier #intellect 1 | firstIntellectTest && affected]
-                Reversed -> [SkillModifier #intellect (-1) | firstIntellectTest && affected]
-          _ -> pure []
-      TheEmpressIII ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            history <- getHistory TurnHistory iid
-            currentSkillTypes <- getSkillTestSkillTypes
-            let
-              skillTypes = concatMap fst $ historySkillTestsPerformed history
-              firstAgilityTest = #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
-            toModifiers source
-              $ case facing of
-                Upright -> [SkillModifier #agility 1 | firstAgilityTest && affected]
-                Reversed -> [SkillModifier #agility (-1) | firstAgilityTest && affected]
-          _ -> pure []
-      TheEmperorIV ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            history <- getHistory TurnHistory iid
-            currentSkillTypes <- getSkillTestSkillTypes
-            let
-              skillTypes = concatMap fst $ historySkillTestsPerformed history
-              firstCombatTest = #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
-            toModifiers source
-              $ case facing of
-                Upright -> [SkillModifier #combat 1 | firstCombatTest && affected]
-                Reversed -> [SkillModifier #combat (-1) | firstCombatTest && affected]
-          _ -> pure []
-      TheHierophantV ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            history <- getHistory TurnHistory iid
-            currentSkillTypes <- getSkillTestSkillTypes
-            let
-              skillTypes = concatMap fst $ historySkillTestsPerformed history
-              firstWillpowerTest = #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
-            toModifiers source
-              $ case facing of
-                Upright -> [SkillModifier #willpower 1 | firstWillpowerTest && affected]
-                Reversed -> [SkillModifier #willpower (-1) | firstWillpowerTest && affected]
-          _ -> pure []
-      TheLoversVI ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheChariotVII ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            fmap (map setActiveDuringSetup)
-              . toModifiers source
-              $ case facing of
-                Upright -> [StartingHand 2 | affected]
-                Reversed -> guard affected *> (StartingHand (-2) : [CannotDrawCards | firstTurn])
-          _ -> pure []
+      TheFool0 -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        isDefeated <- lift $ iid <=~> Matcher.DefeatedInvestigator
+        pure
+          $ case facing of
+            Upright -> [XPModifier "The Fool 0" 2 | not isDefeated]
+            Reversed -> [XPModifier "The Fool 0" (-2) | isDefeated]
+      TheMagicianI -> modifySelectMaybeWith source Matcher.Anyone setActiveDuringSetup \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        firstTurn <- lift $ scenarioFieldMap ScenarioTurn (== 1)
+        pure
+          $ case facing of
+            Upright -> [StartingResources 3]
+            Reversed -> StartingResources (-3) : [CannotGainResources | firstTurn]
+      TheHighPriestessII -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        history <- lift $ getHistory TurnHistory iid
+        currentSkillTypes <- lift getSkillTestSkillTypes
+        let
+          skillTypes = concatMap fst $ historySkillTestsPerformed history
+        guard $ #intellect `notElem` skillTypes && #intellect `elem` currentSkillTypes
+        pure
+          $ case facing of
+            Upright -> [SkillModifier #intellect 1]
+            Reversed -> [SkillModifier #intellect (-1)]
+      TheEmpressIII -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        history <- lift $ getHistory TurnHistory iid
+        currentSkillTypes <- lift getSkillTestSkillTypes
+        let
+          skillTypes = concatMap fst $ historySkillTestsPerformed history
+        guard $ #agility `notElem` skillTypes && #agility `elem` currentSkillTypes
+        pure
+          $ case facing of
+            Upright -> [SkillModifier #agility 1]
+            Reversed -> [SkillModifier #agility (-1)]
+      TheEmperorIV -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        history <- lift $ getHistory TurnHistory iid
+        currentSkillTypes <- lift getSkillTestSkillTypes
+        let
+          skillTypes = concatMap fst $ historySkillTestsPerformed history
+        guard $ #combat `notElem` skillTypes && #combat `elem` currentSkillTypes
+        pure
+          $ case facing of
+            Upright -> [SkillModifier #combat 1]
+            Reversed -> [SkillModifier #combat (-1)]
+      TheHierophantV -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        history <- lift $ getHistory TurnHistory iid
+        currentSkillTypes <- lift getSkillTestSkillTypes
+        let
+          skillTypes = concatMap fst $ historySkillTestsPerformed history
+        guard $ #willpower `notElem` skillTypes && #willpower `elem` currentSkillTypes
+        pure
+          $ case facing of
+            Upright -> [SkillModifier #willpower 1]
+            Reversed -> [SkillModifier #willpower (-1)]
+      TheLoversVI -> pure mempty
+      TheChariotVII -> modifySelectMaybeWith source Matcher.Anyone setActiveDuringSetup \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        firstTurn <- lift $ scenarioFieldMap ScenarioTurn (== 1)
+        pure
+          $ case facing of
+            Upright -> [StartingHand 2]
+            Reversed -> StartingHand (-2) : [CannotDrawCards | firstTurn]
       StrengthVIII ->
         case facing of
-          Upright -> pure []
-          Reversed -> do
-            case target of
-              InvestigatorTarget iid -> do
-                affected <- affectedByTarot iid c
-                firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-                toModifiers source [CannotPlay #asset | firstTurn && affected]
-              _ -> pure []
-      TheHermitIX ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            toModifiers source
-              $ case facing of
-                Upright -> [HandSize 3 | affected]
-                Reversed -> [HandSize (-3) | affected]
-          _ -> pure []
-      WheelOfFortuneX ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      JusticeXI ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheHangedManXII ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            fmap (map setActiveDuringSetup)
-              . toModifiers source
-              $ case facing of
-                Upright -> [Mulligans 2 | affected]
-                Reversed -> guard affected *> [CannotMulligan, CannotReplaceWeaknesses]
-          _ -> pure []
-      DeathXIII ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            toModifiers source
-              $ case facing of
-                Upright -> [HealthModifier 1 | affected]
-                Reversed -> [HealthModifier (-1) | affected]
-          _ -> pure []
-      TemperanceXIV ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            toModifiers source
-              $ case facing of
-                Upright -> [SanityModifier 1 | affected]
-                Reversed -> [SanityModifier (-1) | affected]
-          _ -> pure []
-      TheDevilXV ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheTowerXVI ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheStarXVII ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheMoonXVIII ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheSunXIX ->
-        case target of
-          InvestigatorTarget iid -> do
-            affected <- affectedByTarot iid c
-            firstTurn <- scenarioFieldMap ScenarioTurn (== 1)
-            toModifiers source
-              $ case facing of
-                Upright -> [AdditionalActions "THE SUN · XIX" source 2 | firstTurn && affected]
-                Reversed -> [FewerActions 2 | firstTurn && affected]
-          _ -> pure []
-      JudgementXX ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
-      TheWorldXXI ->
-        case facing of
-          Upright -> pure []
-          Reversed -> pure []
+          Upright -> pure mempty
+          Reversed -> modifySelectMaybe source Matcher.Anyone \iid -> do
+            liftGuardM $ affectedByTarot iid c
+            liftGuardM $ scenarioFieldMap ScenarioTurn (== 1)
+            pure [CannotPlay #asset]
+      TheHermitIX -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        pure
+          $ case facing of
+            Upright -> [HandSize 3]
+            Reversed -> [HandSize (-3)]
+      WheelOfFortuneX -> pure mempty
+      JusticeXI -> pure mempty
+      TheHangedManXII -> modifySelectMaybeWith source Matcher.Anyone setActiveDuringSetup \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        pure
+          $ case facing of
+            Upright -> [Mulligans 2]
+            Reversed -> [CannotMulligan, CannotReplaceWeaknesses]
+      DeathXIII -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        pure
+          $ case facing of
+            Upright -> [HealthModifier 1]
+            Reversed -> [HealthModifier (-1)]
+      TemperanceXIV -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        pure
+          $ case facing of
+            Upright -> [SanityModifier 1]
+            Reversed -> [SanityModifier (-1)]
+      TheDevilXV -> pure mempty
+      TheTowerXVI -> pure mempty
+      TheStarXVII -> pure mempty
+      TheMoonXVIII -> pure mempty
+      TheSunXIX -> modifySelectMaybe source Matcher.Anyone \iid -> do
+        liftGuardM $ affectedByTarot iid c
+        liftGuardM $ scenarioFieldMap ScenarioTurn (== 1)
+        pure
+          $ case facing of
+            Upright -> [AdditionalActions "THE SUN · XIX" source 2]
+            Reversed -> [FewerActions 2]
+      JudgementXX -> pure mempty
+      TheWorldXXI -> pure mempty
 
 instance HasModifiersFor Scenario where
-  getModifiersFor target (Scenario a) =
+  getModifiersFor (Scenario a) =
     liftA2
-      (<>)
-      (concatMapM (getModifiersFor target) (concat . toList $ attr scenarioTarotCards a))
-      (getModifiersFor target a)
+      (Map.unionWith (<>))
+      ( fmap (Map.unionsWith (<>))
+          $ traverse getModifiersFor (concat . toList $ attr scenarioTarotCards a)
+      )
+      (getModifiersFor a)
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of

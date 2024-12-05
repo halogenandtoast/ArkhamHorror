@@ -50,11 +50,10 @@ exposeWeakness1Effect :: EffectArgs -> ExposeWeakness1Effect
 exposeWeakness1Effect = cardEffect ExposeWeakness1Effect Cards.exposeWeakness1
 
 instance HasModifiersFor ExposeWeakness1Effect where
-  getModifiersFor target (ExposeWeakness1Effect attrs) | target == attrs.target = do
+  getModifiersFor (ExposeWeakness1Effect attrs) = do
     case effectMetadata attrs of
-      Just (EffectInt n) -> toModifiers attrs [Mods.EnemyFight (-n)]
+      Just (EffectInt n) -> modified_ attrs attrs.target [Mods.EnemyFight (-n)]
       _ -> error "invalid effect metadata"
-  getModifiersFor _ _ = pure []
 
 instance RunMessage ExposeWeakness1Effect where
   runMessage msg e@(ExposeWeakness1Effect attrs) = case msg of

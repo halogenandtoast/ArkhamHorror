@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.YithianPresence (yithianPresence, YithianPresence 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,16 +16,15 @@ yithianPresence :: TreacheryCard YithianPresence
 yithianPresence = treachery YithianPresence Cards.yithianPresence
 
 instance HasModifiersFor YithianPresence where
-  getModifiersFor (InvestigatorTarget iid) (YithianPresence a) | treacheryInThreatArea iid a = do
-    yithianPresent <- selectAny $ EnemyWithTrait Yithian <> enemyAtLocationWith iid
-    mlid <- selectOne $ locationWithInvestigator iid
-    modified a
-      $ guard yithianPresent
-      *> [CannotInvestigateLocation lid | lid <- maybeToList mlid]
-      *> ( CannotTriggerAbilityMatching AbilityOnEncounterCard
-            : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
-         )
-  getModifiersFor _ _ = pure []
+  getModifiersFor (YithianPresence a) = case a.placement of
+    InThreatArea iid -> do
+      yithianPresent <- selectAny $ EnemyWithTrait Yithian <> enemyAtLocationWith iid
+      mlid <- selectOne $ locationWithInvestigator iid
+      modifiedWhen_ a yithianPresent iid
+        $ ( CannotTriggerAbilityMatching AbilityOnEncounterCard
+              : [CannotInvestigateLocation lid | lid <- maybeToList mlid]
+          )
+    _ -> pure mempty
 
 instance HasAbilities YithianPresence where
   getAbilities (YithianPresence a) =

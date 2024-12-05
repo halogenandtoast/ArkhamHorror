@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.TheBlackCat5 (theBlackCat5, TheBlackCat5 (..)) where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Modifier
 
 newtype TheBlackCat5 = TheBlackCat5 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -14,14 +14,13 @@ theBlackCat5 :: AssetCard TheBlackCat5
 theBlackCat5 = ally TheBlackCat5 Cards.theBlackCat5 (3, 3)
 
 instance HasModifiersFor TheBlackCat5 where
-  getModifiersFor (InvestigatorTarget iid) (TheBlackCat5 a) | a `controlledBy` iid = do
-    toModifiers
+  getModifiersFor (TheBlackCat5 a) =
+    controllerGets
       a
       [ CanResolveToken #tablet (toTarget a)
       , CanResolveToken #elderthing (toTarget a)
       , CanResolveToken #eldersign (toTarget a)
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TheBlackCat5 where
   runMessage msg a@(TheBlackCat5 attrs) = runQueueT $ case msg of

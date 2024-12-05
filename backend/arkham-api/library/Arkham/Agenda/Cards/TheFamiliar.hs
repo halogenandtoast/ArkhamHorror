@@ -20,17 +20,15 @@ import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype TheFamiliar = TheFamiliar AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theFamiliar :: AgendaCard TheFamiliar
 theFamiliar = agenda (2, A) TheFamiliar Cards.theFamiliar (Static 6)
 
 instance HasModifiersFor TheFamiliar where
-  getModifiersFor (EnemyTarget eid) (TheFamiliar a) = do
-    isNonWeakness <- eid <=~> NonWeaknessEnemy
-    toModifiers a [HealthModifier 2 | isNonWeakness]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheFamiliar a) =
+    modifySelect a NonWeaknessEnemy [HealthModifier 2]
 
 instance HasAbilities TheFamiliar where
   getAbilities (TheFamiliar a) =

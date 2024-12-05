@@ -20,12 +20,11 @@ theBlackCore :: LocationCard TheBlackCore
 theBlackCore = location TheBlackCore Cards.theBlackCore 0 (PerPlayer 1)
 
 instance HasModifiersFor TheBlackCore where
-  getModifiersFor target (TheBlackCore attrs) | attrs `is` target = do
+  getModifiersFor (TheBlackCore attrs) = do
     n <- fieldMap LocationTokens (countTokens Depth) attrs.id
     anyClues <-
       fieldMap LocationClues (> 0) =<< selectJust (locationIs Cards.cavernsBeneathTheMoonDarkSide)
-    toModifiers attrs $ ShroudModifier n : [Blocked | anyClues]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs $ ShroudModifier n : [Blocked | anyClues]
 
 instance HasAbilities TheBlackCore where
   getAbilities (TheBlackCore attrs) =

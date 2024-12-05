@@ -18,8 +18,7 @@ lairOfHydra :: LocationCard LairOfHydra
 lairOfHydra = locationWith LairOfHydra Cards.lairOfHydra 6 (PerPlayer 3) connectsToAdjacent
 
 instance HasModifiersFor LairOfHydra where
-  getModifiersFor target (LairOfHydra a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (LairOfHydra a) = modifySelfMaybe a do
     n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
     guard $ n > 0
     pure [ShroudModifier (-n)]

@@ -1,24 +1,23 @@
-module Arkham.Asset.Assets.ClaspOfBlackOnyx (
-  claspOfBlackOnyx,
-  ClaspOfBlackOnyx (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ClaspOfBlackOnyx (claspOfBlackOnyx, ClaspOfBlackOnyx (..)) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Placement
+import Arkham.Prelude
 
 newtype ClaspOfBlackOnyx = ClaspOfBlackOnyx AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor ClaspOfBlackOnyx where
-  getModifiersFor (InvestigatorHandTarget _) (ClaspOfBlackOnyx attrs) =
-    toModifiers
-      attrs
-      [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ClaspOfBlackOnyx a) = case a.placement of
+    StillInHand iid ->
+      modified_
+        a
+        (InvestigatorHandTarget iid)
+        [IncreaseCostOf (NotCard $ CardWithTitle "Clasp of Black Onyx") 1]
+    _ -> pure mempty
 
 claspOfBlackOnyx :: AssetCard ClaspOfBlackOnyx
 claspOfBlackOnyx = asset ClaspOfBlackOnyx Cards.claspOfBlackOnyx

@@ -5,7 +5,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.CampaignLogKey
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Trait (Trait (Suspect))
 
@@ -17,12 +17,10 @@ rageOfTheDeep :: AgendaCard RageOfTheDeep
 rageOfTheDeep = agenda (4, A) RageOfTheDeep Cards.rageOfTheDeep (Static 12)
 
 instance HasModifiersFor RageOfTheDeep where
-  getModifiersFor (EnemyTarget eid) (RageOfTheDeep a) = do
-    isSuspect <- eid <=~> EnemyWithTrait Suspect
-    modified a [IgnoreAloof | isSuspect]
-  getModifiersFor (InvestigatorTarget _iid) (RageOfTheDeep a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RageOfTheDeep a) = do
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities RageOfTheDeep where
   getAbilities (RageOfTheDeep a) = [mkAbility a 1 $ forced $ TurnEnds #when (You <> at_ FullyFloodedLocation)]

@@ -3,13 +3,11 @@ module Arkham.Location.Cards.AbbeyChurch (abbeyChurch, AbbeyChurch (..)) where
 import Arkham.Ability
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (AgendaSequence))
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype AbbeyChurch = AbbeyChurch LocationAttrs
   deriving anyclass IsLocation
@@ -24,24 +22,22 @@ abbeyChurch =
 anyDifferent :: Eq a => [a] -> Bool
 anyDifferent [] = False
 anyDifferent [_] = False
-anyDifferent (x : y : xs) = if x /= y then True else anyDifferent (y : xs)
+anyDifferent (x : rest@(y : _)) = if x /= y then True else anyDifferent rest
 
 instance HasModifiersFor AbbeyChurch where
-  getModifiersFor target (AbbeyChurch a) | a `is` target = do
+  getModifiersFor (AbbeyChurch a) = whenRevealed a $ maybeModifySelf a do
     as <- map AS.agendaStep <$> selectAgg pure AgendaSequence AnyAgenda
-    toModifiers a [ShroudModifier 2 | anyDifferent as]
-  getModifiersFor _ _ = pure []
+    guard $ anyDifferent as
+    pure [ShroudModifier 2]
 
 instance HasAbilities AbbeyChurch where
-  getAbilities (AbbeyChurch attrs) =
-    withRevealedAbilities
-      attrs
-      [mkAbility attrs 1 $ forced $ RevealLocation #after Anyone $ LocationWithId $ toId attrs]
+  getAbilities (AbbeyChurch a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance RunMessage AbbeyChurch where
-  runMessage msg l@(AbbeyChurch attrs) = case msg of
+  runMessage msg l@(AbbeyChurch attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       let titles = ["Chœur Gothique", "Knight's Hall", "Cloister", "Chapel of St. Aubert", "Abbey Tower"]
       pushAll $ map (PlaceLocationMatching . CardWithTitle) titles
       pure l
-    _ -> AbbeyChurch <$> runMessage msg attrs
+    _ -> AbbeyChurch <$> liftRunMessage msg attrs

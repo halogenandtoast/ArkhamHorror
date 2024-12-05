@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Prophetic3 (prophetic3, Prophetic3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Trait (Trait (Fortune, Spell, Spirit))
 
 newtype Prophetic3 = Prophetic3 AssetAttrs
@@ -16,17 +16,17 @@ prophetic3 :: AssetCard Prophetic3
 prophetic3 = asset Prophetic3 Cards.prophetic3
 
 instance HasModifiersFor Prophetic3 where
-  getModifiersFor (InvestigatorTarget iid) (Prophetic3 attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        #resource
-        (InvestigatorWithId iid)
-        (oneOf [CardWithTrait t | t <- [Fortune, Spell, Spirit]])
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Prophetic3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [ CanSpendUsesAsResourceOnCardFromInvestigator
+            a.id
+            #resource
+            (InvestigatorWithId iid)
+            (oneOf [CardWithTrait t | t <- [Fortune, Spell, Spirit]])
+        ]
 
 instance HasAbilities Prophetic3 where
   getAbilities (Prophetic3 a) =

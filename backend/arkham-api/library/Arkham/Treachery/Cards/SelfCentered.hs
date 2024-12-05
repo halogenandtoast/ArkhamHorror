@@ -7,18 +7,17 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype SelfCentered = SelfCentered TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 selfCentered :: TreacheryCard SelfCentered
 selfCentered = treachery SelfCentered Cards.selfCentered
 
 instance HasModifiersFor SelfCentered where
-  getModifiersFor (InvestigatorTarget iid) (SelfCentered attrs) | treacheryInThreatArea iid attrs = do
-    modified
+  getModifiersFor (SelfCentered attrs) =
+    inThreatAreaGets
       attrs
       [CannotCommitToOtherInvestigatorsSkillTests, CannotAffectOtherPlayersWithPlayerEffectsExceptDamage]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities SelfCentered where
   getAbilities (SelfCentered a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

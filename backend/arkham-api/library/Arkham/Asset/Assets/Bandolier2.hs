@@ -2,7 +2,7 @@ module Arkham.Asset.Assets.Bandolier2 (Bandolier2 (..), bandolier2) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.Slot
 import Arkham.Investigator.Projection (getSlots)
 import Arkham.Matcher
@@ -19,10 +19,11 @@ slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon []
 
 instance HasModifiersFor Bandolier2 where
-  getModifiersFor (InvestigatorTarget iid) (Bandolier2 a) | controlledBy a iid = do
-    n <- countM (anyM (<=~> asset_ #weapon) . slotItems) =<< getSlots #hand iid
-    modified a [SkillModifier #willpower 1 | n >= 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Bandolier2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      n <- countM (anyM (<=~> asset_ #weapon) . slotItems) =<< getSlots #hand iid
+      modifiedWhen_ a (n >= 2) iid [SkillModifier #willpower 1]
 
 instance RunMessage Bandolier2 where
   runMessage msg (Bandolier2 attrs) = runQueueT $ case msg of

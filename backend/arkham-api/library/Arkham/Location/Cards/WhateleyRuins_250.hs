@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whateleyRuins_250 :: LocationCard WhateleyRuins_250
@@ -25,10 +25,8 @@ whateleyRuins_250 =
   location WhateleyRuins_250 Cards.whateleyRuins_250 3 (PerPlayer 2)
 
 instance HasModifiersFor WhateleyRuins_250 where
-  getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_250 attrs) = do
-    here <- iid `isAt` attrs
-    toModifiers attrs [SkillModifier #willpower (-1) | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhateleyRuins_250 attrs) = do
+    modifySelect attrs (investigatorAt attrs) [SkillModifier #willpower (-1)]
 
 instance HasAbilities WhateleyRuins_250 where
   getAbilities (WhateleyRuins_250 attrs) =

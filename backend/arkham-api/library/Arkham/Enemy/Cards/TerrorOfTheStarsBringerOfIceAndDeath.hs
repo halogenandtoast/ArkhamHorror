@@ -8,7 +8,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM, modifySelf)
 import Arkham.Matcher
 
 newtype TerrorOfTheStarsBringerOfIceAndDeath = TerrorOfTheStarsBringerOfIceAndDeath EnemyAttrs
@@ -24,14 +24,16 @@ terrorOfTheStarsBringerOfIceAndDeath =
     (2, 2)
 
 instance HasModifiersFor TerrorOfTheStarsBringerOfIceAndDeath where
-  getModifiersFor target (TerrorOfTheStarsBringerOfIceAndDeath a) | isTarget a target = do
+  getModifiersFor (TerrorOfTheStarsBringerOfIceAndDeath a) = do
     healthModifier <- perPlayer 3
-    modified a [HealthModifier healthModifier]
-  getModifiersFor (InvestigatorTarget iid) (TerrorOfTheStarsBringerOfIceAndDeath a) = maybeModified a do
-    liftGuardM $ a.id <=~> ReadyEnemy
-    sameLocation <- lift $ onSameLocation iid a.placement
-    pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotTakeAction #resign | sameLocation]
-  getModifiersFor _ _ = pure []
+    self <- modifySelf a [HealthModifier healthModifier]
+    investigators <-
+      if a.ready
+        then modifySelectMapM a Anyone \iid -> do
+          sameLocation <- onSameLocation iid a.placement
+          pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotTakeAction #resign | sameLocation]
+        else pure mempty
+    pure $ self <> investigators
 
 instance RunMessage TerrorOfTheStarsBringerOfIceAndDeath where
   runMessage msg (TerrorOfTheStarsBringerOfIceAndDeath attrs) = runQueueT $ case msg of

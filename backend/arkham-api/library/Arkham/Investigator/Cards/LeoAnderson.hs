@@ -28,10 +28,10 @@ leoAnderson =
     $ Stats {health = 8, sanity = 6, willpower = 4, intellect = 3, combat = 4, agility = 1}
 
 instance HasModifiersFor LeoAnderson where
-  getModifiersFor (CardIdTarget cid) (LeoAnderson (attrs `With` meta))
-    | cid `elem` fmap toCardId (responseCard meta) = do
-        toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LeoAnderson (attrs `With` meta)) =
+    case responseCard meta of
+      Nothing -> pure mempty
+      Just card -> modified_ attrs card [ReduceCostOf (CardWithId card.id) 1]
 
 instance HasAbilities LeoAnderson where
   getAbilities (LeoAnderson a) =

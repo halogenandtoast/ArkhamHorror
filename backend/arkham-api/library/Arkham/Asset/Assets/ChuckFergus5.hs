@@ -5,11 +5,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Cost
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Trait (Trait (Tactic, Trick))
 
 newtype ChuckFergus5 = ChuckFergus5 AssetAttrs
@@ -23,10 +23,9 @@ cardMatcher :: CardMatcher
 cardMatcher = CardWithOneOf [CardWithTrait Tactic, CardWithTrait Trick] <> CardWithType EventType
 
 instance HasModifiersFor ChuckFergus5 where
-  getModifiersFor (InvestigatorTarget iid) (ChuckFergus5 a)
-    | controlledBy a iid && not (assetExhausted a) =
-        toModifiers a [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChuckFergus5 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifiedWhen_ a a.ready iid [CanBecomeFast cardMatcher, CanReduceCostOf cardMatcher 2]
 
 instance HasAbilities ChuckFergus5 where
   getAbilities (ChuckFergus5 a) =

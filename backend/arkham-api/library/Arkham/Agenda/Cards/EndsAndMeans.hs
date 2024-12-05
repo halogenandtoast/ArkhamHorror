@@ -18,17 +18,18 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Sanctum, SilverTwilight))
 
 newtype EndsAndMeans = EndsAndMeans AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 endsAndMeans :: AgendaCard EndsAndMeans
 endsAndMeans = agenda (2, A) EndsAndMeans Cards.endsAndMeans (Static 10)
 
 instance HasModifiersFor EndsAndMeans where
-  getModifiersFor (EnemyTarget enemy) (EndsAndMeans attrs) = do
-    qualifies <- enemy <=~> (EnemyWithTrait SilverTwilight <> EnemyAt (LocationWithTrait Sanctum))
-    toModifiers attrs [RemoveKeyword Aloof | qualifies]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EndsAndMeans a) = do
+    modifySelect
+      a
+      (EnemyWithTrait SilverTwilight <> at_ (LocationWithTrait Sanctum))
+      [RemoveKeyword Aloof]
 
 instance HasAbilities EndsAndMeans where
   getAbilities (EndsAndMeans a) =

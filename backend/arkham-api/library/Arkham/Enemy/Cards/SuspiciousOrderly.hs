@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype SuspiciousOrderly = SuspiciousOrderly EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 suspiciousOrderly :: EnemyCard SuspiciousOrderly
@@ -25,12 +25,10 @@ suspiciousOrderly =
     (\a -> a {enemyFight = Nothing, enemyHealth = Nothing})
 
 instance HasModifiersFor SuspiciousOrderly where
-  getModifiersFor target (SuspiciousOrderly attrs) | isTarget attrs target = do
-    toModifiers attrs [CannotAttack, CannotBeDamaged, CannotBeAttacked]
-  getModifiersFor (InvestigatorTarget iid) (SuspiciousOrderly attrs) = do
-    affected <- iid <=~> investigatorEngagedWith (toId attrs)
-    toModifiers attrs [CannotInvestigate | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SuspiciousOrderly a) = do
+    self <- modifySelf a [CannotAttack, CannotBeDamaged, CannotBeAttacked]
+    investigators <- modifySelect a (investigatorEngagedWith a) [CannotInvestigate]
+    pure $ self <> investigators
 
 instance RunMessage SuspiciousOrderly where
   runMessage msg (SuspiciousOrderly attrs) =

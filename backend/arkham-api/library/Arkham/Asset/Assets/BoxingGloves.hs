@@ -1,7 +1,4 @@
-module Arkham.Asset.Assets.BoxingGloves (
-  boxingGloves,
-  BoxingGloves (..),
-) where
+module Arkham.Asset.Assets.BoxingGloves (boxingGloves, BoxingGloves (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,16 +8,14 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype BoxingGloves = BoxingGloves AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boxingGloves :: AssetCard BoxingGloves
 boxingGloves = asset BoxingGloves Cards.boxingGloves
 
 instance HasModifiersFor BoxingGloves where
-  getModifiersFor (InvestigatorTarget iid) (BoxingGloves a) | a `controlledBy` iid = do
-    toModifiers a [ActionSkillModifier #fight #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BoxingGloves a) = controllerGets a [ActionSkillModifier #fight #combat 1]
 
 instance HasAbilities BoxingGloves where
   getAbilities (BoxingGloves a) =

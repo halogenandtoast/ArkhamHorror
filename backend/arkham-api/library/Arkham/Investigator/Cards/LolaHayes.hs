@@ -14,9 +14,7 @@ newtype LolaHayes = LolaHayes InvestigatorAttrs
   deriving stock Data
 
 instance HasModifiersFor LolaHayes where
-  getModifiersFor target (LolaHayes attrs) | attrs `is` target = do
-    toModifiers attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LolaHayes attrs) = modifySelf attrs [CanOnlyUseCardsInRole $ investigatorClass attrs]
 
 lolaHayes :: InvestigatorCard LolaHayes
 lolaHayes =

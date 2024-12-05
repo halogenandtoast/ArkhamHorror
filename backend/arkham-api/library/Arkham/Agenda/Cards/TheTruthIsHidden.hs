@@ -17,7 +17,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype TheTruthIsHidden = TheTruthIsHidden AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTruthIsHidden :: AgendaCard TheTruthIsHidden
@@ -25,9 +25,8 @@ theTruthIsHidden =
   agenda (1, A) TheTruthIsHidden Cards.theTruthIsHidden (PerPlayer 2)
 
 instance HasModifiersFor TheTruthIsHidden where
-  getModifiersFor (PhaseTarget MythosPhase) (TheTruthIsHidden attrs) =
-    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheTruthIsHidden attrs) =
+    modified_ attrs (PhaseTarget MythosPhase) [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
 
 instance HasAbilities TheTruthIsHidden where
   getAbilities (TheTruthIsHidden attrs) =

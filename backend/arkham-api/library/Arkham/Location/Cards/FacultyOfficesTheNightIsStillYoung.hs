@@ -3,18 +3,12 @@ module Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung (
   FacultyOfficesTheNightIsStillYoung (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Resolution
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung LocationAttrs
@@ -31,41 +25,27 @@ facultyOfficesTheNightIsStillYoung =
     (PerPlayer 2)
 
 instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
-  getModifiersFor target (FacultyOfficesTheNightIsStillYoung attrs) | isTarget attrs target = do
-    toModifiers attrs [Blocked | not attrs.revealed]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FacultyOfficesTheNightIsStillYoung a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities FacultyOfficesTheNightIsStillYoung where
   getAbilities (FacultyOfficesTheNightIsStillYoung x) =
-    withRevealedAbilities
+    extendRevealed
       x
-      [ mkAbility x 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After Anyone
-          $ LocationWithId
-          $ toId x
+      [ mkAbility x 1 $ forced $ RevealLocation #after Anyone (be x)
       , restrictedAbility x 2 Here
           $ FastAbility
-          $ GroupClueCost
-            (PerPlayer 2)
-            (LocationWithTitle "Faculty Offices")
+          $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Faculty Offices")
       ]
 
 instance RunMessage FacultyOfficesTheNightIsStillYoung where
-  runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push
-        $ FindEncounterCard
-          iid
-          (toTarget attrs)
-          [FromEncounterDeck, FromEncounterDiscard]
-        $ CardWithType EnemyType
-        <> CardWithTrait Humanoid
+  runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      findEncounterCard iid attrs $ #enemy <> CardWithTrait Humanoid
       pure l
-    FoundEncounterCard _iid target card
-      | isTarget attrs target ->
-          l <$ push (SpawnEnemyAt (EncounterCard card) (toId attrs))
-    UseCardAbility _ source 2 _ _
-      | isSource attrs source ->
-          l <$ push (ScenarioResolution $ Resolution 1)
-    _ -> FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
+    FoundEncounterCard _iid (isTarget attrs -> True) card -> do
+      spawnEnemyAt_ card attrs
+      pure l
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      push R1
+      pure l
+    _ -> FacultyOfficesTheNightIsStillYoung <$> liftRunMessage msg attrs

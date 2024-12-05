@@ -10,8 +10,8 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Types (getController)
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 
 newtype RavenousControlledHunger = RavenousControlledHunger AssetAttrs
@@ -22,10 +22,9 @@ ravenousControlledHunger :: AssetCard RavenousControlledHunger
 ravenousControlledHunger = asset RavenousControlledHunger Cards.ravenousControlledHunger
 
 instance HasModifiersFor RavenousControlledHunger where
-  getModifiersFor (InvestigatorTarget iid) (RavenousControlledHunger a) | a `controlledBy` iid = do
+  getModifiersFor (RavenousControlledHunger a) = do
     n <- fieldMap AssetCardsUnderneath (min 5 . length) a.id
-    toModifiers a [SkillModifier sType n | sType <- [minBound ..]]
-  getModifiersFor _ _ = pure []
+    controllerGets a [SkillModifier sType n | sType <- [minBound ..]]
 
 instance HasAbilities RavenousControlledHunger where
   getAbilities (RavenousControlledHunger a) = [restrictedAbility a 1 (ControlsThis <> criteria) $ ForcedAbility AnyWindow]

@@ -18,9 +18,7 @@ falconPointGatehouse :: LocationCard FalconPointGatehouse
 falconPointGatehouse = location FalconPointGatehouse Cards.falconPointGatehouse 1 (Static 0)
 
 instance HasModifiersFor FalconPointGatehouse where
-  getModifiersFor target (FalconPointGatehouse attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FalconPointGatehouse attrs) = modifySelf attrs [CannotBeFullyFlooded]
 
 instance HasAbilities FalconPointGatehouse where
   getAbilities (FalconPointGatehouse a) =

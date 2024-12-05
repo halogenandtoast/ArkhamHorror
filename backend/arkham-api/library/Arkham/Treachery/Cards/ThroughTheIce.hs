@@ -1,10 +1,10 @@
 module Arkham.Treachery.Cards.ThroughTheIce (throughTheIce, ThroughTheIce (..)) where
 
 import Arkham.Cost
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -17,13 +17,15 @@ throughTheIce :: TreacheryCard ThroughTheIce
 throughTheIce = treachery ThroughTheIce Cards.throughTheIce
 
 instance HasModifiersFor ThroughTheIce where
-  getModifiersFor target (ThroughTheIce attrs) | treacheryOn attrs target = do
-    toModifiers
-      attrs
-      [ AdditionalCostToLeave $ SkillTestCost (toSource attrs) #agility (Fixed 2)
-      , AdditionalCostToEnter $ SkillTestCost (toSource attrs) #agility (Fixed 2)
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ThroughTheIce attrs) = case attrs.placement of
+    AttachedToLocation lid ->
+      modified_
+        attrs
+        lid
+        [ AdditionalCostToLeave $ SkillTestCost (toSource attrs) #agility (Fixed 2)
+        , AdditionalCostToEnter $ SkillTestCost (toSource attrs) #agility (Fixed 2)
+        ]
+    _ -> pure mempty
 
 instance RunMessage ThroughTheIce where
   runMessage msg t@(ThroughTheIce attrs) = runQueueT $ case msg of

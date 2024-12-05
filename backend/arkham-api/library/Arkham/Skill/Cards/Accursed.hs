@@ -2,7 +2,8 @@ module Arkham.Skill.Cards.Accursed (accursed, Accursed (..)) where
 
 import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag (getRemainingCurseTokens)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher
 import Arkham.Message (getChoiceAmount)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -15,9 +16,8 @@ accursed :: SkillCard Accursed
 accursed = skill Accursed Cards.accursed
 
 instance HasModifiersFor Accursed where
-  getModifiersFor (ChaosTokenTarget (chaosTokenFace -> CurseToken)) (Accursed a) = do
-    modified a [ChangeChaosTokenModifier (PositiveModifier 0)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Accursed a) =
+    modifySelect a (ChaosTokenFaceIs #curse) [ChangeChaosTokenModifier (PositiveModifier 0)]
 
 instance RunMessage Accursed where
   runMessage msg s@(Accursed attrs) = runQueueT $ case msg of

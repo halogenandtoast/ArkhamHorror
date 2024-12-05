@@ -3,11 +3,10 @@ module Arkham.Asset.Assets.ArcaneEnlightenment (
   arcaneEnlightenment,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
@@ -18,9 +17,9 @@ arcaneEnlightenment :: AssetCard ArcaneEnlightenment
 arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor ArcaneEnlightenment where
-  getModifiersFor (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
-    toModifiers attrs [HandSize 1 | controlledBy attrs iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArcaneEnlightenment a) = case a.controller of
+    Just iid -> modified_ a iid [HandSize 1]
+    Nothing -> pure mempty
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []

@@ -10,11 +10,8 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Projection
 import Arkham.Trait (Trait (Ocean))
 
 newtype SecretsOfTheSeaV2 = SecretsOfTheSeaV2 AgendaAttrs
@@ -28,13 +25,11 @@ instance HasAbilities SecretsOfTheSeaV2 where
   getAbilities (SecretsOfTheSeaV2 a) = [needsAir a 1]
 
 instance HasModifiersFor SecretsOfTheSeaV2 where
-  getModifiersFor (InvestigatorTarget iid) (SecretsOfTheSeaV2 a) = do
-    field InvestigatorPlacement iid >>= \case
-      AtLocation lid -> do
-        isOcean <- lid <=~> LocationWithTrait Ocean
-        modified a [AdditionalCostToEnterMatching (LocationWithTrait Ocean) (ActionCost 2) | isOcean]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SecretsOfTheSeaV2 a) = do
+    modifySelect
+      a
+      (not_ (InVehicleMatching AnyAsset) <> at_ (LocationWithTrait Ocean))
+      [AdditionalCostToEnterMatching (LocationWithTrait Ocean) (ActionCost 2)]
 
 instance RunMessage SecretsOfTheSeaV2 where
   runMessage msg a@(SecretsOfTheSeaV2 attrs) = runQueueT $ case msg of

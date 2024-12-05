@@ -13,7 +13,7 @@ import Arkham.Prelude
 import Arkham.SkillType
 
 newtype AbandonedChapelSpectral = AbandonedChapelSpectral LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abandonedChapelSpectral :: LocationCard AbandonedChapelSpectral
@@ -21,11 +21,13 @@ abandonedChapelSpectral = location AbandonedChapelSpectral Cards.abandonedChapel
 
 -- During the mythos phase, each investigator in Abandoned Chapel gets -1 to each skill.
 instance HasModifiersFor AbandonedChapelSpectral where
-  getModifiersFor (InvestigatorTarget iid) (AbandonedChapelSpectral a) = do
-    here <- iid <=~> investigatorAt (toId a)
+  getModifiersFor (AbandonedChapelSpectral a) = do
     phase <- getPhase
-    toModifiers a [SkillModifier sType (-1) | here, isMythosPhase phase, sType <- allSkills]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen
+      a
+      (isMythosPhase phase)
+      (investigatorAt a)
+      [SkillModifier sType (-1) | sType <- allSkills]
 
 instance HasAbilities AbandonedChapelSpectral where
   getAbilities (AbandonedChapelSpectral a) =

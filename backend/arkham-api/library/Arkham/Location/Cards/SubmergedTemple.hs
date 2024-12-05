@@ -2,7 +2,7 @@ module Arkham.Location.Cards.SubmergedTemple (submergedTemple, SubmergedTemple (
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
@@ -22,10 +22,8 @@ submergedTemple =
     . (floodLevelL ?~ FullyFlooded)
 
 instance HasModifiersFor SubmergedTemple where
-  getModifiersFor (EnemyTarget eid) (SubmergedTemple a) = maybeModified a do
-    liftGuardM $ eid <=~> (at_ (be a) <> EnemyWithTrait AncientOne)
-    pure [EnemyFight 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SubmergedTemple a) =
+    modifySelect a (at_ (be a) <> EnemyWithTrait AncientOne) [EnemyFight 2]
 
 instance HasAbilities SubmergedTemple where
   getAbilities (SubmergedTemple a) =

@@ -9,7 +9,7 @@ import Arkham.Effect.Import
 import Arkham.Effect.Types (targetL)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher
@@ -25,28 +25,29 @@ telescopicSight3 :: EventCard TelescopicSight3
 telescopicSight3 = event TelescopicSight3 Cards.telescopicSight3
 
 instance HasModifiersFor TelescopicSight3 where
-  getModifiersFor (AbilityTarget iid ability) (TelescopicSight3 a) = maybeModified a do
-    AttachedToAsset aid _ <- pure (eventPlacement a)
-    guard $ isSource aid ability.source
-    guard $ #fight `elem` ability.actions
-    lid <- MaybeT $ selectOne $ locationWithInvestigator iid
-    engaged <- lift $ selectAny $ enemyEngagedWith iid
-    let handleTaboo = if tabooed TabooList19 a then id else (<> not_ (enemyEngagedWith a.owner))
-    pure
-      $ if engaged && not (tabooed TabooList19 a)
-        then [EnemyFightActionCriteria $ CriteriaOverride Never]
-        else
-          [ CanModify
-              $ EnemyFightActionCriteria
-              $ CriteriaOverride
-              $ EnemyCriteria
-              $ ThisEnemy
-              $ handleTaboo
-              $ EnemyWithoutModifier CannotBeAttacked
-              <> NonEliteEnemy
-              <> at_ (orConnected lid)
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TelescopicSight3 a) =
+    case a.placement of
+      AttachedToAsset aid _ -> do
+        abilities <- select (AbilityOnAsset (AssetWithId aid) <> AbilityIsAction #fight)
+        modifyEachMaybe a (map (AbilityTarget a.controller) abilities) \_ -> do
+          lid <- MaybeT $ selectOne $ locationWithInvestigator a.controller
+          engaged <- lift $ selectAny $ enemyEngagedWith a.controller
+          let handleTaboo = if tabooed TabooList19 a then id else (<> not_ (enemyEngagedWith a.owner))
+          pure
+            $ if engaged && not (tabooed TabooList19 a)
+              then [EnemyFightActionCriteria $ CriteriaOverride Never]
+              else
+                [ CanModify
+                    $ EnemyFightActionCriteria
+                    $ CriteriaOverride
+                    $ EnemyCriteria
+                    $ ThisEnemy
+                    $ handleTaboo
+                    $ EnemyWithoutModifier CannotBeAttacked
+                    <> NonEliteEnemy
+                    <> at_ (orConnected lid)
+                ]
+      _ -> pure mempty
 
 instance HasAbilities TelescopicSight3 where
   getAbilities (TelescopicSight3 a) = case a.placement of
@@ -86,20 +87,21 @@ telescopicSight3Effect = cardEffect TelescopicSight3Effect Cards.telescopicSight
 -- "swizzle" the target in order to disable/enable to appropriate effects
 
 instance HasModifiersFor TelescopicSight3Effect where
-  getModifiersFor (InvestigatorTarget iid) (TelescopicSight3Effect a) = maybeModified a do
-    iid' <- hoistMaybe a.target.investigator
-    guard $ iid == iid'
-    pure
-      [ EnemyFightActionCriteria
-          $ CriteriaOverride
-          $ EnemyCriteria
-          $ ThisEnemy
-          $ EnemyWithoutModifier CannotBeAttacked
-          <> NonEliteEnemy
-          <> at_ (orConnected $ locationWithInvestigator iid)
-          <> NotEnemy (enemyEngagedWith iid)
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TelescopicSight3Effect a) = case a.target.investigator of
+    Just iid ->
+      modified_
+        a
+        iid
+        [ EnemyFightActionCriteria
+            $ CriteriaOverride
+            $ EnemyCriteria
+            $ ThisEnemy
+            $ EnemyWithoutModifier CannotBeAttacked
+            <> NonEliteEnemy
+            <> at_ (orConnected $ locationWithInvestigator iid)
+            <> NotEnemy (enemyEngagedWith iid)
+        ]
+    _ -> pure mempty
 
 instance RunMessage TelescopicSight3Effect where
   runMessage msg e@(TelescopicSight3Effect attrs) = runQueueT $ case msg of

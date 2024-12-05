@@ -20,13 +20,14 @@ instance HasAbilities DragonPole where
   getAbilities (DragonPole a) = [restrictedAbility a 1 ControlsThis fightAction_]
 
 instance HasModifiersFor DragonPole where
-  getModifiersFor (InvestigatorTarget iid) (DragonPole attrs) | attrs `controlledBy` iid = do
-    getSkillTestSource >>= \case
-      Just (isAbilitySource attrs 1 -> True) -> do
-        slots <- count (not . isEmptySlot) . findWithDefault [] #arcane <$> field InvestigatorSlots iid
-        toModifiers attrs (SkillModifier #combat slots : [DamageDealt 1 | slots >= 2])
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DragonPole a) = case a.controller of
+    Just iid -> maybeModified_ a iid do
+      source <- MaybeT getSkillTestSource
+      guard $ isAbilitySource a 1 source
+      slots <-
+        lift $ count (not . isEmptySlot) . findWithDefault [] #arcane <$> field InvestigatorSlots iid
+      pure $ SkillModifier #combat slots : [DamageDealt 1 | slots >= 2]
+    Nothing -> pure mempty
 
 instance RunMessage DragonPole where
   runMessage msg a@(DragonPole attrs) = case msg of

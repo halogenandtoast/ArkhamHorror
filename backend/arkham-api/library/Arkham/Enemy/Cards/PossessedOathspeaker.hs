@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -17,10 +17,9 @@ possessedOathspeaker :: EnemyCard PossessedOathspeaker
 possessedOathspeaker = enemy PossessedOathspeaker Cards.possessedOathspeaker (4, PerPlayer 5, 3) (2, 2)
 
 instance HasModifiersFor PossessedOathspeaker where
-  getModifiersFor (EnemyTarget eid) (PossessedOathspeaker attrs) | toId attrs == eid = do
+  getModifiersFor (PossessedOathspeaker attrs) = do
     step <- getCurrentAgendaStep
-    modified attrs [CannotBeDamaged | step `elem` [1, 2]]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen attrs (step `elem` [1, 2]) [CannotBeDamaged]
 
 instance HasAbilities PossessedOathspeaker where
   getAbilities (PossessedOathspeaker a) =

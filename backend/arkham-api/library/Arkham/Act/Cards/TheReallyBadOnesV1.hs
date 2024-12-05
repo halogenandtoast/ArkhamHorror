@@ -26,10 +26,8 @@ theReallyBadOnesV1 =
   act (2, A) TheReallyBadOnesV1 Cards.theReallyBadOnesV1 Nothing
 
 instance HasModifiersFor TheReallyBadOnesV1 where
-  getModifiersFor (LocationTarget lid) (TheReallyBadOnesV1 attrs) = do
-    targets <- select UnrevealedLocation
-    toModifiers attrs [TraitRestrictedModifier ArkhamAsylum Blank | lid `elem` targets]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheReallyBadOnesV1 attrs) = do
+    modifySelect attrs UnrevealedLocation [TraitRestrictedModifier ArkhamAsylum Blank]
 
 instance RunMessage TheReallyBadOnesV1 where
   runMessage msg a@(TheReallyBadOnesV1 attrs) = case msg of

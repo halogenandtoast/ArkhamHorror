@@ -294,10 +294,11 @@ getAttackedEnemy = getSkillTestTargetedEnemy
 getSkillTestTargetedEnemy :: HasGame m => m (Maybe EnemyId)
 getSkillTestTargetedEnemy = join . fmap (.enemy) <$> getSkillTestTarget
 
-isInvestigating :: HasGame m => InvestigatorId -> LocationId -> m Bool
-isInvestigating iid lid =
+isInvestigating
+  :: (HasGame m, AsId location, IdOf location ~ LocationId) => InvestigatorId -> location -> m Bool
+isInvestigating iid location =
   andM
-    [ (== Just lid) . join . fmap (.location) <$> getSkillTestTarget
+    [ (== Just (asId location)) . join . fmap (.location) <$> getSkillTestTarget
     , (== Just #investigate) <$> getSkillTestAction
     , (== Just iid) <$> getSkillTestInvestigator
     ]

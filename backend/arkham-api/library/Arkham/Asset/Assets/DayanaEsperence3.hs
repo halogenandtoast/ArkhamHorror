@@ -17,16 +17,18 @@ dayanaEsperence3 :: AssetCard DayanaEsperence3
 dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)
 
 instance HasModifiersFor DayanaEsperence3 where
-  getModifiersFor (InvestigatorTarget iid) (DayanaEsperence3 attrs)
-    | controlledBy attrs iid = do
-        toModifiers attrs [AsIfInHand card | card <- assetCardsUnderneath attrs]
-  getModifiersFor (CardIdTarget cardId) (DayanaEsperence3 attrs) = do
-    toModifiers attrs
-      $ guard (cardId `elem` map toCardId (assetCardsUnderneath attrs))
-      *> [ LeaveCardWhereItIs
-         , AdditionalCost $ assetUseCost attrs Secret 1 <> exhaust attrs
-         ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DayanaEsperence3 a) = do
+    investigator <- case a.controller of
+      Nothing -> pure mempty
+      Just iid -> modified_ a iid $ map AsIfInHand $ assetCardsUnderneath a
+
+    cards <-
+      modifyEach
+        a
+        (assetCardsUnderneath a)
+        [LeaveCardWhereItIs, AdditionalCost $ assetUseCost a Secret 1 <> exhaust a]
+
+    pure $ investigator <> cards
 
 instance HasAbilities DayanaEsperence3 where
   getAbilities (DayanaEsperence3 a) =

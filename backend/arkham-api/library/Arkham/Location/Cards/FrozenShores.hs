@@ -13,8 +13,7 @@ frozenShores :: LocationCard FrozenShores
 frozenShores = symbolLabel $ location FrozenShores Cards.frozenShores 2 (PerPlayer 1)
 
 instance HasModifiersFor FrozenShores where
-  getModifiersFor target (FrozenShores a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (FrozenShores a) = modifySelfMaybe a do
     n <- selectCount $ TreacheryAttachedToLocation (be a)
     guard $ n > 0
     pure [ShroudModifier (n * 2)]

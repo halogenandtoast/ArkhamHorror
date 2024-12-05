@@ -19,20 +19,15 @@ handOfTheBrotherhood =
     ?~ SpawnAt EmptyLocation
 
 instance HasModifiersFor HandOfTheBrotherhood where
-  getModifiersFor (InvestigatorTarget _) (HandOfTheBrotherhood a) = do
-    toModifiers
+  getModifiersFor (HandOfTheBrotherhood a) = do
+    modifySelectWhen
       a
+      a.ready
+      Anyone
       [ CannotTriggerAbilityMatching
-        $ AbilityOnLocation
-          ( LocationMatchAny
-              [ locationWithEnemy (toId a)
-              , ConnectedTo $ locationWithEnemy (toId a)
-              ]
-          )
-        <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
-      | not (enemyExhausted a)
+          $ AbilityOnLocation (orConnected $ locationWithEnemy a)
+          <> AbilityOneOf [AbilityIsActionAbility, AbilityIsReactionAbility]
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities HandOfTheBrotherhood where
   getAbilities (HandOfTheBrotherhood a) =

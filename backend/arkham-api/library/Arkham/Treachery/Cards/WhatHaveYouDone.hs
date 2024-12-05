@@ -1,24 +1,25 @@
 module Arkham.Treachery.Cards.WhatHaveYouDone (whatHaveYouDone, WhatHaveYouDone (..)) where
 
 import Arkham.Ability
-import Arkham.Action (Action (Parley))
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype WhatHaveYouDone = WhatHaveYouDone TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whatHaveYouDone :: TreacheryCard WhatHaveYouDone
 whatHaveYouDone = treachery WhatHaveYouDone Cards.whatHaveYouDone
 
 instance HasModifiersFor WhatHaveYouDone where
-  getModifiersFor (AbilityTarget iid ab) (WhatHaveYouDone attrs) | treacheryInThreatArea iid attrs = do
-    modified attrs
-      $ guard (Parley `elem` abilityActions ab)
-      *> [AdditionalCost DiscardRandomCardCost]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhatHaveYouDone attrs) = case attrs.placement of
+    InThreatArea iid -> do
+      abilities <- select (AbilityIsAction #parley)
+      modifyEach attrs (map (AbilityTarget iid) abilities) [AdditionalCost DiscardRandomCardCost]
+    _ -> pure mempty
 
 instance HasAbilities WhatHaveYouDone where
   getAbilities (WhatHaveYouDone attrs) =

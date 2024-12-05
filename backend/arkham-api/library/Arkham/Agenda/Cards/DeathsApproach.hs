@@ -24,10 +24,8 @@ newtype DeathsApproach = DeathsApproach AgendaAttrs
 -- Errata: The text on this card should read: "Locations cannot be flipped to their non-spectral side"
 --
 instance HasModifiersFor DeathsApproach where
-  getModifiersFor (LocationTarget lid) (DeathsApproach attrs) = do
-    isSpectral <- lid <=~> LocationWithTrait Spectral
-    toModifiers attrs [CannotBeFlipped | isSpectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeathsApproach attrs) = do
+    modifySelect attrs (LocationWithTrait Spectral) [CannotBeFlipped]
 
 deathsApproach :: AgendaCard DeathsApproach
 deathsApproach = agenda (2, A) DeathsApproach Cards.deathsApproach (Static 7)

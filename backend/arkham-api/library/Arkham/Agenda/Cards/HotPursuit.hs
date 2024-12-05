@@ -2,10 +2,8 @@ module Arkham.Agenda.Cards.HotPursuit (HotPursuit (..), hotPursuit) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
-import Arkham.Investigator.Projection
-import Arkham.Placement
-import Arkham.Projection
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Matcher
 
 newtype HotPursuit = HotPursuit AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -15,11 +13,8 @@ hotPursuit :: AgendaCard HotPursuit
 hotPursuit = agenda (2, A) HotPursuit Cards.hotPursuit (Static 9)
 
 instance HasModifiersFor HotPursuit where
-  getModifiersFor (InvestigatorTarget iid) (HotPursuit a) = do
-    field InvestigatorPlacement iid >>= \case
-      InVehicle _ -> pure []
-      _ -> modified a [AdditionalActionCostOf #move 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HotPursuit a) =
+    modifySelect a (not_ $ InVehicleMatching AnyAsset) [AdditionalActionCostOf #move 2]
 
 instance RunMessage HotPursuit where
   runMessage msg a@(HotPursuit attrs) = runQueueT $ case msg of

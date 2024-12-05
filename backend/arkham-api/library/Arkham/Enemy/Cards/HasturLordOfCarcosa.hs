@@ -20,14 +20,13 @@ hasturLordOfCarcosa =
     . (preyL .~ Prey MostRemainingSanity)
 
 instance HasModifiersFor HasturLordOfCarcosa where
-  getModifiersFor (ChaosTokenTarget t) (HasturLordOfCarcosa a) = maybeModified a do
-    guard $ t.face `elem` [PlusOne, Zero, MinusOne, ElderSign]
-    guardM $ isTarget a <$> MaybeT getSkillTestTarget
-    guardM $ (`elem` [#fight, #evade]) <$> MaybeT getSkillTestAction
-    iid <- MaybeT getSkillTestInvestigator
-    liftGuardM $ fieldNone InvestigatorRemainingSanity iid
-    pure [ForcedChaosTokenChange t.face [AutoFail]]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HasturLordOfCarcosa a) =
+    fromMaybe mempty <$> runMaybeT do
+      st <- MaybeT getSkillTest
+      liftGuardM $ orM [isFighting a, isEvading a]
+      liftGuardM $ fieldNone InvestigatorRemainingSanity st.investigator
+      let tokens = filter ((`elem` [PlusOne, Zero, MinusOne, ElderSign]) . (.face)) st.revealedChaosTokens
+      lift $ modifyEachMap a tokens \t -> [ForcedChaosTokenChange t.face [AutoFail]]
 
 instance RunMessage HasturLordOfCarcosa where
   runMessage msg (HasturLordOfCarcosa attrs) = HasturLordOfCarcosa <$> runMessage msg attrs

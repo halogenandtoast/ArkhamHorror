@@ -23,14 +23,13 @@ instance HasChaosTokenValue DaisyWalker where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasModifiersFor DaisyWalker where
-  getModifiersFor target (DaisyWalker a) | a `is` target = do
-    toModifiers
+  getModifiersFor (DaisyWalker a) =
+    modifySelf
       a
       [ GiveAdditionalAction
           $ AdditionalAction "Daisy Walker" (toSource a)
           $ TraitRestrictedAdditionalAction Tome AbilitiesOnly
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage DaisyWalker where
   runMessage msg i@(DaisyWalker attrs) = case msg of

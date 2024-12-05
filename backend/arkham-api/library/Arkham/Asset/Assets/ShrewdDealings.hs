@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings, ShrewdDealings (..)) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype ShrewdDealings = ShrewdDealings AssetAttrs
   deriving anyclass IsAsset
@@ -16,9 +16,7 @@ shrewdDealings :: AssetCard ShrewdDealings
 shrewdDealings = asset ShrewdDealings Cards.shrewdDealings
 
 instance HasModifiersFor ShrewdDealings where
-  getModifiersFor (InvestigatorTarget iid) (ShrewdDealings attrs) | iid `controls` attrs = do
-    toModifiers attrs [ReduceCostOf (#asset <> #item) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ShrewdDealings a) = controllerGets a [ReduceCostOf (#asset <> #item) 1]
 
 instance HasAbilities ShrewdDealings where
   getAbilities (ShrewdDealings x) =

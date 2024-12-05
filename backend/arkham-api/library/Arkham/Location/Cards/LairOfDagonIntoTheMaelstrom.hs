@@ -28,8 +28,7 @@ lairOfDagonIntoTheMaelstrom =
     connectsToAdjacent
 
 instance HasModifiersFor LairOfDagonIntoTheMaelstrom where
-  getModifiersFor target (LairOfDagonIntoTheMaelstrom a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (LairOfDagonIntoTheMaelstrom a) = modifySelfMaybe a do
     n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
     guard $ n > 0
     pure [ShroudModifier (-n)]

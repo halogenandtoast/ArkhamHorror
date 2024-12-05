@@ -14,16 +14,14 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their spectral side"
 --
 instance HasModifiersFor InPursuitOfTheDead where
-  getModifiersFor (LocationTarget lid) (InPursuitOfTheDead attrs) = do
-    notSpectral <- lid <=~> NotLocation (LocationWithTrait Spectral)
-    toModifiers attrs [CannotBeFlipped | notSpectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InPursuitOfTheDead attrs) = do
+    modifySelect attrs (not_ $ LocationWithTrait Spectral) [CannotBeFlipped]
 
 inPursuitOfTheDead :: ActCard InPursuitOfTheDead
 inPursuitOfTheDead =

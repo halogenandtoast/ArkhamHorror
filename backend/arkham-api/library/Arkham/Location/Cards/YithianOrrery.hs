@@ -14,17 +14,14 @@ import Arkham.Matcher
 import Arkham.ScenarioLogKey
 
 newtype YithianOrrery = YithianOrrery LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yithianOrrery :: LocationCard YithianOrrery
 yithianOrrery = location YithianOrrery Cards.yithianOrrery 4 (PerPlayer 1)
 
 instance HasModifiersFor YithianOrrery where
-  getModifiersFor (InvestigatorTarget iid) (YithianOrrery a) = do
-    here <- iid <=~> investigatorAt (toId a)
-    toModifiers a [HandSize 2 | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (YithianOrrery a) = modifySelect a (investigatorAt (toId a)) [HandSize 2]
 
 instance HasAbilities YithianOrrery where
   getAbilities (YithianOrrery attrs) =

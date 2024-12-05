@@ -100,3 +100,31 @@ getDoomCount = do
         IgnoreDoomOnThis n -> Just (min n doom)
         _ -> Nothing
   pure $ max 0 ((adds - ignoredDoomAdd) - (subtracts + ignoredDoomSubtract))
+
+getSubtractDoomCount :: HasGame m => m Int
+getSubtractDoomCount = do
+  adds <-
+    getSum
+      . fold
+      <$> sequence
+        [ selectAgg Sum AssetDoom AnyAsset
+        , selectAgg Sum EnemyDoom AnyEnemy
+        , selectAgg Sum EventDoom AnyEvent
+        , selectAgg Sum LocationDoom Anywhere
+        , selectAgg Sum TreacheryDoom AnyTreachery
+        , selectAgg Sum AgendaDoom AnyAgenda
+        , selectAgg
+            Sum
+            InvestigatorDoom
+            UneliminatedInvestigator
+        ]
+  addDoomAssets <- select AssetWithAnyDoom
+  ignoredDoomAdd <-
+    sum <$> for addDoomAssets \aid -> do
+      doom <- field AssetDoom aid
+      mods <- getModifiers aid
+      pure $ sum $ flip mapMaybe mods \case
+        IgnoreDoomOnThis n -> Just (min n doom)
+        _ -> Nothing
+
+  pure $ max 0 (adds - ignoredDoomAdd)

@@ -4,10 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (AssetDefeated)
 import Arkham.DamageEffect
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype BrotherXavier1 = BrotherXavier1 AssetAttrs
   deriving anyclass IsAsset
@@ -17,15 +15,16 @@ brotherXavier1 :: AssetCard BrotherXavier1
 brotherXavier1 = ally BrotherXavier1 Cards.brotherXavier1 (3, 3)
 
 instance HasModifiersFor BrotherXavier1 where
-  getModifiersFor (InvestigatorTarget iid) (BrotherXavier1 a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor (InvestigatorTarget iid) (BrotherXavier1 a) | not (controlledBy a iid) = do
-    locationId <- field InvestigatorLocation iid
-    assetLocationId <- field AssetLocation (toId a)
-    toModifiers a
-      $ guard (locationId == assetLocationId && isJust locationId)
-      *> [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BrotherXavier1 a) = case a.controller of
+    Just iid -> do
+      controller <- modified_ a iid [SkillModifier #willpower 1]
+      others <-
+        modifySelect
+          a
+          (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+          [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
+      pure $ controller <> others
+    Nothing -> pure mempty
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =

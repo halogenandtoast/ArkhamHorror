@@ -237,6 +237,7 @@ data ModifierType
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts
+  | OtherDoomSubtracts
   | IgnoreDoomOnThis Int
   | DoomThresholdModifier Int
   | DoubleBaseSkillValue

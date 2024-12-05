@@ -13,17 +13,18 @@ import Arkham.Matcher
 import Arkham.Trait
 
 newtype DianneDevine = DianneDevine EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dianneDevine :: EnemyCard DianneDevine
 dianneDevine = enemy DianneDevine Cards.dianneDevine (2, Static 3, 2) (0, 0)
 
 instance HasModifiersFor DianneDevine where
-  getModifiersFor (InvestigatorTarget iid) (DianneDevine a) = do
-    affected <- iid <=~> InvestigatorAt (locationWithEnemy $ toId a)
-    toModifiers a $ guard affected *> [CannotDiscoverClues, CannotTakeControlOfClues]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DianneDevine a) = do
+    modifySelect
+      a
+      (InvestigatorAt $ locationWithEnemy a)
+      [CannotDiscoverClues, CannotTakeControlOfClues]
 
 instance HasAbilities DianneDevine where
   getAbilities (DianneDevine a) =

@@ -105,9 +105,7 @@ instance HasField "meta" Campaign Value where
   getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor (InvestigatorTarget iid) attrs =
-    pure $ findWithDefault [] iid (campaignModifiers attrs)
-  getModifiersFor _ _ = pure []
+  getModifiersFor attrs = pure $ Map.mapKeys toTarget $ campaignModifiers attrs
 
 instance Sourceable CampaignAttrs where
   toSource _ = CampaignSource
@@ -238,7 +236,7 @@ instance ToJSON Campaign where
   toJSON (Campaign a) = toJSON a
 
 instance HasModifiersFor Campaign where
-  getModifiersFor target (Campaign a) = getModifiersFor target a
+  getModifiersFor (Campaign a) = getModifiersFor a
 
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs

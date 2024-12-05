@@ -10,19 +10,17 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 
 newtype DisciplineAlignmentOfSpirit = DisciplineAlignmentOfSpirit AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 disciplineAlignmentOfSpirit :: AssetCard DisciplineAlignmentOfSpirit
 disciplineAlignmentOfSpirit = asset DisciplineAlignmentOfSpirit Cards.disciplineAlignmentOfSpirit
 
 instance HasModifiersFor DisciplineAlignmentOfSpirit where
-  getModifiersFor (InvestigatorTarget iid) (DisciplineAlignmentOfSpirit a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DisciplineAlignmentOfSpirit a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities DisciplineAlignmentOfSpirit where
   getAbilities (DisciplineAlignmentOfSpirit x) =

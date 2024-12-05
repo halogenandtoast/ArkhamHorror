@@ -1,6 +1,5 @@
 module Arkham.Location.Cards.PlainOfTheGhouls (plainOfTheGhouls, PlainOfTheGhouls (..)) where
 
-import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.Game.Helpers (perPlayer)
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
@@ -10,7 +9,6 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Story.Cards qualified as Story
 import Arkham.Trait (Trait (Gug))
 
@@ -22,12 +20,11 @@ plainOfTheGhouls :: LocationCard PlainOfTheGhouls
 plainOfTheGhouls = location PlainOfTheGhouls Cards.plainOfTheGhouls 4 (PerPlayer 1)
 
 instance HasModifiersFor PlainOfTheGhouls where
-  getModifiersFor (EnemyTarget eid) (PlainOfTheGhouls attrs) = do
-    isGug <- fieldMap EnemyTraits (member Gug) eid
-    toModifiers attrs
-      $ guard isGug
-      *> [CannotEnter attrs.id, ChangeSpawnLocation (be attrs) (locationIs Cards.cityOfGugs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PlainOfTheGhouls attrs) =
+    modifySelect
+      attrs
+      (EnemyWithTrait Gug)
+      [CannotEnter attrs.id, ChangeSpawnLocation (be attrs) (locationIs Cards.cityOfGugs)]
 
 instance HasAbilities PlainOfTheGhouls where
   getAbilities (PlainOfTheGhouls attrs) = veiled attrs []

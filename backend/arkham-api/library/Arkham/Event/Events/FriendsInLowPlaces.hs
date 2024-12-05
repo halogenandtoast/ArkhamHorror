@@ -9,7 +9,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
@@ -27,9 +27,8 @@ friendsInLowPlaces :: EventCard FriendsInLowPlaces
 friendsInLowPlaces = event (FriendsInLowPlaces . (`with` Metadata [])) Cards.friendsInLowPlaces
 
 instance HasModifiersFor FriendsInLowPlaces where
-  getModifiersFor target (FriendsInLowPlaces (With a _)) | isTarget a target = do
-    modified a $ guard (a `hasCustomization` Prompt) *> [BecomesFast FastPlayerWindow]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FriendsInLowPlaces (With a _)) =
+    modifySelfWhen a (a `hasCustomization` Prompt) [BecomesFast FastPlayerWindow]
 
 instance RunMessage FriendsInLowPlaces where
   runMessage msg e@(FriendsInLowPlaces (With attrs meta)) = runQueueT $ case msg of

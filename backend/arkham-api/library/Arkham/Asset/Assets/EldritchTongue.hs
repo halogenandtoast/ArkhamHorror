@@ -7,7 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -34,8 +34,8 @@ eldritchTongueEffect :: EffectArgs -> EldritchTongueEffect
 eldritchTongueEffect = cardEffect EldritchTongueEffect Cards.eldritchTongue
 
 instance HasModifiersFor EldritchTongueEffect where
-  getModifiersFor (InvestigatorTarget iid) (EldritchTongueEffect a) | isTarget iid a.target = do
-    maybeModified a do
+  getModifiersFor (EldritchTongueEffect a) = case a.target of
+    InvestigatorTarget iid -> maybeModified_ a iid do
       liftGuardM
         $ selectAny
         $ PlayableCard (UnpaidCost NeedsAction)
@@ -50,7 +50,7 @@ instance HasModifiersFor EldritchTongueEffect where
             $ EffectAction "Use Eldritch Tongue to play parley event"
             $ toId a
         ]
-  getModifiersFor _ _ = pure []
+    _ -> pure mempty
 
 instance RunMessage EldritchTongueEffect where
   runMessage msg e@(EldritchTongueEffect attrs) = runQueueT $ case msg of

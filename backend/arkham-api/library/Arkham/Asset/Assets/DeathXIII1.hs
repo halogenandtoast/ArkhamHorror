@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype DeathXIII1 = DeathXIII1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deathXiii1 :: AssetCard DeathXIII1
 deathXiii1 = asset DeathXIII1 Cards.deathXiii1
 
 instance HasModifiersFor DeathXIII1 where
-  getModifiersFor (InvestigatorTarget iid) (DeathXIII1 a) = do
-    toModifiers a [SkillModifier #intellect 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeathXIII1 a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities DeathXIII1 where
   getAbilities (DeathXIII1 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]

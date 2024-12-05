@@ -6,8 +6,8 @@ import Arkham.Prelude
 import Arkham.Target
 
 class HasModifiersFor a where
-  getModifiersFor :: (HasCallStack, HasGame m) => Target -> a -> m [Modifier]
-  getModifiersFor _ _ = pure []
+  getModifiersFor :: (HasCallStack, HasGame m) => a -> m (Map Target [Modifier])
+  getModifiersFor _ = pure mempty
 
 instance HasModifiersFor a => HasModifiersFor (With a b) where
-  getModifiersFor target (With a _) = getModifiersFor target a
+  getModifiersFor (With a _) = getModifiersFor a

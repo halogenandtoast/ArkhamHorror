@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
 
 newtype FishingNet = FishingNet AssetAttrs
@@ -16,9 +17,9 @@ fishingNet :: AssetCard FishingNet
 fishingNet = assetWith FishingNet Cards.fishingNet (isStoryL .~ True)
 
 instance HasModifiersFor FishingNet where
-  getModifiersFor (EnemyTarget eid) (FishingNet attrs) = do
-    toModifiers attrs [RemoveKeyword Retaliate | attachedToEnemy attrs eid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FishingNet a) = case a.placement of
+    AttachedToEnemy eid -> modified_ a eid [RemoveKeyword Retaliate]
+    _ -> pure mempty
 
 instance HasAbilities FishingNet where
   getAbilities (FishingNet x) =

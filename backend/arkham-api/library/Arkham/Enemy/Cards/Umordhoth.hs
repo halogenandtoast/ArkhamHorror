@@ -14,17 +14,16 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype Umordhoth = Umordhoth EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 umordhoth :: EnemyCard Umordhoth
 umordhoth = enemy Umordhoth Cards.umordhoth (5, Static 6, 6) (3, 3)
 
 instance HasModifiersFor Umordhoth where
-  getModifiersFor target (Umordhoth a) | isTarget a target = do
+  getModifiersFor (Umordhoth a) = do
     healthModifier <- getPlayerCountValue (PerPlayer 4)
-    toModifiers a [HealthModifier healthModifier]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier healthModifier]
 
 instance HasAbilities Umordhoth where
   getAbilities (Umordhoth attrs) =

@@ -24,22 +24,24 @@ ichtacaTheForgottenGuardian =
   ally IchtacaTheForgottenGuardian Cards.ichtacaTheForgottenGuardian (3, 2)
 
 instance HasModifiersFor IchtacaTheForgottenGuardian where
-  getModifiersFor (InvestigatorTarget iid) (IchtacaTheForgottenGuardian a) | controlledBy a iid = do
-    mTarget <- getSkillTestTarget
-    mAction <- getSkillTestAction
+  getModifiersFor (IchtacaTheForgottenGuardian a) = do
+    case a.controller of
+      Nothing -> pure mempty
+      Just iid -> do
+        mTarget <- getSkillTestTarget
+        mAction <- getSkillTestAction
 
-    agility <- case (mTarget, mAction) of
-      (Just (EnemyTarget eid), Just Action.Evade) -> do
-        maybe 1 (const 2) <$> getVengeancePoints eid
-      _ -> pure 1
+        agility <- case (mTarget, mAction) of
+          (Just (EnemyTarget eid), Just Action.Evade) -> do
+            maybe 1 (const 2) <$> getVengeancePoints eid
+          _ -> pure 1
 
-    combat <- case (mTarget, mAction) of
-      (Just (EnemyTarget eid), Just Action.Fight) -> do
-        maybe 1 (const 2) <$> getVengeancePoints eid
-      _ -> pure 1
+        combat <- case (mTarget, mAction) of
+          (Just (EnemyTarget eid), Just Action.Fight) -> do
+            maybe 1 (const 2) <$> getVengeancePoints eid
+          _ -> pure 1
 
-    modified a [SkillModifier #combat combat, SkillModifier #agility agility]
-  getModifiersFor _ _ = pure []
+        modified_ a iid [SkillModifier #combat combat, SkillModifier #agility agility]
 
 instance HasAbilities IchtacaTheForgottenGuardian where
   getAbilities (IchtacaTheForgottenGuardian a) = case assetPlacement a of

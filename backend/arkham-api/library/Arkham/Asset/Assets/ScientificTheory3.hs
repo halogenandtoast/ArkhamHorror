@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.ScientificTheory3 (scientificTheory3, ScientificTheor
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype ScientificTheory3 = ScientificTheory3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,11 +22,11 @@ instance HasAbilities ScientificTheory3 where
     ]
 
 instance HasModifiersFor ScientificTheory3 where
-  getModifiersFor target (ScientificTheory3 attrs) | attrs `is` target = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (ScientificTheory3 attrs) | iid `controls` attrs = do
-    toModifiers attrs [SkillModifier #intellect 1, SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ScientificTheory3 a) = do
+    self <-
+      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controller <- controllerGets a [SkillModifier #intellect 1, SkillModifier #combat 1]
+    pure $ self <> controller
 
 instance RunMessage ScientificTheory3 where
   runMessage msg a@(ScientificTheory3 attrs) = runQueueT $ case msg of

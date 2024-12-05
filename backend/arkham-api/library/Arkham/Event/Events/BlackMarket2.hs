@@ -9,7 +9,7 @@ import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified
@@ -59,14 +59,15 @@ blackMarket2Effect :: EffectArgs -> BlackMarket2Effect
 blackMarket2Effect = cardEffectWith BlackMarket2Effect Cards.blackMarket2 (setEffectMeta False)
 
 instance HasModifiersFor BlackMarket2Effect where
-  getModifiersFor (InvestigatorTarget iid) (BlackMarket2Effect attrs) = do
+  getModifiersFor (BlackMarket2Effect attrs) = do
     case attrs.target of
-      CardIdTarget cardId ->
+      CardIdTarget cardId -> do
         selectOne (SetAsideCardMatch $ CardWithId cardId) >>= \case
-          Just card -> modified attrs [AsIfInHand card | not (isSignature card) || card.owner == Just iid]
-          _ -> pure [] -- should be disabled
+          Just card -> case card.owner of
+            Just iid -> modifiedWhen_ attrs (not (isSignature card)) iid [AsIfInHand card]
+            Nothing -> pure mempty
+          _ -> pure mempty -- should be disabled
       _ -> error "incorrect target"
-  getModifiersFor _ _ = pure []
 
 instance RunMessage BlackMarket2Effect where
   runMessage msg e@(BlackMarket2Effect attrs) = runQueueT $ case msg of

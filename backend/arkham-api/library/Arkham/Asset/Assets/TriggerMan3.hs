@@ -6,10 +6,10 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card (playIsValidAfterSeal)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 
@@ -21,15 +21,9 @@ triggerMan3 :: AssetCard TriggerMan3
 triggerMan3 = ally TriggerMan3 Cards.triggerMan3 (2, 1)
 
 instance HasModifiersFor TriggerMan3 where
-  getModifiersFor (AssetTarget aid) (TriggerMan3 a) | aid /= toId a = do
-    field AssetController a.id >>= \case
-      Nothing -> pure []
-      Just iid -> do
-        placement <- field AssetPlacement aid
-        case placement of
-          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
-          _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TriggerMan3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid]
 
 instance HasAbilities TriggerMan3 where
   getAbilities (TriggerMan3 x) =

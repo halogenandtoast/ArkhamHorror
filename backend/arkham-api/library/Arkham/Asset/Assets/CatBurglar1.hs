@@ -8,16 +8,14 @@ import Arkham.Movement
 import Arkham.Prelude
 
 newtype CatBurglar1 = CatBurglar1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catBurglar1 :: AssetCard CatBurglar1
 catBurglar1 = ally CatBurglar1 Cards.catBurglar1 (2, 2)
 
 instance HasModifiersFor CatBurglar1 where
-  getModifiersFor (InvestigatorTarget iid) (CatBurglar1 a) = do
-    toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CatBurglar1 a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =

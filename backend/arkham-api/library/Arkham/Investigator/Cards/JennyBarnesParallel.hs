@@ -3,12 +3,12 @@ module Arkham.Investigator.Cards.JennyBarnesParallel (jennyBarnesParallel, Jenny
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Game.Helpers (getIsPlayableWithResources, getSpendableResources, toModifiers)
+import Arkham.Game.Helpers (getIsPlayableWithResources, getSpendableResources)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Modifier
 import Arkham.Window (duringTurnWindow)
 
 data Meta = Meta {responseCard :: Maybe Card, resourcesGained :: Int}
@@ -26,10 +26,10 @@ jennyBarnesParallel =
     $ Stats {health = 8, sanity = 7, willpower = 3, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor JennyBarnesParallel where
-  getModifiersFor (CardIdTarget cid) (JennyBarnesParallel (attrs `With` meta))
-    | cid `elem` fmap toCardId (responseCard meta) = do
-        toModifiers attrs [ReduceCostOf (CardWithId cid) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JennyBarnesParallel (attrs `With` meta)) =
+    case responseCard meta of
+      Nothing -> pure mempty
+      Just card -> modified_ attrs card [ReduceCostOf (CardWithId card.id) 1]
 
 instance HasAbilities JennyBarnesParallel where
   getAbilities (JennyBarnesParallel (With a meta)) =

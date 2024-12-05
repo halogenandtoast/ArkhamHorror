@@ -17,10 +17,9 @@ barricade3 :: EventCard Barricade3
 barricade3 = event Barricade3 Cards.barricade3
 
 instance HasModifiersFor Barricade3 where
-  getModifiersFor target (Barricade3 attrs) =
-    modified attrs
-      $ guard (target `elem` attrs.attachedTo)
-      *> [CannotBeEnteredBy NonEliteEnemy, SpawnNonEliteAtConnectingInstead]
+  getModifiersFor (Barricade3 attrs) = case attrs.attachedTo of
+    Just target -> modified_ attrs target [CannotBeEnteredBy NonEliteEnemy, SpawnNonEliteAtConnectingInstead]
+    _ -> pure mempty
 
 instance HasAbilities Barricade3 where
   getAbilities (Barricade3 x) = case x.attachedTo of

@@ -27,16 +27,17 @@ dreamGateWondrousJourney =
     . (revealedConnectedMatchersL .~ [RevealedLocation])
 
 instance HasModifiersFor DreamGateWondrousJourney where
-  getModifiersFor (LocationTarget lid) (DreamGateWondrousJourney a) | not (a `is` lid) = do
-    toModifiers a [ConnectedToWhen RevealedLocation (LocationWithId $ toId a)]
-  getModifiersFor target (DreamGateWondrousJourney a) | a `is` target = do
-    toModifiers a [CannotBeEnteredBy AnyEnemy]
-  getModifiersFor (InvestigatorTarget iid) (DreamGateWondrousJourney a) = do
-    notLuke <- iid <!=~> investigatorIs Investigators.lukeRobinson
-    toModifiers a [CannotEnter (toId a) | notLuke]
-  getModifiersFor (EnemyTarget _) (DreamGateWondrousJourney a) = do
-    toModifiers a [CannotSpawnIn (be a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamGateWondrousJourney a) = do
+    locations <-
+      modifySelect
+        a
+        (not_ $ LocationWithId a.id)
+        [ConnectedToWhen RevealedLocation (LocationWithId $ toId a)]
+    self <- modifySelf a [CannotBeEnteredBy AnyEnemy]
+    investigators <-
+      modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
+    enemies <- modifySelect a AnyEnemy [CannotSpawnIn (be a)]
+    pure $ self <> investigators <> enemies <> locations
 
 instance HasAbilities DreamGateWondrousJourney where
   getAbilities (DreamGateWondrousJourney attrs) =

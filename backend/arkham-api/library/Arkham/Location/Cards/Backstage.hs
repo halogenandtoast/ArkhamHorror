@@ -2,9 +2,7 @@ module Arkham.Location.Cards.Backstage (backstage, Backstage (..)) where
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.GameValue
-import Arkham.Helpers.Location (isAt)
 import Arkham.Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -19,11 +17,9 @@ backstage :: LocationCard Backstage
 backstage = location Backstage Cards.backstage 3 (Static 1)
 
 instance HasModifiersFor Backstage where
-  getModifiersFor (CardIdTarget cid) (Backstage attrs) = do
-    card <- getCard cid
-    here <- maybe (pure False) (`isAt` attrs) (toCardOwner card)
-    toModifiers attrs [HandSizeCardCount 3 | here, Hidden `elem` card.keywords]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Backstage attrs) = do
+    cards <- select $ InHandOf (investigatorAt attrs) <> basic (CardWithKeyword Hidden)
+    modifyEach attrs (map (CardIdTarget . toCardId) cards) [HandSizeCardCount 3]
 
 instance HasAbilities Backstage where
   getAbilities (Backstage attrs) =

@@ -9,18 +9,17 @@ import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype CatsFromSaturn = CatsFromSaturn EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 catsFromSaturn :: EnemyCard CatsFromSaturn
 catsFromSaturn = enemy CatsFromSaturn Cards.catsFromSaturn (2, Static 2, 2) (1, 0)
 
 instance HasModifiersFor CatsFromSaturn where
-  getModifiersFor target (CatsFromSaturn a) | a `is` target = do
+  getModifiersFor (CatsFromSaturn a) = do
     mInvestigator <- selectOne ActiveInvestigator
     x <- maybe getMaxAlarmLevel getAlarmLevel mInvestigator
-    toModifiers a [SwarmingValue x]
-  getModifiersFor _ _ = pure []
+    modifySelf a [SwarmingValue x]
 
 instance HasAbilities CatsFromSaturn where
   getAbilities (CatsFromSaturn attrs) =

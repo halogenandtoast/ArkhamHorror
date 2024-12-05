@@ -16,17 +16,16 @@ import Arkham.Token
 -- Do not remove doom from Nahab when the agenda advances.
 
 newtype Nahab = Nahab EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nahab :: EnemyCard Nahab
 nahab = enemy Nahab Cards.nahab (1, PerPlayer 1, 3) (1, 2)
 
 instance HasModifiersFor Nahab where
-  getModifiersFor target (Nahab attrs) | isTarget attrs target = do
+  getModifiersFor (Nahab attrs) = do
     agendaStep <- getCurrentAgendaStep
-    toModifiers attrs [DoNotRemoveDoom, EnemyFight agendaStep]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [DoNotRemoveDoom, EnemyFight agendaStep]
 
 instance HasAbilities Nahab where
   getAbilities (Nahab attrs) =

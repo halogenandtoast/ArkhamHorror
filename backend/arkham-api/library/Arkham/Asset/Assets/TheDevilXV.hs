@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Prelude
 
 newtype TheDevilXV = TheDevilXV AssetAttrs
@@ -14,10 +15,9 @@ theDevilXv :: AssetCard TheDevilXV
 theDevilXv = asset TheDevilXV Cards.theDevilXv
 
 instance HasModifiersFor TheDevilXV where
-  getModifiersFor (InvestigatorTarget iid) (TheDevilXV a) = do
-    inHand <- selectAny $ InHandOf (InvestigatorWithId iid) <> BasicCardMatch (CardWithId $ toCardId a)
-    toModifiers a [CannotPlay $ CardWithType AssetType <> NotCard (CardWithId $ toCardId a) | inHand]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheDevilXV a) = case a.placement of
+    StillInHand iid -> modified_ a iid [CannotPlay $ #asset <> NotCard (CardWithId $ toCardId a)]
+    _ -> pure mempty
 
 instance RunMessage TheDevilXV where
   runMessage msg (TheDevilXV attrs) = TheDevilXV <$> runMessage msg attrs

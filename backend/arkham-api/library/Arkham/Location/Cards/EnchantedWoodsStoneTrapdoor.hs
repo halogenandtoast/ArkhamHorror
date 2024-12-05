@@ -20,8 +20,7 @@ enchantedWoodsStoneTrapdoor :: LocationCard EnchantedWoodsStoneTrapdoor
 enchantedWoodsStoneTrapdoor = location EnchantedWoodsStoneTrapdoor Cards.enchantedWoodsStoneTrapdoor 2 (PerPlayer 1)
 
 instance HasModifiersFor EnchantedWoodsStoneTrapdoor where
-  getModifiersFor target (EnchantedWoodsStoneTrapdoor attrs) = maybeModified attrs do
-    guard $ attrs `is` target
+  getModifiersFor (EnchantedWoodsStoneTrapdoor attrs) = modifySelfMaybe attrs do
     liftGuardM $ getIsBeingInvestigated attrs.id
     iid <- MaybeT getSkillTestInvestigator
     handSize <- lift $ fieldMap InvestigatorHand length iid

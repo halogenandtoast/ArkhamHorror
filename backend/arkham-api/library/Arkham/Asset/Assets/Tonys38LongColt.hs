@@ -26,14 +26,14 @@ instance HasAbilities Tonys38LongColt where
     ]
 
 instance HasModifiersFor Tonys38LongColt where
-  getModifiersFor (InvestigatorTarget iid) (Tonys38LongColt a) = maybeModified a do
-    guard $ a `controlledBy` iid
-    EnemyTarget eid <- MaybeT getSkillTestTarget
-    guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
-    bounties <- lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
-    guard (bounties > 0)
-    pure [SkillModifier #combat bounties]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Tonys38LongColt a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      EnemyTarget eid <- MaybeT getSkillTestTarget
+      guardM $ isAbilitySource a 2 <$> MaybeT getSkillTestSource
+      bounties <- lift $ fieldMap EnemyTokens (Token.countTokens Token.Bounty) eid
+      guard (bounties > 0)
+      pure [SkillModifier #combat bounties]
 
 instance RunMessage Tonys38LongColt where
   runMessage msg a@(Tonys38LongColt attrs) = case msg of

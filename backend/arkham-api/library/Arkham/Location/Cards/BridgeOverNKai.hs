@@ -12,7 +12,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 
 newtype BridgeOverNKai = BridgeOverNKai LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 bridgeOverNKai :: LocationCard BridgeOverNKai
@@ -20,10 +20,9 @@ bridgeOverNKai =
   symbolLabel $ location BridgeOverNKai Cards.bridgeOverNKai 2 (PerPlayer 1)
 
 instance HasModifiersFor BridgeOverNKai where
-  getModifiersFor target (BridgeOverNKai a) | isTarget a target = do
+  getModifiersFor (BridgeOverNKai a) = do
     n <- getVengeanceInVictoryDisplay
-    toModifiers a [ShroudModifier n]
-  getModifiersFor _ _ = pure []
+    modifySelf a [ShroudModifier n]
 
 instance RunMessage BridgeOverNKai where
   runMessage msg (BridgeOverNKai attrs) =

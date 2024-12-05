@@ -80,6 +80,18 @@ locationDamage = countTokens Damage . locationTokens
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
 
+instance HasField "tokens" LocationAttrs Tokens where
+  getField = locationTokens
+
+instance HasField "token" LocationAttrs (Token -> Int) where
+  getField a tType = countTokens tType a.tokens
+
+instance HasField "directions" LocationAttrs (Map Direction [LocationId]) where
+  getField = locationDirections
+
+instance HasField "leftOf" LocationAttrs (Maybe [LocationId]) where
+  getField = lookup LeftOf . locationDirections
+
 instance HasField "meta" LocationAttrs Value where
   getField = locationMeta
 
@@ -91,6 +103,9 @@ instance HasField "position" LocationAttrs (Maybe Pos) where
 
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
+
+instance HasField "unrevealed" LocationAttrs Bool where
+  getField = not . locationRevealed
 
 instance HasField "floodLevel" LocationAttrs (Maybe FloodLevel) where
   getField = locationFloodLevel

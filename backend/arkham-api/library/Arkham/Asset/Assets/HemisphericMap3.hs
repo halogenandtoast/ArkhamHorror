@@ -8,26 +8,20 @@ import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
-import Arkham.SkillType
 
 newtype HemisphericMap3 = HemisphericMap3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor HemisphericMap3 where
-  getModifiersFor (InvestigatorTarget iid) (HemisphericMap3 a)
-    | controlledBy a iid = do
-        connectedLocationCount <-
-          selectCount $ ConnectedFrom $ locationWithInvestigator iid
-        toModifiers a $ case connectedLocationCount of
-          n
-            | n >= 4 ->
-                [SkillModifier SkillWillpower 2, SkillModifier SkillIntellect 2]
-          n
-            | n >= 2 ->
-                [SkillModifier SkillWillpower 1, SkillModifier SkillIntellect 1]
-          _ -> []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HemisphericMap3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      connectedLocationCount <- selectCount $ ConnectedFrom $ locationWithInvestigator iid
+      modified_ a iid $ case connectedLocationCount of
+        n | n >= 4 -> [SkillModifier #willpower 2, SkillModifier #intellect 2]
+        n | n >= 2 -> [SkillModifier #willpower 1, SkillModifier #intellect 1]
+        _ -> []
 
 hemisphericMap3 :: AssetCard HemisphericMap3
 hemisphericMap3 = asset HemisphericMap3 Cards.hemisphericMap3

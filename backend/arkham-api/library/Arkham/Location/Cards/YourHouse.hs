@@ -17,10 +17,8 @@ yourHouse :: LocationCard YourHouse
 yourHouse = location YourHouse Cards.yourHouse 2 (PerPlayer 1)
 
 instance HasModifiersFor YourHouse where
-  getModifiersFor (EnemyTarget eid) (YourHouse attrs) = do
-    isGhoulPriest <- eid <=~> enemyIs Cards.ghoulPriest
-    toModifiers attrs [ForceSpawnLocation (be attrs) | isGhoulPriest]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (YourHouse attrs) = do
+    modifySelect attrs (enemyIs Cards.ghoulPriest) [ForceSpawnLocation (be attrs)]
 
 -- Ability 1 is just to trigger in UI, it doesn't change anything since we
 -- handle it with the modifier

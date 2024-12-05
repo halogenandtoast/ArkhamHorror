@@ -1,32 +1,23 @@
 module Arkham.Location.Cards.ArkhamWoodsCorpseRiddenClearing where
 
-import Arkham.Prelude
-
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (
-  arkhamWoodsCorpseRiddenClearing,
- )
+import Arkham.Location.Cards qualified as Cards (arkhamWoodsCorpseRiddenClearing)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
 
 newtype ArkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 arkhamWoodsCorpseRiddenClearing :: LocationCard ArkhamWoodsCorpseRiddenClearing
 arkhamWoodsCorpseRiddenClearing =
-  location
-    ArkhamWoodsCorpseRiddenClearing
-    Cards.arkhamWoodsCorpseRiddenClearing
-    3
-    (PerPlayer 1)
+  location ArkhamWoodsCorpseRiddenClearing Cards.arkhamWoodsCorpseRiddenClearing 3 (PerPlayer 1)
 
 instance HasModifiersFor ArkhamWoodsCorpseRiddenClearing where
-  getModifiersFor (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) = do
-    atLocation <- enemyAtLocation eid attrs
-    toModifiers attrs [MaxDamageTaken 1 | atLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArkhamWoodsCorpseRiddenClearing a) =
+    whenRevealed a $ modifySelect a (enemyAt a) [MaxDamageTaken 1]
 
 instance RunMessage ArkhamWoodsCorpseRiddenClearing where
   runMessage msg (ArkhamWoodsCorpseRiddenClearing attrs) =

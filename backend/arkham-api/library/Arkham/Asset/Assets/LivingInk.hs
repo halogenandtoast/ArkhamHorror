@@ -6,33 +6,35 @@ import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelfWhen)
 import Arkham.Matcher
 
 newtype LivingInk = LivingInk AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 livingInk :: AssetCard LivingInk
 livingInk = assetWith LivingInk Cards.livingInk (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasModifiersFor LivingInk where
-  getModifiersFor (InvestigatorTarget iid) (LivingInk a) = do
-    maybeModified a do
-      guard $ a `controlledBy` iid
-      guard $ getAssetMetaDefault True a -- check subtle depiction
-      -- handles EldritchInk && EldritchInk2
-      let skills = [s | ChosenSkill s <- concatMap snd (toList a.customizations)]
-      pure
-        $ if a `hasCustomization` Vibrancy
-          then
-            map (`SkillModifier` 2) skills <> [SkillModifier s (-1) | s <- [minBound ..], s `notElem` skills]
-          else map (`SkillModifier` 1) skills
-  getModifiersFor target (LivingInk a) | a `is` target = do
-    maybeModified a do
-      guard $ a `hasCustomization` ImbuedInk
-      pure [AdditionalStartingUses 2, DoNotTakeUpSlot #body, AdditionalSlot #arcane]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LivingInk a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      controller <- maybeModified_ a iid do
+        guard $ getAssetMetaDefault True a -- check subtle depiction
+        -- handles EldritchInk && EldritchInk2
+        let skills = [s | ChosenSkill s <- concatMap snd (toList a.customizations)]
+        pure
+          $ if a `hasCustomization` Vibrancy
+            then
+              map (`SkillModifier` 2) skills <> [SkillModifier s (-1) | s <- [minBound ..], s `notElem` skills]
+            else map (`SkillModifier` 1) skills
+      self <-
+        modifySelfWhen
+          a
+          (a `hasCustomization` ImbuedInk)
+          [AdditionalStartingUses 2, DoNotTakeUpSlot #body, AdditionalSlot #arcane]
+      pure $ self <> controller
 
 instance HasAbilities LivingInk where
   getAbilities (LivingInk a) =

@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype AnalyticalMind = AnalyticalMind AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 analyticalMind :: AssetCard AnalyticalMind
@@ -21,9 +21,9 @@ instance HasAbilities AnalyticalMind where
     ]
 
 instance HasModifiersFor AnalyticalMind where
-  getModifiersFor (InvestigatorTarget iid) (AnalyticalMind attrs) | controlledBy attrs iid = do
-    toModifiers attrs [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AnalyticalMind a) = case a.controller of
+    Just iid -> modified_ a iid [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
+    Nothing -> pure mempty
 
 instance RunMessage AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of

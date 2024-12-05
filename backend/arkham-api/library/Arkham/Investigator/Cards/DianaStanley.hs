@@ -31,10 +31,9 @@ dianaStanley =
     $ Stats {health = 7, sanity = 7, willpower = 1, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor DianaStanley where
-  getModifiersFor target (DianaStanley a) | isTarget a target = do
+  getModifiersFor (DianaStanley a) = do
     n <- fieldMap InvestigatorCardsUnderneath length (toId a)
-    toModifiers a [SkillModifier #willpower n | n > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf a [SkillModifier #willpower n | n > 0]
 
 instance HasAbilities DianaStanley where
   getAbilities (DianaStanley a) =

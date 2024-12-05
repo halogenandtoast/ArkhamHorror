@@ -20,10 +20,9 @@ aTrailOfTwists =
     %~ (\m -> m {removeDoomLocations = Nowhere})
 
 instance HasModifiersFor ATrailOfTwists where
-  getModifiersFor target (ATrailOfTwists attrs) | attrs `is` target = do
+  getModifiersFor (ATrailOfTwists attrs) = do
     n <- perPlayer 2
-    toModifiers attrs [DoomThresholdModifier n]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [DoomThresholdModifier n]
 
 instance RunMessage ATrailOfTwists where
   runMessage msg a@(ATrailOfTwists attrs) = runQueueT $ case msg of

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 
 newtype AbyssalRot = AbyssalRot EventAttrs
@@ -15,9 +15,9 @@ abyssalRot :: EventCard AbyssalRot
 abyssalRot = event AbyssalRot Cards.abyssalRot
 
 instance HasModifiersFor AbyssalRot where
-  getModifiersFor target (AbyssalRot a) | target `elem` a.attachedTo = do
-    modified a [CannotAttack]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AbyssalRot a) = case a.attachedTo of
+    Just target -> modified_ a target [CannotAttack]
+    _ -> pure mempty
 
 instance HasAbilities AbyssalRot where
   getAbilities (AbyssalRot a) =

@@ -17,7 +17,7 @@ import Arkham.Prelude
 import Arkham.Projection
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 witchHauntedWoodsTheLonelyTree :: LocationCard WitchHauntedWoodsTheLonelyTree
@@ -25,11 +25,10 @@ witchHauntedWoodsTheLonelyTree =
   location WitchHauntedWoodsTheLonelyTree Cards.witchHauntedWoodsTheLonelyTree 2 (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsTheLonelyTree where
-  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTheLonelyTree a) =
-    do
-      handLength <- fieldMap InvestigatorHand length iid
-      toModifiers a [CannotInvestigateLocation (toId a) | handLength >= 3 && handLength <= 5]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WitchHauntedWoodsTheLonelyTree a) = modifySelectMaybe a Anyone \iid -> do
+    handLength <- lift $ fieldMap InvestigatorHand length iid
+    guard $ handLength >= 3 && handLength <= 5
+    pure [CannotInvestigateLocation (toId a)]
 
 instance HasAbilities WitchHauntedWoodsTheLonelyTree where
   getAbilities (WitchHauntedWoodsTheLonelyTree a) =

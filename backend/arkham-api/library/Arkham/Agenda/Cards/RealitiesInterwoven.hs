@@ -16,10 +16,9 @@ realitiesInterwoven :: AgendaCard RealitiesInterwoven
 realitiesInterwoven = agenda (3, A) RealitiesInterwoven Cards.realitiesInterwoven (Static 11)
 
 instance HasModifiersFor RealitiesInterwoven where
-  getModifiersFor target (RealitiesInterwoven attrs) | attrs `is` target = do
+  getModifiersFor (RealitiesInterwoven attrs) = do
     n <- perPlayer 2
-    toModifiers attrs [DoomThresholdModifier n]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [DoomThresholdModifier n]
 
 instance RunMessage RealitiesInterwoven where
   runMessage msg a@(RealitiesInterwoven attrs) = runQueueT $ case msg of

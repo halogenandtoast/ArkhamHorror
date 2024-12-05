@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Trait (Trait (CrimeScene))
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,9 +20,9 @@ incriminatingEvidence :: TreacheryCard IncriminatingEvidence
 incriminatingEvidence = treachery IncriminatingEvidence Cards.incriminatingEvidence
 
 instance HasModifiersFor IncriminatingEvidence where
-  getModifiersFor target (IncriminatingEvidence a) | target `elem` treacheryAttachedTarget a = do
-    toModifiers a [AddTrait CrimeScene, ShroudModifier 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (IncriminatingEvidence a) = case a.placement of
+    AttachedToLocation lid -> modified_ a lid [AddTrait CrimeScene, ShroudModifier 2]
+    _ -> pure mempty
 
 instance HasAbilities IncriminatingEvidence where
   getAbilities (IncriminatingEvidence attrs) = case treacheryAttachedTarget attrs of

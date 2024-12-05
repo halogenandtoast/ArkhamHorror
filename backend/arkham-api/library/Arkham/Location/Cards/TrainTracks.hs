@@ -9,17 +9,15 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype TrainTracks = TrainTracks LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 trainTracks :: LocationCard TrainTracks
 trainTracks = location TrainTracks Cards.trainTracks 3 (PerPlayer 1)
 
 instance HasModifiersFor TrainTracks where
-  getModifiersFor (LocationTarget lid) (TrainTracks a) = do
-    isNorthside <- lid <=~> locationIs Cards.northside
-    toModifiers a [ConnectedToWhen (LocationWithId lid) (be a) | isNorthside]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TrainTracks a) = do
+    modifySelectMap a (locationIs Cards.northside) \lid -> [ConnectedToWhen (LocationWithId lid) (be a)]
 
 instance HasAbilities TrainTracks where
   getAbilities (TrainTracks attrs) =

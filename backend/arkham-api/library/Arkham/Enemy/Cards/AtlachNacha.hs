@@ -5,7 +5,7 @@ import Arkham.Attack
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Label
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -34,9 +34,8 @@ atlachNacha =
     ((asSelfLocationL ?~ "atlachNacha") . setMeta @Meta (Meta 0))
 
 instance HasModifiersFor AtlachNacha where
-  getModifiersFor target (AtlachNacha attrs) | attrs `is` target = do
-    toModifiers attrs $ if attrs.placement == Global then [Omnipotent] else [DoNotExhaustEvaded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AtlachNacha attrs) = do
+    modifySelf attrs $ if attrs.placement == Global then [Omnipotent] else [DoNotExhaustEvaded]
 
 rotateLocation :: Int -> Text -> Text
 rotateLocation 0 txt = txt

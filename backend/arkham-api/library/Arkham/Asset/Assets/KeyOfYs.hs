@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype KeyOfYs = KeyOfYs AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keyOfYs :: AssetCard KeyOfYs
 keyOfYs = assetWith KeyOfYs Cards.keyOfYs (sanityL ?~ 4)
 
 instance HasModifiersFor KeyOfYs where
-  getModifiersFor (InvestigatorTarget iid) (KeyOfYs a) =
-    toModifiers a [AnySkillValue $ assetHorror a | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (KeyOfYs a) = controllerGets a [AnySkillValue $ assetHorror a]
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =

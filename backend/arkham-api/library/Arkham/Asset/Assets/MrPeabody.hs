@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Trait (Trait (Passageway))
 
 newtype MrPeabody = MrPeabody AssetAttrs
@@ -35,9 +35,8 @@ mrPeabodyEffect :: EffectArgs -> MrPeabodyEffect
 mrPeabodyEffect = cardEffect MrPeabodyEffect Cards.mrPeabody
 
 instance HasModifiersFor MrPeabodyEffect where
-  getModifiersFor target (MrPeabodyEffect attrs) | attrs.target == target = do
-    toModifiers attrs [ShroudModifier (-1), AddTrait Passageway]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MrPeabodyEffect a) =
+    modified_ a a.target [ShroudModifier (-1), AddTrait Passageway]
 
 instance RunMessage MrPeabodyEffect where
   runMessage msg e@(MrPeabodyEffect attrs) = runQueueT $ case msg of

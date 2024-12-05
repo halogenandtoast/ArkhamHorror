@@ -4,8 +4,8 @@ import Arkham.Action qualified as Action
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Placement
@@ -18,13 +18,13 @@ mapTheArea :: EventCard MapTheArea
 mapTheArea = event MapTheArea Cards.mapTheArea
 
 instance HasModifiersFor MapTheArea where
-  getModifiersFor (SkillTestTarget _) (MapTheArea a) = do
-    maybeModified a do
-      iid <- MaybeT getSkillTestInvestigator
-      lid <- MaybeT $ getMaybeLocation iid
-      guard $ a.attachedTo == Just (LocationTarget lid)
-      pure [Difficulty (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MapTheArea a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        lid <- MaybeT $ getMaybeLocation st.investigator
+        guard $ a.attachedTo == Just (LocationTarget lid)
+        pure [Difficulty (-1)]
 
 instance RunMessage MapTheArea where
   runMessage msg e@(MapTheArea attrs) = runQueueT $ case msg of

@@ -40,19 +40,16 @@ hereticModifiers
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)
      )
-  => Target
-  -> a
-  -> m [Modifier]
-hereticModifiers target (toAttrs -> a) | isTarget a target = do
+  => a
+  -> m (Map Target [Modifier])
+hereticModifiers (toAttrs -> a) = do
   n <- perPlayer 2
-  atSpectralLocation <-
-    selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
-  toModifiers a
+  atSpectralLocation <- selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
+  modifySelf a
     $ HealthModifier n
     : ( guard (not atSpectralLocation)
           *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
       )
-hereticModifiers _ _ = pure []
 
 hereticAbilities
   :: ( EntityId (EntityAttrs a) ~ EnemyId

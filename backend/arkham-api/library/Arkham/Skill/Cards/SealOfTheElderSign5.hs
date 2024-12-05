@@ -17,13 +17,14 @@ newtype SealOfTheElderSign5 = SealOfTheElderSign5 SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor SealOfTheElderSign5 where
-  getModifiersFor (InvestigatorTarget _) (SealOfTheElderSign5 attrs) = do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
-      Just _ ->
-        toModifiers attrs [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
-      Nothing -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SealOfTheElderSign5 attrs) = do
+    getSkillTest >>= \case
+      Just st ->
+        modified_
+          attrs
+          st.investigator
+          [DoNotDrawChaosTokensForSkillChecks, TreatRevealedChaosTokenAs ElderSign]
+      Nothing -> pure mempty
 
 sealOfTheElderSign5 :: SkillCard SealOfTheElderSign5
 sealOfTheElderSign5 =

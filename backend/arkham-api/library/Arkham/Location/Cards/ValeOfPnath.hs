@@ -13,18 +13,16 @@ import Arkham.Projection
 import Arkham.Story.Cards qualified as Story
 
 newtype ValeOfPnath = ValeOfPnath LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 valeOfPnath :: LocationCard ValeOfPnath
 valeOfPnath = location ValeOfPnath Cards.valeOfPnath 4 (PerPlayer 1)
 
 instance HasModifiersFor ValeOfPnath where
-  getModifiersFor (InvestigatorTarget iid) (ValeOfPnath a) = do
-    here <- iid `isAt` a
+  getModifiersFor (ValeOfPnath a) = do
     hasClues <- fieldMap LocationClues (> 0) a.id
-    toModifiers a $ guard (here && hasClues) *> [CannotPlay AnyCard, CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (hasClues) (investigatorAt a) [CannotPlay AnyCard, CannotCommitCards AnyCard]
 
 instance HasAbilities ValeOfPnath where
   getAbilities (ValeOfPnath attrs) = veiled attrs []

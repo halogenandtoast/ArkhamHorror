@@ -2,7 +2,7 @@ module Arkham.Event.Events.ExistentialRiddle1 (existentialRiddle1, ExistentialRi
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Investigator.Types (Field (..))
@@ -19,8 +19,9 @@ existentialRiddle1 :: EventCard ExistentialRiddle1
 existentialRiddle1 = event ExistentialRiddle1 Cards.existentialRiddle1
 
 instance HasModifiersFor ExistentialRiddle1 where
-  getModifiersFor target (ExistentialRiddle1 a) = do
-    modified a [AddKeyword Aloof | a.attachedTo == Just target]
+  getModifiersFor (ExistentialRiddle1 a) = case a.attachedTo of
+    Just target -> modified_ a target [AddKeyword Aloof]
+    _ -> pure mempty
 
 instance RunMessage ExistentialRiddle1 where
   runMessage msg e@(ExistentialRiddle1 attrs) = runQueueT $ case msg of

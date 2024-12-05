@@ -8,24 +8,27 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype IndescribableApparition = IndescribableApparition TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 indescribableApparition :: TreacheryCard IndescribableApparition
 indescribableApparition = treachery IndescribableApparition Cards.indescribableApparition
 
 instance HasModifiersFor IndescribableApparition where
-  getModifiersFor (InvestigatorTarget iid) (IndescribableApparition attrs) | attrs `on` iid = do
-    unnamableAtYourLocation <- selectAny $ enemyIs Enemies.theUnnamable <> enemyAtLocationWith iid
-    modified
-      attrs
-      [SkillModifier skillType (-1) | unnamableAtYourLocation, skillType <- allSkills]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (IndescribableApparition attrs) = case attrs.placement of
+    InThreatArea iid -> do
+      unnamableAtYourLocation <- selectAny $ enemyIs Enemies.theUnnamable <> enemyAtLocationWith iid
+      modified_
+        attrs
+        iid
+        [SkillModifier skillType (-1) | unnamableAtYourLocation, skillType <- allSkills]
+    _ -> pure mempty
 
 instance HasAbilities IndescribableApparition where
   getAbilities (IndescribableApparition a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

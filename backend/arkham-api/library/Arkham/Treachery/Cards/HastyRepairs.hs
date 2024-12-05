@@ -1,9 +1,10 @@
 module Arkham.Treachery.Cards.HastyRepairs (hastyRepairs, HastyRepairs (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -15,14 +16,13 @@ hastyRepairs :: TreacheryCard HastyRepairs
 hastyRepairs = treachery HastyRepairs Cards.hastyRepairs
 
 instance HasModifiersFor HastyRepairs where
-  getModifiersFor (InvestigatorTarget iid) (HastyRepairs attrs) = do
-    maybeModified attrs do
-      guard $ treacheryInThreatArea iid attrs
+  getModifiersFor (HastyRepairs attrs) = case attrs.placement of
+    InThreatArea iid -> maybeModified_ attrs iid do
       source <- MaybeT getSkillTestSource
       asset <- hoistMaybe source.asset
       liftGuardM $ asset <=~> assetControlledBy iid
       pure [BaseSkill 0]
-  getModifiersFor _ _ = pure []
+    _ -> pure mempty
 
 instance HasAbilities HastyRepairs where
   getAbilities (HastyRepairs a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

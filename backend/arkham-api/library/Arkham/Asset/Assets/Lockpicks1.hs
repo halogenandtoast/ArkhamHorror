@@ -1,13 +1,13 @@
-module Arkham.Asset.Assets.Lockpicks1 ( lockpicks1, lockpicks1Effect, Lockpicks1 (..),) where
+module Arkham.Asset.Assets.Lockpicks1 (lockpicks1, lockpicks1Effect, Lockpicks1 (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Effect.Import
-import Arkham.Investigate
-import Arkham.Modifier
-import Arkham.Helpers.SkillTest
 import Arkham.Asset.Uses
+import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.SkillTest
+import Arkham.Investigate
 
 newtype Lockpicks1 = Lockpicks1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -36,9 +36,8 @@ lockpicks1Effect :: EffectArgs -> Lockpicks1Effect
 lockpicks1Effect = cardEffect Lockpicks1Effect Cards.lockpicks1
 
 instance HasModifiersFor Lockpicks1Effect where
-  getModifiersFor target (Lockpicks1Effect a) | a.target `is` target = do
-    toModifiers a [AddSkillValue #agility]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Lockpicks1Effect a) =
+    modified_ a a.target [AddSkillValue #agility]
 
 handleEffect :: ReverseQueue m => EffectAttrs -> m ()
 handleEffect attrs = withSkillTest \sid -> do

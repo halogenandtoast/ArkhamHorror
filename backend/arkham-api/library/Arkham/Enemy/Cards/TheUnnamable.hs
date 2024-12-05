@@ -14,7 +14,7 @@ import Arkham.Modifier qualified as Mod
 import Arkham.ScenarioLogKey
 
 newtype TheUnnamable = TheUnnamable EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 theUnnamable :: EnemyCard TheUnnamable
@@ -24,11 +24,10 @@ theUnnamable =
     . (spawnAtL ?~ SpawnAt (oneOf ["Attic", "Upstairs Hallway"]))
 
 instance HasModifiersFor TheUnnamable where
-  getModifiersFor target (TheUnnamable a) | isTarget a target = do
+  getModifiersFor (TheUnnamable a) = do
     n <- countM remembered [FoundACrackedMirror, StudiedADesecratedPortrait, NoticedTheMissingBones]
-    toModifiers a $ CannotBeDefeated
+    modifySelf a $ CannotBeDefeated
       : (guard (n > 0) *> [Mod.EnemyFight (-n), Mod.EnemyEvade (-n)])
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TheUnnamable where
   runMessage msg (TheUnnamable attrs) =

@@ -16,15 +16,17 @@ yig :: EnemyCard Yig
 yig = enemy Yig Cards.yig (4, Static 6, 4) (3, 3)
 
 instance HasModifiersFor Yig where
-  getModifiersFor target (Yig a) | isTarget a target = do
-    n <- getPlayerCountValue (PerPlayer 6)
+  getModifiersFor (Yig a) = do
+    n <- perPlayer 6
     cannotBeDamaged <-
       selectAny $ ReadyEnemy <> withTrait Serpent <> at_ (locationWithEnemy a) <> not_ (be a)
-    toModifiers a $ [HealthModifier n] <> [CannotBeDamaged | cannotBeDamaged]
-  getModifiersFor (EnemyTarget eid) (Yig a) = do
-    isModified <- eid <=~> (ReadyEnemy <> EnemyWithTrait Serpent <> at_ (locationWithEnemy a))
-    toModifiers a $ guard isModified *> [AddKeyword Keyword.Alert, AddKeyword Keyword.Retaliate]
-  getModifiersFor _ _ = pure []
+    self <- modifySelf a $ HealthModifier n : [CannotBeDamaged | cannotBeDamaged]
+    enemies <-
+      modifySelect
+        a
+        (ReadyEnemy <> EnemyWithTrait Serpent <> at_ (locationWithEnemy a))
+        [AddKeyword Keyword.Alert, AddKeyword Keyword.Retaliate]
+    pure $ self <> enemies
 
 instance RunMessage Yig where
   runMessage msg (Yig attrs) = Yig <$> runMessage msg attrs

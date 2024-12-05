@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype LaboratoryAssistant = LaboratoryAssistant AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laboratoryAssistant :: AssetCard LaboratoryAssistant
 laboratoryAssistant = ally LaboratoryAssistant Cards.laboratoryAssistant (1, 2)
 
 instance HasModifiersFor LaboratoryAssistant where
-  getModifiersFor (InvestigatorTarget iid) (LaboratoryAssistant attrs) | controlledBy attrs iid = do
-    toModifiers attrs [HandSize 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LaboratoryAssistant attrs) = controllerGets attrs [HandSize 2]
 
 instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =

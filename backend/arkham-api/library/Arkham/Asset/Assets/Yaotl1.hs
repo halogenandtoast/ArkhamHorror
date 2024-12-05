@@ -51,25 +51,26 @@ yaotl1Effect :: EffectArgs -> Yaotl1Effect
 yaotl1Effect = cardEffect Yaotl1Effect Cards.yaotl1
 
 instance HasModifiersFor Yaotl1Effect where
-  getModifiersFor (InvestigatorTarget iid) (Yaotl1Effect a) = maybeModified a do
-    sid <- MaybeT getSkillTestId
-    guard $ isTarget sid a.target
-    iid' <- MaybeT getSkillTestInvestigator
-    guard $ iid == iid'
-    discard <- lift $ field InvestigatorDiscard iid
-    case discard of
-      [] -> pure []
-      (x : _) -> do
-        let
-          skillIcons = cdSkills $ toCardDef x
-          skillCount sk = count (== SkillIcon sk) skillIcons
-        pure
-          [ SkillModifier sk n
-          | sk <- allSkills
-          , let n = skillCount sk
-          , n > 0
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Yaotl1Effect a) = case a.target of
+    InvestigatorTarget iid -> maybeModified_ a iid do
+      sid <- MaybeT getSkillTestId
+      guard $ isTarget sid a.target
+      iid' <- MaybeT getSkillTestInvestigator
+      guard $ iid == iid'
+      discard <- lift $ field InvestigatorDiscard iid
+      case discard of
+        [] -> pure []
+        (x : _) -> do
+          let
+            skillIcons = cdSkills $ toCardDef x
+            skillCount sk = count (== SkillIcon sk) skillIcons
+          pure
+            [ SkillModifier sk n
+            | sk <- allSkills
+            , let n = skillCount sk
+            , n > 0
+            ]
+    _ -> pure mempty
 
 instance RunMessage Yaotl1Effect where
   runMessage msg e@(Yaotl1Effect attrs) = case msg of

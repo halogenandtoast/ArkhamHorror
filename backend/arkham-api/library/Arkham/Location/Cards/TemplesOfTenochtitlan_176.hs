@@ -21,8 +21,7 @@ templesOfTenochtitlan_176 :: LocationCard TemplesOfTenochtitlan_176
 templesOfTenochtitlan_176 = symbolLabel $ location TemplesOfTenochtitlan_176 Cards.templesOfTenochtitlan_176 3 (PerPlayer 1)
 
 instance HasModifiersFor TemplesOfTenochtitlan_176 where
-  getModifiersFor target (TemplesOfTenochtitlan_176 a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (TemplesOfTenochtitlan_176 a) = modifySelfMaybe a do
     iid <- MaybeT getSkillTestInvestigator
     liftGuardM $ fieldP InvestigatorRemainingHealth (<= 3) iid
     liftGuardM $ getIsBeingInvestigated (toId a)

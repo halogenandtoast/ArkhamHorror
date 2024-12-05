@@ -18,14 +18,13 @@ dismalCurse :: TreacheryCard DismalCurse
 dismalCurse = treachery DismalCurse Cards.dismalCurse
 
 instance HasModifiersFor DismalCurse where
-  getModifiersFor (InvestigatorTarget iid') (DismalCurse a) = do
-    mSource <- getSkillTestSource
-    mInvestigator <- getSkillTestInvestigator
-    case (mSource, mInvestigator) of
-      (Just source, Just iid) | iid == iid' && isSource a source -> do
-        toModifiers a [Difficulty 2]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DismalCurse a) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        source <- MaybeT getSkillTestSource
+        guard $ isSource a source
+        pure [Difficulty 2]
 
 instance RunMessage DismalCurse where
   runMessage msg t@(DismalCurse attrs) = case msg of

@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Xochimilco = Xochimilco LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 xochimilco :: LocationCard Xochimilco
@@ -18,10 +18,8 @@ xochimilco =
   locationWith Xochimilco Cards.xochimilco 4 (Static 0) (labelL .~ "heart")
 
 instance HasModifiersFor Xochimilco where
-  getModifiersFor (InvestigatorTarget iid) (Xochimilco a) = do
-    atXochimilco <- iid <=~> investigatorAt (toId a)
-    toModifiers a [CannotGainResources | atXochimilco]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Xochimilco a) = do
+    modifySelect a (investigatorAt (toId a)) [CannotGainResources]
 
 instance HasAbilities Xochimilco where
   getAbilities (Xochimilco attrs) =

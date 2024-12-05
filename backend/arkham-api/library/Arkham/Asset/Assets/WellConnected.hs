@@ -39,14 +39,13 @@ wellConnectedEffect :: EffectArgs -> WellConnectedEffect
 wellConnectedEffect = cardEffect WellConnectedEffect Cards.wellConnected
 
 instance HasModifiersFor WellConnectedEffect where
-  getModifiersFor (InvestigatorTarget iid) (WellConnectedEffect a) = maybeModified a do
-    sid <- MaybeT getSkillTestId
-    iid' <- MaybeT getSkillTestInvestigator
-    guard $ isTarget sid a.target
-    guard $ iid == iid'
-    resources <- lift $ field InvestigatorResources iid
-    pure [AnySkillValue (resources `div` 5)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WellConnectedEffect a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a a.target do
+        guard $ isTarget st.investigator a.target
+        resources <- lift $ field InvestigatorResources st.investigator
+        pure [AnySkillValue (resources `div` 5)]
 
 instance RunMessage WellConnectedEffect where
   runMessage msg e@(WellConnectedEffect attrs) = case msg of

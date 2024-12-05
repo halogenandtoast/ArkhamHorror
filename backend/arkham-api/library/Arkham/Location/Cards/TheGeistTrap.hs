@@ -18,14 +18,12 @@ theGeistTrap :: LocationCard TheGeistTrap
 theGeistTrap = location TheGeistTrap Cards.theGeistTrap 4 (PerPlayer 1)
 
 instance HasModifiersFor TheGeistTrap where
-  getModifiersFor target (TheGeistTrap attrs)
-    | attrs `isTarget` target
-    , not attrs.revealed = do
-        toModifiers attrs [Blocked]
-  getModifiersFor (EnemyTarget eid) (TheGeistTrap attrs) | attrs.revealed = do
-    gainsRetaliate <- selectAny $ be eid <> enemyIs Enemies.theSpectralWatcher <> at_ (be attrs)
-    toModifiers attrs [AddKeyword Keyword.Retaliate | gainsRetaliate]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheGeistTrap a) = do
+    self <- whenUnrevealed a $ modifySelf a [Blocked]
+    enemies <-
+      whenRevealed a
+        $ modifySelect a (enemyIs Enemies.theSpectralWatcher <> enemyAt a) [AddKeyword Keyword.Retaliate]
+    pure $ self <> enemies
 
 instance HasAbilities TheGeistTrap where
   getAbilities (TheGeistTrap attrs) =

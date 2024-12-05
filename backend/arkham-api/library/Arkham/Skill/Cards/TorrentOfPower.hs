@@ -2,7 +2,6 @@ module Arkham.Skill.Cards.TorrentOfPower (torrentOfPower, TorrentOfPower (..)) w
 
 import Arkham.Asset.Uses
 import Arkham.Calculation
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Cost
 import Arkham.Game.Helpers
@@ -28,14 +27,13 @@ chargesSpent (UsesPayment n) = n
 chargesSpent _ = 0
 
 instance HasModifiersFor TorrentOfPower where
-  getModifiersFor (CardIdTarget cid) (TorrentOfPower attrs) | toCardId attrs == cid = do
+  getModifiersFor (TorrentOfPower attrs) = do
     mSkillTest <- getSkillTest
     case mSkillTest of
       Just _ -> do
         let n = maybe 0 chargesSpent (skillAdditionalPayment attrs)
-        toModifiers attrs [AddSkillIcons $ cycleN n [#willpower, #wild]]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        modified_ attrs attrs.cardId [AddSkillIcons $ cycleN n [#willpower, #wild]]
+      _ -> pure mempty
 
 instance RunMessage TorrentOfPower where
   runMessage msg (TorrentOfPower attrs) = TorrentOfPower <$> runMessage msg attrs

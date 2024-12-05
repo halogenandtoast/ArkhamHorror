@@ -15,9 +15,7 @@ boxingGloves3 :: AssetCard BoxingGloves3
 boxingGloves3 = asset BoxingGloves3 Cards.boxingGloves3
 
 instance HasModifiersFor BoxingGloves3 where
-  getModifiersFor (InvestigatorTarget iid) (BoxingGloves3 a) =
-    toModifiers a [ActionSkillModifier #fight #combat 2 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BoxingGloves3 a) = controllerGets a [ActionSkillModifier #fight #combat 2]
 
 instance HasAbilities BoxingGloves3 where
   getAbilities (BoxingGloves3 a) =

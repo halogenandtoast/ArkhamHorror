@@ -15,17 +15,14 @@ donLagorio :: EnemyCard DonLagorio
 donLagorio = enemy DonLagorio Cards.donLagorio (4, Static 4, 3) (2, 0)
 
 instance HasModifiersFor DonLagorio where
-  getModifiersFor (EnemyTarget eid) (DonLagorio attrs) | eid == toId attrs = do
-    field EnemyLocation eid >>= \case
-      Nothing -> pure []
+  getModifiersFor (DonLagorio attrs) = do
+    field EnemyLocation attrs.id >>= \case
+      Nothing -> pure mempty
       Just loc -> do
         mCounterClockwiseLocationId <- getCounterClockwiseLocation loc
-        toModifiers attrs $ case mCounterClockwiseLocationId of
+        modifySelf attrs $ case mCounterClockwiseLocationId of
           Nothing -> []
-          Just counterClockwiseLocationId ->
-            [ HunterConnectedTo counterClockwiseLocationId
-            ]
-  getModifiersFor _ _ = pure []
+          Just counterClockwiseLocationId -> [HunterConnectedTo counterClockwiseLocationId]
 
 instance RunMessage DonLagorio where
   runMessage msg (DonLagorio attrs) = DonLagorio <$> runMessage msg attrs

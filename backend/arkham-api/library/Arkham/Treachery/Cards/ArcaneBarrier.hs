@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.ArcaneBarrier (ArcaneBarrier (..), arcaneBarrier) 
 import Arkham.Cost
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (movementModifier)
@@ -15,13 +16,15 @@ arcaneBarrier :: TreacheryCard ArcaneBarrier
 arcaneBarrier = treachery ArcaneBarrier Cards.arcaneBarrier
 
 instance HasModifiersFor ArcaneBarrier where
-  getModifiersFor target (ArcaneBarrier attrs) | treacheryOn attrs target = do
-    toModifiers
-      attrs
-      [ AdditionalCostToLeave $ SkillTestCost (toSource attrs) #willpower (Fixed 4)
-      , AdditionalCostToEnter $ SkillTestCost (toSource attrs) #willpower (Fixed 4)
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArcaneBarrier attrs) = case attrs.placement of
+    AttachedToLocation lid ->
+      modified_
+        attrs
+        lid
+        [ AdditionalCostToLeave $ SkillTestCost (toSource attrs) #willpower (Fixed 4)
+        , AdditionalCostToEnter $ SkillTestCost (toSource attrs) #willpower (Fixed 4)
+        ]
+    _ -> pure mempty
 
 instance RunMessage ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = runQueueT $ case msg of

@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (getDamageOrHorrorSource)
@@ -16,20 +15,24 @@ newtype HuntersArmor = HuntersArmor AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor HuntersArmor where
-  getModifiersFor target (HuntersArmor a) | isTarget a target = do
-    modified a
-      $ (guard (a `hasCustomization` Enchanted) *> [DoNotTakeUpSlot #body, AdditionalSlot #arcane])
-      <> (guard (a `hasCustomization` Durable) $> HealthModifier 2)
-      <> (guard (a `hasCustomization` Hallowed) $> SanityModifier 2)
-      <> ( guard (a `hasCustomization` Lightweight)
-            *> [ReduceCostOf (CardWithId a.cardId) 1, ActionDoesNotCauseAttacksOfOpportunity #play]
-         )
-  getModifiersFor (InvestigatorTarget iid) (HuntersArmor a) | not (controlledBy a iid) = do
-    sameLocation <- onSameLocation iid a.placement
-    modified a
-      $ guard (a `hasCustomization` ProtectiveRunes && sameLocation)
-      *> [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HuntersArmor a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      self <-
+        modifySelf a
+          $ (guard (a `hasCustomization` Enchanted) *> [DoNotTakeUpSlot #body, AdditionalSlot #arcane])
+          <> (guard (a `hasCustomization` Durable) $> HealthModifier 2)
+          <> (guard (a `hasCustomization` Hallowed) $> SanityModifier 2)
+          <> ( guard (a `hasCustomization` Lightweight)
+                *> [ReduceCostOf (CardWithId a.cardId) 1, ActionDoesNotCauseAttacksOfOpportunity #play]
+             )
+      other <-
+        modifySelectWhen
+          a
+          (a `hasCustomization` ProtectiveRunes)
+          (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+          [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
+      pure $ self <> other
 
 huntersArmor :: AssetCard HuntersArmor
 huntersArmor = assetWith HuntersArmor Cards.huntersArmor $ (healthL ?~ 2) . (sanityL ?~ 2)

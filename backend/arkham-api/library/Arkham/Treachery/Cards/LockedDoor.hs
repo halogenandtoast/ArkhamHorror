@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
@@ -16,9 +17,9 @@ lockedDoor :: TreacheryCard LockedDoor
 lockedDoor = treachery LockedDoor Cards.lockedDoor
 
 instance HasModifiersFor LockedDoor where
-  getModifiersFor (LocationTarget lid) (LockedDoor attrs) =
-    modified attrs [CannotInvestigate | treacheryOnLocation lid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LockedDoor attrs) = case attrs.placement of
+    AttachedToLocation lid -> modified_ attrs lid [CannotInvestigate]
+    _ -> pure mempty
 
 instance HasAbilities LockedDoor where
   getAbilities (LockedDoor a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.AgentFletcher (agentFletcher, AgentFletcher (..)) wher
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.Helpers.SkillTest (isEvading)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
@@ -12,11 +12,10 @@ newtype AgentFletcher = AgentFletcher EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor AgentFletcher where
-  getModifiersFor (InvestigatorTarget iid) (AgentFletcher a) = maybeModified a do
-    guardM $ iid <=~> investigatorIs Investigators.kymaniJones
-    guardM $ isEvading a
-    pure [SetSkillValue #intellect 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AgentFletcher a) =
+    modifySelectMaybe a (investigatorIs Investigators.kymaniJones) \_ -> do
+      guardM $ isEvading a
+      pure [SetSkillValue #intellect 0]
 
 agentFletcher :: EnemyCard AgentFletcher
 agentFletcher =

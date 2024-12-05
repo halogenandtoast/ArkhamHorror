@@ -7,18 +7,15 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Yaztaroth = Yaztaroth TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yaztaroth :: TreacheryCard Yaztaroth
 yaztaroth = treachery Yaztaroth Cards.yaztaroth
 
 instance HasModifiersFor Yaztaroth where
-  getModifiersFor (InvestigatorTarget iid) (Yaztaroth attrs) =
-    toModifiers attrs $ do
-      guard $ treacheryInThreatArea iid attrs
-      [CannotPlay AssetCard, CannotPutIntoPlay AssetCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Yaztaroth attrs) =
+    inThreatAreaGets attrs [CannotPlay AssetCard, CannotPutIntoPlay AssetCard]
 
 instance HasAbilities Yaztaroth where
   getAbilities (Yaztaroth a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

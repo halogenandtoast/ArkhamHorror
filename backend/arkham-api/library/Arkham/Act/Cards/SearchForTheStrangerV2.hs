@@ -18,12 +18,12 @@ searchForTheStrangerV2 =
   act (2, A) SearchForTheStrangerV2 Cards.searchForTheStrangerV2 Nothing
 
 instance HasModifiersFor SearchForTheStrangerV2 where
-  getModifiersFor (EnemyTarget eid) (SearchForTheStrangerV2 a) = do
-    isTheManInThePallidMask <- eid `isMatch` enemyIs Enemies.theManInThePallidMask
-    toModifiers a [CanOnlyBeDefeatedBy (SourceIs $ EnemySource eid) | isTheManInThePallidMask]
-  getModifiersFor (InvestigatorTarget _) (SearchForTheStrangerV2 a) =
-    toModifiers a [CannotDiscoverClues]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SearchForTheStrangerV2 a) = do
+    theMan <-
+      modifySelectMap a (enemyIs Enemies.theManInThePallidMask) \eid ->
+        [CanOnlyBeDefeatedBy (SourceIs $ EnemySource eid)]
+    investigators <- modifySelect a Anyone [CannotDiscoverClues]
+    pure $ theMan <> investigators
 
 instance HasAbilities SearchForTheStrangerV2 where
   getAbilities (SearchForTheStrangerV2 x) =

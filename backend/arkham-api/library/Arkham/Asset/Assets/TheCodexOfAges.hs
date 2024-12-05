@@ -1,16 +1,11 @@
-module Arkham.Asset.Assets.TheCodexOfAges (
-  theCodexOfAges,
-  TheCodexOfAges (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheCodexOfAges (theCodexOfAges, TheCodexOfAges (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
-import Arkham.SkillType
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Window qualified as Window
 
@@ -22,9 +17,9 @@ theCodexOfAges :: AssetCard TheCodexOfAges
 theCodexOfAges = asset TheCodexOfAges Cards.theCodexOfAges
 
 instance HasModifiersFor TheCodexOfAges where
-  getModifiersFor (InvestigatorTarget iid) (TheCodexOfAges a) | controlledBy a iid = do
-    toModifiers a [SkillModifier SkillWillpower 1 | notNull (assetSealedChaosTokens a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheCodexOfAges a) = case a.controller of
+    Just iid | notNull (assetSealedChaosTokens a) -> modified_ a iid [SkillModifier #willpower 1]
+    _ -> pure mempty
 
 instance HasAbilities TheCodexOfAges where
   getAbilities (TheCodexOfAges a) =

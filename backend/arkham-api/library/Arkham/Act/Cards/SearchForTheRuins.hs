@@ -2,7 +2,7 @@ module Arkham.Act.Cards.SearchForTheRuins (SearchForTheRuins (..), searchForTheR
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -19,13 +19,10 @@ searchForTheRuins =
     (Just $ GroupClueCost (PerPlayer 3) "Ruins of Eztli")
 
 instance HasModifiersFor SearchForTheRuins where
-  getModifiersFor (EnemyTarget eid) (SearchForTheRuins a) = maybeModified a do
-    liftGuardM $ eid <=~> EnemyWithTitle "Eztli Guardian"
-    pure [CannotAttack, CannotBeAttacked]
-  getModifiersFor (TreacheryTarget tid) (SearchForTheRuins a) = maybeModified a do
-    liftGuardM $ tid <=~> treacheryIs Treacheries.arrowsFromTheTrees
-    pure [IgnoreRevelation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SearchForTheRuins a) = do
+    guardian <- modifySelect a (EnemyWithTitle "Eztli Guardian") [CannotAttack, CannotBeAttacked]
+    arrows <- modifySelect a (treacheryIs Treacheries.arrowsFromTheTrees) [IgnoreRevelation]
+    pure $ guardian <> arrows
 
 instance RunMessage SearchForTheRuins where
   runMessage msg a@(SearchForTheRuins attrs) = runQueueT $ case msg of

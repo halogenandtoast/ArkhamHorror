@@ -33,11 +33,10 @@ fieldworkEffect :: EffectArgs -> FieldworkEffect
 fieldworkEffect = cardEffectWith FieldworkEffect Cards.fieldwork (setEffectMeta @Bool False)
 
 instance HasModifiersFor FieldworkEffect where
-  getModifiersFor target (FieldworkEffect a) | a.target == target = do
-    mSkillTestSource <- getSkillTestSource
-    let meta = toResult @Bool a.extra
-    toModifiers a [AnySkillValue 2 | isJust mSkillTestSource && meta]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FieldworkEffect a) = maybeModified_ a a.target do
+    _ <- MaybeT getSkillTestSource
+    guard $ toResult @Bool a.extra
+    pure [AnySkillValue 2]
 
 instance RunMessage FieldworkEffect where
   runMessage msg e@(FieldworkEffect attrs) = case msg of

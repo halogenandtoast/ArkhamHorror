@@ -22,16 +22,14 @@ pathsIntoTwilight =
     (Just $ GroupClueCost (PerPlayer 3) Anywhere)
 
 instance HasModifiersFor PathsIntoTwilight where
-  getModifiersFor (LocationTarget lid) (PathsIntoTwilight a) = do
-    mInFrontOf <- field LocationInFrontOf lid
-    toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid)
-        $ NotLocation (LocationWithId lid)
-        <> LocationIsInFrontOf (InvestigatorWithId iid)
-      | iid <- maybeToList mInFrontOf
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PathsIntoTwilight a) = do
+    modifySelectMaybe a (LocationIsInFrontOf Anyone) $ \lid -> do
+      iid <- MaybeT $ field LocationInFrontOf lid
+      pure
+        [ ConnectedToWhen (LocationWithId lid)
+            $ not_ (LocationWithId lid)
+            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        ]
 
 instance RunMessage PathsIntoTwilight where
   runMessage msg a@(PathsIntoTwilight attrs) = case msg of

@@ -1,20 +1,14 @@
-module Arkham.Location.Cards.ParlorCar (
-  parlorCar,
-  ParlorCar (..),
-) where
+module Arkham.Location.Cards.ParlorCar (parlorCar, ParlorCar (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (parlorCar)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Prelude
-import Arkham.Projection
 
 newtype ParlorCar = ParlorCar LocationAttrs
   deriving anyclass IsLocation
@@ -22,36 +16,27 @@ newtype ParlorCar = ParlorCar LocationAttrs
 
 parlorCar :: LocationCard ParlorCar
 parlorCar =
-  locationWith
-    ParlorCar
-    Cards.parlorCar
-    3
-    (PerPlayer 1)
-    (connectsToL .~ setFromList [LeftOf, RightOf])
+  locationWith ParlorCar Cards.parlorCar 3 (PerPlayer 1)
+    $ connectsToL
+    .~ setFromList [LeftOf, RightOf]
 
 instance HasModifiersFor ParlorCar where
-  getModifiersFor target (ParlorCar l@LocationAttrs {..}) | isTarget l target =
-    case lookup LeftOf locationDirections of
-      Just leftLocation -> do
-        clueCount <- sum <$> traverse (field LocationClues) leftLocation
-        toModifiers l $ CannotInvestigate : [Blocked | not locationRevealed && clueCount > 0]
-      Nothing -> toModifiers l [CannotInvestigate]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ParlorCar l) = do
+    blocked <- selectAny $ leftOf l <> LocationWithAnyClues
+    modifySelf l $ CannotInvestigate : [Blocked | l.unrevealed && blocked]
 
 instance HasAbilities ParlorCar where
   getAbilities (ParlorCar attrs) =
-    extendRevealed
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> CluesOnThis (atLeast 1) <> youExist (InvestigatorCanDiscoverCluesAt YourLocation))
-          $ actionAbilityWithCost (ResourceCost 3)
-      ]
+    extendRevealed1 attrs
+      $ restricted
+        attrs
+        1
+        (Here <> CluesOnThis (atLeast 1) <> youExist (InvestigatorCanDiscoverCluesAt YourLocation))
+      $ actionAbilityWithCost (ResourceCost 3)
 
 instance RunMessage ParlorCar where
-  runMessage msg l@(ParlorCar attrs) = case msg of
+  runMessage msg l@(ParlorCar attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ Msg.DiscoverClues iid $ discover attrs (attrs.ability 1) 1
       pure l
-    _ -> ParlorCar <$> runMessage msg attrs
+    _ -> ParlorCar <$> liftRunMessage msg attrs

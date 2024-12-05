@@ -5,6 +5,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -18,9 +19,9 @@ insatiableBloodlust :: TreacheryCard InsatiableBloodlust
 insatiableBloodlust = treachery InsatiableBloodlust Cards.insatiableBloodlust
 
 instance HasModifiersFor InsatiableBloodlust where
-  getModifiersFor (EnemyTarget eid) (InsatiableBloodlust attrs) | treacheryOnEnemy eid attrs = do
-    toModifiers attrs [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InsatiableBloodlust attrs) = case attrs.placement of
+    AttachedToEnemy eid -> modified_ attrs eid [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
+    _ -> pure mempty
 
 instance HasAbilities InsatiableBloodlust where
   getAbilities (InsatiableBloodlust x) =

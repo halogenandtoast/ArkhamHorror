@@ -23,9 +23,7 @@ instance HasAbilities Grounded1 where
     ]
 
 instance HasModifiersFor Grounded1 where
-  getModifiersFor (AssetTarget aid) (Grounded1 attrs) | toId attrs == aid = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Grounded1 attrs) = modifySelf attrs [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage Grounded1 where
   runMessage msg a@(Grounded1 attrs) = case msg of

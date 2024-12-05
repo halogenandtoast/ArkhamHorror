@@ -22,15 +22,15 @@ defensiveStance1 :: SkillCard DefensiveStance1
 defensiveStance1 = skill DefensiveStance1 Cards.defensiveStance1
 
 instance HasModifiersFor DefensiveStance1 where
-  getModifiersFor (CardIdTarget cid) (DefensiveStance1 a) | toCardId a == cid = do
+  getModifiersFor (DefensiveStance1 a) = do
     agility <- field InvestigatorAgility (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
-  getModifiersFor target (DefensiveStance1 a) | a `is` target = do
-    agility <- field InvestigatorAgility (skillOwner a)
-    combat <- field InvestigatorCombat (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
-  getModifiersFor _ _ = pure []
+    (<>)
+      <$> modified_
+        a
+        (CardIdTarget $ toCardId a)
+        [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
+      <*> modifySelf a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
 
 instance RunMessage DefensiveStance1 where
   runMessage msg (DefensiveStance1 attrs) = DefensiveStance1 <$> runMessage msg attrs

@@ -26,13 +26,12 @@ instance HasAbilities Lure2 where
     [restrictedAbility attrs 1 ControlsThis $ ForcedAbility $ RoundEnds Timing.When]
 
 instance HasModifiersFor Lure2 where
-  getModifiersFor (EnemyTarget _) (Lure2 attrs) =
+  getModifiersFor (Lure2 attrs) =
     case eventAttachedTarget attrs of
       Just target@(LocationTarget _) ->
-        toModifiers attrs [DuringEnemyPhaseMustMoveToward target]
-      Just _ -> pure []
-      Nothing -> pure []
-  getModifiersFor _ _ = pure []
+        modifySelect attrs AnyEnemy [DuringEnemyPhaseMustMoveToward target]
+      Just _ -> pure mempty
+      Nothing -> pure mempty
 
 instance RunMessage Lure2 where
   runMessage msg e@(Lure2 attrs) = case msg of

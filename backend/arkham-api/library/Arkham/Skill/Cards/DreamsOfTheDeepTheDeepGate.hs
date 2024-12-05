@@ -18,9 +18,8 @@ newtype DreamsOfTheDeepTheDeepGate = DreamsOfTheDeepTheDeepGate SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor DreamsOfTheDeepTheDeepGate where
-  getModifiersFor target (DreamsOfTheDeepTheDeepGate attrs) | attrs `is` target = do
-    toModifiers attrs [IfFailureModifier ReturnToHandAfterTest]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamsOfTheDeepTheDeepGate attrs) = do
+    modifySelf attrs [IfFailureModifier ReturnToHandAfterTest]
 
 dreamsOfTheDeepTheDeepGate :: SkillCard DreamsOfTheDeepTheDeepGate
 dreamsOfTheDeepTheDeepGate =

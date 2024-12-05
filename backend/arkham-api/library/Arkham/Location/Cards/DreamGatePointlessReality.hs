@@ -19,21 +19,19 @@ import Arkham.Movement
 import Arkham.Projection
 
 newtype DreamGatePointlessReality = DreamGatePointlessReality LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamGatePointlessReality :: LocationCard DreamGatePointlessReality
 dreamGatePointlessReality = location DreamGatePointlessReality Cards.dreamGatePointlessReality 6 (Static 0)
 
 instance HasModifiersFor DreamGatePointlessReality where
-  getModifiersFor target (DreamGatePointlessReality a) | a `is` target = do
-    toModifiers a [CannotBeEnteredBy AnyEnemy]
-  getModifiersFor (InvestigatorTarget iid) (DreamGatePointlessReality a) = do
-    notLuke <- iid <!=~> investigatorIs Investigators.lukeRobinson
-    toModifiers a [CannotEnter (toId a) | notLuke]
-  getModifiersFor (EnemyTarget _) (DreamGatePointlessReality a) = do
-    toModifiers a [CannotSpawnIn (be a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamGatePointlessReality a) = do
+    self <- modifySelf a [CannotBeEnteredBy AnyEnemy]
+    investigators <-
+      modifySelect a (not_ $ investigatorIs Investigators.lukeRobinson) [CannotEnter (toId a)]
+    enemies <- modifySelect a AnyEnemy [CannotSpawnIn (be a)]
+    pure $ self <> investigators <> enemies
 
 instance HasAbilities DreamGatePointlessReality where
   getAbilities (DreamGatePointlessReality attrs) =

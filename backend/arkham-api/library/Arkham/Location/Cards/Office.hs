@@ -17,17 +17,14 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype Office = Office LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 office :: LocationCard Office
 office = location Office Cards.office 4 (PerPlayer 1)
 
 instance HasModifiersFor Office where
-  getModifiersFor (EnemyTarget eid) (Office a) = do
-    atOffice <- eid <=~> enemyAt (toId a)
-    toModifiers a [RemoveKeyword Keyword.Aloof | atOffice]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Office a) = modifySelect a (enemyAt (toId a)) [RemoveKeyword Keyword.Aloof]
 
 instance HasAbilities Office where
   getAbilities (Office a) =

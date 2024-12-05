@@ -5,11 +5,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Fight
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEach)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Projection
 
 newtype TwilightBlade = TwilightBlade AssetAttrs
@@ -20,20 +19,13 @@ twilightBlade :: AssetCard TwilightBlade
 twilightBlade = asset TwilightBlade Cards.twilightBlade
 
 instance HasModifiersFor TwilightBlade where
-  getModifiersFor (CardIdTarget cid) (TwilightBlade a) = case assetPlacement a of
-    InPlayArea iid -> do
-      underDiana <- field InvestigatorCardsUnderneath iid
-      case find ((== cid) . toCardId) underDiana of
-        Just card -> do
-          let isAffected = card `cardMatch` CardWithOneOf [CardWithType EventType, CardWithType SkillType]
-          toModifiers a [AdditionalCost (ExhaustCost $ toTarget a) | isAffected]
-        _ -> pure []
-    _ -> pure []
-  getModifiersFor (InvestigatorTarget iid) (TwilightBlade a) | a `controlledBy` iid = do
-    underDiana <- field InvestigatorCardsUnderneath iid
-    let eventsAndSkills = filter (`cardMatch` (CardWithOneOf [CardWithType EventType, CardWithType SkillType])) underDiana
-    toModifiers a $ map AsIfInHand eventsAndSkills
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TwilightBlade a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      underDiana <- filterCards (CardWithOneOf [#event, #skill]) <$> field InvestigatorCardsUnderneath iid
+      cards <- modifyEach a underDiana [AdditionalCost (ExhaustCost $ toTarget a)]
+      controller <- modified_ a iid $ map AsIfInHand underDiana
+      pure $ cards <> controller
 
 instance HasAbilities TwilightBlade where
   getAbilities (TwilightBlade a) = [restricted a 1 ControlsThis fightAction_]

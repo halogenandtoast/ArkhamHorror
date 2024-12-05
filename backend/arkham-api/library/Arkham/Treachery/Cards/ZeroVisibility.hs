@@ -2,8 +2,9 @@ module Arkham.Treachery.Cards.ZeroVisibility (zeroVisibility, ZeroVisibility (..
 
 import Arkham.Ability
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -15,12 +16,12 @@ zeroVisibility :: TreacheryCard ZeroVisibility
 zeroVisibility = treachery ZeroVisibility Cards.zeroVisibility
 
 instance HasModifiersFor ZeroVisibility where
-  getModifiersFor (InvestigatorTarget iid) (ZeroVisibility a) = maybeModified a do
-    guard $ treacheryInThreatArea iid a
-    lid <- MaybeT $ getMaybeLocation iid
-    liftGuardM $ lid <=~> LocationWithTreachery AnyTreachery
-    pure [AdditionalCostToEnterMatching Anywhere $ ActionCost 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ZeroVisibility a) = case a.placement of
+    InThreatArea iid -> maybeModified_ a iid do
+      lid <- MaybeT $ getMaybeLocation iid
+      liftGuardM $ lid <=~> LocationWithTreachery AnyTreachery
+      pure [AdditionalCostToEnterMatching Anywhere $ ActionCost 1]
+    _ -> pure mempty
 
 instance HasAbilities ZeroVisibility where
   getAbilities (ZeroVisibility a) =

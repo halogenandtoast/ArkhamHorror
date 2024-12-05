@@ -17,15 +17,15 @@ occultTheory1 :: SkillCard OccultTheory1
 occultTheory1 = skill OccultTheory1 Cards.occultTheory1
 
 instance HasModifiersFor OccultTheory1 where
-  getModifiersFor (CardIdTarget cid) (OccultTheory1 a) | toCardId a == cid = do
+  getModifiersFor (OccultTheory1 a) = do
     willpower <- field InvestigatorWillpower a.owner
     intellect <- field InvestigatorIntellect a.owner
-    toModifiers a [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
-  getModifiersFor target (OccultTheory1 a) | a `is` target = do
-    willpower <- field InvestigatorWillpower a.owner
-    intellect <- field InvestigatorIntellect a.owner
-    toModifiers a [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
-  getModifiersFor _ _ = pure []
+    (<>)
+      <$> modified_
+        a
+        (toCardId a)
+        [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
+      <*> modifySelf a [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
 
 instance RunMessage OccultTheory1 where
   runMessage msg (OccultTheory1 attrs) = OccultTheory1 <$> runMessage msg attrs

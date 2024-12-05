@@ -4,8 +4,9 @@ import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Projection
 
 newtype MysteriousStairs_184 = MysteriousStairs_184 LocationAttrs
@@ -19,12 +20,11 @@ mysteriousStairs_184 =
     .~ setFromList [Above, Below]
 
 instance HasModifiersFor MysteriousStairs_184 where
-  getModifiersFor (InvestigatorTarget iid) (MysteriousStairs_184 a) = maybeModified a do
-    liftGuardM $ iid `isAt` a
-    liftGuardM $ fieldSome LocationClues a.id
-    pure [CannotTakeAction #move, CannotTakeAction #resign]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MysteriousStairs_184 a) = whenRevealed a do
+    hasClues <- fieldSome LocationClues a.id
+    if hasClues
+      then modifySelect a (investigatorAt a) [CannotTakeAction #move, CannotTakeAction #resign]
+      else pure mempty
 
 instance RunMessage MysteriousStairs_184 where
-  runMessage msg (MysteriousStairs_184 attrs) =
-    MysteriousStairs_184 <$> runMessage msg attrs
+  runMessage msg (MysteriousStairs_184 attrs) = MysteriousStairs_184 <$> runMessage msg attrs

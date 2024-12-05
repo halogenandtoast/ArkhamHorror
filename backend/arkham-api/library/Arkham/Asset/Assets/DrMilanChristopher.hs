@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.DrMilanChristopher where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Taboo.Types
 
 newtype DrMilanChristopher = DrMilanChristopher AssetAttrs
@@ -15,9 +15,7 @@ drMilanChristopher :: AssetCard DrMilanChristopher
 drMilanChristopher = ally DrMilanChristopher Cards.drMilanChristopher (1, 2)
 
 instance HasModifiersFor DrMilanChristopher where
-  getModifiersFor (InvestigatorTarget iid) (DrMilanChristopher a) = do
-    modified a [SkillModifier #intellect 1 | a `controlledBy` iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DrMilanChristopher a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities DrMilanChristopher where
   getAbilities (DrMilanChristopher x) =

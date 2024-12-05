@@ -10,7 +10,7 @@ import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Matcher
 import Arkham.Phase
 
@@ -41,10 +41,9 @@ boaConstrictorEffect :: EffectArgs -> BoaConstrictorEffect
 boaConstrictorEffect = cardEffect BoaConstrictorEffect Cards.boaConstrictor
 
 instance HasModifiersFor BoaConstrictorEffect where
-  getModifiersFor target (BoaConstrictorEffect a) | a.target == target = do
+  getModifiersFor (BoaConstrictorEffect a) = do
     phase <- getPhase
-    modified a [ControlledAssetsCannotReady | phase == UpkeepPhase]
-  getModifiersFor _ _ = pure []
+    modifiedWhen_ a (phase == UpkeepPhase) a.target [ControlledAssetsCannotReady]
 
 instance RunMessage BoaConstrictorEffect where
   runMessage msg e@(BoaConstrictorEffect attrs) = runQueueT $ case msg of

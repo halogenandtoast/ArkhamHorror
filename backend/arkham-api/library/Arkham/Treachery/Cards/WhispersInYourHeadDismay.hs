@@ -8,6 +8,7 @@ import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -21,9 +22,9 @@ whispersInYourHeadDismay :: TreacheryCard WhispersInYourHeadDismay
 whispersInYourHeadDismay = treachery WhispersInYourHeadDismay Cards.whispersInYourHeadDismay
 
 instance HasModifiersFor WhispersInYourHeadDismay where
-  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDismay a) =
-    toModifiers a [CannotCommitCards $ CardWithType SkillType | treacheryInHandOf a == Just iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhispersInYourHeadDismay a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotCommitCards $ CardWithType SkillType]
+    _ -> pure mempty
 
 instance HasAbilities WhispersInYourHeadDismay where
   getAbilities (WhispersInYourHeadDismay a) =

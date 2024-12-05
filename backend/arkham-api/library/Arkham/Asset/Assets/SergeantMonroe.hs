@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.SergeantMonroe (
-  sergeantMonroe,
-  SergeantMonroe (..),
-)
-where
+module Arkham.Asset.Assets.SergeantMonroe (sergeantMonroe, SergeantMonroe (..)) where
 
 import Arkham.Prelude
 
@@ -10,9 +6,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Trait (Trait (Innocent))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -25,13 +19,13 @@ sergeantMonroe :: AssetCard SergeantMonroe
 sergeantMonroe = ally SergeantMonroe Cards.sergeantMonroe (3, 3)
 
 instance HasModifiersFor SergeantMonroe where
-  getModifiersFor (InvestigatorTarget iid) (SergeantMonroe a) | not (controlledBy a iid) = do
-    locationId <- field InvestigatorLocation iid
-    assetLocationId <- field AssetLocation (toId a)
-    toModifiers a
-      $ guard (locationId == assetLocationId && isJust locationId)
-      *> [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SergeantMonroe a) = case a.controller of
+    Just controller ->
+      modifySelect
+        a
+        (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a))
+        [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
+    _ -> pure mempty
 
 instance HasAbilities SergeantMonroe where
   getAbilities (SergeantMonroe attrs) =

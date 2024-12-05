@@ -6,7 +6,6 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -18,13 +17,9 @@ abigailForeman4 :: AssetCard AbigailForeman4
 abigailForeman4 = ally AbigailForeman4 Cards.abigailForeman4 (1, 2)
 
 instance HasModifiersFor AbigailForeman4 where
-  getModifiersFor (AssetTarget aid) (AbigailForeman4 a) = maybeModified a do
-    guard $ aid /= a.id
-    iid <- MaybeT $ field AssetController a.id
-    AttachedToAsset aid' _ <- lift $ field AssetPlacement aid
-    guard $ aid' == a.id
-    pure [AsIfUnderControlOf iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AbigailForeman4 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid]
 
 instance HasAbilities AbigailForeman4 where
   getAbilities (AbigailForeman4 a) =

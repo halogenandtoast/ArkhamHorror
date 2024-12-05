@@ -18,9 +18,7 @@ falconPointCliffside :: LocationCard FalconPointCliffside
 falconPointCliffside = location FalconPointCliffside Cards.falconPointCliffside 1 (PerPlayer 1)
 
 instance HasModifiersFor FalconPointCliffside where
-  getModifiersFor target (FalconPointCliffside attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FalconPointCliffside attrs) = modifySelf attrs [CannotBeFullyFlooded]
 
 instance HasAbilities FalconPointCliffside where
   getAbilities (FalconPointCliffside attrs) =

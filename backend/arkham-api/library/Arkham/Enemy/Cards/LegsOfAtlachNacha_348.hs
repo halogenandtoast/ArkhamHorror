@@ -3,12 +3,12 @@ module Arkham.Enemy.Cards.LegsOfAtlachNacha_348 (legsOfAtlachNacha_348, LegsOfAt
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (ModifierType (..))
 import Arkham.Modifier qualified as Mod
 import Arkham.Projection
 
@@ -17,10 +17,9 @@ newtype LegsOfAtlachNacha_348 = LegsOfAtlachNacha_348 EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LegsOfAtlachNacha_348 where
-  getModifiersFor target (LegsOfAtlachNacha_348 attrs) | attrs `is` target = do
+  getModifiersFor (LegsOfAtlachNacha_348 attrs) = do
     x <- maybe (pure 0) (fieldWithDefault 0 LocationShroud) =<< selectOne (locationWithEnemy attrs)
-    toModifiers attrs [CannotMakeAttacksOfOpportunity, DoNotExhaustEvaded, Mod.EnemyFight x]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [CannotMakeAttacksOfOpportunity, DoNotExhaustEvaded, Mod.EnemyFight x]
 
 legsOfAtlachNacha_348 :: EnemyCard LegsOfAtlachNacha_348
 legsOfAtlachNacha_348 =

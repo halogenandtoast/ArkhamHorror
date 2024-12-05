@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.SkillTest (getSkillTestAction)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype Metadata = Metadata {chosenAbilities :: [DifferentAbility]}
   deriving stock (Show, Eq, Generic)
@@ -60,10 +60,9 @@ grapplingHookEffect :: EffectArgs -> GrapplingHookEffect
 grapplingHookEffect = cardEffect GrapplingHookEffect Cards.grapplingHook
 
 instance HasModifiersFor GrapplingHookEffect where
-  getModifiersFor target (GrapplingHookEffect a) | isTarget a.target target = do
+  getModifiersFor (GrapplingHookEffect a) = do
     valid <- (== Just #investigate) <$> getSkillTestAction
-    modified a [UseSkillInsteadOf #intellect #agility | valid]
-  getModifiersFor _ _ = pure []
+    modifiedWhen_ a valid a.target [UseSkillInsteadOf #intellect #agility]
 
 instance RunMessage GrapplingHookEffect where
   runMessage msg e@(GrapplingHookEffect attrs) = runQueueT $ case msg of

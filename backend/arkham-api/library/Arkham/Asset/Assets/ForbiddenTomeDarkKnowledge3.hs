@@ -14,7 +14,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Matcher
 
 newtype ForbiddenTomeDarkKnowledge3 = ForbiddenTomeDarkKnowledge3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenTomeDarkKnowledge3 :: AssetCard ForbiddenTomeDarkKnowledge3
@@ -22,12 +22,15 @@ forbiddenTomeDarkKnowledge3 =
   asset ForbiddenTomeDarkKnowledge3 Cards.forbiddenTomeDarkKnowledge3
 
 instance HasModifiersFor ForbiddenTomeDarkKnowledge3 where
-  getModifiersFor (AbilityTarget iid ab) (ForbiddenTomeDarkKnowledge3 a)
-    | isSource a (abilitySource ab) && abilityIndex ab == 1 = do
-        handCount <- getHandCount iid
-        let n = handCount `div` 4
-        toModifiers a [ActionCostModifier (-n) | n > 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ForbiddenTomeDarkKnowledge3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      selectOne (AbilityIs (toSource a) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab -> do
+          handCount <- getHandCount iid
+          let n = handCount `div` 4
+          modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
 
 instance HasAbilities ForbiddenTomeDarkKnowledge3 where
   getAbilities (ForbiddenTomeDarkKnowledge3 a) =

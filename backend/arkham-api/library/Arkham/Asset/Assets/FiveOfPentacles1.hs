@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype FiveOfPentacles1 = FiveOfPentacles1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fiveOfPentacles1 :: AssetCard FiveOfPentacles1
 fiveOfPentacles1 = asset FiveOfPentacles1 Cards.fiveOfPentacles1
 
 instance HasModifiersFor FiveOfPentacles1 where
-  getModifiersFor (InvestigatorTarget iid) (FiveOfPentacles1 a) | controlledBy a iid = do
-    toModifiers a [HealthModifier 1, SanityModifier 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FiveOfPentacles1 a) = controllerGets a [HealthModifier 1, SanityModifier 1]
 
 instance HasAbilities FiveOfPentacles1 where
   getAbilities (FiveOfPentacles1 a) =

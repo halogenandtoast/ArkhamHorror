@@ -21,13 +21,11 @@ theThirdOath :: ActCard TheThirdOath
 theThirdOath = act (3, A) TheThirdOath Cards.theThirdOath Nothing
 
 instance HasModifiersFor TheThirdOath where
-  getModifiersFor (EnemyTarget eid) (TheThirdOath a) = maybeModified a do
-    liftGuardM $ eid <=~> EnemyWithTrait Suspect
-    n <- lift $ perPlayer 1
-    pure [HealthModifier n, RemoveKeyword Aloof]
-  getModifiersFor (InvestigatorTarget _) (TheThirdOath a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheThirdOath a) = do
+    n <- perPlayer 1
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [HealthModifier n, RemoveKeyword Aloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities TheThirdOath where
   getAbilities (TheThirdOath x) =

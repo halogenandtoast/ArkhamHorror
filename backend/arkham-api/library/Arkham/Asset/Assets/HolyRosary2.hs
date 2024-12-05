@@ -9,16 +9,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype HolyRosary2 = HolyRosary2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 holyRosary2 :: AssetCard HolyRosary2
 holyRosary2 = assetWith HolyRosary2 Cards.holyRosary2 (sanityL ?~ 2)
 
 instance HasModifiersFor HolyRosary2 where
-  getModifiersFor (InvestigatorTarget iid) (HolyRosary2 a) =
-    toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HolyRosary2 a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities HolyRosary2 where
   getAbilities (HolyRosary2 x) =

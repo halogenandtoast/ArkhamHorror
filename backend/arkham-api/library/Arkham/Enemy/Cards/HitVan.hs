@@ -2,8 +2,8 @@ module Arkham.Enemy.Cards.HitVan (hitVan, HitVan (..)) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype HitVan = HitVan EnemyAttrs
   deriving anyclass IsEnemy
@@ -13,9 +13,8 @@ hitVan :: EnemyCard HitVan
 hitVan = enemyWith HitVan Cards.hitVan (3, Static 5, 3) (1, 1) (spawnAtL ?~ SpawnAt RearmostLocation)
 
 instance HasModifiersFor HitVan where
-  getModifiersFor target (HitVan a) | isTarget a target = do
-    toModifiers a [CannotAttack | enemyMovedFromHunterKeyword a]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HitVan a) =
+    modifySelfWhen a (enemyMovedFromHunterKeyword a) [CannotAttack]
 
 instance RunMessage HitVan where
   runMessage msg (HitVan attrs) = runQueueT $ case msg of

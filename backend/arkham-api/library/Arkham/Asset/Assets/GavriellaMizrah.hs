@@ -14,16 +14,14 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
 newtype GavriellaMizrah = GavriellaMizrah AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gavriellaMizrah :: AssetCard GavriellaMizrah
 gavriellaMizrah = allyWith GavriellaMizrah Cards.gavriellaMizrah (4, 1) (isStoryL .~ True)
 
 instance HasModifiersFor GavriellaMizrah where
-  getModifiersFor (InvestigatorTarget iid) (GavriellaMizrah a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GavriellaMizrah a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =

@@ -10,19 +10,18 @@ import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 import Arkham.Trait (Trait (Cave))
 
 newtype MoonLizard = MoonLizard EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 moonLizard :: EnemyCard MoonLizard
 moonLizard = enemy MoonLizard Cards.moonLizard (0, PerPlayer 4, 0) (2, 2)
 
 instance HasModifiersFor MoonLizard where
-  getModifiersFor target (MoonLizard attrs) | attrs `is` target = do
+  getModifiersFor (MoonLizard attrs) = do
     mInvestigator <- selectOne $ investigatorEngagedWith attrs
     x <- maybe (pure 5) getAlarmLevel mInvestigator
     nonCaves <- select $ not_ (LocationWithTrait Cave)
-    toModifiers attrs $ [Mod.EnemyFight x, Mod.EnemyEvade x] <> map CannotEnter nonCaves
-  getModifiersFor _ _ = pure []
+    modifySelf attrs $ [Mod.EnemyFight x, Mod.EnemyEvade x] <> map CannotEnter nonCaves
 
 instance RunMessage MoonLizard where
   runMessage msg (MoonLizard attrs) =

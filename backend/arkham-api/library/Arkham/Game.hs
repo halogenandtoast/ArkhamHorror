@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -1531,6 +1531,11 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         lmAssets <- select $ AssetAtLocation $ toId l
         pure . notNull $ List.intersect assets lmAssets
+    LocationWithAttachedEvent eventMatcher -> do
+      events <- select eventMatcher
+      flip filterM ls $ \l -> do
+        lmEvents <- select $ EventAttachedTo $ TargetIs $ toTarget l
+        pure . notNull $ List.intersect events lmEvents
     LocationWithInvestigator (InvestigatorWithId iid) -> do
       mLocation <- field InvestigatorLocation iid
       pure $ filter ((`elem` mLocation) . toId) ls
@@ -2680,6 +2685,12 @@ enemyMatcherFilter = \case
       field EventPlacement eid <&> \case
         AttachedToEnemy eid' -> eid' == enemy.id
         _ -> False
+  EnemyWithAttachedAsset assetMatcher -> \enemy -> do
+    assets <- select assetMatcher
+    flip anyM assets \aid ->
+      field AssetPlacement aid <&> \case
+        AttachedToEnemy eid' -> eid' == enemy.id
+        _ -> False
   FarthestEnemyFromAll enemyMatcher -> \enemy -> do
     locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     enemyLocation <- field EnemyLocation (toId $ toAttrs enemy)
@@ -3670,6 +3681,10 @@ instance Query ChaosTokenMatcher where
     go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
       ChaosTokenMatchesOrElse {} -> error "This matcher can not be nested"
+      ChaosTokenRevealedBy iMatcher -> \t -> do
+        case t.revealedBy of
+          Nothing -> pure False
+          Just iid -> iid <=~> iMatcher
       RevealedChaosTokens m -> \t -> do
         mSkillTest <- getSkillTest
         case mSkillTest of
@@ -4067,20 +4082,28 @@ instance HasChaosTokenValue InvestigatorId where
     getChaosTokenValue iid token investigator'
 
 instance HasModifiersFor Entities where
-  getModifiersFor target e =
-    concat
-      <$> sequence
-        [ concatMapM (getModifiersFor target) (e ^. enemiesL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. assetsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. agendasL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. actsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. locationsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. effectsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. eventsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. skillsL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. treacheriesL . to toList)
-        , concatMapM (getModifiersFor target) (e ^. investigatorsL . to toList)
-        ]
+  getModifiersFor e = do
+    enemiesMods <- foldMapM getModifiersFor (e ^. enemiesL . to toList)
+    assetsMods <- foldMapM getModifiersFor (e ^. assetsL . to toList)
+    agendasMods <- foldMapM getModifiersFor (e ^. agendasL . to toList)
+    actsMods <- foldMapM getModifiersFor (e ^. actsL . to toList)
+    locationsMods <- foldMapM getModifiersFor (e ^. locationsL . to toList)
+    effectsMods <- foldMapM getModifiersFor (e ^. effectsL . to toList)
+    eventsMods <- foldMapM getModifiersFor (e ^. eventsL . to toList)
+    skillsMods <- foldMapM getModifiersFor (e ^. skillsL . to toList)
+    treacheriesMods <- foldMapM getModifiersFor (e ^. treacheriesL . to toList)
+    investigatorsMods <- foldMapM getModifiersFor (e ^. investigatorsL . to toList)
+    pure
+      $ enemiesMods
+      <> assetsMods
+      <> agendasMods
+      <> actsMods
+      <> locationsMods
+      <> effectsMods
+      <> eventsMods
+      <> skillsMods
+      <> treacheriesMods
+      <> investigatorsMods
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location
@@ -4766,36 +4789,19 @@ preloadModifiers g = case gameMode g of
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <-
-      getMonoidalMap
-        <$> foldMapM
-          ( `toTargetModifiers`
-              ( entities
-                  <> inHandEntities
-                  <> inDiscardEntities
-                  <> maybeToList (SomeEntity <$> modeScenario (gameMode g))
-                  <> maybeToList (SomeEntity <$> modeCampaign (gameMode g))
-              )
-          )
-          ( [SkillTestTarget st.id | st <- maybeToList $ gameSkillTest g]
-              <> map ChaosTokenTarget tokens
-              <> map ChaosTokenFaceTarget [minBound .. maxBound]
-              <> map toTarget entities
-              <> map CardIdTarget (keys $ gameCards g)
-              <> map (InvestigatorHandTarget . toId) (toList $ entitiesInvestigators $ gameEntities g)
-              <> map (AbilityTarget (gameActiveInvestigatorId g)) (getAbilities g)
-              <> map ActiveCostTarget (keys $ gameActiveCost g)
-              <> map PhaseTarget [minBound ..]
-          )
+      foldMapM
+        getModifiersFor
+        ( entities
+            <> inHandEntities
+            <> inDiscardEntities
+            <> maybeToList (SomeEntity <$> modeScenario (gameMode g))
+            <> maybeToList (SomeEntity <$> modeCampaign (gameMode g))
+        )
     pure $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
  where
   entities = overEntities (: []) (gameEntities g)
   inHandEntities = concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
   inDiscardEntities = concatMap (overEntities (: [])) (toList $ gameInDiscardEntities g)
-  tokens =
-    nub
-      $ maybe [] allSkillTestChaosTokens (gameSkillTest g)
-      <> maybe [] (allChaosBagChaosTokens . attr scenarioChaosBag) (modeScenario $ gameMode g)
-  toTargetModifiers target = foldMapM (fmap (MonoidalMap.singleton target) . getModifiersFor target)
 
 handleTraitRestrictedModifiers :: Monad m => Game -> m Game
 handleTraitRestrictedModifiers g = do

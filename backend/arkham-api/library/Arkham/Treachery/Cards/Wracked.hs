@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted hiding (beginSkillTest)
 import Arkham.History
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
@@ -19,18 +20,24 @@ wracked :: TreacheryCard Wracked
 wracked = treachery Wracked Cards.wracked
 
 instance HasModifiersFor Wracked where
-  getModifiersFor (InvestigatorTarget iid) (Wracked attrs) = maybeModified attrs do
-    guardInThreatArea iid attrs
-    isSkillTestInvestigator iid
-    liftGuardM $ null . historySkillTestsPerformed <$> getHistory RoundHistory iid
-    pure [AnySkillValue (-1)]
-  getModifiersFor (SkillTestTarget _) (Wracked attrs) = maybeModified attrs do
-    isSkillTestSource attrs
-    investigator <- MaybeT getSkillTestInvestigator
-    guardInThreatArea investigator attrs
-    liftGuardM $ selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith investigator
-    pure [SkillTestAutomaticallySucceeds]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Wracked a) = do
+    investigator <- case a.placement of
+      InThreatArea iid -> maybeModified_ a iid do
+        isSkillTestInvestigator iid
+        liftGuardM $ null . historySkillTestsPerformed <$> getHistory RoundHistory iid
+        pure [AnySkillValue (-1)]
+      _ -> pure mempty
+
+    skillTest <-
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          isSkillTestSource a
+          guardInThreatArea st.investigator a
+          liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith st.investigator
+          pure [SkillTestAutomaticallySucceeds]
+
+    pure $ investigator <> skillTest
 
 instance HasAbilities Wracked where
   getAbilities (Wracked a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

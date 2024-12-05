@@ -18,17 +18,12 @@ schoffnersCatalogue :: AssetCard SchoffnersCatalogue
 schoffnersCatalogue = assetWith SchoffnersCatalogue Cards.schoffnersCatalogue discardWhenNoUses
 
 instance HasModifiersFor SchoffnersCatalogue where
-  getModifiersFor (InvestigatorTarget iid) (SchoffnersCatalogue attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        Secret
-        (colocatedWith iid)
-        (#item <> #asset)
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SchoffnersCatalogue a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [CanSpendUsesAsResourceOnCardFromInvestigator a.id Secret (colocatedWith iid) (#item <> #asset)]
 
 instance RunMessage SchoffnersCatalogue where
   runMessage msg (SchoffnersCatalogue attrs) = SchoffnersCatalogue <$> runMessage msg attrs

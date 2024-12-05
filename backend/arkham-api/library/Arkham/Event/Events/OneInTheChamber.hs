@@ -4,7 +4,7 @@ import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource, inAttackSkillTest)
 import Arkham.Helpers.Window (fromAsset)
 
@@ -32,14 +32,12 @@ oneInTheChamberEffect :: EffectArgs -> OneInTheChamberEffect
 oneInTheChamberEffect = cardEffect OneInTheChamberEffect Cards.oneInTheChamber
 
 instance HasModifiersFor OneInTheChamberEffect where
-  getModifiersFor target (OneInTheChamberEffect attrs) | attrs.target == target = do
-    maybeModified attrs do
-      liftGuardM inAttackSkillTest
-      source <- MaybeT getSkillTestSource
-      assetTarget <- hoistMaybe $ AssetTarget <$> source.asset
-      guard $ Just assetTarget == attrs.metaTarget
-      pure [AnySkillValue 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OneInTheChamberEffect attrs) = maybeModified_ attrs attrs.target do
+    liftGuardM inAttackSkillTest
+    source <- MaybeT getSkillTestSource
+    assetTarget <- hoistMaybe $ AssetTarget <$> source.asset
+    guard $ Just assetTarget == attrs.metaTarget
+    pure [AnySkillValue 3]
 
 instance RunMessage OneInTheChamberEffect where
   runMessage msg e@(OneInTheChamberEffect attrs) = runQueueT $ case msg of

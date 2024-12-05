@@ -5,6 +5,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Location.BreachStatus
 import Arkham.Location.Types (Field (..))
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,9 +19,9 @@ primordialGateway :: TreacheryCard PrimordialGateway
 primordialGateway = treachery PrimordialGateway Cards.primordialGateway
 
 instance HasModifiersFor PrimordialGateway where
-  getModifiersFor (LocationTarget lid) (PrimordialGateway a) | treacheryOnLocation lid a = do
-    modified a [Blank]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PrimordialGateway a) = case a.placement of
+    AttachedToLocation lid -> modified_ a lid [Blank]
+    _ -> pure mempty
 
 instance HasAbilities PrimordialGateway where
   getAbilities (PrimordialGateway x) =

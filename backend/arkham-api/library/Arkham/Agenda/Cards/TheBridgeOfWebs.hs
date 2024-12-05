@@ -20,10 +20,9 @@ theBridgeOfWebs =
     %~ (\m -> m {removeDoomLocations = Nowhere})
 
 instance HasModifiersFor TheBridgeOfWebs where
-  getModifiersFor target (TheBridgeOfWebs attrs) | attrs `is` target = do
+  getModifiersFor (TheBridgeOfWebs attrs) = do
     n <- perPlayer 2
-    toModifiers attrs [DoomThresholdModifier n]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [DoomThresholdModifier n]
 
 instance RunMessage TheBridgeOfWebs where
   runMessage msg a@(TheBridgeOfWebs attrs) = runQueueT $ case msg of

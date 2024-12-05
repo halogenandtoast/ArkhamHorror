@@ -52,22 +52,20 @@ windowModifierEffect' eid metadata effectWindow source target =
     _ -> Nothing
 
 instance HasModifiersFor WindowModifierEffect where
-  getModifiersFor target (WindowModifierEffect EffectAttrs {..})
-    | target == effectTarget = case effectMetadata of
-        Just (EffectModifiers modifiers) -> case effectWindow of
-          Just EffectSetupWindow -> pure $ map setActiveDuringSetup modifiers
-          Just (EffectSkillTestWindow sid) -> do
-            msid <- getSkillTestId
-            pure $ guard (msid == Just sid) *> modifiers
-          Just (EffectPhaseWindowFor p) -> do
-            p' <- getPhase
-            pure $ guard (p == p') *> modifiers
-          Just (EffectTurnWindow iid) -> do
-            isTurn <- iid <=~> TurnInvestigator
-            pure $ guard isTurn *> modifiers
-          _ -> pure modifiers
-        _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WindowModifierEffect attrs) = case effectMetadata attrs of
+    Just (EffectModifiers modifiers) -> case effectWindow attrs of
+      Just EffectSetupWindow -> pure $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
+      Just (EffectSkillTestWindow sid) -> do
+        msid <- getSkillTestId
+        pure $ if msid == Just sid then singletonMap attrs.target modifiers else mempty
+      Just (EffectPhaseWindowFor p) -> do
+        p' <- getPhase
+        pure $ if p == p' then singletonMap attrs.target modifiers else mempty
+      Just (EffectTurnWindow iid) -> do
+        isTurn <- iid <=~> TurnInvestigator
+        pure $ if isTurn then singletonMap attrs.target modifiers else mempty
+      _ -> pure $ singletonMap attrs.target modifiers
+    _ -> pure mempty
 
 instance RunMessage WindowModifierEffect where
   runMessage msg (WindowModifierEffect attrs) =

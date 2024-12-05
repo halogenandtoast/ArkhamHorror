@@ -2,8 +2,8 @@ module Arkham.Treachery.Cards.Whiteout (whiteout, Whiteout (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -15,10 +15,8 @@ whiteout :: TreacheryCard Whiteout
 whiteout = treachery Whiteout Cards.whiteout
 
 instance HasModifiersFor Whiteout where
-  getModifiersFor (InvestigatorTarget iid) (Whiteout attrs) = do
-    affected <- iid <=~> InvestigatorAt (locationWithTreachery $ toId attrs)
-    toModifiers attrs [AnySkillValue (-1) | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Whiteout attrs) =
+    modifySelect attrs (InvestigatorAt (locationWithTreachery $ toId attrs)) [AnySkillValue (-1)]
 
 instance HasAbilities Whiteout where
   getAbilities (Whiteout a) = [mkAbility a 1 $ forced $ RoundEnds #when]

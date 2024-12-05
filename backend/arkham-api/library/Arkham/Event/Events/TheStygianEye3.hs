@@ -17,10 +17,9 @@ theStygianEye3 :: EventCard TheStygianEye3
 theStygianEye3 = event TheStygianEye3 Cards.theStygianEye3
 
 instance HasModifiersFor TheStygianEye3 where
-  getModifiersFor (CardIdTarget cid) (TheStygianEye3 a) | toCardId a == cid = do
+  getModifiersFor (TheStygianEye3 a) = do
     n <- selectCount $ ChaosTokenFaceIs #curse
-    toModifiers a [ReduceCostOf (CardWithId cid) n]
-  getModifiersFor _ _ = pure []
+    modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
 
 instance RunMessage TheStygianEye3 where
   runMessage msg e@(TheStygianEye3 attrs) = case msg of

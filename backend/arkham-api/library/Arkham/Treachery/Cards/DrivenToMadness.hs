@@ -12,25 +12,26 @@ import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message hiding (EnemyEvaded)
+import Arkham.Placement
 import Arkham.Trait (Trait (Humanoid))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner hiding (EnemyEvaded)
 
 newtype DrivenToMadness = DrivenToMadness TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drivenToMadness :: TreacheryCard DrivenToMadness
 drivenToMadness = treachery DrivenToMadness Cards.drivenToMadness
 
 instance HasModifiersFor DrivenToMadness where
-  getModifiersFor target (DrivenToMadness attrs) | target `elem` treacheryAttachedTarget attrs = do
-    toModifiers attrs [EnemyFight 1, HealthModifier 1, EnemyEvade 1, RemoveKeyword Keyword.Aloof]
-  getModifiersFor (InvestigatorTarget _) (DrivenToMadness attrs) = do
-    case treacheryAttachedTarget attrs of
-      Just (EnemyTarget eid) -> toModifiers attrs [CannotParleyWith $ EnemyWithId eid]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DrivenToMadness attrs) = case attrs.placement of
+    AttachedToEnemy eid -> do
+      enemy <-
+        modified_ attrs eid [EnemyFight 1, HealthModifier 1, EnemyEvade 1, RemoveKeyword Keyword.Aloof]
+      investigators <- modifySelect attrs Anyone [CannotParleyWith $ EnemyWithId eid]
+      pure $ enemy <> investigators
+    _ -> pure mempty
 
 instance HasAbilities DrivenToMadness where
   getAbilities (DrivenToMadness attrs) = case treacheryAttachedTarget attrs of

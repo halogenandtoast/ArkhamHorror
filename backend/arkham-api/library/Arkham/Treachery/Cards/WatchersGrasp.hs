@@ -14,10 +14,8 @@ watchersGrasp :: TreacheryCard WatchersGrasp
 watchersGrasp = treachery WatchersGrasp Cards.watchersGrasp
 
 instance HasModifiersFor WatchersGrasp where
-  getModifiersFor (EnemyTarget eid) (WatchersGrasp a) = do
-    isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-    modified a [ForcePrey $ Prey $ be a.drawnBy | isTheSpectralWatcher]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WatchersGrasp a) = do
+    modifySelect a (enemyIs Enemies.theSpectralWatcher) [ForcePrey $ Prey $ be a.drawnBy]
 
 instance RunMessage WatchersGrasp where
   runMessage msg t@(WatchersGrasp attrs) = runQueueT $ case msg of

@@ -15,10 +15,12 @@ theMoonsCore :: ActCard TheMoonsCore
 theMoonsCore = act (3, A) TheMoonsCore Cards.theMoonsCore Nothing
 
 instance HasModifiersFor TheMoonsCore where
-  getModifiersFor (InvestigatorTarget _) (TheMoonsCore x) = do
+  getModifiersFor (TheMoonsCore x) = do
     -- Clues cannot be discovered from The Black Core except as a result of a successful investigation.
-    toModifiers x [CannotDiscoverCluesExceptAsResultOfInvestigation (locationIs Locations.theBlackCore)]
-  getModifiersFor _ _ = pure []
+    modifySelect
+      x
+      Anyone
+      [CannotDiscoverCluesExceptAsResultOfInvestigation (locationIs Locations.theBlackCore)]
 
 instance HasAbilities TheMoonsCore where
   getAbilities (TheMoonsCore x) =

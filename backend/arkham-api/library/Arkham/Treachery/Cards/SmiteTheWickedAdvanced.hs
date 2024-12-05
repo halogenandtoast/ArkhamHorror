@@ -8,6 +8,7 @@ import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -20,9 +21,9 @@ smiteTheWickedAdvanced :: TreacheryCard SmiteTheWickedAdvanced
 smiteTheWickedAdvanced = treachery SmiteTheWickedAdvanced Cards.smiteTheWickedAdvanced
 
 instance HasModifiersFor SmiteTheWickedAdvanced where
-  getModifiersFor (EnemyTarget eid) (SmiteTheWickedAdvanced attrs) | treacheryOnEnemy eid attrs = do
-    modified attrs [EnemyFight 2, HealthModifier 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SmiteTheWickedAdvanced attrs) = case attrs.placement of
+    AttachedToEnemy eid -> modified_ attrs eid [EnemyFight 2, HealthModifier 2]
+    _ -> pure mempty
 
 instance HasAbilities SmiteTheWickedAdvanced where
   getAbilities (SmiteTheWickedAdvanced a) =

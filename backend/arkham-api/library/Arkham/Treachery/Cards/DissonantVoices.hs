@@ -3,27 +3,24 @@ module Arkham.Treachery.Cards.DissonantVoices where
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype DissonantVoices = DissonantVoices TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dissonantVoices :: TreacheryCard DissonantVoices
 dissonantVoices = treachery DissonantVoices Cards.dissonantVoices
 
 instance HasModifiersFor DissonantVoices where
-  getModifiersFor (InvestigatorTarget iid) (DissonantVoices attrs) =
-    modified
+  getModifiersFor (DissonantVoices attrs) =
+    inThreatAreaGets
       attrs
       [ CannotPlay (CardWithOneOf [#asset, #event])
-      | treacheryInThreatArea iid attrs
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities DissonantVoices where
   getAbilities (DissonantVoices a) =

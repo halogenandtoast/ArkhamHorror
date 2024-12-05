@@ -14,9 +14,7 @@ valentinoRivas :: AssetCard ValentinoRivas
 valentinoRivas = allyWith ValentinoRivas Cards.valentinoRivas (2, 3) (isStoryL .~ True)
 
 instance HasModifiersFor ValentinoRivas where
-  getModifiersFor (InvestigatorTarget iid) (ValentinoRivas a) =
-    toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ValentinoRivas a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas x) =

@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheTrueCulpritV10 (TheTrueCulpritV10 (..), theTrueCul
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -17,10 +17,8 @@ theTrueCulpritV10 :: AgendaCard TheTrueCulpritV10
 theTrueCulpritV10 = agenda (3, A) TheTrueCulpritV10 Cards.theTrueCulpritV10 (Static 12)
 
 instance HasModifiersFor TheTrueCulpritV10 where
-  getModifiersFor (EnemyTarget eid) (TheTrueCulpritV10 attrs) = do
-    isGuest <- eid <=~> EnemyWithTrait Guest
-    toModifiers attrs $ guard isGuest *> [LoseVictory, RemoveTrait Innocent, AddTrait Cultist]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheTrueCulpritV10 attrs) = do
+    modifySelect attrs (EnemyWithTrait Guest) [LoseVictory, RemoveTrait Innocent, AddTrait Cultist]
 
 instance HasAbilities TheTrueCulpritV10 where
   getAbilities (TheTrueCulpritV10 attrs) =

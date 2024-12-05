@@ -19,7 +19,7 @@ savant1 :: SkillCard Savant1
 savant1 = skill Savant1 Cards.savant1
 
 instance HasModifiersFor Savant1 where
-  getModifiersFor (CardIdTarget cid) (Savant1 attrs) | toCardId attrs == cid = do
+  getModifiersFor (Savant1 attrs) = do
     sTypes <- getSkillTestSkillTypes
     let types = filter (`notElem` sTypes) [#willpower, #intellect, #combat, #agility]
     sAction <- getSkillTestAction
@@ -31,8 +31,7 @@ instance HasModifiersFor Savant1 where
         SkillCombat -> stats.combat
         SkillAgility -> stats.agility
     let n = fromMaybe 0 $ minimumMay (map getType types)
-    toModifiers attrs [AddSkillIcons $ replicate n #wild | n > 0]
-  getModifiersFor _ _ = pure []
+    modified_ attrs (toCardId attrs) [AddSkillIcons $ replicate n #wild | n > 0]
 
 instance RunMessage Savant1 where
   runMessage msg (Savant1 attrs) = Savant1 <$> runMessage msg attrs

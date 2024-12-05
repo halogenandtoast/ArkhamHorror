@@ -69,10 +69,10 @@ thePallidMask difficulty =
     ]
 
 instance HasModifiersFor ThePallidMask where
-  getModifiersFor (InvestigatorTarget iid) (ThePallidMask a) = do
-    extraXp <- elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
-    toModifiers a [XPModifier "Read Act II" 2 | extraXp]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ThePallidMask a) = do
+    modifySelectMaybe a Anyone \iid -> do
+      liftGuardM $ elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
+      pure [XPModifier "Read Act II" 2]
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =

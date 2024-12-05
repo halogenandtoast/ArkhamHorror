@@ -22,9 +22,8 @@ deadOfNight :: AgendaCard DeadOfNight
 deadOfNight = agenda (2, A) DeadOfNight Cards.deadOfNight (Static 3)
 
 instance HasModifiersFor DeadOfNight where
-  getModifiersFor (InvestigatorTarget _) (DeadOfNight a) =
-    toModifiers a [HandSize (-3)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeadOfNight a) =
+    modifySelect a Anyone [HandSize (-3)]
 
 instance RunMessage DeadOfNight where
   runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of

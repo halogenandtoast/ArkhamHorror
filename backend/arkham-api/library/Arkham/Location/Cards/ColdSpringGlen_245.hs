@@ -6,7 +6,6 @@ import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
 import Arkham.Location.Import.Lifted hiding (ChosenRandomLocation)
-import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
@@ -18,10 +17,8 @@ coldSpringGlen_245 :: LocationCard ColdSpringGlen_245
 coldSpringGlen_245 = location ColdSpringGlen_245 Cards.coldSpringGlen_245 2 (Static 0)
 
 instance HasModifiersFor ColdSpringGlen_245 where
-  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_245 attrs) = do
-    atLocation <- enemyAtLocation eid attrs
-    toModifiers attrs [EnemyEvade (-1) | atLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ColdSpringGlen_245 attrs) = do
+    modifySelect attrs (enemyAt attrs) [EnemyEvade (-1)]
 
 instance HasAbilities ColdSpringGlen_245 where
   getAbilities (ColdSpringGlen_245 attrs) =

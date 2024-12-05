@@ -39,21 +39,22 @@ marksmanship1 :: EventCard Marksmanship1
 marksmanship1 = event Marksmanship1 Cards.marksmanship1
 
 instance HasModifiersFor Marksmanship1 where
-  getModifiersFor (AbilityTarget iid ability) (Marksmanship1 a) = maybeModified a do
-    guard $ eventOwner a == iid
-    guard $ Action.Fight `elem` abilityActions ability
-    traits <- sourceTraits (abilitySource ability)
-    guard $ any (`elem` traits) [Firearm, Ranged]
-    lid <- MaybeT $ selectOne $ locationWithInvestigator iid
-    liftGuardM $ getIsPlayable iid iid (UnpaidCost NeedsAction) [mkWhen DoNotCheckWindow] (toCard a)
-    pure
-      [ CanModify
-          $ EnemyFightActionCriteria
-          $ CriteriaOverride
-          $ EnemyCriteria
-          $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected lid))
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Marksmanship1 a) = do
+    abilities <- select (AbilityIsAction #fight)
+    modifyEachMaybe a (map (AbilityTarget a.owner) abilities) \case
+      AbilityTarget iid ab -> do
+        traits <- sourceTraits ab.source
+        guard $ any (`elem` traits) [Firearm, Ranged]
+        lid <- MaybeT $ selectOne $ locationWithInvestigator iid
+        liftGuardM $ getIsPlayable iid iid (UnpaidCost NeedsAction) [mkWhen DoNotCheckWindow] (toCard a)
+        pure
+          [ CanModify
+              $ EnemyFightActionCriteria
+              $ CriteriaOverride
+              $ EnemyCriteria
+              $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected lid))
+          ]
+      _ -> error "Invalid branch"
 
 instance RunMessage Marksmanship1 where
   runMessage msg e@(Marksmanship1 attrs) = case msg of
@@ -79,18 +80,16 @@ marksmanship1Effect = cardEffect Marksmanship1Effect Cards.marksmanship1
 -- "swizzle" the target in order to disable/enable to appropriate effects
 
 instance HasModifiersFor Marksmanship1Effect where
-  getModifiersFor (EnemyTarget eid) (Marksmanship1Effect a) =
+  getModifiersFor (Marksmanship1Effect a) =
     case a.target of
       InvestigatorTarget _ ->
-        toModifiers
-          a
+        modifySelectMap a AnyEnemy \eid ->
           [ EnemyFightActionCriteria
               $ CriteriaOverride
               $ AnyCriterion [OnSameLocation, OnLocation $ ConnectedTo $ locationWithEnemy eid]
               <> EnemyCriteria (ThisEnemy $ EnemyWithoutModifier CannotBeAttacked)
           ]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      _ -> pure mempty
 
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of

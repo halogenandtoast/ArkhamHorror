@@ -21,9 +21,8 @@ instance HasAbilities SunkenArchives where
     extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
 
 instance HasModifiersFor SunkenArchives where
-  getModifiersFor (InvestigatorTarget _iid) (SunkenArchives a) = do
-    modified a [CannotDiscoverCluesAt $ be a <> FloodedLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SunkenArchives a) =
+    modifySelect a Anyone [CannotDiscoverCluesAt $ be a <> FloodedLocation]
 
 instance RunMessage SunkenArchives where
   runMessage msg l@(SunkenArchives attrs) = runQueueT $ case msg of

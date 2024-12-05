@@ -23,13 +23,11 @@ theFirstOath :: ActCard TheFirstOath
 theFirstOath = act (1, A) TheFirstOath Cards.theFirstOath Nothing
 
 instance HasModifiersFor TheFirstOath where
-  getModifiersFor (EnemyTarget eid) (TheFirstOath a) = maybeModified a do
-    liftGuardM $ eid <=~> EnemyWithTrait Suspect
-    n <- lift $ perPlayer 1
-    pure [HealthModifier n, RemoveKeyword Aloof]
-  getModifiersFor (InvestigatorTarget _) (TheFirstOath a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheFirstOath a) = do
+    n <- perPlayer 1
+    suspects <- modifySelect a (EnemyWithTrait Suspect) [HealthModifier n, RemoveKeyword Aloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ suspects <> investigators
 
 instance HasAbilities TheFirstOath where
   getAbilities (TheFirstOath x) =

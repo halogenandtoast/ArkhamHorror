@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 
 newtype StoppingTheRitual = StoppingTheRitual ActAttrs
@@ -16,10 +16,8 @@ stoppingTheRitual =
   act (3, A) StoppingTheRitual Cards.stoppingTheRitual Nothing
 
 instance HasModifiersFor StoppingTheRitual where
-  getModifiersFor (EnemyTarget eid) (StoppingTheRitual a) = do
-    isNahab <- eid <=~> enemyIs Enemies.nahab
-    toModifiers a [CannotMove | isNahab]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StoppingTheRitual a) =
+    modifySelect a (enemyIs Enemies.nahab) [CannotMove]
 
 instance HasAbilities StoppingTheRitual where
   getAbilities (StoppingTheRitual a)

@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -22,16 +22,19 @@ directiveSeekTheTruth :: AssetCard DirectiveSeekTheTruth
 directiveSeekTheTruth = asset DirectiveSeekTheTruth Cards.directiveSeekTheTruth
 
 instance HasModifiersFor DirectiveSeekTheTruth where
-  getModifiersFor (InvestigatorTarget iid) (DirectiveSeekTheTruth a) = do
-    maybeModified a do
-      guard $ not a.flipped
-      guard $ a.controller == Just iid
-      meta <- lift $ fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
-      guard $ seekTheTruth meta
-      guard $ "seekTheTruth" `notElem` ignoredDirectives meta
-      liftGuardM $ selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
-      pure [CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DirectiveSeekTheTruth a) = case a.controller of
+    Just iid | not a.flipped -> do
+      valid <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
+      if valid
+        then do
+          meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
+          modifiedWhen_
+            a
+            (seekTheTruth meta && "seekTheTruth" `notElem` ignoredDirectives meta)
+            iid
+            [CannotCommitCards AnyCard]
+        else pure mempty
+    _ -> pure mempty
 
 instance HasAbilities DirectiveSeekTheTruth where
   getAbilities (DirectiveSeekTheTruth a) =

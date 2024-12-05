@@ -28,9 +28,8 @@ instance HasChaosTokenValue FinnEdwards where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance HasModifiersFor FinnEdwards where
-  getModifiersFor target (FinnEdwards attrs) | attrs `is` target = do
-    toModifiers attrs [GiveAdditionalAction $ AdditionalAction "Finn Edwards" (toSource attrs) #evade]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FinnEdwards attrs) =
+    modifySelf attrs [GiveAdditionalAction $ AdditionalAction "Finn Edwards" (toSource attrs) #evade]
 
 instance RunMessage FinnEdwards where
   runMessage msg i@(FinnEdwards attrs) = case msg of

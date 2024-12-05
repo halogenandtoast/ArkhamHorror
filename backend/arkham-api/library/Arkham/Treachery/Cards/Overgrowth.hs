@@ -17,10 +17,9 @@ overgrowth :: TreacheryCard Overgrowth
 overgrowth = treachery Overgrowth Cards.overgrowth
 
 instance HasModifiersFor Overgrowth where
-  getModifiersFor (InvestigatorTarget iid) (Overgrowth attrs) = do
-    mlid <- getMaybeLocation iid
-    toModifiers attrs [CannotExplore | lid <- toList mlid, treacheryOnLocation lid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Overgrowth attrs) = case attrs.placement of
+    AttachedToLocation lid -> modifySelect attrs (investigatorAt lid) [CannotExplore]
+    _ -> pure mempty
 
 instance HasAbilities Overgrowth where
   getAbilities (Overgrowth a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

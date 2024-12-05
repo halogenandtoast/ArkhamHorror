@@ -46,13 +46,11 @@ dimCarcosa difficulty =
     ]
 
 instance HasModifiersFor DimCarcosa where
-  getModifiersFor (EnemyTarget eid) (DimCarcosa a) = do
-    isHastur <- elem eid <$> select (EnemyWithTitle "Hastur")
+  getModifiersFor (DimCarcosa a) = do
     knowTheSecret <- remembered KnowTheSecret
-    toModifiers a [CannotBeDefeated | isHastur && not knowTheSecret]
-  getModifiersFor (InvestigatorTarget _) (DimCarcosa a) = do
-    toModifiers a [CanOnlyBeDefeatedByDamage]
-  getModifiersFor _ _ = pure []
+    hastur <- modifySelectWhen a (not knowTheSecret) (EnemyWithTitle "Hastur") [CannotBeDefeated]
+    investigators <- modifySelect a Anyone [CanOnlyBeDefeatedByDamage]
+    pure $ hastur <> investigators
 
 instance HasChaosTokenValue DimCarcosa where
   getChaosTokenValue iid chaosTokenFace (DimCarcosa attrs) = case chaosTokenFace of

@@ -19,14 +19,12 @@ catsOfUlthar = enemy CatsOfUlthar Cards.catsOfUlthar (1, Static 1, 1) (1, 0)
 -- additional. It might be better in the future to move this as a modifier
 -- directly on the skill test
 instance HasModifiersFor CatsOfUlthar where
-  getModifiersFor (SkillTestTarget _) (CatsOfUlthar a) = do
-    modifiers <-
-      toList <$> runMaybeT do
-        st <- MaybeT getSkillTest
+  getModifiersFor (CatsOfUlthar a) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
         guard $ a `is` st.target && st.action == Just #evade
-        pure RevealAnotherChaosToken
-    toModifiers a modifiers
-  getModifiersFor _ _ = pure []
+        pure [RevealAnotherChaosToken]
 
 instance HasAbilities CatsOfUlthar where
   getAbilities (CatsOfUlthar x) =

@@ -30,10 +30,9 @@ letTheStormRageTheFloodBelow =
     (Static 6)
 
 instance HasModifiersFor LetTheStormRageTheFloodBelow where
-  getModifiersFor (CardIdTarget cardId) (LetTheStormRageTheFloodBelow a) = do
-    card <- getCard cardId
-    toModifiers a [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LetTheStormRageTheFloodBelow a) = do
+    ancientEvils <- findAllCards (`isCard` Treacheries.ancientEvils)
+    modifyEach a ancientEvils [AddKeyword Keyword.Surge]
 
 instance HasAbilities LetTheStormRageTheFloodBelow where
   getAbilities (LetTheStormRageTheFloodBelow a) =

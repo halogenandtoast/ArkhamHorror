@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Stupor (stupor, Stupor (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,7 +14,7 @@ stupor :: TreacheryCard Stupor
 stupor = treachery Stupor Cards.stupor
 
 instance HasModifiersFor Stupor where
-  getModifiersFor target (Stupor a) = modified a [IsPointOfHorror | isTarget a target]
+  getModifiersFor (Stupor a) = modifySelf a [IsPointOfHorror]
 
 instance HasAbilities Stupor where
   getAbilities (Stupor a) =

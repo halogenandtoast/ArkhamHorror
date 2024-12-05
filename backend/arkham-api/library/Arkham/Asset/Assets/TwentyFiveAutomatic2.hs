@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -26,15 +26,14 @@ instance HasAbilities TwentyFiveAutomatic2 where
     ]
 
 instance HasModifiersFor TwentyFiveAutomatic2 where
-  getModifiersFor (InvestigatorTarget iid) (TwentyFiveAutomatic2 attrs) = do
-    maybeModified attrs do
-      guard $ attrs `controlledBy` iid
+  getModifiersFor (TwentyFiveAutomatic2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
       EnemyTarget eid' <- MaybeT getSkillTestTarget
       liftGuardM $ eid' <=~> ExhaustedEnemy
       source <- MaybeT getSkillTestSource
-      guard $ isAbilitySource attrs 1 source
+      guard $ isAbilitySource a 1 source
       pure [SkillModifier #combat 2, DamageDealt 1]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TwentyFiveAutomatic2 where
   runMessage msg a@(TwentyFiveAutomatic2 attrs) = runQueueT $ case msg of

@@ -42,9 +42,7 @@ imDoneRunninEffect :: EffectArgs -> ImDoneRunninEffect
 imDoneRunninEffect = cardEffect ImDoneRunninEffect Cards.imDoneRunnin
 
 instance HasModifiersFor ImDoneRunninEffect where
-  getModifiersFor target (ImDoneRunninEffect a) | effectTarget a == target = do
-    toModifiers a [DoNotExhaustEvaded, DoNotDisengageEvaded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ImDoneRunninEffect a) = modified_ a a.target [DoNotExhaustEvaded, DoNotDisengageEvaded]
 
 instance RunMessage ImDoneRunninEffect where
   runMessage msg e@(ImDoneRunninEffect attrs@EffectAttrs {..}) = case msg of

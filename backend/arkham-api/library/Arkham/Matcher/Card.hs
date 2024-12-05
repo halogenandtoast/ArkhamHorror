@@ -344,6 +344,7 @@ data CardListMatcher
   | HasCard CardMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
+  | NoCards
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "item" CardListMatcher where

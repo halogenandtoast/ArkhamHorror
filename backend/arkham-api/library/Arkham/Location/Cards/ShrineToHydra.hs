@@ -15,12 +15,12 @@ shrineToHydra :: LocationCard ShrineToHydra
 shrineToHydra = location ShrineToHydra Cards.shrineToHydra 5 (PerPlayer 2)
 
 instance HasModifiersFor ShrineToHydra where
-  getModifiersFor target (ShrineToHydra attrs) | isTarget attrs target = maybeModified attrs do
-    liftGuardM $ selectAny $ at_ (be attrs) <> InvestigatorWithKey GreenKey
-    pure [ShroudModifier (-3)]
-  getModifiersFor (InvestigatorTarget _) (ShrineToHydra attrs) = do
-    modified attrs [CannotDiscoverCluesExceptAsResultOfInvestigation (be attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ShrineToHydra a) = do
+    self <- modifySelfMaybe a do
+      liftGuardM $ selectAny $ at_ (be a) <> InvestigatorWithKey GreenKey
+      pure [ShroudModifier (-3)]
+    investigators <- modifySelect a Anyone [CannotDiscoverCluesExceptAsResultOfInvestigation (be a)]
+    pure $ self <> investigators
 
 instance HasAbilities ShrineToHydra where
   getAbilities (ShrineToHydra a) =

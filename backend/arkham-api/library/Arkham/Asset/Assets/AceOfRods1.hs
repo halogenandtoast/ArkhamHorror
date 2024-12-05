@@ -5,8 +5,8 @@ import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Modifier
 import Arkham.SkillType
 
 newtype AceOfRods1 = AceOfRods1 AssetAttrs
@@ -46,21 +46,19 @@ aceOfRods1Effect =
   cardEffect (AceOfRods1Effect . (`with` Meta False)) Cards.aceOfRods1
 
 instance HasModifiersFor AceOfRods1Effect where
-  getModifiersFor target (AceOfRods1Effect (a `With` meta))
-    | target == a.target
-    , active meta =
-        toModifiers a [SkillModifier sType 2 | sType <- allSkills]
-  getModifiersFor target (AceOfRods1Effect (a `With` meta))
-    | target == a.target
-    , not (active meta) =
-        toModifiers
-          a
-          [ GiveAdditionalAction
-              $ AdditionalAction "Ace of Rods" (toSource a)
-              $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
-              $ toId a
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AceOfRods1Effect (a `With` meta)) = do
+    target1 <- modifiedWhen_ a (active meta) a.target [SkillModifier sType 2 | sType <- allSkills]
+    target2 <-
+      modifiedWhen_
+        a
+        (not $ active meta)
+        a.target
+        [ GiveAdditionalAction
+            $ AdditionalAction "Ace of Rods" (toSource a)
+            $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
+            $ toId a
+        ]
+    pure $ target1 <> target2
 
 instance RunMessage AceOfRods1Effect where
   runMessage msg e@(AceOfRods1Effect (attrs `With` meta)) = runQueueT $ case msg of

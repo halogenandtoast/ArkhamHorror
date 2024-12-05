@@ -17,18 +17,17 @@ beneathTheLodge :: TreacheryCard BeneathTheLodge
 beneathTheLodge = treachery BeneathTheLodge Cards.beneathTheLodge
 
 instance HasModifiersFor BeneathTheLodge where
-  getModifiersFor (SkillTestTarget _) (BeneathTheLodge attrs) = do
-    mSource <- getSkillTestSource
-    mInvestigator <- getSkillTestInvestigator
-    case (mSource, mInvestigator) of
-      (Just source, Just iid) | isSource attrs source -> do
-        hasKey <- fieldMap InvestigatorKeys notNull iid
-        toModifiers attrs [Difficulty 1 | hasKey]
-      _ -> pure []
-  getModifiersFor target (BeneathTheLodge attrs) | isTarget attrs target = do
+  getModifiersFor (BeneathTheLodge attrs) = do
     hasKey <- maybe (pure False) (fieldMap InvestigatorKeys notNull) (treacheryOwner attrs)
-    toModifiers attrs $ [AddKeyword Keyword.Peril | hasKey]
-  getModifiersFor _ _ = pure []
+    self <- modifySelf attrs $ [AddKeyword Keyword.Peril | hasKey]
+    skillTest <-
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+          source <- MaybeT getSkillTestSource
+          guard $ isSource attrs source
+          pure [Difficulty 1 | hasKey]
+    pure $ self <> skillTest
 
 instance RunMessage BeneathTheLodge where
   runMessage msg t@(BeneathTheLodge attrs) = case msg of

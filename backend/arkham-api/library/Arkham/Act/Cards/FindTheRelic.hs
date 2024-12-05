@@ -14,19 +14,15 @@ import Arkham.Matcher
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype FindTheRelic = FindTheRelic ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 findTheRelic :: ActCard FindTheRelic
 findTheRelic = act (3, A) FindTheRelic Cards.findTheRelic Nothing
 
 instance HasModifiersFor FindTheRelic where
-  getModifiersFor (LocationTarget lid) (FindTheRelic a) = do
-    isModified <-
-      lid
-        <=~> LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    toModifiers a [ShroudModifier 2 | isModified]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FindTheRelic a) =
+    modifySelect a (LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)) [ShroudModifier 2]
 
 instance HasAbilities FindTheRelic where
   getAbilities (FindTheRelic a) =

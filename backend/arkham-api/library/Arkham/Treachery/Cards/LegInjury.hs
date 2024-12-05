@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.LegInjury (legInjury, LegInjury (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,7 +14,7 @@ legInjury :: TreacheryCard LegInjury
 legInjury = treachery LegInjury Cards.legInjury
 
 instance HasModifiersFor LegInjury where
-  getModifiersFor target (LegInjury a) = modified a [IsPointOfDamage | isTarget a target]
+  getModifiersFor (LegInjury a) = modifySelf a [IsPointOfDamage]
 
 instance HasAbilities LegInjury where
   getAbilities (LegInjury a) =

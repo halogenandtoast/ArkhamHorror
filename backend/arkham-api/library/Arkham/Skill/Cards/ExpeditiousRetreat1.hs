@@ -23,13 +23,12 @@ expeditiousRetreat1 :: SkillCard ExpeditiousRetreat1
 expeditiousRetreat1 = skill ExpeditiousRetreat1 Cards.expeditiousRetreat1
 
 instance HasModifiersFor ExpeditiousRetreat1 where
-  getModifiersFor target (ExpeditiousRetreat1 a) | a `is` target = do
+  getModifiersFor (ExpeditiousRetreat1 a) = do
     mAction <- getSkillTestAction
     mSource <- getSkillTestSource
     case (mAction, mSource) of
-      (Just Action.Evade, Just (AbilitySource (EnemySource _) AbilityAttack)) -> toModifiers a [AddSkillIcons [#agility, #agility]]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      (Just Action.Evade, Just (AbilitySource (EnemySource _) AbilityAttack)) -> modifySelf a [AddSkillIcons [#agility, #agility]]
+      _ -> pure mempty
 
 instance RunMessage ExpeditiousRetreat1 where
   runMessage msg s@(ExpeditiousRetreat1 attrs) = case msg of

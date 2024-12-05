@@ -9,36 +9,37 @@ import Arkham.History (History (historyTreacheriesDrawn))
 import Arkham.History.Types
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype CragOfTheGhouls = CragOfTheGhouls LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cragOfTheGhouls :: LocationCard CragOfTheGhouls
 cragOfTheGhouls = location CragOfTheGhouls Cards.cragOfTheGhouls 3 (PerPlayer 2)
 
 instance HasModifiersFor CragOfTheGhouls where
-  getModifiersFor (CardIdTarget cardId) (CragOfTheGhouls a) = do
+  getModifiersFor (CragOfTheGhouls a) = do
     phase <- getPhase
-    card <- getCard cardId
-    if phase == MythosPhase && card `cardMatch` CardWithType TreacheryType
+    if phase == MythosPhase
       then do
         history <- fmap fold . traverse (getHistory PhaseHistory) =<< select (investigatorAt a)
-        toModifiers a [AddKeyword Keyword.Surge | length (historyTreacheriesDrawn history) == 1]
-      else pure []
-  getModifiersFor _ _ = pure []
+        if length (historyTreacheriesDrawn history) == 1
+          then do
+            cards <- findAllCards (`cardMatch` CardWithType TreacheryType)
+            modifyEach a (map (CardIdTarget . toCardId) cards) [AddKeyword Keyword.Surge]
+          else pure mempty
+      else pure mempty
 
 instance HasAbilities CragOfTheGhouls where
   getAbilities (CragOfTheGhouls attrs) = veiled attrs []
 
 instance RunMessage CragOfTheGhouls where
-  runMessage msg (CragOfTheGhouls attrs) = case msg of
+  runMessage msg (CragOfTheGhouls attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.scoutingTheVale
       pure . CragOfTheGhouls $ attrs & canBeFlippedL .~ False
-    _ -> CragOfTheGhouls <$> runMessage msg attrs
+    _ -> CragOfTheGhouls <$> liftRunMessage msg attrs

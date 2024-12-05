@@ -3,7 +3,7 @@ module Arkham.Event.Events.IllTakeThat (illTakeThat, IllTakeThat (..)) where
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (getPassedBy)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Illicit))
@@ -16,9 +16,9 @@ illTakeThat :: EventCard IllTakeThat
 illTakeThat = event IllTakeThat Cards.illTakeThat
 
 instance HasModifiersFor IllTakeThat where
-  getModifiersFor target (IllTakeThat attrs) | attrs.attachedTo == Just target = do
-    modified attrs [AddTrait Illicit]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (IllTakeThat attrs) = case attrs.attachedTo of
+    Just target -> modified_ attrs target [AddTrait Illicit]
+    _ -> pure mempty
 
 instance RunMessage IllTakeThat where
   runMessage msg e@(IllTakeThat attrs) = runQueueT $ case msg of

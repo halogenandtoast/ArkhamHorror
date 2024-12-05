@@ -27,9 +27,7 @@ instance HasAbilities SophieItWasAllMyFault where
         ]
 
 instance HasModifiersFor SophieItWasAllMyFault where
-  getModifiersFor (InvestigatorTarget iid) (SophieItWasAllMyFault attrs) | controlledBy attrs iid = do
-    toModifiers attrs [AnySkillValue (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SophieItWasAllMyFault attrs) = controllerGets attrs [AnySkillValue (-1)]
 
 instance RunMessage SophieItWasAllMyFault where
   runMessage msg a@(SophieItWasAllMyFault attrs) = case msg of

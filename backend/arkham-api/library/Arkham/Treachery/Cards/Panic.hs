@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Panic (panic, Panic (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,7 +14,7 @@ panic :: TreacheryCard Panic
 panic = treachery Panic Cards.panic
 
 instance HasModifiersFor Panic where
-  getModifiersFor target (Panic a) = modified a [IsPointOfHorror | isTarget a target]
+  getModifiersFor (Panic a) = modifySelf a [IsPointOfHorror]
 
 instance HasAbilities Panic where
   getAbilities (Panic a) =

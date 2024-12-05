@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 
 newtype Fence1 = Fence1 AssetAttrs
   deriving anyclass IsAsset
@@ -17,9 +17,9 @@ fence1 :: AssetCard Fence1
 fence1 = asset Fence1 Cards.fence1
 
 instance HasModifiersFor Fence1 where
-  getModifiersFor (InvestigatorTarget iid) (Fence1 a) | controlledBy a iid && not (assetExhausted a) = do
-    toModifiers a [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Fence1 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifiedWhen_ a a.ready iid [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =

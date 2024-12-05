@@ -8,7 +8,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (PlayCard)
 
 newtype Geas2 = Geas2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 geas2 :: AssetCard Geas2
@@ -26,9 +26,7 @@ pattern CommitPromise :: Promise
 pattern CommitPromise <- 3 where CommitPromise = 3
 
 instance HasModifiersFor Geas2 where
-  getModifiersFor (InvestigatorTarget iid) (Geas2 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier sType 1 | sType <- [#willpower, #intellect, #combat, #agility]]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Geas2 a) = controllerGets a [SkillModifier sType 1 | sType <- [#willpower, #intellect, #combat, #agility]]
 
 instance HasAbilities Geas2 where
   getAbilities (Geas2 a) =

@@ -11,7 +11,7 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hiredMuscle1 :: AssetCard HiredMuscle1
@@ -21,9 +21,7 @@ instance HasAbilities HiredMuscle1 where
   getAbilities (HiredMuscle1 x) = [restrictedAbility x 1 ControlsThis $ ForcedAbility $ PhaseEnds #when #upkeep]
 
 instance HasModifiersFor HiredMuscle1 where
-  getModifiersFor (InvestigatorTarget iid) (HiredMuscle1 a) =
-    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HiredMuscle1 a) = controllerGets a [SkillModifier #combat 1]
 
 instance RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = case msg of

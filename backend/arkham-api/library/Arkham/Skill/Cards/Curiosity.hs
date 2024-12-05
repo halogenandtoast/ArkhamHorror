@@ -18,22 +18,22 @@ curiosity :: SkillCard Curiosity
 curiosity = skill Curiosity Cards.curiosity
 
 instance HasModifiersFor Curiosity where
-  getModifiersFor (CardIdTarget cid) (Curiosity attrs) | toCardId attrs == cid = do
+  getModifiersFor (Curiosity attrs) = do
     cardsInHand <- fieldMap InvestigatorHand length (skillOwner attrs)
-    toModifiers
+    modifiedWhen_
       attrs
+      (cardsInHand >= 4)
+      (CardIdTarget $ toCardId attrs)
       [ AddSkillIcons
-        $ if cardsInHand >= 7
-          then
-            [ SkillIcon SkillWillpower
-            , SkillIcon SkillWillpower
-            , SkillIcon SkillIntellect
-            , SkillIcon SkillIntellect
-            ]
-          else [SkillIcon SkillWillpower, SkillIcon SkillIntellect]
-      | cardsInHand >= 4
+          $ if cardsInHand >= 7
+            then
+              [ SkillIcon SkillWillpower
+              , SkillIcon SkillWillpower
+              , SkillIcon SkillIntellect
+              , SkillIcon SkillIntellect
+              ]
+            else [SkillIcon SkillWillpower, SkillIcon SkillIntellect]
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Curiosity where
   runMessage msg (Curiosity attrs) = Curiosity <$> runMessage msg attrs

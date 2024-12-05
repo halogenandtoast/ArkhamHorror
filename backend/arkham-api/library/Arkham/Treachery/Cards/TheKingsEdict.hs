@@ -42,11 +42,12 @@ theKingsEdictEffect :: EffectArgs -> TheKingsEdictEffect
 theKingsEdictEffect = cardEffect TheKingsEdictEffect Cards.theKingsEdict
 
 instance HasModifiersFor TheKingsEdictEffect where
-  getModifiersFor target@(EnemyTarget eid) (TheKingsEdictEffect a) | target == a.target = do
-    clueCount <- field EnemyClues eid
-    doomCount <- field EnemyDoom eid
-    toModifiers a [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheKingsEdictEffect a) = case a.target of
+    EnemyTarget eid -> do
+      clueCount <- field EnemyClues eid
+      doomCount <- field EnemyDoom eid
+      modified_ a eid [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
+    _ -> pure mempty
 
 instance RunMessage TheKingsEdictEffect where
   runMessage msg e@(TheKingsEdictEffect attrs) = case msg of

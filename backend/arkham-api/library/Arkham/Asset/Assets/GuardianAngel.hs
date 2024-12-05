@@ -20,12 +20,12 @@ guardianAngel =
   assetWith GuardianAngel Cards.guardianAngel (healthL ?~ 3)
 
 instance HasModifiersFor GuardianAngel where
-  getModifiersFor (InvestigatorTarget iid) (GuardianAngel a) = maybeModified a do
-    guard $ not (controlledBy a iid)
-    location <- MaybeT $ field AssetLocation (toId a)
-    liftGuardM $ iid <=~> InvestigatorAt (orConnected location)
-    pure [CanAssignDamageToAsset a.id]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GuardianAngel a) = case a.controller of
+    Nothing -> pure mempty
+    Just controller -> modifySelectMaybe a (not_ (InvestigatorWithId controller)) \iid -> do
+      location <- MaybeT $ field AssetLocation (toId a)
+      liftGuardM $ iid <=~> InvestigatorAt (orConnected location)
+      pure [CanAssignDamageToAsset a.id]
 
 instance HasAbilities GuardianAngel where
   getAbilities (GuardianAngel attrs) =

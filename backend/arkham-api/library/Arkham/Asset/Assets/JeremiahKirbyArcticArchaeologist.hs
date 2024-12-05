@@ -7,9 +7,9 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message (SearchType (..))
-import Arkham.Modifier
 import Arkham.Strategy
 import Arkham.Taboo
 
@@ -21,9 +21,7 @@ jeremiahKirbyArcticArchaeologist :: AssetCard JeremiahKirbyArcticArchaeologist
 jeremiahKirbyArcticArchaeologist = ally JeremiahKirbyArcticArchaeologist Cards.jeremiahKirbyArcticArchaeologist (2, 1)
 
 instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
-  getModifiersFor (InvestigatorTarget iid) (JeremiahKirbyArcticArchaeologist a) | iid `controls` a = do
-    toModifiers a [SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JeremiahKirbyArcticArchaeologist a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =

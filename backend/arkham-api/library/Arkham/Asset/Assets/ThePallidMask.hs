@@ -17,9 +17,9 @@ thePallidMask :: AssetCard ThePallidMask
 thePallidMask = assetWith ThePallidMask Cards.thePallidMask (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor ThePallidMask where
-  getModifiersFor (InvestigatorTarget iid) (ThePallidMask a) | controlledBy a iid = do
-    toModifiers a [SanityModifier (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ThePallidMask a) = case a.controller of
+    Just iid -> modified_ a iid [SanityModifier (-2)]
+    Nothing -> pure mempty
 
 instance RunMessage ThePallidMask where
   runMessage msg a@(ThePallidMask attrs) = case msg of

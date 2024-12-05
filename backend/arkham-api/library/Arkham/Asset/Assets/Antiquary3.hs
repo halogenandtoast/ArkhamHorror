@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Antiquary3 (antiquary3, Antiquary3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Trait (Trait (Favor, Relic, Ritual))
 
 newtype Antiquary3 = Antiquary3 AssetAttrs
@@ -16,17 +16,17 @@ antiquary3 :: AssetCard Antiquary3
 antiquary3 = asset Antiquary3 Cards.antiquary3
 
 instance HasModifiersFor Antiquary3 where
-  getModifiersFor (InvestigatorTarget iid) (Antiquary3 attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        #resource
-        (InvestigatorWithId iid)
-        (oneOf [CardWithTrait t | t <- [Favor, Relic, Ritual]])
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Antiquary3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [ CanSpendUsesAsResourceOnCardFromInvestigator
+            a.id
+            #resource
+            (InvestigatorWithId iid)
+            (oneOf [CardWithTrait t | t <- [Favor, Relic, Ritual]])
+        ]
 
 instance HasAbilities Antiquary3 where
   getAbilities (Antiquary3 a) =

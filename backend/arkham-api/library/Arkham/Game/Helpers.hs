@@ -3277,6 +3277,7 @@ locationMatches investigatorId source window locationId matcher' = do
       field LocationShroud locationId >>= \case
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
+    Matcher.LocationWithAttachedEvent {} -> locationId <=~> matcher
     Matcher.LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField {} -> locationId <=~> matcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
@@ -3469,6 +3470,7 @@ cardListMatches cards = \case
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+  Matcher.NoCards -> pure $ null cards
 
 targetListMatches
   :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.LawOfYgirothChaos (lawOfYgirothChaos, LawOfYgiroth
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (TreacheryInHandOf, treacheryInHandOf)
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,11 +15,13 @@ lawOfYgirothChaos :: TreacheryCard LawOfYgirothChaos
 lawOfYgirothChaos = treachery LawOfYgirothChaos Cards.lawOfYgirothChaos
 
 instance HasModifiersFor LawOfYgirothChaos where
-  getModifiersFor (InvestigatorTarget iid) (LawOfYgirothChaos a) | treacheryInHandOf a == Just iid = do
-    modified
-      a
-      [CannotPlay CardWithOddCost, CannotTriggerAbilityMatching $ AbilityOnCard CardWithOddCost]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LawOfYgirothChaos a) = case a.placement of
+    HiddenInHand iid ->
+      modified_
+        a
+        iid
+        [CannotPlay CardWithOddCost, CannotTriggerAbilityMatching $ AbilityOnCard CardWithOddCost]
+    _ -> pure mempty
 
 instance HasAbilities LawOfYgirothChaos where
   getAbilities (LawOfYgirothChaos a) =

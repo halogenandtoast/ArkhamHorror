@@ -477,7 +477,7 @@ instance ToJSON Investigator where
   toJSON (Investigator a) = toJSON a
 
 instance HasModifiersFor Investigator where
-  getModifiersFor target (Investigator a) = getModifiersFor target a
+  getModifiersFor (Investigator a) = getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a

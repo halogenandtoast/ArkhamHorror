@@ -8,7 +8,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher hiding (RevealLocation)
 
 newtype HistoricalSocietyRecordOffice_129 = HistoricalSocietyRecordOffice_129 LocationAttrs
@@ -25,10 +24,8 @@ historicalSocietyRecordOffice_129 =
     (PerPlayer 1)
 
 instance HasModifiersFor HistoricalSocietyRecordOffice_129 where
-  getModifiersFor (EnemyTarget eid) (HistoricalSocietyRecordOffice_129 attrs) = maybeModified attrs do
-    liftGuardM $ enemyAtLocation eid attrs
-    pure [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HistoricalSocietyRecordOffice_129 a) =
+    modifySelect a (enemyAt a) [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities HistoricalSocietyRecordOffice_129 where
   getAbilities (HistoricalSocietyRecordOffice_129 a) =

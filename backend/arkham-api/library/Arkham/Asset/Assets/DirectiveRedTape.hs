@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Investigator.Types (Field (..))
@@ -22,15 +22,13 @@ directiveRedTape :: AssetCard DirectiveRedTape
 directiveRedTape = asset DirectiveRedTape Cards.directiveRedTape
 
 instance HasModifiersFor DirectiveRedTape where
-  getModifiersFor (InvestigatorTarget iid) (DirectiveRedTape a) = do
-    maybeModified a do
-      guard $ not a.flipped
-      guard $ a.controller == Just iid
-      meta <- lift $ fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
-      pure
+  getModifiersFor (DirectiveRedTape a) = case a.controller of
+    Just iid | not a.flipped -> do
+      meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
+      modified_ a iid
         $ [CanBecomeFast $ #event <> oneOf [#insight, #tactic] | a.ready]
         <> [CannotPlay AnyCard | redTape meta >= 2 && "redTape" `notElem` ignoredDirectives meta]
-  getModifiersFor _ _ = pure []
+    _ -> pure mempty
 
 instance HasAbilities DirectiveRedTape where
   getAbilities (DirectiveRedTape a) =

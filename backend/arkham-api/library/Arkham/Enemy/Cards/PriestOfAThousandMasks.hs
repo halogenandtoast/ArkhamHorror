@@ -16,13 +16,12 @@ priestOfAThousandMasks :: EnemyCard PriestOfAThousandMasks
 priestOfAThousandMasks = enemy PriestOfAThousandMasks Cards.priestOfAThousandMasks (2, Static 2, 2) (0, 1)
 
 instance HasModifiersFor PriestOfAThousandMasks where
-  getModifiersFor target (PriestOfAThousandMasks a) | a `is` target = do
+  getModifiersFor (PriestOfAThousandMasks a) = do
     n <- getSignsOfTheGods
-    toModifiers a
+    modifySelf a
       $ (guard (n >= 2) *> [Mod.EnemyFight 1, Mod.EnemyEvade 1])
       <> [HealthModifier 2 | n >= 4]
       <> (guard (n >= 6) *> [DamageDealt 1, AddKeyword Retaliate])
-  getModifiersFor _ _ = pure []
 
 instance RunMessage PriestOfAThousandMasks where
   runMessage msg (PriestOfAThousandMasks attrs) =

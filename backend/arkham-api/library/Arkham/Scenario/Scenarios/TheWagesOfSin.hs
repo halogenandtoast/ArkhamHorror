@@ -29,13 +29,16 @@ newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheWagesOfSin where
-  getModifiersFor (InvestigatorTarget iid) (TheWagesOfSin a) = do
-    atSpectralLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Spectral
-    toModifiers a [UseEncounterDeck SpectralEncounterDeck | atSpectralLocation]
-  getModifiersFor (CardIdTarget cid) (TheWagesOfSin a) = do
-    isSpectral <- (`cardMatch` CardWithTrait Spectral) <$> getCard cid
-    toModifiers a [UseEncounterDeck SpectralEncounterDeck | isSpectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheWagesOfSin a) = do
+    investigators <-
+      modifySelect
+        a
+        (InvestigatorAt $ LocationWithTrait Spectral)
+        [UseEncounterDeck SpectralEncounterDeck]
+    spectral <- findAllCards (`cardMatch` (CardWithTrait Spectral))
+    cards <-
+      modifyEach a (map (CardIdTarget . toCardId) spectral) [UseEncounterDeck SpectralEncounterDeck]
+    pure $ investigators <> cards
 
 theWagesOfSin :: Difficulty -> TheWagesOfSin
 theWagesOfSin difficulty =

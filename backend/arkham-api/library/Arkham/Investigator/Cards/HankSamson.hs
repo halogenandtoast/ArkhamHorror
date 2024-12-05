@@ -1,18 +1,15 @@
 module Arkham.Investigator.Cards.HankSamson (hankSamson, HankSamson (..)) where
 
 import Arkham.Ability
-import Arkham.Asset.Types (Field (..))
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasQueue (replaceMessageMatching)
-import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype HankSamson = HankSamson InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -25,20 +22,20 @@ hankSamson =
     $ Stats {health = 5, sanity = 5, willpower = 3, intellect = 1, combat = 5, agility = 3}
 
 instance HasModifiersFor HankSamson where
-  getModifiersFor (InvestigatorTarget iid) (HankSamson a) | iid /= a.id = do
-    maybeModified a do
-      liftGuardM $ onSameLocation iid a.placement
-      pure [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
-  getModifiersFor (AssetTarget aid) (HankSamson a) = do
-    maybeModified a do
-      liftGuardM $ onSameLocation a.id =<< field AssetPlacement aid
-      liftGuardM $ aid <=~> AllyAsset
-      pure [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
-  getModifiersFor target (HankSamson a) | isTarget a target = do
-    if unCardCode (investigatorArt a) == "10015"
-      then pure []
-      else modified a [CannotHealHorror, CannotHealDamage]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HankSamson a) = do
+    other <-
+      modifySelect
+        a
+        (not_ (InvestigatorWithId a.id) <> colocatedWith a.id)
+        [CanAssignDamageToInvestigator a.id, CanAssignHorrorToInvestigator a.id]
+    assets <-
+      modifySelect
+        a
+        (AssetAt (locationWithInvestigator a.id) <> #ally)
+        [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
+    self <-
+      modifySelfWhen a (unCardCode (investigatorArt a) /= "10015") [CannotHealHorror, CannotHealDamage]
+    pure $ other <> assets <> self
 
 instance HasAbilities HankSamson where
   getAbilities (HankSamson a) = case unCardCode (investigatorArt a) of

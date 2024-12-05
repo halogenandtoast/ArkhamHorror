@@ -20,14 +20,13 @@ carsonSinclair =
     $ Stats {health = 6, sanity = 6, willpower = 2, intellect = 2, combat = 2, agility = 2}
 
 instance HasModifiersFor CarsonSinclair where
-  getModifiersFor target (CarsonSinclair a) | a `is` target = do
-    modified
+  getModifiersFor (CarsonSinclair a) =
+    modifySelf
       a
       [ GiveAdditionalAction
           $ AdditionalAction "Carson Sinclair" (toSource a)
           $ AbilityRestrictedAdditionalAction (toSource a) 1
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities CarsonSinclair where
   getAbilities (CarsonSinclair a) =

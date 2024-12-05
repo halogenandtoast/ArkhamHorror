@@ -330,7 +330,7 @@ instance HasAbilities Treachery where
   getAbilities (Treachery a) = getAbilities a
 
 instance HasModifiersFor Treachery where
-  getModifiersFor target (Treachery a) = getModifiersFor target a
+  getModifiersFor (Treachery a) = getModifiersFor a
 
 instance HasCardCode Treachery where
   toCardCode = toCardCode . toAttrs

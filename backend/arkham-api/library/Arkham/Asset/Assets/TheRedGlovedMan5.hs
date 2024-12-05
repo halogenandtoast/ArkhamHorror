@@ -16,7 +16,7 @@ newtype Metadata = Metadata {chosenSkills :: [SkillType]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRedGlovedMan5 = TheRedGlovedMan5 (AssetAttrs `With` Metadata)
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theRedGlovedMan5 :: AssetCard TheRedGlovedMan5
@@ -29,9 +29,7 @@ instance HasAbilities TheRedGlovedMan5 where
     ]
 
 instance HasModifiersFor TheRedGlovedMan5 where
-  getModifiersFor (InvestigatorTarget iid) (TheRedGlovedMan5 (a `With` Metadata {..})) | controlledBy a iid = do
-    toModifiers a $ map (`BaseSkillOf` 6) chosenSkills
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheRedGlovedMan5 (a `With` Metadata {..})) = controllerGets a $ map (`BaseSkillOf` 6) chosenSkills
 
 skillTypes :: [(Text, SkillType)]
 skillTypes =

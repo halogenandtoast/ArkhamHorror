@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Plucky3 (plucky3, Plucky3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype Plucky3 = Plucky3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,11 +22,11 @@ instance HasAbilities Plucky3 where
     ]
 
 instance HasModifiersFor Plucky3 where
-  getModifiersFor target (Plucky3 attrs) | attrs `is` target = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (Plucky3 attrs) | iid `controls` attrs = do
-    toModifiers attrs [SkillModifier #willpower 1, SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Plucky3 a) = do
+    self <-
+      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controller <- controllerGets a [SkillModifier #willpower 1, SkillModifier #intellect 1]
+    pure $ self <> controller
 
 instance RunMessage Plucky3 where
   runMessage msg a@(Plucky3 attrs) = runQueueT $ case msg of

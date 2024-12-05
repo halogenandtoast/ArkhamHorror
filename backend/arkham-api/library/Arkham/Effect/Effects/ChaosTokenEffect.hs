@@ -38,11 +38,10 @@ chaosTokenEffect' eid metadata source chaosToken =
       }
 
 instance HasModifiersFor ChaosTokenEffect where
-  getModifiersFor target (ChaosTokenEffect attrs) | target == effectTarget attrs =
-    case effectMetadata attrs of
-      Just (EffectModifiers modifiers) -> pure modifiers
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChaosTokenEffect attrs) =
+    pure $ case effectMetadata attrs of
+      Just (EffectModifiers modifiers) -> singletonMap attrs.target modifiers
+      _ -> mempty
 
 instance RunMessage ChaosTokenEffect where
   runMessage msg e@(ChaosTokenEffect attrs@EffectAttrs {..}) = case msg of

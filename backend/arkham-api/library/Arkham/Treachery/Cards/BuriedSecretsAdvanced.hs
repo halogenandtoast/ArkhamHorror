@@ -2,9 +2,10 @@ module Arkham.Treachery.Cards.BuriedSecretsAdvanced (buriedSecretsAdvanced, Buri
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Helpers.Modifiers (inThreatAreaGets, pattern CannotMoveExceptByScenarioCardEffects)
 import Arkham.Investigate
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -19,10 +20,11 @@ instance HasAbilities BuriedSecretsAdvanced where
   getAbilities (BuriedSecretsAdvanced a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [#investigate] (ActionCost 2)]
 
 instance HasModifiersFor BuriedSecretsAdvanced where
-  getModifiersFor (InvestigatorTarget iid) (BuriedSecretsAdvanced a) | a `on` iid = do
-    canInvestigate <- selectAny $ locationWithInvestigator iid <> InvestigatableLocation
-    toModifiers a [CannotMoveExceptByScenarioCardEffects | canInvestigate]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BuriedSecretsAdvanced a) = case a.placement of
+    InThreatArea iid -> do
+      canInvestigate <- selectAny $ locationWithInvestigator iid <> InvestigatableLocation
+      inThreatAreaGets a [CannotMoveExceptByScenarioCardEffects | canInvestigate]
+    _ -> pure mempty
 
 instance RunMessage BuriedSecretsAdvanced where
   runMessage msg t@(BuriedSecretsAdvanced attrs) = runQueueT $ case msg of

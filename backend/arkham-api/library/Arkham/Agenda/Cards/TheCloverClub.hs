@@ -17,18 +17,17 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype TheCloverClub = TheCloverClub AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theCloverClub :: AgendaCard TheCloverClub
 theCloverClub = agenda (1, A) TheCloverClub Cards.theCloverClub (Static 4)
 
 instance HasModifiersFor TheCloverClub where
-  getModifiersFor (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
-    do
-      isCriminal <- elem eid <$> select (EnemyWithTrait Criminal)
-      toModifiers attrs [AddKeyword Aloof | isCriminal]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheCloverClub attrs) =
+    if onSide A attrs
+      then modifySelect attrs (EnemyWithTrait Criminal) [AddKeyword Aloof]
+      else pure mempty
 
 instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =

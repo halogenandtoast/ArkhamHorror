@@ -19,13 +19,12 @@ serpentOfTenochtitlan :: EnemyCard SerpentOfTenochtitlan
 serpentOfTenochtitlan = enemy SerpentOfTenochtitlan Cards.serpentOfTenochtitlan (3, Static 5, 3) (1, 1)
 
 instance HasModifiersFor SerpentOfTenochtitlan where
-  getModifiersFor target (SerpentOfTenochtitlan a) | isTarget a target = do
+  getModifiersFor (SerpentOfTenochtitlan a) = do
     atAncientLocation <- selectAny $ EnemyWithId a.id <> at_ (LocationWithTrait Ancient)
-    toModifiers a
+    modifySelf a
       $ if atAncientLocation
         then [AddKeyword Retaliate, AddKeyword Alert]
         else [AddKeyword Hunter]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities SerpentOfTenochtitlan where
   getAbilities (SerpentOfTenochtitlan a) =

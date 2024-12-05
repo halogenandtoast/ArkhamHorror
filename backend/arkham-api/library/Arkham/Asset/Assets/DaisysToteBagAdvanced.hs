@@ -9,10 +9,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modified_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 import Arkham.Slot
 import Arkham.Trait
 
@@ -31,9 +31,7 @@ instance HasAbilities DaisysToteBagAdvanced where
     ]
 
 instance HasModifiersFor DaisysToteBagAdvanced where
-  getModifiersFor (InvestigatorTarget iid) (DaisysToteBagAdvanced a) | controlledBy a iid = do
-    toModifiers a [CanBecomeFast $ #asset <> #tome]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DaisysToteBagAdvanced a) = controllerGets a [CanBecomeFast $ #asset <> #tome]
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
@@ -57,9 +55,8 @@ daisysToteBagAdvancedEffect :: EffectArgs -> DaisysToteBagAdvancedEffect
 daisysToteBagAdvancedEffect = cardEffect DaisysToteBagAdvancedEffect Cards.daisysToteBagAdvanced
 
 instance HasModifiersFor DaisysToteBagAdvancedEffect where
-  getModifiersFor target (DaisysToteBagAdvancedEffect attrs) | target == attrs.target = do
-    toModifiers attrs [BecomesFast FastPlayerWindow]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DaisysToteBagAdvancedEffect a) =
+    modified_ a a.target [BecomesFast FastPlayerWindow]
 
 instance RunMessage DaisysToteBagAdvancedEffect where
   runMessage msg e@(DaisysToteBagAdvancedEffect attrs) = runQueueT $ case msg of

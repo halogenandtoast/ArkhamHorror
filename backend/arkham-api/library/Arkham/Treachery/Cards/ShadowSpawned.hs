@@ -17,12 +17,13 @@ shadowSpawned :: TreacheryCard ShadowSpawned
 shadowSpawned = treachery ShadowSpawned Cards.shadowSpawned
 
 instance HasModifiersFor ShadowSpawned where
-  getModifiersFor (EnemyTarget eid) (ShadowSpawned attrs) | treacheryOnEnemy eid attrs = do
-    n <- field TreacheryResources (treacheryId attrs)
-    toModifiers attrs
-      $ [EnemyFight n, HealthModifier n, EnemyEvade n]
-      <> [AddKeyword Keyword.Massive | n >= 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ShadowSpawned attrs) = case attrs.placement of
+    AttachedToEnemy eid -> do
+      n <- field TreacheryResources (treacheryId attrs)
+      modified_ attrs eid
+        $ [EnemyFight n, HealthModifier n, EnemyEvade n]
+        <> [AddKeyword Keyword.Massive | n >= 3]
+    _ -> pure mempty
 
 instance RunMessage ShadowSpawned where
   runMessage msg t@(ShadowSpawned attrs) = case msg of

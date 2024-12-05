@@ -60,12 +60,12 @@ ichtacaScionOfYigEffect =
   cardEffect IchtacaScionOfYigEffect Cards.ichtacaScionOfYig
 
 instance HasModifiersFor IchtacaScionOfYigEffect where
-  getModifiersFor (ChaosTokenTarget token) (IchtacaScionOfYigEffect a) | chaosTokenFace token == Cultist = do
-    getSkillTestId >>= \case
-      Just sid | isTarget sid a.target -> do
-        toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (IchtacaScionOfYigEffect a) =
+    getSkillTest >>= \case
+      Just st | isTarget st.id a.target -> do
+        let tokens = filter ((== Cultist) . (.face)) st.revealedChaosTokens
+        modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
+      _ -> pure mempty
 
 instance RunMessage IchtacaScionOfYigEffect where
   runMessage msg e@(IchtacaScionOfYigEffect attrs@EffectAttrs {..}) =

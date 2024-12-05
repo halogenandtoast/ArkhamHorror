@@ -8,16 +8,15 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype WrackedByNightmares = WrackedByNightmares TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wrackedByNightmares :: TreacheryCard WrackedByNightmares
 wrackedByNightmares = treachery WrackedByNightmares Cards.wrackedByNightmares
 
 instance HasModifiersFor WrackedByNightmares where
-  getModifiersFor (InvestigatorTarget iid) (WrackedByNightmares attrs) = do
-    modified attrs [ControlledAssetsCannotReady | treacheryInThreatArea iid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WrackedByNightmares attrs) =
+    inThreatAreaGets attrs [ControlledAssetsCannotReady]
 
 instance HasAbilities WrackedByNightmares where
   getAbilities (WrackedByNightmares a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

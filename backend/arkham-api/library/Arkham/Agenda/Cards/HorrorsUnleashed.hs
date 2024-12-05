@@ -9,15 +9,13 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
 import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Modifier qualified as Modifier
-import Arkham.Projection
 import Arkham.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 horrorsUnleashed :: AgendaCard HorrorsUnleashed
@@ -27,10 +25,8 @@ instance HasAbilities HorrorsUnleashed where
   getAbilities (HorrorsUnleashed x) = [mkAbility x 1 $ ForcedAbility $ PhaseEnds #when #enemy]
 
 instance HasModifiersFor HorrorsUnleashed where
-  getModifiersFor (EnemyTarget eid) (HorrorsUnleashed attrs) = do
-    isAbomination <- member Abomination <$> field EnemyTraits eid
-    toModifiers attrs $ guard isAbomination *> [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HorrorsUnleashed attrs) =
+    modifySelect attrs (EnemyWithTrait Abomination) [Modifier.EnemyFight 1, Modifier.EnemyEvade 1]
 
 instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of

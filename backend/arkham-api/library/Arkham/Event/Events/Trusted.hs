@@ -20,11 +20,9 @@ trusted :: EventCard Trusted
 trusted = event Trusted Cards.trusted
 
 instance HasModifiersFor Trusted where
-  getModifiersFor (AssetTarget aid) (Trusted a) =
-    if AssetTarget aid `elem` eventAttachedTarget a
-      then toModifiers a [HealthModifier 1, SanityModifier 1]
-      else pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Trusted a) = case eventAttachedTarget a of
+    Just (AssetTarget aid) -> modified_ a aid [HealthModifier 1, SanityModifier 1]
+    _ -> pure mempty
 
 instance RunMessage Trusted where
   runMessage msg e@(Trusted attrs) = case msg of

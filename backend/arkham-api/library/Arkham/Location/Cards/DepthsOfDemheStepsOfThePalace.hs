@@ -15,7 +15,7 @@ import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype DepthsOfDemheStepsOfThePalace = DepthsOfDemheStepsOfThePalace LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 depthsOfDemheStepsOfThePalace :: LocationCard DepthsOfDemheStepsOfThePalace
@@ -25,10 +25,8 @@ depthsOfDemheStepsOfThePalace =
     . (revealedL .~ True)
 
 instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
-  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheStepsOfThePalace a) = do
-    here <- iid `isAt` a
-    toModifiers a [CannotPlay FastCard | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DepthsOfDemheStepsOfThePalace a) =
+    modifySelect a (investigatorAt a) [CannotPlay FastCard]
 
 instance RunMessage DepthsOfDemheStepsOfThePalace where
   runMessage msg (DepthsOfDemheStepsOfThePalace attrs) = case msg of

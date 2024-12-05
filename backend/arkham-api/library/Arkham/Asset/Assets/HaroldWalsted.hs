@@ -11,7 +11,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -37,21 +36,14 @@ instance HasAbilities HaroldWalsted where
     ]
 
 instance HasModifiersFor HaroldWalsted where
-  getModifiersFor (InvestigatorTarget iid) (HaroldWalsted attrs) = do
-    mAction <- getSkillTestAction
-    case mAction of
-      Just Action.Investigate -> do
-        isMiskatonic <-
-          selectAny
-            $ LocationWithInvestigator (InvestigatorWithId iid)
-            <> LocationWithTrait Miskatonic
-        toModifiers
-          attrs
-          [ SkillModifier SkillIntellect 2
-          | isMiskatonic && controlledBy attrs iid
-          ]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HaroldWalsted a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      getSkillTestAction >>= \case
+        Just Action.Investigate -> do
+          isMiskatonic <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Miskatonic
+          modifiedWhen_ a isMiskatonic iid [SkillModifier #intellect 2]
+        _ -> pure mempty
 
 instance RunMessage HaroldWalsted where
   runMessage msg a@(HaroldWalsted attrs) = case msg of

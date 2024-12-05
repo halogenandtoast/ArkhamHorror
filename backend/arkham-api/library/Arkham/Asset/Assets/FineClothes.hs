@@ -12,12 +12,13 @@ fineClothes :: AssetCard FineClothes
 fineClothes = assetWith FineClothes Cards.fineClothes $ (healthL ?~ 1) . (sanityL ?~ 1)
 
 instance HasModifiersFor FineClothes where
-  getModifiersFor (SkillTestTarget _) (FineClothes a) = maybeModified a do
-    liftGuardM isParley
-    iid <- MaybeT getSkillTestInvestigator
-    guard $ a `controlledBy` iid
-    pure [Difficulty (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FineClothes a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        guard $ a `controlledBy` st.investigator
+        liftGuardM isParley
+        pure [Difficulty (-2)]
 
 instance RunMessage FineClothes where
   runMessage msg (FineClothes attrs) = FineClothes <$> runMessage msg attrs

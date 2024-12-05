@@ -19,13 +19,10 @@ theDeadWithNoName :: AgendaCard TheDeadWithNoName
 theDeadWithNoName = agenda (3, A) TheDeadWithNoName Cards.theDeadWithNoName (Static 7)
 
 instance HasModifiersFor TheDeadWithNoName where
-  getModifiersFor (EnemyTarget eid) (TheDeadWithNoName a) = do
-    isRat <- eid <=~> enemyIs Enemies.swarmOfRats
-    isUnnamable <- eid <=~> enemyIs Enemies.theUnnamable
-    toModifiers a
-      $ (guard isRat $> AddKeyword (Swarming (Static 2)))
-      <> (guard isUnnamable *> [RemoveKeyword Aloof, AddKeyword Massive])
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheDeadWithNoName a) = do
+    rats <- modifySelect a (enemyIs Enemies.swarmOfRats) [AddKeyword (Swarming (Static 2))]
+    unnamable <- modifySelect a (enemyIs Enemies.theUnnamable) [RemoveKeyword Aloof, AddKeyword Massive]
+    pure $ rats <> unnamable
 
 instance HasAbilities TheDeadWithNoName where
   getAbilities (TheDeadWithNoName a) =

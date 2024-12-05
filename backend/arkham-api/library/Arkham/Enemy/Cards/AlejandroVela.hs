@@ -57,12 +57,12 @@ alejandroVelaEffect :: EffectArgs -> AlejandroVelaEffect
 alejandroVelaEffect = cardEffect AlejandroVelaEffect Cards.alejandroVela
 
 instance HasModifiersFor AlejandroVelaEffect where
-  getModifiersFor (ChaosTokenTarget token) (AlejandroVelaEffect a) | token.face == Tablet = do
-    getSkillTestId >>= \case
-      Just sid | isTarget sid a.target -> do
-        toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AlejandroVelaEffect a) = do
+    getSkillTest >>= \case
+      Just st | isTarget st.id a.target -> do
+        let tokens = filter ((== Tablet) . (.face)) st.revealedChaosTokens
+        modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
+      _ -> pure mempty
 
 instance RunMessage AlejandroVelaEffect where
   runMessage msg e@(AlejandroVelaEffect attrs) =

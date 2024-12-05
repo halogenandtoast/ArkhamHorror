@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Grounded3 (grounded3, Grounded3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype Grounded3 = Grounded3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,11 +22,11 @@ instance HasAbilities Grounded3 where
     ]
 
 instance HasModifiersFor Grounded3 where
-  getModifiersFor target (Grounded3 attrs) | attrs `is` target = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (Grounded3 attrs) | iid `controls` attrs = do
-    toModifiers attrs [AnySkillValue 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Grounded3 a) = do
+    self <-
+      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controller <- controllerGets a [AnySkillValue 1]
+    pure $ self <> controller
 
 instance RunMessage Grounded3 where
   runMessage msg a@(Grounded3 attrs) = runQueueT $ case msg of

@@ -11,14 +11,12 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Trait
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEntityAboveTheVortexAbove :: AgendaCard TheEntityAboveTheVortexAbove
@@ -26,10 +24,8 @@ theEntityAboveTheVortexAbove =
   agenda (2, C) TheEntityAboveTheVortexAbove Cards.theEntityAboveTheVortexAbove (Static 6)
 
 instance HasModifiersFor TheEntityAboveTheVortexAbove where
-  getModifiersFor (EnemyTarget eid) (TheEntityAboveTheVortexAbove a) = do
-    isMonster <- fieldP EnemyTraits (member Monster) eid
-    toModifiers a [EnemyFight 1 | isMonster]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheEntityAboveTheVortexAbove a) =
+    modifySelect a (EnemyWithTrait Monster) [EnemyFight 1]
 
 instance HasAbilities TheEntityAboveTheVortexAbove where
   getAbilities (TheEntityAboveTheVortexAbove a) =

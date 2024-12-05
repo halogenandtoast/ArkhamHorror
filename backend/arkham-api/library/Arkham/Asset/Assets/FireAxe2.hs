@@ -18,13 +18,14 @@ fireAxe2 :: AssetCard FireAxe2
 fireAxe2 = asset FireAxe2 Cards.fireAxe2
 
 instance HasModifiersFor FireAxe2 where
-  getModifiersFor (InvestigatorTarget iid) (FireAxe2 a) | controlledBy a iid = maybeModified a do
-    guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
-    Action.Fight <- MaybeT getSkillTestAction
-    resourceCount <- lift $ field InvestigatorResources iid
-    guard $ resourceCount == 0
-    pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FireAxe2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+      Action.Fight <- MaybeT getSkillTestAction
+      resourceCount <- lift $ field InvestigatorResources iid
+      guard $ resourceCount == 0
+      pure [DamageDealt 1]
 
 instance HasAbilities FireAxe2 where
   getAbilities (FireAxe2 a) =

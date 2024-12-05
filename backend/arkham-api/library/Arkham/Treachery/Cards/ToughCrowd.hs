@@ -11,16 +11,15 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype ToughCrowd = ToughCrowd TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toughCrowd :: TreacheryCard ToughCrowd
 toughCrowd = treachery ToughCrowd Cards.toughCrowd
 
 instance HasModifiersFor ToughCrowd where
-  getModifiersFor (InvestigatorTarget _) (ToughCrowd a) =
-    toModifiers a [AdditionalActionCostOf (IsAction Parley) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ToughCrowd a) =
+    modifySelect a Anyone [AdditionalActionCostOf (IsAction Parley) 1]
 
 instance HasAbilities ToughCrowd where
   getAbilities (ToughCrowd a) = [mkAbility a 1 $ forced $ RoundEnds #when]

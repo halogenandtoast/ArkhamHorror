@@ -8,6 +8,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.SkillType (allSkills)
 import Arkham.Trait (Trait (AncientOne))
 import Arkham.Treachery.Cards qualified as Cards
@@ -22,10 +23,9 @@ theSpinnerInDarkness :: TreacheryCard TheSpinnerInDarkness
 theSpinnerInDarkness = treachery TheSpinnerInDarkness Cards.theSpinnerInDarkness
 
 instance HasModifiersFor TheSpinnerInDarkness where
-  getModifiersFor (EnemyTarget eid) (TheSpinnerInDarkness attrs)
-    | treacheryOnEnemy eid attrs =
-        toModifiers attrs [DamageDealt 1, HorrorDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheSpinnerInDarkness attrs) = case attrs.placement of
+    AttachedToEnemy eid -> modified_ attrs eid [DamageDealt 1, HorrorDealt 1]
+    _ -> pure mempty
 
 instance HasAbilities TheSpinnerInDarkness where
   getAbilities (TheSpinnerInDarkness attrs) = [skillTestAbility $ restrictedAbility attrs 1 OnSameLocation actionAbility]

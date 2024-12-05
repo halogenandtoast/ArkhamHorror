@@ -8,7 +8,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -24,19 +24,20 @@ summonedServitor :: AssetCard SummonedServitor
 summonedServitor = asset SummonedServitor Cards.summonedServitor
 
 instance HasModifiersFor SummonedServitor where
-  getModifiersFor target (SummonedServitor a) | isTarget a target = do
+  getModifiersFor (SummonedServitor a) = do
     let indexes = [i | ChosenIndex i <- concatMap snd (toList a.customizations)]
-    modified a
-      $ guard (a `hasCustomization` Dominance)
-      *> [DoNotTakeUpSlot $ if 0 `elem` indexes then #arcane else #ally]
-  getModifiersFor (InvestigatorTarget iid) (SummonedServitor a) = do
-    maybeModified a do
-      guard $ a `hasCustomization` ArmoredCarapace
-      locationId <- MaybeT $ field InvestigatorLocation iid
-      assetLocationId <- MaybeT $ field AssetLocation (toId a)
-      guard $ locationId == assetLocationId
-      pure [CanAssignDamageToAsset (toId a)]
-  getModifiersFor _ _ = pure []
+    self <-
+      modifySelfWhen
+        a
+        (a `hasCustomization` Dominance)
+        [DoNotTakeUpSlot $ if 0 `elem` indexes then #arcane else #ally]
+    other <-
+      modifySelectWhen
+        a
+        (a `hasCustomization` ArmoredCarapace)
+        (InvestigatorAt $ locationWithAsset a)
+        [CanAssignDamageToAsset a.id]
+    pure $ self <> other
 
 instance HasAbilities SummonedServitor where
   getAbilities (SummonedServitor a) =

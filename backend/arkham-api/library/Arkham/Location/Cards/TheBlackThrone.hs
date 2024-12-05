@@ -1,59 +1,45 @@
-module Arkham.Location.Cards.TheBlackThrone (
-  theBlackThrone,
-  TheBlackThrone (..),
-)
-where
+module Arkham.Location.Cards.TheBlackThrone (theBlackThrone, TheBlackThrone (..)) where
 
-import Arkham.Prelude
-
-import Arkham.Attack
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype TheBlackThrone = TheBlackThrone LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theBlackThrone :: LocationCard TheBlackThrone
 theBlackThrone =
-  locationWith
-    TheBlackThrone
-    Cards.theBlackThrone
-    1
-    (PerPlayer 2)
-    (connectsToL .~ adjacentLocations)
+  locationWith TheBlackThrone Cards.theBlackThrone 1 (PerPlayer 2)
+    $ connectsToL
+    .~ adjacentLocations
 
 instance HasModifiersFor TheBlackThrone where
-  getModifiersFor target (TheBlackThrone attrs) | isTarget attrs target = do
-    azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-    doom <- field EnemyDoom azathoth
+  getModifiersFor (TheBlackThrone a) = whenRevealed a $ maybeModifySelf a do
+    azathoth <- MaybeT $ selectOne $ IncludeOmnipotent $ enemyIs Enemies.azathoth
+    doom <- lift $ field EnemyDoom azathoth
     let x = ceiling (fromIntegral doom / (2 :: Double))
-    toModifiers attrs [ShroudModifier x]
-  getModifiersFor _ _ = pure []
+    pure [ShroudModifier x]
 
 instance HasAbilities TheBlackThrone where
   getAbilities (TheBlackThrone attrs) =
-    withRevealedAbilities
-      attrs
-      [haunted "You must either place 1 doom on Azathoth, or Azathoth attacks you" attrs 1]
+    extendRevealed1 attrs
+      $ haunted "You must either place 1 doom on Azathoth, or Azathoth attacks you" attrs 1
 
 instance RunMessage TheBlackThrone where
-  runMessage msg l@(TheBlackThrone attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(TheBlackThrone attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Place 1 doom on Azathoth" [PlaceDoom (toAbilitySource attrs 1) (toTarget azathoth) 1]
-          , Label "Azathoth attacks you" [toMessage $ enemyAttack azathoth (toAbilitySource attrs 1) iid]
-          ]
+      chooseOneM iid do
+        labeled "Place 1 doom on Azathoth" $ placeDoom (attrs.ability 1) azathoth 1
+        labeled "Azathoth attacks you" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
       pure l
-    _ -> TheBlackThrone <$> runMessage msg attrs
+    _ -> TheBlackThrone <$> liftRunMessage msg attrs

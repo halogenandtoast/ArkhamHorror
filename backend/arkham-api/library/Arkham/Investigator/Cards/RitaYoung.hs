@@ -74,10 +74,12 @@ ritaYoungElderSignEffect :: EffectArgs -> RitaYoungElderSignEffect
 ritaYoungElderSignEffect = cardEffect RitaYoungElderSignEffect Cards.ritaYoung
 
 instance HasModifiersFor RitaYoungElderSignEffect where
-  getModifiersFor (AbilityTarget iid ab) (RitaYoungElderSignEffect a)
-    | ab.index == 1 && isSource iid ab.source && isTarget iid a.target = do
-        modified a [IgnoreLimit]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RitaYoungElderSignEffect a) = case a.target of
+    InvestigatorTarget iid ->
+      selectOne (AbilityIs (toSource iid) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab -> modified_ a (AbilityTarget iid ab) [IgnoreLimit]
+    _ -> pure mempty
 
 instance RunMessage RitaYoungElderSignEffect where
   runMessage msg e@(RitaYoungElderSignEffect attrs) = runQueueT $ case msg of

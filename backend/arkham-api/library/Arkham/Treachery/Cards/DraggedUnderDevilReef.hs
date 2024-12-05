@@ -6,7 +6,7 @@ where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -24,10 +24,7 @@ draggedUnderDevilReef :: TreacheryCard DraggedUnderDevilReef
 draggedUnderDevilReef = treachery DraggedUnderDevilReef Cards.draggedUnderDevilReef
 
 instance HasModifiersFor DraggedUnderDevilReef where
-  getModifiersFor (InvestigatorTarget iid) (DraggedUnderDevilReef a) = maybeModified a do
-    guard $ treacheryInThreatArea iid a
-    pure [CannotEnterVehicle AnyAsset]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DraggedUnderDevilReef a) = inThreatAreaGets a [CannotEnterVehicle AnyAsset]
 
 instance HasAbilities DraggedUnderDevilReef where
   getAbilities (DraggedUnderDevilReef a) = [restricted a 1 OnSameLocation actionAbility]

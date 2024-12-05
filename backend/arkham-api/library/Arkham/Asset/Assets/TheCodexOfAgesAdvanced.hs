@@ -8,10 +8,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype TheCodexOfAgesAdvanced = TheCodexOfAgesAdvanced AssetAttrs
   deriving anyclass IsAsset
@@ -21,9 +21,10 @@ theCodexOfAgesAdvanced :: AssetCard TheCodexOfAgesAdvanced
 theCodexOfAgesAdvanced = asset TheCodexOfAgesAdvanced Cards.theCodexOfAgesAdvanced
 
 instance HasModifiersFor TheCodexOfAgesAdvanced where
-  getModifiersFor (InvestigatorTarget iid) (TheCodexOfAgesAdvanced a) | controlledBy a iid = do
-    toModifiers a [SkillModifier sType 1 | notNull (assetSealedChaosTokens a), sType <- [minBound ..]]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheCodexOfAgesAdvanced a) =
+    controllerGets
+      a
+      [SkillModifier sType 1 | notNull (assetSealedChaosTokens a), sType <- [minBound ..]]
 
 instance HasAbilities TheCodexOfAgesAdvanced where
   getAbilities (TheCodexOfAgesAdvanced a) =

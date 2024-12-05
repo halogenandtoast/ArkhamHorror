@@ -14,17 +14,16 @@ import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Story
 
 newtype SeaOfPitch_265 = SeaOfPitch_265 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaOfPitch_265 :: LocationCard SeaOfPitch_265
 seaOfPitch_265 = location SeaOfPitch_265 Cards.seaOfPitch_265 0 (PerPlayer 1)
 
 instance HasModifiersFor SeaOfPitch_265 where
-  getModifiersFor target (SeaOfPitch_265 attrs) | attrs `is` target = do
+  getModifiersFor (SeaOfPitch_265 attrs) = do
     n <- scenarioCount Distortion
-    toModifiers attrs [ShroudModifier n | n > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [ShroudModifier n | n > 0]
 
 instance HasAbilities SeaOfPitch_265 where
   getAbilities (SeaOfPitch_265 attrs) =

@@ -19,14 +19,14 @@ hotelSecurity =
     ?~ SpawnAt (NearestLocationToYou EmptyLocation)
 
 instance HasModifiersFor HotelSecurity where
-  getModifiersFor target (HotelSecurity attrs) | attrs `is` target = do
+  getModifiersFor (HotelSecurity attrs) = do
     anyGuests <- selectAny $ EnemyWithTrait Guest
-    toModifiers attrs
-      $ guard anyGuests
-      *> [ RemoveKeyword Keyword.Hunter
-         , AddKeyword (Keyword.Patrol $ LocationWithEnemy $ EnemyWithTrait Guest)
-         ]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen
+      attrs
+      anyGuests
+      [ RemoveKeyword Keyword.Hunter
+      , AddKeyword (Keyword.Patrol $ LocationWithEnemy $ EnemyWithTrait Guest)
+      ]
 
 instance RunMessage HotelSecurity where
   runMessage msg (HotelSecurity attrs) = HotelSecurity <$> runMessage msg attrs

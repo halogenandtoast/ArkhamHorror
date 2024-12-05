@@ -8,16 +8,14 @@ import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Prelude
 
 newtype BeatCop = BeatCop AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 beatCop :: AssetCard BeatCop
 beatCop = ally BeatCop Cards.beatCop (2, 2)
 
 instance HasModifiersFor BeatCop where
-  getModifiersFor (InvestigatorTarget iid) (BeatCop a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BeatCop a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities BeatCop where
   getAbilities (BeatCop x) =

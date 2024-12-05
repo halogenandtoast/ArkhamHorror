@@ -454,8 +454,9 @@ createEnemyEngagedWithPrey c = do
 createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
-createEnemyAt_ :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
-createEnemyAt_ c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
+createEnemyAt_
+  :: (ReverseQueue m, IsCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
+createEnemyAt_ c location = push =<< Msg.createEnemyAt_ (toCard c) (asId location) Nothing
 
 createEnemyAt
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m EnemyId
@@ -2115,3 +2116,7 @@ cancelBatch bId = push $ CancelBatch bId
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg
+
+setLocationLabel
+  :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> Text -> m ()
+setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl

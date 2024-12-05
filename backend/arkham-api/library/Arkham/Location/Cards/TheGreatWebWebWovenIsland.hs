@@ -21,11 +21,10 @@ theGreatWebWebWovenIsland =
     .~ setFromList [Above, Below]
 
 instance HasModifiersFor TheGreatWebWebWovenIsland where
-  getModifiersFor target (TheGreatWebWebWovenIsland attrs) | attrs `is` target = do
-    toModifiers
+  getModifiersFor (TheGreatWebWebWovenIsland attrs) = do
+    modifySelf
       attrs
       [AdditionalCostToInvestigate $ OrCost [ActionCost 1, DoomCost (toSource attrs) (toTarget attrs) 1]]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TheGreatWebWebWovenIsland where
   runMessage msg (TheGreatWebWebWovenIsland attrs) =

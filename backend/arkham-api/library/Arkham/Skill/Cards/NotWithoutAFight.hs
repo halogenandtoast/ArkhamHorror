@@ -16,10 +16,12 @@ notWithoutAFight :: SkillCard NotWithoutAFight
 notWithoutAFight = skill NotWithoutAFight Cards.notWithoutAFight
 
 instance HasModifiersFor NotWithoutAFight where
-  getModifiersFor (CardIdTarget cid) (NotWithoutAFight attrs) | toCardId attrs == cid = do
+  getModifiersFor (NotWithoutAFight attrs) = do
     n <- selectCount $ EnemyIsEngagedWith $ InvestigatorWithId attrs.owner
-    toModifiers attrs [AddSkillIcons $ cycleN n [#willpower, #combat, #agility]]
-  getModifiersFor _ _ = pure []
+    modified_
+      attrs
+      (CardIdTarget $ toCardId attrs)
+      [AddSkillIcons $ cycleN n [#willpower, #combat, #agility]]
 
 instance RunMessage NotWithoutAFight where
   runMessage msg (NotWithoutAFight attrs) = NotWithoutAFight <$> runMessage msg attrs

@@ -16,12 +16,12 @@ prophesy :: SkillCard Prophesy
 prophesy = skill Prophesy Cards.prophesy
 
 instance HasModifiersFor Prophesy where
-  getModifiersFor (CardIdTarget cid) (Prophesy attrs) | toCardId attrs == cid = do
+  getModifiersFor (Prophesy attrs) = do
     doom <- getDoomCount
-    toModifiers
+    modified_
       attrs
+      (toCardId attrs)
       [AddSkillIcons $ if doom >= 6 then [WildIcon, WildIcon] else [WildIcon] | doom >= 3]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Prophesy where
   runMessage msg (Prophesy attrs) = Prophesy <$> runMessage msg attrs

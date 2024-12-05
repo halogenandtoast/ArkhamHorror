@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
 
@@ -19,13 +19,10 @@ lloigor =
     .~ Prey FewestCardsInHand
 
 instance HasModifiersFor Lloigor where
-  getModifiersFor target (Lloigor a) | isTarget a target = maybeModified a do
-    liftGuardM
-      $ selectAny
-      $ InvestigatorAt (locationWithEnemy a.id)
-      <> HandWith (LengthIs $ EqualTo $ Static 0)
-    pure [RemoveKeyword Aloof]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Lloigor a) = do
+    valid <-
+      selectAny $ InvestigatorAt (locationWithEnemy a.id) <> HandWith (LengthIs $ EqualTo $ Static 0)
+    modifySelfWhen a valid [RemoveKeyword Aloof]
 
 instance HasAbilities Lloigor where
   getAbilities (Lloigor a) =

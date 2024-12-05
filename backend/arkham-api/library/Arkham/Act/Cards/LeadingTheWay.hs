@@ -15,19 +15,15 @@ import Arkham.Matcher
 import Arkham.Resolution
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 leadingTheWay :: ActCard LeadingTheWay
 leadingTheWay = act (3, A) LeadingTheWay Cards.leadingTheWay Nothing
 
 instance HasModifiersFor LeadingTheWay where
-  getModifiersFor (LocationTarget lid) (LeadingTheWay attrs) = do
-    isBlockedPassage <-
-      elem lid
-        <$> select (locationIs Locations.blockedPassage)
-    toModifiers attrs [Blank | isBlockedPassage]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LeadingTheWay attrs) = do
+    modifySelect attrs (locationIs Locations.blockedPassage) [Blank]
 
 instance HasAbilities LeadingTheWay where
   getAbilities (LeadingTheWay a)

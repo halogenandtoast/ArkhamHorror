@@ -16,13 +16,12 @@ serpentFromYoth :: EnemyCard SerpentFromYoth
 serpentFromYoth = enemy SerpentFromYoth Cards.serpentFromYoth (3, Static 5, 3) (1, 2)
 
 instance HasModifiersFor SerpentFromYoth where
-  getModifiersFor (EnemyTarget eid) (SerpentFromYoth a) | toId a == eid = do
+  getModifiersFor (SerpentFromYoth a) = do
     vengeance <- getVengeanceInVictoryDisplay
-    toModifiers a
+    modifySelf a
       $ [AddKeyword Keyword.Retaliate | vengeance >= 1]
       <> [AddKeyword Keyword.Hunter | vengeance >= 2]
       <> [DamageTakenFrom AttackDamageEffect (-1) | vengeance >= 3]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage SerpentFromYoth where
   runMessage msg (SerpentFromYoth attrs) = SerpentFromYoth <$> runMessage msg attrs

@@ -38,13 +38,19 @@ gavriellaMizrah =
     $ Stats {health = 8, sanity = 4, willpower = 3, intellect = 2, combat = 4, agility = 1}
 
 instance HasModifiersFor GavriellaMizrah where
-  getModifiersFor target (GavriellaMizrah a) | a `isTarget` target = do
-    toModifiersWith a setActiveDuringSetup
-      $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
-  getModifiersFor (AssetTarget aid) (GavriellaMizrah a) = do
-    isFortyFiveAutomatic <- aid <=~> assetIs Cards.fortyFiveAutomatic
-    toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-2) | isFortyFiveAutomatic]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GavriellaMizrah a) = do
+    self <-
+      modifySelfWith
+        a
+        setActiveDuringSetup
+        [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
+    uses <-
+      modifySelectWith
+        a
+        (assetIs Cards.fortyFiveAutomatic)
+        setActiveDuringSetup
+        [AdditionalStartingUses (-2)]
+    pure $ self <> uses
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =

@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.FogOverInnsmouth (fogOverInnsmouth, FogOverInnsmouth (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -16,8 +16,7 @@ fogOverInnsmouth :: TreacheryCard FogOverInnsmouth
 fogOverInnsmouth = treachery FogOverInnsmouth Cards.fogOverInnsmouth
 
 instance HasModifiersFor FogOverInnsmouth where
-  getModifiersFor (LocationTarget _) (FogOverInnsmouth a) = modified a [ShroudModifier 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FogOverInnsmouth a) = modifySelect a Anywhere [ShroudModifier 1]
 
 instance HasAbilities FogOverInnsmouth where
   getAbilities (FogOverInnsmouth a) =

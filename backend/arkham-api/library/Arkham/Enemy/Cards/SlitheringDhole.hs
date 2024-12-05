@@ -25,16 +25,14 @@ slitheringDhole =
     . (unableToSpawnL .~ ShuffleBackInIfUnableToSpawn)
 
 instance HasModifiersFor SlitheringDhole where
-  getModifiersFor (LocationTarget lid) (SlitheringDhole a) = do
-    toModifiers
-      a
+  getModifiersFor (SlitheringDhole a) = do
+    modifySelectMap a Anywhere \lid ->
       [ ConnectedToWhen
           ( LocationWithTreachery (treacheryIs Treacheries.dholeTunnel)
               <> LocationWhenCriteria (exists $ EnemyWithId a.id <> MovingEnemy)
           )
           (LocationWithTreachery (treacheryIs Treacheries.dholeTunnel) <> not_ (LocationWithId lid))
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage SlitheringDhole where
   runMessage msg (SlitheringDhole attrs) = SlitheringDhole <$> runMessage msg attrs

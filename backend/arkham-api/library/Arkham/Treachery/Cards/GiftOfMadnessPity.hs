@@ -5,6 +5,7 @@ import Arkham.Choose
 import Arkham.Classes
 import Arkham.Matcher hiding (PlaceUnderneath, treacheryInHandOf)
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
@@ -13,16 +14,16 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessPity = GiftOfMadnessPity TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 giftOfMadnessPity :: TreacheryCard GiftOfMadnessPity
 giftOfMadnessPity = treachery GiftOfMadnessPity Cards.giftOfMadnessPity
 
 instance HasModifiersFor GiftOfMadnessPity where
-  getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessPity a) =
-    toModifiers a [CannotFight (EnemyWithTrait Lunatic) | treacheryInHandOf a == Just iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GiftOfMadnessPity a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotFight (EnemyWithTrait Lunatic)]
+    _ -> pure mempty
 
 instance HasAbilities GiftOfMadnessPity where
   getAbilities (GiftOfMadnessPity a) = [restrictedAbility a 1 InYourHand actionAbility]

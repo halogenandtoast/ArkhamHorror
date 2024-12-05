@@ -13,6 +13,7 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher.Agenda
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -50,9 +51,8 @@ mystifyingSongEffect :: EffectArgs -> MystifyingSongEffect
 mystifyingSongEffect = cardEffect MystifyingSongEffect Cards.mystifyingSong
 
 instance HasModifiersFor MystifyingSongEffect where
-  getModifiersFor (AgendaTarget _) (MystifyingSongEffect a) =
-    toModifiers a [CannotBeAdvancedByDoomThreshold]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MystifyingSongEffect a) =
+    modifySelect a AnyAgenda [CannotBeAdvancedByDoomThreshold]
 
 instance RunMessage MystifyingSongEffect where
   runMessage msg e@(MystifyingSongEffect attrs@EffectAttrs {..}) = case msg of

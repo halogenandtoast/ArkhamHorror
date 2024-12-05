@@ -13,16 +13,14 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
 newtype GreteWagner = GreteWagner AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 greteWagner :: AssetCard GreteWagner
 greteWagner = ally GreteWagner Cards.greteWagner (3, 2)
 
 instance HasModifiersFor GreteWagner where
-  getModifiersFor (InvestigatorTarget iid) (GreteWagner a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GreteWagner a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities GreteWagner where
   getAbilities (GreteWagner a) =

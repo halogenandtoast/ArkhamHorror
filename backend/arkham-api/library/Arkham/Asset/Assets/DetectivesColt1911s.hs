@@ -21,13 +21,13 @@ detectivesColt1911s :: AssetCard DetectivesColt1911s
 detectivesColt1911s = asset DetectivesColt1911s Cards.detectivesColt1911s
 
 instance HasModifiersFor DetectivesColt1911s where
-  getModifiersFor (AssetTarget aid) (DetectivesColt1911s a) = do
+  getModifiersFor (DetectivesColt1911s a) = do
     case a.controller of
-      Nothing -> pure []
+      Nothing -> pure mempty
       Just iid -> do
-        toolAssetsWithHands <- select $ assetControlledBy iid <> AssetWithTrait Tool <> AssetInSlot HandSlot
-        toModifiers a [DoNotTakeUpSlot HandSlot | aid `elem` take 2 toolAssetsWithHands]
-  getModifiersFor _ _ = pure []
+        toolAssetsWithHands <-
+          take 2 <$> select (assetControlledBy iid <> AssetWithTrait Tool <> AssetInSlot HandSlot)
+        modifyEach a toolAssetsWithHands [DoNotTakeUpSlot HandSlot]
 
 instance HasAbilities DetectivesColt1911s where
   getAbilities (DetectivesColt1911s a) =

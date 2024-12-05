@@ -19,22 +19,22 @@ ableBodied =
   skill AbleBodied Cards.ableBodied
 
 instance HasModifiersFor AbleBodied where
-  getModifiersFor (CardIdTarget cid) (AbleBodied attrs) | toCardId attrs == cid = do
-    itemAssets <- selectCount $ AssetWithTrait Item <> assetControlledBy (skillOwner attrs)
-    toModifiers
-      attrs
+  getModifiersFor (AbleBodied a) = do
+    itemAssets <- selectCount $ AssetWithTrait Item <> assetControlledBy (skillOwner a)
+    modifiedWhen_
+      a
+      (itemAssets <= 2)
+      (CardIdTarget $ toCardId a)
       [ AddSkillIcons
-        $ if itemAssets <= 1
-          then
-            [ SkillIcon SkillCombat
-            , SkillIcon SkillCombat
-            , SkillIcon SkillAgility
-            , SkillIcon SkillAgility
-            ]
-          else [SkillIcon SkillCombat, SkillIcon SkillAgility]
-      | itemAssets <= 2
+          $ if itemAssets <= 1
+            then
+              [ SkillIcon SkillCombat
+              , SkillIcon SkillCombat
+              , SkillIcon SkillAgility
+              , SkillIcon SkillAgility
+              ]
+            else [SkillIcon SkillCombat, SkillIcon SkillAgility]
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage AbleBodied where
   runMessage msg (AbleBodied attrs) = AbleBodied <$> runMessage msg attrs

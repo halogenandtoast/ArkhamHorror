@@ -3,21 +3,19 @@ module Arkham.Asset.Assets.HikingBoots1 (hikingBoots1, HikingBoots1 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Movement
 
 newtype HikingBoots1 = HikingBoots1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hikingBoots1 :: AssetCard HikingBoots1
 hikingBoots1 = asset HikingBoots1 Cards.hikingBoots1
 
 instance HasModifiersFor HikingBoots1 where
-  getModifiersFor (InvestigatorTarget iid) (HikingBoots1 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HikingBoots1 a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities HikingBoots1 where
   getAbilities (HikingBoots1 a) =

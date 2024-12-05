@@ -21,9 +21,7 @@ lighthouseKeepersCottage :: LocationCard LighthouseKeepersCottage
 lighthouseKeepersCottage = location LighthouseKeepersCottage Cards.lighthouseKeepersCottage 4 (PerPlayer 2)
 
 instance HasModifiersFor LighthouseKeepersCottage where
-  getModifiersFor target (LighthouseKeepersCottage attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LighthouseKeepersCottage attrs) = modifySelf attrs [CannotBeFullyFlooded]
 
 instance HasAbilities LighthouseKeepersCottage where
   getAbilities (LighthouseKeepersCottage a) =

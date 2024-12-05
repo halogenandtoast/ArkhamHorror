@@ -18,9 +18,7 @@ lighthouseStairwell :: LocationCard LighthouseStairwell
 lighthouseStairwell = location LighthouseStairwell Cards.lighthouseStairwell 3 (PerPlayer 1)
 
 instance HasModifiersFor LighthouseStairwell where
-  getModifiersFor target (LighthouseStairwell attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LighthouseStairwell attrs) = modifySelf attrs [CannotBeFullyFlooded]
 
 instance HasAbilities LighthouseStairwell where
   getAbilities (LighthouseStairwell attrs) =

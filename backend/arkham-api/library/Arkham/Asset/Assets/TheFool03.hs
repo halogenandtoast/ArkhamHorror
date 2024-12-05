@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.TheFool03 (theFool03, TheFool03 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsWhen)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 
 newtype TheFool03 = TheFool03 AssetAttrs
   deriving anyclass IsAsset
@@ -16,9 +16,7 @@ theFool03 :: AssetCard TheFool03
 theFool03 = asset TheFool03 Cards.theFool03
 
 instance HasModifiersFor TheFool03 where
-  getModifiersFor (InvestigatorTarget iid) (TheFool03 a) | controlledBy a iid && not (assetExhausted a) = do
-    toModifiers a [CanReduceCostOf AnyCard 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheFool03 a) = controllerGetsWhen a a.ready [CanReduceCostOf AnyCard 1]
 
 instance HasAbilities TheFool03 where
   getAbilities (TheFool03 a) =

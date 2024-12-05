@@ -4,26 +4,21 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (HealthModifier), toModifiers)
+import Arkham.Helpers.Modifiers (ModifierType (HealthModifier), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 
 newtype TheDreamEaters = TheDreamEaters ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theDreamEaters :: ActCard TheDreamEaters
 theDreamEaters = act (5, A) TheDreamEaters Cards.theDreamEaters Nothing
 
 instance HasModifiersFor TheDreamEaters where
-  getModifiersFor (EnemyTarget eid) (TheDreamEaters attrs) = do
-    isTrueShape <- eid <=~> enemyIs Enemies.nyarlathotepTrueShape
-    if isTrueShape
-      then do
-        clues <- selectSum InvestigatorClues UneliminatedInvestigator
-        toModifiers attrs [HealthModifier (-clues) | clues > 0]
-      else pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheDreamEaters attrs) = do
+    clues <- selectSum InvestigatorClues UneliminatedInvestigator
+    modifySelect attrs (enemyIs Enemies.nyarlathotepTrueShape) [HealthModifier (-clues) | clues > 0]
 
 instance HasAbilities TheDreamEaters where
   getAbilities (TheDreamEaters x) =

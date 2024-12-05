@@ -29,6 +29,13 @@ isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
   _ -> False
 
+getIchtacasPrey :: HasGame m => m [EnemyId]
+getIchtacasPrey = do
+  remembered <- scenarioField ScenarioRemembered
+  pure $ flip mapMaybe (toList remembered) \case
+    IchtacasPrey (Labeled _ eid' `With` _) -> Just eid'
+    _ -> Nothing
+
 isIchtacasDestination :: HasGame m => LocationId -> m Bool
 isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasDestination (Labeled _ lid') -> lid == lid'

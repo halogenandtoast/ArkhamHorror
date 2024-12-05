@@ -24,9 +24,9 @@ nephthysHuntressOfBast4 :: AssetCard NephthysHuntressOfBast4
 nephthysHuntressOfBast4 = ally NephthysHuntressOfBast4 Cards.nephthysHuntressOfBast4 (2, 2)
 
 instance HasModifiersFor NephthysHuntressOfBast4 where
-  getModifiersFor (InvestigatorTarget iid) (NephthysHuntressOfBast4 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (NephthysHuntressOfBast4 a) = case a.controller of
+    Just iid -> modified_ a iid [SkillModifier #willpower 1]
+    Nothing -> pure mempty
 
 instance HasAbilities NephthysHuntressOfBast4 where
   getAbilities (NephthysHuntressOfBast4 x) =

@@ -7,7 +7,7 @@ where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -22,15 +22,15 @@ directiveConsultExperts :: AssetCard DirectiveConsultExperts
 directiveConsultExperts = asset DirectiveConsultExperts Cards.directiveConsultExperts
 
 instance HasModifiersFor DirectiveConsultExperts where
-  getModifiersFor (AssetTarget aid) (DirectiveConsultExperts a) = do
-    maybeModified a do
-      guard $ not a.flipped
-      controller <- hoistMaybe a.controller
-      liftGuardM $ aid <=~> asset_ #ally
-      meta <- lift $ fieldMap InvestigatorMeta (toResultDefault defaultMeta) controller
-      guard $ "consultExperts" `notElem` ignoredDirectives meta
-      pure [CannotAssignDamage controller]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DirectiveConsultExperts a) = case a.controller of
+    Just iid | not a.flipped -> do
+      meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
+      modifySelectWhen
+        a
+        ("consultExperts" `notElem` ignoredDirectives meta)
+        (asset_ #ally)
+        [CannotAssignDamage iid]
+    _ -> pure mempty
 
 instance RunMessage DirectiveConsultExperts where
   runMessage msg (DirectiveConsultExperts attrs) = runQueueT $ case msg of

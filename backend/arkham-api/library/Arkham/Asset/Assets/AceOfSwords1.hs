@@ -7,16 +7,16 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype AceOfSwords1 = AceOfSwords1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aceOfSwords1 :: AssetCard AceOfSwords1
 aceOfSwords1 = asset AceOfSwords1 Cards.aceOfSwords1
 
 instance HasModifiersFor AceOfSwords1 where
-  getModifiersFor (InvestigatorTarget iid) (AceOfSwords1 a) =
-    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AceOfSwords1 a) = case a.controller of
+    Just iid -> modified_ a iid [SkillModifier #combat 1]
+    _ -> pure mempty
 
 instance HasAbilities AceOfSwords1 where
   getAbilities (AceOfSwords1 a) = [reactionAbility a 1 Free (GameBegins #when) InYourHand]

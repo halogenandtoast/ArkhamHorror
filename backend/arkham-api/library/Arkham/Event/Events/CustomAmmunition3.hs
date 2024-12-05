@@ -17,13 +17,12 @@ customAmmunition3 :: EventCard CustomAmmunition3
 customAmmunition3 = event CustomAmmunition3 Cards.customAmmunition3
 
 instance HasModifiersFor CustomAmmunition3 where
-  getModifiersFor (InvestigatorTarget iid) (CustomAmmunition3 a) = maybeModified a do
+  getModifiersFor (CustomAmmunition3 a) = maybeModified_ a a.controller do
     aid <- MaybeT $ join . fmap (.asset) <$> getSkillTestSource
-    liftGuardM $ iid <=~> HasMatchingAsset (AssetWithId aid)
+    liftGuardM $ a.controller <=~> HasMatchingAsset (AssetWithId aid)
     guard $ maybe False (isTarget aid) a.attachedTo
     liftGuardM $ isFightWith $ EnemyWithTrait Monster
     pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage CustomAmmunition3 where
   runMessage msg e@(CustomAmmunition3 attrs) = runQueueT $ case msg of

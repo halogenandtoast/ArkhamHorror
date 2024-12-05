@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (getSkillTestId, getSkillTestInvestigator, withSkillTest)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.SkillTest (getSkillTest, withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -46,14 +46,15 @@ wellConnected3Effect :: EffectArgs -> WellConnected3Effect
 wellConnected3Effect = cardEffect WellConnected3Effect Cards.wellConnected3
 
 instance HasModifiersFor WellConnected3Effect where
-  getModifiersFor (InvestigatorTarget iid) (WellConnected3Effect a) = maybeModified a do
-    sid <- MaybeT getSkillTestId
-    iid' <- MaybeT getSkillTestInvestigator
-    guard $ isTarget sid a.target
-    guard $ iid == iid'
-    resources <- lift $ field InvestigatorResources iid
-    pure [AnySkillValue (resources `div` 4)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WellConnected3Effect a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st ->
+        if isTarget st.id a.target
+          then do
+            resources <- field InvestigatorResources st.investigator
+            modified_ a st.investigator [AnySkillValue (resources `div` 4)]
+          else pure mempty
 
 instance RunMessage WellConnected3Effect where
   runMessage msg e@(WellConnected3Effect attrs) = runQueueT $ case msg of

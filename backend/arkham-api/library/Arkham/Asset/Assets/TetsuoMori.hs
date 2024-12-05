@@ -20,14 +20,13 @@ tetsuoMori :: AssetCard TetsuoMori
 tetsuoMori = ally TetsuoMori Cards.tetsuoMori (2, 2)
 
 instance HasModifiersFor TetsuoMori where
-  getModifiersFor (InvestigatorTarget iid) (TetsuoMori a) | not (controlledBy a iid) = do
-    locationId <- field InvestigatorLocation iid
-    assetLocationId <- field AssetLocation (toId a)
-    toModifiers a
-      $ if (locationId == assetLocationId) && isJust locationId
-        then [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-        else []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TetsuoMori a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      modifySelect
+        a
+        (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+        [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
 
 instance HasAbilities TetsuoMori where
   getAbilities (TetsuoMori a) =

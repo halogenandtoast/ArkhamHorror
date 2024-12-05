@@ -22,11 +22,12 @@ instance HasAbilities VaultOfEarthlyDemise where
     [mkAbility attrs 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Cards.umordhoth]
 
 instance HasModifiersFor VaultOfEarthlyDemise where
-  getModifiersFor target@(EnemyTarget _) (VaultOfEarthlyDemise attrs) | target `elem` attrs.attached = do
-    let x = treacheryResources attrs
-    additionalHealth <- getPlayerCountValue (PerPlayer x)
-    toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VaultOfEarthlyDemise attrs) = case attrs.placement of
+    AttachedToEnemy eid -> do
+      let x = treacheryResources attrs
+      additionalHealth <- getPlayerCountValue (PerPlayer x)
+      modified_ attrs eid [HealthModifier additionalHealth, EnemyFight x]
+    _ -> pure mempty
 
 instance RunMessage VaultOfEarthlyDemise where
   runMessage msg t@(VaultOfEarthlyDemise attrs) = case msg of

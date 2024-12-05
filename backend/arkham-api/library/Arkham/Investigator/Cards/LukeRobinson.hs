@@ -6,7 +6,13 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.Game.Helpers (canDo, getActions, getIsPlayable, getPlayableCards)
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, toModifiers, withModifiers)
+import Arkham.Helpers.Modifiers (
+  ModifierType (..),
+  getModifiers,
+  modifySelf,
+  toModifiers,
+  withModifiers,
+ )
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -27,13 +33,15 @@ newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
   deriving stock Data
 
 instance HasModifiersFor LukeRobinson where
-  getModifiersFor target (LukeRobinson (a `With` meta)) | a `is` target && active meta = do
-    connectingLocations <- select ConnectedLocation
-    mods <- for connectingLocations $ \lid -> do
-      enemies <- select $ enemyAt lid
-      pure (AsIfAt lid : map AsIfEngagedWith enemies)
-    toModifiers a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LukeRobinson (a `With` meta)) = do
+    if active meta
+      then do
+        connectingLocations <- select ConnectedLocation
+        mods <- for connectingLocations $ \lid -> do
+          enemies <- select $ enemyAt lid
+          pure (AsIfAt lid : map AsIfEngagedWith enemies)
+        modifySelf a [PlayableModifierContexts $ map (CardWithType EventType,) mods]
+      else pure mempty
 
 lukeRobinson :: InvestigatorCard LukeRobinson
 lukeRobinson =

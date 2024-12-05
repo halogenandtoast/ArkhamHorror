@@ -30,6 +30,7 @@ data ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
   | SealedOnInvestigator InvestigatorMatcher ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
+  | ChaosTokenRevealedBy InvestigatorMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
@@ -53,6 +54,7 @@ instance ToDisplay ChaosTokenMatcher where
     SealedOnInvestigator _ inner -> toDisplay inner <> " sealed on a relevant enemy"
     RevealedChaosTokens inner -> toDisplay inner <> " among revealed"
     ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
+    ChaosTokenRevealedBy _ -> "Revealed chaos token"
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

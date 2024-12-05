@@ -10,18 +10,15 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype Haunted = Haunted TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 haunted :: TreacheryCard Haunted
 haunted = treachery Haunted Cards.haunted
 
 instance HasModifiersFor Haunted where
-  getModifiersFor (InvestigatorTarget iid) (Haunted attrs) =
-    modified
-      attrs
-      [SkillModifier skillType (-1) | treacheryInThreatArea iid attrs, skillType <- allSkills]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Haunted attrs) =
+    inThreatAreaGets attrs [SkillModifier skillType (-1) | skillType <- allSkills]
 
 instance HasAbilities Haunted where
   getAbilities (Haunted a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.ColdSpringGlen_244 (
-  coldSpringGlen_244,
-  ColdSpringGlen_244 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ColdSpringGlen_244 (coldSpringGlen_244, ColdSpringGlen_244 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -14,10 +9,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_244)
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coldSpringGlen_244 :: LocationCard ColdSpringGlen_244
@@ -25,10 +21,7 @@ coldSpringGlen_244 =
   location ColdSpringGlen_244 Cards.coldSpringGlen_244 3 (Static 2)
 
 instance HasModifiersFor ColdSpringGlen_244 where
-  getModifiersFor (EnemyTarget eid) (ColdSpringGlen_244 attrs) = do
-    atLocation <- enemyAtLocation eid attrs
-    toModifiers attrs [EnemyEvade (-1) | atLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ColdSpringGlen_244 attrs) = modifySelect attrs (enemyAt attrs) [EnemyEvade (-1)]
 
 instance HasAbilities ColdSpringGlen_244 where
   getAbilities (ColdSpringGlen_244 attrs) =

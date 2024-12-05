@@ -6,12 +6,10 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.GameValue
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
 
 newtype TheRescue = TheRescue ActAttrs
@@ -22,15 +20,12 @@ theRescue :: ActCard TheRescue
 theRescue = act (1, A) TheRescue Cards.theRescue Nothing
 
 instance HasModifiersFor TheRescue where
-  getModifiersFor (EnemyTarget eid) (TheRescue a) = do
+  getModifiersFor (TheRescue a) = do
     kidnapper <- toCardCode <$> getKidnapper
-    enemyCardCode <- field EnemyCardCode eid
     n <- perPlayer 1
-    modified a $ guard (kidnapper == enemyCardCode) *> [RemoveKeyword Aloof, HealthModifier n]
-  getModifiersFor (InvestigatorTarget _) (TheRescue a) = do
-    kidnapper <- toCardCode <$> getKidnapper
-    modified a [CannotParleyWith $ EnemyIs kidnapper]
-  getModifiersFor _ _ = pure []
+    enemies <- modifySelect a (EnemyIs kidnapper) [RemoveKeyword Aloof, HealthModifier n]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyIs kidnapper]
+    pure $ enemies <> investigators
 
 instance HasAbilities TheRescue where
   getAbilities (TheRescue attrs) = extend attrs [restrictedAbility attrs 1 criteria $ Objective $ ForcedAbility AnyWindow]

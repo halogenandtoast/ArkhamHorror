@@ -6,7 +6,7 @@ where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
@@ -19,14 +19,13 @@ directiveLeaveNoDoubt :: AssetCard DirectiveLeaveNoDoubt
 directiveLeaveNoDoubt = asset DirectiveLeaveNoDoubt Cards.directiveLeaveNoDoubt
 
 instance HasModifiersFor DirectiveLeaveNoDoubt where
-  getModifiersFor (InvestigatorTarget iid) (DirectiveLeaveNoDoubt a) = do
-    maybeModified a do
-      guard $ not a.flipped
-      guard $ a.controller == Just iid
-      meta <- lift $ fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
-      pure $ SanityModifier 3
+  getModifiersFor (DirectiveLeaveNoDoubt a) = case a.controller of
+    Just iid | not a.flipped -> do
+      meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
+      modified_ a iid
+        $ SanityModifier 3
         : [CannotMove | leaveNoDoubt meta >= 2 && "leaveNoDoubt" `notElem` ignoredDirectives meta]
-  getModifiersFor _ _ = pure []
+    _ -> pure mempty
 
 instance RunMessage DirectiveLeaveNoDoubt where
   runMessage msg (DirectiveLeaveNoDoubt attrs) = runQueueT $ case msg of

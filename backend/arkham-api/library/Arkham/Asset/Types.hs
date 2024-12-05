@@ -101,7 +101,7 @@ instance HasAbilities Asset where
   getAbilities (Asset a) = getAbilities a
 
 instance HasModifiersFor Asset where
-  getModifiersFor target (Asset a) = getModifiersFor target a
+  getModifiersFor (Asset a) = getModifiersFor a
 
 instance Entity Asset where
   type EntityId Asset = AssetId

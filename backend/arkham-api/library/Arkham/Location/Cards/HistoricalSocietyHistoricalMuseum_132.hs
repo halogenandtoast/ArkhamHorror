@@ -3,22 +3,17 @@ module Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_132 (
   HistoricalSocietyHistoricalMuseum_132 (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyHistoricalMuseum_132 = HistoricalSocietyHistoricalMuseum_132 LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyHistoricalMuseum_132
@@ -31,33 +26,24 @@ historicalSocietyHistoricalMuseum_132 =
     (PerPlayer 1)
 
 instance HasModifiersFor HistoricalSocietyHistoricalMuseum_132 where
-  getModifiersFor (InvestigatorTarget _) (HistoricalSocietyHistoricalMuseum_132 attrs) =
-    do
-      mtarget <- getSkillTestTarget
-      mAction <- getSkillTestAction
-      case (mAction, mtarget) of
-        (Just Action.Investigate, Just target)
-          | isTarget attrs target ->
-              toModifiers attrs [SkillCannotBeIncreased SkillIntellect]
-        _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HistoricalSocietyHistoricalMuseum_132 a) =
+    getSkillTestInvestigator >>= \case
+      Nothing -> pure mempty
+      Just iid -> maybeModified_ a iid do
+        liftGuardM $ isInvestigating iid a.id
+        pure [SkillCannotBeIncreased #intellect]
 
 instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where
   getAbilities (HistoricalSocietyHistoricalMuseum_132 attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemySpawns
-          Timing.When
-          (LocationWithId $ toId attrs)
-          AnyEnemy
-      | not (locationRevealed attrs)
+      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (be attrs) AnyEnemy
+      | attrs.unrevealed
       ]
 
 instance RunMessage HistoricalSocietyHistoricalMuseum_132 where
-  runMessage msg l@(HistoricalSocietyHistoricalMuseum_132 attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          l <$ push (Msg.RevealLocation Nothing $ toId attrs)
-    _ -> HistoricalSocietyHistoricalMuseum_132 <$> runMessage msg attrs
+  runMessage msg l@(HistoricalSocietyHistoricalMuseum_132 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push (Msg.RevealLocation Nothing $ toId attrs)
+      pure l
+    _ -> HistoricalSocietyHistoricalMuseum_132 <$> liftRunMessage msg attrs

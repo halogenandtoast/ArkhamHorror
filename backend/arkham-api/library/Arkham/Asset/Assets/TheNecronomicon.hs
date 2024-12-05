@@ -3,11 +3,12 @@ module Arkham.Asset.Assets.TheNecronomicon (TheNecronomicon (..), theNecronomico
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theNecronomicon :: AssetCard TheNecronomicon
@@ -17,12 +18,13 @@ theNecronomicon =
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomicon where
-  getModifiersFor (ChaosTokenTarget token) (TheNecronomicon a) = do
-    case a.controller of
-      Just iid | token.revealedBy == Just iid -> do
-        toModifiers a [ForcedChaosTokenChange #eldersign [#autofail]]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheNecronomicon a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelect
+        a
+        (ChaosTokenRevealedBy $ InvestigatorWithId iid)
+        [ForcedChaosTokenChange #eldersign [#autofail]]
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) = [controlledAbility a 1 AnyHorrorOnThis #action]

@@ -15,14 +15,12 @@ import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
 newtype DepthsOfDemheTheHeightOfTheDepths = DepthsOfDemheTheHeightOfTheDepths LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor DepthsOfDemheTheHeightOfTheDepths where
-  getModifiersFor (InvestigatorTarget iid) (DepthsOfDemheTheHeightOfTheDepths a) = do
-    here <- iid `isAt` a
-    toModifiers a [CannotPlay FastCard | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DepthsOfDemheTheHeightOfTheDepths a) =
+    modifySelect a (investigatorAt a) [CannotPlay FastCard]
 
 depthsOfDemheTheHeightOfTheDepths
   :: LocationCard DepthsOfDemheTheHeightOfTheDepths

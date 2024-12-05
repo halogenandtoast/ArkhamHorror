@@ -6,22 +6,23 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype WondrousLands = WondrousLands TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 wondrousLands :: TreacheryCard WondrousLands
 wondrousLands = treachery WondrousLands Cards.wondrousLands
 
 instance HasModifiersFor WondrousLands where
-  getModifiersFor (LocationTarget lid) (WondrousLands attrs) =
-    toModifiers attrs [ShroudModifier (-2) | treacheryOnLocation lid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WondrousLands attrs) = case attrs.placement of
+    AttachedToLocation lid -> modified_ attrs lid [ShroudModifier (-2)]
+    _ -> pure mempty
 
 instance HasAbilities WondrousLands where
   getAbilities (WondrousLands a) = case treacheryAttachedTarget a of

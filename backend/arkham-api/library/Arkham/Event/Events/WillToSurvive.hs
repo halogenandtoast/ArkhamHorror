@@ -36,9 +36,8 @@ willToSurviveEffect :: EffectArgs -> WillToSurviveEffect
 willToSurviveEffect = cardEffect WillToSurviveEffect Cards.willToSurvive
 
 instance HasModifiersFor WillToSurviveEffect where
-  getModifiersFor target (WillToSurviveEffect a) | isTarget target a.target = do
-    toModifiers a [DoNotDrawChaosTokensForSkillChecks]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WillToSurviveEffect a) = do
+    modified_ a a.target [DoNotDrawChaosTokensForSkillChecks]
 
 instance RunMessage WillToSurviveEffect where
   runMessage msg e@(WillToSurviveEffect attrs) = case msg of

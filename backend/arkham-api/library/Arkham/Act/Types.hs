@@ -249,7 +249,7 @@ instance HasAbilities Act where
   getAbilities (Act a) = getAbilities a
 
 instance HasModifiersFor Act where
-  getModifiersFor target (Act a) = getModifiersFor target a
+  getModifiersFor (Act a) = getModifiersFor a
 
 instance Entity Act where
   type EntityId Act = ActId

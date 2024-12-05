@@ -14,17 +14,16 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 summonedBeast :: EnemyCard SummonedBeast
 summonedBeast = enemy SummonedBeast Cards.summonedBeast (5, PerPlayer 6, 2) (2, 2)
 
 instance HasModifiersFor SummonedBeast where
-  getModifiersFor target (SummonedBeast attrs) | isTarget attrs target = do
+  getModifiersFor (SummonedBeast attrs) = do
     n <- (`div` 2) <$> getDoomCount
-    toModifiers attrs [EnemyFight n, EnemyEvade n, DamageDealt n, HorrorDealt n]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [EnemyFight n, EnemyEvade n, DamageDealt n, HorrorDealt n]
 
 instance HasAbilities SummonedBeast where
   getAbilities (SummonedBeast attrs) =

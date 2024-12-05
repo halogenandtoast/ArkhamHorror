@@ -17,8 +17,7 @@ salvatoreNeri :: EnemyCard SalvatoreNeri
 salvatoreNeri = enemy SalvatoreNeri Cards.salvatoreNeri (0, Static 3, 0) (0, 2)
 
 instance HasModifiersFor SalvatoreNeri where
-  getModifiersFor target (SalvatoreNeri attrs) = maybeModified attrs do
-    guard $ isTarget attrs target
+  getModifiersFor (SalvatoreNeri attrs) = maybeModifySelf attrs do
     iid <- MaybeT getSkillTestInvestigator
     MaybeT getSkillTestAction >>= \case
       Action.Evade -> do

@@ -16,12 +16,11 @@ darioElAmin :: AssetCard DarioElAmin
 darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
 instance HasModifiersFor DarioElAmin where
-  getModifiersFor (InvestigatorTarget iid) (DarioElAmin attrs) | attrs `controlledBy` iid = do
-    resources <- field InvestigatorResources iid
-    toModifiers attrs
-      $ guard (resources >= 10)
-      *> [SkillModifier #willpower 1, SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DarioElAmin a) = case a.controller of
+    Just iid -> do
+      resources <- field InvestigatorResources iid
+      modifiedWhen_ a (resources >= 10) iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
+    Nothing -> pure mempty
 
 instance HasAbilities DarioElAmin where
   getAbilities (DarioElAmin attrs) =

@@ -16,14 +16,11 @@ velmasDiner :: LocationCard VelmasDiner
 velmasDiner = location VelmasDiner Cards.velmasDiner 2 (Static 0)
 
 instance HasModifiersFor VelmasDiner where
-  getModifiersFor (LocationTarget lid) (VelmasDiner a) = do
-    isEasttown <- lid <=~> locationIs Cards.easttown
-    toModifiers
+  getModifiersFor (VelmasDiner a) = do
+    modifySelectMap
       a
-      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-      | isEasttown
-      ]
-  getModifiersFor _ _ = pure []
+      (locationIs Cards.easttown)
+      \lid -> [ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)]
 
 instance HasAbilities VelmasDiner where
   getAbilities (VelmasDiner attrs) =

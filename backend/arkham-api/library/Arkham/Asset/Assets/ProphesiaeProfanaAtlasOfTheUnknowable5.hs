@@ -8,9 +8,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_)
 import Arkham.History
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Taboo
 
@@ -22,26 +22,29 @@ prophesiaeProfanaAtlasOfTheUnknowable5 :: AssetCard ProphesiaeProfanaAtlasOfTheU
 prophesiaeProfanaAtlasOfTheUnknowable5 = asset ProphesiaeProfanaAtlasOfTheUnknowable5 Cards.prophesiaeProfanaAtlasOfTheUnknowable5
 
 instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
-  getModifiersFor (InvestigatorTarget iid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) | iid `controls` attrs = do
+  getModifiersFor (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
     let mlocus = maybeResult attrs.meta
-    atLocus <- maybe (pure False) (\lid -> iid <=~> InvestigatorAt (LocationWithId lid)) mlocus
-    mTurnInvestigator <- selectOne TurnInvestigator
-    canTaboo <-
-      maybe
-        (pure False)
-        (\iid' -> (== 0) <$> getHistoryField TurnHistory iid' HistoryAttacksOfOpportunity)
-        mTurnInvestigator
-    let aooModified =
-          if tabooed TabooList20 attrs
+    controller <- case attrs.controller of
+      Nothing -> pure mempty
+      Just iid -> maybeModified_ attrs iid do
+        locus <- hoistMaybe mlocus
+        liftGuardM $ iid <!=~> InvestigatorAt (LocationWithId locus)
+        mTurnInvestigator <- lift $ selectOne TurnInvestigator
+        canTaboo <-
+          lift
+            $ maybe
+              (pure False)
+              (\iid' -> (== 0) <$> getHistoryField TurnHistory iid' HistoryAttacksOfOpportunity)
+              mTurnInvestigator
+        pure
+          $ [SkillModifier #intellect 1, SkillModifier #agility 1]
+          <> if tabooed TabooList20 attrs
             then [IgnoreAttacksOfOpportunity | canTaboo]
             else [MayIgnoreAttacksOfOpportunity]
-    toModifiers attrs
-      $ guard (not atLocus)
-      *> ([SkillModifier #intellect 1, SkillModifier #agility 1] <> aooModified)
-  getModifiersFor (LocationTarget lid) (ProphesiaeProfanaAtlasOfTheUnknowable5 attrs) = do
-    let mlocus = maybeResult attrs.meta
-    toModifiers attrs $ guard (Just lid == mlocus) *> [Locus]
-  getModifiersFor _ _ = pure []
+    locus <- case mlocus of
+      Nothing -> pure mempty
+      Just lid -> modified_ attrs lid [Locus]
+    pure $ controller <> locus
 
 instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where
   getAbilities (ProphesiaeProfanaAtlasOfTheUnknowable5 a) =

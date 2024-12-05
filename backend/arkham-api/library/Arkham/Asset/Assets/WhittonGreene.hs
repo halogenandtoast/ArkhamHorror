@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.Trait
 
 newtype WhittonGreene = WhittonGreene AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whittonGreene :: AssetCard WhittonGreene
@@ -24,10 +24,11 @@ instance HasAbilities WhittonGreene where
     ]
 
 instance HasModifiersFor WhittonGreene where
-  getModifiersFor (InvestigatorTarget iid) (WhittonGreene a) | controlledBy a iid = do
-    active <- selectAny $ assetControlledBy iid <> oneOf (withTrait <$> [Tome, Relic])
-    toModifiers a [SkillModifier #intellect 1 | active]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhittonGreene a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      liftGuardM $ selectAny $ assetControlledBy iid <> oneOf (withTrait <$> [Tome, Relic])
+      pure [SkillModifier #intellect 1]
 
 instance RunMessage WhittonGreene where
   runMessage msg a@(WhittonGreene attrs) = case msg of

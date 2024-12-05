@@ -27,22 +27,13 @@ strangeOccurences =
   act (3, E) StrangeOccurences Cards.strangeOccurences Nothing
 
 instance HasModifiersFor StrangeOccurences where
-  getModifiersFor (TreacheryTarget tid) (StrangeOccurences a) = do
-    mDrawnFrom <- field TreacheryDrawnFrom tid
-    case mDrawnFrom of
-      Just Deck.EncounterDeck -> do
-        iid <- field TreacheryDrawnBy tid
-        atIchtacasDestination <-
-          selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
-        treacheriesDrawnCount <-
-          length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
-        toModifiers
-          a
-          [ AddKeyword Keyword.Surge
-          | atIchtacasDestination && treacheriesDrawnCount == 1
-          ]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StrangeOccurences a) = do
+    modifySelectMaybe a AnyTreachery \tid -> do
+      Deck.EncounterDeck <- MaybeT $ field TreacheryDrawnFrom tid
+      iid <- lift $ field TreacheryDrawnBy tid
+      liftGuardM $ selectAny $ locationWithInvestigator iid <> IsIchtacasDestination
+      liftGuardM $ (== 1) . length . historyTreacheriesDrawn <$> getHistory TurnHistory iid
+      pure [AddKeyword Keyword.Surge]
 
 instance HasAbilities StrangeOccurences where
   getAbilities (StrangeOccurences a) =

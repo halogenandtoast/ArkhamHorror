@@ -9,20 +9,22 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype AriadnesTwine3 = AriadnesTwine3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ariadnesTwine3 :: AssetCard AriadnesTwine3
 ariadnesTwine3 = asset AriadnesTwine3 Cards.ariadnesTwine3
 
 instance HasModifiersFor AriadnesTwine3 where
-  getModifiersFor (AssetTarget aid) (AriadnesTwine3 a) | a.id /= aid = do
+  getModifiersFor (AriadnesTwine3 a) =
     case a.controller of
-      Nothing -> pure []
+      Nothing -> pure mempty
       Just iid -> do
-        valid <- aid <=~> AssetControlledBy (affectsOthers $ colocatedWith iid)
-        toModifiers a [ProvidesUses Secret (toSource a) | valid && a.use Secret > 0]
-  getModifiersFor _ _ = pure []
+        modifySelectWhen
+          a
+          (a.use Secret > 0)
+          (not_ (be a) <> AssetControlledBy (affectsOthers $ colocatedWith iid))
+          [ProvidesUses Secret (toSource a)]
 
 instance HasAbilities AriadnesTwine3 where
   getAbilities (AriadnesTwine3 a) =

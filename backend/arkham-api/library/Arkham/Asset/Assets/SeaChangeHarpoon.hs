@@ -21,14 +21,15 @@ instance HasAbilities SeaChangeHarpoon where
   getAbilities (SeaChangeHarpoon attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
 
 instance HasModifiersFor SeaChangeHarpoon where
-  getModifiersFor (InvestigatorTarget iid) (SeaChangeHarpoon attrs) = maybeModified attrs do
-    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-    skillCount <-
-      lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
-    guard (skillCount > 0)
-    pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SeaChangeHarpoon attrs) = case attrs.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ attrs iid do
+      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+      skillCount <-
+        lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
+      guard (skillCount > 0)
+      pure [DamageDealt 1]
 
 instance RunMessage SeaChangeHarpoon where
   runMessage msg a@(SeaChangeHarpoon attrs) = case msg of

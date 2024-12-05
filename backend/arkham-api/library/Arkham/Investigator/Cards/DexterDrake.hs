@@ -92,12 +92,13 @@ dexterDrakeEffect :: EffectArgs -> DexterDrakeEffect
 dexterDrakeEffect = cardEffect DexterDrakeEffect Cards.dexterDrake
 
 instance HasModifiersFor DexterDrakeEffect where
-  getModifiersFor target@(CardIdTarget cid) (DexterDrakeEffect attrs) | attrs.target == target = do
-    card <- getCard cid
-    toModifiers attrs
-      $ [ReduceCostOf (CardWithId cid) 1]
-      <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DexterDrakeEffect a) = case a.target of
+    CardIdTarget cid -> do
+      card <- getCard cid
+      modified_ a a.target
+        $ [ReduceCostOf (CardWithId cid) 1]
+        <> [CanPlayWithOverride (CriteriaOverride NoRestriction) | card `cardMatch` cardIs Assets.occultScraps]
+    _ -> pure mempty
 
 instance RunMessage DexterDrakeEffect where
   runMessage msg e@(DexterDrakeEffect attrs) = runQueueT $ case msg of

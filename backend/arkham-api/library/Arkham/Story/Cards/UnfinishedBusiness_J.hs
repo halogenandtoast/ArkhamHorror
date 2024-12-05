@@ -15,6 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Ref
 import Arkham.Matcher
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
@@ -80,19 +81,21 @@ unfinishedBusiness_JEffect :: EffectArgs -> UnfinishedBusiness_JEffect
 unfinishedBusiness_JEffect = cardEffect UnfinishedBusiness_JEffect Cards.unfinishedBusiness_J
 
 instance HasModifiersFor UnfinishedBusiness_JEffect where
-  getModifiersFor target (UnfinishedBusiness_JEffect a) | effectTarget a == target = do
-    toModifiers a [CannotBeDefeated]
-  getModifiersFor (AbilityTarget _ ability) (UnfinishedBusiness_JEffect a) = do
-    case abilitySource ability of
-      EnemySource eid | EnemyTarget eid == effectTarget a && abilityIndex ability == 1 -> do
-        toModifiers
-          a
-          [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
-          , SetAbilityCriteria
-              (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))
-          ]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UnfinishedBusiness_JEffect a) = do
+    heretic <- modified_ a a.target [CannotBeDefeated]
+    abilities <-
+      selectOne (AbilityIs (targetToSource a.target) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab -> do
+          investigators <- getInvestigators
+          modifyEach
+            a
+            [AbilityTarget iid ab | iid <- investigators]
+            [ SetAbilityCost $ ClueCost (StaticWithPerPlayer 1 1)
+            , SetAbilityCriteria
+                (CriteriaOverride $ OnSameLocation <> LocationExists (YourLocation <> LocationWithTrait Spectral))
+            ]
+    pure $ heretic <> abilities
 
 instance RunMessage UnfinishedBusiness_JEffect where
   runMessage msg e@(UnfinishedBusiness_JEffect attrs@EffectAttrs {..}) = case msg of

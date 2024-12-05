@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.WillOfTheSpiderMother (willOfTheSpiderMother, WillOfTheSpiderMother (..)) where
 
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Spider))
@@ -15,14 +15,13 @@ willOfTheSpiderMother :: TreacheryCard WillOfTheSpiderMother
 willOfTheSpiderMother = treachery WillOfTheSpiderMother Cards.willOfTheSpiderMother
 
 instance HasModifiersFor WillOfTheSpiderMother where
-  getModifiersFor (InvestigatorTarget iid) (WillOfTheSpiderMother attrs) = maybeModified attrs do
-    iid' <- MaybeT getSkillTestInvestigator
-    guard $ iid == iid'
-    source <- MaybeT getSkillTestSource
-    guard $ isSource attrs source
-    liftGuardM $ iid <=~> InvestigatorAt (LocationWithEnemy $ withTrait Spider)
-    pure [CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WillOfTheSpiderMother attrs) =
+    modifySelectMaybe attrs (InvestigatorAt (LocationWithEnemy $ withTrait Spider)) \iid -> do
+      iid' <- MaybeT getSkillTestInvestigator
+      guard $ iid == iid'
+      source <- MaybeT getSkillTestSource
+      guard $ isSource attrs source
+      pure [CannotCommitCards AnyCard]
 
 instance RunMessage WillOfTheSpiderMother where
   runMessage msg t@(WillOfTheSpiderMother attrs) = runQueueT $ case msg of

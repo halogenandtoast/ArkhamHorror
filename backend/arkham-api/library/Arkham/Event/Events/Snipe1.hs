@@ -5,7 +5,7 @@ import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestSource)
 import Arkham.Matcher
 
@@ -31,13 +31,12 @@ snipe1Effect :: EffectArgs -> Snipe1Effect
 snipe1Effect = cardEffect Snipe1Effect Cards.snipe1
 
 instance HasModifiersFor Snipe1Effect where
-  getModifiersFor (ChaosTokenTarget t) (Snipe1Effect attrs)
-    | t.face `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail] = maybeModified attrs do
-        Fight <- MaybeT getSkillTestAction
-        aid <- MaybeT $ join . fmap (.asset) <$> getSkillTestSource
-        guardM $ lift $ aid <=~> oneOf @AssetMatcher [#firearm, #ranged]
-        pure [ChaosTokenFaceModifier [Zero]]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Snipe1Effect attrs) = do
+    modifySelectMaybe attrs (mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, AutoFail]) \_ -> do
+      Fight <- MaybeT getSkillTestAction
+      aid <- MaybeT $ join . fmap (.asset) <$> getSkillTestSource
+      guardM $ lift $ aid <=~> oneOf @AssetMatcher [#firearm, #ranged]
+      pure [ChaosTokenFaceModifier [Zero]]
 
 instance RunMessage Snipe1Effect where
   runMessage msg e@(Snipe1Effect attrs) = runQueueT $ case msg of

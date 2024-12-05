@@ -20,9 +20,7 @@ dagonDeepInSlumber =
     $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor DagonDeepInSlumber where
-  getModifiersFor target (DagonDeepInSlumber a) = maybeModified a do
-    guard $ isTarget a target
-    pure [Omnipotent]
+  getModifiersFor (DagonDeepInSlumber a) = modifySelf a [Omnipotent]
 
 instance HasAbilities DagonDeepInSlumber where
   getAbilities (DagonDeepInSlumber a) =

@@ -8,16 +8,14 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype DrawingTheSign = DrawingTheSign TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drawingTheSign :: TreacheryCard DrawingTheSign
 drawingTheSign = treachery DrawingTheSign Cards.drawingTheSign
 
 instance HasModifiersFor DrawingTheSign where
-  getModifiersFor (InvestigatorTarget iid) (DrawingTheSign attrs) =
-    modified attrs [HandSize (-5) | treacheryInThreatArea iid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DrawingTheSign attrs) = inThreatAreaGets attrs [HandSize (-5)]
 
 instance HasAbilities DrawingTheSign where
   getAbilities (DrawingTheSign a) =

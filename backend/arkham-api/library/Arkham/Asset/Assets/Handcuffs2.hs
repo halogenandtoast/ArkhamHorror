@@ -19,12 +19,11 @@ handcuffs2 :: AssetCard Handcuffs2
 handcuffs2 = asset Handcuffs2 Cards.handcuffs2
 
 instance HasModifiersFor Handcuffs2 where
-  getModifiersFor (EnemyTarget eid) (Handcuffs2 a) | attachedToEnemy a eid = do
-    isNonElite <- eid <=~> NonEliteEnemy
-    toModifiers a $ do
-      guard isNonElite
-      [CannotReady, CannotPlaceDoomOnThis]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Handcuffs2 a) = case a.placement of
+    AttachedToEnemy eid -> do
+      isNonElite <- eid <=~> NonEliteEnemy
+      modifiedWhen_ a isNonElite eid [CannotReady, CannotPlaceDoomOnThis]
+    _ -> pure mempty
 
 instance HasAbilities Handcuffs2 where
   getAbilities (Handcuffs2 a) = case assetPlacement a of

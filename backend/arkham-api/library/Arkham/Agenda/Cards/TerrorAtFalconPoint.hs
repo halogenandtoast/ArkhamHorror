@@ -16,11 +16,9 @@ terrorAtFalconPoint :: AgendaCard TerrorAtFalconPoint
 terrorAtFalconPoint = agenda (4, A) TerrorAtFalconPoint Cards.terrorAtFalconPoint (Static 3)
 
 instance HasModifiersFor TerrorAtFalconPoint where
-  getModifiersFor (EnemyTarget eid) (TerrorAtFalconPoint a) = do
-    isOcieros <- eid <=~> enemyIs Enemies.oceirosMarsh
+  getModifiersFor (TerrorAtFalconPoint a) = do
     healthModifier <- perPlayer 2
-    toModifiers a [HealthModifier healthModifier | isOcieros]
-  getModifiersFor _ _ = pure []
+    modifySelect a (enemyIs Enemies.oceirosMarsh) [HealthModifier healthModifier]
 
 instance RunMessage TerrorAtFalconPoint where
   runMessage msg a@(TerrorAtFalconPoint attrs) = runQueueT $ case msg of

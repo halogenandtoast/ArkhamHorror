@@ -34,10 +34,8 @@ instance HasAbilities NoAsylum where
          ]
 
 instance HasModifiersFor NoAsylum where
-  getModifiersFor (LocationTarget lid) (NoAsylum attrs) = do
-    targets <- select UnrevealedLocation
-    toModifiers attrs [TraitRestrictedModifier ArkhamAsylum Blank | lid `elem` targets]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (NoAsylum attrs) = do
+    modifySelect attrs UnrevealedLocation [TraitRestrictedModifier ArkhamAsylum Blank]
 
 instance RunMessage NoAsylum where
   runMessage msg a@(NoAsylum attrs) = case msg of

@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Location (isAt)
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -22,11 +21,11 @@ mysteriousStairs_185 =
     .~ setFromList [Above, Below]
 
 instance HasModifiersFor MysteriousStairs_185 where
-  getModifiersFor (InvestigatorTarget iid) (MysteriousStairs_185 a) = maybeModified a do
-    liftGuardM $ iid `isAt` a
-    liftGuardM $ selectAny $ enemyAt a <> ReadyEnemy
-    pure [CannotTakeAction #move, CannotTakeAction #resign]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MysteriousStairs_185 a) = whenRevealed a do
+    readyEnemy <- selectAny $ enemyAt a <> ReadyEnemy
+    if readyEnemy
+      then modifySelect a (investigatorAt a) [CannotTakeAction #move, CannotTakeAction #resign]
+      else pure mempty
 
 instance HasAbilities MysteriousStairs_185 where
   getAbilities (MysteriousStairs_185 attrs) =

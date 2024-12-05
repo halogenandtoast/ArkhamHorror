@@ -8,7 +8,7 @@ import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype PitchSpider = PitchSpider EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pitchSpider :: EnemyCard PitchSpider
@@ -25,10 +25,9 @@ pitchSpider =
       ]
 
 instance HasModifiersFor PitchSpider where
-  getModifiersFor target (PitchSpider a) | a `is` target = do
+  getModifiersFor (PitchSpider a) = do
     x <- scenarioCount Distortion
-    toModifiers a $ AttackDealsEitherDamageOrHorror : [SwarmingValue x | x > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf a $ AttackDealsEitherDamageOrHorror : [SwarmingValue x | x > 0]
 
 instance HasAbilities PitchSpider where
   getAbilities (PitchSpider x) =

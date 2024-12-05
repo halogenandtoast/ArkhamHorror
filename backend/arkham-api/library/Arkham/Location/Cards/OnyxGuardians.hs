@@ -3,8 +3,7 @@ module Arkham.Location.Cards.OnyxGuardians (onyxGuardians, OnyxGuardians (..)) w
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Location
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
@@ -33,13 +32,13 @@ instance HasAbilities OnyxGuardians where
       <> GroupClueCost (PerPlayer 1) (be a)
 
 instance HasModifiersFor OnyxGuardians where
-  getModifiersFor (InvestigatorTarget iid) (OnyxGuardians a) = maybeModified a do
-    liftGuardM $ iid `isAt` a
-    phase <- lift getPhase
-    guard $ phase == #enemy
-    ancientOnes <- lift $ select $ ReadyEnemy <> withTrait AncientOne
-    pure $ map AsIfEngagedWith ancientOnes
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OnyxGuardians a) = do
+    phase <- getPhase
+    if phase == #enemy
+      then do
+        ancientOnes <- select $ ReadyEnemy <> withTrait AncientOne
+        modifySelect a (investigatorAt a) $ map AsIfEngagedWith ancientOnes
+      else pure mempty
 
 instance RunMessage OnyxGuardians where
   runMessage msg l@(OnyxGuardians attrs) = runQueueT $ case msg of

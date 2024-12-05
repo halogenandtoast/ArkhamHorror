@@ -10,17 +10,15 @@ import Arkham.Prelude
 import Arkham.Trait (Trait (Creature))
 
 newtype BrownJenkin = BrownJenkin EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brownJenkin :: EnemyCard BrownJenkin
 brownJenkin = enemy BrownJenkin Cards.brownJenkin (1, Static 1, 4) (1, 1)
 
 instance HasModifiersFor BrownJenkin where
-  getModifiersFor (EnemyTarget eid) (BrownJenkin attrs) = do
-    isReady <- eid <=~> (ReadyEnemy <> EnemyWithTrait Creature)
-    toModifiers attrs [EnemyFight 2 | isReady]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BrownJenkin attrs) =
+    modifySelect attrs (ReadyEnemy <> EnemyWithTrait Creature) [EnemyFight 2]
 
 instance HasAbilities BrownJenkin where
   getAbilities (BrownJenkin x) =

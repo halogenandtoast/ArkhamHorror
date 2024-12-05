@@ -16,9 +16,7 @@ undergroundRiver :: LocationCard UndergroundRiver
 undergroundRiver = locationWith UndergroundRiver Cards.undergroundRiver 4 (PerPlayer 2) connectsToAdjacent
 
 instance HasModifiersFor UndergroundRiver where
-  getModifiersFor target (UndergroundRiver attrs) | isTarget attrs target = do
-    modified attrs [CannotBeFullyFlooded | attrs.revealed]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UndergroundRiver a) = whenRevealed a $ modifySelf a [CannotBeFullyFlooded]
 
 instance HasAbilities UndergroundRiver where
   getAbilities (UndergroundRiver attrs) =

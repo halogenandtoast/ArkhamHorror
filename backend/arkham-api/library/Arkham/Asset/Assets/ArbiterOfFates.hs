@@ -1,16 +1,11 @@
-module Arkham.Asset.Assets.ArbiterOfFates (
-  arbiterOfFates,
-  arbiterOfFatesEffect,
-  ArbiterOfFates (..),
-)
-where
+module Arkham.Asset.Assets.ArbiterOfFates (arbiterOfFates, arbiterOfFatesEffect, ArbiterOfFates (..)) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -23,10 +18,13 @@ arbiterOfFates =
   asset ArbiterOfFates Cards.arbiterOfFates
 
 instance HasModifiersFor ArbiterOfFates where
-  getModifiersFor (AbilityTarget "60401" ab) (ArbiterOfFates a)
-    | abilityIndex ab == 1 && abilitySource ab == InvestigatorSource "60401" && not (assetExhausted a) = do
-        toModifiers a [CanIgnoreLimit]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArbiterOfFates a) =
+    if a.exhausted
+      then pure mempty
+      else
+        selectOne (AbilityIs (InvestigatorSource "60401") 1) >>= \case
+          Just ab -> modified_ a (AbilityTarget "60401" ab) [CanIgnoreLimit]
+          Nothing -> pure mempty
 
 instance HasAbilities ArbiterOfFates where
   getAbilities (ArbiterOfFates a) =
@@ -57,10 +55,13 @@ arbiterOfFatesEffect :: EffectArgs -> ArbiterOfFatesEffect
 arbiterOfFatesEffect = cardEffect ArbiterOfFatesEffect Cards.arbiterOfFates
 
 instance HasModifiersFor ArbiterOfFatesEffect where
-  getModifiersFor (AbilityTarget "60401" ab) (ArbiterOfFatesEffect a)
-    | ab.index == 1 && ab.source == InvestigatorSource "60401" = do
-        toModifiers a [IgnoreLimit | not a.finished]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArbiterOfFatesEffect a) =
+    if a.finished
+      then pure mempty
+      else
+        selectOne (AbilityIs (InvestigatorSource "60401") 1) >>= \case
+          Just ab -> modified_ a (AbilityTarget "60401" ab) [IgnoreLimit]
+          Nothing -> pure mempty
 
 -- > When you use Jacqueline Fine's  ability, exhaust Arbiter of Fates: This use of her ability does not count towards its limit.
 -- We basically track if the ability is done being used and then disable this effect

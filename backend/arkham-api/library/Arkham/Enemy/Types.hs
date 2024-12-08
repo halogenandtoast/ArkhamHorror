@@ -367,9 +367,7 @@ instance HasAbilities Enemy where
 -- the printed effects should be disabled
 instance HasModifiersFor Enemy where
   getModifiersFor (Enemy a) =
-    if attr enemyDefeated a
-      then pure mempty
-      else getModifiersFor a
+    unless (attr enemyDefeated a) $ getModifiersFor a
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId

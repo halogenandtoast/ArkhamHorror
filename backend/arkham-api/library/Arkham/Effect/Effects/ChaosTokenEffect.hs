@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Window (Window)
+import Control.Monad.Writer.Class
 
 newtype ChaosTokenEffect = ChaosTokenEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -39,9 +40,9 @@ chaosTokenEffect' eid metadata source chaosToken =
 
 instance HasModifiersFor ChaosTokenEffect where
   getModifiersFor (ChaosTokenEffect attrs) =
-    pure $ case effectMetadata attrs of
-      Just (EffectModifiers modifiers) -> singletonMap attrs.target modifiers
-      _ -> mempty
+    case effectMetadata attrs of
+      Just (EffectModifiers modifiers) -> tell $ singletonMap attrs.target modifiers
+      _ -> pure ()
 
 instance RunMessage ChaosTokenEffect where
   runMessage msg e@(ChaosTokenEffect attrs@EffectAttrs {..}) = case msg of

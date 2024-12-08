@@ -13,6 +13,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (Window)
+import Control.Monad.Writer.Class
 
 newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -54,18 +55,18 @@ windowModifierEffect' eid metadata effectWindow source target =
 instance HasModifiersFor WindowModifierEffect where
   getModifiersFor (WindowModifierEffect attrs) = case effectMetadata attrs of
     Just (EffectModifiers modifiers) -> case effectWindow attrs of
-      Just EffectSetupWindow -> pure $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
+      Just EffectSetupWindow -> tell $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
       Just (EffectSkillTestWindow sid) -> do
         msid <- getSkillTestId
-        pure $ if msid == Just sid then singletonMap attrs.target modifiers else mempty
+        when (msid == Just sid) $ tell $ singletonMap attrs.target modifiers
       Just (EffectPhaseWindowFor p) -> do
         p' <- getPhase
-        pure $ if p == p' then singletonMap attrs.target modifiers else mempty
+        when (p == p') $ tell $ singletonMap attrs.target modifiers
       Just (EffectTurnWindow iid) -> do
         isTurn <- iid <=~> TurnInvestigator
-        pure $ if isTurn then singletonMap attrs.target modifiers else mempty
-      _ -> pure $ singletonMap attrs.target modifiers
-    _ -> pure mempty
+        when isTurn $ tell $ singletonMap attrs.target modifiers
+      _ -> tell $ singletonMap attrs.target modifiers
+    _ -> pure ()
 
 instance RunMessage WindowModifierEffect where
   runMessage msg (WindowModifierEffect attrs) =

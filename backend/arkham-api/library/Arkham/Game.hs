@@ -172,6 +172,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
+import Control.Monad.Trans.Writer.CPS (execWriterT)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key
@@ -1520,8 +1521,8 @@ getLocationsMatching lmatcher = do
     LocationWithModifier modifier' ->
       filterM (\l -> elem modifier' <$> getModifiers (toTarget l)) ls
     LocationWithEnemy enemyMatcher -> do
-      enemies <- select enemyMatcher
-      filterM (fmap (notNull . List.intersect enemies) . select . enemyAt . toId) ls
+      locationIds <- mapMaybe snd <$> selectWithField EnemyLocation enemyMatcher
+      pure $ filter ((`elem` locationIds) . toId) ls
     LocationWithCardsUnderneath cardListMatcher ->
       flip filterM ls
         $ fieldMapM LocationCardsUnderneath (`cardListMatches` cardListMatcher)
@@ -4083,27 +4084,16 @@ instance HasChaosTokenValue InvestigatorId where
 
 instance HasModifiersFor Entities where
   getModifiersFor e = do
-    enemiesMods <- foldMapM getModifiersFor (e ^. enemiesL . to toList)
-    assetsMods <- foldMapM getModifiersFor (e ^. assetsL . to toList)
-    agendasMods <- foldMapM getModifiersFor (e ^. agendasL . to toList)
-    actsMods <- foldMapM getModifiersFor (e ^. actsL . to toList)
-    locationsMods <- foldMapM getModifiersFor (e ^. locationsL . to toList)
-    effectsMods <- foldMapM getModifiersFor (e ^. effectsL . to toList)
-    eventsMods <- foldMapM getModifiersFor (e ^. eventsL . to toList)
-    skillsMods <- foldMapM getModifiersFor (e ^. skillsL . to toList)
-    treacheriesMods <- foldMapM getModifiersFor (e ^. treacheriesL . to toList)
-    investigatorsMods <- foldMapM getModifiersFor (e ^. investigatorsL . to toList)
-    pure
-      $ enemiesMods
-      <> assetsMods
-      <> agendasMods
-      <> actsMods
-      <> locationsMods
-      <> effectsMods
-      <> eventsMods
-      <> skillsMods
-      <> treacheriesMods
-      <> investigatorsMods
+    traverse_ getModifiersFor (e ^. enemiesL)
+    traverse_ getModifiersFor (e ^. assetsL)
+    traverse_ getModifiersFor (e ^. agendasL)
+    traverse_ getModifiersFor (e ^. actsL)
+    traverse_ getModifiersFor (e ^. locationsL)
+    traverse_ getModifiersFor (e ^. effectsL)
+    traverse_ getModifiersFor (e ^. eventsL)
+    traverse_ getModifiersFor (e ^. skillsL)
+    traverse_ getModifiersFor (e ^. treacheriesL)
+    traverse_ getModifiersFor (e ^. investigatorsL)
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location
@@ -4713,7 +4703,7 @@ runMessages mLogger = do
                 $ runMessage msg
                 >=> if shouldPreloadModifiers msg
                   then
-                    preloadModifiers
+                    (timeIt "preloadModifiers" . preloadModifiers)
                       >=> handleAsIfChanges asIfLocations
                       >=> handleTraitRestrictedModifiers
                       >=> handleBlanked
@@ -4789,19 +4779,18 @@ preloadModifiers g = case gameMode g of
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
     allModifiers <-
-      foldMapM
-        getModifiersFor
-        ( entities
-            <> inHandEntities
-            <> inDiscardEntities
-            <> maybeToList (SomeEntity <$> modeScenario (gameMode g))
-            <> maybeToList (SomeEntity <$> modeCampaign (gameMode g))
-        )
+      traverse (foldMapM expandForEach) =<< execWriterT do
+        getModifiersFor $ gameEntities g
+        traverse_ getModifiersFor $ gameInHandEntities g
+        traverse_ getModifiersFor $ gameInDiscardEntities g
+        for_ (modeScenario (gameMode g)) getModifiersFor
+        for_ (modeCampaign (gameMode g)) getModifiersFor
     pure $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
  where
-  entities = overEntities (: []) (gameEntities g)
-  inHandEntities = concatMap (overEntities (: [])) (toList $ gameInHandEntities g)
-  inDiscardEntities = concatMap (overEntities (: [])) (toList $ gameInDiscardEntities g)
+  expandForEach x@(modifierType -> ForEach calc ms) = do
+    n <- calculate calc
+    pure $ map (\m -> x {modifierType = m}) (concat @[[ModifierType]] $ replicate n ms)
+  expandForEach m = pure [m]
 
 handleTraitRestrictedModifiers :: Monad m => Game -> m Game
 handleTraitRestrictedModifiers g = do

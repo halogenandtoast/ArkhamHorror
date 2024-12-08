@@ -105,7 +105,7 @@ instance HasField "meta" Campaign Value where
   getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor attrs = pure $ Map.mapKeys toTarget $ campaignModifiers attrs
+  getModifiersFor attrs = tell $ Map.mapKeys toTarget $ campaignModifiers attrs
 
 instance Sourceable CampaignAttrs where
   toSource _ = CampaignSource

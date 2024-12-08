@@ -28,15 +28,14 @@ wilsonRichards =
 
 instance HasModifiersFor WilsonRichards where
   getModifiersFor (WilsonRichards (With a meta)) = do
-    self <- maybeModifySelf a do
+    maybeModifySelf a do
       source <- MaybeT getSkillTestSource
       aid <- hoistMaybe source.asset
       liftGuardM $ aid <=~> AssetWithTrait Tool
       pure [AnySkillValue 1]
     validCards <-
       if active meta then findAllCards (`cardMatch` (CardOwnedBy a.id <> #asset <> #tool)) else pure []
-    cards <- modifyEachMap a validCards \card -> [ReduceCostOf (CardWithId card.id) 1]
-    pure $ self <> cards
+    modifyEachMap a validCards \card -> [ReduceCostOf (CardWithId card.id) 1]
 
 instance HasChaosTokenValue WilsonRichards where
   getChaosTokenValue iid ElderSign (WilsonRichards (With attrs _)) | iid == toId attrs = do

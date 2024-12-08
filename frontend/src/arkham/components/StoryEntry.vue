@@ -175,5 +175,10 @@ button {
   p {
     flex: 1;
   }
+
+  &:has(.card) {
+    flex-direction: row;
+    gap: 20px;
+  }
 }
 </style>

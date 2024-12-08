@@ -4812,7 +4812,10 @@ preloadModifiers g = case gameMode g of
         traverse_ getModifiersFor $ gameInDiscardEntities g
         for_ (modeScenario (gameMode g)) getModifiersFor
         for_ (modeCampaign (gameMode g)) getModifiersFor
-    pure $ g {gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) allModifiers}
+    pure
+      $ g
+        { gameModifiers = Map.filter notNull $ Map.map (filter modifierFilter) (getMonoidalMap allModifiers)
+        }
  where
   expandForEach x@(modifierType -> ForEach calc ms) = do
     n <- calculate calc

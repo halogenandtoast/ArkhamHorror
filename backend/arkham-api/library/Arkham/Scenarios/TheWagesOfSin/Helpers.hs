@@ -21,6 +21,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
 import Control.Monad.Writer.Class
+import Data.Map.Monoidal.Strict (MonoidalMap)
 
 getSpectralDiscards :: HasGame m => m [EncounterCard]
 getSpectralDiscards =
@@ -40,7 +41,7 @@ hereticModifiers
      , Entity a
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)
-     , MonadWriter (Map Target [Modifier]) m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
      )
   => a
   -> m ()

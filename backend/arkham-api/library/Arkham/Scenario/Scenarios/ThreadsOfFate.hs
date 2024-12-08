@@ -78,9 +78,7 @@ instance RunMessage ThreadsOfFate where
     PreScenarioSetup -> do
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       story intro1
-      story $ if gaveCustodyToHarlan then intro3 else intro2
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM (if gaveCustodyToHarlan then intro3 else intro2) do
         labeled "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
           $ doStep 4 msg
         labeled "“Have it your way.” - Skip to Intro 5." $ doStep 5 msg
@@ -94,8 +92,7 @@ instance RunMessage ThreadsOfFate where
       whenHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone $ doStep 6 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM intro6 do
         labeled "“We should be wary of them.”" do
           record YouAreForgingYourOwnWay
           unlessStandalone do

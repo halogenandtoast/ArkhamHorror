@@ -27,7 +27,14 @@ const remembered = computed(() => {
   if (!log) return []
   if (!props.game.scenario) return []
   const prefix = scenarioToI18n(props.game.scenario)
-  return log.map((record: Remembered) => t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`))
+  return log.map((record: Remembered) => {
+    if (record.tag == 'YouOweBiancaResources') {
+      console.log(record);
+      return `You owe Bianca resources (${record.contents})`
+    } else {
+      return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
+    }
+  })
 })
 
 const otherLog = ref<LogContents | null>(null)

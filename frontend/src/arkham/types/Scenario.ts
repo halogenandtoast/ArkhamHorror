@@ -80,12 +80,21 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   name: scenarioNameDecoder,
 }, 'ScenarioDetails');
 
-export type Remembered = { tag: string }
+export type Remembered = { tag: "YouOweBiancaResources", contents: number } | { tag: string }
 
-const rememberedDecoder = JsonDecoder.object<Remembered>(
-  { tag: JsonDecoder.string },
-  'Remembered'
-);
+const rememberedDecoder = JsonDecoder.oneOf([
+  JsonDecoder.object<Remembered>(
+    { 
+      tag: JsonDecoder.isExactly('YouOweBiancaResources'),
+      contents: JsonDecoder.tuple<[any, number]>(
+        [JsonDecoder.succeed, JsonDecoder.number],
+        'YouOweBiancaResources'
+      ).map<number>((res: [any, number]) => res[1])
+    },
+    'Remembered'
+  ),
+  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string }, 'Remembered')
+], 'Remembered');
 
 
 

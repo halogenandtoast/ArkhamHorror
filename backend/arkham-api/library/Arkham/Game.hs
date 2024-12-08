@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3661,6 +3661,12 @@ instance Query TargetMatcher where
     filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
+  select (ChaosTokenRevealedBy iMatcher) = do
+    getSkillTest >>= \case
+      Nothing -> pure []
+      Just st -> do
+        iids <- select iMatcher
+        pure $ filter (\t -> any (`elem` t.revealedBy) iids) st.revealedChaosTokens
   select matcher = do
     tokenPool <- if includeTokenPool matcher then getTokenPool else pure []
     tokens <-
@@ -3673,7 +3679,7 @@ instance Query ChaosTokenMatcher where
         if null results
           then filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
           else pure results
-      _ -> filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+      _ -> filterM (go matcher) (traceShowId ((if inTokenPool matcher then [] else tokens) <> tokenPool))
    where
     includeSealed = \case
       IncludeSealed _ -> True

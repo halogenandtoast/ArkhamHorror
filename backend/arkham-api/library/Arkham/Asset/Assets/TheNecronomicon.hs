@@ -18,13 +18,11 @@ theNecronomicon =
     . (canLeavePlayByNormalMeansL .~ False)
 
 instance HasModifiersFor TheNecronomicon where
-  getModifiersFor (TheNecronomicon a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      modifySelect
-        a
-        (ChaosTokenRevealedBy $ InvestigatorWithId iid)
-        [ForcedChaosTokenChange #eldersign [#autofail]]
+  getModifiersFor (TheNecronomicon a) = for_ a.controller \iid -> do
+    modifySelect
+      a
+      (ChaosTokenRevealedBy $ InvestigatorWithId iid)
+      [ForcedChaosTokenChange #eldersign [#autofail]]
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) = [controlledAbility a 1 AnyHorrorOnThis #action]

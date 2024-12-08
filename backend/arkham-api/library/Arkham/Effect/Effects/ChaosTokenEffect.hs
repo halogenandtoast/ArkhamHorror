@@ -12,6 +12,7 @@ import Arkham.Effect.Runner
 import Arkham.Id
 import Arkham.Window (Window)
 import Control.Monad.Writer.Class
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 
 newtype ChaosTokenEffect = ChaosTokenEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -41,7 +42,7 @@ chaosTokenEffect' eid metadata source chaosToken =
 instance HasModifiersFor ChaosTokenEffect where
   getModifiersFor (ChaosTokenEffect attrs) =
     case effectMetadata attrs of
-      Just (EffectModifiers modifiers) -> tell $ singletonMap attrs.target modifiers
+      Just (EffectModifiers modifiers) -> tell $ MonoidalMap $ singletonMap attrs.target modifiers
       _ -> pure ()
 
 instance RunMessage ChaosTokenEffect where

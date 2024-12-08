@@ -28,6 +28,7 @@ import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
@@ -105,7 +106,7 @@ instance HasField "meta" Campaign Value where
   getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor attrs = tell $ Map.mapKeys toTarget $ campaignModifiers attrs
+  getModifiersFor attrs = tell $ MonoidalMap $ Map.mapKeys toTarget $ campaignModifiers attrs
 
 instance Sourceable CampaignAttrs where
   toSource _ = CampaignSource

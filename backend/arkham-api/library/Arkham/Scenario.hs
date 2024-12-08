@@ -262,13 +262,9 @@ instance HasModifiersFor TarotCard where
       TheWorldXXI -> pure mempty
 
 instance HasModifiersFor Scenario where
-  getModifiersFor (Scenario a) =
-    liftA2
-      (Map.unionWith (<>))
-      ( fmap (Map.unionsWith (<>))
-          $ traverse getModifiersFor (concat . toList $ attr scenarioTarotCards a)
-      )
-      (getModifiersFor a)
+  getModifiersFor (Scenario a) = do
+    getModifiersFor a
+    traverse_ getModifiersFor (concat . toList $ attr scenarioTarotCards a)
 
 instance RunMessage Scenario where
   runMessage msg x@(Scenario s) = case msg of

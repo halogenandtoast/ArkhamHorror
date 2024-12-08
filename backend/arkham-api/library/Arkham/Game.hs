@@ -4703,7 +4703,7 @@ runMessages mLogger = do
                 $ runMessage msg
                 >=> if shouldPreloadModifiers msg
                   then
-                    (timeIt "preloadModifiers" . preloadModifiers)
+                    preloadModifiers
                       >=> handleAsIfChanges asIfLocations
                       >=> handleTraitRestrictedModifiers
                       >=> handleBlanked

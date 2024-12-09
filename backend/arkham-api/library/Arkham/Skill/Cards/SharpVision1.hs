@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.SharpVision1 (sharpVision1, SharpVision1 (..)) where
 
 import Arkham.Action qualified as Action
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
@@ -17,12 +18,10 @@ sharpVision1 :: SkillCard SharpVision1
 sharpVision1 = skill SharpVision1 Cards.sharpVision1
 
 instance HasModifiersFor SharpVision1 where
-  getModifiersFor (SharpVision1 a) = do
-    mAction <- getSkillTestAction
-    mSource <- getSkillTestSource
-    case (mAction, mSource) of
-      (Just Action.Investigate, Just (AbilitySource (LocationSource _) AbilityInvestigate)) -> modifySelf a [AddSkillIcons [#intellect, #intellect]]
-      _ -> pure mempty
+  getModifiersFor (SharpVision1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
+    Action.Investigate <- MaybeT getSkillTestAction
+    AbilitySource (LocationSource _) AbilityInvestigate <- MaybeT getSkillTestSource
+    pure [AddSkillIcons [#intellect, #intellect]]
 
 instance RunMessage SharpVision1 where
   runMessage msg s@(SharpVision1 attrs) = case msg of

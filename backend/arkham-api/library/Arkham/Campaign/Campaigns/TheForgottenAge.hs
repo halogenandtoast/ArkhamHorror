@@ -22,11 +22,18 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Aeson (Result (..))
+import Data.Aeson.Types (parseMaybe)
 import Data.Monoid (Endo (..))
 
+newtype TheForgottenAge = TheForgottenAge CampaignAttrs
+  deriving newtype (Show, Eq, ToJSON, Entity, HasModifiersFor)
+
 -- metadata is no longer used but we need games to update to deal with it
-newtype TheForgottenAge = TheForgottenAge (CampaignAttrs `With` Metadata)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+instance FromJSON TheForgottenAge where
+  parseJSON = withObject "TheForgottenAge" $ \o -> do
+    case parseMaybe parseJSON (Object o) of
+      Just (metadata :: Metadata) -> TheForgottenAge . (\c -> c {campaignMeta = toJSON metadata}) <$> parseJSON (Object o)
+      _ -> TheForgottenAge <$> parseJSON (Object o)
 
 instance IsCampaign TheForgottenAge where
   nextStep a = case campaignStep (toAttrs a) of
@@ -53,7 +60,7 @@ instance IsCampaign TheForgottenAge where
 theForgottenAge :: Difficulty -> TheForgottenAge
 theForgottenAge difficulty =
   campaign
-    (TheForgottenAge . (`with` mempty))
+    TheForgottenAge
     (CampaignId "04")
     "The Forgotten Age"
     difficulty
@@ -130,8 +137,8 @@ supplyLabel s = case s of
   go label tooltip = TooltipLabel label (Tooltip tooltip)
 
 instance RunMessage TheForgottenAge where
-  runMessage msg c@(TheForgottenAge (With attrs oldMetadata)) = do
-    let metadata = toResultDefault oldMetadata (campaignMeta attrs)
+  runMessage msg c@(TheForgottenAge attrs) = do
+    let metadata = toResultDefault mempty (campaignMeta attrs)
     case msg of
       CampaignStep PrologueStep -> do
         investigatorIds <- allInvestigatorIds
@@ -158,7 +165,7 @@ instance RunMessage TheForgottenAge where
              ]
           <> [CampaignStep (InvestigatorCampaignStep iid PrologueStep) | iid <- investigatorIds]
           <> [NextCampaignStep Nothing]
-        pure . TheForgottenAge $ attrs {campaignMeta = toJSON metadata'} `with` oldMetadata
+        pure . TheForgottenAge $ attrs {campaignMeta = toJSON metadata'}
       CampaignStep (InvestigatorCampaignStep investigatorId PrologueStep) -> do
         let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
@@ -401,7 +408,6 @@ instance RunMessage TheForgottenAge where
         pure
           . TheForgottenAge
           $ attrs {campaignMeta = toJSON $ Metadata resupplyMap (yithians metadata) (expeditionLeader metadata)}
-          `with` oldMetadata
       CampaignStep (InvestigatorCampaignStep investigatorId ResupplyPoint) -> do
         let remaining = findWithDefault 0 investigatorId (supplyPoints metadata)
         investigatorSupplies <- field InvestigatorSupplies investigatorId
@@ -517,7 +523,7 @@ instance RunMessage TheForgottenAge where
                   *> [Record IchtacasFaithIsRestored, AddChaosToken Cultist]
                )
             <> [NextCampaignStep Nothing]
-        pure . TheForgottenAge . (`with` oldMetadata) $ attrs & gasUpdate & canteenUpdate
+        pure . TheForgottenAge $ attrs & gasUpdate & canteenUpdate
       CampaignStep (InterludeStepPart 3 _ 2) -> do
         let
           withPoisoned =
@@ -601,7 +607,6 @@ instance RunMessage TheForgottenAge where
                 results
             pure
               . TheForgottenAge
-              . (`with` oldMetadata)
               $ attrs
                 { campaignMeta = toJSON $ Metadata (supplyPoints metadata) yithians (expeditionLeader metadata)
                 }
@@ -641,7 +646,7 @@ instance RunMessage TheForgottenAge where
             if hasChalk
               then id
               else ala Endo foldMap $ [modifiersL %~ insertWith (<>) iid mods | iid <- iids]
-        pure . TheForgottenAge . (`with` oldMetadata) $ attrs & update
+        pure . TheForgottenAge $ attrs & update
       CampaignStep (InterludeStepPart 4 _ 4) -> do
         investigatorIds <- allInvestigatorIds
         lead <- getLeadPlayer
@@ -822,9 +827,9 @@ instance RunMessage TheForgottenAge where
         pure c
       HandleTargetChoice _ CampaignSource (InvestigatorTarget iid) -> do
         mods <- toModifiers CampaignSource [StartingResources (-3)]
-        pure . TheForgottenAge . (`with` oldMetadata) $ attrs & (modifiersL %~ insertWith (<>) iid mods)
+        pure . TheForgottenAge $ attrs & (modifiersL %~ insertWith (<>) iid mods)
       EndOfScenario _ -> do
-        pure . TheForgottenAge . (`with` oldMetadata) $ attrs & modifiersL .~ mempty
+        pure . TheForgottenAge $ attrs & modifiersL .~ mempty
       PickSupply investigatorId supply -> do
         let
           cost = supplyCost supply
@@ -832,12 +837,11 @@ instance RunMessage TheForgottenAge where
         pure
           . TheForgottenAge
           $ attrs {campaignMeta = toJSON $ Metadata supplyMap (yithians metadata) (expeditionLeader metadata)}
-          `with` oldMetadata
       PreScenarioSetup -> do
         pushAll $ map BecomeYithian $ toList $ yithians metadata
         pure c
       SetCampaignMeta value -> do
         case fromJSON value of
-          Success meta' -> pure . TheForgottenAge $ attrs {campaignMeta = meta'} `with` oldMetadata
+          Success meta' -> pure . TheForgottenAge $ attrs {campaignMeta = meta'}
           _ -> error "Invalid meta!"
       _ -> defaultCampaignRunner msg c

@@ -149,12 +149,12 @@ instance RunMessage RavenousMyconidNurturingStrain4 where
               ([], [], [], [(aid', _)]) -> moveTokens (attrs.ability 2) aid' attrs Horror (min maxHorror n)
               _ -> chooseOneM iid do
                 for_ di \(iid', _) -> do
-                  damageLabeled iid do
+                  damageLabeled iid' do
                     moveTokensNoDefeated (attrs.ability 2) iid' attrs Damage 1
                     doStep (n - 1) msg'
 
                 for_ hi \(iid', _) -> do
-                  horrorLabeled iid do
+                  horrorLabeled iid' do
                     moveTokensNoDefeated (attrs.ability 2) iid' attrs Horror 1
                     doStep (n - 1) msg'
 

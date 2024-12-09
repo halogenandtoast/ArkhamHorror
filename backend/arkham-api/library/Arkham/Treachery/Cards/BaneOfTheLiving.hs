@@ -43,10 +43,7 @@ instance RunMessage BaneOfTheLiving where
            ]
       pure t
     RevelationChoice iid (isSource attrs -> True) 1 -> do
-      stories <- select $ StoryWithTitle "Unfinished Business"
-      storiesWithCardId <- for stories $ \story' -> do
-        storyCard <- field StoryCard story'
-        pure (story', toCardId storyCard)
+      stories <- selectWithField StoryCard $ StoryWithTitle "Unfinished Business"
       player <- getPlayer iid
       push
         $ chooseOne
@@ -54,9 +51,9 @@ instance RunMessage BaneOfTheLiving where
           [ targetLabel
             story'
             [ Flip iid (toSource attrs) (toTarget story')
-            , HandleTargetChoice iid (toSource attrs) (CardIdTarget cardId)
+            , HandleTargetChoice iid (toSource attrs) (CardIdTarget $ toCardId card)
             ]
-          | (story', cardId) <- storiesWithCardId
+          | (story', card) <- stories
           ]
       pure t
     HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cardId) -> do

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3685,7 +3685,7 @@ instance Query ChaosTokenMatcher where
         if null results
           then filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
           else pure results
-      _ -> filterM (go matcher) (traceShowId ((if inTokenPool matcher then [] else tokens) <> tokenPool))
+      _ -> filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
    where
     includeSealed = \case
       IncludeSealed _ -> True

@@ -3475,7 +3475,7 @@ getModifiedChaosTokenFace token = do
 
 cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
-  Matcher.AnyCards -> pure True
+  Matcher.AnyCards -> pure $ notNull cards
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards

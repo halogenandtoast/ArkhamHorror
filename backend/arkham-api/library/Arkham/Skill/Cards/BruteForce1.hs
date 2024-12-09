@@ -1,8 +1,9 @@
 module Arkham.Skill.Cards.BruteForce1 (bruteForce1, BruteForce1 (..)) where
 
 import Arkham.Action qualified as Action
+import Arkham.Card
 import Arkham.Constants
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfMaybe)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -15,7 +16,7 @@ bruteForce1 :: SkillCard BruteForce1
 bruteForce1 = skill BruteForce1 Cards.bruteForce1
 
 instance HasModifiersFor BruteForce1 where
-  getModifiersFor (BruteForce1 a) = modifySelfMaybe a do
+  getModifiersFor (BruteForce1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
     Action.Fight <- MaybeT getSkillTestAction
     AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestSource
     pure [AddSkillIcons [#combat, #combat]]

@@ -1247,15 +1247,18 @@ abilityMatches a@Ability {..} = \case
         InvestigatorSource iid' -> pure $ iid == iid'
         AbilitySource s _ -> sourceMatch s
         ProxySource s _ -> sourceMatch s
+        IndexedSource _ s -> sourceMatch s
         _ -> pure False
     sourceMatch abilitySource
   AbilityOnLocation locationMatcher -> case abilitySource of
     LocationSource lid' -> elem lid' <$> select locationMatcher
     ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
+    IndexedSource _ (LocationSource lid') -> elem lid' <$> select locationMatcher
     _ -> pure False
   AbilityOnStory storyMatcher -> case abilitySource of
     StorySource sid' -> elem sid' <$> select storyMatcher
     ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
+    IndexedSource _ (StorySource sid') -> elem sid' <$> select storyMatcher
     _ -> pure False
   AbilityOnAsset assetMatcher -> case abilitySource.asset of
     Just aid -> elem aid <$> select assetMatcher
@@ -1328,15 +1331,18 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
           InvestigatorSource iid' -> pure $ iid == iid'
           AbilitySource s _ -> sourceMatch s
           ProxySource s _ -> sourceMatch s
+          IndexedSource _ s -> sourceMatch s
           _ -> pure False
       filterM (sourceMatch . abilitySource) as
     AbilityOnLocation locationMatcher -> flip filterM as \a -> case a.source of
       LocationSource lid' -> elem lid' <$> select locationMatcher
       ProxySource (LocationSource lid') _ -> elem lid' <$> select locationMatcher
+      IndexedSource _ (LocationSource lid') -> elem lid' <$> select locationMatcher
       _ -> pure False
     AbilityOnStory storyMatcher -> flip filterM as \a -> case a.source of
       StorySource sid' -> elem sid' <$> select storyMatcher
       ProxySource (StorySource sid') _ -> elem sid' <$> select storyMatcher
+      IndexedSource _ (StorySource sid') -> elem sid' <$> select storyMatcher
       _ -> pure False
     AbilityOnAsset assetMatcher -> flip filterM as \a -> case a.source.asset of
       Just aid -> elem aid <$> select assetMatcher

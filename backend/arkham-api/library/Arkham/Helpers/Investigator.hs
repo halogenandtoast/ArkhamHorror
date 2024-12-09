@@ -429,7 +429,7 @@ getAdditionalActions attrs = do
   let
     toAdditionalAction = \case
       GiveAdditionalAction ac -> [ac]
-      AdditionalActions label source n -> replicate n $ AdditionalAction label source AnyAdditionalAction
+      AdditionalActions label source n | n > 0 -> map (\x -> AdditionalAction label (IndexedSource x source) AnyAdditionalAction) [1 .. n]
       _ -> []
     additionalActions = concatMap toAdditionalAction mods
 

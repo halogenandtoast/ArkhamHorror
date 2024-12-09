@@ -75,6 +75,7 @@ sourceToMaybeTarget = \case
   EncounterCardSource _ -> Nothing
   TestSource {} -> Just $ TestTarget
   ProxySource _ source -> sourceToMaybeTarget source
+  IndexedSource _ source -> sourceToMaybeTarget source
   EffectSource eid -> Just $ EffectTarget eid
   ResourceSource iid -> Just $ ResourceTarget iid
   AbilitySource s _ -> sourceToMaybeTarget s

@@ -24,13 +24,13 @@ mysteriousStairs_186 =
     (connectsToL .~ setFromList [Above, Below])
 
 instance HasModifiersFor MysteriousStairs_186 where
-  getModifiersFor (InvestigatorTarget iid) (MysteriousStairs_186 attrs) = do
-    here <- iid `isAt` attrs
+  getModifiersFor (MysteriousStairs_186 attrs) = do
     hasResources <- fieldSome LocationResources attrs.id
-    toModifiers attrs
-      $ guard (here && hasResources)
-      *> [CannotTakeAction #move, CannotTakeAction #resign]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen
+      attrs
+      hasResources
+      (investigatorAt attrs)
+      [CannotTakeAction #move, CannotTakeAction #resign]
 
 instance HasAbilities MysteriousStairs_186 where
   getAbilities (MysteriousStairs_186 attrs) =

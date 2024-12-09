@@ -14,17 +14,15 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Guest))
 
 newtype HotelManager = HotelManager EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hotelManager :: EnemyCard HotelManager
 hotelManager = enemy HotelManager Cards.hotelManager (3, PerPlayer 6, 4) (2, 2)
 
 instance HasModifiersFor HotelManager where
-  getModifiersFor (EnemyTarget eid) (HotelManager attrs) = do
-    isGuest <- eid <=~> EnemyWithTrait Guest
-    toModifiers attrs $ guard isGuest *> [LosePatrol, AddKeyword Keyword.Surge]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HotelManager attrs) =
+    modifySelect attrs (EnemyWithTrait Guest) [LosePatrol, AddKeyword Keyword.Surge]
 
 instance HasAbilities HotelManager where
   getAbilities (HotelManager a) =

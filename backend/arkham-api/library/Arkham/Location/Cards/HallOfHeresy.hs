@@ -3,23 +3,19 @@ module Arkham.Location.Cards.HallOfHeresy (hallOfHeresy, HallOfHeresy (..)) wher
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype HallOfHeresy = HallOfHeresy LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hallOfHeresy :: LocationCard HallOfHeresy
-hallOfHeresy =
-  symbolLabel $ location HallOfHeresy Cards.hallOfHeresy 4 (PerPlayer 1)
+hallOfHeresy = symbolLabel $ location HallOfHeresy Cards.hallOfHeresy 4 (PerPlayer 1)
 
 instance HasModifiersFor HallOfHeresy where
-  getModifiersFor target (HallOfHeresy a) | isTarget a target = do
-    hasInvestigator <- selectAny $ investigatorAt a
-    toModifiers a [InVictoryDisplayForCountingVengeance | hasInvestigator]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HallOfHeresy a) = whenRevealed a do
+    modifySelfWhenM a (selectAny $ investigatorAt a) [InVictoryDisplayForCountingVengeance]
 
 instance RunMessage HallOfHeresy where
   runMessage msg (HallOfHeresy attrs) = HallOfHeresy <$> runMessage msg attrs

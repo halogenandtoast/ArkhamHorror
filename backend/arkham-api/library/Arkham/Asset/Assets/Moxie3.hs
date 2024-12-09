@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Moxie3 (moxie3, Moxie3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype Moxie3 = Moxie3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,11 +22,11 @@ instance HasAbilities Moxie3 where
     ]
 
 instance HasModifiersFor Moxie3 where
-  getModifiersFor target (Moxie3 attrs) | attrs `is` target = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (Moxie3 attrs) | iid `controls` attrs = do
-    toModifiers attrs [SkillModifier #willpower 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Moxie3 a) = do
+    self <-
+      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controller <- controllerGets a [SkillModifier #willpower 1, SkillModifier #agility 1]
+    pure $ self <> controller
 
 instance RunMessage Moxie3 where
   runMessage msg a@(Moxie3 attrs) = runQueueT $ case msg of

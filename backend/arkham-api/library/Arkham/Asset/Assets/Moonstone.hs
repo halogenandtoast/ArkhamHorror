@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.Moonstone (moonstone, Moonstone (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (Discarded)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype Moonstone = Moonstone AssetAttrs
   deriving anyclass IsAsset
@@ -14,9 +14,7 @@ moonstone :: AssetCard Moonstone
 moonstone = asset Moonstone Cards.moonstone
 
 instance HasModifiersFor Moonstone where
-  getModifiersFor (InvestigatorTarget iid) (Moonstone a) | a `controlledBy` iid = do
-    modified a [SkillModifier #willpower 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Moonstone a) = controllerGets a [SkillModifier #willpower 1, SkillModifier #agility 1]
 
 instance HasAbilities Moonstone where
   getAbilities (Moonstone x) =

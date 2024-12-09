@@ -67,6 +67,7 @@ data EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
   | EnemyWithAttachedEvent EventMatcher
+  | EnemyWithAttachedAsset AssetMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher

@@ -22,10 +22,9 @@ theThirdNight :: AgendaCard TheThirdNight
 theThirdNight = agenda (3, A) TheThirdNight Cards.theThirdNight (Static 5)
 
 instance HasModifiersFor TheThirdNight where
-  getModifiersFor target (TheThirdNight a) | not (isTarget a target) = do
+  getModifiersFor (TheThirdNight a) = do
     moreConvictionThanDoubt <- getMoreConvictionThanDoubt
-    toModifiers a $ [DoomSubtracts | moreConvictionThanDoubt]
-  getModifiersFor _ _ = pure []
+    modifySelf a [OtherDoomSubtracts | moreConvictionThanDoubt]
 
 instance RunMessage TheThirdNight where
   runMessage msg a@(TheThirdNight attrs) = case msg of

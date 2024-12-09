@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype ProfessorWarrenRice = ProfessorWarrenRice AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 professorWarrenRice :: AssetCard ProfessorWarrenRice
@@ -19,9 +19,7 @@ professorWarrenRice =
     (isStoryL .~ True)
 
 instance HasModifiersFor ProfessorWarrenRice where
-  getModifiersFor (InvestigatorTarget iid) (ProfessorWarrenRice a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ProfessorWarrenRice a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities ProfessorWarrenRice where
   getAbilities (ProfessorWarrenRice a) =

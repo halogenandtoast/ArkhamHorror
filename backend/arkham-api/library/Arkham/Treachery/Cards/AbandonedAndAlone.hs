@@ -1,9 +1,7 @@
-module Arkham.Treachery.Cards.AbandonedAndAlone where
+module Arkham.Treachery.Cards.AbandonedAndAlone (abandonedAndAlone) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype AbandonedAndAlone = AbandonedAndAlone TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -13,8 +11,9 @@ abandonedAndAlone :: TreacheryCard AbandonedAndAlone
 abandonedAndAlone = treachery AbandonedAndAlone Cards.abandonedAndAlone
 
 instance RunMessage AbandonedAndAlone where
-  runMessage msg t@(AbandonedAndAlone attrs) = case msg of
+  runMessage msg t@(AbandonedAndAlone attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      pushAll [directHorror iid attrs 2, RemoveDiscardFromGame iid]
+      directHorror iid attrs 2
+      push $ RemoveDiscardFromGame iid
       pure t
-    _ -> AbandonedAndAlone <$> runMessage msg attrs
+    _ -> AbandonedAndAlone <$> liftRunMessage msg attrs

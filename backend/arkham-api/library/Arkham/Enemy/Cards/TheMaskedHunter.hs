@@ -17,13 +17,11 @@ theMaskedHunter =
     .~ Prey MostClues
 
 instance HasModifiersFor TheMaskedHunter where
-  getModifiersFor target (TheMaskedHunter a) | isTarget a target = do
+  getModifiersFor (TheMaskedHunter a) = do
     healthModifier <- perPlayer 2
-    toModifiers a [HealthModifier healthModifier]
-  getModifiersFor (InvestigatorTarget iid) (TheMaskedHunter a) = do
-    affected <- iid <=~> investigatorEngagedWith (toId a)
-    toModifiers a $ guard affected *> [CannotDiscoverClues, CannotSpendClues]
-  getModifiersFor _ _ = pure []
+    self <- modifySelf a [HealthModifier healthModifier]
+    investigators <- modifySelect a (investigatorEngagedWith a) [CannotDiscoverClues, CannotSpendClues]
+    pure $ self <> investigators
 
 instance RunMessage TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs) = TheMaskedHunter <$> runMessage msg attrs

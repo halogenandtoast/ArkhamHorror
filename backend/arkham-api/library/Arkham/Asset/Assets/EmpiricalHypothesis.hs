@@ -158,9 +158,8 @@ empiricalHypothesisEffect =
     (extraL .~ toJSON (EmpiricalHypothesisEffectMetadata 0 False False))
 
 instance HasModifiersFor EmpiricalHypothesisEffect where
-  getModifiersFor target (EmpiricalHypothesisEffect attrs) | isNothing attrs.meta && target == attrs.target = do
-    toModifiers attrs [ReduceCostOf AnyCard 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EmpiricalHypothesisEffect a) =
+    if isNothing a.meta then modified_ a a.target [ReduceCostOf AnyCard 3] else pure mempty
 
 instance HasAbilities EmpiricalHypothesisEffect where
   getAbilities (EmpiricalHypothesisEffect attrs) | isJust attrs.meta = case attrs.source of

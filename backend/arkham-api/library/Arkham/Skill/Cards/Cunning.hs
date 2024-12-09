@@ -18,22 +18,22 @@ cunning :: SkillCard Cunning
 cunning = skill Cunning Cards.cunning
 
 instance HasModifiersFor Cunning where
-  getModifiersFor (CardIdTarget cid) (Cunning attrs) | toCardId attrs == cid = do
+  getModifiersFor (Cunning attrs) = do
     resources <- field InvestigatorResources (skillOwner attrs)
-    toModifiers
+    modifiedWhen_
       attrs
+      (resources >= 5)
+      (CardIdTarget $ toCardId attrs)
       [ AddSkillIcons
-        $ if resources >= 10
-          then
-            [ SkillIcon SkillIntellect
-            , SkillIcon SkillIntellect
-            , SkillIcon SkillAgility
-            , SkillIcon SkillAgility
-            ]
-          else [SkillIcon SkillIntellect, SkillIcon SkillAgility]
-      | resources >= 5
+          $ if resources >= 10
+            then
+              [ SkillIcon SkillIntellect
+              , SkillIcon SkillIntellect
+              , SkillIcon SkillAgility
+              , SkillIcon SkillAgility
+              ]
+            else [SkillIcon SkillIntellect, SkillIcon SkillAgility]
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Cunning where
   runMessage msg (Cunning attrs) = Cunning <$> runMessage msg attrs

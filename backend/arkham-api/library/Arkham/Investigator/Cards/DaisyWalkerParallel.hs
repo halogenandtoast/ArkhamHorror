@@ -20,12 +20,11 @@ daisyWalkerParallel =
     $ Stats {health = 5, sanity = 7, willpower = 1, intellect = 5, combat = 2, agility = 2}
 
 instance HasModifiersFor DaisyWalkerParallel where
-  getModifiersFor target (DaisyWalkerParallel attrs) | attrs `isTarget` target = do
-    maybeModified attrs do
-      tomeCount <- lift $ selectCount $ assetControlledBy attrs.id <> #tome
-      guard $ tomeCount > 0
-      pure [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DaisyWalkerParallel a) = do
+    tomeCount <- selectCount $ assetControlledBy a.id <> #tome
+    modifySelf a
+      $ guard (tomeCount > 0)
+      *> [SkillModifier #willpower tomeCount, SanityModifier tomeCount]
 
 instance HasChaosTokenValue DaisyWalkerParallel where
   getChaosTokenValue iid ElderSign (DaisyWalkerParallel attrs) | attrs `is` iid = do

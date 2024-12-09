@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher
 
 newtype CleaningKit3 = CleaningKit3 AssetAttrs
@@ -15,12 +15,14 @@ cleaningKit3 :: AssetCard CleaningKit3
 cleaningKit3 = asset CleaningKit3 Cards.cleaningKit3
 
 instance HasModifiersFor CleaningKit3 where
-  getModifiersFor (AssetTarget aid) (CleaningKit3 a) | a.id /= aid = maybeModified a do
-    iid <- hoistMaybe a.controller
-    liftGuardM $ aid <=~> assetControlledBy iid
-    guard $ a.use Supply > 0
-    pure [ProvidesUses Supply (toSource a), ProvidesProxyUses Supply Ammo (toSource a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CleaningKit3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelectWhen
+        a
+        (a.use Supply > 0)
+        (not_ (AssetWithId a.id) <> assetControlledBy iid)
+        [ProvidesUses Supply (toSource a), ProvidesProxyUses Supply Ammo (toSource a)]
 
 instance HasAbilities CleaningKit3 where
   getAbilities (CleaningKit3 x) =

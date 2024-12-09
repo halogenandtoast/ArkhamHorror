@@ -13,11 +13,10 @@ underprepared :: EventCard Underprepared
 underprepared = event Underprepared Cards.underprepared
 
 instance HasModifiersFor Underprepared where
-  getModifiersFor (InvestigatorTarget iid) (Underprepared attrs) = do
+  getModifiersFor (Underprepared attrs) = do
     case attrs.placement of
-      StillInHand iid' | iid == iid' -> modified attrs [FewerMatchingIconsPerCard 1]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      StillInHand iid -> modified_ attrs iid [FewerMatchingIconsPerCard 1]
+      _ -> pure mempty
 
 instance RunMessage Underprepared where
   runMessage msg e@(Underprepared attrs) = runQueueT $ case msg of

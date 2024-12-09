@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 grapplingHorror :: EnemyCard GrapplingHorror
@@ -19,11 +19,8 @@ grapplingHorror =
   enemy GrapplingHorror Cards.grapplingHorror (3, Static 3, 2) (1, 1)
 
 instance HasModifiersFor GrapplingHorror where
-  getModifiersFor (InvestigatorTarget iid) (GrapplingHorror a@EnemyAttrs {..}) =
-    do
-      cannotMove <- iid <=~> investigatorEngagedWith enemyId
-      toModifiers a [CannotMove | cannotMove]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GrapplingHorror a) =
+    modifySelect a (investigatorEngagedWith a) [CannotMove]
 
 instance RunMessage GrapplingHorror where
   runMessage msg (GrapplingHorror attrs) =

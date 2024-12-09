@@ -4,20 +4,21 @@ import Arkham.Ability
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype ThePitBelow = ThePitBelow TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thePitBelow :: TreacheryCard ThePitBelow
 thePitBelow = treachery ThePitBelow Cards.thePitBelow
 
 instance HasModifiersFor ThePitBelow where
-  getModifiersFor (LocationTarget lid) (ThePitBelow attrs) =
-    modified attrs [ShroudModifier 1 | treacheryOnLocation lid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ThePitBelow attrs) = case attrs.placement of
+    AttachedToLocation lid -> modified_ attrs lid [ShroudModifier 1]
+    _ -> pure mempty
 
 instance HasAbilities ThePitBelow where
   getAbilities (ThePitBelow a) = [mkAbility a 1 $ forced $ RoundEnds #when]

@@ -42,10 +42,7 @@ hatchetManEffect :: EffectArgs -> HatchetManEffect
 hatchetManEffect = cardEffect HatchetManEffect Cards.hatchetMan
 
 instance HasModifiersFor HatchetManEffect where
-  getModifiersFor target (HatchetManEffect a)
-    | effectTarget a == target =
-        toModifiers a [DamageTaken 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HatchetManEffect a) = modified_ a a.target [DamageTaken 1]
 
 instance RunMessage HatchetManEffect where
   runMessage msg e@(HatchetManEffect attrs@EffectAttrs {..}) = case msg of

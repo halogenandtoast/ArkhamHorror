@@ -16,12 +16,15 @@ deepOneNursemaid :: EnemyCard DeepOneNursemaid
 deepOneNursemaid = enemy DeepOneNursemaid Cards.deepOneNursemaid (0, Static 1, 0) (0, 0)
 
 instance HasModifiersFor DeepOneNursemaid where
-  getModifiersFor (EnemyTarget eid) (DeepOneNursemaid a) = maybeModified a do
-    guard $ a.id /= eid
-    liftGuardM $ a.id <=~> UnengagedEnemy
-    liftGuardM $ eid <=~> (EnemyAt (orConnected $ locationWithEnemy a.id) <> EnemyWithTrait DeepOne)
-    pure [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeepOneNursemaid a) =
+    modifySelect
+      a
+      ( not_ (EnemyWithId a.id)
+          <> UnengagedEnemy
+          <> EnemyAt (orConnected $ locationWithEnemy a.id)
+          <> EnemyWithTrait DeepOne
+      )
+      [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities DeepOneNursemaid where
   getAbilities (DeepOneNursemaid a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)

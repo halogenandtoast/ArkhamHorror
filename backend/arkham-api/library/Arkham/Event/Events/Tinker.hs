@@ -3,7 +3,7 @@ module Arkham.Event.Events.Tinker (tinker, Tinker (..)) where
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -21,11 +21,11 @@ tinker :: EventCard Tinker
 tinker = event (Tinker . (`with` Meta Nothing)) Cards.tinker
 
 instance HasModifiersFor Tinker where
-  getModifiersFor (AssetTarget aid) (Tinker (With a meta)) = maybeModified a do
-    guard $ AssetTarget aid `elem` a.placement.attachedTo
-    slot <- hoistMaybe $ ignoredSlot meta
-    pure [TakeUpFewerSlots slot 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Tinker (With a meta)) = case a.placement.attachedTo of
+    Just (AssetTarget aid) -> maybeModified_ a aid do
+      slot <- hoistMaybe $ ignoredSlot meta
+      pure [TakeUpFewerSlots slot 1]
+    _ -> pure mempty
 
 instance RunMessage Tinker where
   runMessage msg e@(Tinker (With attrs meta)) = runQueueT $ case msg of

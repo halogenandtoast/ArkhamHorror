@@ -12,16 +12,14 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype VaultOfKnowledge = VaultOfKnowledge AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vaultOfKnowledge :: AssetCard VaultOfKnowledge
 vaultOfKnowledge = asset VaultOfKnowledge Cards.vaultOfKnowledge
 
 instance HasModifiersFor VaultOfKnowledge where
-  getModifiersFor (InvestigatorTarget iid) (VaultOfKnowledge a) | a `controlledBy` iid = do
-    toModifiers a [HandSize 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VaultOfKnowledge a) = controllerGets a [HandSize 2]
 
 instance HasAbilities VaultOfKnowledge where
   getAbilities (VaultOfKnowledge a) =

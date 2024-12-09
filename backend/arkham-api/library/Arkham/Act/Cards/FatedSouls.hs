@@ -18,13 +18,12 @@ import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FatedSouls = FatedSouls ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor FatedSouls where
-  getModifiersFor (InvestigatorTarget _) (FatedSouls attrs) = do
-    toModifiers attrs [CannotMove, CannotBeMoved]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FatedSouls attrs) =
+    modifySelect attrs Anyone [CannotMove, CannotBeMoved]
 
 fatedSouls :: ActCard FatedSouls
 fatedSouls = act (2, A) FatedSouls Cards.fatedSouls (Just $ GroupClueCost (PerPlayer 2) Anywhere)

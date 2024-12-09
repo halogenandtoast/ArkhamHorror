@@ -171,10 +171,14 @@ button {
 .entry-body {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  gap: 20px;
+  flex-direction: column;
   p {
     flex: 1;
+  }
+
+  &:has(.card) {
+    flex-direction: row;
+    gap: 20px;
   }
 }
 </style>

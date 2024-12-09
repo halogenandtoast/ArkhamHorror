@@ -15,7 +15,7 @@ import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
 newtype CarlSanfordDeathlessFanatic = CarlSanfordDeathlessFanatic EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 carlSanfordDeathlessFanatic :: EnemyCard CarlSanfordDeathlessFanatic
@@ -28,10 +28,9 @@ carlSanfordDeathlessFanatic =
     (spawnAtL ?~ "Silver Twilight Lodge")
 
 instance HasModifiersFor CarlSanfordDeathlessFanatic where
-  getModifiersFor target (CarlSanfordDeathlessFanatic a) | isTarget a target = do
+  getModifiersFor (CarlSanfordDeathlessFanatic a) = do
     clues <- getSum <$> selectAgg Sum InvestigatorClues UneliminatedInvestigator
-    toModifiers a [HealthModifier $ negate $ 2 * clues]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier $ negate $ 2 * clues]
 
 instance HasAbilities CarlSanfordDeathlessFanatic where
   getAbilities (CarlSanfordDeathlessFanatic a) =

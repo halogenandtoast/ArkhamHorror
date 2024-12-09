@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.FurtiveLocals (furtiveLocals, FurtiveLocals (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -16,8 +16,7 @@ furtiveLocals :: TreacheryCard FurtiveLocals
 furtiveLocals = treachery FurtiveLocals Cards.furtiveLocals
 
 instance HasModifiersFor FurtiveLocals where
-  getModifiersFor (InvestigatorTarget _) (FurtiveLocals a) = modified a [CannotTakeAction #parley]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FurtiveLocals a) = modifySelect a Anyone [CannotTakeAction #parley]
 
 instance HasAbilities FurtiveLocals where
   getAbilities (FurtiveLocals a) =

@@ -2,9 +2,10 @@ module Arkham.Treachery.Cards.SirenCall (sirenCall, SirenCall (..)) where
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
+import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -16,12 +17,13 @@ sirenCall :: TreacheryCard SirenCall
 sirenCall = treachery SirenCall Cards.sirenCall
 
 instance HasModifiersFor SirenCall where
-  getModifiersFor (CardIdTarget cid) (SirenCall attrs) = maybeModified attrs do
-    iid <- hoistMaybe attrs.inThreatAreaOf
-    matchingIcons <- lift $ (#wild :) . toList <$> getSkillTestMatchingSkillIcons
-    n <- lift $ count (`elem` matchingIcons) . cdSkills . toCardDef <$> getCard cid
-    pure [AdditionalCostToCommit iid $ ResourceCost n]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SirenCall attrs) = case attrs.placement of
+    InThreatArea iid -> do
+      matchingIcons <- (#wild :) . toList <$> getSkillTestMatchingSkillIcons
+      modifySelectMapM attrs (CardOwnedBy iid) \card -> do
+        let n = count (`elem` matchingIcons) (cdSkills $ toCardDef card)
+        pure [AdditionalCostToCommit iid $ ResourceCost n | n > 0]
+    _ -> pure mempty
 
 instance HasAbilities SirenCall where
   getAbilities (SirenCall a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

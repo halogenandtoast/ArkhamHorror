@@ -7,7 +7,7 @@ module Arkham.Treachery.Cards.MysteriesOfTheLodge (
 import Arkham.Action qualified as Action
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestAction, getSkillTestTarget)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Cultist))
@@ -43,13 +43,15 @@ mysteriesOfTheLodgeEffect :: EffectArgs -> MysteriesOfTheLodgeEffect
 mysteriesOfTheLodgeEffect = cardEffect MysteriesOfTheLodgeEffect Cards.mysteriesOfTheLodge
 
 instance HasModifiersFor MysteriesOfTheLodgeEffect where
-  getModifiersFor (SkillTestTarget _) (MysteriesOfTheLodgeEffect a) = maybeModified a do
-    target <- MaybeT getSkillTestTarget
-    guard $ target == a.target
-    action <- MaybeT getSkillTestAction
-    guard $ action `elem` [Action.Fight, Action.Evade, Action.Parley]
-    pure [Difficulty 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MysteriesOfTheLodgeEffect a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        target <- MaybeT getSkillTestTarget
+        guard $ target == a.target
+        action <- MaybeT getSkillTestAction
+        guard $ action `elem` [Action.Fight, Action.Evade, Action.Parley]
+        pure [Difficulty 2]
 
 instance RunMessage MysteriesOfTheLodgeEffect where
   runMessage msg e@(MysteriesOfTheLodgeEffect attrs) = runQueueT $ case msg of

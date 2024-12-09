@@ -12,7 +12,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype LodgeEnforcer = LodgeEnforcer EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 lodgeEnforcer :: EnemyCard LodgeEnforcer
@@ -28,10 +28,7 @@ lodgeEnforcer =
     )
 
 instance HasModifiersFor LodgeEnforcer where
-  getModifiersFor (LocationTarget lid) (LodgeEnforcer attrs) = do
-    shouldBlank <- elem lid <$> select (locationWithEnemy $ toId attrs)
-    toModifiers attrs [Blank | shouldBlank]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LodgeEnforcer a) = modifySelect a (locationWithEnemy a) [Blank]
 
 instance RunMessage LodgeEnforcer where
   runMessage msg (LodgeEnforcer attrs) =

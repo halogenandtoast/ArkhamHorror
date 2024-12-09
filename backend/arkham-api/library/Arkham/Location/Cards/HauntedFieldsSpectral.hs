@@ -23,10 +23,8 @@ hauntedFieldsSpectral :: LocationCard HauntedFieldsSpectral
 hauntedFieldsSpectral = location HauntedFieldsSpectral Cards.hauntedFieldsSpectral 3 (Static 0)
 
 instance HasModifiersFor HauntedFieldsSpectral where
-  getModifiersFor (EnemyTarget eid) (HauntedFieldsSpectral attrs) = do
-    affected <- eid <=~> (enemyAt (toId attrs) <> EnemyWithTrait Spectral)
-    toModifiers attrs [HorrorDealt 1 | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HauntedFieldsSpectral attrs) = do
+    modifySelect attrs (enemyAt (toId attrs) <> EnemyWithTrait Spectral) [HorrorDealt 1]
 
 instance HasAbilities HauntedFieldsSpectral where
   getAbilities (HauntedFieldsSpectral a) =

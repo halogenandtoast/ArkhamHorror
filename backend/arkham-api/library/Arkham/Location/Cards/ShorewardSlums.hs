@@ -16,10 +16,9 @@ shorewardSlums :: LocationCard ShorewardSlums
 shorewardSlums = location ShorewardSlums Cards.shorewardSlums 5 (PerPlayer 1)
 
 instance HasModifiersFor ShorewardSlums where
-  getModifiersFor target (ShorewardSlums a) | isTarget a target = do
+  getModifiersFor (ShorewardSlums a) = do
     doom <- field LocationDoom a.id
-    modified a [ShroudModifier ((-2) * doom) | doom > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf a [ShroudModifier ((-2) * doom) | doom > 0]
 
 instance HasAbilities ShorewardSlums where
   getAbilities (ShorewardSlums a) =

@@ -3,10 +3,11 @@ module Arkham.Asset.Assets.TheKingInYellow (theKingInYellow, TheKingInYellow (..
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Message.Lifted.Placement
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 
@@ -28,13 +29,17 @@ instance HasAbilities TheKingInYellow where
     ]
 
 instance HasModifiersFor TheKingInYellow where
-  getModifiersFor (SkillTestTarget _) (TheKingInYellow attrs) = do
-    case assetPlacement attrs of
-      InThreatArea minh -> do
-        commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
-        toModifiers attrs [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
-      _ -> pure [] -- if drawn during a skill test, it will have a small moment where it can't modify
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheKingInYellow a) = case a.placement of
+    InThreatArea minh ->
+      getSkillTestId >>= \case
+        Nothing -> pure mempty
+        Just stId -> do
+          commitedCardsCount <- fieldMap InvestigatorCommittedCards length minh
+          modified_
+            a
+            (SkillTestTarget stId)
+            [CannotPerformSkillTest | commitedCardsCount == 1 || commitedCardsCount == 2]
+    _ -> pure mempty
 
 instance RunMessage TheKingInYellow where
   runMessage msg a@(TheKingInYellow attrs) = runQueueT $ case msg of

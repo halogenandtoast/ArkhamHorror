@@ -46,13 +46,15 @@ pennyWhite =
     $ Stats {health = 7, sanity = 5, willpower = 4, intellect = 1, combat = 3, agility = 2}
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor target (PennyWhite a) | a `is` target = do
-    toModifiersWith a setActiveDuringSetup
-      $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
-  getModifiersFor (AssetTarget aid) (PennyWhite a) = do
-    isFlashlight <- selectAny $ AssetWithId aid <> assetIs Cards.flashlight
-    toModifiersWith a setActiveDuringSetup [AdditionalStartingUses (-1) | isFlashlight]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PennyWhite a) = do
+    self <-
+      modifySelfWith
+        a
+        setActiveDuringSetup
+        [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-3)]
+    assets <-
+      modifySelectWith a (assetIs Cards.flashlight) setActiveDuringSetup [AdditionalStartingUses (-1)]
+    pure $ self <> assets
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite a) =

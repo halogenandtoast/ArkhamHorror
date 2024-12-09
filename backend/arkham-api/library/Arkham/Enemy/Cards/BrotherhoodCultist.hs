@@ -17,10 +17,9 @@ brotherhoodCultist :: EnemyCard BrotherhoodCultist
 brotherhoodCultist = enemy BrotherhoodCultist Cards.brotherhoodCultist (2, Static 3, 2) (0, 1)
 
 instance HasModifiersFor BrotherhoodCultist where
-  getModifiersFor target (BrotherhoodCultist a) | a `is` target = do
+  getModifiersFor (BrotherhoodCultist a) = do
     doom <- field EnemyDoom (toId a)
-    toModifiers a $ guard (doom > 0) *> [EnemyFight doom, EnemyEvade doom]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen a (doom > 0) [EnemyFight doom, EnemyEvade doom]
 
 instance HasAbilities BrotherhoodCultist where
   getAbilities (BrotherhoodCultist a) =

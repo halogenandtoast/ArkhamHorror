@@ -5,11 +5,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Cost
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Trait (Trait (Tactic, Trick))
 
 newtype ChuckFergus2 = ChuckFergus2 AssetAttrs
@@ -26,9 +26,9 @@ cardMatcher = CardWithOneOf [CardWithTrait Tactic, CardWithTrait Trick] <> CardW
 -- which thing has applied which modifiers. I think we are safe with the
 -- current card pool
 instance HasModifiersFor ChuckFergus2 where
-  getModifiersFor (InvestigatorTarget iid) (ChuckFergus2 a) | controlledBy a iid && not (assetExhausted a) = do
-    toModifiers a [ChuckFergus2Modifier cardMatcher 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChuckFergus2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifiedWhen_ a a.ready iid [ChuckFergus2Modifier cardMatcher 2]
 
 instance HasAbilities ChuckFergus2 where
   getAbilities (ChuckFergus2 a) =

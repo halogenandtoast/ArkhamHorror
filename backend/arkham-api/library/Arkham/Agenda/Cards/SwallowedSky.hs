@@ -8,9 +8,8 @@ import Arkham.Prelude
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
-import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.GameValue
-import Arkham.Projection
+import Arkham.Matcher
 import Arkham.Resolution
 import Arkham.Trait
 
@@ -22,10 +21,8 @@ swallowedSky :: AgendaCard SwallowedSky
 swallowedSky = agenda (3, C) SwallowedSky Cards.swallowedSky (Static 8)
 
 instance HasModifiersFor SwallowedSky where
-  getModifiersFor (EnemyTarget eid) (SwallowedSky a) = do
-    isMonster <- fieldP EnemyTraits (member Monster) eid
-    toModifiers a [EnemyFight 1 | isMonster]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SwallowedSky a) = do
+    modifySelect a (EnemyWithTrait Monster) [EnemyFight 1]
 
 instance RunMessage SwallowedSky where
   runMessage msg a@(SwallowedSky attrs) = case msg of

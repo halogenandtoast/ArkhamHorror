@@ -25,9 +25,7 @@ instance HasAbilities ScientificTheory1 where
     ]
 
 instance HasModifiersFor ScientificTheory1 where
-  getModifiersFor (AssetTarget aid) (ScientificTheory1 attrs) | toId attrs == aid = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ScientificTheory1 a) = modifySelf a [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage ScientificTheory1 where
   runMessage msg a@(ScientificTheory1 attrs) = case msg of

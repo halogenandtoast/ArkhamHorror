@@ -31,10 +31,11 @@ fightOrFlightEffect :: EffectArgs -> FightOrFlightEffect
 fightOrFlightEffect = cardEffect FightOrFlightEffect Cards.fightOrFlight
 
 instance HasModifiersFor FightOrFlightEffect where
-  getModifiersFor target@(InvestigatorTarget iid) (FightOrFlightEffect attrs) | attrs.target == target = do
-    horror <- field InvestigatorHorror iid
-    toModifiers attrs [SkillModifier #combat horror, SkillModifier #agility horror]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FightOrFlightEffect attrs) = case attrs.target of
+    InvestigatorTarget iid -> do
+      horror <- field InvestigatorHorror iid
+      modified_ attrs iid [SkillModifier #combat horror, SkillModifier #agility horror]
+    _ -> pure mempty
 
 instance RunMessage FightOrFlightEffect where
   runMessage msg e@(FightOrFlightEffect attrs) = case msg of

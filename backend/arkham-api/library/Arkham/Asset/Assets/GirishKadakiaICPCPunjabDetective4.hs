@@ -7,11 +7,9 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, withSkillTest)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype GirishKadakiaICPCPunjabDetective4 = GirishKadakiaICPCPunjabDetective4 AssetAttrs
   deriving anyclass IsAsset
@@ -21,13 +19,13 @@ girishKadakiaIcpcPunjabDetective4 :: AssetCard GirishKadakiaICPCPunjabDetective4
 girishKadakiaIcpcPunjabDetective4 = ally GirishKadakiaICPCPunjabDetective4 Cards.girishKadakiaIcpcPunjabDetective4 (3, 3)
 
 instance HasModifiersFor GirishKadakiaICPCPunjabDetective4 where
-  getModifiersFor (InvestigatorTarget iid) (GirishKadakiaICPCPunjabDetective4 a) = maybeModified a do
-    guard $ not $ a `controlledBy` iid
-    locationId <- MaybeT $ field InvestigatorLocation iid
-    assetLocationId <- MaybeT $ field AssetLocation a.id
-    guard $ locationId == assetLocationId
-    pure [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GirishKadakiaICPCPunjabDetective4 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelect
+        a
+        (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+        [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 instance HasAbilities GirishKadakiaICPCPunjabDetective4 where
   getAbilities (GirishKadakiaICPCPunjabDetective4 a) =

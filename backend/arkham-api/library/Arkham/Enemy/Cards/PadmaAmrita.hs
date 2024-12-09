@@ -18,13 +18,8 @@ padmaAmrita :: EnemyCard PadmaAmrita
 padmaAmrita = enemy PadmaAmrita Cards.padmaAmrita (5, PerPlayer 3, 3) (0, 0)
 
 instance HasModifiersFor PadmaAmrita where
-  getModifiersFor (InvestigatorTarget _) (PadmaAmrita a) =
-    toModifiers
-      a
-      [ CannotDiscoverCluesAt (LocationWithTrait Ancient)
-      | not (enemyExhausted a)
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PadmaAmrita a) =
+    modifySelectWhen a a.ready Anyone [CannotDiscoverCluesAt (LocationWithTrait Ancient)]
 
 instance HasAbilities PadmaAmrita where
   getAbilities (PadmaAmrita a) =

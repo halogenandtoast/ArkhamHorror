@@ -14,16 +14,14 @@ import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype OozeAndFilth = OozeAndFilth TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 oozeAndFilth :: TreacheryCard OozeAndFilth
 oozeAndFilth = treachery OozeAndFilth Cards.oozeAndFilth
 
 instance HasModifiersFor OozeAndFilth where
-  getModifiersFor (LocationTarget _) (OozeAndFilth a) =
-    toModifiers a [ShroudModifier 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OozeAndFilth a) = modifySelect a Anywhere [ShroudModifier 1]
 
 instance HasAbilities OozeAndFilth where
   getAbilities (OozeAndFilth a) =

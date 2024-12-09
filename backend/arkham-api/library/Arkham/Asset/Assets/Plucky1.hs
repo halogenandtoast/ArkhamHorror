@@ -24,9 +24,7 @@ instance HasAbilities Plucky1 where
     ]
 
 instance HasModifiersFor Plucky1 where
-  getModifiersFor (AssetTarget aid) (Plucky1 attrs) | toId attrs == aid = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Plucky1 attrs) = modifySelf attrs [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage Plucky1 where
   runMessage msg a@(Plucky1 attrs) = case msg of

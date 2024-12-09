@@ -21,14 +21,14 @@ duke :: AssetCard Duke
 duke = allyWith Duke Cards.duke (2, 3) noSlots
 
 instance HasModifiersFor Duke where
-  getModifiersFor (InvestigatorTarget iid) (Duke a) = maybeModified a do
-    guard $ controlledBy a iid
-    guardM $ isSource a <$> MaybeT getSkillTestSource
-    MaybeT getSkillTestAction >>= \case
-      Action.Fight -> pure [BaseSkillOf #combat 4, DamageDealt 1]
-      Action.Investigate -> pure [BaseSkillOf #intellect 4]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Duke a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      guardM $ isSource a <$> MaybeT getSkillTestSource
+      MaybeT getSkillTestAction >>= \case
+        Action.Fight -> pure [BaseSkillOf #combat 4, DamageDealt 1]
+        Action.Investigate -> pure [BaseSkillOf #intellect 4]
+        _ -> pure []
 
 instance HasAbilities Duke where
   getAbilities (Duke a) =

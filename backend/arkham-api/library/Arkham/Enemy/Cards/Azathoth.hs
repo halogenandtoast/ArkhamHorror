@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Azathoth = Azathoth EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 azathoth :: EnemyCard Azathoth
@@ -24,10 +24,9 @@ instance HasAbilities Azathoth where
     [restricted a 1 (exists $ be a <> EnemyWithDoom (atLeast 10)) $ forced AnyWindow]
 
 instance HasModifiersFor Azathoth where
-  getModifiersFor target (Azathoth attrs) | isTarget attrs target = do
+  getModifiersFor (Azathoth attrs) = do
     noAgenda <- selectNone AnyAgenda
-    toModifiers attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs $ Omnipotent : [CountAllDoomInPlay | noAgenda]
 
 instance RunMessage Azathoth where
   runMessage msg e@(Azathoth attrs) = case msg of

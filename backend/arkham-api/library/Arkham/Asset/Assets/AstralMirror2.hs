@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.AstralMirror2 (astralMirror2, AstralMirror2 (..)) whe
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Slot (isEmptySlot)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Slot
 
@@ -22,14 +22,13 @@ astralMirror2 :: AssetCard AstralMirror2
 astralMirror2 = asset (AstralMirror2 . (`with` Meta 0)) Cards.astralMirror2
 
 instance HasModifiersFor AstralMirror2 where
-  getModifiersFor (InvestigatorTarget iid) (AstralMirror2 (With attrs _)) | attrs `controlledBy` iid = do
-    toModifiers
-      attrs
+  getModifiersFor (AstralMirror2 (With a _)) =
+    controllerGets
+      a
       [ GiveAdditionalAction
-          $ AdditionalAction "Astral Mirror (2)" (toSource attrs)
+          $ AdditionalAction "Astral Mirror (2)" (toSource a)
           $ PlayCardRestrictedAdditionalAction (basic #asset <> WillGoIntoSlot #hand)
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage AstralMirror2 where
   runMessage msg a@(AstralMirror2 (With attrs meta)) = runQueueT $ case msg of

@@ -22,10 +22,8 @@ theWitchLight :: AgendaCard TheWitchLight
 theWitchLight = agenda (3, A) TheWitchLight Cards.theWitchLight (Static 8)
 
 instance HasModifiersFor TheWitchLight where
-  getModifiersFor (EnemyTarget eid) (TheWitchLight a) = do
-    valid <- eid <=~> NonWeaknessEnemy
-    toModifiers a [HealthModifier 3 | valid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheWitchLight a) =
+    modifySelect a NonWeaknessEnemy [HealthModifier 3]
 
 instance HasAbilities TheWitchLight where
   getAbilities (TheWitchLight a) =

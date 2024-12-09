@@ -17,10 +17,8 @@ serpentsHaven :: LocationCard SerpentsHaven
 serpentsHaven = location SerpentsHaven Cards.serpentsHaven 2 (PerPlayer 2)
 
 instance HasModifiersFor SerpentsHaven where
-  getModifiersFor (EnemyTarget eid) (SerpentsHaven a) = do
-    isSerpent <- eid <=~> (enemyAt (toId a) <> EnemyWithTrait Serpent)
-    toModifiers a [EnemyFight 1 | isSerpent]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SerpentsHaven a) = do
+    modifySelect a (enemyAt a <> EnemyWithTrait Serpent) [EnemyFight 1]
 
 -- NOTE: Because an explore will move you to Serpent's Haven, it will trigger
 -- the forced ability even if you started the action somewhere else. In order

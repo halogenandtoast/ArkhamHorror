@@ -8,7 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Game.Helpers (targetToSource)
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelfWhen)
 import Arkham.Helpers.SkillTest (
   getSkillTestInvestigator,
   getSkillTestSource,
@@ -29,12 +29,12 @@ customModifications :: EventCard CustomModifications
 customModifications = event CustomModifications Cards.customModifications
 
 instance HasModifiersFor CustomModifications where
-  getModifiersFor (InvestigatorTarget iid) (CustomModifications a) = do
+  getModifiersFor (CustomModifications a) = do
     let
       usingAsset = do
-        iid' <- MaybeT $ getSkillTestInvestigator
-        guard $ iid == iid'
-        attachedAsset <- MaybeT $ selectOne $ assetWithAttachedEvent a <> assetControlledBy iid
+        iid <- MaybeT $ getSkillTestInvestigator
+        guard $ a.controller == iid
+        attachedAsset <- MaybeT $ selectOne $ assetWithAttachedEvent a <> assetControlledBy a.controller
         guardM $ lift inAttackSkillTest
         source <- MaybeT getSkillTestSource
         guard $ source.asset == Just attachedAsset
@@ -43,19 +43,20 @@ instance HasModifiersFor CustomModifications where
       usingAsset
       guard $ a `hasCustomization` NotchedSight
       EnemyTarget eid <- MaybeT getSkillTestTarget
-      guardM $ lift $ eid <=~> EnemyIsEngagedWith (not_ $ InvestigatorWithId iid)
+      guardM $ lift $ eid <=~> EnemyIsEngagedWith (not_ $ InvestigatorWithId a.controller)
       pure DoesNotDamageOtherInvestigator
     extendedStock <- runMaybeT do
       usingAsset
       guard $ a `hasCustomization` ExtendedStock
       pure $ SkillModifier #combat 2
 
-    modified a $ maybeToList notchedSight <> maybeToList extendedStock
-  getModifiersFor target (CustomModifications a) | isTarget a target = do
-    modified a
-      $ guard (a `hasCustomization` LeatherGrip)
-      *> [ReduceCostOf (CardWithId a.cardId) 1, BecomesFast (DuringTurn You)]
-  getModifiersFor _ _ = pure []
+    controller <- modified_ a a.controller $ maybeToList notchedSight <> maybeToList extendedStock
+    self <-
+      modifySelfWhen
+        a
+        (a `hasCustomization` LeatherGrip)
+        [ReduceCostOf (CardWithId a.cardId) 1, BecomesFast (DuringTurn You)]
+    pure $ self <> controller
 
 instance HasAbilities CustomModifications where
   getAbilities (CustomModifications a) =

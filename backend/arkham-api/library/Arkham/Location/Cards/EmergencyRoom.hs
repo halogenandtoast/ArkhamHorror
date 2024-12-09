@@ -1,16 +1,10 @@
-module Arkham.Location.Cards.EmergencyRoom (
-  emergencyRoom,
-  EmergencyRoom (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EmergencyRoom (emergencyRoom, EmergencyRoom (..)) where
 
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 
@@ -22,15 +16,12 @@ emergencyRoom :: LocationCard EmergencyRoom
 emergencyRoom = location EmergencyRoom Cards.emergencyRoom 2 (PerPlayer 1)
 
 instance HasModifiersFor EmergencyRoom where
-  getModifiersFor (SkillTestTarget _) (EmergencyRoom attrs) = do
-    mSkillTest <- getSkillTest
-    case mSkillTest of
-      Just st -> do
-        here <- skillTestInvestigator st <=~> investigatorAt (toId attrs)
-        toModifiers attrs [Difficulty (length $ skillTestCommittedCards st) | here]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EmergencyRoom a) = do
+    getSkillTest >>= \case
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        liftGuardM $ st.investigator <=~> investigatorAt (toId a)
+        pure [Difficulty (length $ skillTestCommittedCards st)]
+      _ -> pure mempty
 
 instance RunMessage EmergencyRoom where
-  runMessage msg (EmergencyRoom attrs) =
-    EmergencyRoom <$> runMessage msg attrs
+  runMessage msg (EmergencyRoom attrs) = EmergencyRoom <$> runMessage msg attrs

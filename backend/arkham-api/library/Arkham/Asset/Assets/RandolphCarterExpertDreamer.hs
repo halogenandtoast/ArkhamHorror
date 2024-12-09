@@ -13,16 +13,16 @@ import Arkham.Prelude
 import Arkham.Window qualified as Window
 
 newtype RandolphCarterExpertDreamer = RandolphCarterExpertDreamer AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 randolphCarterExpertDreamer :: AssetCard RandolphCarterExpertDreamer
 randolphCarterExpertDreamer = ally RandolphCarterExpertDreamer Cards.randolphCarterExpertDreamer (3, 2)
 
 instance HasModifiersFor RandolphCarterExpertDreamer where
-  getModifiersFor (InvestigatorTarget iid) (RandolphCarterExpertDreamer a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RandolphCarterExpertDreamer a) = case a.controller of
+    Just iid -> modified_ a iid [SkillModifier #combat 1, SkillModifier #agility 1]
+    Nothing -> pure mempty
 
 instance HasAbilities RandolphCarterExpertDreamer where
   getAbilities (RandolphCarterExpertDreamer x) =

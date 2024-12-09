@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -18,9 +18,9 @@ enchantWeapon3 :: EventCard EnchantWeapon3
 enchantWeapon3 = event EnchantWeapon3 Cards.enchantWeapon3
 
 instance HasModifiersFor EnchantWeapon3 where
-  getModifiersFor target (EnchantWeapon3 a) | target `elem` a.attachedTo = do
-    modified a [AddTrait Relic, AdditionalSlot #arcane]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EnchantWeapon3 a) = case a.attachedTo of
+    Just target -> modified_ a target [AddTrait Relic, AdditionalSlot #arcane]
+    _ -> pure mempty
 
 instance HasAbilities EnchantWeapon3 where
   getAbilities (EnchantWeapon3 x) =

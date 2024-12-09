@@ -18,9 +18,8 @@ ascendingTheHillV3 :: ActCard AscendingTheHillV3
 ascendingTheHillV3 = act (2, A) AscendingTheHillV3 Cards.ascendingTheHillV3 Nothing
 
 instance HasModifiersFor AscendingTheHillV3 where
-  getModifiersFor (LocationTarget _) (AscendingTheHillV3 attrs) = do
-    toModifiers attrs [NonTraitRestrictedModifier Altered CannotPlaceClues]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AscendingTheHillV3 attrs) = do
+    modifySelect attrs Anywhere [NonTraitRestrictedModifier Altered CannotPlaceClues]
 
 instance HasAbilities AscendingTheHillV3 where
   getAbilities (AscendingTheHillV3 x) = [mkAbility x 1 $ forced $ Enters #when You "Sentinel Peak"]

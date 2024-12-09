@@ -14,10 +14,9 @@ theTowerXVI :: AssetCard TheTowerXVI
 theTowerXVI = asset TheTowerXVI Cards.theTowerXVI
 
 instance HasModifiersFor TheTowerXVI where
-  getModifiersFor (InvestigatorTarget iid) (TheTowerXVI attrs)
-    | attrs.placement == StillInHand iid =
-        toModifiers attrs [CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheTowerXVI a) = case a.placement of
+    StillInHand iid -> modified_ a iid [CannotCommitCards AnyCard]
+    _ -> pure mempty
 
 instance RunMessage TheTowerXVI where
   runMessage msg (TheTowerXVI attrs) = TheTowerXVI <$> runMessage msg attrs

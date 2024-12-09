@@ -4,8 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 
 newtype BackInjury = BackInjury AssetAttrs
   deriving anyclass IsAsset
@@ -18,9 +19,9 @@ instance HasAbilities BackInjury where
   getAbilities (BackInjury attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
 
 instance HasModifiersFor BackInjury where
-  getModifiersFor (InvestigatorTarget iid) (BackInjury attrs) | iid `elem` attrs.inThreatAreaOf = do
-    modified attrs [HealthModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BackInjury a) = case a.placement of
+    InThreatArea iid -> modified_ a iid [HealthModifier (-1)]
+    _ -> pure mempty
 
 instance RunMessage BackInjury where
   runMessage msg t@(BackInjury attrs) = runQueueT $ case msg of

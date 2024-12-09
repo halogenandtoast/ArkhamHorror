@@ -19,10 +19,9 @@ bogGator =
     .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasModifiersFor BogGator where
-  getModifiersFor target (BogGator a) | spawned a && a `is` target = do
-    bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy (toId a)
-    toModifiers a $ guard bayouLocation *> [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BogGator a) = do
+    bayouLocation <- selectAny $ LocationWithTrait Bayou <> locationWithEnemy a
+    modifySelfWhen a (bayouLocation && spawned a) [Modifier.EnemyFight 2, Modifier.EnemyEvade 2]
 
 instance RunMessage BogGator where
   runMessage msg (BogGator attrs) = BogGator <$> runMessage msg attrs

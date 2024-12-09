@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.Zamacona (zamacona, Zamacona (..)) where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 
@@ -16,11 +16,11 @@ newtype Zamacona = Zamacona (EnemyAttrs `With` Meta)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor Zamacona where
-  getModifiersFor (InvestigatorTarget iid) (Zamacona (With attrs _)) = do
-    maybeModified attrs do
-      liftGuardM $ iid <=~> investigatorIs Investigators.alessandraZorzi
-      pure [CannotParleyWith (EnemyWithId attrs.id)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Zamacona (With attrs _)) =
+    modifySelect
+      attrs
+      (investigatorIs Investigators.alessandraZorzi)
+      [CannotParleyWith (EnemyWithId attrs.id)]
 
 instance HasAbilities Zamacona where
   getAbilities (Zamacona (attrs `With` meta)) =

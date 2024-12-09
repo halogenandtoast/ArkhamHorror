@@ -8,7 +8,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (getRecordedCardCodes)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigatorIds, getLead, getSetAsideCard)
 import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Investigators
@@ -25,10 +25,8 @@ justiceXI :: AgendaCard JusticeXI
 justiceXI = agenda (1, A) JusticeXI Cards.justiceXI (Static 8)
 
 instance HasModifiersFor JusticeXI where
-  getModifiersFor (EnemyTarget eid) (JusticeXI attrs) = maybeModified attrs do
-    liftGuardM $ eid <=~> EnemyWithTrait SilverTwilight
-    pure [CannotBeDamaged, CannotBeDefeated]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JusticeXI a) =
+    modifySelect a (EnemyWithTrait SilverTwilight) [CannotBeDamaged, CannotBeDefeated]
 
 instance HasAbilities JusticeXI where
   getAbilities (JusticeXI a) =

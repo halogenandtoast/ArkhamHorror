@@ -21,17 +21,16 @@ shoresOfRlyeh :: LocationCard ShoresOfRlyeh
 shoresOfRlyeh = location ShoresOfRlyeh Cards.shoresOfRlyeh 1 (Static 2)
 
 instance HasModifiersFor ShoresOfRlyeh where
-  getModifiersFor target (ShoresOfRlyeh a) | isTarget a target = do
+  getModifiersFor (ShoresOfRlyeh a) = do
     enemyDoom <- selectAgg Sum EnemyDoom $ enemyAt a
     treacheryDoom <- selectAgg Sum TreacheryDoom $ treacheryAt a
     assetDoom <- selectAgg Sum AssetDoom $ assetAt a
     investigatorDoom <- selectAgg Sum InvestigatorDoom $ investigatorAt a
     doomOnSelf <- fieldMap LocationDoom Sum a.id
-    toModifiers
+    modifySelf
       a
       [ ShroudModifier $ getSum $ fold [enemyDoom, treacheryDoom, assetDoom, investigatorDoom, doomOnSelf]
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities ShoresOfRlyeh where
   getAbilities (ShoresOfRlyeh a) =

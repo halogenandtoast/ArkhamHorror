@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.SkillType
 import Arkham.Window (Window (..), WindowType (EnterPlay))
@@ -42,9 +42,8 @@ showmanshipEffect :: EffectArgs -> ShowmanshipEffect
 showmanshipEffect = cardEffect ShowmanshipEffect Cards.showmanship
 
 instance HasModifiersFor ShowmanshipEffect where
-  getModifiersFor target (ShowmanshipEffect attrs) = maybeModified attrs do
-    guard $ attrs.target == target
-    EffectMetaTarget t <- hoistMaybe attrs.metadata
+  getModifiersFor (ShowmanshipEffect a) = maybeModified_ a a.target do
+    EffectMetaTarget t <- hoistMaybe a.metadata
     abilities <- lift getActiveAbilities
     guard $ any (\ability -> maybe False (`isTarget` t) ability.source.asset) abilities
     pure [SkillModifier sType 2 | sType <- allSkills]

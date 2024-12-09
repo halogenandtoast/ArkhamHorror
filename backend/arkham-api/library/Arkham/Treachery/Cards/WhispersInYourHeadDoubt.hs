@@ -10,6 +10,7 @@ import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.Matcher hiding (treacheryInHandOf)
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
@@ -23,9 +24,9 @@ whispersInYourHeadDoubt =
   treachery WhispersInYourHeadDoubt Cards.whispersInYourHeadDoubt
 
 instance HasModifiersFor WhispersInYourHeadDoubt where
-  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDoubt a) =
-    toModifiers a [CannotPlay (CardWithType EventType) | treacheryInHandOf a == Just iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhispersInYourHeadDoubt a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotPlay (CardWithType EventType)]
+    _ -> pure mempty
 
 instance HasAbilities WhispersInYourHeadDoubt where
   getAbilities (WhispersInYourHeadDoubt a) =

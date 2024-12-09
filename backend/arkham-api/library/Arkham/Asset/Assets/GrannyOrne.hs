@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.GrannyOrne (grannyOrne, GrannyOrne (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype GrannyOrne = GrannyOrne AssetAttrs
   deriving anyclass IsAsset
@@ -16,9 +16,7 @@ grannyOrne :: AssetCard GrannyOrne
 grannyOrne = ally GrannyOrne Cards.grannyOrne (1, 3)
 
 instance HasModifiersFor GrannyOrne where
-  getModifiersFor (InvestigatorTarget iid) (GrannyOrne a)
-    | controlledBy a iid = toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GrannyOrne a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities GrannyOrne where
   getAbilities (GrannyOrne a) =

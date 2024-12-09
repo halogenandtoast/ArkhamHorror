@@ -6,7 +6,7 @@ import Arkham.Constants
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Trait (Trait (Tactic))
@@ -38,15 +38,14 @@ instance HasAbilities LurkerInTheDark where
         else ab
 
 instance HasModifiersFor LurkerInTheDark where
-  getModifiersFor target (LurkerInTheDark a) | isTarget a target = do
-    modified
+  getModifiersFor (LurkerInTheDark a) = do
+    modifySelf
       a
       [ CannotBeDamagedByPlayerSourcesExcept
           $ oneOf [SourceIsAsset #weapon, SourceIsType EventType <> SourceWithTrait Tactic]
       , CannotBeAttackedByPlayerSourcesExcept
           $ oneOf [SourceIsAsset #weapon, SourceIsType EventType <> SourceWithTrait Tactic]
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage LurkerInTheDark where
   runMessage msg e@(LurkerInTheDark attrs) = runQueueT $ case msg of

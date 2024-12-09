@@ -347,6 +347,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   DamageCost {} -> pure True -- TODO: Make better
   DirectDamageCost {} -> pure True -- TODO: Make better
   InvestigatorDamageCost {} -> pure True -- TODO: Make better
+  DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
   DoomCost {} -> pure True -- TODO: Make better
   EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher
   SkillIconCost n skillTypes -> do

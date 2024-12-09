@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.Indebted (Indebted (..), indebted) where
 
 import Arkham.Classes
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -15,12 +16,10 @@ indebted :: TreacheryCard Indebted
 indebted = treachery Indebted Cards.indebted
 
 instance HasModifiersFor Indebted where
-  getModifiersFor (InvestigatorTarget iid) (Indebted attrs) =
-    toModifiersWith
-      attrs
-      setActiveDuringSetup
-      [StartingResources (-2) | treacheryInThreatArea iid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Indebted attrs) = case attrs.placement of
+    InThreatArea iid ->
+      modifiedWith_ attrs iid setActiveDuringSetup [StartingResources (-2)]
+    _ -> pure mempty
 
 instance RunMessage Indebted where
   runMessage msg t@(Indebted attrs) = case msg of

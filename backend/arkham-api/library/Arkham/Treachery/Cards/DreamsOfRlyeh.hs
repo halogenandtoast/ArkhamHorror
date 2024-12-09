@@ -16,11 +16,8 @@ dreamsOfRlyeh :: TreacheryCard DreamsOfRlyeh
 dreamsOfRlyeh = treachery DreamsOfRlyeh Cards.dreamsOfRlyeh
 
 instance HasModifiersFor DreamsOfRlyeh where
-  getModifiersFor (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
-    modified attrs
-      $ guard (treacheryInThreatArea iid attrs)
-      *> [SkillModifier #willpower (-1), SanityModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamsOfRlyeh attrs) =
+    inThreatAreaGets attrs [SkillModifier #willpower (-1), SanityModifier (-1)]
 
 instance HasAbilities DreamsOfRlyeh where
   getAbilities (DreamsOfRlyeh a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

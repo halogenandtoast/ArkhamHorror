@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype JessicaHyde1 = JessicaHyde1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jessicaHyde1 :: AssetCard JessicaHyde1
@@ -15,9 +15,7 @@ jessicaHyde1 =
   allyWith JessicaHyde1 Cards.jessicaHyde1 (3, 1) (tokensL %~ addTokens #damage 2)
 
 instance HasModifiersFor JessicaHyde1 where
-  getModifiersFor (InvestigatorTarget iid) (JessicaHyde1 a) =
-    toModifiers a [SkillModifier #combat 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JessicaHyde1 a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities JessicaHyde1 where
   getAbilities (JessicaHyde1 x) =

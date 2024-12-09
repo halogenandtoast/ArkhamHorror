@@ -18,8 +18,7 @@ lakeXochimilco_182 :: LocationCard LakeXochimilco_182
 lakeXochimilco_182 = symbolLabel $ location LakeXochimilco_182 Cards.lakeXochimilco_182 2 (PerPlayer 1)
 
 instance HasModifiersFor LakeXochimilco_182 where
-  getModifiersFor target (LakeXochimilco_182 a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (LakeXochimilco_182 a) = modifySelfMaybe a do
     iid <- MaybeT getSkillTestInvestigator
     actionsRemaining <- lift $ field InvestigatorRemainingActions iid
     guard $ actionsRemaining > 0

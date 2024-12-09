@@ -150,5 +150,14 @@ insertAfterMatching msgs p = withQueue_ \queue ->
         (x : xs) -> before <> (x : msgs <> xs)
         _ -> error "no matching message"
 
+insertAfterMatchingOrNow :: HasQueue msg m => [msg] -> (msg -> Bool) -> m ()
+insertAfterMatchingOrNow msgs p = do
+  result <- withQueue \queue ->
+    let (before, rest) = break p queue
+     in case rest of
+          (x : xs) -> (before <> (x : msgs <> xs), True)
+          _ -> (queue, False)
+  unless result $ pushAll msgs
+
 assertQueue :: HasQueue msg m => (msg -> Bool) -> m Bool
 assertQueue matcher = any matcher <$> peekQueue

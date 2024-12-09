@@ -6,7 +6,7 @@ import Arkham.Card
 import Arkham.Discover hiding (discoverAtYourLocation)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Investigator (startsWithInHand)
-import Arkham.Helpers.Modifiers (ModifierType (..), setActiveDuringSetup, toModifiersWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -38,10 +38,11 @@ jeromeDavids =
     $ Stats {health = 4, sanity = 8, willpower = 2, intellect = 4, combat = 1, agility = 3}
 
 instance HasModifiersFor JeromeDavids where
-  getModifiersFor target (JeromeDavids a) | a `is` target = do
-    toModifiersWith a setActiveDuringSetup
-      $ [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JeromeDavids a) =
+    modifySelfWith
+      a
+      setActiveDuringSetup
+      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-2)]
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =

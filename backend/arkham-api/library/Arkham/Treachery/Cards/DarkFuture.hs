@@ -12,17 +12,16 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype DarkFuture = DarkFuture TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 darkFuture :: TreacheryCard DarkFuture
 darkFuture = treachery DarkFuture Cards.darkFuture
 
 instance HasModifiersFor DarkFuture where
-  getModifiersFor (InvestigatorTarget iid) (DarkFuture a) | treacheryInThreatArea iid a = do
-    modified a
+  getModifiersFor (DarkFuture a) = do
+    inThreatAreaGets a
       $ map CannotCancelOrIgnoreChaosToken [ElderSign, Skull, Cultist, Tablet, ElderThing, AutoFail]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities DarkFuture where
   getAbilities (DarkFuture a) =

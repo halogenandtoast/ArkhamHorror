@@ -19,9 +19,7 @@ geneBeauregard3 :: AssetCard GeneBeauregard3
 geneBeauregard3 = ally GeneBeauregard3 Cards.geneBeauregard3 (2, 2)
 
 instance HasModifiersFor GeneBeauregard3 where
-  getModifiersFor (InvestigatorTarget iid) (GeneBeauregard3 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #intellect 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GeneBeauregard3 a) = controllerGets a [SkillModifier #intellect 1, SkillModifier #agility 1]
 
 instance HasAbilities GeneBeauregard3 where
   getAbilities (GeneBeauregard3 x) =

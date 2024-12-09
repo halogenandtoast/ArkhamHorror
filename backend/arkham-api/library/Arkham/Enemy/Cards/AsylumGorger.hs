@@ -10,9 +10,8 @@ newtype AsylumGorger = AsylumGorger EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor AsylumGorger where
-  getModifiersFor target (AsylumGorger a) | isTarget a target = do
-    toModifiers a $ CannotMakeAttacksOfOpportunity : [CannotAttack | enemyMovedFromHunterKeyword a]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AsylumGorger a) =
+    modifySelf a $ CannotMakeAttacksOfOpportunity : [CannotAttack | enemyMovedFromHunterKeyword a]
 
 asylumGorger :: EnemyCard AsylumGorger
 asylumGorger =

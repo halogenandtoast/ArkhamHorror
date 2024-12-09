@@ -81,6 +81,16 @@ chooseOrRunNM iid n choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ chooseOrRunN iid n choices'
 
+chooseOrRunOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
+chooseOrRunOneAtATimeM iid choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseOrRunOneAtATime iid choices'
+      Just l -> case choices' of
+        [x] -> push $ uiToRun x
+        _ -> questionLabel l iid $ ChooseOneAtATime choices'
+
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
   when (n > 0) do
@@ -144,6 +154,12 @@ abilityLabeled :: ReverseQueue m => InvestigatorId -> Ability -> QueueT Message 
 abilityLabeled iid ab action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [AbilityLabel iid ab [] [] msgs]
+
+abilityLabeledWithBefore
+  :: ReverseQueue m => InvestigatorId -> Ability -> [Message] -> QueueT Message m () -> ChooseT m ()
+abilityLabeledWithBefore iid ab beforeMsgs action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [AbilityLabel iid ab [] beforeMsgs msgs]
 
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do

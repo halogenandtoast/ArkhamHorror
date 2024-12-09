@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 graveyardGhouls :: EnemyCard GraveyardGhouls
@@ -24,10 +24,8 @@ graveyardGhouls =
     (\a -> a & preyL .~ BearerOf (toId a))
 
 instance HasModifiersFor GraveyardGhouls where
-  getModifiersFor (InvestigatorTarget iid) (GraveyardGhouls attrs) = do
-    affected <- iid <=~> investigatorEngagedWith (toId attrs)
-    toModifiers attrs [CardsCannotLeaveYourDiscardPile | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GraveyardGhouls a) =
+    modifySelect a (investigatorEngagedWith a) [CardsCannotLeaveYourDiscardPile]
 
 instance RunMessage GraveyardGhouls where
   runMessage msg (GraveyardGhouls attrs) =

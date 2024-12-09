@@ -52,15 +52,12 @@ gildedVoltoEffect :: EffectArgs -> GildedVoltoEffect
 gildedVoltoEffect = cardEffect GildedVoltoEffect Cards.gildedVolto
 
 instance HasModifiersFor GildedVoltoEffect where
-  getModifiersFor target (GildedVoltoEffect a) | target == a.target = do
-    toModifiers a [CanBecomeFast #asset]
-  getModifiersFor (CardIdTarget cid) (GildedVoltoEffect a) = maybeModified a do
-    card <- lift $ getCard cid
-    owner <- hoistMaybe $ toCardOwner card
-    guard $ isTarget owner a.target
-    guard $ cardMatch card (CardWithType AssetType)
-    pure [BecomesFast FastPlayerWindow]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GildedVoltoEffect a) = do
+    case a.target of
+      InvestigatorTarget iid -> do
+        cards <- findAllCards (`cardMatch` (CardOwnedBy iid <> #asset))
+        modifyEach a cards [BecomesFast FastPlayerWindow]
+      _ -> modified_ a a.target [CanBecomeFast #asset]
 
 instance RunMessage GildedVoltoEffect where
   runMessage msg e@(GildedVoltoEffect attrs) = case msg of

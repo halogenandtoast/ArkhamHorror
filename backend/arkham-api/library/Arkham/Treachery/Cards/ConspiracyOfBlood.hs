@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
@@ -17,9 +18,9 @@ conspiracyOfBlood :: TreacheryCard ConspiracyOfBlood
 conspiracyOfBlood = treachery ConspiracyOfBlood Cards.conspiracyOfBlood
 
 instance HasModifiersFor ConspiracyOfBlood where
-  getModifiersFor (AgendaTarget aid) (ConspiracyOfBlood a) | treacheryOnAgenda aid a = do
-    toModifiers a [DoomThresholdModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ConspiracyOfBlood a) = case a.placement of
+    AttachedToAgenda aid -> modified_ a aid [DoomThresholdModifier (-1)]
+    _ -> pure mempty
 
 instance HasAbilities ConspiracyOfBlood where
   getAbilities (ConspiracyOfBlood attrs) =

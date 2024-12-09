@@ -25,10 +25,7 @@ harbingerOfValusia =
   enemy HarbingerOfValusia Cards.harbingerOfValusia (3, PerPlayer 10, 3) (2, 2)
 
 instance HasModifiersFor HarbingerOfValusia where
-  getModifiersFor target (HarbingerOfValusia a)
-    | isTarget a target =
-        toModifiers a [CanRetaliateWhileExhausted]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HarbingerOfValusia a) = modifySelf a [CanRetaliateWhileExhausted]
 
 instance HasAbilities HarbingerOfValusia where
   getAbilities (HarbingerOfValusia a) =

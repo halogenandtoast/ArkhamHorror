@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.ArmInjury (armInjury, ArmInjury (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,7 +14,7 @@ armInjury :: TreacheryCard ArmInjury
 armInjury = treachery ArmInjury Cards.armInjury
 
 instance HasModifiersFor ArmInjury where
-  getModifiersFor target (ArmInjury a) = modified a [IsPointOfDamage | isTarget a target]
+  getModifiersFor (ArmInjury a) = modifySelf a [IsPointOfDamage]
 
 instance HasAbilities ArmInjury where
   getAbilities (ArmInjury a) =

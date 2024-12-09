@@ -50,9 +50,8 @@ miskatonicArchaeologyFunding4Effect :: EffectArgs -> MiskatonicArchaeologyFundin
 miskatonicArchaeologyFunding4Effect = cardEffect MiskatonicArchaeologyFunding4Effect Cards.miskatonicArchaeologyFunding4
 
 instance HasModifiersFor MiskatonicArchaeologyFunding4Effect where
-  getModifiersFor target (MiskatonicArchaeologyFunding4Effect a) | effectTarget a == target = do
-    toModifiers a [NoMoreThanOneDamageOrHorrorAmongst $ AssetWithTrait Miskatonic]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MiskatonicArchaeologyFunding4Effect a) =
+    modified_ a a.target [NoMoreThanOneDamageOrHorrorAmongst $ AssetWithTrait Miskatonic]
 
 instance RunMessage MiskatonicArchaeologyFunding4Effect where
   runMessage msg e@(MiskatonicArchaeologyFunding4Effect attrs) = case msg of

@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Trait (Trait (Sanctum))
@@ -27,11 +27,9 @@ hydraAwakenedAndEnraged =
     (2, 1)
 
 instance HasModifiersFor HydraAwakenedAndEnraged where
-  getModifiersFor target (HydraAwakenedAndEnraged a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (HydraAwakenedAndEnraged a) = do
     n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
-    guard $ n > 0
-    pure [EnemyFight (-n)]
+    modifySelfWhen a (n > 0) [EnemyFight (-n)]
 
 instance HasAbilities HydraAwakenedAndEnraged where
   getAbilities (HydraAwakenedAndEnraged a) =

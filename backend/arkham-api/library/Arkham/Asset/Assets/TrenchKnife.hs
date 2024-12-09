@@ -15,9 +15,7 @@ trenchKnife :: AssetCard TrenchKnife
 trenchKnife = asset TrenchKnife Cards.trenchKnife
 
 instance HasModifiersFor TrenchKnife where
-  getModifiersFor (InvestigatorTarget iid) (TrenchKnife attrs) | attrs `controlledBy` iid = do
-    toModifiers attrs [ActionDoesNotCauseAttacksOfOpportunity #engage]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TrenchKnife attrs) = controllerGets attrs [ActionDoesNotCauseAttacksOfOpportunity #engage]
 
 instance HasAbilities TrenchKnife where
   getAbilities (TrenchKnife attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]

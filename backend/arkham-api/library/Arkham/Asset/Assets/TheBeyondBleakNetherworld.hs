@@ -13,7 +13,7 @@ import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
 import Arkham.Helpers.Message (createEnemyWithPlacement_)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Message.Lifted.Choose
@@ -38,16 +38,15 @@ instance HasAbilities TheBeyondBleakNetherworld where
     [restrictedAbility attrs 1 ControlsThis $ forced $ TurnBegins #when You]
 
 instance HasModifiersFor TheBeyondBleakNetherworld where
-  getModifiersFor (AssetTarget aid) (TheBeyondBleakNetherworld (With a _)) | aid /= a.id = do
-    maybeModified a do
-      iid <- MaybeT $ field AssetController a.id
-      AttachedToAsset aid' _ <- lift $ field AssetPlacement aid
-      guard $ aid' == toId a
-      pure
+  getModifiersFor (TheBeyondBleakNetherworld (With a _)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelect
+        a
+        (AssetAttachedToAsset $ be a)
         [ AsIfUnderControlOf iid
         , IsSpirit iid
         ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TheBeyondBleakNetherworld where
   runMessage msg a@(TheBeyondBleakNetherworld (With attrs meta)) = runQueueT $ case msg of

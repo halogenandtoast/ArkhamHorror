@@ -15,7 +15,9 @@ breachTheDoor :: EventCard BreachTheDoor
 breachTheDoor = event BreachTheDoor Cards.breachTheDoor
 
 instance HasModifiersFor BreachTheDoor where
-  getModifiersFor target (BreachTheDoor e) = modified e [ShroudModifier (-n) | e.attachedTo == Just target]
+  getModifiersFor (BreachTheDoor e) = case e.attachedTo of
+    Just target -> modified_ e target [ShroudModifier (-n)]
+    _ -> pure mempty
    where
     n = e.use Lead
 

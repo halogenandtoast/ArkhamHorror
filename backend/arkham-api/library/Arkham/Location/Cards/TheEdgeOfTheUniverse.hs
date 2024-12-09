@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Phase
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theEdgeOfTheUniverse :: LocationCard TheEdgeOfTheUniverse
@@ -25,11 +25,9 @@ theEdgeOfTheUniverse =
   location TheEdgeOfTheUniverse Cards.theEdgeOfTheUniverse 2 (PerPlayer 2)
 
 instance HasModifiersFor TheEdgeOfTheUniverse where
-  getModifiersFor (InvestigatorTarget iid) (TheEdgeOfTheUniverse attrs) = do
-    here <- iid `isAt` attrs
+  getModifiersFor (TheEdgeOfTheUniverse a) = do
     phase <- getPhase
-    toModifiers attrs [CannotDrawCards | here, phase == UpkeepPhase]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (phase == UpkeepPhase) (investigatorAt a) [CannotDrawCards]
 
 -- TODO: This should be some sort of restriction encoded in attrs
 instance HasAbilities TheEdgeOfTheUniverse where

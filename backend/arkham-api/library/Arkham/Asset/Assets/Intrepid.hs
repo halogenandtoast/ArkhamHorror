@@ -14,11 +14,7 @@ intrepid :: AssetCard Intrepid
 intrepid = asset Intrepid Cards.intrepid
 
 instance HasModifiersFor Intrepid where
-  getModifiersFor (InvestigatorTarget iid) (Intrepid a) =
-    toModifiers a
-      $ guard (controlledBy a iid)
-      *> map (`SkillModifier` 1) [#intellect, #combat, #agility]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Intrepid a) = controllerGets a $ map (`SkillModifier` 1) [#intellect, #combat, #agility]
 
 instance HasAbilities Intrepid where
   getAbilities (Intrepid a) =

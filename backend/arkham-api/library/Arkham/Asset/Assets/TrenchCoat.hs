@@ -1,10 +1,8 @@
 module Arkham.Asset.Assets.TrenchCoat (trenchCoat, TrenchCoat (..)) where
 
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Prelude
-import Arkham.SkillType
 
 newtype TrenchCoat = TrenchCoat AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -14,9 +12,7 @@ trenchCoat :: AssetCard TrenchCoat
 trenchCoat = assetWith TrenchCoat Cards.trenchCoat (healthL ?~ 2)
 
 instance HasModifiersFor TrenchCoat where
-  getModifiersFor (InvestigatorTarget iid) (TrenchCoat a) =
-    toModifiers a [ActionSkillModifier Action.Evade SkillAgility 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TrenchCoat a) = controllerGets a [ActionSkillModifier #evade #agility 1]
 
 instance RunMessage TrenchCoat where
   runMessage msg (TrenchCoat attrs) = TrenchCoat <$> runMessage msg attrs

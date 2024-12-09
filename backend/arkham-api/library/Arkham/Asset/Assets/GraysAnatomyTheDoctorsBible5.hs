@@ -10,10 +10,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype GraysAnatomyTheDoctorsBible5 = GraysAnatomyTheDoctorsBible5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -81,12 +81,11 @@ newtype GraysAnatomyTheDoctorsBible5Effect = GraysAnatomyTheDoctorsBible5Effect 
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor GraysAnatomyTheDoctorsBible5Effect where
-  getModifiersFor target (GraysAnatomyTheDoctorsBible5Effect a) | a.target == target = do
+  getModifiersFor (GraysAnatomyTheDoctorsBible5Effect a) = do
     case a.metaInt of
-      Just 1 -> modified a [HealingTaken 1]
-      Just 2 -> modified a [DamageTaken 1]
+      Just 1 -> modified_ a a.target [HealingTaken 1]
+      Just 2 -> modified_ a a.target [DamageTaken 1]
       _ -> error "Unhandled"
-  getModifiersFor _ _ = pure []
 
 graysAnatomyTheDoctorsBible5Effect :: EffectArgs -> GraysAnatomyTheDoctorsBible5Effect
 graysAnatomyTheDoctorsBible5Effect =

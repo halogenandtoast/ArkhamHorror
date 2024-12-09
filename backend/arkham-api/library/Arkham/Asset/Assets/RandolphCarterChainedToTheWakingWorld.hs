@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype RandolphCarterChainedToTheWakingWorld = RandolphCarterChainedToTheWakingWorld AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 randolphCarterChainedToTheWakingWorld :: AssetCard RandolphCarterChainedToTheWakingWorld
@@ -19,14 +19,12 @@ randolphCarterChainedToTheWakingWorld =
   ally RandolphCarterChainedToTheWakingWorld Cards.randolphCarterChainedToTheWakingWorld (2, 3)
 
 instance HasModifiersFor RandolphCarterChainedToTheWakingWorld where
-  getModifiersFor (InvestigatorTarget iid) (RandolphCarterChainedToTheWakingWorld a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #willpower 1, SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RandolphCarterChainedToTheWakingWorld a) = controllerGets a [SkillModifier #willpower 1, SkillModifier #intellect 1]
 
 instance HasAbilities RandolphCarterChainedToTheWakingWorld where
   getAbilities (RandolphCarterChainedToTheWakingWorld attrs) =
     [ restrictedAbility attrs 1 (ControlsThis <> DuringSkillTest SkillTestAtYourLocation)
-        $ ReactionAbility (RevealChaosToken #after You #elderthing) (exhaust attrs)
+        $ ReactionAbility (RevealChaosToken #after Anyone #elderthing) (exhaust attrs)
     ]
 
 instance RunMessage RandolphCarterChainedToTheWakingWorld where

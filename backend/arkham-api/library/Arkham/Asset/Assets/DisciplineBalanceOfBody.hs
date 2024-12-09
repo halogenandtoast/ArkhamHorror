@@ -9,7 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Game.Helpers (canDo, getPlayableCards)
-import Arkham.Helpers.Modifiers (withGrantedAction)
+import Arkham.Helpers.Modifiers (modified_, withGrantedAction)
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -29,9 +29,9 @@ disciplineBalanceOfBody :: AssetCard DisciplineBalanceOfBody
 disciplineBalanceOfBody = asset (DisciplineBalanceOfBody . (`with` Metadata [])) Cards.disciplineBalanceOfBody
 
 instance HasModifiersFor DisciplineBalanceOfBody where
-  getModifiersFor (InvestigatorTarget iid) (DisciplineBalanceOfBody (With a _)) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DisciplineBalanceOfBody (With a _)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modified_ a iid [SkillModifier #agility 1]
 
 instance HasAbilities DisciplineBalanceOfBody where
   getAbilities (DisciplineBalanceOfBody (With x _)) =

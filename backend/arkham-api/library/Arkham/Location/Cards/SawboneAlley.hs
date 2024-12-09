@@ -14,10 +14,8 @@ sawboneAlley :: LocationCard SawboneAlley
 sawboneAlley = location SawboneAlley Cards.sawboneAlley 2 (PerPlayer 2)
 
 instance HasModifiersFor SawboneAlley where
-  getModifiersFor (EnemyTarget eid) (SawboneAlley a) = do
-    valid <- eid <=~> EnemyWithTrait Humanoid
-    modified a $ guard valid *> [EnemyFight 2, EnemyEvade (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SawboneAlley a) =
+    modifySelect a (enemyAt a <> EnemyWithTrait Humanoid) [EnemyFight 2, EnemyEvade (-2)]
 
 instance RunMessage SawboneAlley where
   runMessage msg (SawboneAlley attrs) = runQueueT $ case msg of

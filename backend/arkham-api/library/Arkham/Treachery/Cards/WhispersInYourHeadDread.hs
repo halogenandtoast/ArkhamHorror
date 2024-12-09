@@ -21,9 +21,9 @@ whispersInYourHeadDread =
   treachery WhispersInYourHeadDread Cards.whispersInYourHeadDread
 
 instance HasModifiersFor WhispersInYourHeadDread where
-  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadDread a) =
-    toModifiers a [CannotMoveMoreThanOnceEachTurn | treacheryInHandOf a == Just iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhispersInYourHeadDread a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotMoveMoreThanOnceEachTurn]
+    _ -> pure mempty
 
 instance HasAbilities WhispersInYourHeadDread where
   getAbilities (WhispersInYourHeadDread a) =

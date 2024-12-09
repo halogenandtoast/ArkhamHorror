@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
@@ -19,10 +19,8 @@ huntingDeepOne :: EnemyCard HuntingDeepOne
 huntingDeepOne = enemy HuntingDeepOne Cards.huntingDeepOne (3, Static 3, 3) (1, 1)
 
 instance HasModifiersFor HuntingDeepOne where
-  getModifiersFor (InvestigatorTarget iid) (HuntingDeepOne a) = maybeModified a do
-    liftGuardM $ iid <=~> investigatorEngagedWith a
-    pure [CannotEnterVehicle AnyAsset, CannotGainResources]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HuntingDeepOne a) =
+    modifySelect a (investigatorEngagedWith a) [CannotEnterVehicle AnyAsset, CannotGainResources]
 
 instance HasAbilities HuntingDeepOne where
   getAbilities (HuntingDeepOne a) = extend a [mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)]

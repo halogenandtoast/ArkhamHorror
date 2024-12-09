@@ -9,6 +9,7 @@ import Arkham.Matcher hiding (
   treacheryInHandOf,
  )
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
@@ -23,13 +24,14 @@ giftOfMadnessMisery :: TreacheryCard GiftOfMadnessMisery
 giftOfMadnessMisery = treachery GiftOfMadnessMisery Cards.giftOfMadnessMisery
 
 instance HasModifiersFor GiftOfMadnessMisery where
-  getModifiersFor (InvestigatorTarget iid) (GiftOfMadnessMisery a) =
-    toModifiers
-      a
-      [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
-      | treacheryInHandOf a == Just iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GiftOfMadnessMisery a) = case a.placement of
+    HiddenInHand iid ->
+      modified_
+        a
+        iid
+        [ CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnLocation Anywhere)
+        ]
+    _ -> pure mempty
 
 instance HasAbilities GiftOfMadnessMisery where
   getAbilities (GiftOfMadnessMisery a) =

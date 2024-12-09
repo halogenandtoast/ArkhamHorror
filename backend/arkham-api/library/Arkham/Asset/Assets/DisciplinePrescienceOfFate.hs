@@ -10,7 +10,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Runner
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modified_)
 
 newtype DisciplinePrescienceOfFate = DisciplinePrescienceOfFate AssetAttrs
   deriving anyclass IsAsset
@@ -20,9 +20,7 @@ disciplinePrescienceOfFate :: AssetCard DisciplinePrescienceOfFate
 disciplinePrescienceOfFate = asset DisciplinePrescienceOfFate Cards.disciplinePrescienceOfFate
 
 instance HasModifiersFor DisciplinePrescienceOfFate where
-  getModifiersFor (InvestigatorTarget iid) (DisciplinePrescienceOfFate a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DisciplinePrescienceOfFate a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities DisciplinePrescienceOfFate where
   getAbilities (DisciplinePrescienceOfFate x) =
@@ -46,11 +44,10 @@ disciplinePrescienceOfFateEffect :: EffectArgs -> DisciplinePrescienceOfFateEffe
 disciplinePrescienceOfFateEffect = cardEffect DisciplinePrescienceOfFateEffect Cards.disciplinePrescienceOfFate
 
 instance HasModifiersFor DisciplinePrescienceOfFateEffect where
-  getModifiersFor target@(InvestigatorTarget iid) (DisciplinePrescienceOfFateEffect a) | target == a.target = do
+  getModifiersFor (DisciplinePrescienceOfFateEffect a) =
     getSkillTestInvestigator >>= \case
-      Just iid' | iid == iid' -> toModifiers a [AnySkillValue 5]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      Just iid | isTarget iid a.target -> modified_ a iid [AnySkillValue 5]
+      _ -> pure mempty
 
 instance RunMessage DisciplinePrescienceOfFateEffect where
   runMessage msg e@(DisciplinePrescienceOfFateEffect attrs) = runQueueT $ case msg of
@@ -60,6 +57,9 @@ instance RunMessage DisciplinePrescienceOfFateEffect where
           InvestigatorTarget iid -> flipOverBy iid attrs.source inner
           _ -> error "invalid target"
         AbilitySource (ProxySource (CardIdSource _) (AssetSource inner)) _ -> case attrs.target of
+          InvestigatorTarget iid -> flipOverBy iid attrs.source inner
+          _ -> error "invalid target"
+        AbilitySource (IndexedSource _ (AssetSource inner)) _ -> case attrs.target of
           InvestigatorTarget iid -> flipOverBy iid attrs.source inner
           _ -> error "invalid target"
         _ -> error "invalid source"

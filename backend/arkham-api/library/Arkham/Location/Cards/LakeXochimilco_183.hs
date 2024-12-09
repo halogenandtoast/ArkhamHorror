@@ -18,8 +18,7 @@ lakeXochimilco_183 :: LocationCard LakeXochimilco_183
 lakeXochimilco_183 = symbolLabel $ location LakeXochimilco_183 Cards.lakeXochimilco_183 4 (PerPlayer 2)
 
 instance HasModifiersFor LakeXochimilco_183 where
-  getModifiersFor target (LakeXochimilco_183 a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (LakeXochimilco_183 a) = modifySelfMaybe a do
     iid <- MaybeT getSkillTestInvestigator
     liftGuardM $ fieldP InvestigatorRemainingSanity (<= 3) iid
     liftGuardM $ getIsBeingInvestigated (toId a)

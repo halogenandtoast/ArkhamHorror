@@ -22,13 +22,11 @@ mysteriousStairs_187 =
     .~ setFromList [Above, Below]
 
 instance HasModifiersFor MysteriousStairs_187 where
-  getModifiersFor (InvestigatorTarget iid) (MysteriousStairs_187 attrs) = maybeModified attrs do
-    liftGuardM $ iid `isAt` attrs
-    theUnnamable <- MaybeT $ selectOne $ enemyIs Enemies.theUnnamable <> enemyAt attrs
+  getModifiersFor (MysteriousStairs_187 a) = modifySelectMaybe a (investigatorAt a) \_ -> do
+    theUnnamable <- MaybeT $ selectOne $ enemyIs Enemies.theUnnamable <> enemyAt a
     n <- lift $ perPlayer 1
     liftGuardM $ fieldMap EnemyDamage (< n) theUnnamable
     pure [CannotTakeAction #move, CannotTakeAction #resign]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities MysteriousStairs_187 where
   getAbilities (MysteriousStairs_187 attrs) =

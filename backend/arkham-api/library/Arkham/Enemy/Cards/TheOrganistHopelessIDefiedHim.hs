@@ -6,17 +6,15 @@ module Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim (
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype TheOrganistHopelessIDefiedHim = TheOrganistHopelessIDefiedHim EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheOrganistHopelessIDefiedHim where
-  getModifiersFor target (TheOrganistHopelessIDefiedHim attrs) | isTarget attrs target = do
-    toModifiers attrs [CannotBeDamaged]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheOrganistHopelessIDefiedHim attrs) = modifySelf attrs [CannotBeDamaged]
 
 instance HasAbilities TheOrganistHopelessIDefiedHim where
   getAbilities (TheOrganistHopelessIDefiedHim attrs) =

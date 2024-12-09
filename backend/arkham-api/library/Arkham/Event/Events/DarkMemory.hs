@@ -1,12 +1,8 @@
-module Arkham.Event.Events.DarkMemory where
-
-import Arkham.Prelude
+module Arkham.Event.Events.DarkMemory (darkMemory) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
 
 newtype DarkMemory = DarkMemory EventAttrs
@@ -17,17 +13,15 @@ darkMemory :: EventCard DarkMemory
 darkMemory = event DarkMemory Cards.darkMemory
 
 instance HasAbilities DarkMemory where
-  getAbilities (DarkMemory x) = [restrictedAbility x 1 InYourHand $ ForcedAbility $ TurnEnds #when You]
+  getAbilities (DarkMemory x) = [restricted x 1 InYourHand $ forced $ TurnEnds #when You]
 
 instance RunMessage DarkMemory where
-  runMessage msg e@(DarkMemory attrs) = case msg of
+  runMessage msg e@(DarkMemory attrs) = runQueueT $ case msg of
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
-      pushAll
-        [ RevealCard $ toCardId attrs
-        , assignHorror iid (CardIdSource $ toCardId attrs) 2
-        ]
+      push $ RevealCard attrs.cardId
+      assignHorror iid attrs.cardId 2
       pure e
     PlayThisEvent _ eid | attrs `is` eid -> do
-      push placeDoomOnAgendaAndCheckAdvance
+      placeDoomOnAgendaAndCheckAdvance 1
       pure e
-    _ -> DarkMemory <$> runMessage msg attrs
+    _ -> DarkMemory <$> liftRunMessage msg attrs

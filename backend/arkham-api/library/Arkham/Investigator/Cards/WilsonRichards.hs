@@ -4,7 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModifySelf, modifyEachMap)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -27,20 +27,15 @@ wilsonRichards =
     $ Stats {health = 8, sanity = 6, willpower = 3, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor WilsonRichards where
-  getModifiersFor target (WilsonRichards (With a _)) | isTarget a target = do
-    maybeModified a do
+  getModifiersFor (WilsonRichards (With a meta)) = do
+    maybeModifySelf a do
       source <- MaybeT getSkillTestSource
       aid <- hoistMaybe source.asset
       liftGuardM $ aid <=~> AssetWithTrait Tool
       pure [AnySkillValue 1]
-  getModifiersFor (CardIdTarget cid) (WilsonRichards (With a meta)) = do
-    maybeModified a do
-      guard $ active meta
-      c <- lift (getCard cid)
-      guard $ a.id `elem` c.owner
-      guard $ c `cardMatch` card_ (#asset <> #tool)
-      pure [ReduceCostOf (CardWithId cid) 1]
-  getModifiersFor _ _ = pure []
+    validCards <-
+      if active meta then findAllCards (`cardMatch` (CardOwnedBy a.id <> #asset <> #tool)) else pure []
+    modifyEachMap a validCards \card -> [ReduceCostOf (CardWithId card.id) 1]
 
 instance HasChaosTokenValue WilsonRichards where
   getChaosTokenValue iid ElderSign (WilsonRichards (With attrs _)) | iid == toId attrs = do

@@ -25,10 +25,8 @@ planningTheEscape =
   act (3, A) PlanningTheEscape Cards.planningTheEscape Nothing
 
 instance HasModifiersFor PlanningTheEscape where
-  getModifiersFor (LocationTarget lid) (PlanningTheEscape attrs) = do
-    targets <- select UnrevealedLocation
-    toModifiers attrs [TraitRestrictedModifier ArkhamAsylum Blank | lid `elem` targets]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PlanningTheEscape attrs) = do
+    modifySelect attrs UnrevealedLocation [TraitRestrictedModifier ArkhamAsylum Blank]
 
 instance HasAbilities PlanningTheEscape where
   getAbilities (PlanningTheEscape x)

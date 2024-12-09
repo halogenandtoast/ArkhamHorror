@@ -16,19 +16,15 @@ import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Timing qualified as Timing
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 recoverTheRelic :: ActCard RecoverTheRelic
 recoverTheRelic = act (3, A) RecoverTheRelic Cards.recoverTheRelic Nothing
 
 instance HasModifiersFor RecoverTheRelic where
-  getModifiersFor (EnemyTarget lid) (RecoverTheRelic a) = do
-    isModified <-
-      lid
-        <=~> EnemyWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-    toModifiers a [HealthModifier 2 | isModified]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RecoverTheRelic a) = do
+    modifySelect a (EnemyWithAsset $ assetIs Assets.relicOfAgesADeviceOfSomeSort) [HealthModifier 2]
 
 instance HasAbilities RecoverTheRelic where
   getAbilities (RecoverTheRelic a) =

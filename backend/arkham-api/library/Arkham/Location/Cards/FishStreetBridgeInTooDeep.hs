@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Ability
 import Arkham.SortedPair
-import Arkham.Helpers.Modifiers (modified, ModifierType(..))
+import Arkham.Helpers.Modifiers (modifySelf, ModifierType(..))
 import Arkham.Matcher
 import Arkham.Scenarios.InTooDeep.Helpers
 import Data.Map.Strict qualified as Map
@@ -29,11 +29,10 @@ fishStreetBridgeInTooDeep =
     connectsToAdjacent
 
 instance HasModifiersFor FishStreetBridgeInTooDeep where
-  getModifiersFor target (FishStreetBridgeInTooDeep a) | isTarget a target = do
+  getModifiersFor (FishStreetBridgeInTooDeep a) = do
     Meta meta <- getScenarioMeta
     let x = sum [n| (inSortedPair a.id -> True, n) <- Map.toList meta]
-    modified a [ShroudModifier x | x > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf a [ShroudModifier x | x > 0]
 
 instance HasAbilities FishStreetBridgeInTooDeep where
   getAbilities (FishStreetBridgeInTooDeep a) =

@@ -24,10 +24,8 @@ bleakPlainsBleakDesolation =
     . (revealedL .~ True)
 
 instance HasModifiersFor BleakPlainsBleakDesolation where
-  getModifiersFor (InvestigatorTarget iid) (BleakPlainsBleakDesolation a) = do
-    here <- iid `isAt` a
-    toModifiers a [CannotPlay IsAlly | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BleakPlainsBleakDesolation a) = do
+    modifySelect a (investigatorAt a) [CannotPlay IsAlly]
 
 instance RunMessage BleakPlainsBleakDesolation where
   runMessage msg (BleakPlainsBleakDesolation attrs) = case msg of

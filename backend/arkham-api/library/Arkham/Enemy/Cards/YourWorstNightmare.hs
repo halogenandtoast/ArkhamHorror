@@ -15,22 +15,24 @@ yourWorstNightmare = enemyWith YourWorstNightmare Cards.yourWorstNightmare (2, S
   $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasModifiersFor YourWorstNightmare where
-  getModifiersFor (InvestigatorTarget iid) (YourWorstNightmare attrs) | enemyBearer attrs == Just iid = do
-    toModifiers attrs [CannotTakeAction $ EnemyAction #fight $ EnemyWithId $ toId attrs]
-  getModifiersFor target (YourWorstNightmare attrs) | attrs `is` target = do
-    toModifiers
-      attrs
-      [ CannotBeDamagedByPlayerSources
-          (SourceOwnedBy $ InvestigatorWithId $ fromJustNote "must have bearer" $ enemyBearer attrs)
-      , CanOnlyBeDefeatedBy
-          ( NotSource
-              $ SourceOwnedBy
-              $ InvestigatorWithId
-              $ fromJustNote "must have bearer"
-              $ enemyBearer attrs
-          )
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (YourWorstNightmare a) = do
+    bearer <- case enemyBearer a of
+      Nothing -> pure mempty
+      Just iid -> modified_ a iid [CannotTakeAction $ EnemyAction #fight $ EnemyWithId a.id]
+    self <-
+      modifySelf
+        a
+        [ CannotBeDamagedByPlayerSources
+            (SourceOwnedBy $ InvestigatorWithId $ fromJustNote "must have bearer" $ enemyBearer a)
+        , CanOnlyBeDefeatedBy
+            ( NotSource
+                $ SourceOwnedBy
+                $ InvestigatorWithId
+                $ fromJustNote "must have bearer"
+                $ enemyBearer a
+            )
+        ]
+    pure $ bearer <> self
 
 instance RunMessage YourWorstNightmare where
   runMessage msg (YourWorstNightmare attrs) =

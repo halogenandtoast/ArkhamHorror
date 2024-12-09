@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.StrongArmed1 (strongArmed1, StrongArmed1 (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
@@ -28,15 +28,14 @@ instance HasAbilities StrongArmed1 where
     ]
 
 instance HasModifiersFor StrongArmed1 where
-  getModifiersFor (InvestigatorTarget iid) (StrongArmed1 a) = do
-    maybeModified a do
-      iid' <- MaybeT getSkillTestInvestigator
-      guard $ iid == iid'
-      source <- MaybeT getSkillTestSource
-      asset <- hoistMaybe source.asset
-      liftGuardM $ asset <=~> asset_ (oneOf [#melee, #ranged])
-      pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StrongArmed1 a) = do
+    getSkillTestInvestigator >>= \case
+      Nothing -> pure mempty
+      Just iid -> maybeModified_ a iid do
+        source <- MaybeT getSkillTestSource
+        asset <- hoistMaybe source.asset
+        liftGuardM $ asset <=~> asset_ (oneOf [#melee, #ranged])
+        pure [DamageDealt 1]
 
 instance RunMessage StrongArmed1 where
   runMessage msg s@(StrongArmed1 attrs) = runQueueT $ case msg of

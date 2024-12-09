@@ -16,10 +16,9 @@ joinTheCaravan1 :: EventCard JoinTheCaravan1
 joinTheCaravan1 = event JoinTheCaravan1 Cards.joinTheCaravan1
 
 instance HasModifiersFor JoinTheCaravan1 where
-  getModifiersFor (CardIdTarget cid) (JoinTheCaravan1 a) | toCardId a == cid = do
-    n <- calculate (DifferentClassAmong $ ControlledBy $ HandWith $ HasCard $ CardWithId cid)
-    toModifiers a [ReduceCostOf (CardWithId cid) n]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JoinTheCaravan1 a) = do
+    n <- calculate (DifferentClassAmong $ ControlledBy $ HandWith $ HasCard $ CardWithId $ toCardId a)
+    modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
 
 instance RunMessage JoinTheCaravan1 where
   runMessage msg e@(JoinTheCaravan1 attrs) = runQueueT $ case msg of

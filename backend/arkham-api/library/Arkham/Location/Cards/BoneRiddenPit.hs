@@ -2,7 +2,7 @@ module Arkham.Location.Cards.BoneRiddenPit (boneRiddenPit, BoneRiddenPit (..)) w
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
@@ -19,10 +19,9 @@ boneRiddenPit :: LocationCard BoneRiddenPit
 boneRiddenPit = locationWith BoneRiddenPit Cards.boneRiddenPit 6 (PerPlayer 1) connectsToAdjacent
 
 instance HasModifiersFor BoneRiddenPit where
-  getModifiersFor target (BoneRiddenPit x) | isTarget x target = do
+  getModifiersFor (BoneRiddenPit x) = do
     n <- length <$> selectAgg id InvestigatorKeys (investigatorAt x.id)
-    modified x [ShroudModifier (-n) | n > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf x [ShroudModifier (-n) | n > 0]
 
 instance HasAbilities BoneRiddenPit where
   getAbilities (BoneRiddenPit x) =

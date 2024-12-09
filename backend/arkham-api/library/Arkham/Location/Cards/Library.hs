@@ -16,9 +16,7 @@ library :: LocationCard Library
 library = location Library Cards.library 6 (PerPlayer 1)
 
 instance HasModifiersFor Library where
-  getModifiersFor target (Library attrs) = maybeModified attrs do
-    guard $ isTarget attrs target
-    guard $ attrs.revealed
+  getModifiersFor (Library attrs) = whenRevealed attrs $ modifySelfMaybe attrs do
     iid <- MaybeT getSkillTestInvestigator
     liftGuardM $ isInvestigating iid attrs.id
     liftGuardM $ iid <=~> InvestigatorWithKey TabletKey

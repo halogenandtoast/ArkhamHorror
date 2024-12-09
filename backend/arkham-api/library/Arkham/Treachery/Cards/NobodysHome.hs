@@ -5,6 +5,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -17,12 +18,9 @@ nobodysHome :: TreacheryCard NobodysHome
 nobodysHome = treachery NobodysHome Cards.nobodysHome
 
 instance HasModifiersFor NobodysHome where
-  getModifiersFor (AbilityTarget _ ab) (NobodysHome attrs) = maybeModified attrs do
-    lid <- hoistMaybe ab.source.location
-    guard $ toTarget lid `elem` attrs.attached
-    guard $ #investigate `elem` ab.actions
-    pure [AdditionalCost (ActionCost 1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (NobodysHome attrs) = case attrs.placement of
+    AttachedToLocation lid -> modified_ attrs lid [AdditionalCostToInvestigate (ActionCost 1)]
+    _ -> pure mempty
 
 instance HasAbilities NobodysHome where
   getAbilities (NobodysHome a) = case a.attached of

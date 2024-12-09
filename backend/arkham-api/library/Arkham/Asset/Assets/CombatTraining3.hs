@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.CombatTraining3 (combatTraining3, CombatTraining3 (..
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype CombatTraining3 = CombatTraining3 AssetAttrs
   deriving anyclass IsAsset
@@ -21,11 +21,11 @@ instance HasAbilities CombatTraining3 where
     ]
 
 instance HasModifiersFor CombatTraining3 where
-  getModifiersFor target (CombatTraining3 attrs) | attrs `is` target = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (CombatTraining3 attrs) | iid `controls` attrs = do
-    toModifiers attrs [SkillModifier #combat 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CombatTraining3 a) = do
+    self <-
+      modifySelf a [NonDirectHorrorMustBeAssignToThisFirst, NonDirectDamageMustBeAssignToThisFirst]
+    controller <- controllerGets a [SkillModifier #combat 1, SkillModifier #agility 1]
+    pure $ self <> controller
 
 instance RunMessage CombatTraining3 where
   runMessage msg a@(CombatTraining3 attrs) = runQueueT $ case msg of

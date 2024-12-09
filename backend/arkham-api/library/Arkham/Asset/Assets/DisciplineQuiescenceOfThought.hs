@@ -10,22 +10,20 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 
 newtype DisciplineQuiescenceOfThought = DisciplineQuiescenceOfThought AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 disciplineQuiescenceOfThought :: AssetCard DisciplineQuiescenceOfThought
 disciplineQuiescenceOfThought = asset DisciplineQuiescenceOfThought Cards.disciplineQuiescenceOfThought
 
 instance HasModifiersFor DisciplineQuiescenceOfThought where
-  getModifiersFor (InvestigatorTarget iid) (DisciplineQuiescenceOfThought a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DisciplineQuiescenceOfThought a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities DisciplineQuiescenceOfThought where
   getAbilities (DisciplineQuiescenceOfThought x) =

@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Bruiser3 (bruiser3, Bruiser3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Trait (Trait (Armor, Firearm, Melee))
 
 newtype Bruiser3 = Bruiser3 AssetAttrs
@@ -16,17 +16,17 @@ bruiser3 :: AssetCard Bruiser3
 bruiser3 = asset Bruiser3 Cards.bruiser3
 
 instance HasModifiersFor Bruiser3 where
-  getModifiersFor (InvestigatorTarget iid) (Bruiser3 attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        #resource
-        (InvestigatorWithId iid)
-        (oneOf [CardWithTrait t | t <- [Armor, Firearm, Melee]])
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Bruiser3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [ CanSpendUsesAsResourceOnCardFromInvestigator
+            a.id
+            #resource
+            (InvestigatorWithId iid)
+            (oneOf [CardWithTrait t | t <- [Armor, Firearm, Melee]])
+        ]
 
 instance HasAbilities Bruiser3 where
   getAbilities (Bruiser3 a) =

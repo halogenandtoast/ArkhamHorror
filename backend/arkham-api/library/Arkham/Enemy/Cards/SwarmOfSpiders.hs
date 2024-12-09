@@ -8,17 +8,16 @@ import Arkham.Modifier qualified as Mods
 import Arkham.Prelude
 
 newtype SwarmOfSpiders = SwarmOfSpiders EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 swarmOfSpiders :: EnemyCard SwarmOfSpiders
 swarmOfSpiders = enemy SwarmOfSpiders Cards.swarmOfSpiders (1, Static 1, 0) (1, 0)
 
 instance HasModifiersFor SwarmOfSpiders where
-  getModifiersFor target (SwarmOfSpiders attrs) | attrs `is` target = do
-    x <- selectCount $ enemyIs Cards.swarmOfSpiders <> at_ (locationWithEnemy attrs)
-    toModifiers attrs [Mods.EnemyEvade x]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SwarmOfSpiders attrs) = do
+    x <- selectCount $ at_ (locationWithEnemy attrs) <> enemyIs Cards.swarmOfSpiders
+    modifySelf attrs [Mods.EnemyEvade x]
 
 instance RunMessage SwarmOfSpiders where
   runMessage msg (SwarmOfSpiders attrs) =

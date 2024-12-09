@@ -24,11 +24,9 @@ extensiveResearch :: EventCard ExtensiveResearch
 extensiveResearch = event ExtensiveResearch Cards.extensiveResearch
 
 instance HasModifiersFor ExtensiveResearch where
-  getModifiersFor (CardIdTarget cid) (ExtensiveResearch a) | toCardId a == cid =
-    do
-      n <- fieldMap InvestigatorHand length (eventOwner a)
-      toModifiers a [ReduceCostOf (CardWithId cid) n]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ExtensiveResearch a) = do
+    n <- fieldMap InvestigatorHand length (eventOwner a)
+    modified_ a (CardIdTarget $ toCardId a) [ReduceCostOf (CardWithId $ toCardId a) n]
 
 instance RunMessage ExtensiveResearch where
   runMessage msg e@(ExtensiveResearch attrs) = case msg of

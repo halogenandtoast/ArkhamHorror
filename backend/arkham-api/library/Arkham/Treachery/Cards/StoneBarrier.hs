@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.StoneBarrier (stoneBarrier, StoneBarrier (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -22,14 +21,9 @@ instance HasAbilities StoneBarrier where
     [skillTestAbility $ restricted x 1 OnSameLocation actionAbility]
 
 instance HasModifiersFor StoneBarrier where
-  getModifiersFor (InvestigatorTarget iid) (StoneBarrier a) = case a.placement of
-    AttachedToLocation lid -> maybeModified a do
-      guard a.ready
-      lid' <- MaybeT $ getMaybeLocation iid
-      guard $ lid == lid'
-      pure [CannotMove]
-    _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StoneBarrier a) = case a.placement of
+    AttachedToLocation lid -> modifySelectWhen a a.ready (investigatorAt lid) [CannotMove]
+    _ -> pure mempty
 
 instance RunMessage StoneBarrier where
   runMessage msg t@(StoneBarrier attrs) = runQueueT $ case msg of

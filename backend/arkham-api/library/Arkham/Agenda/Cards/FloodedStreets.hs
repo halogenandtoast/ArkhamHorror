@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Message.Discard.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Suspect))
 
@@ -16,12 +16,10 @@ floodedStreets :: AgendaCard FloodedStreets
 floodedStreets = agenda (3, A) FloodedStreets Cards.floodedStreets (Static 4)
 
 instance HasModifiersFor FloodedStreets where
-  getModifiersFor (EnemyTarget eid) (FloodedStreets a) = do
-    isSuspect <- eid <=~> EnemyWithTrait Suspect
-    modified a [IgnoreAloof | isSuspect]
-  getModifiersFor (InvestigatorTarget _iid) (FloodedStreets a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FloodedStreets a) = do
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities FloodedStreets where
   getAbilities (FloodedStreets a) = [mkAbility a 1 $ forced $ TurnEnds #when (You <> at_ FullyFloodedLocation)]

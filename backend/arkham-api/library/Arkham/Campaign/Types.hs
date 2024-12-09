@@ -28,6 +28,7 @@ import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
@@ -105,9 +106,7 @@ instance HasField "meta" Campaign Value where
   getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor (InvestigatorTarget iid) attrs =
-    pure $ findWithDefault [] iid (campaignModifiers attrs)
-  getModifiersFor _ _ = pure []
+  getModifiersFor attrs = tell $ MonoidalMap $ Map.mapKeys toTarget $ campaignModifiers attrs
 
 instance Sourceable CampaignAttrs where
   toSource _ = CampaignSource
@@ -238,7 +237,7 @@ instance ToJSON Campaign where
   toJSON (Campaign a) = toJSON a
 
 instance HasModifiersFor Campaign where
-  getModifiersFor target (Campaign a) = getModifiersFor target a
+  getModifiersFor (Campaign a) = getModifiersFor a
 
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs

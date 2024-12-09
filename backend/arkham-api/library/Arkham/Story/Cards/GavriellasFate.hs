@@ -77,10 +77,8 @@ gavriellasFateEffect :: EffectArgs -> GavriellasFateEffect
 gavriellasFateEffect = cardEffect GavriellasFateEffect Cards.gavriellasFate
 
 instance HasModifiersFor GavriellasFateEffect where
-  getModifiersFor (AssetTarget aid) (GavriellasFateEffect a) = do
-    isGavriella <- elem aid <$> select (assetIs Assets.gavriellaMizrah)
-    toModifiers a [DoNotTakeUpSlot AllySlot | isGavriella]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GavriellasFateEffect a) =
+    modifySelect a (assetIs Assets.gavriellaMizrah) [DoNotTakeUpSlot AllySlot]
 
 instance RunMessage GavriellasFateEffect where
   runMessage _ = pure

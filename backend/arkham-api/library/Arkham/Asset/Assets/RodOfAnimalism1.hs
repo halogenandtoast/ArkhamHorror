@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Card
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Slot
 import Arkham.Trait (Trait (Creature))
 
@@ -18,9 +18,7 @@ rodOfAnimalism1 :: AssetCard RodOfAnimalism1
 rodOfAnimalism1 = asset RodOfAnimalism1 Cards.rodOfAnimalism1
 
 instance HasModifiersFor RodOfAnimalism1 where
-  getModifiersFor (InvestigatorTarget iid) (RodOfAnimalism1 attrs) =
-    toModifiers attrs [CanReduceCostOf (#asset <> CardWithTrait Creature) 1 | controlledBy attrs iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RodOfAnimalism1 a) = controllerGets a [CanReduceCostOf (#asset <> CardWithTrait Creature) 1]
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Creature []

@@ -7,6 +7,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Action qualified as Action
+import Arkham.Card
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Helpers.Modifiers
@@ -23,13 +24,10 @@ expeditiousRetreat1 :: SkillCard ExpeditiousRetreat1
 expeditiousRetreat1 = skill ExpeditiousRetreat1 Cards.expeditiousRetreat1
 
 instance HasModifiersFor ExpeditiousRetreat1 where
-  getModifiersFor target (ExpeditiousRetreat1 a) | a `is` target = do
-    mAction <- getSkillTestAction
-    mSource <- getSkillTestSource
-    case (mAction, mSource) of
-      (Just Action.Evade, Just (AbilitySource (EnemySource _) AbilityAttack)) -> toModifiers a [AddSkillIcons [#agility, #agility]]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ExpeditiousRetreat1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
+    Action.Evade <- MaybeT getSkillTestAction
+    AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestSource
+    pure [AddSkillIcons [#agility, #agility]]
 
 instance RunMessage ExpeditiousRetreat1 where
   runMessage msg s@(ExpeditiousRetreat1 attrs) = case msg of

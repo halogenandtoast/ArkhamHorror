@@ -19,6 +19,7 @@ import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
+import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
@@ -88,6 +89,7 @@ data LocationMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
+  | LocationWithAttachedEvent EventMatcher
   | LocationWithCardsUnderneath CardListMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | CanEnterLocation InvestigatorMatcher

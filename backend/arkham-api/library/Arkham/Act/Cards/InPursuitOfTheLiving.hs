@@ -28,9 +28,8 @@ inPursuitOfTheLiving :: ActCard InPursuitOfTheLiving
 inPursuitOfTheLiving = act (2, A) (InPursuitOfTheLiving . (`with` Metadata [])) Cards.inPursuitOfTheLiving Nothing
 
 instance HasModifiersFor InPursuitOfTheLiving where
-  getModifiersFor (InvestigatorTarget _) (InPursuitOfTheLiving (a `With` _)) =
-    toModifiers a [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InPursuitOfTheLiving (a `With` _)) =
+    modifySelect a Anyone [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
 
 -- Group limit once per round at each location.
 -- We handle this by using the usedLocationIds metadata

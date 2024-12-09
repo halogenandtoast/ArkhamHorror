@@ -6,9 +6,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Fight
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype EnchantedBow2 = EnchantedBow2 AssetAttrs
   deriving anyclass IsAsset
@@ -18,21 +18,26 @@ enchantedBow2 :: AssetCard EnchantedBow2
 enchantedBow2 = asset EnchantedBow2 Cards.enchantedBow2
 
 instance HasModifiersFor EnchantedBow2 where
-  getModifiersFor (AbilityTarget iid ability) (EnchantedBow2 a) | ability.source.asset == Just a.id && ability.index == 1 = do
-    let meta = toResultDefault True a.meta
-    modified
-      a
-      [ CanModify
-        $ EnemyFightActionCriteria
-        $ CriteriaOverride
-        $ EnemyCriteria
-        $ ThisEnemy
-        $ EnemyWithoutModifier CannotBeAttacked
-        <> oneOf
-          [NonEliteEnemy <> EnemyAt (ConnectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
-      | hasUses a && meta
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EnchantedBow2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      selectOne (AbilityIs (toSource a) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab -> do
+          let meta = toResultDefault True a.meta
+          modifiedWhen_
+            a
+            (hasUses a && meta)
+            (AbilityTarget iid ab)
+            [ CanModify
+                $ EnemyFightActionCriteria
+                $ CriteriaOverride
+                $ EnemyCriteria
+                $ ThisEnemy
+                $ EnemyWithoutModifier CannotBeAttacked
+                <> oneOf
+                  [NonEliteEnemy <> EnemyAt (ConnectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
+            ]
 
 instance HasAbilities EnchantedBow2 where
   getAbilities (EnchantedBow2 a) =

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 
 newtype VirescentRot = VirescentRot EventAttrs
@@ -15,9 +15,9 @@ virescentRot :: EventCard VirescentRot
 virescentRot = event VirescentRot Cards.virescentRot
 
 instance HasModifiersFor VirescentRot where
-  getModifiersFor target (VirescentRot a) | target `elem` a.attachedTo = do
-    modified a [CannotMove]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VirescentRot a) = case a.attachedTo of
+    Just target -> modified_ a target [CannotMove]
+    _ -> pure mempty
 
 instance HasAbilities VirescentRot where
   getAbilities (VirescentRot a) =

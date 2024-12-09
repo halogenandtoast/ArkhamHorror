@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.PrismaticPhenomenon (prismaticPhenomenon, Prismati
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Helpers.SkillTest (getSkillTestTarget, withSkillTest)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
@@ -16,13 +16,11 @@ prismaticPhenomenon :: TreacheryCard PrismaticPhenomenon
 prismaticPhenomenon = treachery PrismaticPhenomenon Cards.prismaticPhenomenon
 
 instance HasModifiersFor PrismaticPhenomenon where
-  getModifiersFor (InvestigatorTarget iid) (PrismaticPhenomenon attrs) =
-    modified
+  getModifiersFor (PrismaticPhenomenon attrs) =
+    inThreatAreaGets
       attrs
       [ AdditionalActionCostOf (FirstOneOfPerformed [#draw, #resource, #play]) 1
-      | treacheryInThreatArea iid attrs
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities PrismaticPhenomenon where
   getAbilities (PrismaticPhenomenon a) =

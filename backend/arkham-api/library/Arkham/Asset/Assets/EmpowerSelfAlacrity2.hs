@@ -16,11 +16,11 @@ empowerSelfAlacrity2 =
   asset EmpowerSelfAlacrity2 Cards.empowerSelfAlacrity2
 
 instance HasModifiersFor EmpowerSelfAlacrity2 where
-  getModifiersFor (InvestigatorTarget iid) (EmpowerSelfAlacrity2 a) | controlledBy a iid = do
-    toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
-  getModifiersFor target (EmpowerSelfAlacrity2 a) | a `is` target = do
-    toModifiers a [SharesSlotWith 3 "Empower Self"]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EmpowerSelfAlacrity2 a) = do
+    controller <-
+      controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
+    self <- modifySelf a [SharesSlotWith 3 "Empower Self"]
+    pure $ controller <> self
 
 instance HasAbilities EmpowerSelfAlacrity2 where
   getAbilities (EmpowerSelfAlacrity2 a) =

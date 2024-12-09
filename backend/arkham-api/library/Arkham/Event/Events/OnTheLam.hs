@@ -1,4 +1,4 @@
-module Arkham.Event.Events.OnTheLam where
+module Arkham.Event.Events.OnTheLam (onTheLam) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

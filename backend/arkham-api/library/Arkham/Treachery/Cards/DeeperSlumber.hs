@@ -6,16 +6,15 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype DeeperSlumber = DeeperSlumber TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deeperSlumber :: TreacheryCard DeeperSlumber
 deeperSlumber = treachery DeeperSlumber Cards.deeperSlumber
 
 instance HasModifiersFor DeeperSlumber where
-  getModifiersFor (InvestigatorTarget iid) (DeeperSlumber attrs) | treacheryInThreatArea iid attrs = do
-    modified attrs [HandSize (-3), CheckHandSizeAfterDraw]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeeperSlumber attrs) =
+    inThreatAreaGets attrs [HandSize (-3), CheckHandSizeAfterDraw]
 
 instance HasAbilities DeeperSlumber where
   getAbilities (DeeperSlumber a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]

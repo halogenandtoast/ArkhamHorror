@@ -5,7 +5,6 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (enemyAtLocation)
 import Arkham.Matcher
 import Arkham.Message (pattern RemoveDoom)
 
@@ -17,10 +16,8 @@ notreDame :: LocationCard NotreDame
 notreDame = location NotreDame Cards.notreDame 3 (PerPlayer 1)
 
 instance HasModifiersFor NotreDame where
-  getModifiersFor (EnemyTarget eid) (NotreDame attrs) | attrs.revealed = do
-    atLocation <- enemyAtLocation eid attrs
-    toModifiers attrs $ guard atLocation *> [EnemyFight (-1), EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (NotreDame a) =
+    whenRevealed a $ modifySelect a (enemyAt a) [EnemyFight (-1), EnemyEvade 1]
 
 instance HasAbilities NotreDame where
   getAbilities (NotreDame attrs) =

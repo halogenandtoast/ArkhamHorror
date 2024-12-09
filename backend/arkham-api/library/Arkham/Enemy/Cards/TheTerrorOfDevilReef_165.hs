@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Cave))
 
@@ -23,10 +23,8 @@ instance HasAbilities TheTerrorOfDevilReef_165 where
     extend1 a $ mkAbility a 1 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
 
 instance HasModifiersFor TheTerrorOfDevilReef_165 where
-  getModifiersFor (LocationTarget lid) (TheTerrorOfDevilReef_165 a) = do
-    isCave <- lid <=~> LocationWithTrait Cave
-    modified a [CannotBeEnteredBy (be a) | isCave]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheTerrorOfDevilReef_165 a) =
+    modifySelect a (LocationWithTrait Cave) [CannotBeEnteredBy (be a)]
 
 instance RunMessage TheTerrorOfDevilReef_165 where
   runMessage msg e@(TheTerrorOfDevilReef_165 attrs) = runQueueT $ case msg of

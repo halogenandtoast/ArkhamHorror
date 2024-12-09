@@ -24,7 +24,7 @@ newtype Metadata = Metadata {discarding :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype RationalThought = RationalThought (TreacheryAttrs `With` Metadata)
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rationalThought :: TreacheryCard RationalThought
@@ -38,12 +38,11 @@ rationalThought =
 -- difficult. Since this is a signature, overlap like this is generally not a
 -- concern, but we may want a more flexible solution in the future
 instance HasModifiersFor RationalThought where
-  getModifiersFor (InvestigatorTarget iid) (RationalThought (a `With` _)) = do
+  getModifiersFor (RationalThought (a `With` _)) = do
     horror <- fieldMap TreacheryTokens (countTokens Horror) a.id
-    modified a
-      $ guard (treacheryInThreatArea iid a)
-      *> [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorAsIfOnInvestigator (toTarget a) horror]
-  getModifiersFor _ _ = pure []
+    inThreatAreaGets
+      a
+      [CannotHealHorrorOnOtherCards (toTarget a), HealHorrorAsIfOnInvestigator (toTarget a) horror]
 
 -- Discard when no horror is on this
 instance HasAbilities RationalThought where

@@ -13,8 +13,9 @@ import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Import
 import Arkham.Enemy.Types (Field (EnemyCard))
+import Arkham.Event.Types (Field (EventCardId))
 import Arkham.Helpers
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Investigator.Types (Field (InvestigatorDeck, InvestigatorDiscard, InvestigatorHand))
 import Arkham.Matcher hiding (AssetCard)
@@ -22,7 +23,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Phase
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.SkillTest.Base
 import Arkham.Strategy
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
@@ -232,24 +232,22 @@ realityAcid5U21Effect :: EffectArgs -> RealityAcid5U21Effect
 realityAcid5U21Effect = cardEffect RealityAcid5U21Effect Cards.realityAcid5U21
 
 instance HasModifiersFor RealityAcid5U21Effect where
-  getModifiersFor (CardIdTarget x) (RealityAcid5U21Effect attrs) = maybeModified attrs do
-    InvestigatorTarget iid <- pure attrs.target
-    ChaosTokenFaceTarget face <- hoistMaybe attrs.metaTarget
-    case face of
-      Cultist -> do
-        st <- MaybeT getSkillTest
-        let cardPairs = mapToList $ skillTestCommittedCards st
-        (iid', _) <- hoistMaybe $ find (elem x . map toCardId . snd) cardPairs
-        liftGuardM $ iid' <=~> colocatedWith iid
-        pure [SetAfterPlay $ DevourThis iid]
-      Tablet -> do
-        liftGuardM
-          $ selectAny
-          $ EventWithCardId x
-          <> EventControlledBy (colocatedWith iid)
-        pure [SetAfterPlay $ DevourThis iid]
-      _ -> error "invalid face"
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RealityAcid5U21Effect attrs) =
+    fromMaybe mempty <$> runMaybeT do
+      InvestigatorTarget iid <- pure attrs.target
+      ChaosTokenFaceTarget face <- hoistMaybe attrs.metaTarget
+      case face of
+        Cultist -> do
+          st <- MaybeT getSkillTest
+          cards <-
+            lift
+              $ concatMap snd
+              <$> filterM (\(iid', _) -> iid' <=~> colocatedWith iid) (mapToList st.committedCards)
+          lift $ modifyEach attrs (map (CardIdTarget . toCardId) cards) [SetAfterPlay $ DevourThis iid]
+        Tablet -> do
+          events <- lift $ selectWithField EventCardId $ EventControlledBy (colocatedWith iid)
+          lift $ modifyEach attrs (map (CardIdTarget . snd) events) [SetAfterPlay $ DevourThis iid]
+        _ -> error "invalid face"
 
 instance RunMessage RealityAcid5U21Effect where
   runMessage msg e@(RealityAcid5U21Effect attrs) = runQueueT $ case msg of

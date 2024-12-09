@@ -13,7 +13,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Timing qualified as Timing
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 earlSawyer :: AssetCard EarlSawyer
@@ -26,9 +26,7 @@ instance HasAbilities EarlSawyer where
     ]
 
 instance HasModifiersFor EarlSawyer where
-  getModifiersFor (InvestigatorTarget iid) (EarlSawyer a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EarlSawyer a) = controllerGets a [SkillModifier #agility 1]
 
 instance RunMessage EarlSawyer where
   runMessage msg a@(EarlSawyer attrs) = case msg of

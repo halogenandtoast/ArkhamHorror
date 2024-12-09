@@ -24,11 +24,14 @@ restlessJourneyHardship :: TreacheryCard RestlessJourneyHardship
 restlessJourneyHardship = treacheryWith RestlessJourneyHardship Cards.restlessJourneyHardship (setMeta @Bool False)
 
 instance HasModifiersFor RestlessJourneyHardship where
-  getModifiersFor (InvestigatorTarget iid) (RestlessJourneyHardship attrs) | treacheryInHandOf attrs == Just iid = do
-    commitedCardsCount <- fieldMap InvestigatorCommittedCards length iid
-    let alreadyCommitted = toResult @Bool attrs.meta
-    modified attrs $ guard (alreadyCommitted || commitedCardsCount >= 1) *> [CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RestlessJourneyHardship attrs) = case attrs.placement of
+    HiddenInHand iid -> do
+      commitedCardsCount <- fieldMap InvestigatorCommittedCards length iid
+      let alreadyCommitted = toResult @Bool attrs.meta
+      modified_ attrs iid
+        $ guard (alreadyCommitted || commitedCardsCount >= 1)
+        *> [CannotCommitCards AnyCard]
+    _ -> pure mempty
 
 instance HasAbilities RestlessJourneyHardship where
   getAbilities (RestlessJourneyHardship a) =

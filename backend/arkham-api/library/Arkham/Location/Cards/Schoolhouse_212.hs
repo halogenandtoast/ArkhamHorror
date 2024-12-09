@@ -4,7 +4,8 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (isAt, withDrawCardUnderneathAction)
+import Arkham.Location.Runner (withDrawCardUnderneathAction)
+import Arkham.Matcher
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs
   deriving anyclass IsLocation
@@ -14,10 +15,8 @@ schoolhouse_212 :: LocationCard Schoolhouse_212
 schoolhouse_212 = location Schoolhouse_212 Cards.schoolhouse_212 4 (Static 1)
 
 instance HasModifiersFor Schoolhouse_212 where
-  getModifiersFor (InvestigatorTarget iid) (Schoolhouse_212 attrs) = do
-    here <- iid `isAt` attrs
-    toModifiers attrs [CannotCommitCards #skill | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Schoolhouse_212 attrs) = do
+    modifySelect attrs (investigatorAt attrs) [CannotCommitCards #skill]
 
 instance HasAbilities Schoolhouse_212 where
   getAbilities = withDrawCardUnderneathAction

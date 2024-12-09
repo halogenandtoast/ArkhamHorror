@@ -51,22 +51,17 @@ writtenInTheStarsEffect :: EffectArgs -> WrittenInTheStarsEffect
 writtenInTheStarsEffect = cardEffect WrittenInTheStarsEffect Cards.writtenInTheStars
 
 instance HasModifiersFor WrittenInTheStarsEffect where
-  getModifiersFor target@(CardIdTarget cid) (WrittenInTheStarsEffect attrs) | target == attrs.target = do
-    case attrs.meta of
+  getModifiersFor (WrittenInTheStarsEffect attrs) = case attrs.target of
+    CardIdTarget cid -> case attrs.meta of
       Just (EffectMetaTarget (InvestigatorTarget iid)) -> do
         card <- getCard cid
         committable <- getIsCommittable iid card
         committedCards <- field InvestigatorCommittedCards iid
-        toModifiers attrs [MustBeCommitted | committable || card `elem` committedCards]
+        (<>)
+          <$> modifiedWhen_ attrs (committable || card `elem` committedCards) attrs.target [MustBeCommitted]
+          <*> modifiedWhen_ attrs committable iid [CanCommitToSkillTestsAsIfInHand card]
       _ -> error "Expected EffectMetaTarget"
-  getModifiersFor target@(InvestigatorTarget iid) (WrittenInTheStarsEffect attrs) | Just (EffectMetaTarget target) == attrs.meta = do
-    case attrs.target of
-      CardIdTarget cid -> do
-        card <- getCard cid
-        committable <- getIsCommittable iid card
-        toModifiers attrs $ [CanCommitToSkillTestsAsIfInHand card | committable]
-      _ -> error "Expected EffectMetaTarget"
-  getModifiersFor _ _ = pure []
+    _ -> pure mempty
 
 instance RunMessage WrittenInTheStarsEffect where
   runMessage msg e@(WrittenInTheStarsEffect attrs) = runQueueT $ case msg of

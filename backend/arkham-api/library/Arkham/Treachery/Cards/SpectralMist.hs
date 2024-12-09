@@ -3,10 +3,11 @@ module Arkham.Treachery.Cards.SpectralMist (SpectralMist (..), spectralMist) whe
 import Arkham.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Source
-import Arkham.Trait
+import Arkham.Trait (Trait (Bayou))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers qualified as Msg
 import Arkham.Treachery.Import.Lifted
@@ -19,11 +20,16 @@ spectralMist :: TreacheryCard SpectralMist
 spectralMist = treachery SpectralMist Cards.spectralMist
 
 instance HasModifiersFor SpectralMist where
-  getModifiersFor _ (SpectralMist a) = maybeModified a do
-    iid <- MaybeT getSkillTestInvestigator
-    lid <- MaybeT $ getMaybeLocation iid
-    guard $ a.attached == Just (toTarget lid)
-    pure [Difficulty 1]
+  getModifiersFor (SpectralMist a) = case a.placement of
+    AttachedToLocation lid ->
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          iid <- MaybeT getSkillTestInvestigator
+          lid' <- MaybeT $ getMaybeLocation iid
+          guard $ lid == lid'
+          pure [Difficulty 1]
+    _ -> pure mempty
 
 instance HasAbilities SpectralMist where
   getAbilities (SpectralMist a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

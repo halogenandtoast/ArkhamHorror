@@ -4,9 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Card
-import Arkham.Game.Helpers (onSameLocation)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -19,11 +18,8 @@ riteOfSanctification =
   assetWith RiteOfSanctification Cards.riteOfSanctification (setMeta @Bool False)
 
 instance HasModifiersFor RiteOfSanctification where
-  getModifiersFor (InvestigatorTarget iid) (RiteOfSanctification a) | not (assetExhausted a) = do
-    sameLocation <- onSameLocation iid a.placement
-    -- investigator attrs your location
-    toModifiers a [CanReduceCostOf AnyCard 2 | sameLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RiteOfSanctification a) = do
+    modifySelectWhen a a.ready (InvestigatorAt $ locationWithAsset a) [CanReduceCostOf AnyCard 2]
 
 instance HasAbilities RiteOfSanctification where
   getAbilities (RiteOfSanctification attrs) =

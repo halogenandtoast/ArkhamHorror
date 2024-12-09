@@ -15,11 +15,11 @@ empowerSelfAcuity2 :: AssetCard EmpowerSelfAcuity2
 empowerSelfAcuity2 = asset EmpowerSelfAcuity2 Cards.empowerSelfAcuity2
 
 instance HasModifiersFor EmpowerSelfAcuity2 where
-  getModifiersFor (InvestigatorTarget iid) (EmpowerSelfAcuity2 a) | controlledBy a iid = do
-    toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #intellect]
-  getModifiersFor target (EmpowerSelfAcuity2 a) | a `is` target = do
-    toModifiers a [SharesSlotWith 3 "Empower Self"]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EmpowerSelfAcuity2 a) = do
+    controller <-
+      controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #intellect]
+    self <- modifySelf a [SharesSlotWith 3 "Empower Self"]
+    pure $ controller <> self
 
 instance HasAbilities EmpowerSelfAcuity2 where
   getAbilities (EmpowerSelfAcuity2 a) =

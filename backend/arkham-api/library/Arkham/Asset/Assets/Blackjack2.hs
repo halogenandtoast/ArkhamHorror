@@ -15,14 +15,14 @@ blackjack2 :: AssetCard Blackjack2
 blackjack2 = asset Blackjack2 Cards.blackjack2
 
 instance HasModifiersFor Blackjack2 where
-  getModifiersFor (InvestigatorTarget iid) (Blackjack2 attrs) = maybeModified attrs do
-    (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
-    EnemyTarget eid <- MaybeT getSkillTestTarget
-    guardM $ lift $ selectAny $ investigatorEngagedWith eid <> notInvestigator iid
-    iid' <- MaybeT getSkillTestInvestigator
-    guard $ iid == iid'
-    pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Blackjack2 attrs) = do
+    getSkillTestInvestigator >>= \case
+      Just iid -> maybeModified_ attrs iid do
+        (isAbilitySource attrs 1 -> True) <- MaybeT getSkillTestSource
+        EnemyTarget eid <- MaybeT getSkillTestTarget
+        guardM $ lift $ selectAny $ investigatorEngagedWith eid <> notInvestigator iid
+        pure [DamageDealt 1]
+      Nothing -> pure mempty
 
 instance HasAbilities Blackjack2 where
   getAbilities (Blackjack2 a) = [fightAbility a 1 mempty ControlsThis]

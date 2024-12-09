@@ -454,8 +454,9 @@ createEnemyEngagedWithPrey c = do
 createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
-createEnemyAt_ :: (ReverseQueue m, IsCard card) => card -> LocationId -> m ()
-createEnemyAt_ c lid = push =<< Msg.createEnemyAt_ (toCard c) lid Nothing
+createEnemyAt_
+  :: (ReverseQueue m, IsCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
+createEnemyAt_ c location = push =<< Msg.createEnemyAt_ (toCard c) (asId location) Nothing
 
 createEnemyAt
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m EnemyId
@@ -1126,6 +1127,17 @@ chooseFightEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
 
+chooseFightEnemyWithModifiers
+  :: (ReverseQueue m, Sourceable source)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> [ModifierType]
+  -> m ()
+chooseFightEnemyWithModifiers sid iid source mods = do
+  skillTestModifiers sid source iid mods
+  push . toMessage =<< mkChooseFight sid iid source
+
 chooseFightEnemyEdit
   :: (ReverseQueue m, Sourceable source)
   => SkillTestId
@@ -1250,9 +1262,10 @@ putOnBottomOfDeck iid deck target = push $ PutOnBottomOfDeck iid (toDeck deck) (
 putCardOnBottomOfDeck :: (ReverseQueue m, IsDeck deck) => InvestigatorId -> deck -> Card -> m ()
 putCardOnBottomOfDeck iid deck card = push $ PutCardOnBottomOfDeck iid (toDeck deck) card
 
-gainResourcesIfCan :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-gainResourcesIfCan iid source n = do
-  mmsg <- Msg.gainResourcesIfCan iid source n
+gainResourcesIfCan
+  :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ InvestigatorId) => a -> source -> Int -> m ()
+gainResourcesIfCan a source n = do
+  mmsg <- Msg.gainResourcesIfCan a source n
   for_ mmsg push
 
 loseResources :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -1797,7 +1810,7 @@ removeCardFromGame card = do
 
 playCardPayingCost :: ReverseQueue m => InvestigatorId -> Card -> m ()
 playCardPayingCost iid card = do
-  addToHand iid [card]
+  addToHandQuiet iid [card]
   withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCost iid card
 
 payCardCost :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
@@ -1805,9 +1818,8 @@ payCardCost iid card = push $ Msg.PayCardCost iid (toCard card) (defaultWindows 
 
 playCardPayingCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
 playCardPayingCostWithWindows iid card ws = do
-  addToHand iid [card]
-  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCost iid card
-  payCardCostWithWindows iid card ws
+  addToHandQuiet iid [card]
+  withTimings (Window.PlayCard iid $ Window.CardPlay card False) $ payCardCostWithWindows iid card ws
 
 payCardCostWithWindows :: ReverseQueue m => InvestigatorId -> Card -> [Window] -> m ()
 payCardCostWithWindows iid card ws = push $ Msg.PayCardCost iid card ws
@@ -2115,3 +2127,7 @@ cancelBatch bId = push $ CancelBatch bId
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg
+
+setLocationLabel
+  :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> Text -> m ()
+setLocationLabel location lbl = push $ SetLocationLabel (asId location) lbl

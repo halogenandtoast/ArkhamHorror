@@ -12,7 +12,6 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.Trait
 import Arkham.Window
 
@@ -56,12 +55,13 @@ eideticMemory3Effect :: EffectArgs -> EideticMemory3Effect
 eideticMemory3Effect = cardEffect EideticMemory3Effect Cards.eideticMemory3
 
 instance HasModifiersFor EideticMemory3Effect where
-  getModifiersFor (EventTarget eid) (EideticMemory3Effect a) = do
-    cardId <- field EventCardId eid
-    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
-  getModifiersFor (CardIdTarget cardId) (EideticMemory3Effect a) = do
-    toModifiers a [RemoveFromGameInsteadOfDiscard | toTarget cardId == a.target]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EideticMemory3Effect a) = do
+    case a.target of
+      CardIdTarget cardId -> do
+        events <- modifySelect a (EventWithCardId cardId) [RemoveFromGameInsteadOfDiscard]
+        cards <- modified_ a a.target [RemoveFromGameInsteadOfDiscard]
+        pure $ events <> cards
+      _ -> pure mempty
 
 instance RunMessage EideticMemory3Effect where
   runMessage msg (EideticMemory3Effect attrs) = EideticMemory3Effect <$> runMessage msg attrs

@@ -11,24 +11,20 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Trait
 
 newtype EscapeTheRuins = EscapeTheRuins ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 escapeTheRuins :: ActCard EscapeTheRuins
 escapeTheRuins = act (3, A) EscapeTheRuins Cards.escapeTheRuins Nothing
 
 instance HasModifiersFor EscapeTheRuins where
-  getModifiersFor (EnemyTarget eid) (EscapeTheRuins a) = do
+  getModifiersFor (EscapeTheRuins a) = do
     n <- getVengeanceInVictoryDisplay
-    isSerpent <- fieldP EnemyTraits (elem Serpent) eid
-    toModifiers a [EnemyEvade 1 | n >= 3 && isSerpent]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (n >= 3) (EnemyWithTrait Serpent) [EnemyEvade 1]
 
 instance HasAbilities EscapeTheRuins where
   getAbilities (EscapeTheRuins x) =

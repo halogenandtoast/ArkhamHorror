@@ -7,8 +7,8 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype HeirloomOfHyperboreaAdvanced = HeirloomOfHyperboreaAdvanced AssetAttrs
   deriving anyclass IsAsset
@@ -22,9 +22,8 @@ heirloomOfHyperboreaAdvanced =
     ((healthL ?~ 3) . (sanityL ?~ 3))
 
 instance HasModifiersFor HeirloomOfHyperboreaAdvanced where
-  getModifiersFor target (HeirloomOfHyperboreaAdvanced a) | isTarget a target = do
-    modified a [CannotBeDamagedBySourcesExcept $ SourceIsPlayerCard <> SourceIsCardEffect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HeirloomOfHyperboreaAdvanced a) =
+    modifySelf a [CannotBeDamagedBySourcesExcept $ SourceIsPlayerCard <> SourceIsCardEffect]
 
 instance HasAbilities HeirloomOfHyperboreaAdvanced where
   getAbilities (HeirloomOfHyperboreaAdvanced x) =

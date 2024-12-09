@@ -180,7 +180,7 @@ instance HasAbilities Agenda where
   getAbilities (Agenda a) = getAbilities a
 
 instance HasModifiersFor Agenda where
-  getModifiersFor target (Agenda a) = getModifiersFor target a
+  getModifiersFor (Agenda a) = getModifiersFor a
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId

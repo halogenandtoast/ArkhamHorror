@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.HospitalDebts (HospitalDebts (..), hospitalDebts) where
+module Arkham.Treachery.Cards.HospitalDebts (hospitalDebts) where
 
 import Arkham.Ability
 import Arkham.Classes

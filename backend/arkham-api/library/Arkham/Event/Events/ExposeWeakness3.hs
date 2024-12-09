@@ -59,8 +59,8 @@ exposeWeakness3Effect :: EffectArgs -> ExposeWeakness3Effect
 exposeWeakness3Effect = cardEffect ExposeWeakness3Effect Cards.exposeWeakness3
 
 instance HasModifiersFor ExposeWeakness3Effect where
-  getModifiersFor target (ExposeWeakness3Effect a) = do
-    toModifiers a [AsIfEnemyFight 0 | effectTarget a == target]
+  getModifiersFor (ExposeWeakness3Effect a) =
+    modified_ a a.target [AsIfEnemyFight 0]
 
 instance RunMessage ExposeWeakness3Effect where
   runMessage msg e@(ExposeWeakness3Effect attrs@EffectAttrs {..}) = case msg of

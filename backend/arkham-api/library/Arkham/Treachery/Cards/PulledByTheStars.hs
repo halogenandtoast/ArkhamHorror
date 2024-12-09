@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.PulledByTheStars (pulledByTheStars, PulledByTheSta
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
@@ -25,15 +25,17 @@ instance HasAbilities PulledByTheStars where
     ]
 
 instance HasModifiersFor PulledByTheStars where
-  getModifiersFor (SkillTestTarget _) (PulledByTheStars attrs) = do
-    mSource <- getSkillTestSource
-    mInvestigator <- getSkillTestInvestigator
-    case (mSource, mInvestigator) of
-      (Just source, Just iid) | isAbilitySource attrs 2 source -> do
-        exhaustedWitch <- selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
-        toModifiers attrs [SkillTestAutomaticallySucceeds | exhaustedWitch]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PulledByTheStars attrs) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> do
+        mSource <- getSkillTestSource
+        mInvestigator <- getSkillTestInvestigator
+        case (mSource, mInvestigator) of
+          (Just source, Just iid) | isAbilitySource attrs 2 source -> do
+            exhaustedWitch <- selectAny $ ExhaustedEnemy <> EnemyWithTrait Witch <> enemyAtLocationWith iid
+            modified_ attrs (SkillTestTarget st.id) [SkillTestAutomaticallySucceeds | exhaustedWitch]
+          _ -> pure mempty
 
 instance RunMessage PulledByTheStars where
   runMessage msg t@(PulledByTheStars attrs) = runQueueT $ case msg of

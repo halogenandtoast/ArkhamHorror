@@ -23,9 +23,10 @@ theRitualBegins =
   agenda (2, A) TheRitualBegins Cards.theRitualBegins (Static 5)
 
 instance HasModifiersFor TheRitualBegins where
-  getModifiersFor (EnemyTarget _) (TheRitualBegins attrs) | onSide A attrs = do
-    toModifiers attrs [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheRitualBegins attrs) =
+    if onSide A attrs
+      then modifySelect attrs AnyEnemy [EnemyFight 1, EnemyEvade 1]
+      else pure mempty
 
 instance RunMessage TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs) = case msg of

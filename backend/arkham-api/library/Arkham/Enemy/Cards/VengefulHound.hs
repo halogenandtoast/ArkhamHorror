@@ -16,10 +16,8 @@ vengefulHound =
     $ \a -> a & preyL .~ BearerOf (toId a)
 
 instance HasModifiersFor VengefulHound where
-  getModifiersFor (InvestigatorTarget iid) (VengefulHound attrs) = do
-    affected <- iid <=~> investigatorEngagedWith (toId attrs)
-    toModifiers attrs $ guard affected *> [CannotRevealCards, CannotDrawCardsFromPlayerCardEffects]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VengefulHound a) = do
+    modifySelect a (investigatorEngagedWith a) [CannotRevealCards, CannotDrawCardsFromPlayerCardEffects]
 
 instance RunMessage VengefulHound where
   runMessage msg (VengefulHound attrs) = VengefulHound <$> runMessage msg attrs

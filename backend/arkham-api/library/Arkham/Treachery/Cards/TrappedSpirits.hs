@@ -19,14 +19,13 @@ trappedSpirits :: TreacheryCard TrappedSpirits
 trappedSpirits = treachery TrappedSpirits Cards.trappedSpirits
 
 instance HasModifiersFor TrappedSpirits where
-  getModifiersFor (InvestigatorTarget _) (TrappedSpirits a) = maybeModified a do
+  getModifiersFor (TrappedSpirits a) = modifySelectMaybe a Anyone \_ -> do
     source <- MaybeT getSkillTestSource
     iid <- MaybeT getSkillTestInvestigator
     guard $ isSource a source
     lid <- MaybeT $ field InvestigatorLocation iid
     liftGuardM $ lid <=~> HauntedLocation
     pure [CommitCost (ResolveEachHauntedAbility lid)]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TrappedSpirits where
   runMessage msg t@(TrappedSpirits attrs) = case msg of

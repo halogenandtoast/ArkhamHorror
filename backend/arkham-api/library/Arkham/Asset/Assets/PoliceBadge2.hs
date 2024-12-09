@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype PoliceBadge2 = PoliceBadge2 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 policeBadge2 :: AssetCard PoliceBadge2
 policeBadge2 = asset PoliceBadge2 Cards.policeBadge2
 
 instance HasModifiersFor PoliceBadge2 where
-  getModifiersFor (InvestigatorTarget iid) (PoliceBadge2 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PoliceBadge2 a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities PoliceBadge2 where
   getAbilities (PoliceBadge2 a) = [controlledAbility a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]

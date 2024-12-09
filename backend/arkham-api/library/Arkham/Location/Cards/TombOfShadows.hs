@@ -19,12 +19,8 @@ tombOfShadows =
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor TombOfShadows where
-  getModifiersFor (EnemyTarget eid) (TombOfShadows attrs) = do
-    active <- elem eid <$> select (enemyIs Enemies.theManInThePallidMask <> EnemyAt (be attrs))
-    -- preventing the man in the pallid mask from being defeated is handled by
-    -- the man in the pallid mask
-    toModifiers attrs [HealthModifier 1 | active]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TombOfShadows a) = do
+    modifySelect a (enemyIs Enemies.theManInThePallidMask <> enemyAt a) [HealthModifier 1]
 
 instance HasAbilities TombOfShadows where
   getAbilities (TombOfShadows attrs) =

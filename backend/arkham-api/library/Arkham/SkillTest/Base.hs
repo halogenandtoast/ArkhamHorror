@@ -62,6 +62,9 @@ instance HasField "id" SkillTest SkillTestId where
 instance HasField "source" SkillTest Source where
   getField = skillTestSource
 
+instance HasField "committedCards" SkillTest (Map InvestigatorId [Card]) where
+  getField = skillTestCommittedCards
+
 instance HasField "kind" SkillTest SkillTestType where
   getField = skillTestType
 

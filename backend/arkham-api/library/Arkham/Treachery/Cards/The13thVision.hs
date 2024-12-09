@@ -16,16 +16,15 @@ the13thVision :: TreacheryCard The13thVision
 the13thVision = treachery The13thVision Cards.the13thVision
 
 instance HasModifiersFor The13thVision where
-  getModifiersFor (SkillTestTarget _) (The13thVision a) = case a.placement of
-    InThreatArea iid' -> do
-      mSkillTestInvestigator <- getSkillTestInvestigator
-      case mSkillTestInvestigator of
-        Just iid -> do
-          atSameLocation <- iid <=~> colocatedWith iid'
-          toModifiers a [FailTies | atSameLocation]
-        _ -> pure []
-    _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (The13thVision a) = case a.placement of
+    InThreatArea iid' ->
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          iid <- MaybeT getSkillTestInvestigator
+          liftGuardM $ iid <=~> colocatedWith iid'
+          pure [FailTies]
+    _ -> pure mempty
 
 instance HasAbilities The13thVision where
   getAbilities (The13thVision a) =

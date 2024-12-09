@@ -20,12 +20,9 @@ bearTrap :: AssetCard BearTrap
 bearTrap = assetWith BearTrap Cards.bearTrap (isStoryL .~ True)
 
 instance HasModifiersFor BearTrap where
-  getModifiersFor (EnemyTarget eid) (BearTrap attrs) =
-    toModifiers attrs
-      $ case attrs.placement of
-        AttachedToEnemy eid' | eid == eid' -> [EnemyFight (-1), EnemyEvade (-1)]
-        _ -> []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BearTrap a) = case a.placement of
+    AttachedToEnemy eid -> modified_ a eid [EnemyFight (-1), EnemyEvade (-1)]
+    _ -> pure mempty
 
 instance HasAbilities BearTrap where
   getAbilities (BearTrap x) =

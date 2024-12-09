@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.JimCulver where
 
 import Arkham.ChaosToken
 import Arkham.Game.Helpers (getModifiedChaosTokenFace)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -19,12 +19,12 @@ jimCulver =
     $ Stats {health = 7, sanity = 8, willpower = 4, intellect = 3, combat = 3, agility = 2}
 
 instance HasModifiersFor JimCulver where
-  getModifiersFor (ChaosTokenTarget token) (JimCulver attrs) = maybeModified attrs do
-    guard $ token.face == #skull
-    iid <- MaybeT getSkillTestInvestigator
-    guard $ attrs `is` iid
-    pure [ChangeChaosTokenModifier (PositiveModifier 0)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JimCulver attrs) =
+    getSkillTestInvestigator >>= \case
+      Just iid | iid == attrs.id -> do
+        skulls <- filter ((== #skull) . (.face)) <$> getSkillTestRevealedChaosTokens
+        modifyEach attrs skulls [ChangeChaosTokenModifier (PositiveModifier 0)]
+      _ -> pure mempty
 
 instance HasChaosTokenValue JimCulver where
   getChaosTokenValue iid ElderSign (JimCulver attrs) | attrs `is` iid = do

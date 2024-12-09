@@ -21,10 +21,11 @@ crypticGrimoireTextOfTheElderHerald4 =
   asset CrypticGrimoireTextOfTheElderHerald4 Cards.crypticGrimoireTextOfTheElderHerald4
 
 instance HasModifiersFor CrypticGrimoireTextOfTheElderHerald4 where
-  getModifiersFor (InvestigatorTarget iid) (CrypticGrimoireTextOfTheElderHerald4 a) | controlledBy a iid = do
-    yourTurn <- iid <=~> TurnInvestigator
-    toModifiers a $ [CanReduceCostOf (CardWithTrait Insight) 1 | yourTurn, a.use Secret >= 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CrypticGrimoireTextOfTheElderHerald4 a) = case a.controller of
+    Just iid -> do
+      yourTurn <- iid <=~> TurnInvestigator
+      modifiedWhen_ a (yourTurn && a.use Secret >= 2) iid $ [CanReduceCostOf (CardWithTrait Insight) 1]
+    Nothing -> pure mempty
 
 instance HasAbilities CrypticGrimoireTextOfTheElderHerald4 where
   getAbilities (CrypticGrimoireTextOfTheElderHerald4 x) =

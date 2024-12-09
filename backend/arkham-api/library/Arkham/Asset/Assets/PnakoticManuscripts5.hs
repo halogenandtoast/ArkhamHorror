@@ -9,9 +9,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -58,9 +58,8 @@ pnakoticManuscripts5Effect =
   cardEffect PnakoticManuscripts5Effect Cards.pnakoticManuscripts5
 
 instance HasModifiersFor PnakoticManuscripts5Effect where
-  getModifiersFor target (PnakoticManuscripts5Effect a) | a.target == target = do
-    toModifiers a [DoNotDrawChaosTokensForSkillChecks]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PnakoticManuscripts5Effect a) =
+    modified_ a a.target [DoNotDrawChaosTokensForSkillChecks]
 
 instance RunMessage PnakoticManuscripts5Effect where
   runMessage msg e@(PnakoticManuscripts5Effect attrs) = runQueueT $ case msg of

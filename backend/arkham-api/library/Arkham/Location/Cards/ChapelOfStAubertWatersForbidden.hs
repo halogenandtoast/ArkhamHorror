@@ -3,13 +3,10 @@ module Arkham.Location.Cards.ChapelOfStAubertWatersForbidden (
   ChapelOfStAubertWatersForbidden (..),
 ) where
 
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Log
-import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
 import Arkham.ScenarioLogKey
 
 newtype ChapelOfStAubertWatersForbidden = ChapelOfStAubertWatersForbidden LocationAttrs
@@ -21,10 +18,8 @@ chapelOfStAubertWatersForbidden =
   location ChapelOfStAubertWatersForbidden Cards.chapelOfStAubertWatersForbidden 2 (PerPlayer 3)
 
 instance HasModifiersFor ChapelOfStAubertWatersForbidden where
-  getModifiersFor target (ChapelOfStAubertWatersForbidden attrs) | isTarget attrs target = do
-    foundAGuide <- remembered FoundAGuide
-    toModifiers attrs [Blocked | not attrs.revealed && not foundAGuide]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChapelOfStAubertWatersForbidden a) =
+    whenUnrevealed a $ blockedUnless a $ remembered FoundAGuide
 
 instance RunMessage ChapelOfStAubertWatersForbidden where
   runMessage msg (ChapelOfStAubertWatersForbidden attrs) =

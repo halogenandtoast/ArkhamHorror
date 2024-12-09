@@ -10,7 +10,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs
@@ -21,12 +20,7 @@ peterSylvestre2 :: AssetCard PeterSylvestre2
 peterSylvestre2 = ally PeterSylvestre2 Cards.peterSylvestre2 (1, 3)
 
 instance HasModifiersFor PeterSylvestre2 where
-  getModifiersFor (InvestigatorTarget iid) (PeterSylvestre2 a)
-    | controlledBy a iid =
-        toModifiers
-          a
-          [SkillModifier SkillAgility 1, SkillModifier SkillWillpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PeterSylvestre2 a) = controllerGets a [SkillModifier #agility 1, SkillModifier #willpower 1]
 
 instance HasAbilities PeterSylvestre2 where
   getAbilities (PeterSylvestre2 x) =

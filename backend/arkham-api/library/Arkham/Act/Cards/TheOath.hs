@@ -23,11 +23,11 @@ theOath =
     (Just $ GroupClueCost (PerPlayer 3) (locationIs Locations.hiddenLibrary))
 
 instance HasModifiersFor TheOath where
-  getModifiersFor (LocationTarget _) (TheOath attrs) = do
-    toModifiers
+  getModifiersFor (TheOath attrs) = do
+    modifySelect
       attrs
+      Anywhere
       [ConnectedToWhen (LocationWithTrait Passageway) (LocationWithTrait Passageway)]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage TheOath where
   runMessage msg a@(TheOath attrs) = case msg of

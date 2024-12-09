@@ -16,10 +16,11 @@ lodgeCatacombs :: LocationCard LodgeCatacombs
 lodgeCatacombs = location LodgeCatacombs Cards.lodgeCatacombs 4 (Static 0)
 
 instance HasModifiersFor LodgeCatacombs where
-  getModifiersFor (InvestigatorTarget iid) (LodgeCatacombs attrs) = do
-    hasAKey <- iid <=~> mapOneOf InvestigatorWithKey [ElderThingKey, SkullKey, CultistKey, TabletKey]
-    toModifiers attrs [CannotEnter attrs.id | not attrs.revealed && not hasAKey]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LodgeCatacombs a) = whenUnrevealed a do
+    modifySelect
+      a
+      (not_ $ mapOneOf InvestigatorWithKey [ElderThingKey, SkullKey, CultistKey, TabletKey])
+      [CannotEnter a.id]
 
 instance HasAbilities LodgeCatacombs where
   getAbilities (LodgeCatacombs a) =

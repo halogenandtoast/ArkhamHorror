@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.GameValue
-import Arkham.Helpers.SkillTest (getSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (cursedShores)
 import Arkham.Location.Helpers
@@ -48,10 +48,10 @@ cursedShoresEffect :: EffectArgs -> CursedShoresEffect
 cursedShoresEffect = cardEffect CursedShoresEffect Cards.cursedShores
 
 instance HasModifiersFor CursedShoresEffect where
-  getModifiersFor target (CursedShoresEffect a) = maybeModified a do
-    guard $ isTarget a target
-    _ <- MaybeT getSkillTestSource
-    pure [AnySkillValue 2]
+  getModifiersFor (CursedShoresEffect a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just _ -> modified_ a a.target [AnySkillValue 2]
 
 instance RunMessage CursedShoresEffect where
   runMessage msg e@(CursedShoresEffect attrs) = runQueueT $ case msg of

@@ -5,12 +5,10 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Projection
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 acolyteOfUmordhoth :: EnemyCard AcolyteOfUmordhoth
@@ -20,11 +18,9 @@ acolyteOfUmordhoth =
     .~ Prey FewestCardsInHand
 
 instance HasModifiersFor AcolyteOfUmordhoth where
-  getModifiersFor target (AcolyteOfUmordhoth a) | a `is` target = do
-    investigators <- select $ investigatorEngagedWith (toId a)
-    anyWithoutCards <- or <$> traverse (fieldMap InvestigatorHand null) investigators
-    toModifiers a [CannotBeEvaded | anyWithoutCards]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AcolyteOfUmordhoth a) = do
+    anyWithoutCards <- selectAny (investigatorEngagedWith a <> HandWith NoCards)
+    modifySelf a [CannotBeEvaded | anyWithoutCards]
 
 instance RunMessage AcolyteOfUmordhoth where
   runMessage msg (AcolyteOfUmordhoth attrs) = AcolyteOfUmordhoth <$> runMessage msg attrs

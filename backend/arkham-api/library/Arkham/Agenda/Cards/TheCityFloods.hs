@@ -18,10 +18,9 @@ theCityFloods :: AgendaCard TheCityFloods
 theCityFloods = agenda (3, A) TheCityFloods Cards.theCityFloods (Static 8)
 
 instance HasModifiersFor TheCityFloods where
-  getModifiersFor (CardIdTarget cardId) (TheCityFloods a) = do
-    card <- getCard cardId
-    toModifiers a [AddKeyword Keyword.Surge | card `isCard` Treacheries.ancientEvils]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheCityFloods a) = do
+    ancientEvils <- findAllCards (`isCard` Treacheries.ancientEvils)
+    modifyEach a ancientEvils [AddKeyword Keyword.Surge]
 
 instance RunMessage TheCityFloods where
   runMessage msg a@(TheCityFloods attrs) = case msg of

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Placement
@@ -20,9 +20,9 @@ instance HasAbilities VowOfDrzytelech where
   getAbilities (VowOfDrzytelech attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
 
 instance HasModifiersFor VowOfDrzytelech where
-  getModifiersFor (InvestigatorTarget iid) (VowOfDrzytelech attrs) | iid `elem` attrs.inThreatAreaOf = do
-    modified attrs [SanityModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VowOfDrzytelech a) = case a.placement of
+    InThreatArea iid -> modified_ a iid [SanityModifier (-1)]
+    _ -> pure mempty
 
 instance RunMessage VowOfDrzytelech where
   runMessage msg t@(VowOfDrzytelech attrs) = runQueueT $ case msg of

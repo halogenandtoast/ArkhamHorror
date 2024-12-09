@@ -14,12 +14,14 @@ cleaningKit :: AssetCard CleaningKit
 cleaningKit = asset CleaningKit Cards.cleaningKit
 
 instance HasModifiersFor CleaningKit where
-  getModifiersFor (AssetTarget aid) (CleaningKit a) | a.id /= aid = maybeModified a do
-    iid <- hoistMaybe a.controller
-    liftGuardM $ aid <=~> assetControlledBy iid
-    guard $ a.use Supply > 0
-    pure [ProvidesUses Supply (toSource a), ProvidesProxyUses Supply Ammo (toSource a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CleaningKit a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelectWhen
+        a
+        (a.use Supply > 0)
+        (not_ (AssetWithId a.id) <> assetControlledBy iid)
+        [ProvidesUses Supply (toSource a), ProvidesProxyUses Supply Ammo (toSource a)]
 
 instance RunMessage CleaningKit where
   runMessage msg (CleaningKit attrs) = runQueueT $ case msg of

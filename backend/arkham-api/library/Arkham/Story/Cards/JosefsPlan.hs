@@ -39,13 +39,10 @@ josefsPlanEffect :: EffectArgs -> JosefsPlanEffect
 josefsPlanEffect = cardEffect JosefsPlanEffect Cards.josefsPlan
 
 instance HasModifiersFor JosefsPlanEffect where
-  getModifiersFor (EnemyTarget eid) (JosefsPlanEffect a) = do
-    isSilverTwilight <- eid <=~> EnemyWithTrait SilverTwilight
-    isJosefMeiger <- eid <=~> enemyIs Enemies.josefMeiger
-    toModifiers a
-      $ [CannotPlaceDoomOnThis | isSilverTwilight]
-      <> [AddKeyword Keyword.Aloof | isJosefMeiger]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JosefsPlanEffect a) = do
+    silverTwilight <- modifySelect a (EnemyWithTrait SilverTwilight) [CannotPlaceDoomOnThis]
+    josef <- modifySelect a (enemyIs Enemies.josefMeiger) [AddKeyword Keyword.Aloof]
+    pure $ silverTwilight <> josef
 
 instance RunMessage JosefsPlanEffect where
   runMessage msg (JosefsPlanEffect attrs) =

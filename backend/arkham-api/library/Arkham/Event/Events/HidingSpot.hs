@@ -22,13 +22,10 @@ hidingSpot :: EventCard HidingSpot
 hidingSpot = event HidingSpot Cards.hidingSpot
 
 instance HasModifiersFor HidingSpot where
-  getModifiersFor (EnemyTarget eid) (HidingSpot attrs) =
+  getModifiersFor (HidingSpot attrs) =
     case eventAttachedTarget attrs of
-      Just (LocationTarget lid) -> do
-        enemies <- select $ EnemyAt $ LocationWithId lid
-        toModifiers attrs [AddKeyword Aloof | eid `elem` enemies]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      Just (LocationTarget lid) -> modifySelect attrs (EnemyAt $ LocationWithId lid) [AddKeyword Aloof]
+      _ -> pure mempty
 
 instance HasAbilities HidingSpot where
   getAbilities (HidingSpot x) =

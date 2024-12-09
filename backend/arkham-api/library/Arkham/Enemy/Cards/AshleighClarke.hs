@@ -4,10 +4,9 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator
+import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype AshleighClarke = AshleighClarke EnemyAttrs
   deriving anyclass IsEnemy
@@ -17,12 +16,9 @@ ashleighClarke :: EnemyCard AshleighClarke
 ashleighClarke = enemy AshleighClarke Cards.ashleighClarke (2, Static 5, 4) (0, 2)
 
 instance HasModifiersFor AshleighClarke where
-  getModifiersFor (InvestigatorTarget iid) (AshleighClarke attrs) = do
-    lid <- getJustLocation iid
-    enemyLocation <- field EnemyLocation (toId attrs)
+  getModifiersFor (AshleighClarke a) = do
     phase <- getPhase
-    toModifiers attrs [CannotDrawCards | phase == UpkeepPhase && Just lid == enemyLocation]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (phase == UpkeepPhase) (InvestigatorAt $ locationWithEnemy a) [CannotDrawCards]
 
 instance RunMessage AshleighClarke where
   runMessage msg (AshleighClarke attrs) = AshleighClarke <$> runMessage msg attrs

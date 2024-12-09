@@ -63,14 +63,10 @@ theLoversVIEffect :: EffectArgs -> TheLoversVIEffect
 theLoversVIEffect = cardEffect TheLoversVIEffect Cards.theLoversVI
 
 instance HasModifiersFor TheLoversVIEffect where
-  getModifiersFor (EnemyTarget eid) (TheLoversVIEffect attrs) = do
-    isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
-    if isTheSpectralWatcher
-      then do
-        tokens <- fieldMap EnemyTokens (countTokens LostSoul) eid
-        toModifiers attrs [EnemyFight tokens, HealthModifier tokens]
-      else pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheLoversVIEffect attrs) = do
+    modifySelectMaybe attrs (enemyIs Enemies.theSpectralWatcher) \eid -> do
+      tokens <- lift $ fieldMap EnemyTokens (countTokens LostSoul) eid
+      pure [EnemyFight tokens, HealthModifier tokens]
 
 instance RunMessage TheLoversVIEffect where
   runMessage msg (TheLoversVIEffect attrs) = TheLoversVIEffect <$> runMessage msg attrs

@@ -6,7 +6,7 @@ where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (TreacheryInHandOf, treacheryInHandOf)
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -19,11 +19,13 @@ lawOfYgirothPandemonium :: TreacheryCard LawOfYgirothPandemonium
 lawOfYgirothPandemonium = treachery LawOfYgirothPandemonium Cards.lawOfYgirothPandemonium
 
 instance HasModifiersFor LawOfYgirothPandemonium where
-  getModifiersFor (InvestigatorTarget iid) (LawOfYgirothPandemonium a) | treacheryInHandOf a == Just iid = do
-    modified
-      a
-      [CannotPlay CardWithOddNumberOfWordsInTitle, CannotCommitCards CardWithOddNumberOfWordsInTitle]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LawOfYgirothPandemonium a) = case a.placement of
+    HiddenInHand iid ->
+      modified_
+        a
+        iid
+        [CannotPlay CardWithOddNumberOfWordsInTitle, CannotCommitCards CardWithOddNumberOfWordsInTitle]
+    _ -> pure mempty
 
 instance HasAbilities LawOfYgirothPandemonium where
   getAbilities (LawOfYgirothPandemonium a) =

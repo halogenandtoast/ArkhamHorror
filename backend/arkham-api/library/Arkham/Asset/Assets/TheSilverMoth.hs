@@ -4,8 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 
 newtype TheSilverMoth = TheSilverMoth AssetAttrs
   deriving anyclass IsAsset
@@ -18,9 +19,9 @@ instance HasAbilities TheSilverMoth where
   getAbilities (TheSilverMoth attrs) = [restrictedAbility attrs 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
 
 instance HasModifiersFor TheSilverMoth where
-  getModifiersFor (InvestigatorTarget iid) (TheSilverMoth attrs) | iid `elem` attrs.inThreatAreaOf = do
-    modified attrs [SanityModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheSilverMoth a) = case a.placement of
+    InThreatArea iid -> modified_ a iid [SanityModifier (-1)]
+    _ -> pure mempty
 
 instance RunMessage TheSilverMoth where
   runMessage msg t@(TheSilverMoth attrs) = runQueueT $ case msg of

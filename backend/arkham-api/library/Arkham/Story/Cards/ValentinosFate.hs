@@ -77,10 +77,8 @@ valentinosFateEffect :: EffectArgs -> ValentinosFateEffect
 valentinosFateEffect = cardEffect ValentinosFateEffect Cards.valentinosFate
 
 instance HasModifiersFor ValentinosFateEffect where
-  getModifiersFor (AssetTarget aid) (ValentinosFateEffect a) = do
-    isValentino <- elem aid <$> select (assetIs Assets.valentinoRivas)
-    toModifiers a [DoNotTakeUpSlot AllySlot | isValentino]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ValentinosFateEffect a) =
+    modifySelect a (assetIs Assets.valentinoRivas) [DoNotTakeUpSlot AllySlot]
 
 instance RunMessage ValentinosFateEffect where
   runMessage _ = pure

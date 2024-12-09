@@ -5,7 +5,7 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
@@ -17,14 +17,13 @@ broodOfYogSothoth :: EnemyCard BroodOfYogSothoth
 broodOfYogSothoth = enemy BroodOfYogSothoth Cards.broodOfYogSothoth (6, Static 1, 3) (2, 2)
 
 instance HasModifiersFor BroodOfYogSothoth where
-  getModifiersFor target (BroodOfYogSothoth a) | isTarget a target = do
+  getModifiersFor (BroodOfYogSothoth a) = do
     healthModifier <- perPlayer 1
-    modified
+    modifySelf
       a
       [ HealthModifier healthModifier
       , CanOnlyBeAttackedByAbilityOn $ singleton $ Assets.esotericFormula.cardCode
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage BroodOfYogSothoth where
   runMessage msg e@(BroodOfYogSothoth attrs) = runQueueT $ case msg of

@@ -20,16 +20,12 @@ avianThrall =
     .~ Prey (InvestigatorWithLowestSkill #intellect UneliminatedInvestigator)
 
 instance HasModifiersFor AvianThrall where
-  getModifiersFor target (AvianThrall attrs) | attrs `is` target = do
-    mSource <- getSkillTestSource
-    mAction <- getSkillTestAction
-    case (mSource, mAction) of
-      (Just source, Just Action.Fight) -> do
-        traits <- sourceTraits source
-        let validTraits = [Ranged, Firearm, Spell]
-        toModifiers attrs [Modifier.EnemyFight (-3) | any (`elem` validTraits) traits]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AvianThrall a) = modifySelfMaybe a do
+    source <- MaybeT getSkillTestSource
+    Action.Fight <- MaybeT getSkillTestAction
+    traits <- lift $ sourceTraits source
+    guard $ any (`elem` [Ranged, Firearm, Spell]) traits
+    pure [Modifier.EnemyFight (-3)]
 
 instance RunMessage AvianThrall where
   runMessage msg (AvianThrall attrs) = AvianThrall <$> runMessage msg attrs

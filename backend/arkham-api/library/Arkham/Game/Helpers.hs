@@ -334,6 +334,8 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
     ActSource _ -> pure True
+    IndexedSource _ (AssetSource _) -> pure True
+    IndexedSource _ (LocationSource _) -> pure True
     ProxySource (AssetSource _) _ -> pure True
     ProxySource (LocationSource _) _ -> pure True
     LocationSource _ -> pure True
@@ -1385,12 +1387,15 @@ passesCriteria iid mcard source' requestor windows' = \case
     LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
     ProxySource (LocationSource lid) _ ->
       fieldP InvestigatorLocation (== Just lid) iid
+    IndexedSource _ (LocationSource lid) ->
+      fieldP InvestigatorLocation (== Just lid) iid
     _ -> pure False
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
   Criteria.ControlsThis ->
     let
       go = \case
         ProxySource (CardIdSource _) s -> go s
+        IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
           elem aid
@@ -1408,6 +1413,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       go = \case
         ProxySource (CardIdSource _) s -> go s
+        IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
           elem aid
@@ -1466,23 +1472,24 @@ passesCriteria iid mcard source' requestor windows' = \case
     AssetSource aid -> fieldP AssetController isNothing aid
     ProxySource (CardIdSource _) (AssetSource aid) -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
+    IndexedSource _ (AssetSource aid) -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> do
     ignored <- hasModifier iid IgnoreOnSameLocation
     if ignored
       then pure True
-      else case source of
-        StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
-        AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
-        EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
-        TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
-        ProxySource (CardIdSource _) (AssetSource aid) -> do
-          onSameLocation iid =<< field AssetPlacement aid
-        ProxySource (AssetSource aid) _ -> do
-          onSameLocation iid =<< field AssetPlacement aid
-        ProxySource (EnemySource eid) _ -> do
-          onSameLocation iid =<< field EnemyPlacement eid
-        _ -> error $ "missing OnSameLocation check for source: " <> show source
+      else do
+        let
+          go = \case
+            StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
+            AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
+            EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
+            TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
+            ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
+            ProxySource inner _ -> go inner
+            IndexedSource _ inner -> go inner
+            _ -> error $ "missing OnSameLocation check for source: " <> show source
+        go source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
@@ -3277,6 +3284,7 @@ locationMatches investigatorId source window locationId matcher' = do
       field LocationShroud locationId >>= \case
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
+    Matcher.LocationWithAttachedEvent {} -> locationId <=~> matcher
     Matcher.LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField {} -> locationId <=~> matcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
@@ -3304,6 +3312,7 @@ locationMatches investigatorId source window locationId matcher' = do
       let
         go = \case
           LocationSource lid -> pure $ lid == locationId
+          IndexedSource _ s -> go s
           ProxySource s _ -> go s
           AbilitySource s _ -> go s
           _ -> error $ "Invalid source for ThisLocation: " <> show source
@@ -3357,6 +3366,7 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
     AbilitySource s _ -> s == source
     ProxySource (CardIdSource _) s -> s == source
     ProxySource _ s -> s == source
+    IndexedSource _ s -> s == source
     s -> s == source
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
@@ -3465,10 +3475,11 @@ getModifiedChaosTokenFace token = do
 
 cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
-  Matcher.AnyCards -> pure True
+  Matcher.AnyCards -> pure $ notNull cards
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+  Matcher.NoCards -> pure $ null cards
 
 targetListMatches
   :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool
@@ -3717,6 +3728,7 @@ sourceMatches s = \case
         AssetSource aid -> elem aid <$> select am
         AbilitySource (AssetSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isAssetSource pSource
+        IndexedSource _ pSource -> isAssetSource pSource
         ProxySource pSource _ -> isAssetSource pSource
         BothSource lSource rSource -> orM [isAssetSource lSource, isAssetSource rSource]
         _ -> pure False
@@ -3729,6 +3741,7 @@ sourceMatches s = \case
         AbilitySource (EventSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isEventSource pSource
         ProxySource pSource _ -> isEventSource pSource
+        IndexedSource _ pSource -> isEventSource pSource
         BothSource lSource rSource -> orM [isEventSource lSource, isEventSource rSource]
         _ -> pure False
      in
@@ -3796,6 +3809,7 @@ sourceMatches s = \case
         LocationMatcherSource {} -> True
         EnemyMatcherSource {} -> True
         LocationSource {} -> True
+        IndexedSource _ s' -> go s'
         ProxySource (CardIdSource _) s' -> go s'
         ProxySource s' _ -> go s'
         ResourceSource {} -> False

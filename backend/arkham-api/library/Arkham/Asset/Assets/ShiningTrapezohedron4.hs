@@ -6,9 +6,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Name
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -28,9 +28,9 @@ instance HasAbilities ShiningTrapezohedron4 where
     ]
 
 instance HasModifiersFor ShiningTrapezohedron4 where
-  getModifiersFor (InvestigatorTarget iid) (ShiningTrapezohedron4 attrs) | attrs `controlledBy` iid = do
-    toModifiers attrs [CanModify $ AlternateResourceCost #spell Free | not attrs.exhausted]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ShiningTrapezohedron4 a) = case a.controller of
+    Just iid | a.ready -> modified_ a iid [CanModify $ AlternateResourceCost #spell Free]
+    _ -> pure mempty
 
 getWindowCard :: [Window] -> (ActiveCostId, BatchId, Card)
 getWindowCard [] = error "No window card"

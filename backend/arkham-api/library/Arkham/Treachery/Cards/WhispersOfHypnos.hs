@@ -49,11 +49,9 @@ whispersOfHypnosEffect :: EffectArgs -> WhispersOfHypnosEffect
 whispersOfHypnosEffect = cardEffect WhispersOfHypnosEffect Cards.whispersOfHypnos
 
 instance HasModifiersFor WhispersOfHypnosEffect where
-  getModifiersFor (InvestigatorTarget _) (WhispersOfHypnosEffect attrs) = do
-    case attrs.meta of
-      Just (EffectMetaSkill sType) -> toModifiers attrs [SkillModifier sType (-2)]
-      _ -> error "invalid meta"
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhispersOfHypnosEffect attrs) = case attrs.meta of
+    Just (EffectMetaSkill sType) -> modifySelect attrs Anyone [SkillModifier sType (-2)]
+    _ -> error "invalid meta"
 
 instance RunMessage WhispersOfHypnosEffect where
   runMessage msg e@(WhispersOfHypnosEffect attrs) = case msg of

@@ -428,6 +428,7 @@ instance RunMessage LocationAttrs where
       let
         triggerSource = case source of
           ProxySource _ s -> s
+          IndexedSource _ s -> s
           _ -> a.ability 101
       sid <- getRandom
       pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
@@ -545,6 +546,9 @@ locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWit
 
 instance Be LocationAttrs LocationMatcher where
   be = LocationWithId . toId
+
+veiled1 :: LocationAttrs -> Ability -> [Ability]
+veiled1 attrs ability = veiled attrs [ability]
 
 veiled :: LocationAttrs -> [Ability] -> [Ability]
 veiled attrs abilities =

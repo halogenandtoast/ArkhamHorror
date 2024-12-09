@@ -38,6 +38,6 @@ instance RunMessage TheFinalCountdown where
           $ ritualSuicideMessages
           <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
           <> [RemoveDoom (toSource attrs) (toTarget azathoth) 1 | theCreatureRecognizesYou]
-          <> [advanceAgendaDeck attrs]
+          <> [toDiscard GameSource attrs]
         pure a
       _ -> TheFinalCountdown <$> runMessage msg attrs

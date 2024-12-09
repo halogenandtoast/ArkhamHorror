@@ -5,10 +5,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Classes.HasQueue (findFromQueue)
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message (MessageType (..), pattern CancelNext)
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 
 newtype StHubertsKey = StHubertsKey AssetAttrs
   deriving anyclass IsAsset
@@ -18,9 +18,7 @@ stHubertsKey :: AssetCard StHubertsKey
 stHubertsKey = asset StHubertsKey Cards.stHubertsKey
 
 instance HasModifiersFor StHubertsKey where
-  getModifiersFor (InvestigatorTarget iid) (StHubertsKey a) | controlledBy a iid = do
-    modified a [SkillModifier #willpower 1, SkillModifier #intellect 1, SanityModifier (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StHubertsKey a) = controllerGets a [SkillModifier #willpower 1, SkillModifier #intellect 1, SanityModifier (-2)]
 
 instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =

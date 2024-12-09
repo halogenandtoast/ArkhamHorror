@@ -41,9 +41,7 @@ defianceEffect :: EffectArgs -> DefianceEffect
 defianceEffect = cardEffect DefianceEffect Cards.defiance
 
 instance HasModifiersFor DefianceEffect where
-  getModifiersFor target (DefianceEffect a) | a.target == target = do
-    toModifiers a [IgnoreChaosTokenEffects]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DefianceEffect a) = modified_ a a.target [IgnoreChaosTokenEffects]
 
 instance RunMessage DefianceEffect where
   runMessage msg e@(DefianceEffect attrs) = runQueueT $ case msg of

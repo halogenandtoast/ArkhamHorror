@@ -6,7 +6,7 @@ import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfMaybe)
 import Arkham.Helpers.Scenario (getGrid)
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -21,13 +21,12 @@ ravagerFromTheDeep :: EnemyCard RavagerFromTheDeep
 ravagerFromTheDeep = enemy RavagerFromTheDeep Cards.ravagerFromTheDeep (2, Static 4, 1) (2, 1)
 
 instance HasModifiersFor RavagerFromTheDeep where
-  getModifiersFor target (RavagerFromTheDeep a) | isTarget a target = maybeModified a do
+  getModifiersFor (RavagerFromTheDeep a) = modifySelfMaybe a do
     lid <- MaybeT $ getLocationOf a.id
     getFloodLevel lid <&> \case
       FullyFlooded -> [EnemyFight 2, EnemyEvade 2]
       PartiallyFlooded -> [EnemyFight 1, EnemyEvade 1]
       Unflooded -> []
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities RavagerFromTheDeep where
   getAbilities (RavagerFromTheDeep a) = extend a [mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)]

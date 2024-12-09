@@ -21,9 +21,10 @@ lostMemories :: AgendaCard LostMemories
 lostMemories = agenda (2, A) LostMemories Cards.lostMemories (Static 7)
 
 instance HasModifiersFor LostMemories where
-  getModifiersFor (InvestigatorTarget _) (LostMemories attrs) | onSide A attrs = do
-    toModifiers attrs [HandSize (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LostMemories attrs) =
+    if onSide A attrs
+      then modifySelect attrs Anyone [HandSize (-2)]
+      else pure mempty
 
 instance RunMessage LostMemories where
   runMessage msg a@(LostMemories attrs) = case msg of
@@ -65,10 +66,8 @@ lostMemoriesEffect :: EffectArgs -> LostMemoriesEffect
 lostMemoriesEffect = cardEffect LostMemoriesEffect Cards.lostMemories
 
 instance HasModifiersFor LostMemoriesEffect where
-  getModifiersFor (InvestigatorTarget iid) (LostMemoriesEffect a) = do
-    hasPendant <- getHasSupply iid Pendant
-    toModifiers a [IgnoreHandSizeReduction | hasPendant]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LostMemoriesEffect a) =
+    modifySelect a (InvestigatorWithSupply Pendant) [IgnoreHandSizeReduction]
 
 instance RunMessage LostMemoriesEffect where
   runMessage msg (LostMemoriesEffect attrs) = LostMemoriesEffect <$> runMessage msg attrs

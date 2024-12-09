@@ -12,7 +12,7 @@ import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
 import Arkham.Helpers.Log (getCircledRecord, getRecordSet)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -50,23 +50,22 @@ getBlockedFrom (Meta meta) lid = do
   select . not_ . beOneOf @_ @LocationMatcher  =<< bfs Set.empty [lid]
 
 instance HasModifiersFor InTooDeep where
-  getModifiersFor (InvestigatorTarget iid) (InTooDeep a) = maybeModified a do
-    lid <- MaybeT $ getLocationOf iid
-    meta <- hoistMaybe $ maybeResult @Meta a.meta
-    CannotEnter <$$> lift (getBlockedFrom meta lid)
-  getModifiersFor (LocationTarget lid) (InTooDeep a) = maybeModified a do
-    Meta meta <- hoistMaybe $ maybeResult @Meta a.meta
-    let
-      barricaded (pair, n) = case unSortedPair pair of
-        (l1, l2) | l1 == lid -> guard (n > 0) $> l2
-        (l1, l2) | l2 == lid -> guard (n > 0) $> l1
-        _ -> Nothing
-    let barriers = mapMaybe barricaded $ Map.toList meta
-    pure [Barricades barriers | notNull barriers]
-  getModifiersFor (EnemyTarget eid) (InTooDeep a) = do
-    isInnsmouthShoggoth <- eid <=~> enemyIs Enemies.innsmouthShoggoth
-    modified a [CanIgnoreBarriers | not isInnsmouthShoggoth]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InTooDeep a) = do
+    investigators <- modifySelectMaybe a Anyone \iid -> do
+      lid <- MaybeT $ getLocationOf iid
+      meta <- hoistMaybe $ maybeResult @Meta a.meta
+      CannotEnter <$$> lift (getBlockedFrom meta lid)
+    locations <- modifySelectMaybe a Anywhere \lid -> do
+      Meta meta <- hoistMaybe $ maybeResult @Meta a.meta
+      let
+        barricaded (pair, n) = case unSortedPair pair of
+          (l1, l2) | l1 == lid -> guard (n > 0) $> l2
+          (l1, l2) | l2 == lid -> guard (n > 0) $> l1
+          _ -> Nothing
+      let barriers = mapMaybe barricaded $ Map.toList meta
+      pure [Barricades barriers | notNull barriers]
+    enemies <- modifySelect a (not_ $ enemyIs Enemies.innsmouthShoggoth) [CanIgnoreBarriers]
+    pure $ investigators <> locations <> enemies
 
 inTooDeep :: Difficulty -> InTooDeep
 inTooDeep difficulty = scenario InTooDeep "07123" "In Too Deep" difficulty []

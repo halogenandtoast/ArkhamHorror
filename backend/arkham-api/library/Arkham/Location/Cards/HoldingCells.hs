@@ -2,7 +2,7 @@ module Arkham.Location.Cards.HoldingCells (holdingCells, HoldingCells (..)) wher
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -19,15 +19,16 @@ holdingCells :: LocationCard HoldingCells
 holdingCells = location HoldingCells Cards.holdingCells 3 (PerPlayer 1)
 
 instance HasModifiersFor HoldingCells where
-  getModifiersFor target (HoldingCells a) | a `is` target = do
-    toModifiers a [CannotBeEnteredBy AnyEnemy, CannotBeFlooded]
-  getModifiersFor (EnemyTarget _) (HoldingCells a) = do
-    toModifiers a [ChangeSpawnLocation (be a) (LocationWithTitle "Sunken Grotto")]
-  getModifiersFor (SkillTestTarget _) (HoldingCells a) = maybeModified a do
-    investigator <- MaybeT getSkillTestInvestigator
-    liftGuardM $ investigator <=~> InvestigatorWithKey YellowKey
-    pure [SkillTestAutomaticallySucceeds]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HoldingCells a) = do
+    self <- modifySelf a [CannotBeEnteredBy AnyEnemy, CannotBeFlooded]
+    enemies <- modifySelect a AnyEnemy [ChangeSpawnLocation (be a) (LocationWithTitle "Sunken Grotto")]
+    skillTest <-
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          liftGuardM $ st.investigator <=~> InvestigatorWithKey YellowKey
+          pure [SkillTestAutomaticallySucceeds]
+    pure $ self <> enemies <> skillTest
 
 instance HasAbilities HoldingCells where
   getAbilities (HoldingCells attrs) =

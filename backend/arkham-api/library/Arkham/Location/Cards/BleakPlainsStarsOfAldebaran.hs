@@ -24,10 +24,8 @@ bleakPlainsStarsOfAldebaran =
     . (revealedL .~ True)
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where
-  getModifiersFor (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) = do
-    here <- iid `isAt` a
-    toModifiers a [CannotPlay IsAlly | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BleakPlainsStarsOfAldebaran a) = do
+    modifySelect a (investigatorAt a) [CannotPlay IsAlly]
 
 instance RunMessage BleakPlainsStarsOfAldebaran where
   runMessage msg (BleakPlainsStarsOfAldebaran attrs) = case msg of

@@ -8,7 +8,7 @@ import Arkham.Prelude
 newtype JennyBarnes = JennyBarnes InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 jennyBarnes :: InvestigatorCard JennyBarnes
 jennyBarnes =
@@ -16,9 +16,7 @@ jennyBarnes =
     $ Stats {health = 8, sanity = 7, willpower = 3, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor JennyBarnes where
-  getModifiersFor target (JennyBarnes attrs) | attrs `is` target = do
-    toModifiers attrs [UpkeepResources 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JennyBarnes attrs) = modifySelf attrs [UpkeepResources 1]
 
 instance HasChaosTokenValue JennyBarnes where
   getChaosTokenValue iid ElderSign (JennyBarnes attrs) | attrs `is` iid = do

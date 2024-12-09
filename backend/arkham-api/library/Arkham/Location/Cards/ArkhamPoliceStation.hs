@@ -17,14 +17,9 @@ arkhamPoliceStation :: LocationCard ArkhamPoliceStation
 arkhamPoliceStation = location ArkhamPoliceStation Cards.arkhamPoliceStation 3 (PerPlayer 2)
 
 instance HasModifiersFor ArkhamPoliceStation where
-  getModifiersFor (LocationTarget lid) (ArkhamPoliceStation a) = do
-    isEasttown <- lid <=~> locationIs Cards.easttown
-    toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-      | isEasttown
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ArkhamPoliceStation a) = do
+    modifySelectMap a (locationIs Cards.easttown) \lid ->
+      [ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)]
 
 instance HasAbilities ArkhamPoliceStation where
   getAbilities (ArkhamPoliceStation attrs) = extendRevealed attrs [restrictedAbility attrs 1 Here actionAbility]

@@ -8,7 +8,7 @@ import Arkham.Ability
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Trait (Trait (Sanctum))
@@ -27,11 +27,9 @@ dagonAwakenedAndEnragedIntoTheMaelstrom =
     (1, 2)
 
 instance HasModifiersFor DagonAwakenedAndEnragedIntoTheMaelstrom where
-  getModifiersFor target (DagonAwakenedAndEnragedIntoTheMaelstrom a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (DagonAwakenedAndEnragedIntoTheMaelstrom a) = do
     n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
-    guard $ n > 0
-    pure [EnemyFight (-n)]
+    modifySelfWhen a (n > 0) [EnemyFight (-n)]
 
 instance HasAbilities DagonAwakenedAndEnragedIntoTheMaelstrom where
   getAbilities (DagonAwakenedAndEnragedIntoTheMaelstrom a) =

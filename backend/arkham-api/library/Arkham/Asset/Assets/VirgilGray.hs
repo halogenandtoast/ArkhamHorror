@@ -19,15 +19,16 @@ virgilGray = allyWith VirgilGray Cards.virgilGray (1, 3) (slotsL .~ mempty)
 
 instance HasAbilities VirgilGray where
   getAbilities (VirgilGray x) =
-    [ controlledAbility
-        x
-        1
-        ( oneOf
-            [ youExist can.gain.resources
-            , youExist can.draw.cards
-            , exists $ HealableAsset (x.ability 1) #horror (be x)
-            ]
-        )
+    [ groupLimit PerWindow
+        $ controlledAbility
+          x
+          1
+          ( oneOf
+              [ youExist can.gain.resources
+              , youExist can.draw.cards
+              , exists $ HealableAsset (x.ability 1) #horror (be x)
+              ]
+          )
         $ freeReaction
         $ ScenarioCountIncremented #after SignOfTheGods
     , mkAbility x 2

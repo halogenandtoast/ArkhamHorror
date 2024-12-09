@@ -48,9 +48,8 @@ dimCarcosa difficulty =
 instance HasModifiersFor DimCarcosa where
   getModifiersFor (DimCarcosa a) = do
     knowTheSecret <- remembered KnowTheSecret
-    hastur <- modifySelectWhen a (not knowTheSecret) (EnemyWithTitle "Hastur") [CannotBeDefeated]
-    investigators <- modifySelect a Anyone [CanOnlyBeDefeatedByDamage]
-    pure $ hastur <> investigators
+    modifySelectWhen a (not knowTheSecret) (EnemyWithTitle "Hastur") [CannotBeDefeated]
+    modifySelectWith a Anyone setActiveDuringSetup [CanOnlyBeDefeatedByDamage]
 
 instance HasChaosTokenValue DimCarcosa where
   getChaosTokenValue iid chaosTokenFace (DimCarcosa attrs) = case chaosTokenFace of
@@ -135,6 +134,16 @@ instance RunMessage DimCarcosa where
       gather Set.AgentsOfHastur
       gather Set.StrikingFear
 
+      setAgendaDeck [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
+
+      let
+        act2 = case n of
+          1 -> Acts.searchForTheStrangerV1
+          2 -> Acts.searchForTheStrangerV2
+          3 -> Acts.searchForTheStrangerV3
+          _ -> error $ "Invalid setup step, got: " <> show n
+      setActDeck [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
+
       shoresOfHali <- place Locations.shoresOfHali
       darkSpires <- place Locations.darkSpires
 
@@ -186,16 +195,6 @@ instance RunMessage DimCarcosa where
           <> setAsideRuinsOfCarcosa
           <> setAsideDimStreets
           <> setAsideDepthsOfDemhe
-
-      setAgendaDeck [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
-
-      let
-        act2 = case n of
-          1 -> Acts.searchForTheStrangerV1
-          2 -> Acts.searchForTheStrangerV2
-          3 -> Acts.searchForTheStrangerV3
-          _ -> error $ "Invalid setup step, got: " <> show n
-      setActDeck [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == Cultist) do
         assignHorror iid Cultist $ if isEasyStandard attrs then 1 else 2

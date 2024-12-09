@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { type Game } from '@/arkham/types/Game'
 import { useDebug } from '@/arkham/debug'
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   game: Game
@@ -31,12 +32,12 @@ watch(() => skipTriggers.value, (value) => {
 <template>
   <div class="settings">
     <div class="options box">
-      <h2 class="title">Settings for {{investigator.name.title}}</h2>
-      <label>Skip triggers during skill tests that don't affect the outcome</label>
+      <h2 class="title">{{$t('gameBar.viewSettingTitle', {investigator: investigator.name.title})}}</h2>
+      <label>{{$t('gameBar.viewSettingSkipTriggers')}}</label>
       <input type="checkbox" v-model="skipTriggers" />
     </div>
     <div>
-      <button @click="closeSettings">Close</button>
+      <button @click="closeSettings">{{$t('close')}}</button>
     </div>
   </div>
 </template>

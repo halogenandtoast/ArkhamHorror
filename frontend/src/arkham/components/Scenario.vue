@@ -40,6 +40,8 @@ import Location from '@/arkham/components/Location.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 // types
 interface RefWrapper<T> {
@@ -98,7 +100,7 @@ onUpdated(() => {
 addEntry({
   id: "viewChaosBag",
   icon: QuestionMarkCircleIcon,
-  content: "View Chaos Bag",
+  content: t('gameBar.viewChaosBag'),
   shortcut: "c",
   nested: 'view',
   action: () => showChaosBag.value = !showChaosBag.value
@@ -107,7 +109,7 @@ addEntry({
 addEntry({
   id: "splitView",
   icon: ViewColumnsIcon,
-  content: "Split View",
+  content: t('gameBar.splitView'),
   nested: 'view',
   action: toggleSplitView
 })
@@ -309,7 +311,7 @@ watchEffect(() => {
     addEntry({
       id: "showOutOfPlay",
       icon: EyeIcon,
-      content: "Show Out of Play",
+      content: t('gameBar.showOutOfPlay'),
       nested: 'view',
       shortcut: 'o',
       action: () => showOutOfPlay.value = !showOutOfPlay.value
@@ -450,7 +452,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
   <div v-else-if="!gameOver" id="scenario" class="scenario" :data-scenario="scenario.id">
     <div class="scenario-body" :class="{'split-view': splitView }">
       <Draggable v-if="showOutOfPlay || forcedShowOutOfPlay">
-        <template #handle><header><h2>Out of Play</h2></header></template>
+        <template #handle><header><h2>{{ $t('gameBar.outOfPlay') }}</h2></header></template>
         <div class="card-row-cards">
           <div v-for="card in outOfPlay" :key="card.id" class="card-row-card">
             <CardView :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
@@ -464,17 +466,17 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', 
             @choose="choose"
           />
         </div>
-        <button v-if="!forcedShowOutOfPlay" class="close button" @click="showOutOfPlay = false">Close</button>
+        <button v-if="!forcedShowOutOfPlay" class="close button" @click="showOutOfPlay = false">{{$t('close')}}</button>
       </Draggable>
       <Draggable v-if="showChaosBag">
-        <template #handle><header><h2>Chaos Bag</h2></header></template>
+        <template #handle><header><h2>{{$t('gameBar.chaosBag')}}</h2></header></template>
         <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />
         <div v-if="debug.active" class="buttons buttons-row">
-          <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">Add <span class="bless-icon"></span></button>
-          <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">Add <span class="curse-icon"></span></button>
-          <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">Add <span class="frost-icon"></span></button>
+          <button class="button blessed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'BlessToken'})">{{$t('gameBar.add')}} <span class="bless-icon"></span></button>
+          <button class="button cursed" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'CurseToken'})">{{$t('gameBar.add')}} <span class="curse-icon"></span></button>
+          <button class="button frost" @click="debug.send(game.id, {tag: 'AddChaosToken', contents: 'FrostToken'})">{{$t('gameBar.add')}} <span class="frost-icon"></span></button>
         </div>
-        <button class="button" @click="showChaosBag = false">Close</button>
+        <button class="button" @click="showChaosBag = false">{{$t('close')}}</button>
       </Draggable>
       <CardRow
         v-if="showCards.ref.length > 0"

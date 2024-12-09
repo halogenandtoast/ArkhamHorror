@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.AbandonedAndAlone where
+module Arkham.Treachery.Cards.AbandonedAndAlone (abandonedAndAlone) where
 
 import Arkham.Treachery.Cards qualified as Cards (abandonedAndAlone)
 import Arkham.Treachery.Import.Lifted

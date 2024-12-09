@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.WendysAmulet where
+module Arkham.Asset.Assets.WendysAmulet (wendysAmulet) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted

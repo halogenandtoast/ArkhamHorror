@@ -25,7 +25,7 @@ abbeyTowerThePathIsOpen =
 instance HasModifiersFor AbbeyTowerThePathIsOpen where
   getModifiersFor (AbbeyTowerThePathIsOpen a) =
     if a.revealed
-      then modifySelect a (investigatorAt a <> HandWith NoCards) [CannotDiscoverCluesAt (be a)]
+      then modifySelect a (investigatorAt a <> HandWith AnyCards) [CannotDiscoverCluesAt (be a)]
       else blockedUnless a $ remembered FoundTheTowerKey
 
 instance HasAbilities AbbeyTowerThePathIsOpen where

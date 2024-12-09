@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.WendyAdams (WendyAdams (..), wendyAdams) where
+module Arkham.Investigator.Cards.WendyAdams (wendyAdams) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets

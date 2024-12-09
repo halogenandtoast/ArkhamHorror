@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.RolandBanks (RolandBanks (..), rolandBanks) where
+module Arkham.Investigator.Cards.RolandBanks (rolandBanks) where
 
 import Arkham.Ability
 import Arkham.Calculation

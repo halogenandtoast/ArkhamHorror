@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.AgnesBaker (AgnesBaker (..), agnesBaker) where
+module Arkham.Investigator.Cards.AgnesBaker (agnesBaker) where
 
 import Arkham.Ability
 import Arkham.Calculation

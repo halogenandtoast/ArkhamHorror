@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HeirloomOfHyperborea where
+module Arkham.Asset.Assets.HeirloomOfHyperborea (heirloomOfHyperborea) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

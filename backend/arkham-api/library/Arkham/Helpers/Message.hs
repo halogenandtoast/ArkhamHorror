@@ -491,10 +491,14 @@ takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
 
 gainResourcesIfCan
-  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> Int -> m (Maybe Message)
-gainResourcesIfCan iid source n = do
-  canGainResources <- can.gain.resources (sourceToFromSource source) iid
-  pure $ guard canGainResources $> takeResources iid source n
+  :: (HasGame m, Sourceable source, AsId a, IdOf a ~ InvestigatorId)
+  => a
+  -> source
+  -> Int
+  -> m (Maybe Message)
+gainResourcesIfCan a source n = do
+  canGainResources <- can.gain.resources (sourceToFromSource source) (asId a)
+  pure $ guard canGainResources $> takeResources (asId a) source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage

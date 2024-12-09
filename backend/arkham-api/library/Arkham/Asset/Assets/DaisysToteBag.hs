@@ -1,13 +1,8 @@
-module Arkham.Asset.Assets.DaisysToteBag (
-  DaisysToteBag (..),
-  daisysToteBag,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DaisysToteBag (daisysToteBag) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
+import Arkham.Asset.Import.Lifted
+import Arkham.Slot
 import Arkham.Trait
 
 newtype DaisysToteBag = DaisysToteBag AssetAttrs
@@ -21,9 +16,9 @@ slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage DaisysToteBag where
-  runMessage msg (DaisysToteBag attrs) = case msg of
+  runMessage msg (DaisysToteBag attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
-    CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
+    CardIsEnteringPlay iid card | card.id == attrs.cardId -> do
       pushAll $ replicate 2 (AddSlot iid #hand (slot attrs))
-      DaisysToteBag <$> runMessage msg attrs
-    _ -> DaisysToteBag <$> runMessage msg attrs
+      DaisysToteBag <$> liftRunMessage msg attrs
+    _ -> DaisysToteBag <$> liftRunMessage msg attrs

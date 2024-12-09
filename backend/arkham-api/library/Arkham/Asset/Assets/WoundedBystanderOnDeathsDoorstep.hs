@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Token
 
 newtype WoundedBystanderOnDeathsDoorstep = WoundedBystanderOnDeathsDoorstep AssetAttrs
   deriving anyclass IsAsset

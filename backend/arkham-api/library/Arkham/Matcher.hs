@@ -190,8 +190,8 @@ preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
-assetControlledBy :: InvestigatorId -> AssetMatcher
-assetControlledBy = AssetControlledBy . InvestigatorWithId
+assetControlledBy :: (AsId a, IdOf a ~ InvestigatorId) => a -> AssetMatcher
+assetControlledBy = AssetControlledBy . InvestigatorWithId . asId
 
 assetAttachedToAsset :: AssetId -> AssetMatcher
 assetAttachedToAsset = AssetAttachedToAsset . AssetWithId

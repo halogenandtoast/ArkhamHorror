@@ -127,6 +127,13 @@ modifySelf
   -> m ()
 modifySelf target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
 
+modifySelf1
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> ModifierType
+  -> m ()
+modifySelf1 target mod1 = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target [mod1]
+
 modifySelfMaybe
   :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => target

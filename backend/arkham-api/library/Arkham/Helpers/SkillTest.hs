@@ -270,13 +270,14 @@ investigate sid iid (toSource -> source) (toTarget -> target) sType n =
       { skillTestAction = Just #investigate
       }
 
+-- NOTE: 100 and 102 are the range for the basic abilities
 getIsScenarioAbility :: HasGame m => m Bool
 getIsScenarioAbility = do
   source <- fromJustNote "damage outside skill test" <$> getSkillTestSource
   go source
  where
   go = \case
-    AbilitySource s _ -> go s
+    AbilitySource s n | n < 100 || n > 102 -> go s
     ProxySource inner1 inner2 -> orM [go inner1, go inner2]
     EnemySource _ -> pure True
     AgendaSource _ -> pure True

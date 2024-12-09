@@ -279,6 +279,7 @@ getIsScenarioAbility = do
   go = \case
     AbilitySource s n | n < 100 || n > 102 -> go s
     ProxySource inner1 inner2 -> orM [go inner1, go inner2]
+    IndexedSource _ inner -> go inner
     EnemySource _ -> pure True
     AgendaSource _ -> pure True
     LocationSource _ -> pure True

@@ -4667,6 +4667,7 @@ runMessages mLogger = do
             pushAll msgs
             runMessages mLogger
           ClearUI -> runMessages mLogger
+          Ask _ (ChooseOneAtATime []) -> runMessages mLogger
           Ask pid q -> do
             -- if we are choosing decks, we do not want to clobber other ChooseDeck
             moreChooseDecks <-

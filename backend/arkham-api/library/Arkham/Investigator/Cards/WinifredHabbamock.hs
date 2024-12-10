@@ -29,7 +29,8 @@ winifredHabbamock =
 
 instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
-    [ playerLimit PerTestOrAbility
+    [ wantsSkillTest AnySkillTest
+        $ playerLimit PerTestOrAbility
         $ (restrictedAbility a 1)
           (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy a.id)))
           (FastAbility Free)

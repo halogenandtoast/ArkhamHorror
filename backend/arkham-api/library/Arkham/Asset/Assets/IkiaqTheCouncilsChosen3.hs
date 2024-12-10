@@ -42,6 +42,7 @@ instance RunMessage IkiaqTheCouncilsChosen3 where
   runMessage msg (IkiaqTheCouncilsChosen3 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       cancelCardDraw attrs card
+      obtainCard card
       let cardIds = toCardId card : toResult @[CardId] attrs.meta
       pure . IkiaqTheCouncilsChosen3 $ attrs & cardsUnderneathL %~ (card :) & setMeta cardIds
     RemovedFromPlay (isSource attrs -> True) -> do

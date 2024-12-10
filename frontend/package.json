@@ -26,13 +26,15 @@
     "lottie-web-vue": "^2.0.7",
     "md5": "^2.3.0",
     "pinia": "^2.3.0",
+    "nodejs": "^0.0.0",
     "ts.data.json": "^2.2.0",
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.5.13",
     "vue-final-modal": "^4.5.5",
     "vue-i18n": "^10.0.5",
     "vue-router": "^4.5.0",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-toastification": "^2.0.0-rc.5",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.10.4",

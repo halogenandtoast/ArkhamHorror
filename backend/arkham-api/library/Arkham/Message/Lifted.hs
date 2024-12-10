@@ -1029,6 +1029,14 @@ roundModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 roundModifiers source target modifiers = Msg.pushM $ Msg.roundModifiers source target modifiers
 
+modifySkillTest
+  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m)
+  => source
+  -> investigator
+  -> [ModifierType]
+  -> m ()
+modifySkillTest source investigator mods = whenJustM Msg.getSkillTestId \sid -> skillTestModifiers sid source (asId investigator) mods
+
 skillTestModifiers
   :: forall target source m
    . (ReverseQueue m, Sourceable source, Targetable target)

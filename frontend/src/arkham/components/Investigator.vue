@@ -17,6 +17,8 @@ import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 export interface Props {
   choices: Message[]
@@ -40,7 +42,7 @@ if (props.playerId == props.investigator.playerId) {
   addEntry({
     id: "viewBonded",
     icon: PaperClipIcon,
-    content: "View Bonded",
+    content: t('gameBar.viewBonded'),
     shortcut: "b",
     nested: 'view',
     action: () => showBonded.value = !showBonded.value
@@ -421,13 +423,13 @@ function onDrop(event: DragEvent) {
     </div>
 
     <Draggable v-if="showBonded">
-      <template #handle><header><h2>Bonded</h2></header></template>
+      <template #handle><header><h2>{{$t('gameBar.bonded')}}</h2></header></template>
       <div class="card-row-cards">
         <div v-for="card in investigator.bondedCards" :key="card.id" class="card-row-card">
           <CardView :game="game" :card="card" :playerId="playerId" @choose="$emit('choose', $event)" />
         </div>
       </div>
-      <button class="close button" @click="showBonded = false">Close</button>
+      <button class="close button" @click="showBonded = false">{{$t('close')}}</button>
     </Draggable>
   </div>
 </template>

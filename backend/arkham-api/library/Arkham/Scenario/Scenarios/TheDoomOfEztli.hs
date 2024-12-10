@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Scenario.Scenarios.TheDoomOfEztli (TheDoomOfEztli (..), theDoomOfEztli) where
 
 import Arkham.Act.Cards qualified as Acts
@@ -256,7 +258,7 @@ instance RunMessage TheDoomOfEztli where
                    , EndSetup
                    ]
             let resetAttrs = toAttrs $ theDoomOfEztli attrs.difficulty
-            pure . TheDoomOfEztli $ resetAttrs `with` Metadata (resolution4Count metadata + 1)
+            pure . TheDoomOfEztli $ traceShowId resetAttrs `with` Metadata (resolution4Count metadata + 1)
           Resolution 5 -> do
             story resolution5
             record TheInvestigatorsRecoveredTheRelicOfAges

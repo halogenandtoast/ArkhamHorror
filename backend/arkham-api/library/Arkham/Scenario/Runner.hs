@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -106,7 +106,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
         let investigatorStoryCards = filter ifShouldAdd $ findWithDefault [] iid scenarioStoryCards
         push $ LoadDeck iid (Deck $ unDeck deck <> investigatorStoryCards)
-    pure a
+    pure $ overAttrs (inResolutionL .~ False) a
   BeginGame -> do
     mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
     for_ mFalseAwakening \falseAwakening -> do
@@ -341,7 +341,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
     investigatorIds <- select Matcher.UneliminatedInvestigator
-    when (null investigatorIds && not scenarioInResolution) $ do
+    when (null (traceShowId investigatorIds) && not (traceShowId scenarioInResolution)) $ do
       push $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
     pure a
   AllInvestigatorsResigned -> do
@@ -1352,4 +1352,5 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
       <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
     pure $ a & gridL .~ grid
+  ForTarget ScenarioTarget msg' -> runMessage msg' a
   _ -> pure a

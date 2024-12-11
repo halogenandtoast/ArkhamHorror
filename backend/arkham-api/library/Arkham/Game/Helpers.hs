@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -4086,7 +4084,7 @@ damageTypeMatches strategy = \case
     DamageFromHastur -> False
 
 passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
-passesLimits iid c = allM go (traceShowId $ cdLimits $ toCardDef c)
+passesLimits iid c = allM go (cdLimits $ toCardDef c)
  where
   go = \case
     LimitPerInvestigator m -> case toCardType c of
@@ -4111,7 +4109,7 @@ passesLimits iid c = allM go (traceShowId $ cdLimits $ toCardDef c)
       n <- getCardUses (toCardCode c)
       pure $ m > n
     MaxPerRound m -> do
-      n <- traceShowId <$> getCardUses (toCardCode c)
+      n <- getCardUses (toCardCode c)
       pure $ m > n
     MaxPerTraitPerRound t m -> do
       n <- count (elem t) . map toTraits <$> getAllCardUses

@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Agenda.Cards.RunningOutOfTime (RunningOutOfTime (..), runningOutOfTime) where
 
 import Arkham.Agenda.Cards qualified as Cards

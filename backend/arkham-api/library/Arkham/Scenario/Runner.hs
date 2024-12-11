@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -341,7 +341,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   -- is that the act deck has been replaced.
   CheckForRemainingInvestigators -> do
     investigatorIds <- select Matcher.UneliminatedInvestigator
-    when (null (traceShowId investigatorIds) && not (traceShowId scenarioInResolution)) $ do
+    when (null investigatorIds && not scenarioInResolution) $ do
       push $ HandleNoRemainingInvestigators scenarioNoRemainingInvestigatorsHandler
     pure a
   AllInvestigatorsResigned -> do

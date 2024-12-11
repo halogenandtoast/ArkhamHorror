@@ -965,16 +965,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NeedsAction -> True
         AuxiliaryCost _ inner -> isPlayAction inner
 
-    additionalCosts <- flip mapMaybeM modifiers \case
-      AdditionalCost n -> pure (Just n)
-      AdditionalActionCostOf match n -> do
-        performedActions <- field InvestigatorActionsPerformed iid
-        takenActions <- field InvestigatorActionsTaken iid
-        let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
-        pure
-          $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
-          $> ActionCost n
-      _ -> pure Nothing
+    additionalCosts <-
+      flip mapMaybeM (modifiers <> cardModifiers) \case
+        AdditionalCost n -> pure (Just n)
+        AdditionalActionCostOf match n -> do
+          performedActions <- field InvestigatorActionsPerformed iid
+          takenActions <- field InvestigatorActionsTaken iid
+          let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
+          pure
+            $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
+            $> ActionCost n
+        _ -> pure Nothing
 
     let
       sealingToCost = \case

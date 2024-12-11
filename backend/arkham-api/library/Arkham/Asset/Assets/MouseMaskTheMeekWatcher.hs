@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Asset.Assets.MouseMaskTheMeekWatcher (
   mouseMaskTheMeekWatcher,
   MouseMaskTheMeekWatcher (..),

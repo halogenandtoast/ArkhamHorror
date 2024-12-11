@@ -10,6 +10,7 @@ import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified
@@ -77,11 +78,30 @@ instance RunMessage BlackMarket2Effect where
         case attrs.target of
           CardIdTarget cardId -> do
             card <- getCard cardId
-            let owner = fromJustNote ("missing owner: " <> show card) card.owner
-            obtainCard card
-            push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
+            case card.owner of
+              Nothing -> do
+                investigators <- select Anyone
+                lead <- getLead
+                focusCards [card] \unfocus -> do
+                  chooseOrRunOneM lead do
+                    questionLabeled "A set aside card was missing its owner. Please select the correct owner"
+                    targets investigators \iid -> do
+                      push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) EndPhase))
+                  push unfocus
+              Just owner -> do
+                obtainCard card
+                push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
           _ -> error "incorrect target"
         disable attrs
+      pure e
+    ForTarget (isTarget attrs -> True) (ForInvestigator iid (ForTarget (CardIdTarget cardId) EndPhase)) -> do
+      card <- getCard cardId
+      eliminated <- iid <!=~> UneliminatedInvestigator
+      if eliminated
+        then obtainCard card
+        else do
+          card' <- setOwner iid card
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
       pure e
     InitiatePlayCard iid card mtarget payment windows' asAction | attrs.target == CardIdTarget card.id -> do
       if cdSkipPlayWindows (toCardDef card)

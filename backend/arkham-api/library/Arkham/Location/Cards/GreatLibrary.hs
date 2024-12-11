@@ -25,7 +25,7 @@ greatLibrary = location GreatLibrary Cards.greatLibrary 2 (Static 4)
 
 instance HasAbilities GreatLibrary where
   getAbilities (GreatLibrary attrs) =
-    withBaseAbilities
+    extendRevealed
       attrs
       [ skillTestAbility
           $ restrictedAbility attrs 1 Here

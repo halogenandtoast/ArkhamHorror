@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -3065,7 +3067,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , case cardMatcher of
               Matcher.BasicCardMatch baseMatcher ->
                 pure $ cardMatch cardPlay.card baseMatcher
-              _ -> elem cardPlay.card <$> select cardMatcher
+              _ ->
+                elem cardPlay.card <$> select (Matcher.basic (Matcher.CardWithId cardPlay.card.id) <> cardMatcher)
           ]
       _ -> noMatch
     Matcher.PlayEventDiscarding timing whoMatcher eventMatcher -> guardTiming timing $ \case
@@ -4083,7 +4086,7 @@ damageTypeMatches strategy = \case
     DamageFromHastur -> False
 
 passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
-passesLimits iid c = allM go (cdLimits $ toCardDef c)
+passesLimits iid c = allM go (traceShowId $ cdLimits $ toCardDef c)
  where
   go = \case
     LimitPerInvestigator m -> case toCardType c of
@@ -4108,7 +4111,7 @@ passesLimits iid c = allM go (cdLimits $ toCardDef c)
       n <- getCardUses (toCardCode c)
       pure $ m > n
     MaxPerRound m -> do
-      n <- getCardUses (toCardCode c)
+      n <- traceShowId <$> getCardUses (toCardCode c)
       pure $ m > n
     MaxPerTraitPerRound t m -> do
       n <- count (elem t) . map toTraits <$> getAllCardUses

@@ -16,7 +16,6 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
@@ -56,7 +55,7 @@ defaultCampaignRunner msg a = case msg of
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid card -> do
-    let card' = overPlayerCard (setPlayerCardOwner iid) card
+    card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']))
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->

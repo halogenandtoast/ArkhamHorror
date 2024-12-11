@@ -22,11 +22,9 @@ surveyTheArea1 = skill SurveyTheArea1 Cards.surveyTheArea1
 
 instance HasModifiersFor SurveyTheArea1 where
   getModifiersFor (SurveyTheArea1 a) = do
-    agility <- field InvestigatorAgility (skillOwner a)
-    intellect <- field InvestigatorIntellect (skillOwner a)
-    (<>)
-      <$> modified_ a a.cardId [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
-      <*> modifySelf a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
+    agility <- field InvestigatorAgility a.owner
+    intellect <- field InvestigatorIntellect a.owner
+    modifySelf a.cardId [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
 
 instance RunMessage SurveyTheArea1 where
   runMessage msg (SurveyTheArea1 attrs) = SurveyTheArea1 <$> runMessage msg attrs

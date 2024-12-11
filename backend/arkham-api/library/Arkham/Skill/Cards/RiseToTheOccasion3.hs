@@ -26,7 +26,7 @@ instance HasModifiersFor RiseToTheOccasion3 where
         base <- getSkillTestBaseSkillForSkillTest (skillOwner attrs) skillTest
         difficulty <- getModifiedSkillTestDifficulty skillTest
         let n = max 0 (min 3 (difficulty - base))
-        modifySelf attrs [AddSkillIcons $ replicate n #wild]
+        modifySelf attrs.cardId [AddSkillIcons $ replicate n #wild]
       _ -> pure mempty
 
 instance RunMessage RiseToTheOccasion3 where

@@ -280,6 +280,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           moveAllTo (toSource attrs) baharna
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -292,11 +293,12 @@ instance RunMessage TheSearchForKadath where
           kadatheron <- placeSetAsideLocation Locations.kadatheron
           ruinsOfIb <- placeSetAsideLocation Locations.ruinsOfIb
           placeSetAsideLocation_ Locations.sarnath
-          beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
-          createEnemyAt_ beingsOfIb ruinsOfIb
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
+          createEnemyAt_ beingsOfIb ruinsOfIb
           moveAllTo (toSource attrs) kadatheron
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -306,13 +308,14 @@ instance RunMessage TheSearchForKadath where
           ilekVad <- placeSetAsideLocation Locations.ilekVad
           forbiddenLands <- placeSetAsideLocation Locations.forbiddenLands
           zulanThek <- placeSetAsideLocation Locations.zulanThek
+
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           stalkingManticore <- getSetAsideCard Enemies.stalkingManticore
           hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
           createEnemyAt_ stalkingManticore forbiddenLands
           createEnemyAt_ hordeOfNight zulanThek
-
-          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-          nightgauntMessages
           moveAllTo (toSource attrs) ilekVad
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -321,10 +324,11 @@ instance RunMessage TheSearchForKadath where
         TimelessRealm -> do
           celephais <- placeSetAsideLocation Locations.celephais
           placeSetAsideLocations_ [Locations.serannian, Locations.hazuthKleg]
-          theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
           moveAllTo (toSource attrs) celephais
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations

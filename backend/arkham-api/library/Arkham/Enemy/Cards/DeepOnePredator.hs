@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.DeepOnePredator (deepOnePredator, DeepOnePredator (..)
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated, EnemyEvaded)
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Matcher
@@ -20,7 +20,9 @@ instance HasAbilities DeepOnePredator where
     extend
       a
       [ forcedAbility a 1 $ EnemyEngaged #after You (be a)
-      , restricted a 2 criteria $ forced $ EnemyDefeated #when You ByAny (be a)
+      , restricted a 2 criteria
+          $ forced
+          $ oneOf [EnemyDefeated #when You ByAny (be a), EnemyEvaded #when You (be a)]
       ]
    where
     criteria = if null a.keys && a.token #clue == 0 then Never else NoRestriction

@@ -112,6 +112,7 @@ getModifiedChaosTokenValue s t = do
       )
       modifiedChaosTokenFaces'
  where
+  applyModifier IgnoreChaosTokenEffects (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier IgnoreChaosToken (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier IgnoreChaosTokenModifier (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier (ChangeChaosTokenModifier modifier') (ChaosTokenValue token _) =

@@ -16,6 +16,7 @@ import Arkham.Json
 import Arkham.Name
 import Arkham.PlayerCard
 import Arkham.SkillType
+import {-# SOURCE #-} Arkham.Taboo
 import Arkham.Taboo.Types
 import Data.Aeson.TH
 import GHC.Records
@@ -68,7 +69,7 @@ instance HasField "skills" PlayerCard [SkillIcon] where
 
 instance HasCardDef PlayerCard where
   toCardDef c = case lookup (pcCardCode c) (allPlayerCards <> allSpecialEnemyCards) of
-    Just def -> def
+    Just def -> maybe def (`tabooListModify` def) (pcTabooList c)
     Nothing ->
       error $ "missing card def for player card " <> show (pcCardCode c)
 

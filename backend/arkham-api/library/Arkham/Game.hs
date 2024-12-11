@@ -3589,10 +3589,10 @@ instance Projection Investigator where
         foldr applyModifier investigatorSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
         sanity <- field InvestigatorSanity (toId attrs)
-        pure (sanity - investigatorSanityDamage attrs)
+        pure $ max 0 (sanity - investigatorSanityDamage attrs)
       InvestigatorRemainingHealth -> do
         health <- field InvestigatorHealth (toId attrs)
-        pure (health - investigatorHealthDamage attrs)
+        pure $ max 0 (health - investigatorHealthDamage attrs)
       InvestigatorPlacement -> pure investigatorPlacement
       InvestigatorLocation -> do
         mods <- getModifiers iid

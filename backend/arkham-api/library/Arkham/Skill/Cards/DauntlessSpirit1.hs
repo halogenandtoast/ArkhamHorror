@@ -1,13 +1,10 @@
 module Arkham.Skill.Cards.DauntlessSpirit1 (dauntlessSpirit1, DauntlessSpirit1 (..)) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype DauntlessSpirit1 = DauntlessSpirit1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -20,12 +17,7 @@ instance HasModifiersFor DauntlessSpirit1 where
   getModifiersFor (DauntlessSpirit1 a) = do
     willpower <- field InvestigatorWillpower (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    (<>)
-      <$> modified_
-        a
-        (CardIdTarget $ toCardId a)
-        [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
-      <*> modifySelf a [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
+    modifySelf a.cardId [AddSkillIcons $ replicate combat #willpower <> replicate willpower #combat]
 
 instance RunMessage DauntlessSpirit1 where
   runMessage msg (DauntlessSpirit1 attrs) = DauntlessSpirit1 <$> runMessage msg attrs

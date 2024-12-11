@@ -17,7 +17,7 @@ longShot = skill LongShot Cards.longShot
 instance HasModifiersFor LongShot where
   getModifiersFor (LongShot attrs) =
     modifySelf
-      attrs
+      attrs.cardId
       [ CanCommitToSkillTestPerformedByAnInvestigatorAt
           (ConnectedFrom $ locationWithInvestigator attrs.owner)
       ]

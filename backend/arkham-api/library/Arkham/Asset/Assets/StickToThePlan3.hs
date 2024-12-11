@@ -23,9 +23,8 @@ stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
 instance HasModifiersFor StickToThePlan3 where
   getModifiersFor (StickToThePlan3 a) = do
-    controller <- controllerGets a (map AsIfInHand $ assetCardsUnderneath a)
-    cards <- modifyEach a (assetCardsUnderneath a) [AdditionalCost $ exhaust a]
-    pure $ controller <> cards
+    controllerGets a (map AsIfInHand $ assetCardsUnderneath a)
+    modifyEach a (assetCardsUnderneath a) [AdditionalCost $ exhaust a]
 
 instance HasAbilities StickToThePlan3 where
   getAbilities (StickToThePlan3 attrs) =

@@ -177,6 +177,15 @@ function sourceCardCode(source: Source) {
     return sourceCardCode(inner)
   }
 
+  console.log(source)
+  if (source.tag === 'EventSource') {
+    const event = props.game.events[source.contents]
+    if (!event) return null
+
+    const mutated = event.mutated ? `_${event.mutated}` : ''
+    return `${event.cardCode.replace('c', '')}${mutated}`
+  }
+
   return null
 }
 
@@ -307,12 +316,14 @@ const tokenEffects = computed(() => {
             <span class="skill">{{skillValue}}</span>
           </div>
         </div>
-        <img
-          v-if="investigatorPortrait"
-          class="portrait"
-          :src="investigatorPortrait"
-        />
-        <Card v-if="sourceCard" :game="game" :card="sourceCard" :revealed="true" playerId="" />
+        <div class="test-source">
+          <img
+            v-if="investigatorPortrait"
+            class="portrait"
+            :src="investigatorPortrait"
+          />
+          <Card v-if="sourceCard" :game="game" :card="sourceCard" :revealed="true" playerId="" />
+        </div>
       </div>
       <ChaosBagView
         :game="game"
@@ -869,5 +880,11 @@ i.iconSkillAgility {
   align-items: center;
   color: var(--title);
   justify-content: center;
+}
+
+.test-source {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 </style>

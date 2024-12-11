@@ -165,7 +165,7 @@ instance RunMessage SkillTest where
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
       mTargetCardId <- case skillTestTarget of
-        ProxyTarget _ t -> fmap toCardId <$> targetToMaybeCard t
+        ProxyTarget t _ -> fmap toCardId <$> targetToMaybeCard t
         t -> fmap toCardId <$> targetToMaybeCard t
       mSourceCardId <- case skillTestSource of
         ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t

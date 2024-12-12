@@ -11,6 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Investigators
@@ -77,22 +78,20 @@ instance RunMessage IceAndDeathPart1 where
     DoStep 1 PreScenarioSetup -> do
       winifredPresent <- selectAny (investigatorIs Investigators.winifredHabbamock)
 
-      let winifredProceed =
-            FlavorText
-              Nothing
-              [ ModifyEntry [RightAligned, if winifredPresent then ValidEntry else InvalidEntry]
-                  $ BasicEntry
-                    "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_."
-              ]
-      let otherWiseProceed =
-            FlavorText
-              Nothing
-              [ ModifyEntry [RightAligned, if winifredPresent then InvalidEntry else ValidEntry]
-                  $ BasicEntry "Otherwise, skip to _Intro 3_."
-              ]
+      let
+        rest =
+          FlavorText
+            Nothing
+            [ rightAlign
+                ( validateEntry winifredPresent
+                    $ BasicEntry
+                      "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_."
+                )
+                <> rightAlign (validateEntry (not winifredPresent) $ BasicEntry "Otherwise, skip to _Intro 3_.")
+            ]
 
       storyWithContinue
-        (i18nWithTitle "intro1" <> winifredProceed <> otherWiseProceed)
+        (i18nWithTitle "intro1" <> rest)
         (if winifredPresent then "Proceed to _Intro 2_" else "Skip to _Intro 3_")
 
       doStep (if winifredPresent then 2 else 3) PreScenarioSetup

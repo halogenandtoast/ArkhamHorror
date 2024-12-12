@@ -82,6 +82,7 @@ export function replaceIcons(body: string) {
     replace(/{elderThing}/g, '<span class="elder-thing-icon"></span>').
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
+    replace(/{frost}/g, '<span class="frost-icon"></span>').
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 

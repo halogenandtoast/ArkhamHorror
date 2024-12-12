@@ -280,7 +280,7 @@ export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = Json
   JsonDecoder.object({ tag: JsonDecoder.isExactly('InvalidEntry'), text: JsonDecoder.string }, 'InvalidEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('ValidEntry'), text: JsonDecoder.string }, 'ValidEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavtorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
 ], 'FlavorTextEntry');
   
 

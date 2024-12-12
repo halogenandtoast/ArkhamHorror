@@ -13,6 +13,7 @@ import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
 import Arkham.Helpers.Log (getRecordSet, whenHasRecord)
 import Arkham.Helpers.Query (getLead, getPlayerCount, getSetAsideCard)
+import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Location.Types qualified as Location
@@ -101,32 +102,36 @@ stories =
 instance RunMessage IceAndDeathPart2 where
   runMessage msg s@(IceAndDeathPart2 attrs) = runQueueT $ scenarioI18n 2 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeath2"
+      story $ i18nWithTitle "intro"
       whenM hasRemainingFrostTokens $ addChaosToken #frost
 
       kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology
       when (kensler.status `notElem` [Eliminated, Mia]) do
-        story $ i18nWithTitle "kenslerAliveAndNotMissing"
         sinha <- getPartner Assets.drMalaSinhaDaringPhysician
-        storyWhen (sinha.status == Mia) $ i18nWithTitle "sinhaMissing"
+        blueStory
+          $ i18nEntry "kenslerAliveAndNotMissing"
+          <> validateEntry (sinha.status == Mia) (i18nEntry "sinhaMissing")
 
       dyer <- getPartner Assets.professorWilliamDyerProfessorOfGeology
       when (dyer.status `notElem` [Eliminated, Mia]) do
-        story $ i18nWithTitle "dyerAliveAndNotMissing"
         danforth <- getPartner Assets.danforthBrilliantStudent
-        storyWhen (danforth.status == Mia) $ i18nWithTitle "danforthMissing"
+        blueStory
+          $ i18nEntry "dyerAliveAndNotMissing"
+          <> validateEntry (danforth.status == Mia) (i18nEntry "danforthMissing")
 
       claypool <- getPartner Assets.averyClaypoolAntarcticGuide
       when (claypool.status `notElem` [Eliminated, Mia]) do
-        story $ i18nWithTitle "claypoolAliveAndNotMissing"
         ellsworth <- getPartner Assets.roaldEllsworthIntrepidExplorer
-        storyWhen (ellsworth.status == Mia) $ i18nWithTitle "ellsworthMissing"
+        blueStory
+          $ i18nEntry "claypoolAliveAndNotMissing"
+          <> validateEntry (ellsworth.status == Mia) (i18nEntry "ellsworthMissing")
 
       fredericks <- getPartner Assets.jamesCookieFredericksDubiousChoice
       when (fredericks.status `notElem` [Eliminated, Mia]) do
-        story $ i18nWithTitle "fredericksAliveAndNotNotMissing"
         takada <- getPartner Assets.takadaHirokoAeroplaneMechanic
-        storyWhen (takada.status == Mia) $ i18nWithTitle "takadaMissing"
+        blueStory
+          $ i18nEntry "fredericksAliveAndNotMissing"
+          <> validateEntry (takada.status == Mia) (i18nEntry "takadaMissing")
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s

@@ -2246,6 +2246,7 @@ library
       Arkham.Helpers.Story
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
+      Arkham.Helpers.Text
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
       Arkham.Helpers.Window

@@ -31,6 +31,14 @@
     "theDisappearance1": {
       "title": "Checkpoint I: The Disappearance",
       "body": "<p><b>The Disappearance 1:</b> Your sleep is anything but pleasant. The maddening cold bites at your flesh and the ever-howling wind plays tricks on your mind, conjuring images of misshapen inky forms bursting out of the ground and rending your party whole.</p><p>Just as you are finally beginning to leave such horrid thoughts behind, your rest is shattered by a startled cry. You awaken to find your camp in shambles, and several of your companions missing. To your dismay, footsteps lead away from the relative safety of your camp and into the frozen wilds beyond.</p>"
+    },
+    "theDisappearance2": {
+      "title": "Checkpoint I: The Disappearance",
+      "body": "<p><b>The Disappearance 2:</b> You spend the next day resting and preparing for the next leg of your journey…</p>"
+    },
+    "theDisappearance3": {
+      "title": "Checkpoint I: The Disappearance",
+      "body": "<p><b>The Disappearance 3:</b> You’ve decided to go after your missing team members…</p>"
     }
   },
   "suppliesRecovered": {

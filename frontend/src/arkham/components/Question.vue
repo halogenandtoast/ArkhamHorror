@@ -2,7 +2,7 @@
 import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
-import { computed, inject, ref, watch, onMounted } from 'vue';
+import { computed, inject, ref, watch, onMounted, h } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { AmountChoice, QuestionType, FlavorTextEntry, FlavorTextModifier } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
@@ -13,6 +13,7 @@ import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 export interface Props {
   game: Game
@@ -26,14 +27,14 @@ const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 
-function formatEntry(entry: FlavorTextEntry): string {
+function formatEntry(entry: FlavorTextEntry): any {
   console.log(entry)
   switch (entry.tag) {
-    case 'BasicEntry': return formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text)
-    case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
-    case 'ModifyEntry': return formatEntry(entry.entry)
-    case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
-    default: throw new Error("Unknown entry type")
+    //case 'BasicEntry': return h('div', formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text))
+    // case 'I18nEntry': return h('div', formatContent(t(entry.key, entry.variables)))
+    // case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(entry.entry)])
+    // case 'CompositeEntry': return h('div', entry.entries.map(formatEntry))
+    default: return h('div', "Unknown entry type")
   }
 }
 
@@ -394,11 +395,7 @@ const cardPiles = computed(() => {
   </div>
 
   <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-    <div
-      v-for="(paragraph, index) in question.flavorText.body"
-      :class="entryStyles(paragraph)"
-      :key="index" v-html="formatEntry(paragraph)">
-    </div>
+    <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
   </div>
 
   <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
@@ -645,14 +642,18 @@ section {
     font-family: none;
   }
 
+  :deep(.composite) {
+    display: contents;
+  }
+
   :deep(.blue) {
     border: 3px solid #3a4a69;
     border-radius: 55px;
     background-color: color-mix(in srgb, #3a4a69, transparent 90%);
     box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
-    padding: 10px;
+    padding: 20px;
 
-    p:first-child {
+    > p:first-child {
       margin-left: 35px;
     }
   }

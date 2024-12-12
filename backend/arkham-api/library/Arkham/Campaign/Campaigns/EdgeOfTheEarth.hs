@@ -87,14 +87,14 @@ instance RunMessage EdgeOfTheEarth where
       nextCampaignStep
       pure c
     CampaignStep (CheckpointStep 1) -> scope "checkpoint1" do
-      story $ i18nWithTitle "theDisappearance1"
       sv <- fromJustNote "missing shelter" <$> getCurrentShelterValue
       mia <- drop sv <$> (shuffle =<< getRemainingPartners)
       if null mia
-        then doStep 2 msg
+        then do
+          story $ i18nWithTitle "theDisappearance1"
+          doStep 2 msg
         else do
-          lead <- getLead
-          chooseOneM lead do
+          storyWithChooseOneM (i18nWithTitle "theDisappearance1") do
             labeled "They’re on their own." do
               for_ mia \partner -> do
                 push $ SetPartnerStatus partner.cardCode Eliminated
@@ -104,11 +104,11 @@ instance RunMessage EdgeOfTheEarth where
                 push $ SetPartnerStatus partner.cardCode Mia
               doStep 3 msg
       pure c
-    DoStep 2 (CampaignStep (CheckpointStep 1)) -> do
+    DoStep 2 (CampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       story $ i18nWithTitle "theDisappearance2"
       push $ CampaignStep (CheckpointStep 2)
       pure c
-    DoStep 3 (CampaignStep (CheckpointStep 1)) -> do
+    DoStep 3 (CampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       story $ i18nWithTitle "theDisappearance3"
       push $ CampaignStep IceAndDeathPart2
       pure c

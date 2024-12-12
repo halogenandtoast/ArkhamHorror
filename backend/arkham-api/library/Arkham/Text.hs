@@ -29,6 +29,12 @@ data FlavorTextEntry
       }
   deriving stock (Show, Eq, Ord, Data)
 
+instance Semigroup FlavorTextEntry where
+  CompositeEntry entries1 <> CompositeEntry entries2 = CompositeEntry (entries1 <> entries2)
+  CompositeEntry entries1 <> entry2 = CompositeEntry (entries1 <> [entry2])
+  entry1 <> CompositeEntry entries2 = CompositeEntry (entry1 : entries2)
+  entry1 <> entry2 = CompositeEntry [entry1, entry2]
+
 data FlavorText = FlavorText
   { flavorTitle :: Maybe Text
   , flavorBody :: [FlavorTextEntry]

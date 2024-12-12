@@ -63,7 +63,9 @@ instance RunMessage TheVanishingOfElinaHarper where
       story $ i18n "townInfo"
       story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
-      unless standalone $ eachInvestigator chooseUpgradeDeck
+      unless standalone do
+        eachInvestigator chooseUpgradeDeck
+        push ReloadDecks
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

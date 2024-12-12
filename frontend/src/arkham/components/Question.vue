@@ -29,7 +29,7 @@ const investigator = computed(() => Object.values(props.game.investigators).find
 function formatEntry(entry: FlavorTextEntry): string {
   console.log(entry)
   switch (entry.tag) {
-    case 'BasicEntry': return formatContent(entry.text)
+    case 'BasicEntry': return formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text)
     case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
     case 'ModifyEntry': return formatEntry(entry.entry)
     case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')

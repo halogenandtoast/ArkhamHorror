@@ -51,10 +51,8 @@ const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
 function formatEntry(entry: FlavorTextEntry): string {
   switch (entry.tag) {
-    case 'BasicEntry': return entry.text
-    case 'I18nEntry': return t(entry.key, entry.variables)
-    case 'InvalidEntry': return entry.text
-    case 'ValidEntry': return entry.text
+    case 'BasicEntry': return formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text)
+    case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
     case 'ModifyEntry': return formatEntry(entry.entry)
     case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
     default: return "Unknown entry type"

@@ -19,8 +19,8 @@ import Arkham.Projection
 import Arkham.Source
 import Data.Map.Strict qualified as Map
 
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "iceAndDeath" a
+scenarioI18n :: Int -> (HasI18n => a) -> a
+scenarioI18n n a = campaignI18n $ scope ("iceAndDeath.part" <> tshow n) a
 
 placeSetAsideConnectedAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Ability
 placeSetAsideConnectedAbility a n = mkAbility a n $ forced $ Enters #after You $ ConnectedToSetAsideLocation

@@ -68,30 +68,45 @@ instance HasChaosTokenValue IceAndDeathPart1 where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage IceAndDeathPart1 where
-  runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1"
+      storyWithContinue (i18nWithTitle "intro") "Proceed to _Ice and Death, Part 1._"
       doStep 1 PreScenarioSetup
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep 1 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro1"
+      winifredPresent <- selectAny (investigatorIs Investigators.winifredHabbamock)
 
-      selectAny (investigatorIs Investigators.winifredHabbamock) >>= \case
-        True -> doStep 2 PreScenarioSetup
-        False -> doStep 3 PreScenarioSetup
+      let winifredProceed =
+            FlavorText
+              Nothing
+              [ ModifyEntry [RightAligned, if winifredPresent then ValidEntry else InvalidEntry]
+                  $ BasicEntry
+                    "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_."
+              ]
+      let otherWiseProceed =
+            FlavorText
+              Nothing
+              [ ModifyEntry [RightAligned, if winifredPresent then InvalidEntry else ValidEntry]
+                  $ BasicEntry "Otherwise, skip to _Intro 3_."
+              ]
 
+      storyWithContinue
+        (i18nWithTitle "intro1" <> winifredProceed <> otherWiseProceed)
+        (if winifredPresent then "Proceed to _Intro 2_" else "Skip to _Intro 3_")
+
+      doStep (if winifredPresent then 2 else 3) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro2"
+      storyWithContinue (i18nWithTitle "intro2") "Skip to _Intro 4_"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro3"
+      storyWithContinue (i18nWithTitle "intro3") "Proceed to _Intro 4_"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro4"
+      story $ i18nWithTitle "intro4"
       killed <- sample expeditionTeam
       push $ SetPartnerStatus killed.cardCode Eliminated
       recordSetInsert WasKilledInThePlaneCrash [killed.cardCode]

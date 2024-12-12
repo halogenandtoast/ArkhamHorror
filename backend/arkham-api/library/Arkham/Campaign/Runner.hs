@@ -113,7 +113,8 @@ defaultCampaignRunner msg a = case msg of
       push $ CampaignStep nextStep'
       pure $ updateAttrs a $ stepL .~ nextStep'
     _ -> error "invalid state"
-  ResetGame -> do
+  ResetGame -> runMessage ReloadDecks a
+  ReloadDecks -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, deck) -> do
       let deckCardCodes = map toCardCode $ unDeck deck
       let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes

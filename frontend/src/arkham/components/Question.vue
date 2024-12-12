@@ -3,8 +3,8 @@ import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
-import { imgsrc, replaceIcons } from '@/arkham/helpers';
-import { AmountChoice, QuestionType } from '@/arkham/types/Question';
+import { imgsrc, formatContent } from '@/arkham/helpers';
+import { AmountChoice, QuestionType, FlavorTextEntry, FlavorTextModifier } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
@@ -26,6 +26,37 @@ const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 
+function formatEntry(entry: FlavorTextEntry): string {
+  console.log(entry)
+  switch (entry.tag) {
+    case 'BasicEntry': return formatContent(entry.text)
+    case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
+    case 'ModifyEntry': return formatEntry(entry.entry)
+    case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
+    default: throw new Error("Unknown entry type")
+  }
+}
+
+function modifierToStyle(modifier: FlavorTextModifier): string {
+  switch (modifier) {
+    case 'BlueEntry': return 'blue'
+    case 'RightAligned': return 'right'
+    case 'PlainText': return 'basic'
+    case 'InvalidEntry': return 'invalid'
+    case 'ValidEntry': return 'valid'
+    default: throw new Error("Unknown modifier")
+  }
+}
+
+function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
+  switch (entry.tag) {
+    case 'BasicEntry': return {}
+    case 'I18nEntry': return {}
+    case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
+    case 'CompositeEntry': return {}
+    default: return {}
+  }
+}
 
 function zoneToLabel(s: string) {
   switch(s) {
@@ -73,14 +104,14 @@ const showChoices = computed(() => {
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
-    return handleI18n(body.slice(1), t)
+    return formatContent(handleI18n(body.slice(1), t))
   }
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+  return formatContent(body)
 }
 
 const paymentAmountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return formatContent(question.value.label)
   }
 
   return null
@@ -88,7 +119,7 @@ const paymentAmountsLabel = computed(() => {
 
 const amountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return formatContent(question.value.label)
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -363,10 +394,11 @@ const cardPiles = computed(() => {
   </div>
 
   <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-    <p
+    <div
       v-for="(paragraph, index) in question.flavorText.body"
-      :key="index" v-html="label(paragraph)">
-    </p>
+      :class="entryStyles(paragraph)"
+      :key="index" v-html="formatEntry(paragraph)">
+    </div>
   </div>
 
   <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
@@ -452,7 +484,7 @@ const cardPiles = computed(() => {
           <legend v-html="amountsLabel"></legend>
           <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
             <div v-if="paymentChoice.maxBound !== 0">
-              <label :for="`choice-${paymentChoice.choiceId}`" v-html="replaceIcons(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+              <label :for="`choice-${paymentChoice.choiceId}`" v-html="formatContent(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
             </div>
           </template>
           <button :disabled="unmetAmountRequirements">Submit</button>
@@ -595,7 +627,7 @@ section {
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
   padding: 10px;
-  margin: 10px 10px 0 10px;
+  margin: 10px;
   border-radius: 5px;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
@@ -605,6 +637,9 @@ section {
   letter-spacing: .03em;
   max-height: 70vh;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
   :deep(b) {
     font-family: none;
@@ -622,6 +657,64 @@ section {
     }
   }
 
+  &:deep(.right) {
+    text-align: right;
+    align-self: end;
+  }
+
+  &:deep(.basic) {
+    font-style: normal;
+    font-family: auto;
+  }
+
+  &:deep(i) {
+    font-style: italic;
+  }
+
+  &:deep(p) {
+    font-family: "ArkhamFlavor";
+  }
+
+  &:deep(strong) {
+    display: contents;
+  }
+
+  &:deep(.invalid) {
+    display: inline-flex;
+    align-items: center;
+    color: #666;
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px; /* Adjust spacing between the circle and the element */
+      border-radius: 50%;
+      background-size: 12px 12px; /* Adjust size of the X and checkmark */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: var(--survivor-dark);
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636l4.95 4.95z"/%3E%3C/svg%3E');
+    }
+  }
+
+  &:deep(.valid) {
+    display: inline-flex;
+    align-items: center;
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 8px; /* Adjust spacing between the circle and the element */
+      border-radius: 50%;
+      background-size: 12px 12px; /* Adjust size of the X and checkmark */
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: green;
+      background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"%3E%3Cpath d="M9 19l-6-6 1.414-1.414L9 16.172l10.586-10.586L21 7.586z"/%3E%3C/svg%3E');
+    }
+  }
 }
 
 .intro-text :deep(ul) {

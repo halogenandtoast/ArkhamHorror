@@ -99,7 +99,7 @@ stories =
   ]
 
 instance RunMessage IceAndDeathPart2 where
-  runMessage msg s@(IceAndDeathPart2 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(IceAndDeathPart2 attrs) = runQueueT $ scenarioI18n 2 $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "iceAndDeath2"
       whenM hasRemainingFrostTokens $ addChaosToken #frost

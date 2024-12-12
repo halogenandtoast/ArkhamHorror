@@ -58,28 +58,32 @@ instance RunMessage EdgeOfTheEarth where
           $ CampaignStep PrologueStep
       pure c
     DoStep 2 (CampaignStep PrologueStep) -> do
-      story $ i18nWithTitle "prologue2"
+      storyWithContinue (i18nWithTitle "prologue2") "Skip to _Prologue 4_"
       record TheInvestigatorsConvincedDyerToAllowTheExpedition
       addChaosToken Cultist
       doStep 4 $ CampaignStep PrologueStep
       pure c
     DoStep 3 (CampaignStep PrologueStep) -> do
-      story $ i18nWithTitle "prologue3"
+      storyWithContinue (i18nWithTitle "prologue3") "Proceed to _Prologue 4_"
       record TheInvestigatorsDidNotBelieveDyersReport
       addChaosToken Tablet
       doStep 4 $ CampaignStep PrologueStep
       pure c
     DoStep 4 (CampaignStep PrologueStep) -> do
       story $ i18nWithTitle "prologue4"
-      storyWithCard Assets.drAmyKenslerProfessorOfBiology $ i18n "amyKensler"
-      storyWithCard Assets.roaldEllsworthIntrepidExplorer $ i18n "roaldEllsworth"
-      storyWithCard Assets.jamesCookieFredericksDubiousChoice $ i18n "jamesFredericks"
-      storyWithCard Assets.takadaHirokoAeroplaneMechanic $ i18n "takadaHiroko"
-      storyWithCard Assets.averyClaypoolAntarcticGuide $ i18n "averyClaypool"
-      storyWithCard Assets.drMalaSinhaDaringPhysician $ i18n "malaSinha"
-      storyWithCard Assets.eliyahAshevakDogHandler $ i18n "eliyahAshevak"
-      storyWithCards [Assets.professorWilliamDyerProfessorOfGeology, Assets.danforthBrilliantStudent]
-        $ i18n "williamDyer"
+      lead <- getLead
+      chooseOneM lead do
+        labeled "Read _Partner_ intros" do
+          storyWithCard Assets.drAmyKenslerProfessorOfBiology $ i18n "amyKensler"
+          storyWithCard Assets.roaldEllsworthIntrepidExplorer $ i18n "roaldEllsworth"
+          storyWithCard Assets.jamesCookieFredericksDubiousChoice $ i18n "jamesFredericks"
+          storyWithCard Assets.takadaHirokoAeroplaneMechanic $ i18n "takadaHiroko"
+          storyWithCard Assets.averyClaypoolAntarcticGuide $ i18n "averyClaypool"
+          storyWithCard Assets.drMalaSinhaDaringPhysician $ i18n "malaSinha"
+          storyWithCard Assets.eliyahAshevakDogHandler $ i18n "eliyahAshevak"
+          storyWithCards [Assets.professorWilliamDyerProfessorOfGeology, Assets.danforthBrilliantStudent]
+            $ i18n "williamDyer"
+        labeled "Skip _Partner_ intros" nothing
       nextCampaignStep
       pure c
     CampaignStep (CheckpointStep 1) -> scope "checkpoint1" do

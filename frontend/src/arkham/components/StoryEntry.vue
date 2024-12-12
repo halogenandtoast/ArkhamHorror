@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, formatContent } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import type { Read } from '@/arkham/types/Question';
+import type { Read, FlavorTextEntry } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
 
@@ -18,7 +18,7 @@ const choose = (idx: number) => emit('choose', idx)
 const { t } = useI18n()
 
 const format = function(body: string) {
-  return body.replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+  return formatContent(body)
 }
 
 const maybeFormat = function(body: string) {
@@ -49,8 +49,20 @@ const readChoices = computed(() => {
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
+function formatEntry(entry: FlavorTextEntry): string {
+  switch (entry.tag) {
+    case 'BasicEntry': return entry.text
+    case 'I18nEntry': return t(entry.key, entry.variables)
+    case 'InvalidEntry': return entry.text
+    case 'ValidEntry': return entry.text
+    case 'ModifyEntry': return formatEntry(entry.entry)
+    case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
+    default: return "Unknown entry type"
+  }
+}
+
 const formatted = computed(() => {
-  return props.question.flavorText.body[0].startsWith("$") ? props.question.flavorText.body[0].slice(1) : null
+  return props.question.flavorText.body.map(formatEntry).join(' ')
 })
 
 const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
@@ -63,7 +75,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       <div class="entry-body">
         <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
-        <div class="entry-text" v-if="formatted" v-html="$t(formatted)"></div>
+        <div class="entry-text" v-if="formatted" v-html="formatContent(formatted)"></div>
         <p v-else
           v-for="(paragraph, index) in question.flavorText.body"
           :key="index"
@@ -76,7 +88,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
         v-for="readChoice in readChoices"
         @click="choose(readChoice.index)"
         :key="readChoice.index"
-      ><i class="option"></i>{{$t(tformat(readChoice.label))}}</button>
+        ><i class="option"></i><span v-html="formatContent(tformat(readChoice.label))"></span></button>
     </div>
   </div>
 </template>
@@ -130,7 +142,7 @@ p {
   }
 }
 
-button {
+button, a.button {
   width: 100%;
   border: 0;
   text-align: left;
@@ -138,15 +150,27 @@ button {
   text-transform: uppercase;
   background-color: #532e61;
   font-weight: bold;
-  color: #EEE;
+  color: #CFCFCF;
   font: Arial, sans-serif;
   &:hover {
     background-color: #311b3e;
+    &:deep(strong) {
+      color: white;
+    }
   }
 
   i {
     font-style: normal;
   }
+
+  &:deep(strong) {
+    color: white;
+  }
+}
+
+a.button {
+  display: block;
+  font-size: 0.7em;
 }
 
 
@@ -166,6 +190,17 @@ button {
 
 .entry-text {
   flex: 1;
+  &:deep(.right) {
+    text-align: right;
+  }
+  &:deep(.basic) {
+    font-style: normal;
+    font-family: auto;
+  }
+
+  &:deep(i) {
+    font-style: italic;
+  }
 }
 
 .entry-body {
@@ -181,4 +216,5 @@ button {
     gap: 20px;
   }
 }
+
 </style>

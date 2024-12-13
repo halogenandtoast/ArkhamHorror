@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -724,7 +724,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       pushAll $ InvestigatorDrewEncounterCard iid <$> encounterCards
 
     let playerCards = onlyPlayerCards drew.cards
-    when (notNull $ traceShowId playerCards) do
+    when (notNull playerCards) do
       pushAll $ InvestigatorDrewPlayerCardFrom iid <$> playerCards <*> pure (Just drew.deck)
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do

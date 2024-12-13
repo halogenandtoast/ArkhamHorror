@@ -77,6 +77,8 @@ import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, _Just)
+import Data.Function (on)
+import Data.List (nubBy)
 import Data.List qualified as List
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -1424,6 +1426,8 @@ instance RunMessage EnemyAttrs where
         Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
+    PlaceUnderneath (isTarget a -> True) cards -> do
+      pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
     PlaceUnderneath _ cards -> do
       when (toCard a `elem` cards) $ push $ RemoveEnemy (toId a)
       pure a

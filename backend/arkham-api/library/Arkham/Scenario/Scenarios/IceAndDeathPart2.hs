@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.IceAndDeathPart2 (IceAndDeathPart2 (..), iceAndDeathPart2) where
+module Arkham.Scenario.Scenarios.IceAndDeathPart2 (iceAndDeathPart2) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -10,11 +10,10 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
-import Arkham.Helpers.Investigator (getMaybeLocation, withLocationOf)
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordSet, whenHasRecord)
-import Arkham.Helpers.Query (getLead, getPlayerCount, getSetAsideCard)
+import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard)
 import Arkham.Helpers.Text
-import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
@@ -22,13 +21,14 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Trait (Trait (Uncharted))
+import Data.Bitraversable (bimapM)
+import Data.Map.Strict qualified as Map
 
 newtype IceAndDeathPart2 = IceAndDeathPart2 ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -41,21 +41,7 @@ iceAndDeathPart2 difficulty =
     "08501b"
     "Ice and Death"
     difficulty
-    [ "trefoil  .       .     .         .        .         plus"
-    , "trefoil  .       .     moon      .        .         plus"
-    , ".        droplet .     moon      .        equals    ."
-    , ".        droplet .     .         .        equals    ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       .     circle    .        .         ."
-    , ".        star    .     circle    .        hourglass ."
-    , ".        star    .     diamond   .        hourglass ."
-    , ".        .       .     diamond   .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    ]
+    iceAndDeathLayout
     (referenceL .~ "08501")
 
 instance HasChaosTokenValue IceAndDeathPart2 where
@@ -223,7 +209,7 @@ instance RunMessage IceAndDeathPart2 where
       addTekeliliDeck
     DoStep 2 Setup -> do
       mia <- mapMaybe (\p -> lookup p.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
-      (cards, removals) <- splitAt 9 <$> (shuffle . (mia <>) =<< shuffle stories)
+      (cards, removals) <- bimapM shuffle pure . splitAt 9 . (mia <>) =<< shuffle stories
       locations <- select $ LocationWithTrait Uncharted
 
       for_ (zip cards locations) \(def, location) -> do
@@ -255,33 +241,20 @@ instance RunMessage IceAndDeathPart2 where
     ScenarioResolution resolution -> scope "resolutions" do
       case resolution of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
-          locations <- selectWithField Location.LocationCard LocationWithoutClues
-
-          if null locations
-            then do
-              record Camp_CrashSite
-              allGainXpWithBonus attrs $ toBonus "bonus" 3
-            else do
-              lead <- getLead
-              chooseOneM lead do
-                for_ locations \(location, card) -> do
-                  for_ (lookup card.cardCode camps) \camp ->
-                    targeting location do
-                      record camp
-                      allGainXpWithBonus attrs $ toBonus "bonus" (max 3 $ fromMaybe 0 $ getShelterValue card)
+          storyWithChooseOneM (i18nWithTitle "noResolution") do
+            labeled "Proceed to _Resolution 1_" $ push R1
         Resolution 1 -> do
           story $ i18nWithTitle "resolution1"
-          sv <- max 3 . fromMaybe 0 <$> getCurrentShelterValue
-          allGainXpWithBonus attrs $ toBonus "bonus" sv
+          allGainXp attrs
+          partners <- getPartnersWithStatus (== Mia) -- If killed the status will be eliminated
+          for_ partners \partner -> do
+            for_ (Map.lookup partner.cardCode possessedMap) \enemy -> do
+              inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithCardCode enemy.cardCode
+              setPartnerStatus partner $ if inVictory then Safe else Eliminated
+
+          locations <- selectField Location.LocationCardCode RevealedLocation
+          recordSetInsert LocationsRevealed locations
+          endOfScenario
         _ -> error "Unknown resolution"
-      locations <- selectField Location.LocationCardCode RevealedLocation
-      recordSetInsert LocationsRevealed locations
-      endOfScenario
-      pure s
-    Resign iid -> do
-      withLocationOf iid \lid -> do
-        card <- field Location.LocationCard lid
-        for_ (lookup card.cardCode camps) record
       pure s
     _ -> IceAndDeathPart2 <$> liftRunMessage msg attrs

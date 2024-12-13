@@ -387,6 +387,8 @@ body {
   --select-dark-20: #cc00cc;
   --select-dark-30: #b200b2;
 
+  --bullet-red: #391714;
+
   @media (max-width: 800px) {
     --card-width: 40px;
   }

@@ -237,6 +237,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
             <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
+            <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"
               :key="index"

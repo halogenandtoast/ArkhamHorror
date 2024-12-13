@@ -435,9 +435,14 @@ allEnemies =
     , SomeEnemyCard drAmyKenslerProfessorOfBiology
     , SomeEnemyCard roaldEllsworthIntrepidExplorer
     , SomeEnemyCard takadaHirokoAeroplaneMechanic
+    , -- Seeping Nightmares [eote]
+      SomeEnemyCard seepingNightmare
     , -- Creatures in the Ice [eote]
       SomeEnemyCard manifestationOfMadness
     , SomeEnemyCard glacialPhantasm
+    , -- Left Behind [eote]
+      SomeEnemyCard lostResearcher
+    , SomeEnemyCard frenziedExplorer
     , -- The Scarlet Keys
       -- signature
       SomeEnemyCard agentFletcher

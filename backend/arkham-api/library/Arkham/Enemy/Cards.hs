@@ -165,6 +165,7 @@ allEncounterEnemyCards =
       , fangOfYig
       , fleshEater
       , formlessSpawn
+      , frenziedExplorer
       , furtiveZoog
       , gavriellaMizrah
       , ghoulFromTheDepths
@@ -234,6 +235,7 @@ allEncounterEnemyCards =
       , lodgeEnforcer
       , lodgeJailor
       , lodgeNeophyte
+      , lostResearcher
       , lumberingGug
       , lupineThrall
       , lurkingDeepOne
@@ -297,6 +299,7 @@ allEncounterEnemyCards =
       , screechingByakhee
       , sebastienMoreau
       , seekerOfCarcosa
+      , seepingNightmare
       , serpentFromYoth
       , serpentOfTenochtitlan
       , servantOfManyMouths
@@ -2449,6 +2452,12 @@ takadaHirokoAeroplaneMechanic =
     , cdVictoryPoints = Just 1
     }
 
+seepingNightmare :: CardDef
+seepingNightmare =
+  (enemy "08547" "Seeping Nightmare" SeepingNightmares 4)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    }
+
 manifestationOfMadness :: CardDef
 manifestationOfMadness =
   (enemy "08689" "Manifestation of Madness" CreaturesInTheIce 3)
@@ -2461,6 +2470,18 @@ glacialPhantasm =
   (enemy "08690" "Glacial Phantasm" CreaturesInTheIce 2)
     { cdCardTraits = setFromList [Monster, Eidolon]
     , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+lostResearcher :: CardDef
+lostResearcher =
+  (enemy "08700" "Lost Researcher" LeftBehind 2)
+    { cdCardTraits = setFromList [Humanoid, Possessed]
+    }
+
+frenziedExplorer :: CardDef
+frenziedExplorer =
+  (enemy "08701" "Frenzied Explorer" LeftBehind 2)
+    { cdCardTraits = setFromList [Humanoid, Possessed]
     }
 
 agentFletcher :: CardDef

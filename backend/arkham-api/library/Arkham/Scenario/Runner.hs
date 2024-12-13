@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Scenario.Runner (
   runScenarioAttrs,
@@ -718,8 +718,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         handler <- getEncounterDeckHandler $ toCardId card
         pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
-  DrewCards iid drew | isNothing drew.target && any isEncounterCard drew.cards -> do
-    pushAll $ InvestigatorDrewEncounterCard iid <$> onlyEncounterCards drew.cards
+  DrewCards iid drew | isNothing drew.target -> do
+    let encounterCards = onlyEncounterCards drew.cards
+    when (notNull encounterCards) do
+      pushAll $ InvestigatorDrewEncounterCard iid <$> encounterCards
+
+    let playerCards = onlyPlayerCards drew.cards
+    when (notNull $ traceShowId playerCards) do
+      pushAll $ InvestigatorDrewPlayerCardFrom iid <$> playerCards <*> pure (Just drew.deck)
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
     case lookup key scenarioDecks of

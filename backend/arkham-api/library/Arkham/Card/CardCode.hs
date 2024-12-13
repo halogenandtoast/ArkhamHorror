@@ -42,6 +42,11 @@ instance Eq CardCode where
 cardCodeExactEq :: CardCode -> CardCode -> Bool
 cardCodeExactEq (CardCode a) (CardCode b) = a == b
 
+newtype CardCodeExact = CardCodeExact {unCardCodeExact :: CardCode}
+
+instance Eq CardCodeExact where
+  (CardCodeExact a) == (CardCodeExact b) = cardCodeExactEq a b
+
 (===) :: CardCode -> CardCode -> Bool
 (===) = cardCodeExactEq
 infix 4 ===

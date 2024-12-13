@@ -72,6 +72,7 @@ allAgendaCards =
       , hospitalOfHorrors
       , hotPursuit
       , humanityFading
+      , icyDepths
       , intoTheWhite
       , intruders
       , inEveryShadow
@@ -88,6 +89,7 @@ allAgendaCards =
       , madnessCoils
       , madnessDies
       , madnessDrowns
+      , manifestationsOfEvil
       , markedForSacrifice
       , outOfTime
       , overTheThreshold
@@ -690,6 +692,12 @@ theChillOfNight = agenda "08524" "The Chill of Night" 5 LostInTheNight
 
 madnessAndDeath :: CardDef
 madnessAndDeath = agenda "08525" "Madness and Death" 6 LostInTheNight
+
+manifestationsOfEvil :: CardDef
+manifestationsOfEvil = agenda "08544" "Manifestations of Evil" 7 SeepingNightmares
+
+icyDepths :: CardDef
+icyDepths = agenda "08545" "Icy Depths" 8 SeepingNightmares
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

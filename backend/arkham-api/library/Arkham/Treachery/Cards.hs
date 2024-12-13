@@ -171,6 +171,7 @@ allEncounterTreacheryCards =
       [ aTearInTime
       , aWorldInDarkness
       , abandonedByTheGods
+      , abandonedToMadness
       , abduction
       , acridMiasma
       , alteredBeast
@@ -337,6 +338,7 @@ allEncounterTreacheryCards =
       , outbreak
       , overgrowth
       , passageIntoTheVeil
+      , phantasmagoria
       , pitfall
       , poisonousSpores
       , polarMirage
@@ -2438,6 +2440,12 @@ zeroVisibility =
     { cdCardTraits = setFromList [Hazard]
     }
 
+phantasmagoria :: CardDef
+phantasmagoria =
+  (treachery "08548" "Phantasmagoria" SeepingNightmares 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
 kindredMist :: CardDef
 kindredMist =
   (treachery "08691" "Kindred Mist" CreaturesInTheIce 2)
@@ -2472,6 +2480,12 @@ throughTheIce :: CardDef
 throughTheIce =
   (treachery "08699" "Through the Ice" HazardsOfAntarctica 2)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+abandonedToMadness :: CardDef
+abandonedToMadness =
+  (treachery "08702" "Abandoned to Madness" LeftBehind 2)
+    { cdCardTraits = setFromList [Curse]
     }
 
 polarMirage :: CardDef

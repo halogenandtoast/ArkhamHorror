@@ -39,21 +39,7 @@ iceAndDeathPart1 difficulty =
     "08501a"
     "Ice and Death"
     difficulty
-    [ "trefoil  .       .     .         .        .         plus"
-    , "trefoil  .       .     moon      .        .         plus"
-    , ".        droplet .     moon      .        equals    ."
-    , ".        droplet .     .         .        equals    ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       .     circle    .        .         ."
-    , ".        star    .     circle    .        hourglass ."
-    , ".        star    .     diamond   .        hourglass ."
-    , ".        .       .     diamond   .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    ]
+    iceAndDeathLayout
     (referenceL .~ "08501")
 
 instance HasChaosTokenValue IceAndDeathPart1 where

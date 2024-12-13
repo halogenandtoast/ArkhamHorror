@@ -8,7 +8,6 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.ChaosToken
-import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
@@ -34,6 +33,7 @@ instance IsCampaign EdgeOfTheEarth where
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (CheckpointStep 1)
+    IceAndDeathPart2 -> Just (CheckpointStep 2)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -70,9 +70,7 @@ instance RunMessage EdgeOfTheEarth where
       doStep 4 $ CampaignStep PrologueStep
       pure c
     DoStep 4 (CampaignStep PrologueStep) -> do
-      story $ i18nWithTitle "prologue4"
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM (i18nWithTitle "prologue4") do
         labeled "Read _Partner_ intros" do
           storyWithCard Assets.drAmyKenslerProfessorOfBiology $ i18n "amyKensler"
           storyWithCard Assets.roaldEllsworthIntrepidExplorer $ i18n "roaldEllsworth"
@@ -106,27 +104,25 @@ instance RunMessage EdgeOfTheEarth where
       pure c
     DoStep 2 (CampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       story $ i18nWithTitle "theDisappearance2"
-      push $ CampaignStep (CheckpointStep 2)
+      push $ NextCampaignStep (Just $ CheckpointStep 2)
       pure c
     DoStep 3 (CampaignStep (CheckpointStep 1)) -> scope "checkpoint1" do
       story $ i18nWithTitle "theDisappearance3"
-      push $ CampaignStep IceAndDeathPart2
+      push $ NextCampaignStep (Just IceAndDeathPart2)
       pure c
     CampaignStep (CheckpointStep 2) -> scope "checkpoint2" do
-      story $ i18nWithTitle "theAttack1"
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM (i18nWithTitle "theAttack1") do
         labeled "Run for your lives!" $ doStep 2 msg
         labeled "Stand and fight!" $ doStep 3 msg
       pure c
     DoStep 2 (CampaignStep (CheckpointStep 2)) -> scope "checkpoint2" do
       story $ i18nWithTitle "theAttack2"
       record TheTeamFledToTheMountains
-      push $ CampaignStep $ InterludeStep 1 Nothing
+      push $ NextCampaignStep $ Just $ InterludeStep 1 Nothing
       pure c
     DoStep 3 (CampaignStep (CheckpointStep 2)) -> scope "checkpoint2" do
       story $ i18nWithTitle "theAttack3"
-      push $ CampaignStep IceAndDeathPart3
+      push $ NextCampaignStep $ Just IceAndDeathPart3
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       story $ i18nWithTitle "restfulNight1"

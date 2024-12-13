@@ -36,9 +36,11 @@ import Arkham.Helpers.Modifiers as X (toModifiers)
 import Arkham.Message as X (
   Message (..),
   StoryMode (..),
+  getChoiceAmount,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
+  pattern PassedThisSkillTestBy,
   pattern UseThisAbility,
  )
 import Arkham.Message.Lifted as X

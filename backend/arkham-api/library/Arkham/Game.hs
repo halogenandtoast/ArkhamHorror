@@ -3444,6 +3444,7 @@ getEnemyField f e = do
           then setFromList <$> select (InvestigatorAt $ locationWithEnemy enemyId)
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
+    EnemyCardsUnderneath -> pure enemyCardsUnderneath
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy

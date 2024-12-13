@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Campaign.Runner (
   module X,
@@ -189,9 +189,9 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
   IncrementRecordCount key int ->
     pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key
-  ScenarioResolution r -> case campaignStep (toAttrs a) of
+  ScenarioResolution r -> case (traceShowId $ campaignStep (toAttrs a)) of
     ScenarioStep sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
-    _ -> error "must be called in a scenario"
+    _ -> error $ "must be called in a scenario, but called in " <> show (campaignStep (toAttrs a))
   DrivenInsane iid ->
     pure
       $ updateAttrs a

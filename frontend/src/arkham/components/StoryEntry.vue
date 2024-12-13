@@ -5,6 +5,7 @@ import { Game } from '@/arkham/types/Game';
 import type { Read, FlavorTextEntry } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 export interface Props {
   game: Game
@@ -59,10 +60,6 @@ function formatEntry(entry: FlavorTextEntry): string {
   }
 }
 
-const formatted = computed(() => {
-  return props.question.flavorText.body.map(formatEntry).join(' ')
-})
-
 const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 
 </script>
@@ -73,12 +70,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       <div class="entry-body">
         <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
-        <div class="entry-text" v-if="formatted" v-html="formatContent(formatted)"></div>
-        <p v-else
-          v-for="(paragraph, index) in question.flavorText.body"
-          :key="index"
-          v-html="format(paragraph)"
-          ></p>
+        <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
       </div>
     </div>
     <div class="options">
@@ -96,6 +88,35 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
   background: #DCD6D0;
   padding: 20px;
   box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
+}
+
+.entry {
+  &:has(.iceAndDeath) {
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+    }
+
+    :deep(li){
+      &::marker {
+        color: #19214F;
+      }
+    }
+  }
+  &:has(.checkpoint) {
+    background-color: #AFA9A9;
+    box-shadow: unset;
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+    }
+  }
 }
 
 .intro-text {
@@ -182,6 +203,7 @@ a.button {
 
 .card {
   flex-basis: 30%;
+  flex-shrink: 0;
   height: fit-content;
   border-radius: 15px;
 }

@@ -67,7 +67,8 @@ newtype LocationId = LocationId {unLocationId :: UUID}
 
 newtype ScenarioId = ScenarioId {unScenarioId :: CardCode}
   deriving stock Data
-  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving Eq via CardCodeExact
 
 newtype SkillId = SkillId {unSkillId :: UUID}
   deriving stock Data

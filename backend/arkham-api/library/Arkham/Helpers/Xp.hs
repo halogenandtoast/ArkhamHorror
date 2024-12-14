@@ -25,6 +25,9 @@ toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
 getXp :: HasGame m => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
+getXp' :: HasGame m => m (Int, [(InvestigatorId, Int)])
+getXp' = getXpWithBonus' 0
+
 getInitialVictory :: (HasCallStack, HasGame m) => m Int
 getInitialVictory = do
   victoryPileVictory <- toVictory =<< getVictoryDisplay

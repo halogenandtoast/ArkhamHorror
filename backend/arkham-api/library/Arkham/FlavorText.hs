@@ -7,7 +7,6 @@ module Arkham.FlavorText (
   flavorText,
   ul,
   li,
-  currentScope,
 )
 where
 

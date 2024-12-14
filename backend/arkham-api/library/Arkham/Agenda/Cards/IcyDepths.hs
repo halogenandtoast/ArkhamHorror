@@ -13,6 +13,8 @@ icyDepths = agenda (8, A) IcyDepths Cards.icyDepths (Static 6)
 instance RunMessage IcyDepths where
   runMessage msg a@(IcyDepths attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      eachInvestigator \iid -> do
+        sufferMentalTrauma iid 1
+        investigatorDefeated attrs iid
       pure a
     _ -> IcyDepths <$> liftRunMessage msg attrs

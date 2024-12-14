@@ -319,6 +319,8 @@ data CampaignLogKey
   | Camp_BarrierCamp
   | Camp_RemnantsOfLakesCamp
   | Camp_CrystallineCavern
+  | TheTeamBarelyEscapedTheIceShelf
+  | TheTeamDefeatedTheHuntingCreatures
   | TheTeamFledToTheMountains
   | LocationsRevealed
   | -- | Curse of the Rougarou

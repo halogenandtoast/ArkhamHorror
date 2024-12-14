@@ -2469,7 +2469,6 @@ glacialPhantasm :: CardDef
 glacialPhantasm =
   (enemy "08690" "Glacial Phantasm" CreaturesInTheIce 2)
     { cdCardTraits = setFromList [Monster, Eidolon]
-    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 lostResearcher :: CardDef

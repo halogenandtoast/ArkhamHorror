@@ -1431,6 +1431,8 @@ instance RunMessage EnemyAttrs where
     PlaceUnderneath _ cards -> do
       when (toCard a `elem` cards) $ push $ RemoveEnemy (toId a)
       pure a
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     PlaceInBonded _iid card -> do
       when (toCard a == card) do
         removeAllMessagesMatching \case

@@ -34,6 +34,7 @@ instance IsCampaign EdgeOfTheEarth where
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (CheckpointStep 1)
     IceAndDeathPart2 -> Just (CheckpointStep 2)
+    IceAndDeathPart3 -> Just (InterludeStep 1 Nothing)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

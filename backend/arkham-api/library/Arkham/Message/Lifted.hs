@@ -422,7 +422,7 @@ killRemaining (toSource -> source) = do
   pure remaining
 
 class FetchCard a where
-  fetchCard :: ReverseQueue m => a -> m Card
+  fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
 
 instance FetchCard CardDef where
   fetchCard def = maybe (genCard def) pure =<< maybeGetSetAsideCard def

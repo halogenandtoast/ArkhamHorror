@@ -111,10 +111,10 @@ getSetAsideEncounterSet encounterSet =
     ScenarioSetAsideCards
     (filter ((== Just encounterSet) . cdEncounterSet . toCardDef))
 
-getOrGenerateSetAsideCard :: (CardGen m, HasGame m) => CardDef -> m Card
+getOrGenerateSetAsideCard :: (CardGen m, HasGame m, HasCallStack) => CardDef -> m Card
 getOrGenerateSetAsideCard cardDef = maybe (genCard cardDef) pure =<< maybeGetSetAsideCard cardDef
 
-maybeGetSetAsideCard :: HasGame m => CardDef -> m (Maybe Card)
+maybeGetSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
 maybeGetSetAsideCard def = do
   mcard <- selectOne . SetAsideCardMatch $ cardIs def
   case mcard of

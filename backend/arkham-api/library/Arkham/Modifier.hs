@@ -298,6 +298,7 @@ data ModifierType
   | IsEmptySpace
   | KilledIfDefeated
   | ExhaustIfDefeated
+  | DoNotExhaust
   | LeaveCardWhereItIs
   | LosePatrol
   | LoseVictory

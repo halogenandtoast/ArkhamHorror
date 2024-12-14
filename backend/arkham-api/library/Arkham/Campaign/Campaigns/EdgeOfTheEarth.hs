@@ -47,6 +47,7 @@ instance RunMessage EdgeOfTheEarth where
         $ EdgeOfTheEarth
         $ foldl' (flip addPartner) attrs expeditionTeam
     CampaignStep PrologueStep -> do
+      story $ i18nWithTitle "madnessUnderTheIce"
       story $ i18nWithTitle "prologue"
       storyWithChooseOneM (i18nWithTitle "prologue1") do
         labeled

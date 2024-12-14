@@ -2193,6 +2193,7 @@ library
       Arkham.Field.Matchers
       Arkham.Fight
       Arkham.Fight.Types
+      Arkham.FlavorText
       Arkham.Game
       Arkham.Game.Base
       Arkham.Game.Diff

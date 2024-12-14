@@ -23,7 +23,7 @@ export function lowercase(word: string) {
   return word.charAt(0).toLowerCase() + word.substring(1);
 }
 
-const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
+export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
 export function imgsrc(src: string) {
   const language = localStorage.getItem('language') || 'en'
@@ -56,7 +56,8 @@ export function pluralize(w: string, n: number) {
 }
 
 export function formatContent(body:string) {
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<strong>$1</strong>')
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<strong>$1</strong>').replace(/\*([^\*]*)\*/g, '<i>$1</i>')
+
 }
 
 export function replaceIcons(body: string) {

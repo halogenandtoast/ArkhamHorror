@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
+import { flavorTextDecoder } from '@/arkham/types/FlavorText';
 
 export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
 
@@ -48,21 +49,6 @@ export type QuestionLabel = {
   card: string | null
   label: string
   question: Question
-}
-
-export type FlavorTextModifier = 'BlueEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry'
-
-export type FlavorTextEntry
-  = { tag: 'BasicEntry', text : string}
-  | { tag: 'I18nEntry', key: string, variables: Record<string, any> }
-  | { tag: 'InvalidEntry', text: string }
-  | { tag: 'ValidEntry', text: string }
-  | { tag: 'ModifyEntry', modifiers: FlavorTextModifier[], entry: FlavorTextEntry }
-  | { tag: 'CompositeEntry', entries: FlavorTextEntry[] }
-
-export type FlavorText = {
-  title: string | null;
-  body: FlavorTextEntry[];
 }
 
 export type Read = {
@@ -266,31 +252,6 @@ export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDeco
   'QuestionLabel',
 );
 
-export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
-  JsonDecoder.isExactly('BlueEntry'),
-  JsonDecoder.isExactly('RightAligned'),
-  JsonDecoder.isExactly('PlainText'),
-  JsonDecoder.isExactly('InvalidEntry'),
-  JsonDecoder.isExactly('ValidEntry'),
-], 'FlavorTextModifier');
-
-export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = JsonDecoder.oneOf<FlavorTextEntry>([
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('BasicEntry'), text: JsonDecoder.string }, 'BasicEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('I18nEntry'), key: JsonDecoder.string, variables: JsonDecoder.object<Record<string, any>>({}, 'Record<string, any>') }, 'I18nEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('InvalidEntry'), text: JsonDecoder.string }, 'InvalidEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ValidEntry'), text: JsonDecoder.string }, 'ValidEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
-], 'FlavorTextEntry');
-  
-
-export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.object<FlavorText>(
-  {
-    title: JsonDecoder.nullable(JsonDecoder.string),
-    body: JsonDecoder.array(flavorTextEntryDecoder, 'string[]')
-  },
-  'FlavorText',
-);
 
 export type ReadChoices
   = { tag: "BasicReadChoices", contents: Message[] }

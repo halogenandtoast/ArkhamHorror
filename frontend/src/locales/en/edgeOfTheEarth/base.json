@@ -1,7 +1,11 @@
 {
+  "madnessUnderTheIce": {
+    "title": "Madness Under the Ice",
+    "body": "<div class='iceAndDeath'><p>“That seething, half-luminous cloud-background held ineffable suggestions of a vague, ethereal beyondness far more than terrestrially spatial; and gave appalling reminders of the utter remoteness, separateness, desolation, and aeon-long death of this untrodden and unfathomed austral world.”</p><p class='right basic'>– H. P. Lovecraft, At the Mountains of Madness</p></div>"
+  },
   "prologue": {
     "title": "Prologue",
-    "body": "<div class='iceAndDeath'><p>“I am forced into speech because men of science have refused to follow my advice without knowing why. It is altogether against my will that I tell my reasons for opposing this contemplated invasion of the antarctic—with its vast fossil-hunt and its wholesale boring and melting of the ancient ice-cap—and I am the more reluctant because my warning may be in vain. Doubt of the real facts, as I must reveal them, is inevitable; yet if I suppressed what will seem extravagant and incredible there would be nothing left.”<p><p class='right basic'>– H. P. Lovecraft, At the Mountains of Madness</p></div>"
+    "body": "<div class='iceAndDeath'><p>“I am forced into speech because men of science have refused to follow my advice without knowing why. It is altogether against my will that I tell my reasons for opposing this contemplated invasion of the antarctic—with its vast fossil-hunt and its wholesale boring and melting of the ancient ice-cap—and I am the more reluctant because my warning may be in vain. Doubt of the real facts, as I must reveal them, is inevitable; yet if I suppressed what will seem extravagant and incredible there would be nothing left.”</p><p class='right basic'>– H. P. Lovecraft, At the Mountains of Madness</p></div>"
   },
   "prologue1": {
     "title": "Prologue",

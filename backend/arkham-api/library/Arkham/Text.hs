@@ -17,6 +17,12 @@ newtype Tooltip = Tooltip Text
 data FlavorTextModifier = BlueEntry | RightAligned | PlainText | InvalidEntry | ValidEntry
   deriving stock (Show, Eq, Ord, Data)
 
+data ListItemEntry = ListItemEntry
+  { entry :: FlavorTextEntry
+  , nested :: [ListItemEntry]
+  }
+  deriving stock (Show, Eq, Ord, Data)
+
 data FlavorTextEntry
   = BasicEntry {text :: Text}
   | I18nEntry {key :: Text, variables :: Map Text Value}
@@ -27,12 +33,14 @@ data FlavorTextEntry
   | CompositeEntry
       { entries :: [FlavorTextEntry]
       }
+  | ListEntry {list :: [ListItemEntry]}
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup FlavorTextEntry where
   CompositeEntry entries1 <> CompositeEntry entries2 = CompositeEntry (entries1 <> entries2)
   CompositeEntry entries1 <> entry2 = CompositeEntry (entries1 <> [entry2])
   entry1 <> CompositeEntry entries2 = CompositeEntry (entry1 : entries2)
+  ListEntry entries1 <> ListEntry entries2 = ListEntry (entries1 <> entries2)
   entry1 <> entry2 = CompositeEntry [entry1, entry2]
 
 data FlavorText = FlavorText
@@ -69,11 +77,14 @@ instance IsString FlavorText where
 instance IsString FlavorTextEntry where
   fromString s = BasicEntry (fromString s)
 
-$(deriveJSON defaultOptions ''FlavorTextModifier)
-$(deriveToJSON defaultOptions ''FlavorTextEntry)
-
-instance FromJSON FlavorTextEntry where
-  parseJSON (String s) = pure $ BasicEntry s
-  parseJSON o = $(mkParseJSON defaultOptions ''FlavorTextEntry) o
-
-$(deriveJSON (aesonOptions $ Just "flavor") ''FlavorText)
+mconcat
+  [ deriveJSON defaultOptions ''FlavorTextModifier
+  , deriveJSON defaultOptions ''ListItemEntry
+  , deriveToJSON defaultOptions ''FlavorTextEntry
+  , [d|
+      instance FromJSON FlavorTextEntry where
+        parseJSON (String s) = pure $ BasicEntry s
+        parseJSON o = $(mkParseJSON defaultOptions ''FlavorTextEntry) o
+      |]
+  , deriveJSON (aesonOptions $ Just "flavor") ''FlavorText
+  ]

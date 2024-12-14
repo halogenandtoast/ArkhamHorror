@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue';
-import { type FlavorTextEntry, type FlavorTextModifier } from '@/arkham/types/Question';
-import { formatContent } from '@/arkham/helpers';
+import { type FlavorTextEntry, type FlavorTextModifier } from '@/arkham/types/FlavorText';
+import { baseUrl, formatContent } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
@@ -10,6 +10,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'I18nEntry': return {}
     case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
     case 'CompositeEntry': return {}
+    case 'ListEntry': return {}
     default: return {}
   }
 }
@@ -25,12 +26,18 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   }
 }
 
+function formatListEntry(t, entry: ListEntry): any {
+  const inner = formatEntry(t, entry.entry)
+  return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e) => formatListEntry(t, e)))])
+}
+
 function formatEntry(t, entry: FlavorTextEntry): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
-     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, entry.variables)) })
+     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
      case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
      case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
+     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
     default: return h('div', "Unknown entry type")
   }
 }
@@ -82,9 +89,16 @@ p, :deep(p) {
   margin: 10px;
 }
 
-:deep(strong) {
-  font-weight: bolder;
-  font-style: normal;
+:deep(strong), :deep(b), b, strong {
+  font-weight: bolder !important;
+  font-style: normal !important;
+  font-family: auto !important;
+}
+
+:deep(.checkpoint) {
+  ul {
+    margin-inline: 20px;
+  }
 }
 
 .invalid, :deep(.invalid) {
@@ -126,7 +140,7 @@ p, :deep(p) {
   }
 }
 
-:deep(ul) {
+ul, :deep(ul) {
   list-style-type: "\0059";
   margin-inline: 10px;
   li {
@@ -184,4 +198,13 @@ p, :deep(p) {
   padding-bottom: 2px;
 }
 
+
+:deep(.encounter-sets) {
+  display: flex;
+  gap: 5px;
+  margin-block: 10px;
+  img {
+    width: 40px;
+  }
+}
 </style>

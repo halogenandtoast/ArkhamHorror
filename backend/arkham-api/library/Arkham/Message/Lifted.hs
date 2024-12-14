@@ -285,6 +285,13 @@ allGainXpWithBonus source xp = do
   push . ReportXp =<< generateXpReport xp
   pushAll =<< toGainXp source (getXpWithBonus xp.value)
 
+allGainXpWithBonus' :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m Int
+allGainXpWithBonus' source xp = do
+  push . ReportXp =<< generateXpReport xp
+  (initial, details) <- getXpWithBonus' xp.value
+  pushAll =<< toGainXp source (pure details)
+  pure initial
+
 allGainXp :: (ReverseQueue m, Sourceable source) => source -> m ()
 allGainXp source = do
   push . ReportXp =<< generateXpReport NoBonus

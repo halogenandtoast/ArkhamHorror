@@ -9,11 +9,11 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
-import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Location
@@ -59,6 +59,7 @@ instance RunMessage IceAndDeathPart1 where
     PreScenarioSetup -> do
       storyWithContinue (i18nWithTitle "intro") "Proceed to _Ice and Death, Part 1._"
       doStep 1 PreScenarioSetup
+      story $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep 1 PreScenarioSetup -> do
@@ -130,6 +131,22 @@ instance RunMessage IceAndDeathPart1 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup IceAndDeathPart1 attrs do
+      scope "setup" $ story $ flavorText $ ul do
+        li "gatherSets"
+        li "setAsideCreaturesInTheIce"
+        li.nested "placeLocations" do
+          li "beginAtCrashSite"
+          li "setUnchartedOutOfPlay"
+        li "setSkitteringNonsenseOutOfPlay"
+        li "setTerrorOfTheStarsBringerOfIceAndDeathOutOfPlay"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.IceAndDeath
       gather Set.TheCrash
       gather Set.DeadlyWeather
@@ -198,9 +215,11 @@ instance RunMessage IceAndDeathPart1 where
                       record camp
                       allGainXpWithBonus attrs $ toBonus "bonus" (max 3 $ fromMaybe 0 $ getShelterValue card)
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
-          sv <- max 3 . fromMaybe 0 <$> getCurrentShelterValue
-          allGainXpWithBonus attrs $ toBonus "bonus" sv
+          sv <- fromMaybe 0 <$> getCurrentShelterValue
+          baseVictory <- allGainXpWithBonus' attrs $ toBonus "bonus" (max 3 sv)
+          story
+            $ withVars ["xp" .= baseVictory, "shelterValue" .= sv]
+            $ i18nWithTitle "resolution1"
         _ -> error "Unknown resolution"
       locations <- selectField Location.LocationCardCode RevealedLocation
       recordSetInsert LocationsRevealed locations

@@ -115,16 +115,13 @@ getOrGenerateSetAsideCard :: (CardGen m, HasGame m, HasCallStack) => CardDef -> 
 getOrGenerateSetAsideCard cardDef = maybe (genCard cardDef) pure =<< maybeGetSetAsideCard cardDef
 
 maybeGetSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
-maybeGetSetAsideCard def = do
-  mcard <- selectOne . SetAsideCardMatch $ cardIs def
-  case mcard of
-    Nothing -> pure Nothing
-    Just card ->
-      pure
-        $ Just
-        $ if cardCodeExactEq (toCardCode card) (toCardCode def)
-          then card
-          else lookupCard (toCardCode def) (toCardId card)
+maybeGetSetAsideCard def = runMaybeT do
+  liftGuardM $ selectAny TheScenario
+  card <- MaybeT $ selectOne . SetAsideCardMatch $ cardIs def
+  pure
+    $ if cardCodeExactEq (toCardCode card) (toCardCode def)
+      then card
+      else lookupCard (toCardCode def) (toCardId card)
 
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
 maybeGetSetAsideEncounterCard def = do

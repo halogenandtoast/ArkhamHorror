@@ -58,6 +58,22 @@
     }
   },
   "part2": {
+    "investigatorSetup": {
+      "title": "Investigator Setup",
+      "body": "<div class='iceAndDeath'><ul><li>Each investigator’s base starting resources is equal to the shelter value of the camp, instead of five.<ul><li>_Shelter Value_: {shelterValue}</li></ul></li><li>Each investigator may choose one available member of the Expedition Team who is not crossed off or marked “MIA” to join them. Put the story asset for the chosen character into play in that investigator’s play area. Place damage and horror on that character as indicated in the “Expedition Team” section of the Campaign Log.</li></ul></div>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Ice and Death*, *Lost in the Night*, *Left Behind*, *Deadly Weather*, *Hazards of Antarctica*, *Silence and Mystery*, *Tekeli-li*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/ice-and-death.png' /><img src='{setImgPath}/lost-in-the-night.png' /><img src='{setImgPath}/left-behind.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "buildAgendaDecks": "Build the agenda deck using agendas 4–6 and the act deck using act 2. (These can be found in the *Lost in the Night* encounter set.)",
+      "placeLocations": "In the “Ice and Death” section of the Campaign Log, find each location under Locations Revealed. Put each of those locations into play, revealed (*with clues equal to its clue value*).",
+      "unrevealed": "Put each other location into play, unrevealed.",
+      "missing": "Several members of the expedition go missing in the night!",
+      "findPossessed": "Find each _Possessed_ enemy from the *Lost in the Night* encounter set whose title matches one of the expedition team members marked “MIA” in your Campaign Log. Set each of these enemies aside, facedown. Remove the rest from the game.",
+      "findStory": "Find the story cards from the *Lost in the Night* encounter set and shuffle them. One at a time, add one of these cards facedown to the previously set-aside enemies, until there are a total of exactly nine enemy and story cards set aside in this way. Remove the unused story cards from the game.",
+      "shuffleTogether": "Shuffle these nine set-aside cards and place one facedown beneath each of the nine _Uncharted_ locations in play.",
+      "beginAtCamp": "Each investigator begins play at the Camp.",
+      "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+    },
     "intro": {
       "title": "Ice and Death, Part II",
       "body": "<p>Your team scrambles in preparation to search for those who went missing in the night. You hate the idea of venturing back out into the freezing cold so soon after taking refuge, but you have no choice if you are to find your companions.</p><p class='basic right'>Add 1 {'{'}frost{'}'} token to the chaos bag.</p><p class='basic right'>Read each passage below that corresponds to the characters who are not missing. Then, proceed to _Setup_.</p>"
@@ -77,11 +93,15 @@
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<div class='resolution'><p><b>Resolution 1:</b> It is clear that something compelled your teammates to venture away from the safety of your camp. Something alien and mysterious. Something that defies your understanding of Antarctica. None of those who wandered off remember why they did so or what they were doing. It is almost as if their memories were wiped clean. Or perhaps their consciousness was supplanted by another…</p><p>In any event, they seem to have recovered. You mourn those you’ve lost and prepare for the day ahead. Rest or no rest, you have only one chance if you are to survive.</p><ul><li>Each investigator earns experience equal the Victory X value of each card in the victory display.</li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Find each enemy in the victory display whose title matches a character who is not crossed off in the “Expedition Team” section of the Campaign Log. These characters have been rescued! Cross off “MIA” next to each of those character’s names.</li><li>Each missing team member who was not found surely could not have survived the night. In the “Expedition Team” section of the Campaign Log, cross off the name of each character who is still marked “MIA.”</li><li>Proceed to <b>Checkpoint II: The Attack</b>.</li></ul></div>"
+        "body": "<div class='resolution'><p><b>Resolution 1:</b> It is clear that something compelled your teammates to venture away from the safety of your camp. Something alien and mysterious. Something that defies your understanding of Antarctica. None of those who wandered off remember why they did so or what they were doing. It is almost as if their memories were wiped clean. Or perhaps their consciousness was supplanted by another…</p><p>In any event, they seem to have recovered. You mourn those you’ve lost and prepare for the day ahead. Rest or no rest, you have only one chance if you are to survive.</p><ul><li>Each investigator earns experience equal the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Find each enemy in the victory display whose title matches a character who is not crossed off in the “Expedition Team” section of the Campaign Log. These characters have been rescued! Cross off “MIA” next to each of those character’s names.</li><li>Each missing team member who was not found surely could not have survived the night. In the “Expedition Team” section of the Campaign Log, cross off the name of each character who is still marked “MIA.”</li><li>Proceed to <b>Checkpoint II: The Attack</b>.</li></ul></div>"
       }
     }
   },
   "part3": {
+    "investigatorSetup": {
+      "title": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.title",
+      "body": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.body"
+    },
     "intro": {
       "title": "Ice and Death, Part III",
       "body": "<p>“There—see it?” one of the team members hands you their binoculars and points into the distance. You’ve ventured just outside camp to find a defensible position where you hope can see the creatures approaching…but what you find instead is even worse. Not only are they encroaching on the campsite as you expected, but more are emerging from the ice by the minute.</p><p>You watch the ice shelf split open, and a geyser of multicolored miasma seeps from the cracks. Your companion clutches your arm and points you in another direction, where you see another geyser spill forth. Then, another. “There has to be an end to them, right?”</p><p>You lower the binoculars and tell the rest of the team to prepare for a fight. You don’t know if you can hold off these strange creatures or not, but there’s only one way to find out.</p><p class='basic right'>Add 1 {'{'}frost{'}'} token to the chaos bag. Proceed to _Setup_.</p>"

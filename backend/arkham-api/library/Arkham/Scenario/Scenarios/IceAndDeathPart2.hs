@@ -9,12 +9,12 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordSet, whenHasRecord)
 import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard)
 import Arkham.Helpers.Text
-import Arkham.I18n
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -119,6 +119,8 @@ instance RunMessage IceAndDeathPart2 where
           $ i18nEntry "fredericksAliveAndNotMissing"
           <> validateEntry (takada.status == Mia) (i18nEntry "takadaMissing")
 
+      sv <- fromMaybe 0 <$> getCurrentShelterValue
+      story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     ForInvestigator iid PreScenarioSetup -> do
@@ -180,6 +182,21 @@ instance RunMessage IceAndDeathPart2 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup IceAndDeathPart2 attrs do
+      scope "setup" $ story $ flavorText $ ul do
+        li "gatherSets"
+        li "buildAgendaDecks"
+        li.nested "placeLocations" do
+          li "unrevealed"
+        li.nested "missing" do
+          li "findPossessed"
+          li "findStory"
+          li "shuffleTogether"
+        li "beginAtCamp"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.IceAndDeath
       gather Set.LostInTheNight
       gather Set.LeftBehind
@@ -244,8 +261,10 @@ instance RunMessage IceAndDeathPart2 where
           storyWithChooseOneM (i18nWithTitle "noResolution") do
             labeled "Proceed to _Resolution 1_" $ push R1
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
-          allGainXp attrs
+          baseVictory <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= baseVictory]
+            $ i18nWithTitle "resolution1"
           partners <- getPartnersWithStatus (== Mia) -- If killed the status will be eliminated
           for_ partners \partner -> do
             for_ (Map.lookup partner.cardCode possessedMap) \enemy -> do

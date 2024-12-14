@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -476,7 +476,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           pushAll $ [PayForAbility (abilityEffect a [] $ mconcat additionalCosts) []] <> msgs
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
-    mods <- getModifiers a
+    mods <- traceShowId <$> getModifiers a
     let
       base = fromMaybe 5 $ listToMaybe [n | BaseStartingResources n <- mods]
       startingResources =

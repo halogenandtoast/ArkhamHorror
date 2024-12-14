@@ -56,6 +56,8 @@ instance RunMessage IceAndDeathPart3 where
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       whenM hasRemainingFrostTokens $ addChaosToken #frost
+      sv <- fromMaybe 0 <$> getCurrentShelterValue
+      story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     ForInvestigator iid PreScenarioSetup -> do

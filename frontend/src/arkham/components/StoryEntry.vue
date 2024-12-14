@@ -109,12 +109,38 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
   &:has(.checkpoint) {
     background-color: #AFA9A9;
     box-shadow: unset;
+    overflow: hidden;
+    &::after {
+      border: 20px solid #D4CCC3;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      z-index: 1;
+    }
     h1 {
       color: #19214F;
       border-bottom: 1px solid #19214F;
       &::after {
         border-bottom: 1px solid #19214F;
       }
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+    padding: 50px;
+    position: relative;
+    &::before {
+      z-index: 2;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image: url(/img/arkham/checkpoint_fleur.png) 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
     }
   }
 }

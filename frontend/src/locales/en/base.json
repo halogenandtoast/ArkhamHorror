@@ -31,5 +31,7 @@
   },
   "tooltips": {
     "takeControlOfKey": "Take control of {key} key"
-  }
+  },
+  "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
+  "readyToBegin": "You are now ready to begin."
 }

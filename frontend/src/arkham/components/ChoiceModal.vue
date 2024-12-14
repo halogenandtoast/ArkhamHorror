@@ -81,7 +81,7 @@ const amountsLabel = computed(() => {
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
-    return t(body.slice(1))
+    return t(body.slice(1).split(' ')[0])
   }
   return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
 }

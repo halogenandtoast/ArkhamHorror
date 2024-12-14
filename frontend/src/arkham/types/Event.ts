@@ -8,9 +8,9 @@ import {
 } from '@/arkham/types/Card';
 
 export type Event = {
-  id: string;
+  id: number;
   cardCode: string;
-  cardId: string;
+  cardId: number;
   doom: number;
   exhausted: boolean;
   sealedChaosTokens: ChaosToken[];
@@ -21,9 +21,8 @@ export type Event = {
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
-  id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  cardId: JsonDecoder.number,
   doom: JsonDecoder.number,
   exhausted: JsonDecoder.boolean,
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),

@@ -4,6 +4,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath, EnemyLocation))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -30,7 +31,10 @@ instance RunMessage Phantasmagoria where
           chooseOneM iid do
             for_ seepingNightmares \(x, cards) -> do
               targeting x $ case cards of
-                [] -> push $ HunterMove x
+                [] -> do
+                  push $ HunterMove x
+                  temporaryModifier x attrs DoNotExhaust do
+                    push $ ForTarget x EnemiesAttack
                 (n : _) ->
                   field EnemyLocation x >>= traverse_ \lid -> do
                     obtainCard n

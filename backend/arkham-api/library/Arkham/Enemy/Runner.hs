@@ -874,6 +874,7 @@ instance RunMessage EnemyAttrs where
     PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- getModifiers (attackTarget details)
+      mods <- getModifiers a
       sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
 
       let
@@ -937,7 +938,7 @@ instance RunMessage EnemyAttrs where
                     sanityDamage
           pushAll
             $ [attackMessage | allowAttack]
-            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
+            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details, DoNotExhaust `notElem` mods]
             <> ignoreWindows
             <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
@@ -1456,4 +1457,5 @@ instance RunMessage EnemyAttrs where
     DoBatch _ msg' -> do
       -- generic DoBatch handler
       runMessage (Do msg') a
+    ForTarget (isTarget a -> True) msg' -> runMessage msg' a
     _ -> pure a

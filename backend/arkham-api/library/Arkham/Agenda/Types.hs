@@ -182,6 +182,9 @@ instance HasAbilities Agenda where
 instance HasModifiersFor Agenda where
   getModifiersFor (Agenda a) = getModifiersFor a
 
+instance Be AgendaAttrs AgendaMatcher where
+  be = AgendaWithId . agendaId
+
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = AgendaAttrs

@@ -54,6 +54,9 @@
       "resolution1": {
         "title": "Resolution 1",
         "body": "<div class='resolution'><p><strong>Resolution 1:</strong> As you make camp, you are haunted by memories of the creatures you encountered in the icy wilds. Such entities should not exist. Not even Dyer’s report mentions anything of the kind. Grim silence settles over the expedition team as you set up shelter. No one speaks of what they saw in the frozen wilderness. No one speaks of the awful sounds those monsters made. You can only hope that this camp is secluded enough to avoid the attention of those things—whatever they may be…</p><ul><li>In your Campaign Log, write “Camp –,” and next to it, record the name of the location the investigators resigned at. This location is referred to as the investigators’ camp for the remainder of Ice and Death. <ul><li>Record the camp’s shelter value in parentheses next to its name.</li><li>_Shelter Value_: {shelterValue}</li></ul></li><li>Each investigator earns experience equal to the camp’s shelter value (to a minumum of 3) plus the Victory X value of each card in the victory display. <ul><li>_Experience_: {xp}</li></ul></li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Proceed to _Checkpoint I: The Disappearance_.</li></ul></div>"
+      },
+      "xp": {
+        "bonus": "Camp's shelter value (minumum of 3)"
       }
     }
   },
@@ -105,6 +108,23 @@
     "intro": {
       "title": "Ice and Death, Part III",
       "body": "<p>“There—see it?” one of the team members hands you their binoculars and points into the distance. You’ve ventured just outside camp to find a defensible position where you hope can see the creatures approaching…but what you find instead is even worse. Not only are they encroaching on the campsite as you expected, but more are emerging from the ice by the minute.</p><p>You watch the ice shelf split open, and a geyser of multicolored miasma seeps from the cracks. Your companion clutches your arm and points you in another direction, where you see another geyser spill forth. Then, another. “There has to be an end to them, right?”</p><p>You lower the binoculars and tell the rest of the team to prepare for a fight. You don’t know if you can hold off these strange creatures or not, but there’s only one way to find out.</p><p class='basic right'>Add 1 {'{'}frost{'}'} token to the chaos bag. Proceed to _Setup_.</p>"
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<div class='resolution'><p><b>If no resolution was reached (each investigator was defeated):</b> Through a whirlwind of snow and ice, you barely manage to escape with your life. You traipse across the snowy plains for miles, exhausted, terrified, and unsure whether the phantasms hunting you are real or merely figments of your rattled imagination.</p><p>In cruel, bitter silence, you and your remaining companions trudge onward. The sun drifts to the horizon but never sets. You have seen no sign of danger for hours, and yet you dare not tarry. Dread compels you on.</p><p>Only when you are too tired to walk any longer do you finally stop to get your bearings and decide how to proceed. After all, is this even a research expedition any longer?</p><ul><li>In your Campaign Log, record the *team barely escaped the ice shelf*.</li><li>Each investigator earns experience equal the Victory X value of each card in the victory display. If there is at least one Seeping Nightmare in the victory display, each investigator earns 2 bonus experience as they have gained insight into the entities that dwell in Antarctica.<ul><li><span class='{bonusClass}'>Gained Bonus Experience</span></li><li>_Experience_: {xp}</li></ul></li><li>Clean up the game. You will not return to this scenario for the remainder of the campaign.</li><li>Proceed to _Interlude I: Restful Night._</li></ul></div>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<div class='resolution'><p><b>Resolution 1:</b> In cruel, bitter silence, you and your remaining companions trudge onward. The sun drifts to the horizon but never sets. You have seen no sign of danger for hours, and yet you dare not tarry. Dread compels you on.</p><p>Only when you are too tired to walk any longer do you finally stop to get your bearings and decide how to proceed. After all, is this even a research expedition any longer?</p><ul><li>In your Campaign Log, record *the team defeated the hunting creatures*.</li><li>Each investigator earns experience equal the Victory X value of each card in the victory display. Each investigator earns 5 bonus experience as they have gained insight into the entities that dwell in Antarctica.<ul><li>_Experience_: {xp}</li></ul></li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Clean up the game. You will not return to this scenario for the remainder of the campaign.</li><li>Proceed to _Interlude I: Restful Night_.</li></ul></div>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<div class='resolution'><p><b>Resolution 2:</b> In cruel, bitter silence, you and your remaining companions trudge onward. The sun drifts to the horizon but never sets. You have seen no sign of danger for hours, and yet you dare not tarry. Dread compels you on.</p><p>Only when you are too tired to walk any longer do you finally stop to get your bearings and decide how to proceed. After all, is this even a research expedition any longer?</p><ul><li>In your Campaign Log, record the * the team fled to the mountains*.</li><li>Each investigator earns experience equal the Victory X value of each card in the victory display. If there is at least one Seeping Nightmare in the victory display, each investigator earns 2 bonus experience as they have gained insight into the entities that dwell in Antarctica.<ul><li><span class='{bonusClass}'>Gained Bonus Experience</span></li><li>_Experience_: {xp}</li></ul></li><li>In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.</li><li>Clean up the game. You will not return to this scenario for the remainder of the campaign.</li><li>Proceed to _Interlude I: Restful Night._</li></ul></div>"
+      },
+      "xp": {
+        "insight": "Gained insight into the entities that dwell in Antarctica."
+      }
     }
   }
 }

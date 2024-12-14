@@ -11,7 +11,9 @@ import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Log (getRecordSet)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Text
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -26,7 +28,7 @@ import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Eidolon))
 
 newtype IceAndDeathPart3 = IceAndDeathPart3 ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 iceAndDeathPart3 :: Difficulty -> IceAndDeathPart3
@@ -38,6 +40,10 @@ iceAndDeathPart3 difficulty =
     difficulty
     iceAndDeathLayout
     (referenceL .~ "08501")
+
+instance HasModifiersFor IceAndDeathPart3 where
+  getModifiersFor (IceAndDeathPart3 a) = do
+    getCamp >>= traverse_ \camp -> modifySelect a (locationIs camp) [ScenarioModifier "camp"]
 
 instance HasChaosTokenValue IceAndDeathPart3 where
   getChaosTokenValue iid tokenFace (IceAndDeathPart3 attrs) = case tokenFace of
@@ -197,11 +203,37 @@ instance RunMessage IceAndDeathPart3 where
     ScenarioResolution resolution -> scope "resolutions" do
       case resolution of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
-          push R1
+          insight <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.seepingNightmare
+          xp <-
+            if insight
+              then allGainXpWithBonus' attrs $ toBonus "insight" 2
+              else allGainXp' attrs
+          story
+            $ withVars
+              [ "bonusClass" .= String (if insight then "valid" else "invalid")
+              , "xp" .= xp
+              ]
+            $ i18nWithTitle "noResolution"
+          record TheTeamBarelyEscapedTheIceShelf
+          endOfScenario
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
-          allGainXp attrs
+          xp <- allGainXpWithBonus' attrs $ toBonus "insight" 5
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"
+          record TheTeamDefeatedTheHuntingCreatures
+          endOfScenario
+        Resolution 2 -> do
+          insight <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.seepingNightmare
+          xp <-
+            if insight
+              then allGainXpWithBonus' attrs $ toBonus "insight" 2
+              else allGainXp' attrs
+          story
+            $ withVars
+              [ "bonusClass" .= String (if insight then "valid" else "invalid")
+              , "xp" .= xp
+              ]
+            $ i18nWithTitle "resolution2"
+          record TheTeamFledToTheMountains
           endOfScenario
         _ -> error "Unknown resolution"
       pure s

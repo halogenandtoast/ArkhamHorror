@@ -2572,6 +2572,7 @@ enemyMatcherFilter es matcher' = case matcher' of
       case attr enemyDiscardedBy enemy of
         Nothing -> pure False
         Just discardee -> pure $ discardee `elem` iids
+  EnemyWithAnyCardsUnderneath -> filterM (fieldP EnemyCardsUnderneath notNull . toId) es
   EnemyWhenEvent eventMatcher -> do
     cond <- selectAny eventMatcher
     pure $ guard cond *> es
@@ -2754,6 +2755,16 @@ enemyMatcherFilter es matcher' = case matcher' of
                   pure $ mdistance == Just minDistance
             _ -> pure False
         else pure False
+  NearestEnemyToAnInvestigator enemyMatcher -> do
+    eids <- select enemyMatcher
+    mins <$> flip mapMaybeM es \enemy -> runMaybeT do
+      guard $ enemy.id `elem` eids
+      iid <- MaybeT $ selectOne $ NearestToEnemy (EnemyWithId enemy.id)
+      ilid <- MaybeT $ field InvestigatorLocation iid
+      elid <- MaybeT $ field EnemyLocation (toId $ toAttrs enemy)
+      if ilid == elid
+        then pure (enemy, 0)
+        else (enemy,) . unDistance <$> MaybeT (getDistance ilid elid)
   NearestEnemyToLocation ilid enemyMatcher -> do
     eids <- select enemyMatcher
     flip filterM es \enemy -> do

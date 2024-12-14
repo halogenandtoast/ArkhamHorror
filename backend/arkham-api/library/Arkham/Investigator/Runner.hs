@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -476,7 +476,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           pushAll $ [PayForAbility (abilityEffect a [] $ mconcat additionalCosts) []] <> msgs
     pure a
   TakeStartingResources iid | iid == investigatorId -> do
-    mods <- traceShowId <$> getModifiers a
+    mods <- getModifiers a
     let
       base = fromMaybe 5 $ listToMaybe [n | BaseStartingResources n <- mods]
       startingResources =
@@ -540,14 +540,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           )
           5
           modifiers'
-      startingResources =
-        foldl'
-          ( \total -> \case
-              StartingResources n -> max 0 (total + n)
-              _ -> total
-          )
-          5
-          modifiers'
       additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) modifiers'
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
@@ -570,7 +562,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
          ]
     pure
       $ a
-      & (tokensL %~ setTokens Resource startingResources)
       & (discardL .~ discard)
       & (handL .~ hand <> additionalHandCards)
       & (deckL .~ Deck deck)

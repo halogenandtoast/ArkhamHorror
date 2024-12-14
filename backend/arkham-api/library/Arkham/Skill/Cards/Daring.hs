@@ -24,7 +24,7 @@ instance RunMessage Daring where
       menemy <- ((.enemy) =<<) <$> getSkillTestTarget
       case menemy of
         Just enemy -> do
-          withSkillTest \sid -> skillTestModifiers sid attrs enemy [AddKeyword Retaliate, AddKeyword Alert]
+          withSkillTest \stid -> skillTestModifiers stid attrs enemy [AddKeyword Retaliate, AddKeyword Alert]
         _ -> error "Target was invalid"
       Daring <$> liftRunMessage msg attrs
     SkillTestEnds {} -> do

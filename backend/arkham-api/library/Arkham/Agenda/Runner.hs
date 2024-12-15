@@ -115,7 +115,7 @@ instance RunMessage AgendaAttrs where
             afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
             pushAll
               [ whenWindow
-              , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
+              , RemoveAllDoomFromPlay (agendaRemoveDoomMatchers {removeDoomAgendas = (AgendaWithId $ toId a)})
               , AdvanceAgenda agendaId
               , afterWindow
               ]

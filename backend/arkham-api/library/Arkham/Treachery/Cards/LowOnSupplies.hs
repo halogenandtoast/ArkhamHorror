@@ -23,7 +23,7 @@ instance RunMessage LowOnSupplies where
     Revelation iid source | isSource attrs source -> do
       anyWithResources <- selectAny InvestigatorWithAnyResources
       hasAssets <- selectAny (HasMatchingAsset AnyAsset)
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

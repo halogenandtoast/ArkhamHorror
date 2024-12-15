@@ -37,7 +37,7 @@ instance RunMessage FirstWatch where
         pure e
       UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _ | eid == eventId -> do
         investigatorIds <-
-          setFromList @(Set InvestigatorId) <$> getInvestigatorIds
+          setFromList @(Set InvestigatorId) <$> getInvestigators
         let
           assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
           remainingInvestigatorIds =

@@ -63,7 +63,7 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
             , AddDirectConnection blackCave townHallId
             , AddDirectConnection townHallId blackCave
             ]
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       pushAll
         $ townHallMessages
         <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]

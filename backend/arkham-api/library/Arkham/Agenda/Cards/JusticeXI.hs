@@ -9,7 +9,7 @@ import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log (getRecordedCardCodes)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (getInvestigatorIds, getLead, getSetAsideCard)
+import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCard)
 import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
@@ -35,7 +35,7 @@ instance HasAbilities JusticeXI where
 instance RunMessage JusticeXI where
   runMessage msg a@(JusticeXI attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       n <- getSpendableClueCount iids
       targetAmount <- perPlayer 3
       actId <- selectJust AnyAct

@@ -31,7 +31,7 @@ instance HasModifiersFor CityOfTheGreatRace where
 instance RunMessage CityOfTheGreatRace where
   runMessage msg a@(CityOfTheGreatRace attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       shouldMoveCustodian <-
         selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
 

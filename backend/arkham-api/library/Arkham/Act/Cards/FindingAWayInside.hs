@@ -30,7 +30,7 @@ instance RunMessage FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid source AdvancedWithClues | aid == actId && onSide B attrs && isSource attrs source -> do
       lead <- getLeadPlayer
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       adamLynch <- genCard Assets.adamLynch
       museumHallsId <-
         fromJustNote "missing museum halls"

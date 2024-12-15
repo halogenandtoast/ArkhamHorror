@@ -35,7 +35,7 @@ instance RunMessage MistakesOfThePast where
             "Historical Society"
       mrPeabody <- getSetAsideCard Assets.mrPeabody
       lead <- getLeadPlayer
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       playerCount <- getPlayerCount
       placeHiddenLibrary <- placeSetAsideLocation_ Locations.hiddenLibrary
       pushAll

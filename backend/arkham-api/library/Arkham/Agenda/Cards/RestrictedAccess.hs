@@ -36,7 +36,7 @@ instance RunMessage RestrictedAccess where
           push $ AttachStoryTreacheryTo tid shadowSpawned (toTarget huntingHorror)
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       mHuntingHorrorId <- getInPlayHuntingHorror
       case mHuntingHorrorId of
         Just eid ->

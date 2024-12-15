@@ -36,7 +36,7 @@ instance HasAbilities HasturTheKingInYellow where
 instance RunMessage HasturTheKingInYellow where
   runMessage msg e@(HasturTheKingInYellow attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       pushAll $ map (InitiateEnemyAttack . enemyAttack (toId attrs) attrs) iids
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -71,7 +71,7 @@ instance RunMessage CurtainCall where
       backstage <- place Locations.backstage
       placeAll [Locations.lobby, Locations.balcony]
 
-      investigators <- allInvestigatorIds
+      investigators <- allInvestigators
       mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       for_ mLola \lola -> do
         chooseOneM lola do

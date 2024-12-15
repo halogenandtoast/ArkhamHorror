@@ -28,7 +28,7 @@ instance RunMessage ThePaleMaskBeckons where
       mTheManInThePallidMask <- selectOne $ enemyIs Cards.theManInThePallidMask
       t <$ case mTheManInThePallidMask of
         Just enemy -> do
-          iids <- getInvestigatorIds
+          iids <- getInvestigators
           pushAll $ map (EnemyAttack . enemyAttack enemy attrs) iids
         Nothing -> do
           enemy <- getCampaignStoryCard Cards.theManInThePallidMask

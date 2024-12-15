@@ -276,6 +276,9 @@ selectOne matcher = do
 selectOrDefault :: (HasCallStack, Query a, HasGame m) => QueryElement a -> a -> m (QueryElement a)
 selectOrDefault def matcher = selectMaybe def id matcher
 
+selectMaybeT :: (HasCallStack, Query a, HasGame m) => a -> MaybeT m (QueryElement a)
+selectMaybeT = MaybeT . selectOne
+
 selectMaybe
   :: (HasCallStack, Query a, HasGame m)
   => b

@@ -184,3 +184,9 @@ getGrid = scenarioField ScenarioGrid
 
 getLayout :: HasGame m => m [GridTemplateRow]
 getLayout = scenarioField ScenarioLocationLayout
+
+guardInScenario :: HasGame m => MaybeT m ()
+guardInScenario = liftGuardM inScenario
+
+inScenario :: HasGame m => m Bool
+inScenario = selectAny TheScenario

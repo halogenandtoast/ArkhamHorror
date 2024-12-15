@@ -249,7 +249,7 @@ instance RunMessage UnionAndDisillusion where
         Resolution 8 -> do
           story resolution8
           removeCampaignCard Assets.puzzleBox
-          investigators <- allInvestigatorIds
+          investigators <- allInvestigators
 
           gavriellaIsAlive <- getHasRecord GavriellaIsAlive
           if gavriellaIsAlive

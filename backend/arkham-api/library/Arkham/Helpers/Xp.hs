@@ -43,7 +43,7 @@ getXpWithBonus bonus = snd <$> getXpWithBonus' bonus
 getXpWithBonus' :: forall m. (HasCallStack, HasGame m) => Int -> m (Int, [(InvestigatorId, Int)])
 getXpWithBonus' bonus = do
   initialAmount <- (bonus +) <$> getInitialVictory
-  investigatorIds <- allInvestigatorIds
+  investigatorIds <- allInvestigators
   details <- for investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure (iid, foldl' applyModifier initialAmount modifiers')
@@ -93,7 +93,7 @@ generateXpReport bonus = do
     fmap (map AllGainXp) . toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
   locationVictory <-
     fmap (map AllGainXp) . toVictory =<< select (RevealedLocation <> LocationWithoutClues)
-  investigatorIds <- allInvestigatorIds
+  investigatorIds <- allInvestigators
   fromModifiers <- concatForM investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure $ mapMaybe (modifierToXpDetail iid) modifiers'

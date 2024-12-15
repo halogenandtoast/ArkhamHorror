@@ -314,7 +314,7 @@ allGainXpWith source f = do
 
 interludeXpAll :: ReverseQueue m => XpBonus -> m ()
 interludeXpAll xp = do
-  investigatorIds <- allInvestigatorIds
+  investigatorIds <- allInvestigators
   push
     $ ReportXp
     $ XpBreakdown

@@ -214,7 +214,7 @@ instance RunMessage ForTheGreaterGood where
             else drawAnotherChaosToken iid
       pure s
     ScenarioResolution n -> do
-      iids <- allInvestigatorIds
+      iids <- allInvestigators
       case n of
         NoResolution -> do
           story noResolution

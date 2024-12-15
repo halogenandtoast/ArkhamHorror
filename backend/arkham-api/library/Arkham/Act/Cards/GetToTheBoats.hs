@@ -38,7 +38,7 @@ instance RunMessage GetToTheBoats where
   runMessage msg a@(GetToTheBoats attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       gondola <- genEncounterCard Locations.gondola
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       pushAll
         [ InvestigatorDrewEncounterCard leadInvestigatorId gondola
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

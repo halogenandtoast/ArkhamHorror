@@ -33,7 +33,7 @@ instance RunMessage TheJunglesHeart where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       withBinoculars <- getInvestigatorsWithSupply Binoculars
 
       let

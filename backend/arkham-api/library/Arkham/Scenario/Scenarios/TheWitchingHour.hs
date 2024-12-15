@@ -123,7 +123,7 @@ instance RunMessage TheWitchingHour where
         , Locations.arkhamWoodsQuietGlade
         ]
 
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       let
         woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
         locationMap =

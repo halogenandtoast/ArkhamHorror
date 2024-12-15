@@ -87,7 +87,7 @@ instance RunMessage HiddenAgendas where
     NextAdvanceActStep aid n | aid == toId a -> do
       monsters <- getSetAsideCardsMatching $ CardWithTrait Monster
       unless (null monsters) $ do
-        iids <- getInvestigatorIds
+        iids <- getInvestigators
         let iid = fromJustNote "error" $ iids !!? (n - 1)
         mLocation <- field InvestigatorLocation iid
         player <- getPlayer iid

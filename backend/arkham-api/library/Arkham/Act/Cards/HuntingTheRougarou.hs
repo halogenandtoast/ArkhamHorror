@@ -65,7 +65,7 @@ instance RunMessage HuntingTheRougarou where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
       lead <- getLeadPlayer
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       rougarou <- fromJustNote "must be" <$> getTheRougarou
 
       requiredClueCount <- getPlayerCountValue (PerPlayer 4)

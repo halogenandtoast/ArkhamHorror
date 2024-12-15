@@ -28,7 +28,7 @@ instance RunMessage SaracenicScript where
   runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
       survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       esotericFormulas <- getSetAsideCardsMatching $ cardIs Assets.esotericFormula
       pushAll
         $ zipWith TakeControlOfSetAsideAsset investigatorIds esotericFormulas

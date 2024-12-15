@@ -65,7 +65,7 @@ instance RunMessage TheEntityAboveTheFloodBelow where
            ]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       pushAll
         $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
         <> [ TakeResources iid 2 (toAbilitySource attrs 1) False

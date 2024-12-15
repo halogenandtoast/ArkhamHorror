@@ -85,6 +85,9 @@ instance RunMessage DarkSideOfTheMoon where
       push $ SetChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> do
+      whenHasRecord RandolphWasCaptured do
+        getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
+
       notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
       captured <- selectAny $ InvestigatorWithRecord WasCaptured
       when captured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro1"
@@ -116,9 +119,6 @@ instance RunMessage DarkSideOfTheMoon where
 
       notCaptured <- select $ not_ (InvestigatorWithRecord WasCaptured)
       for_ notCaptured \iid -> moveTo_ attrs iid moonForest
-
-      whenHasRecord RandolphWasCaptured do
-        getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
 
       setAside
         [ Enemies.moonLizard

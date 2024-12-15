@@ -24,7 +24,7 @@ corpseDweller =
 instance RunMessage CorpseDweller where
   runMessage msg (CorpseDweller attrs) = case msg of
     EnemySpawn miid lid eid | eid == toId attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       let iid = fromMaybe leadInvestigatorId miid
       humanoids <- select $ EnemyWithTrait Humanoid <> enemyAt lid
       player <- getPlayer iid

@@ -397,11 +397,11 @@ instance RunMessage Scenario where
       (Window.getBatchId -> batchId)
       _ -> do
         let
-          getDraw [] = error "no drawing"
+          getDraw [] = Nothing
           getDraw (Would batchId' msgs : _) | batchId' == batchId = getDraw msgs
-          getDraw (Do (EmptyDeck _ (Just draw)) : _) = draw
+          getDraw (Do (EmptyDeck _ (Just draw)) : _) = Just draw
           getDraw (_ : rest) = getDraw rest
-        drawing <- fromQueue getDraw
+        mDrawing <- fromQueue getDraw
         cards <- map toCard . take 10 . reverse <$> field Field.InvestigatorDiscard iid
         player <- getPlayer iid
         push
@@ -409,7 +409,8 @@ instance RunMessage Scenario where
             player
             [ Label
                 "Shuffle the bottom 10 cards of your discard back into your Deck"
-                [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards, drawing]
+                $ [IgnoreBatch batchId, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards]
+                <> maybeToList mDrawing
             , Label "Do Nothing" []
             ]
         pure x
@@ -621,8 +622,8 @@ allScenarios =
     , ("07311", SomeScenario intoTheMaelstrom)
     , ("08501a", SomeScenario iceAndDeathPart1)
     , ("08501b", SomeScenario iceAndDeathPart2)
-    , -- , ("08501c", SomeScenario iceAndDeathPart3)
-      ("50011", SomeScenario returnToTheGathering)
+    , ("08501c", SomeScenario iceAndDeathPart3)
+    , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
     , ("81001", SomeScenario curseOfTheRougarou)

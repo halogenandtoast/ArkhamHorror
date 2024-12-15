@@ -24,7 +24,7 @@ newtype Grizzled = Grizzled SkillAttrs
 instance HasModifiersFor Grizzled where
   getModifiersFor (Grizzled a) = do
     let traits = [t | ChosenTrait t <- concatMap snd (toList a.customizations)]
-    self <- modifySelfMaybe a do
+    modifySelfMaybe a.cardId do
       guard $ isNothing a.attachedTo
       s <- MaybeT getSkillTestSource
       t <- MaybeT getSkillTestTarget
@@ -44,19 +44,17 @@ instance HasModifiersFor Grizzled where
                 else pure 0
       guard $ n > 0
       pure [AddSkillIcons $ concat $ replicate @[[SkillIcon]] n [WildIcon, WildIcon]]
-    skillTest <-
-      getSkillTest >>= \case
-        Nothing -> pure mempty
-        Just st -> case a.attachedTo of
-          Just (EnemyTarget eid) -> maybeModified_ a (SkillTestTarget st.id) do
-            source <- MaybeT $ getSkillTestSource
-            target <- MaybeT $ getSkillTestTarget
-            let isOnEnemy = maybe False (== eid) source.enemy
-            let isAgainstEnemy = maybe False (== eid) target.enemy
-            guard $ isOnEnemy || isAgainstEnemy
-            pure [Difficulty (-1)]
-          _ -> pure mempty
-    pure $ self <> skillTest
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> case a.attachedTo of
+        Just (EnemyTarget eid) -> maybeModified_ a (SkillTestTarget st.id) do
+          source <- MaybeT $ getSkillTestSource
+          target <- MaybeT $ getSkillTestTarget
+          let isOnEnemy = maybe False (== eid) source.enemy
+          let isAgainstEnemy = maybe False (== eid) target.enemy
+          guard $ isOnEnemy || isAgainstEnemy
+          pure [Difficulty (-1)]
+        _ -> pure mempty
 
 grizzled :: SkillCard Grizzled
 grizzled = skill Grizzled Cards.grizzled

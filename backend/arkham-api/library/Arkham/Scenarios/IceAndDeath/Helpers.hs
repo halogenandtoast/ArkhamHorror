@@ -10,6 +10,7 @@ import Arkham.Helpers.Log (getCampaignLog)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Layout
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -19,8 +20,26 @@ import Arkham.Projection
 import Arkham.Source
 import Data.Map.Strict qualified as Map
 
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "iceAndDeath" a
+scenarioI18n :: Int -> (HasI18n => a) -> a
+scenarioI18n n a = campaignI18n $ scope ("iceAndDeath.part" <> tshow n) a
+
+iceAndDeathLayout :: [GridTemplateRow]
+iceAndDeathLayout =
+  [ "trefoil  .       .     .         .        .         plus"
+  , "trefoil  .       .     moon      .        .         plus"
+  , ".        droplet .     moon      .        equals    ."
+  , ".        droplet .     .         .        equals    ."
+  , ".        .       heart .         triangle .         ."
+  , ".        .       heart .         triangle .         ."
+  , ".        .       .     circle    .        .         ."
+  , ".        star    .     circle    .        hourglass ."
+  , ".        star    .     diamond   .        hourglass ."
+  , ".        .       .     diamond   .        .         ."
+  , ".        .       .     square    .        .         ."
+  , ".        .       .     square    .        .         ."
+  , ".        .       .     squiggle  .        .         ."
+  , ".        .       .     squiggle  .        .         ."
+  ]
 
 placeSetAsideConnectedAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Ability
 placeSetAsideConnectedAbility a n = mkAbility a n $ forced $ Enters #after You $ ConnectedToSetAsideLocation
@@ -39,7 +58,7 @@ camps =
     , (Locations.frozenShores.cardCode, Camp_FrozenShores)
     , (Locations.treacherousPath.cardCode, Camp_TreacherousPath)
     , (Locations.precariousIceSheet.cardCode, Camp_PrecariousIceSheet)
-    , (Locations.broadSnowdrifts.cardCode, Camp_BoardSnowdrifts)
+    , (Locations.broadSnowdrifts.cardCode, Camp_BroadSnowdrifts)
     , (Locations.icyWastes.cardCode, Camp_IcyWastes)
     , (Locations.rockyCrags.cardCode, Camp_RockyCrags)
     , (Locations.snowGraves.cardCode, Camp_SnowGraves)

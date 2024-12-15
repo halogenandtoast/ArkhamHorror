@@ -58,8 +58,8 @@ instance RunMessage LostInTheWoods where
       push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigatorIds
-      lead <- getLeadInvestigatorId
+      iids <- getInvestigators
+      lead <- getLead
       arkhamWoods <-
         shuffleM
           =<< select (SetAsideCardMatch $ CardWithTitle "Arkham Woods")

@@ -72,6 +72,7 @@ data EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
   | NearestEnemyToLocation LocationId EnemyMatcher
+  | NearestEnemyToAnInvestigator EnemyMatcher
   | EnemyIs CardCode
   | EnemyWithCardId CardId
   | AnyEnemy
@@ -126,6 +127,7 @@ data EnemyMatcher
   | EnemyWhenLocation LocationMatcher
   | EnemyWhenInvestigator InvestigatorMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
+  | EnemyWithAnyCardsUnderneath
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)

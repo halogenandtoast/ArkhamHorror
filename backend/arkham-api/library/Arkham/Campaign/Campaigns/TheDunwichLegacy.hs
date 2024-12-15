@@ -78,7 +78,7 @@ instance RunMessage TheDunwichLegacy where
       unconsciousForSeveralHours <-
         getHasRecord
           InvestigatorsWereUnconsciousForSeveralHours
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       players <- allPlayers
       lead <- getLeadPlayer
       if unconsciousForSeveralHours
@@ -100,7 +100,7 @@ instance RunMessage TheDunwichLegacy where
       pure c
     CampaignStep (InterludeStep 2 _) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       players <- allPlayers
       lead <- getLeadPlayer
       drHenryArmitageUnowned <- isNothing <$> getOwner Assets.drHenryArmitage

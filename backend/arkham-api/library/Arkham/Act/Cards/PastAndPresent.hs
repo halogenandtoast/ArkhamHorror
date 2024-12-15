@@ -49,7 +49,7 @@ instance RunMessage PastAndPresent where
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       tenochtitlanLocations <-
         select $ LocationWithTrait Tenochtitlan <> LocationWithoutClues
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       timeCollapsing <- getSetAsideCard Agendas.timeCollapsing
       theReturnTrip <- getSetAsideCard Acts.theReturnTrip
 

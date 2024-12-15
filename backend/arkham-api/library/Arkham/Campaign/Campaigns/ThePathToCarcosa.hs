@@ -117,7 +117,7 @@ instance RunMessage ThePathToCarcosa where
           ]
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       players <- allPlayers
       lead <- getLeadPlayer
       conviction <- getRecordCount Conviction

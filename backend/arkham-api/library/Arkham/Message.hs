@@ -893,6 +893,7 @@ data Message
   | RerunSkillTest
   | ResetInvestigators
   | ResetGame
+  | ReloadDecks
   | ResetChaosTokens Source
   | Reset Target
   | ReturnChaosTokensToPool [ChaosToken]

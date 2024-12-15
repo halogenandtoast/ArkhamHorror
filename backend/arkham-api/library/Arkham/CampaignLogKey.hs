@@ -310,7 +310,7 @@ data CampaignLogKey
   | Camp_FrozenShores
   | Camp_TreacherousPath
   | Camp_PrecariousIceSheet
-  | Camp_BoardSnowdrifts
+  | Camp_BroadSnowdrifts
   | Camp_IcyWastes
   | Camp_RockyCrags
   | Camp_SnowGraves
@@ -319,6 +319,8 @@ data CampaignLogKey
   | Camp_BarrierCamp
   | Camp_RemnantsOfLakesCamp
   | Camp_CrystallineCavern
+  | TheTeamBarelyEscapedTheIceShelf
+  | TheTeamDefeatedTheHuntingCreatures
   | TheTeamFledToTheMountains
   | LocationsRevealed
   | -- | Curse of the Rougarou
@@ -389,7 +391,21 @@ unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
   Nothing -> Nothing
 
 instance ToGameLoggerFormat CampaignLogKey where
-  format = pack . go . show
+  format = \case
+    Camp_CrashSite -> "Camp – Crash Site"
+    Camp_FrozenShores -> "Camp – Frozen Shores"
+    Camp_TreacherousPath -> "Camp – Treacherous Path"
+    Camp_PrecariousIceSheet -> "Camp – Precarious Ice Sheet"
+    Camp_BroadSnowdrifts -> "Camp – BroadSnowdrifts"
+    Camp_IcyWastes -> "Camp – Icy Wastes"
+    Camp_RockyCrags -> "Camp – Rocky Crags"
+    Camp_SnowGraves -> "Camp – Snow Graves"
+    Camp_IcebreakerLanding -> "Camp – Icebreaker Landing"
+    Camp_FrigidCave -> "Camp – Frigid Cave"
+    Camp_BarrierCamp -> "Camp – Barrier Camp"
+    Camp_RemnantsOfLakesCamp -> "Camp – Remnants of Lake's Camp"
+    Camp_CrystallineCavern -> "Camp – Crystalling Cavern"
+    s -> pack . go $ show s
    where
     go :: String -> String
     go [] = []

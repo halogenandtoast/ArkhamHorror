@@ -19,7 +19,7 @@ maskedHorrors = treachery MaskedHorrors Cards.maskedHorrors
 instance RunMessage MaskedHorrors where
   runMessage msg t@(MaskedHorrors attrs) = case msg of
     Revelation _ source | isSource attrs source -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       targetInvestigators <-
         map fst
           . filter ((>= 2) . snd)

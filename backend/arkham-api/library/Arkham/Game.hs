@@ -720,7 +720,7 @@ getInvestigatorsMatching matcher = do
 
       mappings <-
         traverse (traverseToSnd (getLocationDistance <=< getJustLocation))
-          =<< getInvestigatorIds
+          =<< getInvestigators
 
       let
         mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
@@ -742,7 +742,7 @@ getInvestigatorsMatching matcher = do
 
       mappings <-
         traverse (traverseToSnd (getEnemyDistance <=< getJustLocation))
-          =<< getInvestigatorIds
+          =<< getInvestigators
 
       let
         mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
@@ -755,7 +755,7 @@ getInvestigatorsMatching matcher = do
       allCounts <-
         traverse
           (\iid' -> length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId iid')))
-          =<< getInvestigatorIds
+          =<< getInvestigators
       pure $ selfCount == maximum (ncons selfCount allCounts)
     HasMatchingAsset assetMatcher -> flip filterM as $ \i ->
       selectAny $ assetMatcher <> assetControlledBy (toId i)
@@ -1843,7 +1843,7 @@ getLocationsMatching lmatcher = do
           pure $ filter (and . sequence [(`elem` matches'), (`elem` candidates)] . toId) ls
         Nothing -> pure []
     FarthestLocationFromAll matcher -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
       distances <- for iids $ \iid -> do
         start <- getJustLocation iid
@@ -2036,7 +2036,7 @@ getLocationsMatching lmatcher = do
     BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
     LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
     LocationWithDefeatedEnemyThisRound -> do
-      iids <- allInvestigatorIds
+      iids <- allInvestigators
       enemiesDefeated <- historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
       let
         validLids = flip mapMaybe enemiesDefeated $ \e ->
@@ -2572,6 +2572,7 @@ enemyMatcherFilter es matcher' = case matcher' of
       case attr enemyDiscardedBy enemy of
         Nothing -> pure False
         Just discardee -> pure $ discardee `elem` iids
+  EnemyWithAnyCardsUnderneath -> filterM (fieldP EnemyCardsUnderneath notNull . toId) es
   EnemyWhenEvent eventMatcher -> do
     cond <- selectAny eventMatcher
     pure $ guard cond *> es
@@ -2754,6 +2755,16 @@ enemyMatcherFilter es matcher' = case matcher' of
                   pure $ mdistance == Just minDistance
             _ -> pure False
         else pure False
+  NearestEnemyToAnInvestigator enemyMatcher -> do
+    eids <- select enemyMatcher
+    mins <$> flip mapMaybeM es \enemy -> runMaybeT do
+      guard $ enemy.id `elem` eids
+      iid <- MaybeT $ selectOne $ NearestToEnemy (EnemyWithId enemy.id)
+      ilid <- MaybeT $ field InvestigatorLocation iid
+      elid <- MaybeT $ field EnemyLocation (toId $ toAttrs enemy)
+      if ilid == elid
+        then pure (enemy, 0)
+        else (enemy,) . unDistance <$> MaybeT (getDistance ilid elid)
   NearestEnemyToLocation ilid enemyMatcher -> do
     eids <- select enemyMatcher
     flip filterM es \enemy -> do
@@ -3444,6 +3455,7 @@ getEnemyField f e = do
           then setFromList <$> select (InvestigatorAt $ locationWithEnemy enemyId)
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
+    EnemyCardsUnderneath -> pure enemyCardsUnderneath
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy
@@ -3589,10 +3601,10 @@ instance Projection Investigator where
         foldr applyModifier investigatorSanity <$> getModifiers attrs
       InvestigatorRemainingSanity -> do
         sanity <- field InvestigatorSanity (toId attrs)
-        pure (sanity - investigatorSanityDamage attrs)
+        pure $ max 0 (sanity - investigatorSanityDamage attrs)
       InvestigatorRemainingHealth -> do
         health <- field InvestigatorHealth (toId attrs)
-        pure (health - investigatorHealthDamage attrs)
+        pure $ max 0 (health - investigatorHealthDamage attrs)
       InvestigatorPlacement -> pure investigatorPlacement
       InvestigatorLocation -> do
         mods <- getModifiers iid

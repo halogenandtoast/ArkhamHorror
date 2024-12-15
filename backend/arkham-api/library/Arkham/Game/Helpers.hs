@@ -548,7 +548,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         usedAbilities' <-
           filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
 
         let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
 
@@ -584,7 +584,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           fmap (map usedAbility)
             . filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
@@ -810,7 +810,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               ]
           Nothing -> pure False
       _ -> pure False
-    iids <- filter (/= iid) <$> getInvestigatorIds
+    iids <- filter (/= iid) <$> getInvestigators
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
     canHelpPay <- flip filterM iidsWithModifiers \(iid', modifiers') -> do
       bobJenkinsPermitted <-
@@ -965,16 +965,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NeedsAction -> True
         AuxiliaryCost _ inner -> isPlayAction inner
 
-    additionalCosts <- flip mapMaybeM modifiers \case
-      AdditionalCost n -> pure (Just n)
-      AdditionalActionCostOf match n -> do
-        performedActions <- field InvestigatorActionsPerformed iid
-        takenActions <- field InvestigatorActionsTaken iid
-        let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
-        pure
-          $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
-          $> ActionCost n
-      _ -> pure Nothing
+    additionalCosts <-
+      flip mapMaybeM (modifiers <> cardModifiers) \case
+        AdditionalCost n -> pure (Just n)
+        AdditionalActionCostOf match n -> do
+          performedActions <- field InvestigatorActionsPerformed iid
+          takenActions <- field InvestigatorActionsTaken iid
+          let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
+          pure
+            $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
+            $> ActionCost n
+        _ -> pure Nothing
 
     let
       sealingToCost = \case
@@ -1297,10 +1298,10 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny Matcher.ResignedInvestigator -- at least one investigator should have resigned
       ]
   Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
-    liftA2
-      (==)
-      (select Matcher.UneliminatedInvestigator)
-      (select investigatorMatcher)
+    uneliminated <- select Matcher.UneliminatedInvestigator
+    if null uneliminated
+      then pure False
+      else (== uneliminated) <$> select investigatorMatcher
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-
@@ -3064,7 +3065,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , case cardMatcher of
               Matcher.BasicCardMatch baseMatcher ->
                 pure $ cardMatch cardPlay.card baseMatcher
-              _ -> elem cardPlay.card <$> select cardMatcher
+              _ ->
+                elem cardPlay.card <$> select (Matcher.basic (Matcher.CardWithId cardPlay.card.id) <> cardMatcher)
           ]
       _ -> noMatch
     Matcher.PlayEventDiscarding timing whoMatcher eventMatcher -> guardTiming timing $ \case

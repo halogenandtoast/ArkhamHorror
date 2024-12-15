@@ -239,6 +239,7 @@ library
       Arkham.Act.Cards.TrialOfTheHuntress
       Arkham.Act.Cards.TruthAndLies
       Arkham.Act.Cards.UncoveringTheConspiracy
+      Arkham.Act.Cards.UnderAttack
       Arkham.Act.Cards.UnexpectedRescue
       Arkham.Act.Cards.WarmWelcome
       Arkham.Act.Cards.WhatHappened
@@ -309,6 +310,7 @@ library
       Arkham.Agenda.Cards.HospitalOfHorrors
       Arkham.Agenda.Cards.HotPursuit
       Arkham.Agenda.Cards.HumanityFading
+      Arkham.Agenda.Cards.IcyDepths
       Arkham.Agenda.Cards.InEveryShadow
       Arkham.Agenda.Cards.IntoTheWhite
       Arkham.Agenda.Cards.Intruders
@@ -325,6 +327,7 @@ library
       Arkham.Agenda.Cards.MadnessCoils
       Arkham.Agenda.Cards.MadnessDies
       Arkham.Agenda.Cards.MadnessDrowns
+      Arkham.Agenda.Cards.ManifestationsOfEvil
       Arkham.Agenda.Cards.MarkedForSacrifice
       Arkham.Agenda.Cards.OutOfTime
       Arkham.Agenda.Cards.OverTheThreshold
@@ -1511,6 +1514,7 @@ library
       Arkham.Enemy.Cards.FleshEater
       Arkham.Enemy.Cards.FlyingPolyp
       Arkham.Enemy.Cards.FormlessSpawn
+      Arkham.Enemy.Cards.FrenziedExplorer
       Arkham.Enemy.Cards.FurtiveZoog
       Arkham.Enemy.Cards.GavriellaMizrah
       Arkham.Enemy.Cards.GhoulFromTheDepths
@@ -1583,6 +1587,7 @@ library
       Arkham.Enemy.Cards.LodgeEnforcer
       Arkham.Enemy.Cards.LodgeJailor
       Arkham.Enemy.Cards.LodgeNeophyte
+      Arkham.Enemy.Cards.LostResearcher
       Arkham.Enemy.Cards.LumberingGug
       Arkham.Enemy.Cards.LupineThrall
       Arkham.Enemy.Cards.LurkerInTheDark
@@ -1652,6 +1657,7 @@ library
       Arkham.Enemy.Cards.ScreechingByakhee
       Arkham.Enemy.Cards.SebastienMoreau
       Arkham.Enemy.Cards.SeekerOfCarcosa
+      Arkham.Enemy.Cards.SeepingNightmare
       Arkham.Enemy.Cards.SerpentFromYoth
       Arkham.Enemy.Cards.SerpentOfTenochtitlan
       Arkham.Enemy.Cards.SerpentsOfYig
@@ -2187,6 +2193,7 @@ library
       Arkham.Field.Matchers
       Arkham.Fight
       Arkham.Fight.Types
+      Arkham.FlavorText
       Arkham.Game
       Arkham.Game.Base
       Arkham.Game.Diff
@@ -2246,6 +2253,7 @@ library
       Arkham.Helpers.Story
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
+      Arkham.Helpers.Text
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
       Arkham.Helpers.Window
@@ -3101,6 +3109,7 @@ library
       Arkham.Scenario.Scenarios.HorrorInHighGear
       Arkham.Scenario.Scenarios.IceAndDeathPart1
       Arkham.Scenario.Scenarios.IceAndDeathPart2
+      Arkham.Scenario.Scenarios.IceAndDeathPart3
       Arkham.Scenario.Scenarios.InTheClutchesOfChaos
       Arkham.Scenario.Scenarios.InTooDeep
       Arkham.Scenario.Scenarios.IntoTheMaelstrom
@@ -3463,6 +3472,7 @@ library
       Arkham.Treachery.Cards.AbandonedAndAlone
       Arkham.Treachery.Cards.AbandonedAndAloneAdvanced
       Arkham.Treachery.Cards.AbandonedByTheGods
+      Arkham.Treachery.Cards.AbandonedToMadness
       Arkham.Treachery.Cards.Abduction
       Arkham.Treachery.Cards.AccursedFate
       Arkham.Treachery.Cards.AcridMiasma
@@ -3686,6 +3696,7 @@ library
       Arkham.Treachery.Cards.Panic
       Arkham.Treachery.Cards.Paranoia
       Arkham.Treachery.Cards.PassageIntoTheVeil
+      Arkham.Treachery.Cards.Phantasmagoria
       Arkham.Treachery.Cards.Pitfall
       Arkham.Treachery.Cards.Poisoned
       Arkham.Treachery.Cards.PoisonousSpores

@@ -41,11 +41,11 @@ getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
 getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s =
-  getInvestigatorIds >>= filterM (`getHasSupply` s)
+  getInvestigators >>= filterM (`getHasSupply` s)
 
 getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s =
-  getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
+  getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
 
 getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
 getVengeanceInVictoryDisplay = do

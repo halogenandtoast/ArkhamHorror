@@ -51,7 +51,7 @@ instance RunMessage HuntressOfTheEztli where
       if ichtacaDefeated
         then do
           lead <- getLeadPlayer
-          investigatorIds <- getInvestigatorIds
+          investigatorIds <- getInvestigators
           alejandroVela <-
             fromJustNote "Alejandro Vela was not set aside"
               . listToMaybe

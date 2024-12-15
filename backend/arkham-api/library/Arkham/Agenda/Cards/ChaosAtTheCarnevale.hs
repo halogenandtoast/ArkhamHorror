@@ -41,7 +41,7 @@ instance RunMessage ChaosAtTheCarnevale where
     UseCardAbility _ source 1 [(windowType -> Window.EnemySpawns eid _)] _
       | isSource attrs source -> a <$ push (PlaceDoom (toAbilitySource attrs 1) (toTarget eid) 2)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       cnidathquaId <- selectJust $ enemyIs Enemies.cnidathqua
       pushAll
         $ [ EnemyAttack

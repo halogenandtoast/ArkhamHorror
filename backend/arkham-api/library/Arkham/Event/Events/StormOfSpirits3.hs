@@ -53,7 +53,7 @@ instance RunMessage StormOfSpirits3Effect where
     RevealChaosToken _ iid token | isTarget iid attrs.target -> do
       let triggers = chaosTokenFace token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]
       when triggers $ do
-        enemy <- fromJustNote "must be enemy" . (preview _EnemyTarget =<<) <$> getSkillTestTarget
+        enemy <- fromJustNote "must be enemy" . ((.enemy) =<<) <$> getSkillTestTarget
         iids <- select $ InvestigatorAt $ locationWithEnemy enemy
         msgs <- evalQueueT $ for_ iids \iid' -> assignDamage iid' attrs.source 2
         push $ If (Window.RevealChaosTokenEffect iid token attrs.id) msgs

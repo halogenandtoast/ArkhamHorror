@@ -294,10 +294,12 @@ allActs =
     , SomeActCard cityOfTheDeepV2
     , SomeActCard cityOfTheDeepV3
     , -- Edge of the Earth
-      --- The Crash
+      --- The Crash [eote]
       SomeActCard searchForACampSite
-    , --- Lost in the Night
+    , --- Lost in the Night [eote]
       SomeActCard theLostExpedition
+    , --- Seeping Nightmares [eote]
+      SomeActCard underAttack
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

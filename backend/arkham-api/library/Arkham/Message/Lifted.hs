@@ -285,10 +285,22 @@ allGainXpWithBonus source xp = do
   push . ReportXp =<< generateXpReport xp
   pushAll =<< toGainXp source (getXpWithBonus xp.value)
 
-allGainXp :: (ReverseQueue m, Sourceable source) => source -> m ()
-allGainXp source = do
+allGainXpWithBonus' :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m Int
+allGainXpWithBonus' source xp = do
+  push . ReportXp =<< generateXpReport xp
+  (initial, details) <- getXpWithBonus' xp.value
+  pushAll =<< toGainXp source (pure details)
+  pure initial
+
+allGainXp' :: (ReverseQueue m, Sourceable source) => source -> m Int
+allGainXp' source = do
+  (initial, details) <- getXp'
   push . ReportXp =<< generateXpReport NoBonus
-  pushAll =<< toGainXp source getXp
+  pushAll =<< toGainXp source (pure details)
+  pure initial
+
+allGainXp :: (ReverseQueue m, Sourceable source) => source -> m ()
+allGainXp = void . allGainXp'
 
 allGainXpWith
   :: (ReverseQueue m, Sourceable source) => source -> (InvestigatorId -> [XpEntry]) -> m ()
@@ -302,7 +314,7 @@ allGainXpWith source f = do
 
 interludeXpAll :: ReverseQueue m => XpBonus -> m ()
 interludeXpAll xp = do
-  investigatorIds <- allInvestigatorIds
+  investigatorIds <- allInvestigators
   push
     $ ReportXp
     $ XpBreakdown
@@ -410,7 +422,7 @@ killRemaining (toSource -> source) = do
   pure remaining
 
 class FetchCard a where
-  fetchCard :: ReverseQueue m => a -> m Card
+  fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
 
 instance FetchCard CardDef where
   fetchCard def = maybe (genCard def) pure =<< maybeGetSetAsideCard def
@@ -1028,6 +1040,14 @@ roundModifier source target modifier = Msg.pushM $ Msg.roundModifier source targ
 roundModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 roundModifiers source target modifiers = Msg.pushM $ Msg.roundModifiers source target modifiers
+
+modifySkillTest
+  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m)
+  => source
+  -> investigator
+  -> [ModifierType]
+  -> m ()
+modifySkillTest source investigator mods = whenJustM Msg.getSkillTestId \sid -> skillTestModifiers sid source (asId investigator) mods
 
 skillTestModifiers
   :: forall target source m

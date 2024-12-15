@@ -23,7 +23,7 @@ export function lowercase(word: string) {
   return word.charAt(0).toLowerCase() + word.substring(1);
 }
 
-const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
+export const baseUrl = import.meta.env.PROD ? "https://assets.arkhamhorror.app" : ''
 
 export function imgsrc(src: string) {
   const language = localStorage.getItem('language') || 'en'
@@ -56,7 +56,8 @@ export function pluralize(w: string, n: number) {
 }
 
 export function formatContent(body:string) {
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<strong>$1</strong>')
+  return replaceIcons(body).replace(/_([^_]*)_/g, '<strong>$1</strong>').replace(/\*([^\*]*)\*/g, '<i>$1</i>')
+
 }
 
 export function replaceIcons(body: string) {
@@ -82,6 +83,7 @@ export function replaceIcons(body: string) {
     replace(/{elderThing}/g, '<span class="elder-thing-icon"></span>').
     replace(/{bless}/g, '<span class="bless-icon"></span>').
     replace(/{curse}/g, '<span class="curse-icon"></span>').
+    replace(/{frost}/g, '<span class="frost-icon"></span>').
     replace(/{perPlayer}/g, '<span class="per-player"></span>')
 }
 

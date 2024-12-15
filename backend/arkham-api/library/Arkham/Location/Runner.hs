@@ -319,7 +319,7 @@ instance RunMessage LocationAttrs where
         if CannotPlaceClues `elem` mods
           then pure 0
           else getPlayerCountValue locationRevealClues
-      revealer <- maybe getLeadInvestigatorId pure miid
+      revealer <- maybe getLead pure miid
       whenWindowMsg <-
         checkWindows
           [mkWindow Timing.When (Window.RevealLocation revealer lid)]

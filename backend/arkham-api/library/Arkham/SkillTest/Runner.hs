@@ -112,6 +112,7 @@ getModifiedChaosTokenValue s t = do
       )
       modifiedChaosTokenFaces'
  where
+  applyModifier IgnoreChaosTokenEffects (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier IgnoreChaosToken (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier IgnoreChaosTokenModifier (ChaosTokenValue token _) = ChaosTokenValue token NoModifier
   applyModifier (ChangeChaosTokenModifier modifier') (ChaosTokenValue token _) =
@@ -164,7 +165,7 @@ instance RunMessage SkillTest where
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
       mTargetCardId <- case skillTestTarget of
-        ProxyTarget _ t -> fmap toCardId <$> targetToMaybeCard t
+        ProxyTarget t _ -> fmap toCardId <$> targetToMaybeCard t
         t -> fmap toCardId <$> targetToMaybeCard t
       mSourceCardId <- case skillTestSource of
         ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t

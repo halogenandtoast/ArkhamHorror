@@ -1,13 +1,10 @@
 module Arkham.Skill.Cards.OccultTheory1 (occultTheory1, OccultTheory1 (..)) where
 
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype OccultTheory1 = OccultTheory1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -20,12 +17,9 @@ instance HasModifiersFor OccultTheory1 where
   getModifiersFor (OccultTheory1 a) = do
     willpower <- field InvestigatorWillpower a.owner
     intellect <- field InvestigatorIntellect a.owner
-    (<>)
-      <$> modified_
-        a
-        (toCardId a)
-        [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
-      <*> modifySelf a [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
+    modifySelf
+      a.cardId
+      [AddSkillIcons $ replicate intellect #willpower <> replicate willpower #intellect]
 
 instance RunMessage OccultTheory1 where
   runMessage msg (OccultTheory1 attrs) = OccultTheory1 <$> runMessage msg attrs

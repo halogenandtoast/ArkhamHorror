@@ -141,7 +141,7 @@ instance RunMessage TheForgottenAge where
     let metadata = toResultDefault mempty (campaignMeta attrs)
     case msg of
       CampaignStep PrologueStep -> do
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         players <- allPlayers
         totalSupplyPoints <- initialSupplyPoints
         lead <- getLeadPlayer
@@ -193,7 +193,7 @@ instance RunMessage TheForgottenAge where
         pure c
       CampaignStep (InterludeStep 1 mkey) -> do
         lead <- getLeadPlayer
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         investigatorPlayers <- allInvestigatorPlayers
         withBlanket <- traverse getPlayer =<< getInvestigatorsWithSupply Blanket
         withoutBlanket <- traverse (traverseToSnd getPlayer) =<< getInvestigatorsWithoutSupply Blanket
@@ -319,7 +319,7 @@ instance RunMessage TheForgottenAge where
       CampaignStep (InterludeStepPart 2 mkey 2) -> do
         players <- allPlayers
         lead <- getLeadPlayer
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         let
           inADeckAlready =
             any ((== Assets.alejandroVela) . toCardDef)
@@ -354,7 +354,7 @@ instance RunMessage TheForgottenAge where
         pushAll [story players expeditionsEnd5, NextCampaignStep Nothing]
         pure c
       CampaignStep ResupplyPoint -> do
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         totalResupplyPoints <- initialResupplyPoints
         poisonedInvestigators <- filterM getIsPoisoned investigatorIds
         poisonedInvestigatorsWith3Xp <-
@@ -552,7 +552,7 @@ instance RunMessage TheForgottenAge where
       CampaignStep (InterludeStepPart 4 _ 1) -> do
         backfired <- getHasRecord TheProcessBackfired
         backfiredSpectacularly <- getHasRecord TheProcessBackfiredSpectacularly
-        iids <- allInvestigatorIds
+        iids <- allInvestigators
         -- no chaos bag technically so we sample from campaign
         let
           chaosBag =
@@ -636,7 +636,7 @@ instance RunMessage TheForgottenAge where
         pure c
       CampaignStep (InterludeStepPart 4 _ 3) -> do
         hasChalk <- getAnyHasSupply Chalk
-        iids <- allInvestigatorIds
+        iids <- allInvestigators
         players <- allPlayers
         let storyEntry = if hasChalk then theWayIsOpen else theWayIsShut
         push $ story players storyEntry
@@ -648,7 +648,7 @@ instance RunMessage TheForgottenAge where
               else ala Endo foldMap $ [modifiersL %~ insertWith (<>) iid mods | iid <- iids]
         pure . TheForgottenAge $ attrs & update
       CampaignStep (InterludeStepPart 4 _ 4) -> do
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         lead <- getLeadPlayer
         provisions <-
           concat <$> for investigatorIds \iid -> do
@@ -680,7 +680,7 @@ instance RunMessage TheForgottenAge where
              ]
         pure c
       CampaignStep (InterludeStepPart 4 mkey 5) -> do
-        investigatorIds <- allInvestigatorIds
+        investigatorIds <- allInvestigators
         lead <- getLeadPlayer
         withMedicine <- flip concatMapM investigatorIds $ \iid -> do
           n <- getSupplyCount iid Medicine
@@ -813,7 +813,7 @@ instance RunMessage TheForgottenAge where
           pushAll $ story players readingSigns : map (\iid -> GainXP iid CampaignSource 2) hasMap
         pure c
       CampaignStep (InterludeStepPart 5 _ 4) -> do
-        iids <- allInvestigatorIds
+        iids <- allInvestigators
         for_ iids $ \iid -> do
           supplies <- field InvestigatorSupplies iid
           for_ supplies $ \case

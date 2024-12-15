@@ -55,7 +55,7 @@ instance RunMessage InPursuitOfTheDead where
 
           when (mementosDiscovered >= 3) $ send "\"You understand the tragic lyrics behind the witch's song\""
           spectralWebs <- getSetAsideCardsMatching $ cardIs Assets.spectralWeb
-          investigators <- getInvestigatorIds
+          investigators <- getInvestigators
 
           pushAll
             $ [createHeretic1, createHeretic2, createHeretic3, createHeretic4]

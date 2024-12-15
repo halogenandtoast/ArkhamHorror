@@ -641,8 +641,8 @@ instance RunMessage ChaosBag where
       Just choice' ->
         if isUndecided choice'
           then do
-            iid <- maybe getLeadInvestigatorId pure miid
-            iids <- getInvestigatorIds
+            iid <- maybe getLead pure miid
+            iids <- getInvestigators
             let
               (choice'', msgs) =
                 decideFirstUndecided source iid iids strategy toDecided choice'
@@ -655,8 +655,8 @@ instance RunMessage ChaosBag where
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
-        iid <- maybe getLeadInvestigatorId pure miid
-        iids <- getInvestigatorIds
+        iid <- maybe getLead pure miid
+        iids <- getInvestigators
         let
           (updatedChoice, messages) =
             decideFirstUndecided source iid iids strategy toDecided choice'
@@ -688,7 +688,7 @@ instance RunMessage ChaosBag where
         Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
         _ -> False
 
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       -- if we have not decided we can use const to replace
       let
         choice'' = Undecided step
@@ -706,7 +706,7 @@ instance RunMessage ChaosBag where
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
           _ -> False
 
-        iids <- getInvestigatorIds
+        iids <- getInvestigators
         -- if we have not decided we can use const to replace
         let
           choice'' = replaceDeciding choice' (Undecided step)
@@ -758,7 +758,7 @@ instance RunMessage ChaosBag where
             )
           pure $ c & choiceL .~ Nothing
         _ -> do
-          iid <- maybe getLeadInvestigatorId pure miid
+          iid <- maybe getLead pure miid
           ((choice'', msgs), c') <-
             runStateT
               (resolveFirstUnresolved source iid strategy choice')

@@ -39,10 +39,10 @@ instance RunMessage IchtacaScionOfYig where
         , parley sid iid attrs attrs #intellect (Fixed 5)
         ]
       pure e
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ Flip iid (toSource attrs) (toTarget attrs)
       pure e
     Flip iid _ target | isTarget attrs target -> do

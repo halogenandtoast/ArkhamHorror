@@ -506,6 +506,8 @@ allTreacheries =
     , --- Ice and Death [eote]
       SomeTreacheryCard apeirophobia
     , SomeTreacheryCard zeroVisibility
+    , --- Seeping Nightmares [eote]
+      SomeTreacheryCard phantasmagoria
     , --- Creatures in the Ice [eote]
       SomeTreacheryCard kindredMist
     , --- Deadly Weather [eote]
@@ -515,6 +517,8 @@ allTreacheries =
     , --- Hazards of Antarctica [eote]
       SomeTreacheryCard iceShaft
     , SomeTreacheryCard throughTheIce
+    , --- Left Behind [eote]
+      SomeTreacheryCard abandonedToMadness
     , --- Silence and Mystery [eote]
       SomeTreacheryCard polarMirage
     , SomeTreacheryCard darkAurora

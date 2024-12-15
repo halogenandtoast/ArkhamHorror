@@ -9,10 +9,11 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
-import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Location
@@ -38,21 +39,7 @@ iceAndDeathPart1 difficulty =
     "08501a"
     "Ice and Death"
     difficulty
-    [ "trefoil  .       .     .         .        .         plus"
-    , "trefoil  .       .     moon      .        .         plus"
-    , ".        droplet .     moon      .        equals    ."
-    , ".        droplet .     .         .        equals    ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       heart .         triangle .         ."
-    , ".        .       .     circle    .        .         ."
-    , ".        star    .     circle    .        hourglass ."
-    , ".        star    .     diamond   .        hourglass ."
-    , ".        .       .     diamond   .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     square    .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    , ".        .       .     squiggle  .        .         ."
-    ]
+    iceAndDeathLayout
     (referenceL .~ "08501")
 
 instance HasChaosTokenValue IceAndDeathPart1 where
@@ -68,30 +55,44 @@ instance HasChaosTokenValue IceAndDeathPart1 where
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage IceAndDeathPart1 where
-  runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1"
+      storyWithContinue (i18nWithTitle "intro") "Proceed to _Ice and Death, Part 1._"
       doStep 1 PreScenarioSetup
+      story $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
     DoStep 1 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro1"
+      winifredPresent <- selectAny (investigatorIs Investigators.winifredHabbamock)
 
-      selectAny (investigatorIs Investigators.winifredHabbamock) >>= \case
-        True -> doStep 2 PreScenarioSetup
-        False -> doStep 3 PreScenarioSetup
+      let
+        rest =
+          FlavorText
+            Nothing
+            [ rightAlign
+                ( validateEntry winifredPresent
+                    $ BasicEntry
+                      "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_."
+                )
+                <> rightAlign (validateEntry (not winifredPresent) $ BasicEntry "Otherwise, skip to _Intro 3_.")
+            ]
 
+      storyWithContinue
+        (i18nWithTitle "intro1" <> rest)
+        (if winifredPresent then "Proceed to _Intro 2_" else "Skip to _Intro 3_")
+
+      doStep (if winifredPresent then 2 else 3) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro2"
+      storyWithContinue (i18nWithTitle "intro2") "Skip to _Intro 4_"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro3"
+      storyWithContinue (i18nWithTitle "intro3") "Proceed to _Intro 4_"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do
-      story $ i18nWithTitle "iceAndDeathPart1Intro4"
+      story $ i18nWithTitle "intro4"
       killed <- sample expeditionTeam
       push $ SetPartnerStatus killed.cardCode Eliminated
       recordSetInsert WasKilledInThePlaneCrash [killed.cardCode]
@@ -130,6 +131,22 @@ instance RunMessage IceAndDeathPart1 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup IceAndDeathPart1 attrs do
+      scope "setup" $ story $ flavorText $ ul do
+        li "gatherSets"
+        li "setAsideCreaturesInTheIce"
+        li.nested "placeLocations" do
+          li "beginAtCrashSite"
+          li "setUnchartedOutOfPlay"
+        li "setSkitteringNonsenseOutOfPlay"
+        li "setTerrorOfTheStarsBringerOfIceAndDeathOutOfPlay"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.IceAndDeath
       gather Set.TheCrash
       gather Set.DeadlyWeather
@@ -198,9 +215,11 @@ instance RunMessage IceAndDeathPart1 where
                       record camp
                       allGainXpWithBonus attrs $ toBonus "bonus" (max 3 $ fromMaybe 0 $ getShelterValue card)
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
-          sv <- max 3 . fromMaybe 0 <$> getCurrentShelterValue
-          allGainXpWithBonus attrs $ toBonus "bonus" sv
+          sv <- fromMaybe 0 <$> getCurrentShelterValue
+          baseVictory <- allGainXpWithBonus' attrs $ toBonus "bonus" (max 3 sv)
+          story
+            $ withVars ["xp" .= baseVictory, "shelterValue" .= sv]
+            $ i18nWithTitle "resolution1"
         _ -> error "Unknown resolution"
       locations <- selectField Location.LocationCardCode RevealedLocation
       recordSetInsert LocationsRevealed locations

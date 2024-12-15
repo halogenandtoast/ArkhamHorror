@@ -29,7 +29,7 @@ instance HasModifiersFor AlyssaGraham where
 instance RunMessage AlyssaGraham where
   runMessage msg a@(AlyssaGraham attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      targets <- map toTarget <$> getInvestigatorIds
+      targets <- map toTarget <$> getInvestigators
       let
         goSearch t =
           TargetLabel

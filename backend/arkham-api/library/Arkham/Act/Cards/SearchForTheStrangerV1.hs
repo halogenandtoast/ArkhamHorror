@@ -47,7 +47,7 @@ instance RunMessage SearchForTheStrangerV1 where
       push (AdvanceAct (toId attrs) source AdvancedWithOther)
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       thePallidMask <- genPlayerCard Assets.thePallidMask
       pushAll
         [ addToHand leadInvestigatorId (PlayerCard thePallidMask)

@@ -22,7 +22,7 @@ instance HasModifiersFor Nightriders where
 
 instance HasAbilities Nightriders where
   getAbilities (Nightriders a) =
-    extend a [mkAbility a 1 $ forced $ EnemyEvaded #after You AnyEnemy]
+    extend a [mkAbility a 1 $ forced $ EnemyEvaded #after You (be a)]
 
 instance RunMessage Nightriders where
   runMessage msg e@(Nightriders attrs) = case msg of

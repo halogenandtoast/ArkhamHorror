@@ -18,9 +18,7 @@ strengthInNumbers1 = skill StrengthInNumbers1 Cards.strengthInNumbers1
 instance HasModifiersFor StrengthInNumbers1 where
   getModifiersFor (StrengthInNumbers1 a) = do
     n <- calculate (DifferentClassAmong $ ControlledBy $ InvestigatorWithId a.owner)
-    (<>)
-      <$> modified_ a a.cardId [AddSkillIcons $ replicate n #wild]
-      <*> modifySelf a [AddSkillIcons $ replicate n #wild]
+    modifySelf a.cardId [AddSkillIcons $ replicate n #wild]
 
 instance RunMessage StrengthInNumbers1 where
   runMessage msg (StrengthInNumbers1 attrs) = StrengthInNumbers1 <$> runMessage msg attrs

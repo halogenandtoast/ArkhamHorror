@@ -38,7 +38,7 @@ instance RunMessage TheEntityAboveTheVortexAbove where
       pushAll [toDiscard GameSource attrs, AddAct 2 openThePathAbove]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      drawing <- map (\iid -> drawCards iid (attrs.ability 1) 1) <$> getInvestigatorIds
+      drawing <- map (\iid -> drawCards iid (attrs.ability 1) 1) <$> getInvestigators
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
         : AdvanceAgendaIfThresholdSatisfied

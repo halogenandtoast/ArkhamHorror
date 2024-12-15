@@ -16,7 +16,7 @@ planOfAction = skill PlanOfAction Cards.planOfAction
 instance HasModifiersFor PlanOfAction where
   getModifiersFor (PlanOfAction attrs) = do
     n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
-    modifySelf attrs
+    modifySelf attrs.cardId
       $ [AddSkillIcons [#willpower, #agility] | n == 0]
       <> [AddSkillIcons [#combat, #intellect] | n >= 2]
 

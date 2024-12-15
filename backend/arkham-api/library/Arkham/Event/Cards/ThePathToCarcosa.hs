@@ -379,11 +379,18 @@ wardOfProtection2 =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow =
         Just
-          $ DrawCard
-            #when
-            (affectsOthers Anyone)
-            (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
-            EncounterDeck
+          $ oneOf
+            [ DrawCard
+                #when
+                (affectsOthers $ InvestigatorAt YourLocation)
+                (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
+                EncounterDeck
+            , DrawCard
+                #when
+                You
+                (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery)
+                EncounterDeck
+            ]
     , cdLevel = Just 2
     }
 

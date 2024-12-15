@@ -540,14 +540,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           )
           5
           modifiers'
-      startingResources =
-        foldl'
-          ( \total -> \case
-              StartingResources n -> max 0 (total + n)
-              _ -> total
-          )
-          5
-          modifiers'
       additionalStartingCards = concat $ mapMaybe (preview _AdditionalStartingCards) modifiers'
     -- investigatorHand is dangerous, but we want to use it here because we're
     -- only affecting cards actually in hand [I think]
@@ -570,7 +562,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
          ]
     pure
       $ a
-      & (tokensL %~ setTokens Resource startingResources)
       & (discardL .~ discard)
       & (handL .~ hand <> additionalHandCards)
       & (deckL .~ Deck deck)
@@ -618,7 +609,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorIsDefeated source iid | iid == investigatorId -> do
-    isLead <- (== iid) <$> getLeadInvestigatorId
+    isLead <- (== iid) <$> getLead
     modifiedHealth <- field InvestigatorHealth (toId a)
     modifiedSanity <- field InvestigatorSanity (toId a)
     let
@@ -648,7 +639,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [InvestigatorWhenEliminated (toSource a) iid (Just $ Do msg)]
     pure $ a & endedTurnL .~ True
   Do (Msg.InvestigatorResigned iid) | iid == investigatorId -> do
-    isLead <- (== iid) <$> getLeadInvestigatorId
+    isLead <- (== iid) <$> getLead
     pushWhen isLead ChooseLeadInvestigator
     pure $ a & resignedL .~ True
   -- InvestigatorWhenEliminated is handled by the scenario
@@ -2414,7 +2405,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
     unless investigatorDefeated $ do
-      isLead <- (== iid) <$> getLeadInvestigatorId
+      isLead <- (== iid) <$> getLead
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do

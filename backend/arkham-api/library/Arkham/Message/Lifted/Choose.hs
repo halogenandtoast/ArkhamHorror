@@ -245,6 +245,9 @@ nothing = pure ()
 questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
 questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}
 
+storyWithContinue :: ReverseQueue m => FlavorText -> Text -> m ()
+storyWithContinue flavor button = storyWithChooseOneM flavor $ labeled button nothing
+
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
 storyWithChooseOneM flavor choices = do
   (_, choices') <- runChooseT choices

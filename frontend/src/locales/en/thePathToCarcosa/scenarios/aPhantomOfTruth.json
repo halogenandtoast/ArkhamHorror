@@ -12,5 +12,10 @@
       "tablet": "-4. Cancel the effects and icons of each skill card committed to this test.",
       "elderThing": "-3. If you fail, lose 1 resource for each point you failed by."
     }
+  },
+  "resolutions": {
+    "xp": {
+      "insight": "Gained insight into the machinations of the Tattered King."
+    }
   }
 }

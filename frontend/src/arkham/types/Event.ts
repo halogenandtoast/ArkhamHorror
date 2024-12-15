@@ -8,7 +8,7 @@ import {
 } from '@/arkham/types/Card';
 
 export type Event = {
-  id: string;
+  id: number;
   cardCode: string;
   cardId: string;
   doom: number;
@@ -21,7 +21,6 @@ export type Event = {
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
-  id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   cardId: JsonDecoder.string,
   doom: JsonDecoder.number,

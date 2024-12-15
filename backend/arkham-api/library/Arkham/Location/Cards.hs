@@ -6274,7 +6274,7 @@ innsmouthHarbour =
   location
     "07066"
     "Innsmouth Harbour"
-    [Innsmouth, Central]
+    [Innsmouth]
     Moon
     [Circle, Hourglass, Equals, Heart]
     TheVanishingOfElinaHarper

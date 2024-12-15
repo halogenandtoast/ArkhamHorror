@@ -77,6 +77,8 @@ import Arkham.Trait
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, _Just)
+import Data.Function (on)
+import Data.List (nubBy)
 import Data.List qualified as List
 import Data.List.Extra (firstJust)
 import Data.Monoid (First (..))
@@ -368,8 +370,10 @@ instance RunMessage EnemyAttrs where
       pure a
     Move movement | isTarget a (moveTarget movement) -> do
       case moveDestination movement of
-        ToLocation destinationLocationId -> do
-          push $ EnemyMove (toId a) destinationLocationId
+        ToLocation destinationLocationId -> case moveMeans movement of
+          Direct -> push $ EnemyMove (toId a) destinationLocationId
+          OneAtATime -> push $ MoveUntil destinationLocationId (toTarget a)
+          Towards -> push $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
         ToLocationMatching matcher -> do
           lids <- select matcher
           player <- getLeadPlayer
@@ -872,6 +876,7 @@ instance RunMessage EnemyAttrs where
     PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- getModifiers (attackTarget details)
+      mods <- getModifiers a
       sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
 
       let
@@ -935,7 +940,7 @@ instance RunMessage EnemyAttrs where
                     sanityDamage
           pushAll
             $ [attackMessage | allowAttack]
-            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details]
+            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details, DoNotExhaust `notElem` mods]
             <> ignoreWindows
             <> [After (EnemyAttack details)]
         _ -> error "Unhandled"
@@ -1424,9 +1429,13 @@ instance RunMessage EnemyAttrs where
         Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
+    PlaceUnderneath (isTarget a -> True) cards -> do
+      pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
     PlaceUnderneath _ cards -> do
       when (toCard a `elem` cards) $ push $ RemoveEnemy (toId a)
       pure a
+    ObtainCard c -> do
+      pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
     PlaceInBonded _iid card -> do
       when (toCard a == card) do
         removeAllMessagesMatching \case
@@ -1450,4 +1459,5 @@ instance RunMessage EnemyAttrs where
     DoBatch _ msg' -> do
       -- generic DoBatch handler
       runMessage (Do msg') a
+    ForTarget (isTarget a -> True) msg' -> runMessage msg' a
     _ -> pure a

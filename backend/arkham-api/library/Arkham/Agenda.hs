@@ -252,15 +252,18 @@ allAgendas =
       SomeAgendaCard underTheSurface
     , SomeAgendaCard celestialAlignment
     , SomeAgendaCard theFlood
-    , -- Edge of the Earth
-      --- The Crash
+    , -- Edge of the Earth [eote]
+      --- The Crash [eote]
       SomeAgendaCard coldWelcome
     , SomeAgendaCard intoTheWhite
     , SomeAgendaCard runningOutOfTime
-    , --- Lost in the Night
+    , --- Lost in the Night [eote]
       SomeAgendaCard aHarshWindBlows
     , SomeAgendaCard theChillOfNight
     , SomeAgendaCard madnessAndDeath
+    , --- Seeping Nightmares [eote]
+      SomeAgendaCard manifestationsOfEvil
+    , SomeAgendaCard icyDepths
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

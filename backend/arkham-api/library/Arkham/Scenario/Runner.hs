@@ -106,7 +106,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
         let investigatorStoryCards = filter ifShouldAdd $ findWithDefault [] iid scenarioStoryCards
         push $ LoadDeck iid (Deck $ unDeck deck <> investigatorStoryCards)
-    pure a
+    pure $ overAttrs (inResolutionL .~ False) a
   BeginGame -> do
     mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
     for_ mFalseAwakening \falseAwakening -> do
@@ -718,8 +718,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         handler <- getEncounterDeckHandler $ toCardId card
         pure $ a & discardLens handler %~ (ec :)
       VengeanceCard _ -> error "vengeance card"
-  DrewCards iid drew | isNothing drew.target && any isEncounterCard drew.cards -> do
-    pushAll $ InvestigatorDrewEncounterCard iid <$> onlyEncounterCards drew.cards
+  DrewCards iid drew | isNothing drew.target -> do
+    let encounterCards = onlyEncounterCards drew.cards
+    when (notNull encounterCards) do
+      pushAll $ InvestigatorDrewEncounterCard iid <$> encounterCards
+
+    let playerCards = onlyPlayerCards drew.cards
+    when (notNull playerCards) do
+      pushAll $ InvestigatorDrewPlayerCardFrom iid <$> playerCards <*> pure (Just drew.deck)
     pure a
   Do (DrawCards iid drawing) | Just key <- Deck.deckSignifierToScenarioDeckKey drawing.deck -> do
     case lookup key scenarioDecks of
@@ -1218,11 +1224,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pushAll [RemoveAllDoom (toSource a) target | target <- targets]
     pure a
   SetupInvestigators -> do
-    iids <- allInvestigatorIds
+    iids <- allInvestigators
     pushAll $ map SetupInvestigator iids <> [DrawStartingHands]
     pure a
   DrawStartingHands -> do
-    iids <- allInvestigatorIds
+    iids <- allInvestigators
     for_ (reverse iids) \iid -> do
       beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand iid)]
       pushAll [beforeDrawingStartingHand, DrawStartingHand iid]
@@ -1317,7 +1323,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout
   ChooseLeadInvestigator -> do
-    iids <- getInvestigatorIds
+    iids <- getInvestigators
     case iids of
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
       xs@(x : _) -> do
@@ -1352,4 +1358,5 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
       <> [PlacedLocationDirection lid LeftOf rightLocation | rightLocation <- maybeToList mRightLocation]
       <> [PlacedLocationDirection lid RightOf leftLocation | leftLocation <- maybeToList mLeftLocation]
     pure $ a & gridL .~ grid
+  ForTarget ScenarioTarget msg' -> runMessage msg' a
   _ -> pure a

@@ -107,7 +107,7 @@ instance RunMessage TheHouseAlwaysWins where
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       story resolution2
       record OBannionGangHasABoneToPickWithTheInvestigators
       record TheInvestigatorsRescuedDrFrancisMorgan

@@ -44,10 +44,14 @@ const isTrueForm = computed(() => {
   return cardCode === 'cxnyarlathotep'
 })
 
-const image = computed(() => {
+const imageId = computed(() => {
   const { cardCode, flipped } = props.enemy
   const suffix = flipped ? 'b' : ''
-  return imgsrc(`cards/${cardCode.replace('c', '')}${suffix}.avif`)
+  return `${cardCode.replace('c', '')}${suffix}`
+})
+
+const image = computed(() => {
+  return imgsrc(`cards/${imageId.value}.avif`)
 })
 
 const id = computed(() => props.enemy.id)
@@ -211,10 +215,11 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             <img v-else
               :draggable="debug.active"
               @dragstart="startDrag($event, enemy)"
-              :src="image"
+              :src="isSwarm ? imgsrc('player_back.jpg') : image"
               class="card enemy"
               :class="{ exhausted: isExhausted, 'enemy--can-interact': canInteract, attached}"
               :data-id="id"
+              :data-image-id="imageId"
               :data-swarm="isSwarm || undefined"
               @click="clicked"
             />
@@ -232,6 +237,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             <PoolItem v-if="lostSouls && lostSouls > 0" type="resource" :amount="lostSouls" />
             <PoolItem v-if="bounties && bounties > 0" type="resource" :amount="bounties" />
             <PoolItem v-if="evidence && evidence > 0" type="resource" tooltip="Evidence" :amount="evidence" />
+            <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <Token
               v-for="(sealedToken, index) in enemy.sealedChaosTokens"
               :key="index"

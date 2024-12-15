@@ -217,6 +217,7 @@ allActCards =
       , trialOfTheHuntress
       , truthAndLies
       , uncoveringTheConspiracy
+      , underAttack
       , unexpectedRescue
       , warmWelcome
       , whatHappened
@@ -824,6 +825,9 @@ searchForACampSite = act "08521" "Search for a Camp Site" 1 TheCrash
 
 theLostExpedition :: CardDef
 theLostExpedition = act "08526" "The Lost Expedition" 2 LostInTheNight
+
+underAttack :: CardDef
+underAttack = act "08546" "Under Attack!" 3 SeepingNightmares
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

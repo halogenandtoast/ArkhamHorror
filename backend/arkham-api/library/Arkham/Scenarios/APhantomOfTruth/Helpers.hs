@@ -45,7 +45,7 @@ disengageEachEnemyAndMoveToConnectingLocation
   :: (HasGame m, Sourceable source) => source -> m [Message]
 disengageEachEnemyAndMoveToConnectingLocation source = do
   lead <- getLeadPlayer
-  iids <- getInvestigatorIds
+  iids <- getInvestigators
   enemyPairs <-
     forToSnd
       iids

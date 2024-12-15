@@ -50,7 +50,7 @@ instance RunMessage OverTheThreshold where
   runMessage msg a@(OverTheThreshold attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       step <- getCurrentActStep
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       if step == 2
         then push R3
         else

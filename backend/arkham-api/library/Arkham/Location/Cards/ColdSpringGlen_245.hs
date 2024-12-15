@@ -8,6 +8,7 @@ import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
 import Arkham.Location.Import.Lifted hiding (ChosenRandomLocation)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 
 newtype ColdSpringGlen_245 = ColdSpringGlen_245 LocationAttrs
   deriving anyclass IsLocation
@@ -25,15 +26,18 @@ instance HasAbilities ColdSpringGlen_245 where
     extendRevealed1 attrs
       $ skillTestAbility
       $ groupLimit PerWindow
-      $ mkAbility attrs 1
+      $ restricted attrs 1 (exists $ investigatorAt attrs)
       $ freeReaction
       $ ChosenRandomLocation #after (be attrs)
 
 instance RunMessage ColdSpringGlen_245 where
   runMessage msg l@(ColdSpringGlen_245 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      investigators <- select $ investigatorAt attrs
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 3)
+      chooseOneM iid do
+        targets investigators \iid' ->
+          beginSkillTest sid iid' (attrs.ability 1) attrs #agility (Fixed 3)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       lift $ replaceMessageMatching

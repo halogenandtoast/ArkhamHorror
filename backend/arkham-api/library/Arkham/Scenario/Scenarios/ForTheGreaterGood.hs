@@ -92,8 +92,8 @@ instance RunMessage ForTheGreaterGood where
       pure s
     DoStep 2 PreScenarioSetup -> do
       showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
-      let intro2Sidebar = if showSidebar then decievingTheLodge else mempty
-      story $ intro2 <> intro2Sidebar
+      let convert = if showSidebar then addFlavorEntry decievingTheLodge else id
+      story $ convert intro2
       pure s
     DoStep 3 PreScenarioSetup -> do
       story intro3
@@ -214,7 +214,7 @@ instance RunMessage ForTheGreaterGood where
             else drawAnotherChaosToken iid
       pure s
     ScenarioResolution n -> do
-      iids <- allInvestigatorIds
+      iids <- allInvestigators
       case n of
         NoResolution -> do
           story noResolution

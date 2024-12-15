@@ -78,7 +78,7 @@ increaseThisFloodLevelTo
 increaseThisFloodLevelTo location newFloodLevel = do
   floodLevel <- fieldWithDefault Unflooded LocationFloodLevel location
   when (floodLevel < newFloodLevel) do
-    push $ IncreaseFloodLevel (asId location)
+    push $ SetFloodLevel (asId location) newFloodLevel
 
 setThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()

@@ -41,7 +41,7 @@ instance RunMessage Encore where
               , PlaceDoomOnAgenda 3 CanNotAdvance
               ]
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       a
         <$ pushAll
           ( map

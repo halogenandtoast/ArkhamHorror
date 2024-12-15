@@ -41,7 +41,7 @@ instance RunMessage PastPresentAndFuture where
       a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       lead <- getLead
       sid <- getRandom
       pushAll

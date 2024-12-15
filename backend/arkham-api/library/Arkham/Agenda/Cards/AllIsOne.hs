@@ -30,7 +30,7 @@ instance RunMessage AllIsOne where
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       failedToSaveStudents <- getHasRecord TheInvestigatorsFailedToSaveTheStudents
       lead <- getLead
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       pushAll
         $ [ ShuffleEncounterDiscardBackIn
           , DiscardUntilFirst
@@ -46,7 +46,7 @@ instance RunMessage AllIsOne where
         <> [advanceAgendaDeck attrs]
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
-      leadInvestigator <- getLeadInvestigatorId
+      leadInvestigator <- getLead
       push $ InvestigatorDrewEncounterCard leadInvestigator card
       pure a
     _ -> AllIsOne <$> runMessage msg attrs

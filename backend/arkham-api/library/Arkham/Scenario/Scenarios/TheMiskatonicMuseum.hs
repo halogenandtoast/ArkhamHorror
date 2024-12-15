@@ -180,7 +180,7 @@ instance RunMessage TheMiskatonicMuseum where
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       story resolution2
       record TheInvestigatorsTookCustodyOfTheNecronomicon
       addCampaignCardToDeckChoice investigatorIds Assets.theNecronomiconOlausWormiusTranslation

@@ -47,10 +47,6 @@ newtype CardCodeExact = CardCodeExact {unCardCodeExact :: CardCode}
 instance Eq CardCodeExact where
   (CardCodeExact a) == (CardCodeExact b) = cardCodeExactEq a b
 
-(===) :: CardCode -> CardCode -> Bool
-(===) = cardCodeExactEq
-infix 4 ===
-
 instance ToJSON CardCode where
   toJSON = toJSON . T.cons 'c' . unCardCode
 
@@ -63,6 +59,9 @@ instance ToJSONKey CardCode where
 
 instance FromJSONKey CardCode where
   fromJSONKey = CardCode . T.dropWhile (== 'c') <$> fromJSONKey
+
+exactCardCode :: HasCardCode a => a -> CardCodeExact
+exactCardCode = CardCodeExact . toCardCode
 
 class HasCardCode a where
   toCardCode :: a -> CardCode

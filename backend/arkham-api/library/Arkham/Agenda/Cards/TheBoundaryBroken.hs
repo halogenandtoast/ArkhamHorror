@@ -31,7 +31,7 @@ instance RunMessage TheBoundaryBroken where
       harbinger <- genCard Enemies.harbingerOfValusia
       locationId <-
         if yigsFury >= 6
-          then getJustLocation =<< getLeadInvestigatorId
+          then getJustLocation =<< getLead
           else selectJust $ FarthestLocationFromAll Anywhere
       createHarbinger <-
         createEnemyAt_

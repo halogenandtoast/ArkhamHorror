@@ -29,7 +29,7 @@ instance RunMessage InnocentReveler where
       push $ parley sid iid (attrs.ability 1) (toTarget attrs) #intellect (Fixed 2)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       let card = PlayerCard $ lookupPlayerCard (toCardDef attrs) (toCardId attrs)
       pushAll
         $ PlaceUnderneath AgendaDeckTarget [card]

@@ -44,7 +44,7 @@ instance HasAbilities BalefulReveler where
 instance RunMessage BalefulReveler where
   runMessage msg e@(BalefulReveler attrs) = case msg of
     InvestigatorDrawEnemy _ eid | eid == toId attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       start <- getJustLocation leadInvestigatorId
       locations <- getCounterClockwiseLocations start
 

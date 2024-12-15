@@ -195,7 +195,7 @@ instance RunMessage TheLastKing where
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       clueCounts <- traverse (field ActClues) =<< select AnyAct
-      investigators <- allInvestigatorIds
+      investigators <- allInvestigators
       let
         extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
         (assignedXp, remainingXp) = quotRem extraXp (length investigators)

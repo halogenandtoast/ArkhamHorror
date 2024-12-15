@@ -45,7 +45,7 @@ instance RunMessage LetTheStormRageTheFloodBelow where
       pushAll [toDiscard GameSource attrs, AddAct 1 openThePathBelow]
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       pushAll
         $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
         <> [ TakeResources iid 2 (toAbilitySource attrs 1) False

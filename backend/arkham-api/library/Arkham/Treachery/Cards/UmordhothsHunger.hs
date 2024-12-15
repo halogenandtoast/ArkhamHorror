@@ -20,7 +20,7 @@ umordhothsHunger = treachery UmordhothsHunger Cards.umordhothsHunger
 instance RunMessage UmordhothsHunger where
   runMessage msg t@(UmordhothsHunger attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       msgs <- for investigatorIds $ \iid -> do
         handCount <- fieldMap InvestigatorHand length iid
         pure

@@ -38,7 +38,7 @@ instance RunMessage TheParisianConspiracyV1 where
             , advanceActDeck attrs
             ]
         _ -> do
-          investigatorIds <- getInvestigatorIds
+          investigatorIds <- getInvestigators
           locationIds <- select $ FarthestLocationFromAll Anywhere
           lead <- getLeadPlayer
 

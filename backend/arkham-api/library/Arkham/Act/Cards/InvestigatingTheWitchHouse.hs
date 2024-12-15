@@ -42,7 +42,7 @@ instance RunMessage InvestigatingTheWitchHouse where
   runMessage msg a@(InvestigatingTheWitchHouse attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       lid <- selectJust $ locationIs Locations.walterGilmansRoom
       keziahsRoom <- getSetAsideCard Locations.keziahsRoom
       otherLocations <- select $ NotLocation $ LocationWithId lid

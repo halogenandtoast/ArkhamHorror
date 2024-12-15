@@ -45,7 +45,7 @@ instance RunMessage TheLonelyCaverns where
       harbinger <- genCard Enemies.harbingerOfValusia
       locationId <-
         if yigsFury >= 8
-          then getJustLocation =<< getLeadInvestigatorId
+          then getJustLocation =<< getLead
           else selectJust $ FarthestLocationFromAll Anywhere
       createHarbinger <- createEnemyAt_ harbinger locationId (Just $ toTarget attrs)
       pushAll

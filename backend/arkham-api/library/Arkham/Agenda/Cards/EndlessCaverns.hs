@@ -25,8 +25,8 @@ instance RunMessage EndlessCaverns where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       enemyMsgs <- getPlacePursuitEnemyMessages
       lead <- getLeadPlayer
-      leadId <- getLeadInvestigatorId
-      iids <- getInvestigatorIds
+      leadId <- getLead
+      iids <- getInvestigators
       pushAll
         $ enemyMsgs
         <> [ questionLabel "Choose a scout" lead

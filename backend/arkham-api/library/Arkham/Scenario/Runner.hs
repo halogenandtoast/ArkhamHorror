@@ -1224,11 +1224,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
     pushAll [RemoveAllDoom (toSource a) target | target <- targets]
     pure a
   SetupInvestigators -> do
-    iids <- allInvestigatorIds
+    iids <- allInvestigators
     pushAll $ map SetupInvestigator iids <> [DrawStartingHands]
     pure a
   DrawStartingHands -> do
-    iids <- allInvestigatorIds
+    iids <- allInvestigators
     for_ (reverse iids) \iid -> do
       beforeDrawingStartingHand <- checkWindows [mkWhen (Window.DrawingStartingHand iid)]
       pushAll [beforeDrawingStartingHand, DrawStartingHand iid]
@@ -1323,7 +1323,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout
   ChooseLeadInvestigator -> do
-    iids <- getInvestigatorIds
+    iids <- getInvestigators
     case iids of
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
       xs@(x : _) -> do

@@ -33,7 +33,7 @@ instance RunMessage TheKingInTatters where
     UseCardAbility iid source 1 _ _ | isSource attrs source -> do
       mlid <- field InvestigatorLocation iid
       for_ mlid $ \lid -> do
-        iids <- getInvestigatorIds
+        iids <- getInvestigators
         noClues <- fieldP LocationClues (== 0) lid
         when noClues
           $ pushAll

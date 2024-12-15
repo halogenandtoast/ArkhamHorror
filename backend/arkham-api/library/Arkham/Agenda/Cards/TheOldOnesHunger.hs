@@ -18,7 +18,7 @@ theOldOnesHunger = agenda (2, A) TheOldOnesHunger Cards.theOldOnesHunger (Static
 instance RunMessage TheOldOnesHunger where
   runMessage msg a@(TheOldOnesHunger attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 2
         then

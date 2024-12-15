@@ -1,18 +1,11 @@
-module Arkham.Act.Cards.LeadingTheWay (
-  LeadingTheWay (..),
-  leadingTheWay,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.LeadingTheWay (leadingTheWay) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Resolution
 
 newtype LeadingTheWay = LeadingTheWay ActAttrs
   deriving anyclass IsAct
@@ -26,27 +19,19 @@ instance HasModifiersFor LeadingTheWay where
     modifySelect attrs (locationIs Locations.blockedPassage) [Blank]
 
 instance HasAbilities LeadingTheWay where
-  getAbilities (LeadingTheWay a)
-    | onSide A a =
-        [ restrictedAbility
-            a
-            1
-            ( EachUndefeatedInvestigator
-                $ InvestigatorAt
-                $ locationIs
-                  Locations.blockedPassage
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+  getAbilities (LeadingTheWay a) =
+    [ restricted a 1 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.blockedPassage)
+      $ Objective
+      $ forced AnyWindow
+    | onSide A a
+    ]
 
 instance RunMessage LeadingTheWay where
-  runMessage msg a@(LeadingTheWay attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push (AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther)
+  runMessage msg a@(LeadingTheWay attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      push $ ScenarioResolution $ Resolution 2
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R2
       pure a
-    _ -> LeadingTheWay <$> runMessage msg attrs
+    _ -> LeadingTheWay <$> liftRunMessage msg attrs

@@ -44,7 +44,7 @@ instance RunMessage TheEndOfAllThings where
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       a <$ push (scenarioResolution 3)
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       yogSothoth <- selectJust (EnemyWithTitle "Yog-Sothoth")
       pushAll
         $ map (EnemyAttack . enemyAttack yogSothoth attrs) investigatorIds

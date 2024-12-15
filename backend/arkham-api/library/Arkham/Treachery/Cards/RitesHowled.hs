@@ -26,7 +26,7 @@ ritesHowled = treachery RitesHowled Cards.ritesHowled
 instance RunMessage RitesHowled where
   runMessage msg t@(RitesHowled attrs) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       pushAll
         $ [ DiscardTopOfDeck iid 3 (toSource attrs) (Just $ toTarget attrs)
           | iid <- investigatorIds

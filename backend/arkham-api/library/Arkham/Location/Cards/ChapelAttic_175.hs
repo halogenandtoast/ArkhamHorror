@@ -44,7 +44,7 @@ instance RunMessage ChapelAttic_175 where
       push $ PlaceUnderneath (toTarget attrs) [card]
       pure l
     UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       let
         returnCards iid =
           let

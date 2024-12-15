@@ -24,7 +24,7 @@ theFestivitiesBegin =
 instance RunMessage TheFestivitiesBegin where
   runMessage msg a@(TheFestivitiesBegin attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       balefulReveler <- genEncounterCard Enemies.balefulReveler
       a
         <$ pushAll

@@ -33,7 +33,7 @@ instance RunMessage GrapplingHook where
   runMessage msg a@(GrapplingHook (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       doStep 3 msg
-      pure a
+      pure . GrapplingHook $ attrs `with` Metadata []
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       abilities' <-
         selectMap DifferentAbility

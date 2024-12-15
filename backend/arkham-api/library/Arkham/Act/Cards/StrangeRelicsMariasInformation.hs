@@ -48,7 +48,7 @@ instance RunMessage StrangeRelicsMariasInformation where
     AdvanceAct aid _ _ | aid == actId attrs && onSide F attrs -> do
       downtown <- selectJust $ locationIs Locations.downtownFirstBankOfArkham
       rivertown <- selectJust $ locationIs Locations.rivertown
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       pushAll
         $ [ Remember $ IchtacasDestination (Labeled (toName Locations.downtownFirstBankOfArkham) downtown)
           , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)

@@ -672,7 +672,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         ForCost {} -> push $ SpendResources iid x
         ForAdditionalCost {} -> push $ SpendResources iid x
         ForCard _ card -> do
-          iids <- getInvestigatorIds
+          iids <- getInvestigators
           iidsWithModifiers <- for iids $ \iid' -> do
             modifiers <- getModifiers (InvestigatorTarget iid')
             pure (iid', modifiers)
@@ -1168,7 +1168,7 @@ instance RunMessage ActiveCost where
 
       extraResources <- case activeCostTarget c of
         ForCard _ card -> do
-          iids <- getInvestigatorIds
+          iids <- getInvestigators
           sum <$> for iids \iid' -> do
             modifiers <- getModifiers (InvestigatorTarget iid')
             sum <$> for modifiers \case

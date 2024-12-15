@@ -47,7 +47,7 @@ instance RunMessage SearchForTheBrotherhood where
       a <$ push (AdvanceAct (toId attrs) source AdvancedWithOther)
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       shattered <- getSetAsideCardsMatching $ CardWithTrait Shattered
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       relicIsMissing <- getHasRecord TheRelicIsMissing
       mRelic <-
         if relicIsMissing
@@ -69,7 +69,7 @@ instance RunMessage SearchForTheBrotherhood where
            ]
       pure a
     NextAdvanceActStep aid idx | aid == toId attrs -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       let miid = iids !!? idx
       for_ miid $ \iid -> do
         discard <- scenarioField ScenarioDiscard

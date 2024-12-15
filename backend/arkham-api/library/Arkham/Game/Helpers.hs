@@ -548,7 +548,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         usedAbilities' <-
           filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
 
         let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
 
@@ -584,7 +584,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           fmap (map usedAbility)
             . filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
@@ -810,7 +810,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               ]
           Nothing -> pure False
       _ -> pure False
-    iids <- filter (/= iid) <$> getInvestigatorIds
+    iids <- filter (/= iid) <$> getInvestigators
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
     canHelpPay <- flip filterM iidsWithModifiers \(iid', modifiers') -> do
       bobJenkinsPermitted <-
@@ -1298,10 +1298,10 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny Matcher.ResignedInvestigator -- at least one investigator should have resigned
       ]
   Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
-    liftA2
-      (==)
-      (select Matcher.UneliminatedInvestigator)
-      (select investigatorMatcher)
+    uneliminated <- select Matcher.UneliminatedInvestigator
+    if null uneliminated
+      then pure False
+      else (== uneliminated) <$> select investigatorMatcher
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-

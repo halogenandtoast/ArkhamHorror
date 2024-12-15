@@ -18,7 +18,7 @@ strangeDisappearances = agenda (1, A) StrangeDisappearances Cards.strangeDisappe
 instance RunMessage StrangeDisappearances where
   runMessage msg a@(StrangeDisappearances attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       scenarioDeckCount <- length <$> getScenarioDeck PotentialSacrifices
       if scenarioDeckCount >= 3
         then

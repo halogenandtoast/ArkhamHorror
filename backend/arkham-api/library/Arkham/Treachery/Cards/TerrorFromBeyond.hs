@@ -26,7 +26,7 @@ terrorFromBeyond = treachery TerrorFromBeyond Cards.terrorFromBeyond
 instance RunMessage TerrorFromBeyond where
   runMessage msg t@(TerrorFromBeyond attrs) = case msg of
     Revelation iid source | isSource attrs source -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       phaseHistory <- mconcat <$> traverse (getHistory PhaseHistory) iids
       let
         secondCopy =

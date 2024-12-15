@@ -370,8 +370,10 @@ instance RunMessage EnemyAttrs where
       pure a
     Move movement | isTarget a (moveTarget movement) -> do
       case moveDestination movement of
-        ToLocation destinationLocationId -> do
-          push $ EnemyMove (toId a) destinationLocationId
+        ToLocation destinationLocationId -> case moveMeans movement of
+          Direct -> push $ EnemyMove (toId a) destinationLocationId
+          OneAtATime -> push $ MoveUntil destinationLocationId (toTarget a)
+          Towards -> push $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
         ToLocationMatching matcher -> do
           lids <- select matcher
           player <- getLeadPlayer

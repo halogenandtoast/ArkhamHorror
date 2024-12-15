@@ -720,7 +720,7 @@ getInvestigatorsMatching matcher = do
 
       mappings <-
         traverse (traverseToSnd (getLocationDistance <=< getJustLocation))
-          =<< getInvestigatorIds
+          =<< getInvestigators
 
       let
         mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
@@ -742,7 +742,7 @@ getInvestigatorsMatching matcher = do
 
       mappings <-
         traverse (traverseToSnd (getEnemyDistance <=< getJustLocation))
-          =<< getInvestigatorIds
+          =<< getInvestigators
 
       let
         mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
@@ -755,7 +755,7 @@ getInvestigatorsMatching matcher = do
       allCounts <-
         traverse
           (\iid' -> length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId iid')))
-          =<< getInvestigatorIds
+          =<< getInvestigators
       pure $ selfCount == maximum (ncons selfCount allCounts)
     HasMatchingAsset assetMatcher -> flip filterM as $ \i ->
       selectAny $ assetMatcher <> assetControlledBy (toId i)
@@ -1843,7 +1843,7 @@ getLocationsMatching lmatcher = do
           pure $ filter (and . sequence [(`elem` matches'), (`elem` candidates)] . toId) ls
         Nothing -> pure []
     FarthestLocationFromAll matcher -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
       distances <- for iids $ \iid -> do
         start <- getJustLocation iid
@@ -2036,7 +2036,7 @@ getLocationsMatching lmatcher = do
     BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
     LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
     LocationWithDefeatedEnemyThisRound -> do
-      iids <- allInvestigatorIds
+      iids <- allInvestigators
       enemiesDefeated <- historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
       let
         validLids = flip mapMaybe enemiesDefeated $ \e ->

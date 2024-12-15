@@ -28,7 +28,7 @@ instance RunMessage SearchForThePattern where
   runMessage msg a@(SearchForThePattern attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       theWingedSerpent <- genEncounterCard Enemies.theWingedSerpent
-      leadInvestigator <- getLeadInvestigatorId
+      leadInvestigator <- getLead
       pushAll
         [ InvestigatorDrewEncounterCard leadInvestigator theWingedSerpent
         , AdvanceActDeck (actDeckId attrs) (toSource attrs)

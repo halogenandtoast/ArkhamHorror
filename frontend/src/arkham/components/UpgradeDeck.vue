@@ -210,7 +210,7 @@ const tabooList = function (investigator: Investigator) {
 <template>
   <div id="upgrade-deck" class="column">
     <div class="column">
-      <h2 class="title">Upgrade Deck ({{xp}} TOTAL xp)</h2>
+      <h2 class="title">{{ $t('upgrade.title', {xp: xp}) }}</h2>
       <div v-if="!waiting" class="upgrade-deck">
         <template v-if="question && question.tag !== 'ChooseUpgradeDeck'">
           <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
@@ -228,27 +228,27 @@ const tabooList = function (investigator: Investigator) {
           <div class="fields">
             <div class="arkhamdb-integration column">
               <template v-if="fetching">
-                <p>Fetching deck from {{deckSource}}...</p>
+                <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
               </template>
               <template v-else>
-                <p>Upgrade your deck directly in {{deckSource}} and sync here.</p>
+                <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
                 <div class="buttons">
-                  <button @click.prevent="viewDeck">Open Deck in {{deckSource}}</button>
-                  <button @click.prevent="syncUpgrade">Pull Upgraded Deck from {{deckSource}}</button>
+                  <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>
+                  <button @click.prevent="syncUpgrade">{{ $t('upgrade.pullUpdate', {deckSource: deckSource}) }}</button>
                 </div>
-                <span class="separator">OR</span>
+                <span class="separator">{{ $t('upgrade.OR') }}</span>
                 <div class="single-field">
                   <input
                     type="url"
                     v-model="deck"
                     @change="loadDeck"
                     @paste.prevent="pasteDeck($event)"
-                    placeholder="ArkhamDB or arkham.build deck url"
+                    v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
                   />
-                  <button @click.prevent="upgrade">Upgrade</button>
+                  <button @click.prevent="upgrade">{{ $t('upgrade.Upgrade') }}</button>
                 </div>
                 <div class="buttons">
-                  <button class="skip" @click.prevent="skipping = true">Continue without upgrading</button>
+                  <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
                 </div>
               </template>
             </div>
@@ -256,7 +256,7 @@ const tabooList = function (investigator: Investigator) {
         </template>
       </div>
       <div v-else class="upgrade-deck">
-        Waiting for other players to upgrade deck.
+        {{ $t('upgrade.waitingOtherPlayer') }}
       </div>
     </div>
 
@@ -268,7 +268,7 @@ const tabooList = function (investigator: Investigator) {
 
   <Prompt
     v-if="skipping"
-    prompt="Are you sure you want to skip upgrading this deck?"
+    v-bind:prompt= "$t('upgrade.skippingPrompt')"
     :yes="skip"
     :no="() => skipping = false"
   />

@@ -244,7 +244,7 @@ const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 const viewUnderScenarioReference = computed(() => `${cardsUnderScenarioReference.value.length} Cards Underneath`)
-const viewDiscardLabel = computed(() => pluralize('Card', discards.value.length))
+const viewDiscardLabel = computed(() => pluralize(t('scenario.discardCard'), discards.value.length))
 const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
   const { cardCode } = props.scenario.discard[0]
@@ -422,10 +422,10 @@ const doShowCards = (cards: ComputedRef<Card[]>, title: string, isDiscards: bool
   showCards.ref = cards
   viewingDiscard.value = isDiscards
 }
-const showRemovedFromPlay = () => doShowCards(removedFromPlay, 'Removed from Play', true)
-const showDiscards = () => doShowCards(discards, 'Discards', true)
+const showRemovedFromPlay = () => doShowCards(removedFromPlay, t('scenario.removedFromPlay'), true)
+const showDiscards = () => doShowCards(discards, t('scenario.discards'), true)
 const hideCards = () => showCards.ref = noCards
-const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, 'Cards Under Scenario Reference', false)
+const showCardsUnderScenarioReference = () => doShowCards(cardsUnderScenarioReference, t('scenario.cardsUnderScenarioReference'), false)
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
   c.tag === "GridLabel" && c.gridLabel === u
 )
@@ -441,7 +441,7 @@ const tarotCardAbility = (card: TarotCard) => {
 
 const victoryDisplay = computed(() => props.scenario.victoryDisplay)
 
-const showVictoryDisplay = () => doShowCards(victoryDisplay, 'Victory Display', true)
+const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victoryDisplay'), true)
 
 </script>
 

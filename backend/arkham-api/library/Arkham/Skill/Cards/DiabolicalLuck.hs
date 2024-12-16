@@ -21,7 +21,7 @@ instance HasAbilities DiabolicalLuck where
         $ restrictedAbility x 1 InYourHand
         $ ConstantReaction
           "Commit Diabolical Luck from your hand"
-          (RevealChaosToken #after You #curse)
+          (RevealChaosToken #when You #curse)
           Free
     ]
 

@@ -27,6 +27,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
+import Arkham.Search
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -465,7 +466,7 @@ search
   -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> Message
-search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search Searching iid source target zones matcher strategy)
+search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search $ mkSearch Searching iid source target zones matcher strategy)
 
 lookAt
   :: (Targetable target, Sourceable source)
@@ -476,7 +477,7 @@ lookAt
   -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> Message
-lookAt iid (toSource -> source) (toTarget -> target) = Search Looking iid source target
+lookAt iid (toSource -> source) (toTarget -> target) zones matcher strategy = Search $ mkSearch Looking iid source target zones matcher strategy
 
 revealing
   :: (Targetable target, Sourceable source)
@@ -485,7 +486,7 @@ revealing
   -> target
   -> Zone
   -> Message
-revealing iid (toSource -> source) (toTarget -> target) zone = Search Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
+revealing iid (toSource -> source) (toTarget -> target) zone = Search $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
 
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False

@@ -3237,6 +3237,7 @@ library
       Arkham.Scenarios.WeaverOfTheCosmos.Helpers
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
+      Arkham.Search
       Arkham.Skill
       Arkham.Skill.Cards
       Arkham.Skill.Cards.AbleBodied

@@ -23,6 +23,10 @@ discardFromHand iid source strategy amount = push . toMessage $ Msg.discardFromH
 chooseAndDiscardCard :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseAndDiscardCard iid source = push . toMessage $ Msg.chooseAndDiscardCard iid source
 
+chooseAndDiscardCards
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+chooseAndDiscardCards iid source n = push . toMessage $ (Msg.chooseAndDiscardCard iid source) {discardAmount = n}
+
 discardCard
   :: (Sourceable source, IsCard card, ReverseQueue m)
   => InvestigatorId

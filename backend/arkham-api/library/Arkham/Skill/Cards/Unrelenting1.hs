@@ -18,7 +18,7 @@ instance RunMessage Unrelenting1 where
   runMessage msg s@(Unrelenting1 attrs) = case msg of
     InvestigatorCommittedSkill iid sid | sid == toId attrs -> do
       player <- getPlayer iid
-      chaosTokensInBag <- getOnlyChaosTokensInBag
+      chaosTokensInBag <- getBagChaosTokens
       pushAll
         [ FocusChaosTokens chaosTokensInBag
         , chooseUpToN

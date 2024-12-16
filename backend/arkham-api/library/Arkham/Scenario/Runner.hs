@@ -60,6 +60,7 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Search
 import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
@@ -765,7 +766,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
               windows' <- checkWindows [mkWhen Window.EncounterDeckRunsOutOfCards]
               pushAll [windows', ShuffleEncounterDiscardBackIn]
         pure $ a & (deckLens handler .~ Deck rest) & (inShuffleL .~ null rest)
-  Search searchType iid _ EncounterDeckTarget _ _ _ -> do
+  Search (MkSearch searchType iid _ EncounterDeckTarget _ _ _ _ _) -> do
     case searchType of
       Searching ->
         wouldDo
@@ -781,7 +782,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         batchId <- getRandom
         push $ DoBatch batchId msg
     pure a
-  DoBatch batchId (Search sType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy) -> do
+  DoBatch
+    batchId
+    (Search (MkSearch sType iid source EncounterDeckTarget cardSources cardMatcher foundStrategy _ _)) -> do
     mods <- getModifiers iid
     let
       additionalDepth =

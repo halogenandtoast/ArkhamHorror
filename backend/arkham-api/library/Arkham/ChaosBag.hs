@@ -1,12 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.ChaosBag (
-  ChaosBag,
-  emptyChaosBag,
-  chaosTokensL,
-) where
-
-import Arkham.Prelude
+module Arkham.ChaosBag (ChaosBag, emptyChaosBag, chaosTokensL) where
 
 import Arkham.ChaosBag.Base
 import Arkham.ChaosBag.RevealStrategy
@@ -20,6 +14,7 @@ import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
@@ -809,12 +804,9 @@ instance RunMessage ChaosBag where
     SealChaosToken token ->
       pure
         $ c
-        & chaosTokensL
-        %~ filter (/= token)
-        & setAsideChaosTokensL
-        %~ filter (/= token)
-        & revealedChaosTokensL
-        %~ filter (/= token)
+        & (chaosTokensL %~ filter (/= token))
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
     SetChaosTokenAside token -> do
       pure $ c & setAsideChaosTokensL %~ (<> [token])
     UnsealChaosToken token -> do

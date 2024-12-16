@@ -206,6 +206,9 @@ infix 9 !!?
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d
 
+uncurry7 :: (a -> b -> c -> d -> e -> f -> g -> h) -> (a, b, c, d, e, f, g) -> h
+uncurry7 z ~(a, b, c, d, e, f, g) = z a b c d e f g
+
 eachWithRest :: Eq a => [a] -> [(a, [a])]
 eachWithRest xs = [(x, deleteFirst x xs) | x <- xs]
 

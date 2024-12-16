@@ -72,6 +72,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult qualified as SkillTest
@@ -305,10 +306,6 @@ data StoryMode = ResolveIt | DoNotResolveIt
   deriving anyclass (ToJSON, FromJSON)
 
 data IncludeDiscard = IncludeDiscard | ExcludeDiscard
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
-data SearchType = Searching | Looking | Revealing
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -926,14 +923,7 @@ data Message
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch
-  | Search
-      SearchType
-      InvestigatorId
-      Source
-      Target
-      [(Zone, ZoneReturnStrategy)]
-      ExtendedCardMatcher
-      FoundCardsStrategy
+  | Search Search
   | ResolveSearch InvestigatorId
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card])
@@ -1107,6 +1097,11 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "Search" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left args -> pure $ Search $ uncurry7 (mkSearch @Source @Target @InvestigatorId) args
+          Right search -> pure $ Search search
       "ObtainCard" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

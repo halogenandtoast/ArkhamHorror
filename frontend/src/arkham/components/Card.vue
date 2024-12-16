@@ -114,7 +114,7 @@ const hasPool = computed(() => {
       :data-customizations="JSON.stringify(cardContents.customizations)"
       @click="emit('choose', cardAction)"
     />
-    <span class="vengeance" v-if="card.tag === 'VengeanceCard'">Vengeance 1</span>
+    <span class="vengeance" v-if="card.tag === 'VengeanceCard'">{{$t('card.vengeance', {value: 1})}}</span>
     <div class="pool" v-if="hasPool">
       <PoolItem v-if="damage" type="doom" :amount="damage" />
       <PoolItem v-if="horror" type="horror" :amount="horror" />

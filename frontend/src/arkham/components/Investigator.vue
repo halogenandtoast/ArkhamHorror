@@ -172,7 +172,7 @@ const portraitImage = computed(() => {
 
 
 const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
-const cardsUnderneathLabel = computed(() => `Underneath (${cardsUnderneath.value.length})`)
+const cardsUnderneathLabel = computed(() => t('investigator.underneathCards', {count: cardsUnderneath.value.length}))
 const devoured = computed(() => props.investigator.devoured)
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
@@ -338,18 +338,18 @@ function onDrop(event: DragEvent) {
         <button
           :disabled="endTurnAction == -1"
           @click="$emit('choose', endTurnAction)"
-        >End turn</button>
+        >{{ $t('investigator.endTurn') }}</button>
 
         <button
           v-if="devoured && devoured.length > 0"
           @click="showDevoured"
-        >Devoured ({{devoured.length}})</button>
+        >{{ $t('investigator.devouredCards', {count: devoured.length}) }}</button>
 
         <button
           :disabled="skipTriggersAction == -1"
           @click="$emit('choose', skipTriggersAction)"
           class="skip-triggers-button"
-        >Skip Triggers</button>
+        >{{ $t('investigator.skipTriggers') }}</button>
 
         <button v-if="cardsUnderneath.length > 0" class="view-discard-button" @click="showCardsUnderneath">{{cardsUnderneathLabel}}</button>
       </div>

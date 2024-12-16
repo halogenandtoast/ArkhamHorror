@@ -48,7 +48,7 @@ function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
             :game="game" :card="card" :playerId="playerId" @choose="emit('choose', $event)" />
         </div>
       </div>
-      <button class="button close" @click="emit('close')">Close</button>
+      <button class="button close" @click="emit('close')">{{ $t('close') }}</button>
     </div>
   </Draggable>
 </template>

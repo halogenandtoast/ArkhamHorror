@@ -40,7 +40,7 @@ function pasteDeck(evt: ClipboardEvent) {
     v-model="deck"
     @change="loadDeck"
     @paste.prevent="pasteDeck($event)"
-    placeholder="ArkhamDB or arkham.build deck url"
+    v-bind:placeholder="$t('create.deckUrlPlaceholder')"
   />
 </template>
 

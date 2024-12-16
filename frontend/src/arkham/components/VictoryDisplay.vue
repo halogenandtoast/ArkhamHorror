@@ -4,6 +4,9 @@ import type { Game } from '@/arkham/types/Game';
 import type { Card } from '@/arkham/types/Card';
 import CardView from '@/arkham/components/Card.vue'
 import Enemy from '@/arkham/components/Enemy.vue';
+import { pluralize } from '@/arkham/helpers';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 export interface Props {
   game: Game
@@ -21,8 +24,7 @@ const enemiesInVictoryDisplay = computed(() => {
 })
 const topOfVictoryDisplay = computed(() => props.victoryDisplay[0])
 
-const viewVictoryDisplayLabel = computed(() => `${props.victoryDisplay.length} Card${props.victoryDisplay.length === 1 ? '' : 's'}`)
-
+const viewVictoryDisplayLabel = computed(() => pluralize(t('scenario.discardCard'), props.victoryDisplay.length))
 const showVictoryDisplay = () => emit('show')
 </script>
 i

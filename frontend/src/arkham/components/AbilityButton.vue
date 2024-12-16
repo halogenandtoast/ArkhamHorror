@@ -80,27 +80,27 @@ const abilityLabel = computed(() => {
   }
 
   if (props.ability.tag === MessageType.EVADE_LABEL) {
-    return "Evade"
+    return t('Evade')
   }
 
   if (props.ability.tag === MessageType.FIGHT_LABEL) {
-    return "Fight"
+    return t('Fight')
   }
 
   if (props.ability.tag === MessageType.ENGAGE_LABEL) {
-    return "Engage"
+    return t('Engage')
   }
 
   if (isForcedAbility.value === true) {
-    return "Forced"
+    return t('Forced')
   }
 
   if (isDelayedAbility.value === true) {
-    return "Delayed"
+    return t('Delayed')
   }
 
   if (isObjective.value === true) {
-    return "Objective"
+    return t('Objective')
   }
 
   if (ability.value && ability.value.type.tag === "CustomizationReaction") {
@@ -130,7 +130,7 @@ const abilityLabel = computed(() => {
   }
 
   if (isHaunted.value === true) {
-    return "Haunted"
+    return t('Haunted')
   }
 
   return ""

@@ -1,0 +1,39 @@
+{
+    "newGame": "New Game",
+
+    "numberOfPlayers" : "Number of Players",
+    "withFriends": "WithFriends",
+    "multihandedSolo": "Multi-handed Solo",
+
+    "campaign": "Campaign",
+    "standalone": "Standalone",
+    "sideStory": "Side Story",
+
+    "alphaWarning": "This campaign is currently being worked on. It likely doesn't work yet and you should not file bugs against it.",
+    "betaWarning": "This campaign is ready for testing but expect your games to break frequently.",
+
+    "normal": "Normal",
+    "returnTo": "Return to...",
+    
+    "fullCampaign": "Full Campaign",
+    "partialCampaign": "Partial Campaign",
+
+    "difficulty": "Difficulty",
+    "Easy": "Easy",
+    "Standard": "Standard",
+    "Hard": "Hard",
+    "Expert": "Expert",
+
+    "includeTarotReadings": "Include Tarot Readings",
+
+    "gameName": "Game Name",
+    "create": "Create",
+
+    "chooseYourDeck": "Choose your deck{s}",
+    "tabooList": "Taboo List: {tabooList}",
+    "useExistingDeck": "Use Existing Deck",
+    "loadNewDeck": "Load New Deck",
+    "selectADeck": "-- Select a Deck --",
+    "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
+    "choose": "Choose"
+}

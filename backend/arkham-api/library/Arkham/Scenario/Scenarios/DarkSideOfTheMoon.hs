@@ -52,7 +52,7 @@ instance HasChaosTokenValue DarkSideOfTheMoon where
   getChaosTokenValue iid tokenFace (DarkSideOfTheMoon attrs) = case tokenFace of
     Skull -> do
       alarmLevel <- getAlarmLevel iid
-      pure $ toChaosTokenValue attrs Skull (alarmLevel + 1 `div` 2) alarmLevel
+      pure $ toChaosTokenValue attrs Skull ((alarmLevel + 1) `div` 2) alarmLevel
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 1 2
     ElderThing -> pure $ ChaosTokenValue ElderThing (byDifficulty attrs (PositiveModifier 1) (PositiveModifier 0))

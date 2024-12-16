@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings, ShrewdDealings (..)) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Game.Helpers (passesLimits)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
@@ -30,7 +31,8 @@ instance HasAbilities ShrewdDealings where
 instance RunMessage ShrewdDealings where
   runMessage msg a@(ShrewdDealings attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
-      investigators <- select $ affectsOthers $ colocatedWith iid
+      investigators <- filterM (`passesLimits` card) =<< select (affectsOthers $ colocatedWith iid)
+      -- need to ensure card would not exceed limit
       chooseOneM iid do
         targets investigators \investigator -> do
           cardResolutionModifier card (attrs.ability 1) card (PlayUnderControlOf investigator)

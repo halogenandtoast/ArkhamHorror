@@ -39,15 +39,7 @@ instance RunMessage JeremiahKirbyArcticArchaeologist where
       -- technically the choose is part of the cost, but I don't think we care
       let source = attrs.ability 1
       let revealTopOfDeck mtch =
-            Search
-              $ mkSearch
-                Revealing
-                iid
-                source
-                (toTarget iid)
-                [fromTopOfDeck 5]
-                mtch
-                (DeferSearchedToTarget (toTarget attrs) IsNotDraw)
+            Search $ mkSearch Revealing iid source iid [fromTopOfDeck 5] mtch (DrawAllFound iid)
       chooseOne
         iid
         [ Label "Even" [revealTopOfDeck $ basic CardWithEvenCost]

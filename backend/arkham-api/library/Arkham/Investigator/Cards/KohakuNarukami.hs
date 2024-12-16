@@ -32,7 +32,7 @@ instance HasChaosTokenValue KohakuNarukami where
 instance RunMessage KohakuNarukami where
   runMessage msg i@(KohakuNarukami attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      tokens <- getBagChaosTokens
+      tokens <- getOnlyChaosTokensInBag
       let bIn = filter ((== #bless) . (.face)) tokens
       let cIn = filter ((== #curse) . (.face)) tokens
       bOut <- getRemainingBlessTokens

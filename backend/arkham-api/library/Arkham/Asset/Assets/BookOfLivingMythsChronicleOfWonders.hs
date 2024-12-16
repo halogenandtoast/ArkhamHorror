@@ -33,7 +33,7 @@ instance HasAbilities BookOfLivingMythsChronicleOfWonders where
 instance RunMessage BookOfLivingMythsChronicleOfWonders where
   runMessage msg a@(BookOfLivingMythsChronicleOfWonders attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      tokens <- getBagChaosTokens
+      tokens <- getOnlyChaosTokensInBag
       let bIn = filter ((== #bless) . (.face)) tokens
       let cIn = filter ((== #curse) . (.face)) tokens
 
@@ -42,7 +42,7 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
         <> [Label "Resolve {curse} token" [DoStep 2 msg] | length cIn >= length bIn]
       pure a
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do
-      tokens <- getBagChaosTokens
+      tokens <- getOnlyChaosTokensInBag
       let bIn = filter ((== #bless) . (.face)) tokens
       let cIn = filter ((== #curse) . (.face)) tokens
       case take 1 (if n == 1 then bIn else cIn) of

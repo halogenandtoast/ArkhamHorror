@@ -15,8 +15,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
 
+getOnlyChaosTokensInBag :: HasGame m => m [ChaosToken]
+getOnlyChaosTokensInBag = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+
 getBagChaosTokens :: HasGame m => m [ChaosToken]
-getBagChaosTokens = scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+getBagChaosTokens = scenarioFieldMap ScenarioChaosBag allChaosBagChaosTokens
 
 getTokenPool :: HasGame m => m [ChaosToken]
 getTokenPool = scenarioFieldMap ScenarioChaosBag chaosBagTokenPool

@@ -206,6 +206,9 @@ infix 9 !!?
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d
 
+uncurry5 :: (a -> b -> c -> d -> e -> f) -> (a, b, c, d, e) -> f
+uncurry5 z ~(a, b, c, d, e) = z a b c d e
+
 uncurry7 :: (a -> b -> c -> d -> e -> f -> g -> h) -> (a, b, c, d, e, f, g) -> h
 uncurry7 z ~(a, b, c, d, e, f, g) = z a b c d e f g
 

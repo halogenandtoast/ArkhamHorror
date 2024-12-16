@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3688,7 +3688,7 @@ instance Query ChaosTokenMatcher where
     tokens <-
       if includeSealed matcher
         then getAllChaosTokens
-        else if isInfestation then getInfestationTokens else traceShowId <$> getBagChaosTokens
+        else if isInfestation then getInfestationTokens else getBagChaosTokens
     case matcher of
       ChaosTokenMatchesOrElse matcher' orElseMatch -> do
         results <- filterM (go matcher') ((if inTokenPool matcher then [] else tokens) <> tokenPool)

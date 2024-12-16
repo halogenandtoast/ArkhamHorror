@@ -113,6 +113,7 @@ library:
     - unliftio
     - uri-bytestring
     - uuid
+    - vector
     - wai
     - wai-extra
     - wai-logger

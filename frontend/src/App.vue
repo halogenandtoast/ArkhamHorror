@@ -49,6 +49,7 @@ const checkAvifSupport = (): Promise<boolean> => {
 <style lang="scss">
 html {
   color-scheme: dark;
+  interpolate-size: allow-keywords;
 }
 * {
   padding: 0;

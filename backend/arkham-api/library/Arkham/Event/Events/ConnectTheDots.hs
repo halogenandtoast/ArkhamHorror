@@ -18,7 +18,8 @@ instance RunMessage ConnectTheDots where
     PlayThisEvent iid (is attrs -> True) -> do
       locations <-
         select
-          $ LocationWithLowerPrintedShroudThan (locationWithInvestigator iid)
+          $ RevealedLocation
+          <> LocationWithLowerPrintedShroudThan (locationWithInvestigator iid)
           <> locationWithDiscoverableCluesBy iid
       chooseOrRunOne
         iid

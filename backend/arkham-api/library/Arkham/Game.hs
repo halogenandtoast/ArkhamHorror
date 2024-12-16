@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -26,7 +26,6 @@ import Arkham.Campaign
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasDistance
@@ -181,7 +180,6 @@ import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
-import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
 import Data.Sequence ((|>), pattern Empty, pattern (:<|), pattern (:|>))
@@ -3690,7 +3688,7 @@ instance Query ChaosTokenMatcher where
     tokens <-
       if includeSealed matcher
         then getAllChaosTokens
-        else if isInfestation then getInfestationTokens else getBagChaosTokens
+        else if isInfestation then getInfestationTokens else traceShowId <$> getBagChaosTokens
     case matcher of
       ChaosTokenMatchesOrElse matcher' orElseMatch -> do
         results <- filterM (go matcher') ((if inTokenPool matcher then [] else tokens) <> tokenPool)

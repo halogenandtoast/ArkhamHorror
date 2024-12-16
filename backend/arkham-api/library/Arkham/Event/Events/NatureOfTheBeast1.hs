@@ -6,8 +6,8 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher hiding (DiscoverClues)
-import Arkham.Message (SearchType (..))
 import Arkham.Message qualified as Msg
+import Arkham.Search
 import Arkham.Strategy
 
 newtype NatureOfTheBeast1 = NatureOfTheBeast1 EventAttrs
@@ -21,7 +21,15 @@ instance RunMessage NatureOfTheBeast1 where
   runMessage msg e@(NatureOfTheBeast1 attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       push
-        $ Search Revealing iid (toSource attrs) #encounterDeck [fromTopOfDeck 3] #any (defer attrs IsDraw)
+        $ Search
+        $ mkSearch
+          Revealing
+          iid
+          attrs
+          EncounterDeckTarget
+          [fromTopOfDeck 3]
+          #any
+          (defer attrs IsDraw)
       push $ DoStep 2 msg
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards -> do

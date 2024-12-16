@@ -36,7 +36,7 @@ instance HasAbilities BeginnersLuck where
 instance RunMessage BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs) = runQueueT $ case msg of
     UseCardAbility iid source 1 (Window.revealedChaosTokens -> [token]) _ | isSource attrs source -> do
-      chaosTokensInBag <- getOnlyChaosTokensInBag
+      chaosTokensInBag <- getBagChaosTokens
       push $ FocusChaosTokens chaosTokensInBag
       chooseOneM iid do
         targets chaosTokensInBag \token' -> do

@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.JeremiahKirbyArcticArchaeologist (
   jeremiahKirbyArcticArchaeologist,
-  JeremiahKirbyArcticArchaeologist (..),
 )
 where
 
@@ -9,7 +8,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Message (SearchType (..))
+import Arkham.Search
 import Arkham.Strategy
 import Arkham.Taboo
 
@@ -29,7 +28,7 @@ instance HasAbilities JeremiahKirbyArcticArchaeologist where
           then limitedAbility (MaxPer Cards.jeremiahKirbyArcticArchaeologist PerGame 2)
           else id
       )
-        $ restrictedAbility a 1 ControlsThis
+        $ restricted a 1 ControlsThis
         $ freeReaction
         $ AssetEntersPlay #when (be a)
     ]
@@ -40,7 +39,15 @@ instance RunMessage JeremiahKirbyArcticArchaeologist where
       -- technically the choose is part of the cost, but I don't think we care
       let source = attrs.ability 1
       let revealTopOfDeck mtch =
-            Search Revealing iid source (toTarget iid) [fromTopOfDeck 5] mtch (DrawAllFound iid)
+            Search
+              $ mkSearch
+                Revealing
+                iid
+                source
+                (toTarget iid)
+                [fromTopOfDeck 5]
+                mtch
+                (DeferSearchedToTarget (toTarget attrs) IsNotDraw)
       chooseOne
         iid
         [ Label "Even" [revealTopOfDeck $ basic CardWithEvenCost]

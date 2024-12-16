@@ -93,6 +93,8 @@ import Arkham.Phase
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
+import Arkham.Search hiding (drawnCardsL, foundCardsL)
+import Arkham.Search qualified as Search
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
 import Arkham.Timing qualified as Timing
@@ -3348,7 +3350,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
-      & (searchL . _Just . searchingDrawnCardsL %~ (<> cards))
+      & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
   DrawToHand iid cards | iid == investigatorId -> do
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
@@ -3366,7 +3368,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (discardL %~ filter ((`notElem` cards) . PlayerCard))
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
-      & (searchL . _Just . searchingDrawnCardsL %~ (<> cards))
+      & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
   AddToHandQuiet iid cards | iid == investigatorId -> do
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
@@ -3457,9 +3459,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         other -> other
     case investigatorSearch of
       Nothing -> error "Invalid call, no search for investigator"
-      Just s -> pure $ a & searchL ?~ s {searchingZones = map updateZone (searchingZones s)}
+      Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
   EndSearch iid _ (InvestigatorTarget iid') _ | iid == investigatorId -> do
-    let cardSources = maybe [] searchingZones investigatorSearch
+    let cardSources = maybe [] searchZones investigatorSearch
     let
       foundKey = \case
         Zone.FromTopOfDeck _ -> Zone.FromDeck
@@ -3489,8 +3491,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             (findWithDefault [] Zone.FromDeck $ a ^. foundCardsL)
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
-        for_ investigatorSearch \MkInvestigatorSearch {searchingType} ->
-          pushWhen (searchingType == Searching) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
+        for_ investigatorSearch \MkSearch {searchType} ->
+          pushWhen (searchType == Searching) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
       PutBack -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back
@@ -3519,13 +3521,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   SearchEnded iid | iid == investigatorId -> do
     case investigatorSearch of
       Just search' -> do
-        when (notNull $ search' ^. searchingDrawnCardsL) do
-          pushM $ checkWindows [mkAfter $ Window.DrawCards iid $ search' ^. searchingDrawnCardsL]
+        when (notNull $ search' ^. Search.drawnCardsL) do
+          pushM $ checkWindows [mkAfter $ Window.DrawCards iid $ search' ^. Search.drawnCardsL]
       _ -> pure ()
 
     pure $ a & searchL .~ Nothing
   CancelSearch iid | iid == investigatorId -> pure $ a & searchL .~ Nothing
-  Search searchType iid _ (InvestigatorTarget iid') _ _ _ | iid' == toId a -> do
+  Search (MkSearch searchType iid _ (InvestigatorTarget iid') _ _ _ _ _) | iid' == toId a -> do
     let deck = Deck.InvestigatorDeck iid'
     if searchType == Searching
       then wouldDo msg (Window.WouldSearchDeck iid deck) (Window.SearchedDeck iid deck)
@@ -3534,7 +3536,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         push $ DoBatch batchId msg
 
     pure a
-  DoBatch _ (Search _ iid _ (InvestigatorTarget iid') _ _ foundStrategy) | iid' == toId a -> do
+  DoBatch _ (Search (MkSearch _ iid _ (InvestigatorTarget iid') _ _ foundStrategy _ _)) | iid' == toId a -> do
     let isDrawing = isSearchDraw foundStrategy
     let deck = Deck.InvestigatorDeck iid'
     wouldDrawCard <- checkWindows [mkWhen (Window.WouldDrawCard iid deck)]
@@ -3543,7 +3545,19 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Do
     ( DoBatch
         batchId
-        (Search searchType iid source target@(InvestigatorTarget iid') cardSources cardMatcher foundStrategy)
+        ( Search
+            ( MkSearch
+                searchType
+                iid
+                source
+                target@(InvestigatorTarget iid')
+                cardSources
+                cardMatcher
+                foundStrategy
+                _
+                _
+              )
+          )
       ) | iid' == toId a -> do
       mods <- getModifiers iid
       let
@@ -3585,20 +3599,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pure
         $ a
         & searchL
-        ?~ MkInvestigatorSearch
-          searchType
-          iid
-          source
-          target
-          cardSources
-          cardMatcher
-          foundStrategy
-          foundCards
-          []
+        ?~ MkSearch searchType iid source target cardSources cardMatcher foundStrategy foundCards []
   ResolveSearch x | x == investigatorId -> do
     case investigatorSearch of
       Just
-        ( MkInvestigatorSearch
+        ( MkSearch
             _
             iid
             source

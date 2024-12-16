@@ -600,6 +600,7 @@ instance RunMessage ChaosBag where
         $ c
         & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
+        & (revealedChaosTokensL .~ mempty)
         & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do

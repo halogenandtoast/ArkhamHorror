@@ -55,13 +55,13 @@ export const additionalActionTypeDecoder = JsonDecoder.oneOf<AdditionalActionTyp
 export const additionalActionDecoder = JsonDecoder.object<AdditionalAction>(
   { kind: additionalActionTypeDecoder }, 'AdditionalAction')
 
-type InvestigatorSearch = {
-  searchingFoundCards: Record<string, Card[]>;
+type Search = {
+  searchFoundCards: Record<string, Card[]>;
 }
 
-export const investigatorSearchDecoder = JsonDecoder.object<InvestigatorSearch>({
-  searchingFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
-}, 'InvestigatorSearch');
+export const searchDecoder = JsonDecoder.object<Search>({
+  searchFoundCards: JsonDecoder.dictionary<Card[]>(JsonDecoder.array(cardDecoder, 'Card[]'), 'Dict<string, Card[]>'),
+}, 'Search');
 
 export type InvestigatorDetails = {
   id: string;
@@ -246,7 +246,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   additionalActions: JsonDecoder.array<AdditionalAction>(additionalActionDecoder, 'AdditionalAction').map((arr) => arr.map((action) => action.kind)),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-  foundCards: JsonDecoder.nullable(investigatorSearchDecoder).map((search) => search?.searchingFoundCards || {}),
+  foundCards: JsonDecoder.nullable(searchDecoder).map((search) => search?.searchFoundCards || {}),
   xp: JsonDecoder.number,
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),

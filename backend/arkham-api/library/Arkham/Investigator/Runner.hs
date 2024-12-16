@@ -3604,7 +3604,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     case investigatorSearch of
       Just
         ( MkSearch
-            _
+            searchType
             iid
             source
             (InvestigatorTarget iid')
@@ -3748,10 +3748,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]
-              push
+
+              let
+                shouldShuffle = case searchType of
+                  Looking -> False
+                  Revealing -> True
+                  Searching -> True
+
+              pushAll
                 $ if null choices
-                  then chooseOne player [Label "No cards found" []]
-                  else chooseOneAtATime player choices
+                  then
+                    [ chooseOne player [Label "No cards found" [ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle]]
+                    ]
+                  else
+                    let cards = concat $ toList targetCards
+                        (before, _, after) = frame $ Window.DrawCards iid cards
+                     in [before, chooseOneAtATime player choices]
+                          <> [ ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle && length targetCards == length foundCards
+                             ]
+                          <> [after]
             ReturnCards -> pure ()
       _ -> pure ()
     pure a

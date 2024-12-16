@@ -1097,11 +1097,6 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
-      "Search" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
-        case contents of
-          Left args -> pure $ Search $ uncurry7 (mkSearch @Source @Target @InvestigatorId) args
-          Right search -> pure $ Search search
       "ObtainCard" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

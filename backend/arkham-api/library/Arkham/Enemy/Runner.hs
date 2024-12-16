@@ -1207,23 +1207,27 @@ instance RunMessage EnemyAttrs where
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       runMessage (EngageEnemy iid eid Nothing False) a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
-      let (before, _, after) = frame (Window.EnemyEngaged iid eid)
-      case enemyPlacement of
-        AsSwarm eid' _ -> do
-          pushAll
-            [ before
-            , EngageEnemy iid eid' mTarget False
-            , after
-            ]
-        _ -> do
-          massive <- eid <=~> MassiveEnemy
-          mlid <- getMaybeLocation iid
-          enemyLocation <- field EnemyLocation eid
-          when (not massive) do
-            pushAll
-              $ [before, PlaceEnemy eid (InThreatArea iid)]
-              <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
-              <> [after]
+      eliminated <- selectNone $ InvestigatorWithId iid
+      if eliminated
+        then push $ EnemyCheckEngagement eid
+        else do
+          let (before, _, after) = frame (Window.EnemyEngaged iid eid)
+          case enemyPlacement of
+            AsSwarm eid' _ -> do
+              pushAll
+                [ before
+                , EngageEnemy iid eid' mTarget False
+                , after
+                ]
+            _ -> do
+              massive <- eid <=~> MassiveEnemy
+              mlid <- getMaybeLocation iid
+              enemyLocation <- field EnemyLocation eid
+              when (not massive) do
+                pushAll
+                  $ [before, PlaceEnemy eid (InThreatArea iid)]
+                  <> [EnemyEntered eid lid | lid <- maybeToList mlid, Just lid /= enemyLocation]
+                  <> [after]
       pure a
     WhenWillEnterLocation iid lid -> do
       case enemyPlacement of

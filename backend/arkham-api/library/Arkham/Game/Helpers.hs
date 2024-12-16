@@ -1093,6 +1093,10 @@ onSameLocation iid = \case
   AttachedToAsset aid _ -> do
     placement' <- field AssetPlacement aid
     onSameLocation iid placement'
+
+  -- fieldMay AssetPlacement aid >>= \case
+  --   Nothing -> pure False
+  --   Just placement' -> onSameLocation iid placement'
   AttachedToAct _ -> pure False
   AttachedToAgenda _ -> pure False
   AttachedToInvestigator iid' ->

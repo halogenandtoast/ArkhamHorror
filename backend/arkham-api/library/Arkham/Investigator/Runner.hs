@@ -2068,7 +2068,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       handleSlotType slots' sType = do
         available <- availableSlotTypesFor sType canHoldMap assetCard a
         case nub available of
-          [] -> error "No slot found"
+          [] -> pure slots' -- if no available slots we must have to put this into play
           [sType'] -> do
             slots'' <- placeInAvailableSlot aid assetCard (slots' ^. at sType' . non [])
             pure $ slots' & ix sType' .~ slots''

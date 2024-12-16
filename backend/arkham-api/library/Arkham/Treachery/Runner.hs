@@ -155,7 +155,7 @@ instance RunMessage TreacheryAttrs where
           <> [RemovedFromPlay source]
       pure a
     RemoveFromPlay source -> do
-      case a.attachedTo of
+      case a.attached of
         Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource (toTarget a)
         _ -> pure ()
       pure a

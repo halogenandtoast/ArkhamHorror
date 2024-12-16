@@ -3143,7 +3143,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     | not investigatorSkippedWindow
         && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
         actions <- getActions a.id windows
-        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+        playableCards <-
+          if not (investigatorDefeated || investigatorResigned)
+            then getPlayableCards a (UnpaidCost NeedsAction) windows
+            else pure []
         runWindow a windows actions playableCards
         pure a
   SpendActions iid _ _ 0 | iid == investigatorId -> do

@@ -154,4 +154,9 @@ instance RunMessage TreacheryAttrs where
         : [UnsealChaosToken token | token <- treacherySealedChaosTokens]
           <> [RemovedFromPlay source]
       pure a
+    RemoveFromPlay source -> do
+      case a.attachedTo of
+        Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource (toTarget a)
+        _ -> pure ()
+      pure a
     _ -> pure a

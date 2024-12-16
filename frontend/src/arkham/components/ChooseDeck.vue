@@ -187,7 +187,7 @@ const chosenDeckTabooList = computed(() => {
 <template>
   <div class="container">
     <div class="investigators">
-      <h2>Choose your deck{{ players.length > 1 ? 's' : ''}}</h2>
+      <h2>{{$t('create.chooseYourDeck', {s: players.length > 1 ? 's' : ''})}}</h2>
       <div class="portraits">
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
@@ -201,7 +201,7 @@ const chosenDeckTabooList = computed(() => {
             </div>
             <div v-else>
               <div v-if="tabooList(player.investigator)" class="taboo-list">
-                Taboo List: {{tabooList(player.investigator)}}
+                {{$t('create.tabooList', {tabooList: tabooList(player.investigator)})}}
               </div>
             </div>
           </template>
@@ -218,23 +218,23 @@ const chosenDeckTabooList = computed(() => {
             <div v-if="needsReply && player.id == playerId" class="deck-main">
               <div class="buttons">
                 <button @click.prevent="deckType = 'UseExistingDeck'" :class="{ current: deckType == 'UseExistingDeck'}" :disabled="decks.length == 0">
-                  Use Existing Deck
+                  {{$t('create.useExistingDeck')}}
                 </button>
                 <button @click.prevent="deckType = 'LoadNewDeck'" :class="{ current: deckType == 'LoadNewDeck'}">
-                  Load New Deck
+                  {{$t('create.loadNewDeck')}}
                 </button>
               </div>
               <form v-if="deckType == 'UseExistingDeck'" class="choose-deck" @submit.prevent="choose">
                 <select v-model="deckId">
-                  <option disabled :value="null">-- Select a Deck--</option>
+                  <option disabled :value="null">{{$t('create.selectADeck')}}</option>
                   <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
                 </select>
                 <p class="error" v-if="error">{{error}}</p>
-                <button type="submit" :disabled="disabled">Choose</button>
+                <button type="submit" :disabled="disabled">{{$t('create.choose')}}</button>
               </form>
               <NewDeck v-else @new-deck="addDeck" :no-portrait="true" :set-portrait="setPortrait" />
               <div v-if="chosenDeckTabooList" class="taboo-list">
-                Taboo List: {{chosenDeckTabooList}}
+                {{$t('create.tabooList', {tabooList: chosenDeckTabooList})}}
               </div>
             </div>
           </template>

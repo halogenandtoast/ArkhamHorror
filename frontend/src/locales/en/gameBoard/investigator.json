@@ -1,0 +1,8 @@
+{
+    "discards": "Discards",
+    "endTurn": "End turn",
+    "skipTriggers": "Skip Triggers",
+    "devouredCards": "Devoured ({count})",
+    "underneathCards": "Underneath ({count})"
+
+}

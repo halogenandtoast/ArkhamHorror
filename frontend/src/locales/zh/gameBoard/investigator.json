@@ -1,0 +1,8 @@
+{
+    "endTurn": "结束回合",
+    "skipTriggers": "跳过触发能力",
+    "devouredCards": "吞噬({count})",
+    "underneathCards": "在卡牌下方({count})",
+    "discards": "玩家弃牌堆"
+
+}

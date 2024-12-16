@@ -1,0 +1,18 @@
+{
+    "title": "Upgrade Deck ({xp} TOTAL xp)",
+    "fetching": "Fetching deck from {deckSource}...",
+    "directlyUpdateContent": "Upgrade your deck directly in {deckSource} and sync here.",
+    "openDeck": "Open Deck in {deckSource}",
+    "pullUpdate": "Pull Upgraded Deck from {deckSource}",
+    "OR": "OR",
+    "deckUrlPlaceholder": "ArkhamDB or arkham.build deck url",
+    "Upgrade": "Upgrade",
+    "continueWithoutUpgrading": "Continue without upgrading",
+    "waitingOtherPlayer": "Waiting for other players to upgrade deck.",
+
+    "skippingPrompt": "Are you sure you want to skip upgrading this deck?",
+    
+    "xp": "{total} XP",
+    "victoryDisplay": "Victory Display"
+
+}

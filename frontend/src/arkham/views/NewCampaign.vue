@@ -201,7 +201,7 @@ async function start() {
           <slot name="cancel"></slot>
         </header>
         <form id="new-campaign" @submit.prevent="start">
-          <p>Number of Players</p>
+          <p>{{$t('create.numberOfPlayers')}}</p>
           <div class="options">
             <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
             <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
@@ -210,15 +210,15 @@ async function start() {
           </div>
           <transition name="slide">
             <div v-if="playerCount > 1" class="options">
-              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">With Friends</label>
-              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">Multi-handed Solo</label>
+              <input type="radio" v-model="multiplayerVariant" value="WithFriends" id="friends" /><label for="friends">{{$t('create.withFriends')}}</label>
+              <input type="radio" v-model="multiplayerVariant" value="Solo" id="solo" /><label for="solo">{{$t('create.multihandedSolo')}}</label>
             </div>
           </transition>
 
           <div class="options">
-            <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">Campaign</label>
-            <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">Standalone</label>
-            <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory"> <label for="sideStory">Side Story</label>
+            <input type="radio" v-model="gameMode" :value="'Campaign'" id="campaign"> <label for="campaign">{{$t('create.campaign')}}</label>
+            <input type="radio" v-model="gameMode" :value="'Standalone'" id="standalone"> <label for="standalone">{{$t('create.standalone')}}</label>
+            <input type="radio" v-model="gameMode" :value="'SideStory'" id="sideStory"> <label for="sideStory">{{$t('create.sideStory')}}</label>
           </div>
 
           <template v-if="gameMode === 'SideStory'">
@@ -236,19 +236,19 @@ async function start() {
                 </div>
               </div>
 
-              <div class="alpha-warning" v-if="campaign && campaign.alpha">This campaign is currently being worked on. It likely doesn't work yet and you should not file bugs against it.</div>
-              <div class="beta-warning" v-if="campaign && campaign.beta">This campaign is ready for testing but expect your games to break frequently.</div>
+              <div class="alpha-warning" v-if="campaign && campaign.alpha">{{$t('create.alphaWarning')}}</div>
+              <div class="beta-warning" v-if="campaign && campaign.beta">{{$t('create.betaWarning')}}</div>
             <!-- </select> -->
           </template>
 
           <div v-if="gameMode === 'Campaign' && selectedCampaign && selectedCampaignReturnToId" class="options">
-            <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
-            <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
+            <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">{{$t('create.normal')}}</label>
+            <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">{{$t('create.returnTo')}}</label>
           </div>
 
           <div v-if="gameMode === 'Campaign' && campaign && campaign.settings" class="options">
-            <input type="radio" v-model="fullCampaign" :value="true" id="full"> <label for="full">Full Campaign</label>
-            <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">Partial Campaign</label>
+            <input type="radio" v-model="fullCampaign" :value="true" id="full"> <label for="full">{{$t('create.fullCampaign')}}</label>
+            <input type="radio" v-model="fullCampaign" :value="false" id="partial"> <label for="partial">{{$t('create.partialCampaign')}}</label>
           </div>
 
           <template v-if="(gameMode === 'Standalone' || (gameMode !== 'SideStory' && !fullCampaign)) && selectedCampaign">
@@ -259,7 +259,7 @@ async function start() {
             </div>
           </template>
 
-          <p>Difficulty</p>
+          <p>{{$t('create.difficulty')}}</p>
           <div class="options">
             <template v-for="difficulty in difficulties" :key="difficulty">
               <input
@@ -269,11 +269,11 @@ async function start() {
                 :checked="difficulty === selectedDifficulty"
                 :id="`difficulty${difficulty}`"
               />
-              <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
+              <label :for="`difficulty${difficulty}`">{{$t('create.'+difficulty)}}</label>
             </template>
           </div>
 
-          <p>Include Tarot Readings</p>
+          <p>{{$t('create.includeTarotReadings')}}</p>
           <div class="options">
             <input
               type="radio"
@@ -282,7 +282,7 @@ async function start() {
               :checked="!includeTarotReadings"
               id="tarotNo"
             />
-            <label for="tarotNo">No</label>
+            <label for="tarotNo">{{$t('No')}}</label>
             <input
               type="radio"
               v-model="includeTarotReadings"
@@ -290,15 +290,15 @@ async function start() {
               :checked="includeTarotReadings"
               id="tarotYes"
             />
-            <label for="tarotYes">Yes</label>
+            <label for="tarotYes">{{$t('Yes')}}</label>
           </div>
 
           <div>
-            <p>Game Name</p>
+            <p>{{$t('create.gameName')}}</p>
             <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
           </div>
 
-          <button type="submit" :disabled="disabled">Create</button>
+          <button type="submit" :disabled="disabled">{{$t('create.create')}}</button>
         </form>
       </div>
     </transition-group>

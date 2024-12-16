@@ -94,7 +94,7 @@ const title = computed(() => {
   }
 
   if (skillTestResults.value) {
-    return "Results"
+    return t("Results")
   }
 
   if (question.value && question.value.tag === QuestionType.READ) {
@@ -102,11 +102,11 @@ const title = computed(() => {
       return question.value.flavorText.title
     }
 
-    return "Story"
+    return t("Story")
   }
 
   if (question.value && question.value.tag === QuestionType.DROP_DOWN) {
-    return "Choose one"
+    return t("Choose one")
   }
 
 
@@ -118,7 +118,7 @@ const title = computed(() => {
     return ""
   }
 
-  return "Choose"
+  return t("Choose")
 })
 </script>
 

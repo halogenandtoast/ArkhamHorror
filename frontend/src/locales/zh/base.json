@@ -30,5 +30,21 @@
   },
   "tooltips": {
     "takeControlOfKey": "获得{key}钥匙的控制权"
-  }
+  },
+
+  "Yes": "是",
+  "No": "否",
+
+  "Evade": "躲避",
+  "Fight": "攻击",
+  "Engage": "交战",
+  "Forced": "强制",
+  "Delayed": "延时效果",
+  "Objective": "目标",
+  "Haunted": "闹鬼",
+  
+  "Results": "结局",
+  "Story": "故事",
+  "ChooseOne": "选择一项",
+  "Choose": "选择"
 }

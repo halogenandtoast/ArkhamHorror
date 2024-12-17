@@ -3730,18 +3730,16 @@ instance Query ChaosTokenMatcher where
             <> maybeToList (infestationCurrentToken bag)
     go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
+      ChaosTokenIs cid -> pure . (== cid) . chaosTokenId
       ChaosTokenMatchesOrElse {} -> error "This matcher can not be nested"
       ChaosTokenRevealedBy iMatcher -> \t -> do
         case t.revealedBy of
           Nothing -> pure False
           Just iid -> iid <=~> iMatcher
       RevealedChaosTokens m -> \t -> do
-        mSkillTest <- getSkillTest
-        case mSkillTest of
-          Nothing -> pure False
-          Just skillTest -> do
-            inner <- select $ IncludeSealed $ IncludeTokenPool m
-            pure $ t `elem` skillTestRevealedChaosTokens skillTest && t `elem` inner
+        chaosBag <- getChaosBag
+        inner <- select $ IncludeSealed $ IncludeTokenPool m
+        pure $ t `elem` chaosBag.revealed && t `elem` inner
       InTokenPool m -> go m
       NotChaosToken m -> fmap not . go m
       SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do

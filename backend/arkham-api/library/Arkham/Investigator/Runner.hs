@@ -143,6 +143,12 @@ overMetaKey k f a attrs = case attrs.meta of
   Null -> attrs {investigatorMeta = object [k .= a]}
   _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
 
+setMetaKey :: (ToJSON a, HasCallStack) => Key -> a -> InvestigatorAttrs -> InvestigatorAttrs
+setMetaKey k v attrs = case attrs.meta of
+  Object o -> attrs {investigatorMeta = Object $ KeyMap.insert k (toJSON v) o}
+  Null -> attrs {investigatorMeta = object [k .= v]}
+  _ -> error $ "Could not insert meta key, meta is not Null or Object: " <> show attrs.meta
+
 insertMetaKey :: HasCallStack => Key -> InvestigatorAttrs -> InvestigatorAttrs
 insertMetaKey k attrs = case attrs.meta of
   Object o -> attrs {investigatorMeta = Object $ KeyMap.insert k (toJSON True) o}

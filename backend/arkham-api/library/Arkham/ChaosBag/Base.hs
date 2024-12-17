@@ -7,6 +7,7 @@ import Arkham.ChaosToken.Types
 import Arkham.Json
 import Arkham.Prelude
 import Data.Aeson.TH
+import GHC.Records
 
 data ChaosBag = ChaosBag
   { chaosBagChaosTokens :: [ChaosToken]
@@ -37,6 +38,9 @@ emptyChaosBag =
     , chaosBagForceDraw = Nothing
     , chaosBagTokenPool = []
     }
+
+instance HasField "revealed" ChaosBag [ChaosToken] where
+  getField = chaosBagRevealedChaosTokens
 
 chaosTokensL :: Lens' ChaosBag [ChaosToken]
 chaosTokensL = lens chaosBagChaosTokens $ \m x -> m {chaosBagChaosTokens = x}

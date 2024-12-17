@@ -31,6 +31,7 @@ import Arkham.Investigator.Runner as X (
   pushWhen,
   pushWhenM,
   setMeta,
+  setMetaKey,
   slotsL,
   startsWith,
   usedAdditionalActionsL,

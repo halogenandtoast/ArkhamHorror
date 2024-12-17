@@ -32,10 +32,18 @@ data ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
   | ChaosTokenRevealedBy InvestigatorMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
+  | ChaosTokenIs ChaosTokenId
   deriving stock (Show, Eq, Ord, Data)
+
+chaosTokenIs :: ChaosToken -> ChaosTokenMatcher
+chaosTokenIs = ChaosTokenIs . chaosTokenId
+
+pattern RevealedChaosToken :: ChaosTokenMatcher
+pattern RevealedChaosToken = RevealedChaosTokens AnyChaosToken
 
 instance ToDisplay ChaosTokenMatcher where
   toDisplay = \case
+    ChaosTokenIs _ -> "Specific chaos token"
     WithNegativeModifier -> "Chaos token with negative modifier"
     ChaosTokenFaceIs face -> toDisplay face
     ChaosTokenFaceIsNot face -> "not " <> toDisplay face

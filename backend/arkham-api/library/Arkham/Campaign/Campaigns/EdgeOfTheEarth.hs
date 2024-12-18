@@ -3,16 +3,23 @@ module Arkham.Campaign.Campaigns.EdgeOfTheEarth (EdgeOfTheEarth (..), edgeOfTheE
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Types (campaignStore)
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Helpers.Log
+import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
+import Arkham.Matcher hiding (AssetDefeated)
+import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Target
+import Data.Map.Strict qualified as Map
 
 newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -128,6 +135,52 @@ instance RunMessage EdgeOfTheEarth where
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       story $ i18nWithTitle "restfulNight1"
+      fledToTheMountains <- getHasRecord TheTeamFledToTheMountains
+      doStep (if fledToTheMountains then 4 else 3) msg
+      push $ CampaignStep $ InterludeStep 2 Nothing
+      pure c
+    DoStep n msg'@(CampaignStep (InterludeStep 1 _)) | n > 0 -> scope "interlude1" do
+      let choices :: [CardCode] =
+            toResult
+              $ Map.findWithDefault
+                (toJSON $ map toCardCode $ toList expeditionTeam)
+                "interlude1"
+                (campaignStore attrs)
+      when (notNull choices) do
+        lead <- getLead
+        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        let choiceMade choice = push $ SetGlobal CampaignTarget "interlude1" (toJSON $ filter (/= choice) choices)
+        chooseOneM lead do
+          let dyer = Assets.professorWilliamDyerProfessorOfGeology.cardCode
+          when (dyer `elem` choices) do
+            labeled "William Dyer" do
+              choiceMade dyer
+              if dyer `elem` remainingPartners
+                then do
+                  story $ i18nWithTitle "williamDyerIsAlive"
+                  iids <- select $ DeckWith $ HasCard $ CardFromEncounterSet Tekelili
+                  if null iids
+                    then doStep n msg'
+                    else do
+                      chooseOneM lead do
+                        for_ iids \iid -> 
+                          portraitLabeled iid nothing
+                      doStep (n - 1) msg'
+                else story $ i18nWithTitle "williamDyerIsCrossedOut"
+
+          let danforth = Assets.danforthBrilliantStudent.cardCode
+          when (danforth `elem` choices) do
+            labeled "William Dyer" do
+              if danforth `elem` remainingPartners
+                then story $ i18nWithTitle "danforthIsAlive"
+                else story $ i18nWithTitle "danforthIsCrossedOut"
+
+              choiceMade danforth
+              doStep (n - 1) msg'
+
+      pure c
+    CampaignStep (InterludeStep 2 _) -> scope "interlude1" do
+      story $ i18nWithTitle "restfulNight2"
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

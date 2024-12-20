@@ -37,6 +37,11 @@ pattern VeiledAbility <- 199
   where
     VeiledAbility = 199
 
+pattern MirageAbility :: Int
+pattern MirageAbility <- 200
+  where
+    MirageAbility = 200
+
 pattern ActAdvancement :: Int
 pattern ActAdvancement <- 999
   where

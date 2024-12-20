@@ -1,20 +1,14 @@
-module Arkham.Location.Cards.DimStreetsTheArchway (
-  dimStreetsTheArchway,
-  DimStreetsTheArchway (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DimStreetsTheArchway (dimStreetsTheArchway) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Timing qualified as Timing
 
 newtype DimStreetsTheArchway = DimStreetsTheArchway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -31,22 +25,14 @@ dimStreetsTheArchway =
 
 instance HasAbilities DimStreetsTheArchway where
   getAbilities (DimStreetsTheArchway a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ DiscoveringLastClue
-            Timing.After
-            You
-            (LocationWithId $ toId a)
-      ]
+    extend1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage DimStreetsTheArchway where
-  runMessage msg l@(DimStreetsTheArchway attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ LoseActions iid source 1
+  runMessage msg l@(DimStreetsTheArchway attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      loseActions iid (attrs.ability 1) 1
       pure l
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theArchway
       pure . DimStreetsTheArchway $ attrs & canBeFlippedL .~ False
-    _ -> DimStreetsTheArchway <$> runMessage msg attrs
+    _ -> DimStreetsTheArchway <$> liftRunMessage msg attrs

@@ -1,6 +1,6 @@
 export const handleI18n = (body: string, t: (key: string, params: { [key: string]: any }) => string) => {
   const {key, params} = parseInput(body)
-  return t(key, params) 
+  return t(key, params)
 }
 
 function parseInput(input: string) {

@@ -640,6 +640,15 @@ setupModifier
   :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 setupModifier source target modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
+scenarioSetupModifier
+  :: (Sourceable source, Targetable target, HasGame m)
+  => ScenarioId
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
+scenarioSetupModifier scenarioId source target modifier = createWindowModifierEffect (EffectScenarioSetupWindow scenarioId) source target [modifier]
+
 abilityModifier
   :: (Sourceable source, Targetable target, HasGame m)
   => AbilityRef

@@ -404,7 +404,7 @@ data Message
   | SetConnections LocationId [LocationMatcher]
   | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId Card
-  | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
+  | RemoveCardFromDeckForCampaign InvestigatorId CardId
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId

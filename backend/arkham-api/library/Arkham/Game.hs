@@ -991,6 +991,8 @@ getInvestigatorsMatching matcher = do
             else elem (toId i) <$> select (healGuard $ matcher')
     InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
+    InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
+    InvestigatorWithMentalTrauma -> pure $ filter ((> 0) . attr investigatorMentalTrauma) as
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
     InvestigatorWithAnyKey -> flip filterM as $ \i ->

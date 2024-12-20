@@ -40,6 +40,9 @@ instance IsEnemyCreationMethod Placement where
 instance IsEnemyCreationMethod LocationMatcher where
   toEnemyCreationMethod = SpawnAtLocationMatching
 
+instance IsEnemyCreationMethod CardDef where
+  toEnemyCreationMethod = SpawnAtLocationMatching . locationIs
+
 data EnemyCreation msg = MkEnemyCreation
   { enemyCreationCard :: Card
   , enemyCreationEnemyId :: EnemyId

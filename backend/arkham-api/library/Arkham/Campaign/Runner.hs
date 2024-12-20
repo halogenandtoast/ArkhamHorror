@@ -220,8 +220,8 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ decksL
       %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
-  RemoveCardFromDeckForCampaign iid pc ->
-    pure $ updateAttrs a $ decksL %~ adjustMap (withDeck (filter (/= pc))) iid
+  RemoveCardFromDeckForCampaign iid cardId ->
+    pure $ updateAttrs a $ decksL %~ adjustMap (withDeck (filter ((/= cardId) . toCardId))) iid
   NextCampaignStep mOverrideStep -> do
     let mstep = mOverrideStep <|> nextStep a
     push $ maybe GameOver CampaignStep mstep

@@ -92,32 +92,32 @@ instance RunMessage IceAndDeathPart2 where
       whenM hasRemainingFrostTokens $ addChaosToken #frost
 
       kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology
-      when (kensler.status `notElem` [Eliminated, Mia]) do
+      unless (kensler.status `elem` [Eliminated, Mia]) do
         sinha <- getPartner Assets.drMalaSinhaDaringPhysician
         blueStory
           $ i18nEntry "kenslerAliveAndNotMissing"
-          <> validateEntry (sinha.status == Mia) (i18nEntry "sinhaMissing")
+          <> validateEntry (sinha.status == Mia) "sinhaMissing"
 
       dyer <- getPartner Assets.professorWilliamDyerProfessorOfGeology
-      when (dyer.status `notElem` [Eliminated, Mia]) do
+      unless (dyer.status `elem` [Eliminated, Mia]) do
         danforth <- getPartner Assets.danforthBrilliantStudent
         blueStory
           $ i18nEntry "dyerAliveAndNotMissing"
-          <> validateEntry (danforth.status == Mia) (i18nEntry "danforthMissing")
+          <> validateEntry (danforth.status == Mia) "danforthMissing"
 
       claypool <- getPartner Assets.averyClaypoolAntarcticGuide
-      when (claypool.status `notElem` [Eliminated, Mia]) do
+      unless (claypool.status `elem` [Eliminated, Mia]) do
         ellsworth <- getPartner Assets.roaldEllsworthIntrepidExplorer
         blueStory
           $ i18nEntry "claypoolAliveAndNotMissing"
-          <> validateEntry (ellsworth.status == Mia) (i18nEntry "ellsworthMissing")
+          <> validateEntry (ellsworth.status == Mia) "ellsworthMissing"
 
       fredericks <- getPartner Assets.jamesCookieFredericksDubiousChoice
-      when (fredericks.status `notElem` [Eliminated, Mia]) do
+      unless (fredericks.status `elem` [Eliminated, Mia]) do
         takada <- getPartner Assets.takadaHirokoAeroplaneMechanic
         blueStory
           $ i18nEntry "fredericksAliveAndNotMissing"
-          <> validateEntry (takada.status == Mia) (i18nEntry "takadaMissing")
+          <> validateEntry (takada.status == Mia) "takadaMissing"
 
       sv <- fromMaybe 0 <$> getCurrentShelterValue
       story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"

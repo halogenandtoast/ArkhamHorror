@@ -720,6 +720,26 @@ allLocations =
     , SomeLocationCard barrierCamp
     , SomeLocationCard remnantsOfLakesCamp
     , SomeLocationCard crystallineCavern
+    , --- Fatal Mirage [eote]
+      SomeLocationCard prisonOfMemories
+    , SomeLocationCard baseCamp
+    , SomeLocationCard deckOfTheTheodosia
+    , SomeLocationCard universityHalls
+    , SomeLocationCard hedgeMaze
+    , SomeLocationCard desertedStation
+    , SomeLocationCard coastalWaters
+    , SomeLocationCard elderChamber
+    , SomeLocationCard riverviewTheatre
+    , SomeLocationCard standingStones
+    , SomeLocationCard airfield
+    , SomeLocationCard alaskanWilds
+    , SomeLocationCard clutteredDormitory
+    , SomeLocationCard dyersClassroom
+    , SomeLocationCard infirmaryFatalMirage
+    , SomeLocationCard drKenslersOffice
+    , SomeLocationCard moaiStatues
+    , SomeLocationCard ottomanFront
+    , SomeLocationCard theBlackStone
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

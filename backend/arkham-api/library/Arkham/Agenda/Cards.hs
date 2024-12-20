@@ -55,6 +55,9 @@ allAgendaCards =
       , encore
       , endlessCaverns
       , endsAndMeans
+      , etherealTangleV1
+      , etherealTangleV2
+      , etherealTangleV3
       , expeditionIntoTheWild
       , eyesInTheDark
       , fashionablyLate
@@ -698,6 +701,15 @@ manifestationsOfEvil = agenda "08544" "Manifestations of Evil" 7 SeepingNightmar
 
 icyDepths :: CardDef
 icyDepths = agenda "08545" "Icy Depths" 8 SeepingNightmares
+
+etherealTangleV1 :: CardDef
+etherealTangleV1 = agenda "08550" "Ethereal Tangle (v. I)" 1 FatalMirage
+
+etherealTangleV2 :: CardDef
+etherealTangleV2 = agenda "08551" "Ethereal Tangle (v. II)" 2 FatalMirage
+
+etherealTangleV3 :: CardDef
+etherealTangleV3 = agenda "08552" "Ethereal Tangle (v. III)" 3 FatalMirage
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

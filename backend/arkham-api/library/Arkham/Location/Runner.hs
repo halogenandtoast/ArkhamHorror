@@ -92,6 +92,17 @@ extendRevealed = withRevealedAbilities
 extendRevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendRevealed1 attrs ability = extendRevealed attrs [ability]
 
+getModifiedRevealClueCount :: HasGame m => LocationAttrs -> m Int
+getModifiedRevealClueCount attrs = do
+  mods <- getModifiers attrs
+  getModifiedRevealClueCountWithMods mods attrs
+
+getModifiedRevealClueCountWithMods :: HasGame m => [ModifierType] -> LocationAttrs -> m Int
+getModifiedRevealClueCountWithMods mods attrs =
+  if CannotPlaceClues `elem` mods
+    then pure 0
+    else getPlayerCountValue (locationRevealClues attrs)
+
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
     SetGlobal target key v | isTarget a target -> pure $ a & globalMetaL %~ insertMap key v
@@ -310,15 +321,12 @@ instance RunMessage LocationAttrs where
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId && not locationRevealed -> do
-      mods <- getModifiers (toTarget a)
-      let maxFloodLevel =
-            if CannotBeFlooded `elem` mods
-              then Unflooded
-              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
-      locationClueCount <-
-        if CannotPlaceClues `elem` mods
-          then pure 0
-          else getPlayerCountValue locationRevealClues
+      mods <- getModifiers a
+      let maxFloodLevel
+            | CannotBeFlooded `elem` mods = Unflooded
+            | CannotBeFullyFlooded `elem` mods = PartiallyFlooded
+            | otherwise = FullyFlooded
+      locationClueCount <- getModifiedRevealClueCountWithMods mods a
       revealer <- maybe getLead pure miid
       whenWindowMsg <-
         checkWindows

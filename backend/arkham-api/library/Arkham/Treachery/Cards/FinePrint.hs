@@ -1,18 +1,11 @@
-module Arkham.Treachery.Cards.FinePrint (
-  finePrint,
-  FinePrint (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.FinePrint (finePrint) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Cards qualified as Treacheries
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype FinePrint = FinePrint TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -22,20 +15,17 @@ finePrint :: TreacheryCard FinePrint
 finePrint = treachery FinePrint Cards.finePrint
 
 instance RunMessage FinePrint where
-  runMessage msg t@(FinePrint attrs) = case msg of
+  runMessage msg t@(FinePrint attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       hasResources <- fieldMap InvestigatorResources (>= 7) iid
       if hasResources
-        then push $ LoseResources iid (toSource attrs) 7
+        then loseResources iid attrs 7
         else do
           case toCard attrs of
             EncounterCard _ -> error "should be player card"
             VengeanceCard _ -> error "should be player card"
             PlayerCard pc -> do
-              sellYourSoul <- genPlayerCard Treacheries.sellYourSoul
-              pushAll
-                [ RemoveCardFromDeckForCampaign iid pc
-                , AddCardToDeckForCampaign iid sellYourSoul
-                ]
+              removeCardFromDeckForCampaign iid pc
+              addCampaignCardToDeck iid =<< genPlayerCard Treacheries.sellYourSoul
       pure t
-    _ -> FinePrint <$> runMessage msg attrs
+    _ -> FinePrint <$> liftRunMessage msg attrs

@@ -145,6 +145,7 @@ data Trait
   | MexicoCity
   | MiGo
   | Midtown
+  | Mirage
   | Miskatonic
   | Mnar
   | Monster

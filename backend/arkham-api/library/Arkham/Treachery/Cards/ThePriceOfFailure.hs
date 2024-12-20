@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.ThePriceOfFailure (
-  thePriceOfFailure,
-  ThePriceOfFailure (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ThePriceOfFailure (thePriceOfFailure) where
 
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Events
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ThePriceOfFailure = ThePriceOfFailure TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,19 +13,16 @@ thePriceOfFailure :: TreacheryCard ThePriceOfFailure
 thePriceOfFailure = treachery ThePriceOfFailure Cards.thePriceOfFailure
 
 instance RunMessage ThePriceOfFailure where
-  runMessage msg t@(ThePriceOfFailure attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(ThePriceOfFailure attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       case toCard attrs of
         VengeanceCard _ -> error "not a vengeance card"
         EncounterCard _ -> error "not an encounter card"
         PlayerCard pc -> do
-          darkPact <- genPlayerCard Events.darkPact
-          pushAll
-            [ InvestigatorAssignDamage iid source DamageAny 2 2
-            , placeDoomOnAgendaAndCheckAdvance
-            , RemoveCardFromDeckForCampaign iid pc
-            , AddCardToDeckForCampaign iid darkPact
-            , RemoveTreachery (toId attrs)
-            ]
+          assignDamageAndHorror iid attrs 2 2
+          placeDoomOnAgendaAndCheckAdvance 1
+          removeCardFromDeckForCampaign iid pc
+          addCampaignCardToDeck iid =<< genPlayerCard Events.darkPact
+          removeTreachery attrs
           pure t
-    _ -> ThePriceOfFailure <$> runMessage msg attrs
+    _ -> ThePriceOfFailure <$> liftRunMessage msg attrs

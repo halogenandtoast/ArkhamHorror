@@ -1,11 +1,9 @@
-module Arkham.Location.Cards.Ulthar (ulthar, Ulthar (..)) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Ulthar (ulthar) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Story.Cards qualified as Story
 
 newtype Ulthar = Ulthar LocationAttrs
@@ -19,8 +17,8 @@ instance HasAbilities Ulthar where
   getAbilities (Ulthar attrs) = veiled attrs []
 
 instance RunMessage Ulthar where
-  runMessage msg (Ulthar attrs) = case msg of
+  runMessage msg (Ulthar attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.crypticSouls
       pure . Ulthar $ attrs & canBeFlippedL .~ False
-    _ -> Ulthar <$> runMessage msg attrs
+    _ -> Ulthar <$> liftRunMessage msg attrs

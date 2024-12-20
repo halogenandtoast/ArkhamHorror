@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.Sarnath (sarnath, Sarnath (..)) where
+module Arkham.Location.Cards.Sarnath (sarnath) where
 
+import Arkham.Ability
 import Arkham.Constants
 import Arkham.GameValue
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Story.Cards qualified as Story
 
@@ -18,31 +18,25 @@ sarnath :: LocationCard Sarnath
 sarnath = location Sarnath Cards.sarnath 3 (PerPlayer 1)
 
 instance HasAbilities Sarnath where
-  getAbilities (Sarnath attrs) =
-    withRevealedAbilities
-      attrs
-      [ restrictedAbility
-          attrs
+  getAbilities (Sarnath a) =
+    extendRevealed
+      a
+      [ restricted
+          a
           VeiledAbility
-          ( exists (LocationWithId (toId attrs) <> LocationCanBeFlipped <> LocationWithoutClues)
+          ( exists (be a <> LocationCanBeFlipped <> LocationWithoutClues)
               <> Remembered KnowWhatHappenedToIb
           )
           (FastAbility Free)
-      , mkAbility attrs 1
-          $ ForcedAbility
-          $ SkillTestResult
-            #after
-            You
-            (WhileInvestigating $ LocationWithId $ toId attrs)
-            (SuccessResult AnyValue)
+      , mkAbility a 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be a) #success
       ]
 
 instance RunMessage Sarnath where
-  runMessage msg l@(Sarnath attrs) = case msg of
+  runMessage msg l@(Sarnath attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theDoomOfSarnath
       pure . Sarnath $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignHorror iid (attrs.ability 1) 1
+      assignHorror iid (attrs.ability 1) 1
       pure l
-    _ -> Sarnath <$> runMessage msg attrs
+    _ -> Sarnath <$> liftRunMessage msg attrs

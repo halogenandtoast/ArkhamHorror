@@ -264,6 +264,10 @@ allAgendas =
     , --- Seeping Nightmares [eote]
       SomeAgendaCard manifestationsOfEvil
     , SomeAgendaCard icyDepths
+    , --- Fatal Mirage [eote]
+      SomeAgendaCard etherealTangleV1
+    , SomeAgendaCard etherealTangleV2
+    , SomeAgendaCard etherealTangleV3
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

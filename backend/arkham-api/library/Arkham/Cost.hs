@@ -46,6 +46,9 @@ totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 totalCluePayment :: Payment -> Int
 totalCluePayment = sumOf (cosmos . _CluePayment . _2)
 
+totalCluePaymentPerInvestigator :: Payment -> [(InvestigatorId, Int)]
+totalCluePaymentPerInvestigator = toListOf (cosmos . _CluePayment)
+
 totalUsesPayment :: Payment -> Int
 totalUsesPayment = sumOf (cosmos . _UsesPayment)
 

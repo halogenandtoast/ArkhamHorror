@@ -175,6 +175,7 @@ allEncounterTreacheryCards =
       , abduction
       , acridMiasma
       , alteredBeast
+      , anamnesis
       , ancestralFear
       , ancientEvils
       , antarcticWind
@@ -251,6 +252,7 @@ allEncounterTreacheryCards =
       , entombed
       , ephemeralExhibits
       , esotericRitual
+      , evanescentMist
       , evilPast
       , expulsion
       , extradimensionalVisions
@@ -272,6 +274,7 @@ allEncounterTreacheryCards =
       , giftOfMadnessPity
       , ghostlyPresence
       , glimpseOfTheUnderworld
+      , glimpseTheUnspeakable
       , glowingEyes
       , graspingHands
       , graveLight
@@ -407,6 +410,7 @@ allEncounterTreacheryCards =
       , theEndIsNigh
       , theFinalAct
       , theKingsEdict
+      , theMadnessWithin
       , thePaleMaskBeckons
       , thePitBelow
       , theSecretMustBeKept
@@ -2446,6 +2450,25 @@ phantasmagoria =
     { cdCardTraits = setFromList [Curse]
     }
 
+evanescentMist :: CardDef
+evanescentMist =
+  (treachery "08585" "Evanescent Mist" FatalMirage 3)
+    { cdCardTraits = setFromList [Curse, Hazard]
+    }
+
+anamnesis :: CardDef
+anamnesis =
+  (treachery "08586" "Anamnesis" FatalMirage 3)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+theMadnessWithin :: CardDef
+theMadnessWithin =
+  (treachery "08688" "The Madness Within" AgentsOfTheUnknown 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
 kindredMist :: CardDef
 kindredMist =
   (treachery "08691" "Kindred Mist" CreaturesInTheIce 2)
@@ -2486,6 +2509,38 @@ abandonedToMadness :: CardDef
 abandonedToMadness =
   (treachery "08702" "Abandoned to Madness" LeftBehind 2)
     { cdCardTraits = setFromList [Curse]
+    }
+
+blasphemousVisions :: CardDef
+blasphemousVisions =
+  (treachery "08703" "Blasphemous Visions" NamelessHorrors 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+glimpseTheUnspeakable :: CardDef
+glimpseTheUnspeakable =
+  peril
+    $ (treachery "08704" "Glimpse the Unspeakable" NamelessHorrors 2)
+      { cdCardTraits = setFromList [Terror]
+      }
+
+nightmarishVapors :: CardDef
+nightmarishVapors =
+  peril
+    $ (treachery "08705" "Nightmarish Vapors" NamelessHorrors 2)
+      { cdCardTraits = setFromList [Terror]
+      }
+
+miasmaticTorment :: CardDef
+miasmaticTorment =
+  (treachery "08706" "Miasmatic Torment" Miasma 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+nebulousMiasma :: CardDef
+nebulousMiasma =
+  (treachery "08707" "Nebulous Miasma" Miasma 2)
+    { cdCardTraits = setFromList [Curse, Hazard]
     }
 
 polarMirage :: CardDef

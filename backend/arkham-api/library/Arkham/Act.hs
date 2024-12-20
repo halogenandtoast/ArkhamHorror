@@ -300,6 +300,10 @@ allActs =
       SomeActCard theLostExpedition
     , --- Seeping Nightmares [eote]
       SomeActCard underAttack
+    , --- Fatal Mirage [eote]
+      SomeActCard shadowOfThePastV1
+    , SomeActCard shadowOfThePastV2
+    , SomeActCard shadowOfThePastV3
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

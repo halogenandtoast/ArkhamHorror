@@ -14,8 +14,10 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
+import Arkham.Classes.Query (selectOne)
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Matcher.Scenario
 
 intFromMetadata :: EffectMetadata window a -> Int
 intFromMetadata = \case
@@ -34,6 +36,10 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     EndSetup | isEndOfWindow a EffectSetupWindow -> do
       a <$ push (DisableEffect effectId)
+    EndSetup -> do
+      selectOne TheScenario >>= traverse_ \scenarioId ->
+        pushWhen (isEndOfWindow a (EffectScenarioSetupWindow scenarioId)) (DisableEffect effectId)
+      pure a
     EndPhase | isEndOfWindow a EffectPhaseWindow -> do
       a <$ push (DisableEffect effectId)
     EndPhase -> do

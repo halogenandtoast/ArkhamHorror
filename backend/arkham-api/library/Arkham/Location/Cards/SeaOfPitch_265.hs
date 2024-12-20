@@ -30,10 +30,10 @@ instance HasAbilities SeaOfPitch_265 where
     veiled attrs []
 
 instance RunMessage SeaOfPitch_265 where
-  runMessage msg (SeaOfPitch_265 attrs) = case msg of
+  runMessage msg (SeaOfPitch_265 attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.centerOfTheSea
       clues <- selectSum InvestigatorClues UneliminatedInvestigator
       n <- perPlayer 3
       pure . SeaOfPitch_265 $ attrs & canBeFlippedL .~ (clues < n)
-    _ -> SeaOfPitch_265 <$> runMessage msg attrs
+    _ -> SeaOfPitch_265 <$> liftRunMessage msg attrs

@@ -221,6 +221,10 @@ instance Semigroup AnyLocationMatcher where
 instance Monoid AnyLocationMatcher where
   mempty = AnyLocationMatcher Nowhere
 
+locationIs :: HasCardCode a => a -> LocationMatcher
+locationIs = LocationIs . toCardCode
+{-# INLINE locationIs #-}
+
 $(deriveToJSON defaultOptions ''LocationMatcher)
 
 instance FromJSON LocationMatcher where

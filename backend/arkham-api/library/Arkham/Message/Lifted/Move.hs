@@ -1,5 +1,6 @@
 module Arkham.Message.Lifted.Move where
 
+import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue (push)
 import Arkham.Id
 import Arkham.Matcher.Location
@@ -32,7 +33,7 @@ moveUntil
 moveUntil target location = push $ MoveUntil (asId location) (toTarget target)
 
 class AsMoveTo a where
-  asMoveTo :: Sourceable source => source -> InvestigatorId -> a -> Movement
+  asMoveTo :: (Sourceable source, Targetable target) => source -> target -> a -> Movement
 
 data MoveWrapper where
   CannotCancel :: AsMoveTo a => a -> MoveWrapper
@@ -43,18 +44,24 @@ instance AsMoveTo Movement where
 instance AsMoveTo LocationId where
   asMoveTo = move
 
+instance AsMoveTo LocationMatcher where
+  asMoveTo = moveToMatch
+
+instance AsMoveTo CardDef where
+  asMoveTo source target = moveToMatch source target . locationIs
+
 instance AsMoveTo MoveWrapper where
   asMoveTo source iid = \case
     CannotCancel inner -> uncancellableMove (asMoveTo source iid inner)
 
 -- No callbacks
 moveTo_
-  :: (ReverseQueue m, Sourceable source, AsMoveTo movement)
+  :: (ReverseQueue m, Sourceable source, AsMoveTo movement, Targetable target)
   => source
-  -> InvestigatorId
+  -> target
   -> movement
   -> m ()
-moveTo_ (toSource -> source) iid = push . MoveTo . asMoveTo source iid
+moveTo_ (toSource -> source) target = push . MoveTo . asMoveTo source target
 
 moveTowardsMatching
   :: (Targetable target, Sourceable source, ReverseQueue m)

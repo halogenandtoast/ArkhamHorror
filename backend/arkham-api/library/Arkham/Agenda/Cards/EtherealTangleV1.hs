@@ -7,7 +7,6 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenario.Deck
 

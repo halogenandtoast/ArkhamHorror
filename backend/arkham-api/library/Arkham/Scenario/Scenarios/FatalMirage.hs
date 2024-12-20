@@ -19,7 +19,7 @@ import Arkham.Placement
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.FatalMirage.Helpers
-import Arkham.Trait (Trait (Resolute))
+import Arkham.Trait (Trait (Eidolon, Resolute))
 
 newtype FatalMirage = FatalMirage ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

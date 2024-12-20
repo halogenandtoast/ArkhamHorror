@@ -164,6 +164,9 @@ instance Targetable ActId where
 instance Targetable AgendaId where
   toTarget = AgendaTarget
 
+instance Targetable BatchId where
+  toTarget = BatchTarget
+
 instance Targetable Card where
   toTarget = CardIdTarget . toCardId
 

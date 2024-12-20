@@ -57,6 +57,10 @@ instance HasModifiersFor WindowModifierEffect where
   getModifiersFor (WindowModifierEffect attrs) = case effectMetadata attrs of
     Just (EffectModifiers modifiers) -> case effectWindow attrs of
       Just EffectSetupWindow -> tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
+      Just (EffectScenarioSetupWindow scenarioId) -> do
+        selectOne TheScenario >>= traverse_ \currentScenarioId ->
+          when (scenarioId == currentScenarioId) do
+            tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
       Just (EffectSkillTestWindow sid) -> do
         msid <- getSkillTestId
         when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers

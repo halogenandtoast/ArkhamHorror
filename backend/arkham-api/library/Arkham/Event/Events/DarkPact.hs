@@ -29,10 +29,7 @@ instance RunMessage DarkPact where
         EncounterCard _ -> error "should be player card"
         VengeanceCard _ -> error "should be player card"
         PlayerCard pc -> do
-          thePriceOfFailure <- genPlayerCard Treacheries.thePriceOfFailure
-          pushAll
-            [ RemoveCardFromDeckForCampaign iid pc
-            , AddCardToDeckForCampaign iid thePriceOfFailure
-            ]
+          removeCardFromDeckForCampaign iid pc
+          addCampaignCardToDeck iid =<< genPlayerCard Treacheries.thePriceOfFailure
           pure e
     _ -> DarkPact <$> liftRunMessage msg attrs

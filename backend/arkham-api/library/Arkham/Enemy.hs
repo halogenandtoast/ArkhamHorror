@@ -437,6 +437,19 @@ allEnemies =
     , SomeEnemyCard takadaHirokoAeroplaneMechanic
     , -- Seeping Nightmares [eote]
       SomeEnemyCard seepingNightmare
+    , -- Fatal Mirage [eote]
+      SomeEnemyCard memoryOfAHuntGoneAwry
+    , SomeEnemyCard memoryOfALostPatient
+    , SomeEnemyCard memoryOfAMissingFather
+    , SomeEnemyCard memoryOfARavagedCountry
+    , SomeEnemyCard memoryOfARegretfulVoyage
+    , SomeEnemyCard memoryOfAnUnspeakableEvil
+    , SomeEnemyCard memoryOfATerribleDiscovery
+    , SomeEnemyCard memoryOfAnAlienTranslation
+    , SomeEnemyCard memoryOfAnUnrequitedLove
+    , SomeEnemyCard horrifyingShade
+    , -- Agents of the Unknown [eote]
+      SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]
       SomeEnemyCard manifestationOfMadness
     , SomeEnemyCard glacialPhantasm

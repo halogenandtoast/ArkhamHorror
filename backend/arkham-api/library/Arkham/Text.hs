@@ -34,6 +34,7 @@ data FlavorTextEntry
       { entries :: [FlavorTextEntry]
       }
   | ListEntry {list :: [ListItemEntry]}
+  | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup FlavorTextEntry where

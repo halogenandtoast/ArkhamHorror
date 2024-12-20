@@ -21,6 +21,7 @@ data LocationSymbol
   | Star
   | Droplet
   | Trefoil
+  | Spade
   | NoSymbol
   deriving stock (Show, Ord, Eq, Data)
 

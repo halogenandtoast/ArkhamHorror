@@ -1,10 +1,9 @@
-module Arkham.Location.Cards.ShoresOfHali (shoresOfHali, ShoresOfHali (..)) where
+module Arkham.Location.Cards.ShoresOfHali (shoresOfHali) where
 
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -19,8 +18,8 @@ shoresOfHali =
     . (revealedL .~ True)
 
 instance RunMessage ShoresOfHali where
-  runMessage msg (ShoresOfHali attrs) = case msg of
-    Flip iid _ target | isTarget attrs target -> do
+  runMessage msg (ShoresOfHali attrs) = runQueueT $ case msg of
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.songsThatTheHyadesShallSing
       pure . ShoresOfHali $ attrs & canBeFlippedL .~ False
-    _ -> ShoresOfHali <$> runMessage msg attrs
+    _ -> ShoresOfHali <$> liftRunMessage msg attrs

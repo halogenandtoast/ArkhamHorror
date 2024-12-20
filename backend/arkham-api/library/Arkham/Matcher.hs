@@ -239,10 +239,6 @@ canEnterLocation :: (AsId a, IdOf a ~ InvestigatorId) => a -> LocationMatcher
 canEnterLocation = CanEnterLocation . InvestigatorWithId . asId
 {-# INLINE canEnterLocation #-}
 
-locationIs :: HasCardCode a => a -> LocationMatcher
-locationIs = LocationIs . toCardCode
-{-# INLINE locationIs #-}
-
 locationWithAsset :: (AsId a, IdOf a ~ AssetId) => a -> LocationMatcher
 locationWithAsset = LocationWithAsset . AssetWithId . asId
 {-# INLINE locationWithAsset #-}

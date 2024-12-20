@@ -323,6 +323,9 @@ data CampaignLogKey
   | TheTeamDefeatedTheHuntingCreatures
   | TheTeamFledToTheMountains
   | LocationsRevealed
+  | DrKenslerIsSharingHerResearchWithYou
+  | TheInvestigatorsScoutedTheMountainPass
+  | EllsworthHasConfrontedHisDemons
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

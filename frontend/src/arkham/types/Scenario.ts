@@ -84,7 +84,7 @@ export type Remembered = { tag: "YouOweBiancaResources", contents: number } | { 
 
 const rememberedDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<Remembered>(
-    { 
+    {
       tag: JsonDecoder.isExactly('YouOweBiancaResources'),
       contents: JsonDecoder.tuple<[any, number]>(
         [JsonDecoder.succeed, JsonDecoder.number],
@@ -221,6 +221,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c08501a": return "edgeOfTheEarth.iceAndDeath"
     case "c08501b": return "edgeOfTheEarth.iceAndDeath"
     case "c08501c": return "edgeOfTheEarth.iceAndDeath"
+    case "c08549": return "edgeOfTheEarth.fatalMirage"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

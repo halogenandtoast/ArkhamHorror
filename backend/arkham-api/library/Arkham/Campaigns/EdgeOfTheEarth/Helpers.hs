@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
@@ -101,6 +102,11 @@ getPartner (toCardCode -> cardCode) = do
         , partnerStatus = partner.status
         }
 
+getPartnerStatus :: (HasGame m, HasCardCode a) => a -> m PartnerStatus
+getPartnerStatus (toCardCode -> cardCode) = do
+  partners <- view partnersL <$> getCampaignLog
+  pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners <&> \partner -> partner.status
+
 setPartnerStatus :: (HasCallStack, HasCardCode a, ReverseQueue m) => a -> PartnerStatus -> m ()
 setPartnerStatus a = push . SetPartnerStatus (toPartnerCode a)
 
@@ -174,9 +180,11 @@ gatherTekelili = do
     filter ((== Just Tekelili) . cdEncounterSet) $ toList allPlayerCards
 
 addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
-addTekelili iid cards = batched \batchId -> do
-  checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
-  traverse_ (addCampaignCardToDeck iid) cards
+addTekelili _ [] = pure ()
+addTekelili iid cards = whenM (can.manipulate.deck iid) do
+  batched \batchId -> do
+    checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
+    traverse_ (addCampaignCardToDeck iid) cards
 
 resolveTekelili
   :: (ReverseQueue m, AsId tekelili, IdOf tekelili ~ TreacheryId) => InvestigatorId -> tekelili -> m ()

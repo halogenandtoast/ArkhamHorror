@@ -4,21 +4,21 @@ import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Text as X
 
-validateEntry :: Bool -> FlavorTextEntry -> FlavorTextEntry
-validateEntry True = \case
-  ModifyEntry xs body -> ModifyEntry (ValidEntry : xs) body
-  body -> ModifyEntry [ValidEntry] body
-validateEntry False = \case
-  ModifyEntry xs body -> ModifyEntry (InvalidEntry : xs) body
-  body -> ModifyEntry [InvalidEntry] body
+import Arkham.I18n
+
+validateEntry :: HasI18n => Bool -> Scope -> FlavorTextEntry
+validateEntry cond = modifyEntry (if cond then ValidEntry else InvalidEntry) . i18nEntry
+
+modifyEntry :: FlavorTextModifier -> FlavorTextEntry -> FlavorTextEntry
+modifyEntry ftmod = \case
+  ModifyEntry ftmods inner -> ModifyEntry (ftmod : ftmods) inner
+  other -> ModifyEntry [ftmod] other
 
 rightAlign :: FlavorTextEntry -> FlavorTextEntry
-rightAlign = \case
-  ModifyEntry xs body -> ModifyEntry (RightAligned : xs) body
-  body -> ModifyEntry [RightAligned] body
+rightAlign = modifyEntry RightAligned
 
 blueFlavor :: FlavorTextEntry -> FlavorText
-blueFlavor entry = FlavorText Nothing [ModifyEntry [BlueEntry] entry]
+blueFlavor = FlavorText Nothing . pure . modifyEntry BlueEntry
 
 blueStory :: ReverseQueue m => FlavorTextEntry -> m ()
 blueStory = story . blueFlavor

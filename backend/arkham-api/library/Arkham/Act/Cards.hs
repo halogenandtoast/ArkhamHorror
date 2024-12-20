@@ -148,6 +148,9 @@ allActCards =
       , searchingForTheTome
       , searchingTheUnnamable
       , seekOutTheNight
+      , shadowOfThePastV1
+      , shadowOfThePastV2
+      , shadowOfThePastV3
       , skinGame
       , stalkedByShadows
       , stoppingTheRitual
@@ -828,6 +831,15 @@ theLostExpedition = act "08526" "The Lost Expedition" 2 LostInTheNight
 
 underAttack :: CardDef
 underAttack = act "08546" "Under Attack!" 3 SeepingNightmares
+
+shadowOfThePastV1 :: CardDef
+shadowOfThePastV1 = act "08553" "Shadow of the Past (v. I)" 1 FatalMirage
+
+shadowOfThePastV2 :: CardDef
+shadowOfThePastV2 = act "08554" "Shadow of the Past (v. II)" 2 FatalMirage
+
+shadowOfThePastV3 :: CardDef
+shadowOfThePastV3 = act "08555" "Shadow of the Past (v. III)" 3 FatalMirage
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

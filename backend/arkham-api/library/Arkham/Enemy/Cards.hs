@@ -194,6 +194,7 @@ allEncounterEnemyCards =
       , highPriestNotToBeDescribed
       , hitVan
       , hordeOfNight
+      , horrifyingShade
       , hotelGuest
       , hotelManager
       , hotelSecurity
@@ -245,6 +246,15 @@ allEncounterEnemyCards =
       , manifestationOfMadness
       , mariaDeSilvaKnowsMoreThanSheLetsOn
       , marshGug
+      , memoryOfAHuntGoneAwry
+      , memoryOfALostPatient
+      , memoryOfAMissingFather
+      , memoryOfARavagedCountry
+      , memoryOfARegretfulVoyage
+      , memoryOfATerribleDiscovery
+      , memoryOfAnAlienTranslation
+      , memoryOfAnUnrequitedLove
+      , memoryOfAnUnspeakableEvil
       , mindlessDancer
       , mrTrombly
       , mobster
@@ -281,6 +291,7 @@ allEncounterEnemyCards =
       , priestOfAThousandMasks
       , priestOfDagon
       , priestessOfTheCoven
+      , primordialEvil
       , professorWilliamDyerProfessorOfGeology
       , pursuingMotorcar
       , ravagerFromTheDeep
@@ -2456,6 +2467,83 @@ seepingNightmare :: CardDef
 seepingNightmare =
   (enemy "08547" "Seeping Nightmare" SeepingNightmares 4)
     { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    }
+
+memoryOfAHuntGoneAwry :: CardDef
+memoryOfAHuntGoneAwry =
+  (enemy "08575" "Memory of a Hunt Gone Awry" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    }
+
+memoryOfALostPatient :: CardDef
+memoryOfALostPatient =
+  (enemy "08576" "Memory of a Lost Patient" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+memoryOfAMissingFather :: CardDef
+memoryOfAMissingFather =
+  (enemy "08577" "Memory of a Missing Father" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+memoryOfARavagedCountry :: CardDef
+memoryOfARavagedCountry =
+  (enemy "08578" "Memory of a Ravaged Country" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+memoryOfARegretfulVoyage :: CardDef
+memoryOfARegretfulVoyage =
+  (enemy "08579" "Memory of a Regretful Voyage" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    }
+
+memoryOfAnUnspeakableEvil :: CardDef
+memoryOfAnUnspeakableEvil =
+  (enemy "08580" "Memory of an Unspeakable Evil" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+    }
+
+memoryOfATerribleDiscovery :: CardDef
+memoryOfATerribleDiscovery =
+  (enemy "08581" "Memory of a Terrible Discovery" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert]
+    }
+
+memoryOfAnAlienTranslation :: CardDef
+memoryOfAnAlienTranslation =
+  (enemy "08582" "Memory of an Alien Transformation" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert]
+    }
+
+memoryOfAnUnrequitedLove :: CardDef
+memoryOfAnUnrequitedLove =
+  (enemy "08583" "Memory of an Unrequited Love" FatalMirage 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert]
+    }
+
+horrifyingShade :: CardDef
+horrifyingShade =
+  (enemy "08584" "Horrifying Shade" FatalMirage 3)
+    { cdCardTraits = setFromList [Monster, Eidolon]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
+primordialEvil :: CardDef
+primordialEvil =
+  (enemy "08687" "Primordial Evil" AgentsOfTheUnknown 2)
+    { cdCardTraits = setFromList [Monster, Eidolon]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 manifestationOfMadness :: CardDef

@@ -101,6 +101,34 @@ allStoryCards =
       , evilWithin
       , bloodyEvidence
       , madnessInside
+      , prisonOfMemories
+      , baseCamp
+      , deckOfTheTheodosia
+      , universityHalls
+      , hedgeMaze
+      , desertedStation
+      , coastalWaters
+      , elderChamber
+      , riverviewTheatre
+      , standingStones
+      , airfield
+      , alaskanWilds
+      , clutteredDormitory
+      , dyersClassroom
+      , infirmary
+      , drKenslersOffice
+      , moaiStatues
+      , ottomanFront
+      , theBlackStone
+      , memoryOfAHuntGoneAwry
+      , memoryOfALostPatient
+      , memoryOfAMissingFather
+      , memoryOfARavagedCountry
+      , memoryOfARegretfulVoyage
+      , memoryOfAnUnspeakableEvil
+      , memoryOfATerribleDiscovery
+      , memoryOfAnAlienTranslation
+      , memoryOfAnUnrequitedLove
       , realityAcid
       ]
 
@@ -344,6 +372,90 @@ bloodyEvidence = story "08533" "Bloody Evidence" LostInTheNight
 
 madnessInside :: CardDef
 madnessInside = story "08534" "Madness Inside" LostInTheNight
+
+prisonOfMemories :: CardDef
+prisonOfMemories = story "08556b" "Prison of Memories" FatalMirage
+
+baseCamp :: CardDef
+baseCamp = story "08557b" "Base Camp" FatalMirage
+
+deckOfTheTheodosia :: CardDef
+deckOfTheTheodosia = story "08558b" "Deck of the Theodosia" FatalMirage
+
+universityHalls :: CardDef
+universityHalls = story "08559b" "University Halls" FatalMirage
+
+hedgeMaze :: CardDef
+hedgeMaze = story "08560b" "Hedge Maze" FatalMirage
+
+desertedStation :: CardDef
+desertedStation = story "08561b" "Deserted Station" FatalMirage
+
+coastalWaters :: CardDef
+coastalWaters = story "08562b" "Coastal Waters" FatalMirage
+
+elderChamber :: CardDef
+elderChamber = story "08563b" "Elder Chamber" FatalMirage
+
+riverviewTheatre :: CardDef
+riverviewTheatre = story "08564b" "Riverview Theatre" FatalMirage
+
+standingStones :: CardDef
+standingStones = story "08565b" "Standing Stones" FatalMirage
+
+airfield :: CardDef
+airfield = story "08566b" "Airfield" FatalMirage
+
+alaskanWilds :: CardDef
+alaskanWilds = story "08567b" "Alaskan Wilds" FatalMirage
+
+clutteredDormitory :: CardDef
+clutteredDormitory = story "08568b" "Cluttered Dormitory" FatalMirage
+
+dyersClassroom :: CardDef
+dyersClassroom = story "08569b" "Dyer's Classroom" FatalMirage
+
+infirmary :: CardDef
+infirmary = story "08570b" "Infirmary" FatalMirage
+
+drKenslersOffice :: CardDef
+drKenslersOffice = story "08571b" "Dr. Kensler's Office" FatalMirage
+
+moaiStatues :: CardDef
+moaiStatues = story "08572b" "Mo'ai Statues" FatalMirage
+
+ottomanFront :: CardDef
+ottomanFront = story "08573b" "Ottoman Front" FatalMirage
+
+theBlackStone :: CardDef
+theBlackStone = story "08574b" "The Black Stone" FatalMirage
+
+memoryOfAHuntGoneAwry :: CardDef
+memoryOfAHuntGoneAwry = story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
+
+memoryOfALostPatient :: CardDef
+memoryOfALostPatient = story "08576b" "Memory of a Lost Patient" FatalMirage
+
+memoryOfAMissingFather :: CardDef
+memoryOfAMissingFather = story "08577b" "Memory of a Missing Father" FatalMirage
+
+memoryOfARavagedCountry :: CardDef
+memoryOfARavagedCountry = story "08578b" "Memory of a Ravaged Country" FatalMirage
+
+memoryOfARegretfulVoyage :: CardDef
+memoryOfARegretfulVoyage = story "08579b" "Memory of a Regretful Voyage" FatalMirage
+
+memoryOfAnUnspeakableEvil :: CardDef
+memoryOfAnUnspeakableEvil = story "08580b" "Memory of an Unspeakable Evil" FatalMirage
+
+memoryOfATerribleDiscovery :: CardDef
+memoryOfATerribleDiscovery = story "08581b" "Memory of a Terrible Discovery" FatalMirage
+
+memoryOfAnAlienTranslation :: CardDef
+memoryOfAnAlienTranslation = story "08582b" "Memory of an Alien Transformation" FatalMirage
+
+memoryOfAnUnrequitedLove :: CardDef
+memoryOfAnUnrequitedLove = story "08583b" "Memory of an Unrequited Love" FatalMirage
 
 realityAcid :: CardDef
 realityAcid =

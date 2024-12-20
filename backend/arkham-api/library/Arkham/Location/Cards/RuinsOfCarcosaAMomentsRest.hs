@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest (
-  ruinsOfCarcosaAMomentsRest,
-  RuinsOfCarcosaAMomentsRest (..),
-) where
+module Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest (ruinsOfCarcosaAMomentsRest) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -26,19 +21,14 @@ ruinsOfCarcosaAMomentsRest =
 
 instance HasAbilities RuinsOfCarcosaAMomentsRest where
   getAbilities (RuinsOfCarcosaAMomentsRest a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ forced
-          $ DiscoveringLastClue #after You (be a)
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage RuinsOfCarcosaAMomentsRest where
-  runMessage msg l@(RuinsOfCarcosaAMomentsRest attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+  runMessage msg l@(RuinsOfCarcosaAMomentsRest attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
       pure l
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.aMomentsRest
       pure . RuinsOfCarcosaAMomentsRest $ attrs & canBeFlippedL .~ False
-    _ -> RuinsOfCarcosaAMomentsRest <$> runMessage msg attrs
+    _ -> RuinsOfCarcosaAMomentsRest <$> liftRunMessage msg attrs

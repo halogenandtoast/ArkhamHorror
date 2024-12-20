@@ -11,6 +11,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
     case 'CompositeEntry': return {}
     case 'ListEntry': return {}
+    case 'EntrySplit': return {}
     default: return {}
   }
 }
@@ -38,6 +39,7 @@ function formatEntry(t, entry: FlavorTextEntry): any {
      case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
      case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
      case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
+     case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
 }
@@ -59,8 +61,18 @@ export default defineComponent({
   border: 3px solid #3a4a69;
   border-radius: 55px;
   background-color: color-mix(in srgb, #3a4a69, transparent 90%);
-  box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
   padding: 20px;
+  position: relative;
+  z-index: 0;
+
+  &::after {
+    border-radius: 55px;
+    box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
 
   > p:first-child {
     margin-left: 35px;
@@ -102,7 +114,9 @@ p, :deep(p) {
 }
 
 .invalid, :deep(.invalid) {
-  display: inline-flex;
+  &:not(li) {
+    display: inline-flex;
+  }
   align-items: center;
   color: #666;
   &::before {
@@ -122,7 +136,9 @@ p, :deep(p) {
 }
 
 .valid, :deep(.valid) {
-  display: inline-flex;
+  &:not(li) {
+    display: inline-flex;
+  }
   align-items: center;
   &::before {
     content: '';
@@ -206,5 +222,12 @@ ul, :deep(ul) {
   img {
     width: 40px;
   }
+}
+
+:deep(hr) {
+  border:0;
+  border-bottom: 2px solid #60759F;
+  margin-inline: -20px;
+  margin-block: 10px;
 }
 </style>

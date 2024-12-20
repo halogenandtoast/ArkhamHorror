@@ -23,7 +23,7 @@ const format = function(body: string) {
 }
 
 const maybeFormat = function(body: string) {
-  return body.startsWith("$") ? t(tformat(body)) : body
+  return body.startsWith("$") ? t(tformat(body.split(' ')[0])) : body
 }
 
 const readCards = computed(() => props.question.readCards || [])

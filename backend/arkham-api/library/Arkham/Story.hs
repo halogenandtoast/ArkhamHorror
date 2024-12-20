@@ -117,5 +117,33 @@ allStories =
     , SomeStoryCard evilWithin
     , SomeStoryCard bloodyEvidence
     , SomeStoryCard madnessInside
+    , SomeStoryCard prisonOfMemories
+    , SomeStoryCard baseCamp
+    , SomeStoryCard deckOfTheTheodosia
+    , SomeStoryCard universityHalls
+    , SomeStoryCard hedgeMaze
+    , SomeStoryCard desertedStation
+    , SomeStoryCard coastalWaters
+    , SomeStoryCard elderChamber
+    , SomeStoryCard riverviewTheatre
+    , SomeStoryCard standingStones
+    , SomeStoryCard airfield
+    , SomeStoryCard alaskanWilds
+    , SomeStoryCard clutteredDormitory
+    , SomeStoryCard dyersClassroom
+    , SomeStoryCard infirmary
+    , SomeStoryCard drKenslersOffice
+    , SomeStoryCard moaiStatues
+    , SomeStoryCard ottomanFront
+    , SomeStoryCard theBlackStone
+    , SomeStoryCard memoryOfAHuntGoneAwry
+    , SomeStoryCard memoryOfALostPatient
+    , SomeStoryCard memoryOfAMissingFather
+    , SomeStoryCard memoryOfARavagedCountry
+    , SomeStoryCard memoryOfARegretfulVoyage
+    , SomeStoryCard memoryOfAnUnspeakableEvil
+    , SomeStoryCard memoryOfATerribleDiscovery
+    , SomeStoryCard memoryOfAnAlienTranslation
+    , SomeStoryCard memoryOfAnUnrequitedLove
     , SomeStoryCard realityAcid
     ]

@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.PalaceOfTheKing (
-  palaceOfTheKing,
-  PalaceOfTheKing (..),
-) where
+module Arkham.Location.Cards.PalaceOfTheKing (palaceOfTheKing) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenarios.DimCarcosa.Helpers
@@ -22,12 +17,9 @@ newtype PalaceOfTheKing = PalaceOfTheKing LocationAttrs
 
 palaceOfTheKing :: LocationCard PalaceOfTheKing
 palaceOfTheKing =
-  locationWith
-    PalaceOfTheKing
-    Cards.palaceOfTheKing
-    2
-    (PerPlayer 3)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith PalaceOfTheKing Cards.palaceOfTheKing 2 (PerPlayer 3)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasModifiersFor PalaceOfTheKing where
   getModifiersFor (PalaceOfTheKing attrs) = do
@@ -41,8 +33,8 @@ instance HasModifiersFor PalaceOfTheKing where
     modifySelf attrs modifiers'
 
 instance RunMessage PalaceOfTheKing where
-  runMessage msg (PalaceOfTheKing attrs) = case msg of
-    Flip iid _ target | isTarget attrs target -> do
+  runMessage msg (PalaceOfTheKing attrs) = runQueueT $ case msg of
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.hastursEnd
       pure . PalaceOfTheKing $ attrs & canBeFlippedL .~ False
-    _ -> PalaceOfTheKing <$> runMessage msg attrs
+    _ -> PalaceOfTheKing <$> liftRunMessage msg attrs

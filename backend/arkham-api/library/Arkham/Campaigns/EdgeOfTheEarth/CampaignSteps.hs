@@ -16,3 +16,13 @@ pattern IceAndDeathPart3 :: CampaignStep
 pattern IceAndDeathPart3 <- ScenarioStep "08501c"
   where
     IceAndDeathPart3 = ScenarioStep "08501c"
+
+pattern FatalMirage :: CampaignStep
+pattern FatalMirage <- ScenarioStep "08549"
+  where
+    FatalMirage = ScenarioStep "08549"
+
+pattern ToTheForbiddenPeaks :: CampaignStep
+pattern ToTheForbiddenPeaks <- ScenarioStep "08549"
+  where
+    ToTheForbiddenPeaks = ScenarioStep "08596"

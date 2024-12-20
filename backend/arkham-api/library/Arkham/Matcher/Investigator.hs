@@ -150,6 +150,8 @@ data InvestigatorMatcher
   | InvestigatorWithMetaKey Text
   | InvestigatorWithFilledSlot SlotType
   | InvestigatorWithAnyFailedSkillTestsThisTurn
+  | InvestigatorWithPhysicalTrauma
+  | InvestigatorWithMentalTrauma
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated InvestigatorMatcher

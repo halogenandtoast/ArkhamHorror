@@ -5,6 +5,8 @@
       "body": "<div class='iceAndDeath'><ul><li>Each investigator may choose one available member of the expedition team who is not crossed off to join them. Put the story asset for the chosen character into play in that investigator’s play area. (These story assets can be found in the Expedition Team encounter set.)</li></ul></div>"
     },
     "setup": {
+      "winifredPresent": "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_.",
+      "winifredNotPresent": "Otherwise, skip to _Intro 3_.",
       "gatherSets": "Gather all cards from the following encounter sets: *Ice and Death*, *The Crash*, *Creatures in the Ice*, *Deadly Weather*, *Hazards of Antarctica*, *Silence and Mystery*, *Tekeli-li*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/ice-and-death.png' /><img src='{setImgPath}/the-crash.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
       "setAsideCreaturesInTheIce": "Set aside the *Creatures in the Ice* encounter set.",
       "placeLocations": "Put the following locations into play: Crash Site, Precarious Ice Sheet, Treacherous Path, and Frozen Shores. (*Use the map on the next page for reference.*)",

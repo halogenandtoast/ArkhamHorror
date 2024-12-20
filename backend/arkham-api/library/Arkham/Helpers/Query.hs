@@ -82,6 +82,12 @@ getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
   pure $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
 
+getSetAsideCardMaybe :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
+getSetAsideCardMaybe def = do
+  ( \card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+    )
+    <$$> selectOne (SetAsideCardMatch $ cardIs def)
+
 getSetAsideEncounterCard :: (HasCallStack, HasGame m) => CardDef -> m EncounterCard
 getSetAsideEncounterCard = fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
 

@@ -1,15 +1,10 @@
-module Arkham.Location.Cards.DepthsOfDemheStepsOfThePalace (
-  depthsOfDemheStepsOfThePalace,
-  DepthsOfDemheStepsOfThePalace (..),
-) where
+module Arkham.Location.Cards.DepthsOfDemheStepsOfThePalace (depthsOfDemheStepsOfThePalace) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
@@ -29,8 +24,8 @@ instance HasModifiersFor DepthsOfDemheStepsOfThePalace where
     modifySelect a (investigatorAt a) [CannotPlay FastCard]
 
 instance RunMessage DepthsOfDemheStepsOfThePalace where
-  runMessage msg (DepthsOfDemheStepsOfThePalace attrs) = case msg of
+  runMessage msg (DepthsOfDemheStepsOfThePalace attrs) = runQueueT $ case msg of
     Flip iid _ target | isTarget attrs target -> do
       readStory iid (toId attrs) Story.stepsOfThePalace
       pure . DepthsOfDemheStepsOfThePalace $ attrs & canBeFlippedL .~ False
-    _ -> DepthsOfDemheStepsOfThePalace <$> runMessage msg attrs
+    _ -> DepthsOfDemheStepsOfThePalace <$> liftRunMessage msg attrs

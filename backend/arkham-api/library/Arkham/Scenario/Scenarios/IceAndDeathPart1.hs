@@ -67,15 +67,13 @@ instance RunMessage IceAndDeathPart1 where
 
       let
         rest =
-          FlavorText
-            Nothing
-            [ rightAlign
-                ( validateEntry winifredPresent
-                    $ BasicEntry
-                      "If Winifred Habbamock is one of the investigators in the campaign, proceed to _Intro 2_."
-                )
-                <> rightAlign (validateEntry (not winifredPresent) $ BasicEntry "Otherwise, skip to _Intro 3_.")
-            ]
+          scope "setup"
+            $ FlavorText
+              Nothing
+              [ rightAlign
+                  (validateEntry winifredPresent "winifredPresent")
+                  <> rightAlign (validateEntry (not winifredPresent) "winifredNotPresent")
+              ]
 
       storyWithContinue
         (i18nWithTitle "intro1" <> rest)
@@ -119,7 +117,7 @@ instance RunMessage IceAndDeathPart1 where
           labeled "Do not take a partner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode
-            when (not inPlay) do
+            unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do

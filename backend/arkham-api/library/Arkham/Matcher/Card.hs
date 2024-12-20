@@ -284,6 +284,9 @@ instance IsLabel "treachery" CardMatcher where
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithOneOf [CardWithType EventType, CardWithType EncounterEventType]
 
+instance IsLabel "story" CardMatcher where
+  fromLabel = CardWithType StoryType
+
 instance IsLabel "skill" CardMatcher where
   fromLabel = CardWithType SkillType
 

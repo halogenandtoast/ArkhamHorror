@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.ValeOfPnath (valeOfPnath, ValeOfPnath (..)) where
+module Arkham.Location.Cards.ValeOfPnath (valeOfPnath) where
 
 import Arkham.Game.Helpers (perPlayer)
 import Arkham.GameValue
@@ -6,9 +6,9 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story (readStory)
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Story.Cards qualified as Story
 
@@ -28,10 +28,10 @@ instance HasAbilities ValeOfPnath where
   getAbilities (ValeOfPnath attrs) = veiled attrs []
 
 instance RunMessage ValeOfPnath where
-  runMessage msg (ValeOfPnath attrs) = case msg of
+  runMessage msg (ValeOfPnath attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theWayOut
       clues <- selectSum InvestigatorClues UneliminatedInvestigator
       n <- perPlayer 3
       pure . ValeOfPnath $ attrs & canBeFlippedL .~ (clues < n)
-    _ -> ValeOfPnath <$> runMessage msg attrs
+    _ -> ValeOfPnath <$> liftRunMessage msg attrs

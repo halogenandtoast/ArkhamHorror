@@ -23,6 +23,7 @@ data EffectWindow
   | EffectRoundWindow
   | EffectNextActionWindow
   | EffectSetupWindow
+  | EffectScenarioSetupWindow ScenarioId
   | EffectTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId
   | EffectCardResolutionWindow CardId

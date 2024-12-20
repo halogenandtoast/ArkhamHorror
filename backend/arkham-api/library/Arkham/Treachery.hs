@@ -508,6 +508,11 @@ allTreacheries =
     , SomeTreacheryCard zeroVisibility
     , --- Seeping Nightmares [eote]
       SomeTreacheryCard phantasmagoria
+    , --- Fatal Mirage [eote]
+      SomeTreacheryCard evanescentMist
+    , SomeTreacheryCard anamnesis
+    , --- Agents of the Unknown [eote]
+      SomeTreacheryCard theMadnessWithin
     , --- Creatures in the Ice [eote]
       SomeTreacheryCard kindredMist
     , --- Deadly Weather [eote]
@@ -519,6 +524,13 @@ allTreacheries =
     , SomeTreacheryCard throughTheIce
     , --- Left Behind [eote]
       SomeTreacheryCard abandonedToMadness
+    , --- Namesless Horrors [eote]
+      SomeTreacheryCard blasphemousVisions
+    , SomeTreacheryCard glimpseTheUnspeakable
+    , SomeTreacheryCard nightmarishVapors
+    , --- Miasma [eote]
+      SomeTreacheryCard miasmaticTorment
+    , SomeTreacheryCard nebulousMiasma
     , --- Silence and Mystery [eote]
       SomeTreacheryCard polarMirage
     , SomeTreacheryCard darkAurora

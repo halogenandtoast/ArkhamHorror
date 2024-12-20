@@ -127,6 +127,7 @@ allPlayerEventCards =
       , drawnToTheFlame
       , dumbLuck
       , dumbLuck2
+      , dyersSketches
       , dynamiteBlast
       , dynamiteBlast2
       , dynamiteBlast3
@@ -375,6 +376,7 @@ allPlayerEventCards =
       , sweepingKick1
       , swiftReflexes
       , swiftReload2
+      , takadasCache
       , taskForce
       , taunt
       , taunt2

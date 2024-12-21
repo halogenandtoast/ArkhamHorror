@@ -3055,6 +3055,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
             ]
         _ -> noMatch
+    Matcher.ResolvingRevelation timing whoMatcher treacheryMatcher -> guardTiming timing \case
+      Window.ResolvingRevelation who treachery ->
+        andM
+          [ matchWho iid who whoMatcher
+          , treachery <=~> treacheryMatcher
+          ]
+      _ -> noMatch
     Matcher.DeckWouldRunOutOfCards timing whoMatcher -> guardTiming timing $ \case
       Window.DeckWouldRunOutOfCards who -> matchWho iid who whoMatcher
       _ -> noMatch

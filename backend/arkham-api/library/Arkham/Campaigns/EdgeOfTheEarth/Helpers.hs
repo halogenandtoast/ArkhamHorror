@@ -8,7 +8,6 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
-import Arkham.Deck (toDeck)
 import Arkham.Draw.Types
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Enemy.Cards qualified as Enemies
@@ -218,8 +217,10 @@ resolveTekelili
 resolveTekelili iid tekelili = do
   cardId <- field TreacheryCardId (asId tekelili)
   mods <- getModifiers cardId
-  let deck = if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods then toDeck iid else toDeck TekeliliDeck
-  putOnBottomOfDeck iid deck (asId tekelili)
+  if
+    | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods -> putOnBottomOfDeck iid iid (asId tekelili)
+    | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> shuffleIntoDeck iid (asId tekelili)
+    | otherwise -> putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
 
 drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()
 drawTekelili iid source n = push $ DrawCards iid $ newCardDraw source TekeliliDeck n

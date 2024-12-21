@@ -25,7 +25,12 @@ instance HasModifiersFor Airfield where
   getModifiersFor (Airfield a) = do
     modifySelfWhenM
       a
-      (selectAny $ assetIs Assets.takadaHirokoAeroplaneMechanic <> at_ (be a))
+      ( selectAny
+          $ mapOneOf
+            assetIs
+            [Assets.takadaHirokoAeroplaneMechanic, Assets.takadaHirokoAeroplaneMechanicResolute]
+          <> at_ (be a)
+      )
       [ShroudModifier (-2)]
     modifySelf a [AdditionalCostToInvestigate (ResourceCost 1)]
 

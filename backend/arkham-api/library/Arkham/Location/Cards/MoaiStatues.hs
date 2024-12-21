@@ -21,7 +21,12 @@ instance HasModifiersFor MoaiStatues where
   getModifiersFor (MoaiStatues a) = do
     modifySelfWhenM
       a
-      (selectAny $ assetIs Assets.roaldEllsworthIntrepidExplorer <> at_ (be a))
+      ( selectAny
+          $ mapOneOf
+            assetIs
+            [Assets.roaldEllsworthIntrepidExplorer, Assets.roaldEllsworthIntrepidExplorerResolute]
+          <> at_ (be a)
+      )
       [ShroudModifier (-2)]
 
 mirageCards :: [CardDef]

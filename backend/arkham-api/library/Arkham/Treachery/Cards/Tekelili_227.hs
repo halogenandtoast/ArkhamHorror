@@ -20,9 +20,11 @@ instance RunMessage Tekelili_227 where
     Revelation iid (isSource attrs -> True) -> do
       isTurn <- iid <=~> TurnInvestigator
 
-      if isTurn
-        then loseActions iid attrs 1
-        else createCardEffect Cards.tekelili_227 Nothing attrs iid
+      n <- ifM_ (hasModifier (toCard attrs) ResolveEffectsAgain) 2 1
+      repeated n
+        $ if isTurn
+          then loseActions iid attrs 1
+          else createCardEffect Cards.tekelili_227 Nothing attrs iid
 
       resolveTekelili iid attrs
       pure t
@@ -38,7 +40,6 @@ tekelili_227Effect = cardEffect Tekelili_227Effect Cards.tekelili_227
 instance RunMessage Tekelili_227Effect where
   runMessage msg e@(Tekelili_227Effect attrs) = runQueueT $ case msg of
     BeginTurn iid | isTarget iid attrs.target -> do
-      n <- ifM_ (hasModifier (toCard attrs) ResolveEffectsAgain) 2 1
-      repeated n $ loseActions iid attrs.source 1
+      loseActions iid attrs.source 1
       disableReturn e
     _ -> Tekelili_227Effect <$> liftRunMessage msg attrs

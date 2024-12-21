@@ -13,6 +13,6 @@ shadowOfThePastV2 = act (1, A) ShadowOfThePastV2 Cards.shadowOfThePastV2 Nothing
 instance RunMessage ShadowOfThePastV2 where
   runMessage msg a@(ShadowOfThePastV2 attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R1
       pure a
     _ -> ShadowOfThePastV2 <$> liftRunMessage msg attrs

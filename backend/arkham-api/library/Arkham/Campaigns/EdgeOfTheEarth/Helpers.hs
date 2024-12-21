@@ -103,7 +103,7 @@ getPartner (toCardCode -> cardCode) = do
         }
 
 getPartnerStatus :: (HasGame m, HasCardCode a) => a -> m PartnerStatus
-getPartnerStatus (toCardCode -> cardCode) = do
+getPartnerStatus (toPartnerCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
   pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners <&> \partner -> partner.status
 
@@ -129,6 +129,33 @@ toPartnerCode a = case toCardCode a of
     | c == Enemies.jamesCookieFredericksDubiousChoice.cardCode ->
         Assets.jamesCookieFredericksDubiousChoice.cardCode
   c | c == Enemies.eliyahAshevakDogHandler.cardCode -> Assets.eliyahAshevakDogHandler.cardCode
+  c
+    | c == Assets.professorWilliamDyerProfessorOfGeologyResolute.cardCode ->
+        Assets.professorWilliamDyerProfessorOfGeology.cardCode
+  c
+    | c == Assets.danforthBrilliantStudentResolute.cardCode ->
+        Assets.danforthBrilliantStudent.cardCode
+  c
+    | c == Assets.eliyahAshevakDogHandlerResolute.cardCode ->
+        Assets.eliyahAshevakDogHandler.cardCode
+  c
+    | c == Assets.drMalaSinhaDaringPhysicianResolute.cardCode ->
+        Assets.drMalaSinhaDaringPhysician.cardCode
+  c
+    | c == Assets.averyClaypoolAntarcticGuideResolute.cardCode ->
+        Assets.averyClaypoolAntarcticGuide.cardCode
+  c
+    | c == Assets.jamesCookieFredericksDubiousChoiceResolute.cardCode ->
+        Assets.jamesCookieFredericksDubiousChoice.cardCode
+  c
+    | c == Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode ->
+        Assets.drAmyKenslerProfessorOfBiology.cardCode
+  c
+    | c == Assets.roaldEllsworthIntrepidExplorerResolute.cardCode ->
+        Assets.roaldEllsworthIntrepidExplorer.cardCode
+  c
+    | c == Assets.takadaHirokoAeroplaneMechanicResolute.cardCode ->
+        Assets.takadaHirokoAeroplaneMechanic.cardCode
   _ -> error "Unknown partner"
  where
   expeditionTeamCodes = map toCardCode (toList expeditionTeam)

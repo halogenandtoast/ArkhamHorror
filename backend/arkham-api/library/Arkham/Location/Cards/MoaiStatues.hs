@@ -2,7 +2,7 @@ module Arkham.Location.Cards.MoaiStatues (moaiStatues) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card.CardDef
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -25,7 +25,7 @@ instance HasModifiersFor MoaiStatues where
       [ShroudModifier (-2)]
 
 mirageCards :: [CardDef]
-mirageCards = [Enemies.memoryOfAnAlienTranslation]
+mirageCards = [Cards.memoryOfAnAlienTranslation]
 
 instance HasAbilities MoaiStatues where
   getAbilities (MoaiStatues a) =

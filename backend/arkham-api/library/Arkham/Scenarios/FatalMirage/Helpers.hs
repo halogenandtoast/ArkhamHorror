@@ -3,23 +3,27 @@
 module Arkham.Scenarios.FatalMirage.Helpers where
 
 import Arkham.Ability
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Constants
 import Arkham.GameT
 import Arkham.GameValue
-import Arkham.Helpers.Query (getLead, getSetAsideCardMaybe)
+import Arkham.Helpers.Query
 import Arkham.Helpers.Story
 import Arkham.I18n
 import Arkham.Location.Base (revealCluesL)
+import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner ()
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (Message (Flip, PlacedLocation), is, pattern UseThisAbility)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Source
@@ -55,3 +59,17 @@ mayAdvance source = do
   chooseOneM lead do
     labeled "Advance the current act" $ advanceCurrentAct source
     labeled "Keep playing" nothing
+
+handleMemory
+  :: (ReverseQueue m, Sourceable source) => source -> CardDef -> CardDef -> CardDef -> m ()
+handleMemory source partner location memory = do
+  getPartnerStatus partner >>= \case
+    Eliminated -> do
+      loc <- selectJust (locationIs location)
+      selectEach (investigatorAt loc) \investigator ->
+        moveTo_ source investigator (locationIs Locations.prisonOfMemories)
+      selectEach (oneOf [UnengagedEnemy, MassiveEnemy] <> enemyAt loc) \enemy ->
+        moveTo_ source enemy (locationIs Locations.prisonOfMemories)
+      addToVictory loc
+      mayAdvance source
+    _ -> getSetAsideCard memory >>= (`createEnemy_` location)

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Scenarios.FatalMirage.Helpers where
 
 import Arkham.Ability
@@ -15,7 +17,7 @@ import Arkham.Location.Base (revealCluesL)
 import Arkham.Location.Runner ()
 import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Message (Message (Flip, RevealLocation), is, pattern UseThisAbility)
+import Arkham.Message (Message (Flip, PlacedLocation), is, pattern UseThisAbility)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
@@ -42,7 +44,7 @@ mirageRunner storyCard mirageCards msg attrs = case msg of
   Flip iid _ (isTarget attrs -> True) -> do
     readStory iid attrs storyCard
     pure attrs
-  RevealLocation _ (is attrs -> True) | attrs.unrevealed -> do
+  PlacedLocation _ _ (is attrs -> True) -> do
     n <- length <$> mapMaybeM getSetAsideCardMaybe mirageCards
     liftRunMessage msg (attrs & revealCluesL .~ PerPlayer n)
   _ -> liftRunMessage msg attrs

@@ -36,8 +36,8 @@ mirage a clues locations =
     $ GroupClueCost (PerPlayer clues) YourLocation
 
 mirageRunner
-  :: CardDef -> [CardDef] -> Message -> LocationAttrs -> QueueT Message GameT LocationAttrs
-mirageRunner storyCard mirageCards msg attrs = case msg of
+  :: CardDef -> [CardDef] -> Int -> Message -> LocationAttrs -> QueueT Message GameT LocationAttrs
+mirageRunner storyCard mirageCards m msg attrs = case msg of
   UseThisAbility iid (isSource attrs -> True) MirageAbility -> do
     flipOverBy iid (attrs.ability MirageAbility) attrs
     pure attrs
@@ -46,7 +46,7 @@ mirageRunner storyCard mirageCards msg attrs = case msg of
     pure attrs
   PlacedLocation _ _ (is attrs -> True) -> do
     n <- length <$> mapMaybeM getSetAsideCardMaybe mirageCards
-    liftRunMessage msg (attrs & revealCluesL .~ PerPlayer n)
+    liftRunMessage msg (attrs & revealCluesL .~ PerPlayer (m * n))
   _ -> liftRunMessage msg attrs
 
 mayAdvance :: (ReverseQueue m, Sourceable source) => source -> m ()

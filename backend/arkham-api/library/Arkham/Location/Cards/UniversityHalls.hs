@@ -35,7 +35,7 @@ instance RunMessage UniversityHalls where
   runMessage msg l@(UniversityHalls attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) MirageAbility _ (totalCluePaymentPerInvestigator -> p) -> do
       -- can't just use the mirage runner because we need to set the total clue payment
-      attrs' <- mirageRunner Stories.universityHalls mirageLocations msg attrs
+      attrs' <- mirageRunner Stories.universityHalls mirageLocations 1 msg attrs
       pure $ UniversityHalls $ attrs' & setMeta p
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       case getLocationMeta @[(InvestigatorId, Int)] attrs of
@@ -47,4 +47,4 @@ instance RunMessage UniversityHalls where
       let tekelili = filterCards (CardFromEncounterSet Tekelili) cards
       focusCards_ tekelili $ chooseOrRunOneM iid $ targets tekelili $ drawCard iid
       pure l
-    _ -> UniversityHalls <$> mirageRunner Stories.universityHalls mirageLocations msg attrs
+    _ -> UniversityHalls <$> mirageRunner Stories.universityHalls mirageLocations 1 msg attrs

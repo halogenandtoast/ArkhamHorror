@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.TheMadnessWithin (theMadnessWithin) where
 
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -12,5 +13,11 @@ theMadnessWithin = treachery TheMadnessWithin Cards.theMadnessWithin
 
 instance RunMessage TheMadnessWithin where
   runMessage msg t@(TheMadnessWithin attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
+    Revelation iid (isSource attrs -> True) -> do
+      sid <- getRandom
+      revelationSkillTest sid iid attrs #willpower (Fixed 4)
+      pure t
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      addTekelili iid =<< getTekelili n
+      pure t
     _ -> TheMadnessWithin <$> liftRunMessage msg attrs

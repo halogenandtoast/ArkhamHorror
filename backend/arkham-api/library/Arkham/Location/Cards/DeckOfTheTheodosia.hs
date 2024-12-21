@@ -45,4 +45,4 @@ instance RunMessage DeckOfTheTheodosia where
         when (actions > 0) do
           labeled "Spend 1 additional action" $ loseActions iid (attrs.ability 2) 1
       pure l
-    _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageLocations msg attrs
+    _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageLocations 1 msg attrs

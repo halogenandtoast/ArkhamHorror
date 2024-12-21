@@ -1,7 +1,9 @@
 module Arkham.Treachery.Cards.Tekelili_227 (tekelili_227, tekelili_227Effect, Tekelili_227 (..)) where
 
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -36,6 +38,7 @@ tekelili_227Effect = cardEffect Tekelili_227Effect Cards.tekelili_227
 instance RunMessage Tekelili_227Effect where
   runMessage msg e@(Tekelili_227Effect attrs) = runQueueT $ case msg of
     BeginTurn iid | isTarget iid attrs.target -> do
-      loseActions iid attrs.source 1
+      n <- ifM_ (hasModifier (toCard attrs) ResolveEffectsAgain) 2 1
+      repeated n $ loseActions iid attrs.source 1
       disableReturn e
     _ -> Tekelili_227Effect <$> liftRunMessage msg attrs

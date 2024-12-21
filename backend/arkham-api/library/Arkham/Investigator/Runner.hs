@@ -2764,11 +2764,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   (drawn, deck') = splitAt n deck
                   allDrawn = investigatorDrawnCards <> drawn
                   shuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
-                  handleCardDraw c = do
-                    -- after is handled
-                    before <- checkWhen $ Window.DrawCard iid (toCard c) cardDraw.deck
-                    pure $ [before] <> drawThisCardFrom iid c (Just cardDraw.deck)
-                msgs <- if (not shuffleBackInEachWeakness) then concatMapM handleCardDraw allDrawn else pure []
+                  handleCardDraw c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
+                msgs <- if not shuffleBackInEachWeakness then concatMapM handleCardDraw allDrawn else pure []
                 player <- getPlayer iid
                 let
                   weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn

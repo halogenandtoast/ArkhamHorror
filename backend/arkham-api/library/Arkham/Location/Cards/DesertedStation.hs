@@ -28,4 +28,4 @@ instance HasAbilities DesertedStation where
 
 instance RunMessage DesertedStation where
   runMessage msg (DesertedStation attrs) = runQueueT $ case msg of
-    _ -> DesertedStation <$> mirageRunner Stories.desertedStation mirageCards msg attrs
+    _ -> DesertedStation <$> mirageRunner Stories.desertedStation mirageCards 2 msg attrs

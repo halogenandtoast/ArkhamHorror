@@ -33,4 +33,4 @@ instance HasAbilities MoaiStatues where
 
 instance RunMessage MoaiStatues where
   runMessage msg (MoaiStatues attrs) = runQueueT $ case msg of
-    _ -> MoaiStatues <$> mirageRunner Stories.moaiStatues mirageCards msg attrs
+    _ -> MoaiStatues <$> mirageRunner Stories.moaiStatues mirageCards 2 msg attrs

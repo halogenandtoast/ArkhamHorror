@@ -35,4 +35,4 @@ instance RunMessage ElderChamber where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       addTekelili iid =<< getTekelili 1
       pure l
-    _ -> ElderChamber <$> mirageRunner Stories.elderChamber mirageCards msg attrs
+    _ -> ElderChamber <$> mirageRunner Stories.elderChamber mirageCards 2 msg attrs

@@ -143,6 +143,7 @@ data WindowMatcher
   | EnemyDiscarded Timing SourceMatcher EnemyMatcher
   | TreacheryDiscarded Timing SourceMatcher TreacheryMatcher
   | WouldPerformRevelationSkillTest Timing Who
+  | ResolvingRevelation Timing Who TreacheryMatcher
   | InitiatedSkillTest Timing Who SkillTypeMatcher SkillTestValueMatcher SkillTestMatcher
   | SkillTestResult Timing Who SkillTestMatcher SkillTestResultMatcher
   | SkillTestEnded Timing Who SkillTestMatcher

@@ -119,6 +119,9 @@ instance RunMessage TreacheryAttrs where
     AddToVictory target | target `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
+    When (Revelation iid (isSource a -> True)) -> do
+      pushM $ checkWhen $ Window.ResolvingRevelation iid a.id
+      pure a
     After (Revelation iid (isSource a -> True)) -> do
       pushWhen
         (treacheryPlacement == Limbo)

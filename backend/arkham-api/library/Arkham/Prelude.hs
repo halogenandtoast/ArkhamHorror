@@ -443,5 +443,10 @@ removeRandom :: (MonadRandom m, Eq a) => [a] -> m [a]
 removeRandom [] = pure []
 removeRandom (x : xs) = snd <$> sampleWithRest (x :| xs)
 
+ifM_ :: Monad m => m Bool -> a -> a -> m a
+ifM_ body tVal fVal = do
+  cond <- body
+  pure $ if cond then tVal else fVal
+
 class ToDisplay a where
   toDisplay :: a -> Text

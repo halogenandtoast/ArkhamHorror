@@ -37,4 +37,4 @@ instance RunMessage CoastalWaters where
       assignHorror iid (attrs.ability 1) 1
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
       pure l
-    _ -> CoastalWaters <$> mirageRunner Stories.coastalWaters mirageCards msg attrs
+    _ -> CoastalWaters <$> mirageRunner Stories.coastalWaters mirageCards 2 msg attrs

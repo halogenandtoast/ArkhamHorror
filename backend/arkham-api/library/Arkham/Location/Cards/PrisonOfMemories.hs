@@ -29,4 +29,4 @@ instance HasAbilities PrisonOfMemories where
 
 instance RunMessage PrisonOfMemories where
   runMessage msg (PrisonOfMemories attrs) = runQueueT $ case msg of
-    _ -> PrisonOfMemories <$> mirageRunner Stories.prisonOfMemories mirageCards msg attrs
+    _ -> PrisonOfMemories <$> mirageRunner Stories.prisonOfMemories mirageCards 1 msg attrs

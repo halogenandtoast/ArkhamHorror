@@ -41,6 +41,7 @@ data ModifierType
   = ForEach GameCalculation [ModifierType]
   | DoNotDrawConnection (SortedPair LocationId)
   | Barricades [LocationId]
+  | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | CanIgnoreBarriers
   | IgnoreBarriers
   | CannotBeFullyFlooded

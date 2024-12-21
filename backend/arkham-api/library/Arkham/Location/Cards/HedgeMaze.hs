@@ -35,4 +35,4 @@ instance RunMessage HedgeMaze where
       turnModifiers iid (attrs.ability 1) attrs [ShroudModifier 1]
       turnModifiers iid (attrs.ability 1) iid [CannotMove]
       pure l
-    _ -> HedgeMaze <$> mirageRunner Stories.hedgeMaze mirageLocations msg attrs
+    _ -> HedgeMaze <$> mirageRunner Stories.hedgeMaze mirageLocations 2 msg attrs

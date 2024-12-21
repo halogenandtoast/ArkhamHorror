@@ -39,4 +39,4 @@ instance RunMessage BaseCamp where
         skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
         push RecalculateSkillTestResults
       pure l
-    _ -> BaseCamp <$> mirageRunner Stories.baseCamp mirageCards msg attrs
+    _ -> BaseCamp <$> mirageRunner Stories.baseCamp mirageCards 1 msg attrs

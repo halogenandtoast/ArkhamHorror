@@ -326,7 +326,14 @@ data CampaignLogKey
   | DrKenslerIsSharingHerResearchWithYou
   | TheInvestigatorsScoutedTheMountainPass
   | EliyahHasConfrontedHisDemons
+  | DrSinhaHasConfrontedHerDemons
+  | TakadaHasConfrontedHerDemons
+  | CookieHasConfrontedHisDemons
+  | DyerHasConfrontedHisDemons
+  | DanforthHasConfrontedHisDemons
+  | ClaypoolHasConfrontedHisDemons
   | EllsworthHasConfrontedHisDemons
+  | DrKenslerHasConfrontedHerDemons
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

@@ -165,6 +165,13 @@ attachedCard =
     (windowType -> Window.AttachCard _ card _) -> Just card
     _ -> Nothing
 
+healedAmount :: [Window] -> Int
+healedAmount = sum . mapMaybe toHealedAmount
+ where
+  toHealedAmount = \case
+    (windowType -> Healed _ _ _ n) -> Just n
+    _ -> Nothing
+
 discoveredLocationAndClues :: HasCallStack => [Window] -> (LocationId, Int)
 discoveredLocationAndClues =
   fromMaybe (error "missing discovery") . asum . map \case

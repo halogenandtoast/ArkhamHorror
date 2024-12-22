@@ -325,6 +325,7 @@ data CampaignLogKey
   | LocationsRevealed
   | DrKenslerIsSharingHerResearchWithYou
   | TheInvestigatorsScoutedTheMountainPass
+  | EliyahHasConfrontedHisDemons
   | EllsworthHasConfrontedHisDemons
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou

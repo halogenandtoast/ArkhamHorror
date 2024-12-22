@@ -40,7 +40,9 @@ instance HasAbilities TheBlackStone where
     extendRevealed
       a
       [ mirage a 2 mirageCards
-      , restricted a 1 (Here <> thisExists a LocationWithAnyClues) $ FastAbility (AddFrostTokenCost 1)
+      , groupLimit PerGame
+          $ restricted a 1 (Here <> thisExists a LocationWithAnyClues)
+          $ FastAbility (AddFrostTokenCost 1)
       ]
 
 instance RunMessage TheBlackStone where

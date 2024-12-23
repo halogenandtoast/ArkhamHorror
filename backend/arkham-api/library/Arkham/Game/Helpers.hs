@@ -3298,6 +3298,7 @@ locationMatches investigatorId source window locationId matcher' = do
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
     Matcher.LocationWithAttachedEvent {} -> locationId <=~> matcher
+    Matcher.LocationWithAttachment {} -> locationId <=~> matcher
     Matcher.LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField {} -> locationId <=~> matcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId

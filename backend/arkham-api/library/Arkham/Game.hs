@@ -1543,6 +1543,14 @@ getLocationsMatching lmatcher = do
       flip filterM ls $ \l -> do
         lmEvents <- select $ EventAttachedTo $ TargetIs $ toTarget l
         pure . notNull $ List.intersect events lmEvents
+    LocationWithAttachment -> do
+      flip filterM ls $ \l -> do
+        orM
+          [ selectAny $ EventAttachedTo $ TargetIs $ toTarget l
+          , selectAny $ AssetAttachedTo $ TargetIs $ toTarget l
+          , selectAny $ TreacheryIsAttachedTo $ toTarget l
+          , selectAny $ EnemyAttachedTo $ TargetIs $ toTarget l
+          ]
     LocationWithInvestigator (InvestigatorWithId iid) -> do
       mLocation <- field InvestigatorLocation iid
       pure $ filter ((`elem` mLocation) . toId) ls
@@ -2908,6 +2916,12 @@ enemyMatcherFilter es matcher' = case matcher' of
   MovingEnemy -> flip filterM es \enemy -> (== Just (toId enemy)) . view enemyMovingL <$> getGame
   EvadingEnemy -> flip filterM es \enemy -> (== Just (toId enemy)) . view enemyEvadingL <$> getGame
   EnemyWithVictory -> filterM (getHasVictoryPoints . toId) es
+  EnemyAttachedTo targetMatcher -> do
+    let
+      isValid a = case (enemyPlacement (toAttrs a)).attachedTo of
+        Just target -> targetMatches target targetMatcher
+        _ -> pure False
+    filterM isValid es
   EnemyAttachedToAsset assetMatcher -> do
     placements <- select assetMatcher
     flip filterM es \enemy -> do

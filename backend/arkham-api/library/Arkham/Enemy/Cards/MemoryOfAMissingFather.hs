@@ -37,6 +37,6 @@ instance RunMessage MemoryOfAMissingFather where
       flipOverBy iid (attrs.ability 2) attrs
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
-      readStory iid attrs Stories.memoryOfAHuntGoneAwry
+      readStory iid attrs Stories.memoryOfAMissingFather
       pure e
     _ -> MemoryOfAMissingFather <$> liftRunMessage msg attrs

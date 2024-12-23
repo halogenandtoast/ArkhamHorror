@@ -90,6 +90,7 @@ data LocationMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
   | LocationWithAttachedEvent EventMatcher
+  | LocationWithAttachment
   | LocationWithCardsUnderneath CardListMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | CanEnterLocation InvestigatorMatcher

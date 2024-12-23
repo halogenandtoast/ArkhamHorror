@@ -22,7 +22,9 @@ instance HasAbilities MemoryOfAnAlienTranslation where
   getAbilities (MemoryOfAnAlienTranslation a) =
     extend
       a
-      [ mkAbility a 1 $ freeReaction $ EnemyExhausts #after (be a)
+      [ restricted a 1 (thisExists a $ EnemyAt LocationWithAttachment)
+          $ freeReaction
+          $ EnemyExhausts #after (be a)
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)
       ]
 

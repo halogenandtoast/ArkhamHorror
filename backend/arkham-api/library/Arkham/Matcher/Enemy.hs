@@ -17,6 +17,7 @@ import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import {-# SOURCE #-} Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Matcher.Source
+import {-# SOURCE #-} Arkham.Matcher.Target
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
@@ -49,6 +50,7 @@ data EnemyMatcher
   | EnemyWithToken Token
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
+  | EnemyAttachedTo TargetMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanSpawnIn LocationMatcher
   | EnemyCanMove

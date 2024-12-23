@@ -23,7 +23,7 @@ instance HasAbilities MemoryOfAnUnspeakableEvil where
   getAbilities (MemoryOfAnUnspeakableEvil a) =
     extend
       a
-      [ restricted a 1 (thisExists a ExhaustedEnemy)
+      [ restricted a 1 OnSameLocation
           $ ActionAbility [#parley] (ActionCost 2 <> ShuffleTopOfScenarioDeckIntoYourDeck 3 TekeliliDeck)
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)
       ]

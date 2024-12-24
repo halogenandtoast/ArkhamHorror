@@ -33,6 +33,7 @@ instance HasModifiersFor Airfield where
       )
       [ShroudModifier (-2)]
     modifySelf a [AdditionalCostToInvestigate (ResourceCost 1)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities Airfield where
   getAbilities (Airfield a) =

@@ -41,7 +41,7 @@ instance RunMessage FrenziedExplorer where
       when (attrs.token #doom > 0) do
         push $ FlipDoom (toTarget attrs) 1
         moveTokens (attrs.ability 2) attrs iid #clue 1
-        checkAfter $ Window.TakeControlOfClues iid (toSource attrs)
+        checkAfter $ Window.TakeControlOfClues iid (toSource attrs) 1
         doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 2) -> do

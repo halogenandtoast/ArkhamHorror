@@ -1853,7 +1853,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
     Matcher.TakeControlOfClues timing whoMatcher sourceMatcher -> guardTiming timing \case
-      Window.TakeControlOfClues who source' -> do
+      Window.TakeControlOfClues who source' _ -> do
         andM
           [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher

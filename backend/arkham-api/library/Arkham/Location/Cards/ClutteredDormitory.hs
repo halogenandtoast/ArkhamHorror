@@ -32,6 +32,7 @@ instance HasModifiersFor ClutteredDormitory where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities ClutteredDormitory where
   getAbilities (ClutteredDormitory a) =

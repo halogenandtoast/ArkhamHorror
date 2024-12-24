@@ -36,6 +36,7 @@ instance HasModifiersFor InfirmaryFatalMirage where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities InfirmaryFatalMirage where
   getAbilities (InfirmaryFatalMirage a) =

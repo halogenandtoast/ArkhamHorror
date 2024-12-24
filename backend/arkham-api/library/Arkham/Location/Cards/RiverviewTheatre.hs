@@ -12,7 +12,7 @@ import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype RiverviewTheatre = RiverviewTheatre LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverviewTheatre :: LocationCard RiverviewTheatre
@@ -20,6 +20,9 @@ riverviewTheatre = location RiverviewTheatre Cards.riverviewTheatre 1 (PerPlayer
 
 mirageCards :: [CardDef]
 mirageCards = [Cards.drKenslersOffice, Cards.infirmaryFatalMirage]
+
+instance HasModifiersFor RiverviewTheatre where
+  getModifiersFor (RiverviewTheatre a) = clearedOfMirages a mirageCards
 
 instance HasAbilities RiverviewTheatre where
   getAbilities (RiverviewTheatre a) =

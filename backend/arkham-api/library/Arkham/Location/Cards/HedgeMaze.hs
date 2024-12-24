@@ -10,20 +10,23 @@ import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype HedgeMaze = HedgeMaze LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hedgeMaze :: LocationCard HedgeMaze
 hedgeMaze = location HedgeMaze Cards.hedgeMaze 2 (PerPlayer 2)
 
-mirageLocations :: [CardDef]
-mirageLocations = [Cards.moaiStatues]
+mirageCards :: [CardDef]
+mirageCards = [Cards.moaiStatues]
+
+instance HasModifiersFor HedgeMaze where
+  getModifiersFor (HedgeMaze a) = clearedOfMirages a mirageCards
 
 instance HasAbilities HedgeMaze where
   getAbilities (HedgeMaze a) =
     extendRevealed
       a
-      [ mirage a 2 mirageLocations
+      [ mirage a 2 mirageCards
       , restricted a 1 (DuringTurn You)
           $ forced
           $ SkillTestResult #after You (WhileInvestigating $ be a) #success
@@ -35,4 +38,4 @@ instance RunMessage HedgeMaze where
       turnModifiers iid (attrs.ability 1) attrs [ShroudModifier 1]
       turnModifiers iid (attrs.ability 1) iid [CannotMove]
       pure l
-    _ -> HedgeMaze <$> mirageRunner Stories.hedgeMaze mirageLocations 2 msg attrs
+    _ -> HedgeMaze <$> mirageRunner Stories.hedgeMaze mirageCards 2 msg attrs

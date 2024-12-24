@@ -34,6 +34,7 @@ instance HasModifiersFor AlaskanWilds where
     modifySelf
       a
       [AdditionalCostToEnter (OrCost [ShuffleTopOfScenarioDeckIntoYourDeck 1 TekeliliDeck, ActionCost 1])]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities AlaskanWilds where
   getAbilities (AlaskanWilds a) = extendRevealed a [mirage a 2 mirageCards]

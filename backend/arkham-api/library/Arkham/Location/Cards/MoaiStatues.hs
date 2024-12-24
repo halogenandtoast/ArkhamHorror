@@ -32,6 +32,7 @@ instance HasModifiersFor MoaiStatues where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 mirageCards :: [CardDef]
 mirageCards = [Cards.memoryOfAnAlienTranslation]

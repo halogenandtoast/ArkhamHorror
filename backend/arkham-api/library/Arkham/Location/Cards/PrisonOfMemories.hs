@@ -19,6 +19,7 @@ instance HasModifiersFor PrisonOfMemories where
   getModifiersFor (PrisonOfMemories a) = do
     n <- getCurrentAgendaStep
     modifySelf a [ShroudModifier n]
+    clearedOfMirages a mirageCards
 
 mirageCards :: [CardDef]
 mirageCards = [Cards.baseCamp, Cards.deckOfTheTheodosia, Cards.universityHalls]

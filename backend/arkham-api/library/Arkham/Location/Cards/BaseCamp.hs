@@ -2,17 +2,24 @@ module Arkham.Location.Cards.BaseCamp (baseCamp) where
 
 import Arkham.Ability
 import Arkham.Card
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhenM)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Modifier
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype BaseCamp = BaseCamp LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor BaseCamp where
+  getModifiersFor (BaseCamp a) = do
+    modifySelfWhenM
+      a
+      (selectNone $ SetAsideCardMatch $ cardsAre mirageCards)
+      [ClearedOfMirages]
 
 baseCamp :: LocationCard BaseCamp
 baseCamp = location BaseCamp Cards.baseCamp 4 (PerPlayer 3)

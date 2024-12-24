@@ -30,7 +30,7 @@ instance RunMessage MadnessInside where
       when (doom > 0) do
         push $ FlipDoom (toTarget eid) doom
         moveTokens attrs eid iid #clue doom
-        checkAfter $ Window.TakeControlOfClues iid (toSource eid)
+        checkAfter $ Window.TakeControlOfClues iid (toSource eid) doom
       toDiscardBy iid attrs eid
       pure s
     _ -> MadnessInside <$> liftRunMessage msg attrs

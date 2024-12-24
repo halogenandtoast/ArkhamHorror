@@ -139,6 +139,12 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   CostWhenEnemy mtchr c -> do
     hasEnemy <- selectAny mtchr
     if hasEnemy then getCanAffordCost_ iid source actions windows' canModify c else pure True
+  CostWhenTreachery mtchr c -> do
+    hasTreachery <- selectAny mtchr
+    if hasTreachery then getCanAffordCost_ iid source actions windows' canModify c else pure True
+  CostWhenTreacheryElse mtchr c1 c2 -> do
+    hasTreachery <- selectAny mtchr
+    getCanAffordCost_ iid source actions windows' canModify $ if hasTreachery then c1 else c2
   CostIfEnemy mtchr c1 c2 -> do
     hasEnemy <- selectAny mtchr
     getCanAffordCost_ iid source actions windows' canModify $ if hasEnemy then c1 else c2

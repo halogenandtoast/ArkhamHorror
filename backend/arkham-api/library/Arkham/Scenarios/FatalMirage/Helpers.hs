@@ -17,6 +17,7 @@ import Arkham.Helpers.Modifiers (modifySelfWhenM)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Story
 import Arkham.I18n
+import Arkham.Id
 import Arkham.Location.Base (revealCluesL)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner ()
@@ -30,7 +31,9 @@ import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Source
+import Arkham.Strategy
 import Arkham.Target
+import Arkham.Treachery.Cards qualified as Treacheries
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
 
@@ -48,11 +51,22 @@ pattern LocationClearedOfMirages <- LocationWithModifier (ScenarioModifier "clea
     LocationClearedOfMirages = LocationWithModifier (ScenarioModifier "cleared_of_mirages")
 
 mirage
-  :: (HasCardCode a, Sourceable a, HasCardCode location) => a -> Int -> [location] -> Ability
+  :: (HasCardCode a, Sourceable a, HasCardCode location, AsId a, IdOf a ~ LocationId)
+  => a
+  -> Int
+  -> [location]
+  -> Ability
 mirage a clues locations =
   restricted a MirageAbility (Here <> SetAsideCardExists (mapOneOf cardIs locations))
     $ FastAbility
-    $ GroupClueCost (PerPlayer clues) YourLocation
+    $ CostWhenTreacheryElse
+      (TreacheryAt (LocationWithId $ asId a) <> treacheryIs Treacheries.evanescentMist)
+      ( OrCost
+          [ GroupClueCost (StaticWithPerPlayer 2 clues) YourLocation
+          , InvestigatorDamageCost (toSource a) (at_ YourLocation) DamageAny 2
+          ]
+      )
+      (GroupClueCost (PerPlayer clues) YourLocation)
 
 mirageRunner
   :: CardDef -> [CardDef] -> Int -> Message -> LocationAttrs -> QueueT Message GameT LocationAttrs

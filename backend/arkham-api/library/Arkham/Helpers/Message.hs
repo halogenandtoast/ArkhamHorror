@@ -39,6 +39,15 @@ import Control.Monad.Trans
 drawCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
 drawCards i source n = DrawCards i $ newCardDraw source i n
 
+drawCardsWith
+  :: Sourceable source
+  => InvestigatorId
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> Message
+drawCardsWith i source n f = DrawCards i $ f $ newCardDraw source i n
+
 drawEncounterCard :: Sourceable source => InvestigatorId -> source -> Message
 drawEncounterCard i source = drawEncounterCards i source 1
 
@@ -54,6 +63,17 @@ drawCardsIfCan
 drawCardsIfCan i source n = do
   canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
   pure $ guard canDraw $> drawCards (asId i) source n
+
+drawCardsIfCanWith
+  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> m (Maybe Message)
+drawCardsIfCanWith i source n f = do
+  canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
+  pure $ guard canDraw $> drawCardsWith (asId i) source n f
 
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of

@@ -10,11 +10,13 @@ import Arkham.Asset.Uses
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
-newtype ProfessorWilliamDyerProfessorOfGeologyResolute = ProfessorWilliamDyerProfessorOfGeologyResolute AssetAttrs
+newtype ProfessorWilliamDyerProfessorOfGeologyResolute
+  = ProfessorWilliamDyerProfessorOfGeologyResolute AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-professorWilliamDyerProfessorOfGeologyResolute :: AssetCard ProfessorWilliamDyerProfessorOfGeologyResolute
+professorWilliamDyerProfessorOfGeologyResolute
+  :: AssetCard ProfessorWilliamDyerProfessorOfGeologyResolute
 professorWilliamDyerProfessorOfGeologyResolute =
   allyWith
     ProfessorWilliamDyerProfessorOfGeologyResolute
@@ -32,7 +34,7 @@ instance HasAbilities ProfessorWilliamDyerProfessorOfGeologyResolute where
             , exists $ HealableAsset (a.ability 1) #horror (at_ YourLocation <> not_ (be a))
             ]
         )
-        $ actionAbilityWithCost (assetUseCost a Secret 1 <> exhaust a)
+        $ FastAbility (assetUseCost a Secret 1 <> exhaust a)
     ]
 
 instance RunMessage ProfessorWilliamDyerProfessorOfGeologyResolute where

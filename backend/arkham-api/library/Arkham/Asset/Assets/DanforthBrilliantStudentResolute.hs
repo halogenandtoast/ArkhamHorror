@@ -5,6 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
+import Arkham.Draw.Types
+import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Matcher
 
 newtype DanforthBrilliantStudentResolute = DanforthBrilliantStudentResolute AssetAttrs
@@ -25,6 +27,7 @@ instance HasAbilities DanforthBrilliantStudentResolute where
 instance RunMessage DanforthBrilliantStudentResolute where
   runMessage msg a@(DanforthBrilliantStudentResolute attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan iid (attrs.ability 1) 3
+      drawCardsIfCanWith iid (attrs.ability 1) 3 \c -> do
+        c {cardDrawDiscard = Just (CardFromEncounterSet Tekelili)}
       pure a
     _ -> DanforthBrilliantStudentResolute <$> liftRunMessage msg attrs

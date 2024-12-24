@@ -2762,7 +2762,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               else do
                 let
                   (drawn, deck') = splitAt n deck
-                  allDrawn = investigatorDrawnCards <> drawn
+                  allDrawn' = investigatorDrawnCards <> drawn
+                  (discarded, allDrawn) = maybe ([], allDrawn') (\mtch -> partition (`cardMatch` mtch) allDrawn') cardDraw.discard
                   shuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
                   handleCardDraw c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
                 msgs <- if not shuffleBackInEachWeakness then concatMapM handleCardDraw allDrawn else pure []
@@ -2805,6 +2806,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   $ windowMsgs
                   <> [DeckHasNoCards iid Nothing | null deck']
                   <> [before]
+                  <> [toDiscard (cardDrawSource cardDraw) (CardIdTarget card.id) | card <- discarded]
                   <> msgs'
                   <> [after]
                   <> ( guard (discardAmount > 0)

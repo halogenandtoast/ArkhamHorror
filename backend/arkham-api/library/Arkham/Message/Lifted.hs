@@ -27,6 +27,7 @@ import Arkham.Deck (IsDeck (..))
 import Arkham.Deck qualified as Deck
 import Arkham.Discover as X (IsInvestigate (..))
 import Arkham.Discover qualified as Msg
+import Arkham.Draw.Types
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
@@ -1338,6 +1339,18 @@ drawCardsIfCan
 drawCardsIfCan iid source n = do
   when (n > 0) do
     mmsg <- Msg.drawCardsIfCan iid source n
+    for_ mmsg push
+
+drawCardsIfCanWith
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> m ()
+drawCardsIfCanWith iid source n f = do
+  when (n > 0) do
+    mmsg <- Msg.drawCardsIfCanWith iid source n f
     for_ mmsg push
 
 forcedDrawCards

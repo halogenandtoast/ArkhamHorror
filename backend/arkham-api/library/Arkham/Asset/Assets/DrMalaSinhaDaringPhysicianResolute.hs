@@ -1,5 +1,5 @@
 module Arkham.Asset.Assets.DrMalaSinhaDaringPhysicianResolute (
-  drMalaSinhaDaringPhysicianResolute
+  drMalaSinhaDaringPhysicianResolute,
 )
 where
 
@@ -15,7 +15,8 @@ newtype DrMalaSinhaDaringPhysicianResolute = DrMalaSinhaDaringPhysicianResolute 
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drMalaSinhaDaringPhysicianResolute :: AssetCard DrMalaSinhaDaringPhysicianResolute
-drMalaSinhaDaringPhysicianResolute = allyWith DrMalaSinhaDaringPhysicianResolute Cards.drMalaSinhaDaringPhysicianResolute (4, 3) noSlots
+drMalaSinhaDaringPhysicianResolute =
+  allyWith DrMalaSinhaDaringPhysicianResolute Cards.drMalaSinhaDaringPhysicianResolute (4, 3) noSlots
 
 instance HasAbilities DrMalaSinhaDaringPhysicianResolute where
   getAbilities (DrMalaSinhaDaringPhysicianResolute a) =
@@ -27,7 +28,7 @@ instance HasAbilities DrMalaSinhaDaringPhysicianResolute where
             , exists $ HealableAsset (a.ability 1) #damage (at_ YourLocation <> not_ (be a))
             ]
         )
-        $ actionAbilityWithCost (assetUseCost a Supply 1 <> exhaust a)
+        $ FastAbility (assetUseCost a Supply 1 <> exhaust a)
     ]
 
 instance RunMessage DrMalaSinhaDaringPhysicianResolute where

@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
@@ -18,7 +19,9 @@ eliyahAshevakDogHandlerResolute = allyWith EliyahAshevakDogHandlerResolute Cards
 
 instance HasAbilities EliyahAshevakDogHandlerResolute where
   getAbilities (EliyahAshevakDogHandlerResolute a) =
-    [restricted a 1 ControlsThis $ evadeAction (assetUseCost a Secret 1 <> exhaust a)]
+    [ restricted a 1 (ControlsThis <> DuringTurn You)
+        $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) [#evade]
+    ]
 
 instance RunMessage EliyahAshevakDogHandlerResolute where
   runMessage msg a@(EliyahAshevakDogHandlerResolute attrs) = runQueueT $ case msg of

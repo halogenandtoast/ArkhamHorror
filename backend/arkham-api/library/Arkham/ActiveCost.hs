@@ -227,6 +227,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       if hasEnemy
         then payCost msg c iid skipAdditionalCosts cost'
         else pure c
+    CostWhenTreachery mtchr cost' -> do
+      hasTreachery <- selectAny mtchr
+      if hasTreachery
+        then payCost msg c iid skipAdditionalCosts cost'
+        else pure c
+    CostWhenTreacheryElse mtchr cost1' cost2' -> do
+      hasTreachery <- selectAny mtchr
+      payCost msg c iid skipAdditionalCosts $ if hasTreachery then cost1' else cost2'
     ArchiveOfConduitsUnidentifiedCost -> do
       locations <- select Anywhere
       push

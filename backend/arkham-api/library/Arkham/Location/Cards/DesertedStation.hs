@@ -21,6 +21,7 @@ mirageCards = [Cards.alaskanWilds]
 instance HasModifiersFor DesertedStation where
   getModifiersFor (DesertedStation a) = do
     modifySelfWhenM a (selectAny $ treacheryAt a.id) [ShroudModifier 3]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities DesertedStation where
   getAbilities (DesertedStation a) =

@@ -36,6 +36,7 @@ instance HasModifiersFor DyersClassroom where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities DyersClassroom where
   getAbilities (DyersClassroom a) =

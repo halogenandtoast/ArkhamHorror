@@ -34,6 +34,7 @@ instance HasModifiersFor TheBlackStone where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities TheBlackStone where
   getAbilities (TheBlackStone a) =

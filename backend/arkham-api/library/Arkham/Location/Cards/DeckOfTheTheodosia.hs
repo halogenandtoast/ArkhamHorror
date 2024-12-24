@@ -14,20 +14,23 @@ import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype DeckOfTheTheodosia = DeckOfTheTheodosia LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deckOfTheTheodosia :: LocationCard DeckOfTheTheodosia
 deckOfTheTheodosia = location DeckOfTheTheodosia Cards.deckOfTheTheodosia 1 (PerPlayer 3)
 
-mirageLocations :: [CardDef]
-mirageLocations = [Cards.coastalWaters, Cards.hedgeMaze, Cards.standingStones]
+mirageCards :: [CardDef]
+mirageCards = [Cards.coastalWaters, Cards.hedgeMaze, Cards.standingStones]
+
+instance HasModifiersFor DeckOfTheTheodosia where
+  getModifiersFor (DeckOfTheTheodosia a) = clearedOfMirages a mirageCards
 
 instance HasAbilities DeckOfTheTheodosia where
   getAbilities (DeckOfTheTheodosia a) =
     extendRevealed
       a
-      [ mirage a 1 mirageLocations
+      [ mirage a 1 mirageCards
       , mkAbility a 1
           $ forced
           $ InitiatedSkillTest #when You AnySkillType AnySkillTestValue
@@ -45,4 +48,4 @@ instance RunMessage DeckOfTheTheodosia where
         when (actions > 0) do
           labeled "Spend 1 additional action" $ loseActions iid (attrs.ability 2) 1
       pure l
-    _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageLocations 1 msg attrs
+    _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageCards 1 msg attrs

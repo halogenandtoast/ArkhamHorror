@@ -11,7 +11,7 @@ import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype ElderChamber = ElderChamber LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elderChamber :: LocationCard ElderChamber
@@ -19,6 +19,9 @@ elderChamber = location ElderChamber Cards.elderChamber 1 (PerPlayer 2)
 
 mirageCards :: [CardDef]
 mirageCards = [Cards.clutteredDormitory]
+
+instance HasModifiersFor ElderChamber where
+  getModifiersFor (ElderChamber a) = clearedOfMirages a mirageCards
 
 instance HasAbilities ElderChamber where
   getAbilities (ElderChamber a) =

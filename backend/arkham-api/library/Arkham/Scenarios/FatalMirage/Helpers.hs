@@ -7,11 +7,13 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Constants
 import Arkham.GameT
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (modifySelfWhenM)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Story
 import Arkham.I18n
@@ -24,13 +26,26 @@ import Arkham.Message (Message (Flip, PlacedLocation), is, pattern UseThisAbilit
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Source
 import Arkham.Target
+import Control.Monad.Writer.Class
+import Data.Map.Monoidal.Strict
 
 scenarioI18n :: (HasI18n => a) -> a
 scenarioI18n a = campaignI18n $ scope "fatalMirage" a
+
+pattern ClearedOfMirages :: ModifierType
+pattern ClearedOfMirages <- ScenarioModifier "cleared_of_mirages"
+  where
+    ClearedOfMirages = ScenarioModifier "cleared_of_mirages"
+
+pattern LocationClearedOfMirages :: LocationMatcher
+pattern LocationClearedOfMirages <- LocationWithModifier (ScenarioModifier "cleared_of_mirages")
+  where
+    LocationClearedOfMirages = LocationWithModifier (ScenarioModifier "cleared_of_mirages")
 
 mirage
   :: (HasCardCode a, Sourceable a, HasCardCode location) => a -> Int -> [location] -> Ability
@@ -73,3 +88,14 @@ handleMemory source partner location memory = do
       addToVictory loc
       mayAdvance source
     _ -> getSetAsideCard memory >>= (`createEnemy_` location)
+
+clearedOfMirages
+  :: (HasCallStack, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => LocationAttrs
+  -> [CardDef]
+  -> m ()
+clearedOfMirages a mirageCards =
+  modifySelfWhenM
+    a
+    (selectNone $ SetAsideCardMatch $ cardsAre mirageCards)
+    [ClearedOfMirages]

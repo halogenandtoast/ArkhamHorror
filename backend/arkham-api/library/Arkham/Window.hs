@@ -241,7 +241,7 @@ data WindowType
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int
   | WouldPlaceClueOnLocation InvestigatorId LocationId Source Int
-  | TakeControlOfClues InvestigatorId Source
+  | TakeControlOfClues InvestigatorId Source Int
   | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId

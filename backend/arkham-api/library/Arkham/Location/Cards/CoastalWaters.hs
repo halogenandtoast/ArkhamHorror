@@ -11,7 +11,7 @@ import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Stories
 
 newtype CoastalWaters = CoastalWaters LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coastalWaters :: LocationCard CoastalWaters
@@ -19,6 +19,9 @@ coastalWaters = location CoastalWaters Cards.coastalWaters 2 (PerPlayer 4)
 
 mirageCards :: [CardDef]
 mirageCards = [Cards.airfield, Cards.ottomanFront]
+
+instance HasModifiersFor CoastalWaters where
+  getModifiersFor (CoastalWaters a) = clearedOfMirages a mirageCards
 
 instance HasAbilities CoastalWaters where
   getAbilities (CoastalWaters a) =

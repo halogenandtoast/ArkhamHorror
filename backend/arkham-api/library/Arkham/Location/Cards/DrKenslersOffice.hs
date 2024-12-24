@@ -36,6 +36,7 @@ instance HasModifiersFor DrKenslersOffice where
           <> at_ (be a)
       )
       [ShroudModifier (-2)]
+    clearedOfMirages a mirageCards
 
 instance HasAbilities DrKenslersOffice where
   getAbilities (DrKenslersOffice a) =

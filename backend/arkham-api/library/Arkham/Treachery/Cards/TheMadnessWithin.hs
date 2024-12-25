@@ -18,6 +18,10 @@ instance RunMessage TheMadnessWithin where
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      addTekelili iid =<< getTekelili n
+      cards <- getTekelili n
+      unless (null cards) $ addTekelili iid cards
+      let horror = n - length cards
+      when (horror > 0) do
+        assignHorror iid attrs horror
       pure t
     _ -> TheMadnessWithin <$> liftRunMessage msg attrs

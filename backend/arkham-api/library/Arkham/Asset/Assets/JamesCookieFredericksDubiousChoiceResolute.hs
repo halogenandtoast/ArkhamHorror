@@ -8,7 +8,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Modifier
 
 newtype JamesCookieFredericksDubiousChoiceResolute = JamesCookieFredericksDubiousChoiceResolute AssetAttrs
@@ -17,11 +17,17 @@ newtype JamesCookieFredericksDubiousChoiceResolute = JamesCookieFredericksDubiou
 
 jamesCookieFredericksDubiousChoiceResolute :: AssetCard JamesCookieFredericksDubiousChoiceResolute
 jamesCookieFredericksDubiousChoiceResolute =
-  allyWith JamesCookieFredericksDubiousChoiceResolute Cards.jamesCookieFredericksDubiousChoiceResolute (6, 1) noSlots
+  allyWith
+    JamesCookieFredericksDubiousChoiceResolute
+    Cards.jamesCookieFredericksDubiousChoiceResolute
+    (6, 1)
+    noSlots
 
 instance HasAbilities JamesCookieFredericksDubiousChoiceResolute where
   getAbilities (JamesCookieFredericksDubiousChoiceResolute a) =
-    [restricted a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1 <> exhaust a)]
+    [ restricted a 1 (ControlsThis <> DuringTurn You)
+        $ FastAbility' (assetUseCost a Ammo 1 <> exhaust a) [#fight]
+    ]
 
 instance RunMessage JamesCookieFredericksDubiousChoiceResolute where
   runMessage msg a@(JamesCookieFredericksDubiousChoiceResolute attrs) = runQueueT $ case msg of

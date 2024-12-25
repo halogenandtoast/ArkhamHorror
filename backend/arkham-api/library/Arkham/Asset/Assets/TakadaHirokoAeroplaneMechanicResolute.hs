@@ -15,7 +15,12 @@ newtype TakadaHirokoAeroplaneMechanicResolute = TakadaHirokoAeroplaneMechanicRes
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 takadaHirokoAeroplaneMechanicResolute :: AssetCard TakadaHirokoAeroplaneMechanicResolute
-takadaHirokoAeroplaneMechanicResolute = allyWith TakadaHirokoAeroplaneMechanicResolute Cards.takadaHirokoAeroplaneMechanicResolute (3, 4) noSlots
+takadaHirokoAeroplaneMechanicResolute =
+  allyWith
+    TakadaHirokoAeroplaneMechanicResolute
+    Cards.takadaHirokoAeroplaneMechanicResolute
+    (3, 4)
+    noSlots
 
 instance HasAbilities TakadaHirokoAeroplaneMechanicResolute where
   getAbilities (TakadaHirokoAeroplaneMechanicResolute a) =
@@ -24,6 +29,7 @@ instance HasAbilities TakadaHirokoAeroplaneMechanicResolute where
 instance RunMessage TakadaHirokoAeroplaneMechanicResolute where
   runMessage msg a@(TakadaHirokoAeroplaneMechanicResolute attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      gainResourcesIfCan iid (attrs.ability 1) 1
       chooseAmounts
         iid
         "Resources"

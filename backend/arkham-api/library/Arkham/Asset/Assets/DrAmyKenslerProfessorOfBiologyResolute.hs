@@ -9,6 +9,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Strategy
@@ -18,11 +19,20 @@ newtype DrAmyKenslerProfessorOfBiologyResolute = DrAmyKenslerProfessorOfBiologyR
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drAmyKenslerProfessorOfBiologyResolute :: AssetCard DrAmyKenslerProfessorOfBiologyResolute
-drAmyKenslerProfessorOfBiologyResolute = allyWith DrAmyKenslerProfessorOfBiologyResolute Cards.drAmyKenslerProfessorOfBiologyResolute (3, 4) noSlots
+drAmyKenslerProfessorOfBiologyResolute =
+  allyWith
+    DrAmyKenslerProfessorOfBiologyResolute
+    Cards.drAmyKenslerProfessorOfBiologyResolute
+    (3, 4)
+    noSlots
 
 instance HasAbilities DrAmyKenslerProfessorOfBiologyResolute where
   getAbilities (DrAmyKenslerProfessorOfBiologyResolute a) =
-    [restricted a 1 ControlsThis $ investigateAction (assetUseCost a Secret 1 <> exhaust a)]
+    [ restricted a 1 (ControlsThis <> DuringTurn You)
+        $ FastAbility'
+          (assetUseCost a Secret 1 <> exhaust a)
+          [#investigate]
+    ]
 
 instance RunMessage DrAmyKenslerProfessorOfBiologyResolute where
   runMessage msg a@(DrAmyKenslerProfessorOfBiologyResolute attrs) = runQueueT $ case msg of

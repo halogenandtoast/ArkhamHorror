@@ -308,10 +308,14 @@ instance RunMessage LocationAttrs where
       if locationRevealed
         then do
           modifiers' <- getModifiers (toTarget a)
-          locationClueCount <-
+          locationClueCount' <-
             if CannotPlaceClues `elem` modifiers'
               then pure 0
               else getPlayerCountValue locationRevealClues
+          let locationClueCount =
+                if ReduceStartingCluesByHalf `elem` modifiers'
+                  then locationClueCount' `div` 2
+                  else locationClueCount'
           let currentClues = countTokens Clue locationTokens
 
           pushAll

@@ -355,5 +355,15 @@
       "id": "08501c",
       "name": "Ice and Death, Part III",
       "campaign": "08"
+  },
+  {
+      "id": "08549",
+      "name": "Fatal Mirage",
+      "campaign": "08"
+  },
+  {
+      "id": "08596",
+      "name": "To the Forbidden Peaks",
+      "campaign": "08"
   }
 ]

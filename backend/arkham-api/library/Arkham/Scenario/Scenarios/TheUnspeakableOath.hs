@@ -28,7 +28,7 @@ import Arkham.Scenario.Helpers hiding (defeated, forceAddCampaignCardToDeckChoic
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheUnspeakableOath.Story
 import Arkham.Strategy
-import Arkham.Trait hiding (Cultist, Expert)
+import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs

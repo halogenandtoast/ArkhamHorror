@@ -740,6 +740,15 @@ allLocations =
     , SomeLocationCard moaiStatues
     , SomeLocationCard ottomanFront
     , SomeLocationCard theBlackStone
+    , --- To the Forbidden Peaks [eote]
+      SomeLocationCard deepDrifts
+    , SomeLocationCard whiteBluff
+    , SomeLocationCard steepIncline
+    , SomeLocationCard narrowRidge
+    , SomeLocationCard rockyLedge
+    , SomeLocationCard snowCoveredCrag
+    , SomeLocationCard windsweptPath
+    , SomeLocationCard theSummit
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -23,7 +23,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Helpers
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Trait hiding (Trait (Cultist))
+import Arkham.Trait hiding (Trait (Cultist, ElderThing))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (over)

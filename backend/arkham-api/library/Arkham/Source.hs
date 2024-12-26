@@ -18,7 +18,7 @@ import Arkham.Matcher.Types (
   LocationMatcher,
  )
 import Arkham.Tarot
-import Arkham.Trait
+import Arkham.Trait hiding (ElderThing)
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import Data.UUID (nil)

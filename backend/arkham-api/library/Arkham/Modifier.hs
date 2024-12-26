@@ -196,6 +196,7 @@ data ModifierType
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
   | CannotPlaceClues
+  | ReduceStartingCluesByHalf
   | CannotPlaceDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher

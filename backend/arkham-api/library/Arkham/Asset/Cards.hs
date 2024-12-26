@@ -248,6 +248,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAnExplorer3
       , dreamEnhancingSerum
       , duke
+      , dynamite
       , earlSawyer
       , earthlySerenity1
       , earthlySerenity4
@@ -347,6 +348,7 @@ allPlayerAssetCards =
       , gravediggersShovel2
       , graysAnatomyTheDoctorsBible5
       , greenManMedallionHourOfTheHuntress
+      , greenSoapstoneJinxedIdol
       , gregoryGry
       , greteWagner
       , greteWagner3
@@ -494,10 +496,12 @@ allPlayerAssetCards =
       , medicalTexts
       , medicalTexts2
       , medicoDellaPeste
+      , miasmicCrystalStrangeEvidence
       , michaelLeigh5
       , microscope
       , microscope4
       , mindsEye2
+      , mineralSpecimen
       , miskatonicArchaeologyFunding4
       , missDoyle1
       , mistsOfRlyeh
@@ -673,6 +677,7 @@ allPlayerAssetCards =
       , sledgehammer
       , sledgehammer4
       , sleuth3
+      , smallRadio
       , smokingPipe
       , solemnVow
       , somethingWorthFightingFor
@@ -680,6 +685,7 @@ allPlayerAssetCards =
       , sophieInLovingMemory
       , sophieItWasAllMyFault
       , soulSanctification3
+      , spareParts
       , sparrowMaskTheWanderersCompanion
       , speakToTheDead
       , spectralWeb
@@ -810,6 +816,7 @@ allPlayerAssetCards =
       , wither
       , wither4
       , wolfMaskTheMoonsSire
+      , woodenSledge
       , woundedBystanderOnDeathsDoorstep
       , yaotl1
       , zeal

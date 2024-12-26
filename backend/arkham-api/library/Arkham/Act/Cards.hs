@@ -29,6 +29,7 @@ allActCards =
       , alejandrosPrison
       , allIn
       , arkhamAsylum
+      , ascendTheMountain
       , ascendingTheHillV1
       , ascendingTheHillV2
       , ascendingTheHillV3
@@ -840,6 +841,9 @@ shadowOfThePastV2 = act "08554" "Shadow of the Past (v. II)" 2 FatalMirage
 
 shadowOfThePastV3 :: CardDef
 shadowOfThePastV3 = act "08555" "Shadow of the Past (v. III)" 3 FatalMirage
+
+ascendTheMountain :: CardDef
+ascendTheMountain = act "08599" "Ascend the Mountain" 1 ToTheForbiddenPeaks
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

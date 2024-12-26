@@ -511,6 +511,11 @@ allTreacheries =
     , --- Fatal Mirage [eote]
       SomeTreacheryCard evanescentMist
     , SomeTreacheryCard anamnesis
+    , --- To the Forbidden Peaks [eote]
+      SomeTreacheryCard snowfall
+    , SomeTreacheryCard avalanche
+    , SomeTreacheryCard hangingOnTheEdge
+    , SomeTreacheryCard hypothermia
     , --- Agents of the Unknown [eote]
       SomeTreacheryCard theMadnessWithin
     , --- Creatures in the Ice [eote]
@@ -522,6 +527,8 @@ allTreacheries =
     , --- Hazards of Antarctica [eote]
       SomeTreacheryCard iceShaft
     , SomeTreacheryCard throughTheIce
+    , --- Elder Things [eote]
+      SomeTreacheryCard riseOfTheElderThings
     , --- Left Behind [eote]
       SomeTreacheryCard abandonedToMadness
     , --- Namesless Horrors [eote]

@@ -21,7 +21,7 @@ import Arkham.Scenario.Types (cardsUnderActDeckL, cardsUnderAgendaDeckL)
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Strategy
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 import Data.List.NonEmpty qualified as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs

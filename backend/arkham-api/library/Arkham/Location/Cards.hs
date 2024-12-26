@@ -223,6 +223,7 @@ allLocationCards =
       , deckOfTheTheodosia
       , deconstructionRoom
       , deepBelowYourHouse
+      , deepDrifts
       , deepOneGrotto_175a
       , deepOneGrotto_175b
       , deepOneNursery
@@ -476,6 +477,7 @@ allLocationCards =
       , mysteriousStairs_187
       , mysteriousStairs_188
       , namelessRuins
+      , narrowRidge
       , narrowShaft
       , newChurchGreen
       , newChurchGreenInTooDeep
@@ -548,6 +550,7 @@ allLocationCards =
       , rivertown_293
       , riverviewTheatre
       , rockyCrags
+      , rockyLedge
       , room212
       , room225
       , room245
@@ -598,6 +601,7 @@ allLocationCards =
       , skaiRiver
       , slaughteredWoods
       , sleepingCar
+      , snowCoveredCrag
       , snowGraves
       , southChurch_298
       , southChurch_299
@@ -609,6 +613,7 @@ allLocationCards =
       , stairwell
       , standingStones
       , statuesInTheDeep
+      , steepIncline
       , stepsOfYhagharl
       , stepsOfYoth
       , stoneAltar
@@ -667,6 +672,7 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOnyxCastle
+      , theSummit
       , theWhiteShip
       , theatre
       , tidalPool
@@ -724,6 +730,8 @@ allLocationCards =
       , wellOfSouls
       , whateleyRuins_250
       , whateleyRuins_251
+      , whiteBluff
+      , windsweptPath
       , witchHauntedWoodsAbandonedMine
       , witchHauntedWoodsCairnStones
       , witchHauntedWoodsChildsTreeHouse
@@ -7592,6 +7600,122 @@ theBlackStone =
       Droplet
       [Circle]
       FatalMirage
+
+deepDrifts :: CardDef
+deepDrifts =
+  victory 1
+    $ locationWithUnrevealed
+      "08600"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Deep Drifts"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+whiteBluff :: CardDef
+whiteBluff =
+  victory 1
+    $ locationWithUnrevealed
+      "08601"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "White Bluff"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+steepIncline :: CardDef
+steepIncline =
+  victory 1
+    $ locationWithUnrevealed
+      "08602"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Steep Incline"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+narrowRidge :: CardDef
+narrowRidge =
+  victory 1
+    $ locationWithUnrevealed
+      "08603"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Narrow Ridge"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+rockyLedge :: CardDef
+rockyLedge =
+  victory 1
+    $ locationWithUnrevealed
+      "08604"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Rocky Ledge"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+snowCoveredCrag :: CardDef
+snowCoveredCrag =
+  victory 1
+    $ locationWithUnrevealed
+      "08605"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Snow-Covered Crag"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+windsweptPath :: CardDef
+windsweptPath =
+  victory 1
+    $ locationWithUnrevealed
+      "08606"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Windswept Path"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+theSummit :: CardDef
+theSummit =
+  victory 1
+    $ location
+      "08607"
+      "The Summit"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

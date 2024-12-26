@@ -74,12 +74,14 @@ data Trait
   | Drifter
   | Dunwich
   | Eidolon
+  | ElderThing
   | Eldritch
   | Elite
   | Endtimes
   | Entrepreneur
   | Evidence
   | Exhibit
+  | Expedition
   | Expert
   | Extradimensional
   | Extraterrestrial

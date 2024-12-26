@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WhereDoomAwaits.Story
-import Arkham.Trait hiding (Cultist, Expert)
+import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 
 newtype WhereDoomAwaits = WhereDoomAwaits ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

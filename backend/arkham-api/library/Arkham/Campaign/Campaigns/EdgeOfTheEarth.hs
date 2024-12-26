@@ -3,7 +3,7 @@ module Arkham.Campaign.Campaigns.EdgeOfTheEarth (EdgeOfTheEarth (..), edgeOfTheE
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Import.Lifted
-import Arkham.Campaign.Types (campaignChaosBag, campaignStore)
+import Arkham.Campaign.Types (campaignChaosBag, campaignCompletedSteps, campaignStore)
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
@@ -47,6 +47,11 @@ instance IsCampaign EdgeOfTheEarth where
     IceAndDeathPart1 -> Just (CheckpointStep 1)
     IceAndDeathPart2 -> Just (CheckpointStep 2)
     IceAndDeathPart3 -> Just (InterludeStep 1 Nothing)
+    FatalMirage ->
+      if
+        | CityOfTheElderThings `elem` campaignCompletedSteps (toAttrs a) -> Just TheHeartOfMadness
+        | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) -> Just CityOfTheElderThings
+        | otherwise -> Just ToTheForbiddenPeaks
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

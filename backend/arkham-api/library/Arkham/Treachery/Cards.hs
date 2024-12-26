@@ -11,7 +11,7 @@ import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
-import Arkham.Trait hiding (Dreamlands)
+import Arkham.Trait hiding (Dreamlands, Expedition)
 import Arkham.Trait qualified as Trait
 
 baseTreachery
@@ -186,6 +186,7 @@ allEncounterTreacheryCards =
       , arousingSuspicions
       , arrowsFromTheTrees
       , attractingAttention
+      , avalanche
       , baneOfTheLiving
       , bathophobia
       , beastOfTheBayou
@@ -279,6 +280,7 @@ allEncounterTreacheryCards =
       , graspingHands
       , graveLight
       , graveLightSpectral
+      , hangingOnTheEdge
       , harvestedBrain
       , heraldsOfTheDeep
       , hideousLullaby
@@ -287,6 +289,7 @@ allEncounterTreacheryCards =
       , huntedByCorsairs
       , huntedDown
       , huntingShadow
+      , hypothermia
       , iCantSee
       , iceShaft
       , illOmen
@@ -365,6 +368,7 @@ allEncounterTreacheryCards =
       , restlessJourneyLies
       , ripplesOnTheSurface
       , riptide
+      , riseOfTheElderThings
       , risingTides
       , ritesHowled
       , rottingRemains
@@ -385,6 +389,7 @@ allEncounterTreacheryCards =
       , slitheringBehindYou
       , snakeBite
       , snakescourge
+      , snowfall
       , somethingInTheDrinks
       , somniphobia
       , songOfTheMagahBird
@@ -2463,6 +2468,30 @@ anamnesis =
     , cdKeywords = setFromList [Keyword.Peril]
     }
 
+snowfall :: CardDef
+snowfall =
+  (treachery "08610" "Snowfall" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+avalanche :: CardDef
+avalanche =
+  (treachery "08611" "Avalance" ToTheForbiddenPeaks 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+hangingOnTheEdge :: CardDef
+hangingOnTheEdge =
+  (treachery "08612" "Hanging on the Edge" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+hypothermia :: CardDef
+hypothermia =
+  (treachery "08613" "Hypothermia" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
 theMadnessWithin :: CardDef
 theMadnessWithin =
   (treachery "08688" "The Madness Within" AgentsOfTheUnknown 2)
@@ -2490,6 +2519,12 @@ whiteout =
 polarVortex :: CardDef
 polarVortex =
   (treachery "08694" "Polar Vortex" DeadlyWeather 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+riseOfTheElderThings :: CardDef
+riseOfTheElderThings =
+  (treachery "08697" "Rise of the Elder Things" ElderThings 2)
     { cdCardTraits = setFromList [Hazard]
     }
 

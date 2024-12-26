@@ -64,6 +64,7 @@ allAgendaCards =
       , feedTheBeast
       , floodedStreets
       , fogOnTheBay
+      , forbiddenPeaks
       , franticPursuit
       , furyThatShakesTheEarth
       , growingSuspicion
@@ -124,6 +125,7 @@ allAgendaCards =
       , swallowedSky
       , temperanceXIV
       , terrorAtFalconPoint
+      , terrorDescends
       , theAlarmIsRaised
       , theArkhamWoods
       , theBarrierIsThin
@@ -710,6 +712,12 @@ etherealTangleV2 = agenda "08551" "Ethereal Tangle (v. II)" 2 FatalMirage
 
 etherealTangleV3 :: CardDef
 etherealTangleV3 = agenda "08552" "Ethereal Tangle (v. III)" 3 FatalMirage
+
+forbiddenPeaks :: CardDef
+forbiddenPeaks = agenda "08597" "Forbidden Peaks" 1 ToTheForbiddenPeaks
+
+terrorDescends :: CardDef
+terrorDescends = agenda "08598" "Terror Descends" 2 ToTheForbiddenPeaks
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -2068,6 +2068,7 @@ createAssetAt c placement = do
   pure assetId
 
 crossOutRecordSetEntries :: (Recordable a, ReverseQueue m) => CampaignLogKey -> [a] -> m ()
+crossOutRecordSetEntries _ [] = pure ()
 crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs
 
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()

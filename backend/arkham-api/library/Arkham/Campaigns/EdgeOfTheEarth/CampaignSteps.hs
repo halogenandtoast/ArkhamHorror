@@ -26,3 +26,13 @@ pattern ToTheForbiddenPeaks :: CampaignStep
 pattern ToTheForbiddenPeaks <- ScenarioStep "08549"
   where
     ToTheForbiddenPeaks = ScenarioStep "08596"
+
+pattern CityOfTheElderThings :: CampaignStep
+pattern CityOfTheElderThings <- ScenarioStep "08621"
+  where
+    CityOfTheElderThings = ScenarioStep "08621"
+
+pattern TheHeartOfMadness :: CampaignStep
+pattern TheHeartOfMadness <- ScenarioStep "08648"
+  where
+    TheHeartOfMadness = ScenarioStep "08648"

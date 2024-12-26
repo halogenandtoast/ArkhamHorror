@@ -24,7 +24,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

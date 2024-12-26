@@ -32,6 +32,13 @@ baseEnemy cardCode name mEncounterSet isWeakness =
 unique :: CardDef -> CardDef
 unique def = def {cdUnique = True}
 
+doubleSided :: CardCode -> CardDef -> CardDef
+doubleSided cCode def =
+  def
+    { cdDoubleSided = True
+    , cdOtherSide = Just cCode
+    }
+
 weakness :: CardCode -> Name -> CardDef
 weakness cardCode name = baseEnemy cardCode name Nothing (Just Weakness)
 
@@ -126,6 +133,7 @@ allEncounterEnemyCards =
       , conglomerationOfSpheres
       , conspicuousStaff
       , constanceDumaine
+      , constrictingElderThing
       , corpseDweller
       , corpseHungryGhoul
       , corpseTaker
@@ -156,6 +164,7 @@ allEncounterEnemyCards =
       , drAmyKenslerProfessorOfBiology
       , drMalaSinhaDaringPhysician
       , eaterOfTheDepths
+      , elderThingScavenger
       , elisabettaMagro
       , eliyahAshevakDogHandler
       , emergentMonstrosity
@@ -176,6 +185,7 @@ allEncounterEnemyCards =
       , grapplingHorror
       , graveEater
       , greyWeaver
+      , guardianElderThing
       , gugSentinel
       , handOfTheBrotherhood
       , harbingerOfValusia
@@ -338,6 +348,7 @@ allEncounterEnemyCards =
       , temporalDevourer
       , tenebrousNightgaunt
       , terrorOfTheStarsBringerOfIceAndDeath
+      , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
       , theCrawlingMist
       , theExperiment
@@ -2471,72 +2482,97 @@ seepingNightmare =
 
 memoryOfAHuntGoneAwry :: CardDef
 memoryOfAHuntGoneAwry =
-  (enemy "08575" "Memory of a Hunt Gone Awry" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
-    }
+  doubleSided "08575b"
+    $ (enemy "08575" "Memory of a Hunt Gone Awry" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+      }
 
 memoryOfALostPatient :: CardDef
 memoryOfALostPatient =
-  (enemy "08576" "Memory of a Lost Patient" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+  doubleSided "08576b"
+    $ (enemy "08576" "Memory of a Lost Patient" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Retaliate]
+      }
 
 memoryOfAMissingFather :: CardDef
 memoryOfAMissingFather =
-  (enemy "08577" "Memory of a Missing Father" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+  doubleSided "08577b"
+    $ (enemy "08577" "Memory of a Missing Father" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Retaliate]
+      }
 
 memoryOfARavagedCountry :: CardDef
 memoryOfARavagedCountry =
-  (enemy "08578" "Memory of a Ravaged Country" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+  doubleSided "08578b"
+    $ (enemy "08578" "Memory of a Ravaged Country" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Retaliate]
+      }
 
 memoryOfARegretfulVoyage :: CardDef
 memoryOfARegretfulVoyage =
-  (enemy "08579" "Memory of a Regretful Voyage" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Retaliate]
-    }
+  doubleSided "08579b"
+    $ (enemy "08579" "Memory of a Regretful Voyage" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Retaliate]
+      }
 
 memoryOfAnUnspeakableEvil :: CardDef
 memoryOfAnUnspeakableEvil =
-  (enemy "08580" "Memory of an Unspeakable Evil" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
-    }
+  doubleSided "08580b"
+    $ (enemy "08580" "Memory of an Unspeakable Evil" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Retaliate]
+      }
 
 memoryOfATerribleDiscovery :: CardDef
 memoryOfATerribleDiscovery =
-  (enemy "08581" "Memory of a Terrible Discovery" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Alert]
-    }
+  doubleSided "08581b"
+    $ (enemy "08581" "Memory of a Terrible Discovery" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Alert]
+      }
 
 memoryOfAnAlienTranslation :: CardDef
 memoryOfAnAlienTranslation =
-  (enemy "08582" "Memory of an Alien Transformation" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Alert]
-    }
+  doubleSided "08582b"
+    $ (enemy "08582" "Memory of an Alien Transformation" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Alert]
+      }
 
 memoryOfAnUnrequitedLove :: CardDef
 memoryOfAnUnrequitedLove =
-  (enemy "08583" "Memory of an Unrequited Love" FatalMirage 1)
-    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
-    , cdKeywords = setFromList [Keyword.Alert]
-    }
+  doubleSided "08583b"
+    $ (enemy "08583" "Memory of an Unrequited Love" FatalMirage 1)
+      { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+      , cdKeywords = setFromList [Keyword.Alert]
+      }
 
 horrifyingShade :: CardDef
 horrifyingShade =
   (enemy "08584" "Horrifying Shade" FatalMirage 3)
     { cdCardTraits = setFromList [Monster, Eidolon]
     , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
+    }
+
+terrorOfTheStarsGuardianOfForbiddenPeaks :: CardDef
+terrorOfTheStarsGuardianOfForbiddenPeaks =
+  (enemy "08608" ("Terror of the Stars" <:> "Guardian of the Forbidden Peaks") ToTheForbiddenPeaks 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+constrictingElderThing :: CardDef
+constrictingElderThing =
+  (enemy "08609" "Constricting Elder Thing" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Monster, ElderThing]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 primordialEvil :: CardDef
@@ -2557,6 +2593,20 @@ glacialPhantasm :: CardDef
 glacialPhantasm =
   (enemy "08690" "Glacial Phantasm" CreaturesInTheIce 2)
     { cdCardTraits = setFromList [Monster, Eidolon]
+    }
+
+elderThingScavenger :: CardDef
+elderThingScavenger =
+  (enemy "08695" "Elder Thing Scavenger" ElderThings 2)
+    { cdCardTraits = setFromList [Monster, ElderThing]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+guardianElderThing :: CardDef
+guardianElderThing =
+  (enemy "08696" "Guardian Elder Thing" ElderThings 2)
+    { cdCardTraits = setFromList [Monster, ElderThing]
+    , cdKeywords = setFromList [Keyword.Hunter]
     }
 
 lostResearcher :: CardDef

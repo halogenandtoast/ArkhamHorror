@@ -15,4 +15,4 @@ import Arkham.GameValue as X
 import Arkham.Matcher as X
 import Arkham.Name as X
 import Arkham.Prelude as X
-import Arkham.Trait as X hiding (Evidence, Possessed, Supply)
+import Arkham.Trait as X hiding (Evidence, Expedition, Possessed, Supply)

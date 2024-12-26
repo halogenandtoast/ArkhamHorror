@@ -268,6 +268,9 @@ allAgendas =
       SomeAgendaCard etherealTangleV1
     , SomeAgendaCard etherealTangleV2
     , SomeAgendaCard etherealTangleV3
+    , --- To the Forbidden Peaks [eote]
+      SomeAgendaCard forbiddenPeaks
+    , SomeAgendaCard terrorDescends
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

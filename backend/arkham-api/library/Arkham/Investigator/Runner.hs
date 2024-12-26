@@ -23,7 +23,7 @@ import Arkham.Name as X
 import Arkham.Source as X
 import Arkham.Stats as X
 import Arkham.Target as X
-import Arkham.Trait as X hiding (Cultist)
+import Arkham.Trait as X hiding (Cultist, ElderThing)
 import Data.Aeson (Result (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 

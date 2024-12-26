@@ -14,7 +14,7 @@ import Arkham.Event.Runner
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.RequestedChaosTokenStrategy
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 import Arkham.Window qualified as Window
 
 newtype Meta = Meta {chosenAsset :: Maybe AssetId}

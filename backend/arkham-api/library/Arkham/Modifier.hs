@@ -324,6 +324,7 @@ data ModifierType
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | PlaceOnBottomOfDeckInsteadOfDiscard
   | ShuffleIntoDeckInsteadOfDiscard
+  | ShuffleIntoAnyDeckInsteadOfDiscard
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]
   | ReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard

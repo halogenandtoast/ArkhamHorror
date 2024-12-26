@@ -15,12 +15,14 @@ import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
 import Arkham.Message (Message (DrawCards, SetPartnerStatus))
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection
@@ -220,6 +222,9 @@ resolveTekelili iid tekelili = do
   if
     | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods -> putOnBottomOfDeck iid iid (asId tekelili)
     | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> shuffleIntoDeck iid (asId tekelili)
+    | ShuffleIntoAnyDeckInsteadOfDiscard `elem` mods -> do
+        investigators <- getInvestigators
+        chooseTargetM iid investigators \iid' -> shuffleIntoDeck iid' (asId tekelili)
     | otherwise -> putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
 
 drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()

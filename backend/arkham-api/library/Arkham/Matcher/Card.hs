@@ -135,6 +135,9 @@ instance IsLabel "asset" ExtendedCardMatcher where
 instance IsLabel "event" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #event
 
+instance IsLabel "story" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #story
+
 instance IsLabel "enemy" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #enemy
 

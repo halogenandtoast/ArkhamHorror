@@ -15,7 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
 import Arkham.Prelude
 import Arkham.Scenarios.CurtainCall.Helpers
-import Arkham.Trait
+import Arkham.Trait hiding (ElderThing)
 import Arkham.Window (getBatchId)
 
 newtype TheStrangerTheShoresOfHali = TheStrangerTheShoresOfHali ActAttrs

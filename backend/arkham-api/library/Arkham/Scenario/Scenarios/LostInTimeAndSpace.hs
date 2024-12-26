@@ -21,7 +21,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
 import Arkham.Scenarios.LostInTimeAndSpace.Helpers
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

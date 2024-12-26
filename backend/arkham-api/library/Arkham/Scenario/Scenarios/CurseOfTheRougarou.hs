@@ -20,7 +20,7 @@ import Arkham.Scenario.Runner hiding (chooseOne, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Maybe (fromJust)
 

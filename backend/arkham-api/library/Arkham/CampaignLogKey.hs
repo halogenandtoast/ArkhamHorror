@@ -334,6 +334,8 @@ data CampaignLogKey
   | ClaypoolHasConfrontedHisDemons
   | EllsworthHasConfrontedHisDemons
   | DrKenslerHasConfrontedHerDemons
+  | MemoriesBanished
+  | MemoriesDiscovered
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed

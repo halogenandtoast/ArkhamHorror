@@ -30,7 +30,7 @@ import Arkham.Scenario.Runner hiding (
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving stock Generic

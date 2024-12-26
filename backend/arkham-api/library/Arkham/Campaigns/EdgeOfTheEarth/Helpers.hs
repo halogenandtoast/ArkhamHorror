@@ -82,11 +82,42 @@ getPartnersWithStatus f = do
     guard $ f partner.status
     pure
       $ Partner
-        { partnerCardCode = cardCode
+        { partnerCardCode = if partner.status == Resolute then toResolute cardCode else cardCode
         , partnerDamage = partner.damage
         , partnerHorror = partner.horror
         , partnerStatus = partner.status
         }
+
+toResolute :: CardCode -> CardCode
+toResolute = \case
+  c
+    | c == Assets.professorWilliamDyerProfessorOfGeology.cardCode ->
+        Assets.professorWilliamDyerProfessorOfGeologyResolute.cardCode
+  c
+    | c == Assets.danforthBrilliantStudent.cardCode ->
+        Assets.danforthBrilliantStudentResolute.cardCode
+  c
+    | c == Assets.eliyahAshevakDogHandler.cardCode ->
+        Assets.eliyahAshevakDogHandlerResolute.cardCode
+  c
+    | c == Assets.drMalaSinhaDaringPhysician.cardCode ->
+        Assets.drMalaSinhaDaringPhysicianResolute.cardCode
+  c
+    | c == Assets.averyClaypoolAntarcticGuide.cardCode ->
+        Assets.averyClaypoolAntarcticGuideResolute.cardCode
+  c
+    | c == Assets.jamesCookieFredericksDubiousChoice.cardCode ->
+        Assets.jamesCookieFredericksDubiousChoiceResolute.cardCode
+  c
+    | c == Assets.drAmyKenslerProfessorOfBiology.cardCode ->
+        Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode
+  c
+    | c == Assets.roaldEllsworthIntrepidExplorer.cardCode ->
+        Assets.roaldEllsworthIntrepidExplorerResolute.cardCode
+  c
+    | c == Assets.takadaHirokoAeroplaneMechanic.cardCode ->
+        Assets.takadaHirokoAeroplaneMechanicResolute.cardCode
+  _ -> error "can not make resolute"
 
 getRemainingPartners :: HasGame m => m [Partner]
 getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
@@ -97,11 +128,14 @@ getPartner (toCardCode -> cardCode) = do
   pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners >>= \partner ->
     pure
       $ Partner
-        { partnerCardCode = cardCode
+        { partnerCardCode = if partner.status == Resolute then toResolute cardCode else cardCode
         , partnerDamage = partner.damage
         , partnerHorror = partner.horror
         , partnerStatus = partner.status
         }
+
+getPartnerIsAlive :: (HasGame m, HasCardCode a) => a -> m Bool
+getPartnerIsAlive x = (`elem` [Safe, Resolute]) <$> getPartnerStatus x
 
 getPartnerStatus :: (HasGame m, HasCardCode a) => a -> m PartnerStatus
 getPartnerStatus (toPartnerCode -> cardCode) = do

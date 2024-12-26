@@ -448,11 +448,17 @@ allEnemies =
     , SomeEnemyCard memoryOfAnAlienTranslation
     , SomeEnemyCard memoryOfAnUnrequitedLove
     , SomeEnemyCard horrifyingShade
+    , -- To the Forbidden Peaks [eote]
+      SomeEnemyCard terrorOfTheStarsGuardianOfForbiddenPeaks
+    , SomeEnemyCard constrictingElderThing
     , -- Agents of the Unknown [eote]
       SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]
       SomeEnemyCard manifestationOfMadness
     , SomeEnemyCard glacialPhantasm
+    , -- Elder Things [eote]
+      SomeEnemyCard elderThingScavenger
+    , SomeEnemyCard guardianElderThing
     , -- Left Behind [eote]
       SomeEnemyCard lostResearcher
     , SomeEnemyCard frenziedExplorer

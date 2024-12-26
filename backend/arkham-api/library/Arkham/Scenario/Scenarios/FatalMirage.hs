@@ -3,23 +3,33 @@ module Arkham.Scenario.Scenarios.FatalMirage (fatalMirage) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Types (Field (..))
+import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps (
+  pattern CityOfTheElderThings,
+  pattern ToTheForbiddenPeaks,
+ )
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.Log
+import Arkham.Helpers.Campaign
+import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Text
+import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
+import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.FatalMirage.Helpers
-import Arkham.Trait (Trait (Eidolon, Resolute))
+import Arkham.Trait (Trait (Eidolon, Otherworld, Resolute))
 
 newtype FatalMirage = FatalMirage ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -114,22 +124,47 @@ instance RunMessage FatalMirage where
       gather Set.Tekelili
       gather Set.ChillingCold
 
-      setAgendaDeck [Agendas.etherealTangleV1]
-      setActDeck [Acts.shadowOfThePastV1]
+      completedSteps <- campaignField CampaignCompletedSteps
+
+      if
+        | CityOfTheElderThings `elem` completedSteps -> do
+            setAgendaDeck [Agendas.etherealTangleV3]
+            setActDeck [Acts.shadowOfThePastV3]
+        | ToTheForbiddenPeaks `elem` completedSteps -> do
+            setAgendaDeck [Agendas.etherealTangleV2]
+            setActDeck [Acts.shadowOfThePastV2]
+        | otherwise -> do
+            setAgendaDeck [Agendas.etherealTangleV1]
+            setActDeck [Acts.shadowOfThePastV1]
+
+      memoriesBanished <- getRecordSet MemoriesBanished
+      memoriesDiscovered <- getRecordSet MemoriesDiscovered
 
       startAt =<< place Locations.prisonOfMemories
+
+      for_ (recordedCardCodes memoriesDiscovered) \cardCode -> do
+        location <- amongGathered (CardWithCardCode cardCode)
+        for_ location (place_ . toCardDef)
+
       setAside =<< amongGathered #location
-      setAside
-        [ Enemies.memoryOfAHuntGoneAwry
-        , Enemies.memoryOfALostPatient
-        , Enemies.memoryOfAMissingFather
-        , Enemies.memoryOfARavagedCountry
-        , Enemies.memoryOfARegretfulVoyage
-        , Enemies.memoryOfAnUnspeakableEvil
-        , Enemies.memoryOfATerribleDiscovery
-        , Enemies.memoryOfAnAlienTranslation
-        , Enemies.memoryOfAnUnrequitedLove
-        ]
+
+      let
+        (banished, enemies) =
+          partition
+            (maybe False ((`elem` memoriesBanished) . recorded) . cdOtherSide)
+            [ Enemies.memoryOfAHuntGoneAwry
+            , Enemies.memoryOfALostPatient
+            , Enemies.memoryOfAMissingFather
+            , Enemies.memoryOfARavagedCountry
+            , Enemies.memoryOfARegretfulVoyage
+            , Enemies.memoryOfAnUnspeakableEvil
+            , Enemies.memoryOfATerribleDiscovery
+            , Enemies.memoryOfAnAlienTranslation
+            , Enemies.memoryOfAnUnrequitedLove
+            ]
+      setAside enemies
+      placeInVictory $ mapMaybe (lookupCardDef <=< cdOtherSide) banished
+
       setAside =<< amongGathered (CardWithTrait Resolute)
 
       case attrs.difficulty of
@@ -161,5 +196,38 @@ instance RunMessage FatalMirage where
         ElderThing ->
           chooseSelectM iid (EnemyWithTrait Eidolon) \enemy -> placeDoom ElderThing enemy 1
         _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> story $ i18nWithTitle "noResolution"
+        Resolution 1 -> story $ i18nWithTitle "resolution1"
+        _ -> error "Unknown resolution"
+      memoriesInVictory <- select (VictoryDisplayCardMatch #story)
+      previouslyBanished <- getRecordSet MemoriesBanished
+      let newMemories = map toCardDef $ filter ((`notElem` previouslyBanished) . recorded . toCardCode) memoriesInVictory
+      -- we want to remove all memories before calculating
+      for_ memoriesInVictory obtainCard
+      recordSetInsert MemoriesBanished $ map toCardCode memoriesInVictory
+
+      discovered <- selectWithField LocationCardCode $ not_ (LocationWithTrait Otherworld)
+      recordSetInsert MemoriesDiscovered $ map snd discovered
+
+      crossOutRecordSetEntries MemoriesDiscovered
+        $ [Locations.alaskanWilds.cardCode | Enemies.memoryOfAHuntGoneAwry `elem` newMemories]
+        <> [Locations.infirmaryFatalMirage.cardCode | Enemies.memoryOfALostPatient `elem` newMemories]
+        <> [Locations.airfield.cardCode | Enemies.memoryOfAMissingFather `elem` newMemories]
+        <> [Locations.ottomanFront.cardCode | Enemies.memoryOfARavagedCountry `elem` newMemories]
+        <> [Locations.dyersClassroom.cardCode | Enemies.memoryOfARegretfulVoyage `elem` newMemories]
+        <> [Locations.clutteredDormitory.cardCode | Enemies.memoryOfAnUnspeakableEvil `elem` newMemories]
+        <> [Locations.theBlackStone.cardCode | Enemies.memoryOfATerribleDiscovery `elem` newMemories]
+        <> [Locations.moaiStatues.cardCode | Enemies.memoryOfAnAlienTranslation `elem` newMemories]
+        <> [Locations.drKenslersOffice.cardCode | Enemies.memoryOfAnUnrequitedLove `elem` newMemories]
+
+      let memoryXp = getSum $ foldMap (foldMap Sum . cdVictoryPoints) newMemories
+      allGainXpWithBonus attrs $ toBonus "memoriesBanished" memoryXp
+      -- Cross off each location recorded under “Memories
+      -- Discovered” for which the corresponding story card is
+      -- also recorded under “Memories Banished.”
+      endOfScenario
       pure s
     _ -> FatalMirage <$> liftRunMessage msg attrs

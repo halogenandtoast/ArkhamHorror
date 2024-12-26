@@ -2,6 +2,7 @@ module Arkham.Asset.Cards.EdgeOfTheEarth where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Trait qualified as Trait
 
 mechanicsWrench :: CardDef
 mechanicsWrench =
@@ -901,6 +902,68 @@ takadaHirokoAeroplaneMechanicResolute =
     , cdUses = uses Resource 9
     , cdKeywords = singleton Keyword.Partner
     , cdUnique = True
+    }
+
+greenSoapstoneJinxedIdol :: CardDef
+greenSoapstoneJinxedIdol =
+  (storyAsset "08614" ("Green Soapstone" <:> "Jinxed Idol") 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 4
+    , cdSkills = [#combat, #combat, #wild]
+    }
+
+woodenSledge :: CardDef
+woodenSledge =
+  (storyAsset "08615" "Wooden Sledge" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdSkills = [#agility, #wild, #wild]
+    }
+
+dynamite :: CardDef
+dynamite =
+  (storyAsset "08616" "Dynamite" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 2
+    , cdSkills = [#combat, #combat, #wild]
+    }
+
+miasmicCrystalStrangeEvidence :: CardDef
+miasmicCrystalStrangeEvidence =
+  (storyAsset "08617" ("Miasmic Crystal" <:> "Strange Evidence") 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 3
+    , cdSkills = [#willpower, #willpower, #wild]
+    }
+
+mineralSpecimen :: CardDef
+mineralSpecimen =
+  (storyAsset "08618" "Mineral Specimen" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 3
+    , cdSkills = [#intellect, #intellect, #wild]
+    }
+
+smallRadio :: CardDef
+smallRadio =
+  (storyAsset "08619" "Small Radio" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdSkills = [#intellect, #intellect, #wild]
+    }
+
+spareParts :: CardDef
+spareParts =
+  (storyAsset "08620" "Spare Parts" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdSkills = [#willpower, #willpower, #wild]
     }
 
 professorWilliamDyerProfessorOfGeology :: CardDef

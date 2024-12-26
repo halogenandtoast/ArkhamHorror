@@ -304,6 +304,8 @@ allActs =
       SomeActCard shadowOfThePastV1
     , SomeActCard shadowOfThePastV2
     , SomeActCard shadowOfThePastV3
+    , --- To the Forbidden Peaks [eote]
+      SomeActCard ascendTheMountain
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -408,7 +408,6 @@ takadasCache =
   (event "08737" "Takada's Cache" 0 Neutral)
     { cdSkills = [#wild]
     , cdCardTraits = singleton Supply
-    , cdCriteria = Just $ oneOf [can.draw.cards You, can.gain.resources You]
     , cdFastWindow = Just FastPlayerWindow
     , cdEncounterSet = Just MemorialsOfTheLost
     , cdEncounterSetQuantity = Just 1

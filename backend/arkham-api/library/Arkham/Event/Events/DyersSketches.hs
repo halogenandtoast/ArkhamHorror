@@ -12,6 +12,7 @@ dyersSketches = event DyersSketches Cards.dyersSketches
 
 instance RunMessage DyersSketches where
   runMessage msg e@(DyersSketches attrs) = runQueueT $ case msg of
-    PlayThisEvent _iid (is attrs -> True) -> do
+    PlayThisEvent iid (is attrs -> True) -> do
+      drawCardsIfCan iid attrs 3
       pure e
     _ -> DyersSketches <$> liftRunMessage msg attrs

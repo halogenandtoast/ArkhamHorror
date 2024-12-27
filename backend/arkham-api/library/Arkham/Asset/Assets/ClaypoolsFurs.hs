@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.ClaypoolsFurs (claypoolsFurs) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
+import Arkham.Helpers.Window
 import Arkham.Matcher
 
 newtype ClaypoolsFurs = ClaypoolsFurs AssetAttrs
@@ -19,5 +20,14 @@ instance HasAbilities ClaypoolsFurs where
     ]
 
 instance RunMessage ClaypoolsFurs where
-  runMessage msg (ClaypoolsFurs attrs) = runQueueT $ case msg of
+  runMessage msg a@(ClaypoolsFurs attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> t) _ -> do
+      cancelChaosToken (attrs.ability 1) t
+      pushAll
+        [ ReturnChaosTokens [t]
+        , UnfocusChaosTokens
+        , DrawAnotherChaosToken iid
+        , RerunSkillTest
+        ]
+      pure a
     _ -> ClaypoolsFurs <$> liftRunMessage msg attrs

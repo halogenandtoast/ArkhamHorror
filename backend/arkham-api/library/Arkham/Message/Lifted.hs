@@ -679,7 +679,7 @@ eachInvestigator f = do
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()
 forInvestigator iid msg = push $ ForInvestigator iid msg
 
-selectEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m ()) -> m ()
+selectEach :: (Query a, HasGame m) => a -> (QueryElement a -> m ()) -> m ()
 selectEach matcher f = select matcher >>= traverse_ f
 
 selectForEach :: (Query a, ReverseQueue m) => a -> (QueryElement a -> m b) -> m [b]

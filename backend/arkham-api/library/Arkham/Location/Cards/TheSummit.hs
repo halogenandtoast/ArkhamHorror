@@ -8,7 +8,7 @@ newtype TheSummit = TheSummit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theSummit :: LocationCard TheSummit
-theSummit = location TheSummit Cards.theSummit 3 (PerPlayer 3)
+theSummit = locationWith TheSummit Cards.theSummit 3 (PerPlayer 3) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities TheSummit where
   getAbilities (TheSummit attrs) =

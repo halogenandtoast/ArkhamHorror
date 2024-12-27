@@ -381,6 +381,7 @@ data ModifierType
   | WillCancelHorror Int
   | Semaphore
   | ScenarioModifier Text
+  | ScenarioModifierValue Text Value
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

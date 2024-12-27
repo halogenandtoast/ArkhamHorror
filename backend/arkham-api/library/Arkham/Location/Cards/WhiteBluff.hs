@@ -8,7 +8,7 @@ newtype WhiteBluff = WhiteBluff LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whiteBluff :: LocationCard WhiteBluff
-whiteBluff = location WhiteBluff Cards.whiteBluff 3 (PerPlayer 1)
+whiteBluff = locationWith WhiteBluff Cards.whiteBluff 3 (PerPlayer 1) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities WhiteBluff where
   getAbilities (WhiteBluff attrs) =

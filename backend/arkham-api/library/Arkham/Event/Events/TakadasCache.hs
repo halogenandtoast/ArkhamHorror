@@ -12,6 +12,9 @@ takadasCache = event TakadasCache Cards.takadasCache
 
 instance RunMessage TakadasCache where
   runMessage msg e@(TakadasCache attrs) = runQueueT $ case msg of
-    PlayThisEvent _iid (is attrs -> True) -> do
+    PlayThisEvent iid (is attrs -> True) -> do
+      gainResourcesIfCan iid attrs 3
+      drawCardsIfCan iid attrs 1
+      removeFromGame attrs
       pure e
     _ -> TakadasCache <$> liftRunMessage msg attrs

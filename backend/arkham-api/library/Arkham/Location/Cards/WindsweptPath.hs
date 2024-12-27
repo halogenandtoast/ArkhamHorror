@@ -8,7 +8,7 @@ newtype WindsweptPath = WindsweptPath LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 windsweptPath :: LocationCard WindsweptPath
-windsweptPath = location WindsweptPath Cards.windsweptPath 3 (Static 0)
+windsweptPath = locationWith WindsweptPath Cards.windsweptPath 3 (Static 0) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities WindsweptPath where
   getAbilities (WindsweptPath attrs) =

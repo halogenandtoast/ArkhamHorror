@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
+import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.ChaosBag
@@ -133,12 +134,16 @@ instance RunMessage ToTheForbiddenPeaks where
           . shuffle
           =<< amongGathered (#location <> CardWithTitle "Mountainside")
 
-      for_ (nonEmpty mountainSides) \(level0 :| _) -> do
+      theSummit <- place Locations.theSummit
+
+      for_ (nonEmpty mountainSides) \(level0 :| rest) -> do
         whenHasRecord TheInvestigatorsScoutedTheMountainPass do
           setupModifier ScenarioSource level0 ReduceStartingCluesByHalf
         startAt level0
-
-      place_ Locations.theSummit
+        zipWithM_
+          (\a b -> push $ Msg.PlacedLocationDirection a LeftOf b)
+          (level0 : rest)
+          (rest <> [theSummit])
 
       addChaosToken ElderThing
       setAside [Enemies.terrorOfTheStarsGuardianOfForbiddenPeaks]

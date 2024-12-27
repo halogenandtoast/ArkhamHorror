@@ -8,7 +8,7 @@ newtype RockyLedge = RockyLedge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rockyLedge :: LocationCard RockyLedge
-rockyLedge = location RockyLedge Cards.rockyLedge 4 (PerPlayer 1)
+rockyLedge = locationWith RockyLedge Cards.rockyLedge 4 (PerPlayer 1) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities RockyLedge where
   getAbilities (RockyLedge attrs) =

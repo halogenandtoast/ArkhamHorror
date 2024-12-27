@@ -8,7 +8,7 @@ newtype SteepIncline = SteepIncline LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 steepIncline :: LocationCard SteepIncline
-steepIncline = location SteepIncline Cards.steepIncline 2 (PerPlayer 2)
+steepIncline = locationWith SteepIncline Cards.steepIncline 2 (PerPlayer 2) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities SteepIncline where
   getAbilities (SteepIncline attrs) =

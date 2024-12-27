@@ -8,7 +8,13 @@ newtype SnowCoveredCrag = SnowCoveredCrag LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 snowCoveredCrag :: LocationCard SnowCoveredCrag
-snowCoveredCrag = location SnowCoveredCrag Cards.snowCoveredCrag 2 (PerPlayer 2)
+snowCoveredCrag =
+  locationWith
+    SnowCoveredCrag
+    Cards.snowCoveredCrag
+    2
+    (PerPlayer 2)
+    (connectsToL .~ adjacentLocations)
 
 instance HasAbilities SnowCoveredCrag where
   getAbilities (SnowCoveredCrag attrs) =

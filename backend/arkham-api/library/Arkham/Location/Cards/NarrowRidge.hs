@@ -8,7 +8,7 @@ newtype NarrowRidge = NarrowRidge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narrowRidge :: LocationCard NarrowRidge
-narrowRidge = location NarrowRidge Cards.narrowRidge 2 (PerPlayer 2)
+narrowRidge = locationWith NarrowRidge Cards.narrowRidge 2 (PerPlayer 2) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities NarrowRidge where
   getAbilities (NarrowRidge attrs) =

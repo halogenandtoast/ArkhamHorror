@@ -8,7 +8,7 @@ newtype DeepDrifts = DeepDrifts LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepDrifts :: LocationCard DeepDrifts
-deepDrifts = location DeepDrifts Cards.deepDrifts 1 (PerPlayer 3)
+deepDrifts = locationWith DeepDrifts Cards.deepDrifts 1 (PerPlayer 3) (connectsToL .~ adjacentLocations)
 
 instance HasAbilities DeepDrifts where
   getAbilities (DeepDrifts attrs) =

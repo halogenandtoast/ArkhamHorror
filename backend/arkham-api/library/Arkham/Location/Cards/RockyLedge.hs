@@ -5,6 +5,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
 
 newtype RockyLedge = RockyLedge LocationAttrs

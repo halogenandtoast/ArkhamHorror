@@ -16,7 +16,7 @@ import Arkham.Source
 
 resignAction :: (HasCardCode a, Sourceable a) => a -> Ability
 resignAction a =
-  mkAbility a 99 $ ActionAbility [Action.Resign] (ActionCost 1)
+  restricted a 99 Here $ ActionAbility [Action.Resign] (ActionCost 1)
 
 drawCardUnderneathAction :: (HasCardCode a, Sourceable a) => a -> Ability
 drawCardUnderneathAction a =

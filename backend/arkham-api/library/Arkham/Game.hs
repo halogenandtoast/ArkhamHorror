@@ -1465,6 +1465,14 @@ getLocationsMatching lmatcher = do
       setAsideLocations <- getSetAsideCardsMatching #location
       let symbols = concatMap (cdLocationConnections . toCardDef) setAsideLocations
       pure $ filter ((`elem` symbols) . toLocationSymbol) ls
+    HighestRow matcher' -> do
+      ls' <- go ls matcher'
+      if null ls'
+        then pure []
+        else do
+          ls'' <- mapMaybeM (\l -> ((l,) . positionRow) <$$> field LocationPosition l.id) ls'
+          let highestRow = getMax0 $ foldMap (Max0 . snd) ls''
+          pure $ map fst $ filter ((== highestRow) . snd) ls''
     HighestShroud matcher' -> do
       ls' <- go ls matcher'
       if null ls'

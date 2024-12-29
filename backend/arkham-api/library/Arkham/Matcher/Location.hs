@@ -127,6 +127,7 @@ data LocationMatcher
   | ClosestUnbarricadedPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
+  | HighestRow LocationMatcher
   | FloodedLocation
   | FullyFloodedLocation
   | PartiallyFloodedLocation

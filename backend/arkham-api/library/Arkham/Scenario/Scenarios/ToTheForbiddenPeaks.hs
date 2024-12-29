@@ -9,11 +9,14 @@ import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Field
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Text
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -135,6 +138,9 @@ instance RunMessage ToTheForbiddenPeaks where
           =<< amongGathered (#location <> CardWithTitle "Mountainside")
 
       theSummit <- place Locations.theSummit
+
+      for_ (withIndex (mountainSides <> [theSummit])) \(m, loc) ->
+        push $ UpdateLocation loc $ Update LocationPosition (Just $ Pos 0 m)
 
       for_ (nonEmpty mountainSides) \(level0 :| rest) -> do
         whenHasRecord TheInvestigatorsScoutedTheMountainPass do

@@ -59,7 +59,6 @@ import Arkham.Matcher (
   investigatorAt,
   noModifier,
  )
-import Arkham.Matcher.Base
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
@@ -555,9 +554,6 @@ enemyAtLocation eid attrs = elem eid <$> select (enemyAt $ toId attrs)
 
 locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
-
-instance Be LocationAttrs LocationMatcher where
-  be = LocationWithId . toId
 
 veiled1 :: LocationAttrs -> Ability -> [Ability]
 veiled1 attrs ability = veiled attrs [ability]

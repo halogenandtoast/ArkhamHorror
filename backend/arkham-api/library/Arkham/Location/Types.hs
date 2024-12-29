@@ -29,7 +29,8 @@ import Arkham.Location.Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.LocationSymbol
-import Arkham.Matcher (LocationMatcher (..))
+import Arkham.Matcher.Base (Be (..))
+import Arkham.Matcher.Location (LocationMatcher (..))
 import Arkham.Message
 import Arkham.Name
 import Arkham.SkillType
@@ -428,6 +429,9 @@ instance IsCard LocationAttrs where
   toCard = defaultToCard
   toCardId = locationCardId
   toCardOwner = const Nothing
+
+instance Be LocationAttrs LocationMatcher where
+  be = LocationWithId . toId
 
 symbolLabel
   :: (Entity a, EntityAttrs a ~ LocationAttrs) => CardBuilder LocationId a -> CardBuilder LocationId a

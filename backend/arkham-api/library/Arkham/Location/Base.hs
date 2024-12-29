@@ -101,6 +101,9 @@ instance HasField "global" LocationAttrs (Aeson.Key -> Maybe Value) where
 instance HasField "position" LocationAttrs (Maybe Pos) where
   getField = locationPosition
 
+instance HasField "row" LocationAttrs (Maybe Int) where
+  getField l = positionRow <$> locationPosition l
+
 instance HasField "revealed" LocationAttrs Bool where
   getField = locationRevealed
 

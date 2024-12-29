@@ -145,7 +145,7 @@ const attachedEnemies = computed(() => {
   const enemyIds = props.location.enemies;
 
   return enemyIds
-    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation') 
+    .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
 })
 
 const treacheries = computed(() => {
@@ -427,6 +427,7 @@ function onDrop(event: DragEvent) {
   font-size: 2.6em;
   color: rgba(0, 0, 0, 0.8);
   pointer-events: none;
+  z-index: 1;
 }
 
 .card-container {

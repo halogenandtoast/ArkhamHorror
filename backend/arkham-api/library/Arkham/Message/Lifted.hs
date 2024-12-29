@@ -58,7 +58,7 @@ import Arkham.Investigate qualified as Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Grid
-import Arkham.Location.Types (Field (..))
+import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher
 import Arkham.Message hiding (story)
 import Arkham.Message.Lifted.Queue as X
@@ -2234,3 +2234,19 @@ advanceCurrentAct :: (ReverseQueue m, Sourceable source) => source -> m ()
 advanceCurrentAct source = do
   actId <- getCurrentAct
   push $ AdvanceAct actId (toSource source) #other
+
+updateLocation
+  :: ( ReverseQueue m
+     , Eq a
+     , Show a
+     , Typeable a
+     , ToJSON a
+     , FromJSON a
+     , Show (Field Location a)
+     , ToJSON (Field Location a)
+     )
+  => LocationId
+  -> Field Location a
+  -> a
+  -> m ()
+updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a

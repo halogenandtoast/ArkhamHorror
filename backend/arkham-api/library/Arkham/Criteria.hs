@@ -236,6 +236,7 @@ data Criterion
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher
   | HasCalculation GameCalculation ValueMatcher
+  | HasRemainingFrostTokens
   | HasRemainingBlessTokens
   | HasMoreBlessThanCurseTokens
   | HasRemainingCurseTokens

@@ -1243,6 +1243,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher
+  Criteria.HasRemainingFrostTokens -> (> 0) <$> getRemainingFrostTokens
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
   Criteria.HasNRemainingCurseTokens valueMatcher -> (`gameValueMatches` valueMatcher) =<< getRemainingCurseTokens

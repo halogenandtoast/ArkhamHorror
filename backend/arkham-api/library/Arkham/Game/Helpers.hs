@@ -3282,6 +3282,7 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
     Matcher.ClosestUnbarricadedPathLocation _ _ -> locationId <=~> matcher
     Matcher.LocationWithoutClues -> locationId <=~> matcher
+    Matcher.HighestRow _ -> locationId <=~> matcher
     Matcher.HighestShroud _ -> locationId <=~> matcher
     Matcher.LocationWithDamage {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFrom {} -> locationId <=~> matcher

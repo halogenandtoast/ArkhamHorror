@@ -1470,7 +1470,7 @@ getLocationsMatching lmatcher = do
       if null ls'
         then pure []
         else do
-          ls'' <- mapMaybeM (\l -> ((l,) . positionRow) <$$> field LocationPosition l.id) ls'
+          ls'' <- mapMaybeM (\l -> ((l,) . positionRow) <$$> field LocationPosition l) ls'
           let highestRow = getMax0 $ foldMap (Max0 . snd) ls''
           filterM (fieldMap LocationPosition (maybe False (\p -> p.row > highestRow)) . toId) ls
     HighestRow matcher' -> do

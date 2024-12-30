@@ -28,7 +28,8 @@ forbiddenPeaks = agenda (1, A) ForbiddenPeaks Cards.forbiddenPeaks (Static 6)
 
 instance HasAbilities ForbiddenPeaks where
   getAbilities (ForbiddenPeaks a) =
-    [mkAbility a 1 $ forced $ Moves #after You AnySource Anywhere Anywhere]
+    [ mkAbility a 1 $ forced $ Moves #after (You <> InvestigatorWithAnyClues) AnySource Anywhere Anywhere
+    ]
 
 instance RunMessage ForbiddenPeaks where
   runMessage msg a@(ForbiddenPeaks attrs) = runQueueT $ case msg of

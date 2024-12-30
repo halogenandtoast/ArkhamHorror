@@ -14,7 +14,8 @@ terrorDescends = agenda (2, A) TerrorDescends Cards.terrorDescends (Static 8)
 
 instance HasAbilities TerrorDescends where
   getAbilities (TerrorDescends a) =
-    [mkAbility a 1 $ forced $ Moves #after You AnySource Anywhere Anywhere]
+    [ mkAbility a 1 $ forced $ Moves #after (You <> InvestigatorWithAnyClues) AnySource Anywhere Anywhere
+    ]
 
 instance RunMessage TerrorDescends where
   runMessage msg a@(TerrorDescends attrs) = runQueueT $ case msg of

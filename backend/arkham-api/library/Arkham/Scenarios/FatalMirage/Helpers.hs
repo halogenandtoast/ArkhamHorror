@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Scenarios.FatalMirage.Helpers where
 
 import Arkham.Ability

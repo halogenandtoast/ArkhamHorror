@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Agenda.Cards.ForbiddenPeaks (forbiddenPeaks) where
 
 import Arkham.Ability

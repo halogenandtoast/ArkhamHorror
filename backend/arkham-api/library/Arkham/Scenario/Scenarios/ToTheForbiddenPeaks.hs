@@ -11,6 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Text
@@ -20,10 +21,15 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Placement qualified as P
 import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Trait (Trait (Expedition))
+import Arkham.Trait qualified as Trait
 
 newtype ToTheForbiddenPeaks = ToTheForbiddenPeaks ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -49,10 +55,16 @@ toTheForbiddenPeaks difficulty =
 
 instance HasChaosTokenValue ToTheForbiddenPeaks where
   getChaosTokenValue iid tokenFace (ToTheForbiddenPeaks attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      row <-
+        fromMaybe 0 <$> runMaybeT do
+          loc <- MaybeT $ getMaybeLocation iid
+          pos <- MaybeT $ field LocationPosition loc
+          pure $ positionRow pos
+      pure $ toChaosTokenValue attrs Skull row (row + 2)
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 1)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage ToTheForbiddenPeaks where
@@ -160,4 +172,36 @@ instance RunMessage ToTheForbiddenPeaks where
         _ -> pure ()
 
       addTekeliliDeck
+    ResolveChaosToken _ Cultist iid -> do
+      void $ runMaybeT do
+        guard (isHardExpert attrs)
+        loc <- MaybeT $ getMaybeLocation iid
+        Pos _ y <- MaybeT $ field LocationPosition loc
+        loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
+        lift $ moveTo (toSource Cultist) iid loc'
+
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> void $ runMaybeT do
+          guard (isHardExpert attrs)
+          loc <- MaybeT $ getMaybeLocation iid
+          Pos _ y <- MaybeT $ field LocationPosition loc
+          loc' <- MaybeT $ selectOne (LocationInRow (y - 1))
+          lift $ moveTo (toSource Cultist) iid loc'
+        Tablet -> withLocationOf iid \loc -> do
+          assets <- select $ assetControlledBy iid <> withTrait Expedition
+          chooseTargetM iid assets (`P.place` loc)
+        ElderThing -> withLocationOf iid \loc -> do
+          elderThings <- select $ NearestEnemyTo iid $ withTrait Trait.ElderThing
+          chooseTargetM iid elderThings \elderThing -> do
+            moveTowardsMatching ElderThing elderThing (LocationWithId loc)
+            forTarget elderThing $ push msg
+        _ -> pure ()
+      pure s
+    ForTarget (EnemyTarget eid) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      case token.face of
+        ElderThing -> whenM (eid <=~> enemyEngagedWith iid) $ initiateEnemyAttack eid ElderThing iid
+        _ -> pure ()
+      pure s
     _ -> ToTheForbiddenPeaks <$> liftRunMessage msg attrs

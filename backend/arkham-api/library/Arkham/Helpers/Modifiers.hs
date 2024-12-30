@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Cost
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
@@ -778,3 +779,6 @@ inThreatAreaGets
 inThreatAreaGets a mods = case a.placement of
   InThreatArea iid -> modified_ a iid mods
   _ -> pure mempty
+
+pattern CannotMoveTo :: LocationMatcher -> ModifierType
+pattern CannotMoveTo lm = AdditionalCostToEnterMatching lm UnpayableCost

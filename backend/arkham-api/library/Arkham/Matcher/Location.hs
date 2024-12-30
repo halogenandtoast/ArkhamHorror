@@ -128,6 +128,7 @@ data LocationMatcher
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
   | HighestRow LocationMatcher
+  | LocationHigherThan LocationMatcher
   | FloodedLocation
   | FullyFloodedLocation
   | PartiallyFloodedLocation

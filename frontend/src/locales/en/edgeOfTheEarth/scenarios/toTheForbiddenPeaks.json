@@ -1,0 +1,8 @@
+{
+  "interlude": {
+    "tragedyStrikes": {
+      "title": "Scenario Interlude: Tragedy Strikes",
+      "body": "<div class='interlude'><header><h1>Scenario Interlude: Tragedy Strikes</h1></header><p class='basic'>Find each surviving expedition member (including those currently under an investigator’s control) who do not have a checkmark drawn next to their name in the “Expedition Team” section of the Campaign Log, and choose one of them at random. If there are no such expedition members, skip the rest of this interlude.</p><p>It all happens in the blink of an eye. You have only enough time to scream your companion’s name before they are seized. Its many, shifting shapes coil around their body. They struggle to escape, but it is hopeless.</p><div class='nested blue {isCookie}'><div><p>_If the victim is James “Cookie” Fredericks_:</p><p>The hardened veteran spits out a curse and manages to slip his right arm out of the thing’s grasp. It’s enough for him to take a single shot with his colt. The gunshot thunders across the mountain and rips through the thing’s grotesque, formless mass.</p><p class='basic'>Deal 2 damage to The Terror of the Stars.</p></div></div><p>Then, without a moment of consideration, it shoves its tendrils into its victim’s body and yanks them apart like a piece of uncooked meat. A spray of blood stains the snow crimson. It drops what remains of your companion unceremoniously onto the ground and turns its attention to you.</p><p class='basic'>In the “Expedition Team” section of the Campaign Log, cross off the chosen character’s name. If they were in play, they are defeated and removed from the game.</p></div>"
+    }
+  }
+}

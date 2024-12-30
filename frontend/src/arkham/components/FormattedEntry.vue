@@ -65,6 +65,13 @@ export default defineComponent({
   position: relative;
   z-index: 0;
 
+  &.nested {
+    border: 0;
+    &::after {
+      filter: grayscale(1);
+    }
+  }
+
   &::after {
     border-radius: 55px;
     box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
@@ -107,7 +114,7 @@ p, :deep(p) {
   font-family: auto !important;
 }
 
-:deep(.checkpoint) {
+:deep(.checkpoint), :deep(.interlude) {
   ul {
     margin-inline: 20px;
   }
@@ -184,9 +191,19 @@ ul, :deep(ul) {
   }
 }
 
-.checkpoint, :deep(.checkpoint) {
+.checkpoint, :deep(.checkpoint), .interlude, :deep(.interlude) {
   li::marker {
     color: #19214F;
+  }
+
+  h1 {
+    color: #2F3863;
+    text-align: center;
+    font-size: 1.2em;
+    border-bottom: 1px solid #2F3863;
+    &::after {
+      border-bottom: 1px solid #2F3863;
+    }
   }
 }
 

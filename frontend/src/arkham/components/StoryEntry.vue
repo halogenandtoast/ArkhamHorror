@@ -106,7 +106,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       }
     }
   }
-  &:has(.checkpoint) {
+  &:has(.checkpoint), &:has(.interlude) {
     background-color: #AFA9A9;
     box-shadow: unset;
     overflow: hidden;

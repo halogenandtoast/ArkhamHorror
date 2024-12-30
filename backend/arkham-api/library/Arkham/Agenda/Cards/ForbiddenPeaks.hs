@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Agenda.Cards.ForbiddenPeaks (forbiddenPeaks) where
 
 import Arkham.Ability
@@ -6,12 +8,16 @@ import Arkham.Agenda.Import.Lifted hiding (terror)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.DamageEffect (nonAttack)
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Message (pushWhen)
 import Arkham.Helpers.Text
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Matcher hiding (AssetDefeated)
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Trait (Trait (Expedition))
 
 newtype ForbiddenPeaks = ForbiddenPeaks AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -27,11 +33,8 @@ instance HasAbilities ForbiddenPeaks where
 instance RunMessage ForbiddenPeaks where
   runMessage msg a@(ForbiddenPeaks attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      -- Put the set-aside Terror of the Stars enemy into play at the highest level location with one or more investigators. Each investigator at that location loses control of all Expedition assets and places them at their location.
-
-      -- Read Scenario Interlude: Tragedy Strikes in the Campaign Guide.
       selectForMaybeM (HighestRow $ LocationWithInvestigator Anyone) \loc -> do
-        selectEach (AssetControlledBy (investigatorAt loc)) (`place` loc)
+        selectEach (AssetControlledBy (investigatorAt loc) <> withTrait Expedition) (`place` loc)
         terror <- createSetAsideEnemy Enemies.terrorOfTheStarsGuardianOfForbiddenPeaks loc
 
         partners <- getPartnersWithStatus (== Safe)
@@ -42,14 +45,14 @@ instance RunMessage ForbiddenPeaks where
           scenarioI18n
             $ scope "interlude"
             $ story
-            $ FlavorText
-              Nothing
-              [ i18nEntry "tragedyStrikes.part1"
-                  <> validateEntry isCookie "tragedyStrikes.cookie"
-                  <> i18nEntry "tragedyStrikes.part2"
-              ]
+            $ withVars ["isCookie" .= String (if isCookie then "valid" else "invalid")]
+            $ i18nWithTitle "tragedyStrikes"
           setPartnerStatus x Eliminated
-          when isCookie $ nonAttackEnemyDamage attrs 2 terror
+          selectForMaybeM
+            (assetIs x.cardCode)
+            (push . AssetDefeated (toSource attrs))
+
+          pushWhen isCookie $ Msg.EnemyDamage terror (nonAttack (toSource attrs) 2)
 
       advanceAgendaDeck attrs
       pure a

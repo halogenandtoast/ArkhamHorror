@@ -44,14 +44,16 @@ edgeOfTheEarth difficulty =
 instance IsCampaign EdgeOfTheEarth where
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just IceAndDeathPart1
-    IceAndDeathPart1 -> Just (CheckpointStep 1)
-    IceAndDeathPart2 -> Just (CheckpointStep 2)
-    IceAndDeathPart3 -> Just (InterludeStep 1 Nothing)
+    IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)
+    IceAndDeathPart2 -> Just (UpgradeDeckStep $ CheckpointStep 2)
+    IceAndDeathPart3 -> Just (UpgradeDeckStep $ InterludeStep 1 Nothing)
     FatalMirage ->
       if
-        | CityOfTheElderThings `elem` campaignCompletedSteps (toAttrs a) -> Just TheHeartOfMadness
-        | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) -> Just CityOfTheElderThings
-        | otherwise -> Just ToTheForbiddenPeaks
+        | CityOfTheElderThings `elem` campaignCompletedSteps (toAttrs a) ->
+            Just (UpgradeDeckStep TheHeartOfMadness)
+        | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) ->
+            Just (UpgradeDeckStep CityOfTheElderThings)
+        | otherwise -> Just (UpgradeDeckStep ToTheForbiddenPeaks)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing

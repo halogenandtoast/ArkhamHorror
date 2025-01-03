@@ -784,7 +784,7 @@ selectOneToHandleWith
   -> matcher
   -> m ()
 selectOneToHandleWith iid source msg matcher =
-  select matcher >>= \results -> if notNull results then chooseOneToHandleWith iid source results msg else pure ()
+  select matcher >>= \results -> unless (null results) (chooseOneToHandleWith iid source results msg)
 
 chooseOneToHandle
   :: (HasCallStack, ReverseQueue m, Targetable target, Sourceable source)
@@ -816,7 +816,7 @@ selectOrRunOneToHandle
   -> matcher
   -> m ()
 selectOrRunOneToHandle iid source matcher =
-  select matcher >>= \results -> if notNull results then chooseOrRunOneToHandle iid source results else pure ()
+  select matcher >>= \results -> unless (null results) (chooseOrRunOneToHandle iid source results)
 
 chooseOrRunOneToHandle
   :: (ReverseQueue m, Targetable target, Sourceable source)
@@ -1388,6 +1388,7 @@ checkWhen = Msg.pushM . Msg.checkWhen
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 
+-- Use @SearchFound@ with this
 search
   :: (Targetable target, Sourceable source, ReverseQueue m)
   => InvestigatorId

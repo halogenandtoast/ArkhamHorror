@@ -49,6 +49,22 @@ getRecordSet :: HasGame m => CampaignLogKey -> m [SomeRecorded]
 getRecordSet k =
   findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
 
+getSomeRecordSet :: forall a m. (HasGame m, Recordable a) => CampaignLogKey -> m [a]
+getSomeRecordSet k = do
+  srs <- findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
+  pure $ flip mapMaybe srs \case
+    SomeRecorded _ (Recorded r :: Recorded r) -> case eqT @a @r of
+      Just Refl -> Just r
+      Nothing -> Nothing
+    _ -> Nothing
+
+getSomeRecordSetJSON :: forall a m. (HasGame m, FromJSON a) => CampaignLogKey -> m [a]
+getSomeRecordSetJSON k = do
+  srs <- findWithDefault [] k . campaignLogRecordedSets <$> getCampaignLog
+  pure $ flip mapMaybe srs \case
+    SomeRecorded RecordableGeneric (Recorded r :: Recorded r) -> maybeResult r
+    _ -> Nothing
+
 inRecordSet :: (Recordable a, HasGame m) => a -> CampaignLogKey -> m Bool
 inRecordSet v k = do
   recordSet <- getRecordSet k

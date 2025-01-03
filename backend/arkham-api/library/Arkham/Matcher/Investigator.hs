@@ -171,6 +171,10 @@ instance Semigroup InvestigatorMatcher where
 instance Monoid InvestigatorMatcher where
   mempty = Anyone
 
+investigator_ :: InvestigatorMatcher -> InvestigatorMatcher
+investigator_ = id
+{-# INLINE investigator_ #-}
+
 $(deriveToJSON defaultOptions ''InvestigatorMatcher)
 
 instance FromJSON InvestigatorMatcher where

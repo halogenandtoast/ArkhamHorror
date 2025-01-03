@@ -892,6 +892,14 @@ allAssets =
     , SomeAssetCard drAmyKenslerProfessorOfBiologyResolute
     , SomeAssetCard roaldEllsworthIntrepidExplorerResolute
     , SomeAssetCard takadaHirokoAeroplaneMechanicResolute
+    , --- To The Forbidden Peaks
+      SomeAssetCard greenSoapstoneJinxedIdol
+    , SomeAssetCard woodenSledge
+    , SomeAssetCard dynamite
+    , SomeAssetCard miasmicCrystalStrangeEvidence
+    , SomeAssetCard mineralSpecimen
+    , SomeAssetCard smallRadio
+    , SomeAssetCard spareParts
     , --- Expedition Team [eote]
       SomeAssetCard professorWilliamDyerProfessorOfGeology
     , SomeAssetCard danforthBrilliantStudent

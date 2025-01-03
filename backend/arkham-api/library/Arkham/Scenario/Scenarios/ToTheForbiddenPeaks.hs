@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.ToTheForbiddenPeaks (toTheForbiddenPeaks) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
@@ -12,7 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Log (whenHasRecord)
+import Arkham.Helpers.Log (getSomeRecordSetJSON, whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Text
 import Arkham.Location.Cards qualified as Locations
@@ -162,6 +163,14 @@ instance RunMessage ToTheForbiddenPeaks where
           (\a b -> push $ Msg.PlacedLocationDirection a LeftOf b)
           (level0 : rest)
           (rest <> [theSummit])
+        getSomeRecordSetJSON SuppliesRecovered >>= traverse_ \case
+          SpareParts -> assetAt_ Assets.spareParts level0
+          GreenSoapstone -> assetAt_ Assets.greenSoapstoneJinxedIdol level0
+          SmallRadio -> assetAt_ Assets.smallRadio level0
+          MineralSpecimen -> assetAt_ Assets.mineralSpecimen level0
+          Dynamite -> assetAt_ Assets.dynamite level0
+          WoodenSledge -> assetAt_ Assets.woodenSledge level0
+          MiasmicCrystal -> assetAt_ Assets.miasmicCrystalStrangeEvidence level0
 
       addChaosToken ElderThing
       setAside [Enemies.terrorOfTheStarsGuardianOfForbiddenPeaks]

@@ -21,9 +21,10 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Keyword qualified as Keyword
-import Arkham.Matcher (replaceThisCard)
+import Arkham.Matcher (locationWithAsset, replaceThisCard)
 import Arkham.Matcher.Asset (AssetMatcher (AssetWithId))
 import Arkham.Matcher.Base (Be (..))
+import Arkham.Matcher.Location (LocationMatcher)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement
@@ -339,8 +340,14 @@ instance HasField "horror" AssetAttrs Int where
 instance HasField "doom" AssetAttrs Int where
   getField = assetDoom
 
+instance HasField "location" AssetAttrs LocationMatcher where
+  getField = locationWithAsset
+
 instance HasField "controller" AssetAttrs (Maybe InvestigatorId) where
   getField = assetController
+
+instance HasField "controlled" AssetAttrs Bool where
+  getField = isJust . assetController
 
 instance HasField "owner" AssetAttrs (Maybe InvestigatorId) where
   getField = assetOwner

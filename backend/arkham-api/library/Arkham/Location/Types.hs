@@ -10,6 +10,7 @@ import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -100,6 +101,7 @@ data instance Field Location :: Type -> Type where
   LocationPosition :: Field Location (Maybe Pos)
   LocationCostToEnterUnrevealed :: Field Location Cost
   LocationKeys :: Field Location (Set ArkhamKey)
+  LocationInvestigateDifficulty :: Field Location GameCalculation
 
 deriving stock instance Show (Field Location typ)
 deriving stock instance Ord (Field Location typ)
@@ -142,6 +144,7 @@ fieldLens = \case
   LocationPrintedSymbol -> virtual
   LocationVengeance -> virtual
   LocationVictory -> virtual
+  LocationInvestigateDifficulty -> virtual
  where
   virtual = error "virtual attribute can not be set directly"
 
@@ -201,6 +204,7 @@ instance FromJSON (SomeField Location) where
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance
     "LocationVictory" -> pure $ SomeField LocationVictory
+    "LocationInvestigateDifficulty" -> pure $ SomeField LocationInvestigateDifficulty
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     _ -> error "no such field"

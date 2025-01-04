@@ -215,6 +215,7 @@ data ModifierType
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
   | AddChaosTokenValue ChaosTokenValue
+  | CancelAnyChaosToken ChaosTokenMatcher
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady

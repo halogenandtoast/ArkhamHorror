@@ -19,8 +19,7 @@ woodenSledge = asset WoodenSledge Cards.woodenSledge
 
 instance HasModifiersFor WoodenSledge where
   getModifiersFor (WoodenSledge a) =
-    modifySelectWhen a a.controlled (InvestigatorAt a.location)
-      $ map AsIfInHand a.cardsUnderneath
+    modifySelectWhen a a.controlled (InvestigatorAt a.location) $ map AsIfInHand a.cardsUnderneath
 
 instance HasAbilities WoodenSledge where
   getAbilities (WoodenSledge a) =
@@ -45,4 +44,9 @@ instance RunMessage WoodenSledge where
           targets cards (placeUnderneath attrs . pure)
         push unfocus
       pure a
+    InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
+      let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
+      addToHand iid [card]
+      push msg
+      pure $ WoodenSledge $ attrs & cardsUnderneathL .~ remaining
     _ -> WoodenSledge <$> liftRunMessage msg attrs

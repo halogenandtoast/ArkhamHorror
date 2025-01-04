@@ -49,7 +49,7 @@ instance RunMessage Backpack where
       push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> do
-      let hadCards = notNull $ attrs.cardsUnderneath
+      let hadCards = notNull attrs.cardsUnderneath
       result <- liftRunMessage msg attrs
       when (hadCards && null result.cardsUnderneath) $ toDiscard attrs attrs
       pure $ Backpack result

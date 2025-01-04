@@ -63,7 +63,7 @@ import Arkham.GameT
 import Arkham.GameValue (GameValue (Static))
 import Arkham.Git (gitHash)
 import Arkham.Helpers
-import Arkham.Helpers.Calculation (calculate)
+import Arkham.Helpers.Calculation (GameCalculation (LocationMaybeFieldCalculation), calculate)
 import Arkham.Helpers.Card (extendedCardMatch, getHasVictoryPoints, iconsForCard)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
@@ -3263,6 +3263,7 @@ instance Projection Location where
           then Just <$> getModifiedShroudValueFor attrs
           else pure Nothing
       LocationJustShroud -> getModifiedShroudValueFor attrs
+      LocationInvestigateDifficulty -> pure $ LocationMaybeFieldCalculation l.id LocationShroud
       LocationBrazier -> pure locationBrazier
       LocationFloodLevel -> pure locationFloodLevel
       LocationBreaches -> pure locationBreaches

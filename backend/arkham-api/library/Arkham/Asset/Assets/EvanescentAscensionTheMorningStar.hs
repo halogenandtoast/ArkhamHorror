@@ -52,7 +52,8 @@ instance RunMessage EvanescentAscensionTheMorningStar where
             $ ChaosToken
               { chaosTokenId = tokenId
               , chaosTokenFace = ElderSign
-              , chaosTokenRevealedBy = (Just iid')
+              , chaosTokenRevealedBy = Just iid'
+              , chaosTokenCancelled = False
               }
           push RerunSkillTest
       pure a

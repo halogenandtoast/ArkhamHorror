@@ -3711,25 +3711,27 @@ instance Query TargetMatcher where
     filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
-  select (ChaosTokenRevealedBy iMatcher) = do
+  select (ChaosTokenRevealedBy iMatcher) =
     getSkillTest >>= \case
       Nothing -> pure []
       Just st -> do
         iids <- select iMatcher
         pure $ filter (\t -> any (`elem` t.revealedBy) iids) st.revealedChaosTokens
   select matcher = do
-    tokenPool <- if includeTokenPool matcher then getTokenPool else pure []
-    tokens <-
-      if includeSealed matcher
-        then getAllChaosTokens
-        else if isInfestation then getInfestationTokens else getBagChaosTokens
+    tokenPool :: [ChaosToken] <- getTokenPool `given` includeTokenPool matcher
+    tokens :: [ChaosToken] <-
+      if
+        | inTokenPool matcher -> pure []
+        | includeSealed matcher -> getAllChaosTokens
+        | isInfestation -> getInfestationTokens
+        | otherwise -> getBagChaosTokens
     case matcher of
       ChaosTokenMatchesOrElse matcher' orElseMatch -> do
-        results <- filterM (go matcher') ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+        results <- filterM (go matcher') (tokens <> tokenPool)
         if null results
-          then filterM (go orElseMatch) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+          then filterM (go orElseMatch) (tokens <> tokenPool)
           else pure results
-      _ -> filterM (go matcher) ((if inTokenPool matcher then [] else tokens) <> tokenPool)
+      _ -> filterM (go matcher) (tokens <> tokenPool)
    where
     includeSealed = \case
       IncludeSealed _ -> True
@@ -3788,30 +3790,33 @@ instance Query ChaosTokenMatcher where
         sealedTokens <- selectAgg id AssetSealedChaosTokens assetMatcher
         isMatch' <- go chaosTokenMatcher t
         pure $ isMatch' && t `elem` sealedTokens
-      WouldReduceYourSkillValueToZero -> \t -> do
-        mSkillTest <- getSkillTest
-        case mSkillTest of
-          Nothing -> pure False
-          Just skillTest -> do
+      WouldReduceYourSkillValueToZero -> \t ->
+        fromMaybe False <$> runMaybeT do
+          guard $ not $ chaosTokenCancelled t
+          skillTest <- MaybeT getSkillTest
+          lift do
             iid' <- toId <$> getActiveInvestigator
-            tv <- getChaosTokenValue iid' (chaosTokenFace t) ()
-            case tv of
-              (ChaosTokenValue _ AutoFailModifier) -> pure True
-              (ChaosTokenValue _ other) -> do
+            getChaosTokenValue iid' t.face () >>= \case
+              ChaosTokenValue _ AutoFailModifier -> pure True
+              ChaosTokenValue _ other -> do
                 currentSkillValue <- getCurrentSkillValue skillTest
                 currentChaosTokenModifier <- fromMaybe 0 <$> chaosTokenModifierToInt other
                 pure $ (currentSkillValue + currentChaosTokenModifier) <= 0
       IsSymbol -> pure . isSymbolChaosToken . chaosTokenFace
       WithNegativeModifier -> \t -> do
         iid' <- toId <$> getActiveInvestigator
-        tv <- getChaosTokenValue iid' (chaosTokenFace t) ()
-        pure $ case tv of
+        getChaosTokenValue iid' t.face () <&> \case
           ChaosTokenValue _ (NegativeModifier _) -> True
           ChaosTokenValue _ (DoubleNegativeModifier _) -> True
           _ -> False
       ChaosTokenFaceIs face -> fmap (elem face) . getModifiedChaosTokenFace
       ChaosTokenFaceIsNot face -> fmap not . go (ChaosTokenFaceIs face)
       AnyChaosToken -> pure . const True
+      CancelableChaosToken inner -> \t ->
+        andM
+          [ pure $ not $ chaosTokenCancelled t
+          , go inner t
+          ]
       ChaosTokenMatchesAny ms -> \t -> anyM (`go` t) ms
       ChaosTokenMatches ms -> \t -> allM (`go` t) ms
       IncludeSealed m -> go m
@@ -4159,9 +4164,7 @@ instance HasChaosTokenValue () where
       Nothing -> error "missing scenario"
 
 instance HasChaosTokenValue InvestigatorId where
-  getChaosTokenValue iid token iid' = do
-    investigator' <- getInvestigator iid'
-    getChaosTokenValue iid token investigator'
+  getChaosTokenValue iid token = getChaosTokenValue iid token <=< getInvestigator
 
 instance HasModifiersFor Entities where
   getModifiersFor e = do
@@ -4246,12 +4249,9 @@ markDistancesWithInclusion checkBarriers initialLocation target canInclude extra
         newVisitedSet = insertSet nextLoc visitedSet
         extraConnections = findWithDefault [] nextLoc extraConnectionsMap
 
-      barricaded <-
-        if checkBarriers
-          then do
-            mods <- lift $ getModifiers nextLoc
-            pure $ concat [ls | Barricades ls <- mods]
-          else pure mempty
+      barricaded <- guarded checkBarriers do
+        mods <- lift $ getModifiers nextLoc
+        pure $ concat [ls | Barricades ls <- mods]
 
       adjacentCells <-
         lift

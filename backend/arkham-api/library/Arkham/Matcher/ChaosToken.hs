@@ -33,6 +33,7 @@ data ChaosTokenMatcher
   | ChaosTokenRevealedBy InvestigatorMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   | ChaosTokenIs ChaosTokenId
+  | CancelableChaosToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 chaosTokenIs :: ChaosToken -> ChaosTokenMatcher
@@ -63,6 +64,7 @@ instance ToDisplay ChaosTokenMatcher where
     RevealedChaosTokens inner -> toDisplay inner <> " among revealed"
     ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
     ChaosTokenRevealedBy _ -> "Revealed chaos token"
+    CancelableChaosToken inner -> toDisplay inner
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

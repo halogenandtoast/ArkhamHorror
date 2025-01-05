@@ -100,6 +100,7 @@ getAdditionalChaosTokenValues s = do
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedChaosTokenValue :: HasGame m => SkillTest -> ChaosToken -> m Int
+getModifiedChaosTokenValue _ t | t.cancelled = pure 0
 getModifiedChaosTokenValue s t = do
   tokenModifiers' <- getModifiers (ChaosTokenTarget t)
   modifiedChaosTokenFaces' <- getModifiedChaosTokenFaces [t]
@@ -255,7 +256,7 @@ instance RunMessage SkillTest where
               for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                 t <- getRandom
                 pushAll
-                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid)))
+                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False))
         else
           if SkillTestAutomaticallySucceeds `elem` modifiers''
             then pushAll [PassSkillTest, UnsetActiveCard]
@@ -293,7 +294,7 @@ instance RunMessage SkillTest where
         , RunSkillTest iid
         ]
       pure s
-    RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokenFaces -> do
+    RequestedChaosTokens (SkillTestSource sid) (Just iid) chaosTokens -> do
       skillTestModifiers' <- getModifiers (SkillTestTarget sid)
       windowMsg <- checkWindows [mkWhen Window.FastPlayerWindow]
       popMessageMatching_ $ \case
@@ -306,15 +307,18 @@ instance RunMessage SkillTest where
               s.id
               (Label "Done Comitting" [CheckAllAdditionalCommitCosts, windowMsg, RevealSkillTestChaosTokens iid])
           else RevealSkillTestChaosTokens iid
-      for_ chaosTokenFaces $ \chaosTokenFace -> do
-        let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosTokenFace
-        pushAll
-          [ When revealMsg
-          , CheckWindows [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosTokenFace)]
-          , revealMsg
-          , After revealMsg
-          ]
-      pure $ s & (setAsideChaosTokensL %~ (<> chaosTokenFaces))
+      for_ chaosTokens $ \chaosToken -> do
+        let revealMsg = RevealChaosToken (SkillTestSource sid) iid chaosToken
+        if chaosToken.cancelled
+          then push $ ForTarget (SkillTestTarget sid) revealMsg
+          else
+            pushAll
+              [ When revealMsg
+              , CheckWindows [mkWindow Timing.AtIf (Window.RevealChaosToken iid chaosToken)]
+              , revealMsg
+              , After revealMsg
+              ]
+      pure $ s & (setAsideChaosTokensL %~ (<> chaosTokens))
     RevealChaosToken SkillTestSource {} _iid token -> do
       pure
         $ s

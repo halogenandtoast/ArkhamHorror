@@ -562,7 +562,7 @@ instance RunMessage TheForgottenAge where
             results <- for iids $ \iid -> do
               tokens <- sampleN (if backfired then 1 else 2) chaosBag
               asChaosTokens <-
-                traverse (\face -> ChaosToken <$> getRandom <*> pure face <*> pure (Just iid)) tokens
+                traverse (\face -> createChaosToken face <&> revealedByL ?~ iid) tokens
               let
                 outOfBody =
                   any

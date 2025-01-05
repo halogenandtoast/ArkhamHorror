@@ -11,7 +11,7 @@ data InfestationToken = InfestationToken {infestationTokenId :: ChaosTokenId, in
   deriving anyclass (ToJSON, FromJSON)
 
 asChaosToken :: InfestationToken -> ChaosToken
-asChaosToken (InfestationToken tokenId face) = ChaosToken tokenId face Nothing
+asChaosToken (InfestationToken tokenId face) = ChaosToken tokenId face Nothing False
 
 instance HasField "face" InfestationToken ChaosTokenFace where
   getField = infestationTokenFace

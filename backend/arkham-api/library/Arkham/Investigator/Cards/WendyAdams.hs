@@ -27,7 +27,7 @@ instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
     [ playerLimit PerTestOrAbility
         $ restricted attrs 1 Self
-        $ ReactionAbility (Matcher.RevealChaosToken #when You AnyChaosToken)
+        $ ReactionAbility (Matcher.RevealChaosToken #when You $ CancelableChaosToken AnyChaosToken)
         $ HandDiscardCost 1 #any
     ]
 

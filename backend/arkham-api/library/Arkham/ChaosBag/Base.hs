@@ -61,8 +61,3 @@ revealedChaosTokensL =
 
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m {chaosBagChoice = x}
-
-createChaosToken :: MonadRandom m => ChaosTokenFace -> m ChaosToken
-createChaosToken face = do
-  tokenId <- getRandom
-  pure $ ChaosToken tokenId face Nothing

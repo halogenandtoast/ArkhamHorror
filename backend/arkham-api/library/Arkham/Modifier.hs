@@ -95,6 +95,7 @@ data ModifierType
   | PlayableCardOf InvestigatorId Card
   | AsIfUnderControlOf InvestigatorId
   | PlayUnderControlOf InvestigatorId
+  | Cancelled
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BaseSkill Int

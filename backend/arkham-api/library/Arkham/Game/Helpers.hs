@@ -28,6 +28,7 @@ import Arkham.Action.Additional (AdditionalActionType (BobJenkinsAction), additi
 import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset, AssetAttrs (assetCardCode), Field (..))
 import Arkham.Attack
+import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosToken
@@ -1154,6 +1155,9 @@ passesCriteria iid mcard source' requestor windows' = \case
           InVehicle aid' | aid == aid' -> pure True
           _ -> pure False
       _ -> error $ "Unhandled vehicle source: " <> show source
+  Criteria.PartnerHasStatus cCode status -> do
+    p <- getPartner cCode
+    pure $ p.status == status
   Criteria.NotInEliminatedBearersThreatArea -> do
     case source of
       EnemySource eid -> do
@@ -1492,6 +1496,7 @@ passesCriteria iid mcard source' requestor windows' = \case
             EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
             TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
             ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
+            ProxySource (CardCodeSource _) (AssetSource aid) -> go (AssetSource aid)
             ProxySource inner _ -> go inner
             IndexedSource _ inner -> go inner
             _ -> error $ "missing OnSameLocation check for source: " <> show source

@@ -8,9 +8,11 @@ module Arkham.Criteria (
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
+import Arkham.CampaignLog
 import Arkham.CampaignLogKey (CampaignLogKey)
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
+import Arkham.Card.CardCode
 import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
 import Arkham.Customization
@@ -249,6 +251,7 @@ data Criterion
   | CanLeaveThisVehicle
   | InThisVehicle
   | NotInEliminatedBearersThreatArea
+  | PartnerHasStatus CardCode PartnerStatus
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]

@@ -174,6 +174,9 @@ instance HasField "meta" CardDef (Map Text Value) where
 instance HasField "actions" CardDef [Action] where
   getField = cdActions
 
+instance HasField "name" CardDef Name where
+  getField = cdName
+
 instance HasField "beforeEffect" CardDef Bool where
   getField = cdBeforeEffect
 

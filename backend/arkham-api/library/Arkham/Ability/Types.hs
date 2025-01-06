@@ -58,6 +58,9 @@ instance HasCost Ability where
 instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
   getField = abilityWantsSkillTest
 
+instance HasField "criteria" Ability Criterion where
+  getField = abilityCriteria
+
 instance HasField "kind" Ability AbilityType where
   getField = abilityType
 
@@ -91,6 +94,7 @@ data AbilityMetadata
   | SkillChoiceMetadata SkillType
   | NoAbilityMetadata
   | InvestigateTargets LocationMatcher
+  | CardCodeMetadata CardCode
   deriving stock (Eq, Show, Ord, Data)
 
 instance Eq Ability where

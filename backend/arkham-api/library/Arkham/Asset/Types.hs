@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Asset.Types where
 
@@ -143,6 +144,14 @@ class
   IsAsset a
 
 type AssetCard a = CardBuilder (AssetId, Maybe InvestigatorId) a
+
+instance HasField "name" (AssetCard a) Name where
+  getField ac = case lookupCardDef ac of
+    Nothing -> error "Missing card"
+    Just x -> x.name
+
+instance HasCardCode (AssetCard a) where
+  toCardCode = cbCardCode
 
 data instance Field (DiscardedEntity Asset) :: Type -> Type where
   DiscardedAssetTraits :: Field (DiscardedEntity Asset) (Set Trait)

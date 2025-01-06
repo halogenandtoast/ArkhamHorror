@@ -11,7 +11,7 @@ import Data.Aeson.TH
 import GHC.Records
 
 data PartnerStatus = Eliminated | Resolute | Mia | Safe | Victim | CannotTake | TheEntity
-  deriving stock (Show, Generic, Eq, Data)
+  deriving stock (Show, Generic, Ord, Eq, Data)
 
 data CampaignLogPartner = CampaignLogPartner
   { campaignLogPartnerDamage :: Int

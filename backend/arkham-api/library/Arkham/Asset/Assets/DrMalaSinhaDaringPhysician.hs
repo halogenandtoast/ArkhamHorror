@@ -20,7 +20,7 @@ drMalaSinhaDaringPhysician = allyWith DrMalaSinhaDaringPhysician Cards.drMalaSin
 
 instance HasAbilities DrMalaSinhaDaringPhysician where
   getAbilities (DrMalaSinhaDaringPhysician a) =
-    [ controlled
+    [ storyControlled
         a
         1
         ( oneOf
@@ -42,7 +42,7 @@ instance RunMessage DrMalaSinhaDaringPhysician where
           <> at_ (locationWithInvestigator iid)
 
       chooseOneM iid do
-        targets investigators \x -> healHorror x (attrs.ability 1) 2
-        targets assets \x -> healHorror x (attrs.ability 1) 2
+        targets investigators \x -> healDamage x (attrs.ability 1) 2
+        targets assets \x -> healDamage x (attrs.ability 1) 2
       pure a
     _ -> DrMalaSinhaDaringPhysician <$> liftRunMessage msg attrs

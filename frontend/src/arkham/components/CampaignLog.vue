@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
+import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log';
 import { computed, ref, onMounted, watch } from 'vue'
 import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
@@ -60,7 +60,7 @@ const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() :
 
 const campaignLog = ref(mainLog)
 
-const recorded = computed(() => campaignLog.value.recorded)
+const recorded = computed(() => campaignLog.value.recorded.map(formatKey))
 const recordedSets = computed(() => campaignLog.value.recordedSets)
 const recordedCounts = computed(() => campaignLog.value.recordedCounts)
 const partners = computed(() => campaignLog.value.partners)
@@ -207,7 +207,7 @@ const emptyLog = computed(() => {
         <div v-if="recorded.length > 0" class="box">
           Campaign Notes
           <ul>
-            <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
+            <li v-for="record in recorded" :key="record">{{t(record)}}</li>
             <template v-for="i in game.investigators" :key="i.id">
               <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
             </template>

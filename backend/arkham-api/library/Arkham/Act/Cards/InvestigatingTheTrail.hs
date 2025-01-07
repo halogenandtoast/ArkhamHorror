@@ -1,16 +1,12 @@
 module Arkham.Act.Cards.InvestigatingTheTrail where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Card
-import Arkham.Classes
 import Arkham.EncounterCard
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Matcher
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -18,26 +14,21 @@ newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
 
 investigatingTheTrail :: ActCard InvestigatingTheTrail
 investigatingTheTrail =
-  act
-    (1, A)
-    InvestigatingTheTrail
-    Cards.investigatingTheTrail
-    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+  act (1, A) InvestigatingTheTrail Cards.investigatingTheTrail (groupClueCost (PerPlayer 3))
 
 instance RunMessage InvestigatingTheTrail where
-  runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
+  runMessage msg a@(InvestigatingTheTrail attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       mRitualSite <- getLocationByName "Ritual Site"
-      mainPath <- getJustLocationByName "Main Path"
-      when (isNothing mRitualSite) $ do
-        placeRitualSite <- placeSetAsideLocation_ Locations.ritualSite
-        push placeRitualSite
+      when (isNothing mRitualSite) $ placeSetAsideLocation_ Locations.ritualSite
+
       cultistsWhoGotAway <-
         traverse (genCard . lookupEncounterCardDef)
           =<< getRecordedCardCodes CultistsWhoGotAway
-      createEnemies <- for cultistsWhoGotAway
-        $ \card -> createEnemyAt_ card mainPath Nothing
 
-      pushAll $ createEnemies <> [advanceActDeck attrs]
+      mainPath <- getJustLocationByName "Main Path"
+      for_ cultistsWhoGotAway (`createEnemyAt_` mainPath)
+
+      advanceActDeck attrs
       pure a
-    _ -> InvestigatingTheTrail <$> runMessage msg attrs
+    _ -> InvestigatingTheTrail <$> liftRunMessage msg attrs

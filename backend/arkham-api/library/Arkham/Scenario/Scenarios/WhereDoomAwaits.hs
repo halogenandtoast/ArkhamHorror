@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.WhereDoomAwaits (WhereDoomAwaits (..), whereDoomAwaits) where
+module Arkham.Scenario.Scenarios.WhereDoomAwaits (whereDoomAwaits) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -6,6 +6,7 @@ import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
@@ -62,7 +63,7 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecorded = setFromList [NoBroodEscapedIntoTheWild]
+    { campaignLogRecorded = setFromList [toCampaignLogKey NoBroodEscapedIntoTheWild]
     }
 
 instance HasChaosTokenValue WhereDoomAwaits where

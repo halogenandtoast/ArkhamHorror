@@ -1,12 +1,9 @@
-module Arkham.Scenario.Scenarios.TheEssexCountyExpress (
-  TheEssexCountyExpress (..),
-  theEssexCountyExpress,
-) where
+module Arkham.Scenario.Scenarios.TheEssexCountyExpress ( theEssexCountyExpress,) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.ChaosToken
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set

@@ -16,8 +16,8 @@ import Arkham.Helpers.Campaign as X
 import Arkham.Matcher
 
 getHasRecordOrStandalone
-  :: HasGame m
-  => CampaignLogKey
+  :: (HasGame m, IsCampaignLogKey k)
+  => k
   -> Bool
   -> m Bool
 getHasRecordOrStandalone key def = do

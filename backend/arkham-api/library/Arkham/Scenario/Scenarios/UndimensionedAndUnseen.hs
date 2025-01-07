@@ -8,6 +8,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -70,7 +71,7 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecordedSets = mapFromList [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
+    { campaignLogRecordedSets = mapFromList [(toCampaignLogKey SacrificedToYogSothoth, [recorded @CardCode "02040"])]
     }
 
 instance HasChaosTokenValue UndimensionedAndUnseen where

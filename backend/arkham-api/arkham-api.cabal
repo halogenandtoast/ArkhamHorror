@@ -1345,6 +1345,7 @@ library
       Arkham.Campaigns.NightOfTheZealot.ChaosBag
       Arkham.Campaigns.NightOfTheZealot.Helpers
       Arkham.Campaigns.NightOfTheZealot.Import
+      Arkham.Campaigns.NightOfTheZealot.Key
       Arkham.Campaigns.TheCircleUndone.CampaignSteps
       Arkham.Campaigns.TheCircleUndone.ChaosBag
       Arkham.Campaigns.TheCircleUndone.FlavorText
@@ -1362,6 +1363,7 @@ library
       Arkham.Campaigns.TheDunwichLegacy.FlavorText
       Arkham.Campaigns.TheDunwichLegacy.Helpers
       Arkham.Campaigns.TheDunwichLegacy.Import
+      Arkham.Campaigns.TheDunwichLegacy.Key
       Arkham.Campaigns.TheForgottenAge.CampaignSteps
       Arkham.Campaigns.TheForgottenAge.ChaosBag
       Arkham.Campaigns.TheForgottenAge.FlavorText
@@ -1380,6 +1382,7 @@ library
       Arkham.Campaigns.ThePathToCarcosa.FlavorText
       Arkham.Campaigns.ThePathToCarcosa.Helpers
       Arkham.Campaigns.ThePathToCarcosa.Import
+      Arkham.Campaigns.ThePathToCarcosa.Key
       Arkham.CampaignStep
       Arkham.Capability
       Arkham.Card

@@ -81,6 +81,9 @@ data GameCalculation
   deriving stock (Show, Ord, Eq, Data, Generic)
   deriving FromJSON via MaybeFixed
 
+recordedCount :: IsCampaignLogKey k => k -> GameCalculation
+recordedCount = RecordedCount . toCampaignLogKey
+
 newtype MaybeFixed = MaybeFixed GameCalculation
 
 instance FromJSON MaybeFixed where

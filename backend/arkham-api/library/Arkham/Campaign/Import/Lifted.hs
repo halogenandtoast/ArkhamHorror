@@ -24,3 +24,6 @@ import Arkham.Text as X
 
 nextCampaignStep :: ReverseQueue m => m ()
 nextCampaignStep = push $ NextCampaignStep Nothing
+
+setNextCampaignStep :: ReverseQueue m => CampaignStep -> m ()
+setNextCampaignStep = push . NextCampaignStep . Just

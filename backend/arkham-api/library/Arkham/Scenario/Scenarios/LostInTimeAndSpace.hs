@@ -4,7 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck

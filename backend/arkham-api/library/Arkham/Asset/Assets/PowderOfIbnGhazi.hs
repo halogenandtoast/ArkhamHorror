@@ -1,12 +1,13 @@
-module Arkham.Asset.Assets.PowderOfIbnGhazi (powderOfIbnGhazi, PowderOfIbnGhazi (..)) where
+module Arkham.Asset.Assets.PowderOfIbnGhazi (powderOfIbnGhazi) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.CampaignLogKey
-import Arkham.Exception
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype PowderOfIbnGhazi = PowderOfIbnGhazi AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,24 +18,16 @@ powderOfIbnGhazi = asset PowderOfIbnGhazi Cards.powderOfIbnGhazi
 
 instance HasAbilities PowderOfIbnGhazi where
   getAbilities (PowderOfIbnGhazi x) =
-    [ restrictedAbility
+    [ controlled
         x
         1
-        ( ControlsThis
-            <> CluesOnThis (GreaterThan $ Static 0)
-            <> EnemyCriteria
-              ( EnemyExists
-                  $ ExhaustedEnemy
-                  <> EnemyAt YourLocation
-                  <> EnemyWithTitle "Brood of Yog-Sothoth"
-              )
-        )
+        (AnyCluesOnThis <> exists (enemy_ $ #exhausted <> at_ YourLocation <> "Brood of Yog-Sothoth"))
         (FastAbility Free)
     ]
 
 instance RunMessage PowderOfIbnGhazi where
-  runMessage msg (PowderOfIbnGhazi attrs) = case msg of
-    InvestigatorPlayAsset _ aid | aid == toId attrs -> do
+  runMessage msg (PowderOfIbnGhazi attrs) = runQueueT $ case msg of
+    InvestigatorPlayAsset _ (is attrs -> True) -> do
       survivedCount <-
         countM
           getHasRecord
@@ -44,18 +37,10 @@ instance RunMessage PowderOfIbnGhazi where
           , ZebulonWhateleySurvivedTheDunwichLegacy
           , EarlSawyerSurvivedTheDunwichLegacy
           ]
-      attrs' <- runMessage msg attrs
+      attrs' <- liftRunMessage msg attrs
       pure . PowderOfIbnGhazi $ attrs' & tokensL %~ setTokens Clue survivedCount
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      player <- getPlayer iid
-      targets <-
-        selectMap EnemyTarget
-          $ EnemyWithTitle "Brood of Yog-Sothoth"
-          <> EnemyAt (LocationWithInvestigator $ InvestigatorWithId iid)
-          <> ExhaustedEnemy
-      case targets of
-        [] -> throwIO $ InvalidState "missing brood of yog sothoth"
-        [x] -> push (PlaceClues (toAbilitySource attrs 1) x 1)
-        xs -> push (chooseOne player [TargetLabel x [PlaceClues (toAbilitySource attrs 1) x 1] | x <- xs])
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      xs <- select $ enemy_ $ "Brood of Yog-Sothoth" <> at_ (locationWithInvestigator iid) <> #exhausted
+      chooseTargetM iid xs \x -> placeClues (attrs.ability 1) x 1
       pure . PowderOfIbnGhazi $ attrs & tokensL %~ decrementTokens Clue
-    _ -> PowderOfIbnGhazi <$> runMessage msg attrs
+    _ -> PowderOfIbnGhazi <$> liftRunMessage msg attrs

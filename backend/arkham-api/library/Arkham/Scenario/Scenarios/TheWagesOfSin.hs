@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TheWagesOfSin (TheWagesOfSin (..), theWagesOfSin) where
+module Arkham.Scenario.Scenarios.TheWagesOfSin (theWagesOfSin) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set

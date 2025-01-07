@@ -56,6 +56,9 @@ data StoryAttrs = StoryAttrs
   }
   deriving stock (Show, Eq)
 
+instance HasField "id" StoryAttrs StoryId where
+  getField = storyId
+
 instance HasField "ability" StoryAttrs (Int -> Source) where
   getField = toAbilitySource
 

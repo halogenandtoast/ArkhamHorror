@@ -3,7 +3,7 @@ module Arkham.Act.Cards.BeyondTheMistV3 (BeyondTheMistV3 (..), beyondTheMistV3) 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies

@@ -1,8 +1,8 @@
-module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (InTheClutchesOfChaos (..), inTheClutchesOfChaos) where
+module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (inTheClutchesOfChaos) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log

@@ -1,16 +1,9 @@
-module Arkham.Story.Cards.ValentinosFate (
-  ValentinosFate (..),
-  valentinosFate,
-  valentinosFateEffect,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.ValentinosFate (valentinosFate, valentinosFateEffect) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Investigator
@@ -21,7 +14,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 import Arkham.SlotType
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype ValentinosFate = ValentinosFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -31,43 +24,30 @@ valentinosFate :: StoryCard ValentinosFate
 valentinosFate = story ValentinosFate Cards.valentinosFate
 
 instance RunMessage ValentinosFate where
-  runMessage msg s@(ValentinosFate attrs) = case msg of
+  runMessage msg s@(ValentinosFate attrs) = runQueueT $ case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       disappearedIntoTheMist <-
-        toCardCode Investigators.valentinoRivas `inRecordSet` DisappearedIntoTheMist
+        Investigators.valentinoRivas.cardCode `inRecordSet` DisappearedIntoTheMist
       claimedBySpecters <-
-        toCardCode Investigators.valentinoRivas `inRecordSet` WasClaimedBySpecters
+        Investigators.valentinoRivas.cardCode `inRecordSet` WasClaimedBySpecters
       onTrail <- getHasRecord TheInvestigatorsAreOnValentino'sTrail
 
       location <- getJustLocation iid
 
+      push $ RemoveStory attrs.id
       if disappearedIntoTheMist && onTrail
         then do
-          valentino <- getSetAsideCard Assets.valentinoRivas
-          enabled <- createCardEffect Cards.valentinosFate Nothing attrs iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , enabled
-            , TakeControlOfSetAsideAsset iid valentino
-            , Record ValentinoIsAlive
-            ]
+          createCardEffect Cards.valentinosFate Nothing attrs iid
+          takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.valentinoRivas
+          record ValentinoIsAlive
         else when claimedBySpecters $ do
           valentino <- genCard Enemies.valentinoRivas
-          createValentino <-
-            createEnemy valentino
-              $ if onTrail
-                then toEnemyCreationMethod location
-                else toEnemyCreationMethod iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , toMessage
-                $ createValentino
-                  { enemyCreationExhausted = onTrail
-                  }
-            ]
-
+          createEnemyWith_
+            valentino
+            (if onTrail then toEnemyCreationMethod location else toEnemyCreationMethod iid)
+            (setExhausted onTrail)
       pure s
-    _ -> ValentinosFate <$> runMessage msg attrs
+    _ -> ValentinosFate <$> liftRunMessage msg attrs
 
 newtype ValentinosFateEffect = ValentinosFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

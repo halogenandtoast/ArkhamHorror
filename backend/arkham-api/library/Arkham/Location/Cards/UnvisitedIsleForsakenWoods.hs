@@ -1,12 +1,8 @@
-module Arkham.Location.Cards.UnvisitedIsleForsakenWoods (
-  unvisitedIsleForsakenWoods,
-  UnvisitedIsleForsakenWoods (..),
-)
-where
+module Arkham.Location.Cards.UnvisitedIsleForsakenWoods ( unvisitedIsleForsakenWoods,) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue

@@ -2,9 +2,7 @@ module Arkham.Scenario.Scenarios.CurtainCall (CurtainCall (..), curtainCall) whe
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.ChaosBag
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers

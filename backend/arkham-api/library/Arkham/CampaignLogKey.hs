@@ -4,6 +4,9 @@ module Arkham.CampaignLogKey where
 
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Campaigns.NightOfTheZealot.Key
+import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -15,92 +18,11 @@ import Data.Data
 import Data.Text qualified as T
 
 data CampaignLogKey
-  = -- | The Night of the Zealot
-    DrivenInsaneInvestigators
+  = DrivenInsaneInvestigators
   | KilledInvestigators
-  | GhoulPriestIsStillAlive
-  | YourHouseIsStillStanding
-  | YourHouseHasBurnedToTheGround
-  | LitaWasForcedToFindOthersToHelpHerCause
-  | CultistsWeInterrogated
-  | CultistsWhoGotAway
-  | ItIsPastMidnight
-  | ArkhamSuccumbedToUmordhothsTerribleVengeance
-  | TheRitualToSummonUmordhothWasBroken
-  | TheInvestigatorsRepelledUmordoth
-  | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
-  | -- | The Dunwich Legacy
-    ProfessorWarrenRiceWasKidnapped
-  | TheInvestigatorsRescuedProfessorWarrenRice
-  | TheInvestigatorsFailedToSaveTheStudents
-  | TheStudentsWereRescued
-  | TheExperimentWasDefeated
-  | InvestigatorsWereUnconsciousForSeveralHours
-  | OBannionGangHasABoneToPickWithTheInvestigators
-  | DrFrancisMorganWasKidnapped
-  | TheInvestigatorsRescuedDrFrancisMorgan
-  | NaomiHasTheInvestigatorsBacks
-  | DrHenryArmitageWasKidnapped
-  | TheInvestigatorsRescuedDrHenryArmitage
-  | TheInvestigatorsFailedToRecoverTheNecronomicon
-  | TheInvestigatorsDestroyedTheNecronomicon
-  | TheInvestigatorsTookCustodyOfTheNecronomicon
-  | TheNecronomiconWasStolen
-  | TheInvestigatorsWereDelayedOnTheirWayToDunwich
-  | TheRitualWasCompleted
-  | TheInvestigatorsPutSilasBishopOutOfHisMisery
-  | TheInvestigatorsRestoredSilasBishop
-  | TheInvestigatorsBanishedSilasBishop
-  | SacrificedToYogSothoth
-  | DrHenryArmitageSurvivedTheDunwichLegacy
-  | ProfessorWarrenRiceSurvivedTheDunwichLegacy
-  | DrFrancisMorganSurvivedTheDunwichLegacy
-  | ZebulonWhateleySurvivedTheDunwichLegacy
-  | EarlSawyerSurvivedTheDunwichLegacy
-  | YouCalmedTheTownsfolk
-  | YouWarnedTheTownsfolk
-  | BroodEscapedIntoTheWild
-  | NoBroodEscapedIntoTheWild
-  | TheInvestigatorsEnteredTheGate
-  | YogSothothToreApartTheBarrierBetweenWorldsAndBecameOneWithAllReality
-  | TheInvestigatorsClosedTheTearInReality
-  | YogSothothHasFledToAnotherDimension
-  | -- | The Path to Carcosa
-    TheStrangerIsOnToYou
-  | ChasingTheStranger
-  | YouTriedToWarnThePolice
-  | ThePoliceAreSuspiciousOfYou
-  | YouChoseNotToGoToThePolice
-  | Doubt
-  | Conviction
-  | VIPsInterviewed
-  | VIPsSlain
-  | YouIntrudedOnASecretMeeting
-  | YouFledTheDinnerParty
-  | YouSlayedTheMonstersAtTheDinnerParty
-  | YouTookTheOnyxClasp
-  | YouLeftTheOnyxClaspBehind
-  | YouDestroyedTheOathspeaker
-  | TheFollowersOfTheSignHaveFoundTheWayForward
-  | TheKingClaimedItsVictims
-  | TheInvestigatorsWereAttackedAsTheyEscapedTheAsylum
-  | TheInvestigatorsEscapedTheAsylum
-  | YouIgnoredDanielsWarning
-  | YouHeadedDanielsWarning
-  | YouDidNotEscapeTheGazeOfThePhantom
-  | YouFoundNigelsHome
-  | YouFoundNigelEngram
-  | YouWereUnableToFindNigel
-  | YouAwokeInsideTheCatacombs
-  | YouEnteredTheCatacombsOnYourOwn
-  | YouKnowTheSiteOfTheGate
-  | ReadActII
-  | YouOpenedThePathBelow
-  | YouOpenedThePathAbove
-  | TheRealmOfCarcosaMergedWithOurOwnAndHasturRulesOverThemBoth
-  | TheInvestigatorsPreventedHasturFromEscapingHisPrison
-  | HasturHasYouInHisGrasp
-  | Possessed
+  | NightOfTheZealotKey NightOfTheZealotKey
+  | TheDunwichLegacyKey TheDunwichLegacyKey
+  | ThePathToCarcosaKey ThePathToCarcosaKey
   | -- | The Forgotten Age
     TheInvestigatorsWereForcedToWaitForAdditionalSupplies
   | IchtacaObservedYourProgressWithKeenInterest
@@ -365,7 +287,40 @@ data CampaignLogKey
   | Teachings3
   deriving stock (Eq, Show, Ord, Data)
 
-$(deriveJSON defaultOptions ''CampaignLogKey)
+$(deriveToJSON defaultOptions ''CampaignLogKey)
+
+instance FromJSON CampaignLogKey where
+  parseJSON o
+    = (NightOfTheZealotKey <$> parseJSON o)
+    <|> (TheDunwichLegacyKey <$> parseJSON o)
+    <|> (ThePathToCarcosaKey <$> parseJSON o)
+    <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
+
+class IsCampaignLogKey k where
+  toCampaignLogKey :: k -> CampaignLogKey
+  fromCampaignLogKey :: CampaignLogKey -> Maybe k
+
+instance IsCampaignLogKey CampaignLogKey where
+  toCampaignLogKey = id
+  fromCampaignLogKey = Just
+
+instance IsCampaignLogKey NightOfTheZealotKey where
+  toCampaignLogKey = NightOfTheZealotKey
+  fromCampaignLogKey = \case
+    NightOfTheZealotKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheDunwichLegacyKey where
+  toCampaignLogKey = TheDunwichLegacyKey
+  fromCampaignLogKey = \case
+    TheDunwichLegacyKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey ThePathToCarcosaKey where
+  toCampaignLogKey = ThePathToCarcosaKey
+  fromCampaignLogKey = \case
+    ThePathToCarcosaKey k -> Just k
+    _ -> Nothing
 
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
@@ -418,6 +373,7 @@ instance ToGameLoggerFormat CampaignLogKey where
     Camp_BarrierCamp -> "Camp – Barrier Camp"
     Camp_RemnantsOfLakesCamp -> "Camp – Remnants of Lake's Camp"
     Camp_CrystallineCavern -> "Camp – Crystalling Cavern"
+    NightOfTheZealotKey k -> pack . go $ show k
     s -> pack . go $ show s
    where
     go :: String -> String

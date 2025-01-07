@@ -2,9 +2,7 @@ module Arkham.Scenario.Scenarios.DimCarcosa (DimCarcosa (..), dimCarcosa) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Classes
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
@@ -16,6 +14,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
@@ -95,12 +94,10 @@ instance RunMessage DimCarcosa where
       setChaosTokens standaloneChaosTokens
 
       lead <- getLead
-      chooseOne
-        lead
-        [ Label "Conviction" [RecordCount Conviction 8]
-        , Label "Doubt" [RecordCount Doubt 8]
-        , Label "Neither" []
-        ]
+      chooseOneM lead do
+        labeled "Conviction" $ markConvictionN 8
+        labeled "Doubt" $ markDoubtN 8
+        labeled "Neither" nothing
 
       pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
       record pathOpened

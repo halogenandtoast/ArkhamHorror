@@ -78,6 +78,15 @@ data CampaignAttrs = CampaignAttrs
 instance HasField "id" CampaignAttrs CampaignId where
   getField = campaignId
 
+instance HasField "step" CampaignAttrs CampaignStep where
+  getField = campaignStep
+
+instance HasField "resolutions" CampaignAttrs (Map ScenarioId Resolution) where
+  getField = campaignResolutions
+
+instance HasField "completedSteps" CampaignAttrs [CampaignStep] where
+  getField = campaignCompletedSteps
+
 instance HasField "decks" CampaignAttrs (Map InvestigatorId (Deck PlayerCard)) where
   getField = campaignDecks
 
@@ -95,6 +104,15 @@ instance HasField "store" CampaignAttrs (Map Text Value) where
 
 instance HasField "id" Campaign CampaignId where
   getField = (.id) . toAttrs
+
+instance HasField "step" Campaign CampaignStep where
+  getField = (.step) . toAttrs
+
+instance HasField "resolutions" Campaign (Map ScenarioId Resolution) where
+  getField = (.resolutions) . toAttrs
+
+instance HasField "completedSteps" Campaign [CampaignStep] where
+  getField = (.completedSteps) . toAttrs
 
 instance HasField "decks" Campaign (Map InvestigatorId (Deck PlayerCard)) where
   getField = (.decks) . toAttrs

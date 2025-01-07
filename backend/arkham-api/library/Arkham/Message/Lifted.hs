@@ -205,34 +205,34 @@ placeLocationCardM = (>>= placeLocationCard)
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal = push . Msg.RevealLocation Nothing . asId
 
-record :: ReverseQueue m => CampaignLogKey -> m ()
-record = push . Record
+record :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
+record = push . Record . toCampaignLogKey
 
-recordWhen :: ReverseQueue m => Bool -> CampaignLogKey -> m ()
-recordWhen True = push . Record
+recordWhen :: (ReverseQueue m, IsCampaignLogKey k) => Bool -> k -> m ()
+recordWhen True = push . Record . toCampaignLogKey
 recordWhen False = pure . const ()
 
-recordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
-recordCount k = push . RecordCount k
+recordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
+recordCount k = push . RecordCount (toCampaignLogKey k)
 
 remember :: ReverseQueue m => ScenarioLogKey -> m ()
 remember = push . Remember
 
-crossOut :: ReverseQueue m => CampaignLogKey -> m ()
-crossOut = push . CrossOutRecord
+crossOut :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
+crossOut = push . CrossOutRecord . toCampaignLogKey
 
 recordSetInsert
-  :: (Recordable a, MonoFoldable t, Element t ~ a, ReverseQueue m)
-  => CampaignLogKey
+  :: (Recordable a, MonoFoldable t, Element t ~ a, ReverseQueue m, IsCampaignLogKey k)
+  => k
   -> t
   -> m ()
 recordSetInsert k = push . Msg.recordSetInsert k
 
-recordSetReplace :: ReverseQueue m => CampaignLogKey -> SomeRecorded -> SomeRecorded -> m ()
-recordSetReplace k v v' = push $ Msg.RecordSetReplace k v v'
+recordSetReplace :: (ReverseQueue m, IsCampaignLogKey k) => k -> SomeRecorded -> SomeRecorded -> m ()
+recordSetReplace k v v' = push $ Msg.RecordSetReplace (toCampaignLogKey k) v v'
 
-incrementRecordCount :: ReverseQueue m => CampaignLogKey -> Int -> m ()
-incrementRecordCount key = push . IncrementRecordCount key
+incrementRecordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
+incrementRecordCount key = push . IncrementRecordCount (toCampaignLogKey key)
 
 story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do
@@ -708,6 +708,7 @@ shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
 shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn
 
 placeDoomOnAgenda :: ReverseQueue m => Int -> m ()
+placeDoomOnAgenda 0 = pure ()
 placeDoomOnAgenda n = push $ PlaceDoomOnAgenda n CanNotAdvance
 
 placeDoomOnAgendaAndCheckAdvance :: ReverseQueue m => Int -> m ()
@@ -2068,7 +2069,7 @@ createAssetAt c placement = do
   push msg
   pure assetId
 
-crossOutRecordSetEntries :: (Recordable a, ReverseQueue m) => CampaignLogKey -> [a] -> m ()
+crossOutRecordSetEntries :: (Recordable a, ReverseQueue m, IsCampaignLogKey k) => k -> [a] -> m ()
 crossOutRecordSetEntries _ [] = pure ()
 crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs
 

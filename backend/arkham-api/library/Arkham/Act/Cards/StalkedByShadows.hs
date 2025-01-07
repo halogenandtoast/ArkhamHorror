@@ -1,18 +1,12 @@
-module Arkham.Act.Cards.StalkedByShadows (
-  StalkedByShadows (..),
-  stalkedByShadows,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.StalkedByShadows (stalkedByShadows) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Matcher hiding (EnemyEvaded)
-import Arkham.Message (Message (EnemyEvaded))
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype StalkedByShadows = StalkedByShadows ActAttrs
@@ -24,26 +18,17 @@ stalkedByShadows = act (2, A) StalkedByShadows Cards.stalkedByShadows Nothing
 
 instance HasAbilities StalkedByShadows where
   getAbilities (StalkedByShadows a) =
-    [ groupLimit PerRound
-        $ restrictedAbility a 1 NoRestriction
-        $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
-    ]
+    [groupLimit PerRound $ mkAbility a 1 $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)]
 
 instance RunMessage StalkedByShadows where
-  runMessage msg a@(StalkedByShadows attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      theOrganist <- getTheOrganist
-      currentAgenda <- AgendaTarget <$> selectJust AnyAgenda
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ Label "Place 1 doom on the current agenda" [PlaceDoom (toAbilitySource attrs 1) currentAgenda 1]
-          , Label "Automatically evade The Organist" [EnemyEvaded iid theOrganist]
-          ]
+  runMessage msg a@(StalkedByShadows attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid do
+        labeled "Place 1 doom on the current agenda" $ placeDoomOnAgenda 1
+        labeled "Automatically evade The Organist" $ automaticallyEvadeEnemy iid =<< getTheOrganist
       pure a
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       intrudedOnASecretMeeting <- getHasRecord YouIntrudedOnASecretMeeting
-      push (scenarioResolution $ if intrudedOnASecretMeeting then 2 else 1)
+      push $ if intrudedOnASecretMeeting then R2 else R1
       pure a
-    _ -> StalkedByShadows <$> runMessage msg attrs
+    _ -> StalkedByShadows <$> liftRunMessage msg attrs

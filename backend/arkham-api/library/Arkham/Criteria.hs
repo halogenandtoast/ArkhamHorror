@@ -68,6 +68,11 @@ pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0))
   where
     NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
 
+pattern AnyCluesOnThis :: Criterion
+pattern AnyCluesOnThis <- CluesOnThis (GreaterThan (Static 0))
+  where
+    AnyCluesOnThis = CluesOnThis (GreaterThan (Static 0))
+
 pattern CanGainResources :: Criterion
 pattern CanGainResources <-
   InvestigatorExists (InvestigatorMatches [You, InvestigatorWithoutModifier CannotGainResources])

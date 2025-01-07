@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ThePathIsBarred (ThePathIsBarred (..), thePathIsBarred) 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.Log (getRecordCount)

@@ -1,14 +1,12 @@
-module Arkham.Scenario.Scenarios.TheUnspeakableOath (TheUnspeakableOath (..), theUnspeakableOath) where
+module Arkham.Scenario.Scenarios.TheUnspeakableOath (theUnspeakableOath) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Cost
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set

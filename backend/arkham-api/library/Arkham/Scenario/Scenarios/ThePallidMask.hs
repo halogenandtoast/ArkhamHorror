@@ -1,14 +1,12 @@
-module Arkham.Scenario.Scenarios.ThePallidMask (ThePallidMask (..), thePallidMask) where
+module Arkham.Scenario.Scenarios.ThePallidMask (thePallidMask) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -79,7 +77,7 @@ standaloneCampaignLog =
   mkCampaignLog
     { campaignLogRecorded =
         setFromList
-          [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
+          $ map toCampaignLogKey [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
     }
 
 instance HasChaosTokenValue ThePallidMask where

@@ -137,6 +137,9 @@ data EnemyMatcher
 enemy_ :: EnemyMatcher -> EnemyMatcher
 enemy_ = id
 
+instance IsString EnemyMatcher where
+  fromString = EnemyWithTitle . fromString
+
 instance Plated EnemyMatcher
 
 instance IsLabel "swarming" EnemyMatcher where

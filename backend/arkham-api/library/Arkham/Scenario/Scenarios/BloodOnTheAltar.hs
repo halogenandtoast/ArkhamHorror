@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.BloodOnTheAltar (BloodOnTheAltar (..), bloodOnT
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -54,27 +54,13 @@ instance HasChaosTokenValue BloodOnTheAltar where
       ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 3
       otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- FOURMOLU_DISABLE -}
 standaloneChaosTokens :: [ChaosTokenFace]
 standaloneChaosTokens =
-  [ PlusOne
-  , Zero
-  , Zero
-  , MinusOne
-  , MinusOne
-  , MinusOne
-  , MinusTwo
-  , MinusTwo
-  , MinusThree
-  , MinusThree
-  , MinusFour
-  , Skull
-  , Skull
-  , Cultist
-  , Tablet
-  , ElderThing
-  , AutoFail
-  , ElderSign
+  [ #"+1" , #"0" , #"0" , #"-1" , #"-1" , #"-1" , #"-2" , #"-2" , #"-3" , #"-3" , #"-4"
+  , Skull , Skull , Cultist , Tablet , ElderThing , AutoFail , ElderSign
   ]
+{- FOURMOLU_ENABLE -}
 
 removeNecronomicon :: ReverseQueue m => m ()
 removeNecronomicon = do

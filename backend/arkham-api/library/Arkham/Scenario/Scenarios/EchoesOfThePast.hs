@@ -3,10 +3,8 @@ module Arkham.Scenario.Scenarios.EchoesOfThePast (EchoesOfThePast (..), echoesOf
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
-import Arkham.Classes hiding (matches)
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))

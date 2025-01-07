@@ -84,11 +84,17 @@ instance HasField "step" CampaignAttrs CampaignStep where
 instance HasField "resolutions" CampaignAttrs (Map ScenarioId Resolution) where
   getField = campaignResolutions
 
+instance HasField "chaosBag" CampaignAttrs [ChaosTokenFace] where
+  getField = campaignChaosBag
+
 instance HasField "completedSteps" CampaignAttrs [CampaignStep] where
   getField = campaignCompletedSteps
 
 instance HasField "decks" CampaignAttrs (Map InvestigatorId (Deck PlayerCard)) where
   getField = campaignDecks
+
+instance HasField "storyCards" CampaignAttrs (Map InvestigatorId [PlayerCard]) where
+  getField = campaignStoryCards
 
 instance HasField "log" CampaignAttrs CampaignLog where
   getField = campaignLog

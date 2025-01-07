@@ -6,11 +6,13 @@ import Arkham.Campaign.Runner as X (
   IsCampaign (..),
   campaign,
   campaignStep,
+  campaignMeta,
   defaultCampaignRunner,
   logL,
   push,
   pushAll,
   pushWhen,
+  modifiersL,
  )
 import Arkham.CampaignStep as X
 import Arkham.Classes as X

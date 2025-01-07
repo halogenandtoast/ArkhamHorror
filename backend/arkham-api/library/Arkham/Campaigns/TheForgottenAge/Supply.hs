@@ -53,3 +53,21 @@ resupplyPointSupplies =
   ]
 
 $(deriveJSON defaultOptions ''Supply)
+
+supplyCost :: Supply -> Int
+supplyCost = \case
+  Provisions -> 1
+  Medicine -> 2
+  Gasoline -> 1
+  Rope -> 3
+  Blanket -> 2
+  Canteen -> 2
+  Torches -> 3
+  Compass -> 2
+  Map -> 3
+  Binoculars -> 2
+  Chalk -> 2
+  Pocketknife -> 2
+  Pickaxe -> 2
+  Pendant -> 1
+

@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.TheCityOfArchives (TheCityOfArchives (..), theCityOfArchives) where
+module Arkham.Scenario.Scenarios.TheCityOfArchives (theCityOfArchives) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message.Discard.Lifted

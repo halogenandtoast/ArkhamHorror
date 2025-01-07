@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TurnBackTime (TurnBackTime (..), turnBackTime) where
+module Arkham.Scenario.Scenarios.TurnBackTime (turnBackTime) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log

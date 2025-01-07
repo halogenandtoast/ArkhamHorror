@@ -1,12 +1,11 @@
-module Arkham.Scenario.Scenarios.ThreadsOfFate (ThreadsOfFate (..), threadsOfFate) where
+module Arkham.Scenario.Scenarios.ThreadsOfFate (threadsOfFate) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
-import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice)
@@ -47,8 +46,7 @@ instance HasChaosTokenValue ThreadsOfFate where
   getChaosTokenValue iid chaosTokenFace (ThreadsOfFate attrs) = case chaosTokenFace of
     Skull -> do
       n <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
-      doom <- getDoomCount
-      pure $ toChaosTokenValue attrs Skull n doom
+      toChaosTokenValue attrs Skull n <$> getDoomCount
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 2
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 2
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3

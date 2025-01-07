@@ -540,6 +540,17 @@ createEnemyWith card creation f = do
   push $ toMessage (f msg)
   pure msg.enemy
 
+createEnemyWithAfter_
+  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
+  => card
+  -> creation
+  -> (EnemyId -> QueueT Message m ())
+  -> m ()
+createEnemyWithAfter_ card creation body = do
+  builder <- Msg.createEnemy card creation
+  after <- evalQueueT $ body builder.enemy
+  push $ toMessage (builder { enemyCreationAfter = after })
+
 createEnemyWith_
   :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
   => card
@@ -597,8 +608,10 @@ removeAllChaosTokens = push . RemoveAllChaosTokens
 removeCampaignCard :: (HasCardDef a, ReverseQueue m) => a -> m ()
 removeCampaignCard (toCardDef -> def) = do
   mOwner <- getOwner def
-  for_ mOwner \owner ->
-    push $ RemoveCampaignCardFromDeck owner def
+  for_ mOwner (`removeCampaignCardFromDeck` def)
+
+removeCampaignCardFromDeck :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> a -> m ()
+removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = push $ RemoveCampaignCardFromDeck iid def
 
 placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -747,6 +760,11 @@ questionLabel :: ReverseQueue m => Text -> InvestigatorId -> Question Message ->
 questionLabel lbl iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl Nothing q)
+
+questionLabelWithCard :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
+questionLabelWithCard lbl cCode iid q = do
+  pid <- getPlayer iid
+  push $ Ask pid (QuestionLabel lbl (Just cCode) q)
 
 chooseOne :: (HasCallStack, ReverseQueue m) => InvestigatorId -> [UI Message] -> m ()
 chooseOne iid msgs = do
@@ -1372,6 +1390,9 @@ focusCards [] _ = pure ()
 focusCards cards f = do
   push $ FocusCards $ toCard <$> cards
   f UnfocusCards
+
+focusCard :: (ReverseQueue m, IsCard a) => a -> (Message -> m ()) -> m ()
+focusCard card =  focusCards [card]
 
 focusCards_ :: (ReverseQueue m, IsCard a) => [a] -> m () -> m ()
 focusCards_ [] _ = pure ()
@@ -2252,3 +2273,6 @@ updateLocation
   -> a
   -> m ()
 updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
+
+shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
+shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTarget target)

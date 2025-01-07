@@ -31,11 +31,11 @@ newtype PlayerId = PlayerId {unPlayerId :: UUID}
 
 newtype ActId = ActId {unActId :: CardCode}
   deriving stock Data
-  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)
 
 newtype AgendaId = AgendaId {unAgendaId :: CardCode}
   deriving stock Data
-  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)
 
 newtype AssetId = AssetId {unAssetId :: UUID}
   deriving stock Data
@@ -67,7 +67,7 @@ newtype LocationId = LocationId {unLocationId :: UUID}
 
 newtype ScenarioId = ScenarioId {unScenarioId :: CardCode}
   deriving stock Data
-  deriving newtype (Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)
   deriving Eq via CardCodeExact
 
 newtype SkillId = SkillId {unSkillId :: UUID}
@@ -76,7 +76,7 @@ newtype SkillId = SkillId {unSkillId :: UUID}
 
 newtype StoryId = StoryId {unStoryId :: CardCode}
   deriving stock Data
-  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)
 
 newtype TreacheryId = TreacheryId {unTreacheryId :: UUID}
   deriving stock Data

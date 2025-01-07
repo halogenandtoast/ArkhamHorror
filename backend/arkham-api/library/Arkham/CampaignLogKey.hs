@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -23,54 +24,7 @@ data CampaignLogKey
   | NightOfTheZealotKey NightOfTheZealotKey
   | TheDunwichLegacyKey TheDunwichLegacyKey
   | ThePathToCarcosaKey ThePathToCarcosaKey
-  | -- | The Forgotten Age
-    TheInvestigatorsWereForcedToWaitForAdditionalSupplies
-  | IchtacaObservedYourProgressWithKeenInterest
-  | AlejandroFollowedTheInvestigatorsIntoTheRuins
-  | IchtacaIsWaryOfTheInvestigators
-  | TheInvestigatorsHaveEarnedIchtacasTrust
-  | AlejandroChoseToRemainAtCamp
-  | TheInvestigatorsClearedAPathToTheEztliRuins
-  | YigsFury
-  | TheInvestigatorsRecoveredTheRelicOfAges
-  | AlejandroRecoveredTheRelicOfAges
-  | TheHarbingerIsStillAlive
-  | TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
-  | TheInvestigatorsHaveEarnedAlejandrosTrust
-  | TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-  | AlejandroIsContinuingHisResearchOnHisOwn
-  | YouAreForgingYourOwnWay
-  | TheInvestigatorsFoundTheMissingRelic
-  | TheRelicIsMissing
-  | TheInvestigatorsRescuedAlejandro
-  | AlejandroIsMissing
-  | TheInvestigatorsForgedABondWithIchtaca
-  | IchtacaIsInTheDark
-  | PathsAreKnownToYou
-  | IchtacaHasConfidenceInYou
-  | TheInvestigatorsMappedOutTheWayForward
-  | IchtacasFaithIsRestored
-  | TheJungleWatches
-  | TheInvestigatorsCooperatedWithTheYithians
-  | TheInvestigatorsResistedCaptivity
-  | TheInvestigatorsHadTheirMemoriesExpunged
-  | TheProcessWasPerfected
-  | TheProcessWasSuccessful
-  | TheProcessBackfired
-  | TheProcessBackfiredSpectacularly
-  | AlejandroRemembersEverything
-  | AlejandroIsSetAgainstYou
-  | IchtacaIsSetAgainstYou
-  | TheInvestigatorsFellIntoTheDepths
-  | TheNexusIsNear
-  | TheBraziersAreLit
-  | TheBraziersRemainUnlit
-  | TheInvestigatorsMendedTheTearInTheFabricOfTime
-  | TheInvestigatorsSavedTheCivilizationOfTheSerpents
-  | TheInvestigatorsSavedTheCivilizationOfTheYithians
-  | TheFabricOfTimeIsUnwoven
-  | TheInvestigatorsTurnedBackTime
-  | TheInvestigatorsSealedTheRelicOfAgesForever
+  | TheForgottenAgeKey TheForgottenAgeKey
   | -- | The Circle Undone
     MissingPersons
   | WasTakenByTheWatcher
@@ -294,6 +248,7 @@ instance FromJSON CampaignLogKey where
     = (NightOfTheZealotKey <$> parseJSON o)
     <|> (TheDunwichLegacyKey <$> parseJSON o)
     <|> (ThePathToCarcosaKey <$> parseJSON o)
+    <|> (TheForgottenAgeKey <$> parseJSON o)
     <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
 
 class IsCampaignLogKey k where
@@ -320,6 +275,12 @@ instance IsCampaignLogKey ThePathToCarcosaKey where
   toCampaignLogKey = ThePathToCarcosaKey
   fromCampaignLogKey = \case
     ThePathToCarcosaKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheForgottenAgeKey where
+  toCampaignLogKey = TheForgottenAgeKey
+  fromCampaignLogKey = \case
+    TheForgottenAgeKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey

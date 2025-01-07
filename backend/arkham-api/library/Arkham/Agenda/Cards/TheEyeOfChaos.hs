@@ -1,16 +1,14 @@
-module Arkham.Agenda.Cards.TheEyeOfChaos (TheEyeOfChaos (..), theEyeOfChaos) where
+module Arkham.Agenda.Cards.TheEyeOfChaos (theEyeOfChaos) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Attack
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers (getGameValue, getPlayer)
+import Arkham.Game.Helpers (getGameValue)
 import Arkham.Helpers.Act (getCurrentActStep)
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message (questionLabelWithCard)
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
 
@@ -33,11 +31,6 @@ instance RunMessage TheEyeOfChaos where
 
         nyarlathoteps <- selectWithField EnemyPlacement $ EnemyWithTitle "Nyarlathotep"
 
-        let
-          investigatorsWithNyarlathotep = flip mapMaybe nyarlathoteps \(_, p) -> case p of
-            StillInHand iid -> Just iid
-            _ -> Nothing
-
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
             StillInHand _ -> do
@@ -45,35 +38,29 @@ instance RunMessage TheEyeOfChaos where
               push $ RevealCard (toCardId card)
             _ -> pure ()
 
-        selectEach (not_ $ oneOf (map InvestigatorWithId investigatorsWithNyarlathotep))
-          $ \iid -> do
-            chooseOne
-              iid
-              [ Label "Take 1 Damage" [Msg.assignDamage iid attrs 1]
-              , Label "Take 1 Horror" [Msg.assignHorror iid attrs 1]
-              ]
+        let investigatorsWithNyarlathotep = [iid | (_, StillInHand iid) <- nyarlathoteps]
+        selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
+          chooseOneM iid do
+            labeled "Take 1 Damage" $ assignDamage iid attrs 1
+            labeled "Take 1 Horror" $ assignHorror iid attrs 1
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
             StillInHand iid -> do
               card <- field EnemyCard nyarlathotep
               push $ FocusCards [card]
-              player <- getPlayer iid
-              push
-                $ questionLabelWithCard "Choose:" (toCardCode card) player
-                $ ChooseOne
-                  [ Label
-                      "Nyarlathotep immediately attacks you and is shuffled into the encounter deck."
-                      [ InitiateEnemyAttack $ enemyAttack nyarlathotep attrs iid
-                      , ShuffleBackIntoEncounterDeck (toTarget nyarlathotep)
-                      ]
-                  , Label
-                      "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
-                      [ InitiateEnemyAttack $ enemyAttack nyarlathotep attrs iid
-                      , InitiateEnemyAttack $ enemyAttack nyarlathotep attrs iid
-                      , InitiateEnemyAttack $ enemyAttack nyarlathotep attrs iid
-                      ]
-                  ]
+              chooseOneM iid do
+                questionLabeled "Choose:"
+                questionLabeledCard card
+                labeled "Nyarlathotep immediately attacks you and is shuffled into the encounter deck." do
+                  initiateEnemyAttack nyarlathotep attrs iid
+                  shuffleBackIntoEncounterDeck nyarlathotep
+                labeled
+                  "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
+                  do
+                    initiateEnemyAttack nyarlathotep attrs iid
+                    initiateEnemyAttack nyarlathotep attrs iid
+                    initiateEnemyAttack nyarlathotep attrs iid
             _ -> pure ()
 
       advanceAgendaDeck attrs

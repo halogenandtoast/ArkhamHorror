@@ -71,5 +71,9 @@ instance FromJSON msg => FromJSON (EnemyCreation msg) where
 createExhausted :: EnemyCreation msg -> EnemyCreation msg
 createExhausted ec = ec {enemyCreationExhausted = True}
 
+instance WithTarget (EnemyCreation msg) where
+  getTarget = enemyCreationTarget
+  setTarget t x = x {enemyCreationTarget = Just (toTarget t)}
+
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId

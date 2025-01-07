@@ -5,9 +5,9 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetCardsUnderneath))
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -97,7 +97,7 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecorded = setFromList [TheBraziersAreLit, TheRelicIsMissing]
+    { campaignLogRecorded = setFromList $ map toCampaignLogKey [TheBraziersAreLit, TheRelicIsMissing]
     }
 
 instance RunMessage ShatteredAeons where

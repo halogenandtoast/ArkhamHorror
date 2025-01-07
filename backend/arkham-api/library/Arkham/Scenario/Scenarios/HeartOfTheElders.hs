@@ -1,9 +1,9 @@
-module Arkham.Scenario.Scenarios.HeartOfTheElders (HeartOfTheElders (..), heartOfTheElders) where
+module Arkham.Scenario.Scenarios.HeartOfTheElders (heartOfTheElders) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set

@@ -1,12 +1,8 @@
-module Arkham.Location.Cards.UnvisitedIsleHauntedSpring (
-  unvisitedIsleHauntedSpring,
-  UnvisitedIsleHauntedSpring (..),
-)
-where
+module Arkham.Location.Cards.UnvisitedIsleHauntedSpring ( unvisitedIsleHauntedSpring,) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers

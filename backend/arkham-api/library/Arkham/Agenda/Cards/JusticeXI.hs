@@ -1,9 +1,9 @@
-module Arkham.Agenda.Cards.JusticeXI (JusticeXI (..), justiceXI) where
+module Arkham.Agenda.Cards.JusticeXI (justiceXI) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)

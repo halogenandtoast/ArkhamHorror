@@ -1351,7 +1351,9 @@ library
       Arkham.Campaigns.TheCircleUndone.FlavorText
       Arkham.Campaigns.TheCircleUndone.Helpers
       Arkham.Campaigns.TheCircleUndone.Import
+      Arkham.Campaigns.TheCircleUndone.Key
       Arkham.Campaigns.TheCircleUndone.Memento
+      Arkham.Campaigns.TheCircleUndone.Memento.Helpers
       Arkham.Campaigns.TheDreamEaters.CampaignSteps
       Arkham.Campaigns.TheDreamEaters.ChaosBag
       Arkham.Campaigns.TheDreamEaters.FlavorText

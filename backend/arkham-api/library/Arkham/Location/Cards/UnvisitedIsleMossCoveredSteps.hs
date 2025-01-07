@@ -1,13 +1,12 @@
 module Arkham.Location.Cards.UnvisitedIsleMossCoveredSteps (
   unvisitedIsleMossCoveredSteps,
   unvisitedIsleMossCoveredStepsEffect,
-  UnvisitedIsleMossCoveredSteps (..),
 )
 where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Effect.Import
 import Arkham.GameValue
 import Arkham.Helpers.Log

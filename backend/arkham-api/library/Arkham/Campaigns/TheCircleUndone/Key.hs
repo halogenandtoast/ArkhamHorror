@@ -1,0 +1,67 @@
+module Arkham.Campaigns.TheCircleUndone.Key where
+
+import Arkham.Prelude
+
+data TheCircleUndoneKey
+  = MissingPersons
+  | WasTakenByTheWatcher
+  | WasClaimedBySpecters
+  | DisappearedIntoTheMist
+  | WasPulledIntoTheSpectralRealm
+  | PiecesOfEvidenceWereLeftBehind
+  | YouAreBeingHunted
+  | YouHaveAcceptedYourFate
+  | YouHaveRejectedYourFate
+  | TheWitches'SpellWasBroken
+  | TheWitches'SpellWasCast
+  | MementosDiscovered
+  | TheInvestigatorsAreOnGavriella'sTrail
+  | TheInvestigatorsAreOnJerome'sTrail
+  | TheInvestigatorsAreOnPenny'sTrail
+  | TheInvestigatorsAreOnValentino'sTrail
+  | TheInvestigatorsEscapedTheSpectralRealm
+  | TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
+  | TheInvestigatorsAreNeverSeenOrHeardFromAgain
+  | JosefDisappearedIntoTheMist
+  | TheInvestigatorsAreEnemiesOfTheLodge
+  | TheInvestigatorsRescuedJosef
+  | JosefIsAliveAndWell
+  | TheInvestigatorsAreMembersOfTheLodge
+  | TheInvestigatorsAreDeceivingTheLodge
+  | TheInvestigatorsToldTheLodgeAboutTheCoven
+  | TheInvestigatorsHidTheirKnowledgeOfTheCoven
+  | TheInvestigatorsSurvivedTheWatchersEmbrace
+  | HereticsWereUnleashedUntoArkham
+  | TheGuardianOfTheTrapEmerged
+  | TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
+  | TheGuardianOfTheTrapEmergedAndWasDefeated
+  | TheInvestigatorsKeptsTheirMementosHidden
+  | TheInvestigatorsWereInductedIntoTheInnerCircle
+  | TheInvestigatorsSidedWithTheLodge
+  | TheInvestigatorsSidedWithTheCoven
+  | GavriellaIsAlive
+  | JeromeIsAlive
+  | PennyIsAlive
+  | ValentinoIsAlive
+  | TheTrueWorkOfTheSilverTwilightLodgeHasBegun
+  | CarlSanfordPossessesTheSecretsOfTheUniverse
+  | AnetteMasonIsPossessedByEvil
+  | GavriellaIsDead
+  | JeromeIsDead
+  | PennyIsDead
+  | ValentinoIsDead
+  | TheInvestigatorsContinuedAlone
+  | TheInvestigatorsAskedAnetteForAssistance
+  | TheInvestigatorsArrestedAnette
+  | AnetteTaughtYouTheSpellsOfOld
+  | TheInvestigatorsAskedSanfordForAssistance
+  | TheInvestigatorsArrestedSanford
+  | TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+  | DoomDrawsEverCloser
+  | ThePathWindsBeforeYou
+  | AzathothDevouredTheUniverse
+  | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
+  | AzathothSlumbersForNow
+  | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)

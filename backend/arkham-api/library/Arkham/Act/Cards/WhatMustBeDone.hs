@@ -1,17 +1,16 @@
-module Arkham.Act.Cards.WhatMustBeDone (WhatMustBeDone (..), whatMustBeDone) where
+module Arkham.Act.Cards.WhatMustBeDone (whatMustBeDone) where
 
 import Arkham.Ability
+import Arkham.Message.Lifted.Choose
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
+import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
+import Arkham.Helpers.Log (inRecordSet)
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Data.List qualified as List
 
@@ -24,18 +23,16 @@ whatMustBeDone = act (3, A) WhatMustBeDone Cards.whatMustBeDone Nothing
 
 instance HasAbilities WhatMustBeDone where
   getAbilities (WhatMustBeDone attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
-        , restrictedAbility
-            attrs
-            2
-            ( exists
-                $ LeadInvestigator
-                <> InvestigatorAt (LocationWithTitle "The Black Throne" <> LocationWithoutClues)
-            )
-            $ Objective
-            $ forced AnyWindow
-        ]
+    extend
+      attrs
+      [ mkAbility attrs 1 $ actionAbilityWithCost ClueCostX
+      , restrictedAbility
+          attrs
+          2
+          (exists $ LeadInvestigator <> at_ ("The Black Throne" <> LocationWithoutClues))
+          $ Objective
+          $ forced AnyWindow
+      ]
 
 getClueCount :: Payment -> Int
 getClueCount (CluePayment _ n) = n
@@ -43,32 +40,25 @@ getClueCount (Payments ps) = sum $ map getClueCount ps
 getClueCount _ = 0
 
 instance RunMessage WhatMustBeDone where
-  runMessage msg a@(WhatMustBeDone attrs) = case msg of
+  runMessage msg a@(WhatMustBeDone attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
       push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      push $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
-      cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards $ map flipCard cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              (toCardId card)
-              [ UnfocusCards
-              , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
-              , placement
-              , RevealLocation (Just iid) lid
-              , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
-              ]
-            | (card, (lid, placement)) <- cardsWithMsgs
-            ]
-        ]
+
+      focusCards (map flipCard drewCards.cards) \unfocus -> do
+        chooseOrRunOneM iid do
+          for drewCards.cards \card -> do
+            targeting card do
+              push unfocus
+              shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
+              lid <- placeLocation card
+              revealBy iid lid
+              push $ RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
       pure a
     AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
       youAcceptedYourFate <- getHasRecord YouHaveAcceptedYourFate
@@ -87,4 +77,4 @@ instance RunMessage WhatMustBeDone where
               else R4
 
       pure a
-    _ -> WhatMustBeDone <$> runMessage msg attrs
+    _ -> WhatMustBeDone <$> liftRunMessage msg attrs

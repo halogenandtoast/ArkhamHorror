@@ -205,6 +205,9 @@ placeLocationCardM = (>>= placeLocationCard)
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal = push . Msg.RevealLocation Nothing . asId
 
+revealBy :: (AsId investigator, IdOf investigator ~ InvestigatorId, AsId location, IdOf location ~ LocationId, ReverseQueue m) => investigator -> location -> m ()
+revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
+
 record :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
 record = push . Record . toCampaignLogKey
 
@@ -627,6 +630,9 @@ removeDoom source target n = push $ RemoveDoom (toSource source) (toTarget targe
 
 removeAllDoom :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 removeAllDoom source target = push $ RemoveAllDoom (toSource source) (toTarget target)
+
+removeAllClues :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+removeAllClues source target = push $ RemoveAllClues (toSource source) (toTarget target)
 
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()

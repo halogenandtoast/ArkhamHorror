@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
+import Arkham.Message.Lifted.Queue
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -72,14 +73,14 @@ getCanMoveLocationLeft lid = do
       Just (EmptySpace _ _) -> True
       Just (CosmosLocation _ _) -> False
 
-commitRitualSuicide :: (HasGame m, Sourceable source) => source -> m [Message]
+commitRitualSuicide :: (ReverseQueue m , Sourceable source) => source -> m ()
 commitRitualSuicide (toSource -> source) = do
   cultists <- select $ EnemyWithTrait Cultist
-  doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
+  for_ cultists (push . toDiscard source)
+
   azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-  pure
-    $ map (toDiscard source) cultists
-    <> [PlaceDoom source (toTarget azathoth) doom]
+  doom <- getSum <$> foldMapM (fieldMap EnemyDoom Sum) cultists
+  push $ PlaceDoom source (toTarget azathoth) doom
 
 getEmptySpaceCards :: HasGame m => m [Card]
 getEmptySpaceCards = cosmosEmptySpaceCards <$> getCosmos

@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.ForTheGreaterGood (ForTheGreaterGood (..), forTheGreaterGood) where
+module Arkham.Scenario.Scenarios.ForTheGreaterGood (forTheGreaterGood) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
@@ -205,10 +205,10 @@ instance RunMessage ForTheGreaterGood where
               chooseOrRunOne
                 iid
                 [ targetLabel
-                  cultist
-                  [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                  , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
-                  ]
+                    cultist
+                    [ RemoveAllDoom (toSource attrs) (toTarget cultist)
+                    , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
+                    ]
                 | cultist <- maxDoomCultists
                 ]
             else drawAnotherChaosToken iid

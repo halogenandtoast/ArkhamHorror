@@ -15,6 +15,7 @@ import Arkham.Agenda.Runner as X (
   pushM,
   removeDoomMatchersL,
   pattern FailedThisSkillTestBy,
+  pattern FailedThisSkillTest,
   pattern R1,
   pattern R2,
   pattern R3,

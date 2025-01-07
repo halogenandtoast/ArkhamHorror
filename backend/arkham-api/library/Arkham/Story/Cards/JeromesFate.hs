@@ -1,16 +1,9 @@
-module Arkham.Story.Cards.JeromesFate (
-  JeromesFate (..),
-  jeromesFate,
-  jeromesFateEffect,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.JeromesFate (jeromesFate, jeromesFateEffect) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Investigator
@@ -21,7 +14,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
 import Arkham.SlotType
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype JeromesFate = JeromesFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -31,43 +24,28 @@ jeromesFate :: StoryCard JeromesFate
 jeromesFate = story JeromesFate Cards.jeromesFate
 
 instance RunMessage JeromesFate where
-  runMessage msg s@(JeromesFate attrs) = case msg of
+  runMessage msg s@(JeromesFate attrs) = runQueueT $ case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
-      disappearedIntoTheMist <-
-        toCardCode Investigators.jeromeDavids `inRecordSet` DisappearedIntoTheMist
-      claimedBySpecters <-
-        toCardCode Investigators.jeromeDavids `inRecordSet` WasClaimedBySpecters
+      disappearedIntoTheMist <- Investigators.jeromeDavids.cardCode `inRecordSet` DisappearedIntoTheMist
+      claimedBySpecters <- Investigators.jeromeDavids.cardCode `inRecordSet` WasClaimedBySpecters
       onTrail <- getHasRecord TheInvestigatorsAreOnJerome'sTrail
 
       location <- getJustLocation iid
 
+      push $ RemoveStory attrs.id
       if disappearedIntoTheMist && onTrail
         then do
-          jerome <- getSetAsideCard Assets.jeromeDavids
-          enabled <- createCardEffect Cards.jeromesFate Nothing attrs iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , enabled
-            , TakeControlOfSetAsideAsset iid jerome
-            , Record JeromeIsAlive
-            ]
+          createCardEffect Cards.jeromesFate Nothing attrs iid
+          takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.jeromeDavids
+          record JeromeIsAlive
         else when claimedBySpecters $ do
           jerome <- genCard Enemies.jeromeDavids
-          createJerome <-
-            createEnemy jerome
-              $ if onTrail
-                then toEnemyCreationMethod location
-                else toEnemyCreationMethod iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , toMessage
-                $ createJerome
-                  { enemyCreationExhausted = onTrail
-                  }
-            ]
-
+          createEnemyWith_
+            jerome
+            (if onTrail then toEnemyCreationMethod location else toEnemyCreationMethod iid)
+            (setExhausted onTrail)
       pure s
-    _ -> JeromesFate <$> runMessage msg attrs
+    _ -> JeromesFate <$> liftRunMessage msg attrs
 
 newtype JeromesFateEffect = JeromesFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)

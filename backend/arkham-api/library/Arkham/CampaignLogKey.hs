@@ -8,6 +8,7 @@ import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Campaigns.TheForgottenAge.Key
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -25,67 +26,7 @@ data CampaignLogKey
   | TheDunwichLegacyKey TheDunwichLegacyKey
   | ThePathToCarcosaKey ThePathToCarcosaKey
   | TheForgottenAgeKey TheForgottenAgeKey
-  | -- | The Circle Undone
-    MissingPersons
-  | WasTakenByTheWatcher
-  | WasClaimedBySpecters
-  | DisappearedIntoTheMist
-  | WasPulledIntoTheSpectralRealm
-  | PiecesOfEvidenceWereLeftBehind
-  | YouAreBeingHunted
-  | YouHaveAcceptedYourFate
-  | YouHaveRejectedYourFate
-  | TheWitches'SpellWasBroken
-  | TheWitches'SpellWasCast
-  | MementosDiscovered
-  | TheInvestigatorsAreOnGavriella'sTrail
-  | TheInvestigatorsAreOnJerome'sTrail
-  | TheInvestigatorsAreOnPenny'sTrail
-  | TheInvestigatorsAreOnValentino'sTrail
-  | TheInvestigatorsEscapedTheSpectralRealm
-  | TheInvestigatorsLearnedNothingOfTheLodge'sSchemes
-  | TheInvestigatorsAreNeverSeenOrHeardFromAgain
-  | JosefDisappearedIntoTheMist
-  | TheInvestigatorsAreEnemiesOfTheLodge
-  | TheInvestigatorsRescuedJosef
-  | JosefIsAliveAndWell
-  | TheInvestigatorsAreMembersOfTheLodge
-  | TheInvestigatorsAreDeceivingTheLodge
-  | TheInvestigatorsToldTheLodgeAboutTheCoven
-  | TheInvestigatorsHidTheirKnowledgeOfTheCoven
-  | TheInvestigatorsSurvivedTheWatchersEmbrace
-  | HereticsWereUnleashedUntoArkham
-  | TheGuardianOfTheTrapEmerged
-  | TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-  | TheGuardianOfTheTrapEmergedAndWasDefeated
-  | TheInvestigatorsKeptsTheirMementosHidden
-  | TheInvestigatorsWereInductedIntoTheInnerCircle
-  | TheInvestigatorsSidedWithTheLodge
-  | TheInvestigatorsSidedWithTheCoven
-  | GavriellaIsAlive
-  | JeromeIsAlive
-  | PennyIsAlive
-  | ValentinoIsAlive
-  | TheTrueWorkOfTheSilverTwilightLodgeHasBegun
-  | CarlSanfordPossessesTheSecretsOfTheUniverse
-  | AnetteMasonIsPossessedByEvil
-  | GavriellaIsDead
-  | JeromeIsDead
-  | PennyIsDead
-  | ValentinoIsDead
-  | TheInvestigatorsContinuedAlone
-  | TheInvestigatorsAskedAnetteForAssistance
-  | TheInvestigatorsArrestedAnette
-  | AnetteTaughtYouTheSpellsOfOld
-  | TheInvestigatorsAskedSanfordForAssistance
-  | TheInvestigatorsArrestedSanford
-  | TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
-  | DoomDrawsEverCloser
-  | ThePathWindsBeforeYou
-  | AzathothDevouredTheUniverse
-  | TheLeadInvestigatorHasJoinedThePipersOfAzathoth
-  | AzathothSlumbersForNow
-  | TheInvestigatorsSignedTheBlackBookOfAzathoth
+  | TheCircleUndoneKey TheCircleUndoneKey
   | -- | The Dream-Eaters
     TheDreamersStrayedFromThePath
   | TheInvestigatorsWereSavedByRandolphCarder
@@ -249,6 +190,7 @@ instance FromJSON CampaignLogKey where
     <|> (TheDunwichLegacyKey <$> parseJSON o)
     <|> (ThePathToCarcosaKey <$> parseJSON o)
     <|> (TheForgottenAgeKey <$> parseJSON o)
+    <|> (TheCircleUndoneKey <$> parseJSON o)
     <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
 
 class IsCampaignLogKey k where
@@ -281,6 +223,12 @@ instance IsCampaignLogKey TheForgottenAgeKey where
   toCampaignLogKey = TheForgottenAgeKey
   fromCampaignLogKey = \case
     TheForgottenAgeKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheCircleUndoneKey where
+  toCampaignLogKey = TheCircleUndoneKey
+  fromCampaignLogKey = \case
+    TheCircleUndoneKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey

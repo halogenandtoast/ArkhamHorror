@@ -1,20 +1,17 @@
-module Arkham.Act.Cards.BeyondTheMistV1 (
-  BeyondTheMistV1 (..),
-  beyondTheMistV1,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.BeyondTheMistV1 ( beyondTheMistV1,) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Movement
+import Arkham.Modifier (ModifierType(..))
+import Arkham.Message.Lifted.Move
+import Arkham.Helpers.Query (getSetAsideCardsMatching, getPlayerCount, getJustLocationByName)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Trait (Trait (Witch))
 
@@ -28,8 +25,8 @@ beyondTheMistV1 = act (3, A) BeyondTheMistV1 Cards.beyondTheMistV1 Nothing
 instance HasAbilities BeyondTheMistV1 where
   getAbilities (BeyondTheMistV1 x)
     | onSide A x =
-        [ restrictedAbility x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
-        , restrictedAbility
+        [ restricted x 1 DuringCircleAction $ FastAbility $ ClueCost (Static 1)
+        , restricted
             x
             2
             ( AllLocationsMatch
@@ -37,44 +34,41 @@ instance HasAbilities BeyondTheMistV1 where
                 (RevealedLocation <> LocationWithBrazier Lit)
             )
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
         ]
   getAbilities _ = []
 
 instance RunMessage BeyondTheMistV1 where
-  runMessage msg a@(BeyondTheMistV1 attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg a@(BeyondTheMistV1 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
-        pushM $ skillTestModifier sid (toSource attrs) (SkillTestTarget sid) (Difficulty (-2))
+        skillTestModifier sid (toSource attrs) (SkillTestTarget sid) (Difficulty (-2))
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       geistTrap <- getJustLocationByName "The Geist-Trap"
       investigatorsAtUnvisitedIsles <- select $ InvestigatorAt (LocationWithTitle "Unvisited Isle")
-      witchesSpellWasCast <- getHasRecord TheWitches'SpellWasCast
       anetteMason <- getSetAsideCard Enemies.anetteMason
       players <- getPlayerCount
       covenInitiates <-
         take (if players > 2 then 2 else 1) <$> getSetAsideCardsMatching (cardIs Enemies.covenInitiate)
 
-      creationMessages <-
-        if witchesSpellWasCast
-          then (: []) <$> createEnemyAt_ anetteMason geistTrap Nothing
-          else
-            traverse
-              (\covenInitiate -> createEnemyAt_ covenInitiate geistTrap Nothing)
-              covenInitiates
+      reveal geistTrap
+      for_ investigatorsAtUnvisitedIsles \iid -> moveTo attrs iid geistTrap
 
-      pushAll
-        $ RevealLocation Nothing geistTrap
-        : [Move $ move attrs iid geistTrap | iid <- investigatorsAtUnvisitedIsles]
-          <> creationMessages
-          <> [NextAdvanceActStep (toId attrs) 1, advanceActDeck attrs]
+      witchesSpellWasCast <- getHasRecord TheWitches'SpellWasCast
+      if witchesSpellWasCast
+        then createEnemyAt_ anetteMason geistTrap
+        else for_ covenInitiates (`createEnemyAt_` geistTrap)
+
+      doStep 1 msg
+      advanceActDeck attrs
       pure a
-    NextAdvanceActStep aid 1 | aid == toId attrs -> do
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       witches <- getSetAsideCardsMatching (CardWithTrait Witch)
-      pushAll [ShuffleCardsIntoDeck Deck.EncounterDeck witches, ShuffleEncounterDiscardBackIn]
+      shuffleCardsIntoDeck Deck.EncounterDeck witches
+      shuffleEncounterDiscardBackIn
       pure a
-    _ -> BeyondTheMistV1 <$> runMessage msg attrs
+    _ -> BeyondTheMistV1 <$> liftRunMessage msg attrs

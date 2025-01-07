@@ -1,8 +1,8 @@
-module Arkham.Act.Cards.TheUnvisitedIsle (TheUnvisitedIsle (..), theUnvisitedIsle) where
+module Arkham.Act.Cards.TheUnvisitedIsle (theUnvisitedIsle) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Field
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Location.Brazier

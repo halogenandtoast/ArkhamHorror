@@ -24,9 +24,7 @@ instance HasAbilities Moxie1 where
     ]
 
 instance HasModifiersFor Moxie1 where
-  getModifiersFor (AssetTarget aid) (Moxie1 attrs) | toId attrs == aid = do
-    toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Moxie1 a) = modifySelf a [NonDirectHorrorMustBeAssignToThisFirst]
 
 instance RunMessage Moxie1 where
   runMessage msg a@(Moxie1 attrs) = case msg of

@@ -80,12 +80,21 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   name: scenarioNameDecoder,
 }, 'ScenarioDetails');
 
-export type Remembered = { tag: string }
+export type Remembered = { tag: "YouOweBiancaResources", contents: number } | { tag: string }
 
-const rememberedDecoder = JsonDecoder.object<Remembered>(
-  { tag: JsonDecoder.string },
-  'Remembered'
-);
+const rememberedDecoder = JsonDecoder.oneOf([
+  JsonDecoder.object<Remembered>(
+    {
+      tag: JsonDecoder.isExactly('YouOweBiancaResources'),
+      contents: JsonDecoder.tuple<[any, number]>(
+        [JsonDecoder.succeed, JsonDecoder.number],
+        'YouOweBiancaResources'
+      ).map<number>((res: [any, number]) => res[1])
+    },
+    'Remembered'
+  ),
+  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string }, 'Remembered')
+], 'Remembered');
 
 
 
@@ -212,6 +221,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c08501a": return "edgeOfTheEarth.iceAndDeath"
     case "c08501b": return "edgeOfTheEarth.iceAndDeath"
     case "c08501c": return "edgeOfTheEarth.iceAndDeath"
+    case "c08549": return "edgeOfTheEarth.fatalMirage"
+    case "c08596": return "edgeOfTheEarth.toTheForbiddenPeaks"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

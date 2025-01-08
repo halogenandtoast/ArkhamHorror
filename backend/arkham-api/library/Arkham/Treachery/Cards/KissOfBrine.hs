@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.KissOfBrine (kissOfBrine, KissOfBrine (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator, isSkillTestSource)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,14 +15,17 @@ kissOfBrine :: TreacheryCard KissOfBrine
 kissOfBrine = treachery KissOfBrine Cards.kissOfBrine
 
 instance HasModifiersFor KissOfBrine where
-  getModifiersFor (InvestigatorTarget iid) (KissOfBrine attrs) | iid `elem` attrs.inThreatAreaOf = do
-    modified attrs [CannotGainResources, CannotDrawCards]
-  getModifiersFor (SkillTestTarget _) (KissOfBrine attrs) = maybeModified attrs do
-    liftGuardM $ isSkillTestSource attrs
-    iid <- MaybeT getSkillTestInvestigator
-    liftGuardM $ iid <=~> InvestigatorAt FloodedLocation
-    pure [Difficulty 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (KissOfBrine attrs) = do
+    threat <- inThreatAreaGets attrs [CannotGainResources, CannotDrawCards]
+    skillTest <-
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+          liftGuardM $ isSkillTestSource attrs
+          iid <- MaybeT getSkillTestInvestigator
+          liftGuardM $ iid <=~> InvestigatorAt FloodedLocation
+          pure [Difficulty 2]
+    pure $ threat <> skillTest
 
 instance HasAbilities KissOfBrine where
   getAbilities (KissOfBrine a) = [mkAbility a 1 $ forced $ PhaseEnds #when #enemy]

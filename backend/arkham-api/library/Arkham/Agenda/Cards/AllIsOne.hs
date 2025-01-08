@@ -1,15 +1,14 @@
-module Arkham.Agenda.Cards.AllIsOne (AllIsOne (..), allIsOne) where
+module Arkham.Agenda.Cards.AllIsOne (allIsOne) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Deck qualified as Deck
-import Arkham.GameValue
+import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
 
 newtype AllIsOne = AllIsOne AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -23,30 +22,20 @@ instance HasAbilities AllIsOne where
     [mkAbility x 1 $ forced $ MovedBy #after You Matcher.EncounterCardSource]
 
 instance RunMessage AllIsOne where
-  runMessage msg a@(AllIsOne attrs@AgendaAttrs {..}) = case msg of
+  runMessage msg a@(AllIsOne attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignHorror iid (attrs.ability 1) 1
+      assignHorror iid (attrs.ability 1) 1
       pure a
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      failedToSaveStudents <- getHasRecord TheInvestigatorsFailedToSaveTheStudents
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
       lead <- getLead
-      investigatorIds <- getInvestigatorIds
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , DiscardUntilFirst
-              lead
-              (toSource attrs)
-              Deck.EncounterDeck
-              (basic #location)
-          ]
-        <> [ assignHorror iid attrs 1
-           | failedToSaveStudents
-           , iid <- investigatorIds
-           ]
-        <> [advanceAgendaDeck attrs]
+      discardUntilFirst lead attrs Deck.EncounterDeck (basic #location)
+      whenHasRecord TheInvestigatorsFailedToSaveTheStudents do
+        eachInvestigator \iid -> assignHorror iid attrs 1
+      advanceAgendaDeck attrs
       pure a
     RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
-      leadInvestigator <- getLeadInvestigatorId
-      push $ InvestigatorDrewEncounterCard leadInvestigator card
+      lead <- getLead
+      drawCard lead card
       pure a
-    _ -> AllIsOne <$> runMessage msg attrs
+    _ -> AllIsOne <$> liftRunMessage msg attrs

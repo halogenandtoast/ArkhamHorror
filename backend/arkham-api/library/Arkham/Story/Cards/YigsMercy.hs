@@ -1,14 +1,13 @@
-module Arkham.Story.Cards.YigsMercy (YigsMercy (..), yigsMercy) where
+module Arkham.Story.Cards.YigsMercy (yigsMercy) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Prelude
 import Arkham.Source
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted

@@ -1,11 +1,10 @@
-module Arkham.Scenario.Scenarios.BlackStarsRise (BlackStarsRise (..), blackStarsRise) where
+module Arkham.Scenario.Scenarios.BlackStarsRise (blackStarsRise) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
@@ -15,6 +14,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (CanAdvance (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)

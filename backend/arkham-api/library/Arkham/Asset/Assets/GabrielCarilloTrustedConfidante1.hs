@@ -8,8 +8,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype GabrielCarilloTrustedConfidante1 = GabrielCarilloTrustedConfidante1 AssetAttrs
   deriving anyclass IsAsset
@@ -19,9 +19,7 @@ gabrielCarilloTrustedConfidante1 :: AssetCard GabrielCarilloTrustedConfidante1
 gabrielCarilloTrustedConfidante1 = ally GabrielCarilloTrustedConfidante1 Cards.gabrielCarilloTrustedConfidante1 (2, 1)
 
 instance HasModifiersFor GabrielCarilloTrustedConfidante1 where
-  getModifiersFor target (GabrielCarilloTrustedConfidante1 a) = modified a $ case target of
-    InvestigatorTarget iid | iid `controls` a -> [SkillModifier #intellect 1]
-    _ -> []
+  getModifiersFor (GabrielCarilloTrustedConfidante1 a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities GabrielCarilloTrustedConfidante1 where
   getAbilities (GabrielCarilloTrustedConfidante1 x) =

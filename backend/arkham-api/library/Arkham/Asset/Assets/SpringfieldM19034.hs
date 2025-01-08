@@ -16,23 +16,30 @@ springfieldM19034 :: AssetCard SpringfieldM19034
 springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 
 instance HasModifiersFor SpringfieldM19034 where
-  getModifiersFor (AbilityTarget iid ability) (SpringfieldM19034 a)
-    | tabooed TabooList19 a && isSource a ability.source && ability.index == 1 =
-        toModifiers
-          a
-          [ CanModify
-              $ EnemyFightActionCriteria
-              $ CriteriaOverride
-              $ EnemyCriteria
-              $ ThisEnemy
-              $ EnemyWithoutModifier CannotBeAttacked
-              <> not_ (enemyEngagedWith iid)
-              <> oneOf
-                [ EnemyAt YourLocation
-                , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
+  getModifiersFor (SpringfieldM19034 a) =
+    if tabooed TabooList19 a
+      then case a.controller of
+        Nothing -> pure mempty
+        Just iid ->
+          selectOne (AbilityIs (toSource a) 1) >>= \case
+            Nothing -> pure mempty
+            Just ab ->
+              modified_
+                a
+                (AbilityTarget iid ab)
+                [ CanModify
+                    $ EnemyFightActionCriteria
+                    $ CriteriaOverride
+                    $ EnemyCriteria
+                    $ ThisEnemy
+                    $ EnemyWithoutModifier CannotBeAttacked
+                    <> not_ (enemyEngagedWith iid)
+                    <> oneOf
+                      [ EnemyAt YourLocation
+                      , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
+                      ]
                 ]
-          ]
-  getModifiersFor _ _ = pure []
+      else pure mempty
 
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where

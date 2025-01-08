@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.TheBoundaryBeyond (TheBoundaryBeyond (..), theBoundaryBeyond) where
+module Arkham.Scenario.Scenarios.TheBoundaryBeyond (theBoundaryBeyond) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -20,6 +20,7 @@ import Arkham.Location.Types (Field (LocationName))
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Name
 import Arkham.Projection
@@ -105,8 +106,9 @@ instance RunMessage TheBoundaryBeyond where
           then do
             story arcaneThrumming
             removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-            withOwner Assets.relicOfAgesADeviceOfSomeSort \owner ->
-              addCampaignCardToDeck owner Assets.relicOfAgesForestallingTheFuture
+            withOwner
+              Assets.relicOfAgesADeviceOfSomeSort
+              (`addCampaignCardToDeck` Assets.relicOfAgesForestallingTheFuture)
           else story growingConcern
 
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro

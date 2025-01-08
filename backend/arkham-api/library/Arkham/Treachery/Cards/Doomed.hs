@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.Doomed (
-  doomed,
-  Doomed (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Doomed (doomed) where
 
 import Arkham.CampaignLogKey
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Log
+import Arkham.Message.Lifted.Log
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Doomed = Doomed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,8 +15,8 @@ doomed :: TreacheryCard Doomed
 doomed = treachery Doomed Cards.doomed
 
 instance RunMessage Doomed where
-  runMessage msg t@(Doomed attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(Doomed attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       doomApproached <- getHasRecord DoomApproaches
       if doomApproached
         then do
@@ -30,22 +24,14 @@ instance RunMessage Doomed where
           case toCard attrs of
             VengeanceCard _ -> error "not a vengeance card"
             EncounterCard _ -> error "not an encounter card"
-            PlayerCard pc ->
-              pushAll
-                [ InvestigatorAssignDamage iid source DamageAny 0 1
-                , RemoveCardFromDeckForCampaign iid pc
-                , AddCardToDeckForCampaign iid accursedFate
-                , PutCardOnBottomOfDeck
-                    iid
-                    (Deck.InvestigatorDeck iid)
-                    (toCard accursedFate)
-                , RemoveTreachery (toId attrs)
-                ]
+            PlayerCard pc -> do
+              assignHorror iid attrs 1
+              removeCardFromDeckForCampaign iid pc
+              addCampaignCardToDeck iid accursedFate
+              putCardOnBottomOfDeck iid iid accursedFate
+              removeTreachery attrs
         else do
-          pushAll
-            $ [ InvestigatorAssignDamage iid source DamageAny 0 1
-              , Record DoomApproaches
-              ]
-
+          assignHorror iid attrs 1
+          record DoomApproaches
       pure t
-    _ -> Doomed <$> runMessage msg attrs
+    _ -> Doomed <$> liftRunMessage msg attrs

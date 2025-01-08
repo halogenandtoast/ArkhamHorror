@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.OBannionsThug (oBannionsThug, OBannionsThug (..)) wher
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 
 newtype OBannionsThug = OBannionsThug EnemyAttrs
@@ -13,10 +13,8 @@ oBannionsThug :: EnemyCard OBannionsThug
 oBannionsThug = enemy OBannionsThug Cards.oBannionsThug (4, Static 2, 2) (2, 0)
 
 instance HasModifiersFor OBannionsThug where
-  getModifiersFor (InvestigatorTarget iid) (OBannionsThug a) = do
-    affected <- iid <=~> investigatorEngagedWith a
-    modified a [CannotGainResources | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OBannionsThug a) = do
+    modifySelect a (investigatorEngagedWith a) [CannotGainResources]
 
 instance RunMessage OBannionsThug where
   runMessage msg (OBannionsThug attrs) = OBannionsThug <$> runMessage msg attrs

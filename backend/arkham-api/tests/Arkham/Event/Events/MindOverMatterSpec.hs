@@ -40,7 +40,7 @@ spec = describe "Mind over Matter" $ do
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
         sid <- genId
-        circleTest sid (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
+        runQueueT $ circleTest sid (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
         runMessages
 
         chooseOptionMatching "use intellect instead of combat" \case
@@ -59,7 +59,7 @@ spec = describe "Mind over Matter" $ do
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
         sid <- genId
-        circleTest
+        runQueueT $ circleTest
           sid
           (toId self)
           (TestSource mempty)

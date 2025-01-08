@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.AquaticAbomination (aquaticAbomination, AquaticAbomina
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher
 
 newtype AquaticAbomination = AquaticAbomination EnemyAttrs
@@ -13,10 +13,9 @@ aquaticAbomination :: EnemyCard AquaticAbomination
 aquaticAbomination = enemy AquaticAbomination Cards.aquaticAbomination (5, Static 7, 2) (2, 2)
 
 instance HasModifiersFor AquaticAbomination where
-  getModifiersFor (LocationTarget _) (AquaticAbomination a) = maybeModified a do
-    liftGuardM $ a.id <=~> MovingEnemy
-    pure [ConnectedToWhen FullyFloodedLocation FullyFloodedLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AquaticAbomination a) = do
+    isMoving <- a.id <=~> MovingEnemy
+    modifySelectWhen a isMoving Anywhere [ConnectedToWhen FullyFloodedLocation FullyFloodedLocation]
 
 instance RunMessage AquaticAbomination where
   runMessage msg (AquaticAbomination attrs) = runQueueT $ case msg of

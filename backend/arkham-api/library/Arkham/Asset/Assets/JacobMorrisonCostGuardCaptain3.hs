@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted, RevealChaosToken)
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
@@ -19,9 +19,7 @@ jacobMorrisonCostGuardCaptain3 :: AssetCard JacobMorrisonCostGuardCaptain3
 jacobMorrisonCostGuardCaptain3 = ally JacobMorrisonCostGuardCaptain3 Cards.jacobMorrisonCostGuardCaptain3 (2, 2)
 
 instance HasModifiersFor JacobMorrisonCostGuardCaptain3 where
-  getModifiersFor target (JacobMorrisonCostGuardCaptain3 a) | a `is` target = do
-    toModifiers a [DoesNotReadyDuringUpkeep]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JacobMorrisonCostGuardCaptain3 a) = modifySelf a [DoesNotReadyDuringUpkeep]
 
 instance HasAbilities JacobMorrisonCostGuardCaptain3 where
   getAbilities (JacobMorrisonCostGuardCaptain3 a) =

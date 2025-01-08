@@ -22,15 +22,12 @@ instance HasAbilities AdamLynch where
     [forcedAbility x 1 $ AssetLeavesPlay #when $ AssetWithId $ toId x]
 
 instance HasModifiersFor AdamLynch where
-  getModifiersFor (AbilityTarget iid ab) (AdamLynch attrs) | controlledBy attrs iid = do
-    mSecurityOffice <- selectOne (LocationWithTitle "Security Office")
-    toModifiers
-      attrs
-      [ ActionCostSetToModifier 1
-      | securityOffice <- toList mSecurityOffice
-      , ab.source.location == Just securityOffice
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AdamLynch a) = case a.controller of
+    Just iid ->
+      selectOne (AbilityOnLocation $ LocationWithTitle "Security Office") >>= \case
+        Just ab -> modified_ a (AbilityTarget iid ab) [ActionCostSetToModifier 1]
+        _ -> pure mempty
+    Nothing -> pure mempty
 
 instance RunMessage AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of

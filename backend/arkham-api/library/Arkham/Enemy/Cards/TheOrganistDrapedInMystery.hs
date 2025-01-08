@@ -17,9 +17,8 @@ newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheOrganistDrapedInMystery where
-  getModifiersFor target (TheOrganistDrapedInMystery attrs) | isTarget attrs target = do
-    toModifiers attrs [CannotBeDamaged]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheOrganistDrapedInMystery attrs) =
+    modifySelf attrs [CannotBeDamaged]
 
 instance HasAbilities TheOrganistDrapedInMystery where
   getAbilities (TheOrganistDrapedInMystery attrs) =

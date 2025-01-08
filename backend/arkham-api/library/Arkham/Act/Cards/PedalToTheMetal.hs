@@ -5,7 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Types (Field (AssetDriver))
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (AddKeyword, VehicleCannotMove), modified)
+import Arkham.Helpers.Modifiers (ModifierType (AddKeyword, VehicleCannotMove), modifySelect)
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -21,8 +21,7 @@ pedalToTheMetal :: ActCard PedalToTheMetal
 pedalToTheMetal = act (1, A) PedalToTheMetal Cards.pedalToTheMetal Nothing
 
 instance HasModifiersFor PedalToTheMetal where
-  getModifiersFor (EnemyTarget _) (PedalToTheMetal a) = modified a [AddKeyword Hunter]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PedalToTheMetal a) = modifySelect a AnyEnemy [AddKeyword Hunter]
 
 instance HasAbilities PedalToTheMetal where
   getAbilities (PedalToTheMetal x) =

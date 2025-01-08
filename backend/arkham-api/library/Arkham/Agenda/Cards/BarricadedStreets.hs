@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Trait (Trait (Coastal, Suspect))
 
@@ -16,12 +16,10 @@ barricadedStreets :: AgendaCard BarricadedStreets
 barricadedStreets = agenda (1, A) BarricadedStreets Cards.barricadedStreets (Static 6)
 
 instance HasModifiersFor BarricadedStreets where
-  getModifiersFor (EnemyTarget eid) (BarricadedStreets a) = do
-    isSuspect <- eid <=~> EnemyWithTrait Suspect
-    modified a [IgnoreAloof | isSuspect]
-  getModifiersFor (InvestigatorTarget _iid) (BarricadedStreets a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BarricadedStreets a) = do
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities BarricadedStreets where
   getAbilities (BarricadedStreets a) = [mkAbility a 1 $ forced $ TurnEnds #when (You <> at_ FullyFloodedLocation)]

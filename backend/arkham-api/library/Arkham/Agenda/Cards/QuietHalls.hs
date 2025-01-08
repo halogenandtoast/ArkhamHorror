@@ -23,7 +23,7 @@ quietHalls = agenda (1, A) QuietHalls Cards.quietHalls (Static 7)
 instance RunMessage QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
         discardCount <- fieldMap InvestigatorDiscard length iid

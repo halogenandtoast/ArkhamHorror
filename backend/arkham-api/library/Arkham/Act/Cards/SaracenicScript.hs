@@ -1,16 +1,12 @@
-module Arkham.Act.Cards.SaracenicScript (
-  SaracenicScript (..),
-  saracenicScript,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.SaracenicScript (saracenicScript) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Matcher
+import Arkham.Helpers.Log (unlessHasRecord)
+import Arkham.Helpers.Query (getSetAsideCardsMatching, getInvestigators)
 
 newtype SaracenicScript = SaracenicScript ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -22,17 +18,16 @@ saracenicScript =
     (1, A)
     SaracenicScript
     Cards.saracenicScript
-    (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Whateley Ruins"))
+    (Just $ GroupClueCost (PerPlayer 2) "Whateley Ruins")
 
 instance RunMessage SaracenicScript where
-  runMessage msg a@(SaracenicScript attrs@ActAttrs {..}) = case msg of
-    AdvanceAct aid _ _ | aid == actId && onSide B attrs -> do
-      survived <- getHasRecord DrHenryArmitageSurvivedTheDunwichLegacy
-      investigatorIds <- getInvestigatorIds
+  runMessage msg a@(SaracenicScript attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      investigators <- getInvestigators
       esotericFormulas <- getSetAsideCardsMatching $ cardIs Assets.esotericFormula
-      pushAll
-        $ zipWith TakeControlOfSetAsideAsset investigatorIds esotericFormulas
-        <> [placeDoomOnAgenda | not survived]
-        <> [advanceActDeck attrs]
+      zipWithM_ takeControlOfSetAsideAsset investigators esotericFormulas
+
+      unlessHasRecord DrHenryArmitageSurvivedTheDunwichLegacy $ placeDoomOnAgenda 1
+      advanceActDeck attrs
       pure a
-    _ -> SaracenicScript <$> runMessage msg attrs
+    _ -> SaracenicScript <$> liftRunMessage msg attrs

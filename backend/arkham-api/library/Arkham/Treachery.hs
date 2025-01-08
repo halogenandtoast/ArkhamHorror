@@ -506,6 +506,18 @@ allTreacheries =
     , --- Ice and Death [eote]
       SomeTreacheryCard apeirophobia
     , SomeTreacheryCard zeroVisibility
+    , --- Seeping Nightmares [eote]
+      SomeTreacheryCard phantasmagoria
+    , --- Fatal Mirage [eote]
+      SomeTreacheryCard evanescentMist
+    , SomeTreacheryCard anamnesis
+    , --- To the Forbidden Peaks [eote]
+      SomeTreacheryCard snowfall
+    , SomeTreacheryCard avalanche
+    , SomeTreacheryCard hangingOnTheEdge
+    , SomeTreacheryCard hypothermia
+    , --- Agents of the Unknown [eote]
+      SomeTreacheryCard theMadnessWithin
     , --- Creatures in the Ice [eote]
       SomeTreacheryCard kindredMist
     , --- Deadly Weather [eote]
@@ -515,6 +527,17 @@ allTreacheries =
     , --- Hazards of Antarctica [eote]
       SomeTreacheryCard iceShaft
     , SomeTreacheryCard throughTheIce
+    , --- Elder Things [eote]
+      SomeTreacheryCard riseOfTheElderThings
+    , --- Left Behind [eote]
+      SomeTreacheryCard abandonedToMadness
+    , --- Namesless Horrors [eote]
+      SomeTreacheryCard blasphemousVisions
+    , SomeTreacheryCard glimpseTheUnspeakable
+    , SomeTreacheryCard nightmarishVapors
+    , --- Miasma [eote]
+      SomeTreacheryCard miasmaticTorment
+    , SomeTreacheryCard nebulousMiasma
     , --- Silence and Mystery [eote]
       SomeTreacheryCard polarMirage
     , SomeTreacheryCard darkAurora

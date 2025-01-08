@@ -623,7 +623,7 @@ runGameMessage msg g = case msg of
   Msg.RevealChaosToken SkillTestSource {} _ token -> pure $ g & focusedChaosTokensL %~ filter (/= token)
   UnfocusChaosTokens -> pure $ g & focusedChaosTokensL .~ mempty
   ChoosePlayer iid SetLeadInvestigator -> do
-    players <- getInvestigatorIds
+    players <- getInvestigators
     push $ ChoosePlayerOrder iid (filter (/= iid) players) [iid]
     pure $ g & leadInvestigatorIdL .~ iid & activeInvestigatorIdL .~ iid
   ChoosePlayer iid SetTurnPlayer -> do
@@ -1732,7 +1732,7 @@ runGameMessage msg g = case msg of
   PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
   Begin InvestigationPhase -> do
     let phaseStep step msgs = Msg.PhaseStep (InvestigationPhaseStep step) msgs
-    investigatorIds <- getInvestigatorIds
+    investigatorIds <- getInvestigators
     phaseBeginsWindow <-
       checkWindows
         [ mkWhen Window.AnyPhaseBegins

@@ -1,7 +1,7 @@
 module Arkham.Investigator.Cards.BodyOfAYithian (BodyOfAYithian (..), YithianMetadata (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
 import {-# SOURCE #-} Arkham.Investigator
@@ -20,10 +20,8 @@ newtype BodyOfAYithian = BodyOfAYithian (InvestigatorAttrs `With` YithianMetadat
   deriving stock Data
 
 instance HasModifiersFor BodyOfAYithian where
-  getModifiersFor (AssetTarget aid) (BodyOfAYithian (a `With` _)) = do
-    isYithian <- aid <=~> (assetControlledBy (toId a) <> #ally)
-    modified a [AddTrait Yithian | isYithian]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BodyOfAYithian (a `With` _)) = do
+    modifySelect a (AssetControlledBy (InvestigatorWithId a.id) <> #ally) [AddTrait Yithian]
 
 instance HasAbilities BodyOfAYithian where
   getAbilities (BodyOfAYithian a) =

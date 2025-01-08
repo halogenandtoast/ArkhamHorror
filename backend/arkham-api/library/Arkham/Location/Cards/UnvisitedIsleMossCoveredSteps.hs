@@ -1,23 +1,21 @@
 module Arkham.Location.Cards.UnvisitedIsleMossCoveredSteps (
   unvisitedIsleMossCoveredSteps,
   unvisitedIsleMossCoveredStepsEffect,
-  UnvisitedIsleMossCoveredSteps (..),
 )
 where
 
+import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.CampaignLogKey
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Campaigns.TheCircleUndone.Key
+import Arkham.Effect.Import
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleMossCoveredSteps = UnvisitedIsleMossCoveredSteps LocationAttrs
@@ -28,9 +26,7 @@ unvisitedIsleMossCoveredSteps :: LocationCard UnvisitedIsleMossCoveredSteps
 unvisitedIsleMossCoveredSteps = location UnvisitedIsleMossCoveredSteps Cards.unvisitedIsleMossCoveredSteps 4 (PerPlayer 2)
 
 instance HasModifiersFor UnvisitedIsleMossCoveredSteps where
-  getModifiersFor target (UnvisitedIsleMossCoveredSteps attrs) = maybeModified attrs do
-    guard $ attrs `isTarget` target
-    guard $ not attrs.revealed
+  getModifiersFor (UnvisitedIsleMossCoveredSteps a) = whenUnrevealed a $ maybeModifySelf a do
     sidedWithLodge <- lift $ getHasRecord TheInvestigatorsSidedWithTheLodge
     isLit <- lift $ selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
     guard $ if sidedWithLodge then not isLit else isLit
@@ -40,23 +36,23 @@ instance HasAbilities UnvisitedIsleMossCoveredSteps where
   getAbilities (UnvisitedIsleMossCoveredSteps attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
+      [ restrictedAbility attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
       , haunted "Your next move action this round costs 1 additional action" attrs 2
       ]
 
 instance RunMessage UnvisitedIsleMossCoveredSteps where
-  runMessage msg l@(UnvisitedIsleMossCoveredSteps attrs) = case msg of
+  runMessage msg l@(UnvisitedIsleMossCoveredSteps attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
       circleTest sid iid (attrs.ability 1) attrs [#combat, #agility] (Fixed 10)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push =<< createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid
+      createCardEffect Cards.unvisitedIsleMossCoveredSteps Nothing attrs iid
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
-    _ -> UnvisitedIsleMossCoveredSteps <$> runMessage msg attrs
+    _ -> UnvisitedIsleMossCoveredSteps <$> liftRunMessage msg attrs
 
 newtype UnvisitedIsleMossCoveredStepsEffect = UnvisitedIsleMossCoveredStepsEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -66,16 +62,12 @@ unvisitedIsleMossCoveredStepsEffect :: EffectArgs -> UnvisitedIsleMossCoveredSte
 unvisitedIsleMossCoveredStepsEffect = cardEffect UnvisitedIsleMossCoveredStepsEffect Cards.unvisitedIsleMossCoveredSteps
 
 instance HasModifiersFor UnvisitedIsleMossCoveredStepsEffect where
-  getModifiersFor target (UnvisitedIsleMossCoveredStepsEffect a) | effectTarget a == target = do
-    toModifiers a [AdditionalActionCostOf (IsAction Action.Move) 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UnvisitedIsleMossCoveredStepsEffect a) =
+    modified_ a a.target [AdditionalActionCostOf (IsAction Action.Move) 1]
 
 instance RunMessage UnvisitedIsleMossCoveredStepsEffect where
-  runMessage msg e@(UnvisitedIsleMossCoveredStepsEffect attrs) = case msg of
-    TakenActions iid (elem #move -> True) | toTarget iid == effectTarget attrs -> do
-      push $ DisableEffect $ toId attrs
-      pure e
-    EndRound -> do
-      push $ DisableEffect $ toId attrs
-      pure e
-    _ -> UnvisitedIsleMossCoveredStepsEffect <$> runMessage msg attrs
+  runMessage msg e@(UnvisitedIsleMossCoveredStepsEffect attrs) = runQueueT $ case msg of
+    TakenActions iid (elem #move -> True) | isTarget iid attrs.target -> do
+      disableReturn e
+    EndRound -> disableReturn e
+    _ -> UnvisitedIsleMossCoveredStepsEffect <$> liftRunMessage msg attrs

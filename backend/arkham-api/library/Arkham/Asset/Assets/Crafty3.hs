@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Crafty3 (crafty3, Crafty3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Trait (Trait (Insight, Tool, Trick))
 
 newtype Crafty3 = Crafty3 AssetAttrs
@@ -16,17 +16,17 @@ crafty3 :: AssetCard Crafty3
 crafty3 = asset Crafty3 Cards.crafty3
 
 instance HasModifiersFor Crafty3 where
-  getModifiersFor (InvestigatorTarget iid) (Crafty3 attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        #resource
-        (InvestigatorWithId iid)
-        (oneOf [CardWithTrait t | t <- [Insight, Tool, Trick]])
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Crafty3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [ CanSpendUsesAsResourceOnCardFromInvestigator
+            a.id
+            #resource
+            (InvestigatorWithId iid)
+            (oneOf [CardWithTrait t | t <- [Insight, Tool, Trick]])
+        ]
 
 instance HasAbilities Crafty3 where
   getAbilities (Crafty3 a) =

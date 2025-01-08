@@ -5,7 +5,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modifySelf)
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
 
@@ -21,10 +21,9 @@ innsmouthShoggoth :: EnemyCard InnsmouthShoggoth
 innsmouthShoggoth = enemy (InnsmouthShoggoth . (`with` Meta Nothing)) Cards.innsmouthShoggoth (3, Static 4, 2) (2, 2)
 
 instance HasModifiersFor InnsmouthShoggoth where
-  getModifiersFor target (InnsmouthShoggoth (With a _)) | isTarget a target = do
+  getModifiersFor (InnsmouthShoggoth (With a _)) = do
     healthModifier <- perPlayer 2
-    modified a [HealthModifier healthModifier]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier healthModifier]
 
 instance HasAbilities InnsmouthShoggoth where
   getAbilities (InnsmouthShoggoth (With a meta)) =

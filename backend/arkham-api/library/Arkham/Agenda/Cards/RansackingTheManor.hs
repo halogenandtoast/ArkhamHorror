@@ -20,7 +20,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype RansackingTheManor = RansackingTheManor AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ransackingTheManor :: AgendaCard RansackingTheManor
@@ -28,9 +28,8 @@ ransackingTheManor =
   agenda (2, A) RansackingTheManor Cards.ransackingTheManor (PerPlayer 2)
 
 instance HasModifiersFor RansackingTheManor where
-  getModifiersFor (PhaseTarget MythosPhase) (RansackingTheManor attrs) =
-    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RansackingTheManor attrs) =
+    modified_ attrs (PhaseTarget MythosPhase) [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
 
 instance HasAbilities RansackingTheManor where
   getAbilities (RansackingTheManor attrs) =

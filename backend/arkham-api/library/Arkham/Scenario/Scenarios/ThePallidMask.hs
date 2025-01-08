@@ -1,14 +1,12 @@
-module Arkham.Scenario.Scenarios.ThePallidMask (ThePallidMask (..), thePallidMask) where
+module Arkham.Scenario.Scenarios.ThePallidMask (thePallidMask) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -21,6 +19,7 @@ import Arkham.Label (unLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -69,17 +68,17 @@ thePallidMask difficulty =
     ]
 
 instance HasModifiersFor ThePallidMask where
-  getModifiersFor (InvestigatorTarget iid) (ThePallidMask a) = do
-    extraXp <- elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
-    toModifiers a [XPModifier "Read Act II" 2 | extraXp]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ThePallidMask a) = do
+    modifySelectMaybe a Anyone \iid -> do
+      liftGuardM $ elem (recorded $ unInvestigatorId iid) <$> getRecordSet ReadActII
+      pure [XPModifier "Read Act II" 2]
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
     { campaignLogRecorded =
         setFromList
-          [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
+          $ map toCampaignLogKey [YouFoundNigelsHome, YouEnteredTheCatacombsOnYourOwn]
     }
 
 instance HasChaosTokenValue ThePallidMask where

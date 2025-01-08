@@ -1,62 +1,48 @@
-module Arkham.Agenda.Cards.PastPresentAndFuture (
-  PastPresentAndFuture (..),
-  pastPresentAndFuture,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.PastPresentAndFuture (pastPresentAndFuture) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
-import Arkham.Card.CardType
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Deck qualified as Deck
-import Arkham.GameValue
+import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
 
 newtype PastPresentAndFuture = PastPresentAndFuture AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pastPresentAndFuture :: AgendaCard PastPresentAndFuture
-pastPresentAndFuture =
-  agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
+pastPresentAndFuture = agenda (2, A) PastPresentAndFuture Cards.pastPresentAndFuture (Static 4)
 
 instance HasAbilities PastPresentAndFuture where
   getAbilities (PastPresentAndFuture x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ MovedBy
-          Timing.After
-          You
-          Matcher.EncounterCardSource
-    ]
+    [mkAbility x 1 $ forced $ MovedBy #after You Matcher.EncounterCardSource]
 
 instance RunMessage PastPresentAndFuture where
-  runMessage msg a@(PastPresentAndFuture attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      a <$ push (InvestigatorAssignDamage iid source DamageAny 0 1)
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
-      investigatorIds <- getInvestigatorIds
-      lead <- getLead
-      sid <- genId
-      pushAll
-        $ [ ShuffleEncounterDiscardBackIn
-          , DiscardUntilFirst lead (toSource attrs) Deck.EncounterDeck (basic $ CardWithType LocationType)
-          ]
-        <> [ beginSkillTest sid iid attrs iid #willpower (RecordedCount SacrificedToYogSothoth)
-           | sacrificedToYogSothoth > 0
-           , iid <- investigatorIds
-           ]
-        <> [advanceAgendaDeck attrs]
+  runMessage msg a@(PastPresentAndFuture attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure a
-    RequestedEncounterCard source _ (Just card) | isSource attrs source -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
       lead <- getLead
-      a <$ push (InvestigatorDrewEncounterCard lead card)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n | isSource attrs source -> do
-      a <$ push (InvestigatorAssignDamage iid source DamageAny n 0)
-    _ -> PastPresentAndFuture <$> runMessage msg attrs
+      discardUntilFirst lead attrs Deck.EncounterDeck (basic #location)
+
+      sacrificedToYogSothoth <- getRecordCount SacrificedToYogSothoth
+      when (sacrificedToYogSothoth > 0) do
+        eachInvestigator \iid -> do
+          sid <- genId
+          beginSkillTest sid iid attrs iid #willpower (recordedCount SacrificedToYogSothoth)
+      advanceAgendaDeck attrs
+      pure a
+    RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
+      lead <- getLead
+      drawCard lead card
+      pure a
+    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
+      assignDamage iid attrs n
+      pure a
+    _ -> PastPresentAndFuture <$> liftRunMessage msg attrs

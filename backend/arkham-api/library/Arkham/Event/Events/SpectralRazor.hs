@@ -4,7 +4,7 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (chooseEngageEnemy)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Matcher
 
@@ -48,8 +48,7 @@ spectralRazorEffect :: EffectArgs -> SpectralRazorEffect
 spectralRazorEffect = cardEffect SpectralRazorEffect Cards.spectralRazor
 
 instance HasModifiersFor SpectralRazorEffect where
-  getModifiersFor target (SpectralRazorEffect a) = maybeModified a do
-    guard $ isTarget target a.target
+  getModifiersFor (SpectralRazorEffect a) = maybeModified_ a a.target do
     EnemyTarget eid <- MaybeT $ getSkillTestTarget
     elite <- lift $ eid <=~> EliteEnemy
     pure [DamageDealt $ if elite then 1 else 2]

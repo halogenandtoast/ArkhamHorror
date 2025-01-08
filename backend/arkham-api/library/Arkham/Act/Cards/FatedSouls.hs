@@ -1,52 +1,45 @@
-module Arkham.Act.Cards.FatedSouls (
-  FatedSouls (..),
-  fatedSouls,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.FatedSouls (fatedSouls) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Query (getJustLocationByName, getSetAsideCardsMatching)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EncounterDeck)
-import Arkham.Placement
+import Arkham.Message.Lifted.Placement
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype FatedSouls = FatedSouls ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor FatedSouls where
-  getModifiersFor (InvestigatorTarget _) (FatedSouls attrs) = do
-    toModifiers attrs [CannotMove, CannotBeMoved]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FatedSouls attrs) = modifySelect attrs Anyone [CannotMove, CannotBeMoved]
 
 fatedSouls :: ActCard FatedSouls
-fatedSouls = act (2, A) FatedSouls Cards.fatedSouls (Just $ GroupClueCost (PerPlayer 2) Anywhere)
+fatedSouls = act (2, A) FatedSouls Cards.fatedSouls (groupClueCost (PerPlayer 2))
 
 instance RunMessage FatedSouls where
-  runMessage msg a@(FatedSouls attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      miskatonicRiver <- getJustLocationByName "Miskatonic River"
-      watcher <- selectJust (OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher)
+  runMessage msg a@(FatedSouls attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      selectForMaybeM (OutOfPlayEnemy SetAsideZone $ enemyIs Enemies.theSpectralWatcher) \watcher -> do
+        place watcher =<< getJustLocationByName "Miskatonic River"
+
       watchersGrasp <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGrasp
       watchersGaze <- getSetAsideCardsMatching $ cardIs Treacheries.watchersGaze
+      shuffleCardsIntoDeck EncounterDeck (watchersGrasp <> watchersGaze)
+
+      shuffleEncounterDiscardBackIn
+      advanceActDeck attrs
+
       locations <- select $ LocationIsInFrontOf Anyone
-      (geistTrap, placeGeistTrap) <- placeSetAsideLocation Locations.theGeistTrap
-      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
-      pushAll
-        $ [ PlaceEnemy watcher $ AtLocation miskatonicRiver
-          , ShuffleCardsIntoDeck EncounterDeck (watchersGrasp <> watchersGaze)
-          , ShuffleEncounterDiscardBackIn
-          , advanceActDeck attrs
-          ]
-        <> map PutLocationInCenter locations
-        <> [placeGeistTrap]
-        <> [lightBrazier geistTrap | sidedWithTheCoven]
+      pushAll $ map PutLocationInCenter locations
+
+      whenHasRecord TheInvestigatorsSidedWithTheCoven do
+        lightBrazier =<< placeSetAsideLocation Locations.theGeistTrap
       pure a
-    _ -> FatedSouls <$> runMessage msg attrs
+    _ -> FatedSouls <$> liftRunMessage msg attrs

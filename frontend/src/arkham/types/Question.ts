@@ -1,5 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
+import { flavorTextDecoder } from '@/arkham/types/FlavorText';
 
 export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
 
@@ -48,11 +49,6 @@ export type QuestionLabel = {
   card: string | null
   label: string
   question: Question
-}
-
-export type FlavorText = {
-  title: string | null;
-  body: string[];
 }
 
 export type Read = {
@@ -256,13 +252,6 @@ export const questionLabelDecoder: JsonDecoder.Decoder<QuestionLabel> = JsonDeco
   'QuestionLabel',
 );
 
-export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.object<FlavorText>(
-  {
-    title: JsonDecoder.nullable(JsonDecoder.string),
-    body: JsonDecoder.array(JsonDecoder.string, 'string[]')
-  },
-  'FlavorText',
-);
 
 export type ReadChoices
   = { tag: "BasicReadChoices", contents: Message[] }

@@ -33,7 +33,7 @@ instance RunMessage CavernOfTheForgottenAge where
   runMessage msg a@(CavernOfTheForgottenAge attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
       descentToYoth <- getSetAsideCard Locations.descentToYoth
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
 
       pushAll

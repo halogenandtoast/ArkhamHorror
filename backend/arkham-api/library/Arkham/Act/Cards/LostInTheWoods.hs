@@ -26,21 +26,20 @@ newtype LostInTheWoods = LostInTheWoods ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LostInTheWoods where
-  getModifiersFor (LocationTarget lid) (LostInTheWoods a) = do
-    mInFrontOf <- field LocationInFrontOf lid
-    toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid)
-        $ NotLocation (LocationWithId lid)
-        <> LocationIsInFrontOf (InvestigatorWithId iid)
-      | iid <- maybeToList mInFrontOf
-      ]
-  getModifiersFor (InvestigatorTarget iid) (LostInTheWoods a) = do
-    lids <-
-      select
-        $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
-    toModifiers a $ map CannotEnter lids
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LostInTheWoods a) = do
+    locations <- modifySelectMaybe a (LocationIsInFrontOf Anyone) \lid -> do
+      iid <- MaybeT $ field LocationInFrontOf lid
+      pure
+        [ ConnectedToWhen (LocationWithId lid)
+            $ not_ (LocationWithId lid)
+            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        ]
+
+    investigators <- modifySelectMaybe a Anyone \iid -> do
+      lids <- lift $ select $ LocationIsInFrontOf (not_ $ InvestigatorWithId iid)
+      pure $ map CannotEnter lids
+
+    pure $ locations <> investigators
 
 instance HasAbilities LostInTheWoods where
   getAbilities (LostInTheWoods a) =
@@ -59,8 +58,8 @@ instance RunMessage LostInTheWoods where
       push $ AdvanceAct (toId a) (InvestigatorSource iid) AdvancedWithClues
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigatorIds
-      lead <- getLeadInvestigatorId
+      iids <- getInvestigators
+      lead <- getLead
       arkhamWoods <-
         shuffleM
           =<< select (SetAsideCardMatch $ CardWithTitle "Arkham Woods")

@@ -31,15 +31,13 @@ intro2 =
       \ you may be able to save Arkham..."
     ]
 
-decievingTheLodge :: FlavorText
+decievingTheLodge :: FlavorTextEntry
 decievingTheLodge =
-  FlavorText
-    Nothing
-    [ "...though you suspect the Lodge has other interests. The Lodge clearly knows\
-      \ more about what is happening than they care to admit. There is a sinister\
-      \ purpose that lurks beneath the surface of the Lodge, and you intend to discover\
-      \ what that purpose is."
-    ]
+  BasicEntry
+    "...though you suspect the Lodge has other interests. The Lodge clearly knows\
+    \ more about what is happening than they care to admit. There is a sinister\
+    \ purpose that lurks beneath the surface of the Lodge, and you intend to discover\
+    \ what that purpose is."
 
 intro3 :: FlavorText
 intro3 =

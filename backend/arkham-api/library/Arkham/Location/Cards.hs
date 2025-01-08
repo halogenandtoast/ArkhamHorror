@@ -81,6 +81,8 @@ allLocationCards =
       , administrationBuilding
       , administrationOffice_130
       , administrationOffice_131
+      , airfield
+      , alaskanWilds
       , alchemyLabs
       , altarToDagon
       , ancientHall
@@ -114,6 +116,7 @@ allLocationCards =
       , balconySpectral
       , ballroom
       , barrierCamp
+      , baseCamp
       , baseOfTheHill
       , baseOfTheSteps
       , basement
@@ -189,6 +192,8 @@ allLocationCards =
       , cloverClubBar
       , cloverClubCardroom
       , cloverClubLounge
+      , clutteredDormitory
+      , coastalWaters
       , coldSpringGlen_244
       , coldSpringGlen_245
       , coldWastes
@@ -215,14 +220,17 @@ allLocationCards =
       , darkHollow
       , darkSpires
       , darkenedHall
+      , deckOfTheTheodosia
       , deconstructionRoom
       , deepBelowYourHouse
+      , deepDrifts
       , deepOneGrotto_175a
       , deepOneGrotto_175b
       , deepOneNursery
       , depthsOfDemheTheHeightOfTheDepths
       , depthsOfDemheStepsOfThePalace
       , descentToYoth
+      , desertedStation
       , desolateCoastline
       , desolateRoad_a
       , desolateRoad_b
@@ -245,15 +253,18 @@ allLocationCards =
       , downstairsDoorwayParlor
       , downtownArkhamAsylum
       , downtownFirstBankOfArkham
+      , drKenslersOffice
       , dreamGatePointlessReality
       , dreamGateWondrousJourney
       , dressingRoom
       , dunwichVillage_242
       , dunwichVillage_243
+      , dyersClassroom
       , dylathLeen
       , easttown
       , easttownArkhamPoliceStation
       , eerieGlade
+      , elderChamber
       , emergencyRoom
       , enchantedWoodsFungalForest
       , enchantedWoodsGreatStoneCircle
@@ -353,6 +364,7 @@ allLocationCards =
       , hauntedFields
       , hauntedFieldsSpectral
       , hazuthKleg
+      , hedgeMaze
       , hereticsGravesSpectral_171
       , hereticsGravesSpectral_172
       , hereticsGraves_171
@@ -381,6 +393,7 @@ allLocationCards =
       , ilekVad
       , infinityOfDarkness
       , infirmary
+      , infirmaryFatalMirage
       , innerSanctum
       , innsmouthHarbour
       , innsmouthHarbourInTooDeep
@@ -441,6 +454,7 @@ allLocationCards =
       , miskatonicRiver
       , miskatonicUniversity
       , miskatonicUniversityMiskatonicMuseum
+      , moaiStatues
       , moldyHalls
       , moldyHallsEarlierTonight
       , monasteryOfLeng
@@ -463,6 +477,7 @@ allLocationCards =
       , mysteriousStairs_187
       , mysteriousStairs_188
       , namelessRuins
+      , narrowRidge
       , narrowShaft
       , newChurchGreen
       , newChurchGreenInTooDeep
@@ -483,6 +498,7 @@ allLocationCards =
       , orneLibrary
       , osbornsGeneralStore_206
       , osbornsGeneralStore_207
+      , ottomanFront
       , outerWall_285
       , outerWall_286
       , overgrownCairns
@@ -512,6 +528,7 @@ allLocationCards =
       , porteDeLAvancee
       , precariousIceSheet
       , prismaticCascade
+      , prisonOfMemories
       , privateRoom
       , pumpRoom
       , quietHalls_131
@@ -531,7 +548,9 @@ allLocationCards =
       , rivertownAbandonedWarehouse
       , rivertown_292
       , rivertown_293
+      , riverviewTheatre
       , rockyCrags
+      , rockyLedge
       , room212
       , room225
       , room245
@@ -582,6 +601,7 @@ allLocationCards =
       , skaiRiver
       , slaughteredWoods
       , sleepingCar
+      , snowCoveredCrag
       , snowGraves
       , southChurch_298
       , southChurch_299
@@ -591,7 +611,9 @@ allLocationCards =
       , southside_295
       , stMarysHospital
       , stairwell
+      , standingStones
       , statuesInTheDeep
+      , steepIncline
       , stepsOfYhagharl
       , stepsOfYoth
       , stoneAltar
@@ -624,6 +646,7 @@ allLocationCards =
       , tenAcreMeadow_246
       , tenAcreMeadow_247
       , theBlackCore
+      , theBlackStone
       , theBlackThrone
       , theCavernOfFlame
       , theDarkCrater
@@ -649,6 +672,7 @@ allLocationCards =
       , theLittleBookshopInTooDeep
       , theMoonRoom
       , theOnyxCastle
+      , theSummit
       , theWhiteShip
       , theatre
       , tidalPool
@@ -674,6 +698,7 @@ allLocationCards =
       , underseaCorridors
       , underwaterCavern
       , unfamiliarChamber
+      , universityHalls
       , unmarkedTomb
       , unvisitedIsleDecayedWillow
       , unvisitedIsleForsakenWoods
@@ -705,6 +730,8 @@ allLocationCards =
       , wellOfSouls
       , whateleyRuins_250
       , whateleyRuins_251
+      , whiteBluff
+      , windsweptPath
       , witchHauntedWoodsAbandonedMine
       , witchHauntedWoodsCairnStones
       , witchHauntedWoodsChildsTreeHouse
@@ -6274,7 +6301,7 @@ innsmouthHarbour =
   location
     "07066"
     "Innsmouth Harbour"
-    [Innsmouth, Central]
+    [Innsmouth]
     Moon
     [Circle, Hourglass, Equals, Heart]
     TheVanishingOfElinaHarper
@@ -7364,6 +7391,331 @@ crystallineCavern =
       Hourglass
       [Equals, Square]
       IceAndDeath
+
+prisonOfMemories :: CardDef
+prisonOfMemories =
+  singleSided
+    $ location
+      "08556"
+      "Prison of Memories"
+      [Otherworld, Mirage]
+      Circle
+      [Triangle]
+      FatalMirage
+
+baseCamp :: CardDef
+baseCamp =
+  singleSided
+    $ location
+      "08557"
+      "Base Camp"
+      [Mirage]
+      Triangle
+      [Circle, Triangle, Trefoil, Square, Spade]
+      FatalMirage
+
+deckOfTheTheodosia :: CardDef
+deckOfTheTheodosia =
+  singleSided
+    $ location
+      "08558"
+      "Deck of the Theodosia"
+      [Mirage]
+      Triangle
+      [Circle, Triangle, Hourglass, Square, Diamond]
+      FatalMirage
+
+universityHalls :: CardDef
+universityHalls =
+  singleSided
+    $ location
+      "08559"
+      "University Halls"
+      [Mirage]
+      Triangle
+      [Circle, Triangle, Moon, Trefoil, Hourglass]
+      FatalMirage
+
+hedgeMaze :: CardDef
+hedgeMaze =
+  singleSided
+    $ location
+      "08560"
+      "Hedge Maze"
+      [Mirage]
+      Diamond
+      [Circle, Equals]
+      FatalMirage
+
+desertedStation :: CardDef
+desertedStation =
+  singleSided
+    $ location
+      "08561"
+      "Deserted Station"
+      [Mirage]
+      Spade
+      [Circle, Heart]
+      FatalMirage
+
+coastalWaters :: CardDef
+coastalWaters =
+  singleSided
+    $ location
+      "08562"
+      "Coastal Waters"
+      [Mirage]
+      Square
+      [Circle, Star]
+      FatalMirage
+
+elderChamber :: CardDef
+elderChamber =
+  singleSided
+    $ location
+      "08563"
+      "Elder Chamber"
+      [Mirage]
+      Moon
+      [Circle, T]
+      FatalMirage
+
+riverviewTheatre :: CardDef
+riverviewTheatre =
+  singleSided
+    $ location
+      "08564"
+      "Riverview Theatre"
+      [Mirage]
+      Trefoil
+      [Circle, Squiggle]
+      FatalMirage
+
+standingStones :: CardDef
+standingStones =
+  singleSided
+    $ location
+      "08565"
+      "Standing Stones"
+      [Mirage]
+      Hourglass
+      [Circle, Droplet]
+      FatalMirage
+
+airfield :: CardDef
+airfield =
+  singleSided
+    $ location
+      "08566"
+      "Airfield"
+      [Mirage]
+      Star
+      [Circle]
+      FatalMirage
+
+alaskanWilds :: CardDef
+alaskanWilds =
+  singleSided
+    $ location
+      "08567"
+      "Alaskan Wilds"
+      [Mirage]
+      Heart
+      [Circle]
+      FatalMirage
+
+clutteredDormitory :: CardDef
+clutteredDormitory =
+  singleSided
+    $ location
+      "08568"
+      "Cluttered Dormitory"
+      [Mirage]
+      T
+      [Circle]
+      FatalMirage
+
+dyersClassroom :: CardDef
+dyersClassroom =
+  singleSided
+    $ location
+      "08569"
+      "Dyer's Classroom"
+      [Mirage]
+      Droplet
+      [Circle]
+      FatalMirage
+
+infirmaryFatalMirage :: CardDef
+infirmaryFatalMirage =
+  singleSided
+    $ location
+      "08570"
+      "Infirmary"
+      [Mirage]
+      Squiggle
+      [Circle]
+      FatalMirage
+
+drKenslersOffice :: CardDef
+drKenslersOffice =
+  singleSided
+    $ location
+      "08571"
+      "Dr. Kensler's Office"
+      [Mirage]
+      Squiggle
+      [Circle]
+      FatalMirage
+
+moaiStatues :: CardDef
+moaiStatues =
+  singleSided
+    $ location
+      "08572"
+      "Mo'ai Statues"
+      [Mirage]
+      Equals
+      [Circle]
+      FatalMirage
+
+ottomanFront :: CardDef
+ottomanFront =
+  singleSided
+    $ location
+      "08573"
+      "Ottoman Front"
+      [Mirage]
+      Star
+      [Circle]
+      FatalMirage
+
+theBlackStone :: CardDef
+theBlackStone =
+  singleSided
+    $ location
+      "08574"
+      "The Black Stone"
+      [Mirage]
+      Droplet
+      [Circle]
+      FatalMirage
+
+deepDrifts :: CardDef
+deepDrifts =
+  victory 1
+    $ locationWithUnrevealed
+      "08600"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Deep Drifts"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+whiteBluff :: CardDef
+whiteBluff =
+  victory 1
+    $ locationWithUnrevealed
+      "08601"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "White Bluff"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+steepIncline :: CardDef
+steepIncline =
+  victory 1
+    $ locationWithUnrevealed
+      "08602"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Steep Incline"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+narrowRidge :: CardDef
+narrowRidge =
+  victory 1
+    $ locationWithUnrevealed
+      "08603"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Narrow Ridge"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+rockyLedge :: CardDef
+rockyLedge =
+  victory 1
+    $ locationWithUnrevealed
+      "08604"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Rocky Ledge"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+snowCoveredCrag :: CardDef
+snowCoveredCrag =
+  victory 1
+    $ locationWithUnrevealed
+      "08605"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Snow-Covered Crag"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+windsweptPath :: CardDef
+windsweptPath =
+  victory 1
+    $ locationWithUnrevealed
+      "08606"
+      "Mountainside"
+      mempty
+      NoSymbol
+      []
+      "Windswept Path"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
+
+theSummit :: CardDef
+theSummit =
+  victory 1
+    $ location
+      "08607"
+      "The Summit"
+      mempty
+      NoSymbol
+      []
+      ToTheForbiddenPeaks
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

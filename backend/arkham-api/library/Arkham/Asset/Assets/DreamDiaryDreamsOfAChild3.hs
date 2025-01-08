@@ -18,7 +18,7 @@ import Arkham.Projection
 import Arkham.Skill.Cards qualified as Skills
 
 newtype DreamDiaryDreamsOfAChild3 = DreamDiaryDreamsOfAChild3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamDiaryDreamsOfAChild3 :: AssetCard DreamDiaryDreamsOfAChild3
@@ -26,16 +26,15 @@ dreamDiaryDreamsOfAChild3 =
   asset DreamDiaryDreamsOfAChild3 Cards.dreamDiaryDreamsOfAChild3
 
 instance HasModifiersFor DreamDiaryDreamsOfAChild3 where
-  getModifiersFor (CardIdTarget cid) (DreamDiaryDreamsOfAChild3 a) = do
-    card <- getCard cid
-    mMods <- runMaybeT $ do
-      guard $ card `cardMatch` cardIs Skills.essenceOfTheDream
-      guard $ toCardOwner card == a.controller
-      controller <- hoistMaybe a.controller
-      guardM $ lift $ fieldMap InvestigatorHand ((>= 8) . length) controller
-      pure $ AddSkillIcons [#wild, #wild]
-    toModifiers a $ toList mMods
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamDiaryDreamsOfAChild3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      valid <- fieldMap InvestigatorHand ((>= 8) . length) iid
+      if valid
+        then do
+          essences <- findAllCards (`cardMatch` (CardOwnedBy iid <> cardIs Skills.essenceOfTheDream))
+          modifyEach a essences [AddSkillIcons [#wild, #wild]]
+        else pure mempty
 
 instance HasAbilities DreamDiaryDreamsOfAChild3 where
   getAbilities (DreamDiaryDreamsOfAChild3 a) =

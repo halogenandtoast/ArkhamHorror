@@ -5,22 +5,23 @@ import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 obscuringFog :: TreacheryCard ObscuringFog
 obscuringFog = treachery ObscuringFog Cards.obscuringFog
 
 instance HasModifiersFor ObscuringFog where
-  getModifiersFor (LocationTarget lid) (ObscuringFog attrs) =
-    toModifiers attrs [ShroudModifier 2 | treacheryOnLocation lid attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ObscuringFog attrs) = case attrs.placement of
+    AttachedToLocation lid -> modified_ attrs lid [ShroudModifier 2]
+    _ -> pure mempty
 
 instance HasAbilities ObscuringFog where
   getAbilities (ObscuringFog a) = case treacheryAttachedTarget a of

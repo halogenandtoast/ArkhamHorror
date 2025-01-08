@@ -1,20 +1,14 @@
-module Arkham.Location.Cards.GreatLibrary (
-  greatLibrary,
-  GreatLibrary (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.GreatLibrary (greatLibrary) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype GreatLibrary = GreatLibrary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,30 +19,23 @@ greatLibrary = location GreatLibrary Cards.greatLibrary 2 (Static 4)
 
 instance HasAbilities GreatLibrary where
   getAbilities (GreatLibrary attrs) =
-    withBaseAbilities
+    extendRevealed
       attrs
-      [ skillTestAbility
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-          <> ClueCost (PerPlayer 1)
-      , restrictedAbility attrs 2 (CluesOnThis $ LessThan $ Static 4)
-          $ ForcedAbility
-          $ RoundEnds Timing.When
+      [ skillTestAbility $ restricted attrs 1 Here $ actionAbilityWithCost (ClueCost $ PerPlayer 1)
+      , restricted attrs 2 (CluesOnThis $ LessThan $ Static 4) $ forced $ RoundEnds #when
       ]
 
 instance RunMessage GreatLibrary where
-  runMessage msg l@(GreatLibrary attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(GreatLibrary attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push $ beginSkillTest sid iid (attrs.ability 1) iid SkillIntellect (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
       pure l
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      current <- field LocationClues (toId attrs)
-      push $ PlaceClues (toAbilitySource attrs 2) (toTarget attrs) (4 - current)
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      current <- field LocationClues attrs.id
+      placeClues (attrs.ability 2) attrs (4 - current)
       pure l
-    PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->
-      do
-        push $ Remember FoundTheProcess
-        pure l
-    _ -> GreatLibrary <$> runMessage msg attrs
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      remember FoundTheProcess
+      pure l
+    _ -> GreatLibrary <$> liftRunMessage msg attrs

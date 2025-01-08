@@ -24,14 +24,11 @@ townHall :: LocationCard TownHall
 townHall = location TownHall Cards.townHall 4 (PerPlayer 1)
 
 instance HasModifiersFor TownHall where
-  getModifiersFor (LocationTarget lid) (TownHall a) = do
-    isDowntown <- lid <=~> locationIs Cards.downtownFirstBankOfArkham
-    toModifiers
+  getModifiersFor (TownHall a) = do
+    modifySelectMap
       a
-      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-      | isDowntown
-      ]
-  getModifiersFor _ _ = pure []
+      (locationIs Cards.downtownFirstBankOfArkham)
+      \lid -> [ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)]
 
 instance HasAbilities TownHall where
   getAbilities (TownHall a) =

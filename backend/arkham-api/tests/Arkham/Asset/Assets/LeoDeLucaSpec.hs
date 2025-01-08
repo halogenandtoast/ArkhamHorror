@@ -39,7 +39,9 @@ spec = describe "Leo De Luca" $ do
       withEach [leoDeLuca, theBlackFan3] $ \choice -> do
         duringRound $ do
           duringTurn self $ do
-            [chosenAction] <- filter ((== toSource choice) . additionalActionSource) <$> self.additionalActions
+            [chosenAction] <-
+              filter ((== IndexedSource 1 (toSource choice)) . additionalActionSource)
+                <$> self.additionalActions
             takeResource self
             chooseOptionMatching "use action from choice" $ \case
               Label _ (LoseAdditionalAction _ additionalAction : _) -> additionalAction == chosenAction

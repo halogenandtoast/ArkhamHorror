@@ -32,7 +32,7 @@ instance RunMessage ExpeditionIntoTheWild where
       pure a
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       setAsideAgentsOfYig <- getSetAsideEncounterSet AgentsOfYig
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       sid <- genId
       pushAll
         $ [ ShuffleEncounterDiscardBackIn

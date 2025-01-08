@@ -4,14 +4,13 @@ module Arkham.Treachery.Cards.WhispersInYourHeadAnxiety (
 ) where
 
 import Arkham.Ability
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Import.Lifted
 
 newtype WhispersInYourHeadAnxiety = WhispersInYourHeadAnxiety TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 whispersInYourHeadAnxiety :: TreacheryCard WhispersInYourHeadAnxiety
@@ -19,9 +18,9 @@ whispersInYourHeadAnxiety =
   treachery WhispersInYourHeadAnxiety Cards.whispersInYourHeadAnxiety
 
 instance HasModifiersFor WhispersInYourHeadAnxiety where
-  getModifiersFor (InvestigatorTarget iid) (WhispersInYourHeadAnxiety a) =
-    modified a [CannotTriggerFastAbilities | treacheryInHandOf a == Just iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhispersInYourHeadAnxiety a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotTriggerFastAbilities]
+    _ -> pure mempty
 
 instance HasAbilities WhispersInYourHeadAnxiety where
   getAbilities (WhispersInYourHeadAnxiety a) =

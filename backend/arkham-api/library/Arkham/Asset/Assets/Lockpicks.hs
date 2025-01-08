@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Modifier
 
 newtype Lockpicks = Lockpicks AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -34,9 +34,8 @@ lockpicksEffect :: EffectArgs -> LockpicksEffect
 lockpicksEffect = cardEffect LockpicksEffect Cards.lockpicks
 
 instance HasModifiersFor LockpicksEffect where
-  getModifiersFor target (LockpicksEffect a) | a.target `is` target = do
-    toModifiers a [AddSkillValue #agility]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LockpicksEffect a) =
+    modified_ a a.target [AddSkillValue #agility]
 
 instance RunMessage LockpicksEffect where
   runMessage msg e@(LockpicksEffect attrs) = runQueueT $ case msg of

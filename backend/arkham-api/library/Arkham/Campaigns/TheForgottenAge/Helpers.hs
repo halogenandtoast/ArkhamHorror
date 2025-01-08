@@ -1,6 +1,7 @@
 module Arkham.Campaigns.TheForgottenAge.Helpers where
 
 import Arkham.Ability
+import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -41,11 +42,11 @@ getAnyHasSupply = fmap notNull . getInvestigatorsWithSupply
 
 getInvestigatorsWithSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithSupply s =
-  getInvestigatorIds >>= filterM (`getHasSupply` s)
+  getInvestigators >>= filterM (`getHasSupply` s)
 
 getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s =
-  getInvestigatorIds >>= filterM (fmap not . (`getHasSupply` s))
+  getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
 
 getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
 getVengeanceInVictoryDisplay = do
@@ -218,10 +219,10 @@ explore iid source cardMatcher exploreRule matchCount = do
         pure
           $ map snd placements
           <> [ chooseOne
-              player
-              [ targetLabel lid [Move $ move source iid lid]
-              | lid <- locationIds
-              ]
+                player
+                [ targetLabel lid [Move $ move source iid lid]
+                | lid <- locationIds
+                ]
              | canMove
              ]
           <> [ UpdateHistory iid historyItem
@@ -260,3 +261,69 @@ cancelExplore source = push $ CancelNext (toSource source) ExploreMessage
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "theForgottenAge" a
+
+pickSupplies :: ReverseQueue m => InvestigatorId -> Metadata -> [Supply] -> Message -> m ()
+pickSupplies iid metadata supplies continue = do
+  let remaining = findWithDefault 0 iid (supplyPoints metadata)
+  when (remaining > 0) do
+    player <- getPlayer iid
+    investigatorSupplies <- field InvestigatorSupplies iid
+    let
+      availableSupply s = s `notElem` investigatorSupplies || s `elem` [Provisions, Medicine, Gasoline]
+      affordableSupplies = filter ((<= remaining) . supplyCost) supplies
+      availableSupplies = filter availableSupply affordableSupplies
+    push
+      $ Ask player
+      $ PickSupplies remaining investigatorSupplies
+      $ Label "Done" []
+      : map (\s -> supplyLabel s [PickSupply iid s, continue]) availableSupplies
+
+supplyLabel :: Supply -> [Message] -> UI Message
+supplyLabel s = case s of
+  Provisions ->
+    go
+      "Provisions"
+      "(1 supply point each): Food and water for one person. A must-have for any journey."
+  Medicine ->
+    go
+      "Medicine"
+      "(2 supply points each): To stave off disease, infection, or venom."
+  Gasoline ->
+    go "Gasoline" "(1 supply points each): Enough for a long journey by car."
+  Rope ->
+    go
+      "Rope"
+      "(3 supply points): Several long coils of strong rope.  Vital for climbing and spelunking."
+  Blanket -> go "Blanket" "(2 supply points): For warmth at night."
+  Canteen ->
+    go "Canteen" "(2 supply points): Can be refilled at streams and rivers."
+  Torches ->
+    go
+      "Torches"
+      "(3 supply points): Can light up dark areas, or set sconces alight."
+  Compass ->
+    go
+      "Compass"
+      "(2 supply points): Can guide you when you are hopelessly lost."
+  Map ->
+    go
+      "Map"
+      "(3 supply points): Unmarked for now, but with time, you may be able to map out your surroundings."
+  Binoculars ->
+    go "Binoculars" "(2 supply points): To help you see faraway places."
+  Chalk -> go "Chalk" "(2 supply points): For writing on rough stone surfaces."
+  Pendant ->
+    go
+      "Pendant"
+      "(1 supply point): Useless, but fond memories bring comfort to travelers far from home."
+  Pocketknife ->
+    go
+      "Pocketknife"
+      "(2 supply point): Too small to be used as a reliable weapon, but easily concealed."
+  Pickaxe ->
+    go "Pickaxe" "(2 supply point): For breaking apart rocky surfaces."
+ where
+  go label tooltip = TooltipLabel label (Tooltip tooltip)
+
+useSupply :: ReverseQueue m => InvestigatorId -> Supply -> m ()
+useSupply iid s = push $ UseSupply iid s

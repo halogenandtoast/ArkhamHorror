@@ -1,11 +1,9 @@
 module Arkham.Treachery.Cards.UnhallowedCountry (UnhallowedCountry (..), unhallowedCountry) where
 
 import Arkham.Ability
-import Arkham.Asset.Types (Field (..))
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Projection
-import Arkham.Trait
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -17,15 +15,12 @@ unhallowedCountry :: TreacheryCard UnhallowedCountry
 unhallowedCountry = treachery UnhallowedCountry Cards.unhallowedCountry
 
 instance HasModifiersFor UnhallowedCountry where
-  getModifiersFor (InvestigatorTarget iid) (UnhallowedCountry attrs) =
-    modified attrs [CannotPlay (#asset <> #ally) | treacheryInThreatArea iid attrs]
-  getModifiersFor (AssetTarget aid) (UnhallowedCountry attrs) = do
-    isAlly <- fieldMap AssetTraits (member Ally) aid
-    miid <- selectAssetController aid
-    modified attrs $ case miid of
-      Just iid -> [Blank | treacheryInThreatArea iid attrs && isAlly]
-      Nothing -> []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UnhallowedCountry attrs) = case attrs.placement of
+    InThreatArea iid -> do
+      threat <- inThreatAreaGets attrs [CannotPlay (#asset <> #ally)]
+      assets <- modifySelect attrs (#ally <> assetControlledBy iid) [Blank]
+      pure $ threat <> assets
+    _ -> pure mempty
 
 instance HasAbilities UnhallowedCountry where
   getAbilities (UnhallowedCountry x) = [skillTestAbility $ restrictedAbility x 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]

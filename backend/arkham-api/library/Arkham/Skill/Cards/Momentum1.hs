@@ -2,7 +2,7 @@ module Arkham.Skill.Cards.Momentum1 (momentum1, momentum1Effect, Momentum1 (..))
 
 import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 
@@ -28,12 +28,13 @@ momentum1Effect :: EffectArgs -> Momentum1Effect
 momentum1Effect = cardEffect Momentum1Effect Cards.momentum1
 
 instance HasModifiersFor Momentum1Effect where
-  getModifiersFor (SkillTestTarget _) (Momentum1Effect attrs) = maybeModified attrs do
-    investigator <- MaybeT getSkillTestInvestigator
-    guard $ investigator `is` attrs.target
-    EffectInt n <- hoistMaybe attrs.meta
-    pure [Difficulty (-n)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Momentum1Effect attrs) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+        guard $ st.investigator `is` attrs.target
+        EffectInt n <- hoistMaybe attrs.meta
+        pure [Difficulty (-n)]
 
 instance RunMessage Momentum1Effect where
   runMessage msg e@(Momentum1Effect attrs) = runQueueT $ case msg of

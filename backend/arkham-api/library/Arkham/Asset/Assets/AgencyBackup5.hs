@@ -5,11 +5,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Discover
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
-import Arkham.Projection
 
 newtype AgencyBackup5 = AgencyBackup5 AssetAttrs
   deriving anyclass IsAsset
@@ -19,13 +17,13 @@ agencyBackup5 :: AssetCard AgencyBackup5
 agencyBackup5 = ally AgencyBackup5 Cards.agencyBackup5 (4, 4)
 
 instance HasModifiersFor AgencyBackup5 where
-  getModifiersFor (InvestigatorTarget iid) (AgencyBackup5 a) = maybeModified a do
-    guard $ not (controlledBy a iid)
-    location <- MaybeT $ field InvestigatorLocation iid
-    assetLocation <- MaybeT $ field AssetLocation (toId a)
-    guard $ location == assetLocation
-    pure [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AgencyBackup5 a) = case a.controller of
+    Just controller ->
+      modifySelect
+        a
+        (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a))
+        [CanAssignDamageToAsset (toId a), CanAssignHorrorToAsset (toId a)]
+    Nothing -> pure mempty
 
 instance HasAbilities AgencyBackup5 where
   getAbilities (AgencyBackup5 a) =

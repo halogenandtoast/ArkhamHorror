@@ -3,10 +3,13 @@ module Arkham.Helpers.SkillTest.Lifted (module Arkham.Helpers.SkillTest.Lifted, 
 import Arkham.Calculation
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Id
+import Arkham.Location.Types (Field (..))
 import Arkham.Message (Message (..))
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -92,6 +95,17 @@ evade
   -> GameCalculation
   -> m ()
 evade sid iid source target sType n = push $ Msg.evade sid iid source target sType n
+
+investigate_
+  :: (Sourceable source, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> m ()
+investigate_ sid iid source = withLocationOf iid \lid -> do
+  sType <- field LocationInvestigateSkill lid
+  difficulty <- field LocationInvestigateDifficulty lid
+  push $ Msg.investigate sid iid source lid sType difficulty
 
 investigate
   :: (Sourceable source, Targetable target, ReverseQueue m)

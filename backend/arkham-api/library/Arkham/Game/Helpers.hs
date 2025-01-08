@@ -28,6 +28,7 @@ import Arkham.Action.Additional (AdditionalActionType (BobJenkinsAction), additi
 import {-# SOURCE #-} Arkham.Asset (createAsset)
 import Arkham.Asset.Types (Asset, AssetAttrs (assetCardCode), Field (..))
 import Arkham.Attack
+import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosToken
@@ -334,6 +335,8 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
     EnemySource eid -> eid <=~> Matcher.canParleyEnemy iid
     AssetSource _ -> pure True
     ActSource _ -> pure True
+    IndexedSource _ (AssetSource _) -> pure True
+    IndexedSource _ (LocationSource _) -> pure True
     ProxySource (AssetSource _) _ -> pure True
     ProxySource (LocationSource _) _ -> pure True
     LocationSource _ -> pure True
@@ -546,7 +549,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
         usedAbilities' <-
           filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
 
         let wasUsedThisWindow = maybe False usedThisWindow $ find ((== ability) . usedAbility) usedAbilities'
 
@@ -582,7 +585,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           fmap (map usedAbility)
             . filterDepthSpecificAbilities
             =<< concatMapM (field InvestigatorUsedAbilities)
-            =<< allInvestigatorIds
+            =<< allInvestigators
         let total = count (== ability) usedAbilities'
         pure $ total < n
 
@@ -808,7 +811,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
               ]
           Nothing -> pure False
       _ -> pure False
-    iids <- filter (/= iid) <$> getInvestigatorIds
+    iids <- filter (/= iid) <$> getInvestigators
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'
     canHelpPay <- flip filterM iidsWithModifiers \(iid', modifiers') -> do
       bobJenkinsPermitted <-
@@ -963,16 +966,17 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NeedsAction -> True
         AuxiliaryCost _ inner -> isPlayAction inner
 
-    additionalCosts <- flip mapMaybeM modifiers \case
-      AdditionalCost n -> pure (Just n)
-      AdditionalActionCostOf match n -> do
-        performedActions <- field InvestigatorActionsPerformed iid
-        takenActions <- field InvestigatorActionsTaken iid
-        let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
-        pure
-          $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
-          $> ActionCost n
-      _ -> pure Nothing
+    additionalCosts <-
+      flip mapMaybeM (modifiers <> cardModifiers) \case
+        AdditionalCost n -> pure (Just n)
+        AdditionalActionCostOf match n -> do
+          performedActions <- field InvestigatorActionsPerformed iid
+          takenActions <- field InvestigatorActionsTaken iid
+          let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
+          pure
+            $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
+            $> ActionCost n
+        _ -> pure Nothing
 
     let
       sealingToCost = \case
@@ -1090,6 +1094,10 @@ onSameLocation iid = \case
   AttachedToAsset aid _ -> do
     placement' <- field AssetPlacement aid
     onSameLocation iid placement'
+
+  -- fieldMay AssetPlacement aid >>= \case
+  --   Nothing -> pure False
+  --   Just placement' -> onSameLocation iid placement'
   AttachedToAct _ -> pure False
   AttachedToAgenda _ -> pure False
   AttachedToInvestigator iid' ->
@@ -1147,6 +1155,9 @@ passesCriteria iid mcard source' requestor windows' = \case
           InVehicle aid' | aid == aid' -> pure True
           _ -> pure False
       _ -> error $ "Unhandled vehicle source: " <> show source
+  Criteria.PartnerHasStatus cCode status -> do
+    p <- getPartner cCode
+    pure $ p.status == status
   Criteria.NotInEliminatedBearersThreatArea -> do
     case source of
       EnemySource eid -> do
@@ -1236,6 +1247,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c
     gameValueMatches value valueMatcher
+  Criteria.HasRemainingFrostTokens -> (> 0) <$> getRemainingFrostTokens
   Criteria.HasRemainingBlessTokens -> (> 0) <$> getRemainingBlessTokens
   Criteria.HasRemainingCurseTokens -> (> 0) <$> getRemainingCurseTokens
   Criteria.HasNRemainingCurseTokens valueMatcher -> (`gameValueMatches` valueMatcher) =<< getRemainingCurseTokens
@@ -1295,10 +1307,10 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny Matcher.ResignedInvestigator -- at least one investigator should have resigned
       ]
   Criteria.EachUndefeatedInvestigator investigatorMatcher -> do
-    liftA2
-      (==)
-      (select Matcher.UneliminatedInvestigator)
-      (select investigatorMatcher)
+    uneliminated <- select Matcher.UneliminatedInvestigator
+    if null uneliminated
+      then pure False
+      else (== uneliminated) <$> select investigatorMatcher
   Criteria.Never -> pure False
   Criteria.InYourHand -> do
     hand <-
@@ -1385,12 +1397,15 @@ passesCriteria iid mcard source' requestor windows' = \case
     LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
     ProxySource (LocationSource lid) _ ->
       fieldP InvestigatorLocation (== Just lid) iid
+    IndexedSource _ (LocationSource lid) ->
+      fieldP InvestigatorLocation (== Just lid) iid
     _ -> pure False
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
   Criteria.ControlsThis ->
     let
       go = \case
         ProxySource (CardIdSource _) s -> go s
+        IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
           elem aid
@@ -1408,6 +1423,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     let
       go = \case
         ProxySource (CardIdSource _) s -> go s
+        IndexedSource _ s -> go s
         ProxySource s _ -> go s
         AssetSource aid ->
           elem aid
@@ -1466,23 +1482,25 @@ passesCriteria iid mcard source' requestor windows' = \case
     AssetSource aid -> fieldP AssetController isNothing aid
     ProxySource (CardIdSource _) (AssetSource aid) -> fieldP AssetController isNothing aid
     ProxySource (AssetSource aid) _ -> fieldP AssetController isNothing aid
+    IndexedSource _ (AssetSource aid) -> fieldP AssetController isNothing aid
     _ -> error $ "missing ControlsThis check for source: " <> show source
   Criteria.OnSameLocation -> do
     ignored <- hasModifier iid IgnoreOnSameLocation
     if ignored
       then pure True
-      else case source of
-        StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
-        AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
-        EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
-        TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
-        ProxySource (CardIdSource _) (AssetSource aid) -> do
-          onSameLocation iid =<< field AssetPlacement aid
-        ProxySource (AssetSource aid) _ -> do
-          onSameLocation iid =<< field AssetPlacement aid
-        ProxySource (EnemySource eid) _ -> do
-          onSameLocation iid =<< field EnemyPlacement eid
-        _ -> error $ "missing OnSameLocation check for source: " <> show source
+      else do
+        let
+          go = \case
+            StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
+            AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
+            EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
+            TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
+            ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
+            ProxySource (CardCodeSource _) (AssetSource aid) -> go (AssetSource aid)
+            ProxySource inner _ -> go inner
+            IndexedSource _ inner -> go inner
+            _ -> error $ "missing OnSameLocation check for source: " <> show source
+        go source
   Criteria.DuringTurn (Matcher.replaceYouMatcher iid -> who) -> selectAny (Matcher.TurnInvestigator <> who)
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
@@ -1841,7 +1859,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
     Matcher.TakeControlOfClues timing whoMatcher sourceMatcher -> guardTiming timing \case
-      Window.TakeControlOfClues who source' -> do
+      Window.TakeControlOfClues who source' _ -> do
         andM
           [ matchWho iid who whoMatcher
           , sourceMatches source' sourceMatcher
@@ -3043,6 +3061,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
             ]
         _ -> noMatch
+    Matcher.ResolvingRevelation timing whoMatcher treacheryMatcher -> guardTiming timing \case
+      Window.ResolvingRevelation who treachery ->
+        andM
+          [ matchWho iid who whoMatcher
+          , treachery <=~> treacheryMatcher
+          ]
+      _ -> noMatch
     Matcher.DeckWouldRunOutOfCards timing whoMatcher -> guardTiming timing $ \case
       Window.DeckWouldRunOutOfCards who -> matchWho iid who whoMatcher
       _ -> noMatch
@@ -3057,7 +3082,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , case cardMatcher of
               Matcher.BasicCardMatch baseMatcher ->
                 pure $ cardMatch cardPlay.card baseMatcher
-              _ -> elem cardPlay.card <$> select cardMatcher
+              _ ->
+                elem cardPlay.card <$> select (Matcher.basic (Matcher.CardWithId cardPlay.card.id) <> cardMatcher)
           ]
       _ -> noMatch
     Matcher.PlayEventDiscarding timing whoMatcher eventMatcher -> guardTiming timing $ \case
@@ -3261,6 +3287,8 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
     Matcher.ClosestUnbarricadedPathLocation _ _ -> locationId <=~> matcher
     Matcher.LocationWithoutClues -> locationId <=~> matcher
+    Matcher.LocationHigherThan _ -> locationId <=~> matcher
+    Matcher.HighestRow _ -> locationId <=~> matcher
     Matcher.HighestShroud _ -> locationId <=~> matcher
     Matcher.LocationWithDamage {} -> locationId <=~> matcher
     Matcher.LocationWithDistanceFrom {} -> locationId <=~> matcher
@@ -3277,6 +3305,8 @@ locationMatches investigatorId source window locationId matcher' = do
       field LocationShroud locationId >>= \case
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
+    Matcher.LocationWithAttachedEvent {} -> locationId <=~> matcher
+    Matcher.LocationWithAttachment {} -> locationId <=~> matcher
     Matcher.LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField {} -> locationId <=~> matcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
@@ -3304,6 +3334,7 @@ locationMatches investigatorId source window locationId matcher' = do
       let
         go = \case
           LocationSource lid -> pure $ lid == locationId
+          IndexedSource _ s -> go s
           ProxySource s _ -> go s
           AbilitySource s _ -> go s
           _ -> error $ "Invalid source for ThisLocation: " <> show source
@@ -3357,6 +3388,7 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
     AbilitySource s _ -> s == source
     ProxySource (CardIdSource _) s -> s == source
     ProxySource _ s -> s == source
+    IndexedSource _ s -> s == source
     s -> s == source
   Matcher.SkillTestSourceMatches sourceMatcher ->
     sourceMatches (skillTestSource st) sourceMatcher
@@ -3465,10 +3497,11 @@ getModifiedChaosTokenFace token = do
 
 cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
 cardListMatches cards = \case
-  Matcher.AnyCards -> pure True
+  Matcher.AnyCards -> pure $ notNull cards
   Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
   Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
   Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+  Matcher.NoCards -> pure $ null cards
 
 targetListMatches
   :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool
@@ -3717,6 +3750,7 @@ sourceMatches s = \case
         AssetSource aid -> elem aid <$> select am
         AbilitySource (AssetSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isAssetSource pSource
+        IndexedSource _ pSource -> isAssetSource pSource
         ProxySource pSource _ -> isAssetSource pSource
         BothSource lSource rSource -> orM [isAssetSource lSource, isAssetSource rSource]
         _ -> pure False
@@ -3729,6 +3763,7 @@ sourceMatches s = \case
         AbilitySource (EventSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isEventSource pSource
         ProxySource pSource _ -> isEventSource pSource
+        IndexedSource _ pSource -> isEventSource pSource
         BothSource lSource rSource -> orM [isEventSource lSource, isEventSource rSource]
         _ -> pure False
      in
@@ -3796,6 +3831,7 @@ sourceMatches s = \case
         LocationMatcherSource {} -> True
         EnemyMatcherSource {} -> True
         LocationSource {} -> True
+        IndexedSource _ s' -> go s'
         ProxySource (CardIdSource _) s' -> go s'
         ProxySource s' _ -> go s'
         ResourceSource {} -> False

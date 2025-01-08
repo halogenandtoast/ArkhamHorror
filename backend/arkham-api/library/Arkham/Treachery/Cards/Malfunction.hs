@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Malfunction (malfunction, Malfunction (..)) where
 
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Vehicle))
@@ -16,14 +16,14 @@ malfunction :: TreacheryCard Malfunction
 malfunction = treachery Malfunction Cards.malfunction
 
 instance HasModifiersFor Malfunction where
-  getModifiersFor (InvestigatorTarget _) (Malfunction a) = do
+  getModifiersFor (Malfunction a) = do
     case a.attached of
       Just (AssetTarget aid) ->
-        modified
+        modifySelect
           a
+          Anyone
           [CannotTriggerAbilityMatching (AbilityOnAsset (AssetWithId aid) <> AbilityIsActionAbility)]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      _ -> pure mempty
 
 instance RunMessage Malfunction where
   runMessage msg t@(Malfunction attrs) = runQueueT $ case msg of

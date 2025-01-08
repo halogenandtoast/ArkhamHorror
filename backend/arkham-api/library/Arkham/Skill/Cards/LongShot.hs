@@ -1,7 +1,7 @@
 module Arkham.Skill.Cards.LongShot (longShot, LongShot (..)) where
 
 import Arkham.Action
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Skill.Cards qualified as Cards
@@ -15,9 +15,9 @@ longShot :: SkillCard LongShot
 longShot = skill LongShot Cards.longShot
 
 instance HasModifiersFor LongShot where
-  getModifiersFor target (LongShot attrs) = maybeModified attrs do
-    guard $ isTarget attrs target
-    pure
+  getModifiersFor (LongShot attrs) =
+    modifySelf
+      attrs.cardId
       [ CanCommitToSkillTestPerformedByAnInvestigatorAt
           (ConnectedFrom $ locationWithInvestigator attrs.owner)
       ]

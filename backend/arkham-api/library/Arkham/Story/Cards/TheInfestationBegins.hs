@@ -8,6 +8,9 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
+import Arkham.Distance
+import {-# SOURCE #-} Arkham.GameEnv (getDistance)
+import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkWindows)
 import Arkham.Matcher
@@ -142,13 +145,21 @@ instance RunMessage TheInfestationBegins where
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
       investigators <- getInvestigators
       locations <-
-        nub . concat <$> for investigators \i -> select (NearestLocationTo i InfestedLocation)
+        nub . mins . concat <$> for investigators \i -> do
+          select (NearestLocationTo i InfestedLocation) >>= \case
+            xs@(x : _) ->
+              fromMaybe [] <$> runMaybeT do
+                lid <- MaybeT $ getMaybeLocation i
+                d <- MaybeT $ getDistance x lid
+                pure $ map (,unDistance d) xs
+            _ -> pure []
+
       lead <- getLeadPlayer
       locationsWithCreation <- for locations $ \location -> do
         (location,) <$> createEnemyAt_ card location Nothing
 
-      push
-        $ chooseOrRunOne
+      pushWhen (notNull locationsWithCreation)
+        $ chooseOne
           lead
           [targetLabel location [creation] | (location, creation) <- locationsWithCreation]
       pure s

@@ -23,15 +23,15 @@ cityOfTheGreatRace =
   agenda (1, A) CityOfTheGreatRace Cards.cityOfTheGreatRace (Static 5)
 
 instance HasModifiersFor CityOfTheGreatRace where
-  getModifiersFor (InvestigatorTarget _) (CityOfTheGreatRace attrs)
-    | onSide A attrs =
-        toModifiers attrs [CannotPlay $ CardWithTrait Item]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CityOfTheGreatRace attrs) =
+    if onSide A attrs
+      then modifySelect attrs Anyone [CannotPlay $ CardWithTrait Item]
+      else pure mempty
 
 instance RunMessage CityOfTheGreatRace where
   runMessage msg a@(CityOfTheGreatRace attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       shouldMoveCustodian <-
         selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
 

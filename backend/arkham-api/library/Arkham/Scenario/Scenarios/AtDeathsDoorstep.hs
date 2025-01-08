@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.AtDeathsDoorstep (AtDeathsDoorstep (..), atDeathsDoorstep) where
+module Arkham.Scenario.Scenarios.AtDeathsDoorstep (atDeathsDoorstep) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -7,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheCircleUndone.CampaignSteps (pattern TheSecretName)
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -17,6 +18,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -78,7 +80,7 @@ standaloneCampaignLog =
     { campaignLogRecordedSets =
         mapFromList
           [
-            ( MissingPersons
+            ( toCampaignLogKey MissingPersons
             , [ crossedOut (toCardCode i)
               | i <-
                   [ Investigators.gavriellaMizrah

@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.LostInTimeAndSpace (LostInTimeAndSpace (..), lostInTimeAndSpace) where
+module Arkham.Scenario.Scenarios.LostInTimeAndSpace (lostInTimeAndSpace) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
@@ -15,13 +15,14 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.LostInTimeAndSpace.FlavorText
 import Arkham.Scenarios.LostInTimeAndSpace.Helpers
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype LostInTimeAndSpace = LostInTimeAndSpace ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

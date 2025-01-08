@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.DrFrancisMorgan (drFrancisMorgan, DrFrancisMorgan (..
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 
 newtype DrFrancisMorgan = DrFrancisMorgan AssetAttrs
   deriving anyclass IsAsset
@@ -21,9 +21,7 @@ instance HasAbilities DrFrancisMorgan where
     ]
 
 instance HasModifiersFor DrFrancisMorgan where
-  getModifiersFor (InvestigatorTarget iid) (DrFrancisMorgan a) | controlledBy a iid = do
-    modified a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DrFrancisMorgan a) = controllerGets a [SkillModifier #combat 1]
 
 instance RunMessage DrFrancisMorgan where
   runMessage msg a@(DrFrancisMorgan attrs) = runQueueT $ case msg of

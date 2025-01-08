@@ -1,17 +1,11 @@
-module Arkham.Location.Cards.TrappersCabin (
-  TrappersCabin (..),
-  trappersCabin,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TrappersCabin (TrappersCabin (..), trappersCabin) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype TrappersCabin = TrappersCabin LocationAttrs
@@ -22,27 +16,22 @@ trappersCabin :: LocationCard TrappersCabin
 trappersCabin = location TrappersCabin Cards.trappersCabin 3 (Static 0)
 
 instance HasModifiersFor TrappersCabin where
-  getModifiersFor (InvestigatorTarget iid) (TrappersCabin attrs) = do
-    here <- iid `isAt` attrs
-    toModifiers attrs [CannotGainResources | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TrappersCabin a) = modifySelect a (investigatorAt a) [CannotGainResources]
 
 instance HasAbilities TrappersCabin where
   getAbilities (TrappersCabin attrs) =
-    withRevealedAbilities attrs
-      $ [ skillTestAbility
-            $ restrictedAbility attrs 1 (Here <> Negate (exists $ assetIs Assets.bearTrap))
-            $ actionAbilityWithCost (ResourceCost 5)
-        ]
+    extendRevealed1 attrs
+      $ skillTestAbility
+      $ restricted attrs 1 (Here <> notExists (assetIs Assets.bearTrap))
+      $ actionAbilityWithCost (ResourceCost 5)
 
 instance RunMessage TrappersCabin where
-  runMessage msg l@(TrappersCabin attrs) = case msg of
+  runMessage msg l@(TrappersCabin attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      bearTrap <- getSetAsideCard Assets.bearTrap
-      push $ TakeControlOfSetAsideAsset iid bearTrap
+      takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.bearTrap
       pure l
-    _ -> TrappersCabin <$> runMessage msg attrs
+    _ -> TrappersCabin <$> liftRunMessage msg attrs

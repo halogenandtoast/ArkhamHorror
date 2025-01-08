@@ -25,7 +25,7 @@ atTheExhibitTheBrotherhoodsPlot =
 instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
   runMessage msg a@(AtTheExhibitTheBrotherhoodsPlot attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       pushAll
         [ FindEncounterCard
             leadInvestigatorId

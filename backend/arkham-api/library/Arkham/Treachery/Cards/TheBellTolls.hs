@@ -1,13 +1,7 @@
-module Arkham.Treachery.Cards.TheBellTolls (
-  theBellTolls,
-  TheBellTolls (..),
-) where
+module Arkham.Treachery.Cards.TheBellTolls (theBellTolls) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TheBellTolls = TheBellTolls TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -17,8 +11,8 @@ theBellTolls :: TreacheryCard TheBellTolls
 theBellTolls = treachery TheBellTolls Cards.theBellTolls
 
 instance RunMessage TheBellTolls where
-  runMessage msg t@(TheBellTolls attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ InvestigatorKilled source iid
+  runMessage msg t@(TheBellTolls attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      kill attrs iid
       pure t
-    _ -> TheBellTolls <$> runMessage msg attrs
+    _ -> TheBellTolls <$> liftRunMessage msg attrs

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Evade
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.SkillTestResult
@@ -25,13 +25,14 @@ instance HasAbilities Stealth3 where
     ]
 
 instance HasModifiersFor Stealth3 where
-  getModifiersFor (EnemyTarget eid) (Stealth3 attrs) = maybeModified attrs do
-    ProxyTarget (EnemyTarget eid') _ <- MaybeT getSkillTestTarget
-    guard $ eid' == eid
-    source <- MaybeT getSkillTestSource
-    guard $ isAbilitySource attrs 1 source
-    pure [EnemyEvade (-2)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Stealth3 a) =
+    getSkillTestTarget >>= \case
+      Just (ProxyTarget (EnemyTarget eid) _) ->
+        maybeModified_ a eid do
+          source <- MaybeT getSkillTestSource
+          guard $ isAbilitySource a 1 source
+          pure [EnemyEvade (-2)]
+      _ -> pure mempty
 
 instance RunMessage Stealth3 where
   runMessage msg a@(Stealth3 attrs) = runQueueT $ case msg of

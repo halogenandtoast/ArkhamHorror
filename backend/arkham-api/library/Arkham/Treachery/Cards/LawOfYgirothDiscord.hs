@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.LawOfYgirothDiscord (lawOfYgirothDiscord, LawOfYgi
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Matcher hiding (TreacheryInHandOf, treacheryInHandOf)
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,9 +15,9 @@ lawOfYgirothDiscord :: TreacheryCard LawOfYgirothDiscord
 lawOfYgirothDiscord = treachery LawOfYgirothDiscord Cards.lawOfYgirothDiscord
 
 instance HasModifiersFor LawOfYgirothDiscord where
-  getModifiersFor (InvestigatorTarget iid) (LawOfYgirothDiscord a) | treacheryInHandOf a == Just iid = do
-    modified a [CannotCommitCards CardWithOddSkillIcons]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LawOfYgirothDiscord a) = case a.placement of
+    HiddenInHand iid -> modified_ a iid [CannotCommitCards CardWithOddSkillIcons]
+    _ -> pure mempty
 
 instance HasAbilities LawOfYgirothDiscord where
   getAbilities (LawOfYgirothDiscord a) =

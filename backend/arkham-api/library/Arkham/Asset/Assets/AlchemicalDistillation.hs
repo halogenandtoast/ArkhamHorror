@@ -7,7 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), getMetaMaybe)
+import Arkham.Helpers.Modifiers (ModifierType (..), getMetaMaybe, modifySelfWhen)
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
@@ -22,10 +22,8 @@ alchemicalDistillation :: AssetCard AlchemicalDistillation
 alchemicalDistillation = asset AlchemicalDistillation Cards.alchemicalDistillation
 
 instance HasModifiersFor AlchemicalDistillation where
-  getModifiersFor target (AlchemicalDistillation attrs) | attrs `is` target = do
-    let refined = attrs `hasCustomization` Refined
-    modified attrs [AdditionalStartingUses 2 | refined]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AlchemicalDistillation a) =
+    modifySelfWhen a (a `hasCustomization` Refined) [AdditionalStartingUses 2]
 
 instance HasAbilities AlchemicalDistillation where
   getAbilities (AlchemicalDistillation a) =

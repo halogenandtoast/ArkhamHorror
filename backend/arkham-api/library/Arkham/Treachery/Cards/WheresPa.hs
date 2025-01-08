@@ -3,12 +3,13 @@ module Arkham.Treachery.Cards.WheresPa (wheresPa, WheresPa (..)) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Scenario (getEncounterDeckKey)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Message.Lifted.CreateEnemy
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -20,9 +21,9 @@ wheresPa :: TreacheryCard WheresPa
 wheresPa = treachery WheresPa Cards.wheresPa
 
 instance HasModifiersFor WheresPa where
-  getModifiersFor target (WheresPa a) | target `elem` a.attached = do
-    modified a [AddKeyword Keyword.Elusive]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WheresPa a) = case a.placement of
+    AttachedToEnemy eid -> modified_ a eid [AddKeyword Keyword.Elusive]
+    _ -> pure mempty
 
 instance HasAbilities WheresPa where
   getAbilities (WheresPa a) =

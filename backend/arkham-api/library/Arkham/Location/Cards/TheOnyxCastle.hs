@@ -1,25 +1,23 @@
 module Arkham.Location.Cards.TheOnyxCastle (theOnyxCastle, TheOnyxCastle (..)) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query (getPlayer)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
 import Arkham.Placement qualified as Placement
 
 newtype TheOnyxCastle = TheOnyxCastle LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theOnyxCastle :: LocationCard TheOnyxCastle
 theOnyxCastle = location TheOnyxCastle Cards.theOnyxCastle 3 (Static 0)
 
 instance HasModifiersFor TheOnyxCastle where
-  getModifiersFor target (TheOnyxCastle attrs) | attrs `is` target = do
-    toModifiers attrs [Blocked | not attrs.revealed]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheOnyxCastle a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities TheOnyxCastle where
   getAbilities (TheOnyxCastle attrs) =

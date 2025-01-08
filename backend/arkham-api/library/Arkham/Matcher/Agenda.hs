@@ -6,6 +6,7 @@ import Arkham.Agenda.Sequence
 import Arkham.Id
 import Arkham.Matcher.Act
 import {-# SOURCE #-} Arkham.Matcher.Asset
+import Arkham.Matcher.Base
 import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
@@ -31,6 +32,8 @@ data AgendaMatcher
   | AgendaCanWheelOfFortuneX
   | FinalAgenda
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsMatcher AgendaMatcher
 
 instance Semigroup AgendaMatcher where
   AnyAgenda <> x = x

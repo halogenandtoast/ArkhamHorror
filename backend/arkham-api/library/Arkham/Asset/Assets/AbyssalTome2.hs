@@ -19,14 +19,13 @@ instance HasAbilities AbyssalTome2 where
     [restrictedAbility attrs 1 ControlsThis $ fightAction (exhaust attrs)]
 
 instance HasModifiersFor AbyssalTome2 where
-  getModifiersFor (InvestigatorTarget iid) (AbyssalTome2 attrs) | attrs `controlledBy` iid = do
-    mSource <- getSkillTestSource
-    case mSource of
-      Just (isAbilitySource attrs 1 -> True) -> do
-        doom <- field AssetDoom (toId attrs)
-        toModifiers attrs [AnySkillValue doom, DamageDealt doom]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AbyssalTome2 a) = case a.controller of
+    Just iid -> maybeModified_ a iid do
+      source <- MaybeT getSkillTestSource
+      guard $ isAbilitySource a 1 source
+      doom <- lift $ field AssetDoom a.id
+      pure [AnySkillValue doom, DamageDealt doom]
+    _ -> pure mempty
 
 instance RunMessage AbyssalTome2 where
   runMessage msg a@(AbyssalTome2 attrs) = case msg of

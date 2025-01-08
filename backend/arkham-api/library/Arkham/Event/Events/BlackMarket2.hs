@@ -9,7 +9,8 @@ import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getPhase)
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified
@@ -59,14 +60,15 @@ blackMarket2Effect :: EffectArgs -> BlackMarket2Effect
 blackMarket2Effect = cardEffectWith BlackMarket2Effect Cards.blackMarket2 (setEffectMeta False)
 
 instance HasModifiersFor BlackMarket2Effect where
-  getModifiersFor (InvestigatorTarget iid) (BlackMarket2Effect attrs) = do
+  getModifiersFor (BlackMarket2Effect attrs) = do
     case attrs.target of
-      CardIdTarget cardId ->
+      CardIdTarget cardId -> do
         selectOne (SetAsideCardMatch $ CardWithId cardId) >>= \case
-          Just card -> modified attrs [AsIfInHand card | not (isSignature card) || card.owner == Just iid]
-          _ -> pure [] -- should be disabled
+          Just card -> case card.owner of
+            Just iid -> modifiedWhen_ attrs (not (isSignature card)) iid [AsIfInHand card]
+            Nothing -> pure mempty
+          _ -> pure mempty -- should be disabled
       _ -> error "incorrect target"
-  getModifiersFor _ _ = pure []
 
 instance RunMessage BlackMarket2Effect where
   runMessage msg e@(BlackMarket2Effect attrs) = runQueueT $ case msg of
@@ -76,11 +78,30 @@ instance RunMessage BlackMarket2Effect where
         case attrs.target of
           CardIdTarget cardId -> do
             card <- getCard cardId
-            let owner = fromJustNote ("missing owner: " <> show card) card.owner
-            obtainCard card
-            push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
+            case card.owner of
+              Nothing -> do
+                investigators <- select Anyone
+                lead <- getLead
+                focusCards [card] \unfocus -> do
+                  chooseOrRunOneM lead do
+                    questionLabeled "A set aside card was missing its owner. Please select the correct owner"
+                    targets investigators \iid -> do
+                      push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) EndPhase))
+                  push unfocus
+              Just owner -> do
+                obtainCard card
+                push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]
           _ -> error "incorrect target"
         disable attrs
+      pure e
+    ForTarget (isTarget attrs -> True) (ForInvestigator iid (ForTarget (CardIdTarget cardId) EndPhase)) -> do
+      card <- getCard cardId
+      eliminated <- iid <!=~> UneliminatedInvestigator
+      if eliminated
+        then obtainCard card
+        else do
+          card' <- setOwner iid card
+          push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
       pure e
     InitiatePlayCard iid card mtarget payment windows' asAction | attrs.target == CardIdTarget card.id -> do
       if cdSkipPlayWindows (toCardDef card)

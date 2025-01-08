@@ -14,9 +14,10 @@ davidRenfield :: AssetCard DavidRenfield
 davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 
 instance HasModifiersFor DavidRenfield where
-  getModifiersFor (InvestigatorTarget iid) (DavidRenfield attrs) | attrs `controlledBy` iid = do
-    toModifiers attrs [SkillModifier #willpower 1 | assetDoom attrs > 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DavidRenfield a) =
+    if a.doom > 0
+      then controllerGets a [SkillModifier #willpower 1]
+      else pure mempty
 
 instance HasAbilities DavidRenfield where
   getAbilities (DavidRenfield a) = [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]

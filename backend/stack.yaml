@@ -3,8 +3,8 @@ require-stack-version: ">= 3.1.1"
 concurrent-tests: true
 system-ghc: true
 install-ghc: false
-resolver: nightly-2024-10-02
-compiler: ghc-9.8.2
+resolver: nightly-2024-12-12
+compiler: ghc-9.10.1
 
 ghc-options:
   "$locals":
@@ -56,3 +56,7 @@ extra-deps:
 - x509-1.7.7@sha256:90eef2d745a654146fc1c325e035eaddac531e4d2145d4bc1dcf4b8fad439d34,2276
 - x509-store-1.6.9@sha256:1f1abeab5bacf1407b920d0f34f4c35a5ad450ff0d8121cd3dc76460f81e711d,1716
 - x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
+- monoidal-containers-0.6.5.0@sha256:ff06e22c520b540dbf3bede0df723810a9d144ecb92e8d97845465fac86b0fc1,2247
+- websockets-0.13.0.0@sha256:d59873dce91721d398d578f51c49b71b8fb352d8571acf7a8bd5bebf1333d2f2,7817
+- yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
+- wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905

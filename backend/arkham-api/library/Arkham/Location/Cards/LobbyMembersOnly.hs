@@ -29,7 +29,7 @@ instance HasAbilities LobbyMembersOnly where
 instance RunMessage LobbyMembersOnly where
   runMessage msg l@(LobbyMembersOnly attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- genIdKey
+      mKey <- getRandomKey
       for_ mKey $ \key ->
         push $ PlaceKey (toTarget attrs) key
       pure l

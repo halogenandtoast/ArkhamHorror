@@ -1,12 +1,13 @@
-module Arkham.Location.Cards.DownstairsDoorwayParlor (downstairsDoorwayParlor, DownstairsDoorwayParlor (..)) where
+module Arkham.Location.Cards.DownstairsDoorwayParlor (downstairsDoorwayParlor) where
 
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype DownstairsDoorwayParlor = DownstairsDoorwayParlor LocationAttrs
@@ -17,10 +18,9 @@ downstairsDoorwayParlor :: LocationCard DownstairsDoorwayParlor
 downstairsDoorwayParlor = location DownstairsDoorwayParlor Cards.downstairsDoorwayParlor 2 (PerPlayer 1)
 
 instance HasModifiersFor DownstairsDoorwayParlor where
-  getModifiersFor target (DownstairsDoorwayParlor a) | a `is` target = do
+  getModifiersFor (DownstairsDoorwayParlor a) = do
     n <- selectCount $ investigatorAt a
-    toModifiers a [ShroudModifier n | n > 0]
-  getModifiersFor _ _ = pure []
+    modifySelf a [ShroudModifier n]
 
 instance HasAbilities DownstairsDoorwayParlor where
   getAbilities (DownstairsDoorwayParlor a) =
@@ -35,8 +35,8 @@ instance HasAbilities DownstairsDoorwayParlor where
       $ FastAbility Free
 
 instance RunMessage DownstairsDoorwayParlor where
-  runMessage msg l@(DownstairsDoorwayParlor attrs) = case msg of
+  runMessage msg l@(DownstairsDoorwayParlor attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Remember RecoveredAStrangeKey
+      remember RecoveredAStrangeKey
       pure l
-    _ -> DownstairsDoorwayParlor <$> runMessage msg attrs
+    _ -> DownstairsDoorwayParlor <$> liftRunMessage msg attrs

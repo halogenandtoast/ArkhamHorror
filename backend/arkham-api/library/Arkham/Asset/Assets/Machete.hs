@@ -15,13 +15,14 @@ machete :: AssetCard Machete
 machete = asset Machete Cards.machete
 
 instance HasModifiersFor Machete where
-  getModifiersFor (InvestigatorTarget iid) (Machete attrs) = maybeModified attrs do
-    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-    EnemyTarget eid <- MaybeT getSkillTestTarget
-    guardM $ (== [eid]) <$> lift (select $ enemyEngagedWith iid)
-    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-    pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Machete a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+      EnemyTarget eid <- MaybeT getSkillTestTarget
+      guardM $ (== [eid]) <$> lift (select $ enemyEngagedWith iid)
+      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+      pure [DamageDealt 1]
 
 instance HasAbilities Machete where
   getAbilities (Machete a) = [fightAbility a 1 mempty ControlsThis]

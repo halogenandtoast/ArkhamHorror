@@ -23,13 +23,11 @@ theSecondOath :: ActCard TheSecondOath
 theSecondOath = act (2, A) TheSecondOath Cards.theSecondOath Nothing
 
 instance HasModifiersFor TheSecondOath where
-  getModifiersFor (EnemyTarget eid) (TheSecondOath a) = maybeModified a do
-    liftGuardM $ eid <=~> EnemyWithTrait Suspect
-    n <- lift $ perPlayer 1
-    pure [HealthModifier n, RemoveKeyword Aloof]
-  getModifiersFor (InvestigatorTarget _) (TheSecondOath a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheSecondOath a) = do
+    n <- perPlayer 1
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [HealthModifier n, RemoveKeyword Aloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities TheSecondOath where
   getAbilities (TheSecondOath x) =

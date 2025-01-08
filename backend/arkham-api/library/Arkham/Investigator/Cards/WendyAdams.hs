@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.WendyAdams (WendyAdams (..), wendyAdams) where
+module Arkham.Investigator.Cards.WendyAdams (wendyAdams) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -27,7 +27,7 @@ instance HasAbilities WendyAdams where
   getAbilities (WendyAdams attrs) =
     [ playerLimit PerTestOrAbility
         $ restricted attrs 1 Self
-        $ ReactionAbility (Matcher.RevealChaosToken #when You AnyChaosToken)
+        $ ReactionAbility (Matcher.RevealChaosToken #when You $ CancelableChaosToken AnyChaosToken)
         $ HandDiscardCost 1 #any
     ]
 

@@ -17,13 +17,12 @@ calvinWright =
     $ Stats {health = 6, sanity = 6, willpower = 0, intellect = 0, combat = 0, agility = 0}
 
 instance HasModifiersFor CalvinWright where
-  getModifiersFor target (CalvinWright a) | a `isTarget` target = do
+  getModifiersFor (CalvinWright a) = do
     let horror = a.sanityDamage
     let damage = a.healthDamage
-    toModifiers a
+    modifySelf a
       $ [SkillModifier skill horror | horror > 0, skill <- [#willpower, #intellect]]
       <> [SkillModifier skill damage | damage > 0, skill <- [#combat, #agility]]
-  getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue CalvinWright where
   getChaosTokenValue iid ElderSign (CalvinWright attrs) | attrs `is` iid = do

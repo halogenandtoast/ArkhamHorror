@@ -21,17 +21,13 @@ curiositieShoppe =
   location CuriositieShoppe Cards.curiositieShoppe 2 (PerPlayer 2)
 
 instance HasModifiersFor CuriositieShoppe where
-  getModifiersFor (LocationTarget lid) (CuriositieShoppe a) = do
-    isNorthside <- lid <=~> locationIs Cards.northside
-    toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)
-      | isNorthside
-      ]
-  getModifiersFor (InvestigatorTarget iid) (CuriositieShoppe attrs) = do
-    here <- iid `isAt` attrs
-    toModifiers attrs [ReduceCostOf (#asset <> CardWithTrait Relic) 2 | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CuriositieShoppe a) = do
+    (<>)
+      <$> modifySelectMap
+        a
+        (locationIs Cards.northside)
+        (\lid -> [ConnectedToWhen (LocationWithId lid) (LocationWithId $ toId a)])
+      <*> modifySelect a (investigatorAt a) [ReduceCostOf (#asset <> CardWithTrait Relic) 2]
 
 instance RunMessage CuriositieShoppe where
   runMessage msg (CuriositieShoppe attrs) =

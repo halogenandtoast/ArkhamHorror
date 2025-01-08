@@ -59,10 +59,8 @@ vantagePointEffect :: EffectArgs -> VantagePointEffect
 vantagePointEffect = cardEffect VantagePointEffect Cards.vantagePoint
 
 instance HasModifiersFor VantagePointEffect where
-  getModifiersFor target (VantagePointEffect a)
-    | effectTarget a == target =
-        toModifiers a [ShroudModifier (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (VantagePointEffect a) =
+    modified_ a a.target [ShroudModifier (-1)]
 
 instance RunMessage VantagePointEffect where
   runMessage msg e@(VantagePointEffect attrs) = case msg of

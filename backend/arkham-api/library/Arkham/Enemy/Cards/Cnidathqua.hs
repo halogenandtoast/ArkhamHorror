@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cnidathqua :: EnemyCard Cnidathqua
@@ -28,10 +28,8 @@ cnidathqua =
     ((asSelfLocationL ?~ "cnidathqua") . (evadeL .~ Nothing))
 
 instance HasModifiersFor Cnidathqua where
-  getModifiersFor (EnemyTarget eid) (Cnidathqua attrs)
-    | eid == toId attrs =
-        toModifiers attrs [CannotBeEvaded, CanBeFoughtAsIfAtYourLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Cnidathqua attrs) =
+    modifySelf attrs [CannotBeEvaded, CanBeFoughtAsIfAtYourLocation]
 
 instance HasAbilities Cnidathqua where
   getAbilities (Cnidathqua attrs) =

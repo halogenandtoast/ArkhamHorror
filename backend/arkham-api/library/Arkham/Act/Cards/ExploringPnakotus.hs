@@ -16,7 +16,7 @@ import Arkham.Placement
 import Data.List.NonEmpty qualified as NE
 
 newtype ExploringPnakotus = ExploringPnakotus ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 exploringPnakotus :: ActCard ExploringPnakotus
@@ -28,10 +28,11 @@ exploringPnakotus =
     (Just $ GroupClueCost (PerPlayer 2) Anywhere)
 
 instance HasModifiersFor ExploringPnakotus where
-  getModifiersFor (EnemyTarget eid) (ExploringPnakotus attrs) | onSide A attrs = do
-    isYithianObserver <- eid <=~> enemyIs Enemies.yithianObserver
-    toModifiersWith attrs setActiveDuringSetup [AddKeyword Aloof | isYithianObserver]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ExploringPnakotus attrs) =
+    if onSide A attrs
+      then
+        modifySelectWith attrs (enemyIs Enemies.yithianObserver) setActiveDuringSetup [AddKeyword Aloof]
+      else pure mempty
 
 instance RunMessage ExploringPnakotus where
   runMessage msg a@(ExploringPnakotus attrs) = case msg of

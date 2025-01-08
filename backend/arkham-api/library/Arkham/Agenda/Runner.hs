@@ -70,13 +70,19 @@ instance RunMessage AgendaAttrs where
               _ -> acc
             modifiedPerPlayerDoomThreshold =
               foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
+            otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
           -- handle multiple agendas, this might need to be specific to the
           -- scenario, but for now given there is only once scenario and the rules
           -- are likely to be the same in the future
           otherAgendaDoom <-
             getSum
               <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
-          totalDoom <- subtract otherAgendaDoom <$> getDoomCount
+          doomCount <- if otherDoomSubtracts then getSubtractDoomCount else getDoomCount
+          let
+            totalDoom =
+              if otherDoomSubtracts
+                then a.doom - (doomCount - a.doom)
+                else subtract otherAgendaDoom doomCount
           when (totalDoom >= modifiedPerPlayerDoomThreshold) do
             whenMsg <- checkWindows [mkWhen (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
             afterMsg <- checkWindows [mkAfter (Window.AgendaWouldAdvance DoomThreshold $ toId a)]
@@ -95,16 +101,22 @@ instance RunMessage AgendaAttrs where
               _ -> acc
             modifiedPerPlayerDoomThreshold =
               foldl' modifyDoomThreshold perPlayerDoomThreshold modifiers'
+            otherDoomSubtracts = OtherDoomSubtracts `elem` modifiers'
           otherAgendaDoom <-
             getSum
               <$> selectAgg Sum AgendaDoom (NotAgenda $ AgendaWithId $ toId a)
-          totalDoom <- subtract otherAgendaDoom <$> getDoomCount
+          doomCount <- if otherDoomSubtracts then getSubtractDoomCount else getDoomCount
+          let
+            totalDoom =
+              if otherDoomSubtracts
+                then a.doom - (doomCount - a.doom)
+                else subtract otherAgendaDoom doomCount
           when (totalDoom >= modifiedPerPlayerDoomThreshold) $ do
             whenWindow <- checkWhen $ Window.AgendaAdvance agendaId
             afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
             pushAll
               [ whenWindow
-              , RemoveAllDoomFromPlay agendaRemoveDoomMatchers
+              , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = AgendaWithId a.id}
               , AdvanceAgenda agendaId
               , afterWindow
               ]

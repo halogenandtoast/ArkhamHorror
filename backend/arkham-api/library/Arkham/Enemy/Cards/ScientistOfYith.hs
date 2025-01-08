@@ -19,13 +19,13 @@ scientistOfYith =
     ?~ SpawnAt (LocationWithTitle "Laboratory of the Great Race")
 
 instance HasModifiersFor ScientistOfYith where
-  getModifiersFor target (ScientistOfYith a) | isTarget a target = do
+  getModifiersFor (ScientistOfYith a) = do
     activatedTheDevice <- remembered ActivatedTheDevice
     dissectedAnOrgan <- remembered DissectedAnOrgan
-    toModifiers a
-      $ guard (activatedTheDevice || dissectedAnOrgan)
-      *> [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen
+      a
+      (activatedTheDevice || dissectedAnOrgan)
+      [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
 
 instance RunMessage ScientistOfYith where
   runMessage msg (ScientistOfYith attrs) = ScientistOfYith <$> runMessage msg attrs

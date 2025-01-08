@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Punishment (punishment, Punishment (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
@@ -17,19 +17,20 @@ punishment :: TreacheryCard Punishment
 punishment = treachery Punishment Cards.punishment
 
 instance HasModifiersFor Punishment where
-  getModifiersFor (SkillTestTarget _) (Punishment attrs) = do
-    maybeModified attrs do
-      source <- MaybeT getSkillTestSource
-      investigator <- MaybeT getSkillTestInvestigator
-      guard $ isSource attrs source && treacheryInThreatArea investigator attrs
-      guardM
-        . lift
-        . selectAny
-        $ ExhaustedEnemy
-        <> EnemyWithTrait Witch
-        <> enemyAtLocationWith investigator
-      pure [SkillTestAutomaticallySucceeds]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Punishment attrs) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+        source <- MaybeT getSkillTestSource
+        investigator <- MaybeT getSkillTestInvestigator
+        guard $ isSource attrs source && treacheryInThreatArea investigator attrs
+        guardM
+          . lift
+          . selectAny
+          $ ExhaustedEnemy
+          <> EnemyWithTrait Witch
+          <> enemyAtLocationWith investigator
+        pure [SkillTestAutomaticallySucceeds]
 
 instance HasAbilities Punishment where
   getAbilities (Punishment a) =

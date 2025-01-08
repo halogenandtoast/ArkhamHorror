@@ -518,6 +518,9 @@ allEvents =
       SomeEventCard hitMe
     , --- neutral [eote]
       SomeEventCard callForBackup2
+    , --- story [eote]
+      SomeEventCard dyersSketches
+    , SomeEventCard takadasCache
     , -- The Scarlet Keys
       --- signature [tsk]
       SomeEventCard wordOfWoe

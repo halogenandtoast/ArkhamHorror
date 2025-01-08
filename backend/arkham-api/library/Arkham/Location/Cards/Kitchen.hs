@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.Kitchen (kitchen, Kitchen (..)) where
+module Arkham.Location.Cards.Kitchen (kitchen) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype Kitchen = Kitchen LocationAttrs
@@ -18,21 +18,18 @@ kitchen = location Kitchen Cards.kitchen 2 (PerPlayer 1)
 
 instance HasAbilities Kitchen where
   getAbilities (Kitchen attrs) =
-    extendRevealed
-      attrs
-      [skillTestAbility $ restrictedAbility attrs 1 (Here <> NoCluesOnThis) actionAbility]
+    extendRevealed1 attrs $ skillTestAbility $ restricted attrs 1 (Here <> NoCluesOnThis) actionAbility
 
 instance HasModifiersFor Kitchen where
-  getModifiersFor (LocationTarget lid) (Kitchen attrs) | lid == toId attrs = do
-    toModifiers attrs [Blocked | not (locationRevealed attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Kitchen a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance RunMessage Kitchen where
-  runMessage msg l@(Kitchen attrs) = case msg of
+  runMessage msg l@(Kitchen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 2)
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> l <$ push (Remember SetAFireInTheKitchen)
-    _ -> Kitchen <$> runMessage msg attrs
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      remember SetAFireInTheKitchen
+      pure l
+    _ -> Kitchen <$> liftRunMessage msg attrs

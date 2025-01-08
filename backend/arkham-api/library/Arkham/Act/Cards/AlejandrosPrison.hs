@@ -10,17 +10,15 @@ import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alejandrosPrison :: ActCard AlejandrosPrison
 alejandrosPrison = act (3, C) AlejandrosPrison Cards.alejandrosPrison Nothing
 
 instance HasModifiersFor AlejandrosPrison where
-  getModifiersFor (LocationTarget lid) (AlejandrosPrison a) = do
-    isModified <- lid <=~> LocationWithAsset (assetIs Assets.alejandroVela)
-    toModifiers a [ShroudModifier 2 | isModified]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AlejandrosPrison a) = do
+    modifySelect a (LocationWithAsset (assetIs Assets.alejandroVela)) [ShroudModifier 2]
 
 instance HasAbilities AlejandrosPrison where
   getAbilities (AlejandrosPrison a) =

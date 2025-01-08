@@ -17,9 +17,8 @@ torturousChords :: TreacheryCard TorturousChords
 torturousChords = treachery TorturousChords Cards.torturousChords
 
 instance HasModifiersFor TorturousChords where
-  getModifiersFor (InvestigatorTarget iid) (TorturousChords a) | treacheryInThreatArea iid a = do
-    modified a [IncreaseCostOf AnyCard 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TorturousChords a) =
+    inThreatAreaGets a [IncreaseCostOf AnyCard 1]
 
 instance RunMessage TorturousChords where
   runMessage msg t@(TorturousChords attrs) = case msg of

@@ -17,7 +17,7 @@ import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype SecretsBetterLeftHidden = SecretsBetterLeftHidden AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 secretsBetterLeftHidden :: AgendaCard SecretsBetterLeftHidden
@@ -29,9 +29,8 @@ secretsBetterLeftHidden =
     (PerPlayer 3)
 
 instance HasModifiersFor SecretsBetterLeftHidden where
-  getModifiersFor (PhaseTarget MythosPhase) (SecretsBetterLeftHidden attrs) =
-    toModifiers attrs [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SecretsBetterLeftHidden attrs) =
+    modified_ attrs (PhaseTarget MythosPhase) [SkipMythosPhaseStep PlaceDoomOnAgendaStep]
 
 instance HasAbilities SecretsBetterLeftHidden where
   getAbilities (SecretsBetterLeftHidden attrs) =

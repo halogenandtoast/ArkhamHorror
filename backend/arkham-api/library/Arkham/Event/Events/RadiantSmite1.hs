@@ -15,10 +15,9 @@ radiantSmite1 :: EventCard RadiantSmite1
 radiantSmite1 = event RadiantSmite1 Cards.radiantSmite1
 
 instance HasModifiersFor RadiantSmite1 where
-  getModifiersFor (InvestigatorTarget iid) (RadiantSmite1 attrs) | attrs.owner == iid = do
+  getModifiersFor (RadiantSmite1 attrs) = do
     let n = count ((== #bless) . (.face)) (eventSealedChaosTokens attrs)
-    toModifiers attrs $ guard (n > 0) *> [DamageDealt n, AnySkillValue n]
-  getModifiersFor _ _ = pure []
+    modifiedWhen_ attrs (n > 0) attrs.owner [DamageDealt n, AnySkillValue n]
 
 instance RunMessage RadiantSmite1 where
   runMessage msg e@(RadiantSmite1 attrs) = runQueueT $ case msg of

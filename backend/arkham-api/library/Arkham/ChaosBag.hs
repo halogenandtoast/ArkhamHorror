@@ -1,12 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.ChaosBag (
-  ChaosBag,
-  emptyChaosBag,
-  chaosTokensL,
-) where
-
-import Arkham.Prelude
+module Arkham.ChaosBag (ChaosBag, emptyChaosBag, chaosTokensL) where
 
 import Arkham.ChaosBag.Base
 import Arkham.ChaosBag.RevealStrategy
@@ -20,6 +14,7 @@ import Arkham.Helpers.Message
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Source
@@ -28,6 +23,16 @@ import Arkham.Timing qualified as Timing
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
+
+cancelTokenIfShould :: HasGame m => ChaosToken -> m ChaosToken
+cancelTokenIfShould token =
+  fromMaybe token <$> runMaybeT do
+    st <- MaybeT getSkillTest
+    mods <- lift $ getModifiers st
+    let matchers = [matcher | CancelAnyChaosToken matcher <- mods]
+    guard $ notNull matchers
+    cancelled <- lift $ anyM (matchChaosToken st.investigator token) matchers
+    pure token {chaosTokenCancelled = cancelled}
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True
@@ -209,13 +214,13 @@ resolveFirstUnresolved source iid strategy = \case
         else
           if all isResolved steps
             then do
-              modifiers' <- lift $ getModifiers iid
+              mods <- lift $ getModifiers iid
               let
                 collectChaosTokens xs (CannotCancelOrIgnoreChaosToken t) = t : xs
                 collectChaosTokens xs _ = xs
-                tokensThatCannotBeIgnored = foldl' collectChaosTokens [] modifiers'
+                tokensThatCannotBeIgnored = foldl' collectChaosTokens [] mods
                 uncanceleableSteps =
-                  filter (\s -> any (`elem` tokensThatCannotBeIgnored) (map chaosTokenFace $ toChaosTokens s)) steps
+                  filter (any ((`elem` tokensThatCannotBeIgnored) . chaosTokenFace) . toChaosTokens) steps
                 remainingSteps = filter (`notElem` uncanceleableSteps) steps
               if (notNull uncanceleableSteps && tokenStrategy == ResolveChoice)
                 || (null remainingSteps && tokenStrategy /= ResolveChoice)
@@ -278,11 +283,11 @@ resolveFirstUnresolved source iid strategy = \case
     ChooseMatchChoice steps tokens' choices -> do
       if all isResolved steps
         then do
-          modifiers' <- lift $ getModifiers iid
+          mods <- lift $ getModifiers iid
           let
             collectChaosTokens xs (CannotCancelOrIgnoreChaosToken t) = t : xs
             collectChaosTokens xs _ = xs
-            tokensThatCannotBeIgnored = foldl' collectChaosTokens [] modifiers'
+            tokensThatCannotBeIgnored = foldl' collectChaosTokens [] mods
             allChaosTokens = concatMap toChaosTokens steps
             toStrategy = \case
               Draw -> ResolveChoice
@@ -567,8 +572,10 @@ instance RunMessage ChaosBag where
           Nothing -> pure True
 
       -- TODO: We need to decide which tokens to keep, i.e. Blessed Blade (4)
+      -- cancelled tokens will go back
       (tokensToReturn, tokensToPool) <- flip partitionM chaosBagSetAsideChaosTokens \token -> do
         if
+          | token.cancelled -> pure True
           | token.face == #bless -> do
               if returnAllBlessed then pure True else hasModifier token ReturnBlessedToChaosBag
           | token.face == #curse -> do
@@ -605,6 +612,7 @@ instance RunMessage ChaosBag where
         $ c
         & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
+        & (revealedChaosTokensL .~ mempty)
         & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> do
@@ -641,8 +649,8 @@ instance RunMessage ChaosBag where
       Just choice' ->
         if isUndecided choice'
           then do
-            iid <- maybe getLeadInvestigatorId pure miid
-            iids <- getInvestigatorIds
+            iid <- maybe getLead pure miid
+            iids <- getInvestigators
             let
               (choice'', msgs) =
                 decideFirstUndecided source iid iids strategy toDecided choice'
@@ -655,8 +663,8 @@ instance RunMessage ChaosBag where
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
-        iid <- maybe getLeadInvestigatorId pure miid
-        iids <- getInvestigatorIds
+        iid <- maybe getLead pure miid
+        iids <- getInvestigators
         let
           (updatedChoice, messages) =
             decideFirstUndecided source iid iids strategy toDecided choice'
@@ -688,7 +696,7 @@ instance RunMessage ChaosBag where
         Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
         _ -> False
 
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       -- if we have not decided we can use const to replace
       let
         choice'' = Undecided step
@@ -706,7 +714,7 @@ instance RunMessage ChaosBag where
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
           _ -> False
 
-        iids <- getInvestigatorIds
+        iids <- getInvestigators
         -- if we have not decided we can use const to replace
         let
           choice'' = replaceDeciding choice' (Undecided step)
@@ -718,20 +726,25 @@ instance RunMessage ChaosBag where
       Nothing -> error "unexpected"
       Just choice' -> case choice' of
         Resolved tokens -> do
-          let tokens' = map (\token -> token {chaosTokenRevealedBy = miid}) tokens
+          tokens' <- for tokens \token -> do
+            cancelTokenIfShould $ token {chaosTokenRevealedBy = miid}
+          -- let tokens' = filter (not . chaosTokenCancelled) tokens''
+
           checkWindowMsgs <- case miid of
-            Nothing -> pure []
             Just iid ->
               (\x y -> [x, y])
                 <$> checkWindows
                   [ mkWhen (Window.RevealChaosToken iid token)
                   | token <- tokens'
+                  , not token.cancelled
                   ]
                 <*> checkWindows
                   [ mkAfter (Window.RevealChaosToken iid token)
                   | token <- tokens'
+                  , not token.cancelled
                   ]
-          for_ miid $ \iid -> do
+            Nothing -> pure []
+          for_ miid \iid -> do
             investigator <- getAttrs @Investigator iid
             send
               $ format investigator
@@ -758,7 +771,7 @@ instance RunMessage ChaosBag where
             )
           pure $ c & choiceL .~ Nothing
         _ -> do
-          iid <- maybe getLeadInvestigatorId pure miid
+          iid <- maybe getLead pure miid
           ((choice'', msgs), c') <-
             runStateT
               (resolveFirstUnresolved source iid strategy choice')
@@ -777,9 +790,18 @@ instance RunMessage ChaosBag where
       pure
         $ c
         & setAsideChaosTokensL
-        %~ (nub . (<> [token]))
+        %~ (nub . ([token] <>))
         & revealedChaosTokensL
-        %~ (nub . (<> [token]))
+        %~ (nub . ([token] <>))
+        & chaosTokensL
+        %~ filter (/= token)
+    ForTarget (SkillTestTarget _) (RevealChaosToken SkillTestSource {} _ token) ->
+      pure
+        $ c
+        & setAsideChaosTokensL
+        %~ (nub . ([token] <>))
+        & revealedChaosTokensL
+        %~ (nub . ([token] <>))
         & chaosTokensL
         %~ filter (/= token)
     RevealChaosToken _source _iid token ->
@@ -809,12 +831,9 @@ instance RunMessage ChaosBag where
     SealChaosToken token ->
       pure
         $ c
-        & chaosTokensL
-        %~ filter (/= token)
-        & setAsideChaosTokensL
-        %~ filter (/= token)
-        & revealedChaosTokensL
-        %~ filter (/= token)
+        & (chaosTokensL %~ filter (/= token))
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
     SetChaosTokenAside token -> do
       pure $ c & setAsideChaosTokensL %~ (<> [token])
     UnsealChaosToken token -> do

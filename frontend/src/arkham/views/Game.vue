@@ -90,11 +90,13 @@ const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
 const processing = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 addEntry({
   id: "viewSettings",
   icon: AdjustmentsHorizontalIcon,
-  content: "View Settings",
+  content: t('gameBar.viewSettings'),
   shortcut: "S",
   nested: 'view',
   action: () => showSettings.value = !showSettings.value
@@ -373,7 +375,7 @@ async function fileBug() {
     window.open(`https://github.com/halogenandtoast/ArkhamHorror/issues/new?labels=bug&title=${title}&body=${body}&assignee=halogenandtoast&projects=halogenandtoast/2`, '_blank')
     submittingBug.value = false
   }).catch(() => {
-    alert('Unable to file bug')
+    alert(t('gameBar.bugSubmittingFail'))
     submittingBug.value = false
   })
 }
@@ -497,20 +499,20 @@ onUnmounted(() => {
 <template>
   <div v-if="submittingBug" class="column page-container">
     <div class="page-content column">
-      <h2 class="title">Submitting bug, this may take several minutes, please wait...</h2>
+      <h2 class="title">{{ $t('gameBar.bugSubmittingTitle') }}</h2>
       <section class="box">
-        When this process is done, it will open GitHub in a new window and you will be able to resume your game.
+        {{ $t('gameBar.bugSubmittingContent') }}
       </section>
     </div>
   </div>
   <div id="game" v-else-if="ready && game && playerId">
     <dialog v-if="error" class="error-dialog">
-      <h2>Error</h2>
+      <h2>{{$t('error')}}</h2>
       <p>{{error}}</p>
-      <p>This is most likely a bug, please file a bug report.</p>
+      <p>{{$t('errorContent')}}</p>
       <div class="buttons">
-        <button @click="bugDescription = error ?? ''; error = null; filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> File Bug</button>
-        <button @click="error = null">Close</button>
+        <button @click="bugDescription = error ?? ''; error = null; filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> {{$t('fileBug')}}</button>
+        <button @click="error = null">{{$t('close')}}</button>
       </div>
     </dialog>
     <div v-if="processing" class="processing">
@@ -525,24 +527,24 @@ onUnmounted(() => {
     <Draggable v-if="showShortcuts">
       <template #handle>
         <header>
-          <h2>Keyboard Shortcuts</h2>
+          <h2>{{ $t('gameBar.shortcutsTitle') }}</h2>
         </header>
       </template>
       <dl class="shortcuts">
         <dt> </dt>
-        <dd>(space) Skip Triggers</dd>
+        <dd>{{ $t('gameBar.shortcutSkipTriggers') }}</dd>
         <dt>u</dt>
-        <dd>Undo</dd>
+        <dd>{{ $t('gameBar.shortcutUndo') }}</dd>
         <dt>D</dt>
-        <dd>Toggle Debug</dd>
+        <dd>{{ $t('gameBar.shortcutToggleDebug') }}</dd>
         <dt>?</dt>
-        <dd>Show/Hide Shortcuts</dd>
+        <dd>{{ $t('gameBar.shortcutShowOrHideShortcuts') }}</dd>
         <dt>d</dt>
-        <dd>Draw from deck / encounter deck</dd>
+        <dd>{{ $t('gameBar.shortcutDraw') }}</dd>
         <dt>r</dt>
-        <dd>Take Resources</dd>
+        <dd>{{ $t('gameBar.shortcutTakeResources') }}</dd>
         <dt>e</dt>
-        <dd>End Turn</dd>
+        <dd>{{ $t('gameBar.shortcutEndTurn') }}</dd>
         <template v-for="item in menuItems" :key="item.id">
           <template v-if="item.shortcut">
             <dt>{{item.shortcut}}</dt>
@@ -554,37 +556,41 @@ onUnmounted(() => {
     <Draggable v-if="filingBug">
       <template #handle>
         <header clas="file-a-bug-header">
-          <h2>File a Bug</h2>
+          <h2>{{ $t('gameBar.fileABug') }}</h2>
         </header>
       </template>
      <form @submit.prevent="fileBug" class="column bug-form box">
-       <p>This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed.</p>
-       <p class="warning">Please note that it will take some time to submit the bug and you can not resume playing until it is done.</p>
-       <input required type="text" v-model="bugTitle" placeholder="A brief title for the bug" />
-       <textarea required v-model="bugDescription" placeholder="A description of what happened"></textarea>
+      <!-- file path: frontend/src/locales/en/gameBoard/game_bar.json -->
+      <!-- This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed. -->
+       <p>{{ $t('gameBar.fileBugPart1') }}</p> 
+       <!-- Please note that it will take some time to submit the bug and you can not resume playing until it is done. -->
+       <p class="warning">{{ $t('gameBar.fileBugPart2') }}</p>
+       <input required type="text" v-model="bugTitle" v-bind:placeholder="$t('gameBar.bugTitleholder')" />
+       <textarea required v-model="bugDescription" v-bind:placeholder="$t('gameBar.bugDescriptionholder')"></textarea>
        <div class="buttons">
-         <button type="submit">Submit</button>
-         <button @click="filingBug = false">Cancel</button>
+         <button type="submit">{{ $t('submit') }}</button>
+         <button @click="filingBug = false">{{ $t('cancel') }}</button>
        </div>
      </form>
     </Draggable>
     <div v-if="socketError" class="socketWarning">
-       <p>Your game is out of sync, trying to reconnect...</p>
+      <!-- frontend/src/locales/en/gameBoard/base.json -->
+       <p>{{ $t('outOfSyncHint') }}</p>
     </div>
     <div class="game-bar">
       <div class="game-bar-item">
         <div>
-          <button @click="showLog = !showLog"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? "Close Log" : "View Log" }}</button>
+          <button @click="showLog = !showLog"><DocumentTextIcon aria-hidden="true" /> {{ showLog ? $t('gameBar.closeLog') : $t('gameBar.viewLog') }}</button>
         </div>
       </div>
       <div>
         <Menu>
           <EyeIcon aria-hidden="true" />
-          View
+          {{ $t('gameBar.view') }}
           <template #items>
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="showShortcuts = !showShortcuts">
-                <BoltIcon aria-hidden="true" /> Shortcuts <span class="shortcut">?</span>
+                <BoltIcon aria-hidden="true" /> {{ $t('gameBar.shortcuts') }} <span class="shortcut">?</span>
               </button>
             </MenuItem>
             <template v-for="item in menuItems" :key="item.id">
@@ -602,19 +608,19 @@ onUnmounted(() => {
       <div>
         <Menu>
           <BeakerIcon aria-hidden="true" />
-          Debug
+          {{ $t('gameBar.debug') }}
           <template #items>
             <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" /> Toggle Debug <span class="shortcut">D</span></button>
+              <button :class="{ active }" @click="debug.toggle"><BugAntIcon aria-hidden="true" />  {{ $t('gameBar.toggleDebug') }} <span class="shortcut">D</span></button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
-              <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> Debug Export</button>
+              <button :class="{ active }" @click="debugExport"><DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExport') }} </button>
             </MenuItem>
           </template>
         </Menu>
       </div>
-      <div><button @click="undo"><BackwardIcon aria-hidden="true" /> Undo</button></div>
-      <div><button @click="filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> File Bug</button></div>
+      <div><button @click="undo"><BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }} </button></div>
+      <div><button @click="filingBug = true"><ExclamationTriangleIcon aria-hidden="true" /> {{ $t('fileBug') }} </button></div>
       <div v-for="item in menuItems" :key="item.id">
         <template v-if="item.nested === null || item.nested === undefined">
           <button @click="item.action">
@@ -624,16 +630,16 @@ onUnmounted(() => {
         </template>
       </div>
       <div class="right">
-        <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> Toggle Sidebar</button>
+        <button @click="toggleSidebar"><ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }} </button>
       </div>
     </div>
     <div v-if="game.gameState.tag === 'IsPending'" class="invite-container">
       <header>
-        <h2>Waiting for more players</h2>
+        <h2>{{ $t('waitingForMorePlayers') }}</h2>
       </header>
       <GameDetails :game="game" id="invite">
         <div v-if="playerId == game.activePlayerId" class="full-width">
-          <p>Invite them with this url:</p>
+          <p>{{ $t('showInviteLink') }}</p>
           <div class="invite-link">
             <input type="text" :value="source"><button @click="copy()"><font-awesome-icon icon="copy" /></button>
           </div>
@@ -709,8 +715,8 @@ onUnmounted(() => {
           <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
         </div>
         <div class="game-over" v-if="gameOver">
-          <p>Game over</p>
-          <button class="replay-button" @click="router.push({name: 'ReplayGame', params: { gameId }})">Watch Replay</button>
+          <p>{{ $t('gameOver') }}</p>
+          <button class="replay-button" @click="router.push({name: 'ReplayGame', params: { gameId }})">{{ $t('watchReplay') }}</button>
           <CampaignLog v-if="game !== null" :game="game" :cards="cards" :playerId="playerId" />
         </div>
         <div class="sidebar" v-if="game.scenario === null">

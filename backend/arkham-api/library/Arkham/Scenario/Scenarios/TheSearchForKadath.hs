@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheSearchForKadath (TheSearchForKadath (..), theSearchForKadath) where
+module Arkham.Scenario.Scenarios.TheSearchForKadath (theSearchForKadath) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -7,7 +7,7 @@ import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -21,6 +21,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Resolution
@@ -89,7 +90,7 @@ standaloneChaosTokens =
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
-  mkCampaignLog {campaignLogRecorded = setFromList [TheInvestigatorsWereSavedByRandolphCarder]}
+  mkCampaignLog {campaignLogRecorded = setFromList [toCampaignLogKey TheInvestigatorsWereSavedByRandolphCarder]}
 
 readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
@@ -97,7 +98,7 @@ readInvestigatorDefeat = do
   unless (null defeated) do
     resigned <- select ResignedInvestigator
     storyOnly defeated investigatorDefeat
-    for_ defeated $ \iid -> push $ RecordForInvestigator iid WasCaptured
+    for_ defeated $ \iid -> recordForInvestigator iid WasCaptured
     withOwner Assets.randolphCarterExpertDreamer $ \owner -> do
       when ((owner `elem` defeated) && notNull resigned) do
         removeCampaignCard Assets.randolphCarterExpertDreamer
@@ -152,12 +153,12 @@ instance RunMessage TheSearchForKadath where
     DoStep 9 PreScenarioSetup -> do
       parleyed <- getHasRecord TheInvestigatorsParleyedWithTheZoogs
       story intro9
-      push $ IncrementRecordCount EvidenceOfKadath 1
+      incrementRecordCount EvidenceOfKadath 1
       doStep (if parleyed then 10 else 11) PreScenarioSetup
       pure s
     DoStep 10 PreScenarioSetup -> do
       story intro10
-      push $ IncrementRecordCount EvidenceOfKadath 1
+      incrementRecordCount EvidenceOfKadath 1
       eachInvestigator \iid -> push $ GainXP iid (toSource attrs) 2
       pure s
     DoStep 11 PreScenarioSetup -> do
@@ -280,6 +281,7 @@ instance RunMessage TheSearchForKadath where
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           moveAllTo (toSource attrs) baharna
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -292,11 +294,12 @@ instance RunMessage TheSearchForKadath where
           kadatheron <- placeSetAsideLocation Locations.kadatheron
           ruinsOfIb <- placeSetAsideLocation Locations.ruinsOfIb
           placeSetAsideLocation_ Locations.sarnath
-          beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
-          createEnemyAt_ beingsOfIb ruinsOfIb
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          beingsOfIb <- getSetAsideCard Enemies.beingsOfIb
+          createEnemyAt_ beingsOfIb ruinsOfIb
           moveAllTo (toSource attrs) kadatheron
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -306,13 +309,14 @@ instance RunMessage TheSearchForKadath where
           ilekVad <- placeSetAsideLocation Locations.ilekVad
           forbiddenLands <- placeSetAsideLocation Locations.forbiddenLands
           zulanThek <- placeSetAsideLocation Locations.zulanThek
+
+          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
+          nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
           stalkingManticore <- getSetAsideCard Enemies.stalkingManticore
           hordeOfNight <- getSetAsideCard Enemies.hordeOfNight
           createEnemyAt_ stalkingManticore forbiddenLands
           createEnemyAt_ hordeOfNight zulanThek
-
-          pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
-          nightgauntMessages
           moveAllTo (toSource attrs) ilekVad
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -321,10 +325,11 @@ instance RunMessage TheSearchForKadath where
         TimelessRealm -> do
           celephais <- placeSetAsideLocation Locations.celephais
           placeSetAsideLocations_ [Locations.serannian, Locations.hazuthKleg]
-          theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
 
           pushAll $ map (InvestigatorDiscardAllClues ScenarioSource) investigators
           nightgauntMessages
+          selectEach (not_ $ enemyIs Enemies.tenebrousNightgaunt) $ toDiscard ScenarioSource
+          theCrawlingMist <- getSetAsideCard Enemies.theCrawlingMist
           moveAllTo (toSource attrs) celephais
           pushAll
             $ map (AddToVictory . toTarget) victoryLocations
@@ -351,7 +356,7 @@ instance RunMessage TheSearchForKadath where
           evidence <- getSignsOfTheGods
           story resolutionText
           allGainXp attrs
-          push $ IncrementRecordCount EvidenceOfKadath evidence
+          incrementRecordCount EvidenceOfKadath evidence
           record VirgilWasCaptured
           record randolphStatus
           endOfScenario

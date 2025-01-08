@@ -16,11 +16,10 @@ lastChance :: SkillCard LastChance
 lastChance = skill LastChance Cards.lastChance
 
 instance HasModifiersFor LastChance where
-  getModifiersFor (CardIdTarget cid) (LastChance a) | a.cardId == cid = do
+  getModifiersFor (LastChance a) = do
     hand <- field InvestigatorHand a.owner
-    let n = max 0 $ length hand - (if any ((== cid) . toCardId) hand then 1 else 0)
-    modified a $ guard (n > 0) *> [RemoveSkillIcons $ replicate n WildIcon]
-  getModifiersFor _ _ = pure []
+    let n = max 0 $ length hand - (if any ((== a.cardId) . toCardId) hand then 1 else 0)
+    modifiedWhen_ a (n > 0) a.cardId [RemoveSkillIcons $ replicate n WildIcon]
 
 instance RunMessage LastChance where
   runMessage msg (LastChance attrs) = LastChance <$> runMessage msg attrs

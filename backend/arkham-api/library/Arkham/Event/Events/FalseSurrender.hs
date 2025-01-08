@@ -5,7 +5,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 
@@ -21,11 +21,9 @@ falseSurrender :: EventCard FalseSurrender
 falseSurrender = event (FalseSurrender . (`with` Meta Nothing)) Cards.falseSurrender
 
 instance HasModifiersFor FalseSurrender where
-  getModifiersFor (InvestigatorTarget iid) (FalseSurrender (With attrs meta)) = maybeModified attrs do
-    guard $ iid == attrs.owner
+  getModifiersFor (FalseSurrender (With a meta)) = maybeModified_ a a.owner do
     eid <- hoistMaybe $ chosenEnemy meta
     pure [MustChooseEnemy (EnemyWithId eid)]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage FalseSurrender where
   runMessage msg e@(FalseSurrender (With attrs meta)) = runQueueT $ case msg of

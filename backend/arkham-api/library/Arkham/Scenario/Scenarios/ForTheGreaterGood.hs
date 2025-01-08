@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.ForTheGreaterGood (ForTheGreaterGood (..), forTheGreaterGood) where
+module Arkham.Scenario.Scenarios.ForTheGreaterGood (forTheGreaterGood) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDoom))
@@ -16,6 +16,7 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ForTheGreaterGood.Story
@@ -92,8 +93,8 @@ instance RunMessage ForTheGreaterGood where
       pure s
     DoStep 2 PreScenarioSetup -> do
       showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
-      let intro2Sidebar = if showSidebar then decievingTheLodge else mempty
-      story $ intro2 <> intro2Sidebar
+      let convert = if showSidebar then addFlavorEntry decievingTheLodge else id
+      story $ convert intro2
       pure s
     DoStep 3 PreScenarioSetup -> do
       story intro3
@@ -205,16 +206,16 @@ instance RunMessage ForTheGreaterGood where
               chooseOrRunOne
                 iid
                 [ targetLabel
-                  cultist
-                  [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                  , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
-                  ]
+                    cultist
+                    [ RemoveAllDoom (toSource attrs) (toTarget cultist)
+                    , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
+                    ]
                 | cultist <- maxDoomCultists
                 ]
             else drawAnotherChaosToken iid
       pure s
     ScenarioResolution n -> do
-      iids <- allInvestigatorIds
+      iids <- allInvestigators
       case n of
         NoResolution -> do
           story noResolution

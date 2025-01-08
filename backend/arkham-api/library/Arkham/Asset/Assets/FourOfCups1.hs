@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype FourOfCups1 = FourOfCups1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fourOfCups1 :: AssetCard FourOfCups1
 fourOfCups1 = asset FourOfCups1 Cards.fourOfCups1
 
 instance HasModifiersFor FourOfCups1 where
-  getModifiersFor (InvestigatorTarget iid) (FourOfCups1 a) = do
-    toModifiers a [SkillModifier #willpower 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FourOfCups1 a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities FourOfCups1 where
   getAbilities (FourOfCups1 a) =

@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TheDoomOfEztli (TheDoomOfEztli (..), theDoomOfEztli) where
+module Arkham.Scenario.Scenarios.TheDoomOfEztli (theDoomOfEztli) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -17,6 +17,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -95,7 +96,7 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecorded = setFromList [TheInvestigatorsClearedAPathToTheEztliRuins]
+    { campaignLogRecorded = setFromList [toCampaignLogKey TheInvestigatorsClearedAPathToTheEztliRuins]
     }
 
 investigatorDefeat :: ReverseQueue m => ScenarioAttrs -> m ()

@@ -1,14 +1,12 @@
-module Arkham.Location.Cards.Garden (garden, Garden (..)) where
+module Arkham.Location.Cards.Garden (garden) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 
 newtype Garden = Garden LocationAttrs
   deriving anyclass IsLocation
@@ -18,28 +16,19 @@ garden :: LocationCard Garden
 garden = location Garden Cards.garden 3 (PerPlayer 1)
 
 instance HasModifiersFor Garden where
-  getModifiersFor (LocationTarget lid) (Garden attrs)
-    | lid == toId attrs =
-        toModifiers attrs [Blocked | not (locationRevealed attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Garden a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities Garden where
   getAbilities (Garden attrs) =
-    withBaseAbilities
-      attrs
-      [ skillTestAbility
-        $ restrictedAbility attrs 1 (Here <> NoCluesOnThis)
-        $ ActionAbility []
-        $ ActionCost 1
-      | locationRevealed attrs
-      ]
+    extendRevealed1 attrs $ skillTestAbility $ restricted attrs 1 (Here <> NoCluesOnThis) actionAbility
 
 instance RunMessage Garden where
-  runMessage msg l@(Garden attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(Garden attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push $ beginSkillTest sid iid (attrs.ability 1) (toTarget attrs) SkillAgility (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) attrs #agility (Fixed 2)
       pure l
-    PassedSkillTest _ _ source SkillTestInitiatorTarget {} _ _
-      | isAbilitySource attrs 1 source -> l <$ push (Remember DistractedTheGuards)
-    _ -> Garden <$> runMessage msg attrs
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      remember DistractedTheGuards
+      pure l
+    _ -> Garden <$> liftRunMessage msg attrs

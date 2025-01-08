@@ -1,19 +1,19 @@
-module Arkham.Agenda.Cards.JusticeXI (JusticeXI (..), justiceXI) where
+module Arkham.Agenda.Cards.JusticeXI (justiceXI) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Log (getRecordedCardCodes)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.Query (getInvestigatorIds, getLead, getSetAsideCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCard)
 import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Trait (Trait (Monster, SilverTwilight))
 
@@ -25,10 +25,8 @@ justiceXI :: AgendaCard JusticeXI
 justiceXI = agenda (1, A) JusticeXI Cards.justiceXI (Static 8)
 
 instance HasModifiersFor JusticeXI where
-  getModifiersFor (EnemyTarget eid) (JusticeXI attrs) = maybeModified attrs do
-    liftGuardM $ eid <=~> EnemyWithTrait SilverTwilight
-    pure [CannotBeDamaged, CannotBeDefeated]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JusticeXI a) =
+    modifySelect a (EnemyWithTrait SilverTwilight) [CannotBeDamaged, CannotBeDefeated]
 
 instance HasAbilities JusticeXI where
   getAbilities (JusticeXI a) =
@@ -37,7 +35,7 @@ instance HasAbilities JusticeXI where
 instance RunMessage JusticeXI where
   runMessage msg a@(JusticeXI attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       n <- getSpendableClueCount iids
       targetAmount <- perPlayer 3
       actId <- selectJust AnyAct

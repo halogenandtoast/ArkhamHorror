@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (AssetDefeated)
 import Arkham.Matcher
-import Arkham.SkillType
 import Arkham.Timing qualified as Timing
 
 newtype GuidingSpirit1 = GuidingSpirit1 AssetAttrs
@@ -20,14 +19,10 @@ guidingSpirit1 :: AssetCard GuidingSpirit1
 guidingSpirit1 = assetWith GuidingSpirit1 Cards.guidingSpirit1 (sanityL ?~ 3)
 
 instance HasModifiersFor GuidingSpirit1 where
-  getModifiersFor (AssetTarget aid) (GuidingSpirit1 attrs)
-    | toId attrs == aid =
-        toModifiers attrs [NonDirectHorrorMustBeAssignToThisFirst]
-  getModifiersFor (InvestigatorTarget iid) (GuidingSpirit1 attrs) =
-    toModifiers
-      attrs
-      [SkillModifier SkillIntellect 1 | controlledBy attrs iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GuidingSpirit1 a) = do
+    self <- modifySelf a [NonDirectHorrorMustBeAssignToThisFirst]
+    controller <- controllerGets a [SkillModifier #intellect 1]
+    pure $ self <> controller
 
 instance HasAbilities GuidingSpirit1 where
   getAbilities (GuidingSpirit1 a) =

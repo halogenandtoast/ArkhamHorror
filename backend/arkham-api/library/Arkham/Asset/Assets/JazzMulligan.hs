@@ -25,14 +25,11 @@ instance HasAbilities JazzMulligan where
     [skillTestAbility $ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_]
 
 instance HasModifiersFor JazzMulligan where
-  getModifiersFor (LocationTarget lid) (JazzMulligan attrs) = do
-    miid <- selectOne You
-    case miid of
-      Just iid | controlledBy attrs iid -> do
-        isUnrevealed <- lid <=~> UnrevealedLocation
-        toModifiers attrs [TraitRestrictedModifier Miskatonic Blank | isUnrevealed]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JazzMulligan a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      active <- iid <=~> ActiveInvestigator
+      modifySelectWhen a active UnrevealedLocation [TraitRestrictedModifier Miskatonic Blank]
 
 instance RunMessage JazzMulligan where
   runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of

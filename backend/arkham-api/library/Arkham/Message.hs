@@ -72,6 +72,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult qualified as SkillTest
@@ -307,10 +308,6 @@ data IncludeDiscard = IncludeDiscard | ExcludeDiscard
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
-data SearchType = Searching | Looking | Revealing
-  deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
-
 newtype FromSkillType = FromSkillType SkillType
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
@@ -406,7 +403,7 @@ data Message
   | SetConnections LocationId [LocationMatcher]
   | SetFlippable LocationId Bool
   | AddCampaignCardToDeck InvestigatorId Card
-  | RemoveCardFromDeckForCampaign InvestigatorId PlayerCard
+  | RemoveCardFromDeckForCampaign InvestigatorId CardId
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
     AddFocusedToHand InvestigatorId Target Zone CardId
@@ -892,6 +889,7 @@ data Message
   | RerunSkillTest
   | ResetInvestigators
   | ResetGame
+  | ReloadDecks
   | ResetChaosTokens Source
   | Reset Target
   | ReturnChaosTokensToPool [ChaosToken]
@@ -924,14 +922,7 @@ data Message
   | RemoveFromBearersDeckOrDiscard PlayerCard
   | SearchCollectionForRandom InvestigatorId Source CardMatcher
   | FinishedSearch
-  | Search
-      SearchType
-      InvestigatorId
-      Source
-      Target
-      [(Zone, ZoneReturnStrategy)]
-      ExtendedCardMatcher
-      FoundCardsStrategy
+  | Search Search
   | ResolveSearch InvestigatorId
   | SearchFound InvestigatorId Target DeckSignifier [Card]
   | FoundCards (Map Zone [Card])

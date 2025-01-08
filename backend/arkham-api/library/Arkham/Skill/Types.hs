@@ -222,7 +222,7 @@ instance HasAbilities Skill where
   getAbilities (Skill a) = getAbilities a
 
 instance HasModifiersFor Skill where
-  getModifiersFor target (Skill a) = getModifiersFor target a
+  getModifiersFor (Skill a) = getModifiersFor a
 
 instance Entity Skill where
   type EntityId Skill = SkillId

@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.CaughtInAWeb (caughtInAWeb, CaughtInAWeb (..)) whe
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -15,10 +16,11 @@ caughtInAWeb :: TreacheryCard CaughtInAWeb
 caughtInAWeb = treachery CaughtInAWeb Cards.caughtInAWeb
 
 instance HasModifiersFor CaughtInAWeb where
-  getModifiersFor (InvestigatorTarget iid) (CaughtInAWeb attrs) | treacheryInThreatArea iid attrs = do
-    alreadyMoved <- fieldMap InvestigatorActionsTaken (any (elem #move)) iid
-    modified attrs $ SkillModifier #agility (-1) : [CannotTakeAction #move | alreadyMoved]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CaughtInAWeb a) = case a.placement of
+    InThreatArea iid -> do
+      alreadyMoved <- fieldMap InvestigatorActionsTaken (any (elem #move)) iid
+      modified_ a iid $ SkillModifier #agility (-1) : [CannotTakeAction #move | alreadyMoved]
+    _ -> pure mempty
 
 instance HasAbilities CaughtInAWeb where
   getAbilities (CaughtInAWeb attrs) = [skillTestAbility $ restrictedAbility attrs 1 OnSameLocation actionAbility]

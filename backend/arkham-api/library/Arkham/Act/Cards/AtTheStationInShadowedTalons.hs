@@ -30,7 +30,7 @@ atTheStationInShadowedTalons =
 instance RunMessage AtTheStationInShadowedTalons where
   runMessage msg a@(AtTheStationInShadowedTalons attrs) = case msg of
     AdvanceAct aid _ _ | aid == actId attrs && onSide D attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       pushAll
         [ FindEncounterCard
             leadInvestigatorId

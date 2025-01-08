@@ -8,9 +8,11 @@ module Arkham.Criteria (
 import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
-import Arkham.CampaignLogKey (CampaignLogKey)
+import Arkham.CampaignLog
+import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey(..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
+import Arkham.Card.CardCode
 import Arkham.Cost.Status (CostStatus)
 import Arkham.Criteria.Override
 import Arkham.Customization
@@ -65,6 +67,11 @@ pattern NoCluesOnThis :: Criterion
 pattern NoCluesOnThis <- CluesOnThis (EqualTo (Static 0))
   where
     NoCluesOnThis = CluesOnThis (EqualTo (Static 0))
+
+pattern AnyCluesOnThis :: Criterion
+pattern AnyCluesOnThis <- CluesOnThis (GreaterThan (Static 0))
+  where
+    AnyCluesOnThis = CluesOnThis (GreaterThan (Static 0))
 
 pattern CanGainResources :: Criterion
 pattern CanGainResources <-
@@ -236,6 +243,7 @@ data Criterion
   | HasScenarioCount ScenarioCountKey ValueMatcher
   | HasCampaignCount CampaignLogKey ValueMatcher
   | HasCalculation GameCalculation ValueMatcher
+  | HasRemainingFrostTokens
   | HasRemainingBlessTokens
   | HasMoreBlessThanCurseTokens
   | HasRemainingCurseTokens
@@ -248,6 +256,7 @@ data Criterion
   | CanLeaveThisVehicle
   | InThisVehicle
   | NotInEliminatedBearersThreatArea
+  | PartnerHasStatus CardCode PartnerStatus
   | -- Special Criterion
     AtLeastNCriteriaMet Int [Criterion]
   | Criteria [Criterion]
@@ -264,6 +273,15 @@ data Criterion
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion
+
+notYetRecorded :: IsCampaignLogKey k => k -> Criterion
+notYetRecorded = NotYetRecorded . toCampaignLogKey
+
+hasCampaignCount :: IsCampaignLogKey k => k -> ValueMatcher -> Criterion
+hasCampaignCount k = HasCampaignCount (toCampaignLogKey k)
+
+hasRecordCriteria :: IsCampaignLogKey k => k -> Criterion
+hasRecordCriteria = HasRecord . toCampaignLogKey
 
 _DuringSkillTest :: Prism' Criterion SkillTestMatcher
 _DuringSkillTest = prism' DuringSkillTest $ \case

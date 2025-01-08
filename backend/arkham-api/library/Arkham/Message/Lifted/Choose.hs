@@ -5,6 +5,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Message (Message (Would), uiToRun)
@@ -22,6 +23,7 @@ import Control.Monad.Writer.Strict
 data ChooseState = ChooseState
   { terminated :: Bool
   , label :: Maybe Text
+  , labelCardCode :: Maybe CardCode
   }
 
 newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Message] m) a}
@@ -35,7 +37,12 @@ instance MonadTrans ChooseT where
   lift = ChooseT . lift . lift
 
 runChooseT :: ChooseT m a -> m ((a, ChooseState), [UI Message])
-runChooseT = runWriterT . (`runStateT` ChooseState False Nothing) . unChooseT
+runChooseT = runWriterT . (`runStateT` ChooseState False Nothing Nothing) . unChooseT
+
+leadChooseOneM :: ReverseQueue m => ChooseT m a -> m ()
+leadChooseOneM choices = do
+  lead <- getLead
+  chooseOneM lead choices
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
@@ -81,6 +88,16 @@ chooseOrRunNM iid n choices = do
   (_, choices') <- runChooseT choices
   unless (null choices') $ chooseOrRunN iid n choices'
 
+chooseOrRunOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
+chooseOrRunOneAtATimeM iid choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseOrRunOneAtATime iid choices'
+      Just l -> case choices' of
+        [x] -> push $ uiToRun x
+        _ -> questionLabel l iid $ ChooseOneAtATime choices'
+
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
   when (n > 0) do
@@ -115,6 +132,11 @@ labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
+portraitLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+portraitLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [PortraitLabel iid msgs]
+
 labeledI18n :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
 labeledI18n label action = unterminated do
   msgs <- lift $ evalQueueT action
@@ -144,6 +166,12 @@ abilityLabeled :: ReverseQueue m => InvestigatorId -> Ability -> QueueT Message 
 abilityLabeled iid ab action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [AbilityLabel iid ab [] [] msgs]
+
+abilityLabeledWithBefore
+  :: ReverseQueue m => InvestigatorId -> Ability -> [Message] -> QueueT Message m () -> ChooseT m ()
+abilityLabeledWithBefore iid ab beforeMsgs action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [AbilityLabel iid ab [] beforeMsgs msgs]
 
 horrorLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 horrorLabeled iid action = unterminated do
@@ -216,18 +244,26 @@ chooseFromM
   -> (QueryElement query -> QueueT Message m ())
   -> m ()
 chooseFromM iid matcher action = do
-  ((_, ChooseState {label}), choices') <-
+  ((_, ChooseState {label, labelCardCode}), choices') <-
     runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
   unless (null choices')
     $ case label of
       Nothing -> chooseOne iid choices'
-      Just l -> questionLabel l iid $ ChooseOne choices'
+      Just l -> case labelCardCode of
+        Nothing -> questionLabel l iid $ ChooseOne choices'
+        Just cCode -> questionLabelWithCard l cCode iid $ ChooseOne choices'
 
 nothing :: Monad m => QueueT Message m ()
 nothing = pure ()
 
 questionLabeled :: ReverseQueue m => Text -> ChooseT m ()
 questionLabeled label = modify $ \s -> s {Arkham.Message.Lifted.Choose.label = Just label}
+
+questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
+questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}
+
+storyWithContinue :: ReverseQueue m => FlavorText -> Text -> m ()
+storyWithContinue flavor button = storyWithChooseOneM flavor $ labeled button nothing
 
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
 storyWithChooseOneM flavor choices = do

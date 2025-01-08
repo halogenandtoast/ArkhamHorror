@@ -1,18 +1,19 @@
-module Arkham.Scenario.Scenarios.APhantomOfTruth (APhantomOfTruth (..), aPhantomOfTruth) where
+module Arkham.Scenario.Scenarios.APhantomOfTruth (aPhantomOfTruth) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers hiding (recordSetInsert, setupModifier, skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers
@@ -222,7 +223,7 @@ instance RunMessage APhantomOfTruth where
         ElderThing -> push $ LoseResources iid (ChaosTokenEffectSource ElderThing) n
         _ -> pure ()
       pure s
-    ScenarioResolution res -> do
+    ScenarioResolution res -> scope "resolutions" do
       let
         replaceSymbolTokens token = do
           removeAllChaosTokens Cultist
@@ -256,7 +257,7 @@ instance RunMessage APhantomOfTruth where
 
       selectForMaybeM (VictoryDisplayCardMatch $ basic $ cardIs Enemies.jordanPerry) \jordan ->
         recordSetInsert VIPsSlain [toCardCode jordan]
-      allGainXpWithBonus attrs $ if res == Resolution 2 then toBonus "resolution2" 2 else NoBonus
+      allGainXpWithBonus attrs $ if res == Resolution 2 then toBonus "insight" 2 else NoBonus
       endOfScenario
       pure s
     _ -> APhantomOfTruth <$> liftRunMessage msg attrs

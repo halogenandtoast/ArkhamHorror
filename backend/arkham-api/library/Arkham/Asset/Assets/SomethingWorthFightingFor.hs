@@ -3,12 +3,10 @@ module Arkham.Asset.Assets.SomethingWorthFightingFor (
   SomethingWorthFightingFor (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Investigator.Types (Field (..))
-import Arkham.Projection
+import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SomethingWorthFightingFor = SomethingWorthFightingFor AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -22,16 +20,13 @@ somethingWorthFightingFor =
     (sanityL ?~ 3)
 
 instance HasModifiersFor SomethingWorthFightingFor where
-  getModifiersFor (InvestigatorTarget iid) (SomethingWorthFightingFor a)
-    | not (controlledBy a iid) = do
-        locationId <- field InvestigatorLocation iid
-        assetLocationId <- field AssetLocation (toId a)
-        toModifiers
-          a
-          [ CanAssignHorrorToAsset a.id
-          | (locationId == assetLocationId) && isJust locationId
-          ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SomethingWorthFightingFor a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modifySelect
+        a
+        (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+        [CanAssignHorrorToAsset a.id]
 
 instance RunMessage SomethingWorthFightingFor where
   runMessage msg (SomethingWorthFightingFor attrs) =

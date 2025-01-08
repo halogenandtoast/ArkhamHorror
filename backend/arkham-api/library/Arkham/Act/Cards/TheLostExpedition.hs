@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheLostExpedition (TheLostExpedition (..), theLostExpedition) where
+module Arkham.Act.Cards.TheLostExpedition (theLostExpedition) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -29,7 +29,7 @@ instance HasAbilities TheLostExpedition where
       ]
    where
     atCamp = oneOf $ map toCriteria (Map.toList camps)
-    toCriteria (site, campRecord) = HasRecord campRecord <> youExist (at_ $ LocationIs site)
+    toCriteria (site, campRecord) = hasRecordCriteria campRecord <> youExist (at_ $ LocationIs site)
 
 instance RunMessage TheLostExpedition where
   runMessage msg a@(TheLostExpedition attrs) = runQueueT $ case msg of

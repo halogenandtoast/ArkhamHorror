@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.Backpack (backpack, Backpack (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, getAdditionalSearchTargets)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Strategy
 
@@ -15,9 +15,7 @@ backpack :: AssetCard Backpack
 backpack = asset Backpack Cards.backpack
 
 instance HasModifiersFor Backpack where
-  getModifiersFor (InvestigatorTarget iid) (Backpack attrs) | controlledBy attrs iid = do
-    modified attrs (AsIfInHand <$> attrs.cardsUnderneath)
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Backpack a) = controllerGets a (AsIfInHand <$> a.cardsUnderneath)
 
 instance HasAbilities Backpack where
   getAbilities (Backpack a) =
@@ -51,7 +49,7 @@ instance RunMessage Backpack where
       push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> do
-      let hadCards = notNull $ attrs.cardsUnderneath
+      let hadCards = notNull attrs.cardsUnderneath
       result <- liftRunMessage msg attrs
       when (hadCards && null result.cardsUnderneath) $ toDiscard attrs attrs
       pure $ Backpack result

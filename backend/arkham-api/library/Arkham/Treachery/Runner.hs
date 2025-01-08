@@ -119,6 +119,9 @@ instance RunMessage TreacheryAttrs where
     AddToVictory target | target `elem` treacheryAttachedTarget a -> do
       push $ toDiscard GameSource a
       pure a
+    When (Revelation iid (isSource a -> True)) -> do
+      pushM $ checkWhen $ Window.ResolvingRevelation iid a.id
+      pure a
     After (Revelation iid (isSource a -> True)) -> do
       pushWhen
         (treacheryPlacement == Limbo)
@@ -153,5 +156,10 @@ instance RunMessage TreacheryAttrs where
         $ windowMsg
         : [UnsealChaosToken token | token <- treacherySealedChaosTokens]
           <> [RemovedFromPlay source]
+      pure a
+    RemoveFromPlay source -> do
+      case a.attached of
+        Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource (toTarget a)
+        _ -> pure ()
       pure a
     _ -> pure a

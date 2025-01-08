@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.DivingSuit (divingSuit, DivingSuit (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype DivingSuit = DivingSuit AssetAttrs
   deriving anyclass IsAsset
@@ -14,8 +14,7 @@ divingSuit :: AssetCard DivingSuit
 divingSuit = asset DivingSuit Cards.divingSuit
 
 instance HasModifiersFor DivingSuit where
-  getModifiersFor target (DivingSuit a) =
-    modified a [NonDirectDamageMustBeAssignToThisN 1 | isTarget a target]
+  getModifiersFor (DivingSuit a) = modifySelf a [NonDirectDamageMustBeAssignToThisN 1]
 
 instance HasAbilities DivingSuit where
   getAbilities (DivingSuit a) =

@@ -19,7 +19,7 @@ theZealotsSeal = treachery TheZealotsSeal Cards.theZealotsSeal
 instance RunMessage TheZealotsSeal where
   runMessage msg t@(TheZealotsSeal attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       -- we must unshift this first for other effects happen before
       for_ investigatorIds $ \iid' -> do
         handCardCount <- fieldMap InvestigatorHand length iid'

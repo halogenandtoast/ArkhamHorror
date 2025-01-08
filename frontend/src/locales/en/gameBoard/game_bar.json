@@ -1,0 +1,49 @@
+{
+    "closeLog": "Close Log",
+    "viewLog": "View Log",
+
+    "view": "View",
+    "shortcuts": "Shortcuts",
+    "shortcutsTitle": "Keyboard Shortcuts",
+    "shortcutSkipTriggers": "(space) Skip Triggers",
+    "shortcutUndo": "Undo",
+    "shortcutToggleDebug": "Toggle Debug",
+    "shortcutShowOrHideShortcuts": "Show/Hide Shortcuts",
+    "shortcutDraw": "Draw from deck / encounter deck",
+    "shortcutTakeResources": "Take Resources",
+    "shortcutEndTurn": "End Turn",
+
+    "viewSettings": "View Settings",
+    "viewSettingTitle": "Settings for {investigator}",
+    "viewSettingSkipTriggers": "Skip triggers during skill tests that don't affect the outcome",
+
+    "viewChaosBag": "View Chaos Bag",
+    "chaosBag": "Chaos Bag",
+    "add": "Add",
+    
+    "splitView": "Split View",
+
+    "viewBonded": "View Bonded",
+    "bonded": "Bonded",
+
+    "showOutOfPlay": "Show Out of Play",
+    "outOfPlay": "Out of Play",
+
+
+    "debug": "Debug",
+    "toggleDebug": "Toggle Debug",
+    "debugExport": "Debug Export",
+
+    "undo": "Undo",
+
+    "fileABug": "File A Bug",
+    "fileBugPart1": "This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed.",
+    "fileBugPart2": "Please note that it will take some time to submit the bug and you can not resume playing until it is done.",
+    "bugTitleholder": "A brief title for the bug",
+    "bugDescriptionholder": "A description of what happened",
+    "bugSubmittingTitle": "Submitting bug, this may take several minutes, please wait...",
+    "bugSubmittingContent": "When this process is done, it will open GitHub in a new window and you will be able to resume your game.",
+    "bugSubmittingFail": "Unable to file bug",
+
+    "toggleSidebar": "Toggle Sidebar"
+}

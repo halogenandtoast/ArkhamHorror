@@ -17,11 +17,8 @@ greyWeaver =
     .~ Prey (InvestigatorWithLowestSkill #agility UneliminatedInvestigator)
 
 instance HasModifiersFor GreyWeaver where
-  getModifiersFor (InvestigatorTarget iid) (GreyWeaver attrs) = do
-    isReady <- toId attrs <=~> ReadyEnemy
-    sameLocation <- iid <=~> InvestigatorAt (locationWithEnemy attrs)
-    toModifiers attrs [CannotTakeAction #move | isReady && sameLocation]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GreyWeaver a) = do
+    modifySelectWhen a a.ready (InvestigatorAt $ locationWithEnemy a) [CannotTakeAction #move]
 
 instance RunMessage GreyWeaver where
   runMessage msg (GreyWeaver attrs) = GreyWeaver <$> runMessage msg attrs

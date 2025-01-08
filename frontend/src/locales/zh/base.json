@@ -26,9 +26,25 @@
   "username": "用户名",
   "usernameOrEmailAlreadyTaken": "用户名或电子邮件已被使用",
   "labels": {
-    "drawTopCardOfEncounterDeck": "Draw the top card of the encounter deck"
+    "drawTopCardOfEncounterDeck": "抽取遭遇牌堆顶部的卡牌"
   },
   "tooltips": {
-    "takeControlOfKey": "Take control of {key} key"
-  }
+    "takeControlOfKey": "获得{key}钥匙的控制权"
+  },
+
+  "Yes": "是",
+  "No": "否",
+
+  "Evade": "躲避",
+  "Fight": "攻击",
+  "Engage": "交战",
+  "Forced": "强制",
+  "Delayed": "延时效果",
+  "Objective": "目标",
+  "Haunted": "闹鬼",
+  
+  "Results": "结局",
+  "Story": "故事",
+  "ChooseOne": "选择一项",
+  "Choose": "选择"
 }

@@ -340,5 +340,30 @@
         { "key": "TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper", "type": "ToggleKey", "content": true },
         { "key": "TheOrdersRitualWasDisrupted", "type": "ToggleKey", "content": false }
       ]
+  },
+  {
+      "id": "08501a",
+      "name": "Ice and Death, Part I",
+      "campaign": "08"
+  },
+  {
+      "id": "08501b",
+      "name": "Ice and Death, Part II",
+      "campaign": "08"
+  },
+  {
+      "id": "08501c",
+      "name": "Ice and Death, Part III",
+      "campaign": "08"
+  },
+  {
+      "id": "08549",
+      "name": "Fatal Mirage",
+      "campaign": "08"
+  },
+  {
+      "id": "08596",
+      "name": "To the Forbidden Peaks",
+      "campaign": "08"
   }
 ]

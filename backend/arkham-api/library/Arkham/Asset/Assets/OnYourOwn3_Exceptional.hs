@@ -6,9 +6,9 @@ module Arkham.Asset.Assets.OnYourOwn3_Exceptional (
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsWhen)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype OnYourOwn3_Exceptional = OnYourOwn3_Exceptional AssetAttrs
   deriving anyclass IsAsset
@@ -24,9 +24,8 @@ instance HasAbilities OnYourOwn3_Exceptional where
     ]
 
 instance HasModifiersFor OnYourOwn3_Exceptional where
-  getModifiersFor (InvestigatorTarget iid) (OnYourOwn3_Exceptional attrs) =
-    toModifiers attrs [CanReduceCostOf (#event <> #survivor) 2 | controlledBy attrs iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OnYourOwn3_Exceptional a) =
+    controllerGetsWhen a a.ready [CanReduceCostOf (#event <> #survivor) 2]
 
 instance RunMessage OnYourOwn3_Exceptional where
   runMessage msg a@(OnYourOwn3_Exceptional attrs) = runQueueT $ case msg of

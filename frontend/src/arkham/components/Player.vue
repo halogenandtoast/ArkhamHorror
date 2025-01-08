@@ -23,6 +23,8 @@ import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import * as Arkham from '@/arkham/types/Investigator';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 interface RefWrapper<T> {
   ref: ComputedRef<T>
@@ -144,7 +146,7 @@ const playTopOfDeckAction = computed(() => {
 })
 
 const viewingDiscard = ref(false)
-const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : pluralize('Card', discards.value.length))
+const viewDiscardLabel = computed(() => viewingDiscard.value ? t('close') : pluralize(t('scenario.discardCard'), discards.value.length))
 
 const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -199,7 +201,7 @@ const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title:
   viewingDiscard.value = isDiscards
 }
 
-const showDiscards = (e: Event) => doShowCards(e, discards, 'Discards', true)
+const showDiscards = (e: Event) => doShowCards(e, discards, t('investigator.discards'), true)
 
 watch(choices, async (newChoices) => {
   const shouldShow = newChoices.some((c) => c.tag === "AbilityLabel" && discards.value.map((d) => toCardContents(d).id).includes(c.ability.source.contents))

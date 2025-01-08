@@ -13,10 +13,8 @@ import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.GameValue
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Trait
 
 newtype TheEntityAboveTheFloodBelow = TheEntityAboveTheFloodBelow AgendaAttrs
@@ -32,10 +30,8 @@ theEntityAboveTheFloodBelow =
     (Static 6)
 
 instance HasModifiersFor TheEntityAboveTheFloodBelow where
-  getModifiersFor (EnemyTarget eid) (TheEntityAboveTheFloodBelow a) = do
-    isMonster <- fieldP EnemyTraits (member Monster) eid
-    toModifiers a [EnemyFight 1 | isMonster]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheEntityAboveTheFloodBelow a) =
+    modifySelect a (EnemyWithTrait Monster) [EnemyFight 1]
 
 instance HasAbilities TheEntityAboveTheFloodBelow where
   getAbilities (TheEntityAboveTheFloodBelow a) =
@@ -69,7 +65,7 @@ instance RunMessage TheEntityAboveTheFloodBelow where
            ]
       pure a
     UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       pushAll
         $ [PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1, AdvanceAgendaIfThresholdSatisfied]
         <> [ TakeResources iid 2 (toAbilitySource attrs 1) False

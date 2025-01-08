@@ -1,36 +1,34 @@
 module Arkham.Scenario.Scenarios.TheDevourerBelow where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.NightOfTheZealot.ChaosBag
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Message (pushWhenM)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
-import Arkham.Scenario.Runner hiding (
+import Arkham.Scenario.Import.Lifted hiding (
   assignDamageAndHorror,
   chooseOrRunOne,
   findAndDrawEncounterCard,
   placeLocationCard,
   story,
  )
-import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Token
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
   deriving stock Generic
@@ -72,7 +70,7 @@ agendaDeck =
 instance RunMessage TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      push $ SetChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      push $ SetChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
       story intro

@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.AminaZidane (aminaZidane, AminaZidane (..)) whe
 import Arkham.Ability
 import Arkham.Helpers.Doom (getDoomOnTarget)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Ref (targetToSource)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
@@ -11,9 +11,9 @@ import Arkham.Investigator.Import.Lifted hiding (PlayCard)
 import Arkham.Matcher
 
 newtype AminaZidane = AminaZidane InvestigatorAttrs
-  deriving anyclass (IsInvestigator)
+  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-  deriving stock (Data)
+  deriving stock Data
 
 aminaZidane :: InvestigatorCard AminaZidane
 aminaZidane =
@@ -21,9 +21,7 @@ aminaZidane =
     $ Stats {health = 5, sanity = 9, willpower = 3, intellect = 3, combat = 3, agility = 3}
 
 instance HasModifiersFor AminaZidane where
-  getModifiersFor target (AminaZidane a) | isTarget a target = do
-    modified a [CanReduceCostOf #asset 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AminaZidane a) = modifySelf a [CanReduceCostOf #asset 3]
 
 instance HasAbilities AminaZidane where
   getAbilities (AminaZidane x) =

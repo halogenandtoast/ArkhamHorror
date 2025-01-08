@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
@@ -30,9 +29,8 @@ instance RunMessage YithianObserver where
   runMessage msg e@(YithianObserver attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       emptyHand <- fieldMap InvestigatorHand null iid
-      withSkillTest \sid ->
-        if emptyHand
-          then skillTestModifiers sid attrs attrs [DamageDealt 1, HorrorDealt 1]
-          else randomDiscard iid attrs
+      if emptyHand
+        then nextSkillTestModifiers attrs attrs [DamageDealt 1, HorrorDealt 1]
+        else randomDiscard iid attrs
       pure e
     _ -> YithianObserver <$> liftRunMessage msg attrs

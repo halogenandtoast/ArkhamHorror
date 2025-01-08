@@ -134,6 +134,7 @@ instance HasField "needsAction" CardPlay Bool where
 
 data WindowType
   = AttemptToEvadeEnemy InvestigatorId EnemyId
+  | ResolvingRevelation InvestigatorId TreacheryId
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
   | FloodLevelChanged LocationId FloodLevel FloodLevel
@@ -240,7 +241,7 @@ data WindowType
   | LostActions InvestigatorId Source Int
   | WouldPlaceDoom Source Target Int
   | WouldPlaceClueOnLocation InvestigatorId LocationId Source Int
-  | TakeControlOfClues InvestigatorId Source
+  | TakeControlOfClues InvestigatorId Source Int
   | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId

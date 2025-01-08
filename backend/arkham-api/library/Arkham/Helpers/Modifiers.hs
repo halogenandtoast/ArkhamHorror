@@ -9,6 +9,8 @@ import Arkham.Ability.Types
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
+import Arkham.Classes.Query
+import Arkham.Cost
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game ()
@@ -19,14 +21,19 @@ import Arkham.Matcher.Types
 import Arkham.Message
 import Arkham.Modifier as X
 import Arkham.Phase (Phase)
+import Arkham.Placement
+import Arkham.Query
 import Arkham.Source
 import Arkham.Target
 import Arkham.Window (Window)
 import Control.Lens (each, sumOf)
 import Control.Monad.Trans.Class
+import Control.Monad.Writer.Class
 import Data.Aeson
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Monoid (First (..))
+import GHC.Records
 
 withGrantedAction
   :: (HasGame m, Sourceable source)
@@ -114,14 +121,290 @@ withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier
 toModifier a mType = Modifier (toSource a) mType False <$> sourceToMaybeCard a
 
+modifySelf
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> [ModifierType]
+  -> m ()
+modifySelf target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+
+modifySelf1
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> ModifierType
+  -> m ()
+modifySelf1 target mod1 = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target [mod1]
+
+modifySelfMaybe
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> MaybeT m [ModifierType]
+  -> m ()
+modifySelfMaybe target body = do
+  mods <- fromMaybe [] <$> runMaybeT body
+  unless (null mods) $ tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+
+modifySelfWith
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> (Modifier -> Modifier)
+  -> [ModifierType]
+  -> m ()
+modifySelfWith target f mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiersWith target f mods
+
+modifySelfWhen
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> Bool
+  -> [ModifierType]
+  -> m ()
+modifySelfWhen target cond mods =
+  when cond do
+    tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
+
+modifySelfWhenM
+  :: (Targetable target, Sourceable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => target
+  -> m Bool
+  -> [ModifierType]
+  -> m ()
+modifySelfWhenM target cond mods = do
+  b <- cond
+  modifySelfWhen target b mods
+
 toModifiers :: (HasGame m, Sourceable a) => a -> [ModifierType] -> m [Modifier]
 toModifiers = traverse . toModifier
 
 modified :: (Sourceable a, HasGame m) => a -> [ModifierType] -> m [Modifier]
 modified a = toModifiers a
 
+modifyEach
+  :: (HasGame m, Sourceable source, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source
+  -> [a]
+  -> [ModifierType]
+  -> m ()
+modifyEach source xs mTypes = do
+  mods <- toModifiers source mTypes
+  tell $ MonoidalMap $ mapFromList $ map ((,mods) . toTarget) xs
+
+modifyEachMap
+  :: (HasGame m, Sourceable source, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source
+  -> [a]
+  -> (a -> [ModifierType])
+  -> m ()
+modifyEachMap source xs f = do
+  tell . MonoidalMap . mapFromList =<< for xs \x -> (toTarget x,) <$> toModifiers source (f x)
+
+modifyEachMapM
+  :: (HasGame m, Sourceable source, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source
+  -> [a]
+  -> (a -> m [ModifierType])
+  -> m ()
+modifyEachMapM source xs f = do
+  tell . MonoidalMap . mapFromList =<< for xs \x -> (toTarget x,) <$> (toModifiers source =<< f x)
+
+modifyEachMaybe
+  :: (HasGame m, Sourceable source, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source
+  -> [a]
+  -> (a -> MaybeT m [ModifierType])
+  -> m ()
+modifyEachMaybe source xs body = do
+  tell . MonoidalMap . mapFromList =<< forMaybeM xs \x -> runMaybeT do
+    mods <- body x
+    guard $ notNull mods
+    (toTarget x,) <$> lift (toModifiers source mods)
+
+modifyEachWith
+  :: (HasGame m, Sourceable source, Targetable a, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => source
+  -> [a]
+  -> (Modifier -> Modifier)
+  -> [ModifierType]
+  -> m ()
+modifyEachWith source xs f mTypes = do
+  mods <- toModifiersWith source f mTypes
+  tell $ MonoidalMap $ mapFromList $ map ((,mods) . toTarget) xs
+
+modifySelect
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> [ModifierType]
+  -> m ()
+modifySelect _ _ [] = pure mempty
+modifySelect source q mtypes = do
+  xs <- select q
+  modifyEach source xs mtypes
+
+modifySelectMap
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> (el -> [ModifierType])
+  -> m ()
+modifySelectMap source q f = do
+  xs <- select q
+  modifyEachMap source xs f
+
+modifySelectMapM
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> (el -> m [ModifierType])
+  -> m ()
+modifySelectMapM source q f = do
+  xs <- select q
+  modifyEachMapM source xs f
+
+modifySelectWith
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> (Modifier -> Modifier)
+  -> [ModifierType]
+  -> m ()
+modifySelectWith source q f mtypes = do
+  xs <- select q
+  modifyEachWith source xs f mtypes
+
+modifySelectWhen
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> Bool
+  -> query
+  -> [ModifierType]
+  -> m ()
+modifySelectWhen source cond q mtypes = when cond $ modifySelect source q mtypes
+
+modifySelectMaybe
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> (el -> MaybeT m [ModifierType])
+  -> m ()
+modifySelectMaybe source q body = do
+  xs <- select q
+  for_ xs \x -> maybeModified_ source x (body x)
+
+modifySelectMaybeWith
+  :: ( HasGame m
+     , Sourceable source
+     , Targetable el
+     , el ~ QueryElement query
+     , Query query
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> query
+  -> (Modifier -> Modifier)
+  -> (el -> MaybeT m [ModifierType])
+  -> m ()
+modifySelectMaybeWith source q f body = do
+  xs <- select q
+  for_ xs \x -> maybeModifiedWith_ source x f (body x)
+
+maybeModifySelf
+  :: (Targetable a, Sourceable a, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> MaybeT m [ModifierType]
+  -> m ()
+maybeModifySelf a = tell . MonoidalMap . singletonMap (toTarget a) <=< modified a . fromMaybe [] <=< runMaybeT
+
 maybeModified :: (Sourceable a, HasGame m) => a -> MaybeT m [ModifierType] -> m [Modifier]
 maybeModified a = modified a . fromMaybe [] <=< runMaybeT
+
+modified_
+  :: (Sourceable a, Targetable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> target
+  -> [ModifierType]
+  -> m ()
+modified_ _ _ [] = pure mempty
+modified_ a target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers a mods
+
+modifiedWhen_
+  :: (Sourceable a, Targetable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> Bool
+  -> target
+  -> [ModifierType]
+  -> m ()
+modifiedWhen_ a cond target mods =
+  if cond
+    then tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers a mods
+    else pure mempty
+
+modifiedWith_
+  :: (Sourceable a, Targetable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> target
+  -> (Modifier -> Modifier)
+  -> [ModifierType]
+  -> m ()
+modifiedWith_ a target f mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiersWith a f mods
+
+maybeModified_
+  :: (Sourceable a, Targetable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> target
+  -> MaybeT m [ModifierType]
+  -> m ()
+maybeModified_ a target body = do
+  mods <- fromMaybe [] <$> runMaybeT body
+  unless (null mods) do
+    tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers a mods
+
+maybeModifiedWith_
+  :: (Sourceable a, Targetable target, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => a
+  -> target
+  -> (Modifier -> Modifier)
+  -> MaybeT m [ModifierType]
+  -> m ()
+maybeModifiedWith_ a target f body = do
+  mods <- fromMaybe [] <$> runMaybeT body
+  unless (null mods) do
+    tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiersWith a f mods
 
 toModifiersWith
   :: (HasGame m, Sourceable a) => a -> (Modifier -> Modifier) -> [ModifierType] -> m [Modifier]
@@ -358,6 +641,15 @@ setupModifier
   :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 setupModifier source target modifier = createWindowModifierEffect EffectSetupWindow source target [modifier]
 
+scenarioSetupModifier
+  :: (Sourceable source, Targetable target, HasGame m)
+  => ScenarioId
+  -> source
+  -> target
+  -> ModifierType
+  -> m Message
+scenarioSetupModifier scenarioId source target modifier = createWindowModifierEffect (EffectScenarioSetupWindow scenarioId) source target [modifier]
+
 abilityModifier
   :: (Sourceable source, Targetable target, HasGame m)
   => AbilityRef
@@ -435,3 +727,58 @@ revelationModifier
   -> m Message
 revelationModifier (toSource -> source) (toTarget -> target) tid modifier = do
   revelationModifiers source target tid [modifier]
+
+controllerGets
+  :: ( HasField "controller" source (Maybe InvestigatorId)
+     , Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> [ModifierType]
+  -> m ()
+controllerGets a mods = case a.controller of
+  Just iid -> modified_ a iid mods
+  Nothing -> pure ()
+
+controllerGetsWhen
+  :: ( HasField "controller" source (Maybe InvestigatorId)
+     , Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> Bool
+  -> [ModifierType]
+  -> m ()
+controllerGetsWhen a cond mods = when cond $ controllerGets a mods
+
+controllerGetsWith
+  :: ( HasField "controller" source (Maybe InvestigatorId)
+     , Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> (Modifier -> Modifier)
+  -> [ModifierType]
+  -> m ()
+controllerGetsWith a f mods = case a.controller of
+  Just iid -> modifiedWith_ a iid f mods
+  Nothing -> pure ()
+
+inThreatAreaGets
+  :: ( HasField "placement" source Placement
+     , Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> [ModifierType]
+  -> m ()
+inThreatAreaGets a mods = case a.placement of
+  InThreatArea iid -> modified_ a iid mods
+  _ -> pure mempty
+
+pattern CannotMoveTo :: LocationMatcher -> ModifierType
+pattern CannotMoveTo lm = AdditionalCostToEnterMatching lm UnpayableCost

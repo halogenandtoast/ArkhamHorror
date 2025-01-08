@@ -3,8 +3,7 @@ module Arkham.Scenario.Scenarios.TheGathering where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.NightOfTheZealot.Import hiding (TheGathering)
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -16,6 +15,7 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)

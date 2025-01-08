@@ -12,7 +12,6 @@ import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Strategy
 import Arkham.Trait
@@ -25,14 +24,9 @@ drElliHorowitz :: AssetCard DrElliHorowitz
 drElliHorowitz = ally DrElliHorowitz Cards.drElliHorowitz (1, 2)
 
 instance HasModifiersFor DrElliHorowitz where
-  getModifiersFor (AssetTarget aid) (DrElliHorowitz a) | aid /= toId a = do
-    field AssetController a.id >>= \case
-      Nothing -> pure []
-      Just iid ->
-        field AssetPlacement aid >>= \case
-          AttachedToAsset aid' _ | aid' == toId a -> toModifiers a [AsIfUnderControlOf iid]
-          _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DrElliHorowitz a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifySelect a (AssetAttachedToAsset (be a)) [AsIfUnderControlOf iid]
 
 instance HasAbilities DrElliHorowitz where
   getAbilities (DrElliHorowitz a) = [controlledAbility a 1 CanManipulateDeck $ freeReaction (AssetEntersPlay #when $ be a)]

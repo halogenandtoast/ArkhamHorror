@@ -14,13 +14,14 @@ theBlackFan3 :: AssetCard TheBlackFan3
 theBlackFan3 = asset TheBlackFan3 Cards.theBlackFan3
 
 instance HasModifiersFor TheBlackFan3 where
-  getModifiersFor (InvestigatorTarget iid) (TheBlackFan3 a) | a `controlledBy` iid = do
-    resources <- field InvestigatorResources iid
-    toModifiers a
-      $ (guard (resources >= 10) *> [HealthModifier 1, SanityModifier 1])
-      <> (guard (resources >= 15) *> [AdditionalActions "The Black Fan" (toSource a) 1])
-      <> (guard (resources >= 20) *> [SkillModifier skill 1 | skill <- [minBound ..]])
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheBlackFan3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      resources <- field InvestigatorResources iid
+      modifiedWhen_ a (resources >= 10) iid
+        $ [HealthModifier 1, SanityModifier 1]
+        <> (guard (resources >= 15) *> [AdditionalActions "The Black Fan" (toSource a) 1])
+        <> (guard (resources >= 20) *> [SkillModifier skill 1 | skill <- [minBound ..]])
 
 instance RunMessage TheBlackFan3 where
   runMessage msg (TheBlackFan3 attrs) = TheBlackFan3 <$> runMessage msg attrs

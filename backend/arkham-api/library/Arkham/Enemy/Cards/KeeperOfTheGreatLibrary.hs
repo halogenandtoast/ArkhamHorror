@@ -21,13 +21,13 @@ keeperOfTheGreatLibrary =
     ?~ "Great Library"
 
 instance HasModifiersFor KeeperOfTheGreatLibrary where
-  getModifiersFor target (KeeperOfTheGreatLibrary a) | isTarget a target = do
+  getModifiersFor (KeeperOfTheGreatLibrary a) = do
     foundTheProcess <- remembered FoundTheProcess
     realizedWhatYearItIs <- remembered RealizedWhatYearItIs
-    toModifiers a
-      $ guard (foundTheProcess || realizedWhatYearItIs)
-      *> [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen
+      a
+      (foundTheProcess || realizedWhatYearItIs)
+      [RemoveKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
 
 instance RunMessage KeeperOfTheGreatLibrary where
   runMessage msg (KeeperOfTheGreatLibrary attrs) = KeeperOfTheGreatLibrary <$> runMessage msg attrs

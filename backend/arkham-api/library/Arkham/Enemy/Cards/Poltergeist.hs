@@ -22,11 +22,10 @@ instance HasAbilities Poltergeist where
     withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
 
 instance HasModifiersFor Poltergeist where
-  getModifiersFor (EnemyTarget eid) (Poltergeist a) | toId a == eid = do
-    toModifiers
+  getModifiersFor (Poltergeist a) = do
+    modifySelf
       a
       [CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map SourceWithTrait [Spell, Relic]]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Poltergeist where
   runMessage msg e@(Poltergeist attrs) = case msg of

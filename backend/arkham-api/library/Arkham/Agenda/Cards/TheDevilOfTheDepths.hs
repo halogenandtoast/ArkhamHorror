@@ -1,18 +1,13 @@
-module Arkham.Agenda.Cards.TheDevilOfTheDepths (
-  TheDevilOfTheDepths (..),
-  theDevilOfTheDepths,
-) where
+module Arkham.Agenda.Cards.TheDevilOfTheDepths (theDevilOfTheDepths) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Projection
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Ocean))
 
 newtype TheDevilOfTheDepths = TheDevilOfTheDepths AgendaAttrs
@@ -23,13 +18,11 @@ theDevilOfTheDepths :: AgendaCard TheDevilOfTheDepths
 theDevilOfTheDepths = agenda (2, A) TheDevilOfTheDepths Cards.theDevilOfTheDepths (Static 9)
 
 instance HasModifiersFor TheDevilOfTheDepths where
-  getModifiersFor (InvestigatorTarget iid) (TheDevilOfTheDepths a) = do
-    field InvestigatorPlacement iid >>= \case
-      AtLocation lid -> do
-        isOcean <- lid <=~> LocationWithTrait Ocean
-        modified a [AdditionalCostToEnterMatching (LocationWithTrait Ocean) (ActionCost 2) | isOcean]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheDevilOfTheDepths a) = do
+    modifySelect
+      a
+      (not_ (InVehicleMatching AnyAsset) <> at_ (LocationWithTrait Ocean))
+      [AdditionalCostToEnterMatching (LocationWithTrait Ocean) (ActionCost 2)]
 
 instance HasAbilities TheDevilOfTheDepths where
   getAbilities (TheDevilOfTheDepths a) = [needsAir a 1]

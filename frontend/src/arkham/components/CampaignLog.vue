@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
+import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log';
 import { computed, ref, onMounted, watch } from 'vue'
 import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
@@ -27,7 +27,14 @@ const remembered = computed(() => {
   if (!log) return []
   if (!props.game.scenario) return []
   const prefix = scenarioToI18n(props.game.scenario)
-  return log.map((record: Remembered) => t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`))
+  return log.map((record: Remembered) => {
+    if (record.tag == 'YouOweBiancaResources') {
+      console.log(record);
+      return `You owe Bianca resources (${record.contents})`
+    } else {
+      return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
+    }
+  })
 })
 
 const otherLog = ref<LogContents | null>(null)
@@ -53,7 +60,7 @@ const logTitles = logTitle && otherLogTitle ? [logTitle, otherLogTitle].sort() :
 
 const campaignLog = ref(mainLog)
 
-const recorded = computed(() => campaignLog.value.recorded)
+const recorded = computed(() => campaignLog.value.recorded.map(formatKey))
 const recordedSets = computed(() => campaignLog.value.recordedSets)
 const recordedCounts = computed(() => campaignLog.value.recordedCounts)
 const partners = computed(() => campaignLog.value.partners)
@@ -200,7 +207,7 @@ const emptyLog = computed(() => {
         <div v-if="recorded.length > 0" class="box">
           Campaign Notes
           <ul>
-            <li v-for="record in recorded" :key="record">{{t(record)}}.</li>
+            <li v-for="record in recorded" :key="record">{{t(record)}}</li>
             <template v-for="i in game.investigators" :key="i.id">
               <li v-for="record in i.log.recorded" :key="`${i.id}${record}`">{{fullName(i.name)}} {{toCapitalizedWords(record).toLowerCase()}}.</li>
             </template>
@@ -214,7 +221,7 @@ const emptyLog = computed(() => {
           </li>
         </ul>
         <ul>
-          <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
+          <li v-for="[key, value] in recordedCounts" :key="key">{{t(formatKey(key))}}: {{value}}.</li>
         </ul>
         <div v-if="Object.values(partners).length > 0" class="partners box">
           <h3 class="title">Expedition Team</h3>

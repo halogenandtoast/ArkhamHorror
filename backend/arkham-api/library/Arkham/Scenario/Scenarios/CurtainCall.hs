@@ -1,10 +1,8 @@
-module Arkham.Scenario.Scenarios.CurtainCall (CurtainCall (..), curtainCall) where
+module Arkham.Scenario.Scenarios.CurtainCall (curtainCall) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.ChaosBag
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers
@@ -15,6 +13,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -71,7 +70,7 @@ instance RunMessage CurtainCall where
       backstage <- place Locations.backstage
       placeAll [Locations.lobby, Locations.balcony]
 
-      investigators <- allInvestigatorIds
+      investigators <- allInvestigators
       mLola <- selectOne $ InvestigatorWithTitle "Lola Hayes"
       for_ mLola \lola -> do
         chooseOneM lola do

@@ -27,11 +27,10 @@ marieLambeau =
     $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 4, combat = 1, agility = 3}
 
 instance HasModifiersFor MarieLambeau where
-  getModifiersFor target (MarieLambeau a) | a `is` target = do
+  getModifiersFor (MarieLambeau a) = do
     hasDoom <- (> 0) <$> getDoomAmongstControlledCards (toId a)
-    toModifiers a
+    modifySelf a
       $ [GiveAdditionalAction (AdditionalAction "Marie Lambeau" (toSource a) marieAction) | hasDoom]
-  getModifiersFor _ _ = pure []
 
 getDoomAmongstControlledCards :: HasGame m => InvestigatorId -> m Int
 getDoomAmongstControlledCards iid =

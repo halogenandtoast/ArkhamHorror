@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.TheBlackBook (theBlackBook, TheBlackBook (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.SkillType ()
 
@@ -18,15 +18,17 @@ theBlackBook :: AssetCard TheBlackBook
 theBlackBook = asset TheBlackBook Cards.theBlackBook
 
 instance HasModifiersFor TheBlackBook where
-  getModifiersFor (InvestigatorTarget iid) (TheBlackBook a) | controlledBy a iid = do
-    sanity <- field InvestigatorRemainingSanity iid
-    toModifiers
-      a
-      [ SkillModifier #willpower 1
-      , SkillModifier #intellect 1
-      , CanReduceCostOf AnyCard sanity
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheBlackBook a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      sanity <- field InvestigatorRemainingSanity iid
+      modified_
+        a
+        iid
+        [ SkillModifier #willpower 1
+        , SkillModifier #intellect 1
+        , CanReduceCostOf AnyCard sanity
+        ]
 
 instance HasAbilities TheBlackBook where
   getAbilities (TheBlackBook a) =

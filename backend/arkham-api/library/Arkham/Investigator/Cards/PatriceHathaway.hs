@@ -20,9 +20,8 @@ patriceHathaway =
     $ Stats {health = 7, sanity = 7, willpower = 4, intellect = 2, combat = 2, agility = 2}
 
 instance HasModifiersFor PatriceHathaway where
-  getModifiersFor target (PatriceHathaway attrs) | attrs `is` target = do
-    toModifiers attrs [HandSize (-3), AlternateUpkeepDraw (toTarget attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PatriceHathaway attrs) =
+    modifySelf attrs [HandSize (-3), AlternateUpkeepDraw (toTarget attrs)]
 
 instance HasChaosTokenValue PatriceHathaway where
   getChaosTokenValue iid ElderSign (PatriceHathaway attrs) | iid == toId attrs = do

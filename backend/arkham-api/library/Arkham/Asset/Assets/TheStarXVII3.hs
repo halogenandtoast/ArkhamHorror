@@ -14,15 +14,9 @@ theStarXvii3 :: AssetCard TheStarXVII3
 theStarXvii3 = asset TheStarXVII3 Cards.theStarXvii3
 
 instance HasModifiersFor TheStarXVII3 where
-  getModifiersFor (AssetTarget aid) (TheStarXVII3 attrs) = case assetController attrs of
-    Nothing -> pure []
-    Just iid -> do
-      isHealthAsset <- aid <=~> (assetControlledBy iid <> AssetWithHealth)
-      isSanityAsset <- aid <=~> (assetControlledBy iid <> AssetWithSanity)
-      toModifiers attrs
-        $ [HealthModifier 1 | isHealthAsset]
-        <> [SanityModifier 1 | isSanityAsset]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheStarXVII3 a) = for_ a.controller \iid -> do
+    modifySelect a (assetControlledBy iid <> AssetWithHealth) [HealthModifier 1]
+    modifySelect a (assetControlledBy iid <> AssetWithSanity) [SanityModifier 1]
 
 instance HasAbilities TheStarXVII3 where
   getAbilities (TheStarXVII3 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]

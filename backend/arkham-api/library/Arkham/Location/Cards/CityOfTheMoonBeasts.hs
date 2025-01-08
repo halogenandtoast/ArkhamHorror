@@ -17,10 +17,9 @@ cityOfTheMoonBeasts :: LocationCard CityOfTheMoonBeasts
 cityOfTheMoonBeasts = location CityOfTheMoonBeasts Cards.cityOfTheMoonBeasts 0 (PerPlayer 1)
 
 instance HasModifiersFor CityOfTheMoonBeasts where
-  getModifiersFor target (CityOfTheMoonBeasts attrs) | attrs `is` target = do
+  getModifiersFor (CityOfTheMoonBeasts attrs) = do
     x <- getMaxAlarmLevel
-    toModifiers attrs [ShroudModifier x]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [ShroudModifier x]
 
 instance HasAbilities CityOfTheMoonBeasts where
   getAbilities (CityOfTheMoonBeasts attrs) =

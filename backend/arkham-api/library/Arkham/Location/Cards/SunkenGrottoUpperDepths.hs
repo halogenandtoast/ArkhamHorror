@@ -5,13 +5,13 @@ module Arkham.Location.Cards.SunkenGrottoUpperDepths (
 where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Scenarios.ALightInTheFog.Helpers.Location
 
 newtype SunkenGrottoUpperDepths = SunkenGrottoUpperDepths LocationAttrs
@@ -22,10 +22,8 @@ sunkenGrottoUpperDepths :: LocationCard SunkenGrottoUpperDepths
 sunkenGrottoUpperDepths = location SunkenGrottoUpperDepths Cards.sunkenGrottoUpperDepths 0 (Static 0)
 
 instance HasModifiersFor SunkenGrottoUpperDepths where
-  getModifiersFor (InvestigatorTarget iid) (SunkenGrottoUpperDepths attrs) = do
-    hasBlueKey <- iid <=~> InvestigatorWithKey BlueKey
-    toModifiers attrs [CannotEnter (toId attrs) | not attrs.revealed && not hasBlueKey]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SunkenGrottoUpperDepths attrs) = whenUnrevealed attrs do
+    modifySelect attrs (not_ $ InvestigatorWithKey BlueKey) [CannotEnter (toId attrs)]
 
 instance HasAbilities SunkenGrottoUpperDepths where
   getAbilities (SunkenGrottoUpperDepths a) =

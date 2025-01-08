@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.FrozenInFear where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,13 +14,8 @@ frozenInFear :: TreacheryCard FrozenInFear
 frozenInFear = treachery FrozenInFear Cards.frozenInFear
 
 instance HasModifiersFor FrozenInFear where
-  getModifiersFor (InvestigatorTarget iid) (FrozenInFear attrs) =
-    modified
-      attrs
-      [ AdditionalActionCostOf (FirstOneOfPerformed [#move, #fight, #evade]) 1
-      | treacheryInThreatArea iid attrs
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FrozenInFear attrs) =
+    inThreatAreaGets attrs [AdditionalActionCostOf (FirstOneOfPerformed [#move, #fight, #evade]) 1]
 
 instance HasAbilities FrozenInFear where
   getAbilities (FrozenInFear a) =

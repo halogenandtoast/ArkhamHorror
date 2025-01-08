@@ -2,6 +2,7 @@ module Arkham.Event.Cards.EdgeOfTheEarth where
 
 import Arkham.Asset.Uses qualified as Uses
 import Arkham.Criteria qualified as Criteria
+import Arkham.EncounterSet (EncounterSet (MemorialsOfTheLost))
 import Arkham.Event.Cards.Import
 
 toeToToe :: CardDef
@@ -389,4 +390,25 @@ callForBackup2 =
                 , control Mystic <> healableCardExists #horror
                 , control Survivor <> healableCardExists #damage
                 ]
+    }
+
+dyersSketches :: CardDef
+dyersSketches =
+  (event "08733" "Dyer's Sketches" 2 Neutral)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = singleton Insight
+    , cdCriteria = Just $ can.draw.cards You
+    , cdFastWindow = Just FastPlayerWindow
+    , cdEncounterSet = Just MemorialsOfTheLost
+    , cdEncounterSetQuantity = Just 1
+    }
+
+takadasCache :: CardDef
+takadasCache =
+  (event "08737" "Takada's Cache" 0 Neutral)
+    { cdSkills = [#wild]
+    , cdCardTraits = singleton Supply
+    , cdFastWindow = Just FastPlayerWindow
+    , cdEncounterSet = Just MemorialsOfTheLost
+    , cdEncounterSetQuantity = Just 1
     }

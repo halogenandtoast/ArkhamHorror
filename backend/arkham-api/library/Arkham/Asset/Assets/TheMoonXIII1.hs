@@ -7,16 +7,14 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype TheMoonXIII1 = TheMoonXIII1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMoonXiii1 :: AssetCard TheMoonXIII1
 theMoonXiii1 = asset TheMoonXIII1 Cards.theMoonXiii1
 
 instance HasModifiersFor TheMoonXIII1 where
-  getModifiersFor (InvestigatorTarget iid) (TheMoonXIII1 a) = do
-    toModifiers a [SkillModifier #agility 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheMoonXIII1 a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities TheMoonXIII1 where
   getAbilities (TheMoonXIII1 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]

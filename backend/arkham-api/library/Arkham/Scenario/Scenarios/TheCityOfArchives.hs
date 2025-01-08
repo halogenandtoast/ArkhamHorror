@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.TheCityOfArchives (TheCityOfArchives (..), theCityOfArchives) where
+module Arkham.Scenario.Scenarios.TheCityOfArchives (theCityOfArchives) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message.Discard.Lifted
@@ -14,6 +14,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers
@@ -23,7 +24,7 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Helpers
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Trait hiding (Trait (Cultist))
+import Arkham.Trait hiding (Trait (Cultist, ElderThing))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (over)

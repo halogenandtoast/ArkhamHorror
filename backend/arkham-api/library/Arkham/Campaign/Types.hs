@@ -28,6 +28,7 @@ import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
 import Data.List.NonEmpty qualified as NE
+import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
 import Data.Typeable
 import GHC.Records
@@ -77,8 +78,23 @@ data CampaignAttrs = CampaignAttrs
 instance HasField "id" CampaignAttrs CampaignId where
   getField = campaignId
 
+instance HasField "step" CampaignAttrs CampaignStep where
+  getField = campaignStep
+
+instance HasField "resolutions" CampaignAttrs (Map ScenarioId Resolution) where
+  getField = campaignResolutions
+
+instance HasField "chaosBag" CampaignAttrs [ChaosTokenFace] where
+  getField = campaignChaosBag
+
+instance HasField "completedSteps" CampaignAttrs [CampaignStep] where
+  getField = campaignCompletedSteps
+
 instance HasField "decks" CampaignAttrs (Map InvestigatorId (Deck PlayerCard)) where
   getField = campaignDecks
+
+instance HasField "storyCards" CampaignAttrs (Map InvestigatorId [PlayerCard]) where
+  getField = campaignStoryCards
 
 instance HasField "log" CampaignAttrs CampaignLog where
   getField = campaignLog
@@ -95,6 +111,15 @@ instance HasField "store" CampaignAttrs (Map Text Value) where
 instance HasField "id" Campaign CampaignId where
   getField = (.id) . toAttrs
 
+instance HasField "step" Campaign CampaignStep where
+  getField = (.step) . toAttrs
+
+instance HasField "resolutions" Campaign (Map ScenarioId Resolution) where
+  getField = (.resolutions) . toAttrs
+
+instance HasField "completedSteps" Campaign [CampaignStep] where
+  getField = (.completedSteps) . toAttrs
+
 instance HasField "decks" Campaign (Map InvestigatorId (Deck PlayerCard)) where
   getField = (.decks) . toAttrs
 
@@ -105,9 +130,7 @@ instance HasField "meta" Campaign Value where
   getField = (.meta) . toAttrs
 
 instance HasModifiersFor CampaignAttrs where
-  getModifiersFor (InvestigatorTarget iid) attrs =
-    pure $ findWithDefault [] iid (campaignModifiers attrs)
-  getModifiersFor _ _ = pure []
+  getModifiersFor attrs = tell $ MonoidalMap $ Map.mapKeys toTarget $ campaignModifiers attrs
 
 instance Sourceable CampaignAttrs where
   toSource _ = CampaignSource
@@ -238,7 +261,7 @@ instance ToJSON Campaign where
   toJSON (Campaign a) = toJSON a
 
 instance HasModifiersFor Campaign where
-  getModifiersFor target (Campaign a) = getModifiersFor target a
+  getModifiersFor (Campaign a) = getModifiersFor a
 
 difficultyOf :: Campaign -> Difficulty
 difficultyOf = campaignDifficulty . toAttrs

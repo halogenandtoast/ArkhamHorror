@@ -22,12 +22,15 @@ forbiddenTomeSecretsRevealed3 :: AssetCard ForbiddenTomeSecretsRevealed3
 forbiddenTomeSecretsRevealed3 = asset ForbiddenTomeSecretsRevealed3 Cards.forbiddenTomeSecretsRevealed3
 
 instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
-  getModifiersFor (AbilityTarget iid ab) (ForbiddenTomeSecretsRevealed3 a)
-    | isSource a (abilitySource ab) && abilityIndex ab == 1 = do
-        handCount <- getHandCount iid
-        let n = handCount `div` 4
-        toModifiers a [ActionCostModifier (-n) | n > 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ForbiddenTomeSecretsRevealed3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      selectOne (AbilityIs (toSource a) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab -> do
+          handCount <- getHandCount iid
+          let n = handCount `div` 4
+          modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where
   getAbilities (ForbiddenTomeSecretsRevealed3 a) =

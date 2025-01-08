@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.UnionAndDisillusion (UnionAndDisillusion (..), unionAndDisillusion) where
+module Arkham.Scenario.Scenarios.UnionAndDisillusion (unionAndDisillusion) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action
@@ -6,6 +6,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -18,10 +19,10 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenario.Types (setStandaloneCampaignLog)
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
@@ -82,7 +83,7 @@ standaloneCampaignLog =
     { campaignLogRecordedSets =
         mapFromList
           [
-            ( MissingPersons
+            ( toCampaignLogKey MissingPersons
             , [ crossedOut (toCardCode i)
               | i <-
                   [ Investigators.gavriellaMizrah
@@ -93,7 +94,7 @@ standaloneCampaignLog =
               ]
             )
           ]
-    , campaignLogRecorded = setFromList [JosefIsAliveAndWell]
+    , campaignLogRecorded = setFromList [toCampaignLogKey JosefIsAliveAndWell]
     }
 
 instance RunMessage UnionAndDisillusion where
@@ -165,8 +166,8 @@ instance RunMessage UnionAndDisillusion where
       placeDoomOnAgenda hereticCount
 
       sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
-      when sidedWithTheCoven
-        $ traverse_ (push . lightBrazier) (forbiddingShore : unvisitedIsles)
+      when sidedWithTheCoven do
+        traverse_ lightBrazier (forbiddingShore : unvisitedIsles)
 
       sidedWithTheLodge <- getHasRecord TheInvestigatorsSidedWithTheLodge
       deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
@@ -249,7 +250,7 @@ instance RunMessage UnionAndDisillusion where
         Resolution 8 -> do
           story resolution8
           removeCampaignCard Assets.puzzleBox
-          investigators <- allInvestigatorIds
+          investigators <- allInvestigators
 
           gavriellaIsAlive <- getHasRecord GavriellaIsAlive
           if gavriellaIsAlive

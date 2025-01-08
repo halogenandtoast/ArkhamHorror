@@ -6,7 +6,6 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.ScenarioLogKey
 
 newtype HallOfSilence = HallOfSilence LocationAttrs
@@ -17,10 +16,8 @@ hallOfSilence :: LocationCard HallOfSilence
 hallOfSilence = location HallOfSilence Cards.hallOfSilence 4 (PerPlayer 1)
 
 instance HasModifiersFor HallOfSilence where
-  getModifiersFor target (HallOfSilence attrs) | isTarget attrs target = do
-    unlockedTheThirdFloor <- remembered UnlockedTheThirdFloor
-    toModifiers attrs [Blocked | not attrs.revealed && not unlockedTheThirdFloor]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HallOfSilence a) =
+    whenUnrevealed a $ blockedWhen a (not <$> remembered UnlockedTheThirdFloor)
 
 instance HasAbilities HallOfSilence where
   getAbilities (HallOfSilence a) =

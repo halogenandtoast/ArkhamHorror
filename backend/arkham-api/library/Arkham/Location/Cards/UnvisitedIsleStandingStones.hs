@@ -1,23 +1,22 @@
 module Arkham.Location.Cards.UnvisitedIsleStandingStones (
   unvisitedIsleStandingStones,
-  UnvisitedIsleStandingStones (..),
   unvisitedIsleStandingStonesEffect,
 )
 where
 
+import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.CampaignLogKey
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Campaigns.TheCircleUndone.Key
+import Arkham.Effect.Import
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest (getSkillTest, withSkillTest)
 import Arkham.Location.Brazier
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleStandingStones = UnvisitedIsleStandingStones LocationAttrs
@@ -28,9 +27,7 @@ unvisitedIsleStandingStones :: LocationCard UnvisitedIsleStandingStones
 unvisitedIsleStandingStones = location UnvisitedIsleStandingStones Cards.unvisitedIsleStandingStones 3 (PerPlayer 2)
 
 instance HasModifiersFor UnvisitedIsleStandingStones where
-  getModifiersFor target (UnvisitedIsleStandingStones attrs) = maybeModified attrs do
-    guard $ attrs `isTarget` target
-    guard $ not attrs.revealed
+  getModifiersFor (UnvisitedIsleStandingStones a) = whenUnrevealed a $ maybeModifySelf a do
     sidedWithLodge <- lift $ getHasRecord TheInvestigatorsSidedWithTheLodge
     isLit <- lift $ selectAny $ locationIs Locations.forbiddingShore <> LocationWithBrazier Lit
     guard $ if sidedWithLodge then not isLit else isLit
@@ -40,7 +37,7 @@ instance HasAbilities UnvisitedIsleStandingStones where
   getAbilities (UnvisitedIsleStandingStones attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility ([Action.Circle]) $ ActionCost 1
+      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
       , haunted
           "Until the end of the round, increase the difficulty of each skill test during a _circle_ action by 2."
           attrs
@@ -48,19 +45,19 @@ instance HasAbilities UnvisitedIsleStandingStones where
       ]
 
 instance RunMessage UnvisitedIsleStandingStones where
-  runMessage msg l@(UnvisitedIsleStandingStones attrs) = case msg of
+  runMessage msg l@(UnvisitedIsleStandingStones attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
       circleTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 10)
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       withSkillTest \sid ->
-        push =<< createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
+        createCardEffect Cards.unvisitedIsleStandingStones Nothing attrs (SkillTestTarget sid)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
-    _ -> UnvisitedIsleStandingStones <$> runMessage msg attrs
+    _ -> UnvisitedIsleStandingStones <$> liftRunMessage msg attrs
 
 newtype UnvisitedIsleStandingStonesEffect = UnvisitedIsleStandingStonesEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -70,16 +67,15 @@ unvisitedIsleStandingStonesEffect :: EffectArgs -> UnvisitedIsleStandingStonesEf
 unvisitedIsleStandingStonesEffect = cardEffect UnvisitedIsleStandingStonesEffect Cards.unvisitedIsleStandingStones
 
 instance HasModifiersFor UnvisitedIsleStandingStonesEffect where
-  getModifiersFor (SkillTestTarget _) (UnvisitedIsleStandingStonesEffect a) = do
-    mAction <- getSkillTestAction
-    case mAction of
-      Just Action.Circle -> toModifiers a [Difficulty 2]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UnvisitedIsleStandingStonesEffect a) = do
+    getSkillTest >>= \case
+      Just st ->
+        if Action.Circle `elem` st.action
+          then modified_ a (SkillTestTarget st.id) [Difficulty 2]
+          else pure mempty
+      Nothing -> pure mempty
 
 instance RunMessage UnvisitedIsleStandingStonesEffect where
-  runMessage msg e@(UnvisitedIsleStandingStonesEffect attrs@EffectAttrs {..}) = case msg of
-    EndRound -> do
-      push $ DisableEffect effectId
-      pure e
-    _ -> UnvisitedIsleStandingStonesEffect <$> runMessage msg attrs
+  runMessage msg e@(UnvisitedIsleStandingStonesEffect attrs) = runQueueT $ case msg of
+    EndRound -> disableReturn e
+    _ -> UnvisitedIsleStandingStonesEffect <$> liftRunMessage msg attrs

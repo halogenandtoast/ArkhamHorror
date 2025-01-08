@@ -1,20 +1,17 @@
-module Arkham.Scenario.Scenarios.TheUntamedWilds (TheUntamedWilds (..), theUntamedWilds) where
+module Arkham.Scenario.Scenarios.TheUntamedWilds (theUntamedWilds) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
 import Arkham.Act.Types
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.TheForgottenAge.ChaosBag
-import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Campaigns.TheForgottenAge.Meta
-import Arkham.Classes
+import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers hiding (checkWhen)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck

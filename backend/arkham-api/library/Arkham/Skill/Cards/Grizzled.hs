@@ -6,7 +6,7 @@ import Arkham.Enemy.Types (Field (EnemyTraits))
 import Arkham.Game.Helpers (sourceMatches)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource, getSkillTestTarget)
 import Arkham.Helpers.Source
 import Arkham.Helpers.Target
 import Arkham.Matcher
@@ -22,12 +22,12 @@ newtype Grizzled = Grizzled SkillAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor Grizzled where
-  getModifiersFor target (Grizzled a) | isTarget a target = do
+  getModifiersFor (Grizzled a) = do
     let traits = [t | ChosenTrait t <- concatMap snd (toList a.customizations)]
-    maybeModified a do
+    modifySelfMaybe a.cardId do
       guard $ isNothing a.attachedTo
-      s <- MaybeT $ getSkillTestSource
-      t <- MaybeT $ getSkillTestTarget
+      s <- MaybeT getSkillTestSource
+      t <- MaybeT getSkillTestTarget
       isEncounterCardTarget <- lift $ targetMatches t ScenarioCardTarget
       isEncounterCardSource <- lift $ sourceMatches s EncounterCardSource
       n <-
@@ -44,17 +44,17 @@ instance HasModifiersFor Grizzled where
                 else pure 0
       guard $ n > 0
       pure [AddSkillIcons $ concat $ replicate @[[SkillIcon]] n [WildIcon, WildIcon]]
-  getModifiersFor (SkillTestTarget _) (Grizzled a) = case a.attachedTo of
-    Just (EnemyTarget eid) -> do
-      maybeModified a do
-        source <- MaybeT $ getSkillTestSource
-        target <- MaybeT $ getSkillTestTarget
-        let isOnEnemy = maybe False (== eid) source.enemy
-        let isAgainstEnemy = maybe False (== eid) target.enemy
-        guard $ isOnEnemy || isAgainstEnemy
-        pure [Difficulty (-1)]
-    _ -> pure []
-  getModifiersFor _ _ = pure []
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> case a.attachedTo of
+        Just (EnemyTarget eid) -> maybeModified_ a (SkillTestTarget st.id) do
+          source <- MaybeT $ getSkillTestSource
+          target <- MaybeT $ getSkillTestTarget
+          let isOnEnemy = maybe False (== eid) source.enemy
+          let isAgainstEnemy = maybe False (== eid) target.enemy
+          guard $ isOnEnemy || isAgainstEnemy
+          pure [Difficulty (-1)]
+        _ -> pure mempty
 
 grizzled :: SkillCard Grizzled
 grizzled = skill Grizzled Cards.grizzled

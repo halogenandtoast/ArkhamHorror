@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -19,9 +20,9 @@ theHarbinger :: TreacheryCard TheHarbinger
 theHarbinger = treachery TheHarbinger Cards.theHarbinger
 
 instance HasModifiersFor TheHarbinger where
-  getModifiersFor (InvestigatorTarget iid) (TheHarbinger a) | Just iid == treacheryOnTopOfDeck a = do
-    map setActiveDuringSetup <$> toModifiers a [CannotManipulateDeck]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheHarbinger a) = case a.placement of
+    OnTopOfDeck iid -> modified_ a iid [CannotManipulateDeck]
+    _ -> pure mempty
 
 instance HasAbilities TheHarbinger where
   getAbilities (TheHarbinger a) = case treacheryOnTopOfDeck a of

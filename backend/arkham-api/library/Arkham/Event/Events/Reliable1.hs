@@ -21,15 +21,14 @@ reliable1 :: EventCard Reliable1
 reliable1 = event Reliable1 Cards.reliable1
 
 instance HasModifiersFor Reliable1 where
-  getModifiersFor (InvestigatorTarget iid) (Reliable1 a) = maybeModified a do
+  getModifiersFor (Reliable1 a) = maybeModified_ a a.controller do
     AssetTarget aid <- hoistMaybe a.attachedTo
     owner <- MaybeT $ field AssetController aid
-    guard $ owner == iid
+    guard $ owner == a.controller
     abilities <- lift getActiveAbilities
     let isAttachedTargetAbility = (== AssetSource aid) . abilitySource
     guard $ any (and . sequence [isAttachedTargetAbility, isTriggeredAbility]) abilities
     pure [AnySkillValue 1]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage Reliable1 where
   runMessage msg e@(Reliable1 attrs) = case msg of

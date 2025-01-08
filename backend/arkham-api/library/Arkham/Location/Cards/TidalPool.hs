@@ -23,12 +23,11 @@ instance HasAbilities TidalPool where
       [restricted attrs 1 UnrevealedKeyIsSetAside $ forced $ RevealLocation #after Anyone (be attrs)]
 
 instance HasModifiersFor TidalPool where
-  getModifiersFor target (TidalPool attrs) | isTarget attrs target = do
+  getModifiersFor (TidalPool attrs) = do
     case locationFloodLevel attrs of
-      Just FullyFlooded -> modified attrs [ShroudModifier 2]
-      Just PartiallyFlooded -> modified attrs [ShroudModifier 1]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      Just FullyFlooded -> modifySelf attrs [ShroudModifier 2]
+      Just PartiallyFlooded -> modifySelf attrs [ShroudModifier 1]
+      _ -> pure mempty
 
 instance RunMessage TidalPool where
   runMessage msg l@(TidalPool attrs) = runQueueT $ case msg of

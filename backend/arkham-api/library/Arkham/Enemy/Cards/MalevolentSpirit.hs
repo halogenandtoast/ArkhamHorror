@@ -15,7 +15,7 @@ import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Relic, Spectral, Spell))
 
 newtype MalevolentSpirit = MalevolentSpirit EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 malevolentSpirit :: EnemyCard MalevolentSpirit
@@ -31,10 +31,9 @@ malevolentSpirit =
     )
 
 instance HasModifiersFor MalevolentSpirit where
-  getModifiersFor target (MalevolentSpirit a) | isTarget a target = do
+  getModifiersFor (MalevolentSpirit a) = do
     atSpectral <- selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
-    toModifiers a $ if atSpectral then [AddKeyword Hunter, DamageDealt 1, HorrorDealt 1] else []
-  getModifiersFor _ _ = pure []
+    modifySelfWhen a atSpectral [AddKeyword Hunter, DamageDealt 1, HorrorDealt 1]
 
 instance HasAbilities MalevolentSpirit where
   getAbilities (MalevolentSpirit a) =

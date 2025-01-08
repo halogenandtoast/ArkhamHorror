@@ -4,10 +4,10 @@ module Arkham.ChaosBag.Base where
 
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
-import Arkham.Id
 import Arkham.Json
 import Arkham.Prelude
 import Data.Aeson.TH
+import GHC.Records
 
 data ChaosBag = ChaosBag
   { chaosBagChaosTokens :: [ChaosToken]
@@ -39,6 +39,9 @@ emptyChaosBag =
     , chaosBagTokenPool = []
     }
 
+instance HasField "revealed" ChaosBag [ChaosToken] where
+  getField = chaosBagRevealedChaosTokens
+
 chaosTokensL :: Lens' ChaosBag [ChaosToken]
 chaosTokensL = lens chaosBagChaosTokens $ \m x -> m {chaosBagChaosTokens = x}
 
@@ -58,8 +61,3 @@ revealedChaosTokensL =
 
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m {chaosBagChoice = x}
-
-createChaosToken :: IdGen m => ChaosTokenFace -> m ChaosToken
-createChaosToken face = do
-  tokenId <- genId
-  pure $ ChaosToken tokenId face Nothing

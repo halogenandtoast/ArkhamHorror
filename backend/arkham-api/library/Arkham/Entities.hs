@@ -135,7 +135,7 @@ instance Targetable SomeEntity where
   toTarget (SomeEntity e) = toTarget e
 
 instance HasModifiersFor SomeEntity where
-  getModifiersFor target (SomeEntity e) = getModifiersFor target e
+  getModifiersFor (SomeEntity e) = getModifiersFor e
 
 overEntities :: Monoid a => (SomeEntity -> a) -> Entities -> a
 overEntities f e = runIdentity $ overEntitiesM (Identity . f) e

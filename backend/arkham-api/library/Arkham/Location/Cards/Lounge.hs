@@ -30,7 +30,7 @@ instance RunMessage Lounge where
       card <- getSetAsideCard Assets.augustLindquist
       augustLindquist <- createAssetAt card (AtLocation attrs.id)
 
-      mKey <- genIdKey
+      mKey <- getRandomKey
       for_ mKey $ placeKey augustLindquist
       pure l
     _ -> Lounge <$> liftRunMessage msg attrs

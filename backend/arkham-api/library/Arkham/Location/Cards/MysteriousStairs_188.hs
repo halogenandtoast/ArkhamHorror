@@ -18,9 +18,10 @@ mysteriousStairs_188 =
     .~ setFromList [Above, Below]
 
 instance HasModifiersFor MysteriousStairs_188 where
-  getModifiersFor target (MysteriousStairs_188 a) = maybeModified a do
-    guard $ a `is` target
-    pure [AdditionalCostToLeave $ SameSkillIconCost 2, AdditionalCostToResign $ SameSkillIconCost 2]
+  getModifiersFor (MysteriousStairs_188 a) =
+    modifySelf
+      a
+      [AdditionalCostToLeave $ SameSkillIconCost 2, AdditionalCostToResign $ SameSkillIconCost 2]
 
 instance RunMessage MysteriousStairs_188 where
   runMessage msg (MysteriousStairs_188 attrs) =

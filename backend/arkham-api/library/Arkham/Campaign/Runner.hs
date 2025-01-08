@@ -16,7 +16,6 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
-import Arkham.Card.PlayerCard (setPlayerCardOwner)
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
@@ -56,7 +55,7 @@ defaultCampaignRunner msg a = case msg of
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   AddCampaignCardToDeck iid card -> do
-    let card' = overPlayerCard (setPlayerCardOwner iid) card
+    card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']))
   RemoveCampaignCard cardDef -> do
     pure $ updateAttrs a $ \attrs ->
@@ -114,7 +113,8 @@ defaultCampaignRunner msg a = case msg of
       push $ CampaignStep nextStep'
       pure $ updateAttrs a $ stepL .~ nextStep'
     _ -> error "invalid state"
-  ResetGame -> do
+  ResetGame -> runMessage ReloadDecks a
+  ReloadDecks -> do
     for_ (mapToList $ campaignDecks $ toAttrs a) $ \(iid, deck) -> do
       let deckCardCodes = map toCardCode $ unDeck deck
       let ifShouldAdd pc = pc.cardCode `notElem` deckCardCodes
@@ -191,7 +191,7 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key
   ScenarioResolution r -> case campaignStep (toAttrs a) of
     ScenarioStep sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
-    _ -> error "must be called in a scenario"
+    _ -> error $ "must be called in a scenario, but called in " <> show (campaignStep (toAttrs a))
   DrivenInsane iid ->
     pure
       $ updateAttrs a
@@ -220,8 +220,8 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ decksL
       %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
-  RemoveCardFromDeckForCampaign iid pc ->
-    pure $ updateAttrs a $ decksL %~ adjustMap (withDeck (filter (/= pc))) iid
+  RemoveCardFromDeckForCampaign iid cardId ->
+    pure $ updateAttrs a $ decksL %~ adjustMap (withDeck (filter ((/= cardId) . toCardId))) iid
   NextCampaignStep mOverrideStep -> do
     let mstep = mOverrideStep <|> nextStep a
     push $ maybe GameOver CampaignStep mstep

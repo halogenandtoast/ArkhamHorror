@@ -3,10 +3,10 @@ module Arkham.Asset.Assets.RobesOfEndlessNight2 (robesOfEndlessNight2, RobesOfEn
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsWhen)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Modifier
 
 newtype RobesOfEndlessNight2 = RobesOfEndlessNight2 AssetAttrs
   deriving anyclass IsAsset
@@ -17,9 +17,7 @@ robesOfEndlessNight2 =
   assetWith RobesOfEndlessNight2 Cards.robesOfEndlessNight2 (healthL ?~ 2)
 
 instance HasModifiersFor RobesOfEndlessNight2 where
-  getModifiersFor (InvestigatorTarget iid) (RobesOfEndlessNight2 a) | controlledBy a iid && a.ready = do
-    toModifiers a [CanReduceCostOf #spell 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RobesOfEndlessNight2 a) = controllerGetsWhen a a.ready [CanReduceCostOf #spell 1]
 
 instance HasAbilities RobesOfEndlessNight2 where
   getAbilities (RobesOfEndlessNight2 a) =

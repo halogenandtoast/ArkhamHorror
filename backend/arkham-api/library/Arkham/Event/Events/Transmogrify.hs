@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -19,11 +19,9 @@ transmogrify :: EventCard Transmogrify
 transmogrify = event Transmogrify Cards.transmogrify
 
 instance HasModifiersFor Transmogrify where
-  getModifiersFor (EnemyTarget eid) (Transmogrify a) = maybeModified a do
-    EnemyTarget eid' <- hoistMaybe $ a.placement.attachedTo
-    guard $ eid == eid'
-    pure [AddKeyword Keyword.Massive, CannotMove]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Transmogrify a) = case a.placement.attachedTo of
+    Just (EnemyTarget eid) -> modified_ a eid [AddKeyword Keyword.Massive, CannotMove]
+    _ -> pure mempty
 
 instance HasAbilities Transmogrify where
   getAbilities (Transmogrify x) = case x.placement of

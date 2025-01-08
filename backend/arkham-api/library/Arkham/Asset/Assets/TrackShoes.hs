@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Modifier
 
 newtype TrackShoes = TrackShoes AssetAttrs
   deriving anyclass IsAsset
@@ -17,9 +17,7 @@ trackShoes :: AssetCard TrackShoes
 trackShoes = asset TrackShoes Cards.trackShoes
 
 instance HasModifiersFor TrackShoes where
-  getModifiersFor (InvestigatorTarget iid) (TrackShoes attrs) | attrs `controlledBy` iid = do
-    toModifiers attrs [SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TrackShoes a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities TrackShoes where
   getAbilities (TrackShoes a) =

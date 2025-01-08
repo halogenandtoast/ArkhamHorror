@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TheLastKing (TheLastKing (..), theLastKing) where
+module Arkham.Scenario.Scenarios.TheLastKing (theLastKing) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
@@ -16,6 +16,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Name hiding (labeled)
 import Arkham.Placement
@@ -80,11 +81,11 @@ standaloneChaosTokens =
 
 interviewedToCardCode :: ScenarioLogKey -> Maybe CardCode
 interviewedToCardCode = \case
-  InterviewedConstance -> Just $ toCardCode Assets.constanceDumaine
-  InterviewedJordan -> Just $ toCardCode Assets.jordanPerry
-  InterviewedHaruko -> Just $ toCardCode Assets.ishimaruHaruko
-  InterviewedSebastien -> Just $ toCardCode Assets.sebastienMoreau
-  InterviewedAshleigh -> Just $ toCardCode Assets.ashleighClarke
+  InterviewedConstance -> Just Assets.constanceDumaine.cardCode
+  InterviewedJordan -> Just Assets.jordanPerry.cardCode
+  InterviewedHaruko -> Just Assets.ishimaruHaruko.cardCode
+  InterviewedSebastien -> Just Assets.sebastienMoreau.cardCode
+  InterviewedAshleigh -> Just Assets.ashleighClarke.cardCode
   _ -> Nothing
 
 instance RunMessage TheLastKing where
@@ -195,7 +196,7 @@ instance RunMessage TheLastKing where
       -- want to handle `getXp` in two phases. The first phase will essentially evenly
       -- add XP modifiers to the players in order to have `getXp` resolve "normally"
       clueCounts <- traverse (field ActClues) =<< select AnyAct
-      investigators <- allInvestigatorIds
+      investigators <- allInvestigators
       let
         extraXp = floor @Double (fromIntegral (sum clueCounts) / 2)
         (assignedXp, remainingXp) = quotRem extraXp (length investigators)

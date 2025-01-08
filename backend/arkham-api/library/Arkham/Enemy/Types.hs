@@ -84,6 +84,7 @@ data instance Field Enemy :: Type -> Type where
   EnemySpawnedBy :: Field Enemy (Maybe InvestigatorId)
   EnemyAttacking :: Field Enemy (Maybe EnemyAttackDetails)
   EnemyBearer :: Field Enemy (Maybe InvestigatorId)
+  EnemyCardsUnderneath :: Field Enemy [Card]
 
 deriving stock instance Show (Field Enemy typ)
 deriving stock instance Ord (Field Enemy typ)
@@ -131,6 +132,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemySpawnedBy" -> pure $ SomeField EnemySpawnedBy
     "EnemyAttacking" -> pure $ SomeField EnemyAttacking
     "EnemyBearer" -> pure $ SomeField EnemyBearer
+    "EnemyCardsUnderneath" -> pure $ SomeField EnemyCardsUnderneath
     _ -> error "no such field"
 
 data instance Field (OutOfPlayEntity _ Enemy) :: Type -> Type where
@@ -207,6 +209,7 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyFlipped = False
             , enemyAttacking = Nothing
             , enemyDelayEngagement = False
+            , enemyCardsUnderneath = []
             }
     }
 
@@ -366,10 +369,8 @@ instance HasAbilities Enemy where
 -- If the enemy has been defeated, we won't have removed it yet ourselves, but
 -- the printed effects should be disabled
 instance HasModifiersFor Enemy where
-  getModifiersFor target (Enemy a) =
-    if attr enemyDefeated a
-      then pure mempty
-      else getModifiersFor target a
+  getModifiersFor (Enemy a) =
+    unless (attr enemyDefeated a) $ getModifiersFor a
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
@@ -425,6 +426,7 @@ fieldLens = \case
   EnemySpawnedBy -> spawnedByL
   EnemyAttacking -> attackingL
   EnemyBearer -> bearerL
+  EnemyCardsUnderneath -> cardsUnderneathL
  where
   virtual = error "virtual attribute can not be set directly"
 

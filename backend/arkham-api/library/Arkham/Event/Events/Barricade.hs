@@ -17,8 +17,9 @@ barricade :: EventCard Barricade
 barricade = event Barricade Cards.barricade
 
 instance HasModifiersFor Barricade where
-  getModifiersFor target (Barricade attrs) = do
-    modified attrs [CannotBeEnteredBy NonEliteEnemy | target `elem` attrs.attachedTo]
+  getModifiersFor (Barricade attrs) = case attrs.attachedTo of
+    Just target -> modified_ attrs target [CannotBeEnteredBy NonEliteEnemy]
+    _ -> pure mempty
 
 instance HasAbilities Barricade where
   getAbilities (Barricade x) = case x.attachedTo of

@@ -1,17 +1,14 @@
-module Arkham.Location.Cards.BaseOfTheSteps (
-  baseOfTheSteps,
-  BaseOfTheSteps (..),
-)
-where
+module Arkham.Location.Cards.BaseOfTheSteps (baseOfTheSteps, BaseOfTheSteps (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted hiding (discardCard)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype BaseOfTheSteps = BaseOfTheSteps LocationAttrs
@@ -22,42 +19,30 @@ baseOfTheSteps :: LocationCard BaseOfTheSteps
 baseOfTheSteps = location BaseOfTheSteps Cards.baseOfTheSteps 3 (PerPlayer 1)
 
 instance HasModifiersFor BaseOfTheSteps where
-  getModifiersFor target (BaseOfTheSteps a) | a `is` target = do
-    blocked <- selectAny $ locationIs Cards.sevenHundredSteps <> LocationWithAnyClues
-    toModifiers a [Blocked | blocked]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BaseOfTheSteps a) = whenUnrevealed a $ maybeModifySelf a do
+    liftGuardM $ selectAny $ locationIs Cards.sevenHundredSteps <> LocationWithAnyClues
+    pure [Blocked]
 
 instance HasAbilities BaseOfTheSteps where
   getAbilities (BaseOfTheSteps a) =
-    withRevealedAbilities
-      a
-      [ skillTestAbility $ forcedAbility a 1 $ Enters #after (You <> HandWith (LengthIs $ atLeast 1)) $ be a
-      ]
+    extendRevealed1 a
+      $ skillTestAbility
+      $ forcedAbility a 1
+      $ Enters #after (You <> HandWith (LengthIs $ atLeast 1)) (be a)
 
 instance RunMessage BaseOfTheSteps where
-  runMessage msg l@(BaseOfTheSteps attrs) = case msg of
+  runMessage msg l@(BaseOfTheSteps attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push
-        $ beginSkillTest
-          sid
-          iid
-          (toAbilitySource attrs 1)
-          iid
-          #willpower
-          (InvestigatorHandLengthCalculation iid)
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (InvestigatorHandLengthCalculation iid)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      player <- getPlayer iid
       hand <- field InvestigatorHand iid
       for_ hand \card -> do
-        pushAll
-          [ FocusCards [card]
-          , chooseOne
-              player
-              [ Label "Discard" [UnfocusCards, toMessage $ discardCard iid (toAbilitySource attrs 1) card]
-              , Label "Take 1 horror" [UnfocusCards, assignHorror iid (toAbilitySource attrs 1) 1]
-              ]
-          ]
+        focusCards [card] \unfocus -> do
+          chooseOneM iid do
+            labeled "Discard" $ discardCard iid (attrs.ability 1) card
+            labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
+          push unfocus
       pure l
-    _ -> BaseOfTheSteps <$> runMessage msg attrs
+    _ -> BaseOfTheSteps <$> liftRunMessage msg attrs

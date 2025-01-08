@@ -1,12 +1,10 @@
-module Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper (
-  TheVanishingOfElinaHarper (..),
-  theVanishingOfElinaHarper,
-) where
+module Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper (theVanishingOfElinaHarper) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
@@ -19,6 +17,7 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -63,7 +62,9 @@ instance RunMessage TheVanishingOfElinaHarper where
       story $ i18n "townInfo"
       story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone
-      unless standalone $ eachInvestigator chooseUpgradeDeck
+      unless standalone do
+        eachInvestigator chooseUpgradeDeck
+        push ReloadDecks
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

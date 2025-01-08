@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype AnetteMasonReincarnatedEvil = AnetteMasonReincarnatedEvil EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anetteMasonReincarnatedEvil :: EnemyCard AnetteMasonReincarnatedEvil
@@ -27,10 +27,9 @@ anetteMasonReincarnatedEvil =
     (spawnAtL ?~ "Hangman's Hill")
 
 instance HasModifiersFor AnetteMasonReincarnatedEvil where
-  getModifiersFor target (AnetteMasonReincarnatedEvil a) | isTarget a target = do
+  getModifiersFor (AnetteMasonReincarnatedEvil a) = do
     clues <- getSum <$> selectAgg Sum InvestigatorClues UneliminatedInvestigator
-    toModifiers a [HealthModifier $ negate $ 2 * clues]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier $ negate $ 2 * clues]
 
 instance HasAbilities AnetteMasonReincarnatedEvil where
   getAbilities (AnetteMasonReincarnatedEvil a) =

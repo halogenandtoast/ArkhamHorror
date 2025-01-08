@@ -1,15 +1,9 @@
-module Arkham.Act.Cards.DescentIntoDark (
-  DescentIntoDark (..),
-  descentIntoDark,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.DescentIntoDark (descentIntoDark) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 
@@ -22,30 +16,23 @@ descentIntoDark = act (2, A) DescentIntoDark Cards.descentIntoDark Nothing
 
 instance HasAbilities DescentIntoDark where
   getAbilities (DescentIntoDark a) =
-    [ restrictedAbility
+    [ restricted
         a
         1
-        ( Negate
-            ( InvestigatorExists
-                $ InvestigatorAt
-                $ NotLocation
-                $ locationIs
-                  Locations.descentToYoth
-            )
-            <> LocationExists
-              (locationIs Locations.descentToYoth <> LocationWithoutDoom)
+        ( notExists (InvestigatorAt $ not_ $ locationIs Locations.descentToYoth)
+            <> exists (locationIs Locations.descentToYoth <> LocationWithoutDoom)
         )
         $ Objective
         $ FastAbility Free
     ]
 
 instance RunMessage DescentIntoDark where
-  runMessage msg a@(DescentIntoDark attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
+  runMessage msg a@(DescentIntoDark attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro
-      push $ scenarioResolution $ if rescuedAlejandro then 1 else 2
+      push $ if rescuedAlejandro then R1 else R2
       pure a
-    _ -> DescentIntoDark <$> runMessage msg attrs
+    _ -> DescentIntoDark <$> liftRunMessage msg attrs

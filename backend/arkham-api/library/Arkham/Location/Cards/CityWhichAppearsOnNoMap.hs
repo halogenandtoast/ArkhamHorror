@@ -1,49 +1,46 @@
-module Arkham.Location.Cards.CityWhichAppearsOnNoMap (cityWhichAppearsOnNoMap, CityWhichAppearsOnNoMap (..)) where
+module Arkham.Location.Cards.CityWhichAppearsOnNoMap (
+  cityWhichAppearsOnNoMap,
+  CityWhichAppearsOnNoMap (..),
+) where
 
-import Arkham.Card
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype CityWhichAppearsOnNoMap = CityWhichAppearsOnNoMap LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityWhichAppearsOnNoMap :: LocationCard CityWhichAppearsOnNoMap
 cityWhichAppearsOnNoMap = location CityWhichAppearsOnNoMap Cards.cityWhichAppearsOnNoMap 6 (PerPlayer 2)
 
 instance HasModifiersFor CityWhichAppearsOnNoMap where
-  getModifiersFor target (CityWhichAppearsOnNoMap attrs) | attrs `is` target = do
-    n <- selectCount $ enemyAt (toId attrs) <> enemyIs Enemies.priestOfAThousandMasks
-    toModifiers attrs [ShroudModifier (-n) | n > 0]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CityWhichAppearsOnNoMap a) = whenRevealed a $ maybeModifySelf a do
+    n <- selectCount $ enemyAt a <> enemyIs Enemies.priestOfAThousandMasks
+    pure [ShroudModifier (-n) | n > 0]
 
 instance HasAbilities CityWhichAppearsOnNoMap where
   getAbilities (CityWhichAppearsOnNoMap attrs) =
-    veiled
-      attrs
-      [ mkAbility attrs 1
-          $ forced
-          $ SkillTestResult #after You (WhileInvestigating $ be attrs) (FailureResult AnyValue)
-      ]
+    veiled1 attrs
+      $ mkAbility attrs 1
+      $ forced
+      $ SkillTestResult #after You (whileInvestigating attrs) #failure
 
 instance RunMessage CityWhichAppearsOnNoMap where
-  runMessage msg l@(CityWhichAppearsOnNoMap attrs) = case msg of
+  runMessage msg l@(CityWhichAppearsOnNoMap attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theBalefulStar
       pure . CityWhichAppearsOnNoMap $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push
-        $ FindEncounterCard iid (toTarget attrs) [FromEncounterDeck, FromEncounterDiscard]
-        $ cardIs Enemies.priestOfAThousandMasks
+      findEncounterCard iid attrs $ cardIs Enemies.priestOfAThousandMasks
       pure l
     FoundEncounterCard _iid (isTarget attrs -> True) card -> do
-      push $ SpawnEnemyAt (EncounterCard card) (toId attrs)
+      spawnEnemyAt_ card attrs
       pure l
-    _ -> CityWhichAppearsOnNoMap <$> runMessage msg attrs
+    _ -> CityWhichAppearsOnNoMap <$> liftRunMessage msg attrs

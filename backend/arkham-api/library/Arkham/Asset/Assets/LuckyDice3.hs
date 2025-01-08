@@ -47,9 +47,8 @@ luckyDice3Effect :: EffectArgs -> LuckyDice3Effect
 luckyDice3Effect = cardEffect (LuckyDice3Effect . (`with` Metadata False)) Cards.luckyDice3
 
 instance HasModifiersFor LuckyDice3Effect where
-  getModifiersFor target (LuckyDice3Effect (attrs `With` _)) | target == attrs.target = do
-    toModifiers attrs [IgnoreChaosToken]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LuckyDice3Effect (a `With` _)) =
+    modified_ a a.target [IgnoreChaosToken]
 
 instance RunMessage LuckyDice3Effect where
   runMessage msg e@(LuckyDice3Effect (attrs `With` (Metadata hasDrawn))) = runQueueT $ case msg of

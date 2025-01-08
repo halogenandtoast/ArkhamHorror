@@ -1,53 +1,57 @@
-module Arkham.Campaigns.EdgeOfTheEarth.Helpers where
+module Arkham.Campaigns.EdgeOfTheEarth.Helpers (
+  module Arkham.Campaigns.EdgeOfTheEarth.Helpers,
+  module Arkham.Campaigns.EdgeOfTheEarth.Partner,
+) where
 
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
+import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
-import Arkham.Deck (toDeck)
+import Arkham.Draw.Types
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
-import Arkham.Message qualified as Msg
+import Arkham.Message (Message (DrawCards, SetPartnerStatus))
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Setup
+import Arkham.Source
 import Arkham.Treachery.Types (Field (TreacheryCardId))
 import Arkham.Window (WindowType (ScenarioEvent))
-import GHC.Records
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "edgeOfTheEarth" a
 
-expeditionTeam :: NonEmpty CardDef
-expeditionTeam =
-  Assets.drAmyKenslerProfessorOfBiology
-    :| [ Assets.professorWilliamDyerProfessorOfGeology
-       , Assets.danforthBrilliantStudent
-       , Assets.roaldEllsworthIntrepidExplorer
-       , Assets.takadaHirokoAeroplaneMechanic
-       , Assets.averyClaypoolAntarcticGuide
-       , Assets.drMalaSinhaDaringPhysician
-       , Assets.jamesCookieFredericksDubiousChoice
-       , Assets.eliyahAshevakDogHandler
-       ]
+-- ** Shelter Helpers ** --
 
 shelterValue :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m (Maybe Int)
 shelterValue location = do
   card <- field LocationCard (asId location)
   pure $ lookup "shelter" (toCardDef card).meta >>= maybeResult
+
+getShelterValue :: HasCardCode a => a -> Maybe Int
+getShelterValue a = do
+  def <- lookupCardDef (toCardCode a)
+  val <- lookup "shelter" (cdMeta def)
+  maybeResult val
+
+-- ** Supply Helpers ** --
 
 whenRecoveredSupply :: HasGame m => Supply -> m () -> m ()
 whenRecoveredSupply supply action = whenM (hasSupply supply) action
@@ -57,6 +61,8 @@ hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
 recoverSupply supply = recordSetInsert SuppliesRecovered [toJSON supply]
+
+-- ** Tekeli-li Helpers ** --
 
 getTekelili :: HasGame m => Int -> m [Card]
 getTekelili n = take n <$> getScenarioDeck TekeliliDeck
@@ -76,76 +82,30 @@ gatherTekelili = do
     filter ((== Just Tekelili) . cdEncounterSet) $ toList allPlayerCards
 
 addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
-addTekelili iid cards = batched \batchId -> do
-  checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
-  traverse_ (addCampaignCardToDeck iid) cards
+addTekelili _ [] = pure ()
+addTekelili iid cards = whenM (can.manipulate.deck iid) do
+  batched \batchId -> do
+    checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
+    traverse_ (addCampaignCardToDeck iid) cards
 
 resolveTekelili
   :: (ReverseQueue m, AsId tekelili, IdOf tekelili ~ TreacheryId) => InvestigatorId -> tekelili -> m ()
 resolveTekelili iid tekelili = do
   cardId <- field TreacheryCardId (asId tekelili)
   mods <- getModifiers cardId
-  let deck = if PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods then toDeck iid else toDeck TekeliliDeck
-  putOnBottomOfDeck iid deck (asId tekelili)
+  if
+    | PlaceOnBottomOfDeckInsteadOfDiscard `elem` mods -> putOnBottomOfDeck iid iid (asId tekelili)
+    | ShuffleIntoDeckInsteadOfDiscard `elem` mods -> shuffleIntoDeck iid (asId tekelili)
+    | ShuffleIntoAnyDeckInsteadOfDiscard `elem` mods -> do
+        investigators <- getInvestigators
+        chooseTargetM iid investigators \iid' -> shuffleIntoDeck iid' (asId tekelili)
+    | otherwise -> putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
 
-getShelterValue :: HasCardCode a => a -> Maybe Int
-getShelterValue a = do
-  def <- lookupCardDef (toCardCode a)
-  val <- lookup "shelter" (cdMeta def)
-  maybeResult val
+drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()
+drawTekelili iid source n = push $ DrawCards iid $ newCardDraw source TekeliliDeck n
 
-data Partner = Partner
-  { partnerCardCode :: CardCode
-  , partnerDamage :: Int
-  , partnerHorror :: Int
-  , partnerStatus :: PartnerStatus
-  }
+setPartnerStatus :: (HasCallStack, HasCardCode a, ReverseQueue m) => a -> PartnerStatus -> m ()
+setPartnerStatus a = push . SetPartnerStatus (toPartnerCode a)
 
-instance HasField "status" Partner PartnerStatus where
-  getField = partnerStatus
-
-instance HasField "damage" Partner Int where
-  getField = partnerDamage
-
-instance HasField "horror" Partner Int where
-  getField = partnerHorror
-
-instance HasField "cardCode" Partner CardCode where
-  getField = partnerCardCode
-
-instance HasCardCode Partner where
-  toCardCode = (.cardCode)
-
-getPartnersWithStatus :: HasGame m => (PartnerStatus -> Bool) -> m [Partner]
-getPartnersWithStatus f = do
-  partners <- view partnersL <$> getCampaignLog
-  pure $ flip mapMaybe (mapToList partners) \(cardCode, partner) -> do
-    guard $ f partner.status
-    pure
-      $ Partner
-        { partnerCardCode = cardCode
-        , partnerDamage = partner.damage
-        , partnerHorror = partner.horror
-        , partnerStatus = partner.status
-        }
-
-getRemainingPartners :: HasGame m => m [Partner]
-getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
-
-getPartner :: (HasGame m, HasCardCode a) => a -> m Partner
-getPartner (toCardCode -> cardCode) = do
-  partners <- view partnersL <$> getCampaignLog
-  pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners >>= \partner ->
-    pure
-      $ Partner
-        { partnerCardCode = cardCode
-        , partnerDamage = partner.damage
-        , partnerHorror = partner.horror
-        , partnerStatus = partner.status
-        }
-
-setPartnerStatus :: (ReverseQueue m, HasCardCode a) => a -> PartnerStatus -> m ()
-setPartnerStatus a = push . Msg.SetPartnerStatus (toCardCode a)
-
-partnerEliminated :: (ReverseQueue m, HasCardCode a) => a -> m ()
-partnerEliminated a = setPartnerStatus a Eliminated
+eliminatePartner :: (HasCallStack, HasCardCode a, ReverseQueue m) => a -> m ()
+eliminatePartner = (`setPartnerStatus` Eliminated)

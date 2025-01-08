@@ -2,7 +2,7 @@ module Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet

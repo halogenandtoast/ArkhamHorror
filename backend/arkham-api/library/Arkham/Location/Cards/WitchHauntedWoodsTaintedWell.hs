@@ -3,13 +3,11 @@ module Arkham.Location.Cards.WitchHauntedWoodsTaintedWell (
   WitchHauntedWoodsTaintedWell (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -26,15 +24,14 @@ witchHauntedWoodsTaintedWell =
     (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsTaintedWell where
-  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsTaintedWell a) = maybeModified a do
-    lid <- MaybeT $ field InvestigatorLocation iid
-    if lid == a.id
-      then pure [CanCommitToSkillTestPerformedByAnInvestigatorAt "Witch-Haunted Woods"]
-      else do
-        isWitchHauntedWoods <- elem lid <$> select (LocationWithTitle "Witch-Haunted Woods")
-        guard isWitchHauntedWoods
-        pure [CanCommitToSkillTestPerformedByAnInvestigatorAt (be a)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WitchHauntedWoodsTaintedWell a) =
+    whenRevealed a $ modifySelectMaybe a Anyone \iid -> do
+      lid <- MaybeT $ field InvestigatorLocation iid
+      if lid == a.id
+        then pure [CanCommitToSkillTestPerformedByAnInvestigatorAt "Witch-Haunted Woods"]
+        else do
+          liftGuardM $ lid <=~> LocationWithTitle "Witch-Haunted Woods"
+          pure [CanCommitToSkillTestPerformedByAnInvestigatorAt (be a)]
 
 instance RunMessage WitchHauntedWoodsTaintedWell where
   runMessage msg (WitchHauntedWoodsTaintedWell attrs) =

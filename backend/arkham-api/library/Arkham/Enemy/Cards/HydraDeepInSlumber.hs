@@ -27,9 +27,7 @@ hydraDeepInSlumber = enemyWith
   $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor HydraDeepInSlumber where
-  getModifiersFor target (HydraDeepInSlumber a) = maybeModified a do
-    guard $ isTarget a target
-    pure [Omnipotent]
+  getModifiersFor (HydraDeepInSlumber a) = modifySelf a [Omnipotent]
 
 instance HasAbilities HydraDeepInSlumber where
   getAbilities (HydraDeepInSlumber a) =

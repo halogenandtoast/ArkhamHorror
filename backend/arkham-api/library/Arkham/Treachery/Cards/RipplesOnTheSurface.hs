@@ -23,14 +23,16 @@ ripplesOnTheSurface :: TreacheryCard RipplesOnTheSurface
 ripplesOnTheSurface = treachery RipplesOnTheSurface Cards.ripplesOnTheSurface
 
 instance HasModifiersFor RipplesOnTheSurface where
-  getModifiersFor (InvestigatorTarget iid) (RipplesOnTheSurface attrs) = do
-    mSource <- getSkillTestSource
-    case mSource of
+  getModifiersFor (RipplesOnTheSurface attrs) = do
+    getSkillTestSource >>= \case
       Just source | isSource attrs source -> do
-        isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
-        toModifiers attrs [CannotCommitCards AnyCard | isBayou]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        getSkillTestInvestigator >>= \case
+          Nothing -> pure mempty
+          Just iid -> maybeModified_ attrs iid do
+            isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
+            guard isBayou
+            pure [CannotCommitCards AnyCard]
+      _ -> pure mempty
 
 instance RunMessage RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@TreacheryAttrs {..}) =

@@ -3,18 +3,14 @@ module Arkham.Location.Cards.ChapelOfStAubertThePathIsOpen (
   ChapelOfStAubertThePathIsOpen (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (InvestigatorRemainingSanity))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
-import Arkham.Projection
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message (getChoiceAmount)
 import Arkham.ScenarioLogKey
 
 newtype ChapelOfStAubertThePathIsOpen = ChapelOfStAubertThePathIsOpen LocationAttrs
@@ -26,27 +22,21 @@ chapelOfStAubertThePathIsOpen =
   location ChapelOfStAubertThePathIsOpen Cards.chapelOfStAubertThePathIsOpen 3 (PerPlayer 2)
 
 instance HasModifiersFor ChapelOfStAubertThePathIsOpen where
-  getModifiersFor target (ChapelOfStAubertThePathIsOpen attrs) | isTarget attrs target = do
-    foundAGuide <- remembered FoundAGuide
-    toModifiers attrs [Blocked | not (locationRevealed attrs) && not foundAGuide]
-  getModifiersFor (InvestigatorTarget iid) (ChapelOfStAubertThePathIsOpen attrs) = do
-    here <- iid `isAt` attrs
-    remainingSanity <- field InvestigatorRemainingSanity iid
-    toModifiers attrs [CannotDiscoverClues | here, remainingSanity > 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChapelOfStAubertThePathIsOpen a) =
+    if a.revealed
+      then modifySelect a (InvestigatorWithRemainingSanity $ atMost 3) [CannotDiscoverCluesAt (be a)]
+      else blockedUnless a $ remembered FoundAGuide
 
 instance HasAbilities ChapelOfStAubertThePathIsOpen where
   getAbilities (ChapelOfStAubertThePathIsOpen a) =
-    withBaseAbilities a [restrictedAbility a 1 Here actionAbility]
+    extendRevealed1 a $ restricted a 1 Here actionAbility
 
 instance RunMessage ChapelOfStAubertThePathIsOpen where
-  runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = case msg of
+  runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      player <- getPlayer iid
-      pushM $ chooseAmounts player "Take up to 3 horror" (MaxAmountTarget 3) [("Horror", (0, 3))] attrs
+      chooseAmounts iid "Take up to 3 horror" (MaxAmountTarget 3) [("Horror", (0, 3))] attrs
       pure l
-    ResolveAmounts iid choices target | isTarget attrs target -> do
-      let horrorAmount = getChoiceAmount "Horror" choices
-      pushWhen (horrorAmount > 0) $ assignHorror iid attrs horrorAmount
+    ResolveAmounts iid (getChoiceAmount "Horror" -> horrorAmount) (isTarget attrs -> True) -> do
+      when (horrorAmount > 0) $ assignHorror iid (attrs.ability 1) horrorAmount
       pure l
-    _ -> ChapelOfStAubertThePathIsOpen <$> runMessage msg attrs
+    _ -> ChapelOfStAubertThePathIsOpen <$> liftRunMessage msg attrs

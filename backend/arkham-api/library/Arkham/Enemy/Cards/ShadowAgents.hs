@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype ShadowAgents = ShadowAgents EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shadowAgents :: EnemyCard ShadowAgents
@@ -33,10 +33,11 @@ instance HasAbilities ShadowAgents where
       ]
 
 instance HasModifiersFor ShadowAgents where
-  getModifiersFor (InvestigatorTarget iid) (ShadowAgents attrs) = do
-    affected <- iid <=~> investigatorEngagedWith attrs
-    toModifiers attrs [CannotDiscoverCluesExceptAsResultOfInvestigation Anywhere | affected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ShadowAgents a) =
+    modifySelect
+      a
+      (investigatorEngagedWith a)
+      [CannotDiscoverCluesExceptAsResultOfInvestigation Anywhere]
 
 instance RunMessage ShadowAgents where
   runMessage msg e@(ShadowAgents attrs) = case msg of

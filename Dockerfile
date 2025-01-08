@@ -59,7 +59,7 @@ RUN \
 RUN chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGNone
 
-ARG GHC=9.8.2
+ARG GHC=9.10.1
 ARG CABAL=3.10.3.0
 ARG STACK=3.1.1
 ARG CACHE_ID="${TARGETARCH}-${GHC}-${CABAL}-${STACK}"
@@ -105,7 +105,7 @@ RUN --mount=type=cache,id=stack-root-${CACHE_ID},target=/opt/arkham/src/backend/
     --mount=type=cache,id=stack-api-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-api/.hie \
     --mount=type=cache,id=stack-validate-hie-${CACHE_ID},target=/opt/arkham/src/backend/arkham-validate/.hie \
     --mount=type=cache,id=stack-discover-hie-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.hie \
-  stack build --no-terminal --system-ghc --ghc-options '-j4 +RTS -A128m -n2m -RTS' && \
+  stack build --no-terminal --system-ghc --ghc-options '-rtsopts -with-rtsopts=-V0 -j4 +RTS -V0 -A128m -n2m -RTS' && \
   stack --no-terminal --local-bin-path /opt/arkham/bin install
 
 FROM ubuntu:22.04 as app

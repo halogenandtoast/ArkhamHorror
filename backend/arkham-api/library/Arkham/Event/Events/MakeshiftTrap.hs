@@ -2,18 +2,15 @@ module Arkham.Event.Events.MakeshiftTrap (makeshiftTrap, MakeshiftTrap (..)) whe
 
 import Arkham.Ability
 import Arkham.DamageEffect
-import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (withLocationOf)
-import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM, modifySelfWhen)
 import Arkham.Helpers.Use (toModifiedStartingUses)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Token
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
@@ -36,21 +33,19 @@ instance HasAbilities MakeshiftTrap where
       _ -> ControlsThis
 
 instance HasModifiersFor MakeshiftTrap where
-  getModifiersFor (EnemyTarget eid) (MakeshiftTrap attrs) = do
-    placement <- field EnemyPlacement eid
-    sameLocation <- onSameLocation placement attrs.placement
-    let standard = guard sameLocation *> [EnemyFight (-1), EnemyEvade (-1)]
-    net <-
-      fromMaybe [] <$> runMaybeT do
-        guard $ attrs `hasCustomization` Net
-        guard sameLocation
-        liftGuardM $ eid <=~> NonEliteEnemy
-        pure [CannotMakeAttacksOfOpportunity, CannotMove]
+  getModifiersFor (MakeshiftTrap a) = do
+    enemies <- case a.placement of
+      AttachedToLocation lid -> modifySelectMapM a (EnemyAt $ LocationWithId lid) \eid -> do
+        net <-
+          fromMaybe [] <$> runMaybeT do
+            guard $ a `hasCustomization` Net
+            liftGuardM $ eid <=~> NonEliteEnemy
+            pure [CannotMakeAttacksOfOpportunity, CannotMove]
 
-    modified attrs $ standard <> net
-  getModifiersFor target (MakeshiftTrap a) | isTarget a target = do
-    modified a $ guard (a `hasCustomization` Simple) $> BecomesFast FastPlayerWindow
-  getModifiersFor _ _ = pure []
+        pure $ [EnemyFight (-1), EnemyEvade (-1)] <> net
+      _ -> pure mempty
+    self <- modifySelfWhen a (a `hasCustomization` Simple) [BecomesFast FastPlayerWindow]
+    pure $ self <> enemies
 
 -- We need to ensure all messages that run RemoveTokens directly are captured and handled here
 instance RunMessage MakeshiftTrap where

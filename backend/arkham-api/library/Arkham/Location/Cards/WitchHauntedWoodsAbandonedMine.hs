@@ -3,15 +3,15 @@ module Arkham.Location.Cards.WitchHauntedWoodsAbandonedMine (
   WitchHauntedWoodsAbandonedMine (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message (getChoiceAmount)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype WitchHauntedWoodsAbandonedMine = WitchHauntedWoodsAbandonedMine LocationAttrs
@@ -27,10 +27,11 @@ witchHauntedWoodsAbandonedMine =
     (PerPlayer 1)
 
 instance HasModifiersFor WitchHauntedWoodsAbandonedMine where
-  getModifiersFor (InvestigatorTarget iid) (WitchHauntedWoodsAbandonedMine a) = do
-    resources <- field InvestigatorResources iid
-    toModifiers a [CannotInvestigateLocation (toId a) | resources >= 3 && resources <= 10]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WitchHauntedWoodsAbandonedMine a) = do
+    modifySelect
+      a
+      (InvestigatorWithResources (atLeast 3) <> InvestigatorWithResources (atMost 10))
+      [CannotInvestigateLocation a.id]
 
 instance HasAbilities WitchHauntedWoodsAbandonedMine where
   getAbilities (WitchHauntedWoodsAbandonedMine a) =
@@ -50,8 +51,8 @@ instance HasAbilities WitchHauntedWoodsAbandonedMine where
 -- Note: we above ProxyTarget here by doubling it to include the two and from,
 -- it would be nice to have a better way to handle this
 instance RunMessage WitchHauntedWoodsAbandonedMine where
-  runMessage msg l@(WitchHauntedWoodsAbandonedMine attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(WitchHauntedWoodsAbandonedMine attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- field InvestigatorResources iid
       let checkResources = if resources > 0 then id else (<> InvestigatorWithAnyResources)
       iids <-
@@ -59,35 +60,29 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
           $ checkResources
           $ InvestigatorAt (not_ $ locationWithInvestigator iid)
 
-      player <- getPlayer iid
+      chooseOneM iid do
+        for_ iids \(iid', otherResources) -> do
+          targeting iid' do
+            chooseOrRunOneM iid do
+              when (resources > 0) do
+                labeled "Move to their pool"
+                  $ chooseAmounts
+                    iid
+                    "Choose amount of resources to move"
+                    (MaxAmountTarget 3)
+                    [("Resources", (0, resources))]
+                  $ ProxyTarget (toTarget attrs)
+                  $ ProxyTarget (InvestigatorTarget iid) (InvestigatorTarget iid')
+              when (otherResources > 0) do
+                labeled "Move to your pool"
+                  $ chooseAmounts
+                    iid
+                    "Choose amount of resources to move"
+                    (MaxAmountTarget 3)
+                    [("Resources", (0, otherResources))]
+                  $ ProxyTarget (toTarget attrs)
+                  $ ProxyTarget (InvestigatorTarget iid') (InvestigatorTarget iid)
 
-      choices <- for iids \(iid', otherResources) -> do
-        chooseMsg1 <-
-          chooseAmounts
-            player
-            "Choose amount of resources to move"
-            (MaxAmountTarget 3)
-            [("Resources", (0, resources))]
-            $ ProxyTarget (toTarget attrs)
-            $ ProxyTarget (InvestigatorTarget iid) (InvestigatorTarget iid')
-        chooseMsg2 <-
-          chooseAmounts
-            player
-            "Choose amount of resources to move"
-            (MaxAmountTarget 3)
-            [("Resources", (0, otherResources))]
-            $ ProxyTarget (toTarget attrs)
-            $ ProxyTarget (InvestigatorTarget iid') (InvestigatorTarget iid)
-
-        pure
-          $ targetLabel
-            iid'
-            [ chooseOrRunOne player
-                $ [Label "Move to their pool" [chooseMsg1] | resources > 0]
-                <> [Label "Move to your pool" [chooseMsg2] | otherResources > 0]
-            ]
-
-      push $ chooseOne player choices
       pure l
     ResolveAmounts
       _
@@ -102,4 +97,4 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
             , SpendResources fromInvestigator n
             ]
           pure l
-    _ -> WitchHauntedWoodsAbandonedMine <$> runMessage msg attrs
+    _ -> WitchHauntedWoodsAbandonedMine <$> liftRunMessage msg attrs

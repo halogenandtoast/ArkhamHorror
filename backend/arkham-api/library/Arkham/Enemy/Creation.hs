@@ -40,6 +40,9 @@ instance IsEnemyCreationMethod Placement where
 instance IsEnemyCreationMethod LocationMatcher where
   toEnemyCreationMethod = SpawnAtLocationMatching
 
+instance IsEnemyCreationMethod CardDef where
+  toEnemyCreationMethod = SpawnAtLocationMatching . locationIs
+
 data EnemyCreation msg = MkEnemyCreation
   { enemyCreationCard :: Card
   , enemyCreationEnemyId :: EnemyId
@@ -66,7 +69,16 @@ instance FromJSON msg => FromJSON (EnemyCreation msg) where
     pure $ MkEnemyCreation {..}
 
 createExhausted :: EnemyCreation msg -> EnemyCreation msg
-createExhausted ec = ec {enemyCreationExhausted = True}
+createExhausted = setExhausted True
+{-# INLINE createExhausted #-}
+
+setExhausted :: Bool -> EnemyCreation msg -> EnemyCreation msg
+setExhausted v ec = ec {enemyCreationExhausted = v}
+{-# INLINE setExhausted #-}
+
+instance WithTarget (EnemyCreation msg) where
+  getTarget = enemyCreationTarget
+  setTarget t x = x {enemyCreationTarget = Just (toTarget t)}
 
 instance HasField "enemy" (EnemyCreation msg) EnemyId where
   getField = enemyCreationEnemyId

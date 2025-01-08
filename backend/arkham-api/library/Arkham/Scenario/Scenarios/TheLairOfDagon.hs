@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheLairOfDagon (TheLairOfDagon (..), theLairOfDagon) where
+module Arkham.Scenario.Scenarios.TheLairOfDagon (theLairOfDagon) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -6,6 +6,7 @@ import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -21,6 +22,7 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

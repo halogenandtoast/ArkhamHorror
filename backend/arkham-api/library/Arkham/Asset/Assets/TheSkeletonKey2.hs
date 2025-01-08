@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 
 newtype TheSkeletonKey2 = TheSkeletonKey2 AssetAttrs
@@ -16,11 +16,10 @@ theSkeletonKey2 :: AssetCard TheSkeletonKey2
 theSkeletonKey2 = asset TheSkeletonKey2 Cards.theSkeletonKey2
 
 instance HasModifiersFor TheSkeletonKey2 where
-  getModifiersFor (LocationTarget lid) (TheSkeletonKey2 a) =
+  getModifiersFor (TheSkeletonKey2 a) =
     case a.placement of
-      AttachedToLocation lid' | lid == lid' -> toModifiers a [SetShroud 1]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+      AttachedToLocation lid -> modified_ a lid [SetShroud 1]
+      _ -> pure mempty
 
 instance HasAbilities TheSkeletonKey2 where
   getAbilities (TheSkeletonKey2 a) =

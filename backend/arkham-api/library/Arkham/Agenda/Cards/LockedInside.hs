@@ -19,7 +19,7 @@ lockedInside = agenda (1, A) LockedInside Cards.lockedInside (Static 2)
 instance RunMessage LockedInside where
   runMessage msg a@(LockedInside attrs) = case msg of
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       pushAll
         [ ShuffleScenarioDeckIntoEncounterDeck LunaticsDeck
         , ShuffleEncounterDiscardBackIn

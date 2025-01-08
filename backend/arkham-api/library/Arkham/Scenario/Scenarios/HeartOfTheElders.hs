@@ -1,9 +1,9 @@
-module Arkham.Scenario.Scenarios.HeartOfTheElders (HeartOfTheElders (..), heartOfTheElders) where
+module Arkham.Scenario.Scenarios.HeartOfTheElders (heartOfTheElders) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -12,7 +12,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.GameT (GameT)
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Layout
@@ -20,6 +19,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Queue (QueueT)
 import Arkham.Resolution

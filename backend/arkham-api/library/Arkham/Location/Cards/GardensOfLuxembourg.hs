@@ -14,14 +14,13 @@ gardensOfLuxembourg :: LocationCard GardensOfLuxembourg
 gardensOfLuxembourg = location GardensOfLuxembourg Cards.gardensOfLuxembourg 3 (PerPlayer 1)
 
 instance HasModifiersFor GardensOfLuxembourg where
-  getModifiersFor (LocationTarget lid) (GardensOfLuxembourg attrs) | attrs.id == lid && attrs.revealed = do
-    toModifiers
+  getModifiersFor (GardensOfLuxembourg attrs) = whenRevealed attrs do
+    modifySelf
       attrs
       [ ConnectedToWhen
           (LocationWithEnemy $ MovingEnemy <> EnemyWithTrait Byakhee)
           (LocationWithId $ toId attrs)
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage GardensOfLuxembourg where
   runMessage msg (GardensOfLuxembourg attrs) =

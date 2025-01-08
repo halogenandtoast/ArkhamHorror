@@ -1,7 +1,7 @@
 module Arkham.Investigator.Cards.AlessandraZorzi (alessandraZorzi, AlessandraZorzi (..)) where
 
 import Arkham.Action.Additional
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -17,14 +17,13 @@ alessandraZorzi =
     $ Stats {health = 7, sanity = 7, willpower = 3, intellect = 4, combat = 2, agility = 4}
 
 instance HasModifiersFor AlessandraZorzi where
-  getModifiersFor target (AlessandraZorzi a) | a `is` target = do
-    modified
+  getModifiersFor (AlessandraZorzi a) =
+    modifySelf
       a
       [ GiveAdditionalAction
           $ AdditionalAction "Alessadra Zorzi" (toSource a)
           $ ActionRestrictedAdditionalAction #parley
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasChaosTokenValue AlessandraZorzi where
   getChaosTokenValue iid ElderSign (AlessandraZorzi attrs) | iid == toId attrs = do

@@ -26,7 +26,7 @@ spec = describe "Grotesque Statue (2)" $ do
         skip
 
       chooseOptionMatching "choose zero token" \case
-        ChaosTokenGroupChoice _ _ (ChooseMatch _ 1 _ _ [[ChaosToken _ Zero _]] _ _) -> True
+        ChaosTokenGroupChoice _ _ (ChooseMatch _ 1 _ _ [[ChaosToken _ Zero _ _]] _ _) -> True
         _ -> False
       assertPassedSkillTest
       applyResults

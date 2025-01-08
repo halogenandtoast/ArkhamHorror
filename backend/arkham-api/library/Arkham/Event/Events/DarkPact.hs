@@ -1,17 +1,10 @@
-module Arkham.Event.Events.DarkPact (
-  darkPact,
-  DarkPact (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.DarkPact (darkPact) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted hiding (InvestigatorEliminated)
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype DarkPact = DarkPact EventAttrs
@@ -23,38 +16,20 @@ darkPact = event DarkPact Cards.darkPact
 
 instance HasAbilities DarkPact where
   getAbilities (DarkPact x) =
-    [ restrictedAbility x 1 InYourHand
-        $ ForcedAbility
-        $ OrWindowMatcher
-          [ GameEnds Timing.When
-          , InvestigatorEliminated Timing.When You
-          ]
-    ]
+    [restricted x 1 InYourHand $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]]
 
 instance RunMessage DarkPact where
-  runMessage msg e@(DarkPact attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(DarkPact attrs) = runQueueT $ case msg of
+    PlayThisEvent iid eid | eid == attrs.id -> do
       iids <- select $ colocatedWith iid
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            [ targetLabel
-              iid'
-              [InvestigatorAssignDamage iid' (toSource attrs) DamageAny 2 0]
-            | iid' <- iids
-            ]
-        ]
+      chooseTargetM iid iids \iid' -> assignDamage iid' attrs 2
       pure e
-    InHand iid' (UseCardAbility iid (isSource attrs -> True) 1 _ _)
-      | iid' == iid -> case toCard attrs of
-          EncounterCard _ -> error "should be player card"
-          VengeanceCard _ -> error "should be player card"
-          PlayerCard pc -> do
-            thePriceOfFailure <- genPlayerCard Treacheries.thePriceOfFailure
-            pushAll
-              [ RemoveCardFromDeckForCampaign iid pc
-              , AddCardToDeckForCampaign iid thePriceOfFailure
-              ]
-            pure e
-    _ -> DarkPact <$> runMessage msg attrs
+    InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
+      case toCard attrs of
+        EncounterCard _ -> error "should be player card"
+        VengeanceCard _ -> error "should be player card"
+        PlayerCard pc -> do
+          removeCardFromDeckForCampaign iid pc
+          addCampaignCardToDeck iid =<< genPlayerCard Treacheries.thePriceOfFailure
+          pure e
+    _ -> DarkPact <$> liftRunMessage msg attrs

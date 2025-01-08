@@ -23,7 +23,7 @@ formlessSpawn =
     ?~ SpawnAt (locationIs Locations.nexusOfNKai)
 
 instance HasModifiersFor FormlessSpawn where
-  getModifiersFor target (FormlessSpawn a) | isTarget a target = do
+  getModifiersFor (FormlessSpawn a) = do
     enemyDoom <- selectAgg Sum EnemyDoom $ EnemyAt $ locationIs Locations.nexusOfNKai
     treacheryDoom <- selectAgg Sum TreacheryDoom $ TreacheryAt $ locationIs Locations.nexusOfNKai
     assetDoom <- selectAgg Sum AssetDoom $ AssetAt $ locationIs Locations.nexusOfNKai
@@ -33,14 +33,13 @@ instance HasModifiersFor FormlessSpawn where
 
     let doomCount = getSum $ fold [enemyDoom, treacheryDoom, assetDoom, investigatorDoom, nexusDoom]
 
-    toModifiers
+    modifySelf
       a
       [ CannotMove
       , CannotBeMoved
       , Mod.EnemyFight doomCount
       , Mod.EnemyEvade doomCount
       ]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage FormlessSpawn where
   runMessage msg (FormlessSpawn attrs) = FormlessSpawn <$> runMessage msg attrs

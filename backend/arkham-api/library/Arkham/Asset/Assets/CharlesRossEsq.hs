@@ -9,9 +9,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Trait
 
@@ -23,16 +23,15 @@ charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 
 instance HasModifiersFor CharlesRossEsq where
-  getModifiersFor (InvestigatorTarget iid) (CharlesRossEsq attrs) | attrs `controlledBy` iid = do
-    mlid <- field AssetLocation (toId attrs)
-    toModifiers
-      attrs
-      [ CanSpendResourcesOnCardFromInvestigator
-        (investigatorAt lid <> not_ (InvestigatorWithId iid))
-        (#asset <> #item)
-      | lid <- maybeToList mlid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CharlesRossEsq a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      lid <- MaybeT $ field AssetLocation a.id
+      pure
+        [ CanSpendResourcesOnCardFromInvestigator
+            (investigatorAt lid <> not_ (InvestigatorWithId iid))
+            (#asset <> #item)
+        ]
 
 instance HasAbilities CharlesRossEsq where
   getAbilities (CharlesRossEsq attrs) = [restrictedAbility attrs 1 ControlsThis $ FastAbility $ exhaust attrs]
@@ -53,18 +52,11 @@ charlesRossEsqEffect :: EffectArgs -> CharlesRossEsqEffect
 charlesRossEsqEffect = cardEffect CharlesRossEsqEffect Cards.charlesRossEsq
 
 instance HasModifiersFor CharlesRossEsqEffect where
-  getModifiersFor (InvestigatorTarget iid) (CharlesRossEsqEffect attrs) =
-    case attrs.source of
-      AssetSource aid -> do
-        assetLid <- field AssetLocation aid
-        investigatorLid <- field InvestigatorLocation iid
-        toModifiers
-          attrs
-          [ ReduceCostOf (CardWithType AssetType <> CardWithTrait Item) 1
-          | isJust assetLid && assetLid == investigatorLid
-          ]
+  getModifiersFor (CharlesRossEsqEffect a) =
+    case a.source of
+      AssetSource aid ->
+        modifySelect a (InvestigatorAt $ locationWithAsset aid) [ReduceCostOf (#asset <> #item) 1]
       _ -> error "invalid source"
-  getModifiersFor _ _ = pure []
 
 instance RunMessage CharlesRossEsqEffect where
   runMessage msg e@(CharlesRossEsqEffect attrs) = runQueueT $ case msg of

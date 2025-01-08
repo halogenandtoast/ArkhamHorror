@@ -18,14 +18,15 @@ import Arkham.Matcher.Types (
   LocationMatcher,
  )
 import Arkham.Tarot
-import Arkham.Trait
+import Arkham.Trait hiding (ElderThing)
 import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 import GHC.Records
 
 data Source
-  = AbilitySource Source Int
+  = IndexedSource Int Source
+  | AbilitySource Source Int
   | ActiveCostSource ActiveCostId
   | ActDeckSource
   | ActSource ActId
@@ -78,6 +79,7 @@ instance HasField "asset" Source (Maybe AssetId) where
   getField = \case
     AssetSource aid -> Just aid
     ProxySource (CardIdSource _) s -> s.asset
+    IndexedSource _ s -> s.asset
     ProxySource s _ -> s.asset
     AbilitySource s _ -> s.asset
     _ -> Nothing
@@ -86,6 +88,7 @@ instance HasField "event" Source (Maybe EventId) where
   getField = \case
     EventSource eid -> Just eid
     ProxySource (CardIdSource _) s -> s.event
+    IndexedSource _ s -> s.event
     ProxySource s _ -> s.event
     AbilitySource s _ -> s.event
     _ -> Nothing
@@ -94,6 +97,7 @@ instance HasField "location" Source (Maybe LocationId) where
   getField = \case
     LocationSource lid -> Just lid
     ProxySource (CardIdSource _) s -> s.location
+    IndexedSource _ s -> s.location
     ProxySource s _ -> s.location
     AbilitySource s _ -> s.location
     _ -> Nothing
@@ -102,6 +106,7 @@ instance HasField "enemy" Source (Maybe EnemyId) where
   getField = \case
     EnemySource aid -> Just aid
     ProxySource (CardIdSource _) s -> s.enemy
+    IndexedSource _ s -> s.enemy
     ProxySource s _ -> s.enemy
     AbilitySource s _ -> s.enemy
     EnemyAttackSource eid -> Just eid
@@ -111,6 +116,7 @@ instance HasField "treachery" Source (Maybe TreacheryId) where
   getField = \case
     TreacherySource aid -> Just aid
     ProxySource (CardIdSource _) s -> s.treachery
+    IndexedSource _ s -> s.treachery
     ProxySource s _ -> s.treachery
     AbilitySource s _ -> s.treachery
     _ -> Nothing

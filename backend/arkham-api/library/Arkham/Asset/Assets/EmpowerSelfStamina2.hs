@@ -15,11 +15,12 @@ empowerSelfStamina2 :: AssetCard EmpowerSelfStamina2
 empowerSelfStamina2 = asset EmpowerSelfStamina2 Cards.empowerSelfStamina2
 
 instance HasModifiersFor EmpowerSelfStamina2 where
-  getModifiersFor (InvestigatorTarget iid) (EmpowerSelfStamina2 a) | controlledBy a iid = do
-    toModifiers a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #combat]
-  getModifiersFor target (EmpowerSelfStamina2 a) | a `is` target = do
-    toModifiers a [SharesSlotWith 3 "Empower Self"]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EmpowerSelfStamina2 a) = do
+    controller <-
+      controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #combat]
+    self <- modifySelf a [SharesSlotWith 3 "Empower Self"]
+
+    pure $ controller <> self
 
 instance HasAbilities EmpowerSelfStamina2 where
   getAbilities (EmpowerSelfStamina2 a) = [controlledAbility a 1 DuringAnySkillTest (FastAbility $ exhaust a)]

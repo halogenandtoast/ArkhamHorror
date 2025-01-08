@@ -1,27 +1,22 @@
-module Arkham.Enemy.Cards.HighPriestNotToBeDescribed (
-  highPriestNotToBeDescribed,
-  HighPriestNotToBeDescribed (..),
-)
-where
+module Arkham.Enemy.Cards.HighPriestNotToBeDescribed ( highPriestNotToBeDescribed,) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype HighPriestNotToBeDescribed = HighPriestNotToBeDescribed EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 highPriestNotToBeDescribed :: EnemyCard HighPriestNotToBeDescribed
 highPriestNotToBeDescribed = enemy HighPriestNotToBeDescribed Cards.highPriestNotToBeDescribed (5, PerPlayer 3, 3) (1, 1)
 
 instance HasModifiersFor HighPriestNotToBeDescribed where
-  getModifiersFor target (HighPriestNotToBeDescribed a) | isTarget a target = do
-    toModifiers a [CannotMakeAttacksOfOpportunity]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HighPriestNotToBeDescribed a) = modifySelf a [CannotMakeAttacksOfOpportunity]
 
 instance HasAbilities HighPriestNotToBeDescribed where
   getAbilities (HighPriestNotToBeDescribed attrs) =

@@ -6,7 +6,6 @@ where
 
 import Arkham.Prelude
 
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
@@ -22,15 +21,10 @@ surveyTheArea1 :: SkillCard SurveyTheArea1
 surveyTheArea1 = skill SurveyTheArea1 Cards.surveyTheArea1
 
 instance HasModifiersFor SurveyTheArea1 where
-  getModifiersFor (CardIdTarget cid) (SurveyTheArea1 a) | toCardId a == cid = do
-    agility <- field InvestigatorAgility (skillOwner a)
-    intellect <- field InvestigatorIntellect (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
-  getModifiersFor target (SurveyTheArea1 a) | a `is` target = do
-    agility <- field InvestigatorAgility (skillOwner a)
-    intellect <- field InvestigatorIntellect (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SurveyTheArea1 a) = do
+    agility <- field InvestigatorAgility a.owner
+    intellect <- field InvestigatorIntellect a.owner
+    modifySelf a.cardId [AddSkillIcons $ replicate intellect #agility <> replicate agility #intellect]
 
 instance RunMessage SurveyTheArea1 where
   runMessage msg (SurveyTheArea1 attrs) = SurveyTheArea1 <$> runMessage msg attrs

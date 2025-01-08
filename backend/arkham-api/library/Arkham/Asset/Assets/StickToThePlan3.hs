@@ -22,12 +22,9 @@ stickToThePlan3 :: AssetCard StickToThePlan3
 stickToThePlan3 = asset StickToThePlan3 Cards.stickToThePlan3
 
 instance HasModifiersFor StickToThePlan3 where
-  getModifiersFor (InvestigatorTarget iid) (StickToThePlan3 attrs) | controlledBy attrs iid = do
-    toModifiers attrs (map AsIfInHand $ assetCardsUnderneath attrs)
-  getModifiersFor (CardIdTarget cardId) (StickToThePlan3 attrs)
-    | cardId `elem` map toCardId (assetCardsUnderneath attrs) = do
-        toModifiers attrs [AdditionalCost $ exhaust attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StickToThePlan3 a) = do
+    controllerGets a (map AsIfInHand $ assetCardsUnderneath a)
+    modifyEach a (assetCardsUnderneath a) [AdditionalCost $ exhaust a]
 
 instance HasAbilities StickToThePlan3 where
   getAbilities (StickToThePlan3 attrs) =

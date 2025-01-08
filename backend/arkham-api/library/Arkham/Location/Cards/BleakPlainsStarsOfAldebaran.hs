@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.BleakPlainsStarsOfAldebaran (
-  bleakPlainsStarsOfAldebaran,
-  BleakPlainsStarsOfAldebaran (..),
-) where
+module Arkham.Location.Cards.BleakPlainsStarsOfAldebaran (bleakPlainsStarsOfAldebaran) where
 
-import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -24,14 +20,12 @@ bleakPlainsStarsOfAldebaran =
     . (revealedL .~ True)
 
 instance HasModifiersFor BleakPlainsStarsOfAldebaran where
-  getModifiersFor (InvestigatorTarget iid) (BleakPlainsStarsOfAldebaran a) = do
-    here <- iid `isAt` a
-    toModifiers a [CannotPlay IsAlly | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BleakPlainsStarsOfAldebaran a) = do
+    modifySelect a (investigatorAt a) [CannotPlay IsAlly]
 
 instance RunMessage BleakPlainsStarsOfAldebaran where
-  runMessage msg (BleakPlainsStarsOfAldebaran attrs) = case msg of
-    Flip iid _ target | isTarget attrs target -> do
+  runMessage msg (BleakPlainsStarsOfAldebaran attrs) = runQueueT $ case msg of
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.starsOfAldebaran
       pure . BleakPlainsStarsOfAldebaran $ attrs & canBeFlippedL .~ False
-    _ -> BleakPlainsStarsOfAldebaran <$> runMessage msg attrs
+    _ -> BleakPlainsStarsOfAldebaran <$> liftRunMessage msg attrs

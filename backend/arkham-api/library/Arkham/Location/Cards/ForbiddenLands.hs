@@ -1,11 +1,13 @@
-module Arkham.Location.Cards.ForbiddenLands (forbiddenLands, ForbiddenLands (..)) where
+module Arkham.Location.Cards.ForbiddenLands (forbiddenLands) where
 
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Message (pushWhen)
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (metaL)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype Meta = Meta {skillTestCount :: Int}
@@ -18,41 +20,31 @@ newtype ForbiddenLands = ForbiddenLands LocationAttrs
 
 forbiddenLands :: LocationCard ForbiddenLands
 forbiddenLands =
-  locationWith
-    ForbiddenLands
-    Cards.forbiddenLands
-    6
-    (Static 0)
+  locationWith ForbiddenLands Cards.forbiddenLands 6 (Static 0)
     $ (canBeFlippedL .~ True)
     . (metaL .~ toJSON (Meta 0))
 
 instance HasAbilities ForbiddenLands where
   getAbilities (ForbiddenLands attrs) =
-    withRevealedAbilities
-      attrs
-      [ skillTestAbility
-          $ restrictedAbility
-            attrs
-            1
-            (Here <> exists (LocationWithId (toId attrs) <> LocationCanBeFlipped))
-            actionAbility
-      ]
+    extendRevealed1 attrs
+      $ skillTestAbility
+      $ restricted attrs 1 (Here <> exists (be attrs <> LocationCanBeFlipped)) actionAbility
 
 instance RunMessage ForbiddenLands where
-  runMessage msg l@(ForbiddenLands attrs) = case msg of
+  runMessage msg l@(ForbiddenLands attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push $ beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 1)
+      beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 1)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       case skillTestCount (toResult attrs.meta) of
         0 -> do
           sid <- genId
-          push $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
+          beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 1)
         1 -> do
           sid <- genId
-          push $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+          beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 2)
         2 -> do
           canFlip <- toId attrs <=~> LocationCanBeFlipped
@@ -60,9 +52,9 @@ instance RunMessage ForbiddenLands where
           pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 0)
         _ -> error "invalid count"
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ assignDamage iid (attrs.ability 1) 1
+      assignDamage iid (attrs.ability 1) 1
       pure $ ForbiddenLands $ attrs & metaL .~ toJSON (Meta 0)
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.aShrineToTheGods
       pure . ForbiddenLands $ attrs & canBeFlippedL .~ False
-    _ -> ForbiddenLands <$> runMessage msg attrs
+    _ -> ForbiddenLands <$> liftRunMessage msg attrs

@@ -17,11 +17,11 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Investigate qualified as Investigate
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Movement
 import Arkham.SkillType
 import Arkham.Token
@@ -44,32 +44,41 @@ hyperphysicalShotcasterTheoreticalDevice =
     discardWhenNoUses
 
 instance HasModifiersFor HyperphysicalShotcasterTheoreticalDevice where
-  getModifiersFor target (HyperphysicalShotcasterTheoreticalDevice (With attrs _)) | attrs `is` target = do
-    let linked = attrs `hasCustomization` AethericLink
-    toModifiers attrs [AdditionalStartingUses 2 | linked]
-  getModifiersFor (AbilityTarget _iid ab) (HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) | isSource attrs ab.source && ab.index == 1 = do
-    case manifest meta of
+  getModifiersFor (HyperphysicalShotcasterTheoreticalDevice (With attrs meta)) = do
+    self <-
+      if attrs `hasCustomization` AethericLink
+        then modifySelf attrs [AdditionalStartingUses 2]
+        else pure mempty
+
+    ability <- case manifest meta of
       Just Translocator -> do
-        toModifiers
-          attrs
-          [ CanModify
-              $ EnemyEvadeActionCriteria
-              $ CriteriaOverride
-              $ EnemyCriteria
-              $ ThisEnemy
-              $ oneOf
-                [ EnemyAt (ConnectedFrom YourLocation)
-                    <> NonEliteEnemy
-                    <> EnemyWithEvade
-                    <> EnemyCanEnter YourLocation
-                , EnemyAt (CanEnterLocation You)
-                    <> oneOf [not_ (EnemyIsEngagedWith Anyone), MassiveEnemy]
-                    <> EnemyWithEvade
-                , EnemyAt YourLocation <> EnemyIsEngagedWith You <> EnemyWithEvade
-                ]
-          ]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        case attrs.controller of
+          Nothing -> pure mempty
+          Just iid ->
+            selectOne (AbilityIs (toSource attrs) 1) >>= \case
+              Nothing -> pure mempty
+              Just ab ->
+                modified_
+                  attrs
+                  (AbilityTarget iid ab)
+                  [ CanModify
+                      $ EnemyEvadeActionCriteria
+                      $ CriteriaOverride
+                      $ EnemyCriteria
+                      $ ThisEnemy
+                      $ oneOf
+                        [ EnemyAt (ConnectedFrom YourLocation)
+                            <> NonEliteEnemy
+                            <> EnemyWithEvade
+                            <> EnemyCanEnter YourLocation
+                        , EnemyAt (CanEnterLocation You)
+                            <> oneOf [not_ (EnemyIsEngagedWith Anyone), MassiveEnemy]
+                            <> EnemyWithEvade
+                        , EnemyAt YourLocation <> EnemyIsEngagedWith You <> EnemyWithEvade
+                        ]
+                  ]
+      _ -> pure mempty
+    pure $ self <> ability
 
 instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
   getAbilities (HyperphysicalShotcasterTheoreticalDevice (With x meta)) =

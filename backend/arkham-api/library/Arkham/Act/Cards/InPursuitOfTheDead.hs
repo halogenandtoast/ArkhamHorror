@@ -1,70 +1,56 @@
-module Arkham.Act.Cards.InPursuitOfTheDead (
-  InPursuitOfTheDead (..),
-  inPursuitOfTheDead,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.InPursuitOfTheDead (inPursuitOfTheDead) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheCircleUndone.Helpers
-import Arkham.Classes
+import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getSetAsideCardsMatching)
+import Arkham.Helpers.Modifiers (modifySelect, ModifierType(..))
 import Arkham.Matcher
 import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- Errata: The text on this card should read: "Locations cannot be flipped to their spectral side"
 --
 instance HasModifiersFor InPursuitOfTheDead where
-  getModifiersFor (LocationTarget lid) (InPursuitOfTheDead attrs) = do
-    notSpectral <- lid <=~> NotLocation (LocationWithTrait Spectral)
-    toModifiers attrs [CannotBeFlipped | notSpectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InPursuitOfTheDead attrs) = do
+    modifySelect attrs (not_ $ LocationWithTrait Spectral) [CannotBeFlipped]
 
 inPursuitOfTheDead :: ActCard InPursuitOfTheDead
-inPursuitOfTheDead =
-  act (1, A) InPursuitOfTheDead Cards.inPursuitOfTheDead (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+inPursuitOfTheDead = act (1, A) InPursuitOfTheDead Cards.inPursuitOfTheDead (groupClueCost (PerPlayer 3))
 
 instance RunMessage InPursuitOfTheDead where
-  runMessage msg a@(InPursuitOfTheDead attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      heretics <- getSetAsideCardsMatching $ CardWithTitle "Heretic"
-      case heretics of
+  runMessage msg a@(InPursuitOfTheDead attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      getSetAsideCardsMatching (CardWithTitle "Heretic") >>= \case
         [heretic1, heretic2, heretic3, heretic4] -> do
           theGallows <- getJustLocationByName "The Gallows"
           hereticsGraves <- getJustLocationByName "Heretics' Graves"
           chapelAttic <- getJustLocationByName "Chapel Attic"
           chapelCrypt <- getJustLocationByName "Chapel Crypt"
 
-          createHeretic1 <- createEnemyAt_ heretic1 theGallows Nothing
-          createHeretic2 <- createEnemyAt_ heretic2 hereticsGraves Nothing
-          createHeretic3 <- createEnemyAt_ heretic3 chapelAttic Nothing
-          createHeretic4 <- createEnemyAt_ heretic4 chapelCrypt Nothing
-          onePerPlayer <- getPlayerCountValue (PerPlayer 1)
-          twoPerPlayer <- getPlayerCountValue (PerPlayer 2)
+          mementosDiscovered <- getMementosDiscoveredCount
+          when (mementosDiscovered >= 3) $ send "\"You understand the tragic lyrics behind the witch's song\""
+
+          createEnemyAt_ heretic1 theGallows
+          createEnemyAt_ heretic2 hereticsGraves
+          createEnemyAt_ heretic3 chapelAttic
+          createEnemyAt_ heretic4 chapelCrypt
 
           let hereticLocations = [theGallows, hereticsGraves, chapelAttic, chapelCrypt]
+          for_ hereticLocations \lid -> placeClues attrs lid =<< perPlayer 2
 
-          otherLocations <-
-            select
-              $ locationNotOneOf hereticLocations
+          selectEach (locationNotOneOf hereticLocations) \lid -> placeClues attrs lid =<< perPlayer 1
 
-          mementosDiscovered <- getMementosDiscoveredCount
-
-          when (mementosDiscovered >= 3) $ send "\"You understand the tragic lyrics behind the witch's song\""
+          investigators <- getInvestigators
           spectralWebs <- getSetAsideCardsMatching $ cardIs Assets.spectralWeb
-          investigators <- getInvestigatorIds
+          zipWithM_ takeControlOfSetAsideAsset investigators spectralWebs
 
-          pushAll
-            $ [createHeretic1, createHeretic2, createHeretic3, createHeretic4]
-            <> [PlaceClues (toSource attrs) (toTarget lid) twoPerPlayer | lid <- hereticLocations]
-            <> [PlaceClues (toSource attrs) (toTarget lid) onePerPlayer | lid <- otherLocations]
-            <> zipWith TakeControlOfSetAsideAsset investigators spectralWebs
-            <> [advanceActDeck attrs]
+          advanceActDeck attrs
         _ -> error "Invalid number of heretics"
       pure a
-    _ -> InPursuitOfTheDead <$> runMessage msg attrs
+    _ -> InPursuitOfTheDead <$> liftRunMessage msg attrs

@@ -3,20 +3,18 @@ module Arkham.Asset.Assets.PeterSylvestre (PeterSylvestre (..), peterSylvestre) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype PeterSylvestre = PeterSylvestre AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 peterSylvestre :: AssetCard PeterSylvestre
 peterSylvestre = ally PeterSylvestre Cards.peterSylvestre (1, 2)
 
 instance HasModifiersFor PeterSylvestre where
-  getModifiersFor target (PeterSylvestre a) = modified a $ case target of
-    InvestigatorTarget iid | iid `controls` a -> [SkillModifier #agility 1]
-    _ -> []
+  getModifiersFor (PeterSylvestre a) = controllerGets a [SkillModifier #agility 1]
 
 instance HasAbilities PeterSylvestre where
   getAbilities (PeterSylvestre x) =

@@ -59,7 +59,6 @@ import Arkham.Matcher (
   investigatorAt,
   noModifier,
  )
-import Arkham.Matcher.Base
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
 import Arkham.Placement
@@ -91,6 +90,17 @@ extendRevealed = withRevealedAbilities
 
 extendRevealed1 :: LocationAttrs -> Ability -> [Ability]
 extendRevealed1 attrs ability = extendRevealed attrs [ability]
+
+getModifiedRevealClueCount :: HasGame m => LocationAttrs -> m Int
+getModifiedRevealClueCount attrs = do
+  mods <- getModifiers attrs
+  getModifiedRevealClueCountWithMods mods attrs
+
+getModifiedRevealClueCountWithMods :: HasGame m => [ModifierType] -> LocationAttrs -> m Int
+getModifiedRevealClueCountWithMods mods attrs =
+  if CannotPlaceClues `elem` mods
+    then pure 0
+    else getPlayerCountValue (locationRevealClues attrs)
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of
@@ -297,10 +307,14 @@ instance RunMessage LocationAttrs where
       if locationRevealed
         then do
           modifiers' <- getModifiers (toTarget a)
-          locationClueCount <-
+          locationClueCount' <-
             if CannotPlaceClues `elem` modifiers'
               then pure 0
               else getPlayerCountValue locationRevealClues
+          let locationClueCount =
+                if ReduceStartingCluesByHalf `elem` modifiers'
+                  then locationClueCount' `div` 2
+                  else locationClueCount'
           let currentClues = countTokens Clue locationTokens
 
           pushAll
@@ -310,16 +324,13 @@ instance RunMessage LocationAttrs where
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
         else pure a
     RevealLocation miid lid | lid == locationId && not locationRevealed -> do
-      mods <- getModifiers (toTarget a)
-      let maxFloodLevel =
-            if CannotBeFlooded `elem` mods
-              then Unflooded
-              else if CannotBeFullyFlooded `elem` mods then PartiallyFlooded else FullyFlooded
-      locationClueCount <-
-        if CannotPlaceClues `elem` mods
-          then pure 0
-          else getPlayerCountValue locationRevealClues
-      revealer <- maybe getLeadInvestigatorId pure miid
+      mods <- getModifiers a
+      let maxFloodLevel
+            | CannotBeFlooded `elem` mods = Unflooded
+            | CannotBeFullyFlooded `elem` mods = PartiallyFlooded
+            | otherwise = FullyFlooded
+      locationClueCount <- getModifiedRevealClueCountWithMods mods a
+      revealer <- maybe getLead pure miid
       whenWindowMsg <-
         checkWindows
           [mkWindow Timing.When (Window.RevealLocation revealer lid)]
@@ -428,6 +439,7 @@ instance RunMessage LocationAttrs where
       let
         triggerSource = case source of
           ProxySource _ s -> s
+          IndexedSource _ s -> s
           _ -> a.ability 101
       sid <- genId
       pushM $ mkInvestigateLocation sid iid triggerSource (toId a)
@@ -543,8 +555,8 @@ enemyAtLocation eid attrs = elem eid <$> select (enemyAt $ toId attrs)
 locationEnemiesWithTrait :: HasGame m => LocationAttrs -> Trait -> m [EnemyId]
 locationEnemiesWithTrait attrs trait = select $ enemyAt (toId attrs) <> EnemyWithTrait trait
 
-instance Be LocationAttrs LocationMatcher where
-  be = LocationWithId . toId
+veiled1 :: LocationAttrs -> Ability -> [Ability]
+veiled1 attrs ability = veiled attrs [ability]
 
 veiled :: LocationAttrs -> [Ability] -> [Ability]
 veiled attrs abilities =

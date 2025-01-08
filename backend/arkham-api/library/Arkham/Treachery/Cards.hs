@@ -11,7 +11,7 @@ import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
-import Arkham.Trait hiding (Dreamlands)
+import Arkham.Trait hiding (Dreamlands, Expedition)
 import Arkham.Trait qualified as Trait
 
 baseTreachery
@@ -171,9 +171,11 @@ allEncounterTreacheryCards =
       [ aTearInTime
       , aWorldInDarkness
       , abandonedByTheGods
+      , abandonedToMadness
       , abduction
       , acridMiasma
       , alteredBeast
+      , anamnesis
       , ancestralFear
       , ancientEvils
       , antarcticWind
@@ -184,6 +186,7 @@ allEncounterTreacheryCards =
       , arousingSuspicions
       , arrowsFromTheTrees
       , attractingAttention
+      , avalanche
       , baneOfTheLiving
       , bathophobia
       , beastOfTheBayou
@@ -250,6 +253,7 @@ allEncounterTreacheryCards =
       , entombed
       , ephemeralExhibits
       , esotericRitual
+      , evanescentMist
       , evilPast
       , expulsion
       , extradimensionalVisions
@@ -271,10 +275,12 @@ allEncounterTreacheryCards =
       , giftOfMadnessPity
       , ghostlyPresence
       , glimpseOfTheUnderworld
+      , glimpseTheUnspeakable
       , glowingEyes
       , graspingHands
       , graveLight
       , graveLightSpectral
+      , hangingOnTheEdge
       , harvestedBrain
       , heraldsOfTheDeep
       , hideousLullaby
@@ -283,6 +289,7 @@ allEncounterTreacheryCards =
       , huntedByCorsairs
       , huntedDown
       , huntingShadow
+      , hypothermia
       , iCantSee
       , iceShaft
       , illOmen
@@ -337,6 +344,7 @@ allEncounterTreacheryCards =
       , outbreak
       , overgrowth
       , passageIntoTheVeil
+      , phantasmagoria
       , pitfall
       , poisonousSpores
       , polarMirage
@@ -360,6 +368,7 @@ allEncounterTreacheryCards =
       , restlessJourneyLies
       , ripplesOnTheSurface
       , riptide
+      , riseOfTheElderThings
       , risingTides
       , ritesHowled
       , rottingRemains
@@ -380,6 +389,7 @@ allEncounterTreacheryCards =
       , slitheringBehindYou
       , snakeBite
       , snakescourge
+      , snowfall
       , somethingInTheDrinks
       , somniphobia
       , songOfTheMagahBird
@@ -405,6 +415,7 @@ allEncounterTreacheryCards =
       , theEndIsNigh
       , theFinalAct
       , theKingsEdict
+      , theMadnessWithin
       , thePaleMaskBeckons
       , thePitBelow
       , theSecretMustBeKept
@@ -2438,6 +2449,55 @@ zeroVisibility =
     { cdCardTraits = setFromList [Hazard]
     }
 
+phantasmagoria :: CardDef
+phantasmagoria =
+  (treachery "08548" "Phantasmagoria" SeepingNightmares 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+evanescentMist :: CardDef
+evanescentMist =
+  (treachery "08585" "Evanescent Mist" FatalMirage 3)
+    { cdCardTraits = setFromList [Curse, Hazard]
+    }
+
+anamnesis :: CardDef
+anamnesis =
+  (treachery "08586" "Anamnesis" FatalMirage 3)
+    { cdCardTraits = setFromList [Terror]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+snowfall :: CardDef
+snowfall =
+  (treachery "08610" "Snowfall" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+avalanche :: CardDef
+avalanche =
+  (treachery "08611" "Avalance" ToTheForbiddenPeaks 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+hangingOnTheEdge :: CardDef
+hangingOnTheEdge =
+  (treachery "08612" "Hanging on the Edge" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+hypothermia :: CardDef
+hypothermia =
+  (treachery "08613" "Hypothermia" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+theMadnessWithin :: CardDef
+theMadnessWithin =
+  (treachery "08688" "The Madness Within" AgentsOfTheUnknown 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
 kindredMist :: CardDef
 kindredMist =
   (treachery "08691" "Kindred Mist" CreaturesInTheIce 2)
@@ -2462,6 +2522,12 @@ polarVortex =
     { cdCardTraits = setFromList [Hazard]
     }
 
+riseOfTheElderThings :: CardDef
+riseOfTheElderThings =
+  (treachery "08697" "Rise of the Elder Things" ElderThings 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
 iceShaft :: CardDef
 iceShaft =
   (treachery "08698" "Ice Shaft" HazardsOfAntarctica 3)
@@ -2472,6 +2538,44 @@ throughTheIce :: CardDef
 throughTheIce =
   (treachery "08699" "Through the Ice" HazardsOfAntarctica 2)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+abandonedToMadness :: CardDef
+abandonedToMadness =
+  (treachery "08702" "Abandoned to Madness" LeftBehind 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+blasphemousVisions :: CardDef
+blasphemousVisions =
+  (treachery "08703" "Blasphemous Visions" NamelessHorrors 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+glimpseTheUnspeakable :: CardDef
+glimpseTheUnspeakable =
+  peril
+    $ (treachery "08704" "Glimpse the Unspeakable" NamelessHorrors 2)
+      { cdCardTraits = setFromList [Terror]
+      }
+
+nightmarishVapors :: CardDef
+nightmarishVapors =
+  peril
+    $ (treachery "08705" "Nightmarish Vapors" NamelessHorrors 2)
+      { cdCardTraits = setFromList [Terror]
+      }
+
+miasmaticTorment :: CardDef
+miasmaticTorment =
+  (treachery "08706" "Miasmatic Torment" Miasma 2)
+    { cdCardTraits = setFromList [Curse]
+    }
+
+nebulousMiasma :: CardDef
+nebulousMiasma =
+  (treachery "08707" "Nebulous Miasma" Miasma 2)
+    { cdCardTraits = setFromList [Curse, Hazard]
     }
 
 polarMirage :: CardDef

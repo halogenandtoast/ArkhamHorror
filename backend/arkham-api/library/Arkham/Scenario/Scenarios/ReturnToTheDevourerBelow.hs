@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow where
 
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -15,9 +15,8 @@ import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Helpers
-import Arkham.Scenario.Runner hiding (placeLocationCard, story)
+import Arkham.Scenario.Import.Lifted hiding (placeLocationCard, story)
 import Arkham.Scenario.Scenarios.TheDevourerBelow
-import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -79,8 +78,7 @@ instance RunMessage ReturnToTheDevourerBelow where
            ]
 
       cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
-      let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
-      pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
+      placeDoomOnAgenda $ (length cultistsWhoGotAway + 1) `div` 2
 
       whenHasRecord ItIsPastMidnight
         $ pushAll

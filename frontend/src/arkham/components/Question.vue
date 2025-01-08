@@ -2,9 +2,9 @@
 import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
-import { computed, inject, ref, watch, onMounted } from 'vue';
-import { imgsrc, replaceIcons } from '@/arkham/helpers';
-import { AmountChoice, QuestionType } from '@/arkham/types/Question';
+import { computed, inject, ref, watch, onMounted, h } from 'vue';
+import { imgsrc, formatContent } from '@/arkham/helpers';
+import { AmountChoice, QuestionType, FlavorTextEntry, FlavorTextModifier } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
@@ -13,6 +13,7 @@ import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
 import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 export interface Props {
   game: Game
@@ -26,6 +27,37 @@ const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 
+function formatEntry(entry: FlavorTextEntry): any {
+  console.log(entry)
+  switch (entry.tag) {
+    //case 'BasicEntry': return h('div', formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text))
+    // case 'I18nEntry': return h('div', formatContent(t(entry.key, entry.variables)))
+    // case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(entry.entry)])
+    // case 'CompositeEntry': return h('div', entry.entries.map(formatEntry))
+    default: return h('div', "Unknown entry type")
+  }
+}
+
+function modifierToStyle(modifier: FlavorTextModifier): string {
+  switch (modifier) {
+    case 'BlueEntry': return 'blue'
+    case 'RightAligned': return 'right'
+    case 'PlainText': return 'basic'
+    case 'InvalidEntry': return 'invalid'
+    case 'ValidEntry': return 'valid'
+    default: throw new Error("Unknown modifier")
+  }
+}
+
+function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
+  switch (entry.tag) {
+    case 'BasicEntry': return {}
+    case 'I18nEntry': return {}
+    case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
+    case 'CompositeEntry': return {}
+    default: return {}
+  }
+}
 
 function zoneToLabel(s: string) {
   switch(s) {
@@ -73,14 +105,14 @@ const showChoices = computed(() => {
 
 const label = function(body: string) {
   if (body.startsWith("$")) {
-    return handleI18n(body.slice(1), t)
+    return formatContent(handleI18n(body.slice(1), t))
   }
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+  return formatContent(body)
 }
 
 const paymentAmountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_PAYMENT_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return formatContent(question.value.label)
   }
 
   return null
@@ -88,7 +120,7 @@ const paymentAmountsLabel = computed(() => {
 
 const amountsLabel = computed(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
-    return replaceIcons(question.value.label)
+    return formatContent(question.value.label)
   }
 
   if (question.value?.tag === QuestionType.QUESTION_LABEL && question.value?.question?.tag === QuestionType.CHOOSE_AMOUNTS) {
@@ -363,10 +395,7 @@ const cardPiles = computed(() => {
   </div>
 
   <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-    <p
-      v-for="(paragraph, index) in question.flavorText.body"
-      :key="index" v-html="label(paragraph)">
-    </p>
+    <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
   </div>
 
   <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
@@ -452,7 +481,7 @@ const cardPiles = computed(() => {
           <legend v-html="amountsLabel"></legend>
           <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
             <div v-if="paymentChoice.maxBound !== 0">
-              <label :for="`choice-${paymentChoice.choiceId}`" v-html="replaceIcons(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+              <label :for="`choice-${paymentChoice.choiceId}`" v-html="formatContent(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
             </div>
           </template>
           <button :disabled="unmetAmountRequirements">Submit</button>
@@ -595,7 +624,7 @@ section {
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
   padding: 10px;
-  margin: 10px 10px 0 10px;
+  margin: 10px;
   border-radius: 5px;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
@@ -605,72 +634,52 @@ section {
   letter-spacing: .03em;
   max-height: 70vh;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
-  :deep(b) {
-    font-family: none;
+  &:has(.resolution) {
+    background: #BAA898;
   }
-
-  :deep(.blue) {
-    border: 3px solid #3a4a69;
-    border-radius: 55px;
-    background-color: color-mix(in srgb, #3a4a69, transparent 90%);
-    box-shadow: inset 0 0 15px color-mix(in srgb, #3a4a69, transparent 10%), 1px 1px 3px color-mix(in srgb, #3a4a69, transparent 30%);
-    padding: 10px;
-
-    p:first-child {
-      margin-left: 35px;
+  &:has(.checkpoint header h1), &:has(.interlude header h1) {
+    padding-top: 2em;
+  }
+  &:has(.checkpoint), &:has(.interlude) {
+    background: #AFA9A9;
+    box-shadow: unset;
+    overflow: hidden;
+    &::after {
+      border: 20px solid #D4CCC3;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      z-index: 1;
     }
-  }
-
-}
-
-.intro-text :deep(ul) {
-  list-style-type: "\0059";
-  li {
-    padding-left: 10px;
-    margin-left: 10px;
-  }
-
-  li::marker {
-    font-family: "ArkhamSlim";
-    color: var(--spooky-green-dark);
-  }
-}
-
-.intro-text :deep(strong) {
-  font-weight: bolder;
-  font-style: normal;
-}
-
-.intro-text :deep(h1) {
-  font-family: "Teutonic";
-  font-weight: 500;
-  color: #38615F;
-  margin: 0 0 10px 0;
-  padding-bottom: 2px;
-  border-bottom: 1px solid #38615f;
-}
-
-.intro-text :deep(header) {
-  font-family: "Teutonic";
-  font-weight: 500;
-  font-size: 1.5em;
-  color: #222;
-  margin: 0 0 10px 0;
-  padding-bottom: 2px;
-}
-
-.intro-text :deep(h1::after) {
-  display: block;
-  content: " ";
-  margin-top: 2px;
-  border-bottom: 1px solid #38615f;
-}
-
-.intro-text :deep(p) {
-  margin: 10px;
-  &:deep(p) {
-    margin: 10px;
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+    padding: 50px;
+    position: relative;
+    &::before {
+      z-index: 2;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image: url(/img/arkham/checkpoint_fleur.png) 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
+    }
   }
 }
 
@@ -1009,6 +1018,46 @@ h2 {
   justify-content: center;
   .portrait {
     min-width: fit-content;
+  }
+}
+
+.intro-text {
+  &:has(.resolution) {
+    background-color: #BAA597;
+    box-shadow: unset;
+    overflow: hidden;
+    &::after {
+      border: 20px solid #D4CCC3;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      z-index: 1;
+    }
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+    padding: 50px;
+    position: relative;
+    &::before {
+      z-index: 2;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image: url(/img/arkham/resolution_fleur.png) 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
+    }
   }
 }
 

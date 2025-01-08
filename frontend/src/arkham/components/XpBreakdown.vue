@@ -79,10 +79,10 @@ function format(s: string) {
 
 <template>
   <div class="breakdown column box">
-    <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount" :class="{ 'amount--negative': scenarioTotal < 0 }">{{scenarioTotal}} XP</span></header>
+    <header class="breakdown-header"><h2 class="title">{{name}}</h2><span class="amount" :class="{ 'amount--negative': scenarioTotal < 0 }">{{ $t('upgrade.xp', {total: scenarioTotal}) }}</span></header>
     <div class="sections">
       <section class="box column group" v-if="totalVictoryDisplay > 0">
-        <header class="entry-header"><h3>Victory Display</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{totalVictoryDisplay}} XP</span></header>
+        <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
         <div class="column">
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="box entry">
             <span>{{entry.details.sourceName}}</span>
@@ -91,7 +91,7 @@ function format(s: string) {
         </div>
       </section>
       <section class="box column group" v-for="([name, entries, total]) in perInvestigator" :key="name">
-        <header class="entry-header"><h3>{{name}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{total}} XP</span></header>
+        <header class="entry-header"><h3>{{name}}</h3><span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total: total}) }}</span></header>
         <div v-for="(entry, idx) in entries" :key="idx" class="box entry">
           <span v-html="format(entry.details.sourceName)"></span> 
           <span v-if="entry.tag !== 'InvestigatorLoseXp'" class="amount">+{{entry.details.amount}}</span>

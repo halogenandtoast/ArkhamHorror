@@ -26,20 +26,16 @@ normanWithers =
     $ Stats {health = 6, sanity = 8, willpower = 4, intellect = 5, combat = 2, agility = 1}
 
 instance HasModifiersFor NormanWithers where
-  getModifiersFor target (NormanWithers (a `With` metadata)) | isTarget a target = do
+  getModifiersFor (NormanWithers (a `With` metadata)) = do
     canReveal <- withoutModifier a CannotRevealCards
-    toModifiers a
-      $ guard canReveal
-      *> ( TopCardOfDeckIsRevealed
-            : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
-         )
-  getModifiersFor (CardIdTarget cid) (NormanWithers (a `With` _)) =
-    case unDeck (investigatorDeck a) of
-      x : _ | toCardId x == cid -> do
-        canReveal <- withoutModifier a CannotRevealCards
-        toModifiers a [ReduceCostOf (CardWithId cid) 1 | canReveal]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+    self <-
+      modifySelfWhen a canReveal
+        $ TopCardOfDeckIsRevealed
+        : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+    card <- case unDeck (investigatorDeck a) of
+      x : _ -> modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
+      _ -> pure mempty
+    pure $ self <> card
 
 instance HasAbilities NormanWithers where
   getAbilities (NormanWithers (a `With` _)) =

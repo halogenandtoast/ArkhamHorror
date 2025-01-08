@@ -8,22 +8,21 @@ import Arkham.Modifier qualified as Mod
 import Arkham.Prelude
 
 newtype Nightriders = Nightriders EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 nightriders :: EnemyCard Nightriders
 nightriders = enemy Nightriders Cards.nightriders (2, Static 2, 5) (0, 1)
 
 instance HasModifiersFor Nightriders where
-  getModifiersFor target (Nightriders a) | a `is` target = do
+  getModifiersFor (Nightriders a) = do
     isHost <- toId a <=~> IsHost
     noSwarm <- selectNone $ SwarmOf (toId a)
-    toModifiers a $ [Mod.EnemyEvade (-5) | isHost && noSwarm]
-  getModifiersFor _ _ = pure []
+    modifySelfWhen a (isHost && noSwarm) [Mod.EnemyEvade (-5)]
 
 instance HasAbilities Nightriders where
   getAbilities (Nightriders a) =
-    extend a [mkAbility a 1 $ forced $ EnemyEvaded #after You AnyEnemy]
+    extend a [mkAbility a 1 $ forced $ EnemyEvaded #after You (be a)]
 
 instance RunMessage Nightriders where
   runMessage msg e@(Nightriders attrs) = case msg of

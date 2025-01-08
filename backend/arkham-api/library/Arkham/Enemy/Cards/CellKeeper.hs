@@ -48,7 +48,7 @@ instance HasAbilities CellKeeper where
 instance RunMessage CellKeeper where
   runMessage msg e@(CellKeeper attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- genIdKey
+      mKey <- getRandomKey
       pushAll
         $ PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Doom 2
         : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]

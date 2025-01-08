@@ -146,6 +146,22 @@ controlled
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 controlled = controlledAbility
 
+storyControlled
+  :: (HasCardCode a, Sourceable a, Be a AssetMatcher) => a -> Int -> Criterion -> AbilityType -> Ability
+storyControlled entity idx restriction =
+  restrictedAbility
+    entity
+    idx
+    (oneOf [ControlsThis, thisExists entity UncontrolledAsset <> OnSameLocation] <> restriction)
+
+storyControlled_
+  :: (HasCardCode a, Sourceable a, Be a AssetMatcher) => a -> Int -> AbilityType -> Ability
+storyControlled_ entity idx =
+  restrictedAbility
+    entity
+    idx
+    (oneOf [ControlsThis, thisExists entity UncontrolledAsset <> OnSameLocation])
+
 fastAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Cost -> Criterion -> Ability
 fastAbility entity idx cost criteria =
   (mkAbility entity idx (FastAbility cost))

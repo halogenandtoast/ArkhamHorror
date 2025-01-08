@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyDoom))
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -16,11 +16,9 @@ initiateOfDagon :: EnemyCard InitiateOfDagon
 initiateOfDagon = enemyWith InitiateOfDagon Cards.initiateOfDagon (2, Static 1, 2) (0, 1) spawnAtEmptyLocation
 
 instance HasModifiersFor InitiateOfDagon where
-  getModifiersFor target (InitiateOfDagon a) | isTarget a target = do
-    maybeModified a do
-      liftGuardM $ fieldMap EnemyDoom (== 0) a.id
-      pure [EnemyFight 2, EnemyEvade 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InitiateOfDagon a) = do
+    noDoom <- fieldMap EnemyDoom (== 0) a.id
+    modifySelfWhen a noDoom [EnemyFight 2, EnemyEvade 2]
 
 instance HasAbilities InitiateOfDagon where
   getAbilities (InitiateOfDagon a) =

@@ -7,12 +7,14 @@ import Arkham.Classes.GameLogger
 import Arkham.Id
 import Arkham.Prelude
 import Data.Aeson.TH
+import Data.Function (on)
 import GHC.OverloadedLabels
 import GHC.Records
 
+
 newtype ChaosTokenId = ChaosTokenId {getChaosTokenId :: Int}
   deriving stock Data
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord, Random)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Ord)
 
 data ChaosTokenModifier
   = AutoFailModifier
@@ -24,18 +26,27 @@ data ChaosTokenModifier
 data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
   deriving stock (Show, Eq, Ord, Data)
 
+createChaosToken :: IdGen m => ChaosTokenFace -> m ChaosToken
+createChaosToken face = do
+  tokenId <- genId
+  pure $ ChaosToken tokenId face Nothing False
+
 data ChaosToken = ChaosToken
   { chaosTokenId :: ChaosTokenId
   , chaosTokenFace :: ChaosTokenFace
   , chaosTokenRevealedBy :: Maybe InvestigatorId
+  , chaosTokenCancelled :: Bool
   }
   deriving stock (Show, Data)
 
+revealedByL :: Lens' ChaosToken (Maybe InvestigatorId)
+revealedByL = lens chaosTokenRevealedBy \m x -> m {chaosTokenRevealedBy = x}
+
 instance Ord ChaosToken where
-  compare a b = compare (chaosTokenId a) (chaosTokenId b)
+  compare = compare `on` chaosTokenId
 
 instance Eq ChaosToken where
-  a == b = chaosTokenId a == chaosTokenId b
+  (==) = (==) `on` chaosTokenId
 
 instance ToGameLoggerFormat ChaosToken where
   format c = format c.face
@@ -73,6 +84,9 @@ instance HasField "face" ChaosToken ChaosTokenFace where
 
 instance HasField "revealedBy" ChaosToken (Maybe InvestigatorId) where
   getField = chaosTokenRevealedBy
+
+instance HasField "cancelled" ChaosToken Bool where
+  getField = chaosTokenCancelled
 
 data ChaosTokenFace
   = PlusOne
@@ -168,72 +182,28 @@ isNumberChaosToken = \case
   MinusSix -> True
   MinusSeven -> True
   MinusEight -> True
-  Skull -> False
-  Cultist -> False
-  Tablet -> False
-  ElderThing -> False
-  AutoFail -> False
-  ElderSign -> False
-  CurseToken -> False
-  BlessToken -> False
-  FrostToken -> False
+  _ -> False
 
 isEvenChaosToken :: ChaosTokenFace -> Bool
 isEvenChaosToken = \case
-  PlusOne -> False
   Zero -> True
-  MinusOne -> False
   MinusTwo -> True
-  MinusThree -> False
   MinusFour -> True
-  MinusFive -> False
   MinusSix -> True
-  MinusSeven -> False
   MinusEight -> True
-  Skull -> False
-  Cultist -> False
-  Tablet -> False
-  ElderThing -> False
-  AutoFail -> False
-  ElderSign -> False
-  CurseToken -> False
-  BlessToken -> False
-  FrostToken -> False
+  _ -> False
 
 isOddChaosToken :: ChaosTokenFace -> Bool
 isOddChaosToken = \case
   PlusOne -> True
-  Zero -> False
   MinusOne -> True
-  MinusTwo -> False
   MinusThree -> True
-  MinusFour -> False
   MinusFive -> True
-  MinusSix -> False
   MinusSeven -> True
-  MinusEight -> False
-  Skull -> False
-  Cultist -> False
-  Tablet -> False
-  ElderThing -> False
-  AutoFail -> False
-  ElderSign -> False
-  CurseToken -> False
-  BlessToken -> False
-  FrostToken -> False
+  _ -> False
 
 isSymbolChaosToken :: ChaosTokenFace -> Bool
 isSymbolChaosToken = \case
-  PlusOne -> False
-  Zero -> False
-  MinusOne -> False
-  MinusTwo -> False
-  MinusThree -> False
-  MinusFour -> False
-  MinusFive -> False
-  MinusSix -> False
-  MinusSeven -> False
-  MinusEight -> False
   Skull -> True
   Cultist -> True
   Tablet -> True
@@ -243,28 +213,13 @@ isSymbolChaosToken = \case
   CurseToken -> True
   BlessToken -> True
   FrostToken -> True
+  _ -> False
 
 isNonNegativeChaosToken :: ChaosTokenFace -> Bool
 isNonNegativeChaosToken = \case
   PlusOne -> True
   Zero -> True
-  MinusOne -> False
-  MinusTwo -> False
-  MinusThree -> False
-  MinusFour -> False
-  MinusFive -> False
-  MinusSix -> False
-  MinusSeven -> False
-  MinusEight -> False
-  Skull -> False
-  Cultist -> False
-  Tablet -> False
-  ElderThing -> False
-  AutoFail -> False
-  ElderSign -> False
-  BlessToken -> False
-  CurseToken -> False
-  FrostToken -> False
+  _ -> False
 
 isNegativeChaosToken :: ChaosTokenFace -> Bool
 isNegativeChaosToken = not . isNonNegativeChaosToken
@@ -283,15 +238,7 @@ chaosTokenToFaceValue = \case
   MinusSix -> (-6)
   MinusSeven -> (-7)
   MinusEight -> (-8)
-  Skull -> 0
-  Cultist -> 0
-  Tablet -> 0
-  ElderThing -> 0
-  AutoFail -> 0
-  ElderSign -> 0
-  CurseToken -> 0
-  BlessToken -> 0
-  FrostToken -> 0
+  _ -> 0
 
 chaosTokenLabel :: ChaosTokenFace -> Text
 chaosTokenLabel = \case
@@ -315,7 +262,18 @@ chaosTokenLabel = \case
   BlessToken -> "Bless"
   FrostToken -> "Frost"
 
-$(deriveJSON defaultOptions ''ChaosTokenModifier)
-$(deriveJSON defaultOptions ''ChaosTokenFace)
-$(deriveJSON defaultOptions ''ChaosToken)
-$(deriveJSON defaultOptions ''ChaosTokenValue)
+mconcat
+  [ deriveJSON defaultOptions ''ChaosTokenModifier
+  , deriveJSON defaultOptions ''ChaosTokenFace
+  , deriveToJSON defaultOptions ''ChaosToken
+  , [d|
+      instance FromJSON ChaosToken where
+        parseJSON = withObject "ChaosToken" \o -> do
+          chaosTokenId <- o .: "chaosTokenId"
+          chaosTokenFace <- o .: "chaosTokenFace"
+          chaosTokenRevealedBy <- o .: "chaosTokenRevealedBy"
+          chaosTokenCancelled <- o .:? "chaosTokenCancelled" .!= False
+          pure ChaosToken {..}
+      |]
+  , deriveJSON defaultOptions ''ChaosTokenValue
+  ]

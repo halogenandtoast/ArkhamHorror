@@ -1,11 +1,12 @@
-module Arkham.Location.Cards.NamelessRuins (namelessRuins, NamelessRuins (..)) where
+module Arkham.Location.Cards.NamelessRuins (namelessRuins) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Story
 
 newtype NamelessRuins = NamelessRuins LocationAttrs
@@ -22,16 +23,13 @@ instance HasAbilities NamelessRuins where
       [mkAbility attrs 1 $ forced $ TurnEnds #when (You <> at_ (be attrs) <> HasMatchingAsset #ally)]
 
 instance RunMessage NamelessRuins where
-  runMessage msg l@(NamelessRuins attrs) = case msg of
+  runMessage msg l@(NamelessRuins attrs) = runQueueT $ case msg of
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.whatRemainsOfTyrrhia
       pure . NamelessRuins $ attrs & canBeFlippedL .~ False
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       allies <- select $ assetControlledBy iid <> #ally
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [targetLabel ally [DealAssetDirectDamage ally (attrs.ability 1) 1 0] | ally <- allies]
+      chooseOneM iid do
+        targets allies \ally -> push $ DealAssetDirectDamage ally (attrs.ability 1) 1 0
       pure l
-    _ -> NamelessRuins <$> runMessage msg attrs
+    _ -> NamelessRuins <$> liftRunMessage msg attrs

@@ -434,9 +434,33 @@ allEnemies =
     , SomeEnemyCard drAmyKenslerProfessorOfBiology
     , SomeEnemyCard roaldEllsworthIntrepidExplorer
     , SomeEnemyCard takadaHirokoAeroplaneMechanic
+    , -- Seeping Nightmares [eote]
+      SomeEnemyCard seepingNightmare
+    , -- Fatal Mirage [eote]
+      SomeEnemyCard memoryOfAHuntGoneAwry
+    , SomeEnemyCard memoryOfALostPatient
+    , SomeEnemyCard memoryOfAMissingFather
+    , SomeEnemyCard memoryOfARavagedCountry
+    , SomeEnemyCard memoryOfARegretfulVoyage
+    , SomeEnemyCard memoryOfAnUnspeakableEvil
+    , SomeEnemyCard memoryOfATerribleDiscovery
+    , SomeEnemyCard memoryOfAnAlienTranslation
+    , SomeEnemyCard memoryOfAnUnrequitedLove
+    , SomeEnemyCard horrifyingShade
+    , -- To the Forbidden Peaks [eote]
+      SomeEnemyCard terrorOfTheStarsGuardianOfForbiddenPeaks
+    , SomeEnemyCard constrictingElderThing
+    , -- Agents of the Unknown [eote]
+      SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]
       SomeEnemyCard manifestationOfMadness
     , SomeEnemyCard glacialPhantasm
+    , -- Elder Things [eote]
+      SomeEnemyCard elderThingScavenger
+    , SomeEnemyCard guardianElderThing
+    , -- Left Behind [eote]
+      SomeEnemyCard lostResearcher
+    , SomeEnemyCard frenziedExplorer
     , -- The Scarlet Keys
       -- signature
       SomeEnemyCard agentFletcher

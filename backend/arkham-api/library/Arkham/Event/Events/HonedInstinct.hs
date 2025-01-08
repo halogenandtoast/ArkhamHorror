@@ -3,7 +3,7 @@ module Arkham.Event.Events.HonedInstinct (honedInstinct, HonedInstinct (..)) whe
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Matcher
 
 newtype HonedInstinct = HonedInstinct EventAttrs
@@ -14,9 +14,8 @@ honedInstinct :: EventCard HonedInstinct
 honedInstinct = event HonedInstinct Cards.honedInstinct
 
 instance HasModifiersFor HonedInstinct where
-  getModifiersFor target (HonedInstinct a) | isTarget a target = do
-    modified a $ guard (a `hasCustomization` ImpulseControl) $> ReduceCostOf (CardWithId a.cardId) 1
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HonedInstinct a) =
+    modifySelfWhen a (a `hasCustomization` ImpulseControl) [ReduceCostOf (CardWithId a.cardId) 1]
 
 instance RunMessage HonedInstinct where
   runMessage msg e@(HonedInstinct attrs) = runQueueT $ case msg of

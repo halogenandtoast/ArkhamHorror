@@ -7,23 +7,18 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Projection
 
 newtype ToolBelt = ToolBelt AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toolBelt :: AssetCard ToolBelt
 toolBelt = asset ToolBelt Cards.toolBelt
 
 instance HasModifiersFor ToolBelt where
-  getModifiersFor (AssetTarget aid) (ToolBelt a) | aid /= a.id = do
-    maybeModified a do
-      iid <- MaybeT $ field AssetController a.id
-      AttachedToAsset aid' _ <- lift (field AssetPlacement aid)
-      guard $ aid' == a.id
-      pure [Blank, AsIfUnderControlOf iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ToolBelt a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> modifySelect a (AssetAttachedToAsset (be a)) [Blank, AsIfUnderControlOf iid]
 
 instance HasAbilities ToolBelt where
   getAbilities (ToolBelt a) = [controlledAbility a 1 beltCriteria $ FastAbility (exhaust a)]

@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Evade
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher hiding (EnemyEvaded, TreacheryInHandOf)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
@@ -32,12 +32,13 @@ evasionCriteria =
     <> EnemyAt YourLocation
 
 instance HasModifiersFor UnspeakableOathCowardice where
-  getModifiersFor (AbilityTarget iid ability) (UnspeakableOathCowardice a)
-    | a.owner == Just iid
-    , abilitySource ability == toSource a
-    , abilityIndex ability == 2 =
-        modified a [CanModify evasionCriteria]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (UnspeakableOathCowardice a) = do
+    case a.placement of
+      HiddenInHand iid -> do
+        selectOne (AbilityIs (toSource a) 2) >>= \case
+          Nothing -> pure mempty
+          Just ab -> modified_ a (AbilityTarget iid ab) [CanModify evasionCriteria]
+      _ -> pure mempty
 
 instance HasAbilities UnspeakableOathCowardice where
   getAbilities (UnspeakableOathCowardice attrs) =

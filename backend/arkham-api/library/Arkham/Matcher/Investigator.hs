@@ -150,7 +150,12 @@ data InvestigatorMatcher
   | InvestigatorWithMetaKey Text
   | InvestigatorWithFilledSlot SlotType
   | InvestigatorWithAnyFailedSkillTestsThisTurn
+  | InvestigatorWithPhysicalTrauma
+  | InvestigatorWithMentalTrauma
   deriving stock (Show, Eq, Ord, Data)
+
+investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher
+investigatorWithRecord = InvestigatorWithRecord . toCampaignLogKey
 
 instance Plated InvestigatorMatcher
 
@@ -168,6 +173,10 @@ instance Semigroup InvestigatorMatcher where
 
 instance Monoid InvestigatorMatcher where
   mempty = Anyone
+
+investigator_ :: InvestigatorMatcher -> InvestigatorMatcher
+investigator_ = id
+{-# INLINE investigator_ #-}
 
 $(deriveToJSON defaultOptions ''InvestigatorMatcher)
 

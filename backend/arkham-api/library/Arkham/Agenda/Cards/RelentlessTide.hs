@@ -5,7 +5,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Trait (Trait (Midtown, Suspect))
@@ -18,12 +18,10 @@ relentlessTide :: AgendaCard RelentlessTide
 relentlessTide = agenda (2, A) RelentlessTide Cards.relentlessTide (Static 5)
 
 instance HasModifiersFor RelentlessTide where
-  getModifiersFor (EnemyTarget eid) (RelentlessTide a) = do
-    isSuspect <- eid <=~> EnemyWithTrait Suspect
-    modified a [IgnoreAloof | isSuspect]
-  getModifiersFor (InvestigatorTarget _iid) (RelentlessTide a) = do
-    modified a [CannotParleyWith $ EnemyWithTrait Suspect]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RelentlessTide a) = do
+    enemies <- modifySelect a (EnemyWithTrait Suspect) [IgnoreAloof]
+    investigators <- modifySelect a Anyone [CannotParleyWith $ EnemyWithTrait Suspect]
+    pure $ enemies <> investigators
 
 instance HasAbilities RelentlessTide where
   getAbilities (RelentlessTide a) = [mkAbility a 1 $ forced $ TurnEnds #when (You <> at_ FullyFloodedLocation)]

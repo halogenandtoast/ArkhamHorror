@@ -21,9 +21,8 @@ selfSacrifice :: SkillCard SelfSacrifice
 selfSacrifice = skill SelfSacrifice Cards.selfSacrifice
 
 instance HasModifiersFor SelfSacrifice where
-  getModifiersFor (InvestigatorTarget iid) (SelfSacrifice attrs) = do
-    toModifiers attrs [ResolvesFailedEffects | attrs.controller == iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SelfSacrifice attrs) = do
+    modified_ attrs attrs.controller [ResolvesFailedEffects]
 
 instance RunMessage SelfSacrifice where
   runMessage msg s@(SelfSacrifice attrs) = case msg of

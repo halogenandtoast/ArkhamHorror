@@ -21,11 +21,9 @@ creepingDarkness :: TreacheryCard CreepingDarkness
 creepingDarkness = treachery CreepingDarkness Cards.creepingDarkness
 
 instance HasModifiersFor CreepingDarkness where
-  getModifiersFor (EnemyTarget eid) (CreepingDarkness a) = do
-    isFormlessSpawn <- eid <=~> enemyIs Enemies.formlessSpawn
+  getModifiersFor (CreepingDarkness a) = do
     n <- getPlayerCountValue (PerPlayer 1)
-    toModifiers a [HealthModifier n | isFormlessSpawn]
-  getModifiersFor _ _ = pure []
+    modifySelect a (enemyIs Enemies.formlessSpawn) [HealthModifier n]
 
 instance HasAbilities CreepingDarkness where
   getAbilities (CreepingDarkness a) =

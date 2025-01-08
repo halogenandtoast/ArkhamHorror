@@ -1,11 +1,7 @@
-module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom (
-  lairOfDagonIntoTheMaelstrom,
-  LairOfDagonIntoTheMaelstrom (..),
-)
-where
+module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom (lairOfDagonIntoTheMaelstrom) where
 
 import Arkham.Ability
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
@@ -28,8 +24,7 @@ lairOfDagonIntoTheMaelstrom =
     connectsToAdjacent
 
 instance HasModifiersFor LairOfDagonIntoTheMaelstrom where
-  getModifiersFor target (LairOfDagonIntoTheMaelstrom a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (LairOfDagonIntoTheMaelstrom a) = modifySelfMaybe a do
     n <- selectCount $ LocationWithAnyKeys <> withTrait Sanctum
     guard $ n > 0
     pure [ShroudModifier (-n)]
@@ -45,7 +40,7 @@ instance HasAbilities LairOfDagonIntoTheMaelstrom where
             ( foldMap
                 (exists . LocationWithKey)
                 [BlueKey, RedKey, GreenKey, YellowKey, PurpleKey, WhiteKey, BlackKey]
-                <> HasRecord TheOrdersRitualWasDisrupted
+                <> hasRecordCriteria TheOrdersRitualWasDisrupted
             )
           $ FastAbility Free
       ]

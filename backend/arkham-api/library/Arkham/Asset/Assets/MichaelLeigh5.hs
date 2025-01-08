@@ -4,8 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
   deriving anyclass IsAsset
@@ -15,9 +15,7 @@ michaelLeigh5 :: AssetCard MichaelLeigh5
 michaelLeigh5 = ally MichaelLeigh5 Cards.michaelLeigh5 (3, 3)
 
 instance HasModifiersFor MichaelLeigh5 where
-  getModifiersFor (InvestigatorTarget iid) (MichaelLeigh5 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #combat 1, SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MichaelLeigh5 a) = controllerGets a [SkillModifier #combat 1, SkillModifier #intellect 1]
 
 instance HasAbilities MichaelLeigh5 where
   getAbilities (MichaelLeigh5 a) =

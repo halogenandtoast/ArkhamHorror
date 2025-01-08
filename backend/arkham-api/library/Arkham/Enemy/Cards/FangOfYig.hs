@@ -18,11 +18,11 @@ fangOfYig =
     .~ Prey (HasMatchingTreachery $ treacheryIs Treacheries.poisoned)
 
 instance HasModifiersFor FangOfYig where
-  getModifiersFor (InvestigatorTarget iid) (FangOfYig a) = do
-    affected <-
-      iid <=~> (investigatorEngagedWith a.id <> HasMatchingTreachery (treacheryIs Treacheries.poisoned))
-    toModifiers a $ guard affected *> [CannotPlay AnyCard, CannotCommitCards AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FangOfYig a) = do
+    modifySelect
+      a
+      (investigatorEngagedWith a.id <> HasMatchingTreachery (treacheryIs Treacheries.poisoned))
+      [CannotPlay AnyCard, CannotCommitCards AnyCard]
 
 instance RunMessage FangOfYig where
   runMessage msg (FangOfYig attrs) = FangOfYig <$> runMessage msg attrs

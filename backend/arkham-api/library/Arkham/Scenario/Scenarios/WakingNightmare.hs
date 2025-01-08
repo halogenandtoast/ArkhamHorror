@@ -1,12 +1,12 @@
-module Arkham.Scenario.Scenarios.WakingNightmare (WakingNightmare (..), wakingNightmare) where
+module Arkham.Scenario.Scenarios.WakingNightmare (wakingNightmare) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Campaigns.TheDreamEaters.Meta
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
@@ -15,8 +15,8 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WakingNightmare.FlavorText
 import Arkham.Scenarios.WakingNightmare.Helpers

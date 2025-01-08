@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Evade
 import Arkham.Prelude
-import Arkham.SkillType
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs
   deriving anyclass IsAsset
@@ -24,14 +23,13 @@ instance HasAbilities StrangeSolutionFreezingVariant4 where
     [restrictedAbility attrs 1 ControlsThis $ evadeAction $ assetUseCost attrs Supply 1]
 
 instance HasModifiersFor StrangeSolutionFreezingVariant4 where
-  getModifiersFor (InvestigatorTarget iid) (StrangeSolutionFreezingVariant4 a) | controlledBy a iid = do
-    mSource <- getSkillTestSource
-    mAction <- getSkillTestAction
-    case (mAction, mSource) of
-      (Just Action.Evade, Just source) | isSource a source -> do
-        toModifiers a [BaseSkillOf SkillAgility 6]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StrangeSolutionFreezingVariant4 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      source <- MaybeT getSkillTestSource
+      guard $ isSource a source
+      Action.Evade <- MaybeT getSkillTestAction
+      pure [BaseSkillOf #agility 6]
 
 instance RunMessage StrangeSolutionFreezingVariant4 where
   runMessage msg a@(StrangeSolutionFreezingVariant4 attrs) = case msg of

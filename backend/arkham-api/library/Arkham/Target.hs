@@ -72,6 +72,13 @@ data Target
   | ThisTarget -- Used with withModifiers
   deriving stock (Show, Eq, Ord, Data, Generic)
 
+instance HasField "asset" Target (Maybe AssetId) where
+  getField = \case
+    AssetTarget aid -> Just aid
+    ProxyTarget (CardIdTarget _) t -> t.asset
+    ProxyTarget t _ -> t.asset
+    _ -> Nothing
+
 instance HasField "enemy" Target (Maybe EnemyId) where
   getField = \case
     EnemyTarget aid -> Just aid
@@ -156,6 +163,9 @@ instance Targetable ActId where
 
 instance Targetable AgendaId where
   toTarget = AgendaTarget
+
+instance Targetable BatchId where
+  toTarget = BatchTarget
 
 instance Targetable Card where
   toTarget = CardIdTarget . toCardId

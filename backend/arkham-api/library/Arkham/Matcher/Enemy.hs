@@ -17,6 +17,7 @@ import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import {-# SOURCE #-} Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Matcher.Source
+import {-# SOURCE #-} Arkham.Matcher.Target
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
@@ -49,6 +50,7 @@ data EnemyMatcher
   | EnemyWithToken Token
   | EnemyAt LocationMatcher
   | EnemyAttachedToAsset AssetMatcher
+  | EnemyAttachedTo TargetMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanSpawnIn LocationMatcher
   | EnemyCanMove
@@ -67,10 +69,12 @@ data EnemyMatcher
   | EnemyIsEngagedWith InvestigatorMatcher
   | EnemyWithAsset AssetMatcher
   | EnemyWithAttachedEvent EventMatcher
+  | EnemyWithAttachedAsset AssetMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher
   | NearestEnemyToLocation LocationId EnemyMatcher
+  | NearestEnemyToAnInvestigator EnemyMatcher
   | EnemyIs CardCode
   | EnemyWithCardId CardId
   | AnyEnemy
@@ -125,12 +129,16 @@ data EnemyMatcher
   | EnemyWhenLocation LocationMatcher
   | EnemyWhenInvestigator InvestigatorMatcher
   | EnemyWhenOtherEnemy EnemyMatcher
+  | EnemyWithAnyCardsUnderneath
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 enemy_ :: EnemyMatcher -> EnemyMatcher
 enemy_ = id
+
+instance IsString EnemyMatcher where
+  fromString = EnemyWithTitle . fromString
 
 instance Plated EnemyMatcher
 

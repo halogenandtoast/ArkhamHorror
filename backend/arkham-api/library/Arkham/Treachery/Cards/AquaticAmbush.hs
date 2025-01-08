@@ -1,8 +1,8 @@
 module Arkham.Treachery.Cards.AquaticAmbush (aquaticAmbush, AquaticAmbush (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (isFightWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (getSkillTest, isFightWith)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
@@ -16,10 +16,12 @@ aquaticAmbush :: TreacheryCard AquaticAmbush
 aquaticAmbush = treachery AquaticAmbush Cards.aquaticAmbush
 
 instance HasModifiersFor AquaticAmbush where
-  getModifiersFor (SkillTestTarget _) (AquaticAmbush a) = maybeModified a do
-    liftGuardM $ isFightWith (EnemyAt FloodedLocation)
-    pure [RevealAnotherChaosToken]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AquaticAmbush a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        liftGuardM $ isFightWith (EnemyAt FloodedLocation)
+        pure [RevealAnotherChaosToken]
 
 instance HasAbilities AquaticAmbush where
   getAbilities (AquaticAmbush a) =

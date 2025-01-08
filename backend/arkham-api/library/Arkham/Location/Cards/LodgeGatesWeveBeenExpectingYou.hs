@@ -4,31 +4,28 @@ module Arkham.Location.Cards.LodgeGatesWeveBeenExpectingYou (
 )
 where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype LodgeGatesWeveBeenExpectingYou = LodgeGatesWeveBeenExpectingYou LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lodgeGatesWeveBeenExpectingYou :: LocationCard LodgeGatesWeveBeenExpectingYou
 lodgeGatesWeveBeenExpectingYou = location LodgeGatesWeveBeenExpectingYou Cards.lodgeGatesWeveBeenExpectingYou 2 (Static 0)
 
 instance HasModifiersFor LodgeGatesWeveBeenExpectingYou where
-  getModifiersFor (EnemyTarget _) (LodgeGatesWeveBeenExpectingYou attrs) =
-    toModifiers attrs [CannotSpawnIn (LocationWithId $ toId attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LodgeGatesWeveBeenExpectingYou a) =
+    whenRevealed a $ modifySelect a AnyEnemy [CannotSpawnIn (be a)]
 
 instance HasAbilities LodgeGatesWeveBeenExpectingYou where
   getAbilities (LodgeGatesWeveBeenExpectingYou attrs) =
-    withRevealedAbilities
-      attrs
-      [withTooltip "On second thought, maybe coming here was a bad idea" (locationResignAction attrs)]
+    extendRevealed1 attrs
+      $ withTooltip "On second thought, maybe coming here was a bad idea" (locationResignAction attrs)
 
 instance RunMessage LodgeGatesWeveBeenExpectingYou where
   runMessage msg (LodgeGatesWeveBeenExpectingYou attrs) =

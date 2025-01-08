@@ -294,10 +294,18 @@ allActs =
     , SomeActCard cityOfTheDeepV2
     , SomeActCard cityOfTheDeepV3
     , -- Edge of the Earth
-      --- The Crash
+      --- The Crash [eote]
       SomeActCard searchForACampSite
-    , --- Lost in the Night
+    , --- Lost in the Night [eote]
       SomeActCard theLostExpedition
+    , --- Seeping Nightmares [eote]
+      SomeActCard underAttack
+    , --- Fatal Mirage [eote]
+      SomeActCard shadowOfThePastV1
+    , SomeActCard shadowOfThePastV2
+    , SomeActCard shadowOfThePastV3
+    , --- To the Forbidden Peaks [eote]
+      SomeActCard ascendTheMountain
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

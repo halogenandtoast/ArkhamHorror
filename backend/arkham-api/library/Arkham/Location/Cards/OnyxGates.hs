@@ -1,32 +1,31 @@
-module Arkham.Location.Cards.OnyxGates (onyxGates, OnyxGates (..)) where
+module Arkham.Location.Cards.OnyxGates (onyxGates) where
 
 import Arkham.Ability
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Game.Helpers (perPlayer)
-import Arkham.Helpers.Log (getRecordCount)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Message.Lifted.Log
 
 newtype OnyxGates = OnyxGates LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 onyxGates :: LocationCard OnyxGates
 onyxGates = location OnyxGates Cards.onyxGates 1 (Static 12)
 
 instance HasModifiersFor OnyxGates where
-  getModifiersFor target (OnyxGates attrs) | attrs `is` target = do
+  getModifiersFor (OnyxGates attrs) = do
     n <- perPlayer 1
-    toModifiers attrs [ShroudModifier n]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [ShroudModifier n]
 
 instance HasAbilities OnyxGates where
   getAbilities (OnyxGates attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (HasCampaignCount EvidenceOfKadath $ atLeast 1)
+      [ restrictedAbility attrs 1 (hasCampaignCount EvidenceOfKadath $ atLeast 1)
           $ forced
           $ RevealLocation #after Anyone
           $ be attrs

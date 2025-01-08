@@ -1,0 +1,39 @@
+{
+    "newGame": "新游戏",
+
+    "numberOfPlayers" : "玩家人数",
+    "withFriends": "与好友一起",
+    "multihandedSolo": "独自控制",
+
+    "campaign": "剧本模式",
+    "standalone": "冒险模式（使用剧本关卡）",
+    "sideStory": "独立冒险",
+
+    "alphaWarning": "此剧本目前正在开发中。它可能尚未完成，您不应该针对它提交bug报告。",
+    "betaWarning": "此剧本已准备就绪供测试使用，但请做好游戏频繁崩溃的心理准备。",
+
+    "normal": "正常",
+    "returnTo": "重返...",
+    
+    "fullCampaign": "完整剧本",
+    "partialCampaign": "部分剧本",
+
+    "difficulty": "难度选择",
+    "Easy": "简单",
+    "Standard": "普通",
+    "Hard": "困难",
+    "Expert": "专家",
+
+    "includeTarotReadings": "是否使用塔罗牌解牌",
+
+    "gameName": "游戏名称",
+    "create": "创建",
+
+    "chooseYourDeck": "选择你的牌组",
+    "tabooList": "禁卡表: {tabooList}",
+    "useExistingDeck": "使用已有牌组",
+    "loadNewDeck": "加载新牌组",
+    "selectADeck": "-- 选择一个牌组 --",
+    "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
+    "choose": "选择"
+}

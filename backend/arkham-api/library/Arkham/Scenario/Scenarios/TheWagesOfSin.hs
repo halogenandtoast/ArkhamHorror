@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TheWagesOfSin (TheWagesOfSin (..), theWagesOfSin) where
+module Arkham.Scenario.Scenarios.TheWagesOfSin (theWagesOfSin) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -16,6 +16,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -29,13 +30,16 @@ newtype TheWagesOfSin = TheWagesOfSin ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor TheWagesOfSin where
-  getModifiersFor (InvestigatorTarget iid) (TheWagesOfSin a) = do
-    atSpectralLocation <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Spectral
-    toModifiers a [UseEncounterDeck SpectralEncounterDeck | atSpectralLocation]
-  getModifiersFor (CardIdTarget cid) (TheWagesOfSin a) = do
-    isSpectral <- (`cardMatch` CardWithTrait Spectral) <$> getCard cid
-    toModifiers a [UseEncounterDeck SpectralEncounterDeck | isSpectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheWagesOfSin a) = do
+    investigators <-
+      modifySelect
+        a
+        (InvestigatorAt $ LocationWithTrait Spectral)
+        [UseEncounterDeck SpectralEncounterDeck]
+    spectral <- findAllCards (`cardMatch` (CardWithTrait Spectral))
+    cards <-
+      modifyEach a (map (CardIdTarget . toCardId) spectral) [UseEncounterDeck SpectralEncounterDeck]
+    pure $ investigators <> cards
 
 theWagesOfSin :: Difficulty -> TheWagesOfSin
 theWagesOfSin difficulty =

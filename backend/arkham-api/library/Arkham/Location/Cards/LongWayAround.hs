@@ -43,9 +43,7 @@ newtype LongWayAroundEffect = LongWayAroundEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor LongWayAroundEffect where
-  getModifiersFor target (LongWayAroundEffect a) = maybeModified a do
-    guard $ isTarget target a.target
-    pure [VehicleCannotMove]
+  getModifiersFor (LongWayAroundEffect a) = modified_ a a.target [VehicleCannotMove]
 
 longWayAroundEffect :: EffectArgs -> LongWayAroundEffect
 longWayAroundEffect = cardEffect LongWayAroundEffect Cards.longWayAround

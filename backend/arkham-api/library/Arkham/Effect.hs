@@ -341,7 +341,10 @@ buildEndOfTurnEffect eid source iid msgs =
   Effect $ endOfTurnEffect' eid source iid msgs
 
 effectIsForNextGame :: Effect -> Bool
-effectIsForNextGame e = e.window == Just EffectSetupWindow
+effectIsForNextGame e = case e.window of
+  Just EffectSetupWindow -> True
+  Just (EffectScenarioSetupWindow {}) -> True
+  _ -> False
 
 effectIsForResolution :: Effect -> Bool
 effectIsForResolution e = e.window == Just EffectResolutionWindow

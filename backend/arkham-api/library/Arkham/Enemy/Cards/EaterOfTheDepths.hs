@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.EaterOfTheDepths (eaterOfTheDepths, EaterOfTheDepths (
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype EaterOfTheDepths = EaterOfTheDepths EnemyAttrs
@@ -16,11 +16,9 @@ eaterOfTheDepths =
     ?~ SpawnAtRandomSetAsideLocation
 
 instance HasModifiersFor EaterOfTheDepths where
-  getModifiersFor target (EaterOfTheDepths a) = maybeModified a do
-    guard $ isTarget a target
+  getModifiersFor (EaterOfTheDepths a) = do
     depth <- getCurrentDepth
-    guard $ depth > 0
-    pure [EnemyEvade depth]
+    modifySelfWhen a (depth > 0) [EnemyEvade depth]
 
 instance RunMessage EaterOfTheDepths where
   runMessage msg (EaterOfTheDepths attrs) =

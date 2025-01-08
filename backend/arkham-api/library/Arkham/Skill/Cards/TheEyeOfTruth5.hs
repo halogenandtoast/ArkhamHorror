@@ -51,25 +51,21 @@ theEyeOfTruth5Effect :: EffectArgs -> TheEyeOfTruth5Effect
 theEyeOfTruth5Effect = cardEffect TheEyeOfTruth5Effect Cards.theEyeOfTruth5
 
 instance HasModifiersFor TheEyeOfTruth5Effect where
-  getModifiersFor (SkillTestTarget _) (TheEyeOfTruth5Effect a) = do
-    mSource <- getSkillTestSource
-    case (mSource, effectTarget a) of
-      (Just (TreacherySource tid), CardIdTarget cardId) -> do
+  getModifiersFor (TheEyeOfTruth5Effect a) = do
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        TreacherySource tid <- MaybeT getSkillTestSource
+        CardIdTarget cardId <- pure a.target
         -- Because the effect is created during a skill test we need to make
         -- sure the treachery hasn't already been removed, such as this card's
         -- effect
-        inPlay <- selectAny $ TreacheryWithId tid
-        if inPlay
-          then do
-            card <- toTitle <$> getCard cardId
-            inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId cardId
-            treacheryCard <- fieldMap TreacheryCard toTitle tid
-            toModifiers a
-              $ guard (card == treacheryCard && inVictory)
-              *> [AddSkillIcons [#wild, #wild, #wild, #wild]]
-          else pure []
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        liftGuardM $ selectAny $ TreacheryWithId tid
+        card <- lift $ toTitle <$> getCard cardId
+        liftGuardM $ selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId cardId
+        treacheryCard <- lift $ fieldMap TreacheryCard toTitle tid
+        guard $ card == treacheryCard
+        pure [AddSkillIcons [#wild, #wild, #wild, #wild]]
 
 instance RunMessage TheEyeOfTruth5Effect where
   runMessage msg e@(TheEyeOfTruth5Effect attrs) = case msg of

@@ -3,8 +3,6 @@
 
 module Arkham.Card.CardDef where
 
-import Arkham.Prelude
-
 import Arkham.Action (Action)
 import Arkham.Asset.Uses
 import Arkham.Calculation
@@ -25,6 +23,7 @@ import Arkham.Matcher.Base
 import Arkham.Matcher.Card
 import Arkham.Matcher.Window
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Slot
 import Arkham.Trait
@@ -64,11 +63,13 @@ data CardLimit
   | MaxPerTraitPerRound Trait Int
   deriving stock (Show, Eq, Ord, Data)
 
-$(deriveJSON defaultOptions ''DeckRestriction)
-$(deriveJSON defaultOptions ''AttackOfOpportunityModifier)
-$(deriveJSON defaultOptions ''EventChoicesRepeatable)
-$(deriveJSON defaultOptions ''EventChoice)
-$(deriveJSON defaultOptions ''CardLimit)
+mconcat
+  [ deriveJSON defaultOptions ''DeckRestriction
+  , deriveJSON defaultOptions ''AttackOfOpportunityModifier
+  , deriveJSON defaultOptions ''EventChoicesRepeatable
+  , deriveJSON defaultOptions ''EventChoice
+  , deriveJSON defaultOptions ''CardLimit
+  ]
 
 toCardCodePairs :: CardDef -> [(CardCode, CardDef)]
 toCardCodePairs c =
@@ -172,6 +173,9 @@ instance HasField "meta" CardDef (Map Text Value) where
 
 instance HasField "actions" CardDef [Action] where
   getField = cdActions
+
+instance HasField "name" CardDef Name where
+  getField = cdName
 
 instance HasField "beforeEffect" CardDef Bool where
   getField = cdBeforeEffect
@@ -290,6 +294,9 @@ class GetCardDef m a where
 class HasCardDef a where
   toCardDef :: HasCallStack => a -> CardDef
 
+getEncounterSet :: HasCardDef a => a -> Maybe EncounterSet
+getEncounterSet = cdEncounterSet . toCardDef
+
 hasRevelation :: HasCardDef a => a -> Bool
 hasRevelation = isRevelation . cdRevelation . toCardDef
 
@@ -374,10 +381,7 @@ instance FromJSON CardDef where
     cdWhenDiscarded <- o .: "whenDiscarded"
     cdCanCommitWhenNoIcons <-
       o .:? "canCommitWhenNoIcons" .!= (cdSkills == [] && cdCardType == SkillType)
-    cdMeta <-
-      o .:? "meta" .!= mempty
-
-    cdTags <-
-      o .:? "tags" .!= []
+    cdMeta <- o .:? "meta" .!= mempty
+    cdTags <- o .:? "tags" .!= []
 
     pure CardDef {..}

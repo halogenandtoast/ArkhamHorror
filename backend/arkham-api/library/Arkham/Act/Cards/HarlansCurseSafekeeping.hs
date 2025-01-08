@@ -47,7 +47,7 @@ instance RunMessage HarlansCurseSafekeeping where
       push $ AdvanceAct (toId attrs) (toSource attrs) AdvancedWithOther
       pure a
     AdvanceAct aid _ _ | aid == actId attrs && onSide B attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+      leadInvestigatorId <- getLead
       relicOfAges <- getSetAsideCard Assets.relicOfAgesADeviceOfSomeSort
       curiositieShoppe <- selectJust $ locationIs Locations.curiositieShoppe
       deckCount <- getActDecksInPlayCount

@@ -20,13 +20,7 @@ dreamEnhancingSerum :: AssetCard DreamEnhancingSerum
 dreamEnhancingSerum = asset DreamEnhancingSerum Cards.dreamEnhancingSerum
 
 instance HasModifiersFor DreamEnhancingSerum where
-  getModifiersFor (InvestigatorTarget iid) (DreamEnhancingSerum a) =
-    toModifiers
-      a
-      [ OnlyFirstCopyCardCountsTowardMaximumHandSize
-      | a `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DreamEnhancingSerum a) = controllerGets a [OnlyFirstCopyCardCountsTowardMaximumHandSize]
 
 -- TODO: No good way to handle reveal
 instance HasAbilities DreamEnhancingSerum where

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (CarnevaleOfHorrors (..), carnevaleOfHorrors) where
+module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (carnevaleOfHorrors) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -14,6 +14,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
@@ -21,7 +22,7 @@ import Arkham.Scenario.Types (cardsUnderActDeckL, cardsUnderAgendaDeckL)
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Strategy
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 import Data.List.NonEmpty qualified as NE
 
 newtype CarnevaleOfHorrors = CarnevaleOfHorrors ScenarioAttrs

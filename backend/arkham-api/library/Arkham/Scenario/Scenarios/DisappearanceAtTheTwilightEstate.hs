@@ -1,14 +1,11 @@
-module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (
-  DisappearanceAtTheTwilightEstate (..),
-  disappearanceAtTheTwilightEstate,
-) where
+module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (disappearanceAtTheTwilightEstate) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
 import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -18,6 +15,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (chooseDecks)
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted

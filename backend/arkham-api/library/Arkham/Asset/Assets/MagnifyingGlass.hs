@@ -13,9 +13,7 @@ magnifyingGlass :: AssetCard MagnifyingGlass
 magnifyingGlass = asset MagnifyingGlass Cards.magnifyingGlass
 
 instance HasModifiersFor MagnifyingGlass where
-  getModifiersFor (InvestigatorTarget iid) (MagnifyingGlass a) | controlledBy a iid = do
-    toModifiers a [ActionSkillModifier #investigate #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MagnifyingGlass a) = controllerGets a [ActionSkillModifier #investigate #intellect 1]
 
 instance RunMessage MagnifyingGlass where
   runMessage msg (MagnifyingGlass attrs) = MagnifyingGlass <$> runMessage msg attrs

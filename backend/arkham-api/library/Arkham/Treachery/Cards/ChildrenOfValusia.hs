@@ -15,19 +15,15 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
 newtype ChildrenOfValusia = ChildrenOfValusia TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 childrenOfValusia :: TreacheryCard ChildrenOfValusia
 childrenOfValusia = treachery ChildrenOfValusia Cards.childrenOfValusia
 
 instance HasModifiersFor ChildrenOfValusia where
-  getModifiersFor (EnemyTarget eid) (ChildrenOfValusia a) = do
-    isSerpent <- eid <=~> EnemyWithTrait Serpent
-    toModifiers a $ do
-      guard isSerpent
-      [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ChildrenOfValusia a) =
+    modifySelect a (EnemyWithTrait Serpent) [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities ChildrenOfValusia where
   getAbilities (ChildrenOfValusia a) =

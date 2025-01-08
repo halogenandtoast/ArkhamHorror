@@ -1,29 +1,26 @@
-module Arkham.Campaign.Campaigns.TheCircleUndone (TheCircleUndone (..), theCircleUndone) where
-
-import Arkham.Prelude
+module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
-import Arkham.Campaign.Runner
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
-import Arkham.CampaignStep
+import Arkham.Campaigns.TheCircleUndone.CampaignSteps
 import Arkham.Campaigns.TheCircleUndone.Import
+import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Decklist
-import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Campaign
-import Arkham.Helpers.Log
+import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
-import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
-import Arkham.Message.Lifted (interludeXpAll)
-import Arkham.Name
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Name (toTitle)
+import Arkham.Question (Question (..))
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs
@@ -59,7 +56,7 @@ theCircleUndone difficulty =
     $ logL
     .~ mkCampaignLog
       { campaignLogRecordedSets =
-          singletonMap MissingPersons
+          singletonMap (toCampaignLogKey MissingPersons)
             $ map (recorded . cdCardCode) allPrologueInvestigators
       }
 
@@ -72,56 +69,44 @@ allPrologueInvestigators =
   ]
 
 instance RunMessage TheCircleUndone where
-  runMessage msg c@(TheCircleUndone attrs) = case msg of
-    StartCampaign | campaignStep attrs `elem` [PrologueStep, DisappearanceAtTheTwilightEstate] -> do
+  runMessage msg c@(TheCircleUndone attrs) = runQueueT $ case msg of
+    StartCampaign | attrs.step `elem` [PrologueStep, DisappearanceAtTheTwilightEstate] -> do
       -- skip picking decks
       lead <- getActivePlayer
-      let step' =
-            if campaignStep attrs == DisappearanceAtTheTwilightEstate then PrologueStep else campaignStep attrs
-      pushAll
-        $ [ Ask lead PickCampaignSettings
-          | campaignStep attrs `notElem` [PrologueStep, DisappearanceAtTheTwilightEstate]
-          ]
-        <> [CampaignStep step']
+      unless (attrs.step `elem` [PrologueStep, DisappearanceAtTheTwilightEstate]) do
+        push $ Ask lead PickCampaignSettings
+      campaignStep_ $ if attrs.step == DisappearanceAtTheTwilightEstate then PrologueStep else attrs.step
       pure c
     CampaignStep PrologueStep -> do
-      players <- allPlayers
-      pushAll
-        $ story players prologue
-        : [ ForPlayer player (CampaignStep PrologueStep)
-          | player <- players
-          ]
-          <> [ story players intro
-             , CampaignStep (PrologueStepPart 2)
-             , NextCampaignStep Nothing
-             ]
+      story prologue
+      eachInvestigator (`forInvestigator` msg)
+      story intro
+      prologueStepPart 2
+      nextCampaignStep
       pure c
-    ForPlayer player (CampaignStep PrologueStep) -> do
+    ForInvestigator iid (CampaignStep PrologueStep) -> do
       taken <- select Anyone
       let
         availablePrologueInvestigators =
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      push
-        $ questionLabel
+      player <- getPlayer iid
+      chooseOneM iid do
+        questionLabeled
           "Choose one of the following neutral investigators to control for the duration of this prologue"
-          player
-        $ ChooseOne
-          [ CardLabel
-            (cdCardCode card)
-            [ LoadDecklist player
-                $ ArkhamDBDecklist
-                  mempty
-                  mempty
-                  (InvestigatorId $ cdCardCode card)
-                  (toTitle card)
-                  Nothing
-                  Nothing
-                  Nothing -- TODO: should we figure out the taboo list here??
-            ]
-          | card <- availablePrologueInvestigators
-          ]
+        for_ availablePrologueInvestigators \card -> do
+          cardLabeled card do
+            push
+              $ LoadDecklist player
+              $ ArkhamDBDecklist
+                mempty
+                mempty
+                (InvestigatorId $ cdCardCode card)
+                (toTitle card)
+                Nothing
+                Nothing
+                Nothing -- TODO: should we figure out the taboo list here??
       pure c
     CampaignStep (PrologueStepPart 2) -> do
       taken <- selectMap unInvestigatorId Anyone
@@ -136,136 +121,95 @@ instance RunMessage TheCircleUndone where
           "05049" -> pennyIntro
           _ -> error "Invalid prologue investigator"
         readings = map readingFor taken
-      players <- allPlayers
-      pushAll
-        $ crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-        : map (story players) readings
+      crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
+      traverse_ story readings
       pure c
     CampaignStep (InterludeStep 2 mInterludeKey) -> do
       anySilverTwilight <- selectAny $ InvestigatorWithTrait SilverTwilight
-      players <- allPlayers
-      lead <- getLeadPlayer
-
-      gainXp <-
-        evalQueueT
-          $ interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
       let
         showThePriceOfProgress4 = mInterludeKey == Just ThePriceOfProgress4
         showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
         showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
-        lodgeChoices =
-          [ Label "\"I refuse to be part of this\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 7)]
-          , Label "\"I agree\"" [CampaignStep (InterludeStepPart 2 mInterludeKey 8)]
-          , Label "\"I agree\" (You are lying)" [CampaignStep (InterludeStepPart 2 mInterludeKey 9)]
-          ]
-      pushAll
-        $ [ story players (if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2)
-          , story players thePriceOfProgress3
-          ]
-        <> ( guard showThePriceOfProgress4
-              *> [ story players thePriceOfProgress4
-                 , Record JosefDisappearedIntoTheMist
-                 , Record TheInvestigatorsAreEnemiesOfTheLodge
-                 , NextCampaignStep Nothing
-                 ]
-           )
-        <> ( guard showThePriceOfProgress5
-              *> ( Record TheInvestigatorsRescuedJosef
-                    : gainXp
-                      <> [storyWithChooseOne lead players thePriceOfProgress5 lodgeChoices]
-                 )
-           )
-        <> ( guard showThePriceOfProgress6
-              *> [Record JosefIsAliveAndWell, storyWithChooseOne lead players thePriceOfProgress6 lodgeChoices]
-           )
+        lodgeChoices = do
+          labeled "\"I refuse to be part of this\"" $ interludeStepPart 2 mInterludeKey 7
+          labeled "\"I agree\"" $ interludeStepPart 2 mInterludeKey 8
+          labeled "\"I agree\" (You are lying)" $ interludeStepPart 2 mInterludeKey 9
+
+      story $ if anySilverTwilight then thePriceOfProgress1 else thePriceOfProgress2
+      story thePriceOfProgress3
+
+      when showThePriceOfProgress4 do
+        story thePriceOfProgress4
+        record JosefDisappearedIntoTheMist
+        record TheInvestigatorsAreEnemiesOfTheLodge
+        nextCampaignStep
+
+      when showThePriceOfProgress5 do
+        record TheInvestigatorsRescuedJosef
+        interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
+        storyWithChooseOneM thePriceOfProgress5 lodgeChoices
+
+      when showThePriceOfProgress6 do
+        record JosefIsAliveAndWell
+        storyWithChooseOneM thePriceOfProgress6 lodgeChoices
       pure c
     CampaignStep (InterludeStepPart 2 _ 7) -> do
-      pushAll [Record TheInvestigatorsAreEnemiesOfTheLodge, NextCampaignStep Nothing]
+      record TheInvestigatorsAreEnemiesOfTheLodge
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 2 _ 8) -> do
-      pushAll
-        [Record TheInvestigatorsAreMembersOfTheLodge, AddChaosToken Cultist, NextCampaignStep Nothing]
+      record TheInvestigatorsAreMembersOfTheLodge
+      addChaosToken Cultist
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 2 _ 9) -> do
-      pushAll
-        [ Record TheInvestigatorsAreMembersOfTheLodge
-        , AddChaosToken Cultist
-        , Record TheInvestigatorsAreDeceivingTheLodge
-        , NextCampaignStep Nothing
-        ]
+      record TheInvestigatorsAreMembersOfTheLodge
+      addChaosToken Cultist
+      record TheInvestigatorsAreDeceivingTheLodge
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStep 3 mInterludeKey) -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      pushAll
-        [ story players theInnerCircle1
-        , chooseOne
-            lead
-            [ Label
-                "Give Mr. Sanford everything you have found."
-                [CampaignStep (InterludeStepPart 3 mInterludeKey 2)]
-            , Label
-                "Tell him you have nothing to show. (You are lying.)"
-                [CampaignStep (InterludeStepPart 3 mInterludeKey 3)]
-            ]
-        ]
+      lead <- getLead
+      story theInnerCircle1
+      chooseOneM lead do
+        labeled "Give Mr. Sanford everything you have found." $ interludeStepPart 3 mInterludeKey 2
+        labeled "Tell him you have nothing to show. (You are lying.)" $ interludeStepPart 3 mInterludeKey 3
       pure c
     CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> do
-      players <- allPlayers
       rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
       toldLodgeAboutCoven <- getHasRecord TheInvestigatorsToldTheLodgeAboutTheCoven
       someMementos <- getRecordSet MementosDiscovered
       let mementos = mapMaybe (unrecorded @Memento) someMementos
-      pushAll
-        [ story players theInnerCircle2
-        , crossOutRecordSetEntries MementosDiscovered (toList mementos)
-        , CampaignStep
-            (InterludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5)
-        ]
+      story theInnerCircle2
+      crossOutRecordSetEntries MementosDiscovered (toList mementos)
+      interludeStepPart 3 mInterludeKey $ if rescuedJosef && toldLodgeAboutCoven then 4 else 5
       pure c
     CampaignStep (InterludeStepPart 3 _ 3) -> do
-      players <- allPlayers
-      pushAll
-        [ story players theInnerCircle3
-        , Record TheInvestigatorsKeptsTheirMementosHidden
-        , NextCampaignStep Nothing
-        ]
+      story theInnerCircle3
+      record TheInvestigatorsKeptsTheirMementosHidden
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      pushAll
-        [ story players theInnerCircle4
-        , chooseUpToN
-            lead
-            3
-            "Done asking question"
-            [ Label "What is the creature?" [story players whatIsTheCreature]
-            , Label "What do you want with the creature?" [story players whatDoYouWantWithTheCreature]
-            , Label
-                "What do the witches want with the creature?"
-                [story players whatDoTheWitchesWantWithTheCreature]
-            , Label
-                "Did you know about the creature before the charity gala?"
-                [story players didYouKnowAboutTheCreatureBeforeTheCharityGala]
-            , Label
-                "Where are the four missing people from the charity gala?"
-                [story players whereAreTheFourMissingPeopleFromTheCharityGala]
-            ]
-        , CampaignStep (InterludeStepPart 3 mInterludeKey 6)
-        ]
+      story theInnerCircle4
+      lead <- getLead
+      chooseUpToNM lead 3 "Done asking question" do
+        labeled "What is the creature?" $ story whatIsTheCreature
+        labeled "What do you want with the creature?" $ story whatDoYouWantWithTheCreature
+        labeled "What do the witches want with the creature?" $ story whatDoTheWitchesWantWithTheCreature
+        labeled "Did you know about the creature before the charity gala?"
+          $ story didYouKnowAboutTheCreatureBeforeTheCharityGala
+        labeled "Where are the four missing people from the charity gala?"
+          $ story whereAreTheFourMissingPeopleFromTheCharityGala
+      interludeStepPart 3 mInterludeKey 6
       pure c
     CampaignStep (InterludeStepPart 3 _ 5) -> do
-      players <- allPlayers
-      pushAll [story players theInnerCircle5, NextCampaignStep Nothing]
+      story theInnerCircle5
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStepPart 3 _ 6) -> do
-      players <- allPlayers
-      pushAll
-        [ story players theInnerCircle6
-        , Record TheInvestigatorsWereInductedIntoTheInnerCircle
-        , NextCampaignStep Nothing
-        ]
+      story theInnerCircle6
+      record TheInvestigatorsWereInductedIntoTheInnerCircle
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStep 4 _) -> do
       acceptedYourFate <- getHasRecord YouHaveAcceptedYourFate
@@ -274,7 +218,6 @@ instance RunMessage TheCircleUndone where
       mementosDiscovered <- getMementosDiscoveredCount
       doomDrawsEverCloser <- getHasRecord DoomDrawsEverCloser
       hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
-      players <- allPlayers
       let
         total =
           getSum
@@ -288,38 +231,29 @@ instance RunMessage TheCircleUndone where
               , mwhen hasBlackBook (Sum 1)
               , mwhen doomDrawsEverCloser (Sum 2)
               ]
-      pushAll
-        $ [ story players twistOfFate1
-          , RecordCount ThePathWindsBeforeYou total
-          ]
-        <> [ AddChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix (campaignDifficulty attrs)
-           | askedAnetteForAssistance || askedSanfordForAssistance
-           ]
-        <> [ story players twistOfFate2
-           , NextCampaignStep Nothing
-           ]
+
+      story twistOfFate1
+      recordCount ThePathWindsBeforeYou total
+      when (askedAnetteForAssistance || askedSanfordForAssistance) do
+        addChaosToken $ fromDifficulty MinusThree MinusFour MinusFive MinusSix attrs.difficulty
+      story twistOfFate2
+      nextCampaignStep
       pure c
     CampaignStep EpilogueStep -> do
-      arrestedAnette <- getHasRecord TheInvestigatorsArrestedAnette
-      assumedControlOfTheLodge <- getHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
-      survivedTheWatchersEmbrace <- getHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace
-      signedTheBlackBook <- getHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth
-      players <- allPlayers
-      pushAll
-        $ [story players epilogueArrestedAnette | arrestedAnette]
-        <> [story players epilogueAssumedControlOfTheLodge | assumedControlOfTheLodge]
-        <> [story players epilogueSurvivedTheWatchersEmbrace | survivedTheWatchersEmbrace]
-        <> [story players epilogueSignedTheBlackBook | signedTheBlackBook]
-        <> [GameOver]
+      whenHasRecord TheInvestigatorsArrestedAnette $ story epilogueArrestedAnette
+      whenHasRecord TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+        $ story epilogueAssumedControlOfTheLodge
+      whenHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace $ story epilogueSurvivedTheWatchersEmbrace
+      whenHasRecord TheInvestigatorsSignedTheBlackBookOfAzathoth $ story epilogueSignedTheBlackBook
+      gameOver
 
       pure c
     HandleOption option -> do
-      lead <- getLeadPlayer
       investigators <- allInvestigators
       case option of
-        TakeBlackBook -> pushM $ forceAddCampaignCardToDeckChoice lead investigators <$> genCard Assets.theBlackBook
-        TakePuzzleBox -> pushM $ forceAddCampaignCardToDeckChoice lead investigators <$> genCard Assets.puzzleBox
+        TakeBlackBook -> forceAddCampaignCardToDeckChoice investigators Assets.theBlackBook
+        TakePuzzleBox -> forceAddCampaignCardToDeckChoice investigators Assets.puzzleBox
         ProceedToInterlude3 -> pure ()
         _ -> error $ "Unhandled option: " <> show option
       pure c
-    _ -> defaultCampaignRunner msg c
+    _ -> lift $ defaultCampaignRunner msg c

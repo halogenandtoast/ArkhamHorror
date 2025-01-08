@@ -39,10 +39,11 @@ improvisationEffect :: EffectArgs -> ImprovisationEffect
 improvisationEffect = cardEffect ImprovisationEffect Cards.improvisation
 
 instance HasModifiersFor ImprovisationEffect where
-  getModifiersFor target@(InvestigatorTarget iid) (ImprovisationEffect attrs) | attrs.target == target = do
-    role <- field InvestigatorClass iid
-    toModifiers attrs [ReduceCostOf (CardWithClass role) 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ImprovisationEffect attrs) = case attrs.target of
+    InvestigatorTarget iid -> do
+      role <- field InvestigatorClass iid
+      modified_ attrs iid [ReduceCostOf (CardWithClass role) 3]
+    _ -> pure mempty
 
 instance RunMessage ImprovisationEffect where
   runMessage msg e@(ImprovisationEffect attrs) = case msg of

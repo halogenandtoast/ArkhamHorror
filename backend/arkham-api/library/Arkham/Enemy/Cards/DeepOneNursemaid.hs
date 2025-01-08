@@ -13,15 +13,15 @@ newtype DeepOneNursemaid = DeepOneNursemaid EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneNursemaid :: EnemyCard DeepOneNursemaid
-deepOneNursemaid = enemy DeepOneNursemaid Cards.deepOneNursemaid (0, Static 1, 0) (0, 0)
+deepOneNursemaid = enemy DeepOneNursemaid Cards.deepOneNursemaid (3, Static 2, 2) (1, 1)
 
 instance HasModifiersFor DeepOneNursemaid where
-  getModifiersFor (EnemyTarget eid) (DeepOneNursemaid a) = maybeModified a do
-    guard $ a.id /= eid
-    liftGuardM $ a.id <=~> UnengagedEnemy
-    liftGuardM $ eid <=~> (EnemyAt (orConnected $ locationWithEnemy a.id) <> EnemyWithTrait DeepOne)
-    pure [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DeepOneNursemaid a) = do
+    whenM (a.id <=~> UnengagedEnemy) do
+      modifySelect
+        a
+        (not_ (be a) <> at_ (orConnected $ locationWithEnemy a.id) <> EnemyWithTrait DeepOne)
+        [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities DeepOneNursemaid where
   getAbilities (DeepOneNursemaid a) = extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after You (be a)

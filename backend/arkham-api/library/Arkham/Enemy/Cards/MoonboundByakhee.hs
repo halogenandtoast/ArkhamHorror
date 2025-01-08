@@ -14,10 +14,10 @@ newtype MoonboundByakhee = MoonboundByakhee EnemyAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 instance HasModifiersFor MoonboundByakhee where
-  getModifiersFor (InvestigatorTarget iid) (MoonboundByakhee attrs) = do
-    x <- getAlarmLevel iid
-    toModifiers attrs $ guard (x <= 2) *> [CannotBeEngagedBy (be attrs), CannotBeHuntedBy (be attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MoonboundByakhee a) = modifySelectMaybe a Anyone \iid -> do
+    x <- lift $ getAlarmLevel iid
+    guard $ x <= 2
+    pure [CannotBeEngagedBy (be a), CannotBeHuntedBy (be a)]
 
 moonboundByakhee :: EnemyCard MoonboundByakhee
 moonboundByakhee =

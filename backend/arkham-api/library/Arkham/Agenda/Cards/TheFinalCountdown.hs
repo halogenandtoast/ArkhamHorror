@@ -1,17 +1,12 @@
-module Arkham.Agenda.Cards.TheFinalCountdown (
-  TheFinalCountdown (..),
-  theFinalCountdown,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheFinalCountdown (theFinalCountdown) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
+import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
+import Arkham.Helpers.Log (inRecordSet)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -27,17 +22,16 @@ theFinalCountdown =
     %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
 
 instance RunMessage TheFinalCountdown where
-  runMessage msg a@(TheFinalCountdown attrs) =
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        ritualSuicideMessages <- commitRitualSuicide attrs
-        lead <- getLead
-        theCreatureRecognizesYou <- CornHuskDoll `inRecordSet` MementosDiscovered
+  runMessage msg a@(TheFinalCountdown attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      lead <- getLead
+      commitRitualSuicide attrs
+      findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)
+
+      theCreatureRecognizesYou <- CornHuskDoll `inRecordSet` MementosDiscovered
+      when theCreatureRecognizesYou do
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
-        pushAll
-          $ ritualSuicideMessages
-          <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
-          <> [RemoveDoom (toSource attrs) (toTarget azathoth) 1 | theCreatureRecognizesYou]
-          <> [advanceAgendaDeck attrs]
-        pure a
-      _ -> TheFinalCountdown <$> runMessage msg attrs
+        removeDoom attrs azathoth 1
+      toDiscard GameSource attrs
+      pure a
+    _ -> TheFinalCountdown <$> liftRunMessage msg attrs

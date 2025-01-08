@@ -1,11 +1,12 @@
-module Arkham.Location.Cards.FoulSwamp (FoulSwamp (..), foulSwamp) where
+module Arkham.Location.Cards.FoulSwamp (foulSwamp) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Location (isAt)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards (foulSwamp)
 import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype FoulSwamp = FoulSwamp LocationAttrs
@@ -16,10 +17,8 @@ foulSwamp :: LocationCard FoulSwamp
 foulSwamp = location FoulSwamp Cards.foulSwamp 2 (Static 0)
 
 instance HasModifiersFor FoulSwamp where
-  getModifiersFor (InvestigatorTarget iid) (FoulSwamp attrs) = maybeModified attrs do
-    liftGuardM $ iid `isAt` attrs
-    pure [CannotHealHorror, CannotCancelHorror]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FoulSwamp attrs) =
+    modifySelect attrs (investigatorAt attrs) [CannotHealHorror, CannotCancelHorror]
 
 instance HasAbilities FoulSwamp where
   getAbilities (FoulSwamp attrs) =

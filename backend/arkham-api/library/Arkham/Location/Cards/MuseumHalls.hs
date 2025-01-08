@@ -1,14 +1,12 @@
 module Arkham.Location.Cards.MuseumHalls (museumHalls, MuseumHalls (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (museumHalls)
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype MuseumHalls = MuseumHalls LocationAttrs
@@ -22,43 +20,40 @@ museumHalls =
     <>~ ["Exhibit Hall"]
 
 instance HasModifiersFor MuseumHalls where
-  getModifiersFor target (MuseumHalls l) | l `is` target = do
-    toModifiers l [Blocked | unrevealed l]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MuseumHalls l) = whenUnrevealed l $ modifySelf l [Blocked]
 
 instance HasAbilities MuseumHalls where
-  getAbilities (MuseumHalls attrs) | unrevealed attrs = do
-    withBaseAbilities
+  getAbilities (MuseumHalls attrs) | attrs.unrevealed = do
+    extend1
       attrs
-      [ withTooltip
-          "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
-          $ restrictedAbility
-            (proxied (LocationMatcherSource "Museum Entrance") attrs)
-            1
-            (OnLocation "Museum Entrance")
-            #action
-      ]
+      $ withTooltip
+        "{action}: Test {combat} (5) to attempt to break down the door to the museum. If you are successful, immediately advance to Act 1b"
+      $ restricted
+        (proxied (LocationMatcherSource "Museum Entrance") attrs)
+        1
+        (OnLocation "Museum Entrance")
+        #action
   getAbilities (MuseumHalls attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) "Museum Halls"
-        ]
+    extend1 attrs
+      $ restricted attrs 1 Here
+      $ actionAbilityWithCost
+      $ GroupClueCost (PerPlayer 1) "Museum Halls"
 
 instance RunMessage MuseumHalls where
-  runMessage msg l@(MuseumHalls attrs) = case msg of
-    UseThisAbility iid this@(isProxySource attrs -> True) 1 | unrevealed attrs -> do
+  runMessage msg l@(MuseumHalls attrs) = runQueueT $ case msg of
+    UseThisAbility iid this@(isProxySource attrs -> True) 1 | attrs.unrevealed -> do
       museumEntrance <- selectJust $ LocationWithTitle "Museum Entrance"
       sid <- genId
-      push $ beginSkillTest sid iid (toAbilitySource this 1) museumEntrance #combat (Fixed 5)
+      beginSkillTest sid iid (toAbilitySource this 1) museumEntrance #combat (Fixed 5)
       pure l
-    UseThisAbility iid (isSource attrs -> True) 1 | revealed attrs -> do
+    UseThisAbility iid (isSource attrs -> True) 1 | attrs.revealed -> do
       push $ DrawCards iid $ targetCardDraw attrs ExhibitDeck 1
       pure l
     DrewCards _ drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      placements <- traverse placeLocation_ drewCards.cards
-      pushAll placements
+      traverse_ placeLocation_ drewCards.cards
       pure l
     PassedThisSkillTest _ source@(isProxyAbilitySource attrs 1 -> True) -> do
       actId <- selectJust AnyAct
-      push $ AdvanceAct actId source AdvancedWithOther
+      push $ AdvanceAct actId source #other
       pure l
-    _ -> MuseumHalls <$> runMessage msg attrs
+    _ -> MuseumHalls <$> liftRunMessage msg attrs

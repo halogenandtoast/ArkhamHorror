@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype ZebulonWhateley = ZebulonWhateley AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 zebulonWhateley :: AssetCard ZebulonWhateley
@@ -28,9 +28,7 @@ instance HasAbilities ZebulonWhateley where
     ]
 
 instance HasModifiersFor ZebulonWhateley where
-  getModifiersFor (InvestigatorTarget iid) (ZebulonWhateley a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ZebulonWhateley a) = controllerGets a [SkillModifier #willpower 1]
 
 instance RunMessage ZebulonWhateley where
   runMessage msg a@(ZebulonWhateley attrs) = case msg of

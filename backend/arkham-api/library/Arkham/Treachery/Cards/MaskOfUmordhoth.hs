@@ -7,6 +7,7 @@ import Arkham.Classes
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
@@ -20,11 +21,12 @@ maskOfUmordhoth :: TreacheryCard MaskOfUmordhoth
 maskOfUmordhoth = treachery MaskOfUmordhoth Cards.maskOfUmordhoth
 
 instance HasModifiersFor MaskOfUmordhoth where
-  getModifiersFor (EnemyTarget eid) (MaskOfUmordhoth attrs) | treacheryOnEnemy eid attrs = do
-    isUnique <- elem eid <$> select UniqueEnemy
-    let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
-    toModifiers attrs [HealthModifier 2, AddKeyword keyword]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MaskOfUmordhoth attrs) = case attrs.placement of
+    AttachedToEnemy eid -> do
+      isUnique <- elem eid <$> select UniqueEnemy
+      let keyword = if isUnique then Keyword.Retaliate else Keyword.Aloof
+      modified_ attrs eid [HealthModifier 2, AddKeyword keyword]
+    _ -> pure mempty
 
 instance RunMessage MaskOfUmordhoth where
   runMessage msg t@(MaskOfUmordhoth attrs@TreacheryAttrs {..}) = case msg of

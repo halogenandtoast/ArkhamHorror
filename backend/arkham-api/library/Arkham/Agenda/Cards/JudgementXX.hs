@@ -1,22 +1,17 @@
-module Arkham.Agenda.Cards.JudgementXX (
-  JudgementXX (..),
-  judgementXX,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.JudgementXX (judgementXX) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner hiding (InvestigatorDefeated)
-import Arkham.CampaignLogKey
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.DefeatedBy
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
+import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Investigator.Types (Field (InvestigatorCardCode))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Monster))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -30,13 +25,8 @@ judgementXX = agenda (1, A) JudgementXX Cards.judgementXX (Static 12)
 
 instance HasAbilities JudgementXX where
   getAbilities (JudgementXX a) =
-    [ mkAbility a 1 $ ForcedAbility $ PlacedDoomCounter Timing.After AnySource AnyTarget
-    , mkAbility a 2
-        $ ForcedAbility
-        $ InvestigatorDefeated
-          Timing.When
-          ByAny
-          You
+    [ mkAbility a 1 $ forced $ PlacedDoomCounter #after AnySource AnyTarget
+    , mkAbility a 2 $ forced $ InvestigatorDefeated #when ByAny You
     ]
 
 toDefeatedInfo :: [Window] -> Source
@@ -45,23 +35,18 @@ toDefeatedInfo ((windowType -> Window.InvestigatorDefeated defeatedBy _) : _) = 
 toDefeatedInfo (_ : xs) = toDefeatedInfo xs
 
 instance RunMessage JudgementXX where
-  runMessage msg a@(JudgementXX attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> pure a
+  runMessage msg a@(JudgementXX attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> pure a
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      investigators <- getInvestigatorPlayers
       n <- getDoomCount
       let damage = if n >= 5 then 2 else 1
-      pushAll
-        $ [ chooseOne
-            player
-            [ Label "Take damage" [assignDamage investigator attrs damage]
-            , Label "Take horror" [assignHorror investigator attrs damage]
-            ]
-          | (investigator, player) <- investigators
-          ]
+      eachInvestigator \iid -> do
+        chooseOneM iid do
+          labeled "Take damage" $ assignDamage iid attrs damage
+          labeled "Take horror" $ assignHorror iid attrs damage
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ -> do
-      push $ RevertAgenda $ toId attrs
+      push $ AdvanceAgenda attrs.id
       cardCode <- field InvestigatorCardCode iid
       let
         handleOther = do
@@ -71,23 +56,17 @@ instance RunMessage JudgementXX where
               if n >= 5 && isSource attrs source
                 then DisappearedIntoTheMist
                 else WasPulledIntoTheSpectralRealm
-          push $ RecordSetInsert key [recorded cardCode]
+          recordSetInsert key [cardCode]
       case source of
         (EnemyAttackSource eid) -> do
           isTheSpectralWatcher <- eid <=~> enemyIs Enemies.theSpectralWatcher
+          when isTheSpectralWatcher do
+            recordSetInsert WasTakenByTheWatcher [cardCode]
           isMonster <- eid <=~> EnemyWithTrait Monster
-          when isTheSpectralWatcher
-            $ push
-            $ RecordSetInsert
-              WasTakenByTheWatcher
-              [recorded cardCode]
-          when isMonster
-            $ push
-            $ RecordSetInsert
-              WasClaimedBySpecters
-              [recorded cardCode]
+          when isMonster do
+            recordSetInsert WasClaimedBySpecters [cardCode]
           when (not isMonster && not isTheSpectralWatcher) handleOther
         _ -> handleOther
-      push $ AdvanceAgenda $ toId attrs
+      push $ RevertAgenda attrs.id
       pure a
-    _ -> JudgementXX <$> runMessage msg attrs
+    _ -> JudgementXX <$> liftRunMessage msg attrs

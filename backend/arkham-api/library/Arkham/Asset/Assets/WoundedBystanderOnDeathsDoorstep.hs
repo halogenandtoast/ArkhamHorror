@@ -7,17 +7,15 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Modifier
-import Arkham.Token
 
 newtype WoundedBystanderOnDeathsDoorstep = WoundedBystanderOnDeathsDoorstep AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor WoundedBystanderOnDeathsDoorstep where
-  getModifiersFor target (WoundedBystanderOnDeathsDoorstep a) =
-    modified a [NonDirectDamageMustBeAssignToThisN 1 | isTarget a target]
+  getModifiersFor (WoundedBystanderOnDeathsDoorstep a) = modifySelf a [NonDirectDamageMustBeAssignToThisN 1]
 
 woundedBystanderOnDeathsDoorstep :: AssetCard WoundedBystanderOnDeathsDoorstep
 woundedBystanderOnDeathsDoorstep =

@@ -1,0 +1,47 @@
+{
+    "closeLog": "关闭战役日志",
+    "viewLog": "查看战役日志",
+
+    "view": "查看",
+    "shortcuts": "快捷键",
+    "shortcutsTitle": "快捷键列表",
+    "shortcutSkipTriggers": "(空格) 跳过触发能力",
+    "shortcutUndo": "撤销",
+    "shortcutToggleDebug": "调试模式开关",
+    "shortcutShowOrHideShortcuts": "展示/隐藏快捷键列表",
+    "shortcutDraw": "抽取玩家卡/遭遇卡",
+    "shortcutTakeResources": "获得资源",
+    "shortcutEndTurn": "结束回合",
+    "viewSettings": "查看设置",
+    "viewSettingTitle": "{investigator}的设置",
+    "viewSettingSkipTriggers": "跳过技能检定期间不影响结果的触发器",
+
+    "viewChaosBag": "查看混乱袋",
+    "chaosBag": "混乱袋",
+    "add": "加入",
+    
+    "splitView": "拆分视图",
+
+    "viewBonded": "查看绑定卡牌",
+    "bonded": "绑定卡牌",
+
+    "showOutOfPlay": "查看场外卡牌",
+    "outOfPlay": "场外卡牌",
+
+    "debug": "调试",
+    "toggleDebug": "调试模式开关",
+    "debugExport": "调试信息导出",
+
+    "undo": "撤销",
+
+    "fileABug": "提交错误报告",
+    "fileBugPart1": "即将存储当前游戏状态，并在GitHub提交一个问题。您需要一个GitHub帐户才能继续。",
+    "fileBugPart2": "请注意，提交错误需要一些时间。在错误提交期间，你将不能继续游戏。",
+    "bugTitleholder": "简短的标题",
+    "bugDescriptionholder": "在这里填写对发生现象的描述",
+    "bugSubmittingTitle": "bug提交中，可能需要几分钟，请耐心等待...",
+    "bugSubmittingContent": "当这个过程完成后，将在一个新窗口中打开GitHub，同时你可以继续游戏。",
+    "bugSubmittingFail": "错误报告提交失败",
+
+    "toggleSidebar": "展开/收起侧边栏"
+}

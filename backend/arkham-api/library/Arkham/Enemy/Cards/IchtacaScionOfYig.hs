@@ -39,10 +39,10 @@ instance RunMessage IchtacaScionOfYig where
         , parley sid iid attrs attrs #intellect (Fixed 5)
         ]
       pure e
-    FailedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ InitiateEnemyAttack $ enemyAttack (toId attrs) attrs iid
       pure e
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       push $ Flip iid (toSource attrs) (toTarget attrs)
       pure e
     Flip iid _ target | isTarget attrs target -> do
@@ -60,12 +60,12 @@ ichtacaScionOfYigEffect =
   cardEffect IchtacaScionOfYigEffect Cards.ichtacaScionOfYig
 
 instance HasModifiersFor IchtacaScionOfYigEffect where
-  getModifiersFor (ChaosTokenTarget token) (IchtacaScionOfYigEffect a) | chaosTokenFace token == Cultist = do
-    getSkillTestId >>= \case
-      Just sid | isTarget sid a.target -> do
-        toModifiers a [ChangeChaosTokenModifier AutoSuccessModifier]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (IchtacaScionOfYigEffect a) =
+    getSkillTest >>= \case
+      Just st | isTarget st.id a.target -> do
+        let tokens = filter ((== Cultist) . (.face)) st.revealedChaosTokens
+        modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
+      _ -> pure mempty
 
 instance RunMessage IchtacaScionOfYigEffect where
   runMessage msg e@(IchtacaScionOfYigEffect attrs@EffectAttrs {..}) =

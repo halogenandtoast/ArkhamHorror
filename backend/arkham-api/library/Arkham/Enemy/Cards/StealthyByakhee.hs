@@ -11,7 +11,7 @@ import Arkham.Enemy.Runner
 import Arkham.Modifier qualified as Modifier
 
 newtype StealthyByakhee = StealthyByakhee EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 stealthyByakhee :: EnemyCard StealthyByakhee
@@ -19,10 +19,8 @@ stealthyByakhee =
   enemy StealthyByakhee Cards.stealthyByakhee (5, Static 2, 3) (2, 1)
 
 instance HasModifiersFor StealthyByakhee where
-  getModifiersFor target (StealthyByakhee attrs)
-    | isTarget attrs target =
-        toModifiers attrs [Modifier.EnemyFight (-3) | enemyExhausted attrs]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (StealthyByakhee a) =
+    modifySelfWhen a a.exhausted [Modifier.EnemyFight (-3)]
 
 instance RunMessage StealthyByakhee where
   runMessage msg (StealthyByakhee attrs) =

@@ -15,6 +15,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Id
 import Arkham.Criteria
+import Arkham.Direction
 import Arkham.Id
 import Arkham.Matcher.Base
 import Arkham.Matcher.Patterns
@@ -189,8 +190,8 @@ preyWith (RestrictedBearerOf e m1) m2 = RestrictedBearerOf e $ m1 <> m2
 assetIs :: HasCardCode a => a -> AssetMatcher
 assetIs = AssetIs . toCardCode
 
-assetControlledBy :: InvestigatorId -> AssetMatcher
-assetControlledBy = AssetControlledBy . InvestigatorWithId
+assetControlledBy :: (AsId a, IdOf a ~ InvestigatorId) => a -> AssetMatcher
+assetControlledBy = AssetControlledBy . InvestigatorWithId . asId
 
 assetAttachedToAsset :: AssetId -> AssetMatcher
 assetAttachedToAsset = AssetAttachedToAsset . AssetWithId
@@ -238,10 +239,6 @@ canEnterLocation :: (AsId a, IdOf a ~ InvestigatorId) => a -> LocationMatcher
 canEnterLocation = CanEnterLocation . InvestigatorWithId . asId
 {-# INLINE canEnterLocation #-}
 
-locationIs :: HasCardCode a => a -> LocationMatcher
-locationIs = LocationIs . toCardCode
-{-# INLINE locationIs #-}
-
 locationWithAsset :: (AsId a, IdOf a ~ AssetId) => a -> LocationMatcher
 locationWithAsset = LocationWithAsset . AssetWithId . asId
 {-# INLINE locationWithAsset #-}
@@ -249,6 +246,14 @@ locationWithAsset = LocationWithAsset . AssetWithId . asId
 locationWithEnemy :: (AsId a, IdOf a ~ EnemyId) => a -> LocationMatcher
 locationWithEnemy = LocationWithEnemy . EnemyWithId . asId
 {-# INLINE locationWithEnemy #-}
+
+leftOf :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+leftOf = LocationInDirection LeftOf . LocationWithId . asId
+{-# INLINE leftOf #-}
+
+rightOf :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
+rightOf = LocationInDirection RightOf . LocationWithId . asId
+{-# INLINE rightOf #-}
 
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId

@@ -6,7 +6,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers
 import Arkham.Helpers.Deck
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Import.Lifted
@@ -37,11 +37,12 @@ hunchDeck :: InvestigatorAttrs -> [Card]
 hunchDeck = Map.findWithDefault [] HunchDeck . investigatorDecks
 
 instance HasModifiersFor JoeDiamond where
-  getModifiersFor target (JoeDiamond (a `With` Metadata (Just cid))) | a `is` target = do
-    case hunchDeck a of
-      x : _ | x.id == cid -> modified a [ReduceCostOf (CardWithId x.id) 2, AsIfInHand x]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JoeDiamond (a `With` Metadata mcid)) =
+    case mcid of
+      Nothing -> pure mempty
+      Just cid -> case hunchDeck a of
+        x : _ | x.id == cid -> modifySelf a [ReduceCostOf (CardWithId x.id) 2, AsIfInHand x]
+        _ -> pure mempty
 
 instance HasAbilities JoeDiamond where
   getAbilities (JoeDiamond (a `With` _)) =

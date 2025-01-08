@@ -31,5 +31,23 @@
   },
   "tooltips": {
     "takeControlOfKey": "Take control of {key} key"
-  }
+  },
+  "shuffleRemainder": "Shuffle the remainder of the encounter cards to build the encounter deck.",
+  "readyToBegin": "You are now ready to begin.",
+
+  "Yes": "Yes",
+  "No": "No",
+
+  "Evade": "Evade",
+  "Fight": "Fight",
+  "Engage": "Engage",
+  "Forced": "Forced",
+  "Delayed": "Delayed",
+  "Objective": "Objective",
+  "Haunted": "Haunted",
+
+  "Results": "Results",
+  "Story": "Story",
+  "ChooseOne": "Choose one",
+  "Choose": "Choose"
 }

@@ -5,9 +5,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Game.Helpers (sourceMatches)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype SoulSanctification3 = SoulSanctification3 AssetAttrs
   deriving anyclass IsAsset
@@ -17,10 +17,9 @@ soulSanctification3 :: AssetCard SoulSanctification3
 soulSanctification3 = asset SoulSanctification3 Cards.soulSanctification3
 
 instance HasModifiersFor SoulSanctification3 where
-  getModifiersFor (InvestigatorTarget _) (SoulSanctification3 a) = case a.controller of
-    Nothing -> pure []
-    Just controller -> modified a $ CanHealAtFull (sourceOwnedBy controller) <$> [#damage, #horror]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SoulSanctification3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just controller -> modifySelect a Anyone $ CanHealAtFull (sourceOwnedBy controller) <$> [#damage, #horror]
 
 instance HasAbilities SoulSanctification3 where
   getAbilities (SoulSanctification3 a) =

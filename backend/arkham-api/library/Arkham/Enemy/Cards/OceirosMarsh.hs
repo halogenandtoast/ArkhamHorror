@@ -22,10 +22,9 @@ oceirosMarsh :: EnemyCard OceirosMarsh
 oceirosMarsh = enemy OceirosMarsh Cards.oceirosMarsh (4, Static 6, 2) (1, 1)
 
 instance HasModifiersFor OceirosMarsh where
-  getModifiersFor target (OceirosMarsh a) = maybeModified a do
-    guard $ isTarget a target
-    liftGuardM $ a.id <=~> EnemyAt FloodedLocation
-    pure [EnemyEvade 2]
+  getModifiersFor (OceirosMarsh a) = do
+    atFlooded <- a.id <=~> EnemyAt FloodedLocation
+    modifySelfWhen a atFlooded [EnemyEvade 2]
 
 instance HasAbilities OceirosMarsh where
   getAbilities (OceirosMarsh a) =

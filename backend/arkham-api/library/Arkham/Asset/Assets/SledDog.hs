@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Game.Helpers (getCanMoveToLocations)
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Movement
 
 newtype SledDog = SledDog AssetAttrs
@@ -15,9 +15,7 @@ sledDog :: AssetCard SledDog
 sledDog = ally SledDog Cards.sledDog (2, 2)
 
 instance HasModifiersFor SledDog where
-  getModifiersFor target (SledDog a) | a `is` target = do
-    toModifiers a [SharesSlotWith 2 "Sled Dog"]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SledDog a) = modifySelf a [SharesSlotWith 2 "Sled Dog"]
 
 instance HasAbilities SledDog where
   getAbilities (SledDog a) =

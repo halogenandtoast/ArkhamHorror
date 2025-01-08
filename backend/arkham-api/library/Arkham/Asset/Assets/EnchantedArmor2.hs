@@ -17,12 +17,10 @@ enchantedArmor2 :: AssetCard EnchantedArmor2
 enchantedArmor2 = assetWith EnchantedArmor2 Cards.enchantedArmor2 (setMeta @(Int, Int) (0, 0))
 
 instance HasModifiersFor EnchantedArmor2 where
-  getModifiersFor (InvestigatorTarget iid) (EnchantedArmor2 attrs) =
-    case attrs.controller of
-      Just controller | controller == iid -> do
-        toModifiers attrs [CanAssignDamageToAsset attrs.id, CanAssignHorrorToAsset attrs.id]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (EnchantedArmor2 a) =
+    case a.controller of
+      Nothing -> pure mempty
+      Just iid -> modified_ a iid [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 instance HasAbilities EnchantedArmor2 where
   getAbilities (EnchantedArmor2 attrs) =

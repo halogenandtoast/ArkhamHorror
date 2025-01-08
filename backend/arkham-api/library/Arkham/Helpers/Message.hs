@@ -27,6 +27,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Resolution
+import Arkham.Search
 import Arkham.Source
 import Arkham.Target
 import Arkham.Timing qualified as Timing
@@ -37,6 +38,15 @@ import Control.Monad.Trans
 
 drawCards :: Sourceable source => InvestigatorId -> source -> Int -> Message
 drawCards i source n = DrawCards i $ newCardDraw source i n
+
+drawCardsWith
+  :: Sourceable source
+  => InvestigatorId
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> Message
+drawCardsWith i source n f = DrawCards i $ f $ newCardDraw source i n
 
 drawEncounterCard :: Sourceable source => InvestigatorId -> source -> Message
 drawEncounterCard i source = drawEncounterCards i source 1
@@ -53,6 +63,17 @@ drawCardsIfCan
 drawCardsIfCan i source n = do
   canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
   pure $ guard canDraw $> drawCards (asId i) source n
+
+drawCardsIfCanWith
+  :: (MonadRandom m, Sourceable source, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> m (Maybe Message)
+drawCardsIfCanWith i source n f = do
+  canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
+  pure $ guard canDraw $> drawCardsWith (asId i) source n f
 
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of
@@ -466,7 +487,7 @@ search
   -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> Message
-search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search Searching iid source target zones matcher strategy)
+search iid (toSource -> source) (toTarget -> target) zones matcher strategy = Do (Search $ mkSearch Searching iid source target zones matcher strategy)
 
 lookAt
   :: (Targetable target, Sourceable source)
@@ -477,7 +498,7 @@ lookAt
   -> ExtendedCardMatcher
   -> FoundCardsStrategy
   -> Message
-lookAt iid (toSource -> source) (toTarget -> target) = Search Looking iid source target
+lookAt iid (toSource -> source) (toTarget -> target) zones matcher strategy = Search $ mkSearch Looking iid source target zones matcher strategy
 
 revealing
   :: (Targetable target, Sourceable source)
@@ -486,16 +507,20 @@ revealing
   -> target
   -> Zone
   -> Message
-revealing iid (toSource -> source) (toTarget -> target) zone = Search Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
+revealing iid (toSource -> source) (toTarget -> target) zone = Search $ mkSearch Revealing iid source target [(zone, PutBack)] (basic AnyCard) ReturnCards
 
 takeResources :: Sourceable source => InvestigatorId -> source -> Int -> Message
 takeResources iid (toSource -> source) n = TakeResources iid n source False
 
 gainResourcesIfCan
-  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> Int -> m (Maybe Message)
-gainResourcesIfCan iid source n = do
-  canGainResources <- can.gain.resources (sourceToFromSource source) iid
-  pure $ guard canGainResources $> takeResources iid source n
+  :: (HasGame m, Sourceable source, AsId a, IdOf a ~ InvestigatorId)
+  => a
+  -> source
+  -> Int
+  -> m (Maybe Message)
+gainResourcesIfCan a source n = do
+  canGainResources <- can.gain.resources (sourceToFromSource source) (asId a)
+  pure $ guard canGainResources $> takeResources (asId a) source n
 
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage

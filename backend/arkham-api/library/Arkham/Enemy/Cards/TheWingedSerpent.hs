@@ -3,8 +3,8 @@ module Arkham.Enemy.Cards.TheWingedSerpent (theWingedSerpent, TheWingedSerpent (
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype TheWingedSerpent = TheWingedSerpent EnemyAttrs
   deriving anyclass IsEnemy
@@ -17,9 +17,7 @@ theWingedSerpent =
     . (healthL .~ Nothing)
 
 instance HasModifiersFor TheWingedSerpent where
-  getModifiersFor target (TheWingedSerpent a) | isTarget a target = do
-    toModifiers a [CannotBeDefeated, CannotMakeAttacksOfOpportunity]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheWingedSerpent a) = modifySelf a [CannotBeDefeated, CannotMakeAttacksOfOpportunity]
 
 instance HasAbilities TheWingedSerpent where
   getAbilities (TheWingedSerpent a) =

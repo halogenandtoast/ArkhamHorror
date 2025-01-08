@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.Backpack2 (backpack2, Backpack2 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), getAdditionalSearchTargets)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, getAdditionalSearchTargets)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Strategy
 
@@ -15,9 +15,7 @@ backpack2 :: AssetCard Backpack2
 backpack2 = asset Backpack2 Cards.backpack2
 
 instance HasModifiersFor Backpack2 where
-  getModifiersFor (InvestigatorTarget iid) (Backpack2 attrs) | controlledBy attrs iid = do
-    modified attrs (AsIfInHand <$> attrs.cardsUnderneath)
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Backpack2 a) = controllerGets a (AsIfInHand <$> a.cardsUnderneath)
 
 instance HasAbilities Backpack2 where
   getAbilities (Backpack2 a) =

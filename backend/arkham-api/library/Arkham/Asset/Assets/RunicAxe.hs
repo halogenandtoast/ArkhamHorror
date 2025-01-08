@@ -12,11 +12,11 @@ import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelfWhen)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Investigator.Types (Field (InvestigatorLocation))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DiscoverClues, EnemyDefeated)
-import Arkham.Modifier
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Trait (Trait (Relic))
@@ -44,22 +44,33 @@ override a iid =
     $ EnemyWithoutModifier CannotBeAttacked
     <> oneOf
       [ EnemyAt (ConnectedFrom $ locationWithInvestigator iid)
+          <> ( if a.use Charge > 1 then oneOf [not_ AloofEnemy, CanEngageEnemy (a.ability 1)] else not_ AloofEnemy
+             )
       , enemyAtLocationWith iid <> AloofEnemy <> CanEngageEnemy (a.ability 1)
       , enemyAtLocationWith iid <> not_ AloofEnemy
       ]
 
 instance HasModifiersFor RunicAxe where
-  getModifiersFor target (RunicAxe (With a _)) | isTarget a target = do
-    modified a
-      $ guard (a `hasCustomization` Heirloom)
-      *> [ReduceCostOf (CardWithId a.cardId) 1, AddTrait Relic]
-  getModifiersFor (AbilityTarget iid ab) (RunicAxe (With a _)) | ab.source == toSource a = do
-    modified
-      a
-      [ CanModify $ EnemyFightActionCriteria $ override a iid
-      | a.use Charge > 0 && a `hasCustomization` InscriptionOfTheHunt
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (RunicAxe (With a _)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      self <-
+        modifySelfWhen
+          a
+          (a `hasCustomization` Heirloom)
+          [ReduceCostOf (CardWithId a.cardId) 1, AddTrait Relic]
+      ability <-
+        if a.use Charge > 0 && a `hasCustomization` InscriptionOfTheHunt
+          then
+            selectOne (AbilityIs (toSource a) 1) >>= \case
+              Nothing -> pure mempty
+              Just ab ->
+                modified_
+                  a
+                  (AbilityTarget iid ab)
+                  [CanModify $ EnemyFightActionCriteria $ override a iid]
+          else pure mempty
+      pure $ self <> ability
 
 instance HasAbilities RunicAxe where
   getAbilities (RunicAxe (With a _)) = [restrictedAbility a 1 ControlsThis fightAction_]

@@ -43,7 +43,7 @@ instance HasAbilities LodgeJailor where
 instance RunMessage LodgeJailor where
   runMessage msg e@(LodgeJailor attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- genIdKey
+      mKey <- getRandomKey
       pushAll
         $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2
         : [PlaceKey (toTarget attrs) k | k <- maybeToList mKey]

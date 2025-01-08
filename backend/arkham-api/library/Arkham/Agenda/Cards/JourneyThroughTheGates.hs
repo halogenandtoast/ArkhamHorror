@@ -1,18 +1,13 @@
-module Arkham.Agenda.Cards.JourneyThroughTheGates (
-  JourneyThroughTheGates (..),
-  journeyThroughTheGates,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.JourneyThroughTheGates (journeyThroughTheGates) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Agenda.Import.Lifted
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Act
 import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Steps))
 
 newtype JourneyThroughTheGates = JourneyThroughTheGates AgendaAttrs
@@ -25,42 +20,42 @@ journeyThroughTheGates = agenda (1, A) JourneyThroughTheGates Cards.journeyThrou
 instance HasAbilities JourneyThroughTheGates where
   getAbilities (JourneyThroughTheGates a) =
     [ restrictedAbility a 1 (exists $ InvestigatorAt $ LocationWithTrait Steps)
-        $ ForcedAbility
+        $ forced
         $ PlacedDoomCounter #when AnySource
         $ TargetIs
         $ toTarget a
     ]
 
 instance RunMessage JourneyThroughTheGates where
-  runMessage msg a@(JourneyThroughTheGates attrs) = case msg of
+  runMessage msg a@(JourneyThroughTheGates attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
+      placeDoom (attrs.ability 1) attrs 1
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       step <- getCurrentActStep
-      investigators <- getInvestigators
       if step == 4
-        then
-          pushAll $ Record TheDreamersStrayedFromThePath
-            : map (\iid -> SufferTrauma iid 0 1) investigators
-              <> map (InvestigatorDefeated (toSource attrs)) investigators
+        then do
+          record TheDreamersStrayedFromThePath
+          eachInvestigator \iid -> do
+            sufferMentalTrauma iid 1
+            investigatorDefeated attrs iid
         else do
-          for_ investigators $ \iid -> do
-            player <- getPlayer iid
+          eachInvestigator \iid -> do
             sid <- genId
-            push
-              $ chooseOne
-                player
-                [ Label
-                    "Test {willpower} (3) to remember that this is all a dream"
-                    [beginSkillTest sid iid (toSource attrs) iid #willpower (Fixed 3)]
-                , Label "Do not test" [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
-                ]
+            chooseOneM iid do
+              labeled
+                "Test {willpower} (3) to remember that this is all a dream"
+                $ beginSkillTest sid iid attrs iid #willpower (Fixed 3)
+              labeled "Do not test" do
+                sufferPhysicalTrauma iid 1
+                investigatorDefeated attrs iid
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      pushAll [SufferTrauma iid 0 1, InvestigatorDefeated (toSource attrs) iid]
+      sufferMentalTrauma iid 1
+      investigatorDefeated attrs iid
       pure a
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      pushAll [SufferTrauma iid 1 0, InvestigatorDefeated (toSource attrs) iid]
+      sufferPhysicalTrauma iid 1
+      investigatorDefeated attrs iid
       pure a
-    _ -> JourneyThroughTheGates <$> runMessage msg attrs
+    _ -> JourneyThroughTheGates <$> liftRunMessage msg attrs

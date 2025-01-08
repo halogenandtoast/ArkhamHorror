@@ -1,11 +1,11 @@
-module Arkham.Scenario.Scenarios.TheDepthsOfYoth (TheDepthsOfYoth (..), theDepthsOfYoth) where
+module Arkham.Scenario.Scenarios.TheDepthsOfYoth (theDepthsOfYoth) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -16,6 +16,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (getChoiceAmount, questionLabel)
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
@@ -77,7 +78,7 @@ standaloneChaosTokens =
   ]
 
 standaloneCampaignLog :: CampaignLog
-standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [TheRelicIsMissing]}
+standaloneCampaignLog = mkCampaignLog {campaignLogRecorded = setFromList [toCampaignLogKey TheRelicIsMissing]}
 
 instance RunMessage TheDepthsOfYoth where
   runMessage msg s@(TheDepthsOfYoth attrs) = runQueueT $ scenarioI18n $ case msg of

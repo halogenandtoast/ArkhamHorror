@@ -55,12 +55,16 @@ allAgendaCards =
       , encore
       , endlessCaverns
       , endsAndMeans
+      , etherealTangleV1
+      , etherealTangleV2
+      , etherealTangleV3
       , expeditionIntoTheWild
       , eyesInTheDark
       , fashionablyLate
       , feedTheBeast
       , floodedStreets
       , fogOnTheBay
+      , forbiddenPeaks
       , franticPursuit
       , furyThatShakesTheEarth
       , growingSuspicion
@@ -72,6 +76,7 @@ allAgendaCards =
       , hospitalOfHorrors
       , hotPursuit
       , humanityFading
+      , icyDepths
       , intoTheWhite
       , intruders
       , inEveryShadow
@@ -88,6 +93,7 @@ allAgendaCards =
       , madnessCoils
       , madnessDies
       , madnessDrowns
+      , manifestationsOfEvil
       , markedForSacrifice
       , outOfTime
       , overTheThreshold
@@ -119,6 +125,7 @@ allAgendaCards =
       , swallowedSky
       , temperanceXIV
       , terrorAtFalconPoint
+      , terrorDescends
       , theAlarmIsRaised
       , theArkhamWoods
       , theBarrierIsThin
@@ -690,6 +697,27 @@ theChillOfNight = agenda "08524" "The Chill of Night" 5 LostInTheNight
 
 madnessAndDeath :: CardDef
 madnessAndDeath = agenda "08525" "Madness and Death" 6 LostInTheNight
+
+manifestationsOfEvil :: CardDef
+manifestationsOfEvil = agenda "08544" "Manifestations of Evil" 7 SeepingNightmares
+
+icyDepths :: CardDef
+icyDepths = agenda "08545" "Icy Depths" 8 SeepingNightmares
+
+etherealTangleV1 :: CardDef
+etherealTangleV1 = agenda "08550" "Ethereal Tangle (v. I)" 1 FatalMirage
+
+etherealTangleV2 :: CardDef
+etherealTangleV2 = agenda "08551" "Ethereal Tangle (v. II)" 2 FatalMirage
+
+etherealTangleV3 :: CardDef
+etherealTangleV3 = agenda "08552" "Ethereal Tangle (v. III)" 3 FatalMirage
+
+forbiddenPeaks :: CardDef
+forbiddenPeaks = agenda "08597" "Forbidden Peaks" 1 ToTheForbiddenPeaks
+
+terrorDescends :: CardDef
+terrorDescends = agenda "08598" "Terror Descends" 2 ToTheForbiddenPeaks
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

@@ -40,7 +40,7 @@ instance RunMessage FarAboveYourHouse where
       pure l
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} _ n
       | isAbilitySource attrs 1 source -> do
-          investigatorIds <- getInvestigatorIds
+          investigatorIds <- getInvestigators
           pushAll
             $ concat
             $ replicate @[[Message]]

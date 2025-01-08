@@ -1,10 +1,8 @@
-module Arkham.Scenario.Scenarios.DimCarcosa (DimCarcosa (..), dimCarcosa) where
+module Arkham.Scenario.Scenarios.DimCarcosa (dimCarcosa) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.ThePathToCarcosa.Helpers
-import Arkham.Classes
+import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
@@ -16,6 +14,8 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)
@@ -46,13 +46,10 @@ dimCarcosa difficulty =
     ]
 
 instance HasModifiersFor DimCarcosa where
-  getModifiersFor (EnemyTarget eid) (DimCarcosa a) = do
-    isHastur <- elem eid <$> select (EnemyWithTitle "Hastur")
+  getModifiersFor (DimCarcosa a) = do
     knowTheSecret <- remembered KnowTheSecret
-    toModifiers a [CannotBeDefeated | isHastur && not knowTheSecret]
-  getModifiersFor (InvestigatorTarget _) (DimCarcosa a) = do
-    toModifiers a [CanOnlyBeDefeatedByDamage]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (not knowTheSecret) (EnemyWithTitle "Hastur") [CannotBeDefeated]
+    modifySelectWith a Anyone setActiveDuringSetup [CanOnlyBeDefeatedByDamage]
 
 instance HasChaosTokenValue DimCarcosa where
   getChaosTokenValue iid chaosTokenFace (DimCarcosa attrs) = case chaosTokenFace of
@@ -98,12 +95,10 @@ instance RunMessage DimCarcosa where
       setChaosTokens standaloneChaosTokens
 
       lead <- getLead
-      chooseOne
-        lead
-        [ Label "Conviction" [RecordCount Conviction 8]
-        , Label "Doubt" [RecordCount Doubt 8]
-        , Label "Neither" []
-        ]
+      chooseOneM lead do
+        labeled "Conviction" $ markConvictionN 8
+        labeled "Doubt" $ markDoubtN 8
+        labeled "Neither" nothing
 
       pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
       record pathOpened
@@ -136,6 +131,16 @@ instance RunMessage DimCarcosa where
       gather Set.InhabitantsOfCarcosa
       gather Set.AgentsOfHastur
       gather Set.StrikingFear
+
+      setAgendaDeck [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
+
+      let
+        act2 = case n of
+          1 -> Acts.searchForTheStrangerV1
+          2 -> Acts.searchForTheStrangerV2
+          3 -> Acts.searchForTheStrangerV3
+          _ -> error $ "Invalid setup step, got: " <> show n
+      setActDeck [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
 
       shoresOfHali <- place Locations.shoresOfHali
       darkSpires <- place Locations.darkSpires
@@ -188,16 +193,6 @@ instance RunMessage DimCarcosa where
           <> setAsideRuinsOfCarcosa
           <> setAsideDimStreets
           <> setAsideDepthsOfDemhe
-
-      setAgendaDeck [Agendas.madnessCoils, Agendas.madnessDrowns, Agendas.madnessDies]
-
-      let
-        act2 = case n of
-          1 -> Acts.searchForTheStrangerV1
-          2 -> Acts.searchForTheStrangerV2
-          3 -> Acts.searchForTheStrangerV3
-          _ -> error $ "Invalid setup step, got: " <> show n
-      setActDeck [Acts.inLostCarcosa, act2, Acts.theKingInTatters]
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == Cultist) do
         assignHorror iid Cultist $ if isEasyStandard attrs then 1 else 2

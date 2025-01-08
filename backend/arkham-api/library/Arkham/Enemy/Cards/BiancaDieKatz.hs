@@ -22,9 +22,9 @@ instance HasAbilities BiancaDieKatz where
   getAbilities (BiancaDieKatz (With attrs meta)) =
     extend
       attrs
-      [ controlled attrs 1 IfYouOweBiancaDieKatz
+      [ restricted attrs 1 IfYouOweBiancaDieKatz
           $ parleyAction (CalculatedResourceCost (AmountYouOweToBiancaDieKatz You))
-      , controlled attrs 2 criteria $ forced $ EnemyLeavesPlay #when (be attrs)
+      , restricted attrs 2 criteria $ forced $ EnemyLeavesPlay #when (be attrs)
       ]
    where
     criteria = if forcedDisabled meta then Never else NoRestriction

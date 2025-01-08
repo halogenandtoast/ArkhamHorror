@@ -1,11 +1,9 @@
 module Arkham.Enemy.Cards.ProfessorWilliamDyerProfessorOfGeology (
   professorWilliamDyerProfessorOfGeology,
-  ProfessorWilliamDyerProfessorOfGeology (..),
 )
 where
 
 import Arkham.Ability
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
@@ -28,8 +26,8 @@ instance HasAbilities ProfessorWilliamDyerProfessorOfGeology where
   getAbilities (ProfessorWilliamDyerProfessorOfGeology a) =
     extend
       a
-      [ restricted a 1 OnSameLocation $ parleyAction (UpTo (Fixed 2) (HandDiscardCost 1 #any))
-      , mkAbility a 2 $ forced $ EnemyDefeated #if Anyone ByAny (be a)
+      [ restricted a 1 OnSameLocation $ parleyAction (UpTo (Fixed 2) $ HandDiscardCost 1 #any)
+      , mkAbility a 2 $ forced $ EnemyDefeated #when Anyone ByAny (be a)
       ]
 
 instance RunMessage ProfessorWilliamDyerProfessorOfGeology where
@@ -43,6 +41,6 @@ instance RunMessage ProfessorWilliamDyerProfessorOfGeology where
       when (attrs.token #resource >= n) $ addToVictory attrs
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
-      partnerEliminated Assets.professorWilliamDyerProfessorOfGeology
+      eliminatePartner attrs
       pure e
     _ -> ProfessorWilliamDyerProfessorOfGeology <$> liftRunMessage msg attrs

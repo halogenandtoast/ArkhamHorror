@@ -2,8 +2,8 @@ module Arkham.Campaigns.TheInnsmouthConspiracy.Helpers where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card.CardCode (HasCardCode)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)
@@ -20,6 +20,7 @@ import Arkham.Message (
   Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel, SetFloodLevel),
  )
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types
@@ -78,7 +79,7 @@ increaseThisFloodLevelTo
 increaseThisFloodLevelTo location newFloodLevel = do
   floodLevel <- fieldWithDefault Unflooded LocationFloodLevel location
   when (floodLevel < newFloodLevel) do
-    push $ IncreaseFloodLevel (asId location)
+    push $ SetFloodLevel (asId location) newFloodLevel
 
 setThisFloodLevel
   :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> FloodLevel -> m ()

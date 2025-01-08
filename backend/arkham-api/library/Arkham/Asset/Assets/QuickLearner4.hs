@@ -5,7 +5,7 @@ import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.SkillTest.Base
+import Control.Monad.Fail (fail)
 
 newtype QuickLearner4 = QuickLearner4 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -16,17 +16,16 @@ quickLearner4 =
   asset QuickLearner4 Cards.quickLearner4
 
 instance HasModifiersFor QuickLearner4 where
-  getModifiersFor (SkillTestTarget _) (QuickLearner4 a) = do
-    mSkillTestInvestigator <- fmap skillTestInvestigator <$> getSkillTest
-    case mSkillTestInvestigator of
-      Just iid | controlledBy a iid -> do
-        actionsTaken <- fieldMap InvestigatorActionsTaken length iid
+  getModifiersFor (QuickLearner4 a) =
+    getSkillTest >>= \case
+      Nothing -> pure mempty
+      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+        guard $ controlledBy a st.investigator
+        actionsTaken <- lift $ fieldMap InvestigatorActionsTaken length st.investigator
         case actionsTaken of
-          n | n < 2 -> toModifiers a [Difficulty 1]
-          n | n > 2 -> toModifiers a [Difficulty (-1)]
-          _ -> pure []
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+          n | n < 2 -> pure [Difficulty 1]
+          n | n > 2 -> pure [Difficulty (-1)]
+          _ -> fail "Wrong number of actions taken"
 
 instance RunMessage QuickLearner4 where
   runMessage msg (QuickLearner4 attrs) = QuickLearner4 <$> runMessage msg attrs

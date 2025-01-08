@@ -1,7 +1,6 @@
 module Arkham.Scenarios.ThreadsOfFate.Helpers where
 
 import Arkham.Prelude
-
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
@@ -13,6 +12,7 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
@@ -28,6 +28,13 @@ isIchtacasPrey :: HasGame m => EnemyId -> m Bool
 isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
   IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
   _ -> False
+
+getIchtacasPrey :: HasGame m => m [EnemyId]
+getIchtacasPrey = do
+  xs <- scenarioField ScenarioRemembered
+  pure $ flip mapMaybe (toList xs) \case
+    IchtacasPrey (Labeled _ eid' `With` _) -> Just eid'
+    _ -> Nothing
 
 isIchtacasDestination :: HasGame m => LocationId -> m Bool
 isIchtacasDestination lid = scenarioFieldMap ScenarioRemembered $ any $ \case

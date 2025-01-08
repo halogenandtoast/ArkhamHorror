@@ -20,17 +20,16 @@ narogath =
     .~ Prey (NearestToEnemy $ withTrait Trait.Cultist <> not_ (enemyIs Cards.narogath))
 
 instance HasModifiersFor Narogath where
-  getModifiersFor (InvestigatorTarget iid) (Narogath a) = do
-    affected <- iid <=~> InvestigatorAt (AccessibleFrom $ locationWithEnemy a.id)
-    toModifiers
-      a
-      [ CannotTakeAction $ EnemyAction Parley $ EnemyWithTrait Cultist
-      | a.ready && affected
-      ]
-  getModifiersFor target (Narogath a) | isTarget a target = do
-    n <- getPlayerCountValue $ PerPlayer 3
-    toModifiers a [HealthModifier n]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Narogath a) = do
+    investigators <-
+      modifySelectWhen
+        a
+        a.ready
+        (InvestigatorAt $ AccessibleFrom $ locationWithEnemy a)
+        [CannotTakeAction $ EnemyAction Parley $ EnemyWithTrait Cultist]
+    n <- perPlayer 3
+    self <- modifySelf a [HealthModifier n]
+    pure $ investigators <> self
 
 instance RunMessage Narogath where
   runMessage msg (Narogath attrs) = Narogath <$> runMessage msg attrs

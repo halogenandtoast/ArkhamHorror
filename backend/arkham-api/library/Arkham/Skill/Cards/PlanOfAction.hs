@@ -14,12 +14,11 @@ planOfAction :: SkillCard PlanOfAction
 planOfAction = skill PlanOfAction Cards.planOfAction
 
 instance HasModifiersFor PlanOfAction where
-  getModifiersFor target (PlanOfAction attrs) | attrs `is` target = do
+  getModifiersFor (PlanOfAction attrs) = do
     n <- length <$> selectAgg id InvestigatorActionsTaken TurnInvestigator
-    modified attrs
+    modifySelf attrs.cardId
       $ [AddSkillIcons [#willpower, #agility] | n == 0]
       <> [AddSkillIcons [#combat, #intellect] | n >= 2]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage PlanOfAction where
   runMessage msg s@(PlanOfAction attrs) = runQueueT $ case msg of

@@ -1,11 +1,12 @@
-module Arkham.Agenda.Cards.HospitalOfHorrors (HospitalOfHorrors (..), hospitalOfHorrors) where
+module Arkham.Agenda.Cards.HospitalOfHorrors (hospitalOfHorrors) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Campaigns.TheDreamEaters.Key
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype HospitalOfHorrors = HospitalOfHorrors AgendaAttrs
@@ -16,10 +17,8 @@ hospitalOfHorrors :: AgendaCard HospitalOfHorrors
 hospitalOfHorrors = agenda (3, A) HospitalOfHorrors Cards.hospitalOfHorrors (Static 8)
 
 instance HasModifiersFor HospitalOfHorrors where
-  getModifiersFor (EnemyTarget eid) (HospitalOfHorrors attrs) = do
-    atInfested <- eid <=~> EnemyAt InfestedLocation
-    modified attrs $ guard atInfested *> [EnemyFight 1, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HospitalOfHorrors attrs) =
+    modifySelect attrs (EnemyAt InfestedLocation) [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities HospitalOfHorrors where
   getAbilities (HospitalOfHorrors attrs) =

@@ -2,14 +2,13 @@ module Arkham.Scenarios.UnionAndDisillusion.Helpers where
 
 import Arkham.Prelude
 
+import Arkham.Message.Lifted.Queue
+import Arkham.Message.Lifted.Choose
 import Arkham.Action
 import Arkham.Calculation
-import Arkham.Classes.Entity
-import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Criteria
 import Arkham.Field
-import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Brazier
 import Arkham.Location.Types
@@ -21,14 +20,14 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 
-lightBrazier :: LocationId -> Message
-lightBrazier locationId = UpdateLocation locationId (LocationBrazier ?=. Lit)
+lightBrazier :: ReverseQueue m => LocationId -> m ()
+lightBrazier locationId = push $ UpdateLocation locationId (LocationBrazier ?=. Lit)
 
-unlightBrazier :: LocationId -> Message
-unlightBrazier locationId = UpdateLocation locationId (LocationBrazier ?=. Unlit)
+unlightBrazier :: ReverseQueue m => LocationId -> m ()
+unlightBrazier locationId = push $ UpdateLocation locationId (LocationBrazier ?=. Unlit)
 
 circleTest
-  :: (Sourceable source, Targetable target, HasQueue Message m)
+  :: (Sourceable source, Targetable target, ReverseQueue m)
   => SkillTestId
   -> InvestigatorId
   -> source
@@ -51,15 +50,12 @@ circleTest sid iid source target skillTypes n =
       { skillTestAction = Just Circle
       }
 
-passedCircleTest :: (HasGame m, HasQueue Message m) => InvestigatorId -> LocationAttrs -> m ()
-passedCircleTest iid attrs = do
-  let
-    brazierChoice =
-      case locationBrazier attrs of
-        Just Lit -> Label "Unlight the brazier" [unlightBrazier (toId attrs)]
-        _unlit -> Label "Light the brazier" [lightBrazier (toId attrs)]
-  player <- getPlayer iid
-  push $ chooseOne player [brazierChoice, Label "Leave brazier alone" []]
+passedCircleTest :: ReverseQueue m => InvestigatorId -> LocationAttrs -> m ()
+passedCircleTest iid attrs = chooseOneM iid do
+  case locationBrazier attrs of
+    Just Lit -> labeled "Unlight the brazier" $ unlightBrazier attrs.id
+    _unlit -> labeled "Light the brazier" $ lightBrazier attrs.id
+  labeled "Leave brazier alone" nothing
 
 pattern DuringCircleAction :: Criterion
 pattern DuringCircleAction <- DuringSkillTest (SkillTestWithAction (ActionIs Circle))

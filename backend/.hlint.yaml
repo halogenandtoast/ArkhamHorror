@@ -47,6 +47,7 @@
   - -XTypeFamilies
   - -XImportQualifiedPost
   - -XPatternSynonyms
+  - -XOverloadedRecordDot
 
 - modules:
   - {name: [Data.Set], as: Set}

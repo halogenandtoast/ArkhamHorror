@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.Sleuth3 (sleuth3, Sleuth3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Trait (Trait (Charm, Tactic, Tome))
 
 newtype Sleuth3 = Sleuth3 AssetAttrs
@@ -16,17 +16,17 @@ sleuth3 :: AssetCard Sleuth3
 sleuth3 = asset Sleuth3 Cards.sleuth3
 
 instance HasModifiersFor Sleuth3 where
-  getModifiersFor (InvestigatorTarget iid) (Sleuth3 attrs) =
-    toModifiers
-      attrs
-      [ CanSpendUsesAsResourceOnCardFromInvestigator
-        (toId attrs)
-        #resource
-        (InvestigatorWithId iid)
-        (oneOf [CardWithTrait t | t <- [Charm, Tactic, Tome]])
-      | attrs `controlledBy` iid
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Sleuth3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      controllerGets
+        a
+        [ CanSpendUsesAsResourceOnCardFromInvestigator
+            a.id
+            #resource
+            (InvestigatorWithId iid)
+            (mapOneOf CardWithTrait [Charm, Tactic, Tome])
+        ]
 
 instance HasAbilities Sleuth3 where
   getAbilities (Sleuth3 a) =

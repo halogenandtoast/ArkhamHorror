@@ -1,15 +1,10 @@
-module Arkham.Scenario.Scenarios.AThousandShapesOfHorror (
-  AThousandShapesOfHorror (..),
-  aThousandShapesOfHorror,
-) where
-
-import Arkham.Prelude hiding ((.=))
+module Arkham.Scenario.Scenarios.AThousandShapesOfHorror (aThousandShapesOfHorror) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
@@ -25,11 +20,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (chooseOne, placeLocationCard, pushAll, story)
+import Arkham.Scenario.Import.Lifted hiding (chooseOne, placeLocationCard, pushAll, story)
 import Arkham.Scenario.Runner qualified as Msg
-import Arkham.Scenario.Setup
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Graveyard))
 import Arkham.Treachery.Cards qualified as Treacheries

@@ -7,18 +7,17 @@ import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype Narcolepsy = Narcolepsy TreacheryAttrs
-  deriving anyclass (IsTreachery)
+  deriving anyclass IsTreachery
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 narcolepsy :: TreacheryCard Narcolepsy
 narcolepsy = treachery Narcolepsy Cards.narcolepsy
 
 instance HasModifiersFor Narcolepsy where
-  getModifiersFor (InvestigatorTarget iid) (Narcolepsy attrs) | treacheryInThreatArea iid attrs = do
-    modified
+  getModifiersFor (Narcolepsy attrs) =
+    inThreatAreaGets
       attrs
       [CannotTakeAction IsAnyAction, CannotTriggerAbilityMatching AnyAbility, CannotPlay AnyCard]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities Narcolepsy where
   getAbilities (Narcolepsy a) =

@@ -14,15 +14,14 @@ monstrousTransformation :: AssetCard MonstrousTransformation
 monstrousTransformation = assetWith MonstrousTransformation Cards.monstrousTransformation (isStoryL .~ True)
 
 instance HasModifiersFor MonstrousTransformation where
-  getModifiersFor (InvestigatorTarget iid) (MonstrousTransformation a) | controlledBy a iid = do
-    toModifiers
+  getModifiersFor (MonstrousTransformation a) =
+    controllerGets
       a
       [ BaseSkillOf #willpower 2
       , BaseSkillOf #intellect 2
       , BaseSkillOf #combat 5
       , BaseSkillOf #agility 5
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities MonstrousTransformation where
   getAbilities (MonstrousTransformation a) = [restrictedAbility a 1 ControlsThis $ fightAction (exhaust a)]

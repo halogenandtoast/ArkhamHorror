@@ -30,11 +30,21 @@ data ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
   | SealedOnInvestigator InvestigatorMatcher ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
+  | ChaosTokenRevealedBy InvestigatorMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
+  | ChaosTokenIs ChaosTokenId
+  | CancelableChaosToken ChaosTokenMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+chaosTokenIs :: ChaosToken -> ChaosTokenMatcher
+chaosTokenIs = ChaosTokenIs . chaosTokenId
+
+pattern RevealedChaosToken :: ChaosTokenMatcher
+pattern RevealedChaosToken = RevealedChaosTokens AnyChaosToken
 
 instance ToDisplay ChaosTokenMatcher where
   toDisplay = \case
+    ChaosTokenIs _ -> "Specific chaos token"
     WithNegativeModifier -> "Chaos token with negative modifier"
     ChaosTokenFaceIs face -> toDisplay face
     ChaosTokenFaceIsNot face -> "not " <> toDisplay face
@@ -53,6 +63,8 @@ instance ToDisplay ChaosTokenMatcher where
     SealedOnInvestigator _ inner -> toDisplay inner <> " sealed on a relevant enemy"
     RevealedChaosTokens inner -> toDisplay inner <> " among revealed"
     ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
+    ChaosTokenRevealedBy _ -> "Revealed chaos token"
+    CancelableChaosToken inner -> toDisplay inner
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

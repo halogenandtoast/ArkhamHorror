@@ -122,9 +122,37 @@ packages:
       size: 631
   original:
     hackage: x509-validation-1.6.12@sha256:4f4af20ec77f02c042ecd4726c195bb0e0b694b336de81e7bd4515b2917bd9bc,2169
+- completed:
+    hackage: monoidal-containers-0.6.5.0@sha256:ff06e22c520b540dbf3bede0df723810a9d144ecb92e8d97845465fac86b0fc1,2247
+    pantry-tree:
+      sha256: ede05b02adb8c33dfecfc6f225b31b84584f975dfe2304f991637bd536339cb9
+      size: 569
+  original:
+    hackage: monoidal-containers-0.6.5.0@sha256:ff06e22c520b540dbf3bede0df723810a9d144ecb92e8d97845465fac86b0fc1,2247
+- completed:
+    hackage: websockets-0.13.0.0@sha256:d59873dce91721d398d578f51c49b71b8fb352d8571acf7a8bd5bebf1333d2f2,7817
+    pantry-tree:
+      sha256: daf51e2913dca006e96a3774484c6d7870dda157022707ec903577301ddbbb0f
+      size: 2736
+  original:
+    hackage: websockets-0.13.0.0@sha256:d59873dce91721d398d578f51c49b71b8fb352d8571acf7a8bd5bebf1333d2f2,7817
+- completed:
+    hackage: yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
+    pantry-tree:
+      sha256: c5d20966fa615a5f11d7759ebb7b408b9ab69b3503c71e4d29dbd3e095bddff4
+      size: 320
+  original:
+    hackage: yesod-websockets-0.3.0.3@sha256:99f49618f7cbb944c928d2870872b6ff867602c80af5d83421a68feb2ad94186,1068
+- completed:
+    hackage: wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905
+    pantry-tree:
+      sha256: 81b4067c7fefad29f632f3e3b97096f1b16753afb3f6052beb5350dd4943e67f
+      size: 558
+  original:
+    hackage: wai-websockets-3.0.1.2@sha256:0e713ddb8c28d47be76cefeab3a73b6876477d648ddcd873ba6b15d08691aa7f,1905
 snapshots:
 - completed:
-    sha256: 24555e806afe039f8f2f87f156417047dd1255cf57a3fb0ff330ec78a4c02cf9
-    size: 664619
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/10/2.yaml
-  original: nightly-2024-10-02
+    sha256: b0933eba5b921a0e96a54fa7ea43fd0ca73288edb836d44fea32420419c02a8f
+    size: 603055
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/12/12.yaml
+  original: nightly-2024-12-12

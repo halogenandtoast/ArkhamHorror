@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
-import Arkham.SkillType
 
 newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -20,20 +19,20 @@ theTatteredCloak =
   assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
 
 instance HasModifiersFor TheTatteredCloak where
-  getModifiersFor (InvestigatorTarget iid) (TheTatteredCloak attrs)
-    | controlledBy attrs iid = do
-        remainingSanity <- field InvestigatorRemainingSanity iid
-        let
-          skillModifiers =
-            if remainingSanity <= 3
-              then
-                [ SkillModifier SkillWillpower 1
-                , SkillModifier SkillCombat 1
-                , SkillModifier SkillAgility 1
-                ]
-              else []
-        toModifiers attrs (SanityModifier (-1) : skillModifiers)
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheTatteredCloak a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      remainingSanity <- field InvestigatorRemainingSanity iid
+      let
+        skillModifiers =
+          if remainingSanity <= 3
+            then
+              [ SkillModifier #willpower 1
+              , SkillModifier #combat 1
+              , SkillModifier #agility 1
+              ]
+            else []
+      modified_ a iid (SanityModifier (-1) : skillModifiers)
 
 instance RunMessage TheTatteredCloak where
   runMessage msg (TheTatteredCloak attrs) =

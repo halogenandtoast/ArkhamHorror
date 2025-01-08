@@ -34,14 +34,11 @@ theBrotherhoodIsRevealed =
     Nothing
 
 instance HasModifiersFor TheBrotherhoodIsRevealed where
-  getModifiersFor (EnemyTarget eid) (TheBrotherhoodIsRevealed (a `With` _)) = do
-    isPrey <- isIchtacasPrey eid
-    atLocationWithoutClues <- selectAny $ locationWithEnemy eid <> LocationWithoutClues
-    n <- perPlayer 1
-    toModifiers a
-      $ guard (isPrey && atLocationWithoutClues)
-      *> [EnemyFight 1, HealthModifier n, EnemyEvade 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheBrotherhoodIsRevealed (a `With` _)) = do
+    modifySelectMaybe a IsIchtacasPrey \eid -> do
+      liftGuardM $ selectAny $ locationWithEnemy eid <> LocationWithoutClues
+      n <- lift $ perPlayer 1
+      pure [EnemyFight 1, HealthModifier n, EnemyEvade 1]
 
 instance HasAbilities TheBrotherhoodIsRevealed where
   getAbilities (TheBrotherhoodIsRevealed (a `With` _)) | onSide E a = do

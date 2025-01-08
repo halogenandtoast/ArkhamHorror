@@ -14,10 +14,9 @@ calculatedRisk :: SkillCard CalculatedRisk
 calculatedRisk = skill CalculatedRisk Cards.calculatedRisk
 
 instance HasModifiersFor CalculatedRisk where
-  getModifiersFor target (CalculatedRisk attrs) | isTarget attrs target = do
+  getModifiersFor (CalculatedRisk attrs) = do
     n <- fieldMap InvestigatorActionsTaken length attrs.owner
-    modified attrs [AddSkillIcons $ replicate n #wild]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs.cardId [AddSkillIcons $ replicate n #wild]
 
 instance RunMessage CalculatedRisk where
   runMessage msg (CalculatedRisk attrs) = runQueueT $ case msg of

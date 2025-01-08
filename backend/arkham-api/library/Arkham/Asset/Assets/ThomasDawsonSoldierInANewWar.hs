@@ -8,9 +8,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype ThomasDawsonSoldierInANewWar = ThomasDawsonSoldierInANewWar AssetAttrs
   deriving anyclass IsAsset
@@ -20,9 +20,7 @@ thomasDawsonSoldierInANewWar :: AssetCard ThomasDawsonSoldierInANewWar
 thomasDawsonSoldierInANewWar = ally ThomasDawsonSoldierInANewWar Cards.thomasDawsonSoldierInANewWar (2, 3)
 
 instance HasModifiersFor ThomasDawsonSoldierInANewWar where
-  getModifiersFor target (ThomasDawsonSoldierInANewWar a) = modified a $ case target of
-    InvestigatorTarget iid | iid `controls` a -> [SkillModifier #willpower 1, SkillModifier #combat 1]
-    _ -> []
+  getModifiersFor (ThomasDawsonSoldierInANewWar a) = controllerGets a [SkillModifier #willpower 1, SkillModifier #combat 1]
 
 instance HasAbilities ThomasDawsonSoldierInANewWar where
   getAbilities (ThomasDawsonSoldierInANewWar a) =

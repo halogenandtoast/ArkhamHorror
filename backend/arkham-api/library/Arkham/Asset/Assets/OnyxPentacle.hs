@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Evade
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 
 newtype OnyxPentacle = OnyxPentacle AssetAttrs
   deriving anyclass IsAsset
@@ -16,19 +16,23 @@ onyxPentacle :: AssetCard OnyxPentacle
 onyxPentacle = asset OnyxPentacle Cards.onyxPentacle
 
 instance HasModifiersFor OnyxPentacle where
-  getModifiersFor (AbilityTarget _ ab) (OnyxPentacle attrs) | isSource attrs ab.source && ab.index == 1 = do
-    modified
-      attrs
-      [ CanModify
-        $ EnemyEvadeActionCriteria
-        $ CriteriaOverride
-        $ EnemyCriteria
-        $ ThisEnemy
-        $ EnemyCanBeEvadedBy (attrs.ability 1)
-        <> EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
-      | attrs.ready
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OnyxPentacle a) = case a.controller of
+    Just iid | a.ready -> do
+      selectOne (AbilityIs (toSource a) 1) >>= \case
+        Nothing -> pure mempty
+        Just ab ->
+          modified_
+            a
+            (AbilityTarget iid ab)
+            [ CanModify
+                $ EnemyEvadeActionCriteria
+                $ CriteriaOverride
+                $ EnemyCriteria
+                $ ThisEnemy
+                $ EnemyCanBeEvadedBy (a.ability 1)
+                <> at_ (oneOf [YourLocation, ConnectedFrom YourLocation])
+            ]
+    _ -> pure mempty
 
 instance HasAbilities OnyxPentacle where
   getAbilities (OnyxPentacle a) =

@@ -10,7 +10,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Game.Helpers (skillTestMatches)
 import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.EncounterCard
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 
@@ -25,14 +25,13 @@ martyrsVambraceRemnantOfTheUnknown3 =
     . (sanityL ?~ 2)
 
 instance HasModifiersFor MartyrsVambraceRemnantOfTheUnknown3 where
-  getModifiersFor (InvestigatorTarget iid) (MartyrsVambraceRemnantOfTheUnknown3 a) = do
-    maybeModified a do
-      guard $ a `controlledBy` iid
+  getModifiersFor (MartyrsVambraceRemnantOfTheUnknown3 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
       st <- MaybeT getSkillTest
       liftGuardM
         $ skillTestMatches iid (toSource a) st (SkillTestFromRevelation <> SkillTestOnEncounterCard)
       pure [AnySkillValue 1]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities MartyrsVambraceRemnantOfTheUnknown3 where
   getAbilities (MartyrsVambraceRemnantOfTheUnknown3 a) =

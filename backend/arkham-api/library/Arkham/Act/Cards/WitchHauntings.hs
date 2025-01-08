@@ -23,19 +23,20 @@ instance HasAbilities WitchHauntings where
     ]
 
 instance HasModifiersFor WitchHauntings where
-  getModifiersFor (LocationTarget lid) (WitchHauntings a) = do
-    mInFrontOf <- field LocationInFrontOf lid
-    toModifiers
-      a
-      [ ConnectedToWhen (LocationWithId lid)
-        $ NotLocation (LocationWithId lid)
-        <> LocationIsInFrontOf (InvestigatorWithId iid)
-      | iid <- maybeToList mInFrontOf
-      ]
-  getModifiersFor (InvestigatorTarget iid) (WitchHauntings a) = do
-    lids <- select $ LocationIsInFrontOf (NotInvestigator $ InvestigatorWithId iid)
-    toModifiers a $ map CannotEnter lids
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WitchHauntings a) = do
+    locations <- modifySelectMaybe a (LocationIsInFrontOf Anyone) \lid -> do
+      iid <- MaybeT $ field LocationInFrontOf lid
+      pure
+        [ ConnectedToWhen (LocationWithId lid)
+            $ not_ (LocationWithId lid)
+            <> LocationIsInFrontOf (InvestigatorWithId iid)
+        ]
+
+    investigators <- modifySelectMaybe a Anyone \iid -> do
+      lids <- lift $ select $ LocationIsInFrontOf (not_ $ InvestigatorWithId iid)
+      pure $ map CannotEnter lids
+
+    pure $ locations <> investigators
 
 instance RunMessage WitchHauntings where
   runMessage msg a@(WitchHauntings attrs) = case msg of

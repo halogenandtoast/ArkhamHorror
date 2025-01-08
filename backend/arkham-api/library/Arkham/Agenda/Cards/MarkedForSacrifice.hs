@@ -14,7 +14,7 @@ import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype MarkedForSacrifice = MarkedForSacrifice AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 markedForSacrifice :: AgendaCard MarkedForSacrifice
@@ -22,10 +22,8 @@ markedForSacrifice =
   agenda (4, A) MarkedForSacrifice Cards.markedForSacrifice (Static 8)
 
 instance HasModifiersFor MarkedForSacrifice where
-  getModifiersFor (EnemyTarget eid) (MarkedForSacrifice a) = do
-    isNonWeakness <- eid <=~> NonWeaknessEnemy
-    toModifiers a [HealthModifier 4 | isNonWeakness]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MarkedForSacrifice a) = do
+    modifySelect a NonWeaknessEnemy [HealthModifier 4]
 
 instance HasAbilities MarkedForSacrifice where
   getAbilities (MarkedForSacrifice a) =

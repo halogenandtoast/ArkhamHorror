@@ -8,6 +8,13 @@ import Arkham.Card.CardType
 import Arkham.EncounterSet
 import Arkham.Name
 
+doubleSided :: CardCode -> CardDef -> CardDef
+doubleSided cCode def =
+  def
+    { cdDoubleSided = True
+    , cdOtherSide = Just cCode
+    }
+
 story :: CardCode -> Name -> EncounterSet -> CardDef
 story cardCode name encounterSet =
   (emptyCardDef cardCode name StoryType)
@@ -101,6 +108,34 @@ allStoryCards =
       , evilWithin
       , bloodyEvidence
       , madnessInside
+      , prisonOfMemories
+      , baseCamp
+      , deckOfTheTheodosia
+      , universityHalls
+      , hedgeMaze
+      , desertedStation
+      , coastalWaters
+      , elderChamber
+      , riverviewTheatre
+      , standingStones
+      , airfield
+      , alaskanWilds
+      , clutteredDormitory
+      , dyersClassroom
+      , infirmary
+      , drKenslersOffice
+      , moaiStatues
+      , ottomanFront
+      , theBlackStone
+      , memoryOfAHuntGoneAwry
+      , memoryOfALostPatient
+      , memoryOfAMissingFather
+      , memoryOfARavagedCountry
+      , memoryOfARegretfulVoyage
+      , memoryOfAnUnspeakableEvil
+      , memoryOfATerribleDiscovery
+      , memoryOfAnAlienTranslation
+      , memoryOfAnUnrequitedLove
       , realityAcid
       ]
 
@@ -344,6 +379,91 @@ bloodyEvidence = story "08533" "Bloody Evidence" LostInTheNight
 
 madnessInside :: CardDef
 madnessInside = story "08534" "Madness Inside" LostInTheNight
+
+prisonOfMemories :: CardDef
+prisonOfMemories = doubleSided "08556" $ story "08556b" "Prison of Memories" FatalMirage
+
+baseCamp :: CardDef
+baseCamp = doubleSided "08557" $ story "08557b" "Base Camp" FatalMirage
+
+deckOfTheTheodosia :: CardDef
+deckOfTheTheodosia = doubleSided "08558" $ story "08558b" "Deck of the Theodosia" FatalMirage
+
+universityHalls :: CardDef
+universityHalls = doubleSided "08559" $ story "08559b" "University Halls" FatalMirage
+
+hedgeMaze :: CardDef
+hedgeMaze = doubleSided "08560" $ story "08560b" "Hedge Maze" FatalMirage
+
+desertedStation :: CardDef
+desertedStation = doubleSided "08561" $ story "08561b" "Deserted Station" FatalMirage
+
+coastalWaters :: CardDef
+coastalWaters = doubleSided "08562" $ story "08562b" "Coastal Waters" FatalMirage
+
+elderChamber :: CardDef
+elderChamber = doubleSided "08563" $ story "08563b" "Elder Chamber" FatalMirage
+
+riverviewTheatre :: CardDef
+riverviewTheatre = doubleSided "08564" $ story "08564b" "Riverview Theatre" FatalMirage
+
+standingStones :: CardDef
+standingStones = doubleSided "08565" $ story "08565b" "Standing Stones" FatalMirage
+
+airfield :: CardDef
+airfield = doubleSided "08566" $ story "08566b" "Airfield" FatalMirage
+
+alaskanWilds :: CardDef
+alaskanWilds = doubleSided "08567" $ story "08567b" "Alaskan Wilds" FatalMirage
+
+clutteredDormitory :: CardDef
+clutteredDormitory = doubleSided "08568" $ story "08568b" "Cluttered Dormitory" FatalMirage
+
+dyersClassroom :: CardDef
+dyersClassroom = doubleSided "08569" $ story "08569b" "Dyer's Classroom" FatalMirage
+
+infirmary :: CardDef
+infirmary = doubleSided "08570" $ story "08570b" "Infirmary" FatalMirage
+
+drKenslersOffice :: CardDef
+drKenslersOffice = doubleSided "08571" $ story "08571b" "Dr. Kensler's Office" FatalMirage
+
+moaiStatues :: CardDef
+moaiStatues = doubleSided "08572" $ story "08572b" "Mo'ai Statues" FatalMirage
+
+ottomanFront :: CardDef
+ottomanFront = doubleSided "08573" $ story "08573b" "Ottoman Front" FatalMirage
+
+theBlackStone :: CardDef
+theBlackStone = doubleSided "08574" $ story "08574b" "The Black Stone" FatalMirage
+
+memoryOfAHuntGoneAwry :: CardDef
+memoryOfAHuntGoneAwry =
+  doubleSided "08575" $ story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
+
+memoryOfALostPatient :: CardDef
+memoryOfALostPatient = doubleSided "08576" $ story "08576b" "Memory of a Lost Patient" FatalMirage
+
+memoryOfAMissingFather :: CardDef
+memoryOfAMissingFather = doubleSided "08577" $ story "08577b" "Memory of a Missing Father" FatalMirage
+
+memoryOfARavagedCountry :: CardDef
+memoryOfARavagedCountry = doubleSided "08578" $ story "08578b" "Memory of a Ravaged Country" FatalMirage
+
+memoryOfARegretfulVoyage :: CardDef
+memoryOfARegretfulVoyage = doubleSided "08579" $ story "08579b" "Memory of a Regretful Voyage" FatalMirage
+
+memoryOfAnUnspeakableEvil :: CardDef
+memoryOfAnUnspeakableEvil = doubleSided "08580" $ story "08580b" "Memory of an Unspeakable Evil" FatalMirage
+
+memoryOfATerribleDiscovery :: CardDef
+memoryOfATerribleDiscovery = doubleSided "08581" $ story "08581b" "Memory of a Terrible Discovery" FatalMirage
+
+memoryOfAnAlienTranslation :: CardDef
+memoryOfAnAlienTranslation = doubleSided "08582" $ story "08582b" "Memory of an Alien Transformation" FatalMirage
+
+memoryOfAnUnrequitedLove :: CardDef
+memoryOfAnUnrequitedLove = doubleSided "08583" $ story "08583b" "Memory of an Unrequited Love" FatalMirage
 
 realityAcid :: CardDef
 realityAcid =

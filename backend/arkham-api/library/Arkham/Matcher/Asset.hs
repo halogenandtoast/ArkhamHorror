@@ -8,6 +8,7 @@ import Arkham.Card.Id
 import Arkham.ClassSymbol
 import Arkham.Damage
 import Arkham.Id
+import Arkham.Keyword (Keyword (..))
 import {-# SOURCE #-} Arkham.Matcher.Ability
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
@@ -41,6 +42,7 @@ data AssetMatcher
   | AssetWithId AssetId
   | AssetWithClass ClassSymbol
   | AssetWithTrait Trait
+  | AssetWithKeyword Keyword
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
   | AssetAttachedTo TargetMatcher

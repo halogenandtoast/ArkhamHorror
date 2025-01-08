@@ -1,9 +1,10 @@
-module Arkham.Agenda.Cards.TheRitualAdvances (TheRitualAdvances (..), theRitualAdvances) where
+module Arkham.Agenda.Cards.TheRitualAdvances (theRitualAdvances) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Message.Lifted.Log
 
 newtype TheRitualAdvances = TheRitualAdvances AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

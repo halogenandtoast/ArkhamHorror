@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
+module Arkham.Scenario.Scenarios.ALightInTheFog (aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))
@@ -6,15 +6,15 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field(AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf, getMaybeLocation)
 import Arkham.Helpers.Log
-import Arkham.Helpers.Modifiers (maybeModified, ModifierType(..), setActiveDuringSetup)
+import Arkham.Helpers.Modifiers (ModifierType(..), setActiveDuringSetup, modifySelectMaybe, modifySelectMaybeWith)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.I18n
 import Arkham.Id
@@ -25,6 +25,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
@@ -60,15 +61,16 @@ newtype ALightInTheFog = ALightInTheFog ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor ALightInTheFog where
-  getModifiersFor (InvestigatorTarget iid) (ALightInTheFog a) = maybeModified a do
-    Meta meta _ _ <- hoistMaybe $ maybeResult a.meta
-    guard $ iid `elem` meta
-    pure [CannotMove, CannotFight AnyEnemy, CannotBeEngaged, ScenarioModifier "captured"]
-  getModifiersFor (LocationTarget lid) (ALightInTheFog a) = map setActiveDuringSetup <$> maybeModified a do
-    pos <- MaybeT $ field LocationPosition lid
-    connected <- lift $ select $ LocationInRow pos.row
-    pure [DoNotDrawConnection $ sortedPair lid connectedId | connectedId <- connected]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ALightInTheFog a) = do
+    investigators <- modifySelectMaybe a Anyone \iid -> do
+      Meta meta _ _ <- hoistMaybe $ maybeResult a.meta
+      guard $ iid `elem` meta
+      pure [CannotMove, CannotFight AnyEnemy, CannotBeEngaged, ScenarioModifier "captured"]
+    locations <- modifySelectMaybeWith a Anywhere setActiveDuringSetup \lid -> do
+      pos <- MaybeT $ field LocationPosition lid
+      connected <- lift $ select $ LocationInRow pos.row
+      pure [DoNotDrawConnection $ sortedPair lid connectedId | connectedId <- connected]
+    pure $ investigators <> locations
 
 aLightInTheFog :: Difficulty -> ALightInTheFog
 aLightInTheFog difficulty = scenario ALightInTheFog "07231" "A Light in the Fog" difficulty []
@@ -200,7 +202,7 @@ instance RunMessage ALightInTheFog where
           push $ if step < AgendaStep 4 then R4 else R3
         Resolution 1 -> do
           story $ i18nWithTitle "resolution1"
-          for_ (meta ^. resignedInMoonRoomL) \iid -> push $ RecordForInvestigator iid PossessesADivingSuit
+          for_ (meta ^. resignedInMoonRoomL) (`recordForInvestigator` PossessesADivingSuit)
           defaultResolution
         Resolution 2 -> do
           story $ i18nWithTitle "resolution2"

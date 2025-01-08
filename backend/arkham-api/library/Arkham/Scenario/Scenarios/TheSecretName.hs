@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.TheSecretName (TheSecretName (..), theSecretName) where
+module Arkham.Scenario.Scenarios.TheSecretName (theSecretName) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.ClassSymbol
@@ -16,6 +16,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (recordSetInsert)

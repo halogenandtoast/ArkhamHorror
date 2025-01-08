@@ -1,20 +1,13 @@
-module Arkham.Location.Cards.RuinsOfCarcosaTheCoffin (
-  ruinsOfCarcosaTheCoffin,
-  RuinsOfCarcosaTheCoffin (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RuinsOfCarcosaTheCoffin (ruinsOfCarcosaTheCoffin) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaTheCoffin = RuinsOfCarcosaTheCoffin LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -22,31 +15,20 @@ newtype RuinsOfCarcosaTheCoffin = RuinsOfCarcosaTheCoffin LocationAttrs
 
 ruinsOfCarcosaTheCoffin :: LocationCard RuinsOfCarcosaTheCoffin
 ruinsOfCarcosaTheCoffin =
-  locationWith
-    RuinsOfCarcosaTheCoffin
-    Cards.ruinsOfCarcosaTheCoffin
-    2
-    (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+  locationWith RuinsOfCarcosaTheCoffin Cards.ruinsOfCarcosaTheCoffin 2 (PerPlayer 1)
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasAbilities RuinsOfCarcosaTheCoffin where
   getAbilities (RuinsOfCarcosaTheCoffin a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ DiscoveringLastClue
-            Timing.After
-            You
-            (LocationWithId $ toId a)
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage RuinsOfCarcosaTheCoffin where
-  runMessage msg l@(RuinsOfCarcosaTheCoffin attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+  runMessage msg l@(RuinsOfCarcosaTheCoffin attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
       pure l
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theCoffin
       pure . RuinsOfCarcosaTheCoffin $ attrs & canBeFlippedL .~ False
-    _ -> RuinsOfCarcosaTheCoffin <$> runMessage msg attrs
+    _ -> RuinsOfCarcosaTheCoffin <$> liftRunMessage msg attrs

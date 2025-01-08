@@ -14,17 +14,15 @@ import Arkham.GameValue
 import Arkham.Matcher
 
 newtype MadnessDrowns = MadnessDrowns AgendaAttrs
-  deriving anyclass (IsAgenda)
+  deriving anyclass IsAgenda
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 madnessDrowns :: AgendaCard MadnessDrowns
 madnessDrowns = agenda (2, A) MadnessDrowns Cards.madnessDrowns (Static 7)
 
 instance HasModifiersFor MadnessDrowns where
-  getModifiersFor (EnemyTarget eid) (MadnessDrowns a) = do
-    isHastur <- eid `isMatch` EnemyWithTitle "Hastur"
-    toModifiers a [EnemyFight 1 | isHastur]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MadnessDrowns a) = do
+    modifySelect a (EnemyWithTitle "Hastur") [EnemyFight 1]
 
 instance HasAbilities MadnessDrowns where
   getAbilities (MadnessDrowns a)

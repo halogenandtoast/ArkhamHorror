@@ -4,12 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Trait (Trait (Tarot))
 
 newtype MoonPendant2 = MoonPendant2 AssetAttrs
   deriving anyclass IsAsset
@@ -19,17 +17,12 @@ moonPendant2 :: AssetCard MoonPendant2
 moonPendant2 = asset MoonPendant2 Cards.moonPendant2
 
 instance HasModifiersFor MoonPendant2 where
-  getModifiersFor (CardIdTarget cid) (MoonPendant2 attrs) | Just iid <- assetController attrs = do
-    mcard <- selectOne $ basic (CardWithId cid) <> inHandOf iid
-    committed <- fieldMap InvestigatorCommittedCards (elem cid . map toCardId) iid
-
-    if isJust mcard || committed
-      then do
-        card <- getCard cid
-        let valid = cardMatch card (NonWeakness <> CardWithTrait Tarot)
-        toModifiers attrs [AddSkillIcons [#wild, #wild] | valid]
-      else pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MoonPendant2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      hand <- select $ basic (NonWeakness <> #tarot) <> inHandOf iid
+      committed <- fieldMap InvestigatorCommittedCards (filterCards (NonWeakness <> #tarot)) iid
+      modifyEach a (hand <> committed) [AddSkillIcons [#wild, #wild]]
 
 instance HasAbilities MoonPendant2 where
   getAbilities (MoonPendant2 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]

@@ -21,10 +21,9 @@ ikiaqTheCouncilsChosen3 :: AssetCard IkiaqTheCouncilsChosen3
 ikiaqTheCouncilsChosen3 = allyWith IkiaqTheCouncilsChosen3 Cards.ikiaqTheCouncilsChosen3 (2, 2) $ setMeta @[CardId] []
 
 instance HasModifiersFor IkiaqTheCouncilsChosen3 where
-  getModifiersFor (InvestigatorTarget iid) (IkiaqTheCouncilsChosen3 a) | a `controlledBy` iid = do
+  getModifiersFor (IkiaqTheCouncilsChosen3 a) = do
     let n = 1 - count (`cardMatch` WeaknessCard) a.cardsUnderneath
-    toModifiers a [SkillModifier #willpower n, SkillModifier #intellect n]
-  getModifiersFor _ _ = pure []
+    controllerGets a [SkillModifier #willpower n, SkillModifier #intellect n]
 
 instance HasAbilities IkiaqTheCouncilsChosen3 where
   getAbilities (IkiaqTheCouncilsChosen3 x) =
@@ -43,6 +42,7 @@ instance RunMessage IkiaqTheCouncilsChosen3 where
   runMessage msg (IkiaqTheCouncilsChosen3 attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       cancelCardDraw attrs card
+      obtainCard card
       let cardIds = toCardId card : toResult @[CardId] attrs.meta
       pure . IkiaqTheCouncilsChosen3 $ attrs & cardsUnderneathL %~ (card :) & setMeta cardIds
     RemovedFromPlay (isSource attrs -> True) -> do

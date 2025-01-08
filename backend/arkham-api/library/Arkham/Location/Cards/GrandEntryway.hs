@@ -1,12 +1,13 @@
-module Arkham.Location.Cards.GrandEntryway (grandEntryway, GrandEntryway (..)) where
+module Arkham.Location.Cards.GrandEntryway (grandEntryway) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Cave))
 
@@ -18,12 +19,11 @@ grandEntryway :: LocationCard GrandEntryway
 grandEntryway = location GrandEntryway Cards.grandEntryway 1 (Static 0)
 
 instance HasModifiersFor GrandEntryway where
-  getModifiersFor (LocationTarget lid) (GrandEntryway attrs) = do
-    toModifiers attrs
-      $ if lid == attrs.id
-        then [ConnectedToWhen (LocationWithId attrs.id) (LocationWithTrait Cave)]
-        else [ConnectedToWhen (LocationWithTrait Cave) (LocationWithId attrs.id)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GrandEntryway a) = do
+    self <- modifySelf a [ConnectedToWhen (be a) (LocationWithTrait Cave)]
+    others <-
+      modifySelect a (not_ $ LocationWithId a.id) [ConnectedToWhen (LocationWithTrait Cave) (be a)]
+    pure $ self <> others
 
 instance HasAbilities GrandEntryway where
   getAbilities (GrandEntryway attrs) =

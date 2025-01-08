@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelect)
 import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Placement
@@ -20,17 +20,16 @@ elleRubashPurifyingPurpose2 :: AssetCard ElleRubashPurifyingPurpose2
 elleRubashPurifyingPurpose2 = ally ElleRubashPurifyingPurpose2 Cards.elleRubashPurifyingPurpose2 (1, 2)
 
 instance HasModifiersFor ElleRubashPurifyingPurpose2 where
-  getModifiersFor (InvestigatorTarget iid) (ElleRubashPurifyingPurpose2 a) | a `controlledBy` iid = do
-    maybeModified a do
-      source <- MaybeT getSkillTestSource
-      skillTestAsset <- hoistMaybe source.asset
-      liftGuardM $ skillTestAsset <=~> AssetAttachedToAsset (be a)
-      pure [AnySkillValue 1]
-  getModifiersFor (AssetTarget aid) (ElleRubashPurifyingPurpose2 a) = do
-    maybeModified a do
-      liftGuardM $ aid <=~> AssetAttachedToAsset (be a)
-      pure [IgnoreDoomOnThis 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (ElleRubashPurifyingPurpose2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      controller <- maybeModified_ a iid do
+        source <- MaybeT getSkillTestSource
+        skillTestAsset <- hoistMaybe source.asset
+        liftGuardM $ skillTestAsset <=~> AssetAttachedToAsset (be a)
+        pure [AnySkillValue 1]
+      assets <- modifySelect a (AssetAttachedToAsset (be a)) [IgnoreDoomOnThis 1]
+      pure $ controller <> assets
 
 instance HasAbilities ElleRubashPurifyingPurpose2 where
   getAbilities (ElleRubashPurifyingPurpose2 x) =

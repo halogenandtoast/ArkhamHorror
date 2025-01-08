@@ -19,6 +19,7 @@ import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
+import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
@@ -88,6 +89,8 @@ data LocationMatcher
   | LocationWithEnemy EnemyMatcher
   | LocationCanBeEnteredBy EnemyId
   | LocationWithAsset AssetMatcher
+  | LocationWithAttachedEvent EventMatcher
+  | LocationWithAttachment
   | LocationWithCardsUnderneath CardListMatcher
   | LocationWithInvestigator InvestigatorMatcher
   | CanEnterLocation InvestigatorMatcher
@@ -124,6 +127,8 @@ data LocationMatcher
   | ClosestUnbarricadedPathLocation LocationId LocationId
   | LocationWithDefeatedEnemyThisRound
   | HighestShroud LocationMatcher
+  | HighestRow LocationMatcher
+  | LocationHigherThan LocationMatcher
   | FloodedLocation
   | FullyFloodedLocation
   | PartiallyFloodedLocation
@@ -218,6 +223,10 @@ instance Semigroup AnyLocationMatcher where
 
 instance Monoid AnyLocationMatcher where
   mempty = AnyLocationMatcher Nowhere
+
+locationIs :: HasCardCode a => a -> LocationMatcher
+locationIs = LocationIs . toCardCode
+{-# INLINE locationIs #-}
 
 $(deriveToJSON defaultOptions ''LocationMatcher)
 

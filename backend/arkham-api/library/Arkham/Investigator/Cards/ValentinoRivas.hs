@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards hiding (valentinoRivas)
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Investigator (startsWithInHand)
-import Arkham.Helpers.Modifiers (ModifierType (..), setActiveDuringSetup, toModifiersWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -35,8 +35,8 @@ valentinoRivas =
     $ Stats {health = 5, sanity = 7, willpower = 1, intellect = 3, combat = 2, agility = 4}
 
 instance HasModifiersFor ValentinoRivas where
-  getModifiersFor target (ValentinoRivas a) | isTarget a target = do
-    toModifiersWith
+  getModifiersFor (ValentinoRivas a) = do
+    modifySelfWith
       a
       setActiveDuringSetup
       [ CannotTakeAction #draw
@@ -44,7 +44,6 @@ instance HasModifiersFor ValentinoRivas where
       , CannotManipulateDeck
       , StartingResources 5
       ]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities ValentinoRivas where
   getAbilities (ValentinoRivas a) =

@@ -1,0 +1,18 @@
+{
+    "title": "升级牌组 (共计{xp}点经验)",
+    "fetching": "正在从{deckSource}获取牌组，请稍等...",
+    "directlyUpdateContent": "直接在{deckSource}进行升级，然后同步到这里",
+    "openDeck": "在{deckSource}查看牌组",
+    "pullUpdate": "从{deckSource}获取更新后的牌组",
+    "OR": "或者",
+    "deckUrlPlaceholder": "在这里填写ArkhamDB或arkham.build牌组url链接",
+    "Upgrade": "升级",
+    "continueWithoutUpgrading": "跳过升级，直接继续",
+    "waitingOtherPlayer": "正在等待其他玩家升级牌组。",
+
+    "skippingPrompt": "你是否确定要跳过此次升级?",
+
+    "xp": "{total}点经验",
+    "victoryDisplay": "胜利牌区"
+
+}

@@ -14,16 +14,14 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Item))
 
 newtype LonnieRitter = LonnieRitter AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lonnieRitter :: AssetCard LonnieRitter
 lonnieRitter = ally LonnieRitter Cards.lonnieRitter (2, 3)
 
 instance HasModifiersFor LonnieRitter where
-  getModifiersFor (InvestigatorTarget iid) (LonnieRitter a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #combat 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LonnieRitter a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities LonnieRitter where
   getAbilities (LonnieRitter a) =

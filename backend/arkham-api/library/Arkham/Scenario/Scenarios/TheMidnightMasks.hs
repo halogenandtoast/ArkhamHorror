@@ -1,13 +1,10 @@
 module Arkham.Scenario.Scenarios.TheMidnightMasks where
 
-import Arkham.Prelude
-
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option
-import Arkham.CampaignLogKey
-import Arkham.Campaigns.NightOfTheZealot.ChaosBag
+import Arkham.Campaigns.NightOfTheZealot.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -25,10 +22,11 @@ import Arkham.Matcher (
   cardIs,
  )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice, recordSetInsert)
-import Arkham.Scenario.Runner hiding (chooseOrRunOne, createEnemyAt, placeLocationCard, story)
-import Arkham.Scenario.Setup
+import Arkham.Scenario.Import.Lifted hiding (chooseOrRunOne, createEnemyAt, placeLocationCard, story)
+import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -76,7 +74,7 @@ allCultists =
 instance RunMessage TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ case msg of
     StandaloneSetup -> do
-      setChaosTokens (chaosBagContents $ scenarioDifficulty attrs)
+      setChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
       forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause

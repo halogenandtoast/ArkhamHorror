@@ -25,10 +25,9 @@ theMurder :: AgendaCard TheMurder
 theMurder = agenda (1, A) TheMurder Cards.theMurder (Static 3)
 
 instance HasModifiersFor TheMurder where
-  getModifiersFor target (TheMurder a) | a `is` target = do
+  getModifiersFor (TheMurder a) = do
     n <- getPlayerCount
-    toModifiers a [DoomThresholdModifier 1 | n == 1]
-  getModifiersFor _ _ = pure []
+    modifySelf a [DoomThresholdModifier 1 | n == 1]
 
 instance RunMessage TheMurder where
   runMessage msg a@(TheMurder attrs) =

@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.WendysAmulet where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.WendysAmulet (wendysAmulet) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Event.Types (Field (..))
-import Arkham.Projection
+import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 
 newtype WendysAmulet = WendysAmulet AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)
@@ -16,12 +14,9 @@ wendysAmulet :: AssetCard WendysAmulet
 wendysAmulet = asset WendysAmulet Cards.wendysAmulet
 
 instance HasModifiersFor WendysAmulet where
-  getModifiersFor (InvestigatorTarget iid) (WendysAmulet a) | controlledBy a iid = do
-    toModifiers a [CanPlayTopmostOfDiscard (Just EventType, [])]
-  getModifiersFor (EventTarget eid) (WendysAmulet a) = do
-    owner <- field EventOwner eid
-    toModifiers a [PlaceOnBottomOfDeckInsteadOfDiscard | controlledBy a owner]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WendysAmulet a) = for_ a.controller \iid -> do
+    controllerGets a [CanPlayTopmostOfDiscard (Just EventType, [])]
+    modifySelect a (EventOwnedBy $ InvestigatorWithId iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
 
 instance RunMessage WendysAmulet where
   runMessage msg (WendysAmulet attrs) = WendysAmulet <$> runMessage msg attrs

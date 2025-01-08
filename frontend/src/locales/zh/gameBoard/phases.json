@@ -1,0 +1,31 @@
+{
+  "playerWindow": "玩家时间段",
+
+  "mythosPhase": "神话阶段",
+  "mythosPhaseBeginsStep": "一轮开始。神话阶段开始。",
+  "placeDoomOnAgendaStep": "在当前密谋卡上放置1个毁灭标记。",
+  "checkDoomThresholdStep": "检查毁灭数量。",
+  "eachInvestigatorDrawsEncounterCardStep": "每位调查员抽取1张遭遇卡。",
+  "mythosPhaseEndsStep": "神话阶段结束。",
+
+  "investigationPhase": "调查阶段",
+  "investigationPhaseBeginsStep": "调查阶段开始。",
+  "nextInvestigatorsTurnBeginsStep": "下一位调查员回合开始。",
+  "investigatorTakesActionStep": "当前调查员如果还有行动利馀，可以执行1个行动。如果执行行动则返回先前的玩家时间段；如果行动用完，则进入2.2.2。",
+  "investigatorsTurnEndsStep": "调查员回合结束。如果该阶段中，还有未执行回合的调查员则返回2.2。如果所有调查员都已完成回合，则进入2.3。",
+  "investigationPhaseEndsStep": "调查阶段结束。",
+
+  "enemyPhase": "敌军阶段",
+  "enemyPhaseBeginsStep": "敌军阶段开始。",
+  "hunterEnemiesMoveStep": "猎手敌人移动。",
+  "resolveAttacksStep": "下一位调查员结算交战敌人的攻击。如果还有调查员未结算敌人攻击，则返回先前的玩家时间段；如果所有调查员都完成攻击结算，则进入下一位玩家时间段",
+  "enemyPhaseEndsStep": "敌军阶段结束。",
+
+  "upkeepPhase": "补给阶段",
+  "upkeepPhaseBeginsStep": "补给阶段开始。",
+  "resetActionsStep": "重置行动数。",
+  "readyExhaustedStep": "将所有消耗(横置)卡牌转为准备(重整)状态。",
+  "drawCardAndGainResourceStep": "每位调查员抽取1张卡牌，并获得1个资源。",
+  "checkHandSizeStep": "每位调查员检查手牌上限。",
+  "upkeepPhaseEndsStep": "补给阶段结束。一轮结束。"
+}

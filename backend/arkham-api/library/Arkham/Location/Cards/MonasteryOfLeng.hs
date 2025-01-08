@@ -1,23 +1,22 @@
-module Arkham.Location.Cards.MonasteryOfLeng (monasteryOfLeng, MonasteryOfLeng (..)) where
+module Arkham.Location.Cards.MonasteryOfLeng (monasteryOfLeng) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType (Blocked), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype MonasteryOfLeng = MonasteryOfLeng LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monasteryOfLeng :: LocationCard MonasteryOfLeng
 monasteryOfLeng = location MonasteryOfLeng Cards.monasteryOfLeng 3 (PerPlayer 2)
 
 instance HasModifiersFor MonasteryOfLeng where
-  getModifiersFor target (MonasteryOfLeng attrs) | attrs `is` target = do
-    toModifiers attrs [Blocked | not attrs.revealed]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MonasteryOfLeng a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities MonasteryOfLeng where
   getAbilities (MonasteryOfLeng attrs) =

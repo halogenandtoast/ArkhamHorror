@@ -19,6 +19,8 @@ import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Spectral))
 import Control.Lens (non, _1, _2)
+import Control.Monad.Writer.Class
+import Data.Map.Monoidal.Strict (MonoidalMap)
 
 getSpectralDiscards :: HasGame m => m [EncounterCard]
 getSpectralDiscards =
@@ -38,20 +40,18 @@ hereticModifiers
      , Entity a
      , Entity (EntityAttrs a)
      , Sourceable (EntityAttrs a)
+     , MonadWriter (MonoidalMap Target [Modifier]) m
      )
-  => Target
-  -> a
-  -> m [Modifier]
-hereticModifiers target (toAttrs -> a) | isTarget a target = do
+  => a
+  -> m ()
+hereticModifiers (toAttrs -> a) = do
   n <- perPlayer 2
-  atSpectralLocation <-
-    selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
-  toModifiers a
+  atSpectralLocation <- selectAny $ locationWithEnemy (toId a) <> LocationWithTrait Spectral
+  modifySelf a
     $ HealthModifier n
     : ( guard (not atSpectralLocation)
           *> [AddKeyword Aloof, CannotBeDamaged, CannotBeEngaged]
       )
-hereticModifiers _ _ = pure []
 
 hereticAbilities
   :: ( EntityId (EntityAttrs a) ~ EnemyId

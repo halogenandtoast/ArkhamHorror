@@ -1,44 +1,33 @@
-module Arkham.Location.Cards.Vault (
-  vault,
-  Vault (..),
-)
-where
+module Arkham.Location.Cards.Vault (vault, Vault (..)) where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ForTheGreaterGood.Helpers
-import Arkham.Timing qualified as Timing
 
 newtype Vault = Vault LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 vault :: LocationCard Vault
 vault = location Vault Cards.vault 4 (PerPlayer 1)
 
 instance HasModifiersFor Vault where
-  getModifiersFor (InvestigatorTarget iid) (Vault attrs) = do
-    hasElderThingKey <- iid <=~> InvestigatorWithKey ElderThingKey
-    toModifiers attrs [CannotEnter (toId attrs) | unrevealed attrs && not hasElderThingKey]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Vault attrs) = whenUnrevealed attrs do
+    modifySelect attrs (not_ $ InvestigatorWithKey ElderThingKey) [CannotEnter (toId attrs)]
 
 instance HasAbilities Vault where
-  getAbilities (Vault attrs) =
-    withRevealedAbilities
-      attrs
-      [mkAbility attrs 1 $ ForcedAbility $ RevealLocation Timing.After You $ LocationWithId $ toId attrs]
+  getAbilities (Vault a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage Vault where
-  runMessage msg l@(Vault attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      mKey <- genIdKey
-      for_ mKey $ \key ->
-        push $ PlaceKey (toTarget attrs) key
+  runMessage msg l@(Vault attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      mKey <- getRandomKey
+      for_ mKey (placeKey attrs)
       pure l
-    _ -> Vault <$> runMessage msg attrs
+    _ -> Vault <$> liftRunMessage msg attrs

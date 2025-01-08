@@ -1,7 +1,5 @@
 module Arkham.Helpers.Query where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -14,6 +12,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 
@@ -21,14 +20,11 @@ import Arkham.Scenario.Types (Field (..))
 -- there is no lead investigator so we just get someone from the eliminated. It
 -- should just be the last person who was eliminated but we don't really track
 -- that
-getLeadInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId
-getLeadInvestigatorId = do
-  mLead <- selectOne LeadInvestigator
-  mOthers <- selectOne (IncludeEliminated Anyone)
-  pure $ fromJustNote "No lead found" (mLead <|> mOthers)
-
 getLead :: (HasCallStack, HasGame m) => m InvestigatorId
-getLead = getLeadInvestigatorId
+getLead = do
+  mLead <- selectOne LeadInvestigator
+  mOthers <- selectOne $ IncludeEliminated Anyone
+  pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
 getPlayer :: (HasCallStack, HasGame m) => InvestigatorId -> m PlayerId
 getPlayer = field InvestigatorPlayerId
@@ -39,23 +35,14 @@ getActiveInvestigatorId = selectJust ActiveInvestigator
 getInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
 getInvestigatorPlayers = selectWithField InvestigatorPlayerId UneliminatedInvestigator
 
-getAllInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
-getAllInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
-
 allInvestigatorPlayers :: HasGame m => m [(InvestigatorId, PlayerId)]
-allInvestigatorPlayers = getAllInvestigatorPlayers
+allInvestigatorPlayers = selectWithField InvestigatorPlayerId Anyone
 
 getInvestigators :: HasGame m => m [InvestigatorId]
-getInvestigators = getInvestigatorIds
-
-getInvestigatorIds :: HasGame m => m [InvestigatorId]
-getInvestigatorIds = select UneliminatedInvestigator
-
-allInvestigatorIds :: HasGame m => m [InvestigatorId]
-allInvestigatorIds = select Anyone
+getInvestigators = select UneliminatedInvestigator
 
 allInvestigators :: HasGame m => m [InvestigatorId]
-allInvestigators = allInvestigatorIds
+allInvestigators = select Anyone
 
 allPlayers :: HasGame m => m [PlayerId]
 allPlayers = getAllPlayers
@@ -66,19 +53,16 @@ getLeadPlayer = field InvestigatorPlayerId =<< getLead
 getLeadInvestigatorPlayer :: (HasCallStack, HasGame m) => m (InvestigatorId, PlayerId)
 getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLead
 
-selectAssetController
-  :: HasGame m => AssetId -> m (Maybe InvestigatorId)
+selectAssetController :: HasGame m => AssetId -> m (Maybe InvestigatorId)
 selectAssetController aid =
   (<|>)
     <$> (join <$> fieldMay AssetController aid)
     <*> (join <$> fieldMay DiscardedAssetController aid)
 
-selectEventController
-  :: HasGame m => EventId -> m (Maybe InvestigatorId)
+selectEventController :: HasGame m => EventId -> m (Maybe InvestigatorId)
 selectEventController = selectOne . HasMatchingEvent . EventWithId
 
-selectSkillController
-  :: HasGame m => SkillId -> m (Maybe InvestigatorId)
+selectSkillController :: HasGame m => SkillId -> m (Maybe InvestigatorId)
 selectSkillController = selectOne . HasMatchingSkill . SkillWithId
 
 getPlayerCount :: HasGame m => m Int
@@ -96,54 +80,43 @@ on double sided cards which card code is on the other side.
 getSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m Card
 getSetAsideCard def = do
   card <- selectJust . SetAsideCardMatch $ cardIs def
-  pure
-    $ if cardCodeExactEq (toCardCode card) (toCardCode def)
-      then card
-      else lookupCard (toCardCode def) (toCardId card)
+  pure $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+
+getSetAsideCardMaybe :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
+getSetAsideCardMaybe def = do
+  ( \card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+    )
+    <$$> selectOne (SetAsideCardMatch $ cardIs def)
 
 getSetAsideEncounterCard :: (HasCallStack, HasGame m) => CardDef -> m EncounterCard
-getSetAsideEncounterCard =
-  fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
+getSetAsideEncounterCard = fmap (fromJustNote "must be encounter card") . maybeGetSetAsideEncounterCard
 
 getSetAsideEncounterSet :: HasGame m => EncounterSet -> m [Card]
 getSetAsideEncounterSet encounterSet =
-  scenarioFieldMap
-    ScenarioSetAsideCards
-    (filter ((== Just encounterSet) . cdEncounterSet . toCardDef))
+  scenarioFieldMap ScenarioSetAsideCards (filter ((== Just encounterSet) . getEncounterSet))
 
-getOrGenerateSetAsideCard :: (CardGen m, HasGame m) => CardDef -> m Card
+getOrGenerateSetAsideCard :: (CardGen m, HasGame m, HasCallStack) => CardDef -> m Card
 getOrGenerateSetAsideCard cardDef = maybe (genCard cardDef) pure =<< maybeGetSetAsideCard cardDef
 
-maybeGetSetAsideCard :: HasGame m => CardDef -> m (Maybe Card)
-maybeGetSetAsideCard def = do
-  mcard <- selectOne . SetAsideCardMatch $ cardIs def
-  case mcard of
-    Nothing -> pure Nothing
-    Just card ->
-      pure
-        $ Just
-        $ if cardCodeExactEq (toCardCode card) (toCardCode def)
-          then card
-          else lookupCard (toCardCode def) (toCardId card)
+maybeGetSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
+maybeGetSetAsideCard def = runMaybeT do
+  guardInScenario
+  card <- selectMaybeT $ SetAsideCardMatch $ cardIs def
+  pure $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
 
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
-maybeGetSetAsideEncounterCard def = do
-  mcard <- selectOne . SetAsideCardMatch $ cardIs def
-  case mcard of
-    Nothing -> pure Nothing
-    Just card ->
-      pure
-        $ preview _EncounterCard
-        $ if cardCodeExactEq (toCardCode card) (toCardCode def)
-          then card
-          else lookupCard (toCardCode def) (toCardId card)
+maybeGetSetAsideEncounterCard def = runMaybeT do
+  guardInScenario
+  card <- selectMaybeT $ SetAsideCardMatch $ cardIs def
+  hoistMaybe
+    $ preview _EncounterCard
+    $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
 
 getSetAsideCardsMatching :: (HasCallStack, HasGame m) => CardMatcher -> m [Card]
 getSetAsideCardsMatching = select . SetAsideCardMatch
 
 getJustLocationByName :: (HasCallStack, HasGame m) => Name -> m LocationId
-getJustLocationByName name =
-  fromJustNote ("Missing " <> show name) <$> getLocationByName name
+getJustLocationByName name = fromJustNote ("Missing " <> show name) <$> getLocationByName name
 
 getLocationByName :: HasGame m => Name -> m (Maybe LocationId)
 getLocationByName name = selectOne matcher

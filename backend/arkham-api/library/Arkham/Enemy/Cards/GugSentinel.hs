@@ -8,17 +8,16 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype GugSentinel = GugSentinel EnemyAttrs
-  deriving anyclass (IsEnemy)
+  deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gugSentinel :: EnemyCard GugSentinel
 gugSentinel = enemy GugSentinel Cards.gugSentinel (5, Static 2, 3) (2, 1)
 
 instance HasModifiersFor GugSentinel where
-  getModifiersFor target (GugSentinel attrs) | attrs `is` target = do
+  getModifiersFor (GugSentinel attrs) = do
     health <- perPlayer 2
-    toModifiers attrs [HealthModifier health]
-  getModifiersFor _ _ = pure []
+    modifySelf attrs [HealthModifier health]
 
 instance HasAbilities GugSentinel where
   getAbilities (GugSentinel attrs) =

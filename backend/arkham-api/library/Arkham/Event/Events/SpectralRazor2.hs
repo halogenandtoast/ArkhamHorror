@@ -6,7 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 
@@ -54,11 +54,10 @@ spectralRazor2Effect :: EffectArgs -> SpectralRazor2Effect
 spectralRazor2Effect = cardEffect SpectralRazor2Effect Cards.spectralRazor2
 
 instance HasModifiersFor SpectralRazor2Effect where
-  getModifiersFor target (SpectralRazor2Effect a) | a.target == target = maybeModified a do
+  getModifiersFor (SpectralRazor2Effect a) = maybeModified_ a a.target do
     EnemyTarget eid <- MaybeT getSkillTestTarget
     elite <- lift $ eid <=~> EliteEnemy
     pure [DamageDealt $ if elite then 1 else 2]
-  getModifiersFor _ _ = pure []
 
 instance RunMessage SpectralRazor2Effect where
   runMessage msg e@(SpectralRazor2Effect attrs) = runQueueT $ case msg of

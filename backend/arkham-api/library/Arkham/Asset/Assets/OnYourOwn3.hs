@@ -3,9 +3,9 @@ module Arkham.Asset.Assets.OnYourOwn3 (onYourOwn3, OnYourOwn3 (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsWhen)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 
 newtype Metadata = Metadata {beingDiscarded :: Bool}
@@ -33,9 +33,8 @@ instance HasAbilities OnYourOwn3 where
         $ ReactionAbility (PlayCard #when You $ basic $ #survivor <> #event) (exhaust a)
 
 instance HasModifiersFor OnYourOwn3 where
-  getModifiersFor (InvestigatorTarget iid) (OnYourOwn3 (attrs `With` _)) =
-    toModifiers attrs [CanReduceCostOf (#event <> #survivor) 2 | controlledBy attrs iid && attrs.ready]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OnYourOwn3 (a `With` _)) =
+    controllerGetsWhen a a.ready [CanReduceCostOf (#event <> #survivor) 2]
 
 instance RunMessage OnYourOwn3 where
   runMessage msg a@(OnYourOwn3 (attrs `With` meta)) = runQueueT $ case msg of

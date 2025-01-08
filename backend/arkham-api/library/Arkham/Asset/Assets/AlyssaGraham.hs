@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Strategy
 
 newtype AlyssaGraham = AlyssaGraham AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alyssaGraham :: AssetCard AlyssaGraham
@@ -24,14 +24,12 @@ instance HasAbilities AlyssaGraham where
     ]
 
 instance HasModifiersFor AlyssaGraham where
-  getModifiersFor (InvestigatorTarget iid) (AlyssaGraham a) =
-    modified a [SkillModifier #intellect 1 | iid `controls` a]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AlyssaGraham a) = controllerGets a [SkillModifier #intellect 1]
 
 instance RunMessage AlyssaGraham where
   runMessage msg a@(AlyssaGraham attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      targets <- map toTarget <$> getInvestigatorIds
+      targets <- map toTarget <$> getInvestigators
       let
         goSearch t =
           TargetLabel

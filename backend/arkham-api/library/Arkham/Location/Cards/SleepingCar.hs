@@ -1,18 +1,12 @@
-module Arkham.Location.Cards.SleepingCar (
-  sleepingCar,
-  SleepingCar (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.SleepingCar (sleepingCar) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (sleepingCar)
-import Arkham.Location.Helpers
-import Arkham.Location.Runner
-import Arkham.Projection
+import Arkham.Location.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype SleepingCar = SleepingCar LocationAttrs
@@ -21,37 +15,22 @@ newtype SleepingCar = SleepingCar LocationAttrs
 
 sleepingCar :: LocationCard SleepingCar
 sleepingCar =
-  locationWith
-    SleepingCar
-    Cards.sleepingCar
-    4
-    (Static 1)
-    (connectsToL .~ setFromList [LeftOf, RightOf])
+  locationWith SleepingCar Cards.sleepingCar 4 (Static 1)
+    $ connectsToL
+    .~ setFromList [LeftOf, RightOf]
 
 instance HasModifiersFor SleepingCar where
-  getModifiersFor target (SleepingCar l@LocationAttrs {..})
-    | isTarget l target = case lookup LeftOf locationDirections of
-        Just leftLocation -> do
-          clueCount <- sum <$> traverse (field LocationClues) leftLocation
-          toModifiers l [Blocked | not locationRevealed && clueCount > 0]
-        Nothing -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SleepingCar l) =
+    whenUnrevealed l $ blockedWhenAny l $ leftOf l <> LocationWithAnyClues
 
 instance HasAbilities SleepingCar where
   getAbilities (SleepingCar attrs) =
-    withBaseAbilities attrs
-      $ [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility attrs 1 Here
-          $ ActionAbility []
-          $ ActionCost 1
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs $ groupLimit PerGame $ restricted attrs 1 Here actionAbility
 
 instance RunMessage SleepingCar where
-  runMessage msg l@(SleepingCar attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l
-            <$ pushAll
-              [TakeResources iid 3 (toAbilitySource attrs 1) False, Remember StolenAPassengersLuggage]
-    _ -> SleepingCar <$> runMessage msg attrs
+  runMessage msg l@(SleepingCar attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      gainResourcesIfCan iid (attrs.ability 1) 3
+      remember StolenAPassengersLuggage
+      pure l
+    _ -> SleepingCar <$> liftRunMessage msg attrs

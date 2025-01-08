@@ -197,6 +197,7 @@ imOuttaHere =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Trick, Spirit]
     , cdCriteria = Just Criteria.ScenarioCardHasResignAbility
+    , cdActions = [#resign]
     }
 
 hypnoticGaze :: CardDef

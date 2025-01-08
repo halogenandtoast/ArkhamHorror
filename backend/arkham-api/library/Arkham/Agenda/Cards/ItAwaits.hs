@@ -1,17 +1,12 @@
-module Arkham.Agenda.Cards.ItAwaits (
-  ItAwaits (..),
-  itAwaits,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.ItAwaits (itAwaits) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.CampaignLogKey
+import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Classes
-import Arkham.GameValue
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Matcher
+import Arkham.Helpers.Log (inRecordSet)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -26,23 +21,21 @@ itAwaits =
     %~ (\m -> m {removeDoomEnemies = NotEnemy AnyEnemy})
 
 instance RunMessage ItAwaits where
-  runMessage msg a@(ItAwaits attrs) =
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        ritualSuicideMessages <- commitRitualSuicide attrs
-        lead <- getLead
-        theWraithRecognizesTheCrucifix <- WornCrucifix `inRecordSet` MementosDiscovered
-        investigators <- getInvestigators
-        sid <- genId
-        pushAll
-          $ ritualSuicideMessages
-          <> [findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)]
-          <> ( guard (not theWraithRecognizesTheCrucifix)
-                *> [beginSkillTest sid iid attrs iid #willpower (Fixed 4) | iid <- investigators]
-             )
-          <> [advanceAgendaDeck attrs]
-        pure a
-      FailedThisSkillTest iid (isSource attrs -> True) -> do
-        push $ assignDamageAndHorror iid attrs 1 1
-        pure a
-      _ -> ItAwaits <$> runMessage msg attrs
+  runMessage msg a@(ItAwaits attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      lead <- getLead
+
+      commitRitualSuicide attrs
+      findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)
+
+      theWraithRecognizesTheCrucifix <- WornCrucifix `inRecordSet` MementosDiscovered
+      unless theWraithRecognizesTheCrucifix do
+        eachInvestigator \iid -> do
+          sid <- genId
+          beginSkillTest sid iid attrs iid #willpower (Fixed 4)
+      advanceAgendaDeck attrs
+      pure a
+    FailedThisSkillTest iid (isSource attrs -> True) -> do
+      assignDamageAndHorror iid attrs 1 1
+      pure a
+    _ -> ItAwaits <$> liftRunMessage msg attrs

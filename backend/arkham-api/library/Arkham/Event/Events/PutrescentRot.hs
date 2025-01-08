@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 
 newtype PutrescentRot = PutrescentRot EventAttrs
@@ -15,9 +15,9 @@ putrescentRot :: EventCard PutrescentRot
 putrescentRot = event PutrescentRot Cards.putrescentRot
 
 instance HasModifiersFor PutrescentRot where
-  getModifiersFor target (PutrescentRot a) | target `elem` a.attachedTo = do
-    modified a [EnemyFight (-1), EnemyEvade (-1)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PutrescentRot a) = case a.attachedTo of
+    Just target -> modified_ a target [EnemyFight (-1), EnemyEvade (-1)]
+    _ -> pure mempty
 
 instance HasAbilities PutrescentRot where
   getAbilities (PutrescentRot a) =

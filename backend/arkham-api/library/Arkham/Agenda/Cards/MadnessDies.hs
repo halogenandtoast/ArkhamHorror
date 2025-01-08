@@ -21,10 +21,7 @@ madnessDies :: AgendaCard MadnessDies
 madnessDies = agenda (3, A) MadnessDies Cards.madnessDies (Static 9)
 
 instance HasModifiersFor MadnessDies where
-  getModifiersFor (EnemyTarget eid) (MadnessDies a) = do
-    isHastur <- eid `isMatch` EnemyWithTitle "Hastur"
-    toModifiers a [EnemyFight 2 | isHastur]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MadnessDies a) = modifySelect a (EnemyWithTitle "Hastur") [EnemyFight 2]
 
 instance RunMessage MadnessDies where
   runMessage msg a@(MadnessDies attrs) = case msg of

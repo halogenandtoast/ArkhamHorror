@@ -1,8 +1,8 @@
-module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (InTheClutchesOfChaos (..), inTheClutchesOfChaos) where
+module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (inTheClutchesOfChaos) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
@@ -13,6 +13,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.InTheClutchesOfChaos.Helpers

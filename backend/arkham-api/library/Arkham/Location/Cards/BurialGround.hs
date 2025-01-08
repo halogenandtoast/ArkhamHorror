@@ -1,39 +1,33 @@
-module Arkham.Location.Cards.BurialGround (burialGround, BurialGround (..)) where
+module Arkham.Location.Cards.BurialGround (burialGround) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey (ScenarioLogKey (NoticedTheMissingBones))
 import Arkham.Trait (Trait (Ghoul))
 
 newtype BurialGround = BurialGround LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 burialGround :: LocationCard BurialGround
 burialGround = location BurialGround Cards.burialGround 4 (PerPlayer 1)
 
 instance HasModifiersFor BurialGround where
-  getModifiersFor (EnemyTarget eid) (BurialGround attrs) = do
-    isGhoul <- eid <=~> EnemyWithTrait Ghoul
-    toModifiers attrs [ForceSpawnLocation (LocationWithId $ toId attrs) | isGhoul]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BurialGround a) =
+    whenRevealed a $ modifySelect a (EnemyWithTrait Ghoul) [ForceSpawnLocation (be a)]
 
 instance HasAbilities BurialGround where
-  getAbilities (BurialGround attrs) =
-    extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 Here
-          $ FastAbility
-          $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)
-      ]
+  getAbilities (BurialGround a) =
+    extendRevealed1 a $ restricted a 1 Here $ FastAbility $ GroupClueCost (PerPlayer 1) (be a)
 
 instance RunMessage BurialGround where
-  runMessage msg l@(BurialGround attrs) = case msg of
+  runMessage msg l@(BurialGround attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Remember NoticedTheMissingBones
+      remember NoticedTheMissingBones
       pure l
-    _ -> BurialGround <$> runMessage msg attrs
+    _ -> BurialGround <$> liftRunMessage msg attrs

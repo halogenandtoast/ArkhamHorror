@@ -23,7 +23,7 @@ instance RunMessage TerrorInTheNight where
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
       aid <- selectJust AnyAgenda
       other <- select $ treacheryIs Cards.terrorInTheNight
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       attached <- filterByField TreacheryPlacement (== AttachedToAgenda aid) other
       attachTreachery attrs aid
       when (n >= 3) $ gainSurge attrs

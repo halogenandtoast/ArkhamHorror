@@ -4,7 +4,7 @@ import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (spawnedEnemy)
 import Arkham.Placement
 import Arkham.Projection
@@ -17,10 +17,9 @@ fendOff3 :: EventCard FendOff3
 fendOff3 = event FendOff3 Cards.fendOff3
 
 instance HasModifiersFor FendOff3 where
-  getModifiersFor (EnemyTarget eid) (FendOff3 attrs) = case attrs.placement of
-    AttachedToEnemy eid' | eid == eid' -> modified attrs [CannotReady]
-    _ -> pure []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FendOff3 attrs) = case attrs.placement of
+    AttachedToEnemy eid -> modified_ attrs eid [CannotReady]
+    _ -> pure mempty
 
 instance RunMessage FendOff3 where
   runMessage msg e@(FendOff3 attrs) = runQueueT $ case msg of

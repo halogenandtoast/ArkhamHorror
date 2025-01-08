@@ -4,13 +4,14 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -180,7 +181,7 @@ instance RunMessage TheMiskatonicMuseum where
       endOfScenario
       pure s
     ScenarioResolution (Resolution 2) -> do
-      investigatorIds <- allInvestigatorIds
+      investigatorIds <- allInvestigators
       story resolution2
       record TheInvestigatorsTookCustodyOfTheNecronomicon
       addCampaignCardToDeckChoice investigatorIds Assets.theNecronomiconOlausWormiusTranslation

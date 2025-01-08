@@ -40,7 +40,7 @@ instance HasAbilities RuinsOfNewYork where
 instance RunMessage RuinsOfNewYork where
   runMessage msg l@(RuinsOfNewYork attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      lead <- getLeadInvestigatorId
+      lead <- getLead
       playerCount <- getPlayerCount
       deck <- fieldMap InvestigatorDeck unDeck lead
       let

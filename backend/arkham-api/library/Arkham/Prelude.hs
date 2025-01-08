@@ -206,6 +206,12 @@ infix 9 !!?
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d
 
+uncurry5 :: (a -> b -> c -> d -> e -> f) -> (a, b, c, d, e) -> f
+uncurry5 z ~(a, b, c, d, e) = z a b c d e
+
+uncurry7 :: (a -> b -> c -> d -> e -> f -> g -> h) -> (a, b, c, d, e, f, g) -> h
+uncurry7 z ~(a, b, c, d, e, f, g) = z a b c d e f g
+
 eachWithRest :: Eq a => [a] -> [(a, [a])]
 eachWithRest xs = [(x, deleteFirst x xs) | x <- xs]
 
@@ -436,6 +442,17 @@ shuffleIn x xs = shuffleM (x : xs)
 removeRandom :: (MonadRandom m, Eq a) => [a] -> m [a]
 removeRandom [] = pure []
 removeRandom (x : xs) = snd <$> sampleWithRest (x :| xs)
+
+ifM_ :: Monad m => m Bool -> a -> a -> m a
+ifM_ body tVal fVal = do
+  cond <- body
+  pure $ if cond then tVal else fVal
+
+given :: (Monad m, Monoid a) => m a -> Bool -> m a
+given ma b = if b then ma else pure mempty
+
+guarded :: (Monad m, Monoid a) => Bool -> m a -> m a
+guarded = flip given
 
 class ToDisplay a where
   toDisplay :: a -> Text

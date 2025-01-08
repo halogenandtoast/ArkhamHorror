@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, formatContent } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
-import type { Read } from '@/arkham/types/Question';
+import type { Read, FlavorTextEntry } from '@/arkham/types/Question';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
+import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 
 export interface Props {
   game: Game
@@ -18,11 +19,11 @@ const choose = (idx: number) => emit('choose', idx)
 const { t } = useI18n()
 
 const format = function(body: string) {
-  return body.replace(/_([^_]*)_/g, '<b>$1</b>').replace(/\*([^*]*)\*/g, '<i>$1</i>')
+  return formatContent(body)
 }
 
 const maybeFormat = function(body: string) {
-  return body.startsWith("$") ? t(tformat(body)) : body
+  return body.startsWith("$") ? t(tformat(body.split(' ')[0])) : body
 }
 
 const readCards = computed(() => props.question.readCards || [])
@@ -49,9 +50,15 @@ const readChoices = computed(() => {
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
 
-const formatted = computed(() => {
-  return props.question.flavorText.body[0].startsWith("$") ? props.question.flavorText.body[0].slice(1) : null
-})
+function formatEntry(entry: FlavorTextEntry): string {
+  switch (entry.tag) {
+    case 'BasicEntry': return formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text)
+    case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
+    case 'ModifyEntry': return formatEntry(entry.entry)
+    case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
+    default: return "Unknown entry type"
+  }
+}
 
 const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 
@@ -63,12 +70,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="() => {}" />
       <div class="entry-body">
         <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
-        <div class="entry-text" v-if="formatted" v-html="$t(formatted)"></div>
-        <p v-else
-          v-for="(paragraph, index) in question.flavorText.body"
-          :key="index"
-          v-html="format(paragraph)"
-          ></p>
+        <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
       </div>
     </div>
     <div class="options">
@@ -76,7 +78,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
         v-for="readChoice in readChoices"
         @click="choose(readChoice.index)"
         :key="readChoice.index"
-      ><i class="option"></i>{{$t(tformat(readChoice.label))}}</button>
+        ><i class="option"></i><span v-html="formatContent(tformat(readChoice.label))"></span></button>
     </div>
   </div>
 </template>
@@ -86,6 +88,61 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
   background: #DCD6D0;
   padding: 20px;
   box-shadow: inset 0 0 170px rgba(0,0,0,0.5), 1px 1px 3px rgba(0,0,0,0.6);
+}
+
+.entry {
+  &:has(.iceAndDeath) {
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+    }
+
+    :deep(li){
+      &::marker {
+        color: #19214F;
+      }
+    }
+  }
+  &:has(.checkpoint), &:has(.interlude) {
+    background-color: #AFA9A9;
+    box-shadow: unset;
+    overflow: hidden;
+    &::after {
+      border: 20px solid #D4CCC3;
+      border-left-width: 10px;
+      border-right-width: 10px;
+      position: absolute;
+      inset: 0px;
+      box-sizing: border-box;
+      content: "";
+      filter: blur(0.25em);
+      z-index: 1;
+    }
+    h1 {
+      color: #19214F;
+      border-bottom: 1px solid #19214F;
+      &::after {
+        border-bottom: 1px solid #19214F;
+      }
+      font-size: 1.3em;
+      font-weight: 500;
+    }
+    padding: 50px;
+    position: relative;
+    &::before {
+      z-index: 2;
+      pointer-events: none;
+      position: absolute;
+      inset: 10px;
+      border-image: url(/img/arkham/checkpoint_fleur.png) 49.9%;
+      border-image-repeat: no-repeat;
+      border-image-width: 50px;
+      content: "";
+    }
+  }
 }
 
 .intro-text {
@@ -130,7 +187,7 @@ p {
   }
 }
 
-button {
+button, a.button {
   width: 100%;
   border: 0;
   text-align: left;
@@ -138,15 +195,27 @@ button {
   text-transform: uppercase;
   background-color: #532e61;
   font-weight: bold;
-  color: #EEE;
+  color: #CFCFCF;
   font: Arial, sans-serif;
   &:hover {
     background-color: #311b3e;
+    &:deep(strong) {
+      color: white;
+    }
   }
 
   i {
     font-style: normal;
   }
+
+  &:deep(strong) {
+    color: white;
+  }
+}
+
+a.button {
+  display: block;
+  font-size: 0.7em;
 }
 
 
@@ -160,21 +229,38 @@ button {
 
 .card {
   flex-basis: 30%;
+  flex-shrink: 0;
   height: fit-content;
   border-radius: 15px;
 }
 
 .entry-text {
   flex: 1;
+  &:deep(.right) {
+    text-align: right;
+  }
+  &:deep(.basic) {
+    font-style: normal;
+    font-family: auto;
+  }
+
+  &:deep(i) {
+    font-style: italic;
+  }
 }
 
 .entry-body {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  gap: 20px;
+  flex-direction: column;
   p {
     flex: 1;
   }
+
+  &:has(.card) {
+    flex-direction: row;
+    gap: 20px;
+  }
 }
+
 </style>

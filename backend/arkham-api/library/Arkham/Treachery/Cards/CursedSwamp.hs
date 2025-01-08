@@ -19,14 +19,16 @@ cursedSwamp :: TreacheryCard CursedSwamp
 cursedSwamp = treachery CursedSwamp Cards.cursedSwamp
 
 instance HasModifiersFor CursedSwamp where
-  getModifiersFor (InvestigatorTarget iid) (CursedSwamp attrs) = do
-    mSource <- getSkillTestSource
-    case mSource of
+  getModifiersFor (CursedSwamp attrs) = do
+    getSkillTestSource >>= \case
       Just source | isSource attrs source -> do
-        isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
-        toModifiers attrs [CannotCommitCards AnyCard | isBayou]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        getSkillTestInvestigator >>= \case
+          Nothing -> pure mempty
+          Just iid -> maybeModified_ attrs iid do
+            isBayou <- selectAny $ LocationWithTrait Bayou <> locationWithInvestigator iid
+            guard isBayou
+            pure [CannotCommitCards AnyCard]
+      _ -> pure mempty
 
 instance RunMessage CursedSwamp where
   runMessage msg t@(CursedSwamp attrs) = case msg of

@@ -26,7 +26,7 @@ instance RunMessage TheArchway where
       dimStreets <- selectJust $ locationIs Locations.dimStreetsTheArchway
       sid <- genId
       pushAll
-        [ beginSkillTest sid iid attrs iid #intellect (Fixed 3)
+        [ beginSkillTest sid iid attrs iid #willpower (Fixed 1)
         , ReplaceLocation dimStreets otherDimStreets DefaultReplace
         ]
       pure s

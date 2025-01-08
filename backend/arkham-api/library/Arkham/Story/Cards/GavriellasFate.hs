@@ -1,16 +1,9 @@
-module Arkham.Story.Cards.GavriellasFate (
-  GavriellasFate (..),
-  gavriellasFate,
-  gavriellasFateEffect,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.GavriellasFate (gavriellasFate, gavriellasFateEffect) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Investigator
@@ -19,9 +12,10 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.SlotType
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype GavriellasFate = GavriellasFate StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -31,43 +25,30 @@ gavriellasFate :: StoryCard GavriellasFate
 gavriellasFate = story GavriellasFate Cards.gavriellasFate
 
 instance RunMessage GavriellasFate where
-  runMessage msg s@(GavriellasFate attrs) = case msg of
+  runMessage msg s@(GavriellasFate attrs) = runQueueT $ case msg of
     ResolveStory iid ResolveIt story' | story' == toId attrs -> do
       disappearedIntoTheMist <-
-        toCardCode Investigators.gavriellaMizrah `inRecordSet` DisappearedIntoTheMist
-      claimedBySpecters <-
-        toCardCode Investigators.gavriellaMizrah `inRecordSet` WasClaimedBySpecters
+        Investigators.gavriellaMizrah.cardCode `inRecordSet` DisappearedIntoTheMist
+      claimedBySpecters <- Investigators.gavriellaMizrah.cardCode `inRecordSet` WasClaimedBySpecters
       onTrail <- getHasRecord TheInvestigatorsAreOnGavriella'sTrail
-
-      location <- getJustLocation iid
 
       if disappearedIntoTheMist && onTrail
         then do
-          gavriella <- getSetAsideCard Assets.gavriellaMizrah
-          enabled <- createCardEffect Cards.gavriellasFate Nothing attrs iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , enabled
-            , TakeControlOfSetAsideAsset iid gavriella
-            , Record GavriellaIsAlive
-            ]
-        else when claimedBySpecters $ do
+          push $ RemoveStory (toId attrs)
+          createCardEffect Cards.gavriellasFate Nothing attrs iid
+          takeControlOfSetAsideAsset iid =<< getSetAsideCard Assets.gavriellaMizrah
+          record GavriellaIsAlive
+        else when claimedBySpecters do
           gavriella <- genCard Enemies.gavriellaMizrah
-          createGavriella <-
-            createEnemy gavriella
-              $ if onTrail
-                then toEnemyCreationMethod location
-                else toEnemyCreationMethod iid
-          pushAll
-            [ RemoveStory (toId attrs)
-            , toMessage
-                $ createGavriella
-                  { enemyCreationExhausted = onTrail
-                  }
-            ]
+          location <- getJustLocation iid
+          push $ RemoveStory attrs.id
+          createEnemyWith_
+            gavriella
+            (if onTrail then toEnemyCreationMethod location else toEnemyCreationMethod iid)
+            (setExhausted onTrail)
 
       pure s
-    _ -> GavriellasFate <$> runMessage msg attrs
+    _ -> GavriellasFate <$> liftRunMessage msg attrs
 
 newtype GavriellasFateEffect = GavriellasFateEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -77,10 +58,8 @@ gavriellasFateEffect :: EffectArgs -> GavriellasFateEffect
 gavriellasFateEffect = cardEffect GavriellasFateEffect Cards.gavriellasFate
 
 instance HasModifiersFor GavriellasFateEffect where
-  getModifiersFor (AssetTarget aid) (GavriellasFateEffect a) = do
-    isGavriella <- elem aid <$> select (assetIs Assets.gavriellaMizrah)
-    toModifiers a [DoNotTakeUpSlot AllySlot | isGavriella]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (GavriellasFateEffect a) =
+    modifySelect a (assetIs Assets.gavriellaMizrah) [DoNotTakeUpSlot AllySlot]
 
 instance RunMessage GavriellasFateEffect where
   runMessage _ = pure

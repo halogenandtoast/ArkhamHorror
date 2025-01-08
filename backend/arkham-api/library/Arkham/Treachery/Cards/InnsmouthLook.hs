@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.InnsmouthLook (innsmouthLook, InnsmouthLook (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Trait (Trait (DeepOne))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -14,10 +14,8 @@ innsmouthLook :: TreacheryCard InnsmouthLook
 innsmouthLook = treachery InnsmouthLook Cards.innsmouthLook
 
 instance HasModifiersFor InnsmouthLook where
-  getModifiersFor (InvestigatorTarget iid) (InnsmouthLook a) = maybeModified a do
-    guard $ treacheryInThreatArea iid a
-    pure [SkillModifier #intellect (-1), SanityModifier (-1), AddTrait DeepOne]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InnsmouthLook a) =
+    inThreatAreaGets a [SkillModifier #intellect (-1), SanityModifier (-1), AddTrait DeepOne]
 
 instance HasAbilities InnsmouthLook where
   getAbilities (InnsmouthLook a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

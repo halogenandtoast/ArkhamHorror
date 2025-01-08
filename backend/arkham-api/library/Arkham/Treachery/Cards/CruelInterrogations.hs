@@ -16,9 +16,8 @@ cruelInterrogations :: TreacheryCard CruelInterrogations
 cruelInterrogations = treachery CruelInterrogations Cards.cruelInterrogations
 
 instance HasModifiersFor CruelInterrogations where
-  getModifiersFor (InvestigatorTarget iid) (CruelInterrogations a) | treacheryInThreatArea iid a = do
-    modified a [CannotTakeAction $ IsAction Action.Draw]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CruelInterrogations a) =
+    inThreatAreaGets a [CannotTakeAction $ IsAction Action.Draw]
 
 instance HasAbilities CruelInterrogations where
   getAbilities (CruelInterrogations a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

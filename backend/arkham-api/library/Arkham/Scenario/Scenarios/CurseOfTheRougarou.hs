@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.CurseOfTheRougarou (CurseOfTheRougarou (..), curseOfTheRougarou) where
+module Arkham.Scenario.Scenarios.CurseOfTheRougarou (curseOfTheRougarou) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,6 +13,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice, roundModifier)
@@ -20,7 +21,7 @@ import Arkham.Scenario.Runner hiding (chooseOne, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 import Arkham.Treachery.Cards qualified as Treacheries
 import Data.Maybe (fromJust)
 

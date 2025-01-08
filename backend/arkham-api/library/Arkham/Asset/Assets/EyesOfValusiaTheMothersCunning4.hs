@@ -10,8 +10,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
 import Arkham.Helpers.Investigator (searchBondedJust)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
-import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Matcher
 import Arkham.Token
 
@@ -50,14 +50,14 @@ newtype EyesOfValusiaTheMothersCunning4Effect
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor EyesOfValusiaTheMothersCunning4Effect where
-  getModifiersFor (InvestigatorTarget _iid) (EyesOfValusiaTheMothersCunning4Effect a) =
-    maybeModified a do
-      EnemyTarget eid <- MaybeT getSkillTestTarget
+  getModifiersFor (EyesOfValusiaTheMothersCunning4Effect a) =
+    modifySelectMaybe a Anyone \iid -> do
+      st <- MaybeT getSkillTest
+      guard $ iid == st.investigator
+      guard $ any (`elem` st.action) [#fight, #evade, #parley]
+      eid <- hoistMaybe st.target.enemy
       guard $ isTarget eid a.target
-      action <- MaybeT getSkillTestAction
-      guard $ action `elem` [#fight, #evade, #parley]
       pure [AnySkillValue 1]
-  getModifiersFor _ _ = pure []
 
 eyesOfValusiaTheMothersCunning4Effect
   :: EffectArgs -> EyesOfValusiaTheMothersCunning4Effect

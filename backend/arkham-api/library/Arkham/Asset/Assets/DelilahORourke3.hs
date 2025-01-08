@@ -16,16 +16,14 @@ import Arkham.Matcher
 import Arkham.Projection
 
 newtype DelilahORourke3 = DelilahORourke3 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 delilahORourke3 :: AssetCard DelilahORourke3
 delilahORourke3 = ally DelilahORourke3 Cards.delilahORourke3 (3, 2)
 
 instance HasModifiersFor DelilahORourke3 where
-  getModifiersFor (InvestigatorTarget iid) (DelilahORourke3 a) | a `controlledBy` iid = do
-    toModifiers a [SkillModifier #combat 1, SkillModifier #agility 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DelilahORourke3 a) = controllerGets a [SkillModifier #combat 1, SkillModifier #agility 1]
 
 instance HasAbilities DelilahORourke3 where
   getAbilities (DelilahORourke3 a) =

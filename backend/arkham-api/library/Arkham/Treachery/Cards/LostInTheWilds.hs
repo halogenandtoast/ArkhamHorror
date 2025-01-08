@@ -14,11 +14,8 @@ lostInTheWilds :: TreacheryCard LostInTheWilds
 lostInTheWilds = treachery LostInTheWilds Cards.lostInTheWilds
 
 instance HasModifiersFor LostInTheWilds where
-  getModifiersFor (InvestigatorTarget iid) (LostInTheWilds attrs) = do
-    modified attrs
-      $ guard (treacheryInThreatArea iid attrs)
-      *> [CannotMove, CannotExplore]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LostInTheWilds attrs) =
+    inThreatAreaGets attrs [CannotMove, CannotExplore]
 
 instance HasAbilities LostInTheWilds where
   getAbilities (LostInTheWilds a) =

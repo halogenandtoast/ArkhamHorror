@@ -58,6 +58,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyFlipped :: Bool
   , enemyAttacking :: Maybe EnemyAttackDetails
   , enemyDelayEngagement :: Bool
+  , enemyCardsUnderneath :: [Card]
   }
   deriving stock (Show, Eq)
 
@@ -152,4 +153,5 @@ instance FromJSON EnemyAttrs where
     enemyFlipped <- v .: "flipped"
     enemyAttacking <- v .:? "attacking"
     enemyDelayEngagement <- v .:? "delayEngagement" .!= False
+    enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
     return EnemyAttrs {..}

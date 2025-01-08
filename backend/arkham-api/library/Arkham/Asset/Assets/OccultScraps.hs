@@ -18,12 +18,10 @@ occultScraps :: AssetCard OccultScraps
 occultScraps = asset OccultScraps Cards.occultScraps
 
 instance HasModifiersFor OccultScraps where
-  getModifiersFor (InvestigatorTarget iid) (OccultScraps a) = do
-    toModifiers a $ case assetPlacement a of
-      InPlayArea iid' | iid == iid' -> [SkillModifier #willpower (-1)]
-      StillInHand iid' | iid == iid' -> [SkillModifier #willpower (-2)]
-      _ -> []
-  getModifiersFor _ _ = pure []
+  getModifiersFor (OccultScraps a) = case a.placement of
+    InPlayArea iid -> modified_ a iid [SkillModifier #willpower (-1)]
+    StillInHand iid -> modified_ a iid [SkillModifier #willpower (-2)]
+    _ -> pure mempty
 
 instance RunMessage OccultScraps where
   runMessage msg (OccultScraps attrs) = OccultScraps <$> runMessage msg attrs

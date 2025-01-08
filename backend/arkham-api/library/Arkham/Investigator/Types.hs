@@ -38,6 +38,8 @@ import Arkham.Movement
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Search hiding (foundCardsL)
+import Arkham.Search qualified as Search
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Taboo.Types
@@ -48,7 +50,6 @@ import Arkham.Trait
 import Control.Lens (_Just)
 import Data.Aeson.TH
 import Data.Data
-import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import GHC.Records
 
@@ -147,7 +148,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorUnhealedHorrorThisRound :: Field Investigator Int
   InvestigatorMeta :: Field Investigator Value
   InvestigatorBeganRoundAt :: Field Investigator (Maybe LocationId)
-  InvestigatorSearch :: Field Investigator (Maybe InvestigatorSearch)
+  InvestigatorSearch :: Field Investigator (Maybe Search)
   --
   InvestigatorSupplies :: Field Investigator [Supply]
 
@@ -267,7 +268,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorStartsWith :: [CardDef]
   , investigatorStartsWithInHand :: [CardDef]
   , investigatorCardsUnderneath :: [Card]
-  , investigatorSearch :: Maybe InvestigatorSearch
+  , investigatorSearch :: Maybe Search
   , investigatorMovement :: Maybe Movement
   , investigatorUsedAbilities :: [UsedAbility]
   , investigatorUsedAdditionalActions :: [AdditionalAction]
@@ -311,25 +312,6 @@ instance HasCardCode InvestigatorAttrs where
 
 instance HasCardCode (With InvestigatorAttrs meta) where
   toCardCode (With x _) = investigatorCardCode x
-
-data InvestigatorSearch = MkInvestigatorSearch
-  { searchingType :: SearchType
-  , searchingInvestigator :: InvestigatorId
-  , searchingSource :: Source
-  , searchingTarget :: Target
-  , searchingZones :: [(Zone, ZoneReturnStrategy)]
-  , searchingMatcher :: ExtendedCardMatcher
-  , searchingFoundCardsStrategy :: FoundCardsStrategy
-  , searchingFoundCards :: Map Zone [Card]
-  , searchingDrawnCards :: [Card]
-  }
-  deriving stock (Show, Eq, Data)
-
-instance HasField "foundCards" InvestigatorSearch (Map Zone [Card]) where
-  getField = searchingFoundCards
-
-instance HasField "allFoundCards" InvestigatorSearch [Card] where
-  getField = concat . Map.elems . searchingFoundCards
 
 investigatorDoom :: InvestigatorAttrs -> Int
 investigatorDoom = countTokens Doom . investigatorTokens
@@ -477,7 +459,7 @@ instance ToJSON Investigator where
   toJSON (Investigator a) = toJSON a
 
 instance HasModifiersFor Investigator where
-  getModifiersFor target (Investigator a) = getModifiersFor target a
+  getModifiersFor (Investigator a) = getModifiersFor a
 
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a
@@ -536,37 +518,8 @@ toInvestigator (SomeInvestigatorCard f) = Investigator . cbCardBuilder f nullCar
 
 makeLensesWith suffixedFields ''InvestigatorAttrs
 
-searchingFoundCardsL :: Lens' InvestigatorSearch (Map Zone [Card])
-searchingFoundCardsL = lens searchingFoundCards $ \m x -> m {searchingFoundCards = x}
-
-searchingDrawnCardsL :: Lens' InvestigatorSearch [Card]
-searchingDrawnCardsL = lens searchingDrawnCards $ \m x -> m {searchingDrawnCards = x}
-
 foundCardsL :: Traversal' InvestigatorAttrs (Map Zone [Card])
-foundCardsL = searchL . _Just . searchingFoundCardsL
-
-$(deriveToJSON defaultOptions ''InvestigatorSearch)
-
-instance FromJSON InvestigatorSearch where
-  parseJSON = withObject "InvestigatorSearch" $ \o ->
-    MkInvestigatorSearch
-      <$> o
-      .: "searchingType"
-      <*> o
-      .: "searchingInvestigator"
-      <*> o
-      .: "searchingSource"
-      <*> o
-      .: "searchingTarget"
-      <*> o
-      .: "searchingZones"
-      <*> o
-      .: "searchingMatcher"
-      <*> o
-      .: "searchingFoundCardsStrategy"
-      <*> o
-      .: "searchingFoundCards"
-      <*> (o .:? "searchingDrawnCards" .!= [])
+foundCardsL = searchL . _Just . Search.foundCardsL
 
 $(deriveToJSON (aesonOptions $ Just "investigator") ''InvestigatorAttrs)
 

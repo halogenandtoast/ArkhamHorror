@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.ForbiddingShore (
-  forbiddingShore,
-  ForbiddingShore (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ForbiddingShore (forbiddingShore) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenarios.UnionAndDisillusion.Helpers
 
@@ -24,33 +19,28 @@ forbiddingShore = location ForbiddingShore Cards.forbiddingShore 3 (PerPlayer 1)
 
 instance HasAbilities ForbiddingShore where
   getAbilities (ForbiddingShore attrs) =
-    withRevealedAbilities
+    extendRevealed
       attrs
-      [ restrictedAbility attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
+      [ restricted attrs 1 Here $ ActionAbility [Action.Circle] $ ActionCost 1
       , haunted "You must either lose 1 action or lose 2 resources" attrs 2
       ]
 
 instance RunMessage ForbiddingShore where
-  runMessage msg l@(ForbiddingShore attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      player <- getPlayer iid
+  runMessage msg l@(ForbiddingShore attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      push
-        $ chooseOne
-          player
-          [ SkillLabel skillType [beginSkillTest sid iid attrs attrs skillType (Fixed 3)]
-          | skillType <- [#willpower, #intellect]
-          ]
+      chooseOneM iid do
+        for_ [#willpower, #intellect] \sType -> do
+          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 3)
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasResources <- fieldMap InvestigatorResources (> 0) iid
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne player
-        $ Label "Lose 1 action" [LoseActions iid (toSource attrs) 1]
-        : [Label "Lose 2 resources" [LoseResources iid (toSource attrs) 2] | hasResources]
+      chooseOrRunOneM iid do
+        labeled "Lose 1 action" $ loseActions iid (attrs.ability 2) 1
+        when hasResources do
+          labeled "Lose 2 resources" $ loseResources iid (attrs.ability 2) 2
       pure l
-    PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs
       pure l
-    _ -> ForbiddingShore <$> runMessage msg attrs
+    _ -> ForbiddingShore <$> liftRunMessage msg attrs

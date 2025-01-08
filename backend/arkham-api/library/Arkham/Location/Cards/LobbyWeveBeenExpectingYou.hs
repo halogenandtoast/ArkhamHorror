@@ -4,13 +4,12 @@ module Arkham.Location.Cards.LobbyWeveBeenExpectingYou (
 )
 where
 
-import Arkham.Prelude
-
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Message
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
@@ -21,25 +20,25 @@ lobbyWeveBeenExpectingYou :: LocationCard LobbyWeveBeenExpectingYou
 lobbyWeveBeenExpectingYou = location LobbyWeveBeenExpectingYou Cards.lobbyWeveBeenExpectingYou 3 (Static 0)
 
 instance HasModifiersFor LobbyWeveBeenExpectingYou where
-  getModifiersFor target (LobbyWeveBeenExpectingYou attrs)
-    | isTarget attrs target =
-        toModifiers attrs [Blocked | not (locationRevealed attrs)]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (LobbyWeveBeenExpectingYou a) = whenUnrevealed a $ modifySelf a [Blocked]
 
 instance HasAbilities LobbyWeveBeenExpectingYou where
   getAbilities (LobbyWeveBeenExpectingYou attrs) =
-    withBaseAbilities
+    extend
       attrs
       [ withTooltip
         "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
-        $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 (OnLocation "Lodge Gates")
-        $ ActionAbility [#parley] (ActionCost 1)
-      | unrevealed attrs
+        $ restricted
+          (proxied (LocationMatcherSource "Lodge Gates") attrs)
+          1
+          (OnLocation "Lodge Gates")
+          parleyAction_
+      | attrs.unrevealed
       ]
 
 instance RunMessage LobbyWeveBeenExpectingYou where
-  runMessage msg l@(LobbyWeveBeenExpectingYou attrs) = case msg of
-    UseCardAbility iid (ProxySource _ source) 1 _ _ | isSource attrs source && unrevealed attrs -> do
+  runMessage msg l@(LobbyWeveBeenExpectingYou attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
       push $ RevealLocation (Just iid) (toId attrs)
       pure l
-    _ -> LobbyWeveBeenExpectingYou <$> runMessage msg attrs
+    _ -> LobbyWeveBeenExpectingYou <$> liftRunMessage msg attrs

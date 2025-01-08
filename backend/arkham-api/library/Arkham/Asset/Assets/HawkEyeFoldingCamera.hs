@@ -21,13 +21,13 @@ hawkEyeFoldingCamera =
   asset (HawkEyeFoldingCamera . (`with` Metadata [])) Cards.hawkEyeFoldingCamera
 
 instance HasModifiersFor HawkEyeFoldingCamera where
-  getModifiersFor (InvestigatorTarget iid) (HawkEyeFoldingCamera (a `With` _))
-    | controlledBy a iid = do
-        toModifiers a
-          $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
-          <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
-          <> [SanityModifier 1 | a.use Evidence >= 3]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HawkEyeFoldingCamera (a `With` _)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid ->
+      modified_ a iid
+        $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
+        <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
+        <> [SanityModifier 1 | a.use Evidence >= 3]
 
 instance HasAbilities HawkEyeFoldingCamera where
   getAbilities (HawkEyeFoldingCamera (a `With` meta)) =

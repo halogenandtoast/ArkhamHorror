@@ -48,6 +48,7 @@ allPlayerAssetCards =
       , annaKaslow4
       , anotherDayAnotherDollar3
       , antiquary3
+      , anyuFaithfulCompanion
       , aquinnah1
       , aquinnah3
       , arbiterOfFates
@@ -78,6 +79,7 @@ allPlayerAssetCards =
       , augur
       , augustLindquist
       , averyClaypoolAntarcticGuide
+      , averyClaypoolAntarcticGuideResolute
       , awakenedMantle
       , azureFlame
       , azureFlame3
@@ -157,13 +159,16 @@ allPlayerAssetCards =
       , clarityOfMind
       , clarityOfMind3
       , claspOfBlackOnyx
+      , claypoolsFurs
       , cleaningKit
       , cleaningKit3
       , closeTheCircle1
+      , collectedWorksOfPoe
       , coltVestPocket
       , coltVestPocket2
       , combatTraining1
       , combatTraining3
+      , cookiesCustom32
       , cornered2
       , crafty3
       , crypticGrimoireTextOfTheElderGuardian4
@@ -179,6 +184,7 @@ allPlayerAssetCards =
       , daisysToteBagAdvanced
       , damningTestimony
       , danforthBrilliantStudent
+      , danforthBrilliantStudentResolute
       , darioElAmin
       , darkHorse
       , darkHorse5
@@ -223,11 +229,13 @@ allPlayerAssetCards =
       , dowsingRod
       , dowsingRod4
       , drAmyKenslerProfessorOfBiology
+      , drAmyKenslerProfessorOfBiologyResolute
       , drCharlesWestIiiKnowsHisPurpose
       , drElliHorowitz
       , drFrancisMorgan
       , drHenryArmitage
       , drMalaSinhaDaringPhysician
+      , drMalaSinhaDaringPhysicianResolute
       , drMilanChristopher
       , drShivaniMaheswaran
       , drWilliamTMaleson
@@ -240,6 +248,7 @@ allPlayerAssetCards =
       , dreamDiaryDreamsOfAnExplorer3
       , dreamEnhancingSerum
       , duke
+      , dynamite
       , earlSawyer
       , earthlySerenity1
       , earthlySerenity4
@@ -250,7 +259,9 @@ allPlayerAssetCards =
       , eldritchTongue
       , elinaHarperKnowsTooMuch
       , eliyahAshevakDogHandler
+      , eliyahAshevakDogHandlerResolute
       , elleRubashPurifyingPurpose2
+      , ellsworthsBoots
       , embezzledTreasure
       , empiricalHypothesis
       , empowerSelfAcuity2
@@ -337,6 +348,7 @@ allPlayerAssetCards =
       , gravediggersShovel2
       , graysAnatomyTheDoctorsBible5
       , greenManMedallionHourOfTheHuntress
+      , greenSoapstoneJinxedIdol
       , gregoryGry
       , greteWagner
       , greteWagner3
@@ -407,6 +419,7 @@ allPlayerAssetCards =
       , jacobMorrisonCostGuardCaptain3
       , jakeWilliams
       , jamesCookieFredericksDubiousChoice
+      , jamesCookieFredericksDubiousChoiceResolute
       , jennysTwin45s
       , jennysTwin45sAdvanced
       , jeremiahKirbyArcticArchaeologist
@@ -423,6 +436,7 @@ allPlayerAssetCards =
       , keenEye
       , keenEye3
       , keeperOfTheKeyCelestialWard
+      , kenslersLog
       , kerosene1
       , keyOfYs
       , kleptomania
@@ -482,10 +496,12 @@ allPlayerAssetCards =
       , medicalTexts
       , medicalTexts2
       , medicoDellaPeste
+      , miasmicCrystalStrangeEvidence
       , michaelLeigh5
       , microscope
       , microscope4
       , mindsEye2
+      , mineralSpecimen
       , miskatonicArchaeologyFunding4
       , missDoyle1
       , mistsOfRlyeh
@@ -563,6 +579,7 @@ allPlayerAssetCards =
       , prismaticSpectaclesLensToTheOtherworld2
       , professorWarrenRice
       , professorWilliamDyerProfessorOfGeology
+      , professorWilliamDyerProfessorOfGeologyResolute
       , professorWilliamWebbFinderOfHiddenConnections
       , professorWilliamWebbFinderOfHiddenConnections2
       , prophesiaeProfanaAtlasOfTheUnknowable5
@@ -601,6 +618,7 @@ allPlayerAssetCards =
       , riteOfSeeking4
       , ritualCandles
       , roaldEllsworthIntrepidExplorer
+      , roaldEllsworthIntrepidExplorerResolute
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rodOfAnimalism1
@@ -652,12 +670,14 @@ allPlayerAssetCards =
       , signMagick3
       , silassNet
       , sinEater3
+      , sinhasMedicalKit
       , sixthSense
       , sixthSense4
       , sledDog
       , sledgehammer
       , sledgehammer4
       , sleuth3
+      , smallRadio
       , smokingPipe
       , solemnVow
       , somethingWorthFightingFor
@@ -665,6 +685,7 @@ allPlayerAssetCards =
       , sophieInLovingMemory
       , sophieItWasAllMyFault
       , soulSanctification3
+      , spareParts
       , sparrowMaskTheWanderersCompanion
       , speakToTheDead
       , spectralWeb
@@ -701,6 +722,7 @@ allPlayerAssetCards =
       , switchblade2
       , swordCane
       , takadaHirokoAeroplaneMechanic
+      , takadaHirokoAeroplaneMechanicResolute
       , talismanOfProtection
       , teachingsOfTheOrder
       , tennesseeSourMash
@@ -794,6 +816,7 @@ allPlayerAssetCards =
       , wither
       , wither4
       , wolfMaskTheMoonsSire
+      , woodenSledge
       , woundedBystanderOnDeathsDoorstep
       , yaotl1
       , zeal

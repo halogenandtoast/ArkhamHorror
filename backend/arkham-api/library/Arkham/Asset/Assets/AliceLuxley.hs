@@ -16,9 +16,9 @@ aliceLuxley :: AssetCard AliceLuxley
 aliceLuxley = ally AliceLuxley Cards.aliceLuxley (2, 2)
 
 instance HasModifiersFor AliceLuxley where
-  getModifiersFor (InvestigatorTarget iid) (AliceLuxley a) =
-    toModifiers a [SkillModifier #intellect 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AliceLuxley a) = case a.controller of
+    Just iid -> modified_ a iid [SkillModifier #intellect 1]
+    Nothing -> pure mempty
 
 instance HasAbilities AliceLuxley where
   getAbilities (AliceLuxley a) =

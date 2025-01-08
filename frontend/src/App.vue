@@ -49,6 +49,7 @@ const checkAvifSupport = (): Promise<boolean> => {
 <style lang="scss">
 html {
   color-scheme: dark;
+  interpolate-size: allow-keywords;
 }
 * {
   padding: 0;
@@ -386,6 +387,8 @@ body {
   --select-dark: #d400d4;
   --select-dark-20: #cc00cc;
   --select-dark-30: #b200b2;
+
+  --bullet-red: #391714;
 
   @media (max-width: 800px) {
     --card-width: 40px;

@@ -8,7 +8,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelfWhen)
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (
   isInvestigation,
@@ -31,20 +31,21 @@ newtype DamningTestimony = DamningTestimony (AssetAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor DamningTestimony where
-  getModifiersFor target (DamningTestimony (With attrs _)) | attrs `is` target = do
-    modified attrs $ guardCustomization attrs FabricatedEvidence [AdditionalStartingUses 2]
-  getModifiersFor (InvestigatorTarget iid) (DamningTestimony (With attrs _)) = do
-    let investigatingUsingThis = liftGuardsM [isSkillTestSource attrs, isSkillTestInvestigator iid, isInvestigation]
-    blackMail <- runMaybeT do
-      guard $ attrs `hasCustomization` Blackmail
-      investigatingUsingThis
-      pure $ SkillModifier #intellect 2
-    searchWarrant <- runMaybeT do
-      guard $ attrs `hasCustomization` SearchWarrant
-      investigatingUsingThis
-      pure MayIgnoreLocationEffectsAndKeywords
-    modified attrs $ maybeToList blackMail <> maybeToList searchWarrant
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DamningTestimony (With a _)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      self <- modifySelfWhen a (a `hasCustomization` FabricatedEvidence) [AdditionalStartingUses 2]
+      let investigatingUsingThis = liftGuardsM [isSkillTestSource a, isSkillTestInvestigator iid, isInvestigation]
+      blackMail <- runMaybeT do
+        guard $ a `hasCustomization` Blackmail
+        investigatingUsingThis
+        pure $ SkillModifier #intellect 2
+      searchWarrant <- runMaybeT do
+        guard $ a `hasCustomization` SearchWarrant
+        investigatingUsingThis
+        pure MayIgnoreLocationEffectsAndKeywords
+      controller <- modified_ a iid $ maybeToList blackMail <> maybeToList searchWarrant
+      pure $ self <> controller
 
 instance HasAbilities DamningTestimony where
   getAbilities (DamningTestimony (With attrs _)) =

@@ -18,9 +18,8 @@ entombed :: TreacheryCard Entombed
 entombed = treachery (Entombed . (`With` Metadata 0)) Cards.entombed
 
 instance HasModifiersFor Entombed where
-  getModifiersFor (InvestigatorTarget iid) (Entombed (attrs `With` _)) =
-    modified attrs $ guard (treacheryInThreatArea iid attrs) *> [CannotMove, CannotDisengageEnemies]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Entombed (attrs `With` _)) =
+    inThreatAreaGets attrs [CannotMove, CannotDisengageEnemies]
 
 instance HasAbilities Entombed where
   getAbilities (Entombed (a `With` _)) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]

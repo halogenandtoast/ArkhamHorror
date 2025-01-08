@@ -41,6 +41,7 @@ data ModifierType
   = ForEach GameCalculation [ModifierType]
   | DoNotDrawConnection (SortedPair LocationId)
   | Barricades [LocationId]
+  | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | CanIgnoreBarriers
   | IgnoreBarriers
   | CannotBeFullyFlooded
@@ -94,6 +95,7 @@ data ModifierType
   | PlayableCardOf InvestigatorId Card
   | AsIfUnderControlOf InvestigatorId
   | PlayUnderControlOf InvestigatorId
+  | Cancelled
   | AttacksCannotBeCancelled
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BaseSkill Int
@@ -195,6 +197,7 @@ data ModifierType
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
   | CannotPlaceClues
+  | ReduceStartingCluesByHalf
   | CannotPlaceDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
@@ -213,6 +216,7 @@ data ModifierType
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
   | AddChaosTokenValue ChaosTokenValue
+  | CancelAnyChaosToken ChaosTokenMatcher
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
@@ -237,6 +241,7 @@ data ModifierType
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts
+  | OtherDoomSubtracts
   | IgnoreDoomOnThis Int
   | DoomThresholdModifier Int
   | DoubleBaseSkillValue
@@ -297,6 +302,7 @@ data ModifierType
   | IsEmptySpace
   | KilledIfDefeated
   | ExhaustIfDefeated
+  | DoNotExhaust
   | LeaveCardWhereItIs
   | LosePatrol
   | LoseVictory
@@ -320,6 +326,8 @@ data ModifierType
   | Omnipotent
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
   | PlaceOnBottomOfDeckInsteadOfDiscard
+  | ShuffleIntoDeckInsteadOfDiscard
+  | ShuffleIntoAnyDeckInsteadOfDiscard
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]
   | ReduceCostOf CardMatcher Int
   | RemoveFromGameInsteadOfDiscard
@@ -375,6 +383,7 @@ data ModifierType
   | WillCancelHorror Int
   | Semaphore
   | ScenarioModifier Text
+  | ScenarioModifierValue Text Value
   | -- UI only modifiers
     Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast

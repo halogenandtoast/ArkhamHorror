@@ -36,7 +36,7 @@ instance RunMessage BreakingAndEntering where
       pure a
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
       (leadInvestigatorId, lead) <- getLeadInvestigatorPlayer
-      investigatorIds <- getInvestigatorIds
+      investigatorIds <- getInvestigators
       mHuntingHorror <- getHuntingHorror
       haroldWalsted <- getSetAsideCard Assets.haroldWalsted
       case mHuntingHorror of

@@ -19,12 +19,15 @@ instance HasAbilities Knuckleduster where
   getAbilities (Knuckleduster a) = [fightAbility a 1 mempty ControlsThis]
 
 instance HasModifiersFor Knuckleduster where
-  getModifiersFor (EnemyTarget eid) (Knuckleduster attrs) = maybeModified attrs do
-    guardM $ isTarget eid <$> MaybeT getSkillTestTarget
-    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-    Action.Fight <- MaybeT getSkillTestAction
-    pure [AddKeyword Keyword.Retaliate]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Knuckleduster attrs) =
+    getSkillTestTarget >>= \case
+      Nothing -> pure mempty
+      Just target -> case target.enemy of
+        Nothing -> pure mempty
+        Just eid -> maybeModified_ attrs eid do
+          guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+          Action.Fight <- MaybeT getSkillTestAction
+          pure [AddKeyword Keyword.Retaliate]
 
 instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of

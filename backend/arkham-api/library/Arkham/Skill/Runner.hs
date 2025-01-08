@@ -38,7 +38,7 @@ instance RunMessage SkillAttrs where
         Just i ->
           pure
             $ a
-              { skillCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i (skillCustomizations a)
+              { skillCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i a.customizations
               }
     SealedChaosToken token (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)

@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.Card
 import Arkham.Deck
 import Arkham.Id
+import Arkham.Matcher.Card (CardMatcher)
 import Arkham.Scenario.Deck
 import Arkham.Source
 import Arkham.Target
@@ -36,8 +37,12 @@ data CardDraw msg = CardDraw
   , cardDrawRules :: Set CardDrawRules
   , cardDrawAndThen :: Maybe msg
   , cardDrawAlreadyDrawn :: [Card]
+  , cardDrawDiscard :: Maybe CardMatcher
   }
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "discard" (CardDraw msg) (Maybe CardMatcher) where
+  getField = cardDrawDiscard
 
 instance HasField "alreadyDrawn" (CardDraw msg) [Card] where
   getField = cardDrawAlreadyDrawn
@@ -120,6 +125,7 @@ newCardDraw source deck n = do
     , cardDrawKind = StandardCardDraw
     , cardDrawAndThen = Nothing
     , cardDrawAlreadyDrawn = []
+    , cardDrawDiscard = Nothing
     }
 
 targetCardDraw
@@ -164,6 +170,7 @@ instance FromJSON msg => FromJSON (CardDraw msg) where
     cardDrawRules <- o .: "cardDrawRules"
     cardDrawAndThen <- o .: "cardDrawAndThen"
     cardDrawAlreadyDrawn <- o .:? "cardDrawAlreadyDrawn" .!= []
+    cardDrawDiscard <- o .:? "cardDrawDiscard"
     pure CardDraw {..}
 
 $(deriveJSON defaultOptions ''CardDrew)

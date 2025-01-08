@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.SkillType
 
 newtype JeromeDavids = JeromeDavids AssetAttrs
   deriving anyclass IsAsset
@@ -16,9 +15,7 @@ jeromeDavids =
   allyWith JeromeDavids Cards.jeromeDavids (1, 4) (isStoryL .~ True)
 
 instance HasModifiersFor JeromeDavids where
-  getModifiersFor (InvestigatorTarget iid) (JeromeDavids a) =
-    toModifiers a [SkillModifier SkillIntellect 1 | controlledBy a iid]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JeromeDavids a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities JeromeDavids where
   getAbilities (JeromeDavids a) =

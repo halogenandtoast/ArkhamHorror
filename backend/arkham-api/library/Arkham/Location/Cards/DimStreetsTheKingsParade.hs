@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.DimStreetsTheKingsParade (
-  dimStreetsTheKingsParade,
-  DimStreetsTheKingsParade (..),
-) where
+module Arkham.Location.Cards.DimStreetsTheKingsParade (dimStreetsTheKingsParade) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
 
@@ -31,11 +27,11 @@ instance HasAbilities DimStreetsTheKingsParade where
       $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage DimStreetsTheKingsParade where
-  runMessage msg l@(DimStreetsTheKingsParade attrs) = case msg of
+  runMessage msg l@(DimStreetsTheKingsParade attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ LoseActions iid (attrs.ability 1) 1
+      loseActions iid (attrs.ability 1) 1
       pure l
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.theKingsParade
       pure . DimStreetsTheKingsParade $ attrs & canBeFlippedL .~ False
-    _ -> DimStreetsTheKingsParade <$> runMessage msg attrs
+    _ -> DimStreetsTheKingsParade <$> liftRunMessage msg attrs

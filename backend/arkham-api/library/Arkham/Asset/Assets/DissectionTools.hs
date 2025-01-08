@@ -15,12 +15,11 @@ dissectionTools :: AssetCard DissectionTools
 dissectionTools = asset DissectionTools Cards.dissectionTools
 
 instance HasModifiersFor DissectionTools where
-  getModifiersFor (InvestigatorTarget iid) (DissectionTools a) | a `controlledBy` iid = do
-    modified a
+  getModifiersFor (DissectionTools a) =
+    controllerGets a
       $ [SkillModifier #agility 1 | a.use Resource >= 1]
       <> [SkillModifier #combat 1 | a.use Resource >= 2]
       <> [SanityModifier 1 | a.use Resource >= 3]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities DissectionTools where
   getAbilities (DissectionTools a) =

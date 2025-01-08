@@ -18,7 +18,9 @@ bolas :: EventCard Bolas
 bolas = event Bolas Cards.bolas
 
 instance HasModifiersFor Bolas where
-  getModifiersFor target (Bolas e) = modified e [EnemyEvade (-1) | e.attachedTo == Just target]
+  getModifiersFor (Bolas e) = case e.attachedTo of
+    Just target -> modified_ e target [EnemyEvade (-1)]
+    _ -> pure mempty
 
 instance HasAbilities Bolas where
   getAbilities (Bolas e) = case e.attachedTo of

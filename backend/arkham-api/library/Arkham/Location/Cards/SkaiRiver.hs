@@ -1,11 +1,13 @@
-module Arkham.Location.Cards.SkaiRiver (skaiRiver, SkaiRiver (..)) where
+module Arkham.Location.Cards.SkaiRiver (skaiRiver) where
 
+import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest.Target
 import Arkham.Helpers.Story
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Story
 import Arkham.Window (getBatchId)
 
@@ -18,32 +20,22 @@ skaiRiver = locationWith SkaiRiver Cards.skaiRiver 2 (Static 0) (canBeFlippedL .
 
 instance HasAbilities SkaiRiver where
   getAbilities (SkaiRiver x) =
-    withRevealedAbilities
-      x
-      [ skillTestAbility
-          $ restrictedAbility x 1 (exists $ LocationWithId (toId x) <> LocationCanBeFlipped)
-          $ forced
-          $ Leaves #when You
-          $ be x
-      ]
+    extendRevealed1 x
+      $ skillTestAbility
+      $ restricted x 1 (exists $ be x <> LocationCanBeFlipped)
+      $ forced
+      $ Leaves #when You (be x)
 
 instance RunMessage SkaiRiver where
-  runMessage msg l@(SkaiRiver attrs) = case msg of
+  runMessage msg l@(SkaiRiver attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
-      player <- getPlayer iid
       sid <- genId
-      push
-        $ chooseOne
-          player
-          [ SkillLabel
-            sType
-            [beginSkillTest sid iid (toAbilitySource attrs 1) (BatchTarget batchId) sType (Fixed 2)]
-          | sType <- [#willpower, #agility]
-          ]
+      chooseOneM iid do
+        for_ [#willpower, #agility] \sType ->
+          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) batchId sType (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      mTarget <- getSkillTestTarget
-      case mTarget of
+      getSkillTestTarget >>= \case
         Just (BatchTarget batchId) -> do
           -- the story should "technically" cancel the batch, but it is easier to do here
           pushAll [CancelBatch batchId, Flip iid (attrs.ability 1) (toTarget attrs)]
@@ -52,4 +44,4 @@ instance RunMessage SkaiRiver where
     Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.dreamlikeHorrors
       pure . SkaiRiver $ attrs & canBeFlippedL .~ False
-    _ -> SkaiRiver <$> runMessage msg attrs
+    _ -> SkaiRiver <$> liftRunMessage msg attrs

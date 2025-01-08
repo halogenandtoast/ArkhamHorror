@@ -9,7 +9,7 @@ import Arkham.Event.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_, modifyEachMap)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
 import Arkham.Placement
@@ -24,19 +24,24 @@ theRavenQuill :: EventCard TheRavenQuill
 theRavenQuill = event TheRavenQuill Cards.theRavenQuill
 
 instance HasModifiersFor TheRavenQuill where
-  getModifiersFor target (TheRavenQuill a) | a.attachedTo == Just target = do
-    modified a $ guardCustomization a SpectralBinding (DoNotTakeUpSlot <$> [minBound ..])
-  getModifiersFor (AbilityTarget _ ab) (TheRavenQuill a) | a.attachedTo == fmap AssetTarget ab.source.asset = do
-    modified a
-      $ guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
-  getModifiersFor (InvestigatorTarget iid) (TheRavenQuill a) = do
-    maybeModified a do
-      guard $ a `hasCustomization` MysticVane
-      source <- MaybeT getSkillTestSource
-      guard $ a.attachedTo == fmap AssetTarget source.asset
-      guardM $ fmap (iid ==) (MaybeT getSkillTestInvestigator)
-      pure [AnySkillValue 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheRavenQuill a) = do
+    case a.attachedTo >>= (.asset) of
+      Just aid -> do
+        spectralBinding <-
+          modified_ a aid $ guardCustomization a SpectralBinding (DoNotTakeUpSlot <$> [minBound ..])
+        abilities <- select (AbilityOnAsset $ AssetWithId aid)
+        livingQuill <-
+          modifyEachMap a (map (AbilityTarget a.controller) abilities) \case
+            AbilityTarget _ ab -> guardCustomization a LivingQuill (ActionDoesNotCauseAttacksOfOpportunity <$> ab.actions)
+            _ -> error "invalid"
+        investigators <- maybeModified_ a a.controller do
+          guard $ a `hasCustomization` MysticVane
+          source <- MaybeT getSkillTestSource
+          guard $ isSource aid source
+          guardM $ fmap (a.controller ==) (MaybeT getSkillTestInvestigator)
+          pure [AnySkillValue 2]
+        pure $ spectralBinding <> livingQuill <> investigators
+      _ -> pure mempty
 
 instance HasAbilities TheRavenQuill where
   getAbilities (TheRavenQuill a) =

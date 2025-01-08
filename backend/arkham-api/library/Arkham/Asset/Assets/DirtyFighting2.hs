@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.DirtyFighting2 (dirtyFighting2, DirtyFighting2 (..)) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget, isParley)
 import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Matcher
@@ -16,15 +16,14 @@ dirtyFighting2 :: AssetCard DirtyFighting2
 dirtyFighting2 = asset DirtyFighting2 Cards.dirtyFighting2
 
 instance HasModifiersFor DirtyFighting2 where
-  getModifiersFor (InvestigatorTarget iid) (DirtyFighting2 attrs) =
-    maybeModified attrs do
-      guard $ attrs `controlledBy` iid
+  getModifiersFor (DirtyFighting2 a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
       EnemyTarget eid <- MaybeT getSkillTestTarget
       liftGuardM $ eid <=~> ExhaustedEnemy
       action <- MaybeT getSkillTestAction
       liftGuardM $ orM [pure $ action `elem` [#fight, #evade, #parley], isParley]
       pure [AnySkillValue 2]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities DirtyFighting2 where
   getAbilities (DirtyFighting2 a) =

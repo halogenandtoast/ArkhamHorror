@@ -3,21 +3,18 @@ module Arkham.Location.Cards.HistoricalSocietyPeabodysOffice (
   HistoricalSocietyPeabodysOffice (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
+import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
-import Arkham.Timing qualified as Timing
 
 newtype HistoricalSocietyPeabodysOffice = HistoricalSocietyPeabodysOffice LocationAttrs
-  deriving anyclass (IsLocation)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 historicalSocietyPeabodysOffice :: LocationCard HistoricalSocietyPeabodysOffice
@@ -29,34 +26,23 @@ historicalSocietyPeabodysOffice =
     (PerPlayer 2)
 
 instance HasModifiersFor HistoricalSocietyPeabodysOffice where
-  getModifiersFor (LocationTarget lid) (HistoricalSocietyPeabodysOffice attrs)
-    | toId attrs == lid = do
-        modifierIsActive <-
-          notNull
-            <$> select
-              ( assetIs Assets.mrPeabody
-                  <> AssetControlledBy (InvestigatorAt $ LocationWithId lid)
-              )
-        toModifiers attrs [ShroudModifier (-2) | modifierIsActive]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (HistoricalSocietyPeabodysOffice a) =
+    modifySelfWhenM
+      a
+      (selectAny $ assetIs Assets.mrPeabody <> AssetControlledBy (investigatorAt a))
+      [ShroudModifier (-2)]
 
 instance HasAbilities HistoricalSocietyPeabodysOffice where
   getAbilities (HistoricalSocietyPeabodysOffice attrs) =
-    withBaseAbilities
+    extend
       attrs
-      [ mkAbility attrs 1
-        $ ForcedAbility
-        $ EnemySpawns
-          Timing.When
-          (LocationWithId $ toId attrs)
-          AnyEnemy
-      | not (locationRevealed attrs)
+      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (be attrs) AnyEnemy
+      | attrs.unrevealed
       ]
 
 instance RunMessage HistoricalSocietyPeabodysOffice where
-  runMessage msg l@(HistoricalSocietyPeabodysOffice attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source && not (locationRevealed attrs) ->
-          l
-            <$ push (Msg.RevealLocation Nothing $ toId attrs)
-    _ -> HistoricalSocietyPeabodysOffice <$> runMessage msg attrs
+  runMessage msg l@(HistoricalSocietyPeabodysOffice attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Msg.RevealLocation Nothing attrs.id
+      pure l
+    _ -> HistoricalSocietyPeabodysOffice <$> liftRunMessage msg attrs

@@ -7,7 +7,7 @@ where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card.CardCode
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers
 import Arkham.Projection
 import Arkham.SkillType (allSkills)
 import Arkham.Token
@@ -24,13 +24,14 @@ foolishnessFoolishCatOfUlthar =
     $ (tokensL %~ setTokens Horror 3)
 
 instance HasModifiersFor FoolishnessFoolishCatOfUlthar where
-  getModifiersFor (InvestigatorTarget iid) (FoolishnessFoolishCatOfUlthar a) | a `controlledBy` iid = do
-    horror <- field AssetHorror a.id
-    toModifiers a
-      $ if horror == 0
-        then [SkillModifier stype 1 | stype <- allSkills]
-        else [HealHorrorAsIfOnInvestigator (toTarget a) horror]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FoolishnessFoolishCatOfUlthar a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      horror <- field AssetHorror a.id
+      modified_ a iid
+        $ if horror == 0
+          then [SkillModifier stype 1 | stype <- allSkills]
+          else [HealHorrorAsIfOnInvestigator (toTarget a) horror]
 
 instance RunMessage FoolishnessFoolishCatOfUlthar where
   runMessage msg (FoolishnessFoolishCatOfUlthar attrs) = runQueueT $ case msg of

@@ -52,6 +52,7 @@ library:
         - -Wall
         - -fwarn-tabs
         - -O2
+        - +RTS -V0 -RTS
   dependencies:
     - MonadRandom
     - aeson
@@ -113,6 +114,7 @@ library:
     - unliftio
     - uri-bytestring
     - uuid
+    - vector
     - wai
     - wai-extra
     - wai-logger

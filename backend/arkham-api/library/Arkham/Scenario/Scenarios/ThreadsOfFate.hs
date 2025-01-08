@@ -1,12 +1,11 @@
-module Arkham.Scenario.Scenarios.ThreadsOfFate (ThreadsOfFate (..), threadsOfFate) where
+module Arkham.Scenario.Scenarios.ThreadsOfFate (threadsOfFate) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
-import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice)
@@ -17,6 +16,7 @@ import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
@@ -47,8 +47,7 @@ instance HasChaosTokenValue ThreadsOfFate where
   getChaosTokenValue iid chaosTokenFace (ThreadsOfFate attrs) = case chaosTokenFace of
     Skull -> do
       n <- fieldMax EnemyDoom (EnemyWithTrait Trait.Cultist)
-      doom <- getDoomCount
-      pure $ toChaosTokenValue attrs Skull n doom
+      toChaosTokenValue attrs Skull n <$> getDoomCount
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 2
     Tablet -> pure $ toChaosTokenValue attrs Tablet 2 2
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 2 3
@@ -78,9 +77,7 @@ instance RunMessage ThreadsOfFate where
     PreScenarioSetup -> do
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       story intro1
-      story $ if gaveCustodyToHarlan then intro3 else intro2
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM (if gaveCustodyToHarlan then intro3 else intro2) do
         labeled "“You’re not going anywhere until you tell me what is going on.” - Skip to Intro 4."
           $ doStep 4 msg
         labeled "“Have it your way.” - Skip to Intro 5." $ doStep 5 msg
@@ -94,8 +91,7 @@ instance RunMessage ThreadsOfFate where
       whenHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone $ doStep 6 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
-      lead <- getLead
-      chooseOneM lead do
+      storyWithChooseOneM intro6 do
         labeled "“We should be wary of them.”" do
           record YouAreForgingYourOwnWay
           unlessStandalone do

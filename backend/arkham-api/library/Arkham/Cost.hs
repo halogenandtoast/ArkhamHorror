@@ -46,6 +46,9 @@ totalResourcePayment = sumOf (cosmos . _ResourcePayment)
 totalCluePayment :: Payment -> Int
 totalCluePayment = sumOf (cosmos . _CluePayment . _2)
 
+totalCluePaymentPerInvestigator :: Payment -> [(InvestigatorId, Int)]
+totalCluePaymentPerInvestigator = toListOf (cosmos . _CluePayment)
+
 totalUsesPayment :: Payment -> Int
 totalUsesPayment = sumOf (cosmos . _UsesPayment)
 
@@ -275,6 +278,8 @@ data Cost
   | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
   | CostWhenEnemy EnemyMatcher Cost
+  | CostWhenTreachery TreacheryMatcher Cost
+  | CostWhenTreacheryElse TreacheryMatcher Cost Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost
   | UpTo GameCalculation Cost
@@ -359,6 +364,8 @@ displayCostType = \case
   ArchiveOfConduitsUnidentifiedCost ->
     "Place 1 resource on 4 different locations, as leylines."
   CostWhenEnemy _ c -> displayCostType c
+  CostWhenTreachery _ c -> displayCostType c
+  CostWhenTreacheryElse _ _ c -> displayCostType c
   CostIfEnemy _ _ c -> displayCostType c
   CostIfCustomization _ _ c -> displayCostType c
   AsIfAtLocationCost _ c -> displayCostType c

@@ -23,10 +23,8 @@ whateleyRuins_251 :: LocationCard WhateleyRuins_251
 whateleyRuins_251 = location WhateleyRuins_251 Cards.whateleyRuins_251 2 (PerPlayer 2)
 
 instance HasModifiersFor WhateleyRuins_251 where
-  getModifiersFor (InvestigatorTarget iid) (WhateleyRuins_251 attrs) = do
-    here <- iid `isAt` attrs
-    toModifiers attrs [SkillModifier #willpower (-1) | here]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (WhateleyRuins_251 attrs) = do
+    modifySelect attrs (investigatorAt attrs) [SkillModifier #willpower (-1)]
 
 instance HasAbilities WhateleyRuins_251 where
   getAbilities (WhateleyRuins_251 attrs) = withRevealedAbilities attrs [skillTestAbility $ restrictedAbility attrs 1 Here actionAbility]

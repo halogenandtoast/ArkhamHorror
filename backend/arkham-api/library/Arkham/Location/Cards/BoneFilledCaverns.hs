@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.BoneFilledCaverns (boneFilledCaverns, BoneFilledCaverns (..)) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
@@ -9,9 +8,8 @@ import Arkham.Id
 import Arkham.Investigate ()
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.ThePallidMask.Helpers
 
@@ -30,11 +28,10 @@ boneFilledCaverns =
     . (costToEnterUnrevealedL .~ GroupClueCost (PerPlayer 1) YourLocation)
 
 instance HasModifiersFor BoneFilledCaverns where
-  getModifiersFor (InvestigatorTarget iid) (BoneFilledCaverns (a `With` metadata)) = maybeModified a do
-    iid' <- hoistMaybe $ affectedInvestigator metadata
-    guard $ iid == iid'
-    pure [FewerSlots #hand 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (BoneFilledCaverns (a `With` metadata)) = do
+    case affectedInvestigator metadata of
+      Nothing -> pure mempty
+      Just iid -> modified_ a iid [FewerSlots #hand 1]
 
 instance HasAbilities BoneFilledCaverns where
   getAbilities (BoneFilledCaverns (a `With` _)) =
@@ -43,9 +40,9 @@ instance HasAbilities BoneFilledCaverns where
       $ forced (RevealLocation #when Anyone $ be a)
 
 instance RunMessage BoneFilledCaverns where
-  runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = case msg of
+  runMessage msg l@(BoneFilledCaverns (attrs `With` metadata)) = runQueueT $ case msg of
     Investigate investigation | investigation.location == toId attrs && not investigation.isAction -> do
-      result <- runMessage msg attrs
+      result <- liftRunMessage msg attrs
       push $ RefillSlots investigation.investigator
       pure $ BoneFilledCaverns $ With result (Metadata $ Just investigation.investigator)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -56,4 +53,4 @@ instance RunMessage BoneFilledCaverns where
       placeDrawnLocations attrs drewCards.cards [Below, RightOf]
       pure l
     SkillTestEnds _ _ _ -> pure $ BoneFilledCaverns $ With attrs (Metadata Nothing)
-    _ -> BoneFilledCaverns . (`with` metadata) <$> runMessage msg attrs
+    _ -> BoneFilledCaverns . (`with` metadata) <$> liftRunMessage msg attrs

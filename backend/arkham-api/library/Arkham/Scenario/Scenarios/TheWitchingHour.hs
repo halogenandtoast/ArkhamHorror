@@ -1,12 +1,12 @@
-module Arkham.Scenario.Scenarios.TheWitchingHour (TheWitchingHour (..), theWitchingHour) where
+module Arkham.Scenario.Scenarios.TheWitchingHour (theWitchingHour) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence (ActStep (..), actStep)
 import Arkham.Act.Types (Field (ActSequence))
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.ChaosBag
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
@@ -18,6 +18,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
@@ -123,7 +124,7 @@ instance RunMessage TheWitchingHour where
         , Locations.arkhamWoodsQuietGlade
         ]
 
-      iids <- getInvestigatorIds
+      iids <- getInvestigators
       let
         woodsWithInvestigators = zip (cycleN 5 iids) witchHauntedWoods
         locationMap =

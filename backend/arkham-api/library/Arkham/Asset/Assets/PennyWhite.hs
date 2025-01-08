@@ -14,16 +14,14 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 
 newtype PennyWhite = PennyWhite AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pennyWhite :: AssetCard PennyWhite
 pennyWhite = allyWith PennyWhite Cards.pennyWhite (3, 2) (isStoryL .~ True)
 
 instance HasModifiersFor PennyWhite where
-  getModifiersFor (InvestigatorTarget iid) (PennyWhite a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (PennyWhite a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite x) =

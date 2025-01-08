@@ -8,16 +8,14 @@ import Arkham.Asset.Runner
 import Arkham.Matcher
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
-  deriving anyclass (IsAsset)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 magnifyingGlass1 :: AssetCard MagnifyingGlass1
 magnifyingGlass1 = asset MagnifyingGlass1 Cards.magnifyingGlass1
 
 instance HasModifiersFor MagnifyingGlass1 where
-  getModifiersFor (InvestigatorTarget iid) (MagnifyingGlass1 a) | controlledBy a iid = do
-    toModifiers a [ActionSkillModifier #investigate #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (MagnifyingGlass1 a) = controllerGets a [ActionSkillModifier #investigate #intellect 1]
 
 instance HasAbilities MagnifyingGlass1 where
   getAbilities (MagnifyingGlass1 a) =

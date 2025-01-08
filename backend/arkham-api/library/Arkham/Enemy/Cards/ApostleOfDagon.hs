@@ -4,9 +4,9 @@ import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Key
 import Arkham.Matcher
-import Arkham.Modifier
 
 newtype ApostleOfDagon = ApostleOfDagon EnemyAttrs
   deriving anyclass IsEnemy
@@ -16,10 +16,9 @@ apostleOfDagon :: EnemyCard ApostleOfDagon
 apostleOfDagon = enemy ApostleOfDagon Cards.apostleOfDagon (2, Static 3, 2) (1, 1)
 
 instance HasModifiersFor ApostleOfDagon where
-  getModifiersFor target (ApostleOfDagon a) | isTarget a target = do
+  getModifiersFor (ApostleOfDagon a) = do
     healthModifier <- perPlayer 1
-    toModifiers a [HealthModifier healthModifier]
-  getModifiersFor _ _ = pure []
+    modifySelf a [HealthModifier healthModifier]
 
 instance HasAbilities ApostleOfDagon where
   getAbilities (ApostleOfDagon a) =

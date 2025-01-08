@@ -72,7 +72,7 @@ instance RunMessage UnfinishedBusiness_D where
       push $ AddToVictory (toTarget attrs)
       pure s
     Flip _ _ (isTarget attrs -> True) -> do
-      heretic <- genCard Enemies.heretic_C
+      let heretic = lookupCard Enemies.heretic_C (toCardId attrs)
       creation <- createEnemy heretic (storyPlacement attrs)
       pushAll
         [RemoveStory (toId attrs), toMessage creation]

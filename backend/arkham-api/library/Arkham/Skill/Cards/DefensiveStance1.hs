@@ -1,18 +1,10 @@
-module Arkham.Skill.Cards.DefensiveStance1 (
-  defensiveStance1,
-  DefensiveStance1 (..),
-)
-where
+module Arkham.Skill.Cards.DefensiveStance1 (defensiveStance1) where
 
-import Arkham.Prelude
-
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype DefensiveStance1 = DefensiveStance1 SkillAttrs
   deriving anyclass (IsSkill, HasAbilities)
@@ -22,15 +14,10 @@ defensiveStance1 :: SkillCard DefensiveStance1
 defensiveStance1 = skill DefensiveStance1 Cards.defensiveStance1
 
 instance HasModifiersFor DefensiveStance1 where
-  getModifiersFor (CardIdTarget cid) (DefensiveStance1 a) | toCardId a == cid = do
+  getModifiersFor (DefensiveStance1 a) = do
     agility <- field InvestigatorAgility (skillOwner a)
     combat <- field InvestigatorCombat (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
-  getModifiersFor target (DefensiveStance1 a) | a `is` target = do
-    agility <- field InvestigatorAgility (skillOwner a)
-    combat <- field InvestigatorCombat (skillOwner a)
-    toModifiers a [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
-  getModifiersFor _ _ = pure []
+    modifySelf a.cardId [AddSkillIcons $ replicate combat #agility <> replicate agility #combat]
 
 instance RunMessage DefensiveStance1 where
   runMessage msg (DefensiveStance1 attrs) = DefensiveStance1 <$> runMessage msg attrs

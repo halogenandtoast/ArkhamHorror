@@ -1,15 +1,14 @@
 module Arkham.Asset.Assets.JeremiahKirbyArcticArchaeologist (
   jeremiahKirbyArcticArchaeologist,
-  JeremiahKirbyArcticArchaeologist (..),
 )
 where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Message (SearchType (..))
-import Arkham.Modifier
+import Arkham.Search
 import Arkham.Strategy
 import Arkham.Taboo
 
@@ -21,9 +20,7 @@ jeremiahKirbyArcticArchaeologist :: AssetCard JeremiahKirbyArcticArchaeologist
 jeremiahKirbyArcticArchaeologist = ally JeremiahKirbyArcticArchaeologist Cards.jeremiahKirbyArcticArchaeologist (2, 1)
 
 instance HasModifiersFor JeremiahKirbyArcticArchaeologist where
-  getModifiersFor (InvestigatorTarget iid) (JeremiahKirbyArcticArchaeologist a) | iid `controls` a = do
-    toModifiers a [SkillModifier #intellect 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (JeremiahKirbyArcticArchaeologist a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities JeremiahKirbyArcticArchaeologist where
   getAbilities (JeremiahKirbyArcticArchaeologist a) =
@@ -31,7 +28,7 @@ instance HasAbilities JeremiahKirbyArcticArchaeologist where
           then limitedAbility (MaxPer Cards.jeremiahKirbyArcticArchaeologist PerGame 2)
           else id
       )
-        $ restrictedAbility a 1 ControlsThis
+        $ restricted a 1 ControlsThis
         $ freeReaction
         $ AssetEntersPlay #when (be a)
     ]
@@ -42,7 +39,7 @@ instance RunMessage JeremiahKirbyArcticArchaeologist where
       -- technically the choose is part of the cost, but I don't think we care
       let source = attrs.ability 1
       let revealTopOfDeck mtch =
-            Search Revealing iid source (toTarget iid) [fromTopOfDeck 5] mtch (DrawAllFound iid)
+            Search $ mkSearch Revealing iid source iid [fromTopOfDeck 5] mtch (DrawAllFound iid)
       chooseOne
         iid
         [ Label "Even" [revealTopOfDeck $ basic CardWithEvenCost]

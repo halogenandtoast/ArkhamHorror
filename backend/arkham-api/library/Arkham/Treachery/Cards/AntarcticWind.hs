@@ -1,8 +1,7 @@
 module Arkham.Treachery.Cards.AntarcticWind (antarcticWind, AntarcticWind (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Location (onSameLocation)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
@@ -18,10 +17,9 @@ antarcticWind :: TreacheryCard AntarcticWind
 antarcticWind = treachery AntarcticWind Cards.antarcticWind
 
 instance HasModifiersFor AntarcticWind where
-  getModifiersFor (InvestigatorTarget iid) (AntarcticWind a) = maybeModified a do
-    liftGuardM $ onSameLocation iid a.placement
-    pure [CannotDrawCards, CannotPlay AnyCard]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AntarcticWind a) = case a.placement of
+    AttachedToLocation lid -> modifySelect a (investigatorAt lid) [CannotDrawCards, CannotPlay AnyCard]
+    _ -> pure mempty
 
 instance HasAbilities AntarcticWind where
   getAbilities (AntarcticWind a) = [mkAbility a 1 $ forced $ RoundEnds #when]

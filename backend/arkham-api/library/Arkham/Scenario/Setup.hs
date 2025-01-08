@@ -206,6 +206,11 @@ amongGathered matcher = do
   y <- filterCards matcher <$> use otherCardsL
   pure $ x <> y
 
+removeCards :: Monad m => [Card] -> ScenarioBuilderT m ()
+removeCards xs = do
+  attrsL . encounterDeckL %= filter ((`notElem` xs) . toCard)
+  otherCardsL %= filter (`notElem` xs)
+
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]

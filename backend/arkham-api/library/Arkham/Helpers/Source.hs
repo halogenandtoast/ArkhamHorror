@@ -47,6 +47,7 @@ sourceTraits = \case
   LocationMatcherSource _ -> pure mempty
   LocationSource lid -> field LocationTraits lid
   ProxySource s _ -> sourceTraits s
+  IndexedSource _ s -> sourceTraits s
   ResourceSource _ -> pure mempty
   ScenarioSource -> pure mempty
   SkillSource sid -> field SkillTraits sid

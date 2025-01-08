@@ -1,8 +1,8 @@
-module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (BeforeTheBlackThrone (..), beforeTheBlackThrone) where
+module Arkham.Scenario.Scenarios.BeforeTheBlackThrone (beforeTheBlackThrone) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
@@ -19,6 +19,7 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution

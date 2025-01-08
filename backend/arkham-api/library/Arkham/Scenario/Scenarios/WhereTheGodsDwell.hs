@@ -1,10 +1,10 @@
-module Arkham.Scenario.Scenarios.WhereTheGodsDwell (WhereTheGodsDwell (..), whereTheGodsDwell) where
+module Arkham.Scenario.Scenarios.WhereTheGodsDwell (whereTheGodsDwell) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDreamEaters.Helpers
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
@@ -14,6 +14,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

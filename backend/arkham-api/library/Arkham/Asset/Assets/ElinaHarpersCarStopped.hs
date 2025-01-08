@@ -19,10 +19,9 @@ elinaHarpersCarStopped :: AssetCard ElinaHarpersCarStopped
 elinaHarpersCarStopped = asset ElinaHarpersCarStopped Cards.elinaHarpersCarStopped
 
 instance HasModifiersFor ElinaHarpersCarStopped where
-  getModifiersFor (InvestigatorTarget _) (ElinaHarpersCarStopped a) = do
+  getModifiersFor (ElinaHarpersCarStopped a) = do
     n <- selectCount $ InVehicleMatching (be a)
-    modified a [CannotEnterVehicle (be a) | n >= 2]
-  getModifiersFor _ _ = pure []
+    modifySelectWhen a (n >= 2) Anyone [CannotEnterVehicle (be a)]
 
 instance HasAbilities ElinaHarpersCarStopped where
   getAbilities (ElinaHarpersCarStopped x) =

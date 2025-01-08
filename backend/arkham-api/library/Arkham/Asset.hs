@@ -881,6 +881,24 @@ allAssets =
     , SomeAssetCard heavyFurs
     , SomeAssetCard sledDog
     , SomeAssetCard rodOfAnimalism1
+    , --- Fatal Mirage [eote]
+      SomeAssetCard professorWilliamDyerProfessorOfGeologyResolute
+    , SomeAssetCard danforthBrilliantStudentResolute
+    , SomeAssetCard eliyahAshevakDogHandlerResolute
+    , SomeAssetCard drMalaSinhaDaringPhysicianResolute
+    , SomeAssetCard averyClaypoolAntarcticGuideResolute
+    , SomeAssetCard jamesCookieFredericksDubiousChoiceResolute
+    , SomeAssetCard drAmyKenslerProfessorOfBiologyResolute
+    , SomeAssetCard roaldEllsworthIntrepidExplorerResolute
+    , SomeAssetCard takadaHirokoAeroplaneMechanicResolute
+    , --- To The Forbidden Peaks
+      SomeAssetCard greenSoapstoneJinxedIdol
+    , SomeAssetCard woodenSledge
+    , SomeAssetCard dynamite
+    , SomeAssetCard miasmicCrystalStrangeEvidence
+    , SomeAssetCard mineralSpecimen
+    , SomeAssetCard smallRadio
+    , SomeAssetCard spareParts
     , --- Expedition Team [eote]
       SomeAssetCard professorWilliamDyerProfessorOfGeology
     , SomeAssetCard danforthBrilliantStudent
@@ -891,6 +909,14 @@ allAssets =
     , SomeAssetCard drAmyKenslerProfessorOfBiology
     , SomeAssetCard roaldEllsworthIntrepidExplorer
     , SomeAssetCard takadaHirokoAeroplaneMechanic
+    , --- Memorials of the Lost [eote]
+      SomeAssetCard claypoolsFurs
+    , SomeAssetCard collectedWorksOfPoe
+    , SomeAssetCard cookiesCustom32
+    , SomeAssetCard ellsworthsBoots
+    , SomeAssetCard kenslersLog
+    , SomeAssetCard sinhasMedicalKit
+    , SomeAssetCard anyuFaithfulCompanion
     , -- The Scarlet Keys
       --- signature
       SomeAssetCard bonesaw

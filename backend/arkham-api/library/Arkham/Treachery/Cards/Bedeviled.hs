@@ -2,8 +2,9 @@ module Arkham.Treachery.Cards.Bedeviled (bedeviled, Bedeviled (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
+import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Source
 import Arkham.Trait (Trait (Witch))
 import Arkham.Treachery.Cards qualified as Cards
@@ -17,17 +18,23 @@ bedeviled :: TreacheryCard Bedeviled
 bedeviled = treachery Bedeviled Cards.bedeviled
 
 instance HasModifiersFor Bedeviled where
-  getModifiersFor (InvestigatorTarget iid) (Bedeviled attrs) | treacheryInThreatArea iid attrs = do
-    modified
-      attrs
-      [CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)]
-  getModifiersFor (SkillTestTarget _) (Bedeviled attrs) = maybeModified attrs do
-    source <- MaybeT getSkillTestSource
-    investigator <- MaybeT getSkillTestInvestigator
-    guard $ isSource attrs source
-    liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith investigator
-    pure [SkillTestAutomaticallySucceeds]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Bedeviled a) = do
+    threatArea <- case a.placement of
+      InThreatArea iid -> do
+        inThreatAreaGets
+          a
+          [CannotTriggerAbilityMatching (AbilityIsActionAbility <> AbilityOnCardControlledBy iid)]
+      _ -> pure mempty
+    skillTest <-
+      getSkillTest >>= \case
+        Nothing -> pure mempty
+        Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          source <- MaybeT getSkillTestSource
+          investigator <- MaybeT getSkillTestInvestigator
+          guard $ isSource a source
+          liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith investigator
+          pure [SkillTestAutomaticallySucceeds]
+    pure $ threatArea <> skillTest
 
 instance HasAbilities Bedeviled where
   getAbilities (Bedeviled a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]

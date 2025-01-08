@@ -4,10 +4,13 @@ import Arkham.Classes.HasGame
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Target
+import Control.Monad.Writer.Class
+import Data.Map.Monoidal.Strict
 
 class HasModifiersFor a where
-  getModifiersFor :: (HasCallStack, HasGame m) => Target -> a -> m [Modifier]
-  getModifiersFor _ _ = pure []
+  getModifiersFor
+    :: (HasCallStack, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m) => a -> m ()
+  getModifiersFor _ = pure ()
 
 instance HasModifiersFor a => HasModifiersFor (With a b) where
-  getModifiersFor target (With a _) = getModifiersFor target a
+  getModifiersFor (With a _) = getModifiersFor a

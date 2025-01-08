@@ -21,7 +21,7 @@ instance HasAbilities Analysis where
         $ restrictedAbility x 1 ControlsThis
         $ ConstantReaction
           "Place 1 of your clues on your location (Analysis)"
-          (RevealChaosToken #after Anyone AnyChaosToken)
+          (RevealChaosToken #after Anyone $ CancelableChaosToken AnyChaosToken)
           (PlaceClueOnLocationCost 1)
     ]
 

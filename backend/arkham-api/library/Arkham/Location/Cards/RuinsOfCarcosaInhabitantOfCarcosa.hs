@@ -1,20 +1,15 @@
 module Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa (
   ruinsOfCarcosaInhabitantOfCarcosa,
-  RuinsOfCarcosaInhabitantOfCarcosa (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
 import Arkham.Scenarios.DimCarcosa.Helpers
 import Arkham.Story.Cards qualified as Story
-import Arkham.Timing qualified as Timing
 
 newtype RuinsOfCarcosaInhabitantOfCarcosa = RuinsOfCarcosaInhabitantOfCarcosa LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,26 +23,19 @@ ruinsOfCarcosaInhabitantOfCarcosa =
     Cards.ruinsOfCarcosaInhabitantOfCarcosa
     2
     (PerPlayer 1)
-    ((canBeFlippedL .~ True) . (revealedL .~ True))
+    $ (canBeFlippedL .~ True)
+    . (revealedL .~ True)
 
 instance HasAbilities RuinsOfCarcosaInhabitantOfCarcosa where
   getAbilities (RuinsOfCarcosaInhabitantOfCarcosa a) =
-    withBaseAbilities
-      a
-      [ mkAbility a 1
-          $ ForcedAbility
-          $ DiscoveringLastClue
-            Timing.After
-            You
-            (LocationWithId $ toId a)
-      ]
+    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoveringLastClue #after You (be a)
 
 instance RunMessage RuinsOfCarcosaInhabitantOfCarcosa where
-  runMessage msg l@(RuinsOfCarcosaInhabitantOfCarcosa attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 1 0
+  runMessage msg l@(RuinsOfCarcosaInhabitantOfCarcosa attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignDamage iid (attrs.ability 1) 1
       pure l
-    Flip iid _ target | isTarget attrs target -> do
+    Flip iid _ (isTarget attrs -> True) -> do
       readStory iid (toId attrs) Story.inhabitantOfCarcosa
       pure . RuinsOfCarcosaInhabitantOfCarcosa $ attrs & canBeFlippedL .~ False
-    _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> runMessage msg attrs
+    _ -> RuinsOfCarcosaInhabitantOfCarcosa <$> liftRunMessage msg attrs

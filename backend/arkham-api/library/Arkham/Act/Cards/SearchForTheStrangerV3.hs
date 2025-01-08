@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 
 newtype SearchForTheStrangerV3 = SearchForTheStrangerV3 ActAttrs
-  deriving anyclass (IsAct)
+  deriving anyclass IsAct
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 searchForTheStrangerV3 :: ActCard SearchForTheStrangerV3
@@ -22,14 +22,10 @@ searchForTheStrangerV3 =
   act (2, A) SearchForTheStrangerV3 Cards.searchForTheStrangerV3 Nothing
 
 instance HasModifiersFor SearchForTheStrangerV3 where
-  getModifiersFor (EnemyTarget eid) (SearchForTheStrangerV3 a) = do
-    isTheManInThePallidMask <-
-      eid
-        `isMatch` enemyIs Enemies.theManInThePallidMask
-    toModifiers a [CanOnlyBeDefeatedByDamage | isTheManInThePallidMask]
-  getModifiersFor (InvestigatorTarget _) (SearchForTheStrangerV3 a) =
-    toModifiers a [CannotDiscoverClues]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SearchForTheStrangerV3 a) = do
+    theMan <- modifySelect a (enemyIs Enemies.theManInThePallidMask) [CanOnlyBeDefeatedByDamage]
+    investigators <- modifySelect a Anyone [CannotDiscoverClues]
+    pure $ theMan <> investigators
 
 instance HasAbilities SearchForTheStrangerV3 where
   getAbilities (SearchForTheStrangerV3 x) =

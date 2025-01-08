@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Investigator.Types (Field (..))
@@ -22,15 +22,15 @@ directiveDueDiligence :: AssetCard DirectiveDueDiligence
 directiveDueDiligence = asset DirectiveDueDiligence Cards.directiveDueDiligence
 
 instance HasModifiersFor DirectiveDueDiligence where
-  getModifiersFor (InvestigatorTarget iid) (DirectiveDueDiligence a) = do
-    maybeModified a do
-      guard $ not a.flipped
-      guard $ a.controller == Just iid
-      meta <- lift $ fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
-      guard $ dueDiligence meta >= 2
-      guard $ "dueDiligence" `notElem` ignoredDirectives meta
-      pure [CannotFight AnyEnemy]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DirectiveDueDiligence a) = case a.controller of
+    Just iid | not a.flipped -> do
+      meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
+      modifiedWhen_
+        a
+        (dueDiligence meta >= 2 && "dueDiligence" `notElem` ignoredDirectives meta)
+        iid
+        [CannotFight AnyEnemy]
+    _ -> pure mempty
 
 instance HasAbilities DirectiveDueDiligence where
   getAbilities (DirectiveDueDiligence a) =

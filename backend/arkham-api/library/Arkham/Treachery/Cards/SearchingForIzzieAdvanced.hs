@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -18,9 +19,9 @@ searchingForIzzieAdvanced :: TreacheryCard SearchingForIzzieAdvanced
 searchingForIzzieAdvanced = treachery SearchingForIzzieAdvanced Cards.searchingForIzzieAdvanced
 
 instance HasModifiersFor SearchingForIzzieAdvanced where
-  getModifiersFor target (SearchingForIzzieAdvanced a) | a.attached == Just target = do
-    toModifiers a [ShroudModifier 2]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (SearchingForIzzieAdvanced a) = case a.placement of
+    AttachedToLocation lid -> modified_ a lid [ShroudModifier 2]
+    _ -> pure mempty
 
 instance HasAbilities SearchingForIzzieAdvanced where
   getAbilities (SearchingForIzzieAdvanced x) =

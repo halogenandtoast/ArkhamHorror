@@ -1,0 +1,20 @@
+{
+    "skillTestTitle": "技能检定",
+
+    "waitingForMorePlayers": "正在等待更多玩家",
+    "showInviteLink": "使用此链接邀请玩家：",
+
+    "gameOver": "游戏结束",
+    "watchReplay": "观看回放",
+
+    "submit": "提交",
+    "sancel": "取消",
+    "close": "关闭",
+
+    "outOfSyncHint": "连接中断，尝试重连中...",
+
+    "error": "错误",
+    "errorContent": "这很可能是一个BUG，请您提交错误报告。",
+    "fileBug": "提交错误报告"
+
+}

@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.FortyFiveAutomatic (FortyFiveAutomatic (..), fortyFiveAutomatic) where
+module Arkham.Asset.Assets.FortyFiveAutomatic (fortyFiveAutomatic) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Modifier
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -14,14 +14,12 @@ fortyFiveAutomatic :: AssetCard FortyFiveAutomatic
 fortyFiveAutomatic = asset FortyFiveAutomatic Cards.fortyFiveAutomatic
 
 instance HasAbilities FortyFiveAutomatic where
-  getAbilities (FortyFiveAutomatic a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (FortyFiveAutomatic a) = [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage FortyFiveAutomatic where
-  runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
+  runMessage msg a@(FortyFiveAutomatic attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- genId
-      chooseFight <- toMessage <$> mkChooseFight sid iid (attrs.ability 1)
-      enabled <- skillTestModifiers sid (attrs.ability 1) iid [DamageDealt 1, SkillModifier #combat 1]
-      pushAll [enabled, chooseFight]
+      chooseFightEnemyWithModifiers sid iid (attrs.ability 1) [DamageDealt 1, SkillModifier #combat 1]
       pure a
-    _ -> FortyFiveAutomatic <$> runMessage msg attrs
+    _ -> FortyFiveAutomatic <$> liftRunMessage msg attrs

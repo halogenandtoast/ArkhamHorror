@@ -1,20 +1,18 @@
-module Arkham.Scenario.Scenarios.DarkSideOfTheMoon (DarkSideOfTheMoon (..), darkSideOfTheMoon) where
+module Arkham.Scenario.Scenarios.DarkSideOfTheMoon (darkSideOfTheMoon) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Campaign (getCampaignStoryCard)
-import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
@@ -23,10 +21,9 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Move
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (assignEnemyDamage, drawEncounterCard, story)
-import Arkham.Scenario.Setup
+import Arkham.Scenario.Import.Lifted hiding (assignEnemyDamage, drawEncounterCard, story)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -52,7 +49,7 @@ instance HasChaosTokenValue DarkSideOfTheMoon where
   getChaosTokenValue iid tokenFace (DarkSideOfTheMoon attrs) = case tokenFace of
     Skull -> do
       alarmLevel <- getAlarmLevel iid
-      pure $ toChaosTokenValue attrs Skull (alarmLevel + 1 `div` 2) alarmLevel
+      pure $ toChaosTokenValue attrs Skull ((alarmLevel + 1) `div` 2) alarmLevel
     Cultist -> pure $ ChaosTokenValue Cultist NoModifier
     Tablet -> pure $ toChaosTokenValue attrs Tablet 1 2
     ElderThing -> pure $ ChaosTokenValue ElderThing (byDifficulty attrs (PositiveModifier 1) (PositiveModifier 0))
@@ -85,8 +82,11 @@ instance RunMessage DarkSideOfTheMoon where
       push $ SetChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> do
-      notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
-      captured <- selectAny $ InvestigatorWithRecord WasCaptured
+      whenHasRecord RandolphWasCaptured do
+        getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
+
+      notCaptured <- selectAny $ not_ (investigatorWithRecord WasCaptured)
+      captured <- selectAny $ investigatorWithRecord WasCaptured
       when captured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro1"
       when notCaptured $ story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro2"
       pure s
@@ -105,7 +105,7 @@ instance RunMessage DarkSideOfTheMoon where
       moonForest <- place Locations.moonForest
       place_ Locations.theDarkCrater
 
-      captured <- select $ InvestigatorWithRecord WasCaptured
+      captured <- select $ investigatorWithRecord WasCaptured
       if notNull captured
         then do
           moonBeastGalley <- place Locations.moonBeastGalley
@@ -114,11 +114,8 @@ instance RunMessage DarkSideOfTheMoon where
             placeClues attrs moonBeastGalley 2
         else setAside [Locations.moonBeastGalley]
 
-      notCaptured <- select $ not_ (InvestigatorWithRecord WasCaptured)
+      notCaptured <- select $ not_ (investigatorWithRecord WasCaptured)
       for_ notCaptured \iid -> moveTo_ attrs iid moonForest
-
-      whenHasRecord RandolphWasCaptured do
-        getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
 
       setAside
         [ Enemies.moonLizard
@@ -172,7 +169,7 @@ instance RunMessage DarkSideOfTheMoon where
           record TheInvestigatorsTraveledToTheColdWastes
           record RandolphSurvivedTheVoyage
           allGainXp attrs
-          push $ IncrementRecordCount EvidenceOfKadath 3
+          incrementRecordCount EvidenceOfKadath 3
           endOfScenario
         other -> throw $ UnknownResolution other
       pure s

@@ -1,10 +1,9 @@
 module Arkham.Event.Events.DawnStar1 (dawnStar1, dawnStar1Effect, DawnStar1 (..)) where
 
-import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, withSkillTest)
 import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 
@@ -30,9 +29,8 @@ dawnStar1Effect :: EffectArgs -> DawnStar1Effect
 dawnStar1Effect = cardEffect DawnStar1Effect Cards.dawnStar1
 
 instance HasModifiersFor DawnStar1Effect where
-  getModifiersFor (ChaosTokenTarget (chaosTokenFace -> CurseToken)) (DawnStar1Effect attrs) = do
-    modified attrs [IgnoreChaosTokenModifier]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (DawnStar1Effect attrs) =
+    modifySelect attrs (ChaosTokenFaceIs #curse) [IgnoreChaosTokenModifier]
 
 instance RunMessage DawnStar1Effect where
   runMessage msg e@(DawnStar1Effect attrs) = runQueueT $ case msg of

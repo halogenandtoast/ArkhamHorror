@@ -22,7 +22,7 @@ instance RunMessage Totality where
   runMessage msg t@(Totality attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- genId
-      revelationSkillTest sid iid attrs #willpower (Fixed 2)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid

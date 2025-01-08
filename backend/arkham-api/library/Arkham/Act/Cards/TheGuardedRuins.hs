@@ -24,19 +24,11 @@ theGuardedRuins =
     (Just $ GroupClueCost (PerPlayer 2) (LocationWithTitle "Ruins of Eztli"))
 
 instance HasModifiersFor TheGuardedRuins where
-  getModifiersFor (EnemyTarget eid) (TheGuardedRuins a) = do
-    isEztliGuardian <- eid <=~> EnemyWithTitle "Eztli Guardian"
-    if isEztliGuardian
-      then toModifiers a [EnemyFight 1, EnemyEvade 1]
-      else pure []
-  getModifiersFor (CardIdTarget cardId) (TheGuardedRuins a) = do
-    card <- getCard cardId
-    toModifiers
-      a
-      [ AddKeyword Keyword.Surge
-      | card `isCard` Treacheries.arrowsFromTheTrees
-      ]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (TheGuardedRuins a) = do
+    guardian <- modifySelect a (EnemyWithTitle "Eztli Guardian") [EnemyFight 1, EnemyEvade 1]
+    validCards <- findAllCards (`isCard` Treacheries.arrowsFromTheTrees)
+    cards <- modifyEach a validCards [AddKeyword Keyword.Surge]
+    pure $ guardian <> cards
 
 instance RunMessage TheGuardedRuins where
   runMessage msg a@(TheGuardedRuins attrs) = case msg of

@@ -3,8 +3,8 @@ module Arkham.Scenario.Scenarios.ExtracurricularActivity where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -12,6 +12,7 @@ import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)

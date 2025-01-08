@@ -1,18 +1,14 @@
-module Arkham.Act.Cards.InPursuitOfTheLiving (
-  InPursuitOfTheLiving (..),
-  inPursuitOfTheLiving,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.InPursuitOfTheLiving (inPursuitOfTheLiving) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.CampaignLogKey
+import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Classes
-import Arkham.Helpers.Investigator
+import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
+import Arkham.Helpers.Modifiers (modifySelect)
+import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Trait (Trait (Spectral))
 
 newtype Metadata = Metadata {usedLocationIds :: [LocationId]}
@@ -27,16 +23,15 @@ inPursuitOfTheLiving :: ActCard InPursuitOfTheLiving
 inPursuitOfTheLiving = act (2, A) (InPursuitOfTheLiving . (`with` Metadata [])) Cards.inPursuitOfTheLiving Nothing
 
 instance HasModifiersFor InPursuitOfTheLiving where
-  getModifiersFor (InvestigatorTarget _) (InPursuitOfTheLiving (a `With` _)) =
-    toModifiers a [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (InPursuitOfTheLiving (a `With` _)) =
+    modifySelect a Anyone [CannotDiscoverCluesAt $ NotLocation $ LocationWithTrait Spectral]
 
 -- Group limit once per round at each location.
 -- We handle this by using the usedLocationIds metadata
 instance HasAbilities InPursuitOfTheLiving where
-  getAbilities (InPursuitOfTheLiving (a `With` meta))
-    | onSide A a =
-        [ restrictedAbility
+  getAbilities (InPursuitOfTheLiving (a `With` meta)) =
+    guard (onSide A a)
+      *> [ restricted
             a
             1
             ( OnLocation
@@ -44,25 +39,22 @@ instance HasAbilities InPursuitOfTheLiving where
                 <> locationNotOneOf (usedLocationIds meta)
             )
             $ FastAbility Free
-        , restrictedAbility
-            a
-            2
-            (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Unfinished Business")
+         , restricted a 2 (ExtendedCardCount 4 $ VictoryDisplayCardMatch $ basic "Unfinished Business")
             $ Objective
-            $ ForcedAbility AnyWindow
-        ]
-  getAbilities _ = []
+            $ forced AnyWindow
+         ]
 
 instance RunMessage InPursuitOfTheLiving where
-  runMessage msg a@(InPursuitOfTheLiving (attrs `With` meta)) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide A attrs -> do
-      pushAll [recordSetInsert MementosDiscovered [CornHuskDoll], scenarioResolution 1]
+  runMessage msg a@(InPursuitOfTheLiving (attrs `With` meta)) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      discoverMemento CornHuskDoll
+      push R1
       pure a
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       lid <- getJustLocation iid
-      push $ Flip iid (toSource attrs) (toTarget lid)
+      flipOverBy iid attrs lid
       pure . InPursuitOfTheLiving $ attrs `with` Metadata (lid : usedLocationIds meta)
-    UseCardAbility _ (isSource attrs -> True) 2 _ _ -> do
-      push $ AdvanceAct (toId a) (toSource attrs) AdvancedWithOther
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
       pure a
-    _ -> InPursuitOfTheLiving . (`with` meta) <$> runMessage msg attrs
+    _ -> InPursuitOfTheLiving . (`with` meta) <$> liftRunMessage msg attrs

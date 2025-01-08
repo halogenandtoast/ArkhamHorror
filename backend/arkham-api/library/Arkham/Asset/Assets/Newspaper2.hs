@@ -22,13 +22,13 @@ newspaper2 :: AssetCard Newspaper2
 newspaper2 = asset (Newspaper2 . (`with` Metadata False)) Cards.newspaper2
 
 instance HasModifiersFor Newspaper2 where
-  getModifiersFor (InvestigatorTarget iid) (Newspaper2 (a `With` metadata)) | controlledBy a iid = do
-    clueCount <- field InvestigatorClues iid
-    toModifiers a
-      $ guard (clueCount == 0)
-      *> ActionSkillModifier #investigate #intellect 2
-      : [DiscoveredClues 1 | active metadata]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (Newspaper2 (a `With` metadata)) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> do
+      clueCount <- field InvestigatorClues iid
+      modifiedWhen_ a (clueCount == 0) iid
+        $ ActionSkillModifier #investigate #intellect 2
+        : [DiscoveredClues 1 | active metadata]
 
 instance HasAbilities Newspaper2 where
   getAbilities (Newspaper2 (a `With` _)) =

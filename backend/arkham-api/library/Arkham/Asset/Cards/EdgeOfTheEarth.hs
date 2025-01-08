@@ -2,6 +2,7 @@ module Arkham.Asset.Cards.EdgeOfTheEarth where
 
 import Arkham.Asset.Cards.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Trait qualified as Trait
 
 mechanicsWrench :: CardDef
 mechanicsWrench =
@@ -813,6 +814,158 @@ rodOfAnimalism1 =
     , cdUnique = True
     }
 
+professorWilliamDyerProfessorOfGeologyResolute :: CardDef
+professorWilliamDyerProfessorOfGeologyResolute =
+  (storyAsset "08587" ("Professor William Dyer" <:> "Professor of Geology") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+danforthBrilliantStudentResolute :: CardDef
+danforthBrilliantStudentResolute =
+  (storyAsset "08588" ("Danforth" <:> "Brilliant Student") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 5
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+eliyahAshevakDogHandlerResolute :: CardDef
+eliyahAshevakDogHandlerResolute =
+  (storyAsset "08589" ("Eliyah Ashevak" <:> "Dog Handler") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+drMalaSinhaDaringPhysicianResolute :: CardDef
+drMalaSinhaDaringPhysicianResolute =
+  (storyAsset "08590" ("Dr. Mala Sinha" <:> "Daring Physician") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+averyClaypoolAntarcticGuideResolute :: CardDef
+averyClaypoolAntarcticGuideResolute =
+  (storyAsset "08591" ("Avery Claypool" <:> "Antarctic Guide") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+jamesCookieFredericksDubiousChoiceResolute :: CardDef
+jamesCookieFredericksDubiousChoiceResolute =
+  (storyAsset "08592" ("James \"Cookie\" Fredericks" <:> "Dubious Choice") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Veteran, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Ammo 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+drAmyKenslerProfessorOfBiologyResolute :: CardDef
+drAmyKenslerProfessorOfBiologyResolute =
+  (storyAsset "08593" ("Dr. Amy Kensler" <:> "Professor of Biology") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Secret 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+roaldEllsworthIntrepidExplorerResolute :: CardDef
+roaldEllsworthIntrepidExplorerResolute =
+  (storyAsset "08594" ("Roald Ellsworth" <:> "Intrepid Explorer") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Miskatonic, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+takadaHirokoAeroplaneMechanicResolute :: CardDef
+takadaHirokoAeroplaneMechanicResolute =
+  (storyAsset "08595" ("Takada Hiroko" <:> "Aeroplane Mechanic") 1 FatalMirage)
+    { cdCardTraits = setFromList [Ally, Wayfarer, Resolute]
+    , cdCardType = AssetType
+    , cdUses = uses Resource 9
+    , cdKeywords = singleton Keyword.Partner
+    , cdUnique = True
+    }
+
+greenSoapstoneJinxedIdol :: CardDef
+greenSoapstoneJinxedIdol =
+  (storyAsset "08614" ("Green Soapstone" <:> "Jinxed Idol") 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 4
+    , cdSkills = [#combat, #combat, #wild]
+    }
+
+woodenSledge :: CardDef
+woodenSledge =
+  (storyAsset "08615" "Wooden Sledge" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdSkills = [#agility, #wild, #wild]
+    }
+
+dynamite :: CardDef
+dynamite =
+  (storyAsset "08616" "Dynamite" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 2
+    , cdSkills = [#combat, #combat, #wild]
+    }
+
+miasmicCrystalStrangeEvidence :: CardDef
+miasmicCrystalStrangeEvidence =
+  (storyAsset "08617" ("Miasmic Crystal" <:> "Strange Evidence") 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 3
+    , cdSkills = [#willpower, #willpower, #wild]
+    }
+
+mineralSpecimen :: CardDef
+mineralSpecimen =
+  (storyAsset "08618" "Mineral Specimen" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Relic, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Charge 3
+    , cdSkills = [#intellect, #intellect, #wild]
+    }
+
+smallRadio :: CardDef
+smallRadio =
+  (storyAsset "08619" "Small Radio" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdSkills = [#intellect, #intellect, #wild]
+    }
+
+spareParts :: CardDef
+spareParts =
+  (storyAsset "08620" "Spare Parts" 1 ToTheForbiddenPeaks)
+    { cdCardTraits = setFromList [Item, Trait.Expedition]
+    , cdCardType = AssetType
+    , cdUses = uses Supply 3
+    , cdSkills = [#willpower, #willpower, #wild]
+    }
+
 professorWilliamDyerProfessorOfGeology :: CardDef
 professorWilliamDyerProfessorOfGeology =
   (storyAsset "08714" ("Professor William Dyer" <:> "Professor of Geology") 1 ExpeditionTeam)
@@ -901,4 +1054,81 @@ takadaHirokoAeroplaneMechanic =
     , cdUses = uses Resource 9
     , cdKeywords = singleton Keyword.Partner
     , cdUnique = True
+    }
+
+claypoolsFurs :: CardDef
+claypoolsFurs =
+  fast
+    $ (asset "08730" "Claypool's Furs" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Clothing]
+      , cdSlots = [#body]
+      , cdSkills = [#combat, #wild]
+      , cdEncounterSet = Just MemorialsOfTheLost
+      , cdEncounterSetQuantity = Just 1
+      }
+
+collectedWorksOfPoe :: CardDef
+collectedWorksOfPoe =
+  (asset "08731" "Collected Works of Poe" 1 Neutral)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSlots = [#hand]
+    , cdUses = uses Charge 3
+    , cdSkills = [#willpower, #wild]
+    , cdEncounterSet = Just MemorialsOfTheLost
+    , cdEncounterSetQuantity = Just 1
+    }
+
+cookiesCustom32 :: CardDef
+cookiesCustom32 =
+  fast
+    $ (asset "08732" "Cookie's Custom .32" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Weapon, Firearm]
+      , cdSlots = [#hand]
+      , cdUses = uses Ammo 2
+      , cdSkills = [#combat, #wild]
+      , cdEncounterSet = Just MemorialsOfTheLost
+      , cdEncounterSetQuantity = Just 1
+      }
+
+ellsworthsBoots :: CardDef
+ellsworthsBoots =
+  (asset "08734" "Ellsworth's Boots" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Clothing, Footwear]
+    , cdSkills = [#agility, #wild]
+    , cdLimits = [LimitPerTrait Footwear 1]
+    , cdEncounterSet = Just MemorialsOfTheLost
+    , cdEncounterSetQuantity = Just 1
+    }
+
+kenslersLog :: CardDef
+kenslersLog =
+  fast
+    $ (asset "08735" "Kensler's Log" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Tome]
+      , cdSkills = [#intellect, #wild]
+      , cdSlots = [#hand]
+      , cdEncounterSet = Just MemorialsOfTheLost
+      , cdEncounterSetQuantity = Just 1
+      }
+
+sinhasMedicalKit :: CardDef
+sinhasMedicalKit =
+  fast
+    $ (asset "08736" "Sinha's Medical Kit" 1 Neutral)
+      { cdCardTraits = setFromList [Item, Science]
+      , cdSkills = [#willpower, #wild]
+      , cdUses = uses Supply 3
+      , cdEncounterSet = Just MemorialsOfTheLost
+      , cdEncounterSetQuantity = Just 1
+      }
+
+anyuFaithfulCompanion :: CardDef
+anyuFaithfulCompanion =
+  (asset "08738" ("Anyu" <:> "Faithful Companion") 3 Neutral)
+    { cdCardTraits = setFromList [Ally, Creature]
+    , cdSkills = [#agility, #wild]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdEncounterSet = Just MemorialsOfTheLost
+    , cdEncounterSetQuantity = Just 1
     }

@@ -1,13 +1,11 @@
-module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (
-  UndimensionedAndUnseen (..),
-  undimensionedAndUnseen,
-) where
+module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -18,13 +16,14 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Scenarios.UndimensionedAndUnseen.Story
 import Arkham.SkillTest
-import Arkham.Trait hiding (Cultist)
+import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype UndimensionedAndUnseen = UndimensionedAndUnseen ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -70,7 +69,8 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecordedSets = mapFromList [(SacrificedToYogSothoth, [recorded @CardCode "02040"])]
+    { campaignLogRecordedSets =
+        mapFromList [(toCampaignLogKey SacrificedToYogSothoth, [recorded @CardCode "02040"])]
     }
 
 instance HasChaosTokenValue UndimensionedAndUnseen where

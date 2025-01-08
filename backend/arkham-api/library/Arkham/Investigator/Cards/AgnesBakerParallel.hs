@@ -3,9 +3,9 @@ module Arkham.Investigator.Cards.AgnesBakerParallel (agnesBakerParallel, AgnesBa
 import Arkham.ActiveCost.Base
 import Arkham.Card
 import Arkham.Cost
-import {-# SOURCE #-} Arkham.GameEnv (getActiveCosts, getCard)
+import {-# SOURCE #-} Arkham.GameEnv (findAllCards, getActiveCosts)
 import Arkham.Helpers.Investigator (canHaveDamageHealed)
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified, modified)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEachMaybe, modifySelf)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -19,28 +19,25 @@ newtype AgnesBakerParallel = AgnesBakerParallel InvestigatorAttrs
   deriving stock Data
 
 instance HasModifiersFor AgnesBakerParallel where
-  getModifiersFor target (AgnesBakerParallel attrs) | isTarget attrs target = do
-    modified attrs [ReduceCostOf (#spell <> #event) 2]
-  getModifiersFor (CardIdTarget cardId) (AgnesBakerParallel attrs) = do
-    maybeModified attrs do
-      card <- lift $ getCard cardId
-      guard $ card.owner == Just attrs.id
-      guard $ cardMatch card (card_ $ #spell <> #event)
+  getModifiersFor (AgnesBakerParallel a) = do
+    self <- modifySelf a [ReduceCostOf (#spell <> #event) 2]
+    validCards <- findAllCards (`cardMatch` (CardOwnedBy a.id <> card_ (#spell <> #event)))
+    cards <- modifyEachMaybe a validCards \card -> do
       startingCost <- case card.cost of
         Just (StaticCost n) -> pure n
         Just DynamicCost -> pure 0
         Just (MaxDynamicCost _) -> pure 0
-        Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== card.cardCode) . toCardCode)) attrs.id
+        Just DiscardAmountCost -> lift $ fieldMap InvestigatorDiscard (count ((== card.cardCode) . toCardCode)) a.id
         Nothing -> pure 0
+      guard $ startingCost > 0
       pure
         [ AdditionalCost
-          $ OrCost
-            [ InvestigatorDamageCost (toSource attrs) (InvestigatorWithId attrs.id) DamageAny 1
-            , ResourceCost (min startingCost 2)
-            ]
-        | startingCost > 0
+            $ OrCost
+              [ InvestigatorDamageCost (toSource a) (InvestigatorWithId a.id) DamageAny 1
+              , ResourceCost (min startingCost 2)
+              ]
         ]
-  getModifiersFor _ _ = pure []
+    pure $ self <> cards
 
 agnesBakerParallel :: InvestigatorCard AgnesBakerParallel
 agnesBakerParallel =

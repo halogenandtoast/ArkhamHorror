@@ -1,42 +1,42 @@
 module Arkham.Campaign.Campaigns.TheDunwichLegacy where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
-import Arkham.Campaign.Runner
 import Arkham.CampaignLogKey
-import Arkham.CampaignStep
+import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Difficulty
 import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Card
-import Arkham.Id
+import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
+import GHC.Records
 
 newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
 
+instance HasField "attrs" TheDunwichLegacy CampaignAttrs where
+  getField (TheDunwichLegacy attrs) = attrs
+
 instance IsCampaign TheDunwichLegacy where
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case a.attrs.step of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ExtracurricularActivity ->
-      if TheHouseAlwaysWins `elem` campaignCompletedSteps (toAttrs a)
+      if TheHouseAlwaysWins `elem` a.attrs.completedSteps
         then Just $ InterludeStep 1 Nothing
         else Just (UpgradeDeckStep TheHouseAlwaysWins)
     TheHouseAlwaysWins ->
-      if ExtracurricularActivity `elem` campaignCompletedSteps (toAttrs a)
+      if ExtracurricularActivity `elem` a.attrs.completedSteps
         then Just $ InterludeStep 1 Nothing
         else Just (UpgradeDeckStep ExtracurricularActivity)
     InterludeStep 1 _ -> Just (UpgradeDeckStep TheMiskatonicMuseum)
     TheMiskatonicMuseum -> Just (UpgradeDeckStep TheEssexCountyExpress)
     TheEssexCountyExpress -> Just (UpgradeDeckStep BloodOnTheAltar)
     BloodOnTheAltar ->
-      case lookup "02195" (campaignResolutions $ toAttrs a) of
+      case lookup "02195" a.attrs.resolutions of
         Just NoResolution -> Just (UpgradeDeckStep UndimensionedAndUnseen)
         _ -> Just $ InterludeStep 2 Nothing
     InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)
@@ -56,175 +56,110 @@ theDunwichLegacy difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage TheDunwichLegacy where
-  runMessage msg c = case msg of
+  runMessage msg c = runQueueT $ case msg of
     CampaignStep PrologueStep -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      pushAll
-        [ storyWithChooseOne
-            lead
-            players
-            prologue
-            [ Label
-                "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
-                [NextCampaignStep (Just ExtracurricularActivity)]
-            , Label
-                "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
-                [NextCampaignStep (Just TheHouseAlwaysWins)]
-            ]
-        ]
+      storyWithChooseOneM prologue do
+        labeled
+          "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
+          $ setNextCampaignStep ExtracurricularActivity
+        labeled
+          "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
+          $ setNextCampaignStep TheHouseAlwaysWins
       pure c
     CampaignStep (InterludeStep 1 _) -> do
-      unconsciousForSeveralHours <-
-        getHasRecord
-          InvestigatorsWereUnconsciousForSeveralHours
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      lead <- getLeadPlayer
+      unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours
       if unconsciousForSeveralHours
-        then
-          pushAll
-            $ [ story players armitagesFate1
-              , Record DrHenryArmitageWasKidnapped
-              ]
-            <> [GainXP iid CampaignSource 2 | iid <- investigatorIds]
-            <> [NextCampaignStep Nothing]
+        then do
+          story armitagesFate1
+          record DrHenryArmitageWasKidnapped
+          interludeXpAll
+            (WithBonus "Reading Wilbur’s journal gives them insight into the hidden world of the mythos." 2)
         else do
-          armitage <- genCard Assets.drHenryArmitage
-          pushAll
-            [ story players armitagesFate2
-            , Record TheInvestigatorsRescuedDrHenryArmitage
-            , addCampaignCardToDeckChoice lead investigatorIds armitage
-            , NextCampaignStep Nothing
-            ]
+          story armitagesFate2
+          record TheInvestigatorsRescuedDrHenryArmitage
+
+          investigators <- allInvestigators
+          addCampaignCardToDeckChoice investigators Assets.drHenryArmitage
+
+      nextCampaignStep
       pure c
     CampaignStep (InterludeStep 2 _) -> do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
-      investigatorIds <- allInvestigatorIds
-      players <- allPlayers
-      lead <- getLeadPlayer
-      drHenryArmitageUnowned <- isNothing <$> getOwner Assets.drHenryArmitage
-      professorWarrenRiceUnowned <- isNothing <$> getOwner Assets.professorWarrenRice
-      drFrancisMorganUnowned <- isNothing <$> getOwner Assets.drFrancisMorgan
-      powder <- genCard Assets.powderOfIbnGhazi
-      armitage <- genCard Assets.drHenryArmitage
-      rice <- genCard Assets.professorWarrenRice
-      morgan <- genCard Assets.drFrancisMorgan
-      whately <- genCard Assets.zebulonWhateley
-      sawyer <- genCard Assets.earlSawyer
-      let
-        addPowderOfIbnGhazi =
-          addCampaignCardToDeckChoice lead investigatorIds powder
-            <$ guard
-              ( any
-                  ((`notElem` sacrificedToYogSothoth) . recorded . toCardCode)
-                  [ Assets.drHenryArmitage
-                  , Assets.professorWarrenRice
-                  , Assets.drFrancisMorgan
-                  ]
-              )
-        addDrHenryArmitage =
-          addCampaignCardToDeckChoice lead investigatorIds armitage
-            <$ guard
-              ( drHenryArmitageUnowned
-                  && recorded (toCardCode Assets.drHenryArmitage)
-                  `notElem` sacrificedToYogSothoth
-              )
-        addProfessorWarrenRice =
-          addCampaignCardToDeckChoice lead investigatorIds rice
-            <$ guard
-              ( professorWarrenRiceUnowned
-                  && recorded (toCardCode Assets.professorWarrenRice)
-                  `notElem` sacrificedToYogSothoth
-              )
-        addDrFrancisMorgan =
-          addCampaignCardToDeckChoice lead investigatorIds morgan
-            <$ guard
-              ( drFrancisMorganUnowned
-                  && recorded (toCardCode Assets.drFrancisMorgan)
-                  `notElem` sacrificedToYogSothoth
-              )
-        addZebulonWhateley =
-          addCampaignCardToDeckChoice lead investigatorIds whately
-            <$ guard
-              ( recorded (toCardCode Assets.zebulonWhateley)
-                  `notElem` sacrificedToYogSothoth
-              )
-        addEarlSawyer =
-          addCampaignCardToDeckChoice lead investigatorIds sawyer
-            <$ guard
-              ( recorded (toCardCode Assets.earlSawyer)
-                  `notElem` sacrificedToYogSothoth
-              )
-      pushAll
-        $ [story players interlude2]
-        <> ( guard (recorded @CardCode "02040" `notElem` sacrificedToYogSothoth)
-              *> [story players interlude2DrHenryArmitage, Record DrHenryArmitageSurvivedTheDunwichLegacy]
-           )
-        <> addDrHenryArmitage
-        <> ( guard (recorded @CardCode "02061" `notElem` sacrificedToYogSothoth)
-              *> [story players interlude2ProfessorWarrenRice, Record ProfessorWarrenRiceSurvivedTheDunwichLegacy]
-           )
-        <> addProfessorWarrenRice
-        <> ( guard (recorded @CardCode "02080" `notElem` sacrificedToYogSothoth)
-              *> [story players interlude2DrFrancisMorgan, Record DrFrancisMorganSurvivedTheDunwichLegacy]
-           )
-        <> addDrFrancisMorgan
-        <> ( guard (recorded @CardCode "02217" `notElem` sacrificedToYogSothoth)
-              *> [story players interlude2ZebulonWhateley, Record ZebulonWhateleySurvivedTheDunwichLegacy]
-           )
-        <> addZebulonWhateley
-        <> ( guard (recorded @CardCode "02218" `notElem` sacrificedToYogSothoth)
-              *> [story players interlude2EarlSawyer, Record EarlSawyerSurvivedTheDunwichLegacy]
-           )
-        <> addEarlSawyer
-        <> addPowderOfIbnGhazi
-        <> [NextCampaignStep Nothing]
+      let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
+      investigators <- allInvestigators
+
+      story interlude2
+
+      unless (sacrificed Assets.drHenryArmitage) do
+        story interlude2DrHenryArmitage
+        record DrHenryArmitageSurvivedTheDunwichLegacy
+
+        whenM (isNothing <$> getOwner Assets.drHenryArmitage) do
+          addCampaignCardToDeckChoice investigators Assets.drHenryArmitage
+
+      unless (sacrificed Assets.professorWarrenRice) do
+        story interlude2ProfessorWarrenRice
+        record ProfessorWarrenRiceSurvivedTheDunwichLegacy
+
+        whenM (isNothing <$> getOwner Assets.professorWarrenRice) do
+          addCampaignCardToDeckChoice investigators Assets.professorWarrenRice
+
+      unless (sacrificed Assets.drFrancisMorgan) do
+        story interlude2DrFrancisMorgan
+        record DrFrancisMorganSurvivedTheDunwichLegacy
+
+        whenM (isNothing <$> getOwner Assets.drFrancisMorgan) do
+          addCampaignCardToDeckChoice investigators Assets.drFrancisMorgan
+
+      unless (sacrificed Assets.zebulonWhateley) do
+        story interlude2ZebulonWhateley
+        record ZebulonWhateleySurvivedTheDunwichLegacy
+        addCampaignCardToDeckChoice investigators Assets.zebulonWhateley
+
+      unless (sacrificed Assets.earlSawyer) do
+        story interlude2EarlSawyer
+        record EarlSawyerSurvivedTheDunwichLegacy
+        addCampaignCardToDeckChoice investigators Assets.earlSawyer
+
+      unless
+        (all sacrificed [Assets.drHenryArmitage, Assets.professorWarrenRice, Assets.drFrancisMorgan])
+        do
+          addCampaignCardToDeckChoice investigators Assets.powderOfIbnGhazi
+
+      nextCampaignStep
       pure c
     CampaignStep EpilogueStep -> do
       warned <- getHasRecord YouWarnedTheTownsfolk
-      players <- allPlayers
-      pushAll [story players $ if warned then epilogue2 else epilogue1, GameOver]
+      story $ if warned then epilogue2 else epilogue1
+      gameOver
       pure c
     HandleOption option -> do
-      lead <- getActivePlayer
       investigators <- allInvestigators
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
       case option of
         TakeArmitage -> do
           unless (sacrificed Assets.drHenryArmitage) do
-            armitage <- genCard Assets.drHenryArmitage
-            push $ forceAddCampaignCardToDeckChoice lead investigators armitage
+            forceAddCampaignCardToDeckChoice investigators Assets.drHenryArmitage
         TakeWarrenRice -> do
           unless (sacrificed Assets.professorWarrenRice) do
-            rice <- genCard Assets.professorWarrenRice
-            push $ forceAddCampaignCardToDeckChoice lead investigators rice
+            forceAddCampaignCardToDeckChoice investigators Assets.professorWarrenRice
         TakeFrancisMorgan -> do
           unless (sacrificed Assets.drFrancisMorgan) do
-            morgan <- genCard Assets.drFrancisMorgan
-            push $ forceAddCampaignCardToDeckChoice lead investigators morgan
-        TakeZebulonWhately -> push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.zebulonWhateley
-        TakeEarlSawyer -> push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.earlSawyer
-        TakePowderOfIbnGhazi -> do
-          when (campaignStep (toAttrs c) == UndimensionedAndUnseen) do
-            push . forceAddCampaignCardToDeckChoice lead investigators =<< genCard Assets.powderOfIbnGhazi
-        TakeTheNecronomicon -> do
-          stolen <- getHasRecord TheNecronomiconWasStolen
-          unless stolen do
-            push
-              . forceAddCampaignCardToDeckChoice lead investigators
-              =<< genCard Assets.theNecronomiconOlausWormiusTranslation
+            forceAddCampaignCardToDeckChoice investigators Assets.drFrancisMorgan
+        TakeZebulonWhately -> forceAddCampaignCardToDeckChoice investigators Assets.zebulonWhateley
+        TakeEarlSawyer -> forceAddCampaignCardToDeckChoice investigators Assets.earlSawyer
+        TakePowderOfIbnGhazi -> when (c.attrs.step == UndimensionedAndUnseen) do
+          forceAddCampaignCardToDeckChoice investigators Assets.powderOfIbnGhazi
+        TakeTheNecronomicon -> unlessHasRecord TheNecronomiconWasStolen do
+          forceAddCampaignCardToDeckChoice investigators Assets.theNecronomiconOlausWormiusTranslation
         AddAcrossTimeAndSpace -> do
           acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
-          push
-            $ Ask lead
-            $ ChooseSome1
-              "Do not add Across Time and Space to any other decks"
-              [ PortraitLabel iid [AddCampaignCardToDeck iid acrossSpaceAndTime]
-              | (iid, acrossSpaceAndTime) <- zip investigators acrossSpaceAndTimes
-              ]
-        Cheated -> push $ AddChaosToken #elderthing
+          lead <- getActiveInvestigatorId
+          chooseSome1M lead "Do not add Across Time and Space to any other decks" do
+            for_ (zip investigators acrossSpaceAndTimes) \(iid, acrossSpaceAndTime) ->
+              portraitLabeled iid $ addCampaignCardToDeck iid acrossSpaceAndTime
+        Cheated -> addChaosToken #elderthing
         _ -> error $ "Unhandled option: " <> show option
       pure c
-    _ -> defaultCampaignRunner msg c
+    _ -> lift $ defaultCampaignRunner msg c

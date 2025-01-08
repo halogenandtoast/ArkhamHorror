@@ -29,11 +29,10 @@ tonyMorgan =
     $ Stats {health = 9, sanity = 5, willpower = 2, intellect = 3, combat = 5, agility = 2}
 
 instance HasModifiersFor TonyMorgan where
-  getModifiersFor target (TonyMorgan (a `With` meta)) | a `is` target = do
-    toModifiers a
+  getModifiersFor (TonyMorgan (a `With` meta)) =
+    modifySelf a
       $ GiveAdditionalAction (AdditionalAction "Tony Morgan" (toSource a) BountyAction)
       : [BountiesOnly | active meta]
-  getModifiersFor _ _ = pure []
 
 instance HasAbilities TonyMorgan where
   getAbilities (TonyMorgan (attrs `With` _)) =

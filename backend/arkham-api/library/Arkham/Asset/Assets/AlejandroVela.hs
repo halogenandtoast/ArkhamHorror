@@ -17,11 +17,11 @@ alejandroVela :: AssetCard AlejandroVela
 alejandroVela = ally AlejandroVela Cards.alejandroVela (2, 2)
 
 instance HasModifiersFor AlejandroVela where
-  getModifiersFor (InvestigatorTarget iid) (AlejandroVela a) = maybeModified a do
-    guard $ a `controlledBy` iid
-    liftGuardM $ isInvestigationOf $ LocationWithTrait Ancient
-    pure [AnySkillValue 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (AlejandroVela a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      liftGuardM $ isInvestigationOf $ LocationWithTrait Ancient
+      pure [AnySkillValue 1]
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =

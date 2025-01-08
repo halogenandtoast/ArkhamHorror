@@ -15,14 +15,15 @@ finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
 finnsTrustyThirtyEight = asset FinnsTrustyThirtyEight Cards.finnsTrustyThirtyEight
 
 instance HasModifiersFor FinnsTrustyThirtyEight where
-  getModifiersFor (InvestigatorTarget iid) (FinnsTrustyThirtyEight attrs) = maybeModified attrs do
-    guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-    EnemyTarget eid <- MaybeT getSkillTestTarget
-    guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-    engagedEnemies <- lift $ select $ EnemyIsEngagedWith $ InvestigatorWithId iid
-    guard $ eid `notElem` engagedEnemies
-    pure [DamageDealt 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (FinnsTrustyThirtyEight a) = case a.controller of
+    Nothing -> pure mempty
+    Just iid -> maybeModified_ a iid do
+      guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
+      EnemyTarget eid <- MaybeT getSkillTestTarget
+      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
+      engagedEnemies <- lift $ select $ EnemyIsEngagedWith $ InvestigatorWithId iid
+      guard $ eid `notElem` engagedEnemies
+      pure [DamageDealt 1]
 
 instance HasAbilities FinnsTrustyThirtyEight where
   getAbilities (FinnsTrustyThirtyEight a) = [fightAbility a 1 (assetUseCost a Ammo 1) ControlsThis]

@@ -135,6 +135,9 @@ instance IsLabel "asset" ExtendedCardMatcher where
 instance IsLabel "event" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #event
 
+instance IsLabel "story" ExtendedCardMatcher where
+  fromLabel = BasicCardMatch #story
+
 instance IsLabel "enemy" ExtendedCardMatcher where
   fromLabel = BasicCardMatch #enemy
 
@@ -284,6 +287,9 @@ instance IsLabel "treachery" CardMatcher where
 instance IsLabel "event" CardMatcher where
   fromLabel = CardWithOneOf [CardWithType EventType, CardWithType EncounterEventType]
 
+instance IsLabel "story" CardMatcher where
+  fromLabel = CardWithType StoryType
+
 instance IsLabel "skill" CardMatcher where
   fromLabel = CardWithType SkillType
 
@@ -344,6 +350,7 @@ data CardListMatcher
   | HasCard CardMatcher
   | AnyCards
   | DifferentLengthIsAtLeast Int CardMatcher
+  | NoCards
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "item" CardListMatcher where

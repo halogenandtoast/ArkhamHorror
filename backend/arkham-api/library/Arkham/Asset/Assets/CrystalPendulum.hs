@@ -23,9 +23,7 @@ crystalPendulum :: AssetCard CrystalPendulum
 crystalPendulum = asset CrystalPendulum Cards.crystalPendulum
 
 instance HasModifiersFor CrystalPendulum where
-  getModifiersFor (InvestigatorTarget iid) (CrystalPendulum a) | controlledBy a iid = do
-    toModifiers a [SkillModifier #willpower 1]
-  getModifiersFor _ _ = pure []
+  getModifiersFor (CrystalPendulum a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities CrystalPendulum where
   getAbilities (CrystalPendulum a) =

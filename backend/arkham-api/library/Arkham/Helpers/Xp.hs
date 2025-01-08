@@ -25,21 +25,32 @@ toGainXp (toSource -> source) f = map (\(iid, n) -> GainXP iid source n) <$> f
 getXp :: HasGame m => m [(InvestigatorId, Int)]
 getXp = getXpWithBonus 0
 
-getXpWithBonus :: forall m. (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
-getXpWithBonus bonus = do
+getXp' :: HasGame m => m (Int, [(InvestigatorId, Int)])
+getXp' = getXpWithBonus' 0
+
+getInitialVictory :: (HasCallStack, HasGame m) => m Int
+getInitialVictory = do
   victoryPileVictory <- toVictory =<< getVictoryDisplay
   locationVictory <- toVictory =<< select (RevealedLocation <> LocationWithoutClues)
   enemyVictory <- toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
-  let initialAmount = bonus + getSum (victoryPileVictory <> locationVictory <> enemyVictory)
-  investigatorIds <- allInvestigatorIds
-  for investigatorIds $ \iid -> do
+  pure $ getSum (victoryPileVictory <> locationVictory <> enemyVictory)
+ where
+  toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints
+
+getXpWithBonus :: forall m. (HasCallStack, HasGame m) => Int -> m [(InvestigatorId, Int)]
+getXpWithBonus bonus = snd <$> getXpWithBonus' bonus
+
+getXpWithBonus' :: forall m. (HasCallStack, HasGame m) => Int -> m (Int, [(InvestigatorId, Int)])
+getXpWithBonus' bonus = do
+  initialAmount <- (bonus +) <$> getInitialVictory
+  investigatorIds <- allInvestigators
+  details <- for investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure (iid, foldl' applyModifier initialAmount modifiers')
+  pure (initialAmount, details)
  where
   applyModifier n (XPModifier _ m) = max 0 (n + m)
   applyModifier n _ = n
-  toVictory :: ConvertToCard c => [c] -> m (Sum Int)
-  toVictory = fmap (mconcat . map Sum . catMaybes) . traverse getVictoryPoints
 
 data XpBonus = NoBonus | WithBonus Text Int | MultiBonus [XpBonus]
 
@@ -82,7 +93,7 @@ generateXpReport bonus = do
     fmap (map AllGainXp) . toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
   locationVictory <-
     fmap (map AllGainXp) . toVictory =<< select (RevealedLocation <> LocationWithoutClues)
-  investigatorIds <- allInvestigatorIds
+  investigatorIds <- allInvestigators
   fromModifiers <- concatForM investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure $ mapMaybe (modifierToXpDetail iid) modifiers'

@@ -22,15 +22,12 @@ noTurningBack :: TreacheryCard NoTurningBack
 noTurningBack = treachery NoTurningBack Cards.noTurningBack
 
 instance HasModifiersFor NoTurningBack where
-  getModifiersFor (InvestigatorTarget iid) (NoTurningBack attrs) =
-    case attrs.placement.attachedTo of
-      Just (LocationTarget lid) -> do
+  getModifiersFor (NoTurningBack attrs) = case attrs.placement.attachedTo of
+    Just (LocationTarget lid) -> do
+      modifySelectMaybe attrs Anyone \iid -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
-        toModifiers
-          attrs
-          [if onNoTurningBack then CannotMove else CannotEnter lid]
-      _ -> pure []
-  getModifiersFor _ _ = pure []
+        pure [if onNoTurningBack then CannotMove else CannotEnter lid]
+    _ -> pure mempty
 
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =

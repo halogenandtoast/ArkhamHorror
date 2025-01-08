@@ -29,19 +29,14 @@ instance RunMessage EyesInTheTrees where
             doStep n (FailedSkillTest iid' Nothing (toSource attrs) target sType n)
         _ -> doStep n msg
       pure t
-    DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
+    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       assets <- select $ assetControlledBy iid <> DiscardableAsset
       cards <- selectAny $ inHandOf iid <> basic DiscardableCard
 
       chooseOneM iid do
         when cards do
-          labeled "Choose and discard a card" do
-            chooseAndDiscardCard iid attrs
-            doStep (n - 1) msg'
+          labeled ("Choose and discard " <> pluralize n "card") $ chooseAndDiscardCards iid attrs n
         when (notNull assets) do
-          labeled "Discard an asset you control" do
-            chooseTargetM iid assets $ toDiscardBy iid attrs
-            doStep (n - 1) msg'
-
+          labeled "Discard an asset you control" $ chooseTargetM iid assets $ toDiscardBy iid attrs
       pure t
     _ -> EyesInTheTrees <$> liftRunMessage msg attrs

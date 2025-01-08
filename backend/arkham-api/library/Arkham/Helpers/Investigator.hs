@@ -429,7 +429,7 @@ getAdditionalActions attrs = do
   let
     toAdditionalAction = \case
       GiveAdditionalAction ac -> [ac]
-      AdditionalActions label source n -> replicate n $ AdditionalAction label source AnyAdditionalAction
+      AdditionalActions label source n | n > 0 -> map (\x -> AdditionalAction label (IndexedSource x source) AnyAdditionalAction) [1 .. n]
       _ -> []
     additionalActions = concatMap toAdditionalAction mods
 
@@ -485,11 +485,17 @@ getJustLocation
 getJustLocation = fieldJust InvestigatorLocation
 
 getMaybeLocation
-  :: (HasCallStack, HasGame m) => InvestigatorId -> m (Maybe LocationId)
-getMaybeLocation = field InvestigatorLocation
+  :: (HasCallStack, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> m (Maybe LocationId)
+getMaybeLocation = field InvestigatorLocation . asId
 
-withLocationOf :: HasGame m => InvestigatorId -> (LocationId -> m ()) -> m ()
-withLocationOf iid = forField InvestigatorLocation iid
+withLocationOf
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m)
+  => investigator
+  -> (LocationId -> m ())
+  -> m ()
+withLocationOf = forField InvestigatorLocation . asId
 
 enemiesColocatedWith :: InvestigatorId -> EnemyMatcher
 enemiesColocatedWith = EnemyAt . LocationWithInvestigator . InvestigatorWithId

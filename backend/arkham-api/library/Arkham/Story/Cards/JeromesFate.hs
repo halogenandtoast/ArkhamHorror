@@ -12,6 +12,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.SlotType
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted

@@ -11,7 +11,6 @@ import Arkham.Asset.Types (AssetAttrs)
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
-import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -71,7 +70,6 @@ import Arkham.Query
 import Arkham.Queue
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenario.Deck
-import Arkham.ScenarioLogKey
 import Arkham.SkillType
 import Arkham.SkillType qualified as SkillType
 import Arkham.Source
@@ -207,35 +205,6 @@ reveal = push . Msg.RevealLocation Nothing . asId
 
 revealBy :: (AsId investigator, IdOf investigator ~ InvestigatorId, AsId location, IdOf location ~ LocationId, ReverseQueue m) => investigator -> location -> m ()
 revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
-
-record :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
-record = push . Record . toCampaignLogKey
-
-recordWhen :: (ReverseQueue m, IsCampaignLogKey k) => Bool -> k -> m ()
-recordWhen True = push . Record . toCampaignLogKey
-recordWhen False = pure . const ()
-
-recordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
-recordCount k = push . RecordCount (toCampaignLogKey k)
-
-remember :: ReverseQueue m => ScenarioLogKey -> m ()
-remember = push . Remember
-
-crossOut :: (ReverseQueue m, IsCampaignLogKey k) => k -> m ()
-crossOut = push . CrossOutRecord . toCampaignLogKey
-
-recordSetInsert
-  :: (Recordable a, MonoFoldable t, Element t ~ a, ReverseQueue m, IsCampaignLogKey k)
-  => k
-  -> t
-  -> m ()
-recordSetInsert k = push . Msg.recordSetInsert k
-
-recordSetReplace :: (ReverseQueue m, IsCampaignLogKey k) => k -> SomeRecorded -> SomeRecorded -> m ()
-recordSetReplace k v v' = push $ Msg.RecordSetReplace (toCampaignLogKey k) v v'
-
-incrementRecordCount :: (ReverseQueue m, IsCampaignLogKey k) => k -> Int -> m ()
-incrementRecordCount key = push . IncrementRecordCount (toCampaignLogKey key)
 
 story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do
@@ -2096,10 +2065,6 @@ createAssetAt c placement = do
   push msg
   pure assetId
 
-crossOutRecordSetEntries :: (Recordable a, ReverseQueue m, IsCampaignLogKey k) => k -> [a] -> m ()
-crossOutRecordSetEntries _ [] = pure ()
-crossOutRecordSetEntries k xs = push $ Msg.crossOutRecordSetEntries k xs
-
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)
 
@@ -2282,3 +2247,6 @@ updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
 
 shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
 shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTarget target)
+
+setActions :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m) => investigator -> source -> Int -> m ()
+setActions investigator source n = push $ SetActions (asId investigator) (toSource source) n

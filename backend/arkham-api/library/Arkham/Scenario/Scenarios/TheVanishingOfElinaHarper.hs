@@ -1,7 +1,4 @@
-module Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper (
-  TheVanishingOfElinaHarper (..),
-  theVanishingOfElinaHarper,
-) where
+module Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper ( theVanishingOfElinaHarper,) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -19,6 +16,7 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck

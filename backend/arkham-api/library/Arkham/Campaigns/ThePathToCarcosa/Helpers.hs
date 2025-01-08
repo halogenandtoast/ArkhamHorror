@@ -7,7 +7,7 @@ import Arkham.Card.CardDef
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Log
 import Arkham.I18n
-import Arkham.Message.Lifted (recordCount)
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 

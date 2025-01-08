@@ -1,9 +1,10 @@
-module Arkham.Act.Cards.ArkhamAsylum (ArkhamAsylum (..), arkhamAsylum) where
+module Arkham.Act.Cards.ArkhamAsylum (arkhamAsylum) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.SkillTest.Type
 import Arkham.SkillType
@@ -18,7 +19,8 @@ newtype ArkhamAsylum = ArkhamAsylum ActAttrs
 arkhamAsylum :: ActCard ArkhamAsylum
 arkhamAsylum =
   actWith (1, A) ArkhamAsylum Cards.arkhamAsylum (groupClueCost $ PerPlayer 3)
-    $ (metaL .~ (toJSON $ Metadata mempty))
+    $ metaL
+    .~ toJSON (Metadata mempty)
 
 instance RunMessage ArkhamAsylum where
   runMessage msg a@(ArkhamAsylum attrs) = runQueueT $ case msg of

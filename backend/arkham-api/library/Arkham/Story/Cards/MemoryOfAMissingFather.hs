@@ -5,6 +5,7 @@ import Arkham.CampaignLog (PartnerStatus (Resolute))
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted

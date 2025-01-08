@@ -16,6 +16,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck

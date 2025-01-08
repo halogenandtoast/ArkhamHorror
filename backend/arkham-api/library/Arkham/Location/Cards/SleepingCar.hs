@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.SleepingCar (sleepingCar, SleepingCar (..)) where
+module Arkham.Location.Cards.SleepingCar (sleepingCar) where
 
 import Arkham.Ability
 import Arkham.Direction
@@ -6,6 +6,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (sleepingCar)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype SleepingCar = SleepingCar LocationAttrs

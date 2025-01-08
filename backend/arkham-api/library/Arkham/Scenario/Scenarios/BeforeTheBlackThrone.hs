@@ -19,6 +19,7 @@ import Arkham.Label (mkLabel)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution

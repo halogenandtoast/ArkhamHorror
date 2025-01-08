@@ -2,13 +2,14 @@
 
 module Arkham.CampaignLogKey where
 
-import Arkham.Campaigns.TheCircleUndone.Memento
-import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.NightOfTheZealot.Key
-import Arkham.Campaigns.TheDunwichLegacy.Key
-import Arkham.Campaigns.ThePathToCarcosa.Key
-import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheCircleUndone.Key
+import Arkham.Campaigns.TheCircleUndone.Memento
+import Arkham.Campaigns.TheDreamEaters.Key
+import Arkham.Campaigns.TheDunwichLegacy.Key
+import Arkham.Campaigns.TheForgottenAge.Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -27,62 +28,7 @@ data CampaignLogKey
   | ThePathToCarcosaKey ThePathToCarcosaKey
   | TheForgottenAgeKey TheForgottenAgeKey
   | TheCircleUndoneKey TheCircleUndoneKey
-  | -- | The Dream-Eaters
-    TheDreamersStrayedFromThePath
-  | TheInvestigatorsWereSavedByRandolphCarder
-  | TheCatsCollectedTheirTributeFromTheZoogs
-  | TheInvestigatorsParleyedWithTheZoogs
-  | DrMaheswaranJoinedTheInvestigation
-  | DrMaheswaranStayedWithHerPatients
-  | StepsOfTheBridge
-  | DrMaheswaran'sFateIsUnknown
-  | RandolphEscapedTheHospitalOnHisOwn
-  | RandolphEscapedTheHospitalWithTheInvestigators
-  | DrMaheswaranIsAlive
-  | DrMaheswaranIsMissing
-  | TheBlackCatDeliveredNewsOfYourPlight
-  | TheBlackCatSharedKnowledgeOfTheDreamlands
-  | TheBlackCatWarnedTheOthers
-  | OkayFineHaveItYourWayThen
-  | TheDreamersGrowWeaker
-  | YouAreOnYourOwn
-  | TheBlackCatHasAHunch
-  | TheBlackCatIsAtYourSide
-  | YouAskedForIt
-  | TheInvestigatorsForcedTheirWayIntoTheTemple
-  | EvidenceOfKadath
-  | HasBrokenTheLawOfUlthar
-  | WasCaptured
-  | VirgilWasCaptured
-  | RandolphEludedCapture
-  | RandolphWasCaptured
-  | RandolphSurvivedTheDescent
-  | RandolphDidNotSurviveTheDescent
-  | TheInvestigatorsPossessTheSilverKey
-  | TheBlackCatRequestedAidFromTheOthers
-  | TheBlackCatSharedKnowledgeOfTheUnderworld
-  | TheBlackCatIsSearchingForTheTruth
-  | TheDreamersKnowOfAnotherPath
-  | TheInvestigatorsWereCarriedToTheColdWastes
-  | TheInvestigatorsTraveledToTheColdWastes
-  | RandolphCarterDidNotSurviveTheVoyage
-  | RandolphSurvivedTheVoyage
-  | TheInvestigatorsFoundAWayOutOfTheUnderworld
-  | TheBlackCatSpokeOfNyarlathotep
-  | TheBlackCatSpokeOfAtlachNacha
-  | TheBlackCatKnowsTheTruth
-  | Nyarlathotep'sInvasionHasBegun
-  | TheDreamersEscapedFromNyarlathotep'sGrasp
-  | TheDreamersBanishedNyarlathotep
-  | TheDreamersAwoke
-  | TheDreamersStayedInTheDreamlandsForever
-  | TheDreamersTraveledBeneathTheMonastery
-  | TheInvestigatorsAreTrappedInAtlachNacha'sRealm
-  | TheBridgeWasCompleted
-  | TheBridgeWasDestroyed
-  | TheInvestigatorsReturnedToReality
-  | TheInvestigatorsNeverEscaped
-  | TheInvestigatorsAreStillInTheDreamlands
+  | TheDreamEatersKey TheDreamEatersKey
   | -- | The Innsmouth Conspiracy
     MemoriesRecovered
   | OutForBlood
@@ -185,13 +131,14 @@ data CampaignLogKey
 $(deriveToJSON defaultOptions ''CampaignLogKey)
 
 instance FromJSON CampaignLogKey where
-  parseJSON o
-    = (NightOfTheZealotKey <$> parseJSON o)
-    <|> (TheDunwichLegacyKey <$> parseJSON o)
-    <|> (ThePathToCarcosaKey <$> parseJSON o)
-    <|> (TheForgottenAgeKey <$> parseJSON o)
-    <|> (TheCircleUndoneKey <$> parseJSON o)
-    <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
+  parseJSON o =
+    (NightOfTheZealotKey <$> parseJSON o)
+      <|> (TheDunwichLegacyKey <$> parseJSON o)
+      <|> (ThePathToCarcosaKey <$> parseJSON o)
+      <|> (TheForgottenAgeKey <$> parseJSON o)
+      <|> (TheCircleUndoneKey <$> parseJSON o)
+      <|> (TheDreamEatersKey <$> parseJSON o)
+      <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
 
 class IsCampaignLogKey k where
   toCampaignLogKey :: k -> CampaignLogKey
@@ -229,6 +176,12 @@ instance IsCampaignLogKey TheCircleUndoneKey where
   toCampaignLogKey = TheCircleUndoneKey
   fromCampaignLogKey = \case
     TheCircleUndoneKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheDreamEatersKey where
+  toCampaignLogKey = TheDreamEatersKey
+  fromCampaignLogKey = \case
+    TheDreamEatersKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey

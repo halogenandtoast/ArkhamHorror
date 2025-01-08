@@ -1,10 +1,11 @@
-module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (WeaverOfTheCosmos (..), weaverOfTheCosmos) where
+module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (weaverOfTheCosmos) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Attack
 import Arkham.Campaigns.TheDreamEaters.Helpers
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
@@ -13,13 +14,13 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget)
 import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.WeaverOfTheCosmos.Helpers

@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.MonasteryOfLeng (monasteryOfLeng, MonasteryOfLeng (..)) where
+module Arkham.Location.Cards.MonasteryOfLeng (monasteryOfLeng) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (Blocked), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype MonasteryOfLeng = MonasteryOfLeng LocationAttrs

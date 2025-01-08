@@ -12,13 +12,13 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Log (getRecordSet, whenHasRecord)
 import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard)
 import Arkham.Helpers.Text
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Resolution

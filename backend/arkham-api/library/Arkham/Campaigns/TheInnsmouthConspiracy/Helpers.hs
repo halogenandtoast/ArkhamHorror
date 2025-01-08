@@ -20,6 +20,7 @@ import Arkham.Message (
   Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel, SetFloodLevel),
  )
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types

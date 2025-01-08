@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
+module Arkham.Scenario.Scenarios.ALightInTheFog (aLightInTheFog) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))
@@ -25,6 +25,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution

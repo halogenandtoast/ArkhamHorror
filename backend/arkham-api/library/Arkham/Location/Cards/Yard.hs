@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Yard (yard, Yard (..)) where
+module Arkham.Location.Cards.Yard (yard) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -7,6 +7,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 

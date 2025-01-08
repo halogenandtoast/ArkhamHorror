@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.BeginnersLuck (BeginnersLuck (..), beginnersLuck) where
+module Arkham.Act.Cards.BeginnersLuck (beginnersLuck) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -10,6 +10,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.ScenarioLogKey
 import Arkham.Trait

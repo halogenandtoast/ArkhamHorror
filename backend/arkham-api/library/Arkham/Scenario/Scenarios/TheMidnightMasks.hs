@@ -22,6 +22,7 @@ import Arkham.Matcher (
   cardIs,
  )
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice, recordSetInsert)
 import Arkham.Scenario.Import.Lifted hiding (chooseOrRunOne, createEnemyAt, placeLocationCard, story)

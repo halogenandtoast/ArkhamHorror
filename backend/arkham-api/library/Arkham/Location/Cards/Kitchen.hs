@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.Kitchen (kitchen, Kitchen (..)) where
+module Arkham.Location.Cards.Kitchen (kitchen) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -6,6 +6,7 @@ import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype Kitchen = Kitchen LocationAttrs

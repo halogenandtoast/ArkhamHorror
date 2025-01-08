@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.BloodOnTheAltar (BloodOnTheAltar (..), bloodOnTheAltar) where
+module Arkham.Scenario.Scenarios.BloodOnTheAltar (bloodOnTheAltar) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -12,6 +12,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath, RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution

@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.Cloister (cloister, Cloister (..)) where
+module Arkham.Location.Cards.Cloister (cloister) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype Cloister = Cloister LocationAttrs

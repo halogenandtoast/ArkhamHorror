@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.GreatLibrary (greatLibrary, GreatLibrary (..)) where
+module Arkham.Location.Cards.GreatLibrary (greatLibrary) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 

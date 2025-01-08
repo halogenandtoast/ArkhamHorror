@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.HorrorInHighGear (HorrorInHighGear (..), horrorInHighGear) where
+module Arkham.Scenario.Scenarios.HorrorInHighGear (horrorInHighGear) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -14,6 +14,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection

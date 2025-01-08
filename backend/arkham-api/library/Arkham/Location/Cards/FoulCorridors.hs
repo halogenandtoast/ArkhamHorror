@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.FoulCorridors (foulCorridors, FoulCorridors (..)) where
+module Arkham.Location.Cards.FoulCorridors (foulCorridors) where
 
 import Arkham.Ability
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype FoulCorridors = FoulCorridors LocationAttrs

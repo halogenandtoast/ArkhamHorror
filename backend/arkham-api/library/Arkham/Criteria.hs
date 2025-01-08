@@ -9,7 +9,7 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey (CampaignLogKey)
+import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey(..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
 import Arkham.Card.CardCode
@@ -273,6 +273,12 @@ data Criterion
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion
+
+notYetRecorded :: IsCampaignLogKey k => k -> Criterion
+notYetRecorded = NotYetRecorded . toCampaignLogKey
+
+hasCampaignCount :: IsCampaignLogKey k => k -> ValueMatcher -> Criterion
+hasCampaignCount k = HasCampaignCount (toCampaignLogKey k)
 
 _DuringSkillTest :: Prism' Criterion SkillTestMatcher
 _DuringSkillTest = prism' DuringSkillTest $ \case

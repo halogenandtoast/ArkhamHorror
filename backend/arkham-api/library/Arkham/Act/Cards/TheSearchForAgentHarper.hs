@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheSearchForAgentHarper (TheSearchForAgentHarper (..), theSearchForAgentHarper) where
+module Arkham.Act.Cards.TheSearchForAgentHarper (theSearchForAgentHarper) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -13,6 +13,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers

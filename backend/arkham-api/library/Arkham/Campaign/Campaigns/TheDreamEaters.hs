@@ -5,6 +5,7 @@ import Arkham.Campaign.Runner hiding (story, storyWithChooseOne)
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
 import Arkham.Campaigns.TheDreamEaters.Import
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.ChaosToken
 import Arkham.Classes
@@ -20,7 +21,7 @@ import Arkham.Id
 import Arkham.Investigator (Investigator, lookupInvestigator)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted hiding (record)
+import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
 import Data.Aeson (Result (..))
@@ -34,15 +35,15 @@ theDreamEaters difficulty =
     $ metaL
     .~ toJSON (Metadata FullMode Nothing Nothing mempty mempty)
 
-recordInBoth :: HasQueue Message m => CampaignLogKey -> m ()
-recordInBoth = pushBoth . Record
+recordInBoth :: (HasQueue Message m, IsCampaignLogKey k) => k -> m ()
+recordInBoth = pushBoth . Record . toCampaignLogKey
 
 pushBoth :: HasQueue Message m => Message -> m ()
 pushBoth msg = pushAll [InTheWebOfDreams msg, InTheDreamQuest msg]
 
-record :: HasQueue Message m => CampaignPart -> CampaignLogKey -> m ()
-record TheDreamQuest key = push $ InTheDreamQuest (Record key)
-record TheWebOfDreams key = push $ InTheWebOfDreams (Record key)
+record :: (HasQueue Message m, IsCampaignLogKey k) => CampaignPart -> k -> m ()
+record TheDreamQuest key = push $ InTheDreamQuest (Record $ toCampaignLogKey key)
+record TheWebOfDreams key = push $ InTheWebOfDreams (Record $ toCampaignLogKey key)
 
 setCampaignPart
   :: ReverseQueue m => CampaignPart -> TheDreamEaters -> CampaignStep -> m TheDreamEaters
@@ -88,7 +89,7 @@ setCampaignPart part c@(TheDreamEaters attrs) step =
                   }
               )
 
-getHasRecord :: HasGame m => CampaignPart -> CampaignLogKey -> m Bool
+getHasRecord :: (IsCampaignLogKey k, HasGame m) => CampaignPart -> k -> m Bool
 getHasRecord part key = do
   isCurrent <- getIsPartialCampaign part
   if isCurrent
@@ -385,16 +386,16 @@ instance RunMessage TheDreamEaters where
           theBlackCat2
           [ Label
               "Tell your companions of your quest, your plight, and your peril. The black cat will return to you once this message is delivered. This may put an undue burden on your companions. "
-              [InTheDreamQuest (Record TheBlackCatDeliveredNewsOfYourPlight)]
+              [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatDeliveredNewsOfYourPlight)]
           , Label
               "Tell your companions about your new friends and about the Dreamlands."
-              [InTheDreamQuest (Record TheBlackCatSharedKnowledgeOfTheDreamlands)]
+              [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSharedKnowledgeOfTheDreamlands)]
           , Label
               "Tell your companions that they are in danger, and that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult."
-              [InTheDreamQuest (Record TheBlackCatWarnedTheOthers)]
+              [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatWarnedTheOthers)]
           , Label
               "You don’t trust this creature one bit. You threaten the black cat, warning it not to approach your friends under any circumstance. The black cat yawns and vanishes out the door."
-              [InTheDreamQuest (Record OkayFineHaveItYourWayThen)]
+              [InTheDreamQuest (Record $ toCampaignLogKey OkayFineHaveItYourWayThen)]
           ]
         push $ CampaignStep (InterludeStepPart 1 Nothing 3)
         pure c
@@ -425,7 +426,7 @@ instance RunMessage TheDreamEaters where
         whenHasRecord TheBlackCatDeliveredNewsOfYourPlight do
           story theBlackCatDeliveredNewsOfYourPlight
           pushAll
-            [ InTheDreamQuest (Record TheBlackCatIsAtYourSide)
+            [ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
             , InTheDreamQuest (AddChaosToken ElderThing)
             , InTheWebOfDreams (AddChaosToken ElderThing)
             ]
@@ -433,7 +434,7 @@ instance RunMessage TheDreamEaters where
         whenHasRecord TheBlackCatWarnedTheOthers do
           story theBlackCatWarnedTheOthers
           pushAll
-            [ InTheWebOfDreams (Record TheBlackCatIsAtYourSide)
+            [ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
             , InTheWebOfDreams (AddChaosToken Tablet)
             , InTheDreamQuest (AddChaosToken Tablet)
             ]
@@ -455,8 +456,8 @@ instance RunMessage TheDreamEaters where
         when (hasAHunch && randolphDidNotSurvive) do
           story where'sBlondie
           pushAll
-            [ InTheDreamQuest (CrossOutRecord TheBlackCatHasAHunch)
-            , InTheWebOfDreams (CrossOutRecord TheBlackCatHasAHunch)
+            [ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)
+            , InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)
             ]
 
         didYouAskForIt <- getHasRecord TheWebOfDreams YouAskedForIt
@@ -476,20 +477,20 @@ instance RunMessage TheDreamEaters where
                 else
                   [ Label
                       "Tell your companions that you are in trouble. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions."
-                      [InTheWebOfDreams (Record TheBlackCatRequestedAidFromTheOthers)]
+                      [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatRequestedAidFromTheOthers)]
                   , Label
                       "Tell your companions about the Underworld. The black cat will then go elsewhere."
-                      [InTheWebOfDreams (Record TheBlackCatSharedKnowledgeOfTheUnderworld)]
+                      [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatSharedKnowledgeOfTheUnderworld)]
                   , Label
                       "Tell your companions that you are safe. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
-                      [InTheWebOfDreams (Record TheBlackCatWarnedTheOthers)]
+                      [InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatWarnedTheOthers)]
                   ]
 
             setCampaignPart TheDreamQuest c (InterludeStepPart 2 Nothing 2)
       CampaignStep (InterludeStepPart 2 _ 2) -> do
         -- TheDreamQuest
         story theOneironauts2
-        notCaptured <- selectAny $ not_ (InvestigatorWithRecord WasCaptured)
+        notCaptured <- selectAny $ not_ (investigatorWithRecord WasCaptured)
         randolphEludedCapture <- getHasRecord TheDreamQuest RandolphEludedCapture
 
         story
@@ -523,7 +524,7 @@ instance RunMessage TheDreamEaters where
             pushBoth $ AddChaosToken ElderThing
 
           when theBlackCatIsAtYourSideDreamQuest do
-            push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
+            push $ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
             record TheWebOfDreams TheBlackCatIsAtYourSide
             pushBoth $ SwapChaosToken ElderThing Tablet
 
@@ -534,7 +535,7 @@ instance RunMessage TheDreamEaters where
             pushBoth $ AddChaosToken ElderThing
 
           when theBlackCatIsAtYourSideWebOfDreams do
-            push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
+            push $ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
             record TheDreamQuest TheBlackCatIsAtYourSide
             pushBoth $ SwapChaosToken Tablet ElderThing
 
@@ -543,11 +544,11 @@ instance RunMessage TheDreamEaters where
           record TheDreamQuest TheDreamersKnowOfAnotherPath
 
           when theBlackCatIsAtYourSideDreamQuest do
-            push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
+            push $ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
             pushBoth $ RemoveChaosToken ElderThing
 
           when theBlackCatIsAtYourSideWebOfDreams do
-            push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
+            push $ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
             pushBoth $ RemoveChaosToken Tablet
 
         push $ CampaignStep (InterludeStepPart 2 Nothing 4)
@@ -579,8 +580,8 @@ instance RunMessage TheDreamEaters where
         when (randolphDidNotSurvive && isSearchingForTheTruth) do
           story theGreatOnes1Searching
           pushAll
-            [ InTheDreamQuest (CrossOutRecord TheBlackCatIsSearchingForTheTruth)
-            , InTheWebOfDreams (CrossOutRecord TheBlackCatIsSearchingForTheTruth)
+            [ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatIsSearchingForTheTruth)
+            , InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatIsSearchingForTheTruth)
             ]
 
         didYouAskForIt <- getHasRecord TheDreamQuest YouAskedForIt
@@ -601,10 +602,10 @@ instance RunMessage TheDreamEaters where
                 else
                   [ Label
                       "Tell your companions about the threats that you face. The black cat will return to you with aid once this message is delivered. This may put an undue burden on your companions. "
-                      [InTheDreamQuest (Record TheBlackCatSpokeOfNyarlathotep)]
+                      [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSpokeOfNyarlathotep)]
                   , Label
                       "Tell your companions that you will be okay. The black cat will stay with them once this message is delivered. This might make your quest a little more difficult. "
-                      [InTheDreamQuest (Record TheBlackCatSpokeOfAtlachNacha)]
+                      [InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatSpokeOfAtlachNacha)]
                   ]
             setCampaignPart TheWebOfDreams c (InterludeStepPart 3 Nothing 2)
       CampaignStep (InterludeStepPart 3 _ 2) -> do
@@ -615,8 +616,8 @@ instance RunMessage TheDreamEaters where
           then do
             story theGreatOnes2TheSilverKey
             pushAll
-              [ InTheWebOfDreams (CrossOutRecord TheInvestigatorsPossessTheSilverKey)
-              , InTheDreamQuest (Record TheInvestigatorsPossessTheSilverKey)
+              [ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey)
+              , InTheDreamQuest (Record $ toCampaignLogKey TheInvestigatorsPossessTheSilverKey)
               ]
             removeCampaignCard Assets.theSilverKey
             setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 21)
@@ -649,8 +650,8 @@ instance RunMessage TheDreamEaters where
                     record TheDreamQuest TheBlackCatIsAtYourSide
                     pushBoth $ AddChaosToken ElderThing
                 | atYourSideTheWebOfDreams -> do
-                    push $ InTheWebOfDreams (CrossOutRecord TheBlackCatIsAtYourSide)
-                    push $ InTheDreamQuest (Record TheBlackCatIsAtYourSide)
+                    push $ InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
+                    push $ InTheDreamQuest (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
                     pushBoth $ SwapChaosToken Tablet ElderThing
                 | otherwise -> pure ()
 
@@ -662,8 +663,8 @@ instance RunMessage TheDreamEaters where
                     record TheWebOfDreams TheBlackCatIsAtYourSide
                     pushBoth $ AddChaosToken Tablet
                 | atYourSideTheDreamQuest -> do
-                    push $ InTheDreamQuest (CrossOutRecord TheBlackCatIsAtYourSide)
-                    push $ InTheWebOfDreams (Record TheBlackCatIsAtYourSide)
+                    push $ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatIsAtYourSide)
+                    push $ InTheWebOfDreams (Record $ toCampaignLogKey TheBlackCatIsAtYourSide)
                     pushBoth $ SwapChaosToken ElderThing Tablet
                 | otherwise -> pure ()
 
@@ -758,7 +759,7 @@ instance RunMessage TheDreamEaters where
         push $ CampaignStep (EpilogueStepPart 17)
         pure c
       CampaignStep (EpilogueStepPart 17) -> do
-        iids <- select $ InvestigatorWithRecord WasCaptured <> not_ DefeatedInvestigator
+        iids <- select $ investigatorWithRecord WasCaptured <> not_ DefeatedInvestigator
         when (notNull iids) do
           players <- traverse getPlayer iids
           push $ Msg.story players $ i18n "theDreamEaters.brokeTheLawOfUlthar"

@@ -15,7 +15,8 @@ import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (Message (..))
-import Arkham.Message.Lifted (ReverseQueue, recordSetInsert, shuffleCardsIntoDeck, shuffleDeck)
+import Arkham.Message.Lifted (ReverseQueue, shuffleCardsIntoDeck, shuffleDeck)
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Projection

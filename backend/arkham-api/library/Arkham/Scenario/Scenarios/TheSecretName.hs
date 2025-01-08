@@ -16,6 +16,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (recordSetInsert)

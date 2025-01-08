@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheThirdOath (TheThirdOath (..), theThirdOath) where
+module Arkham.Act.Cards.TheThirdOath (theThirdOath) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,6 +11,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Obstacle, Suspect))
 
 newtype TheThirdOath = TheThirdOath ActAttrs

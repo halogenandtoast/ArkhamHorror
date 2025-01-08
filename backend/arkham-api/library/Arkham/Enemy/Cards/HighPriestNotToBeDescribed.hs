@@ -1,14 +1,11 @@
-module Arkham.Enemy.Cards.HighPriestNotToBeDescribed (
-  highPriestNotToBeDescribed,
-  HighPriestNotToBeDescribed (..),
-)
-where
+module Arkham.Enemy.Cards.HighPriestNotToBeDescribed ( highPriestNotToBeDescribed,) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype HighPriestNotToBeDescribed = HighPriestNotToBeDescribed EnemyAttrs

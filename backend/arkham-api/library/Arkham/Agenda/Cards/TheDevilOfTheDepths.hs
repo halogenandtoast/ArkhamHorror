@@ -1,7 +1,4 @@
-module Arkham.Agenda.Cards.TheDevilOfTheDepths (
-  TheDevilOfTheDepths (..),
-  theDevilOfTheDepths,
-) where
+module Arkham.Agenda.Cards.TheDevilOfTheDepths (theDevilOfTheDepths) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -10,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Ocean))
 
 newtype TheDevilOfTheDepths = TheDevilOfTheDepths AgendaAttrs

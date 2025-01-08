@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheEssexCountyExpress ( theEssexCountyExpress,) where
+module Arkham.Scenario.Scenarios.TheEssexCountyExpress (theEssexCountyExpress) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,6 +13,7 @@ import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

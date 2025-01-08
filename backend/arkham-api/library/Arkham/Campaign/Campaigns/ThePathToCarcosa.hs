@@ -9,11 +9,11 @@ import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers ()
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Log (getRecordCount, getRecordSet)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 
 newtype ThePathToCarcosa = ThePathToCarcosa CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)

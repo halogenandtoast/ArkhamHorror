@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.Garden (garden, Garden (..)) where
+module Arkham.Location.Cards.Garden (garden) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype Garden = Garden LocationAttrs

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.BurialGround (burialGround, BurialGround (..)) where
+module Arkham.Location.Cards.BurialGround (burialGround) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey (ScenarioLogKey (NoticedTheMissingBones))
 import Arkham.Trait (Trait (Ghoul))
 

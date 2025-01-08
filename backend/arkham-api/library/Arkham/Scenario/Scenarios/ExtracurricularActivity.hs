@@ -12,6 +12,7 @@ import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)

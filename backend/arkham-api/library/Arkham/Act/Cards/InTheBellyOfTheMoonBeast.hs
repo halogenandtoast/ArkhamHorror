@@ -1,9 +1,9 @@
-module Arkham.Act.Cards.InTheBellyOfTheMoonBeast (InTheBellyOfTheMoonBeast (..), inTheBellyOfTheMoonBeast) where
+module Arkham.Act.Cards.InTheBellyOfTheMoonBeast (inTheBellyOfTheMoonBeast) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.UpstairsDoorwayBedroom (upstairsDoorwayBedroom, UpstairsDoorwayBedroom (..)) where
+module Arkham.Location.Cards.UpstairsDoorwayBedroom (upstairsDoorwayBedroom) where
 
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype UpstairsDoorwayBedroom = UpstairsDoorwayBedroom LocationAttrs

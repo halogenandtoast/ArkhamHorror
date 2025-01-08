@@ -1,7 +1,4 @@
-module Arkham.Location.Cards.DownstairsDoorwayParlor (
-  downstairsDoorwayParlor,
-  DownstairsDoorwayParlor (..),
-) where
+module Arkham.Location.Cards.DownstairsDoorwayParlor (downstairsDoorwayParlor) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
@@ -10,6 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype DownstairsDoorwayParlor = DownstairsDoorwayParlor LocationAttrs

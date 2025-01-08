@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.DoorwayToTheDepths (doorwayToTheDepths, DoorwayToTheDepths (..)) where
+module Arkham.Location.Cards.DoorwayToTheDepths (doorwayToTheDepths) where
 
 import Arkham.Ability
 import Arkham.Key
@@ -6,6 +6,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype DoorwayToTheDepths = DoorwayToTheDepths LocationAttrs

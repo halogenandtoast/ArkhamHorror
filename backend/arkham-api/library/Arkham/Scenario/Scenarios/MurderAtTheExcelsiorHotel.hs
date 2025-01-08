@@ -1,7 +1,4 @@
-module Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel (
-  MurderAtTheExcelsiorHotel (..),
-  murderAtTheExcelsiorHotel,
-) where
+module Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel (murderAtTheExcelsiorHotel) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -18,15 +15,11 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (
-  addCampaignCardToDeckChoice,
-  forceAddCampaignCardToDeckChoice,
-  skillTestModifier,
- )
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (ScenarioAttrs (..))
 import Arkham.ScenarioLogKey

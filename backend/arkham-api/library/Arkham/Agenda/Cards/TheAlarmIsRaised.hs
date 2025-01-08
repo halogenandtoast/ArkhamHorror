@@ -1,8 +1,8 @@
-module Arkham.Agenda.Cards.TheAlarmIsRaised (TheAlarmIsRaised (..), theAlarmIsRaised) where
+module Arkham.Agenda.Cards.TheAlarmIsRaised (theAlarmIsRaised) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey (CampaignLogKey (TheInvestigatorsForcedTheirWayIntoTheTemple))
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getLead)

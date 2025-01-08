@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.DevilReef (DevilReef (..), devilReef) where
+module Arkham.Scenario.Scenarios.DevilReef (devilReef) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Types (Field (..))
@@ -24,6 +24,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement qualified as P
 import Arkham.Placement
 import Arkham.Projection

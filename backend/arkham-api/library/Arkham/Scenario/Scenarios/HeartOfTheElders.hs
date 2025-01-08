@@ -12,7 +12,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.GameT (GameT)
 import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Layout
@@ -20,6 +19,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Queue (QueueT)
 import Arkham.Resolution

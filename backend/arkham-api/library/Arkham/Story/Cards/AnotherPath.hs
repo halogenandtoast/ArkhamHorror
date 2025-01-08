@@ -1,7 +1,8 @@
-module Arkham.Story.Cards.AnotherPath (AnotherPath (..), anotherPath) where
+module Arkham.Story.Cards.AnotherPath (anotherPath) where
 
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Message.Lifted.Log
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 

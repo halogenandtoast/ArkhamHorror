@@ -19,10 +19,10 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Scenario.Types (setStandaloneCampaignLog)
 import Arkham.Scenarios.UnionAndDisillusion.Helpers

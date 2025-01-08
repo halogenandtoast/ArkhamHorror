@@ -154,6 +154,9 @@ data InvestigatorMatcher
   | InvestigatorWithMentalTrauma
   deriving stock (Show, Eq, Ord, Data)
 
+investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher
+investigatorWithRecord = InvestigatorWithRecord . toCampaignLogKey
+
 instance Plated InvestigatorMatcher
 
 instance Not InvestigatorMatcher where

@@ -6,6 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 
 newtype TheDisappearance = TheDisappearance ActAttrs

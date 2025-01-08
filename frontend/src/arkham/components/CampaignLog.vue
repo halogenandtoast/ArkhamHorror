@@ -221,7 +221,7 @@ const emptyLog = computed(() => {
           </li>
         </ul>
         <ul>
-          <li v-for="[key, value] in recordedCounts" :key="key">{{toCapitalizedWords(key)}}: {{value}}.</li>
+          <li v-for="[key, value] in recordedCounts" :key="key">{{t(formatKey(key))}}: {{value}}.</li>
         </ul>
         <div v-if="Object.values(partners).length > 0" class="partners box">
           <h3 class="title">Expedition Team</h3>

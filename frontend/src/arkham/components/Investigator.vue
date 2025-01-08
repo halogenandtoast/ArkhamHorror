@@ -327,7 +327,10 @@ function onDrop(event: DragEvent) {
           </template>
         </span>
         <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})">+</button>
+          <button
+            @click.exact="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 1]})"
+            @click.shift="debug.send(game.id, {tag: 'GainActions', contents: [id, {tag: 'TestSource', contents: []}, 5]})"
+          >+</button>
         </template>
         <AbilityButton
           v-for="ability in abilities"
@@ -360,7 +363,10 @@ function onDrop(event: DragEvent) {
         <Key v-for="key in keys" :key="key" :name="key" />
       </div>
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'SpendResources', contents: [id, 1]})">-</button>
+        <button
+          @click.exact="debug.send(game.id, {tag: 'LoseResources', contents: [id, {tag: 'GameSource'}, 1]})"
+          @click.shift="debug.send(game.id, {tag: 'LoseAllResources', contents: [id, {tag: 'GameSource'}]})"
+        >-</button>
       </template>
       <PoolItem
         type="resource"
@@ -369,7 +375,17 @@ function onDrop(event: DragEvent) {
         @choose="$emit('choose', takeResourceAction)"
       />
       <template v-if="debug.active">
-        <button class="plus-button" @click="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})">+</button>
+        <button
+          class="plus-button"
+          @click.exact="debug.send(game.id, {tag: 'TakeResources', contents: [id, 1, {tag: 'GameSource' }, false]})"
+          @click.shift="debug.send(game.id, {tag: 'TakeResources', contents: [id, 5, {tag: 'GameSource' }, false]})"
+        >+</button>
+      </template>
+      <template v-if="debug.active">
+        <button
+          @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, -1]})"
+          @click.shift="debug.send(game.id, {tag: 'InvestigatorDiscardAllClues', contents: [{tag: 'GameSource' }, id]})"
+        >-</button>
       </template>
       <PoolItem
         type="clue"
@@ -378,10 +394,17 @@ function onDrop(event: DragEvent) {
         @choose="$emit('choose', spendCluesAction)"
       />
       <template v-if="debug.active">
-        <button class="plus-button" @click="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})">+</button>
+        <button
+          class="plus-button"
+          @click.exact="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 1]})"
+          @click.shift="debug.send(game.id, {tag: 'GainClues', contents: [id, {tag: 'GameSource' }, 5]})"
+        >+</button>
       </template>
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+        <button
+          @click.exact="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})"
+          @click.shift="debug.send(game.id, {tag: 'HealDamage', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, investigator.tokens['Damage'] ?? 0]})"
+        >-</button>
       </template>
       <PoolItem
         type="health"
@@ -390,10 +413,17 @@ function onDrop(event: DragEvent) {
         @choose="$emit('choose', healthAction)"
       />
       <template v-if="debug.active">
-        <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})">+</button>
+        <button
+          class="plus-button"
+          @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 1, 0]})"
+          @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 5, 0]})"
+        >+</button>
       </template>
       <template v-if="debug.active">
-        <button @click="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})">-</button>
+        <button
+          @click.exact="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, 1]})"
+          @click.shift="debug.send(game.id, {tag: 'HealHorror', contents: [{tag: 'InvestigatorTarget', contents: id}, {tag: 'TestSource', contents: []}, investigator.tokens['Horror'] ?? 0]})"
+        >-</button>
       </template>
       <PoolItem
         type="sanity"
@@ -402,7 +432,11 @@ function onDrop(event: DragEvent) {
         @choose="$emit('choose', sanityAction)"
       />
       <template v-if="debug.active">
-        <button class="plus-button" @click="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})">+</button>
+        <button
+          class="plus-button"
+          @click.exact="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 1]})"
+          @click.shift="debug.send(game.id, {tag: 'InvestigatorDirectDamage', contents: [id, {tag: 'TestSource', contents: []}, 0, 5]})"
+        >+</button>
       </template>
 
       <PoolItem v-if="doom > 0" type="doom" :amount="doom" />

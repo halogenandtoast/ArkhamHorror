@@ -7,13 +7,13 @@ import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.Log (getRecordedCardCodes)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getLead, getSetAsideCard)
 import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.AtDeathsDoorstep.Story
 import Arkham.Trait (Trait (Monster, SilverTwilight))
 

@@ -1,13 +1,10 @@
-module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (
-  BeyondTheGatesOfSleep (..),
-  beyondTheGatesOfSleep,
-) where
+module Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep (beyondTheGatesOfSleep) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ClassSymbol
@@ -21,6 +18,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Resolution

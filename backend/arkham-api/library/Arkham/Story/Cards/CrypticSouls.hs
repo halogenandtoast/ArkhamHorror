@@ -1,15 +1,10 @@
-module Arkham.Story.Cards.CrypticSouls (
-  CrypticSouls (..),
-  crypticSouls,
-) where
+module Arkham.Story.Cards.CrypticSouls (crypticSouls) where
 
-import Arkham.Prelude
-
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Story.Cards qualified as Cards
-import Arkham.Story.Runner
+import Arkham.Story.Import.Lifted
 
 newtype CrypticSouls = CrypticSouls StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)
@@ -19,18 +14,16 @@ crypticSouls :: StoryCard CrypticSouls
 crypticSouls = story CrypticSouls Cards.crypticSouls
 
 instance RunMessage CrypticSouls where
-  runMessage msg s@(CrypticSouls attrs) = case msg of
+  runMessage msg s@(CrypticSouls attrs) = runQueueT $ case msg of
     ResolveStory iid _ story' | story' == toId attrs -> do
       catsCollectedTheirTribute <- getHasRecord TheCatsCollectedTheirTributeFromTheZoogs
-      when catsCollectedTheirTribute
-        $ pushAll [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
+      when catsCollectedTheirTribute do
+        setActions iid attrs 0
+        endYourTurn iid
 
       forcedTheirWay <- getHasRecord TheInvestigatorsForcedTheirWayIntoTheTemple
 
-      when forcedTheirWay $ do
-        catsOfUlthar <- getSetAsideCard Enemies.catsOfUlthar
-        createCatsOfUlthar <- createEnemy catsOfUlthar iid
-        push createCatsOfUlthar
+      when forcedTheirWay $ createEnemyCard_ Enemies.catsOfUlthar iid
 
       pure s
-    _ -> CrypticSouls <$> runMessage msg attrs
+    _ -> CrypticSouls <$> liftRunMessage msg attrs

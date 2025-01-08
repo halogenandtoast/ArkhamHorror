@@ -25,6 +25,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Message (Message (DrawCards, SetPartnerStatus))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection

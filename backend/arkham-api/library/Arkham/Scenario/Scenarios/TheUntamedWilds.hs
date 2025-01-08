@@ -11,6 +11,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers hiding (checkWhen)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck

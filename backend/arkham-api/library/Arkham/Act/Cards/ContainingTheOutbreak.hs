@@ -1,13 +1,10 @@
-module Arkham.Act.Cards.ContainingTheOutbreak (
-  ContainingTheOutbreak (..),
-  containingTheOutbreak,
-) where
+module Arkham.Act.Cards.ContainingTheOutbreak ( containingTheOutbreak,) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier

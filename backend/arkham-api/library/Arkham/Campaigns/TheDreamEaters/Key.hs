@@ -1,0 +1,62 @@
+module Arkham.Campaigns.TheDreamEaters.Key where
+
+import Arkham.Prelude
+
+data TheDreamEatersKey
+  = TheDreamersStrayedFromThePath
+  | TheInvestigatorsWereSavedByRandolphCarder
+  | TheCatsCollectedTheirTributeFromTheZoogs
+  | TheInvestigatorsParleyedWithTheZoogs
+  | DrMaheswaranJoinedTheInvestigation
+  | DrMaheswaranStayedWithHerPatients
+  | StepsOfTheBridge
+  | DrMaheswaran'sFateIsUnknown
+  | RandolphEscapedTheHospitalOnHisOwn
+  | RandolphEscapedTheHospitalWithTheInvestigators
+  | DrMaheswaranIsAlive
+  | DrMaheswaranIsMissing
+  | TheBlackCatDeliveredNewsOfYourPlight
+  | TheBlackCatSharedKnowledgeOfTheDreamlands
+  | TheBlackCatWarnedTheOthers
+  | OkayFineHaveItYourWayThen
+  | TheDreamersGrowWeaker
+  | YouAreOnYourOwn
+  | TheBlackCatHasAHunch
+  | TheBlackCatIsAtYourSide
+  | YouAskedForIt
+  | TheInvestigatorsForcedTheirWayIntoTheTemple
+  | EvidenceOfKadath
+  | HasBrokenTheLawOfUlthar
+  | WasCaptured
+  | VirgilWasCaptured
+  | RandolphEludedCapture
+  | RandolphWasCaptured
+  | RandolphSurvivedTheDescent
+  | RandolphDidNotSurviveTheDescent
+  | TheInvestigatorsPossessTheSilverKey
+  | TheBlackCatRequestedAidFromTheOthers
+  | TheBlackCatSharedKnowledgeOfTheUnderworld
+  | TheBlackCatIsSearchingForTheTruth
+  | TheDreamersKnowOfAnotherPath
+  | TheInvestigatorsWereCarriedToTheColdWastes
+  | TheInvestigatorsTraveledToTheColdWastes
+  | RandolphCarterDidNotSurviveTheVoyage
+  | RandolphSurvivedTheVoyage
+  | TheInvestigatorsFoundAWayOutOfTheUnderworld
+  | TheBlackCatSpokeOfNyarlathotep
+  | TheBlackCatSpokeOfAtlachNacha
+  | TheBlackCatKnowsTheTruth
+  | Nyarlathotep'sInvasionHasBegun
+  | TheDreamersEscapedFromNyarlathotep'sGrasp
+  | TheDreamersBanishedNyarlathotep
+  | TheDreamersAwoke
+  | TheDreamersStayedInTheDreamlandsForever
+  | TheDreamersTraveledBeneathTheMonastery
+  | TheInvestigatorsAreTrappedInAtlachNacha'sRealm
+  | TheBridgeWasCompleted
+  | TheBridgeWasDestroyed
+  | TheInvestigatorsReturnedToReality
+  | TheInvestigatorsNeverEscaped
+  | TheInvestigatorsAreStillInTheDreamlands
+  deriving stock (Show, Eq, Ord, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)

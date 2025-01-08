@@ -15,6 +15,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
 import Arkham.Message (chooseDecks)
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted

@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.BiancaDieKatzSingingYourSong (
-  biancaDieKatzSingingYourSong,
-  BiancaDieKatzSingingYourSong (..),
-)
-where
+module Arkham.Asset.Assets.BiancaDieKatzSingingYourSong (biancaDieKatzSingingYourSong) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +8,7 @@ import Arkham.Helpers.Investigator (searchBonded, withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message (getChoiceAmount)
+import Arkham.Message.Lifted.Log
 import Arkham.Name
 import Arkham.Projection
 import Arkham.ScenarioLogKey

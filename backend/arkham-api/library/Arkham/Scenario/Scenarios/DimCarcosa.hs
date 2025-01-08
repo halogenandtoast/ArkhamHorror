@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.DimCarcosa (DimCarcosa (..), dimCarcosa) where
+module Arkham.Scenario.Scenarios.DimCarcosa (dimCarcosa) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -15,6 +15,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (recordSetInsert)

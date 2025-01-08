@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.EdgeOfTheEarth (EdgeOfTheEarth (..), edgeOfTheEarth) where
+module Arkham.Campaign.Campaigns.EdgeOfTheEarth (edgeOfTheEarth) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
@@ -19,6 +19,7 @@ import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Scenarios.IceAndDeath.Helpers

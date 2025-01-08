@@ -5,6 +5,7 @@ import Arkham.Card.CardCode
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Message (Message (Would), uiToRun)
@@ -37,6 +38,11 @@ instance MonadTrans ChooseT where
 
 runChooseT :: ChooseT m a -> m ((a, ChooseState), [UI Message])
 runChooseT = runWriterT . (`runStateT` ChooseState False Nothing Nothing) . unChooseT
+
+leadChooseOneM :: ReverseQueue m => ChooseT m a -> m ()
+leadChooseOneM choices = do
+  lead <- getLead
+  chooseOneM lead choices
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do

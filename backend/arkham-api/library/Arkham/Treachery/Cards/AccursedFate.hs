@@ -3,6 +3,7 @@ module Arkham.Treachery.Cards.AccursedFate (accursedFate) where
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Helpers.Log
+import Arkham.Message.Lifted.Log
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

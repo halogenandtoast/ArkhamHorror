@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.APhantomOfTruth (APhantomOfTruth (..), aPhantomOfTruth) where
+module Arkham.Scenario.Scenarios.APhantomOfTruth (aPhantomOfTruth) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -13,6 +13,7 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers

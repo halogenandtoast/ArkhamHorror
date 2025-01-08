@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.IceAndDeathPart1 (IceAndDeathPart1 (..), iceAndDeathPart1) where
+module Arkham.Scenario.Scenarios.IceAndDeathPart1 (iceAndDeathPart1) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -20,6 +20,7 @@ import Arkham.Location.Types qualified as Location
 import Arkham.Matcher hiding (InvestigatorResigned)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution

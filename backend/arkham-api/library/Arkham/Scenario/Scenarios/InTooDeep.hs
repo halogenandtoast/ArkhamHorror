@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.InTooDeep (InTooDeep (..), inTooDeep) where
+module Arkham.Scenario.Scenarios.InTooDeep (inTooDeep) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -11,7 +11,6 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf)
-import Arkham.Helpers.Log (getCircledRecord, getRecordSet)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
 import Arkham.Helpers.Xp
 import Arkham.I18n
@@ -22,6 +21,7 @@ import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (metaL)

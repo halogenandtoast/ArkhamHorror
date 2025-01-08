@@ -1,11 +1,12 @@
-module Arkham.Agenda.Cards.HospitalOfHorrors (HospitalOfHorrors (..), hospitalOfHorrors) where
+module Arkham.Agenda.Cards.HospitalOfHorrors (hospitalOfHorrors) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.WakingNightmare.Helpers
 
 newtype HospitalOfHorrors = HospitalOfHorrors AgendaAttrs

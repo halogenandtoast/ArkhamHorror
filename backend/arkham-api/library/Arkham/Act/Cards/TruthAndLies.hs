@@ -1,9 +1,9 @@
-module Arkham.Act.Cards.TruthAndLies (TruthAndLies (..), truthAndLies) where
+module Arkham.Act.Cards.TruthAndLies (truthAndLies) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.Enemy
 import Arkham.Enemy.Cards qualified as Enemies

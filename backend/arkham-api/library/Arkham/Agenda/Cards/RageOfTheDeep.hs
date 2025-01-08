@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.RageOfTheDeep (RageOfTheDeep (..), rageOfTheDeep) where
+module Arkham.Agenda.Cards.RageOfTheDeep (rageOfTheDeep) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Suspect))
 
 newtype RageOfTheDeep = RageOfTheDeep AgendaAttrs
@@ -31,7 +32,7 @@ instance RunMessage RageOfTheDeep where
       record InnsmouthWasConsumedByTheRisingTide
       eachInvestigator \iid -> do
         sufferPhysicalTrauma iid 1
-        push $ InvestigatorDefeated (toSource attrs) iid
+        investigatorDefeated attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignDamageAndHorror iid (attrs.ability 1) 1 1

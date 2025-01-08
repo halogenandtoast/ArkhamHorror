@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.RavenousMyconidUnidentified (
-  ravenousMyconidUnidentified,
-  RavenousMyconidUnidentified (..),
-)
-where
+module Arkham.Asset.Assets.RavenousMyconidUnidentified (ravenousMyconidUnidentified) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,6 +7,7 @@ import Arkham.CampaignLogKey
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBondedJust)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Token
 
 newtype RavenousMyconidUnidentified = RavenousMyconidUnidentified AssetAttrs
@@ -27,11 +24,7 @@ ravenousMyconidUnidentified =
 instance HasAbilities RavenousMyconidUnidentified where
   getAbilities (RavenousMyconidUnidentified a) =
     [ withTooltip "Search your bonded cards for Uncanny Growth and add it to you hand."
-        $ controlledAbility
-          a
-          1
-          (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth)
-          actionAbility
+        $ controlled a 1 (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth) actionAbility
     , withTooltip
         "Move each growth to your resource pool, as resources. Record in your Campaign Log that \"you have classified a new species\""
         $ restrictedAbility a 2 (exists $ be a <> AssetWithUseCount Growth (atLeast 3)) actionAbility

@@ -9,18 +9,18 @@ import Arkham.Campaigns.TheCircleUndone.CampaignSteps
 import Arkham.Campaigns.TheCircleUndone.Import
 import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
-import Arkham.Message.Lifted.Choose
 import Arkham.ChaosToken
 import Arkham.Decklist
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Log (whenHasRecord, getHasRecord, getRecordSet)
-import Arkham.Helpers.Query
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
-import Arkham.Question (Question(..))
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Name (toTitle)
+import Arkham.Question (Question (..))
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype TheCircleUndone = TheCircleUndone CampaignAttrs

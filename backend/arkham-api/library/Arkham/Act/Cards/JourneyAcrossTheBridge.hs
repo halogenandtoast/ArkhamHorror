@@ -1,13 +1,10 @@
-module Arkham.Act.Cards.JourneyAcrossTheBridge (
-  JourneyAcrossTheBridge (..),
-  journeyAcrossTheBridge,
-) where
+module Arkham.Act.Cards.JourneyAcrossTheBridge (journeyAcrossTheBridge) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Direction
@@ -16,6 +13,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 import Data.List.NonEmpty qualified as NE
@@ -29,11 +27,11 @@ journeyAcrossTheBridge = act (1, A) JourneyAcrossTheBridge Cards.journeyAcrossTh
 
 instance HasAbilities JourneyAcrossTheBridge where
   getAbilities (JourneyAcrossTheBridge attrs) =
-    [ restrictedAbility
-      attrs
-      1
-      (EachUndefeatedInvestigator $ at_ (LocationWithLabel "theGreatWeb4"))
-      (Objective $ FastAbility $ GroupClueCost (PerPlayer 3) (LocationWithLabel "theGreatWeb4"))
+    [ restricted
+        attrs
+        1
+        (EachUndefeatedInvestigator $ at_ (LocationWithLabel "theGreatWeb4"))
+        (Objective $ FastAbility $ GroupClueCost (PerPlayer 3) (LocationWithLabel "theGreatWeb4"))
     | onSide A attrs
     ]
 

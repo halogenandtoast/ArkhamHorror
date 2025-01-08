@@ -1,7 +1,4 @@
-module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (
-  TheInnsmouthConspiracy (..),
-  theInnsmouthConspiracy,
-) where
+module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (theInnsmouthConspiracy) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
@@ -14,6 +11,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Source
 
 newtype TheInnsmouthConspiracy = TheInnsmouthConspiracy CampaignAttrs

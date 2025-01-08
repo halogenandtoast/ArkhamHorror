@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.GrandEntryway (grandEntryway, GrandEntryway (..)) where
+module Arkham.Location.Cards.GrandEntryway (grandEntryway) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
@@ -7,6 +7,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Cave))
 

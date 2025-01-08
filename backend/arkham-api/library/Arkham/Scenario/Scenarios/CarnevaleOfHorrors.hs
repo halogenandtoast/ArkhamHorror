@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (CarnevaleOfHorrors (..), carnevaleOfHorrors) where
+module Arkham.Scenario.Scenarios.CarnevaleOfHorrors (carnevaleOfHorrors) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -14,6 +14,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted

@@ -10,6 +10,7 @@ import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Investigator.Types (Field (InvestigatorCardCode))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Trait (Trait (Monster))
 import Arkham.Window (Window (..))

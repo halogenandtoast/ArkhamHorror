@@ -9,8 +9,8 @@ import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
 import Arkham.Game.Helpers
 import Arkham.Helpers.Campaign (getOwner)
-import Arkham.Helpers.Card ()
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Treachery.Cards qualified as Treacheries
 import GHC.Records

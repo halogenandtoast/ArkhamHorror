@@ -1,13 +1,12 @@
-module Arkham.Scenario.Scenarios.PointOfNoReturn (PointOfNoReturn (..), pointOfNoReturn) where
+module Arkham.Scenario.Scenarios.PointOfNoReturn (pointOfNoReturn) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Attack
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -20,10 +19,9 @@ import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (chooseOne, drawCardsIfCan, drawEncounterCard, story)
-import Arkham.Scenario.Setup
+import Arkham.Scenario.Import.Lifted hiding (chooseOne, drawCardsIfCan, drawEncounterCard, story)
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Treacheries
 
@@ -147,8 +145,8 @@ instance RunMessage PointOfNoReturn where
             chooseOne
               iid
               [ targetLabel
-                enemy
-                [EnemyEngageInvestigator enemy iid, InitiateEnemyAttack $ enemyAttack enemy attrs iid]
+                  enemy
+                  [EnemyEngageInvestigator enemy iid, InitiateEnemyAttack $ enemyAttack enemy attrs iid]
               | enemy <- enemies
               ]
         _ -> pure ()

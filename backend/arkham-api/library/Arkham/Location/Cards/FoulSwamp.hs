@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.FoulSwamp (FoulSwamp (..), foulSwamp) where
+module Arkham.Location.Cards.FoulSwamp (foulSwamp) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards (foulSwamp)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
 
 newtype FoulSwamp = FoulSwamp LocationAttrs

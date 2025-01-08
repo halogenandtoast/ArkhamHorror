@@ -1,10 +1,10 @@
-module Arkham.Act.Cards.BeyondDreams (BeyondDreams (..), beyondDreams) where
+module Arkham.Act.Cards.BeyondDreams (beyondDreams) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
@@ -25,14 +25,10 @@ beyondDreams = act (3, A) BeyondDreams Cards.beyondDreams Nothing
 
 instance HasAbilities BeyondDreams where
   getAbilities (BeyondDreams x) =
-    [ restrictedAbility
+    [ restricted
         x
         1
-        ( EachUndefeatedInvestigator
-            $ at_
-            $ locationIs Locations.onyxGates
-            <> LocationWithoutClues
-        )
+        (EachUndefeatedInvestigator $ at_ $ locationIs Locations.onyxGates <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
     ]
@@ -40,8 +36,7 @@ instance HasAbilities BeyondDreams where
 instance RunMessage BeyondDreams where
   runMessage msg a@(BeyondDreams attrs) = runQueueT $ withI18n $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      eachInvestigator \iid -> do
-        push $ InvestigatorDiscardAllClues (toSource attrs) iid
+      eachInvestigator $ discardAllClues attrs
 
       story $ i18n "theDreamEaters.whereTheGodsDwell.grandDesign1"
 

@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.LostInTimeAndSpace (LostInTimeAndSpace (..), lostInTimeAndSpace) where
+module Arkham.Scenario.Scenarios.LostInTimeAndSpace (lostInTimeAndSpace) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
@@ -15,6 +15,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution

@@ -1,7 +1,4 @@
-module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (
-  UndimensionedAndUnseen (..),
-  undimensionedAndUnseen,
-) where
+module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -19,6 +16,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (ChosenRandomLocation, RevealLocation)
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -71,7 +69,8 @@ standaloneChaosTokens =
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
   mkCampaignLog
-    { campaignLogRecordedSets = mapFromList [(toCampaignLogKey SacrificedToYogSothoth, [recorded @CardCode "02040"])]
+    { campaignLogRecordedSets =
+        mapFromList [(toCampaignLogKey SacrificedToYogSothoth, [recorded @CardCode "02040"])]
     }
 
 instance HasChaosTokenValue UndimensionedAndUnseen where

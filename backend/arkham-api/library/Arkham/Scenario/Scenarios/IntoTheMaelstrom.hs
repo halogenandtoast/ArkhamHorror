@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.IntoTheMaelstrom (IntoTheMaelstrom (..), intoTheMaelstrom) where
+module Arkham.Scenario.Scenarios.IntoTheMaelstrom (intoTheMaelstrom) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -16,6 +16,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

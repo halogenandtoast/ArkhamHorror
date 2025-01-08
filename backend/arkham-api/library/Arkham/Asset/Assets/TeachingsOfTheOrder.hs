@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.TeachingsOfTheOrder (
-  teachingsOfTheOrder,
-  TeachingsOfTheOrder (..),
-)
-where
+module Arkham.Asset.Assets.TeachingsOfTheOrder (teachingsOfTheOrder) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,6 +8,7 @@ import Arkham.Helpers.Log
 import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Sanctum))
 
 newtype TeachingsOfTheOrder = TeachingsOfTheOrder AssetAttrs
@@ -26,9 +23,9 @@ instance HasAbilities TeachingsOfTheOrder where
    where
     criteria =
       oneOf
-        [ NotYetRecorded Teachings1 <> ChaosTokenCountIs #curse (atLeast 1)
-        , NotYetRecorded Teachings2 <> exists (not_ (withTrait Sanctum) <> FloodedLocation)
-        , NotYetRecorded Teachings3
+        [ notYetRecorded Teachings1 <> ChaosTokenCountIs #curse (atLeast 1)
+        , notYetRecorded Teachings2 <> exists (not_ (withTrait Sanctum) <> FloodedLocation)
+        , notYetRecorded Teachings3
             <> exists (EnemyAt YourLocation <> NonEliteEnemy <> EnemyCanBeDefeatedBy (a.ability 1))
         ]
 

@@ -15,6 +15,7 @@ import Arkham.Investigator.Cards (leoAnderson, montereyJack, ursulaDowns)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Question (Question (Read), ReadChoices (..))
 import Arkham.Source

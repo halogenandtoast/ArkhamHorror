@@ -117,3 +117,4 @@ recordSetReplace k v v' = RecordSetReplace (toCampaignLogKey k) v v'
 
 crossOutRecordSetEntries :: (Recordable a, IsCampaignLogKey k) => k -> [a] -> Message
 crossOutRecordSetEntries k xs = CrossOutRecordSetEntries (toCampaignLogKey k) $ map recorded xs
+

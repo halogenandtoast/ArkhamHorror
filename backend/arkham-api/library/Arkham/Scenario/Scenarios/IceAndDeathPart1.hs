@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set

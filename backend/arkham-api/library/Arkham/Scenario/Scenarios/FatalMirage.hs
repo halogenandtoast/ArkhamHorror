@@ -9,6 +9,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps (
   pattern ToTheForbiddenPeaks,
  )
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies

@@ -5,8 +5,8 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Types (campaignChaosBag, campaignCompletedSteps, campaignStore)
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card
 import Arkham.ChaosToken

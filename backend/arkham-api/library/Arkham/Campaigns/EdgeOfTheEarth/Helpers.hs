@@ -4,7 +4,7 @@ module Arkham.Campaigns.EdgeOfTheEarth.Helpers (
 ) where
 
 import Arkham.CampaignLog
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Capability

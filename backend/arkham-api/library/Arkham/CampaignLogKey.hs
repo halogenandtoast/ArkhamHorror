@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -31,41 +32,7 @@ data CampaignLogKey
   | TheCircleUndoneKey TheCircleUndoneKey
   | TheDreamEatersKey TheDreamEatersKey
   | TheInnsmouthConspiracyKey TheInnsmouthConspiracyKey
-  | -- | Edge of the Earth
-    TheInvestigatorsConvincedDyerToAllowTheExpedition
-  | TheInvestigatorsDidNotBelieveDyersReport
-  | WasKilledInThePlaneCrash
-  | SuppliesRecovered
-  | Camp_CrashSite
-  | Camp_FrozenShores
-  | Camp_TreacherousPath
-  | Camp_PrecariousIceSheet
-  | Camp_BroadSnowdrifts
-  | Camp_IcyWastes
-  | Camp_RockyCrags
-  | Camp_SnowGraves
-  | Camp_IcebreakerLanding
-  | Camp_FrigidCave
-  | Camp_BarrierCamp
-  | Camp_RemnantsOfLakesCamp
-  | Camp_CrystallineCavern
-  | TheTeamBarelyEscapedTheIceShelf
-  | TheTeamDefeatedTheHuntingCreatures
-  | TheTeamFledToTheMountains
-  | LocationsRevealed
-  | DrKenslerIsSharingHerResearchWithYou
-  | TheInvestigatorsScoutedTheMountainPass
-  | EliyahHasConfrontedHisDemons
-  | DrSinhaHasConfrontedHerDemons
-  | TakadaHasConfrontedHerDemons
-  | CookieHasConfrontedHisDemons
-  | DyerHasConfrontedHisDemons
-  | DanforthHasConfrontedHisDemons
-  | ClaypoolHasConfrontedHisDemons
-  | EllsworthHasConfrontedHisDemons
-  | DrKenslerHasConfrontedHerDemons
-  | MemoriesBanished
-  | MemoriesDiscovered
+  | EdgeOfTheEarthKey EdgeOfTheEarthKey
   | -- | Curse of the Rougarou
     TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
@@ -106,6 +73,7 @@ instance FromJSON CampaignLogKey where
       <|> (TheCircleUndoneKey <$> parseJSON o)
       <|> (TheDreamEatersKey <$> parseJSON o)
       <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
+      <|> (EdgeOfTheEarthKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
 
 class IsCampaignLogKey k where
@@ -158,6 +126,12 @@ instance IsCampaignLogKey TheInnsmouthConspiracyKey where
     TheInnsmouthConspiracyKey k -> Just k
     _ -> Nothing
 
+instance IsCampaignLogKey EdgeOfTheEarthKey where
+  toCampaignLogKey = EdgeOfTheEarthKey
+  fromCampaignLogKey = \case
+    EdgeOfTheEarthKey k -> Just k
+    _ -> Nothing
+
 instance ToJSONKey CampaignLogKey
 instance FromJSONKey CampaignLogKey
 
@@ -196,19 +170,19 @@ unrecorded (SomeRecorded _ (rec :: Recorded b)) = case eqT @a @b of
 
 instance ToGameLoggerFormat CampaignLogKey where
   format = \case
-    Camp_CrashSite -> "Camp – Crash Site"
-    Camp_FrozenShores -> "Camp – Frozen Shores"
-    Camp_TreacherousPath -> "Camp – Treacherous Path"
-    Camp_PrecariousIceSheet -> "Camp – Precarious Ice Sheet"
-    Camp_BroadSnowdrifts -> "Camp – BroadSnowdrifts"
-    Camp_IcyWastes -> "Camp – Icy Wastes"
-    Camp_RockyCrags -> "Camp – Rocky Crags"
-    Camp_SnowGraves -> "Camp – Snow Graves"
-    Camp_IcebreakerLanding -> "Camp – Icebreaker Landing"
-    Camp_FrigidCave -> "Camp – Frigid Cave"
-    Camp_BarrierCamp -> "Camp – Barrier Camp"
-    Camp_RemnantsOfLakesCamp -> "Camp – Remnants of Lake's Camp"
-    Camp_CrystallineCavern -> "Camp – Crystalling Cavern"
+    EdgeOfTheEarthKey Camp_CrashSite -> "Camp – Crash Site"
+    EdgeOfTheEarthKey Camp_FrozenShores -> "Camp – Frozen Shores"
+    EdgeOfTheEarthKey Camp_TreacherousPath -> "Camp – Treacherous Path"
+    EdgeOfTheEarthKey Camp_PrecariousIceSheet -> "Camp – Precarious Ice Sheet"
+    EdgeOfTheEarthKey Camp_BroadSnowdrifts -> "Camp – BroadSnowdrifts"
+    EdgeOfTheEarthKey Camp_IcyWastes -> "Camp – Icy Wastes"
+    EdgeOfTheEarthKey Camp_RockyCrags -> "Camp – Rocky Crags"
+    EdgeOfTheEarthKey Camp_SnowGraves -> "Camp – Snow Graves"
+    EdgeOfTheEarthKey Camp_IcebreakerLanding -> "Camp – Icebreaker Landing"
+    EdgeOfTheEarthKey Camp_FrigidCave -> "Camp – Frigid Cave"
+    EdgeOfTheEarthKey Camp_BarrierCamp -> "Camp – Barrier Camp"
+    EdgeOfTheEarthKey Camp_RemnantsOfLakesCamp -> "Camp – Remnants of Lake's Camp"
+    EdgeOfTheEarthKey Camp_CrystallineCavern -> "Camp – Crystalling Cavern"
     NightOfTheZealotKey k -> pack . go $ show k
     s -> pack . go $ show s
    where

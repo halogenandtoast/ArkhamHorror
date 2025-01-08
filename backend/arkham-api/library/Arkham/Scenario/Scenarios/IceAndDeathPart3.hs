@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.IceAndDeathPart3 (iceAndDeathPart3) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Capability
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set

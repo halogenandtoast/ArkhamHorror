@@ -2,8 +2,8 @@ module Arkham.Story.Cards.MemoryOfARegretfulVoyage (memoryOfARegretfulVoyage) wh
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog (PartnerStatus (Resolute))
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.FatalMirage.Helpers

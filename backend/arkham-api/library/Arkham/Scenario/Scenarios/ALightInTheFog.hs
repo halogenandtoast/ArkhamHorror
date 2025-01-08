@@ -6,8 +6,8 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field(AgendaSequence))
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -202,7 +202,7 @@ instance RunMessage ALightInTheFog where
           push $ if step < AgendaStep 4 then R4 else R3
         Resolution 1 -> do
           story $ i18nWithTitle "resolution1"
-          for_ (meta ^. resignedInMoonRoomL) \iid -> push $ RecordForInvestigator iid PossessesADivingSuit
+          for_ (meta ^. resignedInMoonRoomL) (`recordForInvestigator` PossessesADivingSuit)
           defaultResolution
         Resolution 2 -> do
           story $ i18nWithTitle "resolution2"

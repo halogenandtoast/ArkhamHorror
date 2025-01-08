@@ -280,6 +280,9 @@ notYetRecorded = NotYetRecorded . toCampaignLogKey
 hasCampaignCount :: IsCampaignLogKey k => k -> ValueMatcher -> Criterion
 hasCampaignCount k = HasCampaignCount (toCampaignLogKey k)
 
+hasRecordCriteria :: IsCampaignLogKey k => k -> Criterion
+hasRecordCriteria = HasRecord . toCampaignLogKey
+
 _DuringSkillTest :: Prism' Criterion SkillTestMatcher
 _DuringSkillTest = prism' DuringSkillTest $ \case
   DuringSkillTest x -> Just x

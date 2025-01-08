@@ -2,8 +2,8 @@ module Arkham.Campaigns.TheInnsmouthConspiracy.Helpers where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card.CardCode (HasCardCode)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, push)

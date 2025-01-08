@@ -5,6 +5,7 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception

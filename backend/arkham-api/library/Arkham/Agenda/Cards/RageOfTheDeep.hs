@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.RageOfTheDeep (rageOfTheDeep) where
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher hiding (InvestigatorDefeated)

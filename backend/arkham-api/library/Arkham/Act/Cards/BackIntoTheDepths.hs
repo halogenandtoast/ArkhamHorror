@@ -1,9 +1,9 @@
-module Arkham.Act.Cards.BackIntoTheDepths (BackIntoTheDepths (..), backIntoTheDepths) where
+module Arkham.Act.Cards.BackIntoTheDepths (backIntoTheDepths) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Key

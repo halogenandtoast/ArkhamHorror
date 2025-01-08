@@ -2236,8 +2236,6 @@ updateLocation
      , Typeable a
      , ToJSON a
      , FromJSON a
-     , Show (Field Location a)
-     , ToJSON (Field Location a)
      )
   => LocationId
   -> Field Location a

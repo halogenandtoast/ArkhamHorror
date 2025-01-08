@@ -4150,7 +4150,7 @@ library
     ghc-options: -Wall -fwarn-tabs -O0
     cpp-options: -DDEVELOPMENT
   else
-    ghc-options: -Wall -fwarn-tabs -O2
+    ghc-options: -Wall -fwarn-tabs -O2 +RTS -V0 -RTS
 
 executable arkham-api
   main-is: main.hs

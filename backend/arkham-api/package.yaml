@@ -52,6 +52,7 @@ library:
         - -Wall
         - -fwarn-tabs
         - -O2
+        - +RTS -V0 -RTS
   dependencies:
     - MonadRandom
     - aeson

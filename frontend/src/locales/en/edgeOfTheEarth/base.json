@@ -103,5 +103,24 @@
     "mineralSpecimen": "Mineral Specimen",
     "smallRadio": "Small Radio",
     "spareParts": "Spare Parts"
+  },
+  "key": {
+    "theInvestigatorsConvincedDyerToAllowTheExpedition": "The investigators convinced Dyer to allow the expedition",
+    "wasKilledInThePlaneCrash": "Was killed in the plane crash",
+    "suppliesRecovered": "Supplies recovered",
+
+    "camp_CrashSite": "Camp - Crash Site (0)",
+    "camp_FrozenShores": "Camp - Frozen Shores (2)",
+    "camp_TreacherousPath": "Camp - Treacherous Path (1)",
+    "camp_PrecariousIceSheet": "Camp - Precarious Ice Sheet (2)",
+    "camp_BoardSnowdrifts": "Camp - Board Snowdrifts (4)",
+    "camp_IcyWastes": "Camp - Icy Wastes (4)",
+    "camp_RockyCrags": "Camp - Rocky Crags (3)",
+    "camp_SnowGraves": "Camp - Snow Graves (5)",
+    "camp_IcebreakerLanding": "Camp - Icebreaker Landing (5)",
+    "camp_FrigidCave": "Camp - Frigid Cave (6)",
+    "camp_BarrierCamp": "Camp - Barrier Camp (7)",
+    "camp_RemnantsOfLakesCamp": "Camp - Remnants of Lake's Camp (7)",
+    "camp_CrystallineCavern": "Camp - Crystalline Cavern (8)"
   }
 }

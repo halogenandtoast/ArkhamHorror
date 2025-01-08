@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -123,7 +124,7 @@ instance RunMessage IntoTheMaelstrom where
         )
         (uncurry placeLocationInGrid_)
 
-      selectEach (InvestigatorWithRecord PossessesADivingSuit) \iid -> do
+      selectEach (investigatorWithRecord PossessesADivingSuit) \iid -> do
         divingSuit <- genCard Assets.divingSuit
         createAssetAt_ divingSuit (InPlayArea iid)
 

@@ -3,6 +3,7 @@ module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (theInnsmouthConspiracy)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.CampaignSteps
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getOwner, withOwner)

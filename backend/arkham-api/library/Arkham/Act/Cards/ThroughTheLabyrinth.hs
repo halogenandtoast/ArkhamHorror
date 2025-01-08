@@ -3,7 +3,7 @@ module Arkham.Act.Cards.ThroughTheLabyrinth (throughTheLabyrinth) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log

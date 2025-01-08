@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Act.Types (Field (..))
-import Arkham.CampaignLogKey
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers

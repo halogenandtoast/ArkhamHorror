@@ -6,6 +6,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Helpers (unDeck)
@@ -34,10 +35,10 @@ instance HasAbilities TheSearchForAgentHarper where
       , mkAbility a 2 $ Objective $ freeReaction $ RoundEnds #when
       ]
 
-circle :: (ReverseQueue m, ToJSON a) => CampaignLogKey -> a -> m ()
+circle :: (ReverseQueue m, ToJSON a, IsCampaignLogKey k) => k -> a -> m ()
 circle k x = do
   let x' = toJSON x
-  recordSetReplace k (recorded x') (circled x')
+  recordSetReplace (toCampaignLogKey k) (recorded x') (circled x')
 
 instance RunMessage TheSearchForAgentHarper where
   runMessage msg a@(TheSearchForAgentHarper attrs) = runQueueT $ case msg of

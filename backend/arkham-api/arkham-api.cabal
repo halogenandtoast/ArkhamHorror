@@ -1380,6 +1380,7 @@ library
       Arkham.Campaigns.TheInnsmouthConspiracy.Effects.NoAir
       Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
       Arkham.Campaigns.TheInnsmouthConspiracy.Import
+      Arkham.Campaigns.TheInnsmouthConspiracy.Key
       Arkham.Campaigns.TheInnsmouthConspiracy.Memory
       Arkham.Campaigns.ThePathToCarcosa.CampaignSteps
       Arkham.Campaigns.ThePathToCarcosa.ChaosBag

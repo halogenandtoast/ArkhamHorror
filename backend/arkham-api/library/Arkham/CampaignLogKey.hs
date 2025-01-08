@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
@@ -29,41 +30,7 @@ data CampaignLogKey
   | TheForgottenAgeKey TheForgottenAgeKey
   | TheCircleUndoneKey TheCircleUndoneKey
   | TheDreamEatersKey TheDreamEatersKey
-  | -- | The Innsmouth Conspiracy
-    MemoriesRecovered
-  | OutForBlood
-  | TheMissionFailed
-  | TheMissionWasSuccessful
-  | PossibleSuspects
-  | PossibleHideouts
-  | InnsmouthWasConsumedByTheRisingTide
-  | TheInvestigatorsMadeItSafelyToTheirVehicles
-  | TheTideHasGrownStronger
-  | TheTerrorOfDevilReefIsStillAlive
-  | TheTerrorOfDevilReefIsDead
-  | TheIdolWasBroughtToTheLighthouse
-  | TheMantleWasBroughtToTheLighthouse
-  | TheHeaddressWasBroughtToTheLighthouse
-  | TheInvestigatorsReachedFalconPointBeforeSunrise
-  | TheInvestigatorsReachedFalconPointAfterSunrise
-  | PossessesADivingSuit
-  | TheInvestigatorsPossessAMapOfYhaNthlei
-  | TheInvestigatorsPossessTheKeyToYhaNthlei
-  | DagonHasAwakened
-  | DagonStillSlumbers
-  | TheOrdersRitualWasDisrupted
-  | TheGatekeeperHasBeenDefeated
-  | TheGuardianOfYhanthleiIsDispatched
-  | TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
-  | TheInvestigatorsEscapedYhanthlei
-  | ThePlotOfTheDeepOnesWasThwarted
-  | TheFloodHasBegun
-  | AgentHarpersMissionIsComplete
-  | TheRichesOfTheDeepAreLostForever
-  | AgentHarpersMissionIsCompleteButAtWhatCost
-  | TheRichesOfTheDeepAreLostForeverButAtWhatCost
-  | TheDeepOnesHaveFloodedTheEarth
-  | TheHorribleTruth
+  | TheInnsmouthConspiracyKey TheInnsmouthConspiracyKey
   | -- | Edge of the Earth
     TheInvestigatorsConvincedDyerToAllowTheExpedition
   | TheInvestigatorsDidNotBelieveDyersReport
@@ -138,6 +105,7 @@ instance FromJSON CampaignLogKey where
       <|> (TheForgottenAgeKey <$> parseJSON o)
       <|> (TheCircleUndoneKey <$> parseJSON o)
       <|> (TheDreamEatersKey <$> parseJSON o)
+      <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
 
 class IsCampaignLogKey k where
@@ -182,6 +150,12 @@ instance IsCampaignLogKey TheDreamEatersKey where
   toCampaignLogKey = TheDreamEatersKey
   fromCampaignLogKey = \case
     TheDreamEatersKey k -> Just k
+    _ -> Nothing
+
+instance IsCampaignLogKey TheInnsmouthConspiracyKey where
+  toCampaignLogKey = TheInnsmouthConspiracyKey
+  fromCampaignLogKey = \case
+    TheInnsmouthConspiracyKey k -> Just k
     _ -> Nothing
 
 instance ToJSONKey CampaignLogKey

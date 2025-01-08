@@ -1,8 +1,8 @@
 module Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers where
 
 import Arkham.Ability
-import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue

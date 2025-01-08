@@ -24,7 +24,7 @@ export type LogKey =
 export type LogContents = {
   recorded: LogKey[];
   recordedSets: Record<LogKey, any[]>; // eslint-disable-line
-  recordedCounts: [string, number][]; // eslint-disable-line
+  recordedCounts: [LogKey, number][]; // eslint-disable-line
   partners: Record<string, Partner>;
 }
 
@@ -61,7 +61,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
       return {[formatKey(k)]: v, ...acc}
     }, {})
   }),
-  recordedCounts: JsonDecoder.array<[string, number]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'), '[string, number][]'),
+  recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number], '[LogKey, number]'), '[LogKey, number][]'),
   partners: JsonDecoder.dictionary<Partner>(partnerDecoder, 'Partners'),
 }, 'LogContents');
 

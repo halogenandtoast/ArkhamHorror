@@ -2,7 +2,6 @@ module Arkham.Location.Cards.Parlor where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Location.Cards qualified as Cards

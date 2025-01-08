@@ -2,22 +2,23 @@
 
 module Arkham.CampaignLogKey where
 
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Campaigns.TheForgottenAge.Key
+import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Campaigns.ThePathToCarcosa.Key
-import Arkham.Campaigns.TheInnsmouthConspiracy.Key
-import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card.CardCode
 import Arkham.Classes.GameLogger
 import Arkham.Prelude hiding (toLower)
 import Control.Monad.Fail
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
+import Data.Aeson.Types
 import Data.Char (isUpper, toLower)
 import Data.Data
 import Data.Text qualified as T
@@ -75,6 +76,38 @@ instance FromJSON CampaignLogKey where
       <|> (TheInnsmouthConspiracyKey <$> parseJSON o)
       <|> (EdgeOfTheEarthKey <$> parseJSON o)
       <|> $(mkParseJSON defaultOptions ''CampaignLogKey) o
+      <|> parseStringKey o
+      <|> fail ("Could not parse CampaignLogKey" <> show o)
+
+parseStringKey :: Value -> Parser CampaignLogKey
+parseStringKey = withText "CampaignLogKey" $ \case
+  "DrivenInsaneInvestigators" -> pure DrivenInsaneInvestigators
+  "KilledInvestigators" -> pure KilledInvestigators
+  "TheRougarouContinuesToHauntTheBayou" -> pure TheRougarouContinuesToHauntTheBayou
+  "TheRougarouIsDestroyed" -> pure TheRougarouIsDestroyed
+  "TheRougarouEscapedAndYouEmbracedTheCurse" -> pure TheRougarouEscapedAndYouEmbracedTheCurse
+  "ManyWereSacrificedToCnidathquaDuringTheCarnivale" ->
+    pure ManyWereSacrificedToCnidathquaDuringTheCarnivale
+  "TheSunBanishedCnidathquaIntoTheDepths" -> pure TheSunBanishedCnidathquaIntoTheDepths
+  "CnidathquaRetreatedToNurseItsWounds" -> pure CnidathquaRetreatedToNurseItsWounds
+  "TheExcelsiorIsQuietForNow" -> pure TheExcelsiorIsQuietForNow
+  "TheInvestigatorsFledTheSceneOfTheCrime" -> pure TheInvestigatorsFledTheSceneOfTheCrime
+  "TheExcelsiorClaimsAnotherVictim" -> pure TheExcelsiorClaimsAnotherVictim
+  "TheMurdersContinueUnsolved" -> pure TheMurdersContinueUnsolved
+  "YouHaveIdentifiedTheSolution" -> pure YouHaveIdentifiedTheSolution
+  "YouHaveTranslatedTheGlyphs" -> pure YouHaveTranslatedTheGlyphs
+  "YouHaveIdentifiedTheStone" -> pure YouHaveIdentifiedTheStone
+  "DoomApproaches" -> pure DoomApproaches
+  "TheHourIsNigh" -> pure TheHourIsNigh
+  "YouHaveTranslatedTheTome" -> pure YouHaveTranslatedTheTome
+  "YouHaveInterpretedTheDreams" -> pure YouHaveInterpretedTheDreams
+  "YouHaveTranslatedTheGrimoire" -> pure YouHaveTranslatedTheGrimoire
+  "YouHaveIdentifiedTheGateway" -> pure YouHaveIdentifiedTheGateway
+  "YouHaveClassifiedANewSpecies" -> pure YouHaveClassifiedANewSpecies
+  "Teachings1" -> pure Teachings1
+  "Teachings2" -> pure Teachings2
+  "Teachings3" -> pure Teachings3
+  _ -> fail "Could not parse CampaignLogKey"
 
 class IsCampaignLogKey k where
   toCampaignLogKey :: k -> CampaignLogKey

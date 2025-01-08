@@ -128,8 +128,8 @@ instance RunMessage TheGathering where
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
 
-          killed <- killRemaining attrs
-          when (notNull resigned) $ chooseToAddLita killed
+          remaining <- killRemaining attrs
+          when (notNull resigned) $ chooseToAddLita remaining
         other -> throwIO $ UnknownResolution other
 
       endOfScenario

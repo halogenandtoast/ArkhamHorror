@@ -404,6 +404,9 @@ instance FetchCard CardDef where
 instance FetchCard Card where
   fetchCard = pure
 
+instance FetchCard EncounterCard where
+  fetchCard = pure . toCard
+
 instance FetchCard PlayerCard where
   fetchCard = pure . toCard
 
@@ -455,8 +458,10 @@ createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
 createEnemyAt_
-  :: (ReverseQueue m, IsCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
-createEnemyAt_ c location = push =<< Msg.createEnemyAt_ (toCard c) (asId location) Nothing
+  :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
+createEnemyAt_ c location = do
+  card <- fetchCard c
+  push =<< Msg.createEnemyAt_ card (asId location) Nothing
 
 createEnemyAt
   :: (ReverseQueue m, IsCard card) => card -> LocationId -> m EnemyId
@@ -1997,6 +2002,10 @@ advancedWithOther
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()
 advancedWithOther source = push $ AdvanceAct (asId source) (toSource source) #other
 
+advancedWithClues
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()
+advancedWithClues source = push $ AdvanceAct (asId source) (toSource source) #clues
+
 initiateEnemyAttack
   :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
   => enemy
@@ -2055,8 +2064,10 @@ discardUntilFirst iid source deck matcher = do
   push $ DiscardUntilFirst iid (toSource source) (toDeck deck) matcher
 
 createAssetAt_
-  :: (ReverseQueue m, IsCard card) => card -> Placement -> m ()
-createAssetAt_ c placement = push =<< Msg.createAssetAt_ (toCard c) placement
+  :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
+createAssetAt_ c placement = do
+  card <- fetchCard c
+  push =<< Msg.createAssetAt_ card placement
 
 createAssetAt
   :: (ReverseQueue m, IsCard card) => card -> Placement -> m AssetId

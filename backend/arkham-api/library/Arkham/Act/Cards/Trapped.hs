@@ -1,11 +1,10 @@
-module Arkham.Act.Cards.Trapped where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.Trapped (trapped) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
-import Arkham.Classes
+import Arkham.Act.Import.Lifted
+import Arkham.Helpers.Query (enemiesAt, getJustLocationByName)
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Message.Lifted.Move
 
 newtype Trapped = Trapped ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -15,23 +14,20 @@ trapped :: ActCard Trapped
 trapped = act (1, A) Trapped Cards.trapped (groupClueCost $ PerPlayer 2)
 
 instance RunMessage Trapped where
-  runMessage msg a@(Trapped attrs) = case msg of
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
+  runMessage msg a@(Trapped attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       study <- getJustLocationByName "Study"
       enemies <- enemiesAt study
 
-      (hallway, placeHallway) <- placeSetAsideLocation Locations.hallway
-      placeCellar <- placeSetAsideLocation_ Locations.cellar
-      placeAttic <- placeSetAsideLocation_ Locations.attic
-      placeParlor <- placeSetAsideLocation_ Locations.parlor
+      hallway <- placeSetAsideLocation Locations.hallway
+      placeSetAsideLocation_ Locations.cellar
+      placeSetAsideLocation_ Locations.attic
+      placeSetAsideLocation_ Locations.parlor
 
-      pushAll
-        $ [placeHallway, placeCellar, placeAttic, placeParlor]
-        <> map (toDiscard attrs) enemies
-        <> [ RevealLocation Nothing hallway
-           , MoveAllTo (toSource attrs) hallway
-           , RemoveLocation study
-           , advanceActDeck attrs
-           ]
+      for_ enemies (toDiscard attrs)
+      reveal hallway
+      moveAllTo attrs hallway
+      removeLocation study
+      advanceActDeck attrs
       pure a
-    _ -> Trapped <$> runMessage msg attrs
+    _ -> Trapped <$> liftRunMessage msg attrs

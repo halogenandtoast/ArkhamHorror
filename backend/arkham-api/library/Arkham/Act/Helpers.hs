@@ -16,5 +16,8 @@ import Arkham.Source
 advancedWithOther :: ActAttrs -> Message
 advancedWithOther attrs = AdvanceAct (toId attrs) (toSource attrs) #other
 
+advancedWithClues :: ActAttrs -> Message
+advancedWithClues attrs = AdvanceAct (toId attrs) (toSource attrs) #clues
+
 groupClueCost :: GameValue -> Maybe Cost
 groupClueCost val = Just (GroupClueCost val Anywhere)

@@ -1,10 +1,8 @@
-module Arkham.Location.Cards.Study where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Study (study) where
 
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (study)
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Import.Lifted
 
 newtype Study = Study LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

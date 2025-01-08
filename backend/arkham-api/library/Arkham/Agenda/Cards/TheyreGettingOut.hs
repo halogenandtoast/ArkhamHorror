@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheyreGettingOut (TheyreGettingOut (..), theyreGettingOut) where
+module Arkham.Agenda.Cards.TheyreGettingOut (theyreGettingOut) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards

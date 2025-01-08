@@ -1,12 +1,9 @@
-module Arkham.Location.Cards.Attic where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Attic (attic) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (attic)
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype Attic = Attic LocationAttrs
@@ -17,11 +14,11 @@ attic :: LocationCard Attic
 attic = location Attic Cards.attic 1 (PerPlayer 2)
 
 instance HasAbilities Attic where
-  getAbilities (Attic a) = withRevealedAbilities a [forcedAbility a 1 $ Enters #after You $ be a]
+  getAbilities (Attic a) = extendRevealed1 a $ forcedAbility a 1 $ Enters #after You (be a)
 
 instance RunMessage Attic where
-  runMessage msg a@(Attic attrs) = case msg of
+  runMessage msg a@(Attic attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ assignHorror iid (toAbilitySource attrs 1) 1
+      assignHorror iid (attrs.ability 1) 1
       pure a
-    _ -> Attic <$> runMessage msg attrs
+    _ -> Attic <$> liftRunMessage msg attrs

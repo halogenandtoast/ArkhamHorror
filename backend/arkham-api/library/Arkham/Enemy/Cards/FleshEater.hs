@@ -1,13 +1,7 @@
-module Arkham.Enemy.Cards.FleshEater (
-  fleshEater,
-  FleshEater (..),
-) where
+module Arkham.Enemy.Cards.FleshEater (fleshEater) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype FleshEater = FleshEater EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

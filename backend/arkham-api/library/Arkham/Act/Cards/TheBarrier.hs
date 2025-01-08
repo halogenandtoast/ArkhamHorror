@@ -1,13 +1,10 @@
-module Arkham.Act.Cards.TheBarrier where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheBarrier (theBarrier) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Helpers
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Placement
@@ -28,23 +25,15 @@ instance HasAbilities TheBarrier where
     ]
 
 instance RunMessage TheBarrier where
-  runMessage msg a@(TheBarrier attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ advanceVia #clues a iid
+  runMessage msg a@(TheBarrier attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      advanceVia #clues attrs (attrs.ability 1)
       pure a
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
-      hallway <- getJustLocationByName "Hallway"
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       parlor <- getJustLocationByName "Parlor"
-      ghoulPriest <- getSetAsideCard Enemies.ghoulPriest
-      litaChantler <- getSetAsideCard Assets.litaChantler
-      createGhoulPriest <- createEnemyAt_ ghoulPriest hallway Nothing
-      assetId <- getRandom
-
-      pushAll
-        [ RevealLocation Nothing parlor
-        , CreateAssetAt assetId litaChantler (AtLocation parlor)
-        , createGhoulPriest
-        , advanceActDeck attrs
-        ]
+      reveal parlor
+      createAssetAt_ Assets.litaChantler (AtLocation parlor)
+      createEnemyAt_ Enemies.ghoulPriest =<< getJustLocationByName "Hallway"
+      advanceActDeck attrs
       pure a
-    _ -> TheBarrier <$> runMessage msg attrs
+    _ -> TheBarrier <$> liftRunMessage msg attrs

@@ -1,10 +1,8 @@
-module Arkham.Enemy.Cards.GhoulPriest (ghoulPriest, GhoulPriest (..)) where
+module Arkham.Enemy.Cards.GhoulPriest (ghoulPriest) where
 
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype GhoulPriest = GhoulPriest EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

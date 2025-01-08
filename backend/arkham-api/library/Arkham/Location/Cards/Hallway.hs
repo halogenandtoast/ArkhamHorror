@@ -1,11 +1,7 @@
-module Arkham.Location.Cards.Hallway where
+module Arkham.Location.Cards.Hallway (hallway) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (hallway)
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Import.Lifted
 
 newtype Hallway = Hallway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

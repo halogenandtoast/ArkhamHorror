@@ -3293,6 +3293,7 @@ library
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Story
+      Arkham.Scenarios.TheGathering.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLairOfDagon.Helpers

@@ -153,11 +153,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = case msg of
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         pid <- getPlayer iid
         purchaseTrauma <- initDeckTrauma deck' iid pid (toTarget a)
+        let deck'' = withDeck (<> weaknesses) deck'
 
         pushAll
-          $ LoadDeck iid (withDeck (<> weaknesses) deck')
+          $ LoadDeck iid deck''
           : purchaseTrauma
-        pure $ a & playerDecksL %~ insertMap iid deck'
+        pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
   EndSetup -> do
     pushAll [BeginGame, BeginRound, Begin InvestigationPhase]

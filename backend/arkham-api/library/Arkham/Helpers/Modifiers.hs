@@ -676,8 +676,8 @@ onRevealChaosTokenEffect
 onRevealChaosTokenEffect sid matchr source target msgs = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msgs
 
 uiEffect
-  :: (HasGame m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m Message
-uiEffect source target modifier = createWindowModifierEffect EffectUI source target [modifier]
+  :: (HasGame m, Sourceable source, Targetable target) => source -> target -> UIModifier -> m Message
+uiEffect source target modifier = createWindowModifierEffect EffectUI source target [UIModifier modifier]
 
 getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
 getAdditionalSearchTargets iid = sumOf (each . _AdditionalTargets) <$> getModifiers iid

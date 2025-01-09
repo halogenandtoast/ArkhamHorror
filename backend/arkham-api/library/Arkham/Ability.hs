@@ -102,6 +102,9 @@ displayAsAction = set abilityDisplayAsActionL True
 limitedAbility :: AbilityLimit -> Ability -> Ability
 limitedAbility l a = a & abilityLimitL .~ l
 
+limited :: AbilityLimit -> Ability -> Ability
+limited = limitedAbility
+
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 

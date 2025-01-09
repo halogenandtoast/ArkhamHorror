@@ -1,21 +1,16 @@
-module Arkham.Asset.Assets.EmpiricalHypothesis (
-  empiricalHypothesis,
-  empiricalHypothesisEffect,
-  EmpiricalHypothesis (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.EmpiricalHypothesis (empiricalHypothesis, empiricalHypothesisEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (Discarded)
-import Arkham.Discover
-import Arkham.Effect.Runner hiding (Discarded)
+import Arkham.Asset.Import.Lifted hiding (Discarded)
+import Arkham.Asset.Types (Asset, metaL)
+import Arkham.Asset.Uses
+import Arkham.Effect.Import
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Taboo
 
@@ -28,7 +23,7 @@ empiricalHypothesis = assetWith EmpiricalHypothesis Cards.empiricalHypothesis (m
 
 instance HasAbilities EmpiricalHypothesis where
   getAbilities (EmpiricalHypothesis a) =
-    [ restrictedAbility a 1 ControlsThis $ ForcedAbility $ RoundBegins #when
+    [ restricted a 1 ControlsThis $ forced $ RoundBegins #when
     , (if tabooed TabooList23 a then limitedAbility (PlayerLimit PerRound 2) else id)
         $ withTooltip "{fast} Spend 1 evidence: Draw 1 card."
         $ restrictedAbility a 2 (CanDrawCards <> exists matcher)
@@ -36,24 +31,24 @@ instance HasAbilities EmpiricalHypothesis where
         $ assetUseCost a Evidence 1
     ]
       <> [ withTooltip "{fast} Spend 2 evidence: Reduce the cost of the next card you play by 3."
-          $ restrictedAbility a 3 (exists matcher)
-          $ FastAbility
-          $ assetUseCost a Evidence 2
+            $ restrictedAbility a 3 (exists matcher)
+            $ FastAbility
+            $ assetUseCost a Evidence 2
          | a `hasCustomization` ResearchGrant
          ]
       <> [ withTooltip "{fast} Spend 3 evidence: Discover 1 clue at your location."
-          $ restrictedAbility a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
-          $ FastAbility
-          $ assetUseCost a Evidence 3
+            $ restrictedAbility a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
+            $ FastAbility
+            $ assetUseCost a Evidence 3
          | a `hasCustomization` IrrefutableProof
          ]
       <> [ withTooltip
-          "You may resolve its forced effect, choosing a criteria you have not chosen this round. Then, ready it."
-          $ playerLimit PerWindow
-          $ restrictedAbility a 5 (ControlsThis <> alternativeHypothesisCriteria)
-          $ freeReaction
-          $ Exhausts #after You
-          $ TargetIs (toTarget a)
+            "You may resolve its forced effect, choosing a criteria you have not chosen this round. Then, ready it."
+            $ playerLimit PerWindow
+            $ restrictedAbility a 5 (ControlsThis <> alternativeHypothesisCriteria)
+            $ freeReaction
+            $ Exhausts #after You
+            $ TargetIs (toTarget a)
          | a `hasCustomization` AlternativeHypothesis
          ]
    where
@@ -76,67 +71,61 @@ instance HasAbilities EmpiricalHypothesis where
         <> [6 | a `hasCustomization` FieldResearch]
 
 instance RunMessage EmpiricalHypothesis where
-  runMessage msg a@(EmpiricalHypothesis attrs) = case msg of
+  runMessage msg a@(EmpiricalHypothesis attrs) = runQueueT $ case msg of
     BeginRoundWindow -> do
       pure $ EmpiricalHypothesis $ attrs & metaL .~ toJSON @[Int] []
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      player <- getPlayer iid
-      let option n = HandleAbilityOption iid (toSource attrs) n
-      push
-        $ chooseOne
-          player
-        $ [ Label "You fail a test by 2 or more." [option 1]
-          , Label "You succeed at a test by 3 or more." [option 2]
-          ]
-        <> [ Label "You run out of cards in your hand." [option 3] | attrs `hasCustomization` PessimisticOutlook
-           ]
-        <> [ Label "You are dealt damage or horror." [option 4] | attrs `hasCustomization` TrialAndError
-           ]
-        <> [ Label "You discard a treachery or enemy from play." [option 5]
-           | attrs `hasCustomization` IndepedentVariable
-           ]
-        <> [ Label "You enter a location with 3 or more shroud." [option 6]
-           | attrs `hasCustomization` FieldResearch
-           ]
+      let option n txt = labeled txt $ push $ HandleAbilityOption iid (toSource attrs) n
+      chooseOneM iid do
+        option 1 "You fail a test by 2 or more."
+        option 2 "You succeed at a test by 3 or more."
+        when (attrs `hasCustomization` PessimisticOutlook) do
+          option 3 "You run out of cards in your hand."
+        when (attrs `hasCustomization` TrialAndError) do
+          option 4 "You are dealt damage or horror."
+        when (attrs `hasCustomization` IndepedentVariable) do
+          option 5 "You discard a treachery or enemy from play."
+        when (attrs `hasCustomization` FieldResearch) do
+          option 6 "You enter a location with 3 or more shroud."
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ drawCards iid (toAbilitySource attrs 2) 1
+      drawCardsIfCan iid (attrs.ability 2) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      push =<< createCardEffect Cards.empiricalHypothesis Nothing attrs iid
+      createCardEffect Cards.empiricalHypothesis Nothing attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 4 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 4) 1
+      discoverAtYourLocation NotInvestigate iid (toAbilitySource attrs 4) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 5 -> do
       let meta = toResult @[Int] (assetMeta attrs)
-      let option n = HandleAbilityOption iid (toSource attrs) n
-      player <- getPlayer iid
-      pushAll
-        [ chooseOne
-            player
-            $ [Label "You fail a test by 2 or more." [option 1] | 1 `notElem` meta]
-            <> [Label "You succeed at a test by 3 or more." [option 2] | 2 `notElem` meta]
-            <> [ Label "You run out of cards in your hand." [option 3]
-               | attrs `hasCustomization` PessimisticOutlook && 3 `notElem` meta
-               ]
-            <> [ Label "You are dealt damage or horror." [option 4]
-               | attrs `hasCustomization` TrialAndError && 4 `notElem` meta
-               ]
-            <> [ Label "You discard a treachery or enemy from play." [option 5]
-               | attrs `hasCustomization` IndepedentVariable && 5 `notElem` meta
-               ]
-            <> [ Label "You enter a location with 3 or more shroud." [option 6]
-               | attrs `hasCustomization` FieldResearch && 6 `notElem` meta
-               ]
-        , Ready (toTarget attrs)
-        ]
+      let
+        option n txt =
+          unless (n `elem` meta) do
+            labeled txt $ push $ HandleAbilityOption iid (toSource attrs) n
+      chooseOneM iid do
+        option 1 "You fail a test by 2 or more."
+        option 2 "You succeed at a test by 3 or more."
+
+        when (attrs `hasCustomization` PessimisticOutlook) do
+          option 3 "You run out of cards in your hand."
+
+        when (attrs `hasCustomization` TrialAndError) do
+          option 4 "You are dealt damage or horror."
+
+        when (attrs `hasCustomization` IndepedentVariable) do
+          option 5 "You discard a treachery or enemy from play."
+
+        when (attrs `hasCustomization` FieldResearch) do
+          option 6 "You enter a location with 3 or more shroud."
+
+      readyThis attrs
       pure a
     HandleAbilityOption iid (isSource attrs -> True) n -> do
       let meta = toResult (assetMeta attrs)
-      push =<< createCardEffect Cards.empiricalHypothesis (Just $ EffectInt n) attrs iid
+      createCardEffect Cards.empiricalHypothesis (Just $ EffectInt n) attrs iid
       pure $ EmpiricalHypothesis $ attrs & metaL .~ toJSON (meta <> [n])
-    _ -> EmpiricalHypothesis <$> runMessage msg attrs
+    _ -> EmpiricalHypothesis <$> liftRunMessage msg attrs
 
 data EmpiricalHypothesisEffectMetadata = EmpiricalHypothesisEffectMetadata
   { oldHandCount :: Int
@@ -210,35 +199,33 @@ instance HasAbilities EmpiricalHypothesisEffect where
 -- delayed: then we would disable on the AddUses line and remove the HandleAbilityOption
 -- lasting: remove the HandleAbilityOption
 instance RunMessage EmpiricalHypothesisEffect where
-  runMessage msg e@(EmpiricalHypothesisEffect attrs) = case msg of
+  runMessage msg e@(EmpiricalHypothesisEffect attrs) = runQueueT $ case msg of
     CreatedEffect eid _ (AssetSource aid) _ | eid == toId attrs -> do
       peerReview <- getHasCustomization @Asset aid PeerReview
       EmpiricalHypothesisEffect
-        <$> runMessage
+        <$> liftRunMessage
           msg
-          (attrs {effectExtraMetadata = toJSON $ EmpiricalHypothesisEffectMetadata 0 False peerReview})
+          (attrs & extraL .~ toJSON (EmpiricalHypothesisEffectMetadata 0 False peerReview))
     UseThisAbility _ (ProxySource _ (isSource attrs -> True)) 1 -> do
-      case attrs.source of
-        AssetSource aid -> push $ AddUses attrs.source aid Evidence 1
+      case attrs.source.asset of
+        Just aid -> push $ AddUses attrs.source aid Evidence 1
         _ -> error $ "invalid effect source: " <> show attrs.source
       pure e
     EndRound | isJust attrs.meta -> do
-      push $ disable attrs
-      pure e
+      disableReturn e
     CardEnteredPlay iid _ | isNothing attrs.meta -> do
-      pushWhen (toTarget iid == attrs.target) (disable attrs)
+      when (toTarget iid == attrs.target) (disable attrs)
       pure e
     Do (CheckWindows {}) | isJust attrs.meta -> do
-      attrs' <- runMessage msg attrs
+      attrs' <- liftRunMessage msg attrs
       case attrs.target of
         InvestigatorTarget iid -> do
           let extra = toResult attrs.extra
           newCount <- fieldMap InvestigatorHand length iid
           let pessimistic = oldHandCount extra > 0 && newCount == 0
           let newExtra = toJSON $ extra {oldHandCount = newCount, pessimisticOutlook = pessimistic}
-          pure $ EmpiricalHypothesisEffect $ attrs' {effectExtraMetadata = newExtra}
+          pure $ EmpiricalHypothesisEffect $ attrs' & extraL .~ newExtra
         _ -> pure $ EmpiricalHypothesisEffect attrs'
     HandleAbilityOption _ source _ | source == attrs.source -> do
-      push $ disable attrs
-      pure e
-    _ -> EmpiricalHypothesisEffect <$> runMessage msg attrs
+      disableReturn e
+    _ -> EmpiricalHypothesisEffect <$> liftRunMessage msg attrs

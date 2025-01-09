@@ -29,31 +29,11 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
-import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf, _2)
+import Control.Lens (Plated (..), cosmos, sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
 import Data.Text qualified as T
 import GHC.Records
-
-totalActionCost :: Cost -> Int
-totalActionCost (ActionCost n) = n
-totalActionCost (Costs xs) = sum $ map totalActionCost xs
-totalActionCost _ = 0
-
-totalResourcePayment :: Payment -> Int
-totalResourcePayment = sumOf (cosmos . _ResourcePayment)
-
-totalCluePayment :: Payment -> Int
-totalCluePayment = sumOf (cosmos . _CluePayment . _2)
-
-totalCluePaymentPerInvestigator :: Payment -> [(InvestigatorId, Int)]
-totalCluePaymentPerInvestigator = toListOf (cosmos . _CluePayment)
-
-totalUsesPayment :: Payment -> Int
-totalUsesPayment = sumOf (cosmos . _UsesPayment)
-
-totalInvestigatorDamagePayment :: Payment -> Int
-totalInvestigatorDamagePayment = sumOf (cosmos . _InvestigatorDamagePayment)
 
 decreaseActionCost :: Cost -> Int -> Cost
 decreaseActionCost (ActionCost x) y = ActionCost $ max 0 (x - y)
@@ -84,42 +64,6 @@ decreaseResourceCost (Costs (a : as)) y = case a of
   ResourceCost x -> Costs (ResourceCost (max 0 $ x - y) : as)
   _ -> a <> decreaseResourceCost (Costs as) y
 decreaseResourceCost other _ = other
-
-totalDiscardCardPayments :: Payment -> Int
-totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPayment)
-
-discardPayments :: Payment -> [(Zone, Card)]
-discardPayments = concat . toListOf (cosmos . _DiscardPayment)
-
-chosenEnemyPayment :: Payment -> Maybe EnemyId
-chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
-
-chosenCardPayment :: Payment -> Maybe CardId
-chosenCardPayment = listToMaybe . toListOf (cosmos . _ChosenCardPayment)
-
-addedCurseTokenPayment :: Payment -> Int
-addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)
-
-discardedCards :: Payment -> [Card]
-discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
-
-exhaustedPayments :: Payment -> [Target]
-exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
-
-removedPayments :: Payment -> [Target]
-removedPayments = concat . toListOf (cosmos . _RemovePayment)
-
-instance HasField "discards" Payment [(Zone, Card)] where
-  getField = discardPayments
-
-instance HasField "exhausted" Payment [Target] where
-  getField = exhaustedPayments
-
-instance HasField "resources" Payment Int where
-  getField = totalResourcePayment
-
-instance HasField "investigatorDamage" Payment Int where
-  getField = totalInvestigatorDamagePayment
 
 data Payment
   = ActionPayment Int
@@ -154,61 +98,6 @@ data Payment
 
 instance Plated Payment where
   plate = uniplate
-
-_AddCurseTokenPayment :: Prism' Payment Int
-_AddCurseTokenPayment = prism' AddCurseTokenPayment $ \case
-  AddCurseTokenPayment x -> Just x
-  _ -> Nothing
-
-_ChosenEnemyPayment :: Prism' Payment EnemyId
-_ChosenEnemyPayment = prism' ChosenEnemyPayment $ \case
-  ChosenEnemyPayment x -> Just x
-  _ -> Nothing
-
-_ChosenCardPayment :: Prism' Payment CardId
-_ChosenCardPayment = prism' ChosenCardPayment $ \case
-  ChosenCardPayment x -> Just x
-  _ -> Nothing
-
-_DiscardPayment :: Prism' Payment [(Zone, Card)]
-_DiscardPayment = prism' DiscardPayment $ \case
-  DiscardPayment x -> Just x
-  _ -> Nothing
-
-_DiscardCardPayment :: Prism' Payment [Card]
-_DiscardCardPayment = prism' DiscardCardPayment $ \case
-  DiscardCardPayment x -> Just x
-  _ -> Nothing
-
-_ExhaustPayment :: Prism' Payment [Target]
-_ExhaustPayment = prism' ExhaustPayment $ \case
-  ExhaustPayment x -> Just x
-  _ -> Nothing
-
-_RemovePayment :: Prism' Payment [Target]
-_RemovePayment = prism' RemovePayment $ \case
-  RemovePayment x -> Just x
-  _ -> Nothing
-
-_ResourcePayment :: Prism' Payment Int
-_ResourcePayment = prism' ResourcePayment $ \case
-  ResourcePayment x -> Just x
-  _ -> Nothing
-
-_CluePayment :: Prism' Payment (InvestigatorId, Int)
-_CluePayment = prism' (uncurry CluePayment) $ \case
-  CluePayment iid x -> Just (iid, x)
-  _ -> Nothing
-
-_UsesPayment :: Prism' Payment Int
-_UsesPayment = prism' UsesPayment $ \case
-  UsesPayment x -> Just x
-  _ -> Nothing
-
-_InvestigatorDamagePayment :: Prism' Payment Int
-_InvestigatorDamagePayment = prism' InvestigatorDamagePayment $ \case
-  InvestigatorDamagePayment x -> Just x
-  _ -> Nothing
 
 data Cost
   = ActionCost Int
@@ -310,14 +199,6 @@ data Cost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
-
-_ResourceCost :: Prism' Cost Int
-_ResourceCost = prism' ResourceCost $ \case
-  ResourceCost x -> Just x
-  _ -> Nothing
-
-totalResourceCost :: Cost -> Int
-totalResourceCost = sumOf (cosmos . _ResourceCost)
 
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
@@ -634,7 +515,69 @@ instance Semigroup CostZone where
   x <> CostZones ys = CostZones (x : ys)
   x <> y = CostZones [x, y]
 
-$(deriveJSON defaultOptions ''CostZone)
-$(deriveJSON defaultOptions ''DynamicUseCostValue)
-$(deriveJSON defaultOptions ''Cost)
-$(deriveJSON defaultOptions ''Payment)
+mconcat
+  [ deriveJSON defaultOptions ''CostZone
+  , deriveJSON defaultOptions ''DynamicUseCostValue
+  , deriveJSON defaultOptions ''Cost
+  , deriveJSON defaultOptions ''Payment
+  , makePrisms ''Payment
+  , makePrisms ''Cost
+  ]
+
+totalActionCost :: Cost -> Int
+totalActionCost = sumOf (cosmos . _ActionCost)
+
+totalResourcePayment :: Payment -> Int
+totalResourcePayment = sumOf (cosmos . _ResourcePayment)
+
+totalCluePayment :: Payment -> Int
+totalCluePayment = sumOf (cosmos . _CluePayment . _2)
+
+totalCluePaymentPerInvestigator :: Payment -> [(InvestigatorId, Int)]
+totalCluePaymentPerInvestigator = toListOf (cosmos . _CluePayment)
+
+totalUsesPayment :: Payment -> Int
+totalUsesPayment = sumOf (cosmos . _UsesPayment)
+
+totalInvestigatorDamagePayment :: Payment -> Int
+totalInvestigatorDamagePayment = sumOf (cosmos . _InvestigatorDamagePayment)
+
+totalResourceCost :: Cost -> Int
+totalResourceCost = sumOf (cosmos . _ResourceCost)
+
+totalDiscardCardPayments :: Payment -> Int
+totalDiscardCardPayments = length . concat . toListOf (cosmos . _DiscardCardPayment)
+
+discardPayments :: Payment -> [(Zone, Card)]
+discardPayments = concat . toListOf (cosmos . _DiscardPayment)
+
+chosenEnemyPayment :: Payment -> Maybe EnemyId
+chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
+
+chosenCardPayment :: Payment -> Maybe CardId
+chosenCardPayment = listToMaybe . toListOf (cosmos . _ChosenCardPayment)
+
+addedCurseTokenPayment :: Payment -> Int
+addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)
+
+discardedCards :: Payment -> [Card]
+discardedCards = concat . toListOf (cosmos . _DiscardCardPayment)
+
+exhaustedPayments :: Payment -> [Target]
+exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
+
+removedPayments :: Payment -> [Target]
+removedPayments = concat . toListOf (cosmos . _RemovePayment)
+
+instance HasField "discards" Payment [(Zone, Card)] where
+  getField = discardPayments
+
+instance HasField "exhausted" Payment [Target] where
+  getField = exhaustedPayments
+
+instance HasField "resources" Payment Int where
+  getField = totalResourcePayment
+
+instance HasField "investigatorDamage" Payment Int where
+  getField = totalInvestigatorDamagePayment
+

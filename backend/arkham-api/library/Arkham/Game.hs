@@ -4631,6 +4631,17 @@ getEvadedEnemy [] = Nothing
 getEvadedEnemy ((windowType -> Window.EnemyEvaded _ eid) : _) = Just eid
 getEvadedEnemy (_ : xs) = getEvadedEnemy xs
 
+-- finds the first message in the form `Priority msg` and returns that, otherwise returns the first message
+popMessageWithPriority :: HasQueue Message m => m (Maybe Message)
+popMessageWithPriority = withQueue \case
+  [] -> ([], Nothing)
+  (m : ms) -> case find isPriority ms of
+    Nothing -> (ms, Just m)
+    Just p -> (m : delete p ms, Just p)
+ where
+  isPriority (Priority _) = True
+  isPriority _ = False
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
@@ -4653,7 +4664,7 @@ runMessages mLogger = do
       _ -> False
 
   when valid do
-    mmsg <- popMessage
+    mmsg <- popMessageWithPriority
     case mmsg of
       Nothing -> case gamePhase g of
         CampaignPhase {} -> pure ()
@@ -4704,93 +4715,96 @@ runMessages mLogger = do
 
         for_ mLogger $ liftIO . ($ msg)
 
-        case msg of
-          Run msgs -> do
-            pushAll msgs
-            runMessages mLogger
-          ClearUI -> runMessages mLogger
-          Ask _ (ChooseOneAtATime []) -> runMessages mLogger
-          Ask pid q -> do
-            -- if we are choosing decks, we do not want to clobber other ChooseDeck
-            moreChooseDecks <-
-              isJust <$> findFromQueue \case
-                AskMap askMap | not (null askMap) -> any (== ChooseDeck) (Map.elems askMap)
-                _ -> False
-            if isChooseDecks (gameGameState g) && moreChooseDecks
-              then do
-                let
-                  updateChooseDeck = \case
-                    AskMap askMap | not (null askMap) && any (== ChooseDeck) (Map.elems askMap) -> AskMap $ insertMap pid q askMap
-                    other -> other
-                withQueue_ (map updateChooseDeck)
-                runMessages mLogger
-              else
-                runWithEnv (toExternalGame (g & activePlayerIdL .~ pid) (singletonMap pid q)) >>= putGame
-          AskMap askMap -> do
-            -- Read might have only one player being prompted so we need to find the active player
-            let current = g ^. activePlayerIdL
-            let whenBeingQuestioned (pid, Read _ (BasicReadChoices choices) _) = guard (notNull choices) $> pid
-                whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices) _) = guard (notNull choices) $> pid
-                whenBeingQuestioned (pid, _) = Just pid
-            let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
-            let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
-            runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
-          CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
-          Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
-          _ -> do
-            -- Hidden Library handling
-            -- > While an enemy is moving, Hidden Library gains the Passageway trait.
-            -- Therefor we must track the "while" aspect
-            case msg of
-              HunterMove eid -> overGame $ enemyMovingL ?~ eid
-              WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
-              CheckWindows (getEvadedEnemy -> Just eid) ->
-                overGame $ enemyEvadingL ?~ eid
-              Do (CheckWindows (getEvadedEnemy -> Just eid)) ->
-                overGame $ enemyEvadingL ?~ eid
-              _ -> pure ()
+        let
+          go = \case
+            Priority msg' -> push msg' >> runMessages mLogger
+            Run msgs -> do
+              pushAll msgs
+              runMessages mLogger
+            ClearUI -> runMessages mLogger
+            Ask _ (ChooseOneAtATime []) -> runMessages mLogger
+            Ask pid q -> do
+              -- if we are choosing decks, we do not want to clobber other ChooseDeck
+              moreChooseDecks <-
+                isJust <$> findFromQueue \case
+                  AskMap askMap | not (null askMap) -> any (== ChooseDeck) (Map.elems askMap)
+                  _ -> False
+              if isChooseDecks (gameGameState g) && moreChooseDecks
+                then do
+                  let
+                    updateChooseDeck = \case
+                      AskMap askMap | not (null askMap) && any (== ChooseDeck) (Map.elems askMap) -> AskMap $ insertMap pid q askMap
+                      other -> other
+                  withQueue_ (map updateChooseDeck)
+                  runMessages mLogger
+                else
+                  runWithEnv (toExternalGame (g & activePlayerIdL .~ pid) (singletonMap pid q)) >>= putGame
+            AskMap askMap -> do
+              -- Read might have only one player being prompted so we need to find the active player
+              let current = g ^. activePlayerIdL
+              let whenBeingQuestioned (pid, Read _ (BasicReadChoices choices) _) = guard (notNull choices) $> pid
+                  whenBeingQuestioned (pid, Read _ (LeadInvestigatorMustDecide choices) _) = guard (notNull choices) $> pid
+                  whenBeingQuestioned (pid, _) = Just pid
+              let activePids = mapMaybe whenBeingQuestioned $ mapToList askMap
+              let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
+              runWithEnv (toExternalGame (g & activePlayerIdL .~ activePid) askMap) >>= putGame
+            CheckWindows {} | not (gameRunWindows g) -> runMessages mLogger
+            Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages mLogger
+            _ -> do
+              -- Hidden Library handling
+              -- > While an enemy is moving, Hidden Library gains the Passageway trait.
+              -- Therefor we must track the "while" aspect
+              case msg of
+                HunterMove eid -> overGame $ enemyMovingL ?~ eid
+                WillMoveEnemy eid _ -> overGame $ enemyMovingL ?~ eid
+                CheckWindows (getEvadedEnemy -> Just eid) ->
+                  overGame $ enemyEvadingL ?~ eid
+                Do (CheckWindows (getEvadedEnemy -> Just eid)) ->
+                  overGame $ enemyEvadingL ?~ eid
+                _ -> pure ()
 
-            -- Before we preload, store the as if at's
-            -- After we preload check diff, if there is a diff, we need to
-            -- manually adjust enemies if they could not enter the new location
+              -- Before we preload, store the as if at's
+              -- After we preload check diff, if there is a diff, we need to
+              -- manually adjust enemies if they could not enter the new location
 
-            asIfLocations <- runWithEnv getAsIfLocationMap
+              asIfLocations <- runWithEnv getAsIfLocationMap
 
-            let
-              shouldPreloadModifiers = \case
-                Ask {} -> False
-                BeginAction {} -> False
-                CheckAttackOfOpportunity {} -> False
-                CheckEnemyEngagement {} -> False
-                CheckWindows {} -> False
-                Do (CheckWindows {}) -> False
-                ClearUI {} -> False
-                CreatedCost {} -> False
-                EndCheckWindow {} -> False
-                PaidAllCosts {} -> False
-                PayForAbility {} -> False
-                PayCost {} -> False
-                PayCosts {} -> False
-                Run {} -> False
-                UseAbility {} -> False
-                When {} -> False
-                WhenCanMove {} -> False
-                Would {} -> False
-                _ -> True
+              let
+                shouldPreloadModifiers = \case
+                  Ask {} -> False
+                  BeginAction {} -> False
+                  CheckAttackOfOpportunity {} -> False
+                  CheckEnemyEngagement {} -> False
+                  CheckWindows {} -> False
+                  Do (CheckWindows {}) -> False
+                  ClearUI {} -> False
+                  CreatedCost {} -> False
+                  EndCheckWindow {} -> False
+                  PaidAllCosts {} -> False
+                  PayForAbility {} -> False
+                  PayCost {} -> False
+                  PayCosts {} -> False
+                  Run {} -> False
+                  UseAbility {} -> False
+                  When {} -> False
+                  WhenCanMove {} -> False
+                  Would {} -> False
+                  _ -> True
 
-            runWithEnv do
-              overGameM preloadEntities
-              overGameM $ runPreGameMessage msg
-              overGameM
-                $ runMessage msg
-                >=> if shouldPreloadModifiers msg
-                  then
-                    preloadModifiers
-                      >=> handleAsIfChanges asIfLocations
-                      >=> handleTraitRestrictedModifiers
-                      >=> handleBlanked
-                  else pure
-            runMessages mLogger
+              runWithEnv do
+                overGameM preloadEntities
+                overGameM $ runPreGameMessage msg
+                overGameM
+                  $ runMessage msg
+                  >=> if shouldPreloadModifiers msg
+                    then
+                      preloadModifiers
+                        >=> handleAsIfChanges asIfLocations
+                        >=> handleTraitRestrictedModifiers
+                        >=> handleBlanked
+                    else pure
+              runMessages mLogger
+        go msg
 
 getAsIfLocationMap :: HasGame m => m (Map InvestigatorId LocationId)
 getAsIfLocationMap = do

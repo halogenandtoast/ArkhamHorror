@@ -1314,6 +1314,10 @@ putCardOnBottomOfDeck
   :: (ReverseQueue m, IsDeck deck, IsCard card) => InvestigatorId -> deck -> card -> m ()
 putCardOnBottomOfDeck iid deck card = push $ PutCardOnBottomOfDeck iid (toDeck deck) (toCard card)
 
+putCardOnTopOfDeck
+  :: (ReverseQueue m, IsDeck deck, IsCard card) => InvestigatorId -> deck -> card -> m ()
+putCardOnTopOfDeck iid deck card = push $ PutCardOnTopOfDeck iid (toDeck deck) (toCard card)
+
 gainResourcesIfCan
   :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ InvestigatorId) => a -> source -> Int -> m ()
 gainResourcesIfCan a source n = do
@@ -1831,7 +1835,7 @@ quietCancelCardDraw card = do
   for_ mtarget $ push . QuietlyRemoveFromGame
 
 cancelAttack :: (ReverseQueue m, Sourceable source) => source -> EnemyAttackDetails -> m ()
-cancelAttack source _ = push $ CancelNext (toSource source) AttackMessage
+cancelAttack source _ = push $ Priority $ CancelNext (toSource source) AttackMessage
 
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details

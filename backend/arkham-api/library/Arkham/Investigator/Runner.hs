@@ -3502,6 +3502,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         for_ investigatorSearch \MkSearch {searchType} ->
           pushWhen (searchType == Searching) $ ShuffleDeck (Deck.InvestigatorDeck a.id)
       PutBack -> pure () -- Nothing moves while searching
+      DoNothing -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do
         -- Try to obtain, then don't add back
         pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck (a ^. foundCardsL)

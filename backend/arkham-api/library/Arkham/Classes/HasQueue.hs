@@ -30,7 +30,7 @@ execQueueT body = do
   inbox <- newIORef []
   a <- runReaderT (unQueueT body) (Queue inbox)
   msgs <- readIORef inbox
-  pure $ (a, reverse msgs)
+  pure (a, reverse msgs)
 
 instance MonadIO m => HasQueue msg (QueueT msg m) where
   messageQueue = ask

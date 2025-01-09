@@ -1705,7 +1705,7 @@ readyThis :: (ReverseQueue m, Targetable target) => target -> m ()
 readyThis = push . Msg.Ready . toTarget
 
 uiEffect
-  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UIModifier -> m ()
 uiEffect s t m = Msg.pushM $ Msg.uiEffect s t m
 
 healDamage

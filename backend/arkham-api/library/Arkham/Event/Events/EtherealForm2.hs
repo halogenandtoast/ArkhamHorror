@@ -24,7 +24,7 @@ instance RunMessage EtherealForm2 where
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       enemies <- select $ enemyEngagedWith iid
-      roundModifiers attrs iid [Ethereal, CannotBeEngaged, CannotAttack, CannotDealDamage]
+      roundModifiers attrs iid [UIModifier Ethereal, CannotBeEngaged, CannotAttack, CannotDealDamage]
       pushAll $ map (DisengageEnemy iid) enemies
       pure e
     _ -> EtherealForm2 <$> liftRunMessage msg attrs

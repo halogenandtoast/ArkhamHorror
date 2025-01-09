@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..), UIModifier(..), withoutModifier)
 import Arkham.Matcher
 
 newtype Dynamite = Dynamite AssetAttrs

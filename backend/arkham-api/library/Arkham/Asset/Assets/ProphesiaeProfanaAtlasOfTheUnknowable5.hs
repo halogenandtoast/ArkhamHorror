@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.ProphesiaeProfanaAtlasOfTheUnknowable5 (
   prophesiaeProfanaAtlasOfTheUnknowable5,
-  ProphesiaeProfanaAtlasOfTheUnknowable5 (..),
 )
 where
 
@@ -8,7 +7,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_)
+import Arkham.Helpers.Modifiers (ModifierType (..), UIModifier (..), maybeModified_, modified_)
 import Arkham.History
 import Arkham.Matcher
 import Arkham.Movement
@@ -43,7 +42,7 @@ instance HasModifiersFor ProphesiaeProfanaAtlasOfTheUnknowable5 where
             else [MayIgnoreAttacksOfOpportunity]
     locus <- case mlocus of
       Nothing -> pure mempty
-      Just lid -> modified_ attrs lid [Locus]
+      Just lid -> modified_ attrs lid [UIModifier Locus]
     pure $ controller <> locus
 
 instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where
@@ -51,10 +50,10 @@ instance HasAbilities ProphesiaeProfanaAtlasOfTheUnknowable5 where
     let mlocus = maybeResult a.meta
      in restrictedAbility a 1 ControlsThis (freeReaction $ AssetEntersPlay #after (be a))
           : [ controlledAbility
-              a
-              2
-              (exists $ affectsOthers $ InvestigatorCanMoveTo (a.ability 2) (LocationWithId locus))
-              actionAbility
+                a
+                2
+                (exists $ affectsOthers $ InvestigatorCanMoveTo (a.ability 2) (LocationWithId locus))
+                actionAbility
             | locus <- toList mlocus
             ]
 

@@ -24,20 +24,20 @@ empiricalHypothesis = assetWith EmpiricalHypothesis Cards.empiricalHypothesis (m
 instance HasAbilities EmpiricalHypothesis where
   getAbilities (EmpiricalHypothesis a) =
     [ restricted a 1 ControlsThis $ forced $ RoundBegins #when
-    , (if tabooed TabooList23 a then limitedAbility (PlayerLimit PerRound 2) else id)
+    , (if tabooed TabooList23 a then limited (PlayerLimit PerRound 2) else id)
         $ withTooltip "{fast} Spend 1 evidence: Draw 1 card."
-        $ restrictedAbility a 2 (CanDrawCards <> exists matcher)
+        $ restricted a 2 (CanDrawCards <> exists matcher)
         $ FastAbility
         $ assetUseCost a Evidence 1
     ]
       <> [ withTooltip "{fast} Spend 2 evidence: Reduce the cost of the next card you play by 3."
-            $ restrictedAbility a 3 (exists matcher)
+            $ restricted a 3 (exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 2
          | a `hasCustomization` ResearchGrant
          ]
       <> [ withTooltip "{fast} Spend 3 evidence: Discover 1 clue at your location."
-            $ restrictedAbility a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
+            $ restricted a 4 (CanDiscoverCluesAt YourLocation <> exists matcher)
             $ FastAbility
             $ assetUseCost a Evidence 3
          | a `hasCustomization` IrrefutableProof
@@ -45,7 +45,7 @@ instance HasAbilities EmpiricalHypothesis where
       <> [ withTooltip
             "You may resolve its forced effect, choosing a criteria you have not chosen this round. Then, ready it."
             $ playerLimit PerWindow
-            $ restrictedAbility a 5 (ControlsThis <> alternativeHypothesisCriteria)
+            $ restricted a 5 (ControlsThis <> alternativeHypothesisCriteria)
             $ freeReaction
             $ Exhausts #after You
             $ TargetIs (toTarget a)

@@ -19,11 +19,9 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
-import Arkham.Prelude
-
--- import {-# SOURCE #-} Arkham.Matcher.Types
 import Arkham.Matcher.Types
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
@@ -33,50 +31,37 @@ import {-# SOURCE #-} Arkham.Spawn
 import {-# SOURCE #-} Arkham.Strategy
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait
-import Control.Lens (Prism', prism')
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data ModifierType
-  = ForEach GameCalculation [ModifierType]
-  | DoNotDrawConnection (SortedPair LocationId)
-  | Barricades [LocationId]
-  | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
-  | CanIgnoreBarriers
-  | IgnoreBarriers
-  | CannotBeFullyFlooded
-  | CannotBeFlooded
-  | VehicleCannotMove
-  | CannotEnterVehicle AssetMatcher
-  | AbilityModifier Target Int ModifierType
+  = AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
-  | IgnoreActionCost
-  | AdditionalActionCostOf ActionTarget Int
   | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int
   | ActionDoesNotCauseAttacksOfOpportunity Action
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
-  | IsPointOfDamage
-  | IsPointOfHorror
+  | AddChaosTokenValue ChaosTokenValue
   | AddKeyword Keyword
   | AddSkillIcons [SkillIcon]
-  | ReplaceAllSkillIconsWithWild
   | AddSkillToOtherSkill SkillType SkillType
   | AddSkillValue SkillType
-  | SetSkillValue SkillType Int
   | AddSkillValueOf SkillType InvestigatorId
   | AddTrait Trait
+  | AdditionalActionCostOf ActionTarget Int
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
+  | AdditionalCostToCommit InvestigatorId Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToEnterMatching LocationMatcher Cost
   | AdditionalCostToInvestigate Cost
-  | AdditionalCostToResign Cost
   | AdditionalCostToLeave Cost
-  | AdditionalCostToCommit InvestigatorId Cost
-  | AdditionalStartingUses Int
+  | AdditionalCostToResign Cost
+  | AdditionalResources Int
+  | AdditionalSlot SlotType
   | AdditionalStartingCards [Card]
+  | AdditionalStartingUses Int
   | AdditionalTargets Int
   | AlternateEvadeField (SomeField Enemy)
   | AlternateFightField (SomeField Enemy)
@@ -87,18 +72,16 @@ data ModifierType
   | AlternativeReady Source
   | AnySkillValue Int
   | AsIfAt LocationId
-  | IgnoreOnSameLocation
-  | IgnoreEngagementRequirement
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card
-  | PlayableCardOf InvestigatorId Card
   | AsIfUnderControlOf InvestigatorId
-  | PlayUnderControlOf InvestigatorId
-  | Cancelled
+  | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
-  | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | Barricades [LocationId]
   | BaseSkill Int
+  | BaseSkillOf {skillType :: SkillType, value :: Int}
+  | BaseStartingResources Int
   | BecomesFast WindowMatcher
   | Blank
   | BlankExceptForcedAbilities
@@ -106,45 +89,48 @@ data ModifierType
   | BondedInsteadOfDiscard
   | BondedInsteadOfShuffle
   | BountiesOnly
+  | CalculatedDifficulty GameCalculation
   | CanAssignDamageToAsset AssetId
-  | CanAssignHorrorToAsset AssetId
   | CanAssignDamageToInvestigator InvestigatorId
+  | CanAssignHorrorToAsset AssetId
   | CanAssignHorrorToInvestigator InvestigatorId
   | CanBeAssignedDirectDamage
   | CanBeFoughtAsIfAtYourLocation
   | CanBecomeFast CardMatcher
-  | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CanCommitToSkillTestPerformedByAnInvestigatorAt LocationMatcher
   | CanCommitToSkillTestsAsIfInHand Card
   | CanEnterEmptySpace
+  | CanHealAtFull SourceMatcher DamageType
   | CanIgnoreAspect AspectMatcher
+  | CanIgnoreBarriers
   | CanIgnoreLimit
   | CanModify ModifierType
   | CanMoveWith InvestigatorMatcher
   | CanOnlyBeAttackedByAbilityOn (Set CardCode)
-  | CannotBeAttackedByPlayerSourcesExcept SourceMatcher
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
   | CanOnlyUseCardsInRole ClassSymbol
+  | CanPlayFromDiscard (Maybe CardType, [Trait])
   | CanPlayTopOfDeck CardMatcher
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
-  | CanPlayFromDiscard (Maybe CardType, [Trait])
   | CanPlayWithOverride CriteriaOverride
   | CanReduceCostOf CardMatcher Int
   | CanResolveToken ChaosTokenFace Target
   | CanRetaliateWhileExhausted
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher
-  | ProvidesUses UseType Source
-  | ProvidesProxyUses UseType UseType Source
+  | CancelAnyChaosToken ChaosTokenMatcher
   | CancelAttacksByEnemies Card EnemyMatcher
+  | CancelEffects
   | CancelSkills
+  | Cancelled
   | CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+  | CannotAssignDamage InvestigatorId
   | CannotAttack
-  | MustFight EnemyId
   | CannotBeAdvancedByDoomThreshold
   | CannotBeAttacked
   | CannotBeAttackedBy EnemyMatcher
+  | CannotBeAttackedByPlayerSourcesExcept SourceMatcher
   | CannotBeDamaged
   | CannotBeDamagedByPlayerSources SourceMatcher
   | CannotBeDamagedByPlayerSourcesExcept SourceMatcher
@@ -152,23 +138,20 @@ data ModifierType
   | CannotBeDefeated
   | CannotBeEngaged
   | CannotBeEngagedBy EnemyMatcher
-  | CannotBeHuntedBy EnemyMatcher
   | CannotBeEnteredBy EnemyMatcher
   | CannotBeEvaded
   | CannotBeFlipped
+  | CannotBeFlooded
+  | CannotBeFullyFlooded
+  | CannotBeHuntedBy EnemyMatcher
   | CannotBeMoved
   | CannotBeRevealed
   | CannotCancelHorror
   | CannotCancelHorrorFrom Source
-  | MustChooseEnemy EnemyMatcher
   | CannotCancelOrIgnoreChaosToken ChaosTokenFace
-  | ReturnBlessedToChaosBag
-  | ReturnCursedToChaosBag
-  | MayChooseToRemoveChaosToken InvestigatorId
   | CannotCommitCards CardMatcher
   | CannotCommitToOtherInvestigatorsSkillTests
   | CannotDealDamage
-  | CannotAssignDamage InvestigatorId
   | CannotDiscoverClues
   | CannotDiscoverCluesAt LocationMatcher
   | CannotDiscoverCluesExceptAsResultOfInvestigation LocationMatcher
@@ -177,15 +160,14 @@ data ModifierType
   | CannotDrawCardsFromPlayerCardEffects
   | CannotEngage InvestigatorId
   | CannotEnter LocationId
+  | CannotEnterVehicle AssetMatcher
   | CannotEvade EnemyMatcher
   | CannotExplore
   | CannotFight EnemyMatcher
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
-  | CannotRevealCards
-  | CanHealAtFull SourceMatcher DamageType
-  | CannotHealHorror
   | CannotHealDamage
+  | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target
   | CannotInvestigate
   | CannotInvestigateLocation LocationId
@@ -197,12 +179,12 @@ data ModifierType
   | CannotParleyWith EnemyMatcher
   | CannotPerformSkillTest
   | CannotPlaceClues
-  | ReduceStartingCluesByHalf
   | CannotPlaceDoomOnThis
   | CannotPlay CardMatcher
   | CannotPutIntoPlay CardMatcher
   | CannotReady
   | CannotReplaceWeaknesses
+  | CannotRevealCards
   | CannotSpawnIn LocationMatcher
   | CannotSpendClues
   | CannotTakeAction ActionTarget
@@ -212,37 +194,34 @@ data ModifierType
   | CardsCannotLeaveYourDiscardPile
   | ChangeChaosTokenModifier ChaosTokenModifier
   | ChangeRevealStrategy RevealStrategy
-  | SetAttackDamageStrategy DamageStrategy
+  | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int
-  | AddChaosTokenValue ChaosTokenValue
-  | CancelAnyChaosToken ChaosTokenMatcher
+  | CheckHandSizeAfterDraw
+  | ChuckFergus2Modifier CardMatcher Int -- Used by Chuck Fergus (2), check for notes
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
   | DamageDealt Int
-  | HorrorDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
   | DamageTakenFrom DamageEffectMatcher Int
-  | HealingTaken Int
   | Difficulty Int
-  | CalculatedDifficulty GameCalculation
   | DiscoveredClues Int
   | DiscoveredCluesAt LocationId Int
   | DoNotDisengageEvaded
   | DoNotDrawChaosTokensForSkillChecks
+  | DoNotDrawConnection (SortedPair LocationId)
+  | DoNotExhaust
   | DoNotExhaustEvaded
   | DoNotRemoveDoom
+  | DoNotRevealAnotherChaosToken -- see: Ancient Covenant (2)
   | DoNotTakeUpSlot SlotType
-  | TakeUpFewerSlots SlotType Int
   | DoesNotDamageOtherInvestigator
   | DoesNotReadyDuringUpkeep
   | DoomSubtracts
-  | OtherDoomSubtracts
-  | IgnoreDoomOnThis Int
   | DoomThresholdModifier Int
   | DoubleBaseSkillValue
   | DoubleDifficulty
@@ -251,108 +230,133 @@ data ModifierType
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled
-  | CancelEffects
   | EnemyCannotEngage InvestigatorId
+  | EnemyEngageActionCriteria CriteriaOverride
   | EnemyEvade Int
   | EnemyEvadeActionCriteria CriteriaOverride
   | EnemyEvadeWithMin Int (Min Int)
   | EnemyFight Int
   | EnemyFightActionCriteria CriteriaOverride
   | EnemyFightWithMin Int (Min Int)
-  | EnemyEngageActionCriteria CriteriaOverride
-  | InvestigateActionCriteria CriteriaOverride
   | EntersPlayWithDoom Int
+  | ExhaustIfDefeated
   | ExtraResources Int
-  | AdditionalResources Int
   | FailTies
   | FewerActions Int
+  | FewerMatchingIconsPerCard Int
   | FewerSlots SlotType Int
-  | AdditionalSlot SlotType
+  | ForEach GameCalculation [ModifierType]
   | ForcePrey PreyMatcher
-  | ForceSpawnLocation LocationMatcher
   | ForceSpawn SpawnAt
-  | Foresight Text
-  | ChangeSpawnLocation LocationMatcher LocationMatcher
+  | ForceSpawnLocation LocationMatcher
   | ForcedChaosTokenChange ChaosTokenFace [ChaosTokenFace]
+  | Foresight Text
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int
-  | CheckHandSizeAfterDraw
   | HandSizeCardCount Int
-  | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED
   | HealHorrorAsIfOnInvestigator Target Int
-  | IsSpirit InvestigatorId
+  | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED
+  | HealingTaken Int
   | HealthModifier Int
   | HealthModifierWithMin Int (Min Int)
+  | HorrorDealt Int
   | HunterConnectedTo LocationId
+  | IfFailureModifier ModifierType
+  | IfSuccessfulModifier ModifierType
+  | IgnoreActionCost
+  | IgnoreAlert
   | IgnoreAllCosts
   | IgnoreAloof
-  | IgnoreAlert
+  | IgnoreAttacksOfOpportunity
+  | IgnoreBarriers
   | IgnoreChaosToken
-  | IgnoreChaosTokenModifier
   | IgnoreChaosTokenEffects
+  | IgnoreChaosTokenModifier
+  | IgnoreCommitOneRestriction
+  | IgnoreDoomOnThis Int
+  | IgnoreEngagementRequirement
   | IgnoreHandSizeReduction
   | IgnoreLimit
+  | IgnoreOnSameLocation
   | IgnorePlayableModifierContexts
   | IgnoreRetaliate
   | IgnoreRevelation
   | IgnoreText
   | InVictoryDisplayForCountingVengeance
   | IncreaseCostOf CardMatcher Int
+  | InvestigateActionCriteria CriteriaOverride
   | IsEmptySpace
+  | IsPointOfDamage
+  | IsPointOfHorror
+  | IsSpirit InvestigatorId
   | KilledIfDefeated
-  | ExhaustIfDefeated
-  | DoNotExhaust
   | LeaveCardWhereItIs
+  | LookAtDepth Int
   | LosePatrol
   | LoseVictory
   | MaxCluesDiscovered Int
   | MaxDamageTaken Int
   | MayChooseNotToTakeUpkeepResources
+  | MayChooseToRemoveChaosToken InvestigatorId
+  | MayIgnoreAttacksOfOpportunity
   | MayIgnoreLocationEffectsAndKeywords
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
   | Mulligans Int
   | MustBeCommitted
+  | MustChooseEnemy EnemyMatcher
+  | MustFight EnemyId
   | MustTakeAction ActionTarget
   | NegativeToPositive
-  | NoStandardDamage
   | NoDamageDealt
+  | NoInitialSwarm
   | NoMoreThanOneDamageOrHorrorAmongst AssetMatcher
+  | NoStandardDamage
   | NoSurge
-  | NonDirectHorrorMustBeAssignToThisFirst
   | NonDirectDamageMustBeAssignToThisFirst
   | NonDirectDamageMustBeAssignToThisN Int
+  | NonDirectHorrorMustBeAssignToThisFirst
+  | NonTraitRestrictedModifier Trait ModifierType
   | Omnipotent
   | OnlyFirstCopyCardCountsTowardMaximumHandSize
+  | OtherDoomSubtracts
   | PlaceOnBottomOfDeckInsteadOfDiscard
-  | ShuffleIntoDeckInsteadOfDiscard
-  | ShuffleIntoAnyDeckInsteadOfDiscard
+  | PlayUnderControlOf InvestigatorId
+  | PlayableCardOf InvestigatorId Card
   | PlayableModifierContexts [(CardMatcher, [ModifierType])]
+  | ProvidesProxyUses UseType UseType Source
+  | ProvidesUses UseType Source
   | ReduceCostOf CardMatcher Int
+  | ReduceStartingCluesByHalf
   | RemoveFromGameInsteadOfDiscard
   | RemoveKeyword Keyword
   | RemoveSkillIcons [SkillIcon]
-  | FewerMatchingIconsPerCard Int
   | RemoveTrait Trait
+  | ReplaceAllSkillIconsWithWild
+  | ResolveEffectsAgain -- NOTE: If used for more than Tekelili, need to figure out what to do
   | ResolvesFailedEffects
+  | ReturnBlessedToChaosBag
+  | ReturnCursedToChaosBag
   | ReturnToHandAfterTest
-  | DoNotRevealAnotherChaosToken -- see: Ancient Covenant (2)
   | RevealAnotherChaosToken -- TODO: Only ShatteredAeons handles this, if a player card affects this, all scenarios have to be updated, we also use this for Cats of Ulthar directly on the SkillTest
   | RevealChaosTokensBeforeCommittingCards
-  | MayIgnoreAttacksOfOpportunity
-  | IgnoreAttacksOfOpportunity
-  | IgnoreCommitOneRestriction
   | SanityModifier Int
+  | ScenarioModifier Text
+  | ScenarioModifierValue Text Value
   | SearchDepth Int
-  | LookAtDepth Int
+  | Semaphore
   | SetAbilityCost Cost
   | SetAbilityCriteria CriteriaOverride
   | SetAfterPlay AfterPlayStrategy
+  | SetAttackDamageStrategy DamageStrategy
   | SetDifficulty Int
   | SetShroud Int
+  | SetSkillValue SkillType Int
   | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
   | ShroudModifier Int
+  | ShuffleIntoAnyDeckInsteadOfDiscard
+  | ShuffleIntoDeckInsteadOfDiscard
   | SkillCannotBeIncreased SkillType
   | SkillModifier {skillType :: SkillType, value :: Int}
   | SkillModifiersAffectOtherSkill SkillType SkillType
@@ -364,28 +368,24 @@ data ModifierType
   | StartingClues Int
   | StartingHand Int
   | StartingResources Int
-  | BaseStartingResources Int
-  | UpkeepResources Int
+  | SwarmingValue Int
+  | TakeUpFewerSlots SlotType Int
   | TopCardOfDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType
-  | NonTraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
+  | UpkeepResources Int
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose
   | UseSkillInsteadOf SkillType SkillType -- this doesn't
-  | XPModifier Text Int
-  | IfSuccessfulModifier ModifierType
-  | IfFailureModifier ModifierType
-  | NoInitialSwarm
-  | SwarmingValue Int
-  | AttackDealsEitherDamageOrHorror
+  | VehicleCannotMove
   | WillCancelHorror Int
-  | Semaphore
-  | ScenarioModifier Text
-  | ScenarioModifierValue Text Value
-  | -- UI only modifiers
-    Ethereal -- from Ethereal Form
+  | XPModifier Text Int
+  | UIModifier UIModifier
+  deriving stock (Show, Eq, Ord, Data)
+
+data UIModifier
+  = Ethereal -- from Ethereal Form
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
   deriving stock (Show, Eq, Ord, Data)
@@ -413,51 +413,6 @@ instance IsLabel "willpower" (Int -> ModifierType) where
 instance IsLabel "damage" (Int -> ModifierType) where
   fromLabel = DamageDealt
 
-_UpkeepResources :: Prism' ModifierType Int
-_UpkeepResources = prism' UpkeepResources $ \case
-  UpkeepResources n -> Just n
-  _ -> Nothing
-
-_AdditionalStartingCards :: Prism' ModifierType [Card]
-_AdditionalStartingCards = prism' AdditionalStartingCards $ \case
-  AdditionalStartingCards n -> Just n
-  _ -> Nothing
-
-_AlternateSuccessfullInvestigation :: Prism' ModifierType Target
-_AlternateSuccessfullInvestigation = prism' AlternateSuccessfullInvestigation $ \case
-  AlternateSuccessfullInvestigation n -> Just n
-  _ -> Nothing
-
-_MetaModifier :: Prism' ModifierType Value
-_MetaModifier = prism' MetaModifier $ \case
-  MetaModifier n -> Just n
-  _ -> Nothing
-
-_PlayableModifierContexts :: Prism' ModifierType [(CardMatcher, [ModifierType])]
-_PlayableModifierContexts = prism' PlayableModifierContexts $ \case
-  PlayableModifierContexts n -> Just n
-  _ -> Nothing
-
-_SearchDepth :: Prism' ModifierType Int
-_SearchDepth = prism' SearchDepth $ \case
-  SearchDepth n -> Just n
-  _ -> Nothing
-
-_AdditionalTargets :: Prism' ModifierType Int
-_AdditionalTargets = prism' AdditionalTargets $ \case
-  AdditionalTargets n -> Just n
-  _ -> Nothing
-
-_CannotEnter :: Prism' ModifierType LocationId
-_CannotEnter = prism' CannotEnter $ \case
-  CannotEnter n -> Just n
-  _ -> Nothing
-
-_CanCommitToSkillTestsAsIfInHand :: Prism' ModifierType Card
-_CanCommitToSkillTestsAsIfInHand = prism' CanCommitToSkillTestsAsIfInHand $ \case
-  CanCommitToSkillTestsAsIfInHand n -> Just n
-  _ -> Nothing
-
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType
@@ -476,6 +431,9 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "Explosion" -> pure $ UIModifier Explosion
+            "Locus" -> pure $ UIModifier Locus
+            "Ethereal" -> pure $ UIModifier Ethereal
             "CanHealAtFull" -> do
               contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
               case contents of
@@ -492,4 +450,6 @@ mconcat
             _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
       |]
   , deriveJSON (aesonOptions $ Just "modifier") ''Modifier
+  , deriveJSON defaultOptions ''UIModifier
+  , makePrisms ''ModifierType
   ]

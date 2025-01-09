@@ -7,7 +7,12 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM, modifySelfWhen)
+import Arkham.Helpers.Modifiers (
+  ModifierType (..),
+  UIModifier (..),
+  modifySelectMapM,
+  modifySelfWhen,
+ )
 import Arkham.Helpers.Use (toModifiedStartingUses)
 import Arkham.Matcher
 import Arkham.Placement
@@ -23,14 +28,12 @@ makeshiftTrap :: EventCard MakeshiftTrap
 makeshiftTrap = event MakeshiftTrap Cards.makeshiftTrap
 
 instance HasAbilities MakeshiftTrap where
-  getAbilities (MakeshiftTrap a) = [restrictedAbility a 1 tripwireCriteria $ forced $ RoundEnds #when]
+  getAbilities (MakeshiftTrap a) = [controlled a 1 tripwireCriteria $ forced $ RoundEnds #when]
    where
     tripwireCriteria = case a.attachedTo of
       Just (LocationTarget lid) ->
-        if a `hasCustomization` Tripwire
-          then ControlsThis <> exists (EnemyAt $ LocationWithId lid)
-          else ControlsThis
-      _ -> ControlsThis
+        mwhen (a `hasCustomization` Tripwire) (exists $ EnemyAt $ LocationWithId lid)
+      _ -> NoRestriction
 
 instance HasModifiersFor MakeshiftTrap where
   getModifiersFor (MakeshiftTrap a) = do

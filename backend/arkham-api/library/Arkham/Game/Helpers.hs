@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -214,6 +215,7 @@ getCanPerformAbility !iid !ws !ability = do
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
+
 
   andM
     [ getCanAffordCost iid (toSource ability) actions ws cost
@@ -536,7 +538,11 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
           $ find
             ((== ability) . usedAbility)
             usedAbilities
-      PlayerLimit _ n ->
+      PlayerLimit PerRound n -> do
+        pure
+          $ maybe True ((< n) . usedTimes)
+          $ find ((== ability) . usedAbility) usedAbilities
+      PlayerLimit _ n -> do
         pure
           $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities

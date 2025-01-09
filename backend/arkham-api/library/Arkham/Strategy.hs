@@ -27,6 +27,7 @@ data ZoneReturnStrategy
   | PutBack
   | DiscardRest
   | RemoveRestFromGame
+  | DoNothing
   deriving stock (Show, Eq, Ord, Data)
 
 -- NOTE: INT must be the number of targets to resolve

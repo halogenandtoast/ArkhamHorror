@@ -1,12 +1,11 @@
-module Arkham.Asset.Assets.ShieldOfFaith2 (shieldOfFaith2, ShieldOfFaith2 (..)) where
+module Arkham.Asset.Assets.ShieldOfFaith2 (shieldOfFaith2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Card
+import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Matcher
-import Arkham.Message (pattern CancelNext)
-import Arkham.Message.Type
 
 newtype ShieldOfFaith2 = ShieldOfFaith2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -18,7 +17,7 @@ shieldOfFaith2 = assetWith ShieldOfFaith2 Cards.shieldOfFaith2 $ setMeta False
 instance HasAbilities ShieldOfFaith2 where
   getAbilities (ShieldOfFaith2 attrs) =
     let active = toResult @Bool attrs.meta
-     in restrictedAbility
+     in restricted
           attrs
           1
           ControlsThis
@@ -37,8 +36,8 @@ instance RunMessage ShieldOfFaith2 where
   runMessage msg a@(ShieldOfFaith2 attrs) = runQueueT $ case msg of
     ResolvedCard _ card | toCardId card == toCardId attrs -> do
       ShieldOfFaith2 <$> lift (runMessage msg $ setMeta True attrs)
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ CancelNext (toSource attrs) AttackMessage
+    UseCardAbility _iid (isSource attrs -> True) 1 (getAttackDetails -> details) _ -> do
+      cancelAttack (attrs.ability 1) details
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

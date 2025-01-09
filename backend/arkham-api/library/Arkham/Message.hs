@@ -109,6 +109,7 @@ messageType InvestigatorIsDefeated {} = Just InvestigatorDefeatedMessage
 messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg
+messageType (MoveWithSkillTest msg) = messageType msg
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
@@ -1089,6 +1090,7 @@ data Message
   | DoBatch BatchId Message
   | -- UI
     ClearUI
+  | Priority Message
   deriving stock (Show, Eq, Data)
 
 $(deriveToJSON defaultOptions ''Message)

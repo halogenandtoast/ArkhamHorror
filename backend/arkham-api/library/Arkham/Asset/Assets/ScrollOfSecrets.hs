@@ -1,14 +1,16 @@
-module Arkham.Asset.Assets.ScrollOfSecrets (scrollOfSecrets, ScrollOfSecrets (..)) where
+module Arkham.Asset.Assets.ScrollOfSecrets (scrollOfSecrets) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
+import Arkham.Strategy
 
 newtype ScrollOfSecrets = ScrollOfSecrets AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,65 +31,32 @@ instance HasAbilities ScrollOfSecrets where
     ]
 
 instance RunMessage ScrollOfSecrets where
-  runMessage msg a@(ScrollOfSecrets attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ affectsOthers can.manipulate.deck
+  runMessage msg a@(ScrollOfSecrets attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      xs <- selectTargets $ affectsOthers can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel target [lookAt iid attrs target [fromBottomOfDeck 1] #any (defer attrs IsNotDraw)]
-          | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
-          ]
+      chooseTargetM iid ([EncounterDeckTarget | hasEncounterDeck] <> xs) \target -> do
+        lookAt iid attrs target [(FromBottomOfDeck 1, DoNothing)] #any (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              card
-              [ chooseOne
-                  player
-                  [ Label "Discard" [AddToEncounterDiscard card]
-                  , Label
-                      "Place on bottom of encounter deck"
-                      [PutCardOnBottomOfDeck iid Deck.EncounterDeck (EncounterCard card)]
-                  , Label
-                      "Place on top of encounter deck"
-                      [PutCardOnTopOfDeck iid Deck.EncounterDeck (EncounterCard card)]
-                  ]
-              ]
-            | card <- onlyEncounterCards cards
-            ]
-        , UnfocusCards
-        ]
+      focusCards cards \unfocus -> do
+        chooseOrRunOneM iid do
+          targets (onlyEncounterCards cards) \card ->
+            chooseOneM iid do
+              labeled "Discard" $ discard card
+              labeled "Place on bottom of encounter deck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
+              labeled "Place on top of encounter deck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
+        push unfocus
       pure a
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              (toCardId card)
-              [ chooseOne
-                  player
-                  [ Label "Discard" [AddToDiscard iid' card]
-                  , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
-                  , Label
-                      "Place on bottom of deck"
-                      [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
-                  , Label
-                      "Place on top of deck"
-                      [PutCardOnTopOfDeck iid deck (PlayerCard card)]
-                  ]
-              ]
-            | card <- onlyPlayerCards cards
-            ]
-        , UnfocusCards
-        ]
+      focusCards cards \unfocus -> do
+        chooseOrRunOneM iid do
+          targets (onlyPlayerCards cards) \card -> do
+            chooseOneM iid do
+              labeled "Discard" $ discard card
+              labeled "Add to Hand" $ addToHand iid' (only card)
+              labeled "Place on bottom of deck" $ putCardOnBottomOfDeck iid deck card
+              labeled "Place on top of deck" $ putCardOnTopOfDeck iid deck card
+        push unfocus
       pure a
-    _ -> ScrollOfSecrets <$> runMessage msg attrs
+    _ -> ScrollOfSecrets <$> liftRunMessage msg attrs

@@ -1,10 +1,8 @@
 module Arkham.Event.Events.Dodge where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Window (getAttackDetails)
 
 newtype Dodge = Dodge EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,8 +12,8 @@ dodge :: EventCard Dodge
 dodge = event Dodge Cards.dodge
 
 instance RunMessage Dodge where
-  runMessage msg e@(Dodge attrs) = case msg of
+  runMessage msg e@(Dodge attrs) = runQueueT $ case msg of
     PlayThisEvent _ eid | attrs `is` eid -> do
-      push $ CancelNext (toSource attrs) AttackMessage
-      pure e
-    _ -> Dodge <$> runMessage msg attrs
+      cancelAttack attrs (getAttackDetails attrs.windows)
+      pure e 
+    _ -> Dodge <$> liftRunMessage msg attrs

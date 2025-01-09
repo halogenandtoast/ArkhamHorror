@@ -1099,6 +1099,7 @@ runGameMessage msg g = case msg of
         RemoveRestFromGame -> do
           -- Try to obtain, then don't add back
           lift $ pushAll $ map (ObtainCard . toCardId) $ findWithDefault [] Zone.FromDeck foundCards
+        DoNothing -> pure ()
 
     pure g
   FinishedSearch -> do

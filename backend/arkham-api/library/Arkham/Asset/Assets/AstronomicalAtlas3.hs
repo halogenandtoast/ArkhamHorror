@@ -24,7 +24,11 @@ instance HasAbilities AstronomicalAtlas3 where
     [ controlledAbility a 1 (can.manipulate.deck You) $ FastAbility (exhaust a)
     , playerLimit PerTestOrAbility
         $ wantsSkillTest AnySkillTest
-        $ controlledAbility a 2 (exists $ #eligible <> CardIsBeneathAsset (be a)) (FastAbility Free)
+        $ controlled
+          a
+          2
+          (DuringSkillTest SkillTestAtYourLocation <> exists (#eligible <> CardIsBeneathAsset (be a)))
+          (FastAbility Free)
     ]
 
 instance RunMessage AstronomicalAtlas3 where

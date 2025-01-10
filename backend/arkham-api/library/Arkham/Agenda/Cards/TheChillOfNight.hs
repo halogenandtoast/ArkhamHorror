@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheChillOfNight (TheChillOfNight (..), theChillOfNight) where
+module Arkham.Agenda.Cards.TheChillOfNight (theChillOfNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
@@ -25,6 +25,6 @@ instance RunMessage TheChillOfNight where
     HandleTargetChoice _ (isSource attrs -> True) (LocationTarget location) -> do
       lead <- getLead
       cards <- field LocationCardsUnderneath location
-      focusCards cards (continue lead . pure)
+      focusCards cards (continue_ lead)
       pure a
     _ -> TheChillOfNight <$> liftRunMessage msg attrs

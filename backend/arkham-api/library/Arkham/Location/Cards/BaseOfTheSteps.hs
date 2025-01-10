@@ -39,10 +39,9 @@ instance RunMessage BaseOfTheSteps where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       hand <- field InvestigatorHand iid
       for_ hand \card -> do
-        focusCards [card] \unfocus -> do
+        focusCard card do
           chooseOneM iid do
             labeled "Discard" $ discardCard iid (attrs.ability 1) card
             labeled "Take 1 horror" $ assignHorror iid (attrs.ability 1) 1
-          push unfocus
       pure l
     _ -> BaseOfTheSteps <$> liftRunMessage msg attrs

@@ -440,11 +440,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay
-          investigatorId
-          (PlayerCard card)
-          Nothing
-          NoPayment
-          (Window.defaultWindows investigatorId)
+            investigatorId
+            (PlayerCard card)
+            Nothing
+            NoPayment
+            (Window.defaultWindows investigatorId)
          | card <- permanentCards
          ]
       <> [TakeStartingResources investigatorId]
@@ -504,8 +504,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           chooseOne player
             $ Label "Done With Mulligan" [FinishedWithMulligan investigatorId]
             : [ targetLabel
-                (toCardId card)
-                [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
+                  (toCardId card)
+                  [DiscardCard iid GameSource (toCardId card), InvestigatorMulligan iid]
               | card <- hand
               , cdCanReplace (toCardDef card)
               ]
@@ -951,11 +951,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ chooseOne
         player
         [ FightLabel
-          eid
-          $ ChoseEnemy choose.skillTest investigatorId source eid
-          : [ FightEnemy choose.skillTest investigatorId eid source mTarget skillType isAction
-            | not choose.onlyChoose
-            ]
+            eid
+            $ ChoseEnemy choose.skillTest investigatorId source eid
+            : [ FightEnemy choose.skillTest investigatorId eid source mTarget skillType isAction
+              | not choose.onlyChoose
+              ]
         | eid <- enemyIds
         ]
     pure a
@@ -1067,10 +1067,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ chooseOne
         player
         [ EvadeLabel
-          eid
-          [ ChosenEvadeEnemy choose.skillTest source eid
-          , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
-          ]
+            eid
+            [ ChosenEvadeEnemy choose.skillTest source eid
+            , EvadeEnemy choose.skillTest a.id eid source mTarget skillType isAction
+            ]
         | eid <- enemyIds
         ]
     pure a
@@ -1176,8 +1176,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     $ chooseOne
                       player
                       [ targetLabel
-                        lid
-                        [Move $ movement {moveDestination = ToLocation lid, moveMeans = Direct}]
+                          lid
+                          [Move $ movement {moveDestination = ToLocation lid, moveMeans = Direct}]
                       | lid <- matchingClosestLocationIds
                       ]
             OneAtATime -> do
@@ -1192,8 +1192,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     $ chooseOne
                       player
                       [ targetLabel
-                        lid
-                        [Move $ movement {moveDestination = ToLocation lid, moveMeans = Direct}, Move movement]
+                          lid
+                          [Move $ movement {moveDestination = ToLocation lid, moveMeans = Direct}, Move movement]
                       | lid <- matchingClosestLocationIds
                       ]
             Direct -> do
@@ -1314,9 +1314,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       let horror' = max 0 (horror - horrorToCancel)
       pushAll
         $ [ CheckWindows
-            $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-            : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage DamageDirect) | damage > 0]
-              <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
+              $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
+              : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage DamageDirect) | damage > 0]
+                <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
           | damage > 0 || horror' > 0
           ]
         <> [ InvestigatorDoAssignDamage
@@ -1343,9 +1343,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           let horror' = max 0 (horror - horrorToCancel)
           pushAll
             $ [ CheckWindows
-                $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
-                : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
-                  <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
+                  $ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage horror')
+                  : [mkWhen (Window.WouldTakeDamage source (toTarget a) damage strategy) | damage > 0]
+                    <> [mkWhen (Window.WouldTakeHorror source (toTarget a) horror') | horror' > 0]
               | damage > 0 || horror' > 0
               ]
             <> [InvestigatorDoAssignDamage iid source strategy AnyAsset damage horror' [] []]
@@ -1575,10 +1575,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push
       $ chooseOne player
       $ [ targetLabel
-          a
-          [ Msg.InvestigatorDamage investigatorId source health sanity
-          , continue health sanity (toTarget a)
-          ]
+            a
+            [ Msg.InvestigatorDamage investigatorId source health sanity
+            , continue health sanity (toTarget a)
+            ]
         | not onlyAssets
         ]
       <> map toAssetMessage assetsWithCounts
@@ -1880,10 +1880,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push
       $ chooseOne player
       $ [ targetLabel
-          (toCardId choice)
-          [ ReturnToHand iid (toTarget event)
-          , InitiatePlayCardAs iid card choice msgs chosenCardStrategy payment windows' asAction
-          ]
+            (toCardId choice)
+            [ ReturnToHand iid (toTarget event)
+            , InitiatePlayCardAs iid card choice msgs chosenCardStrategy payment windows' asAction
+            ]
         | choice <- choices
         ]
     pure a
@@ -2048,10 +2048,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             else
               chooseOne player
                 $ [ targetLabel
-                    aid'
-                    $ map (toDiscardBy iid GameSource) assets
-                    <> [ InvestigatorPlayAsset iid aid
-                       ]
+                      aid'
+                      $ map (toDiscardBy iid GameSource) assets
+                      <> [ InvestigatorPlayAsset iid aid
+                         ]
                   | aid' <- assetsThatCanProvideSlots
                   , let assets = assetsInSlotsOf aid'
                   ]
@@ -2229,9 +2229,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           push
             $ chooseOne player
             $ [ Label
-                ("Heal " <> toTitle c)
-                $ toDiscardBy iid source t
-                : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
+                  ("Heal " <> toTitle c)
+                  $ toDiscardBy iid source t
+                  : [HealDamage (InvestigatorTarget iid) source (amount - 1) | amount - 1 > 0]
               | (t, c) <- dmgTreacheries
               ]
             <> [Label "Heal remaining damage normally" [whenWindow, Do msg] | investigatorHealthDamage a > 0]
@@ -2324,9 +2324,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           push
             $ chooseOne player
             $ [ Label
-                ("Heal " <> toTitle c)
-                $ toDiscardBy iid source t
-                : [Do (HealHorrorDelayed (InvestigatorTarget iid) source (n - 1)) | n - 1 > 0]
+                  ("Heal " <> toTitle c)
+                  $ toDiscardBy iid source t
+                  : [Do (HealHorrorDelayed (InvestigatorTarget iid) source (n - 1)) | n - 1 > 0]
               | (t, c) <- hrrTreacheries
               ]
             <> [ Label "Heal remaining horror normally" [Do (HealHorror (toTarget iid) source n)]
@@ -2369,10 +2369,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     ]
                 ]
               <> [ targetLabel
-                  aid
-                  [ RemoveTokens s (toTarget aid) Clue 1
-                  , ForInvestigator iid (MoveTokens s source target Clue (amount - 1))
-                  ]
+                    aid
+                    [ RemoveTokens s (toTarget aid) Clue 1
+                    , ForInvestigator iid (MoveTokens s source target Clue (amount - 1))
+                    ]
                  | (aid, _) <- assetsWithClues
                  ]
             pure a
@@ -2445,10 +2445,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             , EnterLocation iid lid
             ]
           <> [ chooseOne
-              player
-              [ Label "Move too" [Move $ move iid' iid' lid]
-              , Label "Skip" []
-              ]
+                player
+                [ Label "Move too" [Move $ move iid' iid' lid]
+                , Label "Skip" []
+                ]
              | (iid', player) <- moveWith
              ]
           <> [ afterMoveButBeforeEnemyEngagement
@@ -2778,7 +2778,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                             player
                             [ Label
                                 "Shuffle Weaknesses back in"
-                                [UnfocusCards, ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses]
+                                [ UnfocusCards
+                                , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) weaknesses
+                                ]
                             ]
                          ]
 
@@ -2846,15 +2848,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         push
           $ chooseOrRunOne player
           $ [ Label
-              "Cancel card effects and discard it"
-              [CancelNext GameSource RevelationMessage, DiscardCard iid GameSource card.id]
+                "Cancel card effects and discard it"
+                [CancelNext GameSource RevelationMessage, DiscardCard iid GameSource card.id]
             | canCancel
             ]
           <> [ Label
-              "Immediately play that card at -2 cost"
-              [ reduceCost
-              , PayCardCost iid (toCard card) (Window.defaultWindows iid)
-              ]
+                "Immediately play that card at -2 cost"
+                [ reduceCost
+                , PayCardCost iid (toCard card) (Window.defaultWindows iid)
+                ]
              | playable
              ]
           <> [Label "Draw normally" $ maybeToList mWhenDraw <> [Do msg]]
@@ -3180,8 +3182,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           push
             $ chooseOrRunOne player
             $ [ Label
-                ("Use action from " <> lbl)
-                [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+                  ("Use action from " <> lbl)
+                  [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
               | ac@(AdditionalAction lbl _ _) <- xs
               ]
           pure a
@@ -3190,8 +3192,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         push
           $ chooseOrRunOne player
           $ [ Label
-              ("Use action from " <> lbl)
-              [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
+                ("Use action from " <> lbl)
+                [LoseAdditionalAction iid ac, SpendActions iid source mAction (n - 1)]
             | ac@(AdditionalAction lbl _ _) <- xs
             ]
         pure a
@@ -3639,16 +3641,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               let
                 choices =
                   [ targetLabel
-                    card
-                    [ if card `elem` playableCards
-                        then
-                          chooseOne
-                            player
-                            [ Label "Add to hand" [addFoundToHand]
-                            , Label "Play Card" [addFoundToHand, PayCardCost iid card windows']
-                            ]
-                        else addFoundToHand
-                    ]
+                      card
+                      [ if card `elem` playableCards
+                          then
+                            chooseOne
+                              player
+                              [ Label "Add to hand" [addFoundToHand]
+                              , Label "Play Card" [addFoundToHand, PayCardCost iid card windows']
+                              ]
+                          else addFoundToHand
+                      ]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
@@ -3665,16 +3667,16 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               let
                 choices =
                   [ targetLabel
-                    card
-                    [ if card `elem` committable
-                        then
-                          chooseOne
-                            player
-                            [ Label "Draw it" [addFoundToHand]
-                            , Label "Commit to skill test" [CommitCard who card]
-                            ]
-                        else addFoundToHand
-                    ]
+                      card
+                      [ if card `elem` committable
+                          then
+                            chooseOne
+                              player
+                              [ Label "Draw it" [addFoundToHand]
+                              , Label "Commit to skill test" [CommitCard who card]
+                              ]
+                          else addFoundToHand
+                      ]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   , let addFoundToHand = AddFocusedToHand iid (toTarget who) zone (toCardId card)
@@ -3698,8 +3700,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               let
                 choices =
                   [ targetLabel
-                    card
-                    [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
+                      card
+                      [DrawFocusedToHand iid (toTarget who) zone (toCardId card)]
                   | (zone, cards) <- mapToList targetCards
                   , card <- cards
                   ]
@@ -3738,8 +3740,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               let
                 choices =
                   [ targetLabel
-                    (toCardId card)
-                    [addToHand who card, PutCardIntoPlay iid card Nothing NoPayment windows']
+                      (toCardId card)
+                      [addToHand who card, PutCardIntoPlay iid card Nothing NoPayment windows']
                   | (_, cards) <- playableCards
                   , card <- cards
                   ]
@@ -4090,14 +4092,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         push
           $ chooseOrRunOne player
           $ [ targetLabel
-              iid'
-              [ chooseSome1
-                  player
-                  "Done giving keys"
-                  [ Label ("Give " <> keyName k <> " key") [PlaceKey (toTarget iid') k]
-                  | k <- toList investigatorKeys
-                  ]
-              ]
+                iid'
+                [ chooseSome1
+                    player
+                    "Done giving keys"
+                    [ Label ("Give " <> keyName k <> " key") [PlaceKey (toTarget iid') k]
+                    | k <- toList investigatorKeys
+                    ]
+                ]
             | iid' <- x : xs
             ]
     pure a

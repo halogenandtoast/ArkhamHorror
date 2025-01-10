@@ -1,4 +1,4 @@
-module Arkham.Event.Events.UncageTheSoul (uncageTheSoul, UncageTheSoul (..)) where
+module Arkham.Event.Events.UncageTheSoul (uncageTheSoul) where
 
 import Arkham.Cost
 import Arkham.Effect.Runner
@@ -25,9 +25,9 @@ instance RunMessage UncageTheSoul where
           (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
           =<< select (inHandOf iid <> basic (oneOf [#spell, #ritual]))
 
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseTargetM iid cards \card -> do
-          push unfocus
+          unfocusCards
           reduceCostOf attrs card 3
           playCardPayingCost iid card
 

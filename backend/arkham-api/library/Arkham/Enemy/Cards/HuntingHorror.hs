@@ -1,11 +1,10 @@
-module Arkham.Enemy.Cards.HuntingHorror (huntingHorror, HuntingHorror (..)) where
+module Arkham.Enemy.Cards.HuntingHorror (huntingHorror) where
 
 import Arkham.Ability
 import Arkham.Classes.HasQueue (withQueue_)
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
-import Arkham.Helpers.ChaosBag.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
@@ -40,7 +39,6 @@ instance RunMessage HuntingHorror where
       chooseOneM iid do
         labeled "Continue" do
           when (any (`elem` faces) [#skull, #cultist, #tablet, #elderthing, #autofail]) $ readyThis attrs
-      resetChaosTokens (attrs.ability 1)
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ PlaceEnemyOutOfPlay VoidZone attrs.id

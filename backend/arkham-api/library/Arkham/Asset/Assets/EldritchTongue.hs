@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.EldritchTongue (eldritchTongue, eldritchTongueEffect, EldritchTongue (..)) where
+module Arkham.Asset.Assets.EldritchTongue (eldritchTongue, eldritchTongueEffect) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
@@ -62,10 +62,10 @@ instance RunMessage EldritchTongueEffect where
           <> #event
           <> oneOf [#parley, basic (CardTaggedWith "parley")]
       for_ attrs.source.asset \aid -> do
-        focusCards cards \unfocus -> do
+        focusCards cards do
           chooseOneM iid do
             targets cards \card -> do
-              push unfocus
+              unfocusCards
               eventModifiers
                 attrs.source
                 card

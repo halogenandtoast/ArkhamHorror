@@ -36,6 +36,8 @@ import Arkham.Trait
 import Data.Aeson.TH
 import Data.Text qualified as T
 import GHC.Records
+import Control.Monad.State.Strict (StateT)
+import Control.Monad.Writer.Strict (WriterT)
 
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
@@ -92,13 +94,28 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
 
+cardIds :: IsCard a => [a] -> [CardId]
+cardIds = map toCardId
+
 class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
   clearCardCache :: m ()
 
+instance (CardGen m, Monoid w) => CardGen (WriterT w m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
+
 instance CardGen m => CardGen (MaybeT m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
+
+instance CardGen m => CardGen (StateT s m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card

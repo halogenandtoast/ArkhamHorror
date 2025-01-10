@@ -274,6 +274,9 @@ data Criterion
 
 instance Plated Criterion
 
+during :: SkillTestMatcher -> Criterion
+during = DuringSkillTest
+
 notYetRecorded :: IsCampaignLogKey k => k -> Criterion
 notYetRecorded = NotYetRecorded . toCampaignLogKey
 

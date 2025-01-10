@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MotivationalSpeech (motivationalSpeech, MotivationalSpeech (..)) where
+module Arkham.Event.Events.MotivationalSpeech (motivationalSpeech) where
 
 import Arkham.Card
 import Arkham.Cost.Status
@@ -25,11 +25,11 @@ instance RunMessage MotivationalSpeech where
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
       allies <- select $ PlayableCardWithCostReduction NoAction 3 $ inHandOf iid <> #ally
       when (notNull allies) do
-        focusCards allies \unfocus -> do
+        focusCards allies do
           chooseOneM iid do
-            labeled "Do not play ally" $ push unfocus
+            labeled "Do not play ally" unfocusCards
             targets allies \ally -> do
-              push unfocus
+              unfocusCards
               costModifier attrs iid (ReduceCostOf (CardWithId $ toCardId ally) 3)
               push $ PayCardCost iid ally (defaultWindows iid)
       pure e

@@ -39,10 +39,9 @@ instance RunMessage WoodenSledge where
         (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseUpToNM iid 3 "Done placing cards underneath Wooden Sledge" do
           targets cards (placeUnderneath attrs . pure)
-        push unfocus
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath

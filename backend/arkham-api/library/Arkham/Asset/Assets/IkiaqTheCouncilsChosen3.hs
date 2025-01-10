@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.IkiaqTheCouncilsChosen3 (
-  ikiaqTheCouncilsChosen3,
-  IkiaqTheCouncilsChosen3 (..),
-)
-where
+module Arkham.Asset.Assets.IkiaqTheCouncilsChosen3 ( ikiaqTheCouncilsChosen3,) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -27,7 +23,7 @@ instance HasModifiersFor IkiaqTheCouncilsChosen3 where
 
 instance HasAbilities IkiaqTheCouncilsChosen3 where
   getAbilities (IkiaqTheCouncilsChosen3 x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ restricted x 1 ControlsThis
         $ ReactionAbility
           ( DrawCard
               #when
@@ -43,11 +39,11 @@ instance RunMessage IkiaqTheCouncilsChosen3 where
     UseCardAbility _iid (isSource attrs -> True) 1 (cardDrawn -> card) _ -> do
       cancelCardDraw attrs card
       obtainCard card
-      let cardIds = toCardId card : toResult @[CardId] attrs.meta
-      pure . IkiaqTheCouncilsChosen3 $ attrs & cardsUnderneathL %~ (card :) & setMeta cardIds
+      let cs = toCardId card : toResult @[CardId] attrs.meta
+      pure . IkiaqTheCouncilsChosen3 $ attrs & cardsUnderneathL %~ (card :) & setMeta cs
     RemovedFromPlay (isSource attrs -> True) -> do
-      let cardIds = toResult @[CardId] attrs.meta
-      let weaknesses = filter ((`elem` cardIds) . toCardId) attrs.cardsUnderneath
+      let cs = toResult @[CardId] attrs.meta
+      let weaknesses = filter ((`elem` cs) . toCardId) attrs.cardsUnderneath
       for_ weaknesses \weakness -> for_ (toCardOwner weakness) \owner ->
         pushAll $ drawThisCardFrom owner weakness Nothing
       IkiaqTheCouncilsChosen3

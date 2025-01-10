@@ -1,4 +1,4 @@
-module Arkham.Event.Events.UntimelyTransaction1 (untimelyTransaction1, UntimelyTransaction1 (..)) where
+module Arkham.Event.Events.UntimelyTransaction1 (untimelyTransaction1) where
 
 import Arkham.Card
 import Arkham.Classes.HasQueue (evalQueueT)
@@ -11,6 +11,7 @@ import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (defaultWindows)
+import Control.Monad.State.Strict (put)
 
 newtype UntimelyTransaction1 = UntimelyTransaction1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -26,8 +27,8 @@ instance RunMessage UntimelyTransaction1 where
       chooseOne
         iid
         [ targetLabel
-          (toCardId item)
-          [RevealCard (toCardId item), HandleTargetChoice iid (toSource attrs) (toTarget $ toCardId item)]
+            (toCardId item)
+            [RevealCard (toCardId item), HandleTargetChoice iid (toSource attrs) (toTarget $ toCardId item)]
         | item <- items
         ]
       pure e
@@ -43,14 +44,15 @@ instance RunMessage UntimelyTransaction1 where
         played <- evalQueueT do
           drawCardsIfCan iid attrs 1
           gainResourcesIfCan iid attrs (printedCardCost card)
-        focusCards [card] \unfocus ->
+        focusCard card do
+          put Unfocused
           push
             $ AskMap
             $ mapFromList
-            $ (player, ChooseOne [Label "No one pays" [unfocus]])
+            $ (player, ChooseOne [Label "No one pays" [UnfocusCards]])
             : [ ( otherPlayer
                 , ChooseOne
-                    [ Label "Play Card" $ unfocus
+                    [ Label "Play Card" $ UnfocusCards
                         : PayCardCost otherInvestigator card (defaultWindows otherInvestigator)
                         : played
                     ]

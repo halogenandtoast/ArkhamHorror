@@ -1,109 +1,48 @@
-module Arkham.Event.Events.FirstWatch (
-  firstWatch,
-  FirstWatch (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.FirstWatch (firstWatch) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Query (getInvestigators, getPlayerCount)
 import Arkham.Id
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
   deriving newtype (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-
 newtype FirstWatch = FirstWatch (EventAttrs `With` FirstWatchMetadata)
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 firstWatch :: EventCard FirstWatch
-firstWatch =
-  event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
+firstWatch = event (FirstWatch . (`with` FirstWatchMetadata [])) Cards.firstWatch
 
 instance RunMessage FirstWatch where
-  runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..})) =
-    case msg of
-      InvestigatorPlayEvent _ eid _ _ _ | eid == eventId -> do
-        popMessageMatching_ $ \case
-          AllDrawEncounterCard -> True
-          _ -> False
-        playerCount <- getPlayerCount
-        push $ DrawEncounterCards (EventTarget eventId) playerCount
-        pure e
-      UseCardAbilityChoice iid (EventSource eid) 1 (EncounterCardMetadata card) [] _ | eid == eventId -> do
-        investigatorIds <-
-          setFromList @(Set InvestigatorId) <$> getInvestigators
-        let
-          assignedInvestigatorIds = setFromList $ map fst firstWatchPairings
-          remainingInvestigatorIds =
-            setToList
-              . insertSet iid
-              $ investigatorIds
-              `difference` assignedInvestigatorIds
-        player <- getPlayer iid
-        push
-          $ chooseOne
-            player
-            [ targetLabel
-              iid'
-              [ UseCardAbilityChoice
-                  iid'
-                  (EventSource eid)
-                  2
-                  (EncounterCardMetadata card)
-                  []
-                  NoPayment
-              ]
-            | iid' <- remainingInvestigatorIds
-            ]
-        pure e
-      UseCardAbilityChoice iid (EventSource eid) 2 (EncounterCardMetadata card) _ _
-        | eid == eventId ->
-            pure
-              $ FirstWatch
-                ( attrs
-                    `with` FirstWatchMetadata
-                      { firstWatchPairings = (iid, card) : firstWatchPairings
-                      }
-                )
-      UseCardAbilityChoice _ (EventSource eid) 3 (TargetMetadata _) _ _
-        | eid == eventId ->
-            e
-              <$ pushAll
-                [ InvestigatorDrewEncounterCard iid' card
-                | (iid', card) <- firstWatchPairings
-                ]
-      RequestedEncounterCards (EventTarget eid) cards | eid == eventId -> do
-        player <- getPlayer eventOwner
-        pushAll
-          [ FocusCards (map toCard cards)
-          , chooseOneAtATime
-              player
-              [ TargetLabel
-                (CardIdTarget $ toCardId card)
-                [ UseCardAbilityChoice
-                    eventOwner
-                    (EventSource eventId)
-                    1
-                    (EncounterCardMetadata card)
-                    []
-                    NoPayment
-                ]
-              | card <- cards
-              ]
-          , UnfocusCards
-          , UseCardAbilityChoice
-              eventOwner
-              (EventSource eventId)
-              3
-              (TargetMetadata $ toTarget attrs)
-              []
-              NoPayment
-          ]
-        pure e
-      _ -> FirstWatch . (`with` metadata) <$> runMessage msg attrs
+  runMessage msg e@(FirstWatch (attrs `With` meta)) = runQueueT $ case msg of
+    PlayThisEvent _ (is attrs -> True) -> do
+      don't AllDrawEncounterCard
+      playerCount <- getPlayerCount
+      push $ DrawEncounterCards (toTarget attrs) playerCount
+      pure e
+    UseCardAbilityChoice iid (isSource attrs -> True) 1 (EncounterCardMetadata card) [] _ -> do
+      investigators <- getInvestigators
+      let assignedInvestigators = map fst (firstWatchPairings meta)
+      let remainingInvestigators = nub $ iid : (investigators \\ assignedInvestigators)
+      chooseTargetM iid remainingInvestigators \iid' ->
+        push $ UseCardAbilityChoice iid' (toSource attrs) 2 (EncounterCardMetadata card) [] NoPayment
+      pure e
+    UseCardAbilityChoice iid (isSource attrs -> True) 2 (EncounterCardMetadata card) _ _ -> do
+      pure
+        $ FirstWatch (attrs `with` meta {firstWatchPairings = (iid, card) : firstWatchPairings meta})
+    RequestedEncounterCards (isTarget attrs -> True) cards -> do
+      focusCards cards do
+        chooseOneAtATimeM attrs.owner do
+          targets cards \card -> do
+            push $ UseCardAbilityChoice attrs.owner (toSource attrs) 1 (EncounterCardMetadata card) [] NoPayment
+      doStep 2 msg
+      pure e
+    DoStep 2 (RequestedEncounterCards (isTarget attrs -> True) _) -> do
+      for_ (firstWatchPairings meta) (uncurry drawCard)
+      pure e
+    _ -> FirstWatch . (`with` meta) <$> liftRunMessage msg attrs

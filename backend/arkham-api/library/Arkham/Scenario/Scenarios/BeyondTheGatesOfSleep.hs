@@ -249,12 +249,12 @@ instance RunMessage BeyondTheGatesOfSleep where
             then notElem MultiplayerOnly . cdDeckRestrictions
             else const True
       newWeakness <- genCard =<< sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses)
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneM iid do
           questionLabeled "Replace basic weakness with random and take 1 trauma of your choice?"
-          labeled "Do not replace" $ push unfocus
+          labeled "Do not replace" unfocusCards
           targets cards \card -> do
-            push unfocus
+            unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
             shuffleCardsIntoDeck iid [newWeakness]
             chooseOneM iid do
@@ -265,15 +265,15 @@ instance RunMessage BeyondTheGatesOfSleep where
       doStep 2 msg
       pure s
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneM iid do
           questionLabeled
             $ "Choose up to "
             <> tshow n
             <> " Tactic and/or Supply cards and begin this scenario with them as additional cards in your opening hand."
-          labeled "Do not take any" $ push unfocus
+          labeled "Do not take any" unfocusCards
           targets cards \card -> do
-            push unfocus
+            unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
             setupModifier ScenarioSource iid (AdditionalStartingCards [card])
             when (n > 1) do

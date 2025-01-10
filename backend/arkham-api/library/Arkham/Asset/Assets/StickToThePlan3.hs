@@ -1,15 +1,13 @@
-module Arkham.Asset.Assets.StickToThePlan3 (
-  stickToThePlan3,
-  StickToThePlan3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.StickToThePlan3 (stickToThePlan3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.Helpers.Modifiers hiding (costModifier)
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
+import Arkham.Strategy
 import Arkham.Trait qualified as Trait
 import Data.Function (on)
 import Data.List (nubBy)
@@ -28,44 +26,32 @@ instance HasModifiersFor StickToThePlan3 where
 
 instance HasAbilities StickToThePlan3 where
   getAbilities (StickToThePlan3 attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ freeReaction
-        $ DrawingStartingHand #when You
-    ]
+    [restricted attrs 1 ControlsThis $ freeReaction $ DrawingStartingHand #when You]
 
 instance RunMessage StickToThePlan3 where
-  runMessage msg a@(StickToThePlan3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      push $ search iid attrs iid [fromDeck] #any (defer attrs IsNotDraw)
+  runMessage msg a@(StickToThePlan3 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      search iid attrs iid [fromDeck] #any (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       let
         tacticsAndSupplies =
           nubBy ((==) `on` toCardCode)
-            $ filter
-              (`cardMatch` (#event <> oneOf (map CardWithTrait [Trait.Tactic, Trait.Supply])))
-              cards
-      additionalTargets <- getAdditionalSearchTargets iid
-      player <- getPlayer iid
-      if null tacticsAndSupplies
-        then pushAll [FocusCards cards, chooseOne player [Label "No cards found" [UnfocusCards]]]
-        else
-          push
-            $ chooseUpToN
-              player
-              (3 + additionalTargets)
-              "Choose no more events"
-              [ targetLabel
-                (toCardId card)
-                [ RemoveCardFromSearch iid (toCardId card)
-                , PlaceUnderneath (toTarget attrs) [card]
-                ]
-              | card <- tacticsAndSupplies
-              ]
+            $ filterCards (#event <> mapOneOf CardWithTrait [Trait.Tactic, Trait.Supply]) cards
+      focusCards cards do
+        if null tacticsAndSupplies
+          then prompt_ iid "No cards found"
+          else do
+            totalTargets <- getTotalSearchTargets iid tacticsAndSupplies 3
+            chooseUpToNM iid totalTargets "Choose no more events" do
+              targets tacticsAndSupplies \card -> do
+                push $ RemoveCardFromSearch iid (toCardId card)
+                placeUnderneath attrs [card]
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
-      enabled <- costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
-      pushAll [enabled, addToHand iid card, msg]
+      costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
+      addToHand iid [card]
+      push msg
       pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
-    _ -> StickToThePlan3 <$> runMessage msg attrs
+    _ -> StickToThePlan3 <$> liftRunMessage msg attrs

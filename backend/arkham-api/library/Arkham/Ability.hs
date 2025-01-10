@@ -108,6 +108,9 @@ limited = limitedAbility
 playerLimit :: AbilityLimitType -> Ability -> Ability
 playerLimit lType = limitedAbility (PlayerLimit lType 1)
 
+perTestOrAbility :: Ability -> Ability
+perTestOrAbility = playerLimit PerTestOrAbility
+
 noLimit :: Ability -> Ability
 noLimit = limitedAbility NoLimit
 {-# INLINE noLimit #-}

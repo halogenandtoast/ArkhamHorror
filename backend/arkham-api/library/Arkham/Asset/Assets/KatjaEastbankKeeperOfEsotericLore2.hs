@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.KatjaEastbankKeeperOfEsotericLore2 (
-  katjaEastbankKeeperOfEsotericLore2,
-  KatjaEastbankKeeperOfEsotericLore2 (..),
-)
-where
+module Arkham.Asset.Assets.KatjaEastbankKeeperOfEsotericLore2 (katjaEastbankKeeperOfEsotericLore2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -10,6 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card (onlyPlayerCards)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message.Lifted.Choose
 
 newtype KatjaEastbankKeeperOfEsotericLore2 = KatjaEastbankKeeperOfEsotericLore2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,11 +17,9 @@ katjaEastbankKeeperOfEsotericLore2 = ally KatjaEastbankKeeperOfEsotericLore2 Car
 
 instance HasAbilities KatjaEastbankKeeperOfEsotericLore2 where
   getAbilities (KatjaEastbankKeeperOfEsotericLore2 x) =
-    [ controlledAbility x 1 criteria1
-        $ ReactionAbility
-          (DrawCard #when You (basic NonWeakness) (DeckOf You))
-          (exhaust x)
-    , controlledAbility x 2 criteria2 actionAbility
+    [ controlled x 1 criteria1
+        $ ReactionAbility (DrawCard #when You (basic NonWeakness) (DeckOf You)) (exhaust x)
+    , controlled x 2 criteria2 actionAbility
     ]
    where
     criteria1 = if length x.cardsUnderneath < 5 then NoRestriction else Never
@@ -38,11 +33,7 @@ instance RunMessage KatjaEastbankKeeperOfEsotericLore2 where
       drawCardsIfCan iid (attrs.ability 1) 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      focusCards attrs.cardsUnderneath \unfocus -> do
-        chooseOne
-          iid
-          [ targetLabel card [unfocus, InvestigatorDrewPlayerCardFrom iid card Nothing]
-          | card <- onlyPlayerCards attrs.cardsUnderneath
-          ]
+      focusCards attrs.cardsUnderneath do
+        chooseTargetM iid (onlyPlayerCards attrs.cardsUnderneath) $ drawCard iid
       pure a
     _ -> KatjaEastbankKeeperOfEsotericLore2 <$> liftRunMessage msg attrs

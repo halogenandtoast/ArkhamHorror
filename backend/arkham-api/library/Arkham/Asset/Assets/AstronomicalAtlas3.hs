@@ -1,15 +1,14 @@
-module Arkham.Asset.Assets.AstronomicalAtlas3 (astronomicalAtlas3, AstronomicalAtlas3 (..)) where
+module Arkham.Asset.Assets.AstronomicalAtlas3 (astronomicalAtlas3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ignoreCommitOneRestriction)
+import Arkham.Helpers.Modifiers (ModifierType (..), ignoreCommitOneRestriction)
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Strategy
 
 newtype AstronomicalAtlas3 = AstronomicalAtlas3 AssetAttrs
@@ -22,13 +21,8 @@ astronomicalAtlas3 = asset AstronomicalAtlas3 Cards.astronomicalAtlas3
 instance HasAbilities AstronomicalAtlas3 where
   getAbilities (AstronomicalAtlas3 a) =
     [ controlledAbility a 1 (can.manipulate.deck You) $ FastAbility (exhaust a)
-    , playerLimit PerTestOrAbility
-        $ wantsSkillTest AnySkillTest
-        $ controlled
-          a
-          2
-          (DuringSkillTest SkillTestAtYourLocation <> exists (#eligible <> CardIsBeneathAsset (be a)))
-          (FastAbility Free)
+    , let criteria = during SkillTestAtYourLocation <> exists (#eligible <> CardIsBeneathAsset (be a))
+       in perTestOrAbility $ wantsSkillTest AnySkillTest $ controlled a 2 criteria (FastAbility Free)
     ]
 
 instance RunMessage AstronomicalAtlas3 where
@@ -39,19 +33,18 @@ instance RunMessage AstronomicalAtlas3 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       committable <- ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
       withSkillTest \sid ->
-        focusCards attrs.cardsUnderneath $ \unfocus -> do
+        focusCards attrs.cardsUnderneath do
           chooseOrRunOneM iid do
             targets committable \card -> do
-              push unfocus
               skillTestModifier sid attrs card (IfSuccessfulModifier ReturnToHandAfterTest)
-              push $ SkillTestCommitCard iid card
+              commitCard iid card
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      focusCards cards \unfocus -> continue iid [unfocus, Do msg]
+      focusCards cards $ continue iid $ unfocusCards >> do_ msg
       pure a
     Do (SearchFound iid t@(isTarget attrs -> True) deck (card : cards)) -> do
       when (length attrs.cardsUnderneath < 5) do
         when (isNonWeakness card) $ placeUnderneath attrs [card]
-        push $ Do (SearchFound iid t deck cards)
+        do_ $ SearchFound iid t deck cards
       pure a
     _ -> AstronomicalAtlas3 <$> liftRunMessage msg attrs

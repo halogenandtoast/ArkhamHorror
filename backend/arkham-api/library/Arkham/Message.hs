@@ -340,6 +340,9 @@ class AndThen a where
 instance AndThen (CardDraw Message) where
   andThen cd msg = cd {cardDrawAndThen = Just msg}
 
+instance AndThen EnemyAttackDetails where
+  andThen cd msg = cd {attackAfter = [msg]}
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting

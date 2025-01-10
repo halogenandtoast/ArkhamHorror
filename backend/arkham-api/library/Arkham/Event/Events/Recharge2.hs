@@ -4,7 +4,6 @@ import Arkham.Asset.Uses
 import Arkham.ChaosToken
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.ChaosBag.Lifted
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Id
 import Arkham.Matcher
@@ -29,7 +28,7 @@ instance RunMessage Recharge2 where
         <> oneOf [#spell, #relic]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
-      revealChaosTokens attrs iid 1
+      requestChaosTokens iid attrs 1
       pure $ Recharge2 $ attrs `with` Meta (Just aid)
     RequestedChaosTokens (isSource attrs -> True) _ tokens -> do
       for_ (chosenAsset meta) \aid -> do
@@ -41,6 +40,5 @@ instance RunMessage Recharge2 where
                 (Window.RevealChaosTokenEventEffect attrs.controller tokens attrs.id)
                 [Msg.toDiscardBy attrs.controller attrs aid]
           else push (AddUses (toSource attrs) aid Charge 3)
-      resetChaosTokens attrs
       pure e
     _ -> Recharge2 . (`with` meta) <$> liftRunMessage msg attrs

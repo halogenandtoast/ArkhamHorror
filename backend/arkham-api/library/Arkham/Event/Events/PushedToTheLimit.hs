@@ -1,4 +1,4 @@
-module Arkham.Event.Events.PushedToTheLimit (pushedToTheLimit, PushedToTheLimit (..)) where
+module Arkham.Event.Events.PushedToTheLimit (pushedToTheLimit) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -6,7 +6,6 @@ import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
-import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
@@ -28,19 +27,14 @@ instance RunMessage PushedToTheLimit where
           <> #asset
           <> inDiscardOf iid
           <> CardWithPerformableAbility AbilityIsActionAbility [IgnoreAllCosts]
-      focusCards cards \unfocus ->
-        chooseOne
-          iid
-          [ targetLabel
-            card
-            [ unfocus
-            , AddCardEntity card
-            , handleTargetChoice iid attrs (AssetId $ unsafeCardIdToUUID card.id)
-            , RemoveCardEntity card
-            , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-            ]
-          | card <- cards
-          ]
+      focusCards cards do
+        chooseOneM iid do
+          targets cards \card -> do
+            unfocusCards
+            push $ AddCardEntity card
+            handleTarget iid attrs (AssetId $ unsafeCardIdToUUID card.id)
+            push $ RemoveCardEntity card
+            shuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let

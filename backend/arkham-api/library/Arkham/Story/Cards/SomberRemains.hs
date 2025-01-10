@@ -25,6 +25,6 @@ instance RunMessage SomberRemains where
       chooseOneAtATimeM iid $ targets cards $ putCardOnBottomOfDeck iid TekeliliDeck
       pure s
     SearchFound iid (isTarget attrs -> True) _ [] -> do
-      prompt iid "No Cards Found" []
+      prompt_ iid "No Cards Found"
       pure s
     _ -> SomberRemains <$> liftRunMessage msg attrs

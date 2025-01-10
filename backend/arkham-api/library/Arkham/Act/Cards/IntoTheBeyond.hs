@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.IntoTheBeyond (IntoTheBeyond (..), intoTheBeyond) where
+module Arkham.Act.Cards.IntoTheBeyond (intoTheBeyond) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -35,8 +35,9 @@ instance RunMessage IntoTheBeyond where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ target | isTarget attrs target -> do
       let locationCards = map toCard $ filterLocations cards
-      focusCards locationCards \unfocus -> do
-        chooseTargetM iid locationCards (push . ResolveRevelation iid)
-        push unfocus
+      focusCards locationCards do
+        chooseTargetM iid locationCards \card -> do
+          unfocusCards
+          push $ ResolveRevelation iid card
       pure a
     _ -> IntoTheBeyond <$> liftRunMessage msg attrs

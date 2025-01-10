@@ -211,10 +211,9 @@ instance RunMessage EdgeOfTheEarth where
                           "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                         portraitLabeled iid do
                           cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                          focusCards cards \unfocus -> do
+                          focusCards cards do
                             chooseUpToNM iid 5 "Do not remove anymore" do
                               targets cards $ removeCardFromDeckForCampaign iid
-                            push unfocus
 
                       doStep (n - 1) msg'
                 else do

@@ -359,6 +359,14 @@ removeMessageType msgType = withQueue_ $ \queue ->
 addToHand :: IsCard a => InvestigatorId -> a -> Message
 addToHand i (toCard -> c) = AddToHand i [c]
 
+addToDiscard :: IsCard a => InvestigatorId -> a -> Message
+addToDiscard i (toCard -> c) = go c
+  where
+    go = \case
+      VengeanceCard c' -> go c'
+      PlayerCard c' -> AddToDiscard i c'
+      EncounterCard c' -> AddToEncounterDiscard c'
+
 drawToHand :: IsCard a => InvestigatorId -> a -> Message
 drawToHand i (toCard -> c) = DrawToHand i [c]
 
@@ -429,10 +437,16 @@ placeLabeledLocationsFrom lbl n cards = fmap fold
     pure [([location], [placement, SetLocationLabel location (lbl <> tshow (n + idx))])]
 
 putCardIntoPlay :: IsCard card => InvestigatorId -> card -> Message
-putCardIntoPlay iid (toCard -> card) = PutCardIntoPlay iid card Nothing NoPayment (defaultWindows iid)
+putCardIntoPlay iid card = putCardIntoPlayWithWindows iid card (defaultWindows iid)
+
+putCardIntoPlayWithWindows :: IsCard card => InvestigatorId -> card -> [Window] -> Message
+putCardIntoPlayWithWindows iid (toCard -> card) ws = PutCardIntoPlay iid card Nothing NoPayment ws
 
 putCardIntoPlayWithAdditionalCosts :: IsCard card => InvestigatorId -> card -> Message
-putCardIntoPlayWithAdditionalCosts iid (toCard -> card) = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment (defaultWindows iid)
+putCardIntoPlayWithAdditionalCosts iid (toCard -> card) = putCardIntoPlayWithAdditionalCostsAndWindows iid card (defaultWindows iid)
+
+putCardIntoPlayWithAdditionalCostsAndWindows :: IsCard card => InvestigatorId -> card -> [Window] -> Message
+putCardIntoPlayWithAdditionalCostsAndWindows iid (toCard -> card) ws = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment ws
 
 placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)
 placeLabeledLocation lbl card = do

@@ -25,6 +25,6 @@ instance RunMessage AHarshWindBlows where
     HandleTargetChoice _ (isSource attrs -> True) (LocationTarget location) -> do
       lead <- getLead
       cards <- field LocationCardsUnderneath location
-      focusCards cards (continue lead . pure)
+      focusCards cards $ continue_ lead
       pure a
     _ -> AHarshWindBlows <$> liftRunMessage msg attrs

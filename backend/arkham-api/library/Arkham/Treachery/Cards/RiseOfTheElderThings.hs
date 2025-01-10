@@ -22,15 +22,12 @@ riseOfTheElderThings = treachery RiseOfTheElderThings Cards.riseOfTheElderThings
 instance RunMessage RiseOfTheElderThings where
   runMessage msg t@(RiseOfTheElderThings attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      elderThings <-
-        filterCards (card_ $ #enemy <> CardWithTrait ElderThing) <$> scenarioField ScenarioDiscard
+      elderThings <- filterCards (#enemy <> CardWithTrait ElderThing) <$> scenarioField ScenarioDiscard
       when (null elderThings) $ gainSurge attrs
       unless (null elderThings) do
-        focusCards elderThings \unfocus -> do
-          chooseOneM iid do
-            for_ elderThings \elderThing -> do
-              targeting elderThing $ pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
-          push unfocus
+        focusCards elderThings do
+          chooseTargetM iid elderThings \elderThing -> do
+            pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
       selectEach (enemyEngagedWith iid <> withTrait ElderThing) \x -> do
         roundModifiers attrs x [EnemyFight 1, EnemyEvade 1]
       pure t

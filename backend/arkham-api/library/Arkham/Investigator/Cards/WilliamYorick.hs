@@ -43,9 +43,9 @@ instance RunMessage WilliamYorick where
         filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) windows'')
           $ filterCards (card_ #asset) (map toCard $ investigatorDiscard attrs)
 
-      focusCards (map toCard $ investigatorDiscard attrs) \unfocus -> do
+      focusCards (map toCard $ investigatorDiscard attrs) do
         chooseTargetM iid playableCards \card -> do
-          push unfocus
+          unfocusCards
           playCardPayingCost iid card
       pure i
     ElderSignEffect iid | iid == toId attrs -> do
@@ -70,13 +70,10 @@ instance RunMessage WilliamYorickEffect where
         discards <- lift $ field InvestigatorDiscard iid
         guard $ notNull discards
         lift do
-          focusCards (map toCard discards) \unfocus -> do
+          focusCards (map toCard discards) do
             chooseOneM iid do
-              labeled "Do not return card to hand" $ push unfocus
-              for_ discards \card -> do
-                targeting card do
-                  push unfocus
-                  addToHand iid (only $ PlayerCard card)
+              labeled "Do not return card to hand" nothing
+              targets discards $ addToHand iid . only
       disableReturn e
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
     _ -> WilliamYorickEffect <$> liftRunMessage msg attrs

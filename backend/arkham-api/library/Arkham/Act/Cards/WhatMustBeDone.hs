@@ -50,11 +50,11 @@ instance RunMessage WhatMustBeDone where
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       let cards = drewCards.cards
 
-      focusCards (map flipCard drewCards.cards) \unfocus -> do
+      focusCards (map flipCard drewCards.cards) do
         chooseOrRunOneM iid do
-          for drewCards.cards \card -> do
+          for_ drewCards.cards \card -> do
             targeting card do
-              push unfocus
+              unfocusCards
               shuffleCardsIntoDeck CosmosDeck (List.delete card cards)
               lid <- placeLocation card
               revealBy iid lid

@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Copycat3 (copycat3, copycat3Effect, Copycat3 (..)) where
+module Arkham.Skill.Cards.Copycat3 (copycat3, copycat3Effect) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Import
@@ -23,13 +23,12 @@ instance RunMessage Copycat3 where
         committableCards <- select $ CommittableCard (InvestigatorWithId iid) $ inDiscardOf iid' <> #skill
         pure $ guard (notNull committableCards) $> (iid', committableCards)
       unless (null iidsWithCommittableCards) do
-        focusCards (concatMap snd iidsWithCommittableCards) \unfocus -> do
+        focusCards (concatMap snd iidsWithCommittableCards) do
           chooseOneM iid do
             for_ iidsWithCommittableCards \(iid', cards) -> do
               targets cards \card -> do
                 push $ CommitCard iid card
                 createCardEffect Cards.copycat3 (Just $ EffectMetaTarget (toTarget card)) attrs iid'
-                push unfocus
       Copycat3 <$> liftRunMessage msg attrs
     _ -> Copycat3 <$> liftRunMessage msg attrs
 
@@ -42,7 +41,7 @@ copycat3Effect = cardEffect Copycat3Effect Cards.copycat3
 
 instance RunMessage Copycat3Effect where
   runMessage msg e@(Copycat3Effect attrs) = runQueueT $ case msg of
-    SkillTestEnds _ _ _ -> do
+    SkillTestEnds {} -> do
       case (attrs.meta, attrs.target) of
         (Just (EffectMetaTarget (CardIdTarget cardId)), InvestigatorTarget iid) -> do
           card <- getCard cardId

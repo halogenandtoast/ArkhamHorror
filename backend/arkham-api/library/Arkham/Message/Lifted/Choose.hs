@@ -1,7 +1,7 @@
 module Arkham.Message.Lifted.Choose where
 
 import Arkham.Ability.Types
-import Arkham.Card.CardCode
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -28,7 +28,7 @@ data ChooseState = ChooseState
 
 newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Message] m) a}
   deriving newtype
-    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState ChooseState, MonadIO)
+    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState ChooseState, MonadIO, MonadRandom, CardGen)
 
 instance HasGame m => HasGame (ChooseT m) where
   getGame = lift getGame

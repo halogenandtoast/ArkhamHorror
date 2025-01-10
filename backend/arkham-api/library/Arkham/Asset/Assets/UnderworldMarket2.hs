@@ -1,16 +1,15 @@
-module Arkham.Asset.Assets.UnderworldMarket2 (underworldMarket2, UnderworldMarket2 (..)) where
+module Arkham.Asset.Assets.UnderworldMarket2 (underworldMarket2) where
 
 import Arkham.Ability
+import Arkham.Message.Lifted.Choose
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Cost (getSpendableResources)
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Projection
 
 newtype Meta = Meta {marketDeck :: [Card]}
@@ -26,54 +25,39 @@ underworldMarket2 = asset (UnderworldMarket2 . (`with` Meta [])) Cards.underworl
 
 instance HasAbilities UnderworldMarket2 where
   getAbilities (UnderworldMarket2 (With attrs meta)) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ freeReaction
-        $ DrawingStartingHand #when You
-    , controlledAbility attrs 2 criteria $ freeReaction $ TurnBegins #when You
+    [ restricted attrs 1 ControlsThis $ freeReaction $ DrawingStartingHand #when You
+    , controlled attrs 2 criteria $ freeReaction $ TurnBegins #when You
     ]
    where
-    criteria = if length (marketDeck meta) > 0 then NoRestriction else Never
+    criteria = if null (marketDeck meta) then Never else NoRestriction
 
 instance RunMessage UnderworldMarket2 where
   runMessage msg a@(UnderworldMarket2 (With attrs meta)) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       xs <- filterCards (card_ #illicit) <$> fieldMap InvestigatorDeck (map toCard . unDeck) iid
-
-      when (notNull xs) do
-        focusCards xs \unfocus -> do
-          chooseN
-            iid
-            10
-            [targetLabel card [HandleTargetChoice iid (attrs.ability 1) (toTarget card)] | card <- xs]
-          push unfocus
+      focusCards xs $ chooseNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
       pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      push $ ObtainCard cid
-      deck' <- shuffleM (card : marketDeck meta)
+      obtainCard card
+      deck' <- shuffle (card : marketDeck meta)
       pure . UnderworldMarket2 . (`with` Meta deck') $ attrs
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let (xs, rest) = splitAt 2 $ marketDeck meta
       when (notNull xs) do
-        focusCards xs \unfocus -> do
+        focusCards xs do
           spendableResources <- getSpendableResources iid
-          player <- getPlayer iid
-          let placeOnBottom c = targetLabel c [HandleTargetChoice iid (attrs.ability 2) (toTarget c)]
-          let choosePlaceOnBottom cs = Msg.chooseOneAtATime player $ map placeOnBottom cs
-          chooseOne iid
-            $ Label "Place the rest on the bottom, in any order" [choosePlaceOnBottom xs, unfocus]
-            : [ Label
-                "Spend 1 resource to draw 1 of them"
-                [ SpendResources iid 1
-                , Msg.chooseOne
-                    player
-                    [ targetLabel card $ AddToHand iid [card] : [choosePlaceOnBottom cs | notNull cs]
-                    | (card, cs) <- eachWithRest xs
-                    ]
-                , unfocus
-                ]
-              | spendableResources > 0
-              ]
+          chooseOneM iid do
+            labeled "Place the rest on the bottom, in any order" do
+              chooseOneAtATimeM iid $ targets xs $ handleTarget iid (attrs.ability 2)
+            when (spendableResources > 0) do
+              labeled "Spend 1 resource to draw 1 of them" do
+                push $ SpendResources iid 1
+                chooseOneM iid do
+                  for_ (eachWithRest xs) \(card, cs) -> do
+                    targeting card do
+                      addToHand iid (only card)
+                      chooseOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
 
       pure . UnderworldMarket2 . (`with` Meta rest) $ attrs
     HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (CardIdTarget cid) -> do

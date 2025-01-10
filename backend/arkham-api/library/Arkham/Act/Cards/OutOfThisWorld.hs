@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.OutOfThisWorld (OutOfThisWorld (..), outOfThisWorld) where
+module Arkham.Act.Cards.OutOfThisWorld (outOfThisWorld) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -28,9 +28,11 @@ instance RunMessage OutOfThisWorld where
       pure a
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
       let locationCards = filterLocations cards
-      focusCards (map toCard cards) \unfocus -> do
+      focusCards (map toCard cards) do
         chooseOneM iid do
-          when (null locationCards) $ labeled "No locations found" $ push unfocus
-          targets locationCards \location -> pushAll [unfocus, ResolveRevelation iid (toCard location)]
+          when (null locationCards) $ labeled "No locations found" unfocusCards
+          targets locationCards \location -> do
+            unfocusCards
+            push $ ResolveRevelation iid (toCard location)
       pure a
     _ -> OutOfThisWorld <$> liftRunMessage msg attrs

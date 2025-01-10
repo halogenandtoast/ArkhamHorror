@@ -1,17 +1,13 @@
-module Arkham.Asset.Assets.FluxStabilizerInactive (
-  fluxStabilizerInactive,
-  FluxStabilizerInactive (..),
-)
-where
+module Arkham.Asset.Assets.FluxStabilizerInactive (fluxStabilizerInactive) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Deck
 import Arkham.Event.Cards qualified as Events
 import Arkham.Helpers.Investigator (searchBonded)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Token
 
 newtype FluxStabilizerInactive = FluxStabilizerInactive AssetAttrs
@@ -23,10 +19,7 @@ fluxStabilizerInactive = asset FluxStabilizerInactive Cards.fluxStabilizerInacti
 
 instance HasAbilities FluxStabilizerInactive where
   getAbilities (FluxStabilizerInactive x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ forced
-        $ PlacedToken #after AnySource (TargetIs $ toTarget x) Clue
-    ]
+    [restricted x 1 ControlsThis $ forced $ PlacedToken #after AnySource (TargetIs $ toTarget x) Clue]
 
 instance RunMessage FluxStabilizerInactive where
   runMessage msg a@(FluxStabilizerInactive attrs) = runQueueT $ case msg of
@@ -44,12 +37,7 @@ instance RunMessage FluxStabilizerInactive where
                 <> basic (oneOf [cardIs Events.aethericCurrentYuggoth, cardIs Events.aethericCurrentYoth])
             ]
       when (notNull currents) $ do
-        focusCards currents \unfocus ->
-          chooseOne
-            iid
-            [ targetLabel current [unfocus, ShuffleCardsIntoDeck (InvestigatorDeck iid) [current]]
-            | current <- currents
-            ]
+        focusCards currents $ chooseTargetM iid currents $ shuffleCardsIntoDeck iid . only
       push $ Flip iid (attrs.ability 1) (toTarget attrs)
       pure a
     _ -> FluxStabilizerInactive <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.BlackMarket2 (blackMarket2, blackMarket2Effect, BlackMarket2 (..)) where
+module Arkham.Event.Events.BlackMarket2 (blackMarket2, blackMarket2Effect) where
 
 import Arkham.Capability
 import Arkham.Card
@@ -82,12 +82,11 @@ instance RunMessage BlackMarket2Effect where
               Nothing -> do
                 investigators <- select Anyone
                 lead <- getLead
-                focusCards [card] \unfocus -> do
+                focusCard card do
                   chooseOrRunOneM lead do
                     questionLabeled "A set aside card was missing its owner. Please select the correct owner"
                     targets investigators \iid -> do
                       push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) EndPhase))
-                  push unfocus
               Just owner -> do
                 obtainCard card
                 push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck owner) [card]

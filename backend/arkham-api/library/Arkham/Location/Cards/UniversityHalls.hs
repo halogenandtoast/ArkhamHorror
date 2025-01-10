@@ -48,6 +48,6 @@ instance RunMessage UniversityHalls where
       pure l
     DiscardedTopOfDeck iid cards (isAbilitySource attrs 2 -> True) (isTarget attrs -> True) -> do
       let tekelili = filterCards (CardFromEncounterSet Tekelili) cards
-      focusCards_ tekelili $ chooseOrRunOneM iid $ targets tekelili $ drawCard iid
+      focusCards tekelili $ chooseOrRunOneM iid $ targets tekelili $ drawCard iid
       pure l
     _ -> UniversityHalls <$> mirageRunner Stories.universityHalls mirageCards 1 msg attrs

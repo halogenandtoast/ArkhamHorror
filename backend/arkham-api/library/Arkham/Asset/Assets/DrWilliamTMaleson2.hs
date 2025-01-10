@@ -1,6 +1,7 @@
-module Arkham.Asset.Assets.DrWilliamTMaleson2 (drWilliamTMaleson2, DrWilliamTMaleson2 (..)) where
+module Arkham.Asset.Assets.DrWilliamTMaleson2 (drWilliamTMaleson2) where
 
 import Arkham.Ability
+import Arkham.Message.Lifted.Choose
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
@@ -22,7 +23,7 @@ drWilliamTMaleson2 = ally (DrWilliamTMaleson2 . (`with` Meta Nothing)) Cards.drW
 
 instance HasAbilities DrWilliamTMaleson2 where
   getAbilities (DrWilliamTMaleson2 (With attrs _)) =
-    [ restrictedAbility attrs 1 ControlsThis
+    [ restricted attrs 1 ControlsThis
         $ ReactionAbility
           (DrawCard #when (affectsOthers Anyone) (basic IsEncounterCard) EncounterDeck)
           (exhaust attrs <> PlaceClueOnLocationCost 1)
@@ -36,12 +37,17 @@ instance RunMessage DrWilliamTMaleson2 where
       pure . DrWilliamTMaleson2 $ attrs `with` Meta (Just card)
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       case (drawnCard meta, drewCards.cards) of
-        (Just e1, [c2@(EncounterCard e2)]) -> focusCards [EncounterCard e1, c2] \unfocus -> do
-          questionLabel "Choose card to resolve" iid
-            $ ChooseOne
-              [ targetLabel e1 [unfocus, AddToEncounterDiscard e2, InvestigatorDrewEncounterCard iid e1]
-              , targetLabel c2 [unfocus, AddToEncounterDiscard e1, InvestigatorDrewEncounterCard iid e2]
-              ]
+        (Just e1, [c2@(EncounterCard e2)]) -> focusCards [EncounterCard e1, c2] do
+          chooseOneM iid do
+            questionLabeled "Choose card to resolve"
+            targeting e1 do
+              unfocusCards
+              push $ AddToEncounterDiscard e2
+              drawCard iid e1
+            targeting c2 do
+              unfocusCards
+              push $ AddToEncounterDiscard e1
+              drawCard iid e2
         _ -> error "Unhandled william t maleson"
       cancelledOrIgnoredCardOrGameEffect $ attrs.ability 1
       pure a

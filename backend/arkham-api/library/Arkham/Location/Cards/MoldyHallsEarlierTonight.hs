@@ -1,20 +1,17 @@
-module Arkham.Location.Cards.MoldyHallsEarlierTonight (
-  moldyHallsEarlierTonight,
-  MoldyHallsEarlierTonight (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.MoldyHallsEarlierTonight (moldyHallsEarlierTonight) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (InvestigatorDiscard, InvestigatorName))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Modifier
-import Arkham.Name
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Name qualified as Name
 import Arkham.Projection
 import Arkham.ScenarioLogKey
 
@@ -28,55 +25,29 @@ moldyHallsEarlierTonight =
 
 instance HasAbilities MoldyHallsEarlierTonight where
   getAbilities (MoldyHallsEarlierTonight a) =
-    withRevealedAbilities
-      a
-      [ limitedAbility (GroupLimit PerGame 1)
-          $ restrictedAbility
-            a
-            1
-            ( Here
-                <> InvestigatorExists
-                  ( DiscardWith AnyCards
-                      <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
-                      <> InvestigatorAt (LocationWithId $ toId a)
-                  )
-            )
-          $ ActionAbility []
-          $ ActionCost 1
-      ]
+    extendRevealed1 a
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        (Here <> exists (DiscardWith AnyCards <> can.have.cards.leaveDiscard <> at_ (be a)))
+        actionAbility
 
 instance RunMessage MoldyHallsEarlierTonight where
-  runMessage msg l@(MoldyHallsEarlierTonight attrs) = case msg of
-    Msg.RevealLocation _ lid | lid == toId attrs -> do
-      MoldyHallsEarlierTonight <$> runMessage msg (attrs & labelL .~ "moldyHallsEarlierTonight")
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      iids <-
-        select
-          $ investigatorAt (toId attrs)
-          <> DiscardWith AnyCards
-          <> InvestigatorWithoutModifier CardsCannotLeaveYourDiscardPile
+  runMessage msg l@(MoldyHallsEarlierTonight attrs) = runQueueT $ case msg of
+    Msg.RevealLocation _ (is attrs -> True) -> do
+      MoldyHallsEarlierTonight <$> liftRunMessage msg (attrs & labelL .~ "moldyHallsEarlierTonight")
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      iids <- select $ at_ (be attrs) <> DiscardWith AnyCards <> can.have.cards.leaveDiscard
 
-      iidsWithDetails <- for iids $ \iid -> do
+      for_ iids \iid -> do
         name <- field InvestigatorName iid
         discards <- fieldMap InvestigatorDiscard (map toCard) iid
-        player <- getPlayer iid
-        pure (iid, player, discards, name)
-
-      pushAll
-        [ chooseOne
-          player
-          [ Label "Do not request aid from your past self" []
-          , Label
-              "Request aid from your past self"
-              [ FocusCards discards
-              , chooseOne
-                  player
-                  [targetLabel card [ReturnToHand iid (toTarget card)] | card <- discards]
-              , UnfocusCards
-              , Remember $ MeddledWithThePast $ labeled name iid
-              ]
-          ]
-        | (iid, player, discards, name) <- iidsWithDetails
-        ]
+        chooseOneM iid do
+          labeled "Do not request aid from your past self" nothing
+          labeled "Request aid from your past self" do
+            focusCards discards do
+              chooseTargetM iid discards (returnToHand iid)
+            remember $ MeddledWithThePast $ Name.labeled name iid
       pure l
-    _ -> MoldyHallsEarlierTonight <$> runMessage msg attrs
+    _ -> MoldyHallsEarlierTonight <$> liftRunMessage msg attrs

@@ -44,10 +44,7 @@ instance RunMessage TheYithianRelic where
   runMessage msg a@(TheYithianRelic attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOne (inDiscardOf iid <> basic "Relic of Ages") >>= \case
-        Just relic -> focusCard relic \unfocus -> do
-          chooseOneM iid $ targeting relic do
-            push unfocus
-            addToHand iid (only relic)
+        Just relic -> focusCard relic $ chooseOneM iid $ targeting relic $ addToHand iid (only relic)
         Nothing -> search iid attrs iid [fromDeck] (basic "Relic of Ages") (DrawFound iid 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

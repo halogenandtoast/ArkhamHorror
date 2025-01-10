@@ -59,9 +59,8 @@ instance RunMessage SearchForTheBrotherhood where
       case rest of
         [] -> pure ()
         (x : _) ->
-          focusCards (map EncounterCard $ nonMatch <> [x]) \unfocus -> do
+          focusCards (map EncounterCard $ nonMatch <> [x]) do
             chooseOneM iid do
               targeting x $ shuffleCardsIntoDeck ExplorationDeck [EncounterCard x]
-            push unfocus
       pure a
     _ -> SearchForTheBrotherhood <$> liftRunMessage msg attrs

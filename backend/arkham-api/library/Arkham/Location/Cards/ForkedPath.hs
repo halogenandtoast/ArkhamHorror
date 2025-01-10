@@ -1,19 +1,12 @@
-module Arkham.Location.Cards.ForkedPath (
-  forkedPath,
-  ForkedPath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ForkedPath (forkedPath) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype ForkedPath = ForkedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,21 +21,16 @@ forkedPath = symbolLabel $ location ForkedPath Cards.forkedPath 2 (PerPlayer 2)
 -- and choose 1 to move to
 
 instance HasAbilities ForkedPath where
-  getAbilities (ForkedPath attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (Here <> InvestigatorExists (You <> InvestigatorWithSupply Map))
-          $ ForcedAbility
-          $ AttemptExplore Timing.When You
-      ]
+  getAbilities (ForkedPath a) =
+    extendRevealed1 a
+      $ restricted a 1 (Here <> InvestigatorExists (You <> InvestigatorWithSupply Map))
+      $ forced
+      $ AttemptExplore #when You
 
 instance RunMessage ForkedPath where
-  runMessage msg l@(ForkedPath attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      popMessageMatching_ $ \case
+  runMessage msg l@(ForkedPath attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      matchingDon't \case
         Do (Explore {}) -> True
         _ -> False
       explore
@@ -52,4 +40,4 @@ instance RunMessage ForkedPath where
         PlaceExplored
         2
       pure l
-    _ -> ForkedPath <$> runMessage msg attrs
+    _ -> ForkedPath <$> liftRunMessage msg attrs

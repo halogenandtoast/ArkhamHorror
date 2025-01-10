@@ -1,4 +1,4 @@
-module Arkham.Event.Events.IllTakeThat (illTakeThat, IllTakeThat (..)) where
+module Arkham.Event.Events.IllTakeThat (illTakeThat) where
 
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
@@ -26,9 +26,9 @@ instance RunMessage IllTakeThat where
       let n = getPassedBy attrs.windows
       items <-
         select $ PlayableCardWithCostReduction NoAction n $ inHandOf iid <> basic (#item <> #asset)
-      focusCards items \unfocus -> do
+      focusCards items do
         chooseTargetM iid items \item -> do
-          push unfocus
+          unfocusCards
           reduceCostOf attrs item n
           payCardCost iid item
           handleTarget iid attrs item

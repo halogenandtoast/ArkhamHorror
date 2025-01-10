@@ -1,4 +1,4 @@
-module Arkham.Event.Events.EtherealWeaving3 (etherealWeaving3, EtherealWeaving3 (..)) where
+module Arkham.Event.Events.EtherealWeaving3 (etherealWeaving3) where
 
 import Arkham.Card
 import Arkham.Cost.Status
@@ -26,13 +26,12 @@ instance RunMessage EtherealWeaving3 where
   runMessage msg e@(EtherealWeaving3 (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       cards <- select $ inHandOf iid <> #event <> #spell
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseUpToN
           iid
           3
           "Done revealing cards"
           [targetLabel card [handleTargetChoice iid attrs card] | card <- cards]
-        push unfocus
       doStep 2 msg
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do

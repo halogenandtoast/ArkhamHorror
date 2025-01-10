@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.MollyMaxwell (mollyMaxwell, MollyMaxwell (..)) where
+module Arkham.Asset.Assets.MollyMaxwell (mollyMaxwell) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -19,7 +19,7 @@ mollyMaxwell = ally MollyMaxwell Cards.mollyMaxwell (2, 4)
 
 instance HasAbilities MollyMaxwell where
   getAbilities (MollyMaxwell a) =
-    [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a <> horrorCost a 1]
+    [restricted a 1 ControlsThis $ FastAbility $ exhaust a <> horrorCost a 1]
 
 instance RunMessage MollyMaxwell where
   runMessage msg a@(MollyMaxwell attrs) = runQueueT $ case msg of
@@ -34,15 +34,12 @@ instance RunMessage MollyMaxwell where
           ]
       pure a
     RevealedCards iid (isSource attrs -> True) _ mcard rest -> do
-      focusCards (rest <> maybeToList mcard) \unfocus -> do
+      focusCards (rest <> maybeToList mcard) do
         chooseOneM iid do
-          when (isNothing mcard) do
-            labeled "No cards found" do
-              push unfocus
+          case mcard of
+            Nothing -> labeled "No cards found" $ shuffleCardsIntoDeck iid rest
+            Just c -> targeting c do
+              addToHand iid [c]
               shuffleCardsIntoDeck iid rest
-          for_ mcard \c -> targeting c do
-            push unfocus
-            addToHand iid [c]
-            shuffleCardsIntoDeck iid rest
       pure a
     _ -> MollyMaxwell <$> liftRunMessage msg attrs

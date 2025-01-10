@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Resourceful (resourceful, Resourceful (..)) where
+module Arkham.Skill.Cards.Resourceful (resourceful) where
 
 import Arkham.Capability
 import Arkham.Card
@@ -22,11 +22,10 @@ instance RunMessage Resourceful where
         cards <- select $ inDiscardOf attrs.owner <> basic (#survivor <> not_ (CardWithTitle "Resourceful"))
         unless (null cards) do
           discards <- map toCard <$> attrs.owner.discard
-          focusCards discards \unfocus -> do
-            chooseOneM attrs.owner do
-              targets cards \card -> do
-                push unfocus
-                obtainCard card
-                addToHand attrs.owner (only card)
+          focusCards discards do
+            chooseTargetM attrs.owner cards \card -> do
+              unfocusCards
+              obtainCard card
+              addToHand attrs.owner (only card)
       pure s
     _ -> Resourceful <$> liftRunMessage msg attrs

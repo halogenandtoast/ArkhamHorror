@@ -1,13 +1,12 @@
-module Arkham.Event.Events.ParallelFates2 (parallelFates2, ParallelFates2 (..)) where
+module Arkham.Event.Events.ParallelFates2 (parallelFates2) where
 
+import Arkham.Capability
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Strategy
 
 newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
@@ -18,59 +17,30 @@ newtype ParallelFates2 = ParallelFates2 (EventAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parallelFates2 :: EventCard ParallelFates2
-parallelFates2 =
-  event (ParallelFates2 . (`with` Metadata [])) Cards.parallelFates2
+parallelFates2 = event (ParallelFates2 . (`with` Metadata [])) Cards.parallelFates2
 
 instance RunMessage ParallelFates2 where
-  runMessage msg e@(ParallelFates2 (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      targets <- selectTargets $ InvestigatorWithoutModifier CannotManipulateDeck
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ TargetLabel target [lookAt iid attrs target [fromTopOfDeck 6] #any (defer attrs IsNotDraw)]
-          | target <- EncounterDeckTarget : targets
-          ]
+  runMessage msg e@(ParallelFates2 (attrs `With` meta)) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      xs <- selectTargets $ investigator_ can.manipulate.deck
+      chooseTargetM iid (EncounterDeckTarget : xs) \target -> do
+        lookAt iid attrs target [fromTopOfDeck 6] #any (defer attrs IsNotDraw)
       pure e
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOne
-            player
-            [ Label "Shuffle them in" [ShuffleCardsIntoDeck Deck.EncounterDeck cards]
-            , Label
-                "Put back in any order"
-                [ chooseOneAtATime
-                    player
-                    [ targetLabel card [PutCardOnTopOfDeck iid Deck.EncounterDeck (EncounterCard card)]
-                    | card <- mapMaybe (preview _EncounterCard) cards
-                    ]
-                ]
-            ]
-        , UnfocusCards
-        ]
+      focusCards cards do
+        chooseOneM iid do
+          labeled "Shuffle them in" $ shuffleCardsIntoDeck Deck.EncounterDeck cards
+          labeled "Put back in any order" do
+            chooseOneAtATimeM iid do
+              targets (onlyEncounterCards cards) $ putCardOnTopOfDeck iid Deck.EncounterDeck
       pure e
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck _) cards -> do
-      let drawing = drawCards iid attrs 1
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOne
-            player
-            [ Label "Shuffle them in" [ShuffleCardsIntoDeck deck cards]
-            , Label
-                "Put back in any order"
-                [ chooseOneAtATime
-                    player
-                    [ targetLabel card [PutCardOnTopOfDeck iid deck (PlayerCard card)]
-                    | card <- mapMaybe (preview _PlayerCard) cards
-                    ]
-                ]
-            ]
-        , UnfocusCards
-        , drawing
-        ]
+      focusCards cards do
+        chooseOneM iid do
+          labeled "Shuffle them in" $ shuffleCardsIntoDeck deck cards
+          labeled "Put back in any order" do
+            chooseOneAtATimeM iid do
+              targets (onlyPlayerCards cards) $ putCardOnTopOfDeck iid deck
+      drawCardsIfCan iid attrs 1
       pure e
-    _ -> ParallelFates2 . (`with` meta) <$> runMessage msg attrs
+    _ -> ParallelFates2 . (`with` meta) <$> liftRunMessage msg attrs

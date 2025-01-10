@@ -26,7 +26,7 @@ instance RunMessage InnsmouthHarbour where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       leads <- take 1 <$> getLeadsDeck
       for_ leads crossOutLead
-      focusCards leads \unfocus -> continue iid [unfocus]
+      focusCards leads $ continue_ iid
       shuffleLeadsDeck
       pure l
     _ -> InnsmouthHarbour <$> liftRunMessage msg attrs

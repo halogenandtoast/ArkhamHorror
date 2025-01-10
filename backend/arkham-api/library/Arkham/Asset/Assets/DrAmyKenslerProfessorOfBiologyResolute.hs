@@ -28,10 +28,7 @@ drAmyKenslerProfessorOfBiologyResolute =
 
 instance HasAbilities DrAmyKenslerProfessorOfBiologyResolute where
   getAbilities (DrAmyKenslerProfessorOfBiologyResolute a) =
-    [ restricted a 1 (ControlsThis <> DuringTurn You)
-        $ FastAbility'
-          (assetUseCost a Secret 1 <> exhaust a)
-          [#investigate]
+    [ controlled a 1 (DuringTurn You) $ FastAbility' (assetUseCost a Secret 1 <> exhaust a) [#investigate]
     ]
 
 instance RunMessage DrAmyKenslerProfessorOfBiologyResolute where
@@ -57,12 +54,11 @@ instance RunMessage DrAmyKenslerProfessorOfBiologyResolute where
       pure a
     SearchFound iid (isTarget attrs -> True) _deck cards -> do
       canAffectOtherPlayers <- can.affect.otherPlayers iid
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneM iid do
           when canAffectOtherPlayers do
             labeled "Discard Card" do
-              push unfocus
               for_ cards (discardCard iid (attrs.ability 1))
-          labeled "Leave card" $ push unfocus
+          labeled "Leave card" nothing
       pure a
     _ -> DrAmyKenslerProfessorOfBiologyResolute <$> liftRunMessage msg attrs

@@ -37,9 +37,6 @@ instance RunMessage CollectedWorksOfPoe where
         drawCardsIfCan iid' (attrs.ability 1) 1
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards -> do
-      focusCards cards \unfocus -> do
-        chooseOneAtATimeM iid do
-          targets cards $ putCardOnBottomOfDeck iid TekeliliDeck
-        push unfocus
+      focusCards cards $ chooseOneAtATimeM iid $ targets cards $ putCardOnBottomOfDeck iid TekeliliDeck
       pure a
     _ -> CollectedWorksOfPoe <$> liftRunMessage msg attrs

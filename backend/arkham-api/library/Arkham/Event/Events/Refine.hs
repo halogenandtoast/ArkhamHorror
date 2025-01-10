@@ -1,13 +1,14 @@
-module Arkham.Event.Events.Refine (refine, Refine (..)) where
+module Arkham.Event.Events.Refine (refine) where
 
 import Arkham.Card
+import Arkham.Message.Lifted.Choose
 import Arkham.Card.PlayerCard
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Matcher
-import Arkham.Name
+import Arkham.Name hiding (labeled)
 import Arkham.PlayerCard
 import Data.Function (on)
 import Data.List (nubBy)
@@ -24,7 +25,7 @@ instance RunMessage Refine where
     PlayThisEvent iid (is attrs -> True) -> do
       cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic CardWithAvailableCustomization
       let cards' = nubBy ((==) `on` toCardCode) cards
-      focusCards cards' $ chooseOneToHandleWith iid attrs cards'
+      focusCards cards' $ chooseOneToHandle iid attrs cards'
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       card <- getCard cid
@@ -35,13 +36,10 @@ instance RunMessage Refine where
                 filter
                   (not . hasCustomization_ customizations (pcCustomizations pc))
                   (keys customizations)
-          chooseOne
-            iid
-            [ Label
-              (tshow customization)
-              [ForTarget (toTarget attrs) $ IncreaseCustomization iid (toCardCode card) customization []]
-            | customization <- availableCustomizations
-            ]
+          chooseOneM iid do
+            for_ availableCustomizations \customization -> do
+              labeled (tshow customization) do
+                forTarget attrs $ push $ IncreaseCustomization iid card.cardCode customization []
         _ -> pure ()
       pure e
     ForTarget (isTarget attrs -> True) msg'@(IncreaseCustomization iid cardCode customization choices) -> do

@@ -9,8 +9,8 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Taboo
 import Arkham.Strategy
+import Arkham.Taboo
 
 newtype ScrollOfSecrets = ScrollOfSecrets AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,10 +21,7 @@ scrollOfSecrets = asset ScrollOfSecrets Cards.scrollOfSecrets
 
 instance HasAbilities ScrollOfSecrets where
   getAbilities (ScrollOfSecrets a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
+    [ controlled a 1 (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
         $ (if tabooed TabooList18 a then FastAbility else actionAbilityWithCost)
         $ exhaust a
         <> assetUseCost a Secret 1
@@ -39,17 +36,16 @@ instance RunMessage ScrollOfSecrets where
         lookAt iid attrs target [(FromBottomOfDeck 1, DoNothing)] #any (defer attrs IsNotDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOrRunOneM iid do
           targets (onlyEncounterCards cards) \card ->
             chooseOneM iid do
               labeled "Discard" $ discard card
               labeled "Place on bottom of encounter deck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
               labeled "Place on top of encounter deck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
-        push unfocus
       pure a
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOrRunOneM iid do
           targets (onlyPlayerCards cards) \card -> do
             chooseOneM iid do
@@ -57,6 +53,5 @@ instance RunMessage ScrollOfSecrets where
               labeled "Add to Hand" $ addToHand iid' (only card)
               labeled "Place on bottom of deck" $ putCardOnBottomOfDeck iid deck card
               labeled "Place on top of deck" $ putCardOnTopOfDeck iid deck card
-        push unfocus
       pure a
     _ -> ScrollOfSecrets <$> liftRunMessage msg attrs

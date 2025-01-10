@@ -1,17 +1,15 @@
-module Arkham.Asset.Assets.ScrollOfSecretsMystic3 (
-  scrollOfSecretsMystic3,
-  ScrollOfSecretsMystic3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ScrollOfSecretsMystic3 (scrollOfSecretsMystic3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Strategy
 import Arkham.Taboo
 
 newtype ScrollOfSecretsMystic3 = ScrollOfSecretsMystic3 AssetAttrs
@@ -23,91 +21,40 @@ scrollOfSecretsMystic3 = asset ScrollOfSecretsMystic3 Cards.scrollOfSecretsMysti
 
 instance HasAbilities ScrollOfSecretsMystic3 where
   getAbilities (ScrollOfSecretsMystic3 a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
+    [ controlled a 1 (exists $ oneOf [affectsOthers can.manipulate.deck, You <> can.target.encounterDeck])
         $ (if tabooed TabooList18 a then FastAbility else actionAbilityWithCost)
         $ exhaust a
         <> assetUseCost a Secret 1
     ]
 
 instance RunMessage ScrollOfSecretsMystic3 where
-  runMessage msg a@(ScrollOfSecretsMystic3 attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      targets <- selectTargets $ affectsOthers can.manipulate.deck
+  runMessage msg a@(ScrollOfSecretsMystic3 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      xs <- selectTargets $ affectsOthers can.manipulate.deck
       hasEncounterDeck <- can.target.encounterDeck iid
       let doSearch target x = lookAt iid attrs target [x 1] #any (defer attrs IsNotDraw)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ TargetLabel
-            target
-            [ chooseOne
-                player
-                [ Label "Look at top" [doSearch target fromTopOfDeck]
-                , Label "Look at bottom" [doSearch target fromBottomOfDeck]
-                ]
-            ]
-          | target <- [EncounterDeckTarget | hasEncounterDeck] <> targets
-          ]
+      chooseTargetM iid ([EncounterDeckTarget | hasEncounterDeck] <> xs) \target -> do
+        chooseOneM iid do
+          labeled "Look at top" $ doSearch target fromTopOfDeck
+          labeled "Look at bottom" $ doSearch target fromBottomOfDeck
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              (toCardId card)
-              [ chooseOne
-                  player
-                  [ Label "Discard" [AddToEncounterDiscard card]
-                  , Label
-                      "Place on bottom of encounter deck"
-                      [ PutCardOnBottomOfDeck
-                          iid
-                          Deck.EncounterDeck
-                          (EncounterCard card)
-                      ]
-                  , Label
-                      "Place on top of encounter deck"
-                      [ PutCardOnTopOfDeck
-                          iid
-                          Deck.EncounterDeck
-                          (EncounterCard card)
-                      ]
-                  ]
-              ]
-            | card <- mapMaybe (preview _EncounterCard) cards
-            ]
-        , UnfocusCards
-        ]
+      focusCards cards do
+        chooseOrRunOneM iid do
+          targets (onlyEncounterCards cards) \card ->
+            chooseOneM iid do
+              labeled "Discard" $ push $ AddToEncounterDiscard card
+              labeled "Place on bottom of encounter deck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
+              labeled "Place on top of encounter deck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
       pure a
     SearchFound iid (isTarget attrs -> True) deck@(Deck.InvestigatorDeck iid') cards -> do
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              (toCardId card)
-              [ chooseOne
-                  player
-                  [ Label "Discard" [AddToDiscard iid' card]
-                  , Label "Add to Hand" [addToHand iid' (PlayerCard card)]
-                  , Label
-                      "Place on bottom of deck"
-                      [PutCardOnBottomOfDeck iid deck (PlayerCard card)]
-                  , Label
-                      "Place on top of deck"
-                      [PutCardOnTopOfDeck iid deck (PlayerCard card)]
-                  ]
-              ]
-            | card <- mapMaybe (preview _PlayerCard) cards
-            ]
-        , UnfocusCards
-        ]
+      focusCards cards do
+        chooseOrRunOneM iid do
+          targets (onlyPlayerCards cards) \card ->
+            chooseOneM iid do
+              labeled "Discard" $ push $ AddToDiscard iid' card
+              labeled "Add to Hand" $ addToHand iid' (only card)
+              labeled "Place on bottom of deck" $ putCardOnBottomOfDeck iid deck card
+              labeled "Place on top of deck" $ putCardOnTopOfDeck iid deck card
       pure a
-    _ -> ScrollOfSecretsMystic3 <$> runMessage msg attrs
+    _ -> ScrollOfSecretsMystic3 <$> liftRunMessage msg attrs

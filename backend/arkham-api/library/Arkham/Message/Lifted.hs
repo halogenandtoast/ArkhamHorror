@@ -51,6 +51,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Xp
+import Arkham.History
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigate qualified as Investigate
@@ -60,6 +61,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher
 import Arkham.Message hiding (story)
+import Arkham.Message as X (AndThen (..))
 import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Phase (Phase)
@@ -79,6 +81,7 @@ import Arkham.Trait (Trait)
 import Arkham.Window (Window, WindowType, defaultWindows)
 import Arkham.Window qualified as Window
 import Arkham.Xp
+import Control.Monad.State.Strict (MonadState, StateT, execStateT, get, put)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Aeson
 
@@ -144,8 +147,8 @@ placeLocation card = do
   push placement
   pure lid
 
-placeLocation_ :: ReverseQueue m => Card -> m ()
-placeLocation_ = Msg.placeLocation_ >=> push
+placeLocation_ :: (ReverseQueue m, FetchCard card) => card -> m ()
+placeLocation_ = fetchCard >=> Msg.placeLocation_ >=> push
 
 placeRandomLocationGroupCards
   :: ReverseQueue m => Text -> [CardDef] -> m ()
@@ -203,7 +206,14 @@ placeLocationCardM = (>>= placeLocationCard)
 reveal :: (AsId location, IdOf location ~ LocationId, ReverseQueue m) => location -> m ()
 reveal = push . Msg.RevealLocation Nothing . asId
 
-revealBy :: (AsId investigator, IdOf investigator ~ InvestigatorId, AsId location, IdOf location ~ LocationId, ReverseQueue m) => investigator -> location -> m ()
+revealBy
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId location
+     , IdOf location ~ LocationId
+     , ReverseQueue m
+     )
+  => investigator -> location -> m ()
 revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
 
 story :: ReverseQueue m => FlavorText -> m ()
@@ -292,7 +302,9 @@ interludeXpAll xp = do
   push
     $ ReportXp
     $ XpBreakdown
-      [ InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- xp.flatten, iid <- investigatorIds
+      [ InvestigatorGainXp iid $ XpDetail XpBonus txt n
+      | WithBonus txt n <- xp.flatten
+      , iid <- investigatorIds
       ]
   for_ investigatorIds \iid -> do
     push $ GainXP iid CampaignSource xp.value
@@ -322,6 +334,9 @@ assignHorror iid (toSource -> source) horror = push $ Msg.assignHorror iid sourc
 
 assignDamageAndHorror
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> Int -> m ()
+assignDamageAndHorror _ _ 0 0 = pure ()
+assignDamageAndHorror iid (toSource -> source) 0 horror = push $ Msg.assignHorror iid source horror
+assignDamageAndHorror iid (toSource -> source) damage 0 = push $ Msg.assignDamage iid source damage
 assignDamageAndHorror iid (toSource -> source) damage horror = push $ Msg.assignDamageAndHorror iid source damage horror
 
 directDamage :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -458,7 +473,8 @@ createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
 createEnemyAt_
-  :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId) => card -> location -> m ()
+  :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId)
+  => card -> location -> m ()
 createEnemyAt_ c location = do
   card <- fetchCard c
   push =<< Msg.createEnemyAt_ card (asId location) Nothing
@@ -526,7 +542,7 @@ createEnemyWithAfter_
 createEnemyWithAfter_ card creation body = do
   builder <- Msg.createEnemy card creation
   after <- evalQueueT $ body builder.enemy
-  push $ toMessage (builder { enemyCreationAfter = after })
+  push $ toMessage (builder {enemyCreationAfter = after})
 
 createEnemyWith_
   :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
@@ -587,7 +603,9 @@ removeCampaignCard (toCardDef -> def) = do
   mOwner <- getOwner def
   for_ mOwner (`removeCampaignCardFromDeck` def)
 
-removeCampaignCardFromDeck :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> a -> m ()
+removeCampaignCardFromDeck
+  :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> a -> m ()
 removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = push $ RemoveCampaignCardFromDeck iid def
 
 placeClues
@@ -715,11 +733,16 @@ chooseOrRunOne iid msgs = do
   player <- getPlayer iid
   push $ Msg.chooseOrRunOne player msgs
 
-continue :: ReverseQueue m => InvestigatorId -> [Message] -> m ()
+continue :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> m ()
 continue iid = prompt iid "Continue"
 
-prompt :: ReverseQueue m => InvestigatorId -> Text -> [Message] -> m ()
-prompt iid lbl msgs = Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
+continue_ :: ReverseQueue m => InvestigatorId -> m ()
+continue_ iid = continue iid (pure ())
+
+prompt :: ReverseQueue m => InvestigatorId -> Text -> QueueT Message m () -> m ()
+prompt iid lbl body = do
+  msgs <- evalQueueT body
+  Arkham.Message.Lifted.chooseOne iid [Label lbl msgs]
 
 prompt_ :: ReverseQueue m => InvestigatorId -> Text -> m ()
 prompt_ iid lbl = Arkham.Message.Lifted.chooseOne iid [Label lbl []]
@@ -741,7 +764,8 @@ questionLabel lbl iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl Nothing q)
 
-questionLabelWithCard :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
+questionLabelWithCard
+  :: ReverseQueue m => Text -> CardCode -> InvestigatorId -> Question Message -> m ()
 questionLabelWithCard lbl cCode iid q = do
   pid <- getPlayer iid
   push $ Ask pid (QuestionLabel lbl (Just cCode) q)
@@ -935,6 +959,15 @@ addToHand
 addToHand iid (toList -> cards) = do
   for_ cards obtainCard
   push $ AddToHand iid (map toCard cards)
+
+addToDiscard
+  :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => InvestigatorId
+  -> cards
+  -> m ()
+addToDiscard iid (toList -> cards) = do
+  for_ cards obtainCard
+  for_ cards $ push . Msg.addToDiscard iid 
 
 addToHandQuiet
   :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
@@ -1303,6 +1336,10 @@ toDiscard source target = push $ Msg.toDiscard source target
 putCardIntoPlay :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 putCardIntoPlay iid card = push $ Msg.putCardIntoPlayWithAdditionalCosts iid card
 
+putCardIntoPlayWithWindows
+  :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> [Window] -> m ()
+putCardIntoPlayWithWindows iid card ws = push $ Msg.putCardIntoPlayWithAdditionalCostsAndWindows iid card ws
+
 putCampaignCardIntoPlay :: (ReverseQueue m, HasCardDef def) => InvestigatorId -> def -> m ()
 putCampaignCardIntoPlay iid def = push $ PutCampaignCardIntoPlay iid (toCardDef def)
 
@@ -1351,10 +1388,9 @@ drawCardsIfCanWith
   -> Int
   -> (CardDraw Message -> CardDraw Message)
   -> m ()
-drawCardsIfCanWith iid source n f = do
-  when (n > 0) do
-    mmsg <- Msg.drawCardsIfCanWith iid source n f
-    for_ mmsg push
+drawCardsIfCanWith iid source n f = when (n > 0) do
+  mmsg <- Msg.drawCardsIfCanWith iid source n f
+  for_ mmsg push
 
 forcedDrawCards
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -1362,25 +1398,35 @@ forcedDrawCards
   -> source
   -> Int
   -> m ()
-forcedDrawCards iid source n = when (n > 0) $ push $ Msg.drawCards (asId iid) source n
+forcedDrawCards iid source n = Msg.pushWhen (n > 0) $ Msg.drawCards (asId iid) source n
 
 focusChaosTokens :: ReverseQueue m => [ChaosToken] -> (Message -> m ()) -> m ()
 focusChaosTokens tokens f = do
   push $ FocusChaosTokens tokens
   f UnfocusChaosTokens
 
-focusCards :: (ReverseQueue m, IsCard a) => [a] -> (Message -> m ()) -> m ()
+data Unfocus = NeedsUnfocus | Unfocused
+
+unfocusCards :: (ReverseQueue m, MonadState Unfocus m) => m ()
+unfocusCards = do
+  get >>= \case
+    NeedsUnfocus -> do
+      push UnfocusCards
+      put Unfocused
+    Unfocused -> do
+      push UnfocusCards
+      put Unfocused
+
+focusCards :: (ReverseQueue m, IsCard a) => [a] -> StateT Unfocus m () -> m ()
 focusCards [] _ = pure ()
-focusCards cards f = do
-  push $ FocusCards $ toCard <$> cards
-  f UnfocusCards
+focusCards cards body = do
+  push $ FocusCards $ map toCard cards
+  execStateT body NeedsUnfocus >>= \case
+    NeedsUnfocus -> push UnfocusCards
+    Unfocused -> pure ()
 
-focusCard :: (ReverseQueue m, IsCard a) => a -> (Message -> m ()) -> m ()
-focusCard card =  focusCards [card]
-
-focusCards_ :: (ReverseQueue m, IsCard a) => [a] -> m () -> m ()
-focusCards_ [] _ = pure ()
-focusCards_ cards f = focusCards cards (\unfocus -> f >> push unfocus)
+focusCard :: (ReverseQueue m, IsCard a) => a -> StateT Unfocus m () -> m ()
+focusCard card = focusCards [card]
 
 checkWindows :: ReverseQueue m => [Window] -> m ()
 checkWindows = Msg.pushM . Msg.checkWindows
@@ -1620,7 +1666,7 @@ atEndOfTurn a iid body = do
 --      atEndOfRound iid do
 --        addToHand iid (toCard attrs)
 atEndOfRound
-  :: (Sourceable a, HasQueue Message m)
+  :: (Sourceable a, ReverseQueue m)
   => a
   -> QueueT Message m ()
   -> m ()
@@ -1669,8 +1715,8 @@ costModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 costModifiers source target modifiers = Msg.pushM $ Msg.costModifiers source target modifiers
 
-placeUnderneath :: (ReverseQueue m, Targetable target) => target -> [Card] -> m ()
-placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target cards
+placeUnderneath :: (ReverseQueue m, Targetable target, IsCard card) => target -> [card] -> m ()
+placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard cards
 
 gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
@@ -2018,6 +2064,15 @@ initiateEnemyAttack
   -> m ()
 initiateEnemyAttack enemy source target = push $ InitiateEnemyAttack $ enemyAttack enemy source target
 
+initiateEnemyAttackWith
+  :: (Targetable target, Sourceable source, IdOf enemy ~ EnemyId, AsId enemy, ReverseQueue m)
+  => enemy
+  -> source
+  -> target
+  -> (EnemyAttackDetails -> EnemyAttackDetails)
+  -> m ()
+initiateEnemyAttackWith enemy source target f = push $ InitiateEnemyAttack $ f $ enemyAttack enemy source target
+
 handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 handleTarget iid source target = push $ Msg.handleTargetChoice iid source target
@@ -2181,8 +2236,8 @@ removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) =>
 removeLocation (asId -> lid) = do
   noClues <- lid <=~> LocationWithoutClues
   if noClues
-    then maybe (push $ RemoveLocation lid) (\_ -> addToVictory lid) =<< field LocationVictory lid
-    else push $ RemoveLocation lid
+    then maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid) =<< field LocationVictory lid
+    else pushAll $ resolve (RemoveLocation lid)
 
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseAndDiscardAsset iid source = push $ ChooseAndDiscardAsset iid (toSource source) AnyAsset
@@ -2191,7 +2246,12 @@ loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -
 loseActions iid source n = push $ LoseActions iid (toSource source) n
 
 requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-requestChaosTokens iid source n = push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
+requestChaosTokens iid source n = do
+  push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
+  resetChaosTokens source
+
+resetChaosTokens :: (ReverseQueue m, Sourceable source) => source -> m ()
+resetChaosTokens source = push $ ResetChaosTokens (toSource source)
 
 withTimings :: ReverseQueue m => WindowType -> m () -> m ()
 withTimings w body = do
@@ -2261,5 +2321,18 @@ updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
 shuffleBackIntoEncounterDeck :: (ReverseQueue m, Targetable target) => target -> m ()
 shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTarget target)
 
-setActions :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m) => investigator -> source -> Int -> m ()
+setActions
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
+  => investigator -> source -> Int -> m ()
 setActions investigator source n = push $ SetActions (asId investigator) (toSource source) n
+
+commitCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
+commitCard iid card = push $ SkillTestCommitCard iid (toCard card)
+
+updateHistory
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> HistoryItem -> m ()
+updateHistory investigator history = push $ UpdateHistory (asId investigator) history
+
+setGlobal :: (ReverseQueue m, Targetable target, ToJSON a) => target -> Aeson.Key -> a -> m ()
+setGlobal target k v = push $ SetGlobal (toTarget target) k (toJSON v)

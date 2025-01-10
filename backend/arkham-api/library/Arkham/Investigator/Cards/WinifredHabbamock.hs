@@ -1,18 +1,13 @@
-module Arkham.Investigator.Cards.WinifredHabbamock (
-  winifredHabbamock,
-  winifredHabbamockEffect,
-  WinifredHabbamock (..),
-)
-where
+module Arkham.Investigator.Cards.WinifredHabbamock (winifredHabbamock, winifredHabbamockEffect) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.Effect.Import
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorCommittedCards))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.SkillTest.Base
 import Arkham.SkillTestResult
@@ -31,7 +26,9 @@ instance HasAbilities WinifredHabbamock where
   getAbilities (WinifredHabbamock a) =
     [ wantsSkillTest AnySkillTest
         $ playerLimit PerTestOrAbility
-        $ (restrictedAbility a 1)
+        $ restricted
+          a
+          1
           (Self <> CommitedCardsMatch (DifferentLengthIsAtLeast 2 (NonWeakness <> CardOwnedBy a.id)))
           (FastAbility Free)
     ]
@@ -44,7 +41,7 @@ instance HasChaosTokenValue WinifredHabbamock where
 instance RunMessage WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsIfCan iid (toAbilitySource attrs 1) 1
+      drawCardsIfCan iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       createCardEffect Cards.winifredHabbamock Nothing attrs attrs
@@ -61,19 +58,16 @@ winifredHabbamockEffect = cardEffect WinifredHabbamockEffect Cards.winifredHabba
 
 instance RunMessage WinifredHabbamockEffect where
   runMessage msg e@(WinifredHabbamockEffect attrs) = runQueueT $ case msg of
-    SkillTestEnds _ _ _ -> do
+    SkillTestEnds {} -> do
       getSkillTest >>= traverse_ \st -> case skillTestResult st of
         SucceededBy _ n -> case attrs.source of
           InvestigatorSource iid -> do
             cards <- field InvestigatorCommittedCards iid
             when (notNull cards) do
               afterSkillTest do
-                focusCards cards \unfocus -> do
-                  chooseN
-                    iid
-                    (min (n `div` 2) (length cards))
-                    [targetLabel (toCardId card) [ReturnToHand iid (toTarget $ toCardId card)] | card <- cards]
-                  push unfocus
+                focusCards cards do
+                  chooseNM iid (min (n `div` 2) (length cards)) do
+                    targets cards (returnToHand iid)
           _ -> error "invalid source"
         _ -> pure ()
       disableReturn e

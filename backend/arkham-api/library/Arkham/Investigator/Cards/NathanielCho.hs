@@ -1,15 +1,15 @@
-module Arkham.Investigator.Cards.NathanielCho (NathanielCho, nathanielChoEffect, nathanielCho) where
+module Arkham.Investigator.Cards.NathanielCho (nathanielChoEffect, nathanielCho) where
 
 import Arkham.Ability hiding (discardedCards)
 import Arkham.Card
-import Arkham.Effect.Runner
-import Arkham.Helpers.Effect
+import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
-import Arkham.Id
+import Arkham.Helpers.SkillTest (getSkillTestAction)
+import Arkham.Helpers.Window (damagedEnemy)
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner hiding (discardedCards)
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -27,7 +27,7 @@ nathanielCho =
 instance HasAbilities NathanielCho where
   getAbilities (NathanielCho x) =
     [ playerLimit PerPhase
-        $ restrictedAbility x 1 Self
+        $ restricted x 1 Self
         $ freeReaction
         $ EnemyDealtDamage #when AnyDamageEffect AnyEnemy (SourceOwnedBy You <> SourceIsType EventType)
     ]
@@ -37,22 +37,17 @@ instance HasChaosTokenValue NathanielCho where
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-getEnemyId :: [Window] -> EnemyId
-getEnemyId = \case
-  ((windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _) : _) -> eid
-  _ -> error "Expected DealtDamage window"
-
 instance RunMessage NathanielCho where
-  runMessage msg a@(NathanielCho attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (getEnemyId -> eid) _ -> do
-      push =<< createCardEffect Cards.nathanielCho Nothing attrs eid
+  runMessage msg a@(NathanielCho attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (damagedEnemy -> eid) _ -> do
+      createCardEffect Cards.nathanielCho Nothing attrs eid
       pure a
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       mAction <- getSkillTestAction
       when (mAction == Just #fight) do
-        push =<< createCardEffect Cards.nathanielCho Nothing attrs attrs
+        createCardEffect Cards.nathanielCho Nothing attrs attrs
       pure a
-    _ -> NathanielCho <$> runMessage msg attrs
+    _ -> NathanielCho <$> liftRunMessage msg attrs
 
 newtype NathanielChoEffect = NathanielChoEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -76,28 +71,18 @@ isTakeDamage attrs window = case attrs.target of
     _ -> False
 
 instance RunMessage NathanielChoEffect where
-  runMessage msg e@(NathanielChoEffect attrs) = case msg of
+  runMessage msg e@(NathanielChoEffect attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (Initiator {}) _ _ | attrs.target == InvestigatorTarget iid -> do
       discardedCards <- field InvestigatorDiscard iid
       let events = filter ((== EventType) . toCardType) discardedCards
       if null events
-        then push $ disable attrs
-        else do
-          player <- getPlayer iid
-          pushAll
-            [ FocusCards (map toCard events)
-            , questionLabel "{elderSign}: return an event from your discard pile to your hand." player
-                $ ChooseOne
-                  [ targetLabel event [UnfocusCards, ReturnToHand iid (toTarget event)]
-                  | event <- events
-                  ]
-            , disable attrs
-            ]
+        then disable attrs
+        else focusCards (map toCard events) do
+          chooseOneM iid do
+            questionLabeled "{elderSign}: return an event from your discard pile to your hand."
+            targets events (returnToHand iid)
+          disable attrs
       pure e
-    Do (CheckWindows windows') | any (isTakeDamage attrs) windows' -> do
-      push $ disable attrs
-      pure e
-    SkillTestEnds _ _ _ -> do
-      push $ disable attrs
-      pure e
-    _ -> NathanielChoEffect <$> runMessage msg attrs
+    Do (CheckWindows windows') | any (isTakeDamage attrs) windows' -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
+    _ -> NathanielChoEffect <$> liftRunMessage msg attrs

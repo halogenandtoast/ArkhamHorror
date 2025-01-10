@@ -100,11 +100,11 @@ instance RunMessage TheSearchForAgentHarper where
       n <- perPlayer 1
       revealed <- take (min 3 $ clues `div` n) <$> getScenarioDeck LeadsDeck
       for_ revealed crossOutLead
-      focusCards revealed \unfocus -> do
+      focusCards revealed do
         chooseOneM iid do
           for_ (eachWithRest revealed) \(lead, rest') -> do
             targeting lead do
-              push unfocus
+              unfocusCards
               drawCard iid lead
               shuffleIntoLeadsDeck $ map toCard topOfEncounterDeck <> rest'
       pure a

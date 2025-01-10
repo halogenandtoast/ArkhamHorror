@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.JoeDiamond (joeDiamond, JoeDiamond (..)) where
+module Arkham.Investigator.Cards.JoeDiamond (joeDiamond) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -77,14 +77,13 @@ instance RunMessage JoeDiamond where
               fromJustNote "Deck missing unsolved case"
                 $ find (`cardMatch` cardIs Events.unsolvedCase) insights
             remainingInsights = filter (/= unsolvedCase) insights
-          focusCards (map toCard remainingInsights) \unfocus -> do
+          focusCards (map toCard remainingInsights) do
             push $ ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard unsolvedCase]
             questionLabel "Choose 10 more cards for hunch deck" iid
               $ ChooseN 10
               $ [ targetLabel insight.id [ShuffleCardsIntoDeck (Deck.HunchDeck iid) [toCard insight]]
                 | insight <- remainingInsights
                 ]
-            push unfocus
           pure $ JoeDiamond (attrs' `with` meta)
     ShuffleCardsIntoDeck (Deck.HunchDeck iid) [insight] | attrs `is` iid -> do
       hunchDeck' <- shuffleM $ insight : filter (/= insight) (hunchDeck attrs)

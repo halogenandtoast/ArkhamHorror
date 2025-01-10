@@ -323,6 +323,11 @@ getPassedBy = \case
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
 
+damagedEnemy :: [Window] -> EnemyId
+damagedEnemy = \case
+  ((windowType -> Window.DealtDamage _ _ (EnemyTarget eid) _) : _) -> eid
+  _ -> error "Expected DealtDamage window"
+
 getDamageSource :: HasCallStack => [Window] -> Source
 getDamageSource = \case
   [] -> error "No damage"

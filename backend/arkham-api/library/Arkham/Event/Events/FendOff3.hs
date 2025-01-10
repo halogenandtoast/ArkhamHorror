@@ -1,6 +1,5 @@
-module Arkham.Event.Events.FendOff3 (fendOff3, FendOff3 (..)) where
+module Arkham.Event.Events.FendOff3 (fendOff3) where
 
-import Arkham.Attack
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -26,13 +25,11 @@ instance RunMessage FendOff3 where
     PlayThisEvent iid (is attrs -> True) -> do
       let enemy = spawnedEnemy attrs.windows
       card <- field EnemyCard enemy
-      focusCards [card] \unfocus -> do
-        push $ InitiateEnemyAttack $ (enemyAttack enemy attrs iid) {attackAfter = [DoStep 1 msg]}
-        push unfocus
+      focusCards [card] $ initiateEnemyAttackWith enemy attrs iid (`andThen` DoStep 1 msg)
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       let enemy = spawnedEnemy attrs.windows
-      push $ EnemyEvaded iid enemy
-      push $ PlaceEvent attrs.id (AttachedToEnemy enemy)
+      automaticallyEvadeEnemy iid enemy
+      place attrs (AttachedToEnemy enemy)
       pure e
     _ -> FendOff3 <$> liftRunMessage msg attrs

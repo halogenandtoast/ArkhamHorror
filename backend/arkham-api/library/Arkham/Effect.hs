@@ -104,7 +104,6 @@ import Arkham.Enemy.Enemies (
   yogSothothEffect,
  )
 import Arkham.Event.Events (
-  aChanceEncounterEffect,
   actOfDesperationEffect,
   atACrossroads1Effect,
   backstab3Effect,
@@ -375,7 +374,7 @@ allEffects =
     , ("02230", SomeEffect luckyDice2Effect)
     , ("02236", SomeEffect undimensionedAndUnseenTabletToken)
     , ("02246", SomeEffect tenAcreMeadow_246Effect)
-    , ("02270", SomeEffect aChanceEncounterEffect)
+    , ("02270", SomeEffect $ noop "02270")
     , ("02323", SomeEffect yogSothothEffect)
     , ("03005", SomeEffect williamYorickEffect)
     , ("03012", SomeEffect thePaintedWorldEffect)

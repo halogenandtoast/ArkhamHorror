@@ -27,6 +27,6 @@ instance RunMessage ElderThingScavenger where
       pure e
     DiscardedTopOfDeck iid cards (isAbilitySource attrs 1 -> True) (isTarget attrs -> True) -> do
       let weaknesses = filterCards WeaknessCard cards
-      focusCards_ weaknesses $ chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
+      focusCards weaknesses $ chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
       pure e
     _ -> ElderThingScavenger <$> liftRunMessage msg attrs

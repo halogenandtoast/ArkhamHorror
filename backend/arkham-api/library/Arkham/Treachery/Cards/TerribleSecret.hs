@@ -1,13 +1,11 @@
-module Arkham.Treachery.Cards.TerribleSecret (terribleSecret, TerribleSecret (..)) where
+module Arkham.Treachery.Cards.TerribleSecret (terribleSecret) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype TerribleSecret = TerribleSecret TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -17,29 +15,20 @@ terribleSecret :: TreacheryCard TerribleSecret
 terribleSecret = treachery TerribleSecret Cards.terribleSecret
 
 instance RunMessage TerribleSecret where
-  runMessage msg t@(TerribleSecret attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
+  runMessage msg t@(TerribleSecret attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
       if null cardsUnderneath
-        then push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-        else do
-          player <- getPlayer iid
-          pushAll
-            [ FocusCards cardsUnderneath
-            , chooseUpToN
-                player
-                (length cardsUnderneath)
-                "Keep Remaining Cards"
-                [ targetLabel (toCardId c) [AddToDiscard iid c]
-                | pc <- cardsUnderneath
-                , c <- maybeToList (preview _PlayerCard pc)
-                ]
-            , UnfocusCards
-            , DoStep 1 msg
-            ]
+        then shuffleIntoDeck iid attrs
+        else focusCards cardsUnderneath do
+          chooseUpToNM iid (length cardsUnderneath) "Keep Remaining Cards" do
+            for_ cardsUnderneath \pc -> do
+              for_ (preview _PlayerCard pc) \c -> targeting c (discardCard iid attrs c)
+          unfocusCards
+          doStep 1 msg
       pure t
     DoStep 1 (Revelation iid source) | isSource attrs source -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
-      push $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 (length cardsUnderneath)
+      assignHorror iid attrs (length cardsUnderneath)
       pure t
-    _ -> TerribleSecret <$> runMessage msg attrs
+    _ -> TerribleSecret <$> liftRunMessage msg attrs

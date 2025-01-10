@@ -1,18 +1,17 @@
-module Arkham.Investigator.Cards.DianaStanley (
-  dianaStanley,
-  DianaStanley (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.DianaStanley (dianaStanley) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
+import Arkham.Ability
 import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Investigator (startsWithInHand)
+import Arkham.Message.Lifted.Choose
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Matcher hiding (AssetCard, EventCard, PlaceUnderneath, SkillCard)
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
@@ -38,7 +37,7 @@ instance HasModifiersFor DianaStanley where
 instance HasAbilities DianaStanley where
   getAbilities (DianaStanley a) =
     [ playerLimit PerPhase
-        $ restrictedAbility a 1 (Self <> fewerThan5CardBeneath)
+        $ restricted a 1 (Self <> fewerThan5CardBeneath)
         $ freeReaction
         $ CancelledOrIgnoredCardOrGameEffect (SourceOwnedBy You <> NotSource #investigator)
     ]
@@ -56,17 +55,14 @@ getCancelSource ((windowType -> Window.CancelledOrIgnoredCardOrGameEffect source
 getCancelSource (_ : rest) = getCancelSource rest
 
 instance RunMessage DianaStanley where
-  runMessage msg i@(DianaStanley attrs) = case msg of
+  runMessage msg i@(DianaStanley attrs) = runQueueT $ case msg of
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       cardsUnderneath <- field InvestigatorCardsUnderneath iid
-      player <- getPlayer iid
-      when (notNull cardsUnderneath) $ do
-        pushAll
-          [ FocusCards cardsUnderneath
-          , chooseOrRunOne player
-              $ Label "Do not add any cards to your Hand" [UnfocusCards]
-              : [targetLabel (toCardId c) [UnfocusCards, addToHand iid c] | c <- cardsUnderneath]
-          ]
+      unless (null cardsUnderneath) $ do
+        focusCards cardsUnderneath do
+          chooseOrRunOneM iid do
+            labeled "Do not add any cards to your Hand" nothing
+            targets cardsUnderneath (addToHand iid . only)
       pure i
     UseCardAbility iid (isSource attrs -> True) 1 (getCancelSource -> source) _ -> do
       let
@@ -83,11 +79,11 @@ instance RunMessage DianaStanley where
       canLeavePlay <- case source of
         AssetSource aid -> elem aid <$> select AssetCanLeavePlayByNormalMeans
         _ -> pure $ not (cdPermanent $ toCardDef card)
-      pushAll
-        $ [removeMsg | canLeavePlay]
-        <> (guard canLeavePlay *> [ObtainCard card.id, PlaceUnderneath (toTarget attrs) [card]])
-        <> [ drawCards iid (attrs.ability 1) 1
-           , TakeResources iid 1 (attrs.ability 1) False
-           ]
+      when canLeavePlay do
+        push removeMsg
+        obtainCard card
+        placeUnderneath attrs [card]
+      drawCardsIfCan iid (attrs.ability 1) 1
+      gainResourcesIfCan iid (attrs.ability 1) 1
       pure i
-    _ -> DianaStanley <$> runMessage msg attrs
+    _ -> DianaStanley <$> liftRunMessage msg attrs

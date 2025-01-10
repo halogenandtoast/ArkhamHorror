@@ -30,13 +30,13 @@ instance RunMessage Southside_294 where
     DiscardedTopOfEncounterDeck iid cards (isSource attrs -> True) (isTarget attrs -> True) -> do
       let powerTreacheries = filterCards (CardWithTrait Power) cards
       act <- selectJust AnyAct
-      pushAll $ [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
+      pushAll [RemoveBreaches (toTarget attrs) 1, PlaceBreaches (toTarget act) 1]
 
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOneM iid do
-          when (null powerTreacheries) $ labeled "Continue" $ push unfocus
+          when (null powerTreacheries) $ labeled "Continue" unfocusCards
           targets powerTreacheries \card -> do
-            push unfocus
+            unfocusCards
             drawCard iid card
       pure l
     _ -> Southside_294 <$> liftRunMessage msg attrs

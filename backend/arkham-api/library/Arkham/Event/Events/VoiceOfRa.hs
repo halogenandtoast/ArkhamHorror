@@ -1,11 +1,9 @@
-module Arkham.Event.Events.VoiceOfRa (voiceOfRa, VoiceOfRa (..)) where
+module Arkham.Event.Events.VoiceOfRa (voiceOfRa) where
 
 import Arkham.Card
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.RequestedChaosTokenStrategy
 import Arkham.Taboo
 
 newtype VoiceOfRa = VoiceOfRa EventAttrs
@@ -17,18 +15,16 @@ voiceOfRa = event VoiceOfRa Cards.voiceOfRa
 
 instance RunMessage VoiceOfRa where
   runMessage msg e@(VoiceOfRa attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 3) SetAside
+    PlayThisEvent iid (is attrs -> True) -> do
+      requestChaosTokens iid attrs 3
       pure e
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
       send $ format (toCard attrs) <> " drew " <> toSentence (map chaosTokenLabel tokens)
-      continue iid []
+      continue_ iid
       let valid =
             if tabooed TabooList20 attrs
               then isSymbolChaosToken
               else (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
-      let n = count valid tokens
-      gainResourcesIfCan iid attrs (1 + (2 * n))
-      push $ ResetChaosTokens (toSource attrs)
+      gainResourcesIfCan iid attrs (1 + (2 * count valid tokens))
       pure e
     _ -> VoiceOfRa <$> liftRunMessage msg attrs

@@ -21,7 +21,11 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
 import Arkham.Slot
+import Arkham.Helpers (Deck(..), unDeck)
 import GHC.Records
+
+instance HasField "deck" InvestigatorId (QueueT Message GameT [PlayerCard]) where
+  getField = fieldMap InvestigatorDeck unDeck
 
 instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
   getField = field InvestigatorHand

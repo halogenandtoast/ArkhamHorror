@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.ProfessorWilliamWebbFinderOfHiddenConnections (
   professorWilliamWebbFinderOfHiddenConnections,
-  ProfessorWilliamWebbFinderOfHiddenConnections (..),
 )
 where
 
@@ -9,10 +8,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
-import Arkham.Discover
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher hiding (DiscoverClues)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 
 newtype ProfessorWilliamWebbFinderOfHiddenConnections
@@ -30,7 +29,7 @@ professorWilliamWebbFinderOfHiddenConnections =
 
 instance HasAbilities ProfessorWilliamWebbFinderOfHiddenConnections where
   getAbilities (ProfessorWilliamWebbFinderOfHiddenConnections a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility (SuccessfulInvestigation #when You Anywhere) (exhaust a <> assetUseCost a Secret 1)
     ]
 
@@ -51,24 +50,20 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
             (toTarget lid)
             (AlternateSuccessfullInvestigation (toTarget attrs))
 
-      chooseOne
-        iid
-        $ [Label "Return item to your hand" [DoStep 1 msg] | hasItems && canGetItem]
-        <> [Label "Discover a clue at a connecting location" [DoStep 2 msg] | hasLocations]
+      chooseOneM iid do
+        when (hasItems && canGetItem) do
+          labeled "Return item to your hand" $ doStep 1 msg
+        when hasLocations do
+          labeled "Discover a clue at a connecting location" $ doStep 2 msg
 
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       items <- select $ #item <> inDiscardOf iid
-      focusCards items \unfocus -> do
-        chooseOne iid [targetLabel item [unfocus, AddToHand iid [item]] | item <- items]
+      focusCards items $ chooseTargetM iid items $ addToHand iid . only
       pure a
     DoStep 2 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <-
         select $ ConnectedFrom (locationWithInvestigator iid) <> locationWithDiscoverableCluesBy iid
-      chooseOne
-        iid
-        [ targetLabel location [DiscoverClues iid $ discover location (attrs.ability 1) 1]
-        | location <- locations
-        ]
+      chooseTargetM iid locations \lid -> discoverAt NotInvestigate iid (attrs.ability 1) lid 1
       pure a
     _ -> ProfessorWilliamWebbFinderOfHiddenConnections <$> liftRunMessage msg attrs

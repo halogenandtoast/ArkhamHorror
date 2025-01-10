@@ -200,6 +200,9 @@ data Cost
 
 instance Plated Cost
 
+clueCost :: Int -> Cost
+clueCost n = ClueCost (Static n)
+
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 

@@ -1,6 +1,5 @@
-module Arkham.Event.Events.AntediluvianHymn (antediluvianHymn, AntediluvianHymn (..)) where
+module Arkham.Event.Events.AntediluvianHymn (antediluvianHymn) where
 
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -28,15 +27,10 @@ instance RunMessage AntediluvianHymn where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       n <- getRemainingCurseTokens
-      addCurse <- evalQueueT $ addCurseTokens (Just iid) 1
-      focusCards cards \unfocus -> do
-        chooseUpToN
-          iid
-          n
-          "Do not add 1 {curse} token to place a card on the bottom of the encounter deck"
-          [ targetLabel card $ addCurse <> [PutCardOnBottomOfDeck iid Deck.EncounterDeck card]
-          | card <- cards
-          ]
-        push unfocus
+      focusCards cards do
+        chooseUpToNM iid n "Do not add 1 {curse} token to place a card on the bottom of the encounter deck" do
+          targets cards \card -> do
+            addCurseTokens (Just iid) 1
+            putCardOnBottomOfDeck iid Deck.EncounterDeck card
       pure e
     _ -> AntediluvianHymn <$> liftRunMessage msg attrs

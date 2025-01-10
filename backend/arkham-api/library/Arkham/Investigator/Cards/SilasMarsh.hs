@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.SilasMarsh (silasMarsh, SilasMarsh (..)) where
+module Arkham.Investigator.Cards.SilasMarsh (silasMarsh) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -50,12 +50,11 @@ instance RunMessage SilasMarsh where
 
       when (notNull skills) do
         withSkillTest \sid -> do
-          focusCards skills \unfocus -> do
+          focusCards skills do
             chooseOneM iid do
               labeled "Do not commit skills" nothing
               targets skills \card -> do
                 push $ CommitCard iid card
                 skillTestModifier sid ElderSign card ReturnToHandAfterTest
-            push unfocus
       pure i
     _ -> SilasMarsh <$> liftRunMessage msg attrs

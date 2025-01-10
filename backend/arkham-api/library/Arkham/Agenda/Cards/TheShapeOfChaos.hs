@@ -48,20 +48,21 @@ instance RunMessage TheShapeOfChaos where
           case p of
             StillInHand iid -> do
               card <- field EnemyCard nyarlathotep
-              focusCard card \unfocus -> do
+              focusCard card do
                 chooseOneM iid do
                   questionLabeled "Choose:"
                   questionLabeledCard card
                   labeled "Nyarlathotep immediately attacks you and is shuffled into the encounter deck." do
+                    unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
                     shuffleBackIntoEncounterDeck nyarlathotep
                   labeled
                     "Nyarlathotep immediately attacks you three times and is returned to that investigator's hand."
                     do
+                      unfocusCards
                       initiateEnemyAttack nyarlathotep attrs iid
                       initiateEnemyAttack nyarlathotep attrs iid
                       initiateEnemyAttack nyarlathotep attrs iid
-                push unfocus
             _ -> pure ()
 
       advanceAgendaDeck attrs

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.GuidedByTheUnseen3 (guidedByTheUnseen3, GuidedByTheUnseen3 (..)) where
+module Arkham.Asset.Assets.GuidedByTheUnseen3 (guidedByTheUnseen3) where
 
 import Arkham.Ability hiding (you)
 import Arkham.Asset.Cards qualified as Cards
@@ -22,7 +22,7 @@ guidedByTheUnseen3 = asset GuidedByTheUnseen3 Cards.guidedByTheUnseen3
 instance HasAbilities GuidedByTheUnseen3 where
   getAbilities (GuidedByTheUnseen3 x) =
     [ playerLimit PerTestOrAbility
-        $ controlledAbility
+        $ controlled
           x
           1
           ( DuringSkillTest
@@ -43,15 +43,15 @@ instance RunMessage GuidedByTheUnseen3 where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       committable <- filterM (getIsCommittable iid) cards
-      focusCards cards \unfocus -> do
+      focusCards cards do
         if attrs.use Secret == 0 || null committable
-          then chooseOne iid [Label "Continue" [unfocus]]
+          then continue_ iid
           else withSkillTest \sid ->
             -- MustBeCommitted prevents being able to uncommit, as it is really "committed"
             chooseOneM iid do
-              labeled "Do not commit any cards" $ push unfocus
+              labeled "Do not commit any cards" unfocusCards
               targets committable \card -> do
-                push unfocus
+                unfocusCards
                 push $ SpendUses (attrs.ability 1) (toTarget attrs) Secret 1
                 skillTestModifier sid attrs (toCardId card) MustBeCommitted
                 push $ SkillTestCommitCard iid card

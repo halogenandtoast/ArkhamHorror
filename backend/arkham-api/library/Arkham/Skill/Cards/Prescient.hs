@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Prescient (prescient, prescientEffect, Prescient (..)) where
+module Arkham.Skill.Cards.Prescient (prescient, prescientEffect) where
 
 import Arkham.ChaosToken
 import Arkham.Effect.Import
@@ -36,7 +36,7 @@ prescientEffect = cardEffect PrescientEffect Cards.prescient
 
 instance RunMessage PrescientEffect where
   runMessage msg e@(PrescientEffect attrs) = runQueueT $ case msg of
-    SkillTestEnds _ _ _ -> do
+    SkillTestEnds {} -> do
       mSkillTest <- getSkillTest
       let
         iid = case attrs.target of
@@ -58,10 +58,9 @@ instance RunMessage PrescientEffect where
             (CardWithTrait Spell)
       disable attrs
       when (returnSpell && notNull spells) do
-        focusCards spells \unfocus -> do
+        focusCards spells do
           chooseOneM iid do
             labeled "Do not return spell card" nothing
             targets spells $ addToHand iid . only
-          push unfocus
       pure e
     _ -> PrescientEffect <$> liftRunMessage msg attrs

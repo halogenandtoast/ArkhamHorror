@@ -6,6 +6,7 @@ import Arkham.Prelude
 import Arkham.Queue
 import Data.Tuple.Extra (dupe)
 import Text.Pretty.Simple
+import Control.Monad.State.Strict
 
 runQueueT :: HasQueue msg m => QueueT msg m a -> m a
 runQueueT body = do
@@ -40,6 +41,10 @@ class MonadIO m => HasQueue msg m | m -> msg where
   messageQueue :: m (Queue msg)
   pushAll :: [msg] -> m ()
   pushAll = withQueue_ . (<>)
+
+instance HasQueue msg m => HasQueue msg (StateT s m) where
+  messageQueue = lift messageQueue
+  pushAll = lift . pushAll
 
 dumpQueue :: (HasQueue msg m, Show msg) => m ()
 dumpQueue = pPrint =<< readIORef . queueToRef =<< messageQueue

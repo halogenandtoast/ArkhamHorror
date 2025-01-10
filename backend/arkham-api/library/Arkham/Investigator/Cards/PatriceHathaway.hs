@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.PatriceHathaway (patriceHathaway, PatriceHathaway (..)) where
+module Arkham.Investigator.Cards.PatriceHathaway (patriceHathaway) where
 
 import Arkham.Capability
 import Arkham.Card
@@ -51,12 +51,12 @@ instance RunMessage PatriceHathaway where
       pure i
     DoStep 2 (ElderSignEffect (is attrs -> True)) -> do
       let discards = map toCard attrs.discard
-      focusCards discards \unfocus -> do
+      focusCards discards do
         chooseOneM attrs.id do
           questionLabeled "Choose 1 card to leave in discard"
           for_ (eachWithRest discards) \(card, rest) -> do
             targeting card do
-              push unfocus
+              unfocusCards
               shuffleCardsIntoDeck attrs.id rest
       pure i
     _ -> PatriceHathaway <$> liftRunMessage msg attrs

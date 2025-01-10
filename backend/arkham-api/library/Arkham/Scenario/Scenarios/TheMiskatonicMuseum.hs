@@ -89,7 +89,7 @@ instance RunMessage TheMiskatonicMuseum where
       pure s
     LookAtTopOfDeck iid ScenarioDeckTarget n -> do
       case fromJustNote "must be set" (lookup ExhibitDeck attrs.decks) of
-        cards -> focusCards (map flipCard $ take n cards) \unfocus -> continue iid [unfocus]
+        cards -> focusCards (map flipCard $ take n cards) $ continue_ iid
       pure s
     Setup -> runScenarioSetup TheMiskatonicMuseum attrs do
       gather Set.TheMiskatonicMuseum

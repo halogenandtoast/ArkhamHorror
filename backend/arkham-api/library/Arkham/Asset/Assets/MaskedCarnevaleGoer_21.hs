@@ -1,12 +1,12 @@
-module Arkham.Asset.Assets.MaskedCarnevaleGoer_21 (maskedCarnevaleGoer_21, MaskedCarnevaleGoer_21 (..)) where
+module Arkham.Asset.Assets.MaskedCarnevaleGoer_21 (maskedCarnevaleGoer_21) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Helpers.Query (getLead)
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
 
 newtype MaskedCarnevaleGoer_21 = MaskedCarnevaleGoer_21 AssetAttrs
@@ -19,13 +19,12 @@ maskedCarnevaleGoer_21 =
 
 instance HasAbilities MaskedCarnevaleGoer_21 where
   getAbilities (MaskedCarnevaleGoer_21 x) =
-    [ restrictedAbility x 1 OnSameLocation (actionAbilityWithCost $ ClueCost (Static 1))
-    ]
+    [restricted x 1 OnSameLocation (actionAbilityWithCost $ clueCost 1)]
 
 instance RunMessage MaskedCarnevaleGoer_21 where
-  runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = case msg of
+  runMessage msg a@(MaskedCarnevaleGoer_21 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Flip iid (toSource iid) (toTarget attrs)
+      flipOverBy iid (attrs.ability 1) attrs
       pure a
     Flip _ _ (isTarget attrs -> True) -> do
       location <- fieldJust AssetLocation (toId attrs)
@@ -35,9 +34,9 @@ instance RunMessage MaskedCarnevaleGoer_21 where
         , Flipped (toSource attrs) innocentReveler
         ]
       pure a
-    LookAtRevealed _ _ target | isTarget a target -> do
+    LookAtRevealed _ _ (isTarget a -> True) -> do
       let innocentReveler = PlayerCard $ lookupPlayerCard Cards.innocentReveler (toCardId attrs)
-      lead <- getLeadPlayer
-      pushAll [FocusCards [innocentReveler], chooseOne lead [Label "Continue" [UnfocusCards]]]
+      lead <- getLead
+      focusCard innocentReveler $ continue_ lead
       pure a
-    _ -> MaskedCarnevaleGoer_21 <$> runMessage msg attrs
+    _ -> MaskedCarnevaleGoer_21 <$> liftRunMessage msg attrs

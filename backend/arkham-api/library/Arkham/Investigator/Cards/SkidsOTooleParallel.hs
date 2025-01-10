@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.SkidsOTooleParallel (skidsOTooleParallel, SkidsOTooleParallel (..)) where
+module Arkham.Investigator.Cards.SkidsOTooleParallel (skidsOTooleParallel) where
 
 import Arkham.Ability
 import Arkham.Calculation
@@ -6,6 +6,7 @@ import Arkham.Helpers.SkillTest (getBaseSkillTestDifficulty, getSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 
@@ -21,7 +22,7 @@ skidsOTooleParallel =
 
 instance HasAbilities SkidsOTooleParallel where
   getAbilities (SkidsOTooleParallel a) =
-    [playerLimit PerRound $ restrictedAbility a 1 Self $ FastAbility $ UpTo (Fixed 3) (ResourceCost 1)]
+    [playerLimit PerRound $ restricted a 1 Self $ FastAbility $ UpTo (Fixed 3) (ResourceCost 1)]
 
 instance HasChaosTokenValue SkidsOTooleParallel where
   getChaosTokenValue iid ElderSign (SkidsOTooleParallel attrs) | iid == toId attrs = do
@@ -50,7 +51,9 @@ instance RunMessage SkidsOTooleParallel where
     ElderSignEffect (is attrs -> True) -> do
       cards <- select $ inDiscardOf attrs.id <> basic (CardWithMaxLevel 2)
       when (notNull cards) $ do
-        focusCards cards \unfocus -> do
-          chooseOne attrs.id [targetLabel card [unfocus, AddToHand attrs.id [card]] | card <- cards]
+        focusCards cards do
+          chooseTargetM attrs.id cards \card -> do
+            unfocusCards
+            addToHand attrs.id (only card)
       pure i
     _ -> SkidsOTooleParallel <$> liftRunMessage msg attrs

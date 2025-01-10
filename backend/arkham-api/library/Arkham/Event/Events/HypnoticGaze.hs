@@ -1,4 +1,4 @@
-module Arkham.Event.Events.HypnoticGaze (hypnoticGaze, HypnoticGaze (..)) where
+module Arkham.Event.Events.HypnoticGaze (hypnoticGaze) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
@@ -33,7 +33,7 @@ instance RunMessage HypnoticGaze where
       cancelledOrIgnoredCardOrGameEffect attrs
       pure $ HypnoticGaze (attrs `with` Metadata (Just currentAttack.enemy))
     RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
-      continue iid []
+      continue_ iid
       let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
       let valid =
             if tabooed TabooList21 attrs

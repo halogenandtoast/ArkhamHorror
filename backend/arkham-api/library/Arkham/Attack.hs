@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Arkham.Attack (module Arkham.Attack, module Arkham.Attack.Types) where
 
 import Arkham.Attack.Types

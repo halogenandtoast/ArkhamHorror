@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.Subject5U21 (subject5U21, Subject5U21 (..)) where
+module Arkham.Investigator.Cards.Subject5U21 (subject5U21) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -69,14 +69,13 @@ instance RunMessage Subject5U21 where
 
       let allDevoured = devouredRavenous <> devoured meta
 
-      focusCards allDevoured \unfocus -> do
+      focusCards allDevoured do
         chooseOneM iid do
           labeled "Do not return a devoured card" nothing
           for_ allDevoured \case
             card@(PlayerCard pc) -> for_ (pcOwner pc) \owner ->
               targeting card $ addToHand owner [card]
             _ -> pure ()
-        push unfocus
       pure i
     AddToHand _ cards -> do
       attrs' <- liftRunMessage msg attrs
@@ -125,7 +124,7 @@ instance RunMessage Subject5U21 where
 
       let allDevoured = devouredRavenous <> devoured meta
 
-      focusCards allDevoured \unfocus -> do
+      focusCards allDevoured do
         chooseUpToNM attrs.id 3 "Do not regurgitate any more cards" do
           for_ allDevoured \case
             card@(PlayerCard pc) -> for_ (pcOwner pc) \owner ->
@@ -133,7 +132,6 @@ instance RunMessage Subject5U21 where
                 addToHand owner [card]
                 doStep 1 msg
             _ -> pure ()
-        push unfocus
 
       pure i
     DoStep 1 (ForTarget (isTarget attrs -> True) (PlayThisEvent _ eid)) -> do

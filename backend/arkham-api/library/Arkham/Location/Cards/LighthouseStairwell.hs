@@ -30,10 +30,9 @@ instance RunMessage LighthouseStairwell where
   runMessage msg l@(LighthouseStairwell attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cards <- getSetAsideCardsMatching $ #asset <> #relic
-      focusCards cards \unfocus -> do
+      focusCards cards do
         chooseOrRunOneM iid do
           targets cards $ addToHand iid . only
-        push unfocus
       pure l
     PlaceGrid (GridLocation pos lid) | lid == attrs.id -> setConnectedInRow pos l
     _ -> LighthouseStairwell <$> liftRunMessage msg attrs

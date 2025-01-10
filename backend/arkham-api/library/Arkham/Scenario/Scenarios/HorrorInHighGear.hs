@@ -150,13 +150,12 @@ instance RunMessage HorrorInHighGear where
 
       pure s
     FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
-      focusCards [card] \unfocus -> do
+      focusCard card do
         locations <- getRear
         lead <- getLead
         chooseOrRunOneM lead do
           questionLabeled "Where will the enemy spawn?"
           targets locations $ createEnemyAt_ card
-        push unfocus
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of

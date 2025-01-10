@@ -1,18 +1,10 @@
-module Arkham.Event.Events.ParallelFates (
-  parallelFates,
-  ParallelFates (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.ParallelFates (parallelFates) where
 
 import Arkham.Card
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.RequestedChaosTokenStrategy
+import Arkham.Event.Import.Lifted
 
 newtype Metadata = Metadata {drawnCards :: [EncounterCard]}
   deriving stock (Show, Eq, Generic)
@@ -23,47 +15,20 @@ newtype ParallelFates = ParallelFates (EventAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 parallelFates :: EventCard ParallelFates
-parallelFates =
-  event (ParallelFates . (`with` Metadata [])) Cards.parallelFates
+parallelFates = event (ParallelFates . (`with` Metadata [])) Cards.parallelFates
 
 instance RunMessage ParallelFates where
-  runMessage msg e@(ParallelFates (attrs `With` meta)) = case msg of
-    InvestigatorPlayEvent _ eid _ _ _ | eid == toId attrs -> do
-      push (DrawEncounterCards (toTarget attrs) 4)
+  runMessage msg e@(ParallelFates (attrs `With` meta)) = runQueueT $ case msg of
+    PlayThisEvent _ (is attrs -> True) -> do
+      push $ DrawEncounterCards (toTarget attrs) 4
       pure e
-    RequestedEncounterCards target cards | isTarget attrs target -> do
-      pushAll
-        [ FocusCards (map EncounterCard cards)
-        , RequestChaosTokens
-            (toSource attrs)
-            (Just $ eventOwner attrs)
-            (Reveal 1)
-            SetAside
-        , UnfocusCards
-        ]
+    RequestedEncounterCards (isTarget attrs -> True) cards -> do
+      focusCards (map EncounterCard cards) $ requestChaosTokens attrs.owner attrs 1
       pure $ ParallelFates (attrs `With` Metadata cards)
     RequestedChaosTokens (isSource attrs -> True) (Just iid) (map chaosTokenFace -> tokens) -> do
-      player <- getPlayer iid
-      push $ ResetChaosTokens (toSource attrs)
-      push
-        $ if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
-          then
-            chooseOne
-              player
-              [ Label
-                  "Shuffle back in"
-                  [ ShuffleCardsIntoDeck
-                      EncounterDeck
-                      (map EncounterCard $ drawnCards meta)
-                  ]
-              ]
-          else
-            chooseOneAtATime
-              player
-              [ targetLabel
-                (toCardId c)
-                [PutCardOnTopOfDeck iid EncounterDeck (EncounterCard c)]
-              | c <- drawnCards meta
-              ]
+      if any (`elem` [Skull, Cultist, Tablet, ElderThing, AutoFail]) tokens
+        then chooseOneM iid do
+          labeled "Shuffle back in" $ shuffleCardsIntoDeck EncounterDeck (map EncounterCard $ drawnCards meta)
+        else chooseOneAtATimeM iid $ targets (drawnCards meta) $ putCardOnTopOfDeck iid EncounterDeck
       pure e
-    _ -> ParallelFates . (`with` meta) <$> runMessage msg attrs
+    _ -> ParallelFates . (`with` meta) <$> liftRunMessage msg attrs

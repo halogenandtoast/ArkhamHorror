@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.Plucky3 (plucky3, Plucky3 (..)) where
+module Arkham.Asset.Assets.Plucky3 (plucky3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
+import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
@@ -17,7 +17,7 @@ plucky3 = assetWith Plucky3 Cards.plucky3 $ (healthL ?~ 1) . (sanityL ?~ 3)
 instance HasAbilities Plucky3 where
   getAbilities (Plucky3 x) =
     [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #intellect])
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest)
+        $ controlled x 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (ResourceCost 1)
     ]
 

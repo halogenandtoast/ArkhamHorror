@@ -40,7 +40,4 @@ instance RunMessage WendyAdams where
         unfocusChaosTokens
 
       drawAnotherChaosToken
-      pure this
-    elderSignEffect do
-      whenAny (assetIs Assets.wendysAmulet) passSkillTest
-      pure this
+    elderSignEffect $ whenAny (assetIs Assets.wendysAmulet) passSkillTest

@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.OnyxPentacle (onyxPentacle, OnyxPentacle (..)) where
+module Arkham.Asset.Assets.OnyxPentacle (onyxPentacle) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Evade
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -35,8 +35,7 @@ instance HasModifiersFor OnyxPentacle where
     _ -> pure mempty
 
 instance HasAbilities OnyxPentacle where
-  getAbilities (OnyxPentacle a) =
-    [restrictedAbility a 1 ControlsThis evadeAction_]
+  getAbilities (OnyxPentacle a) = [restricted a 1 ControlsThis evadeAction_]
 
 instance RunMessage OnyxPentacle where
   runMessage msg a@(OnyxPentacle attrs) = runQueueT $ case msg of

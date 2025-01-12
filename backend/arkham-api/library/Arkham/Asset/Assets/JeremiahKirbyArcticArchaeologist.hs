@@ -1,12 +1,9 @@
-module Arkham.Asset.Assets.JeremiahKirbyArcticArchaeologist (
-  jeremiahKirbyArcticArchaeologist,
-)
-where
+module Arkham.Asset.Assets.JeremiahKirbyArcticArchaeologist ( jeremiahKirbyArcticArchaeologist,) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Search
 import Arkham.Strategy

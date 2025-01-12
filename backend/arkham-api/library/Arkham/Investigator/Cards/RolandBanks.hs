@@ -31,6 +31,4 @@ instance HasChaosTokenValue RolandBanks where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage RolandBanks where
-  runMessage = script $ onAbility 1 do
-    discoverAtYourLocation NotInvestigate you ability 1
-    pure this
+  runMessage = script $ onAbility 1 $ discoverAtYourLocation NotInvestigate you ability 1

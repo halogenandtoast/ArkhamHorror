@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.TheBlackBook (theBlackBook, TheBlackBook (..)) where
+module Arkham.Asset.Assets.TheBlackBook (theBlackBook) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers hiding (reduceCostOf)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

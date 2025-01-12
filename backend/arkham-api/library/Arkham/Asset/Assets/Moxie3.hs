@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.Moxie3 (moxie3, Moxie3 (..)) where
+module Arkham.Asset.Assets.Moxie3 (moxie3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
+import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
@@ -17,7 +17,7 @@ moxie3 = assetWith Moxie3 Cards.moxie3 $ (healthL ?~ 3) . (sanityL ?~ 1)
 instance HasAbilities Moxie3 where
   getAbilities (Moxie3 x) =
     [ wantsSkillTest (YourSkillTest $ oneOf [#willpower, #agility])
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest)
+        $ controlled x 1 (DuringSkillTest AnySkillTest)
         $ FastAbility (ResourceCost 1)
     ]
 

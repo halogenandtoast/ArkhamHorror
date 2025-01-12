@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.LivingInk (livingInk, LivingInk (..)) where
+module Arkham.Asset.Assets.LivingInk (livingInk) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modifySelfWhen)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype LivingInk = LivingInk AssetAttrs

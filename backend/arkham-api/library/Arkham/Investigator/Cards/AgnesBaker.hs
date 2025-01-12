@@ -1,12 +1,12 @@
 module Arkham.Investigator.Cards.AgnesBaker (agnesBaker) where
 
-import Arkham.Ability hiding (you, atYourLocation)
-import Arkham.Script 
+import Arkham.Ability hiding (atYourLocation, you)
 import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.Script
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -33,4 +33,3 @@ instance HasChaosTokenValue AgnesBaker where
 instance RunMessage AgnesBaker where
   runMessage = script $ onAbility 1 do
     chooseEnemy (atYourLocation <> ability.canDamage) $ nonAttackEnemyDamage ability 1
-    pure this

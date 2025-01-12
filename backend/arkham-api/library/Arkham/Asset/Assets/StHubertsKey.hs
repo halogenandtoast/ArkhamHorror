@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.StHubertsKey (stHubertsKey, StHubertsKey (..)) where
+module Arkham.Asset.Assets.StHubertsKey (stHubertsKey) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Classes.HasQueue (findFromQueue)
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message (MessageType (..), pattern CancelNext)
 import Arkham.Message qualified as Msg
@@ -22,7 +22,7 @@ instance HasModifiersFor StHubertsKey where
 
 instance HasAbilities StHubertsKey where
   getAbilities (StHubertsKey a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility
           (InvestigatorDefeated #when ByHorror $ HealableInvestigator (toSource a) #horror You)
         $ DiscardCost FromPlay

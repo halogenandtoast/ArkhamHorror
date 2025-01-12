@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.DisciplineQuiescenceOfThought (
-  disciplineQuiescenceOfThought,
-  DisciplineQuiescenceOfThought (..),
-)
-where
+module Arkham.Asset.Assets.DisciplineQuiescenceOfThought (disciplineQuiescenceOfThought) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -10,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

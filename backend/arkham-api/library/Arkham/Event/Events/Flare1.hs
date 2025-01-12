@@ -1,11 +1,10 @@
 module Arkham.Event.Events.Flare1 where
 
-import Arkham.Asset.Helpers ()
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards (flare1)
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Enemy
-import Arkham.Helpers.Modifiers (ModifierType (..), getTotalSearchTargets)
+import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Matcher
 import Arkham.Strategy
 

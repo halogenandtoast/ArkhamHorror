@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.Moonstone (moonstone, Moonstone (..)) where
+module Arkham.Asset.Assets.Moonstone (moonstone) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (Discarded)
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype Moonstone = Moonstone AssetAttrs
@@ -18,7 +18,7 @@ instance HasModifiersFor Moonstone where
 
 instance HasAbilities Moonstone where
   getAbilities (Moonstone x) =
-    [ restrictedAbility x 1 InYourDiscard
+    [ restricted x 1 InYourDiscard
         $ freeReaction
         $ Discarded #after (Just You) AnySource
         $ PlayableCardWithCriteria NoAction (CriteriaOverride NoRestriction)

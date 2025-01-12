@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.AceOfRods1 (aceOfRods1, aceOfRods1Effect, AceOfRods1 (..)) where
+module Arkham.Asset.Assets.AceOfRods1 (aceOfRods1, aceOfRods1Effect) where
 
 import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Effect.Import
-import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.SkillType
 
@@ -18,8 +18,8 @@ aceOfRods1 = asset AceOfRods1 Cards.aceOfRods1
 
 instance HasAbilities AceOfRods1 where
   getAbilities (AceOfRods1 a) =
-    [ restrictedAbility a 1 (ControlsThis <> DuringTurn You) $ FastAbility Free
-    , restrictedAbility a 2 InYourHand $ freeReaction (GameBegins #when)
+    [ controlled a 1 (DuringTurn You) $ FastAbility Free
+    , restricted a 2 InYourHand $ freeReaction (GameBegins #when)
     ]
 
 instance RunMessage AceOfRods1 where

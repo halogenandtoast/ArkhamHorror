@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.FieldAgent2 (FieldAgent2 (..), fieldAgent2) where
+module Arkham.Asset.Assets.FieldAgent2 (fieldAgent2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 
 newtype FieldAgent2 = FieldAgent2 AssetAttrs
@@ -18,7 +18,7 @@ instance HasModifiersFor FieldAgent2 where
 
 instance HasAbilities FieldAgent2 where
   getAbilities (FieldAgent2 x) =
-    [ controlledAbility x 1 (CanDiscoverCluesAt YourLocation) $ FastAbility (exhaust x <> horrorCost x 1)
+    [ controlled x 1 (CanDiscoverCluesAt YourLocation) $ FastAbility (exhaust x <> horrorCost x 1)
     ]
 
 instance RunMessage FieldAgent2 where

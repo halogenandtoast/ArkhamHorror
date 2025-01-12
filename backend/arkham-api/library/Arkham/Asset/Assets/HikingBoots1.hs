@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.HikingBoots1 (hikingBoots1, HikingBoots1 (..)) where
+module Arkham.Asset.Assets.HikingBoots1 (hikingBoots1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Movement
 
@@ -19,7 +19,7 @@ instance HasModifiersFor HikingBoots1 where
 
 instance HasAbilities HikingBoots1 where
   getAbilities (HikingBoots1 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         ( exists

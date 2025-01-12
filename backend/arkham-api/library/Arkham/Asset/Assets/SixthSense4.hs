@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.SixthSense4 (sixthSense4, sixthSense4Effect, SixthSense4 (..)) where
+module Arkham.Asset.Assets.SixthSense4 (sixthSense4, sixthSense4Effect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -9,7 +9,7 @@ import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Effect.Import
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealChaosToken)

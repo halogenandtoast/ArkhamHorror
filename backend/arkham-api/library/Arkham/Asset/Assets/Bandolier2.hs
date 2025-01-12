@@ -1,8 +1,8 @@
-module Arkham.Asset.Assets.Bandolier2 (Bandolier2 (..), bandolier2) where
+module Arkham.Asset.Assets.Bandolier2 (bandolier2) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
 import Arkham.Investigator.Projection (getSlots)
 import Arkham.Matcher

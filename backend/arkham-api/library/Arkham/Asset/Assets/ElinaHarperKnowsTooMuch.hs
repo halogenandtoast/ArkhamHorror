@@ -1,12 +1,8 @@
-module Arkham.Asset.Assets.ElinaHarperKnowsTooMuch (
-  elinaHarperKnowsTooMuch,
-  ElinaHarperKnowsTooMuch (..),
-)
-where
+module Arkham.Asset.Assets.ElinaHarperKnowsTooMuch (elinaHarperKnowsTooMuch) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 

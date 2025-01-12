@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.CombatTraining3 (combatTraining3, CombatTraining3 (..)) where
+module Arkham.Asset.Assets.CombatTraining3 (combatTraining3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
+import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
@@ -17,7 +17,7 @@ combatTraining3 = assetWith CombatTraining3 Cards.combatTraining3 $ (healthL ?~ 
 instance HasAbilities CombatTraining3 where
   getAbilities (CombatTraining3 x) =
     [ wantsSkillTest (YourSkillTest $ oneOf [#combat, #agility])
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
+        $ controlled x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor CombatTraining3 where

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Followed (followed, followedEffect, Followed (..)) where
+module Arkham.Event.Events.Followed (followed, followedEffect) where
 
 import Arkham.Card
 import Arkham.Effect.Import
@@ -6,7 +6,7 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
-import Arkham.Helpers.Modifiers (ModifierType (..), getMeta)
+import Arkham.Helpers.Modifiers hiding (cardResolutionModifier, costModifier, skillTestModifiers)
 import Arkham.Matcher
 
 newtype Followed = Followed EventAttrs

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.StormOfSpirits3 (stormOfSpirits3, stormOfSpirits3Effect, StormOfSpirits3 (..)) where
+module Arkham.Event.Events.StormOfSpirits3 (stormOfSpirits3, stormOfSpirits3Effect) where
 
 import Arkham.Action qualified as Action
 import Arkham.Aspect hiding (aspect)
@@ -10,7 +10,7 @@ import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Matcher hiding (AttackDamageEffect, RevealChaosToken)
 import Arkham.Window qualified as Window
@@ -59,5 +59,5 @@ instance RunMessage StormOfSpirits3Effect where
         push $ If (Window.RevealChaosTokenEffect iid token attrs.id) msgs
         disable attrs
       pure e
-    SkillTestEnds _ _ _ -> disableReturn e
+    SkillTestEnds {} -> disableReturn e
     _ -> StormOfSpirits3Effect <$> liftRunMessage msg attrs

@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.TrackShoes (trackShoes, TrackShoes (..)) where
+module Arkham.Asset.Assets.TrackShoes (trackShoes) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Game.Helpers (getAccessibleLocations)
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

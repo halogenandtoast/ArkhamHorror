@@ -24,4 +24,3 @@ instance RunMessage Fieldwork where
       during #nextSkillTest
       removeOn #endOfCurrentPhase
       apply $ AnySkillValue 2
-    pure this

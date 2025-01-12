@@ -9,6 +9,7 @@ import Arkham.Prelude
 
 import {-# SOURCE #-} Arkham.Calculation
 import Arkham.CampaignLog
+import Arkham.Duration
 import Arkham.CampaignLogKey (CampaignLogKey, IsCampaignLogKey(..))
 import Arkham.Campaigns.TheForgottenAge.Supply (Supply)
 import Arkham.Capability (Capabilities, Capable (..), FromSource)
@@ -274,8 +275,9 @@ data Criterion
 
 instance Plated Criterion
 
-during :: SkillTestMatcher -> Criterion
-during = DuringSkillTest
+instance Duration Criterion where
+  type DurationOf Criterion = SkillTestMatcher
+  during = DuringSkillTest
 
 notYetRecorded :: IsCampaignLogKey k => k -> Criterion
 notYetRecorded = NotYetRecorded . toCampaignLogKey

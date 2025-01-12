@@ -1,8 +1,8 @@
-module Arkham.Asset.Assets.CloseTheCircle1 (closeTheCircle1, CloseTheCircle1 (..)) where
+module Arkham.Asset.Assets.CloseTheCircle1 (closeTheCircle1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (drawCards)
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
@@ -35,7 +35,7 @@ instance HasModifiersFor CloseTheCircle1 where
 
 instance HasAbilities CloseTheCircle1 where
   getAbilities (CloseTheCircle1 (With a _)) =
-    [ controlledAbility a 1 (exists $ BasicAbility <> PerformableAbility [ActionCostModifier (-1)])
+    [ controlled a 1 (exists $ BasicAbility <> PerformableAbility [ActionCostModifier (-1)])
         $ FastAbility (assetUseCost a Charge 1 <> exhaust a)
     ]
 

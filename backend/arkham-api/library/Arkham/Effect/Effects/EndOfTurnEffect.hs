@@ -32,6 +32,7 @@ endOfTurnEffect' eid source iid msgs =
       , effectMetadata = Just (EffectMessages msgs)
       , effectTraits = mempty
       , effectWindow = Nothing
+      , effectDisableWindow = Nothing
       , effectFinished = False
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing

@@ -1,7 +1,7 @@
-module Arkham.Effect.Effects.WindowModifierEffect (
-  windowModifierEffect,
-  windowModifierEffect',
-  WindowModifierEffect (..),
+module Arkham.Effect.Effects.GenericEffect (
+  genericEffect,
+  genericEffect',
+  GenericEffect (..),
 ) where
 
 import Arkham.Prelude
@@ -16,27 +16,27 @@ import Arkham.Window (Window)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
 
-newtype WindowModifierEffect = WindowModifierEffect EffectAttrs
+newtype GenericEffect = GenericEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-windowModifierEffect :: EffectArgs -> WindowModifierEffect
-windowModifierEffect = WindowModifierEffect . uncurry (baseAttrs "wmode")
+genericEffect :: EffectArgs -> GenericEffect
+genericEffect = GenericEffect . uncurry (baseAttrs "genef")
 
-windowModifierEffect'
+genericEffect'
   :: EffectId
   -> EffectMetadata Window Message
   -> EffectWindow
   -> Source
   -> Target
-  -> WindowModifierEffect
-windowModifierEffect' eid metadata effectWindow source target =
-  WindowModifierEffect
+  -> GenericEffect
+genericEffect' eid metadata effectWindow source target =
+  GenericEffect
     $ EffectAttrs
       { effectId = eid
       , effectSource = source
       , effectTarget = target
-      , effectCardCode = "wmode"
+      , effectCardCode = "genef"
       , effectMetadata = Just metadata
       , effectTraits = mempty
       , effectWindow = Just effectWindow
@@ -54,8 +54,8 @@ windowModifierEffect' eid metadata effectWindow source target =
     (_, _, _, EffectSkillTestWindow sid) -> Just sid
     _ -> Nothing
 
-instance HasModifiersFor WindowModifierEffect where
-  getModifiersFor (WindowModifierEffect attrs) = case effectMetadata attrs of
+instance HasModifiersFor GenericEffect where
+  getModifiersFor (GenericEffect attrs) = case effectMetadata attrs of
     Just (EffectModifiers modifiers) -> case effectWindow attrs of
       Just EffectSetupWindow -> tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
       Just (EffectScenarioSetupWindow scenarioId) -> do
@@ -74,6 +74,6 @@ instance HasModifiersFor WindowModifierEffect where
       _ -> tell $ MonoidalMap $ singletonMap attrs.target modifiers
     _ -> pure ()
 
-instance RunMessage WindowModifierEffect where
-  runMessage msg (WindowModifierEffect attrs) =
-    WindowModifierEffect <$> runMessage msg attrs
+instance RunMessage GenericEffect where
+  runMessage msg (GenericEffect attrs) =
+    GenericEffect <$> runMessage msg attrs

@@ -42,6 +42,15 @@ data EffectWindow
   | EffectRevelationWindow TreacheryId
   deriving stock (Eq, Show, Data)
 
+instance IsLabel "endOfCurrentPhase" EffectWindow where
+  fromLabel = EffectPhaseWindow
+
+instance IsLabel "endOfNextSkillTest" EffectWindow where
+  fromLabel = EffectNextSkillTestWindow
+
+instance IsLabel "nextSkillTest" EffectWindow where
+  fromLabel = EffectNextSkillTestWindow
+
 instance IsLabel "round" EffectWindow where
   fromLabel = EffectRoundWindow
 

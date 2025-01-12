@@ -37,6 +37,7 @@ onRevealChaosTokenEffect' eid skillTestId matchr source target msgs =
       , effectMetadata = Just (EffectMessages msgs)
       , effectTraits = mempty
       , effectWindow = Nothing
+      , effectDisableWindow = Nothing
       , effectFinished = False
       , effectExtraMetadata = toJSON matchr
       , effectSkillTest = Just skillTestId

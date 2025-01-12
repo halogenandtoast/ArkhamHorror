@@ -1447,11 +1447,14 @@ library
       Arkham.Discover
       Arkham.Distance
       Arkham.Draw.Types
+      Arkham.Duration
       Arkham.Effect
+      Arkham.Effect.Builder
       Arkham.Effect.Effects
       Arkham.Effect.Effects.ChaosTokenEffect
       Arkham.Effect.Effects.EndOfRoundEffect
       Arkham.Effect.Effects.EndOfTurnEffect
+      Arkham.Effect.Effects.GenericEffect
       Arkham.Effect.Effects.MaxEffect
       Arkham.Effect.Effects.OnRevealChaosTokenEffect
       Arkham.Effect.Effects.SurgeEffect
@@ -3329,6 +3332,7 @@ library
       Arkham.Scenarios.WeaverOfTheCosmos.Helpers
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
+      Arkham.Script
       Arkham.Search
       Arkham.Skill
       Arkham.Skill.Cards

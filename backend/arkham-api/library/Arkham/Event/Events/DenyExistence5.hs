@@ -2,7 +2,7 @@ module Arkham.Event.Events.DenyExistence5 (denyExistence5, DenyExistence5 (..)) 
 
 import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted hiding (Discarded)
+import Arkham.Event.Import.Lifted hiding (Discarded, drawCards)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Window
 

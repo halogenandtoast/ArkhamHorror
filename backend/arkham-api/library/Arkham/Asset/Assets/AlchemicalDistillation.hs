@@ -70,11 +70,11 @@ instance RunMessage AlchemicalDistillation where
       getSkillTestTarget >>= \case
         Just (InvestigatorTarget iid) -> do
           mDrawCards <- runMaybeT do
-            drawCards <- MaybeT $ Msg.drawCardsIfCan iid (attrs.ability 1) (modify 2)
-            pure $ Label ("Draw " <> tshow (modify 2) <> " cards") [drawCards]
+            cards <- MaybeT $ Msg.drawCardsIfCan iid (attrs.ability 1) (modify 2)
+            pure $ Label ("Draw " <> tshow (modify 2) <> " cards") [cards]
           mGainResources <- runMaybeT do
-            gainResources <- MaybeT $ Msg.gainResourcesIfCan iid (attrs.ability 1) (modify 2)
-            pure $ Label ("Gain " <> tshow (modify 2) <> " resources") [gainResources]
+            resources <- MaybeT $ Msg.gainResourcesIfCan iid (attrs.ability 1) (modify 2)
+            pure $ Label ("Gain " <> tshow (modify 2) <> " resources") [resources]
           mMendingDistillate <- runMaybeT do
             guard $ attrs `hasCustomization` MendingDistillate
             guardM $ lift $ iid <=~> HealableInvestigator (attrs.ability 1) #damage Anyone

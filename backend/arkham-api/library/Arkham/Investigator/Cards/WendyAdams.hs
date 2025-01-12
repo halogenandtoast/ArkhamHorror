@@ -1,12 +1,12 @@
 module Arkham.Investigator.Cards.WendyAdams (wendyAdams) where
 
 import Arkham.Ability
+import Arkham.Script
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Import.Lifted hiding (drawAnotherChaosToken)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Window qualified as Window
 
 newtype WendyAdams = WendyAdams InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -32,13 +32,15 @@ instance HasAbilities WendyAdams where
     ]
 
 instance RunMessage WendyAdams where
-  runMessage msg i@(WendyAdams attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (Window.revealedChaosTokens -> [token]) _ -> do
-      cancelChaosToken (attrs.ability 1) token
-      pushAll [ReturnChaosTokens [token], UnfocusChaosTokens]
-      drawAnotherChaosToken iid
-      pure i
-    ElderSignEffect (is attrs -> True) -> do
+  runMessage = script do
+    onAbility 1 do
+      for_ revealedChaosTokens \token -> do
+        cancelChaosToken ability token
+        returnChaosTokens [token]
+        unfocusChaosTokens
+
+      drawAnotherChaosToken
+      pure this
+    elderSignEffect do
       whenAny (assetIs Assets.wendysAmulet) passSkillTest
-      pure i
-    _ -> WendyAdams <$> liftRunMessage msg attrs
+      pure this

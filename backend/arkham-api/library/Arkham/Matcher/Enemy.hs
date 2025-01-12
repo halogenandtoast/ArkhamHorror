@@ -29,6 +29,7 @@ import Arkham.Zone
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 import GHC.OverloadedLabels
+import GHC.Records
 
 instance IsMatcher EnemyMatcher
 instance Be EnemyId EnemyMatcher where
@@ -133,6 +134,9 @@ data EnemyMatcher
   | -- | Must be replaced
     ThatEnemy
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "canDamage" Source EnemyMatcher where
+  getField = EnemyCanBeDamagedBySource
 
 enemy_ :: EnemyMatcher -> EnemyMatcher
 enemy_ = id

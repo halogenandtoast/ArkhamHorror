@@ -13,6 +13,7 @@ import Arkham.Ability.Types as X
 import Arkham.Ability.Used as X
 import Arkham.Cost as X
 import Arkham.Criteria as X
+import Arkham.Duration as X
 
 import Arkham.Ability.Types qualified
 import Arkham.Action

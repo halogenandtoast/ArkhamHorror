@@ -64,6 +64,7 @@ data EffectBuilder = EffectBuilder
   , effectBuilderTraits :: Set Trait
   , effectBuilderMetadata :: Maybe (EffectMetadata Window Message)
   , effectBuilderWindow :: Maybe EffectWindow
+  , effectBuilderDisableWindow :: Maybe EffectWindow
   , effectBuilderFinished :: Bool
   -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
   -- to track and escape recursion
@@ -83,6 +84,7 @@ data EffectAttrs = EffectAttrs
   , effectTraits :: Set Trait
   , effectMetadata :: Maybe (EffectMetadata Window Message)
   , effectWindow :: Maybe EffectWindow
+  , effectDisableWindow :: Maybe EffectWindow
   , effectFinished :: Bool
   -- ^ Sometimes an effect may cause infinite recursion, this bool can be used
   -- to track and escape recursion
@@ -175,6 +177,7 @@ baseAttrs cardCode eid EffectBuilder {..} =
     , effectMetadata = effectBuilderMetadata
     , effectTraits = effectBuilderTraits
     , effectWindow = effectBuilderWindow
+    , effectDisableWindow = effectBuilderDisableWindow
     , effectFinished = effectBuilderFinished
     , effectExtraMetadata = effectBuilderExtraMetadata
     , effectSkillTest = effectBuilderSkillTest
@@ -190,9 +193,8 @@ metadataL = lens effectMetadata $ \m x -> m {effectMetadata = x}
 instance HasAbilities EffectAttrs
 
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
-isEndOfWindow EffectAttrs {effectWindow} effectWindow' =
-  effectWindow'
-    `elem` toEffectWindowList effectWindow
+isEndOfWindow EffectAttrs {effectWindow, effectDisableWindow} effectWindow' =
+    effectWindow' `elem` toEffectWindowList (effectDisableWindow <|> effectWindow)
  where
   toEffectWindowList Nothing = []
   toEffectWindowList (Just (FirstEffectWindow xs)) = xs
@@ -283,6 +285,7 @@ makeEffectBuilder cardCode meffectMetadata rawSource@(toSource -> source) (toTar
       , effectBuilderMetadata = meffectMetadata
       , effectBuilderTraits = mempty
       , effectBuilderWindow = Nothing
+      , effectBuilderDisableWindow = Nothing
       , effectBuilderFinished = False
       , effectBuilderExtraMetadata = Null
       , effectBuilderSkillTest = mSkillTest
@@ -297,4 +300,20 @@ makeEffectBuilder cardCode meffectMetadata rawSource@(toSource -> source) (toTar
     _ -> Nothing
 
 $(deriveJSON (aesonOptions $ Just "effectBuilder") ''EffectBuilder)
-$(deriveJSON (aesonOptions $ Just "effect") ''EffectAttrs)
+$(deriveToJSON (aesonOptions $ Just "effect") ''EffectAttrs)
+
+instance FromJSON EffectAttrs where
+  parseJSON = withObject "EffectAttrs" \o -> do
+    effectId <- o .: "id"
+    effectCardCode <- o .: "cardCode"
+    effectTarget <- o .: "target"
+    effectSource <- o .: "source"
+    effectCardId <- o .:? "cardId"
+    effectTraits <- o .: "traits"
+    effectMetadata <- o .: "metadata"
+    effectWindow <- o .: "window"
+    effectDisableWindow <- o .:? "disableWindow"
+    effectFinished <- o .: "finished"
+    effectExtraMetadata <- o .: "extraMetadata"
+    effectSkillTest <- o .: "skillTest"
+    pure EffectAttrs {..}

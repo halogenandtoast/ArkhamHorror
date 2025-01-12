@@ -1,8 +1,8 @@
-module Arkham.Event.Events.CrypticResearch4 where
+module Arkham.Event.Events.CrypticResearch4 (crypticResearch4) where
 
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (drawCards)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Matcher
 

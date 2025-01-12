@@ -5,6 +5,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Script
 import Arkham.Trait (Trait (Tome))
 
 newtype DaisyWalker = DaisyWalker InvestigatorAttrs
@@ -30,9 +31,6 @@ instance HasModifiersFor DaisyWalker where
       $ TraitRestrictedAdditionalAction Tome AbilitiesOnly
 
 instance RunMessage DaisyWalker where
-  runMessage msg i@(DaisyWalker attrs) = runQueueT $ case msg of
-    PassedSkillTestWithToken (is attrs -> True) ElderSign -> do
-      tomeCount <- selectCount $ assetControlledBy attrs <> #tome
-      when (tomeCount > 0) $ drawCardsIfCan attrs.id ElderSign tomeCount
-      pure i
-    _ -> DaisyWalker <$> liftRunMessage msg attrs
+  runMessage = script $ passedWithElderSign do
+    drawCardsIfCan you ElderSign =<< selectCount (asset_ $ yours <> #tome)
+    pure this

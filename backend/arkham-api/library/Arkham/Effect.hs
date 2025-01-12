@@ -55,7 +55,6 @@ import Arkham.Asset.Assets (
   eyeOfChaosEffect,
   eyeOfTheDjinnVesselOfGoodAndEvil2Effect,
   eyesOfValusiaTheMothersCunning4Effect,
-  fieldworkEffect,
   fireExtinguisher1Effect,
   gildedVoltoEffect,
   grapplingHookEffect,
@@ -379,7 +378,7 @@ allEffects =
     , ("03005", SomeEffect williamYorickEffect)
     , ("03012", SomeEffect thePaintedWorldEffect)
     , ("03018", SomeEffect improvisationEffect)
-    , ("03024", SomeEffect fieldworkEffect)
+    , ("03024", SomeEffect $ noop "03024")
     , ("03029", SomeEffect sleightOfHandEffect)
     , ("03031", SomeEffect lockpicks1Effect)
     , ("03032", SomeEffect $ noop "03032")
@@ -539,4 +538,5 @@ allEffects =
     , ("surge", SomeEffect surgeEffect)
     , ("maxef", SomeEffect maxEffect)
     , ("noair", SomeEffect noAirEffect)
+    , ("genef", SomeEffect genericEffect)
     ]

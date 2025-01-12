@@ -1,12 +1,12 @@
 module Arkham.Investigator.Cards.AgnesBaker (agnesBaker) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (you, atYourLocation)
+import Arkham.Script 
 import Arkham.Calculation
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message.Lifted.Choose
 
 newtype AgnesBaker = AgnesBaker InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -31,10 +31,6 @@ instance HasChaosTokenValue AgnesBaker where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage AgnesBaker where
-  runMessage msg i@(AgnesBaker attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
-      enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
-      chooseTargetM iid enemies $ nonAttackEnemyDamage source 1
-      pure i
-    _ -> AgnesBaker <$> liftRunMessage msg attrs
+  runMessage = script $ onAbility 1 do
+    chooseEnemy (atYourLocation <> ability.canDamage) $ nonAttackEnemyDamage ability 1
+    pure this

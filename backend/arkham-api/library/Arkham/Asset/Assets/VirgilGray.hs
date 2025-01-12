@@ -48,8 +48,8 @@ instance RunMessage VirgilGray where
         $ [ Label "Draw 1 card" [drawing]
           | drawing <- maybeToList mDrawCards
           ]
-        <> [ Label "Gain 1 resource" [gainResources]
-           | gainResources <- maybeToList mGainResources
+        <> [ Label "Gain 1 resource" [resources]
+           | resources <- maybeToList mGainResources
            ]
         <> [ Label "Heal 1 horror from Virgil Gray" [HealHorror (toTarget attrs) (attrs.ability 1) 1]
            | healable

@@ -1,11 +1,12 @@
-module Arkham.Asset.Assets.Fieldwork (fieldwork, fieldworkEffect, Fieldwork (..)) where
+module Arkham.Asset.Assets.Fieldwork (fieldwork) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (you)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Effect.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Script
+import Arkham.Effect.Builder
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 
 newtype Fieldwork = Fieldwork AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,38 +16,12 @@ fieldwork :: AssetCard Fieldwork
 fieldwork = asset Fieldwork Cards.fieldwork
 
 instance HasAbilities Fieldwork where
-  getAbilities (Fieldwork attrs) =
-    [reaction attrs 1 ControlsThis (exhaust attrs) (Enters #after You LocationWithAnyClues)]
+  getAbilities (Fieldwork a) = [reaction a 1 ControlsThis (exhaust a) (Enters #after You LocationWithAnyClues)]
 
 instance RunMessage Fieldwork where
-  runMessage msg a@(Fieldwork attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push =<< createCardEffect Cards.fieldwork Nothing (attrs.ability 1) iid
-      pure a
-    _ -> Fieldwork <$> runMessage msg attrs
-
-newtype FieldworkEffect = FieldworkEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
-
-fieldworkEffect :: EffectArgs -> FieldworkEffect
-fieldworkEffect = cardEffectWith FieldworkEffect Cards.fieldwork (setEffectMeta @Bool False)
-
-instance HasModifiersFor FieldworkEffect where
-  getModifiersFor (FieldworkEffect a) = maybeModified_ a a.target do
-    _ <- MaybeT getSkillTestSource
-    guard $ toResult @Bool a.extra
-    pure [AnySkillValue 2]
-
-instance RunMessage FieldworkEffect where
-  runMessage msg e@(FieldworkEffect attrs) = case msg of
-    BeginSkillTestAfterFast -> do
-      pure . FieldworkEffect $ attrs & setEffectMeta @Bool True
-    EndPhase -> do
-      push $ disable attrs
-      pure e
-    SkillTestEnds {} -> do
-      let meta = toResult @Bool attrs.extra
-      pushWhen meta $ disable attrs
-      pure e
-    _ -> FieldworkEffect <$> runMessage msg attrs
+  runMessage = script $ onAbility 1 do
+    effect ability you do
+      during #nextSkillTest
+      removeOn #endOfCurrentPhase
+      apply $ AnySkillValue 2
+    pure this

@@ -1,7 +1,7 @@
-module Arkham.Event.Events.Contraband2 (contraband2, Contraband2 (..)) where
+module Arkham.Event.Events.Contraband2 (contraband2) where
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (drawCards)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getPlayer)

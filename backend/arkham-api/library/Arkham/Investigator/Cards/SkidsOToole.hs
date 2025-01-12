@@ -1,6 +1,7 @@
 module Arkham.Investigator.Cards.SkidsOToole (skidsOToole) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (you)
+import Arkham.Script
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
@@ -25,11 +26,10 @@ instance HasChaosTokenValue SkidsOToole where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage SkidsOToole where
-  runMessage msg i@(SkidsOToole attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gainActions iid (attrs.ability 1) 1
-      pure i
-    PassedSkillTestWithToken (is attrs -> True) ElderSign -> do
-      gainResourcesIfCan attrs ElderSign 2
-      pure i
-    _ -> SkidsOToole <$> liftRunMessage msg attrs
+  runMessage = script do
+    onAbility 1 do
+      gainActions you ability 1
+      pure this
+    passedWithElderSign do
+      gainResources you ElderSign 2
+      pure this

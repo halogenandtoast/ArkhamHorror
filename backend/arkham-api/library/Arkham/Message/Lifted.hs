@@ -1355,6 +1355,10 @@ putCardOnTopOfDeck
   :: (ReverseQueue m, IsDeck deck, IsCard card) => InvestigatorId -> deck -> card -> m ()
 putCardOnTopOfDeck iid deck card = push $ PutCardOnTopOfDeck iid (toDeck deck) (toCard card)
 
+gainResources
+  :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ InvestigatorId) => a -> source -> Int -> m ()
+gainResources = gainResourcesIfCan
+
 gainResourcesIfCan
   :: (ReverseQueue m, Sourceable source, AsId a, IdOf a ~ InvestigatorId) => a -> source -> Int -> m ()
 gainResourcesIfCan a source n = do
@@ -1369,6 +1373,14 @@ drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 
 drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 drawEncounterCards i source n = push $ Msg.drawEncounterCards i source n
+
+drawCards
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> m ()
+drawCards = drawCardsIfCan
 
 drawCardsIfCan
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -2336,3 +2348,9 @@ updateHistory investigator history = push $ UpdateHistory (asId investigator) hi
 
 setGlobal :: (ReverseQueue m, Targetable target, ToJSON a) => target -> Aeson.Key -> a -> m ()
 setGlobal target k v = push $ SetGlobal (toTarget target) k (toJSON v)
+
+unfocusChaosTokens :: ReverseQueue m => m ()
+unfocusChaosTokens = push UnfocusChaosTokens
+
+returnChaosTokens :: ReverseQueue m => [ChaosToken] -> m ()
+returnChaosTokens = push . ReturnChaosTokens

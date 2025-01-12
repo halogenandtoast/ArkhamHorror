@@ -3,7 +3,7 @@ module Arkham.Event.Events.HonedInstinct (honedInstinct, HonedInstinct (..)) whe
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Modifiers hiding (eventModifiers)
 import Arkham.Matcher
 
 newtype HonedInstinct = HonedInstinct EventAttrs

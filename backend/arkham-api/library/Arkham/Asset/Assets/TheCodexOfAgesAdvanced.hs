@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.TheCodexOfAgesAdvanced (
-  theCodexOfAgesAdvanced,
-  TheCodexOfAgesAdvanced (..),
-)
-where
+module Arkham.Asset.Assets.TheCodexOfAgesAdvanced (theCodexOfAgesAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

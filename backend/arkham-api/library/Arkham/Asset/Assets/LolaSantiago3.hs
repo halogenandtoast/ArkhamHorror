@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.LolaSantiago3 (lolaSantiago3, LolaSantiago3 (..)) where
+module Arkham.Asset.Assets.LolaSantiago3 (lolaSantiago3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Cost.FieldCost
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 
@@ -20,7 +20,7 @@ instance HasModifiersFor LolaSantiago3 where
 
 instance HasAbilities LolaSantiago3 where
   getAbilities (LolaSantiago3 a) =
-    [ controlledAbility a 1 ClueOnLocation
+    [ controlled a 1 ClueOnLocation
         $ FastAbility (exhaust a <> MaybeFieldResourceCost (MaybeFieldCost YourLocation LocationShroud))
     ]
 

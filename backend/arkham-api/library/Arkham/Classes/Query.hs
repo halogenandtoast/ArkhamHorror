@@ -15,6 +15,9 @@ selectWhenNotNull q f = select q >>= \xs -> if null xs then pure () else f xs
 selectCount :: (HasCallStack, Query a, HasGame m) => a -> m Int
 selectCount = fmap length . select
 
+withCount :: (HasCallStack, Query a, HasGame m) => (Int -> m ()) -> a -> m ()
+withCount f = selectCount >=> f
+
 selectAny :: (HasCallStack, Query a, HasGame m) => a -> m Bool
 selectAny = fmap notNull . selectMap id
 

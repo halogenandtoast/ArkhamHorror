@@ -358,7 +358,7 @@ data ModifierType
   | ShuffleIntoAnyDeckInsteadOfDiscard
   | ShuffleIntoDeckInsteadOfDiscard
   | SkillCannotBeIncreased SkillType
-  | SkillModifier {skillType :: SkillType, value :: Int}
+  | CalculatedSkillModifier {skillType :: SkillType, calculation :: GameCalculation}
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
   | SkillTestResultValueModifier Int
@@ -383,6 +383,10 @@ data ModifierType
   | XPModifier Text Int
   | UIModifier UIModifier
   deriving stock (Show, Eq, Ord, Data)
+
+pattern SkillModifier :: SkillType -> Int -> ModifierType
+pattern SkillModifier skillType value <- CalculatedSkillModifier skillType (Fixed value) where
+  SkillModifier skillType value = CalculatedSkillModifier skillType (Fixed value)
 
 data UIModifier
   = Ethereal -- from Ethereal Form

@@ -20,6 +20,7 @@ import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
 import Arkham.GameValue
 import Arkham.Helpers
+import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
@@ -56,7 +57,9 @@ getSkillValue st iid = do
         SkillAgility -> InvestigatorBaseAgility
   base <- field fld iid
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
-  let x = if canBeIncreased then sum [n | SkillModifier st' n <- mods, st' == st] else 0
+  x <- if canBeIncreased
+    then sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
+    else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
 skillValueFor
@@ -92,8 +95,9 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd modifiers
       pure $ max 0 (n + m)
-    applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 = do
-      pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
+    applyModifier (CalculatedSkillModifier skillType calc) n = do
+      m <- calculate calc
+      pure $ if (canBeIncreased || m < 0)  && skillType `elem` matchingSkills then max 0 (n + m) else n
     applyModifier (ActionSkillModifier action skillType m) n | canBeIncreased || m < 0 = do
       pure
         $ if skillType `elem` matchingSkills && Just action == maction

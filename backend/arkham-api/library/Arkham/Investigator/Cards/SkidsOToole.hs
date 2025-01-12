@@ -27,9 +27,5 @@ instance HasChaosTokenValue SkidsOToole where
 
 instance RunMessage SkidsOToole where
   runMessage = script do
-    onAbility 1 do
-      gainActions you ability 1
-      pure this
-    passedWithElderSign do
-      gainResources you ElderSign 2
-      pure this
+    onAbility 1 $ gainActions you ability 1
+    passedWithElderSign $ gainResources you ElderSign 2

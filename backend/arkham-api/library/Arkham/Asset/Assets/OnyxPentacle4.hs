@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.OnyxPentacle4 (onyxPentacle4, OnyxPentacle4 (..)) where
+module Arkham.Asset.Assets.OnyxPentacle4 (onyxPentacle4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Evade
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -16,27 +16,23 @@ onyxPentacle4 :: AssetCard OnyxPentacle4
 onyxPentacle4 = asset OnyxPentacle4 Cards.onyxPentacle4
 
 instance HasModifiersFor OnyxPentacle4 where
-  getModifiersFor (OnyxPentacle4 a) = case a.controller of
-    Just iid | a.ready -> do
-      selectOne (AbilityIs (toSource a) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab ->
-          modified_
-            a
-            (AbilityTarget iid ab)
-            [ CanModify
-                $ EnemyEvadeActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyCanBeEvadedBy (a.ability 1)
-                <> EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
-            ]
-    _ -> pure mempty
+  getModifiersFor (OnyxPentacle4 a) = for_ a.controller \iid -> void $ runMaybeT do
+    guard a.ready
+    ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
+    modified_
+      a
+      (AbilityTarget iid ab)
+      [ CanModify
+          $ EnemyEvadeActionCriteria
+          $ CriteriaOverride
+          $ EnemyCriteria
+          $ ThisEnemy
+          $ EnemyCanBeEvadedBy (a.ability 1)
+          <> EnemyAt (oneOf [YourLocation, ConnectedFrom YourLocation])
+      ]
 
 instance HasAbilities OnyxPentacle4 where
-  getAbilities (OnyxPentacle4 a) =
-    [restrictedAbility a 1 ControlsThis evadeAction_]
+  getAbilities (OnyxPentacle4 a) = [restricted a 1 ControlsThis evadeAction_]
 
 instance RunMessage OnyxPentacle4 where
   runMessage msg a@(OnyxPentacle4 attrs) = runQueueT $ case msg of

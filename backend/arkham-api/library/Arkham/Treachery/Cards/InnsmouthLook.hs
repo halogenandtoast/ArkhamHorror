@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.InnsmouthLook (innsmouthLook, InnsmouthLook (..)) where
+module Arkham.Treachery.Cards.InnsmouthLook (innsmouthLook) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Trait (Trait (DeepOne))
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.RavenousUncontrolledHunger (
-  ravenousUncontrolledHunger,
-  RavenousUncontrolledHunger (..),
-)
-where
+module Arkham.Asset.Assets.RavenousUncontrolledHunger (ravenousUncontrolledHunger) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -10,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Types (getController)
 import Arkham.Card
 import Arkham.Card.PlayerCard
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection

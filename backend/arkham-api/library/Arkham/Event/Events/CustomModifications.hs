@@ -1,4 +1,4 @@
-module Arkham.Event.Events.CustomModifications (customModifications, CustomModifications (..)) where
+module Arkham.Event.Events.CustomModifications (customModifications) where
 
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Uses
@@ -8,7 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Game.Helpers (targetToSource)
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelfWhen)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (
   getSkillTestInvestigator,
   getSkillTestSource,
@@ -32,7 +32,7 @@ instance HasModifiersFor CustomModifications where
   getModifiersFor (CustomModifications a) = do
     let
       usingAsset = do
-        iid <- MaybeT $ getSkillTestInvestigator
+        iid <- MaybeT getSkillTestInvestigator
         guard $ a.controller == iid
         attachedAsset <- MaybeT $ selectOne $ assetWithAttachedEvent a <> assetControlledBy a.controller
         guardM $ lift inAttackSkillTest

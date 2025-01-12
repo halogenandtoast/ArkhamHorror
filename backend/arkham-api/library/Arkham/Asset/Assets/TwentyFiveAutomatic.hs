@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.TwentyFiveAutomatic (twentyFiveAutomatic, TwentyFiveAutomatic (..)) where
+module Arkham.Asset.Assets.TwentyFiveAutomatic (twentyFiveAutomatic) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestSource, getSkillTestTarget)
 import Arkham.Matcher
 

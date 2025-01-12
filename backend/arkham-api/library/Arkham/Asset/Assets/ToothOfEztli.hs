@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.ToothOfEztli (toothOfEztli, ToothOfEztli (..)) where
+module Arkham.Asset.Assets.ToothOfEztli (toothOfEztli) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 

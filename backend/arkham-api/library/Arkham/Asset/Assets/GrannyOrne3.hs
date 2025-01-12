@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.GrannyOrne3 (grannyOrne3, GrannyOrne3 (..)) where
+module Arkham.Asset.Assets.GrannyOrne3 (grannyOrne3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,7 +20,7 @@ instance HasModifiersFor GrannyOrne3 where
 
 instance HasAbilities GrannyOrne3 where
   getAbilities (GrannyOrne3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility
           (WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) #any #failure)
           (exhaust a)

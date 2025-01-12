@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.LitaChantler where
+module Arkham.Asset.Assets.LitaChantler (litaChantler) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (attackedEnemy)
 import Arkham.Matcher

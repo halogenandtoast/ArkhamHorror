@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DamningTestimony (damningTestimony, DamningTestimony (..)) where
+module Arkham.Asset.Assets.DamningTestimony (damningTestimony) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -8,7 +8,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelfWhen)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.SkillTest (
   isInvestigation,

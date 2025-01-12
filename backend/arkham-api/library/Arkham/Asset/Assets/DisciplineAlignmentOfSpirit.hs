@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.DisciplineAlignmentOfSpirit (
-  disciplineAlignmentOfSpirit,
-  DisciplineAlignmentOfSpirit (..),
-)
-where
+module Arkham.Asset.Assets.DisciplineAlignmentOfSpirit (disciplineAlignmentOfSpirit) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -10,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 
 newtype DisciplineAlignmentOfSpirit = DisciplineAlignmentOfSpirit AssetAttrs
   deriving anyclass IsAsset

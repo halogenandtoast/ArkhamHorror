@@ -14,6 +14,7 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Message.Lifted qualified as Msg
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Target
 import Arkham.ChaosToken.Types
 import Arkham.Prelude hiding (Handler)
@@ -39,6 +40,9 @@ this = ?this
 you :: (?you :: InvestigatorId) => InvestigatorId
 you = ?you
 
+yourLocation :: (?you :: InvestigatorId) => LocationMatcher
+yourLocation = locationWithInvestigator ?you
+
 ability :: (?ability :: Source) => Source
 ability = ?ability
 
@@ -54,12 +58,12 @@ onAbility
       , Sourceable attrs
       , HasField "ability" attrs (Int -> Source)
       )
-    => QueueT Message GameT a)
+    => StateT a (QueueT Message GameT) ())
   -> RunBuilderT a ()
 onAbility n body = onMessage \case
   UseCardAbility iid source n' windows payment | n == n' && isSource (toAttrs this) source -> Just $
     let ?you = iid; ?ability = (toAttrs this).ability n; ?windows = windows; ?payment = payment
-    in body
+    in execStateT body this
   _ -> Nothing
 
 onMessage :: ((?this :: a) => Message -> Maybe (QueueT Message GameT a)) -> RunBuilderT a ()
@@ -87,11 +91,11 @@ passedWithElderSign
   (( ?you :: InvestigatorId
    , ?this :: a
    )
-    => QueueT Message GameT a) -> RunBuilderT a ()
+    => StateT a (QueueT Message GameT) ()) -> RunBuilderT a ()
 passedWithElderSign body = onMessage \case
   PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | is (toAttrs this) iid -> Just $
     let ?you = iid
-    in body
+    in execStateT body this
   _ -> Nothing
 
 class Yours a where
@@ -126,9 +130,9 @@ chooseAmong a body = do
 chooseEnemy :: (?you :: InvestigatorId, ReverseQueue m) => EnemyMatcher -> (EnemyId -> QueueT Message m ()) -> m ()
 chooseEnemy = chooseAmong
 
-elderSignEffect :: (Entity a, attrs ~ EntityAttrs a, Is attrs InvestigatorId) => ((?this :: a) => QueueT Message GameT a) -> RunBuilderT a ()
+elderSignEffect :: (Entity a, attrs ~ EntityAttrs a, Is attrs InvestigatorId) => ((?this :: a) => StateT a (QueueT Message GameT) ()) -> RunBuilderT a ()
 elderSignEffect body = onMessage \case
-  ResolveChaosToken _ ElderSign iid | is (toAttrs this) iid -> Just $ let ?you = iid in body
+  ResolveChaosToken _ ElderSign iid | is (toAttrs this) iid -> Just $ let ?you = iid in execStateT body this
   _ -> Nothing
     
 revealedChaosTokens :: (?windows :: [Window]) => [ChaosToken]
@@ -136,3 +140,17 @@ revealedChaosTokens = Window.revealedChaosTokens ?windows
 
 drawAnotherChaosToken :: (?you :: InvestigatorId, ReverseQueue m) => m ()
 drawAnotherChaosToken = Msg.drawAnotherChaosToken you
+
+chooseFightEnemyWithModifiers
+  :: (ReverseQueue m, Sourceable source, ?you :: InvestigatorId)
+  => SkillTestId
+  -> source
+  -> [ModifierType]
+  -> m ()
+chooseFightEnemyWithModifiers sid = Msg.chooseFightEnemyWithModifiers sid you
+
+class WithClues a where
+  withClues :: a
+
+instance WithClues LocationMatcher where
+  withClues = LocationWithAnyClues

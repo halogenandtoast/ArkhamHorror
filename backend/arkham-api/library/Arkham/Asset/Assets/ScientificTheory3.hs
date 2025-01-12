@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.ScientificTheory3 (scientificTheory3, ScientificTheory3 (..)) where
+module Arkham.Asset.Assets.ScientificTheory3 (scientificTheory3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modifySelf)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -18,7 +18,7 @@ scientificTheory3 = assetWith ScientificTheory3 Cards.scientificTheory3 $ (healt
 instance HasAbilities ScientificTheory3 where
   getAbilities (ScientificTheory3 x) =
     [ wantsSkillTest (YourSkillTest $ oneOf [#intellect, #combat])
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
+        $ controlled x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor ScientificTheory3 where

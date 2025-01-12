@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.MichaelLeigh5 (michaelLeigh5, MichaelLeigh5 (..)) where
+module Arkham.Asset.Assets.MichaelLeigh5 (michaelLeigh5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers hiding (nextSkillTestModifier)
 import Arkham.Matcher
 
 newtype MichaelLeigh5 = MichaelLeigh5 AssetAttrs
@@ -19,9 +19,9 @@ instance HasModifiersFor MichaelLeigh5 where
 
 instance HasAbilities MichaelLeigh5 where
   getAbilities (MichaelLeigh5 a) =
-    [ controlledAbility a 1 cardRestriction
+    [ controlled a 1 cardRestriction
         $ freeReaction (SkillTestResult #after You (WhileInvestigating Anywhere) $ SuccessResult AnyValue)
-    , restrictedAbility a 2 ControlsThis
+    , restricted a 2 ControlsThis
         $ ReactionAbility (PerformAction #when You #fight)
         $ assetUseCost a Evidence 1
         <> exhaust a

@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.CombatTraining1 (combatTraining1, CombatTraining1 (..)) where
+module Arkham.Asset.Assets.CombatTraining1 (combatTraining1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 
@@ -18,10 +18,10 @@ instance HasAbilities CombatTraining1 where
   getAbilities (CombatTraining1 x) =
     [ withTooltip "{fast} Spend 1 resource: You get +1 {combat} for this skill test."
         $ wantsSkillTest (YourSkillTest #combat)
-        $ controlledAbility x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
+        $ controlled x 1 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     , withTooltip "{fast} Spend 1 resource: You get +1 {agility} for this skill test."
         $ wantsSkillTest (YourSkillTest #agility)
-        $ controlledAbility x 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
+        $ controlled x 2 (DuringSkillTest AnySkillTest) (FastAbility $ ResourceCost 1)
     ]
 
 instance HasModifiersFor CombatTraining1 where

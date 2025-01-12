@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.ThomasDawsonSoldierInANewWar (
-  thomasDawsonSoldierInANewWar,
-  ThomasDawsonSoldierInANewWar (..),
-)
-where
+module Arkham.Asset.Assets.ThomasDawsonSoldierInANewWar (thomasDawsonSoldierInANewWar) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window
 import Arkham.Matcher
 

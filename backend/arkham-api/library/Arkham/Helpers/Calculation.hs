@@ -138,3 +138,6 @@ calculate = go
               (YouOweBiancaResources (Labeled _ iid') n) | i == iid' -> n
               _ -> 0
           sum . map toResources . toList <$> scenarioField ScenarioRemembered
+    IfLocationExistsCalculation q c1 c2 -> do
+      cond <- selectAny q
+      calculate $ if cond then c1 else c2

@@ -1,7 +1,6 @@
 module Arkham.Asset.Assets.DisciplinePrescienceOfFate (
   disciplinePrescienceOfFate,
   disciplinePrescienceOfFateEffect,
-  DisciplinePrescienceOfFate (..),
 )
 where
 
@@ -10,7 +9,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Runner
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, modified_)
+import Arkham.Helpers.Modifiers
 
 newtype DisciplinePrescienceOfFate = DisciplinePrescienceOfFate AssetAttrs
   deriving anyclass IsAsset

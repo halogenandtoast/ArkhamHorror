@@ -32,5 +32,4 @@ instance HasModifiersFor DaisyWalker where
 
 instance RunMessage DaisyWalker where
   runMessage = script $ passedWithElderSign do
-    drawCardsIfCan you ElderSign =<< selectCount (asset_ $ yours <> #tome)
-    pure this
+    drawCards you ElderSign `withCount` asset_ (yours <> #tome)

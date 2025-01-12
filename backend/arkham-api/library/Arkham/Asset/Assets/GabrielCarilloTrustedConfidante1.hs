@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.GabrielCarilloTrustedConfidante1 (
-  gabrielCarilloTrustedConfidante1,
-  GabrielCarilloTrustedConfidante1 (..),
-)
-where
+module Arkham.Asset.Assets.GabrielCarilloTrustedConfidante1 (gabrielCarilloTrustedConfidante1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype GabrielCarilloTrustedConfidante1 = GabrielCarilloTrustedConfidante1 AssetAttrs
@@ -23,7 +19,7 @@ instance HasModifiersFor GabrielCarilloTrustedConfidante1 where
 
 instance HasAbilities GabrielCarilloTrustedConfidante1 where
   getAbilities (GabrielCarilloTrustedConfidante1 x) =
-    [ controlledAbility x 1 (can.draw.cards You)
+    [ controlled x 1 (can.draw.cards You)
         $ ReactionAbility (TurnBegins #when You) (AddCurseTokenCost 1)
     ]
 

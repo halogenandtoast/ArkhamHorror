@@ -1,16 +1,16 @@
 module Arkham.Treachery.Cards.HospitalDebts (hospitalDebts) where
 
-import Arkham.Ability
-import Arkham.Classes
+import Arkham.Ability hiding (you)
+import Arkham.Effect.Builder
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Prelude
+import Arkham.Script
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Import.Lifted
+import Arkham.Treachery.Import.Lifted hiding (moveTokens)
 
 newtype HospitalDebts = HospitalDebts TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Targetable)
 
 hospitalDebts :: TreacheryCard HospitalDebts
 hospitalDebts = treachery HospitalDebts Cards.hospitalDebts
@@ -28,14 +28,9 @@ instance HasAbilities HospitalDebts where
         ]
 
 instance RunMessage HospitalDebts where
-  runMessage msg t@(HospitalDebts attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
-      placeInThreatArea attrs iid
-      pure t
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll [SpendResources iid 1, PlaceResources (attrs.ability 1) (toTarget attrs) 1]
-      pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      resolutionModifier (attrs.ability 2) iid (XPModifier "Hospital Debts" (-2))
-      pure t
-    _ -> HospitalDebts <$> liftRunMessage msg attrs
+  runMessage = script do
+    revelation placeInYourThreatArea
+    onAbility 1 $ moveTokens you this #resource 1
+    onAbility 2 $ effect you do
+      during #resolution
+      apply $ XPModifier "Hospital Debts" (-2)

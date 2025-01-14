@@ -43,7 +43,6 @@ data PerCardSettings = PerCardSettings
 data PerCardSetting a where
   CardIgnoreUnrelatedSkillTestTriggers :: PerCardSetting Bool
   CardIgnoreDuringSkillTests :: PerCardSetting Bool
-  deriving stock Typeable
 
 instance Show (PerCardSetting a) where
   show = \case

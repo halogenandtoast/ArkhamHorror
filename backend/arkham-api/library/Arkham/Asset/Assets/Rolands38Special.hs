@@ -4,7 +4,8 @@ import Arkham.Ability hiding (you)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (chooseFightEnemyWithModifiers)
 import Arkham.Asset.Uses
-import Arkham.Modifier
+import Arkham.Calculation.IsCalculation ()
+import Arkham.Effect.Builder
 import Arkham.Script
 
 newtype Rolands38Special = Rolands38Special AssetAttrs
@@ -18,13 +19,6 @@ instance HasAbilities Rolands38Special where
   getAbilities (Rolands38Special x) = [restricted x 1 ControlsThis $ fightAction $ assetUseCost x Ammo 1]
 
 instance RunMessage Rolands38Special where
-  runMessage = script do
-    onAbility 1 do
-      sid <- getRandom
-      chooseFightEnemyWithModifiers
-        sid
-        ability
-        [ DamageDealt 1
-        , CalculatedSkillModifier #combat
-            $ IfLocationExistsCalculation (yourLocation <> withClues) (Fixed 3) (Fixed 1)
-        ]
+  runMessage = script $ onAbility 1 $ fight $ effect you do
+    damageDealt 1
+    combat $ ifLocation (yourLocation <> withClues) (Fixed 3) (Fixed 1)

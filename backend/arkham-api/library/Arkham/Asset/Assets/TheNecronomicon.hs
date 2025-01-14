@@ -1,16 +1,19 @@
 module Arkham.Asset.Assets.TheNecronomicon (theNecronomicon) where
 
-import Arkham.Ability
+import Arkham.Ability hiding (you)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Import.Lifted hiding (moveTokens)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
-import Arkham.Placement
+import Arkham.Script
+import GHC.Records
 
 newtype TheNecronomicon = TheNecronomicon AssetAttrs
   deriving anyclass IsAsset
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Sourceable)
+
+instance HasField "horror" TheNecronomicon Int where
+  getField = getField @"horror" . toAttrs
 
 theNecronomicon :: AssetCard TheNecronomicon
 theNecronomicon =
@@ -29,15 +32,8 @@ instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) = [controlledAbility a 1 AnyHorrorOnThis #action]
 
 instance RunMessage TheNecronomicon where
-  runMessage msg a@(TheNecronomicon attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
-      putCardIntoPlay iid attrs
-      pure a
-    CardEnteredPlay iid card | card.id == attrs.cardId -> do
-      place attrs (InThreatArea iid)
-      pure $ a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      moveTokens (attrs.ability 1) attrs iid #horror 1
-      when (attrs.horror <= 1) $ toDiscardBy iid (attrs.ability 1) attrs
-      pure a
-    _ -> TheNecronomicon <$> liftRunMessage msg attrs
+  runMessage = script do
+    revelation placeInYourThreatArea
+    onAbilityThen 1
+      (moveTokens this you #horror 1)
+      (when (this.horror == 0) discardThis)

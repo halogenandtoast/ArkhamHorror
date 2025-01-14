@@ -54,6 +54,9 @@ instance IsLabel "nextSkillTest" EffectWindow where
 instance IsLabel "round" EffectWindow where
   fromLabel = EffectRoundWindow
 
+instance IsLabel "resolution" EffectWindow where
+  fromLabel = EffectResolutionWindow
+
 instance IsLabel "skillTest" (SkillTestId -> EffectWindow) where
   fromLabel = EffectSkillTestWindow
 

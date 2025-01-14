@@ -171,7 +171,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
-import Control.Monad.Trans.Writer.CPS (execWriterT)
+import Control.Monad.Writer.Strict (execWriterT)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key

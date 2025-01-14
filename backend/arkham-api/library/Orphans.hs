@@ -62,10 +62,6 @@ instance PersistField UUID where
 instance PersistFieldSql UUID where
   sqlType _ = SqlOther "uuid"
 
--- Entity (and Key)
-deriving stock instance Typeable Key
-deriving stock instance Typeable Entity
-
 instance {-# OVERLAPPABLE #-} (ToJSON a, PersistEntity a) => ToJSON (Entity a) where
   toJSON = entityIdToJSON
 

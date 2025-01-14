@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Script
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted hiding (drawAnotherChaosToken)
+import Arkham.Investigator.Import.Lifted hiding (drawAnotherChaosToken, cancelChaosToken)
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 

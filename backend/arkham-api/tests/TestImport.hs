@@ -222,9 +222,6 @@ instance HasStdGen TestApp where
 instance HasQueue Message TestAppT where
   messageQueue = gets messageQueueRef
 
-instance HasQueue Message (ReaderT TestApp TestAppT) where
-  messageQueue = asks messageQueueRef
-
 instance HasGameLogger TestAppT where
   getLogger = do
     logger <- gets testGameLogger

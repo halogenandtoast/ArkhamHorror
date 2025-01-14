@@ -384,6 +384,9 @@ instance Foldable Only where
 forMaybeM :: Monad m => [a] -> (a -> m (Maybe b)) -> m [b]
 forMaybeM xs f = catMaybes <$> traverse f xs
 
+upon :: Applicative m => m () -> Bool -> m ()
+upon = flip when
+
 whenNothing :: Applicative m => Maybe a -> m () -> m ()
 whenNothing ma body = when (isNothing ma) body
 
@@ -456,3 +459,6 @@ guarded = flip given
 
 class ToDisplay a where
   toDisplay :: a -> Text
+
+mapFold :: (Foldable t, Monoid m) => t a -> (a -> m) -> m
+mapFold = flip Data.Foldable.foldMap

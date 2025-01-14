@@ -3,7 +3,7 @@ module Arkham.Classes.HasGame where
 import {-# SOURCE #-} Arkham.Game.Base
 import Arkham.Prelude
 import Arkham.Queue
-import Control.Monad.Trans.Writer.CPS
+import Control.Monad.Writer.Strict
 import Control.Monad.State.Strict
 
 class Monad m => HasGame m where
@@ -21,5 +21,5 @@ instance HasGame m => HasGame (StateT s m) where
 instance HasGame m => HasGame (MaybeT m) where
   getGame = lift getGame
 
-instance HasGame m => HasGame (WriterT w m) where
+instance (Monoid w, HasGame m) => HasGame (WriterT w m) where
   getGame = lift getGame

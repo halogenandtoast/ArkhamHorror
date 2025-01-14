@@ -12,8 +12,10 @@ class IsMatcher matcher => Has matcher a where
 class OneOf a where
   oneOf :: [a] -> a
 
-mapOneOf :: OneOf b => (a -> b) -> [a] -> b
-mapOneOf f = oneOf . map f
+mapOneOf :: (OneOf b, MonoFoldable t, Element t ~ a) => (a -> b) -> t -> b
+mapOneOf f ts = case otoList ts of
+  [x] -> f x
+  xs -> oneOf $ map f xs
 
 beOneOf :: (Be a b, OneOf b) => [a] -> b
 beOneOf = mapOneOf be

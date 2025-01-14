@@ -19,8 +19,7 @@ instance HasAbilities Fieldwork where
   getAbilities (Fieldwork a) = [reaction a 1 ControlsThis (exhaust a) (Enters #after You LocationWithAnyClues)]
 
 instance RunMessage Fieldwork where
-  runMessage = script $ onAbility 1 do
-    effect ability you do
-      during #nextSkillTest
-      removeOn #endOfCurrentPhase
-      apply $ AnySkillValue 2
+  runMessage = script $ onAbility 1 $ effect you do
+    during #nextSkillTest
+    removeOn #endOfCurrentPhase
+    apply $ AnySkillValue 2

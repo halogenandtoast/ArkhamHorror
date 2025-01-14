@@ -12,7 +12,7 @@ spec = describe "Cover Up" $ do
     coverUp <- selectJust $ treacheryIs Cards.coverUp
     coverUp.clues `shouldReturn` 3
 
-  it "allows you to remove a clue instead of discovering clues" $ gameTest $ \self -> do
+  it "allows you to remove a clue instead of discovering clues" . gameTest $ \self -> do
     location <- testLocation & prop @"clues" 1
     self `loadDeck` [Cards.coverUp]
     self `drawCards` 1

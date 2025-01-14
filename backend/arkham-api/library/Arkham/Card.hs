@@ -121,6 +121,12 @@ instance CardGen m => CardGen (StateT s m) where
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
 
+instance CardGen m => CardGen (ReaderT r m) where
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
+  replaceCard cardId card = lift $ replaceCard cardId card
+  clearCardCache = lift clearCardCache
+
 instance CardGen m => CardGen (QueueT msg m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard

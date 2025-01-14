@@ -156,9 +156,9 @@ handleVehicleLeaves vehicle here per = do
   pure $ max 0 (total - n)
 
 notSeenVehicle :: LocationAttrs -> AssetMatcher
-notSeenVehicle attrs = case (maybeResult =<< attrs.global "seenVehicles") of
+notSeenVehicle attrs = case maybeResult =<< attrs.global "seenVehicles" of
   Nothing -> AnyAsset
-  Just xs -> not_ (mapOneOf AssetWithId xs)
+  Just (xs :: [AssetId]) -> not_ (mapOneOf AssetWithId xs)
 
 sawVehicle :: AssetId -> Map Aeson.Key Value -> Map Aeson.Key Value
 sawVehicle aid kmap = insertMap "seenVehicles" (toJSON (aid : current)) kmap

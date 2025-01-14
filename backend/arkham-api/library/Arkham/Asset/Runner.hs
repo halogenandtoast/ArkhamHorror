@@ -593,6 +593,7 @@ instance RunMessage AssetAttrs where
       let
         mController = case placement of
           InPlayArea iid -> Just iid
+          InThreatArea iid -> Just iid
           AttachedToAsset _ (Just (InPlayArea iid)) -> Just iid
           _ -> Nothing
         controllerF = case mController of
@@ -611,6 +612,7 @@ instance RunMessage AssetAttrs where
         let
           mEnterPlayMsg = case placement of
             InPlayArea iid -> Just $ CardEnteredPlay iid (toCard a)
+            InThreatArea iid -> Just $ CardEnteredPlay iid (toCard a)
             AttachedToAsset _ (Just (InPlayArea iid)) -> Just $ CardEnteredPlay iid (toCard a)
             _ -> Nothing
 

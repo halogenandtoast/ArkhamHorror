@@ -2354,3 +2354,6 @@ unfocusChaosTokens = push UnfocusChaosTokens
 
 returnChaosTokens :: ReverseQueue m => [ChaosToken] -> m ()
 returnChaosTokens = push . ReturnChaosTokens
+
+revealCard :: (IsCard card, ReverseQueue m) => card -> m ()
+revealCard card = push $ RevealCard (toCardId card)

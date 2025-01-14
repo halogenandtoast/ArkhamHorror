@@ -1320,6 +1320,7 @@ library
       Arkham.Attack
       Arkham.Attack.Types
       Arkham.Calculation
+      Arkham.Calculation.IsCalculation
       Arkham.Campaign
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.EdgeOfTheEarth

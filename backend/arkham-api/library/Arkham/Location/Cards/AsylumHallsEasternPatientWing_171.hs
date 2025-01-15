@@ -34,6 +34,6 @@ instance RunMessage AsylumHallsEasternPatientWing_171 where
   runMessage msg l@(AsylumHallsEasternPatientWing_171 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
-      pushAll [assignHorror iid source 1, takeResources iid source 1]
+      pushAll [assignHorror iid source 1, takeResources iid source 2]
       pure l
     _ -> AsylumHallsEasternPatientWing_171 <$> runMessage msg attrs

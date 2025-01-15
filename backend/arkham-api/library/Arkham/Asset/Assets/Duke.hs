@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.Duke (Duke (..), duke) where
+module Arkham.Asset.Assets.Duke (duke) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers
+import Arkham.Game.Helpers hiding (skillTestModifiers)
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -14,21 +12,11 @@ import Arkham.Message.Lifted.Move
 import Arkham.Window (defaultWindows)
 
 newtype Duke = Duke AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 duke :: AssetCard Duke
 duke = allyWith Duke Cards.duke (2, 3) noSlots
-
-instance HasModifiersFor Duke where
-  getModifiersFor (Duke a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
-      guardM $ isSource a <$> MaybeT getSkillTestSource
-      MaybeT getSkillTestAction >>= \case
-        Action.Fight -> pure [BaseSkillOf #combat 4, DamageDealt 1]
-        Action.Investigate -> pure [BaseSkillOf #intellect 4]
-        _ -> pure []
 
 instance HasAbilities Duke where
   getAbilities (Duke a) =
@@ -41,6 +29,7 @@ instance RunMessage Duke where
   runMessage msg a@(Duke attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
+      skillTestModifiers sid (attrs.ability 1) iid [BaseSkillOf #combat 4, DamageDealt 1]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
@@ -58,6 +47,7 @@ instance RunMessage Duke where
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) (decrease_ ab 1)) do
           sid <- getRandom
+          skillTestModifiers sid ab iid [BaseSkillOf #intellect 4]
           investigate' <- mkInvestigateLocation sid iid attrs lid
           push $ CheckAdditionalActionCosts iid (toTarget lid) #investigate [toMessage investigate']
       pure a
@@ -65,6 +55,7 @@ instance RunMessage Duke where
       selectForMaybeM (BasicInvestigate lid) \ab ->
         whenM (getCanPerformAbility iid (defaultWindows iid) $ decrease_ ab 1) do
           sid <- getRandom
+          skillTestModifiers sid ab iid [BaseSkillOf #intellect 4]
           pushM $ mkInvestigateLocation sid iid attrs lid
       pure a
     _ -> Duke <$> liftRunMessage msg attrs

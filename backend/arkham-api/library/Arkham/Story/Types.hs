@@ -33,6 +33,7 @@ class
   , Entity a
   , EntityId a ~ StoryId
   , EntityAttrs a ~ StoryAttrs
+  , RunType a ~ a
   ) =>
   IsStory a
 

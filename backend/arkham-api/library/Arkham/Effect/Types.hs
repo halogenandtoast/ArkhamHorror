@@ -38,6 +38,7 @@ class
   , Entity a
   , EntityId a ~ EffectId
   , EntityAttrs a ~ EffectAttrs
+  , RunType a ~ a
   ) =>
   IsEffect a
 

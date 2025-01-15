@@ -129,7 +129,7 @@ instance HasAbilities SmallRadio where
 runPartner :: MonadTrans m => AssetAttrs -> CardCode -> Message -> m GameT ()
 runPartner attrs cCode msg = do
   let
-    go :: forall a m. (RunMessage a, MonadTrans m) => AssetCard a -> m GameT ()
+    go :: forall a m. (RunMessage a, RunType a ~ a, MonadTrans m) => AssetCard a -> m GameT ()
     go x =
       let z = cbCardBuilder x attrs.cardId (attrs.id, attrs.owner)
        in void $ liftRunMessage msg z

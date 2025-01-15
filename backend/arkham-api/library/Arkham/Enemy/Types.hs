@@ -51,6 +51,7 @@ class
   , Entity a
   , EntityId a ~ EnemyId
   , EntityAttrs a ~ EnemyAttrs
+  , RunType a ~ a
   ) =>
   IsEnemy a
 

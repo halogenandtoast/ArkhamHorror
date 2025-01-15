@@ -140,6 +140,7 @@ class
   , Entity a
   , EntityId a ~ AssetId
   , EntityAttrs a ~ AssetAttrs
+  , RunType a ~ a
   ) =>
   IsAsset a
 

@@ -83,6 +83,7 @@ class
   , Data a
   , EntityId a ~ InvestigatorId
   , EntityAttrs a ~ InvestigatorAttrs
+  , RunType a ~ a
   ) =>
   IsInvestigator a
 

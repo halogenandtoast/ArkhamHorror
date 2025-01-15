@@ -112,6 +112,12 @@ import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.UUID (nil)
 
+instance RunMessage Investigator where
+  runMessage msg i@(Investigator a) = do
+    modifiers' <- getModifiers (toTarget i)
+    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
+    Investigator <$> runMessage msg' a
+
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 

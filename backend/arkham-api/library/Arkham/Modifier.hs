@@ -26,6 +26,7 @@ import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
 import Arkham.SortedPair
+import {-# SOURCE #-} Arkham.Criteria
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Spawn
 import {-# SOURCE #-} Arkham.Strategy
@@ -35,7 +36,8 @@ import Data.Aeson.TH
 import GHC.OverloadedLabels
 
 data ModifierType
-  = AbilityModifier Target Int ModifierType
+  = CriteriaModifier Criterion ModifierType
+  | AbilityModifier Target Int ModifierType
   | ActionCostModifier Int
   | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int

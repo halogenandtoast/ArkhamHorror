@@ -56,6 +56,7 @@ class
   , Entity a
   , EntityId a ~ LocationId
   , EntityAttrs a ~ LocationAttrs
+  , RunType a ~ a
   ) =>
   IsLocation a
   where

@@ -86,7 +86,7 @@ revelation handler = onMessage matchHandler \case
   matchHandler (Revelation _ s) = isSource (toAttrs ?this) s
   matchHandler _ = False
 
-additionalSlots :: forall a attrs. (?this :: a, Entity a, attrs ~ EntityAttrs a, RunMessage attrs, HasField "cardId" attrs CardId) => SlotType -> Int -> Slot -> ScriptT a ()
+additionalSlots :: forall a attrs. (?this :: a, Entity a, RunType attrs ~ attrs, attrs ~ EntityAttrs a, RunMessage attrs, HasField "cardId" attrs CardId) => SlotType -> Int -> Slot -> ScriptT a ()
 additionalSlots sType n slot = onMessage @a matchHandler \case
   msg@(CardIsEnteringPlay iid card) | card.id == (toAttrs this).cardId -> do
     pushAll $ replicate n (AddSlot iid sType slot)
@@ -165,7 +165,7 @@ onAbilityThen n handler thenHandler = onMessage matchHandler \case
     matchHandler (DoStep 1 (UseThisAbility _ s n')) = isSource (toAttrs ?this) s && n' == n
     matchHandler _ = False
 
-script :: (Entity a, RunMessage (EntityAttrs a)) => ((?this :: a) => ScriptT a ()) -> Message -> a -> GameT a
+script :: (Entity a, attrs ~ EntityAttrs a, RunMessage attrs, RunType attrs ~ attrs) => ((?this :: a) => ScriptT a ()) -> Message -> a -> GameT a
 script dsl msg a = runQueueT do
   let ?msg = msg
   let ?this = a

@@ -39,6 +39,7 @@ class
   , Entity a
   , EntityId a ~ SkillId
   , EntityAttrs a ~ SkillAttrs
+  , RunType a ~ a
   ) =>
   IsSkill a
 

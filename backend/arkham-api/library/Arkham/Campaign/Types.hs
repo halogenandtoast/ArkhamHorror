@@ -44,6 +44,7 @@ class
   , Entity a
   , EntityId a ~ CampaignId
   , EntityAttrs a ~ CampaignAttrs
+  , RunType a ~ a
   ) =>
   IsCampaign a
   where

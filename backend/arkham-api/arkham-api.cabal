@@ -39,6 +39,8 @@ library
       Arkham.Ability
       Arkham.Ability.Builder
       Arkham.Ability.Limit
+      Arkham.Ability.Scripted
+      Arkham.Ability.Scripted.Builder
       Arkham.Ability.Type
       Arkham.Ability.Types
       Arkham.Ability.Used

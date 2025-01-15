@@ -48,6 +48,7 @@ class
   , Entity a
   , EntityId a ~ ScenarioId
   , EntityAttrs a ~ ScenarioAttrs
+  , RunType a ~ a
   ) =>
   IsScenario a
 

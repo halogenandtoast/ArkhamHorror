@@ -1,42 +1,26 @@
-module Arkham.Asset.Assets.Knife (Knife (..), knife) where
+module Arkham.Asset.Assets.Knife (knife) where
 
-import Arkham.Ability
+import Arkham.Ability.Scripted.Builder
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
+import Arkham.Effect.Builder
+import Arkham.Card
 
 newtype Knife = Knife AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, Targetable, Sourceable, HasCardCode)
+  deriving HasAbilities via Scripted Knife
+  deriving RunMessage via Scripted Knife
 
 knife :: AssetCard Knife
 knife = asset Knife Cards.knife
 
-instance HasAbilities Knife where
-  getAbilities (Knife a) =
-    [ withTooltip "{action}: _Fight_. You get +1 {combat} for this attack."
-        $ restrictedAbility a 1 ControlsThis fightAction_
-    , withTooltip
-        "{action}: Discard Knife: _Fight_. You get +2 {combat} for this attack. This attack deals +1 damage."
-        $ restrictedAbility a 2 ControlsThis
-        $ fightAction (discardCost a)
-    ]
-
-instance RunMessage Knife where
-  runMessage msg a@(Knife attrs) = case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
-      sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
-      pushAll [enabled, chooseFight]
-      pure a
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      let source = attrs.ability 2
-      sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifiers sid source iid [SkillModifier #combat 2, DamageDealt 1]
-      pushAll [enabled, chooseFight]
-      pure a
-    _ -> Knife <$> runMessage msg attrs
+instance ScriptedAbilities Knife where
+  scriptedAbilities = abilities do
+    fightAction do
+      tooltip "{action}: _Fight_. You get +1 {combat} for this attack."
+      fight $ effect you $ combat (Fixed 1)
+    fightAction do
+      tooltip "{action}: Discard Knife: _Fight_. You get +2 {combat} for this attack. This attack deals +1 damage."
+      addCost $ discardCost this
+      fight $ effect you $ combat (Fixed 2) >> damageDealt 1

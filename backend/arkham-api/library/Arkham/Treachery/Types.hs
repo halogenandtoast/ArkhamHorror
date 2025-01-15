@@ -39,6 +39,7 @@ class
   , Entity a
   , EntityId a ~ TreacheryId
   , EntityAttrs a ~ TreacheryAttrs
+  , RunType a ~ a
   ) =>
   IsTreachery a
 

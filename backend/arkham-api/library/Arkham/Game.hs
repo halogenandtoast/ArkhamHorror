@@ -2876,6 +2876,10 @@ enemyMatcherFilter es matcher' = case matcher' of
     flip filterM es \enemy -> do
       engagedInvestigators <- enemyEngagedInvestigators (toId enemy)
       pure $ any (`elem` engagedInvestigators) iids
+  OnlyEnemyEngagedWith investigatorMatcher -> do
+    select (EnemyIsEngagedWith investigatorMatcher) >>= \case
+      [x] -> pure $ filter (\enemy -> enemy.id == x) es
+      _ -> pure []
   EnemyOwnedBy investigatorMatcher -> do
     iids <- select investigatorMatcher
     pure $ flip filter es \enemy -> do

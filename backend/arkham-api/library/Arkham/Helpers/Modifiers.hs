@@ -741,6 +741,19 @@ controllerGets a mods = case a.controller of
   Just iid -> modified_ a iid mods
   Nothing -> pure ()
 
+controllerGetsMaybe
+  :: ( HasField "controller" source (Maybe InvestigatorId)
+     , Sourceable source
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => source
+  -> (InvestigatorId -> MaybeT m [ModifierType])
+  -> m ()
+controllerGetsMaybe a body = case a.controller of
+  Just iid -> maybeModified_ a iid (body iid)
+  Nothing -> pure ()
+
 controllerGetsWhen
   :: ( HasField "controller" source (Maybe InvestigatorId)
      , Sourceable source

@@ -10,19 +10,12 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes.Entity.TH
-import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
 import Arkham.Investigator.Types
 import Data.Aeson (Result (..))
 import Data.Typeable
-
-instance RunMessage Investigator where
-  runMessage msg i@(Investigator a) = do
-    modifiers' <- getModifiers (toTarget i)
-    let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    Investigator <$> runMessage msg' a
 
 lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of

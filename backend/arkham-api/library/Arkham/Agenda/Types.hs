@@ -36,6 +36,7 @@ class
   , Entity a
   , EntityId a ~ AgendaId
   , EntityAttrs a ~ AgendaAttrs
+  , RunType a ~ a
   ) =>
   IsAgenda a
 

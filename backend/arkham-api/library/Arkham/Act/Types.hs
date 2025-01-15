@@ -34,6 +34,7 @@ class
   , Entity a
   , EntityId a ~ ActId
   , EntityAttrs a ~ ActAttrs
+  , RunType a ~ a
   ) =>
   IsAct a
 

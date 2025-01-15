@@ -110,6 +110,7 @@ data EnemyMatcher
   | MovingEnemy
   | EvadingEnemy
   | AttackedEnemy
+  | OnlyEnemyEngagedWith InvestigatorMatcher
   | IsIchtacasPrey
   | EnemyCanBeDamagedBySource Source
   | OutOfPlayEnemy OutOfPlayZone EnemyMatcher

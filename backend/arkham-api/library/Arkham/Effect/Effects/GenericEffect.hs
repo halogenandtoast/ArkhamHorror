@@ -7,6 +7,7 @@ module Arkham.Effect.Effects.GenericEffect (
 import Arkham.Prelude
 
 import Arkham.Classes
+import Arkham.Criteria
 import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv (getPhase)
 import Arkham.Id
@@ -57,22 +58,36 @@ genericEffect' eid metadata effectWindow source target =
 instance HasModifiersFor GenericEffect where
   getModifiersFor (GenericEffect attrs) = case effectMetadata attrs of
     Just (EffectModifiers modifiers) -> case effectWindow attrs of
-      Just EffectSetupWindow -> tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
+      Just EffectSetupWindow -> do
+        modifiers' <- resolveModifiers modifiers
+        tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers'
       Just (EffectScenarioSetupWindow scenarioId) -> do
         selectOne TheScenario >>= traverse_ \currentScenarioId ->
           when (scenarioId == currentScenarioId) do
-            tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
+            modifiers' <- resolveModifiers modifiers
+            tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers'
       Just (EffectSkillTestWindow sid) -> do
         msid <- getSkillTestId
-        when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
+        modifiers' <- resolveModifiers modifiers
+        when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
       Just (EffectPhaseWindowFor p) -> do
         p' <- getPhase
-        when (p == p') $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
+        modifiers' <- resolveModifiers modifiers
+        when (p == p') $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
       Just (EffectTurnWindow iid) -> do
         isTurn <- iid <=~> TurnInvestigator
-        when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
-      _ -> tell $ MonoidalMap $ singletonMap attrs.target modifiers
+        modifiers' <- resolveModifiers modifiers
+        when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers'
+      _ -> do
+        modifiers' <- resolveModifiers modifiers
+        tell $ MonoidalMap $ singletonMap attrs.target modifiers'
     _ -> pure ()
+   where
+    resolveModifiers [] = pure []
+    resolveModifiers (x@(modifierType -> (CriteriaModifier (EnemyCriteria (EnemyExists matcher)) m)) : ms) = do
+      valid <- selectAny matcher
+      if valid then (x { modifierType = m } :) <$> resolveModifiers ms else resolveModifiers ms
+    resolveModifiers (m : ms) = (m:) <$> resolveModifiers ms
 
 instance RunMessage GenericEffect where
   runMessage msg (GenericEffect attrs) =

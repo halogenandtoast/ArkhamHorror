@@ -10,6 +10,7 @@ import Arkham.Duration as X
 import Arkham.Calculation.IsCalculation
 import Arkham.Matcher.Location
 import Arkham.Calculation
+import Arkham.Criteria
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Effect.Types
@@ -19,6 +20,7 @@ import Arkham.GameT
 import Arkham.Helpers.Modifiers (toModifiers)
 import Arkham.Message (Message (CreateEffect))
 import Arkham.Message.Lifted.Queue
+import Arkham.Matcher.Enemy
 import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Queue
@@ -67,6 +69,17 @@ instance (Monad m, a ~ ()) => Duration (EffectBuilderT m a) where
   during window = do
     enableOn window
     removeOn window
+
+applyWhen :: HasGame m => Criterion -> EffectBuilderT m () -> EffectBuilderT m ()
+applyWhen c inner = do
+  builder <- EffectBuilderT $ StateT $ \s -> (,s) <$> execStateT (runEffectBuilder inner) ((s :: EffectBuilder) {effectBuilderMetadata = Nothing})
+  case effectBuilderMetadata builder of
+    Just (EffectModifiers mods) -> do
+      for_ mods $ apply . CriteriaModifier c . modifierType
+    _ -> pure ()
+
+whenAttackedEnemy :: HasGame m => EffectBuilderT m () -> EnemyMatcher -> EffectBuilderT m ()
+whenAttackedEnemy body matcher = applyWhen (exists $ AttackedEnemy <> matcher) body
 
 apply :: HasGame m => ModifierType -> EffectBuilderT m ()
 apply modKind = EffectBuilderT $ do

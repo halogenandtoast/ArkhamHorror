@@ -9,7 +9,9 @@ type Runner a = HasCallStack => Message -> a -> GameT a
 type Runnable a = HasCallStack => GameT a
 
 class RunMessage a where
-  runMessage :: HasCallStack => Message -> a -> GameT a
+  type RunType a :: Type
+  type RunType a = a
+  runMessage :: HasCallStack => Message -> a -> GameT (RunType a)
 
-liftRunMessage :: (HasCallStack, MonadTrans t, RunMessage a) => Message -> a -> t GameT a
+liftRunMessage :: (HasCallStack, MonadTrans t, RunMessage a, a ~ RunType a) => Message -> a -> t GameT a
 liftRunMessage msg = lift . runMessage msg

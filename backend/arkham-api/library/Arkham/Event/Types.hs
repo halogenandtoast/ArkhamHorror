@@ -46,6 +46,7 @@ class
   , Entity a
   , EntityId a ~ EventId
   , EntityAttrs a ~ EventAttrs
+  , RunType a ~ a
   ) =>
   IsEvent a
 

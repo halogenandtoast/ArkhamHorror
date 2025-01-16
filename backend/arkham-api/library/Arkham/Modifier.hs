@@ -437,6 +437,10 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "SkillModifier" -> do
+              skillType <- v .: "skillType"
+              value <- v .: "value"
+              pure $ CalculatedSkillModifier skillType (Fixed value)
             "Explosion" -> pure $ UIModifier Explosion
             "Locus" -> pure $ UIModifier Locus
             "Ethereal" -> pure $ UIModifier Ethereal

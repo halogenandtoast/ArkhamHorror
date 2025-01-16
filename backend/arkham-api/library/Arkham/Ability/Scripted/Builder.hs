@@ -1,28 +1,32 @@
 {-# LANGUAGE ImplicitParams #-}
 {-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Ability.Scripted.Builder (
   module Arkham.Ability.Scripted.Builder,
   module Arkham.Ability.Scripted,
 )
 where
 
-import Arkham.Ability.Scripted hiding (forced, fightAction, fight)
+import Arkham.Ability qualified as A
+import Arkham.Ability.Scripted hiding (fight, fightAction, forced, reaction)
 import Arkham.Ability.Scripted qualified as S
 import Arkham.Ability.Types qualified
-import Arkham.Ability qualified as A
 import Arkham.Action
-import Arkham.Token
-import Arkham.Id
 import Arkham.Card.CardCode
 import Arkham.Classes.Entity
--- import Arkham.Classes.HasAbilities
--- import Arkham.Helpers.Ability (withBaseAbilities)
+import Arkham.Id
 import Arkham.Matcher
+import Arkham.Message (Message)
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Token
+import Arkham.Window (Window)
 import Control.Monad.Reader
 import Control.Monad.State.Strict
 import GHC.Records
+
+-- import Arkham.Classes.HasAbilities
+-- import Arkham.Helpers.Ability (withBaseAbilities)
 
 newtype AbilitiesBuilder e a = AbilitiesBuilder {runAbilitiesBuilder :: StateT [ScriptedAbility e] (Reader e) a}
   deriving newtype (Functor, Applicative, Monad, MonadState [ScriptedAbility e], MonadReader e)
@@ -75,8 +79,10 @@ instance Monad (ActionAbilityBuilder e) where
 
 buildActionAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> ActionAbilityBuilder a () -> ScriptedAbility a
-buildActionAbility entity idx body = snd $ runAbilityBuilder body $
-  ScriptedAbility (mkAbility entity idx $ ActionAbility [] (ActionCost 1)) (AbilityScript $ pure ())
+buildActionAbility entity idx body =
+  snd
+    $ runAbilityBuilder body
+    $ ScriptedAbility (mkAbility entity idx $ ActionAbility [] (ActionCost 1)) (AbilityScript $ pure ())
 
 addAction :: Action -> ActionAbilityBuilder a ()
 addAction a = ActionAbilityBuilder $ \(ScriptedAbility ab s) ->
@@ -95,11 +101,12 @@ tooltip t = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbili
 addCost :: Cost -> ActionAbilityBuilder a ()
 addCost c = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbility (overCost (<> c) ab) s)
 
-spendUses :: (?this :: a, Entity a, EntityId a ~ AssetId) => Int -> Token -> ActionAbilityBuilder a ()
+spendUses
+  :: (?this :: a, Entity a, EntityId a ~ AssetId) => Int -> Token -> ActionAbilityBuilder a ()
 spendUses n c = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbility (overCost (<> assetUseCost ?this c n) ab) s)
 
 justCost :: Cost -> ActionAbilityBuilder a ()
-justCost c = ActionAbilityBuilder $ \(ScriptedAbility ab s)-> ((), ScriptedAbility (overCost (const c) ab) s)
+justCost c = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbility (overCost (const c) ab) s)
 
 addCriteria :: Criterion -> ActionAbilityBuilder a ()
 addCriteria c = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbility (ab {abilityCriteria = abilityCriteria ab <> c}) s)
@@ -113,8 +120,36 @@ mustControl = addCriteria ControlsThis
 inYourHand :: ActionAbilityBuilder a ()
 inYourHand = addCriteria InYourHand
 
-run :: ((?you :: InvestigatorId, ?this :: a, ?source :: Source) => ScriptT a ()) -> ActionAbilityBuilder a ()
+self :: ActionAbilityBuilder a ()
+self = addCriteria Self
+
+oncePerRound :: ActionAbilityBuilder a ()
+oncePerRound = overAbility (playerLimit PerRound)
+
+overAbility :: (Ability -> Ability) -> ActionAbilityBuilder a ()
+overAbility f = ActionAbilityBuilder $ \(ScriptedAbility ab s) -> ((), ScriptedAbility (f ab) s)
+
+run
+  :: ((?you :: InvestigatorId, ?this :: a, ?source :: Source) => ScriptT a ())
+  -> ActionAbilityBuilder a ()
 run s = ActionAbilityBuilder \(ScriptedAbility ab (AbilityScript s')) -> ((), ScriptedAbility ab (AbilityScript $ s' >> s))
+
+elderSign
+  :: (?this :: a, Sourceable a, HasCardCode a)
+  => ( ( ?this :: a
+       , ?msg :: Message
+       , ?you :: InvestigatorId
+       , ?ability :: Source
+       , ?source :: Source
+       , ?windows :: [Window]
+       )
+       => ScriptT a ()
+     )
+  -> AbilitiesBuilder a ()
+elderSign body = do
+  idx <- abilitiesCount
+  AbilitiesBuilder do
+    tell [ScriptedAbility (mkAbility ?this idx ConstantAbility) (AbilityScript body)]
 
 extendRevealedAbilities
   :: (HasField "revealed" attrs Bool, attrs ~ EntityAttrs e, Entity e)
@@ -133,7 +168,7 @@ revealedSide action = do
   e <- ask
   when ((toAttrs e).revealed) action
 
-tell ::[ScriptedAbility e] -> StateT [ScriptedAbility e] (Reader e) ()
+tell :: [ScriptedAbility e] -> StateT [ScriptedAbility e] (Reader e) ()
 tell xs = modify (<> xs)
 
 forced
@@ -144,9 +179,29 @@ forced matcher body = do
   AbilitiesBuilder do
     tell [buildForcedAbility e (idx + 1) matcher body]
 
+reaction
+  :: (HasCardCode e, Sourceable e) => WindowMatcher -> ActionAbilityBuilder e () -> AbilitiesBuilder e ()
+reaction matcher body = do
+  e <- ask
+  idx <- abilitiesCount
+  AbilitiesBuilder do
+    tell [buildReactionAbility e (idx + 1) matcher body]
+
+buildReactionAbility
+  :: (HasCardCode a, Sourceable a)
+  => a -> Int -> WindowMatcher -> ActionAbilityBuilder a () -> ScriptedAbility a
+buildReactionAbility entity idx matcher body =
+  snd
+    $ runAbilityBuilder body
+    $ ScriptedAbility (mkAbility entity idx $ A.freeReaction matcher) (AbilityScript $ pure ())
+
 buildForcedAbility
-  :: (HasCardCode a, Sourceable a) => a -> Int -> WindowMatcher -> ActionAbilityBuilder a () -> ScriptedAbility a
-buildForcedAbility entity idx matcher body = snd $ runAbilityBuilder body $ ScriptedAbility (mkAbility entity idx $ A.forced matcher) (AbilityScript $ pure ())
+  :: (HasCardCode a, Sourceable a)
+  => a -> Int -> WindowMatcher -> ActionAbilityBuilder a () -> ScriptedAbility a
+buildForcedAbility entity idx matcher body =
+  snd
+    $ runAbilityBuilder body
+    $ ScriptedAbility (mkAbility entity idx $ A.forced matcher) (AbilityScript $ pure ())
 
 abilitiesCount :: AbilitiesBuilder e Int
 abilitiesCount = length <$> get
@@ -159,5 +214,6 @@ fightAction body = do
   AbilitiesBuilder do
     tell [buildActionAbility e (idx + 1) (mustControl >> addAction #fight >> let ?this = e in body)]
 
-fight :: ((?you :: InvestigatorId, ?source :: Source) => FightT (ScriptT a) ()) -> ActionAbilityBuilder a ()
+fight
+  :: ((?you :: InvestigatorId, ?source :: Source) => FightT (ScriptT a) ()) -> ActionAbilityBuilder a ()
 fight body = run $ S.fight body

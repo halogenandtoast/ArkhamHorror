@@ -99,6 +99,7 @@ data AbilityType
   | Haunted
   | Cosmos
   | ForcedWhen {criteria :: Criterion, abilityType :: AbilityType}
+  | ConstantAbility
   deriving stock (Show, Ord, Eq, Data)
 
 instance HasCost AbilityType where
@@ -120,6 +121,7 @@ instance HasCost AbilityType where
     Haunted -> Haunted
     Cosmos -> Cosmos
     ForcedWhen criteria abilityType -> ForcedWhen criteria (overCost f abilityType)
+    ConstantAbility -> ConstantAbility
 
 pattern Anytime :: AbilityType
 pattern Anytime <- SilentForcedAbility AnyWindow
@@ -146,6 +148,7 @@ abilityTypeCostL f = \case
   Cosmos -> pure Cosmos
   ForcedWhen criteria abilityType ->
     ForcedWhen criteria <$> abilityTypeCostL f abilityType
+  ConstantAbility -> pure ConstantAbility
 
 $(deriveToJSON defaultOptions ''AbilityType)
 

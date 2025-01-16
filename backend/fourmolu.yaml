@@ -14,3 +14,4 @@ unicode: never
 column-limit: 100
 single-constraint-parens: never
 single-deriving-parens: never
+trailing-section-operators: false

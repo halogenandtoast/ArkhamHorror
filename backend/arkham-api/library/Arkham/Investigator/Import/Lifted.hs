@@ -15,9 +15,8 @@ import Arkham.Investigator.Runner as X (
   IsInvestigator,
   Stats (..),
   deckL,
-  resignedL,
-  defeatedL,
   decksL,
+  defeatedL,
   deleteMetaKey,
   insertMetaKey,
   investigator,
@@ -30,6 +29,7 @@ import Arkham.Investigator.Runner as X (
   pushIfAny,
   pushWhen,
   pushWhenM,
+  resignedL,
   setMeta,
   setMetaKey,
   slotsL,
@@ -54,6 +54,11 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Calculation
+import Arkham.Matcher.Window
+import Arkham.Matcher.Investigator
 
 elderSignValue :: GameCalculation -> ChaosTokenValue
 elderSignValue = ChaosTokenValue ElderSign . CalculatedModifier
+
+afterYouFailAnySkillTest :: WindowMatcher
+afterYouFailAnySkillTest = SkillTestResult #after You #failed #any

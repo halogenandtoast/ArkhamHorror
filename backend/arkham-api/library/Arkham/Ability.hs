@@ -128,6 +128,9 @@ withI18nTooltip t a = a & abilityTooltipL ?~ scope "tooltips" (toI18n t)
 selfAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 selfAbility a n c = restrictedAbility a n (Self <> c)
 
+selfAbility_ :: (HasCardCode a, Sourceable a) => a -> Int -> AbilityType -> Ability
+selfAbility_ a n = restrictedAbility a n Self
+
 restrictedAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 restrictedAbility entity idx restriction type' =
@@ -312,6 +315,7 @@ abilityTypeActions = \case
   Objective aType -> abilityTypeActions aType
   DelayedAbility aType -> abilityTypeActions aType
   ForcedWhen _ aType -> abilityTypeActions aType
+  ConstantAbility -> []
 
 abilityTypeCost :: AbilityType -> Cost
 abilityTypeCost = \case
@@ -331,6 +335,7 @@ abilityTypeCost = \case
   Objective aType -> abilityTypeCost aType
   DelayedAbility aType -> abilityTypeCost aType
   ForcedWhen _ aType -> abilityTypeCost aType
+  ConstantAbility -> Free
 
 modifyCost :: (Cost -> Cost) -> AbilityType -> AbilityType
 modifyCost f = \case
@@ -356,6 +361,7 @@ modifyCost f = \case
   Objective aType' -> Objective $ modifyCost f aType'
   DelayedAbility aType' -> DelayedAbility $ modifyCost f aType'
   ForcedWhen c aType' -> ForcedWhen c $ modifyCost f aType'
+  ConstantAbility -> ConstantAbility
 
 applyAbilityTypeModifiers :: AbilityType -> [ModifierType] -> AbilityType
 applyAbilityTypeModifiers aType modifiers = modifyCost (`applyCostModifiers` modifiers) aType
@@ -416,6 +422,7 @@ defaultAbilityWindow = \case
   Objective aType -> defaultAbilityWindow aType
   DelayedAbility aType -> defaultAbilityWindow aType
   ForcedWhen _ aType -> defaultAbilityWindow aType
+  ConstantAbility -> AnyWindow
 
 isFastAbilityType :: AbilityType -> Bool
 isFastAbilityType = \case
@@ -435,6 +442,7 @@ isFastAbilityType = \case
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isFastAbilityType aType
+  ConstantAbility -> False
 
 isReactionAbilityType :: AbilityType -> Bool
 isReactionAbilityType = \case
@@ -454,6 +462,7 @@ isReactionAbilityType = \case
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isReactionAbilityType aType
+  ConstantAbility -> False
 
 isSilentForcedAbilityType :: AbilityType -> Bool
 isSilentForcedAbilityType = \case
@@ -473,6 +482,7 @@ isSilentForcedAbilityType = \case
   ServitorAbility {} -> False
   Cosmos {} -> False
   ForcedWhen _ aType -> isSilentForcedAbilityType aType
+  ConstantAbility {} -> False
 
 isPerWindowLimit :: AbilityLimit -> Bool
 isPerWindowLimit = \case
@@ -502,6 +512,7 @@ defaultAbilityLimit = \case
   ServitorAbility _ -> NoLimit
   Cosmos -> NoLimit
   ForcedWhen _ aType -> defaultAbilityLimit aType
+  ConstantAbility -> NoLimit
 
 decreaseAbilityActionCost :: Ability -> Int -> Ability
 decreaseAbilityActionCost ab n =

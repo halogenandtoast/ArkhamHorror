@@ -10,6 +10,8 @@ import Arkham.Classes.HasAbilities
 import Arkham.GameT
 import Arkham.Id
 import Arkham.Message
+import Arkham.Investigator.Types
+import Data.Typeable
 import Arkham.Prelude
 import Arkham.Script as X
 import Arkham.Source
@@ -22,7 +24,7 @@ newtype Scripted a = Scripted a
 instance ScriptedAbilities a => HasAbilities (Scripted a) where
   getAbilities (Scripted a) = useScripted a
 
-instance (ScriptedAbilities a, attrs ~ EntityAttrs a, RunType attrs ~ attrs, Sourceable attrs, RunMessage attrs, HasField "ability" attrs (Int -> Source)) => RunMessage (Scripted a) where
+instance (ScriptedAbilities a, attrs ~ EntityAttrs a, RunType attrs ~ attrs, Sourceable attrs, RunMessage attrs, HasField "ability" attrs (Int -> Source), Typeable attrs) => RunMessage (Scripted a) where
   type RunType (Scripted a) = a
   runMessage msg (Scripted a) = withScripted (pure ()) msg a
 
@@ -50,12 +52,13 @@ class Entity a => ScriptedAbilities a where
   scriptedAbilities :: a -> [ScriptedAbility a]
 
 withScripted
-  :: ( ScriptedAbilities a
+  :: forall a attrs. ( ScriptedAbilities a
      , attrs ~ EntityAttrs a
      , Sourceable attrs
      , RunMessage attrs
      , HasField "ability" attrs (Int -> Source)
      , RunType attrs ~ attrs
+     , Typeable attrs
      )
   => ((?this :: a) => ScriptT a ())
   -> Message
@@ -63,9 +66,13 @@ withScripted
   -> GameT a
 withScripted body = script do
   for_ (scriptedAbilities ?this) \(ScriptedAbility ab (AbilityScript handler)) ->
-    if isInHand ab
-      then inHand $ onAbility ab.index handler
-      else onAbility ab.index handler
+    if ab.kind == ConstantAbility
+      then case eqT @attrs @InvestigatorAttrs of
+        Just Refl -> let ?ability = toSource ab in elderSignEffect handler
+        Nothing -> pure ()
+      else if isInHand ab
+        then inHand $ onAbility ab.index handler
+        else onAbility ab.index handler
   body
  where
   isInHand ab = go ab.criteria

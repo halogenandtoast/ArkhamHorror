@@ -110,6 +110,9 @@ hasModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 hasModifier a m = (m `elem`) <$> getModifiers (toTarget a)
 
+semaphore :: (HasGame m, Targetable target) => target -> m () -> m ()
+semaphore target body = whenM (withoutModifier target Semaphore) body
+
 withoutModifier
   :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m

@@ -273,6 +273,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ForcedAbilityWithCost _ _ -> pure True
     AbilityEffect {} -> pure True
     ServitorAbility _ -> pure True
+    ConstantAbility -> pure False
 
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
@@ -446,6 +447,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
     Objective {} -> pure True
     DelayedAbility inner -> go f inner
     ForcedWhen _ aType -> go f aType
+    ConstantAbility -> pure False -- Never affordable, we should ignore
 
 filterDepthSpecificAbilities :: HasGame m => [UsedAbility] -> m [UsedAbility]
 filterDepthSpecificAbilities usedAbilities = do
@@ -525,6 +527,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             Haunted -> pure True
             Cosmos -> pure True
             ServitorAbility _ -> pure True -- should be disabled by the servitor
+            ConstantAbility -> pure False
         go (abilityType ability)
       PlayerLimit (PerSearch trait) n -> do
         let traitMatchingUsedAbilities = filter (elem trait . usedAbilityTraits) usedAbilities
@@ -3724,6 +3727,7 @@ isForcedAbilityType iid source = \case
   Haunted {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   Cosmos {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source source [] c
+  ConstantAbility {} -> pure False
 
 sourceMatches
   :: (HasCallStack, HasGame m) => Source -> Matcher.SourceMatcher -> m Bool

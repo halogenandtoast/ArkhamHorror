@@ -141,6 +141,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
     ForcedAbility _ -> pure ()
     SilentForcedAbility _ -> pure ()
     Haunted -> pure ()
+    ConstantAbility -> pure ()
     ServitorAbility _ -> pure ()
     Cosmos -> pure ()
     ForcedAbilityWithCost {} -> push (PayCosts activeCostId)

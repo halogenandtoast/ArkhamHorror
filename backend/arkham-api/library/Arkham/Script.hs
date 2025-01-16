@@ -2,42 +2,42 @@
 
 module Arkham.Script where
 
-import Arkham.Window qualified as Window
-import Arkham.Helpers.Window qualified as Window
-import Arkham.Message.Lifted.Queue
-import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Placement
-import Arkham.Message.Lifted qualified as Msg
+import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Classes.Entity
+import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue
+import Arkham.Classes.Query
+import Arkham.Classes.RunMessage
 import Arkham.Effect.Builder
 import Arkham.Effect.Types
 import Arkham.Effect.Window
-import Arkham.Window (Window)
-import Arkham.Card
+import Arkham.GameT
+import Arkham.Helpers.Window qualified as Window
+import Arkham.Id
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Message.Lifted qualified as Msg
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
+import Arkham.Message.Lifted.Queue
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Token
-import Arkham.Classes.Entity
-import Arkham.Classes.Query
-import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue
-import Arkham.Classes.RunMessage
-import Arkham.GameT
-import Arkham.Id
-import Arkham.Message
-import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Target
+import Arkham.Token
 import Arkham.Trait
+import Arkham.Window (Window)
+import Arkham.Window qualified as Window
 import Control.Monad.Reader
-import Control.Monad.Writer.Strict
 import Control.Monad.State.Strict
+import Control.Monad.Writer.Strict
 import GHC.Records
 
-newtype ScriptState = ScriptState { scriptStateInHand :: Bool }
+newtype ScriptState = ScriptState {scriptStateInHand :: Bool}
 
 instance HasGame m => HasGame (ReaderT ScriptState m) where
   getGame = lift getGame
@@ -53,7 +53,18 @@ data CardHandler a = CardHandler
 newtype ScriptT b a = Script
   { runScriptT :: ReaderT ScriptState (WriterT [CardHandler b] (StateT b (QueueT Message GameT))) a
   }
-  deriving newtype (Functor, Applicative, Monad, MonadState b, MonadWriter [CardHandler b], MonadReader ScriptState, MonadIO, HasGame, CardGen, MonadRandom)
+  deriving newtype
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadState b
+    , MonadWriter [CardHandler b]
+    , MonadReader ScriptState
+    , MonadIO
+    , HasGame
+    , CardGen
+    , MonadRandom
+    )
 
 instance ReverseQueue (ScriptT a)
 instance HasQueue Message (ScriptT a) where
@@ -72,13 +83,18 @@ this = ?this
 ability :: (?ability :: Source) => Source
 ability = ?ability
 
+source :: (?source :: Source) => Source
+source = ?source
+
 yourLocation :: (?you :: InvestigatorId) => LocationMatcher
 yourLocation = locationWithInvestigator ?you
 
 onMessage :: (Message -> Bool) -> (Message -> ScriptT a ()) -> ScriptT a ()
 onMessage match h = Script $ tell [CardHandler match h]
 
-revelation :: (?this :: a, Sourceable (EntityAttrs a), Entity a) => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
+revelation
+  :: (?this :: a, Sourceable (EntityAttrs a), Entity a)
+  => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
 revelation handler = onMessage matchHandler \case
   Revelation iid s | isSource (toAttrs ?this) s -> let ?you = iid; ?source = s in handler
   _ -> pure ()
@@ -86,7 +102,16 @@ revelation handler = onMessage matchHandler \case
   matchHandler (Revelation _ s) = isSource (toAttrs ?this) s
   matchHandler _ = False
 
-additionalSlots :: forall a attrs. (?this :: a, Entity a, RunType attrs ~ attrs, attrs ~ EntityAttrs a, RunMessage attrs, HasField "cardId" attrs CardId) => SlotType -> Int -> Slot -> ScriptT a ()
+additionalSlots
+  :: forall a attrs
+   . ( ?this :: a
+     , Entity a
+     , RunType attrs ~ attrs
+     , attrs ~ EntityAttrs a
+     , RunMessage attrs
+     , HasField "cardId" attrs CardId
+     )
+  => SlotType -> Int -> Slot -> ScriptT a ()
 additionalSlots sType n slot = onMessage @a matchHandler \case
   msg@(CardIsEnteringPlay iid card) | card.id == (toAttrs this).cardId -> do
     pushAll $ replicate n (AddSlot iid sType slot)
@@ -97,97 +122,147 @@ additionalSlots sType n slot = onMessage @a matchHandler \case
   matchHandler _ = False
 
 inHand :: ScriptT a () -> ScriptT a ()
-inHand body = local (\s -> s{ scriptStateInHand = True }) body
+inHand body = local (\s -> s {scriptStateInHand = True}) body
 
 onAbility
-  :: (?this :: a, HasField "ability" (EntityAttrs a) (Int -> Source), Entity a, Sourceable (EntityAttrs a))
+  :: ( ?this :: a
+     , HasField "ability" (EntityAttrs a) (Int -> Source)
+     , Entity a
+     , Sourceable (EntityAttrs a)
+     )
   => Int
-  -> ((?this :: a, ?msg :: Message, ?you :: InvestigatorId, ?ability :: Source, ?source :: Source, ?windows :: [Window]) => ScriptT a ())
+  -> ( ( ?this :: a
+       , ?msg :: Message
+       , ?you :: InvestigatorId
+       , ?ability :: Source
+       , ?source :: Source
+       , ?windows :: [Window]
+       )
+       => ScriptT a ()
+     )
   -> ScriptT a ()
 onAbility n handler = do
   ss <- ask
   onMessage (matchHandler ss) \case
-    msg@(UseCardAbility iid s n' ws p) | not (scriptStateInHand ss) && isSource (toAttrs ?this) s && n' == n ->
-      let ?you     = iid;
-          ?source  = (toAttrs ?this).ability n;
-          ?msg     = msg;
-          ?windows = ws;
-          ?payment = p;
-          ?ability = (toAttrs ?this).ability n
-      in handler
-    InHand iid' msg@(UseCardAbility iid s n' ws p) | scriptStateInHand ss && iid' == iid && isSource (toAttrs ?this) s && n' == n ->
-      let ?you = iid;
-          ?source = (toAttrs ?this).ability n;
-          ?msg = msg;
-          ?windows = ws;
-          ?payment = p;
-          ?ability = (toAttrs ?this).ability n
-      in handler
+    msg@(UseCardAbility iid s n' ws p)
+      | not (scriptStateInHand ss) && isSource (toAttrs ?this) s && n' == n ->
+          let ?you = iid
+              ?source = (toAttrs ?this).ability n
+              ?msg = msg
+              ?windows = ws
+              ?payment = p
+              ?ability = (toAttrs ?this).ability n
+           in handler
+    InHand iid' msg@(UseCardAbility iid s n' ws p)
+      | scriptStateInHand ss && iid' == iid && isSource (toAttrs ?this) s && n' == n ->
+          let ?you = iid
+              ?source = (toAttrs ?this).ability n
+              ?msg = msg
+              ?windows = ws
+              ?payment = p
+              ?ability = (toAttrs ?this).ability n
+           in handler
     _ -> pure ()
  where
-    matchHandler ss (UseThisAbility _ s n') =
-      not (scriptStateInHand ss)
-        && isSource (toAttrs ?this) s
-        && n' == n
-    matchHandler ss (InHand iid' (UseThisAbility iid s n')) =
-      scriptStateInHand ss
-        && iid' == iid
-        && isSource (toAttrs ?this) s
-        && n' == n
-    matchHandler _ _ = False
+  matchHandler ss (UseThisAbility _ s n') =
+    not (scriptStateInHand ss)
+      && isSource (toAttrs ?this) s
+      && n'
+      == n
+  matchHandler ss (InHand iid' (UseThisAbility iid s n')) =
+    scriptStateInHand ss
+      && iid'
+      == iid
+      && isSource (toAttrs ?this) s
+      && n'
+      == n
+  matchHandler _ _ = False
 
 onAbilityThen
-  :: (?this :: a, HasField "ability" (EntityAttrs a) (Int -> Source), Entity a, Sourceable (EntityAttrs a))
+  :: ( ?this :: a
+     , HasField "ability" (EntityAttrs a) (Int -> Source)
+     , Entity a
+     , Sourceable (EntityAttrs a)
+     )
   => Int
-  -> ((?this :: a, ?msg :: Message, ?you :: InvestigatorId, ?ability :: Source, ?source :: Source) => ScriptT a ())
-  -> ((?this :: a, ?msg :: Message, ?you :: InvestigatorId, ?ability :: Source, ?source :: Source) => ScriptT a ())
+  -> ( (?this :: a, ?msg :: Message, ?you :: InvestigatorId, ?ability :: Source, ?source :: Source)
+       => ScriptT a ()
+     )
+  -> ( (?this :: a, ?msg :: Message, ?you :: InvestigatorId, ?ability :: Source, ?source :: Source)
+       => ScriptT a ()
+     )
   -> ScriptT a ()
 onAbilityThen n handler thenHandler = onMessage matchHandler \case
-  msg@(UseCardAbility iid s n' ws p) | isSource (toAttrs ?this) s && n' == n ->
-    let ?you     = iid;
-        ?source  = (toAttrs ?this).ability n;
-        ?msg     = msg;
-        ?windows = ws;
-        ?payment = p;
-        ?ability = (toAttrs ?this).ability n
-    in handler >> Msg.doStep 1 msg
-  DoStep 1 msg@(UseCardAbility iid s n' ws p) | isSource (toAttrs ?this) s && n' == n ->
-    let ?you     = iid;
-        ?source  = (toAttrs ?this).ability n;
-        ?msg     = msg;
-        ?windows = ws;
-        ?payment = p;
-        ?ability = (toAttrs ?this).ability n
-    in thenHandler
+  msg@(UseCardAbility iid s n' ws p)
+    | isSource (toAttrs ?this) s && n' == n ->
+        let ?you = iid
+            ?source = (toAttrs ?this).ability n
+            ?msg = msg
+            ?windows = ws
+            ?payment = p
+            ?ability = (toAttrs ?this).ability n
+         in handler >> Msg.doStep 1 msg
+  DoStep 1 msg@(UseCardAbility iid s n' ws p)
+    | isSource (toAttrs ?this) s && n' == n ->
+        let ?you = iid
+            ?source = (toAttrs ?this).ability n
+            ?msg = msg
+            ?windows = ws
+            ?payment = p
+            ?ability = (toAttrs ?this).ability n
+         in thenHandler
   _ -> pure ()
  where
-    matchHandler (UseThisAbility _ s n') = isSource (toAttrs ?this) s && n' == n
-    matchHandler (DoStep 1 (UseThisAbility _ s n')) = isSource (toAttrs ?this) s && n' == n
-    matchHandler _ = False
+  matchHandler (UseThisAbility _ s n') = isSource (toAttrs ?this) s && n' == n
+  matchHandler (DoStep 1 (UseThisAbility _ s n')) = isSource (toAttrs ?this) s && n' == n
+  matchHandler _ = False
 
-script :: (Entity a, attrs ~ EntityAttrs a, RunMessage attrs, RunType attrs ~ attrs) => ((?this :: a) => ScriptT a ()) -> Message -> a -> GameT a
+script
+  :: (Entity a, attrs ~ EntityAttrs a, RunMessage attrs, RunType attrs ~ attrs)
+  => ((?this :: a) => ScriptT a ()) -> Message -> a -> GameT a
 script dsl msg a = runQueueT do
   let ?msg = msg
   let ?this = a
   handlers <- evalStateT (execWriterT $ runReaderT (runScriptT dsl) initScriptState) a
   let result = foldr (\h acc -> acc <|> runHandler h msg) Nothing handlers
   fromMaybe (overAttrsM (liftRunMessage msg) a) result
-  where
-    runHandler (CardHandler match h) m
-      | match m = Just $ let ?this = a in runScript (h m) a
-      | otherwise = Nothing
+ where
+  runHandler (CardHandler match h) m
+    | match m = Just $ let ?this = a in runScript (h m) a
+    | otherwise = Nothing
 
-holds :: (?this :: a, Entity a, attrs ~ EntityAttrs a, Sourceable attrs, MonoFoldable t, Element t ~ Trait) => t -> Slot
+holds
+  :: (?this :: a, Entity a, attrs ~ EntityAttrs a, Sourceable attrs, MonoFoldable t, Element t ~ Trait)
+  => t -> Slot
 holds ts = RestrictedSlot (toSource $ toAttrs ?this) (mapOneOf CardWithTrait ts) []
 
-moveTokens :: (?source :: Source, Sourceable from, Targetable onto) => from -> onto -> Token -> Int -> ScriptT a ()
+moveTokens
+  :: (?source :: Source, Sourceable from, Targetable onto)
+  => from -> onto -> Token -> Int -> ScriptT a ()
 moveTokens from onto = Msg.moveTokens ?source (toSource from) (toTarget onto)
 
-discardThis :: (?this :: a, ?you :: InvestigatorId, ?source :: Source, Entity a, attrs ~ EntityAttrs a, Targetable attrs) => ScriptT a ()
+discardThis
+  :: ( ?this :: a
+     , ?you :: InvestigatorId
+     , ?source :: Source
+     , Entity a
+     , attrs ~ EntityAttrs a
+     , Targetable attrs
+     )
+  => ScriptT a ()
 discardThis = Msg.toDiscardBy you ?source (toAttrs this)
 
 class CanBeInThreat ref where
-  placeInYourThreatArea :: (?you :: InvestigatorId, ?this :: a, Placeable attrs, Entity a, attrs ~ EntityAttrs a, AsId attrs, IdOf attrs ~ ref) => ScriptT a ()
+  placeInYourThreatArea
+    :: ( ?you :: InvestigatorId
+       , ?this :: a
+       , Placeable attrs
+       , Entity a
+       , attrs ~ EntityAttrs a
+       , AsId attrs
+       , IdOf attrs ~ ref
+       )
+    => ScriptT a ()
   placeInYourThreatArea = place (toAttrs this) (InThreatArea you)
 
 instance CanBeInThreat TreacheryId
@@ -217,22 +292,42 @@ instance ChooseAmong EnemyMatcher where
   type ChosenType EnemyMatcher = EnemyId
   toChooseAmong = select
 
-chooseAmong :: (?ability:: Source, ?this :: x, ChooseAmong a, el ~ ChosenType a, Targetable el, ?you :: InvestigatorId, ?source :: Source) => a -> ((?you :: InvestigatorId, ?ability :: Source, ?source:: Source, ?this:: x) => el -> QueueT Message (ScriptT x) ()) -> ScriptT x ()
+chooseAmong
+  :: ( ?ability :: Source
+     , ?this :: x
+     , ChooseAmong a
+     , el ~ ChosenType a
+     , Targetable el
+     , ?you :: InvestigatorId
+     , ?source :: Source
+     )
+  => a
+  -> ( (?you :: InvestigatorId, ?ability :: Source, ?source :: Source, ?this :: x)
+       => el -> QueueT Message (ScriptT x) ()
+     )
+  -> ScriptT x ()
 chooseAmong a body = do
   xs <- toChooseAmong a
   chooseTargetM you xs body
 
-chooseEnemy :: (?ability :: Source, ?this :: x, ?you :: InvestigatorId, ?source :: Source) => EnemyMatcher -> ((?you :: InvestigatorId, ?ability :: Source, ?source :: Source, ?this :: x) => EnemyId -> QueueT Message (ScriptT x) ()) -> ScriptT x ()
+chooseEnemy
+  :: (?ability :: Source, ?this :: x, ?you :: InvestigatorId, ?source :: Source)
+  => EnemyMatcher
+  -> ( (?you :: InvestigatorId, ?ability :: Source, ?source :: Source, ?this :: x)
+       => EnemyId -> QueueT Message (ScriptT x) ()
+     )
+  -> ScriptT x ()
 chooseEnemy = chooseAmong
 
-elderSignEffect :: (?this :: a, Entity a, Is (EntityAttrs a) InvestigatorId) => ScriptT a () -> ScriptT a ()
+elderSignEffect
+  :: (?this :: a, Entity a, Is (EntityAttrs a) InvestigatorId) => ((?this :: a, ?source :: Source, ?you :: InvestigatorId, ?msg :: Message, ?windows :: [Window], ?ability :: Source) => ScriptT a ()) -> ScriptT a ()
 elderSignEffect body = onMessage matchHandler \case
-  ResolveChaosToken _ ElderSign iid | is (toAttrs this) iid -> body
+  msg@(ResolveChaosToken _ ElderSign iid) | is (toAttrs this) iid -> let ?you = iid; ?source = toSource ElderSign; ?msg = msg; ?windows = []; ?ability = (toSource ElderSign); in body
   _ -> pure ()
  where
   matchHandler (ResolveChaosToken _ ElderSign iid) = is (toAttrs this) iid
   matchHandler _ = False
-    
+
 revealedChaosTokens :: (?windows :: [Window]) => [ChaosToken]
 revealedChaosTokens = Window.revealedChaosTokens ?windows
 
@@ -260,17 +355,28 @@ passedWithElderSign
   :: (?this :: a, Entity a, Is attrs InvestigatorId, attrs ~ EntityAttrs a)
   => ((?this :: a, ?you :: InvestigatorId) => ScriptT a ()) -> ScriptT a ()
 passedWithElderSign body = onMessage matchHandler \case
-  PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _ | is (toAttrs this) iid -> 
-    let ?you = iid in body
+  PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _
+    | is (toAttrs this) iid ->
+        let ?you = iid in body
   _ -> pure ()
  where
   matchHandler (PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _) = is (toAttrs this) iid
   matchHandler _ = False
 
-newtype FightDetails = FightDetails { fightDetailsSkillTestId :: SkillTestId }
+newtype FightDetails = FightDetails {fightDetailsSkillTestId :: SkillTestId}
 
-newtype FightT m a = FightT { runFightT :: StateT FightDetails m a }
-  deriving newtype (Functor, Applicative, Monad, MonadState FightDetails, HasGame, MonadTrans, CardGen, MonadRandom, MonadIO)
+newtype FightT m a = FightT {runFightT :: StateT FightDetails m a}
+  deriving newtype
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadState FightDetails
+    , HasGame
+    , MonadTrans
+    , CardGen
+    , MonadRandom
+    , MonadIO
+    )
 
 instance HasQueue msg m => HasQueue msg (FightT m) where
   messageQueue = lift messageQueue
@@ -284,10 +390,20 @@ instance HasGame m => WithEffect (FightT m) where
   effect target body = do
     effectId <- getRandom
     details <- get
-    builder <- execStateT (runEffectBuilder $ during (EffectSkillTestWindow (fightDetailsSkillTestId details)) >> body) =<< makeEffectBuilder "genef" Nothing ?source target
-    push $ CreateEffect builder {effectBuilderEffectId = Just effectId, effectBuilderSkillTest = Just (fightDetailsSkillTestId details)}
+    builder <-
+      execStateT
+        (runEffectBuilder $ during (EffectSkillTestWindow (fightDetailsSkillTestId details)) >> body)
+        =<< makeEffectBuilder "genef" Nothing ?source target
+    push
+      $ CreateEffect
+        builder
+          { effectBuilderEffectId = Just effectId
+          , effectBuilderSkillTest = Just (fightDetailsSkillTestId details)
+          }
 
-fight :: (?you :: InvestigatorId, ?source :: source, ReverseQueue m, Sourceable source) => FightT m () -> m ()
+fight
+  :: (?you :: InvestigatorId, ?source :: source, ReverseQueue m, Sourceable source)
+  => FightT m () -> m ()
 fight body = do
   sid <- getRandom
   let ?skillTestId = sid in evalStateT (runFightT body) (FightDetails sid)
@@ -303,13 +419,17 @@ insteadOfDiscoveringClues body = do
     _ -> False
   body
 
-discardTokens :: (?source :: source, ?this :: a, Sourceable source, Entity a, Targetable (EntityAttrs a)) => Token -> Int -> ScriptT a ()
+discardTokens
+  :: (?source :: source, ?this :: a, Sourceable source, Entity a, Targetable (EntityAttrs a))
+  => Token -> Int -> ScriptT a ()
 discardTokens t n = push $ RemoveTokens (toSource ?source) (toTarget $ toAttrs ?this) t n
 
-cancelChaosToken :: (Sourceable source) => source -> ChaosToken -> ScriptT a ()
-cancelChaosToken source token = Script $ lift $ lift $ lift $ Msg.cancelChaosToken (toSource source) token
+cancelChaosToken :: Sourceable source => source -> ChaosToken -> ScriptT a ()
+cancelChaosToken s token = Script $ lift $ lift $ lift $ Msg.cancelChaosToken (toSource s) token
 
-onPlay :: (?this :: a, Entity a, Is (EntityAttrs a) EventId) => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
+onPlay
+  :: (?this :: a, Entity a, Is (EntityAttrs a) EventId)
+  => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
 onPlay handler = onMessage matchHandler \case
   PlayThisEvent iid eid | is (toAttrs ?this) eid -> let ?you = iid; ?source = EventSource eid in handler
   _ -> pure ()
@@ -322,3 +442,11 @@ removeDiscardFromGame = push $ RemoveDiscardFromGame ?you
 
 directHorror :: (?this :: a, Sourceable a) => InvestigatorId -> Int -> ScriptT a ()
 directHorror iid n = Msg.directHorror iid (toSource ?this) n
+
+healDamage
+  :: (?source :: Source, Targetable target) => target -> Int -> ScriptT a ()
+healDamage target n = Msg.healDamage (toTarget target) ?source n
+
+healHorror
+  :: (?source :: Source, Targetable target) => target -> Int -> ScriptT a ()
+healHorror target n = Msg.healHorror (toTarget target) ?source n

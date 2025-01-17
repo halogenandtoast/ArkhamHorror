@@ -86,6 +86,9 @@ ability = ?ability
 source :: (?source :: Source) => Source
 source = ?source
 
+windows :: (?windows :: [Window]) => [Window]
+windows = ?windows
+
 yourLocation :: (?you :: InvestigatorId) => LocationMatcher
 yourLocation = locationWithInvestigator ?you
 
@@ -428,10 +431,10 @@ cancelChaosToken :: Sourceable source => source -> ChaosToken -> ScriptT a ()
 cancelChaosToken s token = Script $ lift $ lift $ lift $ Msg.cancelChaosToken (toSource s) token
 
 onPlay
-  :: (?this :: a, Entity a, Is (EntityAttrs a) EventId)
-  => ((?you :: InvestigatorId, ?source :: Source) => ScriptT a ()) -> ScriptT a ()
+  :: (?this :: a, Entity a, Is (EntityAttrs a) EventId, HasField "windows" (EntityAttrs a) [Window])
+  => ((?you :: InvestigatorId, ?source :: Source, ?windows :: [Window]) => ScriptT a ()) -> ScriptT a ()
 onPlay handler = onMessage matchHandler \case
-  PlayThisEvent iid eid | is (toAttrs ?this) eid -> let ?you = iid; ?source = EventSource eid in handler
+  PlayThisEvent iid eid | is (toAttrs ?this) eid -> let ?you = iid; ?source = EventSource eid; ?windows = (toAttrs ?this).windows; in handler
   _ -> pure ()
  where
   matchHandler (PlayThisEvent _ eid) = is (toAttrs ?this) eid
@@ -450,3 +453,13 @@ healDamage target n = Msg.healDamage (toTarget target) ?source n
 healHorror
   :: (?source :: Source, Targetable target) => target -> Int -> ScriptT a ()
 healHorror target n = Msg.healHorror (toTarget target) ?source n
+
+drawnCard :: (?windows :: [Window]) => Window.DrawnCard
+drawnCard = Window.drawnCard ?windows
+
+shuffleDrawnCardBackIntoDeck :: (?windows :: [Window]) => ScriptT a ()
+shuffleDrawnCardBackIntoDeck = Msg.shuffleCardsIntoDeck drawnCard.drawnFrom drawnCard
+
+cancelCardDraw :: (?windows :: [Window], ?source :: Source) => ScriptT a ()
+cancelCardDraw = Script $ lift $ lift $ lift do
+  Msg.cancelCardDraw ?source (Window.cardDrawn windows)

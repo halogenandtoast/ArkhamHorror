@@ -2515,10 +2515,10 @@ runGameMessage msg g = case msg of
                 ]
             pure $ g & focusedCardsL .~ [toCard card]
           else do
-            pushAll [FocusCards [toCard card], whenDraw, Do msg]
+            pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
             pure g
       else do
-        pushAll [FocusCards [toCard card], whenDraw, Do msg]
+        pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
         pure g
   Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)
@@ -2687,17 +2687,15 @@ runGameMessage msg g = case msg of
     push msg'
     pure g
   DrewTreachery iid _ (PlayerCard card) -> do
-    pid <- getPlayer iid
-    sendRevelation pid (toJSON $ toCard card)
     treacheryId <- getRandom
     let treachery = createTreachery card iid treacheryId
     -- player treacheries will not trigger draw treachery windows
 
-    modifiers' <- getModifiers (toTarget treachery)
+    mods <- getModifiers treachery
 
     pushAll
       $ [RemoveCardFromHand iid (toCardId card) | hasRevelation card]
-      <> [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` modifiers']
+      <> [GainSurge GameSource (toTarget treachery) | AddKeyword Keyword.Surge `elem` mods]
       <> [ResolveTreachery iid treacheryId]
 
     let

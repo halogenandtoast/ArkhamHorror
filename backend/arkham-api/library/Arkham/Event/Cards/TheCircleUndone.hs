@@ -34,7 +34,7 @@ darkInsight =
       { cdCardTraits = singleton Insight
       , cdFastWindow =
           Just
-            $ OrWindowMatcher
+            $ oneOf
               [ DrawCard
                   #when
                   (affectsOthers $ InvestigatorAt YourLocation)

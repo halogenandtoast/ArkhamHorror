@@ -1,10 +1,8 @@
-module Arkham.Event.Events.DarkInsight (darkInsight, DarkInsight (..)) where
+module Arkham.Event.Events.DarkInsight (darkInsight) where
 
-import Arkham.Card
-import Arkham.Deck qualified as Deck
+import Arkham.Script
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Window (cardDrawn)
+import Arkham.Event.Import.Lifted hiding (cancelCardDraw)
 
 newtype DarkInsight = DarkInsight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -14,14 +12,4 @@ darkInsight :: EventCard DarkInsight
 darkInsight = event DarkInsight Cards.darkInsight
 
 instance RunMessage DarkInsight where
-  runMessage msg e@(DarkInsight attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
-      let card = cardDrawn attrs.windows
-      cancelCardDraw attrs card
-      case card of
-        PlayerCard _ -> push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-        EncounterCard _ -> push $ ShuffleCardsIntoDeck Deck.EncounterDeck [card]
-        VengeanceCard {} -> error "Unhandled"
-
-      pure e
-    _ -> DarkInsight <$> liftRunMessage msg attrs
+  runMessage = script $ onPlay $ cancelCardDraw >> shuffleDrawnCardBackIntoDeck

@@ -1,9 +1,13 @@
+{-# LANGUAGE NoFieldSelectors #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 module Arkham.Helpers.Window where
 
 import Arkham.Prelude
 
 import Arkham.Attack.Types
 import Arkham.Card
+import Arkham.Deck
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
@@ -220,6 +224,27 @@ cardPlayed :: HasCallStack => [Window] -> Card
 cardPlayed [] = error "missing play card window"
 cardPlayed ((windowType -> Window.PlayCard _ c) : _) = c.card
 cardPlayed (_ : xs) = cardPlayed xs
+
+data DrawnCard = DrawnCard
+  { card :: Card
+  , drawnBy :: InvestigatorId
+  , drawnFrom :: DeckSignifier
+  }
+
+type instance Element DrawnCard = Card
+
+instance MonoFoldable DrawnCard where
+  ofoldr f b x = f x.card b
+  ofoldl' f a x = f a x.card
+  otoList x = [x.card]
+  ofoldMap f x = f x.card
+  ofoldr1Ex f x = f x.card x.card
+  ofoldl1Ex' f x = f x.card x.card
+
+drawnCard :: HasCallStack => [Window] -> DrawnCard
+drawnCard [] = error "missing play card window"
+drawnCard ((windowType -> Window.DrawCard iid c deck) : _) = DrawnCard c iid deck
+drawnCard (_ : xs) = drawnCard xs
 
 cardDrawn :: HasCallStack => [Window] -> Card
 cardDrawn [] = error "missing play card window"

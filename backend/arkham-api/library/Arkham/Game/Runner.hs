@@ -153,7 +153,7 @@ runGameMessage msg g = case msg of
                   pc
                     { pcCustomizations =
                         IntMap.alter
-                          (Just . maybe (1, choices) (second (const choices) . first (+ 1)))
+                          (Just . maybe (1, choices) (bimap (+ 1) (const choices)))
                           i
                           (pcCustomizations pc)
                     }
@@ -1031,7 +1031,7 @@ runGameMessage msg g = case msg of
       historyItem =
         HistoryItem
           HistorySkillTestsPerformed
-          [(skillTypes, fromMaybe Unrun $ skillTestResult <$> g ^. skillTestL)]
+          [(skillTypes, maybe Unrun skillTestResult (g ^. skillTestL))]
       turn = isJust $ view turnPlayerInvestigatorIdL g
       setTurnHistory =
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
@@ -1153,11 +1153,11 @@ runGameMessage msg g = case msg of
       case placement of
         AtLocation lid ->
           pushAll
-            $ [ Will (EnemySpawn Nothing lid enemyId)
-              , When (EnemySpawn Nothing lid enemyId)
-              , EnemySpawn Nothing lid enemyId
-              , After (EnemySpawn Nothing lid enemyId)
-              ]
+            [ Will (EnemySpawn Nothing lid enemyId)
+            , When (EnemySpawn Nothing lid enemyId)
+            , EnemySpawn Nothing lid enemyId
+            , After (EnemySpawn Nothing lid enemyId)
+            ]
         _ -> pure ()
     pure g
   PlaceInBonded _ (toCardId -> cardId) -> do
@@ -1289,8 +1289,7 @@ runGameMessage msg g = case msg of
               let revelation = Revelation iid (TreacherySource tid)
               pushAll
                 $ CardEnteredPlay iid card
-                : ( guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)]
-                  )
+                : (guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)])
                   <> [UnsetActiveCard]
               pure
                 $ g
@@ -1648,9 +1647,9 @@ runGameMessage msg g = case msg of
           $ find ((== cardId) . toCardId)
           $ (g ^. focusedCardsL)
           <> ( concat
-                . Map.elems
-                . view Investigator.foundCardsL
-                $ toAttrs investigator'
+                 . Map.elems
+                 . view Investigator.foundCardsL
+                 $ toAttrs investigator'
              )
     case card of
       PlayerCard pc -> do
@@ -1789,12 +1788,12 @@ runGameMessage msg g = case msg of
       $ questionLabel "Choose next in turn order" player
       $ ChooseOne
         [ PortraitLabel
-          iid
-          [ ChoosePlayerOrder
-              iid
-              (filter (/= iid) investigatorIds)
-              (orderedInvestigatorIds <> [iid])
-          ]
+            iid
+            [ ChoosePlayerOrder
+                iid
+                (filter (/= iid) investigatorIds)
+                (orderedInvestigatorIds <> [iid])
+            ]
         | iid <- investigatorIds
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
@@ -1967,8 +1966,8 @@ runGameMessage msg g = case msg of
            ]
         <> [ phaseStep MythosPhaseWindow [fastWindow]
            , phaseStep
-              MythosPhaseEndsStep
-              [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
+               MythosPhaseEndsStep
+               [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
            ]
     pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
   Msg.PhaseStep step msgs -> do
@@ -2299,10 +2298,10 @@ runGameMessage msg g = case msg of
             pushAll
               $ windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
               <> [ chooseOrRunOne
-                    player
-                    [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
-                    | lid <- lids
-                    ]
+                     player
+                     [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
+                     | lid <- lids
+                     ]
                  ]
       SpawnWithPlacement placement -> do
         mLocation <- getPlacementLocation placement

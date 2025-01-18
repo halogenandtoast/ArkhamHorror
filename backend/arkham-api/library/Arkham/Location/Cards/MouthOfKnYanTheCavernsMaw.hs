@@ -1,20 +1,12 @@
-module Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw (
-  mouthOfKnYanTheCavernsMaw,
-  MouthOfKnYanTheCavernsMaw (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.MouthOfKnYanTheCavernsMaw (mouthOfKnYanTheCavernsMaw) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
 
 newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
@@ -22,59 +14,33 @@ newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mouthOfKnYanTheCavernsMaw :: LocationCard MouthOfKnYanTheCavernsMaw
-mouthOfKnYanTheCavernsMaw = location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYanTheCavernsMaw 2 (Static 0)
+mouthOfKnYanTheCavernsMaw =
+  location MouthOfKnYanTheCavernsMaw Cards.mouthOfKnYanTheCavernsMaw 2 (Static 0)
 
 instance HasAbilities MouthOfKnYanTheCavernsMaw where
   getAbilities (MouthOfKnYanTheCavernsMaw attrs) =
-    withBaseAbilities attrs
-      $ if locationRevealed attrs
-        then
-          [ withTooltip
-              "Let's make camp and solve this puzzle tomorrow"
-              (locationResignAction attrs)
-          , restrictedAbility
-              attrs
-              2
-              (Here <> HasSupply Compass)
-              (ActionAbility [] $ ActionCost 1)
-          ]
-        else []
+    extendRevealed
+      attrs
+      [ withTooltip "Let's make camp and solve this puzzle tomorrow" (locationResignAction attrs)
+      , restricted attrs 2 (Here <> HasSupply Compass) actionAbility
+      ]
 
 instance RunMessage MouthOfKnYanTheCavernsMaw where
-  runMessage msg l@(MouthOfKnYanTheCavernsMaw attrs) = case msg of
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
+  runMessage msg l@(MouthOfKnYanTheCavernsMaw attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
       explorationDeck <- getExplorationDeck
-      let
-        (viewing, rest) = splitAt 3 explorationDeck
-        cardPairs = map (toSnd (`deleteFirst` viewing)) viewing
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards viewing
-        , SetScenarioDeck ExplorationDeck rest
-        , questionLabel "Place one card on bottom of exploration deck" player
-            $ ChooseOne
-              [ targetLabel
-                (toCardId c)
-                [ PutCardOnBottomOfDeck
-                    iid
-                    (Deck.ScenarioDeckByKey ExplorationDeck)
-                    c
-                , FocusCards remaining
-                , questionLabel "Place card on top of exploration deck" player
-                    $ ChooseOneAtATime
-                      [ targetLabel
-                        (toCardId r)
-                        [ PutCardOnTopOfDeck
-                            iid
-                            (Deck.ScenarioDeckByKey ExplorationDeck)
-                            r
-                        ]
-                      | r <- remaining
-                      ]
-                ]
-              | (c, remaining) <- cardPairs
-              ]
-        , UnfocusCards
-        ]
+      let (viewing, rest) = splitAt 3 explorationDeck
+      let cardPairs = map (toSnd (`deleteFirst` viewing)) viewing
+      focusCards viewing do
+        setExplorationDeck rest
+        chooseOneM iid do
+          questionLabeled "Place one card on bottom of exploration deck"
+          for_ cardPairs \(c, remaining) -> targeting c do
+            putCardOnBottomOfDeck iid ExplorationDeck c
+            unfocusCards
+            focusCards remaining do
+              chooseOneAtATimeM iid do
+                questionLabeled "Place card on top of exploration deck"
+                targets remaining $ putCardOnTopOfDeck iid ExplorationDeck
       pure l
-    _ -> MouthOfKnYanTheCavernsMaw <$> runMessage msg attrs
+    _ -> MouthOfKnYanTheCavernsMaw <$> liftRunMessage msg attrs

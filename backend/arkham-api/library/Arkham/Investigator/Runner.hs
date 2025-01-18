@@ -353,16 +353,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           GroupLimit PerWindow _ -> depth >= usedDepth
           _ -> True
 
-    usedAbilities' <- filterM filterAbility investigatorUsedAbilities
-    let usedAbilities'' =
-          map
-            ( \u ->
-                if usedDepth u > depth
-                  then u {usedThisWindow = False}
-                  else if usedDepth u == depth && depth > 0 then u {usedThisWindow = True} else u
-            )
-            usedAbilities'
-    pure $ a & usedAbilitiesL .~ usedAbilities''
+    usedAbilities <-
+      map
+        ( \u ->
+            if usedDepth u > depth
+              then u {usedThisWindow = False}
+              else if usedDepth u == depth && depth > 0 then u {usedThisWindow = True} else u
+        )
+        <$> filterM filterAbility investigatorUsedAbilities
+    pure $ a & usedAbilitiesL .~ usedAbilities
   EndOfScenario {} -> do
     pure $ a & handL .~ mempty & defeatedL .~ False & resignedL .~ False
   ResetGame ->

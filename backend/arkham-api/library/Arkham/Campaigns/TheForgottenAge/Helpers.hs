@@ -77,6 +77,9 @@ getVengeanceInVictoryDisplay = do
 getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)
 
+setExplorationDeck :: (ReverseQueue m) => [Card] -> m ()
+setExplorationDeck = setScenarioDeck ExplorationDeck
+
 getSetAsidePoisonedCount :: HasGame m => m Int
 getSetAsidePoisonedCount = do
   n <- selectCount $ InDeckOf Anyone <> basic (cardIs Treacheries.poisoned)

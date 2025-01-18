@@ -59,11 +59,11 @@ instance RunMessage CavernOfTheForgottenAge where
           lid
             <=~> ( SingleSidedLocation
                     <> NotLocation
-                      (locationIs Locations.mouthOfKnYanTheDepthsBelow)
+                      (locationIs Locations.mouthOfKnYanTheDepthsBeneath)
                  )
         mouthOfKnYan <-
           selectJust
-            $ locationIs Locations.mouthOfKnYanTheDepthsBelow
+            $ locationIs Locations.mouthOfKnYanTheDepthsBeneath
         isConnectedToMouthOfKnYan <-
           mouthOfKnYan
             <=~> ConnectedTo (LocationWithId lid)

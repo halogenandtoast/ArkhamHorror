@@ -326,7 +326,7 @@ allLocations =
     , SomeLocationCard sacredWoods_185
     , -- Heart of the Elders
       SomeLocationCard mouthOfKnYanTheCavernsMaw
-    , SomeLocationCard mouthOfKnYanTheDepthsBelow
+    , SomeLocationCard mouthOfKnYanTheDepthsBeneath
     , --- Pillars of Judgement
       SomeLocationCard timeWrackedWoods
     , SomeLocationCard stoneAltar

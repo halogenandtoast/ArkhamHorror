@@ -845,6 +845,8 @@ instance RunMessage ChaosBag where
         %~ filter (/= token)
         & revealedChaosTokensL
         %~ filter (/= token)
+    RemoveChaosToken face ->
+      pure $ c & chaosTokensL %~ deleteFirstMatch ((== face) . chaosTokenFace)
     RemoveAllChaosTokens face ->
       pure
         $ c

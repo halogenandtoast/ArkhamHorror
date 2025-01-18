@@ -75,6 +75,7 @@ defaultCampaignRunner msg a = case msg of
     if token `notElem` [CurseToken, BlessToken]
       then pure $ updateAttrs a (chaosBagL %~ (token :))
       else pure a
+  RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
   InitDeck iid _ deck -> do
     playerCount <- getPlayerCount

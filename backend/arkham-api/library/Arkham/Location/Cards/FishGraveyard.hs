@@ -34,6 +34,6 @@ instance RunMessage FishGraveyard where
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       flashback Flashback3
       recoverMemory ADecisionToStickTogether
-      removeChaosToken #cultist
+      removeChaosToken #tablet
       pure l
     _ -> FishGraveyard <$> liftRunMessage msg attrs

@@ -12,7 +12,7 @@ import Arkham.ActiveCost
 import Arkham.Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset
-import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..))
+import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.Card

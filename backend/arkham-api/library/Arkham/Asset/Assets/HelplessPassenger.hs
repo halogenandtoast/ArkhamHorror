@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HelplessPassenger (helplessPassenger, HelplessPassenger (..)) where
+module Arkham.Asset.Assets.HelplessPassenger (helplessPassenger) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -13,10 +13,7 @@ newtype HelplessPassenger = HelplessPassenger AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 helplessPassenger :: AssetCard HelplessPassenger
-helplessPassenger =
-  allyWith HelplessPassenger Cards.helplessPassenger (1, 1)
-    $ (isStoryL .~ True)
-    . (slotsL .~ mempty)
+helplessPassenger = allyWith HelplessPassenger Cards.helplessPassenger (1, 1) noSlots
 
 instance HasAbilities HelplessPassenger where
   getAbilities (HelplessPassenger x) =

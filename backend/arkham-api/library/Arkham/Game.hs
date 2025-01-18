@@ -19,6 +19,7 @@ import Arkham.Asset.Types (
   assetDamage,
   assetDoom,
   assetHorror,
+  assetIsStory,
   assetResources,
  )
 import Arkham.Asset.Uses (Uses (..), useType)
@@ -475,7 +476,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       , "log" .= toJSON glog
       , "git" .= toJSON gameGitRevision
       , "mode" .= toJSON gameMode
-      , "modifiers" .= (toJSON $ Map.filter notNull gameModifiers)
+      , "modifiers" .= toJSON (Map.filter notNull gameModifiers)
       , "encounterDeckSize"
           .= toJSON (maybe 0 (length . attr scenarioEncounterDeck) $ modeScenario gameMode)
       , "locations"
@@ -576,7 +577,7 @@ getEffectsMatching matcher = do
   go = \case
     AnyEffect -> pure . const True
     EffectWithCardCode cCode -> fieldMap EffectCardCode (== cCode) . toId
-    EffectWithMetaInt n -> pure . maybe False (== n) . (.metaInt) . toAttrs
+    EffectWithMetaInt n -> pure . (== Just n) . (.metaInt) . toAttrs
     EffectMatches as -> \e -> allM (`go` e) as
     EffectWithTarget t -> pure . (== t) . (.target) . toAttrs
 
@@ -988,7 +989,7 @@ getInvestigatorsMatching matcher = do
         HorrorType -> do
           if CannotHealHorror `elem` mods
             then elem (toId i) <$> select (healGuard $ matcher' <> You)
-            else elem (toId i) <$> select (healGuard $ matcher')
+            else elem (toId i) <$> select (healGuard matcher')
     InvestigatorWithMostCardsInPlayArea -> flip filterM as $ \i ->
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
@@ -1201,7 +1202,7 @@ getTreacheriesMatching matcher = do
     TreacheryWithDoom gameValueMatcher -> \t -> do
       doom <- field TreacheryDoom (toId t)
       doom `gameValueMatches` gameValueMatcher
-    TreacheryWithToken tkn -> \t -> fieldMap TreacheryTokens (Token.hasToken tkn) (toId t)
+    TreacheryWithToken tkn -> fieldMap TreacheryTokens (Token.hasToken tkn) . toId
     TreacheryMatches matchers ->
       \treachery -> allM (`matcherFilter` treachery) matchers
     TreacheryOneOf matchers ->
@@ -1597,8 +1598,7 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just v ->
           filterM
-            ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
-            )
+            (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v)))
             ls
     LocationWithMostInvestigators locationMatcher -> do
       matches' <- go ls locationMatcher
@@ -1905,7 +1905,7 @@ getLocationsMatching lmatcher = do
       go ls (AccessibleFrom $ LocationWithId yourLocation)
     ConnectedLocation -> guardYourLocation $ \yourLocation -> do
       go ls (ConnectedFrom $ LocationWithId yourLocation)
-    YourLocation -> guardYourLocation $ fmap (\l -> [l | elem l ls]) . getLocation
+    YourLocation -> guardYourLocation $ fmap (\l -> [l | l `elem` ls]) . getLocation
     NotYourLocation -> guardYourLocation
       $ \yourLocation -> pure $ filter ((/= yourLocation) . toId) ls
     LocationWithTrait trait -> do
@@ -2108,11 +2108,11 @@ getLocationsMatching lmatcher = do
     LocationInRow n -> do
       pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
     LocationInPosition pos -> do
-      pure $ filter (maybe False (== pos) . attr locationPosition) ls
+      pure $ filter ((== Just pos) . attr locationPosition) ls
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls
     LocationBeingDiscovered -> do
       getWindowStack >>= \case
-        (ws : []) -> case maybeDiscoveredLocation ws of
+        [ws] -> case maybeDiscoveredLocation ws of
           Nothing -> pure []
           Just lid -> pure $ filter ((== lid) . toId) ls
         _ ->
@@ -2172,11 +2172,11 @@ getAssetsMatching matcher = do
     AssetWithHealth -> flip filterM as \a -> do
       mods <- getModifiers (toId a)
       let isSpirit = notNull [() | IsSpirit _ <- mods]
-      pure $ if isSpirit then False else isJust (attr assetHealth a)
+      pure $ not isSpirit && isJust (attr assetHealth a)
     AssetWithSanity -> flip filterM as \a -> do
       mods <- getModifiers (toId a)
       let isSpirit = notNull [() | IsSpirit _ <- mods]
-      pure $ if isSpirit then False else isJust (attr assetSanity a)
+      pure $ not isSpirit && isJust (attr assetSanity a)
     AssetWithDamage -> filterM (fieldMap AssetDamage (> 0) . toId) as
     AssetWithDoom valueMatcher ->
       filterM ((`gameValueMatches` valueMatcher) . attr assetDoom) as
@@ -2239,7 +2239,7 @@ getAssetsMatching matcher = do
           _ -> Nothing
       pure $ filter ((`elem` aids) . toId) as
     AssetAtLocation lid -> flip filterM as $ \a ->
-      maybe False (== lid) <$> field AssetLocation a.id
+      (== Just lid) <$> field AssetLocation a.id
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . attr assetIsStory) as
     AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
@@ -2471,7 +2471,7 @@ getEventsMatching matcher = do
     EventWithoutModifier modifierType -> filterM (fmap (notElem modifierType) . getModifiers . toId) as
     EventWithModifier modifierType -> filterM (fmap (elem modifierType) . getModifiers . toId) as
     EventWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . attr eventDoom) as
-    EventWithToken tkn -> filterM (\e -> fieldMap EventTokens (Token.hasToken tkn) (toId e)) as
+    EventWithToken tkn -> filterM (fieldMap EventTokens (Token.hasToken tkn) . toId) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
     EventMatches ms -> foldM filterMatcher as ms
     EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
@@ -2536,8 +2536,7 @@ getSkillsMatching matcher = do
       skillIcons <- getSkillTestMatchingSkillIcons
       pure
         $ filter
-          ( \a -> any (`member` skillIcons) (cdSkills (toCardDef a)) || null (cdSkills $ toCardDef a)
-          )
+          (\a -> any (`member` skillIcons) (cdSkills (toCardDef a)) || null (cdSkills $ toCardDef a))
           as
 
 getStoriesMatching :: HasGame m => StoryMatcher -> m [Story]
@@ -2560,7 +2559,7 @@ getOutOfPlayEnemy outOfPlayZone eid =
 getMaybeOutOfPlayEnemy :: HasGame m => OutOfPlayZone -> EnemyId -> m (Maybe Enemy)
 getMaybeOutOfPlayEnemy outOfPlayZone eid = do
   menemy <- preview (entitiesL . enemiesL . ix eid) <$> getGame
-  pure $ maybe Nothing (\e -> guard (isCorrectOutOfPlay e) $> e) menemy
+  pure $ menemy >>= (\e -> guard (isCorrectOutOfPlay e) $> e)
  where
   isCorrectOutOfPlay e = case e.placement of
     OutOfPlay zone -> zone == outOfPlayZone
@@ -2824,7 +2823,7 @@ enemyMatcherFilter es matcher' = case matcher' of
   EnemyWithId enemyId -> pure $ filter ((== enemyId) . toId) es
   NonEliteEnemy -> filterM (fmap (notElem Elite) . field EnemyTraits . toId) es
   EnemyMatchAll ms -> foldM enemyMatcherFilter es ms
-  EnemyOneOf ms -> nub . concat <$> (traverse (enemyMatcherFilter es) ms)
+  EnemyOneOf ms -> nub . concat <$> traverse (enemyMatcherFilter es) ms
   EnemyWithTrait t -> filterM (fmap (member t) . field EnemyTraits . toId) es
   EnemyWithoutTrait t -> filterM (fmap (notMember t) . field EnemyTraits . toId) es
   EnemyWithAnyKey -> pure $ filter (notNull . attr enemyKeys) es
@@ -3255,7 +3254,7 @@ instance Projection Location where
       LocationInvestigateSkill -> pure locationInvestigateSkill
       LocationLabel -> pure locationLabel
       LocationTokens -> pure locationTokens
-      LocationKeys -> pure $ locationKeys
+      LocationKeys -> pure locationKeys
       LocationClues -> pure $ locationClues attrs
       LocationRevealClues -> pure locationRevealClues
       LocationResources -> pure $ locationResources attrs
@@ -3678,8 +3677,8 @@ instance Projection Investigator where
         controlledAssetClues <- getSum <$> selectAgg Sum AssetClues (assetControlledBy attrs.id)
         pure $ investigatorClues attrs + controlledAssetClues
       InvestigatorCluesInPool -> pure $ investigatorClues attrs
-      InvestigatorTokens -> pure $ investigatorTokens
-      InvestigatorSearch -> pure $ investigatorSearch
+      InvestigatorTokens -> pure investigatorTokens
+      InvestigatorSearch -> pure investigatorSearch
       InvestigatorHand -> do
         -- Include in hand treacheries
         ts <- selectMapM (fmap toCard . getTreachery) (TreacheryInHandOf (InvestigatorWithId iid))
@@ -3959,7 +3958,7 @@ instance Query ExtendedCardMatcher where
             CommittableTreachery -> error "unhandled"
             AnyCommitRestriction crs -> anyM (passesCommitRestriction card) crs
             OnlyFightAgainst ematcher ->
-              getSkillTestTarget >>= \mt -> case ((.enemy) =<< mt) of
+              getSkillTestTarget >>= \mt -> case (.enemy) =<< mt of
                 Just eid -> andM [(== Just #fight) <$> getSkillTestAction, eid <=~> ematcher]
                 _ -> pure False
             OnlyEvasionAgainst ematcher ->
@@ -4110,8 +4109,7 @@ instance Query ExtendedCardMatcher where
         skillIcons <- getSkillTestMatchingSkillIcons
         pure
           $ filter
-            ( \c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c))
-            )
+            (\c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c)))
             cs
       CardWithCopyInHand who -> do
         flip filterM cs \c -> do
@@ -4280,8 +4278,7 @@ markDistancesWithInclusion checkBarriers initialLocation target canInclude extra
     locationIds <- filterM target (keys map')
     pure
       $ foldr
-        ( \locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap
-        )
+        (\locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap)
         mempty
         locationIds
   getDistance'' map' lid = length $ unwindPath map' [lid]
@@ -4731,13 +4728,13 @@ runMessages mLogger = do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-
                 isJust <$> findFromQueue \case
-                  AskMap askMap | not (null askMap) -> any (== ChooseDeck) (Map.elems askMap)
+                  AskMap askMap | not (null askMap) -> ChooseDeck `elem` Map.elems askMap
                   _ -> False
               if isChooseDecks (gameGameState g) && moreChooseDecks
                 then do
                   let
                     updateChooseDeck = \case
-                      AskMap askMap | not (null askMap) && any (== ChooseDeck) (Map.elems askMap) -> AskMap $ insertMap pid q askMap
+                      AskMap askMap | not (null askMap) && ChooseDeck `elem` Map.elems askMap -> AskMap $ insertMap pid q askMap
                       other -> other
                   withQueue_ (map updateChooseDeck)
                   runMessages mLogger

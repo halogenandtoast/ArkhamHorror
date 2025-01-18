@@ -1,40 +1,30 @@
-module Arkham.Asset.Assets.GavriellaMizrah (
-  gavriellaMizrah,
-  GavriellaMizrah (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.GavriellaMizrah (gavriellaMizrah) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (pattern SkillModifier, controllerGets)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Discover
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 
 newtype GavriellaMizrah = GavriellaMizrah AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gavriellaMizrah :: AssetCard GavriellaMizrah
-gavriellaMizrah = allyWith GavriellaMizrah Cards.gavriellaMizrah (4, 1) (isStoryL .~ True)
+gavriellaMizrah = ally GavriellaMizrah Cards.gavriellaMizrah (4, 1)
 
 instance HasModifiersFor GavriellaMizrah where
   getModifiersFor (GavriellaMizrah a) = controllerGets a [SkillModifier #combat 1]
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    [ controlledAbility
-        a
-        1
-        (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
-        $ ReactionAbility (EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy) (exhaust a)
+    [ controlled a 1 (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
+        $ triggered (EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage GavriellaMizrah where
-  runMessage msg a@(GavriellaMizrah attrs) = case msg of
+  runMessage msg a@(GavriellaMizrah attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure a
-    _ -> GavriellaMizrah <$> runMessage msg attrs
+    _ -> GavriellaMizrah <$> liftRunMessage msg attrs

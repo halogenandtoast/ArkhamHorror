@@ -1,13 +1,8 @@
-module Arkham.Asset.Assets.Straitjacket (
-  straitjacket,
-  Straitjacket (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Straitjacket (straitjacket) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 
 newtype Straitjacket = Straitjacket AssetAttrs
@@ -19,7 +14,7 @@ straitjacket =
   assetWith
     Straitjacket
     Cards.straitjacket
-    ((canLeavePlayByNormalMeansL .~ False) . (isStoryL .~ True))
+    (canLeavePlayByNormalMeansL .~ False)
 
 -- Ability is usable by investigators at the same location due to this "ruling" from MJ:
 --
@@ -34,15 +29,11 @@ straitjacket =
 
 instance HasAbilities Straitjacket where
   getAbilities (Straitjacket a) =
-    [ restrictedAbility a 1 OnSameLocation
-        $ ActionAbility []
-        $ ActionCost
-          2
-    ]
+    [restricted a 1 OnSameLocation $ ActionAbility [] (ActionCost 2)]
 
 instance RunMessage Straitjacket where
   runMessage msg a@(Straitjacket attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ Discarded (toTarget attrs) (toAbilitySource attrs 1) (toCard attrs)
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      push $ Discarded (toTarget attrs) (attrs.ability 1) (toCard attrs)
       pure a
     _ -> Straitjacket <$> runMessage msg attrs

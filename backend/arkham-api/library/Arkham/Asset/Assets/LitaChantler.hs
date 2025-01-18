@@ -14,7 +14,7 @@ newtype LitaChantler = LitaChantler AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 litaChantler :: AssetCard LitaChantler
-litaChantler = allyWith LitaChantler Cards.litaChantler (3, 3) (isStoryL .~ True)
+litaChantler = ally LitaChantler Cards.litaChantler (3, 3)
 
 instance HasModifiersFor LitaChantler where
   getModifiersFor (LitaChantler a) = for_ a.controller \iid -> do

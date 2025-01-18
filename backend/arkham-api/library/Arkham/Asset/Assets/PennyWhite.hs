@@ -1,42 +1,30 @@
-module Arkham.Asset.Assets.PennyWhite (
-  pennyWhite,
-  PennyWhite (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.PennyWhite (pennyWhite) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Discover
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (controllerGets, pattern SkillModifier)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 
 newtype PennyWhite = PennyWhite AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pennyWhite :: AssetCard PennyWhite
-pennyWhite = allyWith PennyWhite Cards.pennyWhite (3, 2) (isStoryL .~ True)
+pennyWhite = ally PennyWhite Cards.pennyWhite (3, 2)
 
 instance HasModifiersFor PennyWhite where
   getModifiersFor (PennyWhite a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities PennyWhite where
   getAbilities (PennyWhite x) =
-    [ controlledAbility
-        x
-        1
-        (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
-        $ ReactionAbility
-          (SkillTestResult #after You SkillTestFromRevelation $ SuccessResult AnyValue)
-          (exhaust x)
+    [ controlled x 1 (CanDiscoverCluesAt YourLocation <> OnLocation LocationWithAnyClues)
+        $ triggered (SkillTestResult #after You SkillTestFromRevelation #success) (exhaust x)
     ]
 
 instance RunMessage PennyWhite where
-  runMessage msg a@(PennyWhite attrs) = case msg of
+  runMessage msg a@(PennyWhite attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toSource attrs) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure a
-    _ -> PennyWhite <$> runMessage msg attrs
+    _ -> PennyWhite <$> liftRunMessage msg attrs

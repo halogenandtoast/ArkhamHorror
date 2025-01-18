@@ -1,4 +1,5 @@
-module Arkham.Treachery.Cards.Malfunction (malfunction, Malfunction (..)) where
+{-# OPTIONS_GHC -Wno-deprecations #-}
+module Arkham.Treachery.Cards.Malfunction (malfunction) where
 
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
@@ -23,13 +24,13 @@ instance HasModifiersFor Malfunction where
           a
           Anyone
           [CannotTriggerAbilityMatching (AbilityOnAsset (AssetWithId aid) <> AbilityIsActionAbility)]
-      _ -> pure mempty
+      _ -> pure ()
 
 instance RunMessage Malfunction where
   runMessage msg t@(Malfunction attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      withLocationOf iid \lid -> do
+      withLocationOf iid \(traceShowId -> lid) -> do
         vehicles <- select $ ClosestAsset lid (AssetWithTrait Vehicle <> StoryAsset)
-        chooseTargetM iid vehicles $ attachTreachery attrs
+        chooseTargetM iid (traceShowId vehicles) $ attachTreachery attrs
       pure t
     _ -> Malfunction <$> liftRunMessage msg attrs

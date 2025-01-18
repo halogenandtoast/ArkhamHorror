@@ -1,17 +1,16 @@
-module Arkham.Asset.Assets.MonstrousTransformation (MonstrousTransformation (..), monstrousTransformation) where
+module Arkham.Asset.Assets.MonstrousTransformation (monstrousTransformation) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers (ModifierType(..), controllerGets)
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Prelude
+import Arkham.Asset.Import.Lifted
 
 newtype MonstrousTransformation = MonstrousTransformation AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 monstrousTransformation :: AssetCard MonstrousTransformation
-monstrousTransformation = assetWith MonstrousTransformation Cards.monstrousTransformation (isStoryL .~ True)
+monstrousTransformation = asset MonstrousTransformation Cards.monstrousTransformation
 
 instance HasModifiersFor MonstrousTransformation where
   getModifiersFor (MonstrousTransformation a) =
@@ -24,15 +23,13 @@ instance HasModifiersFor MonstrousTransformation where
       ]
 
 instance HasAbilities MonstrousTransformation where
-  getAbilities (MonstrousTransformation a) = [restrictedAbility a 1 ControlsThis $ fightAction (exhaust a)]
+  getAbilities (MonstrousTransformation a) = [restricted a 1 ControlsThis $ fightAction (exhaust a)]
 
 instance RunMessage MonstrousTransformation where
-  runMessage msg a@(MonstrousTransformation attrs) = case msg of
+  runMessage msg a@(MonstrousTransformation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (DamageDealt 1)
-      pushAll [enabled, chooseFight]
+      skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    _ -> MonstrousTransformation <$> runMessage msg attrs
+    _ -> MonstrousTransformation <$> liftRunMessage msg attrs

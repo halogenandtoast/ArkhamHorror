@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.YhanthleiStatueDynamicRelic (
-  yhanthleiStatueDynamicRelic,
-  YhanthleiStatueDynamicRelic (..),
-)
-where
+module Arkham.Asset.Assets.YhanthleiStatueDynamicRelic (yhanthleiStatueDynamicRelic) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,16 +13,14 @@ newtype YhanthleiStatueDynamicRelic = YhanthleiStatueDynamicRelic AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yhanthleiStatueDynamicRelic :: AssetCard YhanthleiStatueDynamicRelic
-yhanthleiStatueDynamicRelic =
-  assetWith YhanthleiStatueDynamicRelic Cards.yhanthleiStatueDynamicRelic
-    $ (isStoryL .~ True)
+yhanthleiStatueDynamicRelic = asset YhanthleiStatueDynamicRelic Cards.yhanthleiStatueDynamicRelic
 
 instance HasAbilities YhanthleiStatueDynamicRelic where
   getAbilities (YhanthleiStatueDynamicRelic x) =
-    [ controlledAbility
+    [ controlled
         x
         1
-        (exists $ EnemyWithTrait Humanoid <> at_ YourLocation <> EnemyCanBeDamagedBySource (x.ability 1))
+        (exists $ withTrait Humanoid <> at_ YourLocation <> EnemyCanBeDamagedBySource (x.ability 1))
         $ FastAbility (exhaust x)
     , controlledAbility x 2 (HasRemainingBlessTokens <> ChaosTokenCountIs #curse (atLeast 1))
         $ FastAbility (exhaust x)

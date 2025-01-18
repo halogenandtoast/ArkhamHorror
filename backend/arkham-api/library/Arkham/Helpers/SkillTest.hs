@@ -74,7 +74,7 @@ getSkillTestInvestigator :: HasGame m => m (Maybe InvestigatorId)
 getSkillTestInvestigator = fmap skillTestInvestigator <$> getSkillTest
 
 isSkillTestInvestigator :: HasGame m => InvestigatorId -> m Bool
-isSkillTestInvestigator iid = maybe False (== iid) <$> getSkillTestInvestigator
+isSkillTestInvestigator iid = (== Just iid) <$> getSkillTestInvestigator
 
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource

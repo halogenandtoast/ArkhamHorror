@@ -1,39 +1,31 @@
-module Arkham.Asset.Assets.KeyToTheChamber (
-  keyToTheChamber,
-  KeyToTheChamber (..),
-) where
+module Arkham.Asset.Assets.KeyToTheChamber (keyToTheChamber) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Exception
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype KeyToTheChamber = KeyToTheChamber AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 keyToTheChamber :: AssetCard KeyToTheChamber
-keyToTheChamber =
-  assetWith KeyToTheChamber Cards.keyToTheChamber (isStoryL .~ True)
+keyToTheChamber = asset KeyToTheChamber Cards.keyToTheChamber
 
 instance HasAbilities KeyToTheChamber where
   getAbilities (KeyToTheChamber attrs) = case attrs.placement of
     InPlayArea _ ->
-      [ controlledAbility attrs 1 (exists (ConnectedLocation <> "The Hidden Chamber")) (FastAbility Free)
+      [ controlled attrs 1 (exists (ConnectedLocation <> "The Hidden Chamber")) (FastAbility Free)
       ]
     _ -> []
 
 instance RunMessage KeyToTheChamber where
-  runMessage msg a@(KeyToTheChamber attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      a <$ push (TakeControlOfAsset iid $ toId a)
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      mHiddenChamberId <- selectOne (LocationWithTitle "The Hidden Chamber")
-      case mHiddenChamberId of
-        Nothing -> throwIO $ InvalidState "The Hidden Chamber is missing"
-        Just hiddenChamberId -> push (AttachAsset (toId a) (LocationTarget hiddenChamberId))
+  runMessage msg a@(KeyToTheChamber attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      takeControlOfAsset iid attrs
       pure a
-    _ -> KeyToTheChamber <$> runMessage msg attrs
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      selectForMaybeM (LocationWithTitle "The Hidden Chamber") (attach attrs)
+      pure a
+    _ -> KeyToTheChamber <$> liftRunMessage msg attrs

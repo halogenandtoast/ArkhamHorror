@@ -272,7 +272,6 @@ data AssetAttrs = AssetAttrs
   , assetTokens :: Tokens
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetWhenNoUses :: Maybe WhenNoUses
-  , assetIsStory :: Bool
   , assetCardsUnderneath :: [Card]
   , assetSealedChaosTokens :: [ChaosToken]
   , assetKeys :: Set ArkhamKey
@@ -470,7 +469,6 @@ assetWith f cardDef g =
             , assetTokens = mempty
             , assetCanLeavePlayByNormalMeans = Keyword.Partner `notElem` cdKeywords cardDef
             , assetWhenNoUses = Nothing
-            , assetIsStory = False
             , assetCardsUnderneath = []
             , assetSealedChaosTokens = []
             , assetKeys = mempty
@@ -486,6 +484,9 @@ assetWith f cardDef g =
             , assetDriver = Nothing
             }
     }
+
+assetIsStory :: AssetAttrs -> Bool
+assetIsStory a = isJust $ cdEncounterSet (toCardDef a)
 
 instance Entity AssetAttrs where
   type EntityId AssetAttrs = AssetId

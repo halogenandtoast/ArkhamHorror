@@ -103,12 +103,17 @@ suffixedFields = defaultFieldRules & lensField .~ suffixedNamer
 guardM :: (Alternative m, Monad m) => m Bool -> m ()
 guardM p = p >>= guard
 
+ensure :: (Alternative (t m), Monad m, MonadTrans t) => m Bool -> t m ()
+ensure = liftGuardM
+
 liftGuardM :: (Alternative (t m), Monad m, MonadTrans t) => m Bool -> t m ()
 liftGuardM p = lift p >>= guard
 
+ensureAll :: (MonadTrans t, Monad m, Alternative (t m)) => [m Bool] -> t m ()
+ensureAll = liftGuardsM
+
 liftGuardsM :: (MonadTrans t, Monad m, Alternative (t m)) => [m Bool] -> t m ()
-liftGuardsM [] = pure ()
-liftGuardsM (a : as) = liftGuardM a >> liftGuardsM as
+liftGuardsM as = foldr ((>>) . liftGuardM) (pure ()) as
 
 mapSet :: Ord b => (a -> b) -> Set a -> Set b
 mapSet = Set.map

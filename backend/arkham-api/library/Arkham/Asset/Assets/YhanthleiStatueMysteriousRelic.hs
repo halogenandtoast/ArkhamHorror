@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.YhanthleiStatueMysteriousRelic (
-  yhanthleiStatueMysteriousRelic,
-  YhanthleiStatueMysteriousRelic (..),
-)
-where
+module Arkham.Asset.Assets.YhanthleiStatueMysteriousRelic (yhanthleiStatueMysteriousRelic) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,15 +14,14 @@ newtype YhanthleiStatueMysteriousRelic = YhanthleiStatueMysteriousRelic AssetAtt
 
 yhanthleiStatueMysteriousRelic :: AssetCard YhanthleiStatueMysteriousRelic
 yhanthleiStatueMysteriousRelic =
-  assetWith YhanthleiStatueMysteriousRelic Cards.yhanthleiStatueMysteriousRelic
-    $ (isStoryL .~ True)
+  asset YhanthleiStatueMysteriousRelic Cards.yhanthleiStatueMysteriousRelic
 
 instance HasAbilities YhanthleiStatueMysteriousRelic where
   getAbilities (YhanthleiStatueMysteriousRelic x) =
-    [ controlledAbility
+    [ controlled
         x
         1
-        (exists $ EnemyWithTrait Humanoid <> at_ YourLocation <> EnemyCanBeDamagedBySource (x.ability 1))
+        (exists $ withTrait Humanoid <> at_ YourLocation <> EnemyCanBeDamagedBySource (x.ability 1))
         $ FastAbility (exhaust x <> AddCurseTokenCost 2)
     , restricted x 2 ControlsThis
         $ actionAbilityWithCost (OrCost $ map SpendKeyCost [BlueKey, WhiteKey, RedKey, YellowKey])

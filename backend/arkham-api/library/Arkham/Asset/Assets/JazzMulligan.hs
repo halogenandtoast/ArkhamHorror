@@ -1,13 +1,13 @@
-module Arkham.Asset.Assets.JazzMulligan (jazzMulligan, JazzMulligan (..)) where
+module Arkham.Asset.Assets.JazzMulligan (jazzMulligan) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Placement
 import Arkham.Trait
 
 newtype JazzMulligan = JazzMulligan AssetAttrs
@@ -15,33 +15,27 @@ newtype JazzMulligan = JazzMulligan AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetCard JazzMulligan
-jazzMulligan =
-  allyWith JazzMulligan Cards.jazzMulligan (2, 2)
-    $ (isStoryL .~ True)
-    . (slotsL .~ mempty)
+jazzMulligan = allyWith JazzMulligan Cards.jazzMulligan (2, 2) noSlots
 
 instance HasAbilities JazzMulligan where
   getAbilities (JazzMulligan x) =
-    [skillTestAbility $ restrictedAbility x 1 (Uncontrolled <> OnSameLocation) parleyAction_]
+    [skillTestAbility $ restricted x 1 (Uncontrolled <> OnSameLocation) parleyAction_]
 
 instance HasModifiersFor JazzMulligan where
-  getModifiersFor (JazzMulligan a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      active <- iid <=~> ActiveInvestigator
-      modifySelectWhen a active UnrevealedLocation [TraitRestrictedModifier Miskatonic Blank]
+  getModifiersFor (JazzMulligan a) = for_ a.controller \iid -> do
+    active <- iid <=~> ActiveInvestigator
+    modifySelectWhen a active UnrevealedLocation [TraitRestrictedModifier Miskatonic Blank]
 
 instance RunMessage JazzMulligan where
-  runMessage msg a@(JazzMulligan attrs@AssetAttrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      lid <- fieldMap InvestigatorLocation (fromJustNote "must be at a location") iid
-      push $ PlaceAsset assetId $ AtLocation lid
+  runMessage msg a@(JazzMulligan attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      withLocationOf iid (place attrs)
       pure a
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid (attrs.ability 1) (toTarget attrs) #intellect (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ TakeControlOfAsset iid assetId
+      takeControlOfAsset iid attrs
       pure a
-    _ -> JazzMulligan <$> runMessage msg attrs
+    _ -> JazzMulligan <$> liftRunMessage msg attrs

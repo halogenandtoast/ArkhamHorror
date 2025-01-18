@@ -1,59 +1,39 @@
-module Arkham.Asset.Assets.LadyEsprit (
-  LadyEsprit (..),
-  ladyEsprit,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.LadyEsprit (ladyEsprit) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Damage
+import Arkham.Asset.Import.Lifted
+import Arkham.Capability
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype LadyEsprit = LadyEsprit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ladyEsprit :: AssetCard LadyEsprit
-ladyEsprit = allyWith LadyEsprit Cards.ladyEsprit (2, 4) (isStoryL .~ True)
+ladyEsprit = ally LadyEsprit Cards.ladyEsprit (2, 4)
 
 instance HasAbilities LadyEsprit where
   getAbilities (LadyEsprit x) =
-    [ restrictedAbility
+    [ restricted
         x
         1
         ( OnSameLocation
-            <> exists
-              (oneOf [HealableInvestigator (toSource x) DamageType You, You <> InvestigatorCanGainResources])
+            <> any_
+              [HealableInvestigator (toSource x) #damage You, You <> InvestigatorCanGainResources]
         )
-        ( ActionAbility []
-            $ Costs
-              [ ActionCost 1
-              , ExhaustCost (toTarget x)
-              , HorrorCost (toSource x) (toTarget x) 1
-              ]
-        )
+        (actionAbilityWithCost $ exhaust x <> horrorCost x 1)
     ]
 
 instance RunMessage LadyEsprit where
-  runMessage msg a@(LadyEsprit attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      canHeal <- canHaveDamageHealed attrs iid
-      canGainResources <- withoutModifier (InvestigatorTarget iid) CannotGainResources
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ ComponentLabel
-            (InvestigatorComponent iid DamageToken)
-            [HealDamage (InvestigatorTarget iid) (toSource attrs) 2]
-          | canHeal
-          ]
-        <> [ ComponentLabel
-            (InvestigatorComponent iid ResourceToken)
-            [TakeResources iid 2 (toAbilitySource attrs 1) False]
-           | canGainResources
-           ]
+  runMessage msg a@(LadyEsprit attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      chooseOneM iid do
+        whenM (canHaveDamageHealed attrs iid) do
+          damageLabeled iid $ healDamage iid (attrs.ability 1) 2
+        whenM (can.gain.resources iid) do
+          resourceLabeled iid $ gainResources iid (attrs.ability 1) 2
       pure a
-    _ -> LadyEsprit <$> runMessage msg attrs
+    _ -> LadyEsprit <$> liftRunMessage msg attrs

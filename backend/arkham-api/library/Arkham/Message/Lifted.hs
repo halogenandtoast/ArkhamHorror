@@ -606,7 +606,9 @@ removeCampaignCard (toCardDef -> def) = do
 removeCampaignCardFromDeck
   :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator -> a -> m ()
-removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = push $ RemoveCampaignCardFromDeck iid def
+removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
+  push $ RemoveCampaignCard def
+  push $ RemoveCampaignCardFromDeck iid def
 
 placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
@@ -967,7 +969,7 @@ addToDiscard
   -> m ()
 addToDiscard iid (toList -> cards) = do
   for_ cards obtainCard
-  for_ cards $ push . Msg.addToDiscard iid 
+  for_ cards $ push . Msg.addToDiscard iid
 
 addToHandQuiet
   :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
@@ -2241,14 +2243,16 @@ resolveChaosTokens iid source tokens = do
     $ map UnsealChaosToken tokens
     <> map ObtainChaosToken tokens
     <> [ ReplaceCurrentDraw (toSource source) iid
-          $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
+           $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
 removeLocation (asId -> lid) = do
   noClues <- lid <=~> LocationWithoutClues
   if noClues
-    then maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid) =<< field LocationVictory lid
+    then
+      maybe (pushAll $ resolve (RemoveLocation lid)) (\_ -> addToVictory lid)
+        =<< field LocationVictory lid
     else pushAll $ resolve (RemoveLocation lid)
 
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
@@ -2357,3 +2361,6 @@ returnChaosTokens = push . ReturnChaosTokens
 
 revealCard :: (IsCard card, ReverseQueue m) => card -> m ()
 revealCard card = push $ RevealCard (toCardId card)
+
+addToEncounterDiscard :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs) => xs -> m ()
+addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (preview _EncounterCard . toCard) . otoList

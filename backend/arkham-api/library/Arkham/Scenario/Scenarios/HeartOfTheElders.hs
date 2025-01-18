@@ -230,7 +230,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = case msg of
     when (notNull theJungleWatchesCardDefs) do
       placeInVictory theJungleWatchesCardDefs
 
-    startAt =<< place Locations.mouthOfKnYanTheDepthsBelow
+    startAt =<< place Locations.mouthOfKnYanTheDepthsBeneath
 
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned

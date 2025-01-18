@@ -465,7 +465,7 @@ allLocationCards =
       , moonForest
       , morgue
       , mouthOfKnYanTheCavernsMaw
-      , mouthOfKnYanTheDepthsBelow
+      , mouthOfKnYanTheDepthsBeneath
       , mtNgranek
       , mu
       , museumEntrance
@@ -3399,12 +3399,12 @@ mouthOfKnYanTheCavernsMaw =
       [Squiggle, T, Hourglass]
       HeartOfTheElders
 
-mouthOfKnYanTheDepthsBelow :: CardDef
-mouthOfKnYanTheDepthsBelow =
+mouthOfKnYanTheDepthsBeneath :: CardDef
+mouthOfKnYanTheDepthsBeneath =
   singleSided
     $ location
       "04206b"
-      ("Mouth of K'n-yan" <:> "The Depths Below")
+      ("Mouth of K'n-yan" <:> "The Depths Beneath")
       [Cave]
       Equals
       [Circle, Triangle, Diamond]

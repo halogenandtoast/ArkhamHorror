@@ -51,6 +51,7 @@ import Control.Lens (_Just)
 import Data.Aeson.TH
 import Data.Data
 import Data.Text qualified as T
+import GHC.OverloadedLabels
 import GHC.Records
 
 instance Data Investigator where
@@ -155,6 +156,9 @@ data instance Field Investigator :: Type -> Type where
 
 deriving stock instance Show (Field Investigator val)
 deriving stock instance Ord (Field Investigator val)
+
+instance IsLabel "resources" (Field Investigator Int) where
+  fromLabel = InvestigatorResources
 
 instance ToJSON (Field Investigator typ) where
   toJSON = toJSON . show
@@ -469,12 +473,11 @@ instance HasAbilities Investigator where
   getAbilities i@(Investigator a) =
     getAbilities a
       <> [ restricted
-          i
-          500
-          ( Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a))
-          )
-          $ ActionAbility []
-          $ ActionCost 1
+             i
+             500
+             (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
+             $ ActionAbility []
+             $ ActionCost 1
          | notNull (investigatorKeys $ toAttrs a)
          ]
       <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1

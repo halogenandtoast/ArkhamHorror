@@ -87,7 +87,6 @@ import Arkham.Asset.Assets (
   steadyHanded1Effect,
   thirtyFiveWinchesterEffect,
   wellConnected3Effect,
-  wellConnectedEffect,
   wither4Effect,
   witherEffect,
   yaotl1Effect,
@@ -416,7 +415,7 @@ allEffects =
     , ("05005", SomeEffect ritaYoungElderSignEffect)
     , ("05016", SomeEffect imDoneRunninEffect)
     , ("05018", SomeEffect mystifyingSongEffect)
-    , ("05028", SomeEffect wellConnectedEffect)
+    , ("05028", SomeEffect $ noop "05028")
     , ("05037", SomeEffect actOfDesperationEffect)
     , ("05040", SomeEffect aceOfRods1Effect)
     , ("05049", SomeEffect pennyWhiteEffect)

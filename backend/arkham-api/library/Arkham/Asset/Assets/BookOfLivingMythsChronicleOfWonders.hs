@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.BookOfLivingMythsChronicleOfWonders (
   bookOfLivingMythsChronicleOfWonders,
-  BookOfLivingMythsChronicleOfWonders (..),
 )
 where
 
@@ -10,6 +9,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Window qualified as Window
 
 newtype BookOfLivingMythsChronicleOfWonders = BookOfLivingMythsChronicleOfWonders AssetAttrs
@@ -21,13 +21,8 @@ bookOfLivingMythsChronicleOfWonders = asset BookOfLivingMythsChronicleOfWonders 
 
 instance HasAbilities BookOfLivingMythsChronicleOfWonders where
   getAbilities (BookOfLivingMythsChronicleOfWonders a) =
-    [ controlledAbility
-        a
-        1
-        (oneOf [ChaosTokenCountIs #bless (atLeast 1), ChaosTokenCountIs #curse (atLeast 1)])
-        $ ReactionAbility
-          (WouldRevealChaosToken #when $ affectsOthers $ InvestigatorAt YourLocation)
-          (exhaust a)
+    [ controlled a 1 (mapOneOf ((`ChaosTokenCountIs` atLeast 1) . OnlyInBag) [#bless, #curse])
+        $ triggered (WouldRevealChaosToken #when $ affectsOthers $ at_ YourLocation) (exhaust a)
     ]
 
 instance RunMessage BookOfLivingMythsChronicleOfWonders where
@@ -37,9 +32,9 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
       let bIn = filter ((== #bless) . (.face)) tokens
       let cIn = filter ((== #curse) . (.face)) tokens
 
-      chooseOrRunOne iid
-        $ [Label "Resolve {bless} token" [DoStep 1 msg] | length bIn >= length cIn]
-        <> [Label "Resolve {curse} token" [DoStep 2 msg] | length cIn >= length bIn]
+      chooseOrRunOneM iid do
+        when (length bIn >= length cIn) $ labeled "Resolve {bless} token" $ doStep 1 msg
+        when (length cIn >= length bIn) $ labeled "Resolve {curse} token" $ doStep 2 msg
       pure a
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do
       tokens <- getOnlyChaosTokensInBag
@@ -50,8 +45,7 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
           cancelTokenDraw
           push $ SetChaosTokenAside token
           checkWhen $ Window.RevealChaosToken iid token
-          withSkillTest \sid ->
-            push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
+          withSkillTest \sid -> push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
         _ -> error "invalid token"
       pure a
     _ -> BookOfLivingMythsChronicleOfWonders <$> liftRunMessage msg attrs

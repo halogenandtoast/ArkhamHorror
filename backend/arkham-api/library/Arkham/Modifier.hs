@@ -73,6 +73,7 @@ data ModifierType
   | AlternateUpkeepDraw Target
   | AlternativeReady Source
   | AnySkillValue Int
+  | AnySkillValueCalculated GameCalculation
   | AsIfAt LocationId
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId

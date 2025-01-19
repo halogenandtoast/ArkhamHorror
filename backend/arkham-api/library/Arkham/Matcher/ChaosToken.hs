@@ -14,6 +14,7 @@ import GHC.OverloadedLabels
 
 data ChaosTokenMatcher
   = WithNegativeModifier
+  | OnlyInBag ChaosTokenMatcher
   | ChaosTokenFaceIs ChaosTokenFace
   | ChaosTokenFaceIsNot ChaosTokenFace
   | ChaosTokenMatchesAny [ChaosTokenMatcher]
@@ -44,6 +45,7 @@ pattern RevealedChaosToken = RevealedChaosTokens AnyChaosToken
 
 instance ToDisplay ChaosTokenMatcher where
   toDisplay = \case
+    OnlyInBag inner -> toDisplay inner
     ChaosTokenIs _ -> "Specific chaos token"
     WithNegativeModifier -> "Chaos token with negative modifier"
     ChaosTokenFaceIs face -> toDisplay face

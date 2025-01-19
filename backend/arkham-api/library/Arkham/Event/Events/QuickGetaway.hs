@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Event.Events.QuickGetaway (quickGetaway, QuickGetaway (..)) where
 
 import Arkham.Attack.Types

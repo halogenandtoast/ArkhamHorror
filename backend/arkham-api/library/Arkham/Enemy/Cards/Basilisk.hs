@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.Basilisk (basilisk, Basilisk (..)) where
+module Arkham.Enemy.Cards.Basilisk (basilisk) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -13,8 +13,8 @@ newtype Basilisk = Basilisk EnemyAttrs
 basilisk :: EnemyCard Basilisk
 basilisk =
   enemyWith Basilisk Cards.basilisk (4, Static 4, 4) (2, 0)
-    $ spawnAtL
-    ?~ SpawnAt (LocationWithDistanceFrom 1 (locationIs Locations.mouthOfKnYanTheCavernsMaw) Anywhere)
+    $ preyL
+    .~ Prey (NearestToLocation $ locationIs Locations.mouthOfKnYanTheCavernsMaw)
 
 instance HasAbilities Basilisk where
   getAbilities (Basilisk a) =
@@ -27,6 +27,6 @@ instance HasAbilities Basilisk where
 instance RunMessage Basilisk where
   runMessage msg e@(Basilisk attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ ShuffleBackIntoEncounterDeck (toTarget attrs)
+      shuffleBackIntoEncounterDeck attrs
       pure e
     _ -> Basilisk <$> liftRunMessage msg attrs

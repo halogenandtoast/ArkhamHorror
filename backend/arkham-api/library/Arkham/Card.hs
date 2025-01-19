@@ -94,6 +94,9 @@ class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where
   toCustomizations :: a -> Customizations
   toCustomizations _ = mempty
 
+sameCard :: (IsCard a, IsCard b) => a -> b -> Bool
+sameCard a b = toCardId a == toCardId b
+
 cardIds :: IsCard a => [a] -> [CardId]
 cardIds = map toCardId
 

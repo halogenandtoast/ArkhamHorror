@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.BlessingOfIsis3 (blessingOfIsis3, BlessingOfIsis3 (..)) where
+module Arkham.Asset.Assets.BlessingOfIsis3 (blessingOfIsis3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,10 +18,7 @@ blessingOfIsis3 = asset BlessingOfIsis3 Cards.blessingOfIsis3
 instance HasAbilities BlessingOfIsis3 where
   getAbilities (BlessingOfIsis3 x) =
     [ wantsSkillTest SkillTestAtYourLocation
-        $ controlled
-          x
-          1
-          (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #bless)
+        $ controlled x 1 (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #bless)
         $ triggered (RevealChaosToken #when Anyone #bless) (exhaust x)
     ]
 
@@ -32,7 +29,7 @@ instance RunMessage BlessingOfIsis3 where
         push $ ChaosTokenCanceled iid (attrs.ability 1) drawnToken
         tokens <- nub . (drawnToken :) . filter ((== #bless) . (.face)) <$> getSkillTestRevealedChaosTokens
         for_ tokens \token -> do
-          skillTestModifiers sid (attrs.ability 1) (ChaosTokenTarget token) $ ReturnBlessedToChaosBag
+          skillTestModifiers sid (attrs.ability 1) token $ ReturnBlessedToChaosBag
             : [ChaosTokenFaceModifier [#eldersign] | token == drawnToken]
       pure a
     _ -> BlessingOfIsis3 <$> liftRunMessage msg attrs

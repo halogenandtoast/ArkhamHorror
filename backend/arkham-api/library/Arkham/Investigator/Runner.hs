@@ -290,12 +290,13 @@ runWindow attrs windows actions playableCards = do
       then do
         let
           (isSilent, normal) = partition isSilentForcedAbility actions
-          toForcedAbilities = map (($ windows) . UseAbility iid)
+          toForcedAbilities = map (flip (UseAbility iid) windows)
           toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         -- Silent forced abilities should trigger automatically
         pushAll
           $ toForcedAbilities isSilent
           <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
+          <> [Do (CheckWindows windows)]
       else do
         let globalSkip = attrs.settings.globalSettings.ignoreUnrelatedSkillTestTriggers
         let

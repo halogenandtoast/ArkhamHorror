@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Treachery.Cards.Malfunction (malfunction) where
 
 import Arkham.Helpers.Investigator
@@ -29,8 +28,8 @@ instance HasModifiersFor Malfunction where
 instance RunMessage Malfunction where
   runMessage msg t@(Malfunction attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      withLocationOf iid \(traceShowId -> lid) -> do
+      withLocationOf iid \lid -> do
         vehicles <- select $ ClosestAsset lid (AssetWithTrait Vehicle <> StoryAsset)
-        chooseTargetM iid (traceShowId vehicles) $ attachTreachery attrs
+        chooseTargetM iid vehicles $ attachTreachery attrs
       pure t
     _ -> Malfunction <$> liftRunMessage msg attrs

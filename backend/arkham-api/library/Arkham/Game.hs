@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3727,6 +3727,7 @@ instance Query ChaosTokenMatcher where
         | inTokenPool matcher -> pure []
         | includeSealed matcher -> getAllChaosTokens
         | isInfestation -> getInfestationTokens
+        | isOnlyInBag matcher -> getOnlyChaosTokensInBag
         | otherwise -> getBagChaosTokens
     case matcher of
       ChaosTokenMatchesOrElse matcher' orElseMatch -> do
@@ -3736,6 +3737,9 @@ instance Query ChaosTokenMatcher where
           else pure results
       _ -> filterM (go matcher) (tokens <> tokenPool)
    where
+    isOnlyInBag = \case
+      OnlyInBag _ -> True
+      _ -> False
     includeSealed = \case
       IncludeSealed _ -> True
       IncludeTokenPool m -> includeSealed m
@@ -3780,6 +3784,7 @@ instance Query ChaosTokenMatcher where
         inner <- select $ IncludeSealed $ IncludeTokenPool m
         pure $ t `elem` chaosBag.revealed && t `elem` inner
       InTokenPool m -> go m
+      OnlyInBag m -> go m
       NotChaosToken m -> fmap not . go m
       SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id EnemySealedChaosTokens enemyMatcher

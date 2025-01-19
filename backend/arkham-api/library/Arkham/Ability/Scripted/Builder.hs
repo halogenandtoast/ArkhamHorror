@@ -1,5 +1,4 @@
 {-# LANGUAGE ImplicitParams #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Ability.Scripted.Builder (
   module Arkham.Ability.Scripted.Builder,

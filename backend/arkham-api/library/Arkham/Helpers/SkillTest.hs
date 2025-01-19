@@ -337,36 +337,29 @@ getSkillTestDifficulty = do
 getCurrentSkillValue :: HasGame m => SkillTest -> m Int
 getCurrentSkillValue st = do
   mods <- getModifiers st.investigator
+  let
+    applyModifier canIncrease (AnySkillValue m) n | canIncrease || m < 0 = pure $ max 0 (n + m)
+    applyModifier canIncrease (AnySkillValueCalculated m) n = do
+      v <- calculate m
+      pure $ if canIncrease || v < 0 then max 0 (n + v) else n
+    applyModifier _ _ n = pure n
   case skillTestBaseValue st of
     SkillBaseValue sType -> do
       sType' <- getAlternateSkill st sType
-      let canBeIncreased = SkillCannotBeIncreased sType' `notElem` mods
-      let
-        applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
-        applyModifier _ n = n
-      stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
-      pure $ foldr applyModifier (statsSkillValue stats sType') mods
+      let canIncrease = SkillCannotBeIncreased sType' `notElem` mods
+      stats <- modifiedStatsOf st.action st.investigator
+      foldrM (applyModifier canIncrease) (statsSkillValue stats sType') mods
     AndSkillBaseValue types -> do
       types' <- traverse (getAlternateSkill st) types
-      let canBeIncreased = any (\sType' -> SkillCannotBeIncreased sType' `notElem` mods) types'
-      let
-        applyModifier (AnySkillValue m) n | canBeIncreased || m < 0 = max 0 (n + m)
-        applyModifier _ n = n
+      let canIncrease = any (\sType' -> SkillCannotBeIncreased sType' `notElem` mods) types'
       values <- for types' $ \sType -> do
-        stats <- modifiedStatsOf (skillTestAction st) (skillTestInvestigator st)
+        stats <- modifiedStatsOf st.action st.investigator
         pure $ statsSkillValue stats sType
-      pure $ foldr applyModifier (sum values) mods
+      foldrM (applyModifier canIncrease) (sum values) mods
     HalfResourcesOf iid -> do
       result <- fieldMap InvestigatorResources (`div` 2) iid
-      let
-        applyModifier (AnySkillValue m) n = max 0 (n + m)
-        applyModifier _ n = n
-      pure $ foldr applyModifier result mods
-    FixedBaseValue x -> do
-      let
-        applyModifier (AnySkillValue m) n = max 0 (n + m)
-        applyModifier _ n = n
-      pure $ foldr applyModifier x mods
+      foldrM (applyModifier True) result mods
+    FixedBaseValue x -> foldrM (applyModifier True) x mods
 
 skillIconCount :: HasGame m => SkillTest -> m Int
 skillIconCount SkillTest {..} = do

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -1277,8 +1278,8 @@ passesCriteria iid mcard source' requestor windows' = \case
           Just pos -> pure $ Cosmos.isEmpty $ Cosmos.viewCosmos (Cosmos.updatePosition pos dir) cosmos'
       _ -> error "Only works on locations"
   Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
-    n <- selectCount tokenMatcher
-    gameValueMatches n valueMatcher
+    n <- selectCount (traceShowId tokenMatcher)
+    gameValueMatches (traceShowId n) (traceShowId valueMatcher)
   Criteria.HasHistory hType iMatcher historyMatcher -> do
     investigators <- select iMatcher
     histories <- traverse (getHistory hType) investigators

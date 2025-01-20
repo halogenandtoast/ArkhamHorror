@@ -23,7 +23,8 @@ instance RunMessage TheKingsEdict where
         [] -> gainSurge attrs
         xs -> for_ xs \cultist ->
           selectForMaybeM (locationWithEnemy cultist) \lid -> moveTokens attrs lid cultist #clue 1
-      selectEach (EnemyWithTrait Cultist) $ createCardEffect Cards.theKingsEdict Nothing attrs
+      selectEach (InPlayEnemy $ EnemyWithTrait Cultist)
+        $ createCardEffect Cards.theKingsEdict Nothing attrs
       pure t
     _ -> TheKingsEdict <$> liftRunMessage msg attrs
 

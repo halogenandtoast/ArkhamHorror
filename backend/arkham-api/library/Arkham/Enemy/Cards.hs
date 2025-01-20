@@ -1918,6 +1918,7 @@ unboundBeast =
   (weakness "06283" "Unbound Beast")
     { cdCardTraits = setFromList [Monster, Extradimensional, Tindalos]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    , cdRevelation = IsRevelation
     }
 
 nyarlathotepTheCrawlingChaos :: CardDef

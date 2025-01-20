@@ -515,8 +515,13 @@ defaultAbilityLimit = \case
   ConstantAbility -> NoLimit
 
 decreaseAbilityActionCost :: Ability -> Int -> Ability
-decreaseAbilityActionCost ab n =
-  ab {Arkham.Ability.Types.abilityType = modifyCost (`decreaseActionCost` n) (abilityType ab)}
+decreaseAbilityActionCost ab n = modifyAbilityCost (`decreaseActionCost` n) ab
+
+modifyAbilityCost :: (Cost -> Cost) -> Ability -> Ability
+modifyAbilityCost f ab = ab {Arkham.Ability.Types.abilityType = modifyCost f (abilityType ab)}
+
+ignoreAllCosts :: Ability -> Ability
+ignoreAllCosts ab = modifyAbilityCost (const Free) ab
 
 decrease_ :: Ability -> Int -> Ability
 decrease_ = decreaseAbilityActionCost

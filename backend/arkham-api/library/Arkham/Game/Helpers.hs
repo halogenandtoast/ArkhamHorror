@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -1515,7 +1516,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
     case mcard of
-      Just (card, _) -> selectAny (Matcher.replaceThisCard (toCardId card) cardMatcher)
+      Just (card, _) -> traceShowId <$> selectAny (traceShowId $ Matcher.replaceYouMatcher iid $ Matcher.replaceThisCard (toCardId card) cardMatcher)
       _ -> selectAny cardMatcher
   Criteria.CommitedCardsMatch cardListMatcher -> do
     mSkillTest <- getSkillTest

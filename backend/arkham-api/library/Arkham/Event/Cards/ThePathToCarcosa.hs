@@ -382,13 +382,13 @@ wardOfProtection2 =
           $ oneOf
             [ DrawCard
                 #when
-                (affectsOthers $ InvestigatorAt YourLocation)
+                (affectsOthers $ InvestigatorAt Anywhere)
                 (CanCancelRevelationEffect $ basic $ NonPeril <> NonWeaknessTreachery)
                 EncounterDeck
             , DrawCard
                 #when
                 You
-                (CanCancelRevelationEffect $ basic $ NonWeaknessTreachery)
+                (CanCancelRevelationEffect $ basic NonWeaknessTreachery)
                 EncounterDeck
             ]
     , cdLevel = Just 2

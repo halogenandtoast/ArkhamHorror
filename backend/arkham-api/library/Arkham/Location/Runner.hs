@@ -254,8 +254,8 @@ instance RunMessage LocationAttrs where
                 $ chooseOne
                   player
                   [ targetLabel
-                    lid'
-                    [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+                      lid'
+                      [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
                   | lid' <- availableLocationIds
                   ]
       pure a
@@ -301,8 +301,8 @@ instance RunMessage LocationAttrs where
           pure $ a & tokensL %~ setTokens Clue clueCount & withoutCluesL .~ (clueCount == 0)
         else pure $ a & tokensL %~ subtractTokens tType n
     PlacedLocation _ _ lid | lid == locationId -> do
-      active <- getActiveInvestigatorId
-      pushM $ checkAfter $ Window.PutLocationIntoPlay active lid
+      selectOne ActiveInvestigator >>= traverse_ \active -> do
+        pushM $ checkAfter $ Window.PutLocationIntoPlay active lid
       pushM $ checkAfter $ Window.LocationEntersPlay lid
       if locationRevealed
         then do
@@ -528,10 +528,10 @@ instance HasAbilities LocationAttrs where
         $ ActionAbility [#move] moveCost
     ]
       <> [ withI18n
-          $ withVar "key" (String $ keyName k)
-          $ withI18nTooltip "takeControlOfKey"
-          $ restrictedAbility l (500 + idx) (onLocation l)
-          $ FastAbility Free
+             $ withVar "key" (String $ keyName k)
+             $ withI18nTooltip "takeControlOfKey"
+             $ restrictedAbility l (500 + idx) (onLocation l)
+             $ FastAbility Free
          | l.revealed
          , l.clues == 0
          , (idx, k) <- withIndex l.keys

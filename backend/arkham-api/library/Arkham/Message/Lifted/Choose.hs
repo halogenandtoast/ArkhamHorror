@@ -101,8 +101,11 @@ chooseOrRunOneAtATimeM iid choices = do
 chooseNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseNM iid n choices = do
   when (n > 0) do
-    (_, choices') <- runChooseT choices
-    unless (null choices') $ chooseN iid n choices'
+    ((_, ChooseState {label}), choices') <- runChooseT choices
+    unless (null choices') do
+      case label of
+        Nothing -> chooseN iid n choices'
+        Just l -> questionLabel l iid $ ChooseN n choices'
 
 chooseUpToNM :: ReverseQueue m => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM iid n done choices = do

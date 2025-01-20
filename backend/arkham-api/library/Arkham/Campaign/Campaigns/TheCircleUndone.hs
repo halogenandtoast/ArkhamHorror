@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone) where
 
 import Arkham.Asset.Cards qualified as Assets
@@ -17,6 +19,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Name (toTitle)
@@ -79,34 +82,37 @@ instance RunMessage TheCircleUndone where
       pure c
     CampaignStep PrologueStep -> do
       story prologue
-      eachInvestigator (`forInvestigator` msg)
+      allPlayers >>= traverse_ (push . (`ForPlayer` msg))
       story intro
       prologueStepPart 2
       nextCampaignStep
       pure c
-    ForInvestigator iid (CampaignStep PrologueStep) -> do
+    ForPlayer player (CampaignStep PrologueStep) -> do
       taken <- select Anyone
       let
         availablePrologueInvestigators =
           filter
             ((`notElem` taken) . InvestigatorId . cdCardCode)
             allPrologueInvestigators
-      player <- getPlayer iid
-      chooseOneM iid do
-        questionLabeled
+      push
+        $ Msg.questionLabel
           "Choose one of the following neutral investigators to control for the duration of this prologue"
-        for_ availablePrologueInvestigators \card -> do
-          cardLabeled card do
-            push
-              $ LoadDecklist player
-              $ ArkhamDBDecklist
-                mempty
-                mempty
-                (InvestigatorId $ cdCardCode card)
-                (toTitle card)
-                Nothing
-                Nothing
-                Nothing -- TODO: should we figure out the taboo list here??
+          player
+        $ ChooseOne
+          [ CardLabel
+              (cdCardCode card)
+              [ LoadDecklist player
+                  $ ArkhamDBDecklist
+                    mempty
+                    mempty
+                    (InvestigatorId $ cdCardCode card)
+                    (toTitle card)
+                    Nothing
+                    Nothing
+                    Nothing -- TODO: should we figure out the taboo list here??
+              ]
+          | card <- availablePrologueInvestigators
+          ]
       pure c
     CampaignStep (PrologueStepPart 2) -> do
       taken <- selectMap unInvestigatorId Anyone

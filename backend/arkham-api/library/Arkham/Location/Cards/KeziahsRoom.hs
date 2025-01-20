@@ -53,7 +53,7 @@ instance RunMessage KeziahsRoom where
           fromJustNote "too many locations"
             $ find (`notElem` labels)
             $ map (\n -> "unknownPlaces" <> tshow @Int n) [1 .. 7]
-      for_ drewCards.cards $ \card -> do
+      for_ drewCards.cards \card -> do
         lid <- placeLocation card
         setLocationLabel lid nextLabel
         chooseOneM iid do

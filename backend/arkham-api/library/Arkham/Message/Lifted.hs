@@ -632,6 +632,10 @@ placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
 
+addUses
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
+addUses = placeTokens
+
 removeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
 removeTokens source lid token n = push $ RemoveTokens (toSource source) (toTarget lid) token n
@@ -2114,6 +2118,13 @@ forTarget target f =
     [] -> pure ()
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
+
+forTargets :: (ReverseQueue m, Targetable target) => [target] -> QueueT Message m () -> m ()
+forTargets targets f =
+  evalQueueT f >>= \case
+    [] -> pure ()
+    [msg] -> push $ ForTargets (map toTarget targets) msg
+    msgs -> push $ ForTargets (map toTarget targets) (Run msgs)
 
 searchCollectionForRandom
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> CardMatcher -> m ()

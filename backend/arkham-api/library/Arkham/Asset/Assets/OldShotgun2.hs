@@ -1,10 +1,9 @@
-module Arkham.Asset.Assets.OldShotgun2 (oldShotgun2, OldShotgun2 (..)) where
+module Arkham.Asset.Assets.OldShotgun2 (oldShotgun2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Fight
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Modifier
 
@@ -23,7 +22,7 @@ instance RunMessage OldShotgun2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat 3, NoStandardDamage]
-      pushM $ mkChooseFight sid iid (attrs.ability 1)
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       withSkillTest \sid ->

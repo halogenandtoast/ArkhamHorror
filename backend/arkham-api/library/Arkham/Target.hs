@@ -18,7 +18,7 @@ import Arkham.Matcher.Enemy
 import Arkham.Phase
 import Arkham.Tarot
 import Arkham.Trait
-import Control.Lens (Getting, Prism', prism')
+import Control.Lens (Getting)
 import Data.Aeson.TH
 import Data.Monoid (First)
 import GHC.OverloadedLabels
@@ -124,14 +124,8 @@ investigatorTarget :: Target -> Maybe InvestigatorId
 investigatorTarget (InvestigatorTarget iid) = Just iid
 investigatorTarget _ = Nothing
 
-_InvestigatorTarget :: Prism' Target InvestigatorId
-_InvestigatorTarget = prism' InvestigatorTarget investigatorTarget
-
 instance IsLabel "encounterDeck" Target where
   fromLabel = EncounterDeckTarget
-
-instance IsLabel "investigator" (Getting (First InvestigatorId) Target InvestigatorId) where
-  fromLabel = _InvestigatorTarget
 
 pattern Initiator :: Target -> Target
 pattern Initiator t <- SkillTestInitiatorTarget t
@@ -217,10 +211,6 @@ toProxyTarget :: Target -> Target
 toProxyTarget (ProxyTarget proxyTarget _) = proxyTarget
 toProxyTarget target = target
 
-_EnemyTarget :: Traversal' Target EnemyId
-_EnemyTarget f (EnemyTarget enemy) = EnemyTarget <$> f enemy
-_EnemyTarget _ other = pure other
-
 data ActionTarget
   = FirstOneOfPerformed [Action]
   | IsAction Action
@@ -259,6 +249,7 @@ instance IsLabel "resign" ActionTarget where
 mconcat
   [ deriveJSON defaultOptions ''ActionTarget
   , deriveToJSON defaultOptions ''Target
+  , makePrisms ''Target
   ]
 
 instance FromJSON Target where
@@ -272,3 +263,6 @@ instance FromJSON Target where
 
 instance FromJSONKey Target
 instance ToJSONKey Target
+
+instance IsLabel "investigator" (Getting (First InvestigatorId) Target InvestigatorId) where
+  fromLabel = _InvestigatorTarget

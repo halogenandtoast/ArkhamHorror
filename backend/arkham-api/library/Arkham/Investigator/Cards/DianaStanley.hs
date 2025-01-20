@@ -83,7 +83,7 @@ instance RunMessage DianaStanley where
         push removeMsg
         obtainCard card
         placeUnderneath attrs [card]
-      drawCardsIfCan iid (attrs.ability 1) 1
-      gainResourcesIfCan iid (attrs.ability 1) 1
+      drawCards iid (attrs.ability 1) 1
+      gainResources iid (attrs.ability 1) 1
       pure i
     _ -> DianaStanley <$> liftRunMessage msg attrs

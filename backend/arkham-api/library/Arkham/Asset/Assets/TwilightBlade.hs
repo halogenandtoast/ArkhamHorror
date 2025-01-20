@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.TwilightBlade (twilightBlade, TwilightBlade (..)) where
+module Arkham.Asset.Assets.TwilightBlade (twilightBlade) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -19,13 +19,11 @@ twilightBlade :: AssetCard TwilightBlade
 twilightBlade = asset TwilightBlade Cards.twilightBlade
 
 instance HasModifiersFor TwilightBlade where
-  getModifiersFor (TwilightBlade a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      underDiana <- filterCards (CardWithOneOf [#event, #skill]) <$> field InvestigatorCardsUnderneath iid
-      cards <- modifyEach a underDiana [AdditionalCost (ExhaustCost $ toTarget a)]
-      controller <- modified_ a iid $ map AsIfInHand underDiana
-      pure $ cards <> controller
+  getModifiersFor (TwilightBlade a) = for_ a.controller \iid -> do
+    underDiana <- filterCards (CardWithOneOf [#event, #skill]) <$> field InvestigatorCardsUnderneath iid
+    cards <- modifyEach a underDiana [AdditionalCost (ExhaustCost $ toTarget a)]
+    controller <- modified_ a iid $ map AsIfInHand underDiana
+    pure $ cards <> controller
 
 instance HasAbilities TwilightBlade where
   getAbilities (TwilightBlade a) = [restricted a 1 ControlsThis fightAction_]

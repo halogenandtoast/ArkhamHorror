@@ -336,6 +336,7 @@ runGameMessage msg g = case msg of
       & (actionRemovedEntitiesL .~ mempty)
       & (activeAbilitiesL .~ mempty)
       & (foundCardsL .~ mempty)
+      & (cardUsesL .~ mempty)
   StartScenario sid -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.

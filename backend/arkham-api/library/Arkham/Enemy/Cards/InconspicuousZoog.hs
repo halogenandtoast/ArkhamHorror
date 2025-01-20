@@ -1,11 +1,12 @@
-module Arkham.Enemy.Cards.InconspicuousZoog (inconspicuousZoog, InconspicuousZoog (..)) where
+module Arkham.Enemy.Cards.InconspicuousZoog (inconspicuousZoog) where
 
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Placement
-import Arkham.Prelude
 
 newtype InconspicuousZoog = InconspicuousZoog EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -19,30 +20,25 @@ inconspicuousZoog =
 
 instance HasAbilities InconspicuousZoog where
   getAbilities (InconspicuousZoog x) =
-    extend1 x
-      $ restricted x 1 isSwarmRestriction
-      $ forced
-      $ EnemyDefeated #when You ByAny (be x)
+    extend1 x $ restricted x 1 isSwarmRestriction $ forced $ EnemyDefeated #when You ByAny (be x)
    where
     isSwarmRestriction = case x.placement of
       AsSwarm _ _ -> NoRestriction
       _ -> Never
 
 instance RunMessage InconspicuousZoog where
-  runMessage msg e@(InconspicuousZoog attrs) = case msg of
+  runMessage msg e@(InconspicuousZoog attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      popMessageMatching_ \case
+      matchingDon't \case
         ExcessDamage eid' _ | toId attrs == eid' -> True
         _ -> False
-      case enemyPlacement attrs of
+      case attrs.placement of
         AsSwarm host _ -> do
           connectingLocations <-
-            select (ConnectedFrom (locationWithEnemy host) <> LocationCanBeEnteredBy host)
-          player <- getPlayer iid
-          pushIfAny connectingLocations
-            $ chooseOrRunOne
-              player
-              [targetLabel location [EnemyMove host location] | location <- connectingLocations]
+            select $ ConnectedFrom (locationWithEnemy host) <> LocationCanBeEnteredBy host
+          unless (null connectingLocations) do
+            exhaustThis host
+            chooseOrRunOneM iid $ targets connectingLocations $ enemyMoveTo host
         _ -> error "should not trigger"
       pure e
-    _ -> InconspicuousZoog <$> runMessage msg attrs
+    _ -> InconspicuousZoog <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.DaisyWalkerParallel (DaisyWalkerParallel (..), daisyWalkerParallel) where
+module Arkham.Investigator.Cards.DaisyWalkerParallel (daisyWalkerParallel) where
 
 import Arkham.Ability
 import Arkham.Game.Helpers
@@ -40,16 +40,30 @@ instance HasAbilities DaisyWalkerParallel where
 
 instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 windows' _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       tomeAssets <- select $ assetControlledBy iid <> #tome
+      forTargets tomeAssets (push msg)
+      pure i
+    ForTargets [] (UseThisAbility _iid (isSource attrs -> True) 1) -> pure i
+    ForTargets ts msg'@(UseCardAbility iid (isSource attrs -> True) 1 windows' _) -> do
       allAbilities <- getAllAbilities
-      let abilitiesForAsset aid = filter (isSource aid . abilitySource) allAbilities
-      let pairs' = filter (notNull . snd) $ map (toSnd abilitiesForAsset) tomeAssets
-      let toLabel a = AbilityLabel iid (decreaseAbilityActionCost a 1) windows' [] []
-      chooseOneAtATimeM iid do
-        for_ pairs' \(tome, actions) -> do
-          targeting tome do
-            chooseOne iid $ map toLabel actions
+      let nullifyActionCost = (`applyAbilityModifiers` [ActionCostSetToModifier 0])
+      let abilitiesForAsset aid = map nullifyActionCost $ filter (isSource aid . abilitySource) allAbilities
+      let tomeAssets = mapMaybe (preview _AssetTarget) ts
+
+      canTrigger <-
+        filter (notNull . snd)
+          <$> traverse
+            (traverseToSnd (filterM (getCanPerformAbility iid windows') . abilitiesForAsset))
+            tomeAssets
+
+      unless (null canTrigger) do
+        let toLabel a = AbilityLabel iid a windows' [] []
+        chooseOneM iid do
+          for_ (eachWithRest canTrigger) \((tome, actions), rest) -> do
+            targeting tome do
+              chooseOne iid $ map toLabel actions
+              forTargets (map fst rest) (push msg')
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       chooseOneM iid do

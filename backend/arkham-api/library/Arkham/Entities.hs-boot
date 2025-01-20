@@ -8,6 +8,7 @@ import Arkham.Prelude
 
 data Entities
 
+instance Semigroup Entities
 instance Monoid Entities
 instance Eq Entities
 instance Show Entities

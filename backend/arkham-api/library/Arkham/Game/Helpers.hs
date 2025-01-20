@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -44,7 +43,9 @@ import Arkham.Deck qualified as Deck
 import Arkham.DefeatedBy
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
+import {-# SOURCE #-} Arkham.Entities
 import Arkham.Event.Types (Event, Field (..))
+import Arkham.Event.Types qualified
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
@@ -95,6 +96,7 @@ import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.List.Extra (nubOrdOn)
 import Data.Set qualified as Set
+import Data.Typeable
 
 replaceThisCard :: Card -> Source -> Source
 replaceThisCard c = \case
@@ -215,7 +217,6 @@ getCanPerformAbility !iid !ws !ability = do
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
-
 
   andM
     [ getCanAffordCost iid (toSource ability) actions ws cost
@@ -1060,12 +1061,12 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction)
       && ( (#evade `notElem` pcDef.actions)
-            || canEvade
-            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
+             || canEvade
+             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
          )
       && ( (#fight `notElem` pcDef.actions)
-            || canFight
-            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
+             || canFight
+             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
          )
       && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
@@ -1278,8 +1279,8 @@ passesCriteria iid mcard source' requestor windows' = \case
           Just pos -> pure $ Cosmos.isEmpty $ Cosmos.viewCosmos (Cosmos.updatePosition pos dir) cosmos'
       _ -> error "Only works on locations"
   Criteria.ChaosTokenCountIs tokenMatcher valueMatcher -> do
-    n <- selectCount (traceShowId tokenMatcher)
-    gameValueMatches (traceShowId n) (traceShowId valueMatcher)
+    n <- selectCount tokenMatcher
+    gameValueMatches n valueMatcher
   Criteria.HasHistory hType iMatcher historyMatcher -> do
     investigators <- select iMatcher
     histories <- traverse (getHistory hType) investigators
@@ -1651,7 +1652,21 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
       ]
   Criteria.AssetExists matcher -> do
-    selectAny (Matcher.replaceYouMatcher iid matcher)
+    -- N.B. Old Shotgun (2) needs to have a different uses when playing an
+    -- event We add the event card to the "game" when asking for a matching
+    -- asset so that ActiveEvent is set
+    case mcard of
+      Just (card, _) | card `cardMatch` card_ #event -> do
+        g <- getGame
+        let
+          setPlacement :: forall a. Typeable a => a -> a
+          setPlacement a = case eqT @a @Event of
+            Just Refl -> overAttrs (Arkham.Event.Types.placementL .~ Limbo) a
+            _ -> a
+        runReaderT
+          (selectAny (Matcher.replaceYouMatcher iid matcher))
+          (g & entitiesL %~ (<> addCardEntityWith iid setPlacement mempty card))
+      _ -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do

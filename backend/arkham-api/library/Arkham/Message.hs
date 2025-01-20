@@ -1054,6 +1054,7 @@ data Message
   | DoStep Int Message
   | ForInvestigator InvestigatorId Message
   | ForTarget Target Message
+  | ForTargets [Target] Message
   | ForPlayer PlayerId Message
   | ForChoice Int Message
   | ForSkillType SkillType Message

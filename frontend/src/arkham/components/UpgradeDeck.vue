@@ -52,13 +52,21 @@ function viewDeck() {
     const matches = currentDeckUrl.value.match(arkhamDbApiRegex)
     if (matches) {
       window.open(`https://arkhamdb.com/deck/view/${matches[1]}`)
+      return
     }
 
-    console.log(currentDeckUrl.value)
+    const arkhamDbDecklistRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/api\/public\/decklist\/([^/]+)/
+    const dlmatches = currentDeckUrl.value.match(arkhamDbDecklistRegex)
+    if (dlmatches) {
+      window.open(`https://arkhamdb.com/decklist/view/${dlmatches[1]}`)
+      return
+    }
+
     const arkhamBuildApiRegex = /https:\/\/api.arkham\.build\/v1\/public\/share\/([^/]+)/
     const abmatches = currentDeckUrl.value.match(arkhamBuildApiRegex)
     if (abmatches) {
       window.open(`https://arkham.build/deck/view/${abmatches[1]}?upgrade_xp=${xp.value}`)
+      return
     }
   }
 }

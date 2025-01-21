@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Helpers.Modifiers (controllerGetsMaybe, pattern SkillModifier)
+import Arkham.Helpers.Modifiers (controllerGetsMaybe, ModifierType (..))
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Trait

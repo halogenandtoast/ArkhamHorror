@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.CaughtInAWeb (caughtInAWeb, CaughtInAWeb (..)) where
+module Arkham.Treachery.Cards.CaughtInAWeb (caughtInAWeb) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers

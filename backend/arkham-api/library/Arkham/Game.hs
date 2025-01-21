@@ -308,9 +308,10 @@ replayChoices currentGame choices = do
     Success g -> g
 
 withModifiers :: (HasGame m, Targetable a) => a -> m (With a ModifierData)
-withModifiers a = do
-  modifiers' <- getModifiers' (toTarget a)
-  pure $ a `with` ModifierData modifiers'
+withModifiers a = With a . ModifierData <$> (traverse (overModifierTypeM calculateModifier) =<< getModifiers' a)
+ where
+  calculateModifier (CalculatedSkillModifier s c) = SkillModifier s <$> calculate c
+  calculateModifier other = pure other
 
 withTreacheryMetadata :: HasGame m => Treachery -> m (With Treachery TreacheryMetadata)
 withTreacheryMetadata a = do

@@ -27,5 +27,8 @@ instance RunMessage KeyToTheChamber where
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       selectForMaybeM (LocationWithTitle "The Hidden Chamber") (attach attrs)
-      pure a
+      -- N.B. we are special casing control here to avoid a weird interaction
+      -- where the key would be discarded after being attached if the previous
+      -- controller is eliminated as they technically retain control
+      pure . KeyToTheChamber $ attrs & controllerL .~ Nothing
     _ -> KeyToTheChamber <$> liftRunMessage msg attrs

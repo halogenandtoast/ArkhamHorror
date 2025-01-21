@@ -55,8 +55,7 @@ getLeadInvestigatorPlayer = traverseToSnd (field InvestigatorPlayerId) =<< getLe
 
 selectAssetController :: HasGame m => AssetId -> m (Maybe InvestigatorId)
 selectAssetController aid =
-  (<|>)
-    <$> (join <$> fieldMay AssetController aid)
+  ((<|>) . join <$> fieldMay AssetController aid)
     <*> (join <$> fieldMay DiscardedAssetController aid)
 
 selectEventController :: HasGame m => EventId -> m (Maybe InvestigatorId)
@@ -84,8 +83,7 @@ getSetAsideCard def = do
 
 getSetAsideCardMaybe :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
 getSetAsideCardMaybe def = do
-  ( \card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
-    )
+  (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
     <$$> selectOne (SetAsideCardMatch $ cardIs def)
 
 getSetAsideEncounterCard :: (HasCallStack, HasGame m) => CardDef -> m EncounterCard

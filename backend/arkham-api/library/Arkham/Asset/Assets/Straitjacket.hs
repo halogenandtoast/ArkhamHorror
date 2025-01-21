@@ -10,11 +10,7 @@ newtype Straitjacket = Straitjacket AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 straitjacket :: AssetCard Straitjacket
-straitjacket =
-  assetWith
-    Straitjacket
-    Cards.straitjacket
-    (canLeavePlayByNormalMeansL .~ False)
+straitjacket = assetWith Straitjacket Cards.straitjacket (canLeavePlayByNormalMeansL .~ False)
 
 -- Ability is usable by investigators at the same location due to this "ruling" from MJ:
 --
@@ -33,7 +29,7 @@ instance HasAbilities Straitjacket where
 
 instance RunMessage Straitjacket where
   runMessage msg a@(Straitjacket attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       push $ Discarded (toTarget attrs) (attrs.ability 1) (toCard attrs)
       pure a
     _ -> Straitjacket <$> runMessage msg attrs

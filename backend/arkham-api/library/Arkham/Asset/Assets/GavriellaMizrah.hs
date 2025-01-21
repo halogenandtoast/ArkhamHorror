@@ -1,9 +1,9 @@
 module Arkham.Asset.Assets.GavriellaMizrah (gavriellaMizrah) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (pattern SkillModifier, controllerGets)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 
 newtype GavriellaMizrah = GavriellaMizrah AssetAttrs

@@ -282,6 +282,9 @@ selectOrDefault def matcher = selectMaybe def id matcher
 selectMaybeT :: (HasCallStack, Query a, HasGame m) => a -> MaybeT m (QueryElement a)
 selectMaybeT = MaybeT . selectOne
 
+selectMapMaybeM :: (Query a, HasGame m) => a -> (QueryElement a -> m (Maybe b)) -> m [b]
+selectMapMaybeM q f = select q >>= mapMaybeM f
+
 selectMaybe
   :: (HasCallStack, Query a, HasGame m)
   => b

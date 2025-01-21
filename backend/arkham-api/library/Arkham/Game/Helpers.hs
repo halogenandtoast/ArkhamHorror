@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Game.Helpers (module Arkham.Game.Helpers, module X) where
 
 import Arkham.Prelude
@@ -1516,7 +1515,7 @@ passesCriteria iid mcard source' requestor windows' = \case
   Criteria.CardExists cardMatcher -> selectAny cardMatcher
   Criteria.ExtendedCardExists cardMatcher ->
     case mcard of
-      Just (card, _) -> traceShowId <$> selectAny (traceShowId $ Matcher.replaceYouMatcher iid $ Matcher.replaceThisCard (toCardId card) cardMatcher)
+      Just (card, _) -> selectAny (Matcher.replaceYouMatcher iid $ Matcher.replaceThisCard (toCardId card) cardMatcher)
       _ -> selectAny cardMatcher
   Criteria.CommitedCardsMatch cardListMatcher -> do
     mSkillTest <- getSkillTest
@@ -3567,17 +3566,16 @@ actionMatches iid a (Matcher.ActionMatches as) = allM (actionMatches iid a) as
 actionMatches iid a (Matcher.ActionOneOf as) = anyM (actionMatches iid a) as
 actionMatches iid a Matcher.RepeatableAction = do
   a' <- getAttrs @Investigator iid
-  actions <- withModifiers iid (toModifiers GameSource [ActionCostModifier (-1)]) $ do
-    getActions iid (defaultWindows iid)
+  actions <- withGrantedAction iid GameSource $ getActions iid (defaultWindows iid)
 
   playableCards <-
-    filter (`cardMatch` Matcher.NotCard Matcher.FastCard)
+    filterCards (not_ Matcher.FastCard)
       <$> getPlayableCards a' (UnpaidCost NoAction) (defaultWindows iid)
 
-  canAffordTakeResources <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+  canAffordTakeResources <- withModifiersOf iid GameSource [ActionCostOf IsAnyAction (-1)] do
     getCanAfford a' [#resource]
 
-  canAffordDrawCards <- withModifiers iid (toModifiers GameSource [ActionCostOf IsAnyAction (-1)]) $ do
+  canAffordDrawCards <- withModifiersOf iid GameSource [ActionCostOf IsAnyAction (-1)] do
     getCanAfford a' [#draw]
   let available = filter (elem a . abilityActions) actions
   canDraw <- canDo iid #draw

@@ -50,7 +50,7 @@ withGrantedActions
   -> Int
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
-withGrantedActions iid source n = withModifiers iid (toModifiers source [ActionCostModifier (-n)])
+withGrantedActions iid source n = withModifiersOf iid source [ActionCostModifier (-n)]
 
 ignoreActionCost
   :: HasGame m
@@ -73,6 +73,15 @@ withModifiers
   -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
   -> m a
 withModifiers = withModifiers'
+
+withModifiersOf
+  :: (HasGame m, Targetable target, Sourceable source)
+  => target
+  -> source
+  -> [ModifierType]
+  -> (forall t. (MonadTrans t, HasGame (t m)) => t m a)
+  -> m a
+withModifiersOf t s mt = withModifiers t (toModifiers s mt)
 
 getCombinedModifiers :: forall m. HasGame m => [Target] -> m [ModifierType]
 getCombinedModifiers targets = map modifierType . nub . concat <$> traverse getFullModifiers targets

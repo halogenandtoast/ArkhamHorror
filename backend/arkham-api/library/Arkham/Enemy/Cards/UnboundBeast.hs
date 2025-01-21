@@ -2,7 +2,6 @@ module Arkham.Enemy.Cards.UnboundBeast (unboundBeast) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
@@ -21,18 +20,15 @@ unboundBeast =
 instance RunMessage UnboundBeast where
   runMessage msg e@(UnboundBeast attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      summonedHounds <-
-        select (assetIs Assets.summonedHound1) >>= traverse \hound -> do
-          controller <- field AssetController hound
-          card <- field AssetCard hound
-          pure (hound, card, controller)
+      summonedHounds <- selectMapMaybeM (assetIs Assets.summonedHound1) \hound -> do
+        card <- fetchCard hound
+        (hound,card,) <$$> field AssetController hound
       if null summonedHounds
-        then push $ PlaceInBonded iid (toCard attrs)
-        else do
-          chooseOrRunOneM iid do
-            for_ summonedHounds \(hound, card, mController) -> do
-              for_ mController \controller -> do
-                targeting hound do
-                  pushAll [PlaceInBonded controller card, EnemyEngageInvestigator (toId attrs) controller]
+        then placeInBonded iid attrs
+        else chooseOrRunOneM iid do
+          for_ summonedHounds \(hound, card, controller) -> do
+            targeting hound do
+              placeInBonded controller card
+              enemyEngageInvestigator attrs controller
       pure e
     _ -> UnboundBeast <$> liftRunMessage msg attrs

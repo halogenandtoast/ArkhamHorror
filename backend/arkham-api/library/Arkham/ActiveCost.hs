@@ -160,7 +160,7 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
   handleActions actions = do
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
-      $ [BeginAction, beforeWindowMsg, PayCosts activeCostId, TakenActions iid actions]
+      $ [BeginAction, beforeWindowMsg, PayCosts activeCostId]
       <> [CheckAttackOfOpportunity iid False | checkAttackOfOpportunity actions]
 
 nonAttackOfOpportunityActions :: [Action]
@@ -617,8 +617,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           canParallelRex <-
             iid
               <=~> ( InvestigatorIs "90078"
-                      <> InvestigatorAt Anywhere
-                      <> InvestigatorWithAnyClues
+                       <> InvestigatorAt Anywhere
+                       <> InvestigatorWithAnyClues
                    )
           if canParallelRex
             then do
@@ -790,8 +790,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                       $ reduceResourceCost nested
                   ]
                 : [ Label
-                    ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
-                    [PayCost acId iid skipAdditionalCosts nested]
+                      ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
+                      [PayCost acId iid skipAdditionalCosts nested]
                   | canAffordNested
                   ]
             else push $ PayCost acId iid skipAdditionalCosts nested
@@ -972,8 +972,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           x
           [ targetLabel
-            card
-            [pay (DiscardCardCost $ PlayerCard card)]
+              card
+              [pay (DiscardCardCost $ PlayerCard card)]
           | card <- cards
           ]
       pure c
@@ -1144,16 +1144,16 @@ instance RunMessage ActiveCost where
             <> mEffect
             <> [ wouldPayWindowMsg
                , Would
-                  batchId
-                  $ [PayCosts acId]
-                  <> [ CheckAttackOfOpportunity iid False
-                     | not modifiersPreventAttackOfOpportunity
-                        && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                        && isNothing cardDef.fastWindow
-                        && all (`notElem` nonAttackOfOpportunityActions) actions
-                        && (totalActionCost c.costs > 0)
-                     ]
-                  <> [PayCostFinished acId]
+                   batchId
+                   $ [PayCosts acId]
+                   <> [ CheckAttackOfOpportunity iid False
+                      | not modifiersPreventAttackOfOpportunity
+                          && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                          && isNothing cardDef.fastWindow
+                          && all (`notElem` nonAttackOfOpportunityActions) actions
+                          && (totalActionCost c.costs > 0)
+                      ]
+                   <> [PayCostFinished acId]
                ]
           pure c
         ForAbility a@Ability {..} -> do
@@ -1235,7 +1235,7 @@ instance RunMessage ActiveCost where
         ForAbility ability -> do
           let
             isAction = isActionAbility ability && ability.index > 0
-            actions = Action.Activate : ability.actions
+            actions = nub $ [Action.Activate | abilityIsActivate ability] <> ability.actions
             iid = c.investigator
           whenActivateAbilityWindow <- checkWindows [mkWhen (Window.ActivateAbility iid c.windows ability)]
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
@@ -1243,7 +1243,7 @@ instance RunMessage ActiveCost where
             if isAction
               then do
                 afterWindowMsgs <- checkWindows [mkAfter (Window.PerformAction iid action) | action <- actions]
-                pure [afterWindowMsgs, FinishAction]
+                pure [afterWindowMsgs, FinishAction, TakenActions iid actions]
               else pure []
           -- TODO: this will not work for ForcedWhen, but this currently only applies to IntelReport
           isForced <- isForcedAbility iid ability

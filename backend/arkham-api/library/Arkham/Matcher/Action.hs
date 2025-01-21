@@ -50,6 +50,9 @@ instance IsLabel "move" ActionMatcher where
 instance IsLabel "parley" ActionMatcher where
   fromLabel = ActionIs #parley
 
+instance IsLabel "resign" ActionMatcher where
+  fromLabel = ActionIs #resign
+
 instance IsLabel "play" ActionMatcher where
   fromLabel = ActionIs #play
 

@@ -335,4 +335,5 @@ mconcat
             _ -> $(mkParseJSON defaultOptions ''WindowType) (Object o)
       |]
   , deriveJSON defaultOptions ''Window
+  , makePrisms ''WindowType
   ]

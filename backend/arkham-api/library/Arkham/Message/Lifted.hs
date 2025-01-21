@@ -8,6 +8,7 @@ import Arkham.Agenda.Types (AgendaAttrs (agendaDeckId))
 import Arkham.Aspect (IsAspect (..))
 import Arkham.Aspect qualified as Msg
 import Arkham.Asset.Types (AssetAttrs)
+import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
@@ -424,6 +425,9 @@ instance FetchCard EncounterCard where
 
 instance FetchCard PlayerCard where
   fetchCard = pure . toCard
+
+instance FetchCard AssetId where
+  fetchCard = field Field.AssetCard
 
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)
@@ -2063,8 +2067,15 @@ attach a = push . toAttach a
 enemyCheckEngagement :: ReverseQueue m => EnemyId -> m ()
 enemyCheckEngagement = push . EnemyCheckEngagement
 
-enemyEngageInvestigator :: ReverseQueue m => EnemyId -> InvestigatorId -> m ()
-enemyEngageInvestigator eid iid = push $ EnemyEngageInvestigator eid iid
+enemyEngageInvestigator
+  :: ( ReverseQueue m
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => enemy -> investigator -> m ()
+enemyEngageInvestigator enemy investigator = push $ EnemyEngageInvestigator (asId enemy) (asId investigator)
 
 advancedWithOther
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ ActId) => source -> m ()

@@ -361,12 +361,15 @@ instance RunMessage AssetAttrs where
       pure a
     InvestigatorEliminated iid -> do
       let
-        shouldDiscard = case assetPlacement of
+        shouldRemoveFromGame = case assetPlacement of
           InPlayArea iid' -> iid == iid'
           InThreatArea iid' -> iid == iid'
           AttachedToInvestigator iid' -> iid == iid'
-          _ -> a.controller == Just iid
-      pushWhen shouldDiscard $ RemoveFromGame (toTarget a)
+          _ -> a.controller == Just iid && not (assetIsStory a)
+      pushWhen shouldRemoveFromGame $ RemoveFromGame (toTarget a)
+
+      let shouldDiscard = a.controller == Just iid && assetIsStory a
+      pushWhen shouldDiscard $ Discard Nothing GameSource (toTarget a)
       pure a
     AddUses source aid useType' n | aid == assetId -> runMessage (PlaceTokens source (toTarget a) useType' n) a
     SpendUses source target useType' n | isTarget a target -> do

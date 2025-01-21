@@ -95,6 +95,8 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd modifiers
       pure $ max 0 (n + m)
+    applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
+      pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
     applyModifier (CalculatedSkillModifier skillType calc) n = do
       m <- calculate calc
       pure $ if (canBeIncreased || m < 0)  && skillType `elem` matchingSkills then max 0 (n + m) else n

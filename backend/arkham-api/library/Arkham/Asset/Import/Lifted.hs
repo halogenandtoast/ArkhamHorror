@@ -14,6 +14,7 @@ import Arkham.Asset.Runner as X (
   canLeavePlayByNormalMeansL,
   cardsUnderneathL,
   controlledBy,
+  controllerL,
   controls,
   discardWhenNoUses,
   driverL,

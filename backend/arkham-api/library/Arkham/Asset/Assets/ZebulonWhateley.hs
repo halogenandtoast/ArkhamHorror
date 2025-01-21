@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ZebulonWhateley (zebulonWhateley) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (controllerGets, pattern SkillModifier)
+import Arkham.Helpers.Modifiers (controllerGets, ModifierType (..))
 import Arkham.Matcher
 
 newtype ZebulonWhateley = ZebulonWhateley AssetAttrs

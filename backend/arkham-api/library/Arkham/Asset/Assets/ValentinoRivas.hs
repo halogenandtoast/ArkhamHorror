@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ValentinoRivas (valentinoRivas) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, pattern SkillModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 

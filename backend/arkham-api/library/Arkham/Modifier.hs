@@ -362,6 +362,7 @@ data ModifierType
   | ShuffleIntoDeckInsteadOfDiscard
   | SkillCannotBeIncreased SkillType
   | CalculatedSkillModifier {skillType :: SkillType, calculation :: GameCalculation}
+  | SkillModifier {skillType :: SkillType, value :: Int}
   | SkillModifiersAffectOtherSkill SkillType SkillType
   | SkillTestAutomaticallySucceeds
   | SkillTestResultValueModifier Int
@@ -386,10 +387,6 @@ data ModifierType
   | XPModifier Text Int
   | UIModifier UIModifier
   deriving stock (Show, Eq, Ord, Data)
-
-pattern SkillModifier :: SkillType -> Int -> ModifierType
-pattern SkillModifier skillType value <- CalculatedSkillModifier skillType (Fixed value) where
-  SkillModifier skillType value = CalculatedSkillModifier skillType (Fixed value)
 
 data UIModifier
   = Ethereal -- from Ethereal Form
@@ -428,6 +425,9 @@ data Modifier = Modifier
   }
   deriving stock (Show, Eq, Ord, Data)
 
+overModifierTypeM :: Monad m => (ModifierType -> m ModifierType) -> Modifier -> m Modifier
+overModifierTypeM f m = f (modifierType m) <&> \mt -> m { modifierType = mt }
+
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}
 
@@ -438,10 +438,6 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
-            "SkillModifier" -> do
-              skillType <- v .: "skillType"
-              value <- v .: "value"
-              pure $ CalculatedSkillModifier skillType (Fixed value)
             "Explosion" -> pure $ UIModifier Explosion
             "Locus" -> pure $ UIModifier Locus
             "Ethereal" -> pure $ UIModifier Ethereal

@@ -55,10 +55,13 @@ abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType
 
 abilityActions :: Ability -> [Action]
-abilityActions = abilityTypeActions . abilityType
+abilityActions Ability {abilityBasic, abilityType} = abilityTypeActions abilityBasic abilityType
 
 instance HasField "actions" Ability [Action] where
   getField = abilityActions
+
+instance HasField "basic" Ability Bool where
+  getField = abilityBasic
 
 abilityIs :: Ability -> Action -> Bool
 abilityIs a = (`elem` abilityActions a)
@@ -70,7 +73,7 @@ abilityIsActionAbility a = case abilityType a of
   _ -> False
 
 abilityIsActivate :: Ability -> Bool
-abilityIsActivate a = abilityIndex a `notElem` notActivateIndexes && abilityIsActionAbility a
+abilityIsActivate a = not a.basic && a.index `notElem` notActivateIndexes && abilityIsActionAbility a
  where
   notActivateIndexes = [PlayAbility, ResourceAbility, AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage]
 
@@ -287,23 +290,24 @@ isFastAbility :: Ability -> Bool
 isFastAbility Ability {abilityType} = isFastAbilityType abilityType
 
 isActionAbility :: Ability -> Bool
-isActionAbility Ability {abilityType} =
-  notNull $ abilityTypeActions abilityType
+isActionAbility Ability {abilityType, abilityBasic} =
+  notNull $ abilityTypeActions abilityBasic abilityType
 
 abilityTypeTriggersSkillTest :: AbilityType -> Bool
-abilityTypeTriggersSkillTest = any (`elem` [#fight, #evade, #investigate, #circle]) . abilityTypeActions
+abilityTypeTriggersSkillTest = any (`elem` [#fight, #evade, #investigate, #circle]) . abilityTypeActions True
 
 isTriggeredAbility :: Ability -> Bool
 isTriggeredAbility =
   or . sequence [isReactionAbility, isFastAbility, isActionAbility]
 
-abilityTypeActions :: AbilityType -> [Action]
-abilityTypeActions = \case
+-- Hidden to this module
+abilityTypeActions :: Bool -> AbilityType -> [Action]
+abilityTypeActions isBasic = \case
   FastAbility' _ actions -> actions
   ReactionAbility {} -> []
   CustomizationReaction {} -> []
   ConstantReaction {} -> []
-  ActionAbility actions _ -> if #play `elem` actions then actions else #activate : actions
+  ActionAbility actions _ -> if #play `elem` actions then actions else [#activate | not isBasic] <> actions
   ActionAbilityWithSkill actions _ _ -> #activate : actions
   ForcedAbility _ -> []
   SilentForcedAbility _ -> []
@@ -312,9 +316,9 @@ abilityTypeActions = \case
   Haunted -> []
   ServitorAbility action -> [action]
   Cosmos -> []
-  Objective aType -> abilityTypeActions aType
-  DelayedAbility aType -> abilityTypeActions aType
-  ForcedWhen _ aType -> abilityTypeActions aType
+  Objective aType -> abilityTypeActions isBasic aType
+  DelayedAbility aType -> abilityTypeActions isBasic aType
+  ForcedWhen _ aType -> abilityTypeActions isBasic aType
   ConstantAbility -> []
 
 abilityTypeCost :: AbilityType -> Cost

@@ -978,7 +978,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       <> [ CheckAttackOfOpportunity iid False
          | ActionDoesNotCauseAttacksOfOpportunity #engage `notElem` modifiers'
          ]
-      <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction]
+      <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction, TakenActions iid [#engage]]
+
     pure a
   FightEnemy sid iid eid source mTarget skillType True | iid == investigatorId -> do
     handleSkillTestNesting_ sid msg do
@@ -1005,6 +1006,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , FightEnemy sid iid eid source mTarget skillType False
         , afterWindowMsg
         , FinishAction
+        , TakenActions iid [#fight]
         ]
     pure a
   FightEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
@@ -1126,6 +1128,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , EvadeEnemy sid iid eid source mTarget skillType False
         , afterWindowMsg
         , FinishAction
+        , TakenActions iid [#evade]
         ]
     pure a
   EvadeEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
@@ -1143,6 +1146,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       , MoveAction iid lid cost False
       , afterWindowMsg
       , FinishAction
+      , TakenActions iid [#move]
       ]
     pure a
   MoveAction iid lid _cost False | iid == investigatorId -> do
@@ -1792,6 +1796,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         <> [ toMessage $ investigation {investigateIsAction = False}
            , afterWindowMsg
            , FinishAction
+           , TakenActions investigatorId [#investigate]
            ]
     pure a
   GainClues iid source n | iid == investigatorId -> do
@@ -2697,6 +2702,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              , DrawEnded iid
              , afterWindowMsg
              , FinishAction
+             , TakenActions iid [#draw]
              ]
       else
         pushAll $ wouldDrawCard
@@ -2964,6 +2970,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , afterWindowMsg
         , afterActivateAbilityWindow
         , FinishAction
+        , TakenActions iid [#resource]
         ]
     pure a
   TakeResources iid n source False | iid == investigatorId -> do
@@ -3253,9 +3260,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   LoseAdditionalAction iid n | iid == investigatorId -> do
     pure $ a & usedAdditionalActionsL %~ (n :)
   TakeActions iid actions cost | iid == investigatorId -> do
-    pushAll
-      $ [PayForAbility (abilityEffect a actions cost) []]
-      <> [TakenActions iid actions | notNull actions]
+    push $ PayForAbility (abilityEffect a actions cost) []
     pure a
   TakenActions iid actions | iid == investigatorId -> do
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed

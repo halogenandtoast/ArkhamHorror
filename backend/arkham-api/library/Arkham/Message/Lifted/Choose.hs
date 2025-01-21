@@ -17,6 +17,7 @@ import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Text (FlavorText)
+import Arkham.Window (defaultWindows)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 
@@ -28,7 +29,15 @@ data ChooseState = ChooseState
 
 newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Message] m) a}
   deriving newtype
-    (Functor, Applicative, Monad, MonadWriter [UI Message], MonadState ChooseState, MonadIO, MonadRandom, CardGen)
+    ( Functor
+    , Applicative
+    , Monad
+    , MonadWriter [UI Message]
+    , MonadState ChooseState
+    , MonadIO
+    , MonadRandom
+    , CardGen
+    )
 
 instance HasGame m => HasGame (ChooseT m) where
   getGame = lift getGame
@@ -165,10 +174,15 @@ cardLabeled a action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [CardLabel (toCardCode a) msgs]
 
+deckLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
+deckLabeled iid action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [ComponentLabel (InvestigatorDeckComponent iid) msgs]
+
 abilityLabeled :: ReverseQueue m => InvestigatorId -> Ability -> QueueT Message m () -> ChooseT m ()
 abilityLabeled iid ab action = unterminated do
   msgs <- lift $ evalQueueT action
-  tell [AbilityLabel iid ab [] [] msgs]
+  tell [AbilityLabel iid ab (defaultWindows iid) [] msgs]
 
 abilityLabeledWithBefore
   :: ReverseQueue m => InvestigatorId -> Ability -> [Message] -> QueueT Message m () -> ChooseT m ()

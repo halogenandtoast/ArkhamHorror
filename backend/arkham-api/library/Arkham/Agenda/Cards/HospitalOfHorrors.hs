@@ -8,6 +8,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Trait (Trait (Spider))
 
 newtype HospitalOfHorrors = HospitalOfHorrors AgendaAttrs
   deriving anyclass IsAgenda
@@ -18,7 +19,7 @@ hospitalOfHorrors = agenda (3, A) HospitalOfHorrors Cards.hospitalOfHorrors (Sta
 
 instance HasModifiersFor HospitalOfHorrors where
   getModifiersFor (HospitalOfHorrors attrs) =
-    modifySelect attrs (EnemyAt InfestedLocation) [EnemyFight 1, EnemyEvade 1]
+    modifySelect attrs (EnemyAt InfestedLocation <> withTrait Spider) [EnemyFight 1, EnemyEvade 1]
 
 instance HasAbilities HospitalOfHorrors where
   getAbilities (HospitalOfHorrors attrs) =

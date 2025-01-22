@@ -75,10 +75,7 @@ postApiV1ArkhamGamesImportR = do
         ArkhamGameExportData {..} = aeCampaignData export
         investigatorIds = aeCampaignPlayers export
       key <- runDB $ do
-        gameId <-
-          insert
-            $ ArkhamGame agedName agedCurrentData agedStep Solo now now
-        insertMany_ $ map (\e -> e {arkhamLogEntryArkhamGameId = gameId}) agedLog
+        gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep Solo now now
         traverse_ (insert_ . ArkhamPlayer userId gameId) investigatorIds
         rawExecute "ALTER TABLE arkham_steps DISABLE TRIGGER enforce_step_order_per_game;" []
         for_ agedSteps \s ->

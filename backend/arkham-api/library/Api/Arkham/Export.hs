@@ -1,6 +1,5 @@
 module Api.Arkham.Export where
 
-import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Game
 import Database.Esqueleto.Experimental
@@ -37,8 +36,8 @@ instance ToJSON ArkhamGameExportData where
 instance FromJSON ArkhamGameExportData where
   parseJSON = genericParseJSON $ aesonOptions $ Just "aged"
 
-arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> [ArkhamLogEntry] -> ArkhamGameExportData
-arkhamGameToExportData ArkhamGame {..} steps _gameLog =
+arkhamGameToExportData :: ArkhamGame -> [ArkhamStep] -> ArkhamGameExportData
+arkhamGameToExportData ArkhamGame {..} steps =
   ArkhamGameExportData
     { agedName = arkhamGameName
     , agedCurrentData = arkhamGameCurrentData
@@ -50,7 +49,7 @@ arkhamGameToExportData ArkhamGame {..} steps _gameLog =
 
 generateExport :: ArkhamGameId -> Handler ArkhamExport
 generateExport gameId = do
-  (ge, players, steps, entries) <- runDB $ do
+  (ge, players, steps) <- runDB $ do
     ge <- get404 gameId
     players <- select $ do
       players <- from $ table @ArkhamPlayer
@@ -60,13 +59,12 @@ generateExport gameId = do
       steps <- from $ table @ArkhamStep
       where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
       orderBy [desc $ steps ^. ArkhamStepStep]
+      limit 30
       pure steps
-
-    entries <- getGameLogEntries gameId
-    pure (ge, players, steps, entries)
+    pure (ge, players, steps)
 
   pure
     $ ArkhamExport
       { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
-      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps) entries
+      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps)
       }

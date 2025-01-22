@@ -3,6 +3,8 @@ import { ref, computed, inject } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
 import { imgsrc } from '@/arkham/helpers';
 import { Game } from '@/arkham/types/Game';
+import { Investigator } from '@/arkham/types/Investigator';
+import { baseKey } from '@/arkham/types/Log';
 import Prompt from '@/components/Prompt.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import Question from '@/arkham/components/Question.vue';
@@ -23,14 +25,46 @@ const waiting = ref(false)
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const solo = inject('solo', false)
+const deckInvestigator = ref<string | null>(null)
 const investigator = computed(() => {
   return Object.values(props.game.investigators).find((i) => {
     return i.playerId === props.playerId
   })
 })
-const investigatorId = computed(() => investigator.value?.id)
+const investigatorId = computed(() => deckInvestigator.value ? `c${deckInvestigator.value}` : investigator.value?.id)
+const originalInvestigatorId = computed(() => investigator.value?.id)
 const xp = computed(() => investigator.value?.xp)
 const skipping = ref(false)
+
+const killedInvestigators = computed(() => {
+  const {campaign} = props.game
+  if (!campaign) { return [] }
+  const {recordedSets} = campaign.log
+  const toInvestigators = (k: string) => {
+    return (recordedSets[baseKey(k)] ?? []).map((r: {contents: string}) => r.contents)
+  }
+  return [...toInvestigators('KilledInvestigators'), ...toInvestigators('DrivenInsaneInvestigators')]
+})
+
+const error = computed(() => {
+  if(!deckInvestigator.value) return null
+
+  const alreadyTaken = Object.values(props.game.investigators).some((i) => {
+    return i.id === deckInvestigator.value && i.playerId !== props.playerId
+  })
+
+  if (alreadyTaken) {
+    return 'This investigator is already taken'
+  }
+
+  const killedOrInsane = killedInvestigators.value.includes(`c${deckInvestigator.value}`)
+
+  if (killedOrInsane) {
+    return 'This investigator was killed or driven insane'
+  }
+
+  return null
+})
 
 const currentDeckUrl = computed(() => {
   if (!investigator.value) { return null }
@@ -72,6 +106,7 @@ function viewDeck() {
 }
 
 async function syncUpgrade() {
+  if(error.value) return
   if (!investigator.value?.deckUrl) return;
   let nextUrl: string | null = investigator.value.deckUrl;
   if (nextUrl) {
@@ -106,6 +141,7 @@ async function syncUpgrade() {
       }
     }
 
+    if(!nextUrl) return
     const arkhamBuildApiRegex = /https:\/\/api.arkham\.build\/v1\/public\/share\/([^/]+)/
     const abmatches = nextUrl.match(arkhamBuildApiRegex)
     if (abmatches) {
@@ -156,7 +192,10 @@ function loadDeck() {
 
   fetch(deckUrl.value)
     .then((response) => response.json(), () => model.value = null)
-    .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
+    .then((data) => {
+      model.value = {...data, url: deckUrl.value}
+      deckInvestigator.value = data.investigator_code
+    }, () => model.value = null)
 }
 
 function pasteDeck(evt: ClipboardEvent) {
@@ -167,8 +206,9 @@ function pasteDeck(evt: ClipboardEvent) {
 }
 
 async function upgrade() {
-  if (deckUrl.value && investigatorId.value) {
-    upgradeDeck(props.game.id, investigatorId.value, deckUrl.value).then(() => {
+  if(error.value) return
+  if (deckUrl.value && originalInvestigatorId.value) {
+    upgradeDeck(props.game.id, originalInvestigatorId.value, deckUrl.value).then(() => {
       if(!solo) {
         waiting.value = true
       }
@@ -220,7 +260,7 @@ const tabooList = function (investigator: Investigator) {
     <div class="column">
       <h2 class="title">{{ $t('upgrade.title', {xp: xp}) }}</h2>
       <div v-if="!waiting" class="upgrade-deck">
-        <template v-if="question && question.tag !== 'ChooseUpgradeDeck'">
+        <template v-if="question && investigator && question.tag !== 'ChooseUpgradeDeck'">
           <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
           <div v-if="question && playerId == investigator.playerId" class="question">
             <Question :game="game" :playerId="playerId" @choose="choose" />
@@ -232,35 +272,57 @@ const tabooList = function (investigator: Investigator) {
           </div>
         </template>
         <template v-else>
-          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
-          <div class="fields">
-            <div class="arkhamdb-integration column">
-              <template v-if="fetching">
-                <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
-              </template>
-              <template v-else>
-                <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
-                <div class="buttons">
-                  <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>
-                  <button @click.prevent="syncUpgrade">{{ $t('upgrade.pullUpdate', {deckSource: deckSource}) }}</button>
-                </div>
-                <span class="separator">{{ $t('upgrade.OR') }}</span>
-                <div class="single-field">
-                  <input
-                    type="url"
-                    v-model="deck"
-                    @change="loadDeck"
-                    @paste.prevent="pasteDeck($event)"
-                    v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
-                  />
-                  <button @click.prevent="upgrade">{{ $t('upgrade.Upgrade') }}</button>
-                </div>
-                <div class="buttons">
-                  <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
-                </div>
-              </template>
+          <template v-if="investigatorId && killedInvestigators.includes(investigatorId)">
+            <img v-if="investigatorId && killedInvestigators.includes(investigatorId)" class="portrait killed" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+            <div class="fields">
+              <p class="killed-prompt"> {{ $t('upgrade.killed') }}</p>
+              <p v-if="error" class="error">{{ error }}</p>
+              <div class="single-field">
+                <input
+                  type="url"
+                  v-model="deck"
+                  @change="loadDeck"
+                  @paste.prevent="pasteDeck($event)"
+                  v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
+                />
+                <button :class="{disable: error != null || deckInvestigator == null}" :disabled="error != null" @click.prevent="upgrade">{{ $t('upgrade.newInvestigator') }}</button>
+              </div>
             </div>
-          </div>
+          </template>
+          <template v-else>
+            <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+            <div class="fields">
+              <p v-if="error" class="error">{{ error }}</p>
+              <div class="arkhamdb-integration column">
+                <template v-if="fetching">
+                  <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
+                </template>
+                <template v-else>
+                  <template v-if="investigatorId == originalInvestigatorId">
+                    <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
+                    <div class="buttons">
+                      <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>
+                      <button @click.prevent="syncUpgrade">{{ $t('upgrade.pullUpdate', {deckSource: deckSource}) }}</button>
+                    </div>
+                    <span class="separator">{{ $t('upgrade.OR') }}</span>
+                  </template>
+                  <div class="single-field">
+                    <input
+                      type="url"
+                      v-model="deck"
+                      @change="loadDeck"
+                      @paste.prevent="pasteDeck($event)"
+                      v-bind:placeholder="$t('upgrade.deckUrlPlaceholder')"
+                    />
+                    <button @click.prevent="upgrade">{{ originalInvestigatorId && killedInvestigators.includes(originalInvestigatorId) ? $t('upgrade.newInvestigator') : $t('upgrade.Upgrade') }}</button>
+                  </div>
+                  <div v-if="investigatorId == originalInvestigatorId" class="buttons">
+                    <button class="skip" @click.prevent="skipping = true">{{ $t('upgrade.continueWithoutUpgrading') }}</button>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
         </template>
       </div>
       <div v-else class="upgrade-deck">
@@ -421,5 +483,26 @@ p.secondary {
 
 .separator:not(:empty)::after {
   margin-left: .25em;
+}
+
+.killed {
+  filter: grayscale(1) brightness(0.5) sepia(1) hue-rotate(-90deg) saturate(10);
+}
+
+.disable {
+  color: #666;
+  background-color: #333;
+  &:hover {
+    cursor: not-allowed;
+    color: #666;
+    background-color: #333;
+  }
+}
+
+.killed-prompt {
+  padding: 10px;
+  margin-block: 10px;
+  background-color: #660000;
+  border-radius: 10px;
 }
 </style>

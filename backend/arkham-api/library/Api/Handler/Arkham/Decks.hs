@@ -121,8 +121,11 @@ putApiV1ArkhamGameDecksR gameId = do
         case edecklist of
           Left err -> error $ show err
           Right decklist -> do
-            cards <- loadDecklistCards slots decklist
-            pure $ UpgradeDeck investigatorId (Just deckUrl) (Deck cards)
+            if investigatorId /= investigator_code decklist
+              then pure $ ReplaceInvestigator investigatorId decklist
+              else do
+                cards <- loadDecklistCards slots decklist
+                pure $ UpgradeDeck investigatorId (Just deckUrl) (Deck cards)
     push msg
     runMessages Nothing
   ge <- readIORef gameRef

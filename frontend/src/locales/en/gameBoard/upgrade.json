@@ -1,6 +1,8 @@
 {
     "title": "Upgrade Deck ({xp} TOTAL xp)",
     "fetching": "Fetching deck from {deckSource}...",
+    "newInvestigator": "Load New Investigator",
+    "killed": "Your investigator was killed or driven insane. Pick a new investigator.",
     "directlyUpdateContent": "Upgrade your deck directly in {deckSource} and sync here.",
     "openDeck": "Open Deck in {deckSource}",
     "pullUpdate": "Pull Upgraded Deck from {deckSource}",

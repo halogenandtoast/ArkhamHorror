@@ -183,6 +183,39 @@ runGameMessage msg g = case msg of
       %~ (\e -> foldr (over biplate . swapCard) e cards')
       & resolvingCardL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
+  ReplaceInvestigator oldIid decklist -> do
+    playerId <- getPlayer oldIid
+    dl <- loadDecklist decklist
+    let iid' = decklistInvestigator dl
+    let deck = decklistCards dl
+    let sideDeck = decklistExtraDeck dl
+    let investigator =
+          overAttrs
+            ( \ia ->
+                ia
+                  { investigatorTaboo = decklistTaboo dl
+                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  }
+            )
+            (lookupInvestigator iid' playerId)
+    let iid = toId investigator
+    when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
+    push $ InitDeck iid (decklistUrl dl) (Deck deck)
+    let activeInvestigatorF =
+          if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
+        turnPlayerInvestigatorF =
+          if gameTurnPlayerInvestigatorId g == Just oldIid
+            then set turnPlayerInvestigatorIdL (Just iid)
+            else id
+    pure
+      $ g
+      & ( entitiesL
+            . investigatorsL
+            %~ insertEntity investigator
+            . Map.filter ((/= playerId) . attr investigatorPlayerId)
+        )
+      & activeInvestigatorF
+      & turnPlayerInvestigatorF
   LoadDecklist playerId decklist -> do
     -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
@@ -357,6 +390,7 @@ runGameMessage msg g = case msg of
     pushAll
       $ LoadTarotDeck
       : PreScenarioSetup
+      : HandleKilledOrInsaneInvestigators
       : [StandaloneSetup | standalone]
         <> [ChooseLeadInvestigator]
         <> [PerformTarotReading | gamePerformTarotReadings g]

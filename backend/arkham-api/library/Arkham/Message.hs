@@ -524,6 +524,7 @@ data Message
   | ChooseEvadeEnemy ChooseEvade
   | ChooseFightEnemy ChooseFight
   | ChooseEngageEnemy InvestigatorId Source (Maybe Target) EnemyMatcher Bool -- If we add ChooseEngageEnemy update Tony Morgan
+  | HandleKilledOrInsaneInvestigators
   | ChooseLeadInvestigator
   | PreScenarioSetup
   | StandaloneSetup
@@ -698,6 +699,7 @@ data Message
   | InitDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
+  | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to upgrade deck during campaign
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target

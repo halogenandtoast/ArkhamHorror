@@ -61,6 +61,8 @@ data InvestigatorMatcher
   | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode
+  | KilledInvestigator
+  | InsaneInvestigator
   | InvestigatorCanBeAssignedDamageBy InvestigatorId
   | InvestigatorCanBeAssignedHorrorBy InvestigatorId
   | InvestigatorCanMoveTo Source LocationMatcher

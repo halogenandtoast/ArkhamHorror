@@ -447,6 +447,14 @@ function onDrop(event: DragEvent) {
   &:deep(img) {
     max-width: unset;
   }
+
+  div {
+    margin-top: -100%;
+  }
+
+  div:first-child {
+    margin-top: 0;
+  }
 }
 
 .location-asset-column {

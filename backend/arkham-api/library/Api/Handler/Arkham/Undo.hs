@@ -19,6 +19,7 @@ import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
+import Database.Esqueleto.PostgreSQL (forUpdateOf, noWait)
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
 import Json
@@ -56,6 +57,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
             game <- from $ table @ArkhamGame
             where_ $ game.id ==. val gameId
             locking ForUpdate
+            forUpdateOf game noWait
             pure ()
           -- ensure previous step exists
           maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())

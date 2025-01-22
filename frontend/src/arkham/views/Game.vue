@@ -560,11 +560,9 @@ onUnmounted(() => {
         </header>
       </template>
      <form @submit.prevent="fileBug" class="column bug-form box">
-      <!-- file path: frontend/src/locales/en/gameBoard/game_bar.json -->
-      <!-- This will store the current game state, and fill in a GitHub issue. You will need a GitHub account in order to proceed. -->
        <p>{{ $t('gameBar.fileBugPart1') }}</p> 
-       <!-- Please note that it will take some time to submit the bug and you can not resume playing until it is done. -->
-       <p class="warning">{{ $t('gameBar.fileBugPart2') }}</p>
+       <p class="info">{{ $t('gameBar.fileBugPart2') }}</p>
+       <p class="warning">{{ $t('gameBar.fileBugPart3') }}</p>
        <input required type="text" v-model="bugTitle" v-bind:placeholder="$t('gameBar.bugTitleholder')" />
        <textarea required v-model="bugDescription" v-bind:placeholder="$t('gameBar.bugDescriptionholder')"></textarea>
        <div class="buttons">
@@ -1422,5 +1420,15 @@ button:hover .shortcut {
   &:hover {
     background-color: var(--spooky-green-dark);
   }
+}
+
+.warning {
+  background-color: var(--survivor-extra-dark);
+  padding: 10px;
+}
+
+.info {
+  background-color: var(--seeker-extra-dark);
+  padding: 10px;
 }
 </style>

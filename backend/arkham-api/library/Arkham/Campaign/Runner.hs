@@ -19,6 +19,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
+import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
@@ -26,6 +27,7 @@ import Arkham.Helpers.Deck
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher
 import Arkham.Name
 import Arkham.Projection
 import Arkham.Xp
@@ -44,6 +46,13 @@ defaultCampaignRunner msg a = case msg of
       $ chooseDecks players
       : [Ask lead PickCampaignSettings | campaignStep (toAttrs a) /= PrologueStep]
         <> [CampaignStep $ campaignStep $ toAttrs a]
+    pure a
+  HandleKilledOrInsaneInvestigators -> do
+    -- This case is mainly to handle when there is not an upgrade window
+    -- between two scenarios
+    killed <- select KilledInvestigator
+    insane <- select InsaneInvestigator
+    for_ (nub $ killed <> insane) (push . chooseUpgradeDeck <=< getPlayer)
     pure a
   CampaignStep (ScenarioStep sid) -> do
     pushAll [ResetInvestigators, ResetGame, StartScenario sid]
@@ -109,6 +118,8 @@ defaultCampaignRunner msg a = case msg of
     let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
     pushAll purchaseTrauma
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
+  ReplaceInvestigator oldIid _ -> do
+    pure $ updateAttrs a $ decksL %~ deleteMap oldIid
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of
     UpgradeDeckStep nextStep' -> do
       push $ CampaignStep nextStep'

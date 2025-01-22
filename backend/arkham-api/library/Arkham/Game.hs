@@ -597,7 +597,16 @@ getInvestigatorsMatching matcher = do
   investigators' <-
     if includeEliminated matcher
       then pure investigators
-      else filterM (fmap not . isEliminated . toId) investigators
+      else
+        filterM
+          ( \i ->
+              andM
+                [ pure $ not $ attr investigatorKilled i
+                , pure $ not $ attr investigatorDrivenInsane i
+                , not <$> isEliminated (toId i)
+                ]
+          )
+          investigators
   results <- go investigators' matcher
   -- We now need to handle the odd iteraction for Rational Thought, which we will treat like an investigator
   case matcher of
@@ -630,9 +639,13 @@ getInvestigatorsMatching matcher = do
   includeEliminated (InvestigatorMatches xs) = any includeEliminated xs
   includeEliminated (AnyInvestigator xs) = any includeEliminated xs
   includeEliminated (IncludeEliminated _) = True
+  includeEliminated KilledInvestigator = True
+  includeEliminated InsaneInvestigator = True
   includeEliminated _ = False
   go [] = const (pure [])
   go as = \case
+    KilledInvestigator -> pure $ filter (attr investigatorKilled) as
+    InsaneInvestigator -> pure $ filter (attr investigatorDrivenInsane) as
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
       filterM
         ( fmap (> 0)

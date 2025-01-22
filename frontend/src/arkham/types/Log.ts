@@ -23,7 +23,7 @@ export type LogKey =
 
 export type LogContents = {
   recorded: LogKey[];
-  recordedSets: Record<LogKey, any[]>; // eslint-disable-line
+  recordedSets: Record<string, any[]>; // eslint-disable-line
   recordedCounts: [LogKey, number][]; // eslint-disable-line
   partners: Record<string, Partner>;
 }
@@ -64,6 +64,10 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number], '[LogKey, number]'), '[LogKey, number][]'),
   partners: JsonDecoder.dictionary<Partner>(partnerDecoder, 'Partners'),
 }, 'LogContents');
+
+export function baseKey(k: string): string {
+  return formatKey({ tag: k });
+}
 
 export function formatKey(key: LogKey): string {
   const format = (str: string) => str.slice(0, 1).toLowerCase() + str.slice(1); 

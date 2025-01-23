@@ -60,6 +60,7 @@ library:
     - aeson-diff
     - amazonka
     - amazonka-s3
+    - annotated-exception
     - base16-bytestring
     - bcrypt
     - bytestring
@@ -74,6 +75,7 @@ library:
     - email-validate
     - errors
     - esqueleto
+    - exceptions
     - extra
     - fast-logger
     - file-embed
@@ -90,6 +92,7 @@ library:
     - monad-logger
     - monoidal-containers
     - mtl >= 2.3.1
+    - opentelemetry
     - parsec
     - path-pieces
     - persistent

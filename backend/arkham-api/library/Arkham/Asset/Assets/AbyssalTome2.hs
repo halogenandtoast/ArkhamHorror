@@ -1,10 +1,13 @@
-module Arkham.Asset.Assets.AbyssalTome2 (abyssalTome2, AbyssalTome2 (..)) where
+module Arkham.Asset.Assets.AbyssalTome2 (abyssalTome2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Fight
-import Arkham.Prelude
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
+import Arkham.Helpers.SkillTest (isSkillTestSource)
+import Arkham.Message (getChoiceAmount)
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 newtype AbyssalTome2 = AbyssalTome2 AssetAttrs
@@ -15,37 +18,25 @@ abyssalTome2 :: AssetCard AbyssalTome2
 abyssalTome2 = asset AbyssalTome2 Cards.abyssalTome2
 
 instance HasAbilities AbyssalTome2 where
-  getAbilities (AbyssalTome2 attrs) =
-    [restrictedAbility attrs 1 ControlsThis $ fightAction (exhaust attrs)]
+  getAbilities (AbyssalTome2 a) = [restricted a 1 ControlsThis $ fightAction (exhaust a)]
 
 instance HasModifiersFor AbyssalTome2 where
-  getModifiersFor (AbyssalTome2 a) = case a.controller of
-    Just iid -> maybeModified_ a iid do
-      source <- MaybeT getSkillTestSource
-      guard $ isAbilitySource a 1 source
+  getModifiersFor (AbyssalTome2 a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
+      liftGuardM $ isSkillTestSource (a.ability 1)
       doom <- lift $ field AssetDoom a.id
       pure [AnySkillValue doom, DamageDealt doom]
-    _ -> pure mempty
 
 instance RunMessage AbyssalTome2 where
-  runMessage msg a@(AbyssalTome2 attrs) = case msg of
+  runMessage msg a@(AbyssalTome2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      player <- getPlayer iid
+      chooseAmounts iid "Amount of Doom to Place" (MaxAmountTarget 3) [("Doom", (0, 3))] attrs
 
       sid <- getRandom
-      choices <- for [#intellect, #willpower, #combat] \sType -> do
-        chooseFight <- withSkillType sType <$> mkChooseFight sid iid (attrs.ability 1)
-        pure $ SkillLabel sType [toMessage chooseFight]
-
-      chooseMsg <-
-        chooseAmounts player "Amount of Doom to Place" (MaxAmountTarget 3) [("Doom", (0, 3))] attrs
-
-      pushAll
-        [ chooseMsg
-        , chooseOne player choices
-        ]
+      chooseOneM iid $ for_ [#intellect, #willpower, #combat] \sType -> do
+        skillLabeled sType $ chooseFightEnemyEdit sid iid (attrs.ability 1) (withSkillType sType)
       pure a
     ResolveAmounts _ (getChoiceAmount "Doom" -> n) (isTarget attrs -> True) -> do
-      push $ PlaceDoom (attrs.ability 1) (toTarget attrs) n
+      placeDoom (attrs.ability 1) attrs n
       pure a
-    _ -> AbyssalTome2 <$> runMessage msg attrs
+    _ -> AbyssalTome2 <$> liftRunMessage msg attrs

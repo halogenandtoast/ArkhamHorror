@@ -47,23 +47,21 @@ aceOfRods1Effect =
 
 instance HasModifiersFor AceOfRods1Effect where
   getModifiersFor (AceOfRods1Effect (a `With` meta)) = do
-    target1 <- modifiedWhen_ a (active meta) a.target [SkillModifier sType 2 | sType <- allSkills]
-    target2 <-
-      modifiedWhen_
-        a
-        (not $ active meta)
-        a.target
-        [ GiveAdditionalAction
-            $ AdditionalAction "Ace of Rods" (toSource a)
-            $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
-            $ toId a
-        ]
-    pure $ target1 <> target2
+    modifiedWhen_ a (active meta) a.target [SkillModifier sType 2 | sType <- allSkills]
+    modifiedWhen_
+      a
+      (not $ active meta)
+      a.target
+      [ GiveAdditionalAction
+          $ AdditionalAction "Ace of Rods" (toSource a)
+          $ EffectAction "Use Ace of Rods (1) extra action with +2 to each skill"
+          $ toId a
+      ]
 
 instance RunMessage AceOfRods1Effect where
   runMessage msg e@(AceOfRods1Effect (attrs `With` meta)) = runQueueT $ case msg of
     UseEffectAction iid eid _ | eid == toId attrs -> do
-      push $ GainActions iid (toSource attrs) 1
+      gainActions iid attrs 1
       pure $ AceOfRods1Effect (attrs `with` Meta True)
     FinishAction -> do
       when (active meta) $ disable attrs

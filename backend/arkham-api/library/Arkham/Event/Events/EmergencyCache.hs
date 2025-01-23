@@ -1,13 +1,7 @@
-module Arkham.Event.Events.EmergencyCache (
-  emergencyCache,
-  EmergencyCache (..),
-) where
+module Arkham.Event.Events.EmergencyCache (emergencyCache) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 
 newtype EmergencyCache = EmergencyCache EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,8 +11,8 @@ emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
 instance RunMessage EmergencyCache where
-  runMessage msg e@(EmergencyCache attrs) = case msg of
-    PlayThisEvent iid eid | attrs `is` eid -> do
-      push $ TakeResources iid 3 (toSource attrs) False
+  runMessage msg e@(EmergencyCache attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      gainResources iid attrs 3
       pure e
-    _ -> EmergencyCache <$> runMessage msg attrs
+    _ -> EmergencyCache <$> liftRunMessage msg attrs

@@ -9,10 +9,22 @@
 {-# LANGUAGE NoStrictData #-}
 {-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Foundation where
 
 import Import.NoFoundation
+
+import Control.Exception.Annotated qualified as UE
+import Control.Monad.Catch qualified as Catch
+import Control.Exception.Annotated.UnliftIO qualified as AnnotatedIO
+import Control.Monad.Catch
+  ( MonadThrow(..)
+  , MonadCatch(..)
+  , MonadMask(..)
+  , generalBracket
+  )
+import UnliftIO.Exception qualified as UnliftIO
 
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
@@ -179,6 +191,51 @@ instance CanRunDB (HandlerFor App) where
   runDB action = do
     master <- getYesod
     runSqlPool action $ appConnPool master
+
+newtype ExceptionViaIO m a = ExceptionViaIO (m a)
+  deriving newtype (Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+
+-- | A variant of 'throwWithCallStackIO' that uses 'MonadIO' instead of
+-- 'MonadThrow'.
+throwWithCallStackIO ::
+  (MonadIO m, Exception e) =>
+  e ->
+  m a
+throwWithCallStackIO = liftIO . withFrozenCallStack UE.throwWithCallStack
+
+instance MonadIO m => MonadThrow (ExceptionViaIO m) where
+  throwM = throwWithCallStackIO
+
+instance MonadUnliftIO m => MonadCatch (ExceptionViaIO m) where
+  catch = AnnotatedIO.catch
+
+instance MonadUnliftIO m => MonadMask (ExceptionViaIO m) where
+  generalBracket = generalBracketIO
+  mask = UnliftIO.mask
+  uninterruptibleMask = UnliftIO.uninterruptibleMask
+
+deriving via ExceptionViaIO (HandlerFor app) instance MonadMask (HandlerFor app)
+deriving via ExceptionViaIO (HandlerFor app) instance MonadCatch (HandlerFor app)
+
+generalBracketIO ::
+  (MonadUnliftIO m) =>
+  m a ->
+  (a -> Catch.ExitCase b -> m c) ->
+  (a -> m b) ->
+  m (b, c)
+generalBracketIO acquire release action = do
+  UnliftIO.mask \restore -> do
+    x <- acquire
+    res1 <- UnliftIO.try $ restore $ action x
+    case res1 of
+      Left e1 -> do
+        -- explicitly ignore exceptions from after
+        _ :: Either SomeException c <-
+          UnliftIO.try $ UnliftIO.uninterruptibleMask_ $ release x (Catch.ExitCaseException e1)
+        throwWithCallStackIO e1
+      Right y -> do
+        c <- UnliftIO.uninterruptibleMask_ $ release x (Catch.ExitCaseSuccess y)
+        pure (y, c)
 
 -- How to run database actions.
 -- instance YesodPersist App where

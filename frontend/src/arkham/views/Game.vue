@@ -341,6 +341,7 @@ const toggleSidebar = function () {
 }
 
 // Undo
+const undoLock = ref(false)
 async function undo() {
   processing.value = true
   if (game.value) game.value.question = {}
@@ -348,7 +349,10 @@ async function undo() {
   gameCard.value = null
   tarotCards.value = []
   uiLock.value = false
-  undoChoice(props.gameId)
+  if (undoLock.value) return
+  undoLock.value = true
+  await undoChoice(props.gameId)
+  undoLock.value = false
 }
 
 async function undoScenario() {

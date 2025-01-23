@@ -16,6 +16,7 @@ import Arkham.Queue
 import Arkham.Random
 import Control.Concurrent.MVar
 import Control.Lens hiding (from)
+import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.Random (MonadRandom (..), StdGen)
 import Data.Aeson qualified as Aeson
 import Data.Map.Strict qualified as Map
@@ -67,7 +68,18 @@ data ApiResponse
   deriving anyclass ToJSON
 
 newtype GameAppT a = GameAppT {unGameAppT :: ReaderT GameApp IO a}
-  deriving newtype (MonadReader GameApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom)
+  deriving newtype
+    ( MonadReader GameApp
+    , Functor
+    , Applicative
+    , Monad
+    , MonadFail
+    , MonadIO
+    , MonadRandom
+    , MonadMask
+    , MonadCatch
+    , MonadThrow
+    )
 
 data GameApp = GameApp
   { appGame :: IORef Game

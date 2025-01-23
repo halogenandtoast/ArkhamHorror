@@ -8,6 +8,7 @@ import {-# SOURCE #-} Arkham.Message
 import Arkham.Prelude
 import Arkham.Queue
 import Arkham.Random
+import Control.Monad.Catch (MonadMask, MonadCatch, MonadThrow)
 import Control.Monad.Random
 import Data.Dependent.Map (DMap)
 import Data.Dependent.Map qualified as DMap
@@ -21,7 +22,8 @@ data GameEnv = GameEnv
   }
 
 newtype GameT a = GameT {unGameT :: ReaderT GameEnv IO a}
-  deriving newtype (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO)
+  deriving newtype
+    (MonadReader GameEnv, Functor, Applicative, Monad, MonadIO, MonadUnliftIO, MonadMask, MonadCatch, MonadThrow)
 
 clearCache :: GameT ()
 clearCache = do

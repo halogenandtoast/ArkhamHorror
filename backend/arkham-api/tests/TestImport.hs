@@ -91,6 +91,7 @@ import Arkham.SkillTest.Type
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Trait (Trait (Elite))
+import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
@@ -175,7 +176,18 @@ cloneTestApp testApp = do
 
 newtype TestAppT a = TestAppT {unTestAppT :: StateT TestApp IO a}
   deriving newtype
-    (MonadState TestApp, Functor, Applicative, Monad, MonadFail, MonadIO, MonadRandom, MonadUnliftIO)
+    ( MonadState TestApp
+    , Functor
+    , Applicative
+    , Monad
+    , MonadFail
+    , MonadIO
+    , MonadRandom
+    , MonadUnliftIO
+    , MonadMask
+    , MonadCatch
+    , MonadThrow
+    )
 
 -- Bad instance, only exists for timeout functionality
 instance MonadUnliftIO m => MonadUnliftIO (StateT TestApp m) where

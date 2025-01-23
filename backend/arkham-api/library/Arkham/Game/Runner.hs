@@ -148,7 +148,7 @@ getInvestigatorsInOrder = do
   pure $ g ^. playerOrderL
 
 runGameMessage :: Runner Game
-runGameMessage msg g = case msg of
+runGameMessage msg g = withSpan_ "runGameMessage" $ case msg of
   AfterThisTestResolves _sid msgs -> do
     insertAfterMatching [AfterSkillTestQuiet msgs] (== EndSkillTestWindow)
     pure g
@@ -3299,27 +3299,24 @@ preloadEntities g = do
 -- too late.
 instance RunMessage Game where
   runMessage msg g =
-    ( (modeL . here) (runMessage msg) g
-        >>= (modeL . there) (runMessage msg)
-        >>= entitiesL (runMessage msg)
-        >>= actionRemovedEntitiesL (runMessage msg)
-        >>= itraverseOf
-          (inHandEntitiesL . itraversed)
-          (\i -> runMessage (InHand i msg))
-        >>= itraverseOf
-          (inDiscardEntitiesL . itraversed)
-          (\i -> runMessage (InDiscard i msg))
-        >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
-        >>= encounterDiscardEntitiesL (runMessage msg)
-        >>= inSearchEntitiesL (runMessage (InSearch msg))
-        >>= (skillTestL . traverse) (runMessage msg)
-        >>= (activeCostL . traverse) (runMessage msg)
-        >>= runGameMessage msg
-    )
+    withSpan_ "Game.runMessage"
+      $ ( (modeL . here) (runMessage msg) g
+            >>= (modeL . there) (runMessage msg)
+            >>= entitiesL (runMessage msg)
+            >>= actionRemovedEntitiesL (runMessage msg)
+            >>= itraverseOf (inHandEntitiesL . itraversed) (\i -> runMessage (InHand i msg))
+            >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i -> runMessage (InDiscard i msg))
+            >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
+            >>= encounterDiscardEntitiesL (runMessage msg)
+            >>= inSearchEntitiesL (runMessage (InSearch msg))
+            >>= (skillTestL . traverse) (runMessage msg)
+            >>= (activeCostL . traverse) (runMessage msg)
+            >>= runGameMessage msg
+        )
       <&> handleActionDiff g
 
 runPreGameMessage :: Runner Game
-runPreGameMessage msg g = case msg of
+runPreGameMessage msg g = withSpan_ "runPreGameMessage" $ case msg of
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

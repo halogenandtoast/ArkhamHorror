@@ -14,9 +14,10 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
-import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.), (!=.))
+import Import hiding (delete, on, update, (!=.), (<.), (=.), (==.), (>=.))
 import Json
 import Network.HTTP.Types.Status qualified as Status
+import OpenTelemetry.Eventlog (withSpan_)
 
 jsonError :: Text -> Handler a
 jsonError msg = sendStatusJSON Status.status400 (object ["error" .= msg])
@@ -25,7 +26,7 @@ jsonErrorContents :: ToJSON v => v -> Text -> Handler a
 jsonErrorContents v msg = sendStatusJSON Status.status400 (object ["error" .= msg, "contents" .= v])
 
 stepBack :: UserId -> ArkhamGameId -> ArkhamGame -> Handler ArkhamGame
-stepBack userId gameId current@ArkhamGame {..} = do
+stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
   Entity pid arkhamPlayer <- runDB $ getBy404 (UniquePlayer userId gameId)
   runDB (getBy (UniqueStep gameId arkhamGameStep)) >>= \case
     Nothing -> jsonError "Missing step"
@@ -33,7 +34,7 @@ stepBack userId gameId current@ArkhamGame {..} = do
       -- never delete the initial step as it can not be redone
       -- NOTE: actually we never want to step back if the patchOperations are empty, the first condition is therefor redundant
       when (arkhamStepStep step <= 0) $ jsonErrorContents step "Can't undo the first step"
-      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) do
+      when (null $ patchOperations $ choicePatchDown $ arkhamStepChoice step) $ withSpan_ "noUpdate" do
         -- we don't need to apply any real updates so let's just remove the step
         arkhamGame <- runDB do
           void $ select do

@@ -197,6 +197,7 @@ import Arkham.Treachery.Types (
 import Arkham.Window (Window (..), mkWindow)
 import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
 import Control.Monad.Writer.Strict (execWriterT, tell)
@@ -5338,6 +5339,7 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
+     , MonadMask m
      )
   => Maybe (Message -> IO ())
   -> m ()
@@ -5539,12 +5541,12 @@ getAsIfLocationMap = do
     pure $ (iid,) <$> mAsIf
 
 handleAloofChanges :: [EnemyId] -> Game -> GameT Game
-handleAloofChanges aloof g = do
+handleAloofChanges aloof g = withSpan_ "handleAloofChanges" do
   noLongerAloof <- select $ mapOneOf EnemyWithId aloof <> not_ AloofEnemy
   foldM (\g' eid -> runMessage (EnemyCheckEngagement eid) g') g noLongerAloof
 
 handleAsIfChanges :: Map InvestigatorId LocationId -> Game -> GameT Game
-handleAsIfChanges asIfMap g = go (Map.toList asIfMap) g
+handleAsIfChanges asIfMap g = withSpan_ "handleAsIfChanges" $ go (Map.toList asIfMap) g
  where
   go [] g' = pure g'
   go ((iid, loc) : rest) g' = do
@@ -5599,8 +5601,8 @@ We only preload modifiers while the scenario is active in order to prevent
 scenario specific modifiers from causing an exception. For instance when we
 need to call `getVengeanceInVictoryDisplay`
 -}
-preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
-preloadModifiers g = case gameMode g of
+preloadModifiers :: (HasCallStack, MonadMask m, MonadIO m) => Game -> m Game
+preloadModifiers g = withSpan_ "preloadModifiers" $ case gameMode g of
   This _ -> pure g
   _ -> flip runReaderT g $ do
     let modifierFilter = if gameInSetup g then modifierActiveDuringSetup else const True
@@ -5623,8 +5625,8 @@ preloadModifiers g = case gameMode g of
   handleMoving m@(modifierType -> WhileEnemyMovingModifier x) = if isJust (view enemyMovingL g) then [m {modifierType = x}] else []
   handleMoving m = [m]
 
-handleTraitRestrictedModifiers :: Monad m => Game -> m Game
-handleTraitRestrictedModifiers g = do
+handleTraitRestrictedModifiers :: (MonadMask m, MonadIO m) => Game -> m Game
+handleTraitRestrictedModifiers g = withSpan_ "handleTraitRestrictedModifiers" do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
@@ -5638,8 +5640,8 @@ handleTraitRestrictedModifiers g = do
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
-handleBlanked :: Monad m => Game -> m Game
-handleBlanked g = do
+handleBlanked :: (MonadIO m, MonadMask m) => Game -> m Game
+handleBlanked g = withSpan_ "handleBlanked" do
   modifiers' <- flip execStateT (gameModifiers g) $ do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
@@ -5649,8 +5651,8 @@ handleBlanked g = do
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
-applyBlank :: Monad m => Source -> StateT (Map Target [Modifier]) m ()
-applyBlank s = do
+applyBlank :: (MonadIO m, MonadMask m) => Source -> StateT (Map Target [Modifier]) m ()
+applyBlank s = withSpan_ "applyBlank" do
   current <- get
   for_ (mapToList current) $ \(target, targetModifiers) -> do
     let

@@ -24,6 +24,7 @@ import Arkham.Target
 import Arkham.Tarot
 import Arkham.Text (FlavorText (..), FlavorTextEntry (..), FlavorTextModifier (..), toI18n)
 import Arkham.Window (defaultWindows)
+import Control.Monad.Catch (MonadCatch, MonadMask, MonadThrow)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
 
@@ -43,6 +44,9 @@ newtype ChooseT m a = ChooseT {unChooseT :: StateT ChooseState (WriterT [UI Mess
     , MonadIO
     , MonadRandom
     , CardGen
+    , MonadCatch
+    , MonadThrow
+    , MonadMask
     )
 
 instance HasGame m => HasGame (ChooseT m) where

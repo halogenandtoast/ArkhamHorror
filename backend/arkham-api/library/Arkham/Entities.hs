@@ -2,8 +2,6 @@
 
 module Arkham.Entities where
 
-import Arkham.Prelude
-
 import Arkham.Act
 import Arkham.Agenda ()
 import Arkham.Agenda.Types (Agenda)
@@ -27,6 +25,7 @@ import Arkham.Investigator.Types (Investigator)
 import Arkham.Json
 import Arkham.Location
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenario ()
 import Arkham.Skill (createSkill)
 import Arkham.Skill.Types (Skill)
@@ -211,7 +210,7 @@ addEntity a e =
     | otherwise -> e
 
 instance RunMessage Entities where
-  runMessage msg entities =
+  runMessage msg entities = withSpan_ "Entities.runMessage" do
     traverseOf (actsL . traverse) (runMessage msg) entities
       >>= traverseOf (agendasL . traverse) (runMessage msg)
       >>= traverseOf (treacheriesL . traverse) (runMessage msg)

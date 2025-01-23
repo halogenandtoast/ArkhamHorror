@@ -36,6 +36,7 @@ import Arkham.Skill.Types
 import Arkham.Story.Types
 import Arkham.Treachery.Types
 import Arkham.Zone
+import Control.Monad.Catch (MonadMask)
 
 class HasGameRef a where
   gameRefL :: Lens' a (IORef Game)
@@ -103,9 +104,10 @@ runMessages
      , MonadReader env m
      , HasGameLogger m
      , HasDebugLevel m
+     , MonadMask m
      )
   => Maybe (Message -> IO ())
   -> m ()
-preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
-handleTraitRestrictedModifiers :: Monad m => Game -> m Game
-handleBlanked :: Monad m => Game -> m Game
+preloadModifiers :: (HasCallStack, MonadMask m, MonadIO m) => Game -> m Game
+handleTraitRestrictedModifiers :: (MonadMask m, MonadIO m) => Game -> m Game
+handleBlanked :: (MonadIO m, MonadMask m) => Game -> m Game

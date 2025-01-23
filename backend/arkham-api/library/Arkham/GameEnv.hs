@@ -35,6 +35,7 @@ import Arkham.Random
 import Arkham.SkillTest.Base
 import Arkham.Target
 import Arkham.Window
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.Random.Lazy hiding (filterM, foldM, fromList)
 import Data.Dependent.Map qualified as DMap
 import Data.Map.Strict qualified as Map
@@ -169,9 +170,10 @@ getPhase :: HasGame m => m Phase
 getPhase = gamePhase <$> getGame
 
 getEnemyPhaseStep :: HasGame m => m (Maybe EnemyPhaseStep)
-getEnemyPhaseStep = getGame <&> \g -> case gamePhaseStep g of
-  Just (EnemyPhaseStep s) -> Just s
-  _ -> Nothing
+getEnemyPhaseStep =
+  getGame <&> \g -> case gamePhaseStep g of
+    Just (EnemyPhaseStep s) -> Just s
+    _ -> Nothing
 
 getWindowDepth :: HasGame m => m Int
 getWindowDepth = gameWindowDepth <$> getGame
@@ -216,7 +218,8 @@ withActiveInvestigator iid body = do
   game <- getGame
   runReaderT body $ game & activeInvestigatorIdL .~ iid
 
-withActiveInvestigatorAdjust :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
+withActiveInvestigatorAdjust
+  :: (MonadIO m, MonadMask m, HasGame m) => InvestigatorId -> ReaderT Game m a -> m a
 withActiveInvestigatorAdjust iid body = do
   game <- getGame
   game' <-

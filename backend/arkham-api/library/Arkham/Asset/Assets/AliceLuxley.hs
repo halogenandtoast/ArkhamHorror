@@ -1,12 +1,11 @@
-module Arkham.Asset.Assets.AliceLuxley (aliceLuxley, AliceLuxley (..)) where
+module Arkham.Asset.Assets.AliceLuxley (aliceLuxley) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.DamageEffect
+import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype AliceLuxley = AliceLuxley AssetAttrs
   deriving anyclass IsAsset
@@ -16,32 +15,18 @@ aliceLuxley :: AssetCard AliceLuxley
 aliceLuxley = ally AliceLuxley Cards.aliceLuxley (2, 2)
 
 instance HasModifiersFor AliceLuxley where
-  getModifiersFor (AliceLuxley a) = case a.controller of
-    Just iid -> modified_ a iid [SkillModifier #intellect 1]
-    Nothing -> pure mempty
+  getModifiersFor (AliceLuxley a) = controllerGets a [SkillModifier #intellect 1]
 
 instance HasAbilities AliceLuxley where
   getAbilities (AliceLuxley a) =
-    [ controlledAbility
-        a
-        1
-        (exists (EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toAbilitySource a 1)) <> CanDealDamage)
-        $ ReactionAbility (Matcher.DiscoverClues #after You Anywhere $ atLeast 1) (exhaust a)
+    [ controlled a 1 (exists (at_ YourLocation <> (a.ability 1).canDamage) <> CanDealDamage)
+        $ triggered (DiscoverClues #after You Anywhere $ atLeast 1) (exhaust a)
     ]
 
 instance RunMessage AliceLuxley where
-  runMessage msg a@(AliceLuxley attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
-      enemies <-
-        select
-          $ EnemyAt (locationWithInvestigator iid)
-          <> EnemyCanBeDamagedBySource (toAbilitySource attrs 1)
-      player <- getPlayer iid
-      push
-        $ chooseOrRunOne
-          player
-          [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1]
-          | enemy <- enemies
-          ]
+  runMessage msg a@(AliceLuxley attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      enemies <- select $ at_ (locationWithInvestigator iid) <> (attrs.ability 1).canDamage
+      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 1
       pure a
-    _ -> AliceLuxley <$> runMessage msg attrs
+    _ -> AliceLuxley <$> liftRunMessage msg attrs

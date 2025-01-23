@@ -1,12 +1,7 @@
-module Arkham.Asset.Assets.Adaptable1 (
-  adaptable1,
-  Adaptable1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Adaptable1 (adaptable1) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 
 newtype Adaptable1 = Adaptable1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.AlchemicalDistillation (alchemicalDistillation, AlchemicalDistillation (..)) where
+module Arkham.Asset.Assets.AlchemicalDistillation (alchemicalDistillation) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +12,7 @@ import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Movement
+import Arkham.Message.Lifted.Move
 
 newtype AlchemicalDistillation = AlchemicalDistillation AssetAttrs
   deriving anyclass IsAsset
@@ -28,7 +28,7 @@ instance HasModifiersFor AlchemicalDistillation where
 instance HasAbilities AlchemicalDistillation where
   getAbilities (AlchemicalDistillation a) =
     [ skillTestAbility
-        $ restrictedAbility a 1 ControlsThis
+        $ restricted a 1 ControlsThis
         $ actionAbilityWithCost (assetUseCost a Supply 1)
     ]
 
@@ -43,13 +43,13 @@ instance RunMessage AlchemicalDistillation where
               (attrs.ability 1)
               attrs
               (MetaModifier $ object ["empowered" .= True])
-            push $ Do msg
-          labeled "Do not empower" $ push $ Do msg
-        else push $ Do msg
+            do_ msg
+          labeled "Do not empower" $ do_ msg
+        else do_ msg
       pure a
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
       choices <- select (affectsOthers $ colocatedWith iid)
-      chooseOrRunOne iid $ targetLabels choices $ only . handleTargetChoice iid (attrs.ability 1)
+      chooseOrRunOneM iid $ targets choices $ handleTarget iid (attrs.ability 1)
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
       empowered <- getMetaMaybe False attrs "empowered"
@@ -57,11 +57,12 @@ instance RunMessage AlchemicalDistillation where
       beginSkillTest sid iid (attrs.ability 1) iid' #intellect (Fixed $ if empowered then 3 else 1)
       pure a
     PassedThisSkillTestBy _ (isAbilitySource attrs 1 -> True) n -> do
-      push $ Do msg
+      do_ msg
       when (n >= 2 && attrs `hasCustomization` Perfected) do
         getSkillTestTarget >>= \case
-          Just (InvestigatorTarget iid) ->
-            chooseOne iid [Label "Resolve a second option" [Do msg], Label "Do not resolve a second option" []]
+          Just (InvestigatorTarget iid) -> chooseOneM iid do
+            labeled "Resolve a second option" $ do_ msg
+            labeled "Do not resolve a second option" nothing
           _ -> pure ()
       pure a
     Do msg'@(PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)) -> do
@@ -129,27 +130,27 @@ instance RunMessage AlchemicalDistillation where
           x
           [ Msg.chooseOrRunOne player
               $ [ Label
-                  ("Place " <> tshow (modify 1) <> " Charge")
-                  [PlaceTokens (attrs.ability 1) (toTarget x) Charge (modify 1)]
+                    ("Place " <> tshow (modify 1) <> " Charge")
+                    [PlaceTokens (attrs.ability 1) (toTarget x) Charge (modify 1)]
                 | x `elem` chargeAssets
                 ]
               <> [ Label
-                  ("Place " <> tshow (modify 1) <> " Secret")
-                  [PlaceTokens (attrs.ability 1) (toTarget x) Secret (modify 1)]
+                     ("Place " <> tshow (modify 1) <> " Secret")
+                     [PlaceTokens (attrs.ability 1) (toTarget x) Secret (modify 1)]
                  | x `elem` secretAssets
                  ]
           ]
       pure a
     ForInvestigator _ (DoStep 2 (PassedThisSkillTest _ (isAbilitySource attrs 1 -> True))) -> do
       empowered <- getMetaMaybe False attrs "empowered"
-      push $ DoStep (if empowered then 3 else 2) msg
+      doStep (if empowered then 3 else 2) msg
       pure a
     DoStep
       n
       msg'@(ForInvestigator iid (DoStep 2 (PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)))) | n > 0 -> do
         locations <- getAccessibleLocations iid attrs
-        chooseOne iid
-          $ Label "Done Moving" []
-          : [targetLabel lid [Move $ move attrs iid lid, DoStep (n - 1) msg'] | lid <- locations]
+        chooseOneM iid do
+          labeled "Done Moving" nothing
+          targets locations \lid -> moveTo attrs iid lid >> doStep (n - 1) msg'
         pure a
     _ -> AlchemicalDistillation <$> liftRunMessage msg attrs

@@ -1963,11 +1963,12 @@ runGameMessage msg g = case msg of
             . filter (any isPerRound . cdLimits)
             . mapMaybe lookupCardDef
             $ Map.keys (view cardUsesL g)
+    let tabooRoundEndUses = ["02266", "08055"]
     pure
       $ g
       & (roundHistoryL .~ mempty)
       & cardUsesL
-      %~ Map.filterWithKey (\k _ -> k `notElem` roundEndUses)
+      %~ Map.filterWithKey (\k _ -> k `notElem` roundEndUses && k `notElem` tabooRoundEndUses)
   Begin MythosPhase {} -> do
     let playerOrder = g ^. playerOrderL
     mGloria <- selectOne $ investigatorIs Investigators.gloriaGoldberg

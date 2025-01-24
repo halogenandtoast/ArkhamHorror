@@ -15,8 +15,8 @@ import Arkham.Target
 moveAllTo :: (ReverseQueue m, Sourceable source) => source -> LocationId -> m ()
 moveAllTo (toSource -> source) lid = push $ MoveAllTo source lid
 
-moveTo :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> LocationId -> m ()
-moveTo (toSource -> source) iid lid = push $ Move $ move source iid lid
+moveTo :: (ReverseQueue m, Sourceable source, AsId location, IdOf location ~ LocationId) => source -> InvestigatorId -> location -> m ()
+moveTo (toSource -> source) iid location = push $ Move $ move source iid (asId location)
 
 enemyMoveTo
   :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId location, IdOf location ~ LocationId)

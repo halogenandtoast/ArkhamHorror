@@ -182,19 +182,19 @@ instance RunMessage BeforeTheBlackThrone where
       mTopLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
+          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
       mBottomLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
+          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
       mLeftLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
+          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
       mRightLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
+          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
       currentMsgs <- case current of
         Just (EmptySpace _ c) -> case toCardOwner c of
           Nothing -> error "Unhandled"

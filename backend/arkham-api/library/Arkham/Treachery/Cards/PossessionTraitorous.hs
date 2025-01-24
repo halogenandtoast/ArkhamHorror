@@ -1,7 +1,4 @@
-module Arkham.Treachery.Cards.PossessionTraitorous (
-  possessionTraitorous,
-  PossessionTraitorous (..),
-) where
+module Arkham.Treachery.Cards.PossessionTraitorous (possessionTraitorous) where
 
 import Arkham.Card
 import Arkham.Investigator.Types (Field (..))

@@ -1,4 +1,4 @@
-module Arkham.Event.Events.AceInTheHole3 (aceInTheHole3, AceInTheHole3 (..)) where
+module Arkham.Event.Events.AceInTheHole3 (aceInTheHole3) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
@@ -12,7 +12,7 @@ aceInTheHole3 = event AceInTheHole3 Cards.aceInTheHole3
 
 instance RunMessage AceInTheHole3 where
   runMessage msg e@(AceInTheHole3 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == attrs.id -> do
+    PlayThisEvent iid (is attrs -> True) -> do
       gainActions iid attrs 3
       pure e
     _ -> AceInTheHole3 <$> liftRunMessage msg attrs

@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.MindlessDancer (mindlessDancer, MindlessDancer (..)) where
+module Arkham.Enemy.Cards.MindlessDancer (mindlessDancer) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -39,7 +39,7 @@ instance RunMessage MindlessDancer where
       checkWhen $ Window.MovedFromHunter attrs.id
       push $ HunterMove (toId attrs)
       pure e
-    PlaceCosmos _ lid (CosmosLocation pos _) -> do
+    After (PlaceCosmos _ lid (CosmosLocation pos _)) -> do
       emptySpace <- selectJust $ IncludeEmptySpace $ LocationWithLabel (mkLabel $ cosmicLabel pos)
       case attrs.placement of
         AtLocation lid' | lid' == emptySpace -> do

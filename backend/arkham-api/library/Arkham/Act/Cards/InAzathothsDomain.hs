@@ -1,22 +1,22 @@
-module Arkham.Act.Cards.InAzathothsDomain (InAzathothsDomain (..), inAzathothsDomain) where
+{-# OPTIONS_GHC -Wno-deprecations #-}
+module Arkham.Act.Cards.InAzathothsDomain (inAzathothsDomain) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
+import Arkham.Helpers.Query (getJustLocationByName)
+import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 import Arkham.Movement
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -40,60 +40,46 @@ instance HasAbilities InAzathothsDomain where
   getAbilities (InAzathothsDomain attrs) =
     extend attrs [mkAbility attrs 1 $ actionAbilityWithCost ClueCostX]
 
-getClueCount :: Payment -> Int
-getClueCount (CluePayment _ n) = n
-getClueCount (Payments ps) = sum $ map getClueCount ps
-getClueCount _ = 0
-
 instance RunMessage InAzathothsDomain where
-  runMessage msg a@(InAzathothsDomain attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ (getClueCount -> x) -> do
-      push $ DrawCards iid $ targetCardDraw attrs CosmosDeck x
+  runMessage msg a@(InAzathothsDomain attrs) = runQueueT $ case msg of
+    UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> x) -> do
+      drawCardsEdit iid (attrs.ability 1) x (setTarget attrs)
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
-      let cards = drewCards.cards
-      cardsWithMsgs <- traverse (traverseToSnd placeLocation) cards
-      player <- getPlayer iid
-      pushAll
-        [ FocusCards $ map flipCard cards
-        , chooseOrRunOne
-            player
-            [ targetLabel
-              (toCardId card)
-              [ UnfocusCards
-              , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
-              , placement
-              , Msg.RevealLocation (Just iid) lid
-              , RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
-              ]
-            | (card, (lid, placement)) <- cardsWithMsgs
-            ]
-        ]
+      focusCards (map flipCard drewCards.cards) do
+        chooseOrRunOneM iid do
+          targets drewCards.cards \card -> do
+            unfocusCards
+            shuffleCardsIntoDeck CosmosDeck $ List.delete card drewCards.cards
+            lid <- placeLocation card
+            revealBy iid lid
+            push $ RunCosmos iid lid [Move $ move (attrs.ability 1) iid lid]
       pure a
-    AdvanceAct aid _ _ | aid == toId a && onSide B attrs -> do
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       hideousPalace <- getJustLocationByName "Hideous Palace"
       emptySpace <- select $ IncludeEmptySpace $ locationIs Locations.emptySpace
       emptySpaceCards <- getEmptySpaceCards
       cosmosLocations <- select $ NotLocation $ oneOf ["Court of the Great Old Ones", "Hideous Palace"]
-      enemies <- select $ EnemyAt $ NotLocation "Court of the Great Old Ones"
+      enemies <- select $ EnemyAt $ IncludeEmptySpace $ NotLocation "Court of the Great Old Ones"
       enemyCards <- traverse (field Field.EnemyCard) enemies
-
       cosmosCards <- traverse (field Field.LocationCard) cosmosLocations
 
       let cosmos' = initCosmos @Card @LocationId
           cardsWithOwners = List.groupOnKey toCardOwner emptySpaceCards
 
+      removeLocation hideousPalace
+      for_ (cosmosLocations <> emptySpace) removeLocation
+      shuffleCardsIntoDeck CosmosDeck cosmosCards
+      for_ enemyCards obtainCard
+      shuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards
+      for_ cardsWithOwners \(mOwner, cards) -> for_ mOwner \owner -> do
+        shuffleCardsIntoDeck owner cards
       pushAll
-        $ RemoveLocation hideousPalace
-        : map RemoveLocation (cosmosLocations <> emptySpace)
-          <> [ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) cosmosCards]
-          <> [ShuffleCardsIntoTopOfDeck Deck.EncounterDeck 5 enemyCards]
-          <> [ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) cards | (Just iid, cards) <- cardsWithOwners]
-          <> [ SetScenarioMeta (toJSON cosmos')
-             , NextAdvanceActStep (toId a) 1
-             , AllDrawEncounterCard
-             , advanceActDeck attrs
-             ]
+        [ SetScenarioMeta (toJSON cosmos')
+        , NextAdvanceActStep (toId a) 1
+        , AllDrawEncounterCard
+        ]
+      advanceActDeck attrs
       pure a
     NextAdvanceActStep aid _ | aid == toId attrs -> do
       (cards, cosmosDeck) <- splitAt 3 <$> getScenarioDeck CosmosDeck
@@ -105,12 +91,8 @@ instance RunMessage InAzathothsDomain where
           [x, y, z, b] -> (x, y, z, b)
           _ -> error "impossible"
 
-      (firstCosmos, placeFirstCosmos) <- placeLocation firstCosmosCard
-      (secondCosmos, placeSecondCosmos) <- placeLocation secondCosmosCard
-      (thirdCosmos, placeThirdCosmos) <- placeLocation thirdCosmosCard
-      (fourthCosmos, placeFourthCosmos) <- placeLocation fourthCosmosCard
-
       (map toCard -> playerCards, _) <- fieldMap InvestigatorDeck (draw 8) lead
+      for_ playerCards obtainCard
 
       let
         emptySpaceLocations =
@@ -125,23 +107,25 @@ instance RunMessage InAzathothsDomain where
           ]
         emptySpaces = zip emptySpaceLocations playerCards
 
-      placeEmptySpaces <- concatForM emptySpaces $ \(pos, card) -> do
-        (emptySpace', placeEmptySpace) <- placeLocationCard Locations.emptySpace
-        pure [placeEmptySpace, PlaceCosmos lead emptySpace' (EmptySpace pos card)]
+      setScenarioDeck CosmosDeck cosmosDeck
 
-      pushAll
-        $ [ SetScenarioDeck CosmosDeck cosmosDeck
-          , PlaceCosmos lead courtOfTheGreatOldOnes (CosmosLocation (Pos 0 0) courtOfTheGreatOldOnes)
-          , placeFirstCosmos
-          , PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
-          , placeSecondCosmos
-          , PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
-          , placeThirdCosmos
-          , PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 3 1) thirdCosmos)
-          , placeFourthCosmos
-          , PlaceCosmos lead fourthCosmos (CosmosLocation (Pos 3 (-1)) fourthCosmos)
-          ]
-        <> map (ObtainCard . toCardId) playerCards
-        <> placeEmptySpaces
+      push $ PlaceCosmos lead courtOfTheGreatOldOnes (CosmosLocation (Pos 0 0) courtOfTheGreatOldOnes)
+
+      firstCosmos <- placeLocation firstCosmosCard
+      push $ PlaceCosmos lead firstCosmos (CosmosLocation (Pos 1 2) firstCosmos)
+
+      secondCosmos <- placeLocation secondCosmosCard
+      push $ PlaceCosmos lead secondCosmos (CosmosLocation (Pos 1 (-2)) secondCosmos)
+
+      thirdCosmos <- placeLocation thirdCosmosCard
+      push $ PlaceCosmos lead thirdCosmos (CosmosLocation (Pos 3 1) thirdCosmos)
+
+      fourthCosmos <- placeLocation fourthCosmosCard
+      push $ PlaceCosmos lead fourthCosmos (CosmosLocation (Pos 3 (-1)) fourthCosmos)
+
+      for_ emptySpaces $ \(pos, card) -> do
+        emptySpace' <- placeLocationCard Locations.emptySpace
+        push $ PlaceCosmos lead emptySpace' (EmptySpace pos card)
+
       pure a
-    _ -> InAzathothsDomain <$> runMessage msg attrs
+    _ -> InAzathothsDomain <$> liftRunMessage msg attrs

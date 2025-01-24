@@ -59,19 +59,22 @@ import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
 gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
-gameStream mUserId gameId = catchingConnectionException $ do
+gameStream mUserId gameId = catchingConnectionException do
   writeChannel <- lift $ (.channel) <$> getRoom gameId
   roomsRef <- getsYesod appGameRooms
-  atomicModifyIORef' roomsRef
-    $ \rooms -> (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
-  bracket (atomically $ dupTChan writeChannel) closeConnection
-    $ \readChannel ->
+  atomicModifyIORef'
+    roomsRef
+    \rooms -> (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
+  bracket
+    (atomically $ dupTChan writeChannel)
+    closeConnection
+    \readChannel ->
       race_
         (forever $ atomically (readTChan readChannel) >>= sendTextData)
         (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
  where
-  handleData writeChannel dataPacket = lift $ do
-    for_ mUserId $ \userId ->
+  handleData writeChannel dataPacket = lift do
+    for_ mUserId \userId ->
       case eitherDecodeStrict dataPacket of
         Left err -> $(logWarn) $ tshow err
         Right answer ->
@@ -80,14 +83,13 @@ gameStream mUserId gameId = catchingConnectionException $ do
 
   closeConnection _ = do
     roomsRef <- getsYesod appGameRooms
-    clientCount <-
-      atomicModifyIORef' roomsRef $ \rooms ->
-        ( Map.adjust (\room -> room {socketClients = max 0 (room.clients - 1)}) gameId rooms
-        , maybe 0 (\room -> max 0 (room.clients - 1)) $ Map.lookup gameId rooms
-        )
+    clientCount <- atomicModifyIORef' roomsRef \rooms ->
+      ( Map.adjust (\room -> room {socketClients = max 0 (room.clients - 1)}) gameId rooms
+      , maybe 0 (\room -> max 0 (room.clients - 1)) $ Map.lookup gameId rooms
+      )
     when (clientCount == 0) do
       lift $ removeChannel (gameChannel gameId)
-      atomicModifyIORef' roomsRef $ \rooms -> (Map.delete gameId rooms, ())
+      atomicModifyIORef' roomsRef \rooms -> (Map.delete gameId rooms, ())
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -187,7 +189,7 @@ getApiV1ArkhamGamesR = do
         `innerJoin` table @ArkhamGameRaw
           `on` (\(players :& games) -> coerce players.arkhamGameId ==. games.id)
     where_ $ players.userId ==. val userId
-    orderBy [desc $ games.updatedAt]
+    orderBy [desc games.updatedAt]
     pure games
 
   let

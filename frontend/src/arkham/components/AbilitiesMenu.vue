@@ -19,11 +19,6 @@ const abilitiesRef = ref<HTMLElement | null>(null);
 const showAbilities = defineModel()
 const abilitiesPosition = ref({ bottom: '0px', top: '0px', left: '0px' });
 const positionClass = computed(() => props.position || 'top');
-onMounted(() => {
-  nextTick(() => {
-    calculatePosition();
-  });
-});
 
 function calculatePosition() {
   if (props.frame) {

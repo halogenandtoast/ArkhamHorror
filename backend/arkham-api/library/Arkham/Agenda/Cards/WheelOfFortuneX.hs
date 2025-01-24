@@ -44,8 +44,7 @@ instance RunMessage WheelOfFortuneX where
       findAndDrawEncounterCard lead (cardIs Treacheries.daemonicPiping)
 
       ableToFindYourWay <- Gilman'sJournal `inRecordSet` MementosDiscovered
-      unless ableToFindYourWay do
-        eachInvestigator (`forInvestigator` msg)
+      unless ableToFindYourWay $ eachInvestigator (`forInvestigator` msg)
       advanceAgendaDeck attrs
 
       pure a
@@ -70,8 +69,7 @@ instance RunMessage WheelOfFortuneX where
       case cards of
         [card] -> do
           cosmos <- getCosmos
-          let mpos = findInCosmos lid cosmos
-          case mpos of
+          case findInCosmos lid cosmos of
             Nothing -> error "location not found in cosmos, we shouldn't be here"
             Just pos -> do
               obtainCard card
@@ -80,7 +78,7 @@ instance RunMessage WheelOfFortuneX where
                 [ PlaceCosmos iid emptySpace' (EmptySpace pos card)
                 , PlaceCosmos iid lid (CosmosLocation (updatePosition pos GridLeft) lid)
                 ]
-              pure a
+              pure . WheelOfFortuneX . (`with` Metadata (lid : locationsMoved meta)) $ attrs
         [] -> error "empty deck, what should we do?, maybe don't let this be called?"
         _ -> error "too many cards, why did this happen?"
     _ -> WheelOfFortuneX . (`with` meta) <$> liftRunMessage msg attrs

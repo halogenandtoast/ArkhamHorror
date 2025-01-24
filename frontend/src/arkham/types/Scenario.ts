@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { type Name, nameDecoder } from '@/arkham/types/Name';
 import {
   Card,
   cardDecoder,
@@ -80,18 +81,30 @@ export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
   name: scenarioNameDecoder,
 }, 'ScenarioDetails');
 
-export type Remembered = { tag: "YouOweBiancaResources", contents: number } | { tag: string }
+export type Remembered=
+    { tag: "YouOweBiancaResources", contents: number } |
+    { tag: "RememberNamed", actualTag: string, name: Name } |
+    { tag: string }
 
 const rememberedDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<Remembered>(
     {
       tag: JsonDecoder.isExactly('YouOweBiancaResources'),
-      contents: JsonDecoder.tuple<[any, number]>(
+      contents: JsonDecoder.tuple(
         [JsonDecoder.succeed, JsonDecoder.number],
         'YouOweBiancaResources'
       ).map<number>((res: [any, number]) => res[1])
     },
     'Remembered'
+  ),
+  JsonDecoder.object<Remembered>(
+    {
+      tag: JsonDecoder.constant('RememberNamed'),
+      actualTag: JsonDecoder.string,
+      name: JsonDecoder.object({ getLabel: nameDecoder, unLabel: JsonDecoder.string }, 'labeled').map(res => res.getLabel)
+    },
+    'Remembered'
+    , { actualTag: 'tag', name: 'contents' }
   ),
   JsonDecoder.object<Remembered>( { tag: JsonDecoder.string }, 'Remembered')
 ], 'Remembered');

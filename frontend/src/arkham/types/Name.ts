@@ -12,3 +12,11 @@ export const nameDecoder = JsonDecoder.object<Name>(
   },
   'Name'
 );
+
+export function simpleName(name: Name) {
+    return name.title
+}
+
+export function fullName(name: Name) {
+  return name.subtitle ? `${name.title}: ${name.subtitle}` : name.title
+}

@@ -4,7 +4,7 @@ import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/typ
 import { computed, ref, onMounted, watch } from 'vue'
 import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
-import type { Name } from '@/arkham/types/Name'
+import { type Name, simpleName } from '@/arkham/types/Name'
 import { scenarioToI18n, type Remembered } from '@/arkham/types/Scenario'
 import Supplies from '@/arkham/components/Supplies.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
@@ -31,9 +31,13 @@ const remembered = computed(() => {
     if (record.tag == 'YouOweBiancaResources') {
       console.log(record);
       return `You owe Bianca resources (${record.contents})`
-    } else {
-      return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
     }
+
+    if (record.tag === 'RememberNamed') {
+      return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, { name: simpleName(record.name) })
+    }
+      
+    return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
   })
 })
 

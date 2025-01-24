@@ -1,4 +1,8 @@
 {
+  "remembered": {
+    "hadADrink": "{name} had a drink",
+    "cheated": "Cheated"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-2. You may spend 2 resources to treat this token as a 0, instead.",

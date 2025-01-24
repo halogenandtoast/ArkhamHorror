@@ -34,7 +34,7 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 function canInteract(c: Message): boolean {
   if (c.tag === "TargetLabel") {
-    return c.target.contents === id.value || `c${id.value}` === c.target.contents
+    return c.target.contents === id.value || `c${id.value}` === c.target.contents || c.target.contents == props.treachery.cardId
   }
 
   return false

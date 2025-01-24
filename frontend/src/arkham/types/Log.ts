@@ -47,7 +47,7 @@ export const partnerDecoder = JsonDecoder.object<Partner>({
 export const logKeyDecoder = JsonDecoder.oneOf<LogKey>([
   JsonDecoder.object<LogKey>({
     tag: JsonDecoder.string,
-    contents: JsonDecoder.string,
+    contents: JsonDecoder.string.map((str) => str.replace(/'/g, '')),
   }, 'LogKey'),
   JsonDecoder.object<LogKey>({
     tag: JsonDecoder.string,

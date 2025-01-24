@@ -170,7 +170,10 @@ instance RunMessage BeforeTheBlackThrone where
       case fromJSON @(Cosmos Card LocationId) meta of
         Error err -> error err
         Success cosmos -> pure $ BeforeTheBlackThrone $ attrs & metaL .~ meta & locationLayoutL .~ cosmosToGrid cosmos
-    PlaceCosmos _ lid cloc -> do
+    PlaceCosmos {} -> do
+      pushAll [Do msg, After msg]
+      pure s
+    Do (PlaceCosmos _ lid cloc) -> do
       cosmos' <- getCosmos
       let
         pos = cosmosLocationToPosition cloc

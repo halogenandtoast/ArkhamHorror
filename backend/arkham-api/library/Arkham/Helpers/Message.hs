@@ -361,11 +361,11 @@ addToHand i (toCard -> c) = AddToHand i [c]
 
 addToDiscard :: IsCard a => InvestigatorId -> a -> Message
 addToDiscard i (toCard -> c) = go c
-  where
-    go = \case
-      VengeanceCard c' -> go c'
-      PlayerCard c' -> AddToDiscard i c'
-      EncounterCard c' -> AddToEncounterDiscard c'
+ where
+  go = \case
+    VengeanceCard c' -> go c'
+    PlayerCard c' -> AddToDiscard i c'
+    EncounterCard c' -> AddToEncounterDiscard c'
 
 drawToHand :: IsCard a => InvestigatorId -> a -> Message
 drawToHand i (toCard -> c) = DrawToHand i [c]
@@ -379,6 +379,11 @@ shuffleIntoDeck (toDeck -> deck) (toTarget -> target) = ShuffleIntoDeck deck tar
 shuffleCardsIntoDeck
   :: (IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card) => deck -> cards -> Message
 shuffleCardsIntoDeck (toDeck -> deck) = ShuffleCardsIntoDeck deck . map toCard . toList
+
+shuffleCardsIntoTopOfDeck
+  :: (IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => deck -> Int -> cards -> Message
+shuffleCardsIntoTopOfDeck (toDeck -> deck) n = ShuffleCardsIntoTopOfDeck deck n . map toCard . toList
 
 findEncounterCard
   :: (Targetable target, IsCardMatcher cardMatcher)
@@ -445,7 +450,8 @@ putCardIntoPlayWithWindows iid (toCard -> card) ws = PutCardIntoPlay iid card No
 putCardIntoPlayWithAdditionalCosts :: IsCard card => InvestigatorId -> card -> Message
 putCardIntoPlayWithAdditionalCosts iid (toCard -> card) = putCardIntoPlayWithAdditionalCostsAndWindows iid card (defaultWindows iid)
 
-putCardIntoPlayWithAdditionalCostsAndWindows :: IsCard card => InvestigatorId -> card -> [Window] -> Message
+putCardIntoPlayWithAdditionalCostsAndWindows
+  :: IsCard card => InvestigatorId -> card -> [Window] -> Message
 putCardIntoPlayWithAdditionalCostsAndWindows iid (toCard -> card) ws = PutCardIntoPlayWithAdditionalCosts iid card Nothing NoPayment ws
 
 placeLabeledLocation :: (MonadRandom m, HasGame m) => Text -> Card -> m (LocationId, Message)

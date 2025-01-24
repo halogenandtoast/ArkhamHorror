@@ -1414,6 +1414,15 @@ drawCardsIfCanWith iid source n f = when (n > 0) do
   mmsg <- Msg.drawCardsIfCanWith iid source n f
   for_ mmsg push
 
+drawCardsEdit
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> m ()
+drawCardsEdit = drawCardsIfCanWith
+
 forcedDrawCards
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator
@@ -1503,6 +1512,14 @@ shuffleCardsIntoDeck
   -> cards
   -> m ()
 shuffleCardsIntoDeck deck cards = push $ Msg.shuffleCardsIntoDeck deck cards
+
+shuffleCardsIntoTopOfDeck
+  :: (ReverseQueue m, IsDeck deck, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => deck
+  -> Int
+  -> cards
+  -> m ()
+shuffleCardsIntoTopOfDeck deck n cards = push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
 shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
 shuffleDeck deck = shuffleCardsIntoDeck deck ([] :: [Card])

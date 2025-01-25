@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.DirtyFighting2 (dirtyFighting2, DirtyFighting2 (..)) where
+module Arkham.Asset.Assets.DirtyFighting2 (dirtyFighting2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
-import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget, isParley)
+import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy, isParley)
 import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Matcher
 
@@ -16,19 +16,18 @@ dirtyFighting2 :: AssetCard DirtyFighting2
 dirtyFighting2 = asset DirtyFighting2 Cards.dirtyFighting2
 
 instance HasModifiersFor DirtyFighting2 where
-  getModifiersFor (DirtyFighting2 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
-      EnemyTarget eid <- MaybeT getSkillTestTarget
-      liftGuardM $ eid <=~> ExhaustedEnemy
+  getModifiersFor (DirtyFighting2 a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
+      eid <- MaybeT getSkillTestTargetedEnemy
+      guardM $ eid <=~> ExhaustedEnemy
       action <- MaybeT getSkillTestAction
-      liftGuardM $ orM [pure $ action `elem` [#fight, #evade, #parley], isParley]
+      guardM $ (action `elem` [#fight, #evade, #parley] ||) <$> isParley
       pure [AnySkillValue 2]
 
 instance HasAbilities DirtyFighting2 where
   getAbilities (DirtyFighting2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (EnemyEvaded #after You $ ignoreAloofFightOverride AnyEnemy) (exhaust a)
+    [ restricted a 1 ControlsThis
+        $ triggered (EnemyEvaded #after You $ ignoreAloofFightOverride AnyEnemy) (exhaust a)
     ]
 
 instance RunMessage DirtyFighting2 where

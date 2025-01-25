@@ -47,12 +47,12 @@ newtype ActionAbilityBuilder a = ActionAbilityBuilder {runAbilityBuilder :: Abil
 instance Functor ActionAbilityBuilder where
   fmap :: (a -> b) -> ActionAbilityBuilder a -> ActionAbilityBuilder b
   fmap f (ActionAbilityBuilder g) = ActionAbilityBuilder $ \ability ->
-    let (a, ability') = g (ability)
+    let (a, ability') = g ability
      in (f a, ability')
 
 instance Applicative ActionAbilityBuilder where
   pure :: a -> ActionAbilityBuilder a
-  pure x = ActionAbilityBuilder $ \ability -> (x, ability)
+  pure x = ActionAbilityBuilder (x,)
 
   (<*>) :: ActionAbilityBuilder (a -> b) -> ActionAbilityBuilder a -> ActionAbilityBuilder b
   (ActionAbilityBuilder f) <*> (ActionAbilityBuilder g) = ActionAbilityBuilder $ \ability ->
@@ -104,7 +104,7 @@ extendRevealedAbilities
   -> [Ability]
 extendRevealedAbilities e action =
   withBaseAbilities (toAttrs e)
-    $ guard ((toAttrs e).revealed)
+    $ guard (toAttrs e).revealed
     *> runReader (execWriterT $ runAbilitiesBuilder action) e
 
 revealedSide
@@ -113,4 +113,4 @@ revealedSide
   -> AbilitiesBuilder e ()
 revealedSide action = do
   e <- ask
-  when ((toAttrs e).revealed) action
+  when (toAttrs e).revealed action

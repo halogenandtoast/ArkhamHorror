@@ -61,7 +61,7 @@ instance Functor (ActionAbilityBuilder e) where
 
 instance Applicative (ActionAbilityBuilder e) where
   pure :: a -> ActionAbilityBuilder e a
-  pure x = ActionAbilityBuilder $ \ab -> (x, ab)
+  pure x = ActionAbilityBuilder (x,)
 
   (<*>) :: ActionAbilityBuilder e (a -> b) -> ActionAbilityBuilder e a -> ActionAbilityBuilder e b
   (ActionAbilityBuilder f) <*> (ActionAbilityBuilder g) = ActionAbilityBuilder $ \ab ->
@@ -156,7 +156,7 @@ extendRevealedAbilities
   -> AbilitiesBuilder e ()
   -> [ScriptedAbility e]
 extendRevealedAbilities e action =
-  guard ((toAttrs e).revealed)
+  guard (toAttrs e).revealed
     *> runReader (execStateT (runAbilitiesBuilder action) []) e
 
 revealedSide
@@ -165,7 +165,7 @@ revealedSide
   -> AbilitiesBuilder e ()
 revealedSide action = do
   e <- ask
-  when ((toAttrs e).revealed) action
+  when (toAttrs e).revealed action
 
 tell :: [ScriptedAbility e] -> StateT [ScriptedAbility e] (Reader e) ()
 tell xs = modify (<> xs)

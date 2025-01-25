@@ -1,21 +1,19 @@
-module Arkham.Act.Cards.FollowingLeads (
-  FollowingLeads (..),
-  followingLeads,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.FollowingLeads (followingLeads) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query (getInvestigators, getJustLocationByName)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -32,89 +30,72 @@ followingLeads = act (2, A) FollowingLeads Cards.followingLeads Nothing
 
 instance HasAbilities FollowingLeads where
   getAbilities (FollowingLeads x) =
-    [ restrictedAbility x 1 (AssetCount 2 $ AssetWithTrait Lead <> AssetWithClues (atLeast 1))
+    [ restricted x 1 (AssetCount 2 $ withTrait Lead <> AssetWithClues (atLeast 1))
         $ Objective
-        $ ReactionAbility (RoundEnds #when) Free
+        $ freeReaction (RoundEnds #when)
     ]
 
 instance RunMessage FollowingLeads where
-  runMessage msg a@(FollowingLeads attrs) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      push
-        $ storyWithChooseOne
-          lead
-          players
-          theTruth1
-          [ Label "Tell Sergeant Monroe the truth." [DoStep 2 msg]
-          , Label "Lie about your involvement." [DoStep 3 msg]
-          ]
+  runMessage msg a@(FollowingLeads attrs) = runQueueT $ case msg of
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      advanceVia #other attrs (attrs.ability 1)
       pure a
-    DoStep n msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> do
-      players <- allPlayers
-      lead <- getLeadPlayer
-      leadId <- getLead
-      iids <- getInvestigators
-      didn'tCoverAnythingUp <- noneM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
-      coveredUpYourInvolvement <- allM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
-      evidence <- selectCount $ AssetWithTrait Lead <> AssetWithClues (atLeast 2)
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      storyWithChooseOneM theTruth1 do
+        labeled "Tell Sergeant Monroe the truth." $ doStep 2 msg
+        labeled "Lie about your involvement." $ doStep 3 msg
+      pure a
+    DoStep n msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+      lead <- getLead
       noInnocents <- selectNone $ VictoryDisplayCardMatch $ basic $ CardWithTrait Innocent
       mSergeantMonroe <- selectOne $ assetIs Assets.sergeantMonroe
-      let believableTruth = didn'tCoverAnythingUp && evidence == 2 && noInnocents
-      let believableLie = coveredUpYourInvolvement && noInnocents
 
       case n of
         2 -> do
-          pushAll [story players theTruth2, DoStep (if believableTruth then 5 else 4) msg']
+          story theTruth2
+          didn'tCoverAnythingUp <- noneM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
+          evidence <- selectCount $ withTrait Lead <> AssetWithClues (atLeast 2)
+          let believableTruth = didn'tCoverAnythingUp && evidence == 2 && noInnocents
+          doStep (if believableTruth then 5 else 4) msg'
         3 -> do
-          pushAll [story players theTruth3, DoStep (if believableLie then 6 else 4) msg']
+          story theTruth3
+          coveredUpYourInvolvement <- allM remembered [CleanedUpTheBlood, HidTheBody, TidiedUpTheRoom]
+          let believableLie = coveredUpYourInvolvement && noInnocents
+          doStep (if believableLie then 6 else 4) msg'
         4 -> do
-          pushAll
-            $ [ story players theTruth4
-              , Remember ThePoliceDon'tBelieveYou
-              ]
-            <> [RemoveFromGame (toTarget sergeantMonroe) | sergeantMonroe <- maybeToList mSergeantMonroe]
-            <> [ RemoveAllCopiesOfCardFromGame leadId (toCardCode Enemies.arkhamOfficer)
-               , ShuffleEncounterDiscardBackIn
-               , DoStep 7 msg'
-               ]
+          story theTruth4
+          remember ThePoliceDon'tBelieveYou
+          for_ mSergeantMonroe removeFromGame
+          push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)
+          shuffleEncounterDiscardBackIn
+          doStep 7 msg'
         5 -> do
-          takeControlMessage <- case mSergeantMonroe of
-            Just sergeantMonroe -> pure $ chooseOrRunOne lead $ targetLabels iids $ only . (`TakeControlOfAsset` sergeantMonroe)
+          story theTruth5
+          remember ThePoliceAreOnYourSide
+
+          iids <- getInvestigators
+          case mSergeantMonroe of
+            Just sergeantMonroe -> chooseOrRunOneM lead $ targets iids (`takeControlOfAsset` sergeantMonroe)
             Nothing -> do
-              sergeantMonroe <- getSetAsideCard Assets.sergeantMonroe
-              pure
-                $ chooseOrRunOne lead
-                $ targetLabels iids
-                $ only
-                . (`TakeControlOfSetAsideAsset` sergeantMonroe)
-          pushAll
-            [ story players theTruth5
-            , Remember ThePoliceAreOnYourSide
-            , takeControlMessage
-            , RemoveAllCopiesOfCardFromGame leadId (toCardCode Enemies.arkhamOfficer)
-            , ShuffleEncounterDiscardBackIn
-            , DoStep 7 msg'
-            ]
+              sergeantMonroe <- fetchCard Assets.sergeantMonroe
+              chooseOrRunOneM lead $ targets iids (`takeControlOfSetAsideAsset` sergeantMonroe)
+          push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)
+          shuffleEncounterDiscardBackIn
+          doStep 7 msg'
         6 -> do
-          takeControlMessage <- case mSergeantMonroe of
-            Just sergeantMonroe -> pure $ chooseOrRunOne lead $ targetLabels iids $ only . (`TakeControlOfAsset` sergeantMonroe)
+          story theTruth6
+          remember ThePoliceAreOnYourSide
+
+          iids <- getInvestigators
+          case mSergeantMonroe of
+            Just sergeantMonroe -> do
+              chooseOrRunOneM lead $ targets iids (`takeControlOfAsset` sergeantMonroe)
             Nothing -> do
-              sergeantMonroe <- getSetAsideCard Assets.sergeantMonroe
-              pure
-                $ chooseOrRunOne lead
-                $ targetLabels iids
-                $ only
-                . (`TakeControlOfSetAsideAsset` sergeantMonroe)
-          pushAll
-            [ story players theTruth6
-            , Remember ThePoliceAreOnYourSide
-            , takeControlMessage
-            , RemoveAllCopiesOfCardFromGame leadId (toCardCode Enemies.arkhamOfficer)
-            , ShuffleEncounterDiscardBackIn
-            , DoStep 7 msg'
-            ]
+              sergeantMonroe <- fetchCard Assets.sergeantMonroe
+              chooseOrRunOneM lead $ targets iids (`takeControlOfSetAsideAsset` sergeantMonroe)
+          push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)
+          shuffleEncounterDiscardBackIn
+          doStep 7 msg'
         7 -> do
           mAlienDevice <- selectOne $ assetIs Assets.alienDevice
           mManagersKey <- selectOne $ assetIs Assets.managersKey
@@ -124,166 +105,120 @@ instance RunMessage FollowingLeads where
           case (mAlienDevice, mTimeWornLocket, mSinisterSolution, mManagersKey, mTomeOfRituals) of
             (Just alienDevice, Just timeWornLocket, _, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV1
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues timeWornLocket
-              room245 <- getJustLocationByName "Room 245"
-              card <- genCard Enemies.vengefulSpecter
-              placeVengefulSpecter <- createEnemyAt_ card room245 Nothing
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget timeWornLocket) clues
-                , PlaceClues (toSource attrs) (toTarget alienDevice) clues
-                , placeVengefulSpecter
-                ]
+              removeClues attrs timeWornLocket clues
+              placeClues attrs alienDevice clues
+              card <- fetchCard Enemies.vengefulSpecter
+              createEnemyAtLocationMatching_ card "Room 245"
             (Just alienDevice, _, Just sinisterSolution, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV2
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues alienDevice
-              hotelRoof <- getJustLocationByName "Hotel Roof"
-              card <- genCard Enemies.otherworldlyMeddler
-              (otherworldlyMeddler, placeOtherworldlyMeddler) <- createEnemyAt card hotelRoof Nothing
+              removeClues attrs alienDevice clues
+              placeClues attrs sinisterSolution clues
+              card <- fetchCard Enemies.otherworldlyMeddler
+              otherworldlyMeddler <- createEnemyAtLocationMatching card "Hotel Roof"
               doom <- perPlayer 1
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget alienDevice) clues
-                , PlaceClues (toSource attrs) (toTarget sinisterSolution) clues
-                , placeOtherworldlyMeddler
-                , PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) doom
-                ]
+              placeDoom attrs otherworldlyMeddler doom
             (Just alienDevice, _, _, Just managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV3
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues managersKey
-              restaurant <- getJustLocationByName "Restaurant"
-              card <- genCard Enemies.hotelManager
-              placeHotelManager <- createEnemyAt_ card restaurant Nothing
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget managersKey) clues
-                , PlaceClues (toSource attrs) (toTarget alienDevice) clues
-                , placeHotelManager
-                ]
+              removeClues attrs managersKey clues
+              placeClues attrs alienDevice clues
+              card <- fetchCard Enemies.hotelManager
+              createEnemyAtLocationMatching_ card "Restaurant"
             (Just alienDevice, _, _, _, Just tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV4
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues alienDevice
-              hotelRoof <- getJustLocationByName "Hotel Roof"
-              card <- genCard Enemies.otherworldlyMeddler
-              (otherworldlyMeddler, placeOtherworldlyMeddler) <- createEnemyAt card hotelRoof Nothing
+              removeClues attrs alienDevice clues
+              placeClues attrs tomeOfRituals clues
+              card <- fetchCard Enemies.otherworldlyMeddler
+              otherworldlyMeddler <- createEnemyAtLocationMatching card "Hotel Roof"
               doom <- perPlayer 2
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget alienDevice) clues
-                , PlaceClues (toSource attrs) (toTarget tomeOfRituals) clues
-                , placeOtherworldlyMeddler
-                , PlaceDoom (toSource attrs) (toTarget otherworldlyMeddler) (2 + doom)
-                ]
+              placeDoom attrs otherworldlyMeddler (2 + doom)
             (_, Just timeWornLocket, Just sinisterSolution, _, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV5
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues timeWornLocket
-              room245 <- getJustLocationByName "Room 245"
-              card <- genCard Enemies.vengefulSpecter
-              placeVengefulSpecter <- createEnemyAt_ card room245 Nothing
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget timeWornLocket) clues
-                , PlaceClues (toSource attrs) (toTarget sinisterSolution) clues
-                , placeVengefulSpecter
-                ]
+              removeClues attrs timeWornLocket clues
+              placeClues attrs sinisterSolution clues
+              card <- fetchCard Enemies.vengefulSpecter
+              createEnemyAtLocationMatching_ card "Room 245"
             (_, Just timeWornLocket, _, Just managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV6
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues managersKey
-              restaurant <- getJustLocationByName "Restaurant"
-              card <- genCard Enemies.hotelManager
-              placeHotelManager <- createEnemyAt_ card restaurant Nothing
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget managersKey) clues
-                , PlaceClues (toSource attrs) (toTarget timeWornLocket) clues
-                , placeHotelManager
-                ]
+              removeClues attrs managersKey clues
+              placeClues attrs timeWornLocket clues
+              card <- fetchCard Enemies.hotelManager
+              createEnemyAtLocationMatching_ card "Restaurant"
             (_, Just _timeWornLocket, _, _, Just _tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV7
-              basement <- getJustLocationByName "Basement"
-              card <- genCard Enemies.dimensionalShambler
-              placeDimensionalShambler <- createEnemyAt_ card basement Nothing
+              push $ SetCurrentAgendaDeck 1 [agenda]
+              card <- fetchCard Enemies.dimensionalShambler
+              createEnemyAtLocationMatching_ card "Basement"
               guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
+              shuffleCardsIntoDeck Deck.EncounterDeck guests
+              shuffleEncounterDiscardBackIn
               x <- perPlayer 1
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , placeDimensionalShambler
-                , ShuffleCardsIntoDeck Deck.EncounterDeck guests
-                , ShuffleEncounterDiscardBackIn
-                , DiscardUntilN (1 + x) leadId (toSource attrs) (toTarget attrs) Deck.EncounterDeck
-                    $ BasicCardMatch
-                    $ oneOf [CardWithTrait Guest, CardWithTrait Cultist]
-                ]
+              discardUntilN (1 + x) lead attrs attrs Deck.EncounterDeck
+                $ basic
+                $ mapOneOf CardWithTrait [Guest, Cultist]
             (_, _, Just _sinisterSolution, Just _managersKey, _) -> do
               agenda <- genCard Agendas.theTrueCulpritV8
-              staff <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Staff
-              room212 <- getJustLocationByName "Room 212"
-              harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
-              x <- getPlayerCount
+              push $ SetCurrentAgendaDeck 1 [agenda]
+              staff <- select $ VictoryDisplayCardMatch $ basic $ withTrait Staff
+              shuffleCardsIntoDeck Deck.EncounterDeck staff
+              shuffleEncounterDiscardBackIn
+              discardUntilFirst lead attrs Deck.EncounterDeck $ basic $ withTrait Staff
+              x <- perPlayer 1
+              when (x >= 3) do
+                discardUntilFirst lead attrs Deck.EncounterDeck $ basic $ withTrait Staff
               tid <- getRandom
-              pushAll
-                $ [ SetCurrentAgendaDeck 1 [agenda]
-                  , ShuffleCardsIntoDeck Deck.EncounterDeck staff
-                  , ShuffleEncounterDiscardBackIn
-                  , DiscardUntilFirst leadId (toSource attrs) Deck.EncounterDeck
-                      $ BasicCardMatch
-                      $ CardWithTrait Staff
-                  ]
-                <> [ DiscardUntilFirst leadId (toSource attrs) Deck.EncounterDeck
-                    $ BasicCardMatch
-                    $ CardWithTrait Staff
-                   | x >= 3
-                   ]
-                <> [AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)]
+              room212 <- getJustLocationByName "Room 212"
+              harvestedBrain <- fetchCard Treacheries.harvestedBrain
+              push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
             (_, _, Just sinisterSolution, _, Just tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV9
-              room212 <- getJustLocationByName "Room 212"
+              push $ SetCurrentAgendaDeck 1 [agenda]
               clues <- field AssetClues sinisterSolution
-              harvestedBrain <- getSetAsideCard Treacheries.harvestedBrain
+              removeClues attrs sinisterSolution clues
+              placeClues attrs tomeOfRituals clues
               tid <- getRandom
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , RemoveClues (toSource attrs) (toTarget sinisterSolution) clues
-                , PlaceClues (toSource attrs) (toTarget tomeOfRituals) clues
-                , AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
-                ]
+              room212 <- getJustLocationByName "Room 212"
+              harvestedBrain <- fetchCard Treacheries.harvestedBrain
+              push $ AttachStoryTreacheryTo tid harvestedBrain (toTarget room212)
             (_, _, _, Just _managersKey, Just _tomeOfRituals) -> do
               agenda <- genCard Agendas.theTrueCulpritV10
-              basement <- getJustLocationByName "Basement"
-              card <- genCard Enemies.dimensionalShambler
-              placeDimensionalShambler <- createEnemyAt_ card basement Nothing
+              push $ SetCurrentAgendaDeck 1 [agenda]
+              card <- fetchCard Enemies.dimensionalShambler
+              createEnemyAtLocationMatching_ card "Basement"
               guests <- select $ VictoryDisplayCardMatch $ basic $ CardWithTrait Guest
-              x <- perPlayer 2
-              pushAll
-                [ SetCurrentAgendaDeck 1 [agenda]
-                , placeDimensionalShambler
-                , ShuffleCardsIntoDeck Deck.EncounterDeck guests
-                , ShuffleEncounterDiscardBackIn
-                , PlaceDoom (toSource attrs) (AgendaMatcherTarget AnyAgenda) x
-                ]
+              shuffleCardsIntoDeck Deck.EncounterDeck guests
+              shuffleEncounterDiscardBackIn
+              placeDoom attrs (AgendaMatcherTarget AnyAgenda) =<< perPlayer 2
             _ -> error "invalid combination"
 
-          pushAll
-            [ story players theTruth7
-            , RemoveAllDoomFromPlay defaultRemoveDoomMatchers
-            , toDiscard GameSource attrs
-            ]
+          story theTruth7
+          push $ RemoveAllDoomFromPlay defaultRemoveDoomMatchers
+          toDiscard GameSource attrs
         _ -> error "unknown step"
 
       pure a
     RequestedEncounterCards (isTarget attrs -> True) cards -> do
       crimeScenes <- select $ LocationWithTrait CrimeScene
       (emptyCrimeScenes, rest) <- partitionM (<=~> EmptyLocation) crimeScenes
-      emptyCrimeScenes' <- shuffleM emptyCrimeScenes
-      rest' <- shuffleM rest
+      emptyCrimeScenes' <- shuffle emptyCrimeScenes
+      rest' <- shuffle rest
 
       for_ (zip cards (emptyCrimeScenes' <> rest')) $ \(card, lid) -> do
-        assetId <- getRandom
-        push $ CreateAssetAt assetId (toCard card) (AtLocation lid)
+        createAssetAt_ (toCard card) (AtLocation lid)
 
       pure a
     RequestedEncounterCard (isSource attrs -> True) _ (Just ec) -> do
-      foyer <- getJustLocationByName "Foyer"
-      pushM $ createEnemyAt_ (toCard ec) foyer Nothing
+      createEnemyAtLocationMatching_ (toCard ec) "Foyer"
       pure a
-    _ -> FollowingLeads <$> runMessage msg attrs
+    _ -> FollowingLeads <$> liftRunMessage msg attrs

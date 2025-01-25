@@ -618,6 +618,10 @@ placeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeClues source target n = push $ PlaceClues (toSource source) (toTarget target) n
 
+removeClues
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
+removeClues source target n = push $ RemoveClues (toSource source) (toTarget target) n
+
 placeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n
@@ -1383,6 +1387,12 @@ drawEncounterCard i source = push $ Msg.drawEncounterCards i source 1
 
 drawEncounterCards :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 drawEncounterCards i source n = push $ Msg.drawEncounterCards i source n
+
+drawEncounterCardsEdit
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> m ()
+drawEncounterCardsEdit iid source n f = when (n > 0) do
+  push $ Msg.drawEncounterCardsWith iid source n f
 
 drawCards
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -2175,6 +2185,18 @@ discardUntilFirst
 discardUntilFirst iid source deck matcher = do
   push $ DiscardUntilFirst iid (toSource source) (toDeck deck) matcher
 
+discardUntilN
+  :: (ReverseQueue m, Sourceable source, IsDeck deck, Targetable target)
+  => Int
+  -> InvestigatorId
+  -> source
+  -> target
+  -> deck
+  -> ExtendedCardMatcher
+  -> m ()
+discardUntilN n iid source target deck matcher = do
+  push $ DiscardUntilN n iid (toSource source) (toTarget target) (toDeck deck) matcher
+
 createAssetAt_
   :: (ReverseQueue m, FetchCard card) => card -> Placement -> m ()
 createAssetAt_ c placement = do
@@ -2297,7 +2319,8 @@ removeLocation (asId -> lid) = do
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 chooseAndDiscardAsset iid source = chooseAndDiscardAssetMatching iid source AnyAsset
 
-chooseAndDiscardAssetMatching :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
+chooseAndDiscardAssetMatching
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
 chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher
 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()

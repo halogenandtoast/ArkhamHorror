@@ -25,7 +25,7 @@ instance RunMessage IllTakeThat where
     PlayThisEvent iid (is attrs -> True) -> do
       let n = getPassedBy attrs.windows
       items <-
-        select $ PlayableCardWithCostReduction NoAction n $ inHandOf iid <> basic (#item <> #asset)
+        select $ PlayableCardWithCostReduction NoAction n $ inHandOf ForPlay iid <> basic (#item <> #asset)
       focusCards items do
         chooseTargetM iid items \item -> do
           unfocusCards

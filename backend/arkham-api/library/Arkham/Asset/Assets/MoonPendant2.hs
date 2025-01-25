@@ -20,7 +20,7 @@ instance HasModifiersFor MoonPendant2 where
   getModifiersFor (MoonPendant2 a) = case a.controller of
     Nothing -> pure mempty
     Just iid -> do
-      hand <- select $ basic (NonWeakness <> #tarot) <> inHandOf iid
+      hand <- select $ basic (NonWeakness <> #tarot) <> inHandOf NotForPlay iid
       committed <- fieldMap InvestigatorCommittedCards (filterCards (NonWeakness <> #tarot)) iid
       modifyEach a (hand <> committed) [AddSkillIcons [#wild, #wild]]
 

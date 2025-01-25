@@ -30,6 +30,11 @@ import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
+data ForPlay = ForPlay | NotForPlay
+  deriving stock (Show, Eq, Ord, Data)
+
+instance Plated ForPlay
+
 -- | Relies on game state, can not be used purely
 data ExtendedCardMatcher
   = BasicCardMatch CardMatcher
@@ -44,7 +49,7 @@ data ExtendedCardMatcher
   | IsThisCard
   | ControlledBy Who
   | OwnedBy Who
-  | InHandOf Who
+  | InHandOf ForPlay Who
   | InDeckOf Who
   | InPlayAreaOf Who
   | InDiscardOf Who
@@ -368,6 +373,7 @@ mconcat
   [ deriveJSON defaultOptions ''CardMatcher
   , deriveJSON defaultOptions ''CardListMatcher
   , deriveJSON defaultOptions ''DeckMatcher
+  , deriveJSON defaultOptions ''ForPlay
   , deriveToJSON defaultOptions ''ExtendedCardMatcher
   ]
 
@@ -377,6 +383,11 @@ instance FromJSON ExtendedCardMatcher where
     case t of
       "AnyCard" -> pure (BasicCardMatch AnyCard)
       "CardMatches" -> BasicCardMatch . CardMatches <$> o .: "contents"
+      "InHandOf" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left iid -> pure $ InHandOf ForPlay iid
+          Right (forPlay, iid) -> pure $ InHandOf forPlay iid
       _ -> $(mkParseJSON defaultOptions ''ExtendedCardMatcher) (Object o)
 
 -- ** Card Helpers **

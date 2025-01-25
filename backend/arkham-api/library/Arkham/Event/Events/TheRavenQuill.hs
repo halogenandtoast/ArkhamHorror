@@ -89,7 +89,7 @@ instance RunMessage TheRavenQuill where
           cards <-
             select
               $ PlayableCard (UnpaidCost NoAction)
-              $ oneOf [inHandOf iid, inDiscardOf iid]
+              $ oneOf [inHandOf ForPlay iid, inDiscardOf iid]
               <> basic (oneOf $ CardWithTitle <$> titles)
           if null cards && not canSearch
             then pushAll defaultChoose

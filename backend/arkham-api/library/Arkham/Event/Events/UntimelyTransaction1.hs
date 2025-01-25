@@ -23,7 +23,7 @@ untimelyTransaction1 = event UntimelyTransaction1 Cards.untimelyTransaction1
 instance RunMessage UntimelyTransaction1 where
   runMessage msg e@(UntimelyTransaction1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      items <- select $ InHandOf (InvestigatorWithId iid) <> #item
+      items <- select $ InHandOf NotForPlay (InvestigatorWithId iid) <> #item
       chooseOne
         iid
         [ targetLabel

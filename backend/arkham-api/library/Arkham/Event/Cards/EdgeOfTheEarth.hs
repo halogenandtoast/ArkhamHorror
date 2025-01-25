@@ -107,7 +107,7 @@ unearthTheAncients2 =
     { cdSkills = [#intellect, #intellect, #agility]
     , cdCardTraits = singleton Insight
     , cdActions = [#investigate]
-    , cdCriteria = Just $ Criteria.ExtendedCardExists $ InHandOf You <> basic (#seeker <> #asset)
+    , cdCriteria = Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
     , cdLevel = Just 2
     }
 
@@ -251,7 +251,7 @@ burnAfterReading1 =
     , cdCriteria =
         Just
           $ oneOf
-            [ exists $ InHandOf You <> basic (CardWithMaxLevel 5)
+            [ exists $ InHandOf NotForPlay You <> basic (CardWithMaxLevel 5)
             , canDiscoverCluesAtYourLocation
             ]
     , cdLevel = Just 1

@@ -30,7 +30,7 @@ unearthTheAncients = event (UnearthTheAncients . (`with` Metadata Nothing)) Card
 instance RunMessage UnearthTheAncients where
   runMessage msg e@(UnearthTheAncients (attrs `With` metadata)) = case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      assets <- select $ inHandOf iid <> basic (#seeker <> #asset)
+      assets <- select $ inHandOf NotForPlay iid <> basic (#seeker <> #asset)
       player <- getPlayer iid
       push
         $ chooseOne player

@@ -17,7 +17,7 @@ instance RunMessage LucidDreaming2 where
   runMessage msg e@(LucidDreaming2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       canRevealCards <- can.reveal.cards iid
-      cards <- select $ oneOf $ inPlayAreaOf iid : [inHandOf iid | canRevealCards]
+      cards <- select $ oneOf $ inPlayAreaOf iid : [inHandOf NotForPlay iid | canRevealCards]
       chooseTargetM iid cards \card ->
         search iid attrs iid [fromDeck] (basic $ CardWithTitle card.title) (DrawFound iid 1)
       pure e

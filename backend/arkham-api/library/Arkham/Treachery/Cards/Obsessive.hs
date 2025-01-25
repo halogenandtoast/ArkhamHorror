@@ -27,7 +27,7 @@ instance RunMessage Obsessive where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cards <- select $ inHandOf iid <> basic (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
+      cards <- select $ inHandOf NotForPlay iid <> basic (NonWeakness <> CardWithoutKeyword Keyword.Hidden)
       for_ (nonEmpty cards) $ \cards' -> do
         card <- sample cards'
         push $ DiscardCard iid (attrs.ability 1) card.id

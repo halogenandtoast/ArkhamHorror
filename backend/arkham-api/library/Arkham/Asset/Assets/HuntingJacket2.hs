@@ -16,7 +16,7 @@ huntingJacket2 = assetWith HuntingJacket2 Cards.huntingJacket2 ((healthL ?~ 2) .
 
 instance HasAbilities HuntingJacket2 where
   getAbilities (HuntingJacket2 a) =
-    [ controlledAbility a 1 (exists (InHandOf You <> basic NonWeakness) <> criteria1)
+    [ controlledAbility a 1 (exists (InHandOf NotForPlay You <> basic NonWeakness) <> criteria1)
         $ FastAbility (exhaust a)
     , controlledAbility a 2 criteria2 $ freeReaction $ AssetDefeated #when ByAny (be a)
     ]
@@ -27,7 +27,7 @@ instance HasAbilities HuntingJacket2 where
 instance RunMessage HuntingJacket2 where
   runMessage msg a@(HuntingJacket2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      selectOneToHandle iid (attrs.ability 1) $ inHandOf iid <> basic NonWeakness
+      selectOneToHandle iid (attrs.ability 1) $ inHandOf NotForPlay iid <> basic NonWeakness
       pure a
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       c <- getCard cid

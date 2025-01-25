@@ -36,7 +36,7 @@ instance HasAbilities JennyBarnesParallel where
     [ restrictedAbility
         a
         1
-        (Self <> PlayableCardExistsWithCostReduction (Reduce 1) (InHandOf You <> #talent <> #asset))
+        (Self <> PlayableCardExistsWithCostReduction (Reduce 1) (InHandOf ForPlay You <> #talent <> #asset))
         $ freeReaction (TurnBegins #after You)
     , restrictedAbility a 2 (Self <> can.gain.resources You <> criteria)
         $ FastAbility
@@ -56,7 +56,7 @@ instance HasChaosTokenValue JennyBarnesParallel where
 instance RunMessage JennyBarnesParallel where
   runMessage msg i@(JennyBarnesParallel (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      results <- select (InHandOf (InvestigatorWithId iid) <> #talent <> #asset)
+      results <- select (InHandOf ForPlay (InvestigatorWithId iid) <> #talent <> #asset)
       resources <- getSpendableResources iid
       cards <-
         filterM

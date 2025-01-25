@@ -19,7 +19,7 @@ burnAfterReading1 = event BurnAfterReading1 Cards.burnAfterReading1
 instance RunMessage BurnAfterReading1 where
   runMessage msg e@(BurnAfterReading1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      selectWithNonNull (inHandOf iid <> basic (CardWithMaxLevel 5)) \canExile ->
+      selectWithNonNull (inHandOf NotForPlay iid <> basic (CardWithMaxLevel 5)) \canExile ->
         chooseOne iid [targetLabel x [handleTargetChoice iid attrs x.id] | x <- canExile]
 
       withLocationOf iid \lid -> do

@@ -28,7 +28,7 @@ instance RunMessage UncageTheSoul3 where
       results <-
         select
           $ oneOf
-            [ inHandOf iid <> basic (oneOf [#spell, #ritual])
+            [ inHandOf NotForPlay iid <> basic (oneOf [#spell, #ritual])
             , inDiscardOf iid <> basic (oneOf [#spell, #ritual])
             ]
       if null results
@@ -47,7 +47,7 @@ instance RunMessage UncageTheSoul3 where
         filterM (getIsPlayableWithResources iid GameSource rs (UnpaidCost NoAction) ws)
           =<< select
             ( oneOf
-                [ inHandOf iid <> basic (oneOf [#spell, #ritual])
+                [ inHandOf NotForPlay iid <> basic (oneOf [#spell, #ritual])
                 , inDiscardOf iid <> basic (oneOf [#spell, #ritual])
                 ]
             )

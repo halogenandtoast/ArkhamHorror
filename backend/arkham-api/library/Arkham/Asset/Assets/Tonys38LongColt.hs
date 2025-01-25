@@ -38,7 +38,7 @@ instance HasModifiersFor Tonys38LongColt where
 instance RunMessage Tonys38LongColt where
   runMessage msg a@(Tonys38LongColt attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mcard <- selectOne $ inHandOf iid <> basic (cardIs Cards.tonys38LongColt)
+      mcard <- selectOne $ inHandOf ForPlay iid <> basic (cardIs Cards.tonys38LongColt)
       for_ mcard $ push . putCardIntoPlay iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

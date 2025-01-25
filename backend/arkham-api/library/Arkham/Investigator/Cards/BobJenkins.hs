@@ -51,7 +51,7 @@ instance HasAbilities BobJenkins where
       ( Self
           <> PlayableCardExists
             (UnpaidCost NoAction)
-            (basic (#asset <> #item) <> InHandOf (affectsOthers $ InvestigatorAt YourLocation))
+            (basic (#asset <> #item) <> InHandOf ForPlay (affectsOthers $ InvestigatorAt YourLocation))
       )
       $ ActionAbility [] mempty
     | BobJenkinsAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
@@ -71,7 +71,7 @@ instance RunMessage BobJenkins where
       investigators <- select (affectsOthers $ colocatedWith iid)
 
       playableCards <- concatForM investigators $ \iid' -> do
-        cards <- select $ InHandOf (InvestigatorWithId iid') <> basic (#asset <> #item)
+        cards <- select $ InHandOf ForPlay (InvestigatorWithId iid') <> basic (#asset <> #item)
         withModifiers
           iid'
           (toModifiers attrs [CanSpendResourcesOnCardFromInvestigator (InvestigatorWithId iid) AnyCard])

@@ -31,7 +31,7 @@ instance RunMessage EyesInTheTrees where
       pure t
     DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       assets <- select $ assetControlledBy iid <> DiscardableAsset
-      cards <- selectAny $ inHandOf iid <> basic DiscardableCard
+      cards <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
 
       chooseOneM iid do
         when cards do

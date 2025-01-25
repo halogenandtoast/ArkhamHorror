@@ -31,7 +31,7 @@ instance RunMessage EasyMark1 where
         <> toList mDrawCards
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mcard <- selectOne $ inHandOf iid <> basic (cardIs Cards.easyMark1)
+      mcard <- selectOne $ inHandOf ForPlay iid <> basic (cardIs Cards.easyMark1)
       for_ mcard $ push . putCardIntoPlay iid
       pure e
     _ -> EasyMark1 <$> runMessage msg attrs

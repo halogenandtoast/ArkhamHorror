@@ -18,7 +18,7 @@ hitAndRun = event HitAndRun Cards.hitAndRun
 instance RunMessage HitAndRun where
   runMessage msg e@(HitAndRun attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
-      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (#ally <> #asset)
+      cards <- select $ PlayableCard Cost.PaidCost $ inHandOf ForPlay iid <> basic (#ally <> #asset)
       chooseTargetM iid cards \card -> do
         push $ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
         createCardEffect Cards.hitAndRun Nothing attrs card

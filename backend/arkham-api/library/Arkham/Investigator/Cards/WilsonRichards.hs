@@ -51,7 +51,7 @@ instance RunMessage WilsonRichards where
         else pure i
     ElderSignEffect iid | attrs `is` iid -> do
       playAreaTools <- select $ assetInPlayAreaOf iid <> #tool
-      handTools <- select $ inHandOf iid <> #asset <> #tool
+      handTools <- select $ inHandOf NotForPlay iid <> #asset <> #tool
       validPlayAreaTools <- flip filterM playAreaTools \aid -> do
         cost <- field AssetCost aid
         pure $ any (\c -> maybe False ((<= cost) . toPrintedCost) c.cost) handTools
@@ -61,7 +61,7 @@ instance RunMessage WilsonRichards where
       pure i
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       cost <- field AssetCost aid
-      handTools <- select $ inHandOf iid <> #asset <> #tool
+      handTools <- select $ inHandOf NotForPlay iid <> #asset <> #tool
       let validHandTools = filter (\c -> maybe False ((<= cost) . toPrintedCost) c.cost) handTools
       returnToHand iid aid
       chooseOne iid [targetLabel tool [Msg.putCardIntoPlay iid tool] | tool <- validHandTools]

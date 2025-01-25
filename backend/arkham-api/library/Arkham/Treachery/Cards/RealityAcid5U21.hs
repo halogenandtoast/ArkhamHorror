@@ -167,7 +167,7 @@ instance RunMessage RealityAcid5U21 where
           investigators <- select $ affectsOthers Anyone
           signatures <- forMaybeM investigators \investigator -> do
             inDeck <- select $ inDeckOf investigator <> basic (SignatureCard <> NonWeakness)
-            inHand <- select $ inHandOf investigator <> basic (SignatureCard <> NonWeakness)
+            inHand <- select $ inHandOf NotForPlay investigator <> basic (SignatureCard <> NonWeakness)
             inDiscard <- select $ inDiscardOf investigator <> basic (SignatureCard <> NonWeakness)
             inPlay <- select $ inPlayAreaOf investigator <> basic (SignatureCard <> NonWeakness)
 

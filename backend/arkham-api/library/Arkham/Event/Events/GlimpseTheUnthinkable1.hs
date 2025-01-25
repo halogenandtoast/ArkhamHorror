@@ -32,7 +32,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
     ResolveEvent iid eid _ _ | eid == toId attrs -> do
       cards <-
         select
-          $ InHandOf (InvestigatorWithId iid)
+          $ InHandOf NotForPlay (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       player <- getPlayer iid
       pushM
@@ -48,7 +48,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
         n = getChoiceAmount "Number of cards to discard" choices
       cards <-
         select
-          $ InHandOf (InvestigatorWithId iid)
+          $ InHandOf NotForPlay (InvestigatorWithId iid)
           <> BasicCardMatch NonWeakness
       let drawing = drawCards iid attrs n
       player <- getPlayer iid

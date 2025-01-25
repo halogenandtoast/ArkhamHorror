@@ -75,6 +75,9 @@ drawCardsIfCanWith i source n f = do
   canDraw <- can.draw.cards (sourceToFromSource source) (asId i)
   pure $ guard canDraw $> drawCardsWith (asId i) source n f
 
+drawEncounterCardsWith :: Sourceable source => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> Message
+drawEncounterCardsWith i source n f = DrawCards i $ f $ newCardDraw source Deck.EncounterDeck n
+
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of
   AbilitySource s _ -> sourceToFromSource s

@@ -284,7 +284,7 @@ instance RunMessage Scenario where
     UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
       investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       msgs <- forMaybeM investigators $ \investigator -> do
-        results <- select (Matcher.InHandOf (Matcher.InvestigatorWithId investigator) <> #asset)
+        results <- select (Matcher.InHandOf Matcher.ForPlay (Matcher.InvestigatorWithId investigator) <> #asset)
         resources <- getSpendableResources investigator
         cards <-
           filterM

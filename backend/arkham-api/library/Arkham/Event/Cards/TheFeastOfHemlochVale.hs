@@ -89,7 +89,7 @@ holdUp =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdActions = [#parley]
-    , cdCriteria = Just $ exists (EnemyAt YourLocation) <> exists (InHandOf You <> #item <> #asset)
+    , cdCriteria = Just $ exists (EnemyAt YourLocation) <> exists (InHandOf NotForPlay You <> #item <> #asset)
     }
 
 taskForce :: CardDef
@@ -297,7 +297,7 @@ falseSurrender =
     , cdCriteria =
         Just
           $ exists (EnemyAt YourLocation <> CanParleyEnemy You)
-          <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf You <> basic (#asset <> #weapon))
+          <> exists (PlayableCardWithCostReduction NoAction 1 $ InHandOf ForPlay You <> basic (#asset <> #weapon))
     }
 
 grift :: CardDef
@@ -490,7 +490,7 @@ etherealWeaving3 =
     , cdCardTraits = setFromList [Spirit, Double]
     , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria =
-        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ InHandOf You <> #spell <> #event
+        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ InHandOf ForPlay You <> #spell <> #event
     }
 
 -- We need to include the token pool because after this skill test the tokens

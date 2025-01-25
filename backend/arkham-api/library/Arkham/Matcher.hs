@@ -350,8 +350,8 @@ inDeckOf = InDeckOf . InvestigatorWithId
 inPlayAreaOf :: InvestigatorId -> ExtendedCardMatcher
 inPlayAreaOf = InPlayAreaOf . InvestigatorWithId
 
-inHandOf :: InvestigatorId -> ExtendedCardMatcher
-inHandOf = InHandOf . InvestigatorWithId
+inHandOf :: ForPlay -> InvestigatorId -> ExtendedCardMatcher
+inHandOf forPlay = InHandOf forPlay . InvestigatorWithId
 
 inDiscardOf :: InvestigatorId -> ExtendedCardMatcher
 inDiscardOf = InDiscardOf . InvestigatorWithId

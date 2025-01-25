@@ -27,7 +27,7 @@ holdUp = event (HoldUp . (`with` Meta Nothing)) Cards.holdUp
 instance RunMessage HoldUp where
   runMessage msg e@(HoldUp (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ inHandOf iid <> #item <> #asset
+      selectOneToHandle iid attrs $ inHandOf NotForPlay iid <> #item <> #asset
       sid <- getRandom
       chooseFightEnemyEdit sid iid attrs (setTarget attrs)
       pure e

@@ -25,7 +25,7 @@ instance HasAbilities JoeyTheRatVigil3 where
         $ controlledAbility
           x
           1
-          (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf You <> #item))
+          (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf ForPlay You <> #item))
           (FastAbility $ ResourceCost 1)
     , withTooltip "Discard an _Item_ asset from play: Gain 2 resources."
         $ controlledAbility x 2 (can.gain.resources You)

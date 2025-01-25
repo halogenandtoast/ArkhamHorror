@@ -27,7 +27,7 @@ instance HasModifiersFor TriggerMan3 where
 
 instance HasAbilities TriggerMan3 where
   getAbilities (TriggerMan3 x) =
-    [ controlledAbility x 1 (exists $ InHandOf You <> basic (#illicit <> #asset))
+    [ controlledAbility x 1 (exists $ InHandOf NotForPlay You <> basic (#illicit <> #asset))
         $ freeReaction
         $ AssetEntersPlay #when (be x)
     , controlledAbility

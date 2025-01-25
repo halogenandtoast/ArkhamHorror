@@ -32,13 +32,13 @@ instance HasModifiersFor DayanaEsperence3 where
 
 instance HasAbilities DayanaEsperence3 where
   getAbilities (DayanaEsperence3 a) =
-    [ controlled a 1 (exists $ InHandOf You <> basic (NonWeakness <> #spell <> #event)) $ FastAbility Free
+    [ controlled a 1 (exists $ InHandOf ForPlay You <> basic (NonWeakness <> #spell <> #event)) $ FastAbility Free
     ]
 
 instance RunMessage DayanaEsperence3 where
   runMessage msg a@(DayanaEsperence3 attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cards <- select $ inHandOf iid <> basic (NonWeakness <> #spell <> #event)
+      cards <- select $ inHandOf ForPlay iid <> basic (NonWeakness <> #spell <> #event)
 
       player <- getPlayer iid
       push

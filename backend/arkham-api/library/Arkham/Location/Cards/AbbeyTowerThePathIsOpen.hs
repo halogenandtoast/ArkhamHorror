@@ -35,7 +35,7 @@ instance HasAbilities AbbeyTowerThePathIsOpen where
 instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      maxDiscardAmount <- selectCount $ inHandOf iid <> basic NonWeakness
+      maxDiscardAmount <- selectCount $ inHandOf NotForPlay iid <> basic NonWeakness
       chooseAmounts
         iid
         "Discard up to 3 cards from your hand"

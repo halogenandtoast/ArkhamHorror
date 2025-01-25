@@ -2295,7 +2295,10 @@ removeLocation (asId -> lid) = do
     else pushAll $ resolve (RemoveLocation lid)
 
 chooseAndDiscardAsset :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
-chooseAndDiscardAsset iid source = push $ ChooseAndDiscardAsset iid (toSource source) AnyAsset
+chooseAndDiscardAsset iid source = chooseAndDiscardAssetMatching iid source AnyAsset
+
+chooseAndDiscardAssetMatching :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> AssetMatcher -> m ()
+chooseAndDiscardAssetMatching iid source matcher = push $ ChooseAndDiscardAsset iid (toSource source) matcher
 
 loseActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 loseActions iid source n = push $ LoseActions iid (toSource source) n

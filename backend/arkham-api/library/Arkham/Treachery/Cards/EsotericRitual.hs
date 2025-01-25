@@ -24,7 +24,7 @@ instance RunMessage EsotericRitual where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       tokens <- count ((== #curse) . (.face)) <$> getSkillTestRevealedChaosTokens
       hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
-      hasDiscardableCard <- selectAny $ inHandOf iid <> basic DiscardableCard
+      hasDiscardableCard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseNM iid (if tokens > 0 then 2 else 1) do
         when hasDiscardableCard
           $ labeled "Discard 2 cards from your hand"

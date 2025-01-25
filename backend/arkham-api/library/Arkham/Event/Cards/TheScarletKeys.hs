@@ -112,7 +112,7 @@ everVigilant4 =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1)
           $ #asset
-          <> InHandOf (affectsOthers $ InvestigatorAt YourLocation)
+          <> InHandOf ForPlay (affectsOthers $ InvestigatorAt YourLocation)
     }
 
 theRavenQuill :: CardDef
@@ -131,7 +131,7 @@ theRavenQuill =
                   [ can.search.deck You
                   , exists
                       $ PlayableCard (UnpaidCost NoAction)
-                      $ oneOf [InHandOf You, InDiscardOf You]
+                      $ oneOf [InHandOf ForPlay You, InDiscardOf You]
                       <> ChosenViaCustomization IsThisCard
                   ]
             ]
@@ -265,7 +265,7 @@ hitAndRun =
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf You <> #ally <> #asset
+    , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf ForPlay You <> #ally <> #asset
     }
 
 illTakeThat :: CardDef
@@ -282,7 +282,7 @@ illTakeThat =
     , cdCriteria =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction ReduceBySuccessAmount
-          $ InHandOf You
+          $ InHandOf ForPlay You
           <> #item
           <> #asset
     }
@@ -407,7 +407,7 @@ uncageTheSoul3 =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction (Reduce 3)
           $ oneOf
-            [ InHandOf You <> basic (oneOf [#spell, #ritual])
+            [ InHandOf NotForPlay You <> basic (oneOf [#spell, #ritual])
             , InDiscardOf You <> basic (oneOf [#spell, #ritual])
             , CardIsAsset $ AssetControlledBy You <> oneOf [#spell, #ritual]
             ]

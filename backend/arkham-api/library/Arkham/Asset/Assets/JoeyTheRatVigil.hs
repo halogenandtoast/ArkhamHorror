@@ -24,7 +24,7 @@ instance HasAbilities JoeyTheRatVigil where
     [ controlledAbility
         x
         1
-        (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf You <> #item))
+        (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf ForPlay You <> #item))
         (FastAbility $ ResourceCost 1)
     ]
 

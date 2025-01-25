@@ -34,7 +34,7 @@ instance RunMessage FalseSurrender where
     HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
       selectOneToHandle iid attrs
         $ PlayableCardWithCostReduction NoAction 1
-        $ inHandOf iid
+        $ inHandOf ForPlay iid
         <> basic (#asset <> #weapon)
       pure . FalseSurrender $ With attrs (Meta $ Just eid)
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do

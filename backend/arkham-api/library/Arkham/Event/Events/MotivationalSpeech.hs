@@ -23,7 +23,7 @@ instance RunMessage MotivationalSpeech where
       chooseOrRunOne iid $ targetLabels ts $ only . handleTargetChoice iid attrs
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid) -> do
-      allies <- select $ PlayableCardWithCostReduction NoAction 3 $ inHandOf iid <> #ally
+      allies <- select $ PlayableCardWithCostReduction NoAction 3 $ inHandOf ForPlay iid <> #ally
       when (notNull allies) do
         focusCards allies do
           chooseOneM iid do

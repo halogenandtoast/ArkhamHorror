@@ -39,7 +39,7 @@ instance HasAbilities WellOfSouls where
 instance RunMessage WellOfSouls where
   runMessage msg l@(WellOfSouls attrs) = case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      hasCardsInHand <- selectAny $ inHandOf iid
+      hasCardsInHand <- selectAny $ inHandOf NotForPlay iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

@@ -249,8 +249,8 @@ knowledgeIsPower =
           $ Criteria.AnyCriterion
             [ exists (AssetControlledBy You <> oneOf [AssetWithTrait Tome, AssetWithTrait Spell])
             , Criteria.ExtendedCardExists
-                $ InHandOf You
-                <> basic (oneOf [CardWithTrait Tome, CardWithTrait Spell] <> #asset)
+                $ InHandOf NotForPlay You
+                <> basic (mapOneOf CardWithTrait [Tome, Spell] <> #asset)
                 <> CardWithPerformableAbility
                   (AbilityOneOf [AbilityIsActionAbility, AbilityIsFastAbility])
                   [IgnoreAllCosts]

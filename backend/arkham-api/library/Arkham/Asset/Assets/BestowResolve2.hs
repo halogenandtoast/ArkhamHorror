@@ -27,7 +27,7 @@ instance HasAbilities BestowResolve2 where
             )
             <> exists
               ( PassesCommitRestrictions
-                  $ InHandOf You
+                  $ InHandOf NotForPlay You
                   <> basic (NonWeakness <> oneOf [CardWithAnySkills, SkillCard <> CardWithNoSkills])
               )
         )
@@ -39,7 +39,7 @@ instance RunMessage BestowResolve2 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectWithNonNull
         ( PassesCommitRestrictions
-            $ InHandOf (InvestigatorWithId iid)
+            $ inHandOf NotForPlay iid
             <> basic (NonWeakness <> oneOf [CardWithAnySkills, SkillCard <> CardWithNoSkills])
         )
         $ chooseOneToHandle iid attrs

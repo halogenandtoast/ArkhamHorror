@@ -35,7 +35,7 @@ instance HasAbilities DexterDrake where
                 [ PlayableCardExistsWithCostReduction
                     (Reduce 1)
                     (HandCardWithDifferentTitleFromAtLeastOneAsset You AnyAsset AnyCard)
-                , ExtendedCardExists (InHandOf You <> basic (cardIs Assets.occultScraps))
+                , ExtendedCardExists (InHandOf ForPlay You <> basic (cardIs Assets.occultScraps))
                 ]
           )
         $ FastAbility
@@ -64,8 +64,8 @@ instance RunMessage DexterDrake where
             [ PlayableCardWithCostReduction
                 NoAction
                 1
-                (inHandOf attrs.id <> basic (#asset <> not_ (CardWithTitle $ toTitle card)))
-            , inHandOf iid <> basic (cardIs Assets.occultScraps)
+                (inHandOf ForPlay attrs.id <> basic (#asset <> not_ (CardWithTitle $ toTitle card)))
+            , inHandOf ForPlay iid <> basic (cardIs Assets.occultScraps)
             ]
       chooseOrRunOneM iid do
         targets cards \c -> do

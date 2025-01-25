@@ -53,7 +53,8 @@ everVigilant1 =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Tactic
     , cdLevel = Just 1
-    , cdCriteria = Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ #asset <> InHandOf You
+    , cdCriteria =
+        Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ #asset <> InHandOf ForPlay You
     }
 
 noStoneUnturned :: CardDef
@@ -71,7 +72,7 @@ sleightOfHand =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = singleton Trick
     , cdFastWindow = Just $ DuringTurn You
-    , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf You <> #item
+    , cdCriteria = Just $ Criteria.PlayableCardExists PaidCost $ InHandOf ForPlay You <> #item
     }
 
 daringManeuver :: CardDef
@@ -91,8 +92,8 @@ uncageTheSoul =
     , cdCriteria =
         Just
           $ Criteria.PlayableCardExistsWithCostReduction (Reduce 3)
-          $ InHandOf You
-          <> basic (oneOf [CardWithTrait Spell, CardWithTrait Ritual])
+          $ InHandOf ForPlay You
+          <> basic (mapOneOf CardWithTrait [Spell, Ritual])
     }
 
 astralTravel :: CardDef

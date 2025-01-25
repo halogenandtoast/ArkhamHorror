@@ -106,7 +106,7 @@ instance HasAbilities HyperphysicalShotcasterTheoreticalDevice where
       Telescanner -> NoRestriction
       Translocator -> NoRestriction
       Realitycollapser -> NoRestriction
-      Matterweaver -> exists (PlayableCardWithNoCost NoAction $ InHandOf You <> #asset)
+      Matterweaver -> exists (PlayableCardWithNoCost NoAction $ InHandOf ForPlay You <> #asset)
       _ -> error "Invalid manifest criteria"
 
 instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
@@ -246,7 +246,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
             | sType <- allSkills
             ]
         Just Matterweaver -> do
-          cards <- select $ PlayableCardWithNoCost NoAction $ inHandOf iid <> #asset
+          cards <- select $ PlayableCardWithNoCost NoAction $ inHandOf ForPlay iid <> #asset
           chooseOne
             iid
             [ targetLabel

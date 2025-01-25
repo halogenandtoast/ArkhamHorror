@@ -200,7 +200,7 @@ lucidDreaming2 =
     , cdCriteria =
         Just
           $ youExist can.manipulate.deck
-          <> exists (oneOf [InPlayAreaOf You, InHandOf (You <> can.reveal.cards) <> NotThisCard])
+          <> exists (oneOf [InPlayAreaOf You, InHandOf NotForPlay (You <> can.reveal.cards) <> NotThisCard])
     }
 
 heroicRescue2 :: CardDef
@@ -214,8 +214,7 @@ heroicRescue2 =
             #when
             ( affectsOthers
                 $ NotYou
-                <> oneOf
-                  [InvestigatorAt YourLocation, InvestigatorAt (CanMoveToLocation You ThisCard ConnectedLocation)]
+                <> oneOf [at_ YourLocation, at_ (CanMoveToLocation You ThisCard ConnectedLocation)]
             )
             AnyEnemyAttack
             NonEliteEnemy

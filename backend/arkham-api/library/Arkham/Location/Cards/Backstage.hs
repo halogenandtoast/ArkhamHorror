@@ -18,7 +18,7 @@ backstage = location Backstage Cards.backstage 3 (Static 1)
 
 instance HasModifiersFor Backstage where
   getModifiersFor (Backstage attrs) = do
-    cards <- select $ InHandOf (investigatorAt attrs) <> basic (CardWithKeyword Hidden)
+    cards <- select $ InHandOf NotForPlay (investigatorAt attrs) <> basic (CardWithKeyword Hidden)
     modifyEach attrs (map (CardIdTarget . toCardId) cards) [HandSizeCardCount 3]
 
 instance HasAbilities Backstage where

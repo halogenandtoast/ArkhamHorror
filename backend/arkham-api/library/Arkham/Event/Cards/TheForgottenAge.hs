@@ -38,7 +38,8 @@ unearthTheAncients =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
     , cdActions = [#investigate]
-    , cdCriteria = Just $ Criteria.ExtendedCardExists $ InHandOf You <> basic (#seeker <> #asset)
+    , cdCriteria =
+        Just $ Criteria.ExtendedCardExists $ InHandOf NotForPlay You <> basic (#seeker <> #asset)
     }
 
 eavesdrop :: CardDef

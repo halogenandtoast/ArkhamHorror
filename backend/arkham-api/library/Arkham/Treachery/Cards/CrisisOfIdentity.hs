@@ -33,7 +33,7 @@ instance RunMessage CrisisOfIdentity where
       if tabooed TabooList20 attrs
         then do
           player <- getPlayer iid
-          cards <- select $ inHandOf iid <> basic (CardWithClass role)
+          cards <- select $ inHandOf NotForPlay iid <> basic (CardWithClass role)
           let targets = map toTarget assets <> map toTarget events <> map toTarget skills <> map toTarget cards
           pushAll
             $ [ chooseOne

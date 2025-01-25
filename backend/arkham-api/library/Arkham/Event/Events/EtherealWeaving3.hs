@@ -25,7 +25,7 @@ etherealWeaving3 = event (EtherealWeaving3 . (`with` Meta [])) Cards.etherealWea
 instance RunMessage EtherealWeaving3 where
   runMessage msg e@(EtherealWeaving3 (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      cards <- select $ inHandOf iid <> #event <> #spell
+      cards <- select $ inHandOf NotForPlay iid <> #event <> #spell
       focusCards cards do
         chooseUpToN
           iid

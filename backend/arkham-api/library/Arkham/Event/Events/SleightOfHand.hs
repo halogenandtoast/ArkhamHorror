@@ -20,12 +20,12 @@ instance RunMessage SleightOfHand where
   runMessage msg e@(SleightOfHand attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
       let
-        tabooMatcher =
-          if tabooed TabooList18 attrs
-            then (CardWithMaxLevel 3 <>)
-            else if tabooed TabooList15 attrs then (CardFillsLessSlots 2 #hand <>) else id
+        tabooMatcher
+          | tabooed TabooList18 attrs = (CardWithMaxLevel 3 <>)
+          | tabooed TabooList15 attrs = (CardFillsLessSlots 2 #hand <>)
+          | otherwise = id
       cards <-
-        select $ PlayableCard Cost.PaidCost $ inHandOf iid <> basic (tabooMatcher #item)
+        select $ PlayableCard Cost.PaidCost $ inHandOf ForPlay iid <> basic (tabooMatcher #item)
       chooseTargetM iid cards \card -> do
         push $ PutCardIntoPlay iid card (Just $ toTarget attrs) NoPayment windows'
         createCardEffect Cards.sleightOfHand Nothing attrs card
@@ -44,7 +44,7 @@ instance RunMessage SleightOfHandEffect where
     EndTurn _ -> do
       case attrs.target of
         CardIdTarget cid -> do
-          selectOne (AssetWithCardId cid) >>= traverse_ \aid -> selectAssetController aid >>= traverse_ \controller -> returnToHand controller aid
+          selectOne (AssetWithCardId cid) >>= traverse_ \aid -> selectAssetController aid >>= traverse_ (`returnToHand` aid)
         _ -> pure ()
       disableReturn e
     _ -> SleightOfHandEffect <$> liftRunMessage msg attrs

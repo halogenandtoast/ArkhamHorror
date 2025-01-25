@@ -38,7 +38,7 @@ instance HasAbilities LeoAnderson where
     [ restrictedAbility
         a
         1
-        (Self <> PlayableCardExistsWithCostReduction (Reduce 1) (InHandOf You <> #ally))
+        (Self <> PlayableCardExistsWithCostReduction (Reduce 1) (InHandOf ForPlay You <> #ally))
         $ freeReaction (TurnBegins #after You)
     ]
 
@@ -50,7 +50,7 @@ instance HasChaosTokenValue LeoAnderson where
 instance RunMessage LeoAnderson where
   runMessage msg i@(LeoAnderson (attrs `With` meta)) = case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payment -> do
-      results <- select (InHandOf (InvestigatorWithId iid) <> #ally)
+      results <- select (InHandOf ForPlay (InvestigatorWithId iid) <> #ally)
       resources <- getSpendableResources iid
       cards <-
         filterM

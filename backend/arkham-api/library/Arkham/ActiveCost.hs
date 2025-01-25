@@ -1016,7 +1016,7 @@ payCost msg c iid skipAdditionalCosts cost = do
     DiscardFromCost x zone cardMatcher -> do
       let
         getCards = \case
-          FromHandOf whoMatcher -> selectMap (FromHand,) (InHandOf whoMatcher <> BasicCardMatch cardMatcher)
+          FromHandOf whoMatcher -> selectMap (FromHand,) (InHandOf NotForPlay whoMatcher <> BasicCardMatch cardMatcher)
           FromPlayAreaOf whoMatcher -> do
             assets <- select $ AssetControlledBy whoMatcher
             map (FromPlay,) . filter (`cardMatch` cardMatcher) <$> traverse (field AssetCard) assets

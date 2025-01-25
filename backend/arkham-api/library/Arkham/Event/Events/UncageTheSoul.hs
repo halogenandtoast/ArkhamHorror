@@ -23,7 +23,7 @@ instance RunMessage UncageTheSoul where
       cards <-
         filterM
           (getIsPlayableWithResources iid GameSource (availableResources + 3) (UnpaidCost NoAction) windows'')
-          =<< select (inHandOf iid <> basic (oneOf [#spell, #ritual]))
+          =<< select (inHandOf NotForPlay iid <> basic (oneOf [#spell, #ritual]))
 
       focusCards cards do
         chooseTargetM iid cards \card -> do

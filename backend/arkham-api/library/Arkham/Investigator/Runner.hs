@@ -2712,7 +2712,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let (cards, deck) = draw n investigatorDeck
     pure $ a & deckL .~ Deck.withDeck (<> cards) deck
   DoDrawCards iid | iid == toId a -> do
-    for_ (a ^. drawingL) \d -> push $ Do (DrawCards iid d)
+    for_ (a ^. drawingL) \d -> do
+      push $ Do (DrawCards iid d)
+      for_ (cardDrawAndThen d) push
     pure $ a & drawingL .~ Nothing
   ReplaceCurrentCardDraw iid drawing | iid == investigatorId -> do
     pure $ a & drawingL ?~ drawing

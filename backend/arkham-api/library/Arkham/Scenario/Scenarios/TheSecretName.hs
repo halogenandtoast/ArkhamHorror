@@ -216,7 +216,7 @@ instance RunMessage TheSecretName where
         Resolution 1 -> do
           story resolution1
           allGainXpWithBonus attrs (brownJenkinBonus <> nahabBonus)
-          when (step == 2) $ recordSetInsert MementosDiscovered [Gilman'sJournal]
+          when (step >= 2) $ recordSetInsert MementosDiscovered [Gilman'sJournal]
           when (step == 3) $ recordSetInsert MementosDiscovered [Keziah'sFormulae]
           when (step >= 2) addTheBlackBook
           endOfScenario

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -1647,7 +1647,7 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just start -> do
           matchingLocationIds <- map toId <$> getLocationsMatching matcher
-          matches' <- getLongestPath start (pure . (`elem` (traceShowId matchingLocationIds)))
+          matches' <- getLongestPath start (pure . (`elem` matchingLocationIds))
           pure $ filter ((`elem` matches') . toId) ls
     FarthestLocationFromLocation start matcher -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher
@@ -1677,7 +1677,7 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`notElem` cannotEnter) . toId) ls
     CanMoveToLocation investigatorMatcher source matcher -> do
       iid <- selectJust investigatorMatcher
-      inner <- select (matcher <> not_ BlockedLocation)
+      inner <- select $ matcher <> not_ BlockedLocation
       filterM (andM . sequence [pure . (`elem` inner), getCanMoveTo iid source] . toId) ls
     NearestLocationToLocation start matcher -> do
       matchingLocationIds <- map toId <$> getLocationsMatching matcher

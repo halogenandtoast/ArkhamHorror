@@ -45,6 +45,7 @@ import Arkham.Treachery.Runner as X (
   treacheryOnAgenda,
   treacheryOnEnemy,
   treacheryOnLocation,
+  treacheryOnTopOfDeck,
   treacheryWith,
   withTreacheryInvestigator,
   pattern PlaceResources,

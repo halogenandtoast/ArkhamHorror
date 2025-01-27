@@ -456,10 +456,11 @@ isFastCard (PlayerCard card) =
 isFastCard (EncounterCard _) = False
 isFastCard (VengeanceCard _) = False
 
-toPlayerCard :: Card -> Maybe PlayerCard
-toPlayerCard (PlayerCard pc) = Just pc
-toPlayerCard (EncounterCard _) = Nothing
-toPlayerCard (VengeanceCard c) = toPlayerCard c
+toPlayerCard :: IsCard c => c -> Maybe PlayerCard
+toPlayerCard c = case toCard c of
+  PlayerCard pc -> Just pc
+  EncounterCard {} -> Nothing
+  VengeanceCard inner -> toPlayerCard inner
 
 toEncounterCard :: Card -> Maybe EncounterCard
 toEncounterCard (EncounterCard ec) = Just ec

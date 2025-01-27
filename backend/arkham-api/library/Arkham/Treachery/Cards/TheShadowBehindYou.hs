@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.TheShadowBehindYou (theShadowBehindYou, TheShadowBehindYou (..)) where
+module Arkham.Treachery.Cards.TheShadowBehindYou (theShadowBehindYou) where
 
 import Arkham.Ability
-import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigator.Types
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -22,27 +22,28 @@ theShadowBehindYou = treachery (TheShadowBehindYou . (`with` Metadata False)) Ca
 
 instance HasAbilities TheShadowBehindYou where
   getAbilities (TheShadowBehindYou (a `With` metadata)) =
-    restrictedAbility a 1 OnSameLocation (ActionAbility [] $ ActionCost 1)
-      : [ restrictedAbility
-          a
-          2
-          ( InThreatAreaOf You
-              <> youExist
-                ( oneOf
-                    [ InvestigatorWithAnyResources
-                    , HandWith (HasCard $ CardWithoutKeyword Hidden)
-                    ]
-                )
-          )
-          $ forced
-          $ TurnEnds #when You
+    restricted a 1 OnSameLocation actionAbility
+      : [ restricted
+            a
+            2
+            ( InThreatAreaOf You
+                <> youExist
+                  ( oneOf
+                      [ InvestigatorWithAnyResources
+                      , HandWith (HasCard $ CardWithoutKeyword Hidden)
+                      ]
+                  )
+            )
+            $ forced
+            $ TurnEnds #when You
         | not (hasUsedAbility metadata)
         ]
 
 instance RunMessage TheShadowBehindYou where
   runMessage msg t@(TheShadowBehindYou (attrs `With` metadata)) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      placeInThreatArea attrs iid
+      whenNone (treacheryInThreatAreaOf iid <> treacheryIs Cards.theShadowBehindYou) do
+        placeInThreatArea attrs iid
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       pure $ TheShadowBehindYou (attrs `with` Metadata True)
@@ -54,18 +55,16 @@ instance RunMessage TheShadowBehindYou where
         hasNonHiddenCards = any (notElem Hidden . toKeywords) handCards
         hasHiddenCards = any (elem Hidden . toKeywords) handCards
 
-      chooseOrRunOne iid
-        $ [ Label
-            "Discard all cards in your hand"
-            $ DiscardHand iid (toSource attrs)
-            : [Msg.toDiscardBy iid (attrs.ability 2) attrs | not hasHiddenCards]
-          | hasNonHiddenCards
-          ]
-        <> [ Label
-            "Lose all resources"
-            [LoseAllResources iid (attrs.ability 1), Msg.toDiscardBy iid (attrs.ability 2) attrs]
-           | hasResources
-           ]
+      chooseOrRunOneM iid do
+        when hasNonHiddenCards do
+          labeled "Discard all cards in your hand" do
+            push $ DiscardHand iid (toSource attrs)
+            unless hasHiddenCards $ toDiscardBy iid (attrs.ability 2) attrs
+
+        when hasResources do
+          labeled "Lose all resources" do
+            push $ LoseAllResources iid (attrs.ability 1)
+            toDiscardBy iid (attrs.ability 2) attrs
       pure t
     EndTurn iid | treacheryInThreatArea iid attrs -> do
       pure $ TheShadowBehindYou (attrs `with` Metadata False)

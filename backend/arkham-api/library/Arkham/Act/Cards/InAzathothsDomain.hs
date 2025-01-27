@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Act.Cards.InAzathothsDomain (inAzathothsDomain) where
 
 import Arkham.Ability

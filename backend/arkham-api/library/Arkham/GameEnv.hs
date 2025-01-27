@@ -207,7 +207,8 @@ withActiveInvestigator
   -> m a
 withActiveInvestigator iid body = do
   game <- getGame
-  runReaderT body $ game & activeInvestigatorIdL .~ iid
+  game' <- handleBlanked =<< handleTraitRestrictedModifiers =<< preloadModifiers (game & activeInvestigatorIdL .~ iid)
+  runReaderT body game'
 
 getActiveAbilities :: HasGame m => m [Ability]
 getActiveAbilities = gameActiveAbilities <$> getGame

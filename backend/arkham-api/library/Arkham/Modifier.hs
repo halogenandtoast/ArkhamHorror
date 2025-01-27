@@ -286,6 +286,7 @@ data ModifierType
   | IgnoreRetaliate
   | IgnoreRevelation
   | IgnoreText
+  | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance
   | IncreaseCostOf CardMatcher Int
   | InvestigateActionCriteria CriteriaOverride

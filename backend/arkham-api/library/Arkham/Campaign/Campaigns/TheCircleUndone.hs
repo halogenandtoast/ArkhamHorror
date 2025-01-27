@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Campaign.Campaigns.TheCircleUndone (theCircleUndone) where
 
 import Arkham.Asset.Cards qualified as Assets

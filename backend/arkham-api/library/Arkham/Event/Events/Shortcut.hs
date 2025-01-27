@@ -1,14 +1,13 @@
-module Arkham.Event.Events.Shortcut (shortcut, Shortcut (..)) where
+module Arkham.Event.Events.Shortcut (shortcut) where
 
 import Arkham.Capability
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
-import Arkham.Movement
-import Arkham.Prelude
+import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Message.Lifted.Move
 
 newtype Shortcut = Shortcut EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -18,24 +17,14 @@ shortcut :: EventCard Shortcut
 shortcut = event Shortcut Cards.shortcut
 
 instance RunMessage Shortcut where
-  runMessage msg e@(Shortcut attrs@EventAttrs {..}) = case msg of
-    PlayThisEvent iid eid | eid == eventId -> do
-      investigatorIds <- select =<< guardAffectsOthers iid (can.move <> colocatedWith iid)
-      connectingLocations <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      unless (null connectingLocations) do
-        push
-          $ chooseOrRunOne
-            player
-            [ targetLabel
-              iid'
-              [ chooseOne
-                  player
-                  [ targetLabel lid' [Move $ move (toSource attrs) iid' lid']
-                  | lid' <- connectingLocations
-                  ]
-              ]
-            | iid' <- investigatorIds
-            ]
+  runMessage msg e@(Shortcut attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      investigators <- select =<< guardAffectsOthers iid (can.move <> colocatedWith iid)
+      chooseOrRunOneM iid do
+        for_ investigators \iid' -> do
+          connectingLocations <- withActiveInvestigator iid' $ getAccessibleLocations iid' attrs
+          when (notNull connectingLocations) do
+            targeting iid' do
+              chooseTargetM iid connectingLocations $ moveTo attrs iid'
       pure e
-    _ -> Shortcut <$> runMessage msg attrs
+    _ -> Shortcut <$> liftRunMessage msg attrs

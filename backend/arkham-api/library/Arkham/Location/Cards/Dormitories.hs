@@ -20,7 +20,7 @@ instance HasModifiersFor Dormitories where
 instance HasAbilities Dormitories where
   getAbilities (Dormitories attrs) =
     extendRevealed1 attrs
-      $ restrictedAbility attrs 1 Here
+      $ restricted attrs 1 Here
       $ Objective
       $ FastAbility
       $ GroupClueCost (PerPlayer 3) (LocationWithTitle "Dormitories")

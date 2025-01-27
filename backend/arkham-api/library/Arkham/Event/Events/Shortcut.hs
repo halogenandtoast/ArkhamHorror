@@ -22,7 +22,7 @@ instance RunMessage Shortcut where
       investigators <- select =<< guardAffectsOthers iid (can.move <> colocatedWith iid)
       chooseOrRunOneM iid do
         for_ investigators \iid' -> do
-          connectingLocations <- withActiveInvestigator iid' $ getAccessibleLocations iid' attrs
+          connectingLocations <- withActiveInvestigatorAdjust iid' $ getAccessibleLocations iid' attrs
           when (notNull connectingLocations) do
             targeting iid' do
               chooseTargetM iid connectingLocations $ moveTo attrs iid'

@@ -4079,9 +4079,10 @@ instance Query ExtendedCardMatcher where
       InHandOf forPlay who -> do
         iids <- select who
         cards <- case forPlay of
-          ForPlay -> (<>)
-            <$> concatMapM (field InvestigatorHand) iids
-            <*> concatMapM getAsIfInHandCards iids
+          ForPlay ->
+            (<>)
+              <$> concatMapM (field InvestigatorHand) iids
+              <*> concatMapM getAsIfInHandCards iids
           NotForPlay -> concatMapM (field InvestigatorHand) iids
         pure $ filter (`elem` cards) cs
       InDeckOf who -> do

@@ -31,6 +31,16 @@ advanceAgendaDeck attrs = AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs
 
 instance RunMessage AgendaAttrs where
   runMessage msg a@AgendaAttrs {..} = case msg of
+    AdvanceToAgenda n _ _ _ | n == agendaDeckId -> do
+      whenWindow <- checkWhen $ Window.AgendaAdvance agendaId
+      afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
+      pushAll
+        [ whenWindow
+        , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = AgendaWithId a.id}
+        , Do msg
+        , afterWindow
+        ]
+      pure a
     PlaceUnderneath target cards | isTarget a target -> do
       pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom source (isTarget a -> True) n -> do

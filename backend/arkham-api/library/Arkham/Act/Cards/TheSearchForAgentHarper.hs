@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Agenda.Sequence qualified as Agendas
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
@@ -83,9 +84,9 @@ instance RunMessage TheSearchForAgentHarper where
       pure a
     DoStep 3 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       theRescue <- getSetAsideCard Acts.theRescue
-      franticPursuit <- getSetAsideCard Agendas.franticPursuit
+      -- franticPursuit <- getSetAsideCard Agendas.franticPursuit
       push $ SetCurrentActDeck 1 [theRescue]
-      push $ SetCurrentAgendaDeck 1 [franticPursuit]
+      push $ AdvanceToAgenda 1 Agendas.franticPursuit Agendas.A (toSource attrs)
       hideout <- placeLocation =<< getHideout
       placeClues attrs hideout =<< perPlayer 1
       elinaHarper <- getSetAsideCard Assets.elinaHarperKnowsTooMuch

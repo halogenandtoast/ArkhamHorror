@@ -2365,6 +2365,15 @@ discardTopOfDeck
 discardTopOfDeck investigator source n =
   push $ DiscardTopOfDeck (asId investigator) n (toSource source) Nothing
 
+discardTopOfEncounterDeck
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
+  => investigator
+  -> source
+  -> Int
+  -> m ()
+discardTopOfEncounterDeck investigator source n =
+  push $ DiscardTopOfEncounterDeck (asId investigator) n (toSource source) Nothing
+
 discardTopOfDeckAndHandle
   :: ( AsId investigator
      , IdOf investigator ~ InvestigatorId

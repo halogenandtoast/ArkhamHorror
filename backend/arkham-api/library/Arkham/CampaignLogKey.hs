@@ -185,7 +185,7 @@ instance FromJSON a => FromJSON (Recorded a) where
       "Recorded" -> Recorded <$> o' .: "contents"
       "CrossedOut" -> CrossedOut <$> o' .: "contents"
       _ -> fail $ "Unknown tag: " <> T.unpack tag
-    return $ if isCircled then Circled rec else rec
+    pure if isCircled then Circled rec else rec
 
 recordedCardCodes :: [SomeRecorded] -> [CardCode]
 recordedCardCodes [] = []

@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
@@ -22,9 +23,11 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
+import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheWitchingHour.Helpers
 import Arkham.Scenarios.TheWitchingHour.Story
+import Arkham.Trait (Trait (Witch))
 import Data.Map.Monoidal qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 
@@ -180,5 +183,30 @@ instance RunMessage TheWitchingHour where
           allGainXpWithBonus attrs $ toBonus "bonus" 1
           endOfScenario
         _ -> error "invalid resolution"
+      pure s
+    ResolveChaosToken _ Skull iid | isHardExpert attrs -> do
+      getSkillTestDifficulty >>= traverse_ (discardTopOfEncounterDeck iid Skull)
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
+      case token.face of
+        Skull | isEasyStandard attrs -> discardTopOfEncounterDeck iid Skull n
+        Tablet -> afterSkillTest $ forTarget attrs $ push msg
+        ElderThing -> do
+          enemies <-
+            select $ enemy_ $ withTrait Witch <> #exhausted <> at_ (orConnected $ locationWithInvestigator iid)
+          if isEasyStandard attrs
+            then chooseTargetM iid enemies \enemy -> do
+              readyThis enemy
+              healAllDamage ElderThing enemy
+            else for_ enemies \enemy -> do
+              readyThis enemy
+              healAllDamage ElderThing enemy
+        _ -> pure ()
+      pure s
+    ForTarget (isTarget attrs -> True) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do
+      when (token.face == Tablet) do
+        bottomTreachery <-
+          take 1 . reverse . filterCards (card_ #treachery) <$> getEncounterDiscard RegularEncounterDeck
+        for_ bottomTreachery (drawCard iid)
       pure s
     _ -> TheWitchingHour <$> liftRunMessage msg attrs

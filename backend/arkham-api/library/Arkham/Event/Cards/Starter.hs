@@ -156,6 +156,8 @@ dynamiteBlast3 =
     { cdSkills = [#willpower, #willpower, #combat, #combat]
     , cdCardTraits = setFromList [Tactic]
     , cdLevel = Just 3
+    , cdFastWindow = Just FastPlayerWindow
+    , cdCriteria = Just Criteria.CanDealDamage
     }
 
 taunt3 :: CardDef

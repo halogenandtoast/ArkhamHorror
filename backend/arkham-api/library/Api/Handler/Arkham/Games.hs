@@ -58,7 +58,7 @@ import Safe (fromJustNote)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
-gameStream :: HasCallStack => Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
+gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
 gameStream mUserId gameId = catchingConnectionException do
   writeChannel <- lift $ (.channel) <$> getRoom gameId
   roomsRef <- getsYesod appGameRooms
@@ -76,8 +76,6 @@ gameStream mUserId gameId = catchingConnectionException do
         Right answer ->
           updateGame answer gameId userId writeChannel `catch` \(e :: SomeException) -> do
             liftIO $ atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
-            $(logWarn) $ tshow e
-            throwM e
 
   closeConnection _ = do
     roomsRef <- getsYesod appGameRooms

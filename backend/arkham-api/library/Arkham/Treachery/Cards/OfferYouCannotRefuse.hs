@@ -26,6 +26,8 @@ instance RunMessage OfferYouCannotRefuse where
             VengeanceCard _ -> error "should be player card"
             PlayerCard pc -> do
               removeCardFromDeckForCampaign iid pc
-              addCampaignCardToDeck iid =<< genPlayerCard Treacheries.finePrint
+              finePrint <- genPlayerCard Treacheries.finePrint
+              addCampaignCardToDeck iid DoNotShuffleIn finePrint
+              addToDiscard iid (only finePrint)
       pure t
     _ -> OfferYouCannotRefuse <$> liftRunMessage msg attrs

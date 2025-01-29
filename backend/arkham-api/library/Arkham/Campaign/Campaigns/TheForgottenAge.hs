@@ -198,7 +198,7 @@ instance RunMessage TheForgottenAge where
 
         unless inADeckAlready do
           investigators <- allInvestigators
-          addCampaignCardToDeckChoice investigators =<< fetchCard Assets.alejandroVela
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn =<< fetchCard Assets.alejandroVela
         addChaosToken Tablet
         push $ CampaignStep (InterludeStepPart 2 mkey 4)
         pure c
@@ -392,7 +392,8 @@ instance RunMessage TheForgottenAge where
                 player <- getPlayer iid
                 push $ Ask player $ Read qLabel (BasicReadChoices [Label "Continue" []]) Nothing
                 push unfocus
-              when outOfBody $ addCampaignCardToDeck iid =<< genCard Treacheries.outOfBodyExperience
+              when outOfBody do
+                addCampaignCardToDeck iid DoNotShuffleIn Treacheries.outOfBodyExperience
 
             let
               yithians =
@@ -531,7 +532,7 @@ instance RunMessage TheForgottenAge where
           story finalDawning
           removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
           removeCampaignCard Assets.relicOfAgesForestallingTheFuture
-          for_ mRelicOfAgesOwner (`addCampaignCardToDeck` relic)
+          for_ mRelicOfAgesOwner \owner -> addCampaignCardToDeck owner DoNotShuffleIn relic
         pure c
       CampaignStep (InterludeStepPart 5 _ 2) -> do
         hasTorches <- getAnyHasSupply Torches

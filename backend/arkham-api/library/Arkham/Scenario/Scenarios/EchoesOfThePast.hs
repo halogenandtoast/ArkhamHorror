@@ -195,7 +195,7 @@ instance RunMessage EchoesOfThePast where
           story resolution1
           record YouTookTheOnyxClasp
           markConviction
-          forceAddCampaignCardToDeckChoice investigators Assets.claspOfBlackOnyx
+          forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.claspOfBlackOnyx
         2 -> do
           story resolution2
           record YouLeftTheOnyxClaspBehind
@@ -203,7 +203,7 @@ instance RunMessage EchoesOfThePast where
         3 -> do
           story resolution3
           record YouDestroyedTheOathspeaker
-          addCampaignCardToDeckChoice investigators Assets.theTatteredCloak
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theTatteredCloak
         4 -> do
           story resolution4
           record TheFollowersOfTheSignHaveFoundTheWayForward

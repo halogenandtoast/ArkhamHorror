@@ -63,23 +63,18 @@ defaultCampaignRunner msg a = case msg of
     pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
-  AddCampaignCardToDeck iid card -> do
+  AddCampaignCardToDeck iid _ card -> do
     card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']))
   RemoveCampaignCard cardDef -> do
-    pure $ updateAttrs a $ \attrs ->
-      attrs
-        & storyCardsL
-        %~ Map.map (filter ((/= cardDef) . toCardDef))
-        & decksL
-        %~ Map.map (withDeck (filter ((/= cardDef) . toCardDef)))
+    pure $ updateAttrs a
+        $ (storyCardsL %~ Map.map (filter ((/= cardDef) . toCardDef)))
+        . (decksL %~ Map.map (withDeck $ filter ((/= cardDef) . toCardDef)))
   RemoveCampaignCardFromDeck iid cardDef ->
-    pure $ updateAttrs a $ \attrs ->
-      attrs
-        & storyCardsL
-        %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid
-        & decksL
-        %~ adjustMap (withDeck (filter ((/= cardDef) . toCardDef))) iid
+    pure
+      $ updateAttrs a
+      $ (storyCardsL %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid)
+      . (decksL %~ adjustMap (withDeck $ filter ((/= cardDef) . toCardDef)) iid)
   AddChaosToken token -> do
     if token `notElem` [CurseToken, BlessToken]
       then pure $ updateAttrs a (chaosBagL %~ (token :))
@@ -93,7 +88,7 @@ defaultCampaignRunner msg a = case msg of
     pid <- getPlayer iid
     purchaseTrauma <- initDeckTrauma deck' iid pid CampaignTarget
     pushAll
-      $ map (AddCampaignCardToDeck iid) randomWeaknesses
+      $ map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
       <> purchaseTrauma
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'

@@ -22,7 +22,9 @@ instance RunMessage ThePriceOfFailure where
           assignDamageAndHorror iid attrs 2 2
           placeDoomOnAgendaAndCheckAdvance 1
           removeCardFromDeckForCampaign iid pc
-          addCampaignCardToDeck iid =<< genPlayerCard Events.darkPact
+          darkPact <- genPlayerCard Events.darkPact
+          addCampaignCardToDeck iid DoNotShuffleIn darkPact 
+          addToDiscard iid (only darkPact)
           removeTreachery attrs
           pure t
     _ -> ThePriceOfFailure <$> liftRunMessage msg attrs

@@ -106,7 +106,7 @@ instance RunMessage DimCarcosa where
       let token = if pathOpened == YouOpenedThePathBelow then Tablet else ElderThing
       addChaosToken token
       addChaosToken token
-      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      addCampaignCardToDeck lead ShuffleIn Enemies.theManInThePallidMask
       pure s
     Setup -> runScenarioSetup DimCarcosa attrs do
       doubt <- getDoubt

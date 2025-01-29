@@ -73,7 +73,7 @@ additionalRewards s = do
     for_ investigators \iid -> searchCollectionForRandomBasicWeakness iid s [Madness, Injury, Monster]
   when (null s.cardsUnderAgendaDeck && length s.cardsUnderActDeck == 3) do
     story Flavor.abbessSatisfied
-    addCampaignCardToDeckChoice investigators Assets.abbessAllegriaDiBiase
+    addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.abbessAllegriaDiBiase
 
 instance RunMessage CarnevaleOfHorrors where
   runMessage msg s@(CarnevaleOfHorrors attrs) = runQueueT $ case msg of
@@ -248,7 +248,7 @@ instance RunMessage CarnevaleOfHorrors where
         labeled "Do not add a mask" $ push $ ChooseOneRewardByEachPlayer rewards rest
         for_ rewards \reward -> do
           cardLabeled reward do
-            addCampaignCardToDeck currentInvestigatorId reward
+            addCampaignCardToDeck currentInvestigatorId DoNotShuffleIn reward
             push $ ChooseOneRewardByEachPlayer (delete reward rewards) rest
       pure s
     _ -> CarnevaleOfHorrors <$> liftRunMessage msg attrs

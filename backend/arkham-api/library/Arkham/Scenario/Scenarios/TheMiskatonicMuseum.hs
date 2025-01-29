@@ -184,7 +184,7 @@ instance RunMessage TheMiskatonicMuseum where
       investigatorIds <- allInvestigators
       story resolution2
       record TheInvestigatorsTookCustodyOfTheNecronomicon
-      addCampaignCardToDeckChoice investigatorIds Assets.theNecronomiconOlausWormiusTranslation
+      addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.theNecronomiconOlausWormiusTranslation
       addChaosToken ElderThing
       allGainXp attrs
       endOfScenario

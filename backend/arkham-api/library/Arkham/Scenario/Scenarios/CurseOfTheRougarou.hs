@@ -187,7 +187,7 @@ instance RunMessage CurseOfTheRougarou where
       story resolution2
       record TheRougarouIsDestroyed
       removeCampaignCard Treacheries.curseOfTheRougarou
-      addCampaignCardToDeckChoice [lead] Assets.ladyEsprit
+      addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.ladyEsprit
       allGainXp attrs
       endOfScenario
       pure s
@@ -195,7 +195,7 @@ instance RunMessage CurseOfTheRougarou where
       lead <- getLead
       story resolution3
       record TheRougarouEscapedAndYouEmbracedTheCurse
-      addCampaignCardToDeck lead Assets.monstrousTransformation
+      addCampaignCardToDeck lead DoNotShuffleIn Assets.monstrousTransformation
       allGainXp attrs
       endOfScenario
       pure s

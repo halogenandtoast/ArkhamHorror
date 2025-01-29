@@ -173,7 +173,7 @@ instance RunMessage AThousandShapesOfHorror where
           story $ i18nWithTitle "theDreamEaters.aThousandShapesOfHorror.resolutions.resolution1"
           record RandolphSurvivedTheDescent
           record TheInvestigatorsPossessTheSilverKey
-          addCampaignCardToDeckChoice investigators Assets.theSilverKey
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theSilverKey
           allGainXp attrs
           addChaosToken Skull
           endOfScenario

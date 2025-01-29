@@ -22,7 +22,7 @@ import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
-import Arkham.Message (Message (DrawCards, SetPartnerStatus))
+import Arkham.Message (Message (DrawCards, SetPartnerStatus), ShuffleIn(..))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -86,7 +86,7 @@ addTekelili _ [] = pure ()
 addTekelili iid cards = whenM (can.manipulate.deck iid) do
   batched \batchId -> do
     checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
-    traverse_ (addCampaignCardToDeck iid) cards
+    traverse_ (addCampaignCardToDeck iid ShuffleIn) cards
 
 resolveTekelili
   :: (ReverseQueue m, AsId tekelili, IdOf tekelili ~ TreacheryId) => InvestigatorId -> tekelili -> m ()

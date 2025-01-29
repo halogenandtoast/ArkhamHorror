@@ -79,7 +79,7 @@ instance RunMessage TheDunwichLegacy where
           record TheInvestigatorsRescuedDrHenryArmitage
 
           investigators <- allInvestigators
-          addCampaignCardToDeckChoice investigators Assets.drHenryArmitage
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drHenryArmitage
 
       nextCampaignStep
       pure c
@@ -95,36 +95,36 @@ instance RunMessage TheDunwichLegacy where
         record DrHenryArmitageSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.drHenryArmitage) do
-          addCampaignCardToDeckChoice investigators Assets.drHenryArmitage
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drHenryArmitage
 
       unless (sacrificed Assets.professorWarrenRice) do
         story interlude2ProfessorWarrenRice
         record ProfessorWarrenRiceSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.professorWarrenRice) do
-          addCampaignCardToDeckChoice investigators Assets.professorWarrenRice
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
 
       unless (sacrificed Assets.drFrancisMorgan) do
         story interlude2DrFrancisMorgan
         record DrFrancisMorganSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.drFrancisMorgan) do
-          addCampaignCardToDeckChoice investigators Assets.drFrancisMorgan
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drFrancisMorgan
 
       unless (sacrificed Assets.zebulonWhateley) do
         story interlude2ZebulonWhateley
         record ZebulonWhateleySurvivedTheDunwichLegacy
-        addCampaignCardToDeckChoice investigators Assets.zebulonWhateley
+        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.zebulonWhateley
 
       unless (sacrificed Assets.earlSawyer) do
         story interlude2EarlSawyer
         record EarlSawyerSurvivedTheDunwichLegacy
-        addCampaignCardToDeckChoice investigators Assets.earlSawyer
+        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.earlSawyer
 
       unless
         (all sacrificed [Assets.drHenryArmitage, Assets.professorWarrenRice, Assets.drFrancisMorgan])
         do
-          addCampaignCardToDeckChoice investigators Assets.powderOfIbnGhazi
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.powderOfIbnGhazi
 
       nextCampaignStep
       pure c
@@ -140,25 +140,25 @@ instance RunMessage TheDunwichLegacy where
       case option of
         TakeArmitage -> do
           unless (sacrificed Assets.drHenryArmitage) do
-            forceAddCampaignCardToDeckChoice investigators Assets.drHenryArmitage
+            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.drHenryArmitage
         TakeWarrenRice -> do
           unless (sacrificed Assets.professorWarrenRice) do
-            forceAddCampaignCardToDeckChoice investigators Assets.professorWarrenRice
+            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.professorWarrenRice
         TakeFrancisMorgan -> do
           unless (sacrificed Assets.drFrancisMorgan) do
-            forceAddCampaignCardToDeckChoice investigators Assets.drFrancisMorgan
-        TakeZebulonWhately -> forceAddCampaignCardToDeckChoice investigators Assets.zebulonWhateley
-        TakeEarlSawyer -> forceAddCampaignCardToDeckChoice investigators Assets.earlSawyer
+            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.drFrancisMorgan
+        TakeZebulonWhately -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.zebulonWhateley
+        TakeEarlSawyer -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.earlSawyer
         TakePowderOfIbnGhazi -> when (c.attrs.step == UndimensionedAndUnseen) do
-          forceAddCampaignCardToDeckChoice investigators Assets.powderOfIbnGhazi
+          forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.powderOfIbnGhazi
         TakeTheNecronomicon -> unlessHasRecord TheNecronomiconWasStolen do
-          forceAddCampaignCardToDeckChoice investigators Assets.theNecronomiconOlausWormiusTranslation
+          forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.theNecronomiconOlausWormiusTranslation
         AddAcrossTimeAndSpace -> do
           acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
           lead <- getActiveInvestigatorId
           chooseSome1M lead "Do not add Across Time and Space to any other decks" do
             for_ (zip investigators acrossSpaceAndTimes) \(iid, acrossSpaceAndTime) ->
-              portraitLabeled iid $ addCampaignCardToDeck iid acrossSpaceAndTime
+              portraitLabeled iid $ addCampaignCardToDeck iid ShuffleIn acrossSpaceAndTime
         Cheated -> addChaosToken #elderthing
         _ -> error $ "Unhandled option: " <> show option
       pure c

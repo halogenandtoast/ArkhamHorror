@@ -97,7 +97,7 @@ instance RunMessage TheLastKing where
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       lead <- getLead
-      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      addCampaignCardToDeck lead ShuffleIn Enemies.theManInThePallidMask
       pure s
     Setup -> runScenarioSetup TheLastKing attrs do
       gather Set.TheLastKing

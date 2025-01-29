@@ -307,7 +307,7 @@ instance RunMessage BeyondTheGatesOfSleep where
         _ -> error "Invalid Resolution"
 
       investigators <- allInvestigators
-      addCampaignCardToDeckChoice investigators Assets.randolphCarterExpertDreamer
+      addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterExpertDreamer
       allGainXp attrs
       endOfScenario
       pure s

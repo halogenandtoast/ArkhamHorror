@@ -148,7 +148,7 @@ instance RunMessage TheDevourerBelow where
         case option of
           AddLitaChantler -> do
             investigators <- allInvestigators
-            forceAddCampaignCardToDeckChoice investigators Assets.litaChantler
+            forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.litaChantler
           _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheDevourerBelow <$> liftRunMessage msg attrs

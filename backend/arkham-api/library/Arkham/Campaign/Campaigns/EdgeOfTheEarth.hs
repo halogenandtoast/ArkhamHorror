@@ -6,8 +6,8 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Types (campaignChaosBag, campaignCompletedSteps, campaignStore)
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
-import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
+import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet (EncounterSet (Tekelili))
@@ -218,7 +218,7 @@ instance RunMessage EdgeOfTheEarth where
                       doStep (n - 1) msg'
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Events.dyersSketches
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Events.dyersSketches
                   doStep (n - 1) msg'
 
           let danforth = Assets.danforthBrilliantStudent.cardCode
@@ -242,7 +242,7 @@ instance RunMessage EdgeOfTheEarth where
                       scenarioSetupModifier "08596" CampaignSource iid (StartingHand 2)
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.collectedWorksOfPoe
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.collectedWorksOfPoe
               doStep (n - 1) msg'
 
           let kensler = Assets.drAmyKenslerProfessorOfBiology.cardCode
@@ -260,7 +260,7 @@ instance RunMessage EdgeOfTheEarth where
                 then record DrKenslerIsSharingHerResearchWithYou
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.kenslersLog
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.kenslersLog
               doStep (n - 1) msg'
 
           let sinha = Assets.drMalaSinhaDaringPhysician.cardCode
@@ -290,7 +290,7 @@ instance RunMessage EdgeOfTheEarth where
                       doStep (n - 1) msg'
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.sinhasMedicalKit
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.sinhasMedicalKit
                   doStep (n - 1) msg'
 
           let cookie = Assets.jamesCookieFredericksDubiousChoice.cardCode
@@ -313,7 +313,7 @@ instance RunMessage EdgeOfTheEarth where
                       interludeXp iid $ toBonus "cookiesAdvice" 1
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.cookiesCustom32
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.cookiesCustom32
               doStep (n - 1) msg'
 
           let ellsworth = Assets.roaldEllsworthIntrepidExplorer.cardCode
@@ -340,7 +340,7 @@ instance RunMessage EdgeOfTheEarth where
                     else doStep n msg'
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.claypoolsFurs
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.claypoolsFurs
                   doStep (n - 1) msg'
 
           when (ellsworth `elem` choices) do
@@ -356,7 +356,7 @@ instance RunMessage EdgeOfTheEarth where
                 then record TheInvestigatorsScoutedTheMountainPass
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.ellsworthsBoots
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ellsworthsBoots
               doStep (n - 1) msg'
 
           let takada = Assets.takadaHirokoAeroplaneMechanic.cardCode
@@ -380,7 +380,7 @@ instance RunMessage EdgeOfTheEarth where
                       scenarioSetupModifier "08596" CampaignSource iid (StartingResources 3)
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Events.takadasCache
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache
               doStep (n - 1) msg'
 
           let ashevak = Assets.eliyahAshevakDogHandler.cardCode
@@ -410,7 +410,7 @@ instance RunMessage EdgeOfTheEarth where
                       doStep (n - 1) msg'
                 else do
                   iids <- getInvestigators
-                  addCampaignCardToDeckChoice iids Assets.anyuFaithfulCompanion
+                  addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.anyuFaithfulCompanion
                   doStep (n - 1) msg'
 
       pure c

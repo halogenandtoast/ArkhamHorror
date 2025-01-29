@@ -103,6 +103,7 @@ instance RunMessage TheGathering where
         chooseToAddLita killed =
           addCampaignCardToDeckChoice
             (if leadId `elem` killed then resigned else [leadId])
+            DoNotShuffleIn
             Assets.litaChantler
       case resolution of
         NoResolution -> do

@@ -432,24 +432,24 @@ instance FetchCard AssetId where
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)
   => investigator
+  -> ShuffleIn
   -> card
   -> m ()
-addCampaignCardToDeck investigator card = do
-  card' <- fetchCard card
-  push $ Msg.AddCampaignCardToDeck (asId investigator) card'
+addCampaignCardToDeck investigator shouldShuffleIn card = do
+  push . Msg.AddCampaignCardToDeck (asId investigator) shouldShuffleIn =<< fetchCard card
 
-addCampaignCardToDeckChoice :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> card -> m ()
-addCampaignCardToDeckChoice choices card = do
+addCampaignCardToDeckChoice :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
+addCampaignCardToDeckChoice choices shouldShuffleIn card = do
   lead <- getLeadPlayer
   card' <- fetchCard card
-  push $ Msg.addCampaignCardToDeckChoice lead choices card'
+  push $ Msg.addCampaignCardToDeckChoice lead choices shouldShuffleIn card'
 
 forceAddCampaignCardToDeckChoice
-  :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> card -> m ()
-forceAddCampaignCardToDeckChoice choices card = do
+  :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
+forceAddCampaignCardToDeckChoice choices shouldShuffleIn card = do
   lead <- getLeadPlayer
   card' <- fetchCard card
-  push $ Msg.forceAddCampaignCardToDeckChoice lead choices card'
+  push $ Msg.forceAddCampaignCardToDeckChoice lead choices shouldShuffleIn card'
 
 removeCardFromDeckForCampaign
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, IsCard card, ReverseQueue m)

@@ -180,12 +180,12 @@ instance RunMessage MurderAtTheExcelsiorHotel where
 
           story resolution1
           record TheExcelsiorIsQuietForNow
-          forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
-          addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+          forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.whatHaveYouDone
+          addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.bloodstainedDagger
 
           policeOnYourSide <- remembered ThePoliceAreOnYourSide
           when policeOnYourSide do
-            addCampaignCardToDeckChoice investigators Assets.sergeantMonroe
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.sergeantMonroe
 
           policeInVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ #enemy <> withTrait Police
           when (not policeOnYourSide && policeInVictory) do
@@ -225,16 +225,16 @@ instance RunMessage MurderAtTheExcelsiorHotel where
       record TheMurdersContinueUnsolved
       allGainXp attrs
       lead <- getLead
-      forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
-      addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+      forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.whatHaveYouDone
+      addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.bloodstainedDagger
       endOfScenario
       pure s
     ScenarioResolutionStep 2 (Resolution 3) -> do
       record TheMurdersContinueUnsolved
       allGainXp attrs
       lead <- getLead
-      forceAddCampaignCardToDeckChoice [lead] Treacheries.whatHaveYouDone
-      addCampaignCardToDeckChoice [lead] Assets.bloodstainedDagger
+      forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.whatHaveYouDone
+      addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.bloodstainedDagger
       searchCollectionForRandom
         lead
         attrs

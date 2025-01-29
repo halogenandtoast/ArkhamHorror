@@ -32,6 +32,7 @@ import Arkham.Message as X (
   AgendaAdvancementMethod (..),
   CanAdvance (..),
   Message (..),
+  ShuffleIn (..),
   pattern AdvanceAgenda,
   pattern PassedThisSkillTest,
   pattern RemoveClues,

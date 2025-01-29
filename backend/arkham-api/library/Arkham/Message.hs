@@ -89,6 +89,7 @@ import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import Data.UUID (nil)
 import GHC.OverloadedLabels
+import Control.Monad.Fail
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
@@ -343,6 +344,10 @@ instance AndThen (CardDraw Message) where
 instance AndThen EnemyAttackDetails where
   andThen cd msg = cd {attackAfter = [msg]}
 
+data ShuffleIn = ShuffleIn | DoNotShuffleIn
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
@@ -407,7 +412,7 @@ data Message
   | AddDirectConnection LocationId LocationId
   | SetConnections LocationId [LocationMatcher]
   | SetFlippable LocationId Bool
-  | AddCampaignCardToDeck InvestigatorId Card
+  | AddCampaignCardToDeck InvestigatorId ShuffleIn Card
   | RemoveCardFromDeckForCampaign InvestigatorId CardId
   | AddCardToDeckForCampaign InvestigatorId PlayerCard
   | -- Adding Cards to Hand
@@ -1126,10 +1131,11 @@ instance FromJSON Message where
           Left (st, uim) -> pure $ CommitToSkillTest (skillTestId st) uim
           Right (stId, uim) -> pure $ CommitToSkillTest stId uim
       "AddCampaignCardToDeck" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        contents <- (Left <$> o .: "contents") <|> (Right . Left <$> o .: "contents") <|> (Right . Right <$> o .: "contents") <|> fail ("Invalid AddCampaignCardToDeck: " <> show o)
         case contents of
-          Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid card
-          Right (iid, cardDef :: CardDef) -> pure $ AddCampaignCardToDeck iid (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
+          Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid ShuffleIn card
+          Right (Left (iid, cardDef :: CardDef)) -> pure $ AddCampaignCardToDeck iid ShuffleIn (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
+          Right (Right (iid, shouldShuffleIn, card :: Card)) -> pure $ AddCampaignCardToDeck iid shouldShuffleIn card
       "SealedChaosToken" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

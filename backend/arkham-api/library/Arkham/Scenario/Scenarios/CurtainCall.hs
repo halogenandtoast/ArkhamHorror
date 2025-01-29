@@ -123,7 +123,7 @@ instance RunMessage CurtainCall where
 
       record TheStrangerIsOnToYou
       lead <- getLead
-      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      addCampaignCardToDeck lead DoNotShuffleIn Enemies.theManInThePallidMask
       allGainXp attrs
       endOfScenario
       pure s

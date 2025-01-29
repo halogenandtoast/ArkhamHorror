@@ -112,7 +112,7 @@ instance RunMessage TheHouseAlwaysWins where
       story resolution2
       record OBannionGangHasABoneToPickWithTheInvestigators
       record TheInvestigatorsRescuedDrFrancisMorgan
-      addCampaignCardToDeckChoice investigatorIds Assets.drFrancisMorgan
+      addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.drFrancisMorgan
       when (Cheated `member` attrs.log) $ addChaosToken ElderThing
       allGainXp attrs
       endOfScenario

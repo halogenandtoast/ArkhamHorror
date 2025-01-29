@@ -71,7 +71,7 @@ flashback iid f = case f of
     chooseOrRunOneM iid do
       labeled "Do not take Teachings of the Order" nothing
       targets iids \iid' -> do
-        addCampaignCardToDeck iid' Assets.teachingsOfTheOrder
+        addCampaignCardToDeck iid' DoNotShuffleIn Assets.teachingsOfTheOrder
         takeControlOfSetAsideAsset iid' teachings
   Flashback7 -> do
     scenarioI18n $ story $ i18nWithTitle "flashback7"

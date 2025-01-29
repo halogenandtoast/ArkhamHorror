@@ -106,9 +106,8 @@ instance RunMessage TheBoundaryBeyond where
           then do
             story arcaneThrumming
             removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-            withOwner
-              Assets.relicOfAgesADeviceOfSomeSort
-              (`addCampaignCardToDeck` Assets.relicOfAgesForestallingTheFuture)
+            withOwner Assets.relicOfAgesADeviceOfSomeSort \owner -> do
+              addCampaignCardToDeck owner ShuffleIn Assets.relicOfAgesForestallingTheFuture
           else story growingConcern
 
         rescuedAlejandro <- getHasRecord TheInvestigatorsRescuedAlejandro

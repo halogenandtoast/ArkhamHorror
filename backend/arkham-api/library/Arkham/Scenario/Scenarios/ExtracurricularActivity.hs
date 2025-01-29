@@ -118,7 +118,7 @@ instance RunMessage ExtracurricularActivity where
       record TheInvestigatorsRescuedProfessorWarrenRice
       addChaosToken Tablet
       investigators <- allInvestigators
-      addCampaignCardToDeckChoice investigators Assets.professorWarrenRice
+      addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
       allGainXp attrs
       endOfScenario
       pure s

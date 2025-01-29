@@ -26,6 +26,8 @@ instance RunMessage FinePrint where
             VengeanceCard _ -> error "should be player card"
             PlayerCard pc -> do
               removeCardFromDeckForCampaign iid pc
-              addCampaignCardToDeck iid =<< genPlayerCard Treacheries.sellYourSoul
+              sellYourSoul <- genPlayerCard Treacheries.sellYourSoul
+              addCampaignCardToDeck iid DoNotShuffleIn sellYourSoul
+              addToDiscard iid (only sellYourSoul)
       pure t
     _ -> FinePrint <$> liftRunMessage msg attrs

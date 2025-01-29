@@ -9,6 +9,7 @@ import Arkham.Classes as X
 import Arkham.Helpers.Query as X
 import Arkham.Message as X (
   Message (..),
+  ShuffleIn (..),
   toMessage,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,

@@ -225,13 +225,13 @@ instance RunMessage ForTheGreaterGood where
         Resolution 1 -> do
           story resolution1
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-          addCampaignCardToDeckChoice iids Assets.puzzleBox
+          addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.puzzleBox
           allGainXp attrs
           endOfScenarioThen (InterludeStep 3 Nothing)
         Resolution 2 -> do
           story resolution2
           record TheInvestigatorsDiscoveredHowToOpenThePuzzleBox
-          addCampaignCardToDeckChoice iids Assets.puzzleBox
+          addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.puzzleBox
           allGainXp attrs
           endOfScenario
         Resolution 3 -> do

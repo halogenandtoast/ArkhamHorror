@@ -272,7 +272,7 @@ instance RunMessage ThreadsOfFate where
 
       relicOwned <- getIsAlreadyOwned Assets.relicOfAgesADeviceOfSomeSort
       when (act3bCompleted && not relicOwned) do
-        addCampaignCardToDeckChoice iids Assets.relicOfAgesADeviceOfSomeSort
+        addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.relicOfAgesADeviceOfSomeSort
 
       unless act3bCompleted do
         removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
@@ -281,7 +281,7 @@ instance RunMessage ThreadsOfFate where
 
       alejandroOwned <- getIsAlreadyOwned Assets.alejandroVela
       when (act3dCompleted && not alejandroOwned) do
-        addCampaignCardToDeckChoice iids Assets.alejandroVela
+        addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.alejandroVela
 
       unless act3dCompleted do
         removeCampaignCard Assets.alejandroVela
@@ -289,9 +289,9 @@ instance RunMessage ThreadsOfFate where
       record $ if act3fCompleted then TheInvestigatorsForgedABondWithIchtaca else IchtacaIsInTheDark
 
       when act3fCompleted do
-        addCampaignCardToDeckChoice iids Assets.ichtacaTheForgottenGuardian
+        addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ichtacaTheForgottenGuardian
 
-      addCampaignCardToDeckChoice [lead] Assets.expeditionJournal
+      addCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditionJournal
       allGainXpWithBonus attrs $ toBonus "bonus" act1sCompleted
       endOfScenario
       pure s

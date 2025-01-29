@@ -170,7 +170,7 @@ instance RunMessage PointOfNoReturn where
         Resolution 2 -> do
           story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.resolutions.resolution2"
           lead <- getLead
-          forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
+          forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.falseAwakening
           n <- scenarioCount Distortion
           incrementRecordCount StepsOfTheBridge n
           allGainXp attrs

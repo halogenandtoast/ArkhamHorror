@@ -30,6 +30,6 @@ instance RunMessage DarkPact where
         VengeanceCard _ -> error "should be player card"
         PlayerCard pc -> do
           removeCardFromDeckForCampaign iid pc
-          addCampaignCardToDeck iid =<< genPlayerCard Treacheries.thePriceOfFailure
+          addCampaignCardToDeck iid DoNotShuffleIn =<< genPlayerCard Treacheries.thePriceOfFailure
           pure e
     _ -> DarkPact <$> liftRunMessage msg attrs

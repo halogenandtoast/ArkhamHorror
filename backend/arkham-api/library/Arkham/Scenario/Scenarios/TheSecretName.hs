@@ -207,7 +207,7 @@ instance RunMessage TheSecretName where
         addTheBlackBook = chooseOneM lead do
           labeled "Do not add The Black Book" nothing
           targets iids \iid -> do
-            addCampaignCardToDeck iid Assets.theBlackBook
+            addCampaignCardToDeck iid DoNotShuffleIn Assets.theBlackBook
             addChaosToken Skull
       case resolution of
         NoResolution -> do

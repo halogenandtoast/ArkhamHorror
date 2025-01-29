@@ -58,28 +58,26 @@ import Safe (fromJustNote)
 import UnliftIO.Exception hiding (Handler)
 import Yesod.WebSockets
 
-gameStream :: Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
+gameStream :: HasCallStack => Maybe UserId -> ArkhamGameId -> WebSocketsT Handler ()
 gameStream mUserId gameId = catchingConnectionException do
   writeChannel <- lift $ (.channel) <$> getRoom gameId
   roomsRef <- getsYesod appGameRooms
-  atomicModifyIORef'
-    roomsRef
-    \rooms -> (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
-  bracket
-    (atomically $ dupTChan writeChannel)
-    closeConnection
-    \readChannel ->
-      race_
-        (forever $ atomically (readTChan readChannel) >>= sendTextData)
-        (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
+  atomicModifyIORef' roomsRef \rooms -> do
+    (Map.adjust (\room -> room {socketClients = room.clients + 1}) gameId rooms, ())
+  bracket (atomically $ dupTChan writeChannel) closeConnection \readChannel -> do
+    race_
+      (forever $ atomically (readTChan readChannel) >>= sendTextData)
+      (runConduit $ sourceWS .| mapM_C (handleData writeChannel))
  where
   handleData writeChannel dataPacket = lift do
     for_ mUserId \userId ->
       case eitherDecodeStrict dataPacket of
         Left err -> $(logWarn) $ tshow err
         Right answer ->
-          updateGame answer gameId userId writeChannel `catch` \(e :: SomeException) ->
+          updateGame answer gameId userId writeChannel `catch` \(e :: SomeException) -> do
             liftIO $ atomically $ writeTChan writeChannel $ encode $ GameError $ tshow e
+            $(logWarn) $ tshow e
+            throwM e
 
   closeConnection _ = do
     roomsRef <- getsYesod appGameRooms

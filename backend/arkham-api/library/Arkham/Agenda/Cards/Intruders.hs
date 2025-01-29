@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.Intruders (Intruders (..), intruders) where
+module Arkham.Agenda.Cards.Intruders (intruders) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -24,11 +24,11 @@ instance RunMessage Intruders where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locationSymbols <- toConnections =<< getJustLocation iid
       let source = attrs.ability 1
-      push $ Explore iid source (oneOf $ map CardWithPrintedLocationSymbol locationSymbols)
+      push $ Explore iid source (mapOneOf CardWithPrintedLocationSymbol locationSymbols)
       pure a
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator (investigatorDefeated attrs)
-      unpoisoned <- getUnpoisoned
-      for_ unpoisoned \iid -> addCampaignCardToDeck iid Treacheries.poisoned
+      getUnpoisoned
+        >>= traverse_ \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.poisoned
       pure a
     _ -> Intruders <$> liftRunMessage msg attrs

@@ -89,7 +89,7 @@ readInvestigatorDefeat = do
     when (owner `elem` defeated) do
       record DrFrancisMorganWasKidnapped
       removeCampaignCard Assets.drFrancisMorgan
-  for_ defeated \iid -> addCampaignCardToDeck iid Treacheries.acrossSpaceAndTime
+  for_ defeated \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.acrossSpaceAndTime
 
 instance RunMessage TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs) = runQueueT $ case msg of

@@ -92,21 +92,21 @@ matchingCardsAlreadyInDeck matcher = do
   pure $ Map.map (setFromList . map toCardCode . filter (`cardMatch` matcher) . unDeck) decks
 
 addCampaignCardToDeckChoice
-  :: PlayerId -> [InvestigatorId] -> Card -> Message
-addCampaignCardToDeckChoice leadPlayer investigators card =
+  :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message
+addCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
   questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
-    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator card]
+    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator shouldShuffleIn card]
       | investigator <- investigators
       ]
     <> [Label ("Do not add " <> display card.name <> " to any deck") []]
 
 forceAddCampaignCardToDeckChoice
-  :: PlayerId -> [InvestigatorId] -> Card -> Message
-forceAddCampaignCardToDeckChoice _ [onlyId] card = AddCampaignCardToDeck onlyId card
-forceAddCampaignCardToDeckChoice leadPlayer investigators card =
+  :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message
+forceAddCampaignCardToDeckChoice _ [onlyId] shouldShuffleIn card = AddCampaignCardToDeck onlyId shouldShuffleIn card
+forceAddCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
   questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
-      [ PortraitLabel investigator [AddCampaignCardToDeck investigator card]
+      [ PortraitLabel investigator [AddCampaignCardToDeck investigator shouldShuffleIn card]
       | investigator <- investigators
       ]

@@ -254,22 +254,22 @@ instance RunMessage UnionAndDisillusion where
 
           gavriellaIsAlive <- getHasRecord GavriellaIsAlive
           if gavriellaIsAlive
-            then addCampaignCardToDeckChoice investigators Assets.gavriellaMizrah
+            then addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.gavriellaMizrah
             else record GavriellaIsDead
 
           jeromeIsAlive <- getHasRecord JeromeIsAlive
           if jeromeIsAlive
-            then addCampaignCardToDeckChoice investigators Assets.jeromeDavids
+            then addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.jeromeDavids
             else record JeromeIsDead
 
           pennyIsAlive <- getHasRecord PennyIsAlive
           if pennyIsAlive
-            then addCampaignCardToDeckChoice investigators Assets.pennyWhite
+            then addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.pennyWhite
             else record PennyIsDead
 
           valentinoIsAlive <- getHasRecord ValentinoIsAlive
           if valentinoIsAlive
-            then addCampaignCardToDeckChoice investigators Assets.valentinoRivas
+            then addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.valentinoRivas
             else record ValentinoIsDead
           allGainXp attrs
           endOfScenario

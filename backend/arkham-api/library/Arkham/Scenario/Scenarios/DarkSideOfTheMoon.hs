@@ -161,7 +161,7 @@ instance RunMessage DarkSideOfTheMoon where
           record TheInvestigatorsWereCarriedToTheColdWastes
           record RandolphCarterDidNotSurviveTheVoyage
           removeCampaignCard Assets.randolphCarterExpertDreamer
-          forceAddCampaignCardToDeckChoice [lead] Treacheries.falseAwakening
+          forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Treacheries.falseAwakening
           allGainXp attrs
           endOfScenario
         Resolution 1 -> do

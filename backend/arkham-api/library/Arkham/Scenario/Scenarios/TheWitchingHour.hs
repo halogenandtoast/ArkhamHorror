@@ -82,8 +82,8 @@ instance RunMessage TheWitchingHour where
           (not . any ((`elem` [Assets.theTowerXVI, Assets.aceOfRods1]) . toCardDef))
           lead
       when addCards do
-        addCampaignCardToDeck lead Assets.theTowerXVI
-        addCampaignCardToDeck lead Assets.aceOfRods1
+        addCampaignCardToDeck lead ShuffleIn Assets.theTowerXVI
+        addCampaignCardToDeck lead ShuffleIn Assets.aceOfRods1
       pure s
     DoStep 3 PreScenarioSetup -> do
       story intro3

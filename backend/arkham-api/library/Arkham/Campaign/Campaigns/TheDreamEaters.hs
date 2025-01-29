@@ -626,7 +626,7 @@ instance RunMessage TheDreamEaters where
             pure c
       CampaignStep (InterludeStepPart 3 _ 21) -> do
         investigators <- allInvestigators
-        addCampaignCardToDeckChoice investigators Assets.theSilverKey
+        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.theSilverKey
         setCampaignPart TheDreamQuest c (InterludeStepPart 3 Nothing 22)
       CampaignStep (InterludeStepPart 3 _ 22) -> do
         -- If the black cat is searching for the truth:

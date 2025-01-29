@@ -193,7 +193,7 @@ instance RunMessage ALightInTheFog where
           recordWhen (RedKey `elem` actKeys) TheInvestigatorsPossessTheKeyToYhaNthlei
 
           investigators <- allInvestigators
-          for_ (meta ^. relicsAddedToHandL) (addCampaignCardToDeckChoice investigators)
+          for_ (meta ^. relicsAddedToHandL) (addCampaignCardToDeckChoice investigators DoNotShuffleIn)
           allGainXp attrs
           endOfScenario
       case resolution of

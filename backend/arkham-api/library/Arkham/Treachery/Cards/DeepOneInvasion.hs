@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DeepOneInvasion (deepOneInvasion, DeepOneInvasion (..)) where
+module Arkham.Treachery.Cards.DeepOneInvasion (deepOneInvasion) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Location

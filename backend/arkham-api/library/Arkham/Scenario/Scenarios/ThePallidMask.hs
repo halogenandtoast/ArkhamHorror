@@ -137,7 +137,7 @@ instance RunMessage ThePallidMask where
       lead <- getLead
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
-      addCampaignCardToDeck lead Enemies.theManInThePallidMask
+      addCampaignCardToDeck lead ShuffleIn Enemies.theManInThePallidMask
       pure . ThePallidMask $ attrs & standaloneCampaignLogL .~ standaloneCampaignLog
     Setup -> runScenarioSetup ThePallidMask attrs do
       gather Set.ThePallidMask

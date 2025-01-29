@@ -68,20 +68,20 @@ instance RunMessage TheInnsmouthConspiracy where
     CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
       story $ i18nWithTitle "part1"
       memoriesRecovered <- getRecordSet MemoriesRecovered
-      when (recorded AMeetingWithThomasDawson `elem` memoriesRecovered) $ do
+      when (recorded AMeetingWithThomasDawson `elem` memoriesRecovered) do
         story $ i18nWithTitle "aMeetingWithThomasDawson"
-        eachInvestigator $ \iid -> gainXp iid CampaignSource (ikey "xp.aMeetingWithThomasDawson") 1
+        eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.aMeetingWithThomasDawson") 1
       when (null memoriesRecovered) $ do
         story $ i18nWithTitle "noMemoriesRecovered"
-      when (recorded ABattleWithAHorrifyingDevil `elem` memoriesRecovered) $ do
+      when (recorded ABattleWithAHorrifyingDevil `elem` memoriesRecovered) do
         story $ i18nWithTitle "aBattleWithAHorrifyingDevil"
-        eachInvestigator $ \iid -> gainXp iid CampaignSource (ikey "xp.aBattleWithAHorrifyingDevil") 1
-      when (recorded ADecisionToStickTogether `elem` memoriesRecovered) $ do
+        eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.aBattleWithAHorrifyingDevil") 1
+      when (recorded ADecisionToStickTogether `elem` memoriesRecovered) do
         story $ i18nWithTitle "aDecisionToStickTogether"
-        eachInvestigator $ \iid -> gainXp iid CampaignSource (ikey "xp.aDecisionToStickTogether") 1
-      when (recorded AnEncounterWithASecretCult `elem` memoriesRecovered) $ do
+        eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.aDecisionToStickTogether") 1
+      when (recorded AnEncounterWithASecretCult `elem` memoriesRecovered) do
         story $ i18nWithTitle "anEncounterWithASecretCult"
-        eachInvestigator $ \iid -> gainXp iid CampaignSource (ikey "xp.anEncounterWithASecretCult") 1
+        eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.anEncounterWithASecretCult") 1
       story $ i18nWithTitle "part2"
       nextCampaignStep
       pure c
@@ -91,7 +91,7 @@ instance RunMessage TheInnsmouthConspiracy where
       whenHasRecord TheMissionWasSuccessful do
         story $ i18nWithTitle "theSyzygy3"
         investigators <- allInvestigators
-        addCampaignCardToDeckChoice investigators Assets.elinaHarperKnowsTooMuch
+        addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.elinaHarperKnowsTooMuch
       story $ i18nWithTitle "theSyzygy4"
       nextCampaignStep
       pure c
@@ -157,7 +157,7 @@ instance RunMessage TheInnsmouthConspiracy where
       withOwner Assets.elinaHarperKnowsTooMuch \iid -> do
         chooseOneM iid do
           labeled "Add Elina Harper to your deck" do
-            addCampaignCardToDeck iid Assets.elinaHarperKnowsTooMuch
+            addCampaignCardToDeck iid DoNotShuffleIn Assets.elinaHarperKnowsTooMuch
           labeled "Do not add Elina Harper to your deck" do
             removeCampaignCard Assets.elinaHarperKnowsTooMuch
 

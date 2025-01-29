@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.EmergingDeepOne (emergingDeepOne, EmergingDeepOne (..)) where
+module Arkham.Enemy.Cards.EmergingDeepOne (emergingDeepOne) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers

@@ -31,6 +31,7 @@ import Arkham.Event.Runner as X (
 import Arkham.Helpers.Modifiers as X (getModifiers)
 import Arkham.Message as X (
   Message (..),
+  ShuffleIn (..),
   toMessage,
   pattern CancelRevelation,
   pattern FailedThisSkillTest,

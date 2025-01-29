@@ -236,7 +236,10 @@ instance RunMessage TheUnspeakableOath where
             withOwner Assets.claspOfBlackOnyx \owner -> do
               removeCampaignCard Assets.claspOfBlackOnyx
               investigators <- allInvestigators
-              forceAddCampaignCardToDeckChoice (filter (/= owner) investigators) Assets.claspOfBlackOnyx
+              forceAddCampaignCardToDeckChoice
+                (filter (/= owner) investigators)
+                DoNotShuffleIn
+                Assets.claspOfBlackOnyx
           updateSlain
           replaceSymbolTokens Cultist
           endOfScenario

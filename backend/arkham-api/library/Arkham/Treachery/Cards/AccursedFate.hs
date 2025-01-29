@@ -27,7 +27,7 @@ instance RunMessage AccursedFate where
             PlayerCard pc -> do
               assignHorror iid attrs 2
               removeCardFromDeckForCampaign iid pc
-              addCampaignCardToDeck iid theBellTolls
+              addCampaignCardToDeck iid DoNotShuffleIn theBellTolls
               putCardOnBottomOfDeck iid iid theBellTolls
               removeTreachery attrs
         else do

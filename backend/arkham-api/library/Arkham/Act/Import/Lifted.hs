@@ -12,6 +12,7 @@ import Arkham.Act.Runner as X (
   AdvancementMethod (..),
   IsAct,
   Message (..),
+  ShuffleIn (..),
   act,
   actWith,
   getLeadPlayer,

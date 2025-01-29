@@ -12,5 +12,9 @@
       "tablet": "Reveal another token. If you fail, until the end of the round, you cannot move.",
       "elderThing": "-4. If the Rougarou is at your location or a connecting location, it attacks you."
     }
+  },
+  "remembered": {
+    "foundAnAncientBindingStone": "Found an ancient binding stone",
+    "foundAStrangeDoll": "Found a strange doll"
   }
 }

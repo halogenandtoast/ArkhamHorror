@@ -5,8 +5,8 @@ import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Helpers
-import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Campaigns.TheDreamEaters.Key
+import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Agenda
@@ -128,7 +128,10 @@ instance RunMessage WakingNightmare where
               recordCount StepsOfTheBridge (steps + n)
               record DrMaheswaran'sFateIsUnknown
               record RandolphEscapedTheHospitalOnHisOwn
-              addCampaignCardToDeckChoice investigators Assets.randolphCarterChainedToTheWakingWorld
+              addCampaignCardToDeckChoice
+                investigators
+                DoNotShuffleIn
+                Assets.randolphCarterChainedToTheWakingWorld
               push R5
             else do
               recordCount StepsOfTheBridge (steps + n)
@@ -138,26 +141,26 @@ instance RunMessage WakingNightmare where
           record DrMaheswaranIsAlive
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 2 -> do
           story resolution2
           record DrMaheswaranIsMissing
           when isFullCampaign $ record TheDreamersGrowWeaker
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 3 -> do
           story resolution3
           record DrMaheswaranIsAlive
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 4 -> do
           story resolution4
           record DrMaheswaranIsMissing
           record RandolphEscapedTheHospitalWithTheInvestigators
-          addCampaignCardToDeckChoice investigators Assets.randolphCarterChainedToTheWakingWorld
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.randolphCarterChainedToTheWakingWorld
           push R5
         Resolution 5 -> do
           story resolution5

@@ -255,8 +255,8 @@ instance RunMessage TheCircleUndone where
     HandleOption option -> do
       investigators <- allInvestigators
       case option of
-        TakeBlackBook -> forceAddCampaignCardToDeckChoice investigators Assets.theBlackBook
-        TakePuzzleBox -> forceAddCampaignCardToDeckChoice investigators Assets.puzzleBox
+        TakeBlackBook -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.theBlackBook
+        TakePuzzleBox -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.puzzleBox
         ProceedToInterlude3 -> pure ()
         _ -> error $ "Unhandled option: " <> show option
       pure c

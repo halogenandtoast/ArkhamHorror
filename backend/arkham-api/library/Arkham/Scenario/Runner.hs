@@ -715,11 +715,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         Just (x : _) -> push (AddAgenda k x)
         _ -> pure ()
     pure a
-  AddCampaignCardToDeck iid card -> do
+  AddCampaignCardToDeck iid shouldShuffleIn card -> do
     standalone <- getIsStandalone
     let card' = overPlayerCard (setPlayerCardOwner iid) card
     replaceCard card.id card'
-    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
+    when (shouldShuffleIn == ShuffleIn) do
+      push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
     pure $ if standalone then a & storyCardsL %~ insertWith (<>) iid (onlyPlayerCards [card']) else a
   LookAtTopOfDeck iid EncounterDeckTarget n -> do
     let cards = map EncounterCard . take n $ unDeck scenarioEncounterDeck

@@ -5,22 +5,22 @@ import Arkham.Campaign.Runner as X (
   CampaignAttrs,
   IsCampaign (..),
   campaign,
-  campaignWith,
-  campaignStep,
   campaignMeta,
+  campaignStep,
+  campaignWith,
   defaultCampaignRunner,
   logL,
+  modifiersL,
   push,
   pushAll,
   pushWhen,
-  modifiersL,
  )
 import Arkham.CampaignStep as X
 import Arkham.Classes as X
 import Arkham.Difficulty as X
 import Arkham.Helpers.Message as X (targetLabel)
 import Arkham.Id as X
-import Arkham.Message as X (Message (..), UI (..), pattern PlaceClues)
+import Arkham.Message as X (Message (..), ShuffleIn (..), UI (..), pattern PlaceClues)
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Text as X

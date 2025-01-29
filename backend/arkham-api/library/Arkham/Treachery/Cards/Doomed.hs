@@ -27,7 +27,7 @@ instance RunMessage Doomed where
             PlayerCard pc -> do
               assignHorror iid attrs 1
               removeCardFromDeckForCampaign iid pc
-              addCampaignCardToDeck iid accursedFate
+              addCampaignCardToDeck iid DoNotShuffleIn accursedFate
               putCardOnBottomOfDeck iid iid accursedFate
               removeTreachery attrs
         else do

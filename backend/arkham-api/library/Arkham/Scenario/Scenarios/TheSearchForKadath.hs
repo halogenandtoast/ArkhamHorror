@@ -102,7 +102,7 @@ readInvestigatorDefeat = do
     withOwner Assets.randolphCarterExpertDreamer $ \owner -> do
       when ((owner `elem` defeated) && notNull resigned) do
         removeCampaignCard Assets.randolphCarterExpertDreamer
-        forceAddCampaignCardToDeckChoice resigned Assets.randolphCarterExpertDreamer
+        forceAddCampaignCardToDeckChoice resigned DoNotShuffleIn Assets.randolphCarterExpertDreamer
 
 instance RunMessage TheSearchForKadath where
   runMessage msg s@(TheSearchForKadath attrs) = runQueueT $ case msg of

@@ -29,7 +29,7 @@ import Arkham.Effect.Types (EffectAttrs (effectFinished))
 import Arkham.Effect.Window (EffectWindow (EffectCardResolutionWindow))
 import Arkham.Enemy
 import Arkham.Enemy.Creation (EnemyCreation (..), EnemyCreationMethod (..))
-import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
+import Arkham.Enemy.Types (EnemyAttrs (..), Field (..), delayEngagementL)
 import Arkham.Entities
 import Arkham.Event
 import Arkham.Event.Types
@@ -2284,7 +2284,7 @@ runGameMessage msg g = case msg of
           EncounterCard _ -> Nothing
           PlayerCard pc -> pcOwner pc
           VengeanceCard vc -> getBearer vc
-    enemy'' <-
+    enemy'' <- overAttrs (delayEngagementL .~ False) <$>
       runMessage
         (SetOriginalCardCode $ originalCardCode card)
         (createEnemy card enemyId)

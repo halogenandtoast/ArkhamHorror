@@ -139,7 +139,7 @@ instance RunMessage TheUntamedWilds where
           foughtWithIchtaca <- remembered YouFoughtWithIchtaca
           recordWhen foughtWithIchtaca IchtacaIsWaryOfTheInvestigators
           recordWhen (actStep < 3 || foughtWithIchtaca) AlejandroFollowedTheInvestigatorsIntoTheRuins
-          addCampaignCardToDeckChoice investigators Assets.alejandroVela
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
           whenM (remembered IchtachaIsLeadingTheWay) do
             record TheInvestigatorsHaveEarnedIchtacasTrust
             record AlejandroChoseToRemainAtCamp
@@ -158,7 +158,7 @@ instance RunMessage TheUntamedWilds where
           story resolution2
           record TheInvestigatorsClearedAPathToTheEztliRuins
           record AlejandroFollowedTheInvestigatorsIntoTheRuins
-          addCampaignCardToDeckChoice investigators Assets.alejandroVela
+          addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.alejandroVela
           record IchtacaIsWaryOfTheInvestigators
           recordCount YigsFury vengeance
           allGainXp attrs

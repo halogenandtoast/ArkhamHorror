@@ -342,6 +342,7 @@ investigator f cardDef Stats {..} =
                 , investigatorDrivenInsane = False
                 , investigatorDefeated = False
                 , investigatorResigned = False
+                , investigatorEliminated = False
                 , investigatorSlots = defaultSlots iid
                 , investigatorXp = 0
                 , investigatorPhysicalTrauma = 0

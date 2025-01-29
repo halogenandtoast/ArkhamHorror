@@ -687,6 +687,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (handL .~ mempty)
       & (discardL .~ mempty)
       & (deckL .~ mempty)
+      & (eliminatedL .~ True)
   RemoveAllClues _ (InvestigatorTarget iid) | iid == investigatorId -> do
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveAllDoom _ (InvestigatorTarget iid) | iid == investigatorId -> do
@@ -695,13 +696,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure
       $ a
-      & (slotsL . each %~ filter ((not . isSlotSource source)))
+      & (slotsL . each %~ filter (not . isSlotSource source))
       & (slotsL %~ removeFromSlots aid)
   RemovedFromPlay source@(EventSource aid) -> do
     pushWhen (providedSlot a aid) $ RefillSlots a.id
-    pure
-      $ a
-      & (slotsL . each %~ filter ((not . isSlotSource source)))
+    pure $ a & slotsL . each %~ filter (not . isSlotSource source)
   TakeControlOfAsset iid aid | iid == investigatorId -> do
     a <$ push (InvestigatorPlayAsset iid aid)
   TakeControlOfAsset iid aid | iid /= investigatorId -> do
@@ -2000,14 +1999,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         card <- sourceToCard (slotSource slot)
         pure
           $ Label
-            ("Change slot from " <> (toTitle card) <> " to " <> tshow sType)
+            ("Change slot from " <> toTitle card <> " to " <> tshow sType)
             [InvestigatorAdjustSlot iid slot sType' sType]
 
     when (notNull choices) do
       player <- getPlayer iid
       push $ chooseSome player "Do not change slots" choices
 
-    pure $ a
+    pure a
   InvestigatorAdjustSlot iid slot fromSlotType toSlotType | iid == investigatorId -> do
     push $ RefillSlots iid
     pure
@@ -2120,7 +2119,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
     mods <- getModifiers a
     let n = sum [x | DamageTaken x <- mods]
-    pure $ a & assignedHealthDamageL +~ (max 0 $ damage + n) & assignedSanityDamageL +~ horror
+    pure $ a & assignedHealthDamageL +~ max 0 (damage + n) & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do
@@ -2492,7 +2491,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- it is granted by the investigator
     push $ RefillSlots a.id
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
-  RefillSlots iid | iid == investigatorId -> do
+  RefillSlots iid | iid == investigatorId && not investigatorEliminated -> do
     assetIds <- select $ AssetWithPlacement (InPlayArea iid)
 
     requirements <- concatForM assetIds $ \assetId -> do
@@ -2851,7 +2850,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       checkWindows [mkWhen $ Window.DrawCard iid (toCard card) deck]
     if hasForesight
       then do
-        canCancel <- (PlayerCard card) <=~> CanCancelRevelationEffect #any
+        canCancel <- PlayerCard card <=~> CanCancelRevelationEffect #any
         availableResources <- getSpendableResources iid
         player <- getPlayer iid
         playable <-
@@ -2952,7 +2951,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   Do (LoseResources iid source n) | iid == investigatorId -> liftRunMessage (RemoveTokens source (toTarget a) #resource n) a
   LoseAllResources iid source | iid == investigatorId -> do
-    liftRunMessage (LoseResources iid source $ a.resources) a
+    liftRunMessage (LoseResources iid source a.resources) a
   TakeResources iid n source True | iid == investigatorId -> do
     let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility [#resource] $ ActionCost 1)
     whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
@@ -2977,11 +2976,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   TakeResources iid n source False | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
-    if canGain
-      then do
-        beforeWindowMsg <- checkWindows [mkWhen (Window.GainsResources iid source n)]
-        pushAll [beforeWindowMsg, Do msg]
-      else pure ()
+    when canGain do
+      beforeWindowMsg <- checkWindows [mkWhen (Window.GainsResources iid source n)]
+      pushAll [beforeWindowMsg, Do msg]
     pure a
   Do (TakeResources iid n source False) | iid == investigatorId -> do
     canGain <- can.gain.resources (sourceToFromSource source) iid
@@ -3985,7 +3982,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         -- Silent forced abilities should trigger automatically
         let
           (isSilent, normal) = partition isSilentForcedAbility actions
-          toForcedAbilities = map (($ windows) . UseAbility iid)
+          toForcedAbilities = map (flip (UseAbility iid) windows)
           toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
         player <- getPlayer iid
         pushAll
@@ -4166,7 +4163,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         | usedAbility used == ability = used {usedTimes = max 0 (usedTimes used - 1)}
         | otherwise = used
     pure $ a & usedAbilitiesL %~ map updateUsed
-  SkillTestEnds _ _ _ -> do
+  SkillTestEnds {} -> do
     pure
       $ a
       & ( usedAbilitiesL

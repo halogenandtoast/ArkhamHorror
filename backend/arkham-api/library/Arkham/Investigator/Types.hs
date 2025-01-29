@@ -266,6 +266,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorResigned :: Bool
   , investigatorKilled :: Bool
   , investigatorDrivenInsane :: Bool
+  , investigatorEliminated :: Bool
   , investigatorSlots :: Map SlotType [Slot]
   , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
@@ -561,6 +562,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorResigned <- o .: "resigned"
     investigatorKilled <- o .: "killed"
     investigatorDrivenInsane <- o .: "drivenInsane"
+    investigatorEliminated <- o .:? "eliminated" .!= False
     investigatorSlots <- o .: "slots"
     investigatorXp <- o .: "xp"
     investigatorPhysicalTrauma <- o .: "physicalTrauma"

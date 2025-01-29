@@ -14,6 +14,8 @@ import Arkham.Matcher
 import Arkham.Name
 import Arkham.Trait
 
+{- HLint ignore "Use camelCase" -}
+
 baseEnemy
   :: CardCode
   -> Name

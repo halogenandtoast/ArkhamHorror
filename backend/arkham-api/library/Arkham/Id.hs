@@ -128,6 +128,10 @@ instance AsId LocationId where
   type IdOf LocationId = LocationId
   asId = id
 
+instance AsId StoryId where
+  type IdOf StoryId = StoryId
+  asId = id
+
 instance AsId TreacheryId where
   type IdOf TreacheryId = TreacheryId
   asId = id

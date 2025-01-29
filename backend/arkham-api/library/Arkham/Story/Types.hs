@@ -57,6 +57,10 @@ data StoryAttrs = StoryAttrs
   }
   deriving stock (Show, Eq)
 
+instance AsId StoryAttrs where
+  type IdOf StoryAttrs = StoryId
+  asId = storyId
+
 instance HasField "id" StoryAttrs StoryId where
   getField = storyId
 
@@ -65,6 +69,9 @@ instance HasField "ability" StoryAttrs (Int -> Source) where
 
 instance HasField "meta" StoryAttrs Value where
   getField = storyMeta
+
+instance HasField "placement" StoryAttrs Placement where
+  getField = storyPlacement
 
 storyWith
   :: (StoryAttrs -> a)

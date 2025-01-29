@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.CharlesRossEsq (
-  charlesRossEsq,
-  charlesRossEsqEffect,
-  CharlesRossEsq (..),
-) where
+module Arkham.Asset.Assets.CharlesRossEsq (charlesRossEsq, charlesRossEsqEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -23,13 +19,12 @@ charlesRossEsq :: AssetCard CharlesRossEsq
 charlesRossEsq = ally CharlesRossEsq Cards.charlesRossEsq (1, 2)
 
 instance HasModifiersFor CharlesRossEsq where
-  getModifiersFor (CharlesRossEsq a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
+  getModifiersFor (CharlesRossEsq a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
       lid <- MaybeT $ field AssetLocation a.id
       pure
         [ CanSpendResourcesOnCardFromInvestigator
-            (investigatorAt lid <> not_ (InvestigatorWithId iid))
+            (investigatorAt lid <> not_ (be iid))
             (#asset <> #item)
         ]
 
@@ -38,9 +33,8 @@ instance HasAbilities CharlesRossEsq where
 
 instance RunMessage CharlesRossEsq where
   runMessage msg a@(CharlesRossEsq attrs) = runQueueT $ case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      -- TODO: we may want to track the investigator instead of the asset
-      createCardEffect Cards.charlesRossEsq Nothing source attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      createCardEffect Cards.charlesRossEsq Nothing (attrs.ability 1) iid
       pure a
     _ -> CharlesRossEsq <$> liftRunMessage msg attrs
 
@@ -52,21 +46,17 @@ charlesRossEsqEffect :: EffectArgs -> CharlesRossEsqEffect
 charlesRossEsqEffect = cardEffect CharlesRossEsqEffect Cards.charlesRossEsq
 
 instance HasModifiersFor CharlesRossEsqEffect where
-  getModifiersFor (CharlesRossEsqEffect a) =
-    case a.source of
-      AssetSource aid ->
-        modifySelect a (InvestigatorAt $ locationWithAsset aid) [ReduceCostOf (#asset <> #item) 1]
-      _ -> error "invalid source"
+  getModifiersFor (CharlesRossEsqEffect a) = for_ a.target.investigator \iid -> do
+    modifySelect a (colocatedWith iid) [ReduceCostOf (#asset <> #item) 1]
 
 instance RunMessage CharlesRossEsqEffect where
   runMessage msg e@(CharlesRossEsqEffect attrs) = runQueueT $ case msg of
-    CardEnteredPlay iid card -> case attrs.source of
-      AssetSource aid -> do
-        assetLid <- field AssetLocation aid
-        investigatorLid <- field InvestigatorLocation iid
-        when
-          (isJust assetLid && assetLid == investigatorLid && cardMatch card (#asset <> CardWithTrait Item))
-          (disable attrs)
-        pure e
-      _ -> error "Invalid source"
+    CardEnteredPlay iid card -> do
+      for_ attrs.target.investigator \iid' -> void $ runMaybeT do
+        guard $ cardMatch card (#asset <> CardWithTrait Item)
+        yourLocation <- MaybeT $ field InvestigatorLocation iid'
+        investigatorLid <- MaybeT $ field InvestigatorLocation iid
+        guard $ yourLocation == investigatorLid
+        lift $ disable attrs
+      pure e
     _ -> CharlesRossEsqEffect <$> liftRunMessage msg attrs

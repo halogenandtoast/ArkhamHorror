@@ -44,12 +44,13 @@ instance RunMessage Hope where
       skillTestModifier sid source iid (BaseSkillOf #agility 5)
       when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
       pushM $ mkChooseEvade sid iid source
-      chooseOrRunOneM iid do
-        questionLabeled "Put into play from discard"
-        for_ catsInDiscard $ \card -> do
-          cardLabeled card do
-            shuffleCardsIntoDeck iid (only hopeCard)
-            putCardIntoPlay iid card
-        labeled "Skip" nothing
+      when discarded do
+        chooseOrRunOneM iid do
+          questionLabeled "Put into play from discard"
+          for_ catsInDiscard $ \card -> do
+            cardLabeled card do
+              shuffleCardsIntoDeck iid (only hopeCard)
+              putCardIntoPlay iid card
+          labeled "Skip" nothing
       pure a
     _ -> Hope <$> liftRunMessage msg attrs

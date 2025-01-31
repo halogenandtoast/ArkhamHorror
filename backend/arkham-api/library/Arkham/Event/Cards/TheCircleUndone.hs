@@ -147,9 +147,8 @@ crackTheCase =
   (event "05110" "Crack the Case" 0 Seeker)
     { cdSkills = [#intellect]
     , cdCardTraits = singleton Insight
-    , cdFastWindow = Just $ DiscoveringLastClue #after You YourLocation
-    , cdCriteria =
-        Just $ exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
+    , cdFastWindow = Just $ DiscoveringLastClue #after Anyone YourLocation
+    , cdCriteria = Just $ exists $ affectsOthers $ can.gain.resources <> InvestigatorAt YourLocation
     }
 
 intelReport :: CardDef

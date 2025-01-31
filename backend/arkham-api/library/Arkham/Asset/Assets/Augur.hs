@@ -44,11 +44,12 @@ instance RunMessage Augur where
       skillTestModifier sid source iid (BaseSkillOf #intellect 5)
       when discarded $ skillTestModifier sid source sid SkillTestAutomaticallySucceeds
       pushM $ mkInvestigate sid iid source
-      chooseOrRunOneM iid do
-        questionLabeled "Put into play from discard"
-        for_ catsInDiscard \card -> cardLabeled card do
-          shuffleCardsIntoDeck iid (only augurCard)
-          putCardIntoPlay iid card
-        labeled "Skip" nothing
+      when discarded do
+        chooseOrRunOneM iid do
+          questionLabeled "Put into play from discard"
+          for_ catsInDiscard \card -> cardLabeled card do
+            shuffleCardsIntoDeck iid (only augurCard)
+            putCardIntoPlay iid card
+          labeled "Skip" nothing
       pure a
     _ -> Augur <$> liftRunMessage msg attrs

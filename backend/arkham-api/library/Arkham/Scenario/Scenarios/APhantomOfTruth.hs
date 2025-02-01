@@ -98,7 +98,7 @@ instance RunMessage APhantomOfTruth where
       chooseOneM lead do
         labeled "Conviction" markConviction
         labeled "Doubt" markDoubt
-      shuffleCardsIntoDeck lead [theManInThePallidMask]
+      addCampaignCardToDeck lead ShuffleIn theManInThePallidMask
       pure s
     PreScenarioSetup -> do
       theKingClaimedItsVictims <- getHasRecord TheKingClaimedItsVictims

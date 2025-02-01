@@ -432,10 +432,7 @@ instance RunMessage EdgeOfTheEarth where
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & logL
-            . partnersL
-            . ix cCode
-            %~ (\partner -> partner & damageL .~ damage & horrorL .~ horror)
+            & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
         else pure c
     HealDamage (CardCodeTarget cCode) CampaignSource n -> do
       if cCode `elem` map (.cardCode) expeditionTeam
@@ -443,10 +440,7 @@ instance RunMessage EdgeOfTheEarth where
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & logL
-            . partnersL
-            . ix cCode
-            %~ (\partner -> partner & damageL %~ max 0 . subtract n)
+            & (logL . partnersL . ix cCode %~ (damageL %~ max 0 . subtract n))
         else pure c
     HealHorror (CardCodeTarget cCode) CampaignSource n -> do
       if cCode `elem` map (.cardCode) expeditionTeam
@@ -454,9 +448,6 @@ instance RunMessage EdgeOfTheEarth where
           pure
             $ EdgeOfTheEarth
             $ attrs
-            & logL
-            . partnersL
-            . ix cCode
-            %~ (\partner -> partner & horrorL %~ max 0 . subtract n)
+            & (logL . partnersL . ix cCode %~ (horrorL %~ max 0 . subtract n))
         else pure c
     _ -> lift $ defaultCampaignRunner msg c

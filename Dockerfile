@@ -26,6 +26,8 @@ RUN \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt-get update -y && \
     apt-get install -y --no-install-recommends --fix-missing \
+        libpcre3 \
+        libpcre3-dev \
         libpq-dev \
         curl \
         libtinfo6 \

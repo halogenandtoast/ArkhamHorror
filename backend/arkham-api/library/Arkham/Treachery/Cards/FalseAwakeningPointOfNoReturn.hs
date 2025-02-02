@@ -1,14 +1,8 @@
-module Arkham.Treachery.Cards.FalseAwakeningPointOfNoReturn (
-  falseAwakeningPointOfNoReturn,
-  FalseAwakeningPointOfNoReturn (..),
-)
-where
+module Arkham.Treachery.Cards.FalseAwakeningPointOfNoReturn (falseAwakeningPointOfNoReturn) where
 
-import Arkham.Classes
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Cards.FalseAwakening
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype FalseAwakeningPointOfNoReturn = FalseAwakeningPointOfNoReturn FalseAwakening
   deriving anyclass (IsTreachery, HasModifiersFor)

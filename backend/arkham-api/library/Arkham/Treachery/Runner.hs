@@ -146,6 +146,8 @@ instance RunMessage TreacheryAttrs where
       pure a
     Discarded (isTarget a -> True) _ _ -> do
       runMessage (RemoveFromPlay (toSource a)) a
+    RemoveFromGame target | a `isTarget` target -> do
+      a <$ push (RemoveFromPlay $ toSource a)
     RemoveFromPlay source | isSource a source -> do
       windowMsg <-
         checkWindows

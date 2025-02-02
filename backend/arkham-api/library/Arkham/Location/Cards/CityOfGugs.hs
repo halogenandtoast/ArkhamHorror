@@ -1,12 +1,11 @@
-module Arkham.Location.Cards.CityOfGugs (cityOfGugs, CityOfGugs (..)) where
+module Arkham.Location.Cards.CityOfGugs (cityOfGugs) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Story (readStory)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted
-import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype CityOfGugs = CityOfGugs LocationAttrs
@@ -19,7 +18,7 @@ cityOfGugs = locationWith CityOfGugs Cards.cityOfGugs 2 (PerPlayer 1) (canBeFlip
 instance HasAbilities CityOfGugs where
   getAbilities (CityOfGugs a) =
     let restriction = if locationCanBeFlipped a then NoRestriction else Never
-     in extendRevealed a [restrictedAbility a 1 restriction $ forced $ Enters #after You $ be a]
+     in extendRevealed a [restricted a 1 restriction $ forced $ Enters #after You $ be a]
 
 instance RunMessage CityOfGugs where
   runMessage msg l@(CityOfGugs attrs) = runQueueT $ case msg of

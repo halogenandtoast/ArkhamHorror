@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine, JacquelineFine (..)) where
+module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine) where
 
 import Arkham.Ability
 import Arkham.ChaosBagStepState
@@ -22,7 +22,7 @@ jacquelineFine =
 instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
     [ playerLimit PerRound
-        $ restrictedAbility a 1 Self
+        $ restricted a 1 Self
         $ freeReaction (WouldRevealChaosToken #when $ affectsOthers $ at_ YourLocation)
     ]
 

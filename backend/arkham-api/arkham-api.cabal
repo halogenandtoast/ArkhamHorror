@@ -4091,6 +4091,8 @@ library
     , base
     , base16-bytestring
     , bcrypt
+    , bugsnag
+    , bugsnag-yesod
     , bytestring
     , case-insensitive
     , classy-prelude

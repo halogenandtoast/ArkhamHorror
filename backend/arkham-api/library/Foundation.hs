@@ -26,6 +26,8 @@ import Control.Monad.Catch
   )
 import UnliftIO.Exception qualified as UnliftIO
 
+import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
+import Data.Bugsnag.Settings qualified as Bugsnag
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
@@ -97,6 +99,7 @@ data App = App
   , appHttpManager :: Manager
   , appLogger :: Logger
   , appGameRooms :: !(IORef (Map ArkhamGameId Room))
+  , appBugsnag :: Bugsnag.Settings
   }
 
 class Monad m => HasApp m where
@@ -149,7 +152,7 @@ instance Yesod App where
   -- To add it, chain it together with the defaultMiddleware: yesodMiddleware = defaultYesodMiddleware . defaultCsrfMiddleware
   -- For details, see the CSRF documentation in the Yesod.Core.Handler module of the yesod-core package.
   yesodMiddleware :: ToTypedContent res => Handler res -> Handler res
-  yesodMiddleware = defaultYesodMiddleware
+  yesodMiddleware = bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
 
   defaultLayout :: Widget -> Handler Html
   defaultLayout _ = pure ""

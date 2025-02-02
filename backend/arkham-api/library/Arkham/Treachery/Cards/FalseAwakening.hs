@@ -1,13 +1,11 @@
-module Arkham.Treachery.Cards.FalseAwakening (falseAwakening, FalseAwakening (..)) where
+module Arkham.Treachery.Cards.FalseAwakening (FalseAwakening (..), falseAwakening) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.Helpers.SkillTest qualified as Msg
-import Arkham.Message.Lifted
-import Arkham.Prelude
+import Arkham.Helpers.GameValue
+import Arkham.Message.Lifted.Choose
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner hiding (chooseOne)
+import Arkham.Treachery.Import.Lifted
 
 -- NOTE: False Awakening's constant ability of starting next to the agenda deck
 -- is hard coded (Investigator/Runner and Scenario/Runner). If we have another
@@ -30,11 +28,11 @@ instance RunMessage FalseAwakening where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- perPlayer 1
       sid <- getRandom
-      chooseOne
-        iid
-        [SkillLabel s [Msg.beginSkillTest sid iid (attrs.ability 1) iid s (Fixed $ 2 + n)] | s <- allSkills]
+      chooseOneM iid do
+        for_ allSkills \s ->
+          skillLabeled s $ beginSkillTest sid iid (attrs.ability 1) iid s (Fixed $ 2 + n)
       pure t
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ RemoveFromGame (toTarget attrs)
+      removeFromGame attrs
       pure t
     _ -> FalseAwakening <$> liftRunMessage msg attrs

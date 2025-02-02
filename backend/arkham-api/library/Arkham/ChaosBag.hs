@@ -336,7 +336,7 @@ resolveFirstChooseUnresolved
 resolveFirstChooseUnresolved source iid strategy = \case
   [] -> pure ([], [])
   (Undecided s : _) -> error $ "should not be called with undecided: " <> show s
-  (Deciding _ : _) -> error "should not be called with deciding"
+  (Deciding s : _) -> error $ "should not be called with deciding: " <> show s
   (Resolved tokens' : rest) -> do
     (rest', msgs) <- resolveFirstChooseUnresolved source iid strategy rest
     pure (Resolved tokens' : rest', msgs)

@@ -33,24 +33,27 @@ instance HasQueue Message m => HasQueue Message (CreateEnemyT m) where
 instance ReverseQueue m => ReverseQueue (CreateEnemyT m)
 
 createEnemyT
-  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
-  => card
+  :: (ReverseQueue m, FetchCard a, IsEnemyCreationMethod creation)
+  => a
   -> creation
   -> (EnemyId -> CreateEnemyT m ())
   -> m EnemyId
-createEnemyT card creation body = do
+createEnemyT a creation body = do
+  card <- fetchCard a
   eff <- Msg.createEnemy card creation
   eff' <- execStateT (unCreateEnemyT $ body eff.enemy) eff
   push $ toMessage eff'
   pure eff'.enemy
 
 runCreateEnemyT
-  :: (ReverseQueue m, IsCard card, IsEnemyCreationMethod creation)
-  => card
+  :: (ReverseQueue m, FetchCard a, IsEnemyCreationMethod creation)
+  => a
   -> creation
   -> (EnemyId -> CreateEnemyT m ())
   -> m ()
-runCreateEnemyT card creation body = void $ createEnemyT card creation body
+runCreateEnemyT a creation body = do
+  card <- fetchCard a
+  void $ createEnemyT card creation body
 
 afterCreate :: MonadIO m => QueueT Message m () -> CreateEnemyT m ()
 afterCreate body = do

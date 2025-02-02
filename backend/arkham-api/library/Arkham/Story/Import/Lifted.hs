@@ -3,7 +3,14 @@ module Arkham.Story.Import.Lifted (module Arkham.Story.Import.Lifted, module X) 
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Helpers.Message as X (targetLabel)
-import Arkham.Message as X (Message (..), UI (..), pattern PlaceClues, pattern UseThisAbility)
+import Arkham.Message as X (
+  Message (..),
+  UI (..),
+  pattern FailedThisSkillTest,
+  pattern PassedThisSkillTest,
+  pattern PlaceClues,
+  pattern UseThisAbility,
+ )
 import Arkham.Message.Lifted as X hiding (story)
 import Arkham.Prelude as X
 import Arkham.Source as X

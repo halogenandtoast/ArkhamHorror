@@ -28,6 +28,7 @@ import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.CaseInsensitive (mk)
 import Data.Default.Class (def)
+import Data.List (lookup)
 import Data.Text qualified as T
 import Data.X509.CertificateStore (readCertificateStore)
 import Database.Persist.Postgresql (
@@ -35,6 +36,13 @@ import Database.Persist.Postgresql (
   createPostgresqlPool,
   pgConnStr,
   pgPoolSize,
+ )
+import Database.Redis (
+  ConnectInfo (..),
+  checkedConnect,
+  newPubSubController,
+  parseConnectInfo,
+  pubSubForever,
  )
 import Import hiding (sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
@@ -66,8 +74,6 @@ import Network.Wai.Middleware.RequestLogger (
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
 
--- import Database.Redis (ConnectInfo (..), parseConnectInfo)
-
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
@@ -87,12 +93,6 @@ import Base.Api.Handler.PasswordReset
 import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
 import Control.Concurrent (forkIO)
-import Data.List (lookup)
-import Database.Redis (
-  checkedConnect,
-  newPubSubController,
-  pubSubForever,
- )
 import Handler.Health
 
 -- This line actually creates our YesodDispatch instance. It is the second half

@@ -25,6 +25,7 @@ module Application (
 
 import Config
 import Control.Monad.Logger (liftLoc, runLoggingT)
+import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.CaseInsensitive (mk)
 import Data.Default.Class (def)
 import Data.Text qualified as T
@@ -35,7 +36,6 @@ import Database.Persist.Postgresql (
   pgConnStr,
   pgPoolSize,
  )
-import Database.Redis (ConnectInfo (..), parseConnectInfo)
 import Import hiding (sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
@@ -65,6 +65,8 @@ import Network.Wai.Middleware.RequestLogger (
  )
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
+
+-- import Database.Redis (ConnectInfo (..), parseConnectInfo)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -109,6 +111,7 @@ makeFoundation appSettings = do
   -- subsite.
   appHttpManager <- getGlobalManager
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
+  let appBugsnag = Bugsnag.defaultSettings (appBugsnagApiKey appSettings)
 
   appGameRooms <- newIORef mempty
 

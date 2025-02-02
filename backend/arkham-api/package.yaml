@@ -65,6 +65,8 @@ library:
     - amazonka-s3
     - annotated-exception
     - base16-bytestring
+    - bugsnag
+    - bugsnag-yesod
     - bcrypt
     - bytestring
     - case-insensitive

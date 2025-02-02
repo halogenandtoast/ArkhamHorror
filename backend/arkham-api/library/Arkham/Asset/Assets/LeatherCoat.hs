@@ -1,9 +1,7 @@
 module Arkham.Asset.Assets.LeatherCoat where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 
 newtype LeatherCoat = LeatherCoat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

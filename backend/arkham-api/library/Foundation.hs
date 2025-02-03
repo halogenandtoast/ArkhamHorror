@@ -1,3 +1,4 @@
+{-# LANGUAGE PackageImports #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -26,8 +27,11 @@ import Control.Monad.Catch
   )
 import UnliftIO.Exception qualified as UnliftIO
 
+import "bugsnag-hs" Network.Bugsnag qualified as Bugsnag (Exception)
+import Network.Bugsnag.Exception (AsException(..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Data.Bugsnag.Settings qualified as Bugsnag
+import "bugsnag" Network.Bugsnag qualified as Bugsnag
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result (Success), fromJSON)
@@ -165,6 +169,7 @@ instance Yesod App where
     -> Handler AuthResult
   -- Routes not requiring authentication.
   isAuthorized HealthR _ = pure Authorized
+  isAuthorized ErrorR _ = pure Authorized
   isAuthorized (ApiP _) _ = pure Authorized
 
   -- What messages should be logged. The following includes all messages when
@@ -186,6 +191,17 @@ instance Yesod App where
 
 class Monad m => CanRunDB m where
   runDB :: SqlPersistT m a -> m a
+
+bugsnag :: (HasBugsnag m, MonadIO m) => Bugsnag.Exception -> m ()
+bugsnag e = do
+  settings <- bugsnagSettings
+  liftIO $ Bugsnag.notifyBugsnag settings (AsException e)
+
+class HasBugsnag m where
+  bugsnagSettings :: m Bugsnag.Settings
+
+instance HasApp m => HasBugsnag m where
+  bugsnagSettings = getsApp appBugsnag
 
 instance HasApp (HandlerFor App) where
   getApp = getYesod

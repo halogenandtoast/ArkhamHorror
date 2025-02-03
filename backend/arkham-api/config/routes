@@ -1,4 +1,5 @@
 /health HealthR GET
+/error ErrorR GET
 /api ApiP:
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST

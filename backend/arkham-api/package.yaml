@@ -66,6 +66,7 @@ library:
     - annotated-exception
     - base16-bytestring
     - bugsnag
+    - bugsnag-hs
     - bugsnag-yesod
     - bcrypt
     - bytestring

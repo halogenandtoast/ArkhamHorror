@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.Classes
 import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv (getPhase)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (Window)

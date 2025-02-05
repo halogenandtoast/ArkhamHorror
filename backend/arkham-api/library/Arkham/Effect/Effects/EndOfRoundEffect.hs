@@ -6,7 +6,6 @@ module Arkham.Effect.Effects.EndOfRoundEffect (
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Id
 import Arkham.Prelude
 
 newtype EndOfRoundEffect = EndOfRoundEffect EffectAttrs

@@ -7,8 +7,6 @@ where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorDamage)
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Helpers.Query (getPlayer)
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Message qualified as Msg

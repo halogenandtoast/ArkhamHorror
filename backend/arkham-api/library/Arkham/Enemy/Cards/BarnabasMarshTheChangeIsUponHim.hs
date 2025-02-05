@@ -9,7 +9,6 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
 

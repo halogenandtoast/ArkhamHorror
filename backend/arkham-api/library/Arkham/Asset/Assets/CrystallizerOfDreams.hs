@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
 import Arkham.Event.Types (Field (..))
-import Arkham.Id
 import Arkham.Matcher hiding (EventCard, PlaceUnderneath)
 import Arkham.Prelude
 import Arkham.Projection

@@ -25,6 +25,7 @@ import Arkham.Helpers.Message as X hiding (
  )
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.Location.Types as X
 import Arkham.LocationSymbol as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
@@ -42,7 +43,6 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.I18n
-import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key

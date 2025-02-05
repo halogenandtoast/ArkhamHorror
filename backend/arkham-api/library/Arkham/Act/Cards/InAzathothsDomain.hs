@@ -9,7 +9,6 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
 import Arkham.Helpers.Query (getJustLocationByName)
 import Arkham.Helpers.Scenario (getScenarioDeck)
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field

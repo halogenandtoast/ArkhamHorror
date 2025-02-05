@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Arkham.Helpers.Query where
 
 import Arkham.Asset.Types (Field (..))
@@ -26,8 +28,8 @@ getLead = do
   mOthers <- selectOne $ IncludeEliminated Anyone
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
-getPlayer :: (HasCallStack, HasGame m) => InvestigatorId -> m PlayerId
-getPlayer = field InvestigatorPlayerId
+instance HasGame m => HasPlayer m where
+  getPlayer = field InvestigatorPlayerId
 
 getActiveInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust ActiveInvestigator

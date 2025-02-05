@@ -6,7 +6,6 @@ import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Log ()
 import Arkham.Helpers.Message
-import Arkham.Helpers.Query
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher

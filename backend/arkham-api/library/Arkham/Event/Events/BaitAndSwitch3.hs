@@ -8,7 +8,6 @@ import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
-import Arkham.Id
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Arkham.Movement

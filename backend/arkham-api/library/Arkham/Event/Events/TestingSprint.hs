@@ -3,7 +3,6 @@ module Arkham.Event.Events.TestingSprint (testingSprint, TestingSprint (..)) whe
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message (handleTargetChoice)
-import Arkham.Id
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

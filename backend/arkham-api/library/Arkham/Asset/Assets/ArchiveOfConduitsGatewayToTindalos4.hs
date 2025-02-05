@@ -9,7 +9,6 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.DamageEffect
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Movement

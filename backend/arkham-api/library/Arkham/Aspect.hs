@@ -7,7 +7,6 @@ import Arkham.Classes.HasGame
 import Arkham.Evade.Types
 import Arkham.Fight.Types
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Matcher
@@ -23,7 +22,7 @@ leftOr = either id (pure . toMessage)
 
 class IsAspect a b where
   aspect
-    :: (HasGame m, Sourceable source)
+    :: (HasGame m, HasPlayer m, Sourceable source)
     => InvestigatorId
     -> source
     -> a

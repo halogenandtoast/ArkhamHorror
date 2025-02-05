@@ -3,7 +3,6 @@ module Arkham.Event.Events.ThoroughInquiry (thoroughInquiry, ThoroughInquiry (..
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Name

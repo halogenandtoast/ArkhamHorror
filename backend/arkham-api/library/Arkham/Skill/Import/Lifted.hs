@@ -3,6 +3,7 @@ module Arkham.Skill.Import.Lifted (module X) where
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Helpers.Modifiers as X (getModifiers)
+import Arkham.Id as X
 import Arkham.Message as X (
   Message (..),
   toMessage,

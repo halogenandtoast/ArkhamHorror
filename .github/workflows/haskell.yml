@@ -43,6 +43,9 @@ jobs:
           ${{ runner.os }}-build-
           ${{ runner.os }}-
 
+    - name: Install pcre
+      run: |
+        apt-get install libpcre libpcre3-dev
     - name: Install dependencies
       run: |
         stack build --system-ghc --test --no-run-tests --bench --no-run-benchmarks --only-dependencies

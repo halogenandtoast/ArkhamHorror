@@ -6,7 +6,6 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait

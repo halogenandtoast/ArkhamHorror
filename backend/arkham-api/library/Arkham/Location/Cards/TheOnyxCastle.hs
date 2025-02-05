@@ -2,7 +2,6 @@ module Arkham.Location.Cards.TheOnyxCastle (theOnyxCastle, TheOnyxCastle (..)) w
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

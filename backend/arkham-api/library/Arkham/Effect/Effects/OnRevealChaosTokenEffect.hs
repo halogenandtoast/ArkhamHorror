@@ -7,7 +7,6 @@ module Arkham.Effect.Effects.OnRevealChaosTokenEffect (
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Game.Helpers (chaosTokenMatches)
-import Arkham.Id
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Window qualified as Window

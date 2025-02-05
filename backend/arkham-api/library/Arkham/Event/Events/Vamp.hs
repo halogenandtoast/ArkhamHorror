@@ -3,7 +3,6 @@ module Arkham.Event.Events.Vamp (vamp, Vamp (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillType
 

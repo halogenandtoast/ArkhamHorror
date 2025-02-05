@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement

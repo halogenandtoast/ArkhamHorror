@@ -14,8 +14,8 @@ import Arkham.Agenda.Runner as X (
   pushAll,
   pushM,
   removeDoomMatchersL,
-  pattern FailedThisSkillTestBy,
   pattern FailedThisSkillTest,
+  pattern FailedThisSkillTestBy,
   pattern R1,
   pattern R2,
   pattern R3,
@@ -28,6 +28,7 @@ import Arkham.Agenda.Runner as X (
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
+import Arkham.Id as X
 import Arkham.Message as X (
   AgendaAdvancementMethod (..),
   CanAdvance (..),

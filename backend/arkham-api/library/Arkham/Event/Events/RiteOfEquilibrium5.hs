@@ -4,7 +4,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

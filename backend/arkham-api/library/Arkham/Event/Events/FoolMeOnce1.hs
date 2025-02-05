@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window (cardDrawn)
-import Arkham.Id
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Placement
 import Arkham.Projection

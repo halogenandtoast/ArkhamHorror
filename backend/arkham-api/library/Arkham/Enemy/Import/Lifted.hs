@@ -33,6 +33,7 @@ import Arkham.Enemy.Runner as X (
 import Arkham.GameValue as X
 import Arkham.Helpers.Ability as X
 import Arkham.Helpers.Modifiers as X (toModifiers)
+import Arkham.Id as X
 import Arkham.Message as X (
   Message (..),
   StoryMode (..),

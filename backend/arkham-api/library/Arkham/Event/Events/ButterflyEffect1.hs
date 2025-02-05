@@ -3,7 +3,6 @@ module Arkham.Event.Events.ButterflyEffect1 (butterflyEffect1, ButterflyEffect1 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.SkillTest (getCommittableCards, getCommittedCards, getSkillTestInvestigator)
 import Data.Map.Strict qualified as Map
 

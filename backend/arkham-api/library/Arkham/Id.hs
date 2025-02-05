@@ -25,6 +25,9 @@ newtype SkillTestId = SkillTestId UUID
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)
 
+class HasPlayer m where
+  getPlayer :: HasCallStack => InvestigatorId -> m PlayerId
+
 newtype PlayerId = PlayerId {unPlayerId :: UUID}
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Ord, Random)

@@ -2,13 +2,11 @@
 
 module Arkham.Asset where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
-import Arkham.Id
+import Arkham.Prelude
 
 createAsset :: IsCard a => a -> AssetId -> Asset
 createAsset a aId =

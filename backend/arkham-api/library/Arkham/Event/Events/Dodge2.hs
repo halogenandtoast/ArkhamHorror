@@ -3,7 +3,6 @@ module Arkham.Event.Events.Dodge2 (dodge2, Dodge2) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
-import Arkham.Id
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
   deriving stock (Show, Eq, Generic)

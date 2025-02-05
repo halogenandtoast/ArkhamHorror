@@ -6,7 +6,6 @@ module Arkham.Effect.Effects.EndOfTurnEffect (
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Id
 import Arkham.Prelude
 
 newtype EndOfTurnEffect = EndOfTurnEffect EffectAttrs

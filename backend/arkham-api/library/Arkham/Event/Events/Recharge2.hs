@@ -5,7 +5,6 @@ import Arkham.ChaosToken
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Window qualified as Window
 

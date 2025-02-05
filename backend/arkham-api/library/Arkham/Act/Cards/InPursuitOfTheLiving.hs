@@ -7,7 +7,6 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Investigator (getJustLocation)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Trait (Trait (Spectral))

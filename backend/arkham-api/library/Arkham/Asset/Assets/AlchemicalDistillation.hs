@@ -8,7 +8,6 @@ import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), getMetaMaybe, modifySelfWhen)
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

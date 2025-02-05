@@ -18,6 +18,7 @@ import Arkham.Helpers.Message as X hiding (
   InvestigatorResigned,
  )
 import Arkham.Helpers.Query as X
+import Arkham.Id as X
 import Arkham.Investigator.Types as X
 import Arkham.Name as X
 import Arkham.Source as X
@@ -60,7 +61,6 @@ import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
 import Arkham.Helpers.SkillTest
 import Arkham.History
-import Arkham.Id
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key

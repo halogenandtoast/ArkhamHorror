@@ -4,7 +4,6 @@ import Arkham.Attack
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
-import Arkham.Id
 import Arkham.Matcher
 
 newtype Meta = Meta {chosenEnemy :: Maybe EnemyId}

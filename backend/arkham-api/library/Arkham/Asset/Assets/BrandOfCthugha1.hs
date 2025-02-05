@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
-import Arkham.Id
 import Arkham.Prelude
 
 newtype BrandOfCthugha1 = BrandOfCthugha1 AssetAttrs

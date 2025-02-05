@@ -9,7 +9,6 @@ import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Event.Events
 import Arkham.Event.Runner
-import Arkham.Id
 
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
 createEvent a iid eid =

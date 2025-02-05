@@ -6,9 +6,7 @@ import Arkham.DamageEffect
 import Arkham.Enemy.Types hiding (EnemyDamage)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.Window
-import Arkham.Id
 import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy

@@ -12,7 +12,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Customization
 import Arkham.Helpers.SkillTest.Lifted (parley)
-import Arkham.Id
 import Arkham.Matcher hiding (DiscoverClues, EnemyEvaded)
 import Arkham.Placement
 import Arkham.Projection

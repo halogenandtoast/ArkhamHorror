@@ -18,6 +18,7 @@ import Arkham.Helpers.Message as X hiding (
  )
 import Arkham.Helpers.Query as X
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
@@ -60,7 +61,7 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       Nothing -> pure a
       Just i ->
         pure
-          $ a {eventCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i eventCustomizations}
+          $ a {eventCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i eventCustomizations}
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   AttachEvent eid target | eid == eventId -> do
     case target of

@@ -10,7 +10,6 @@ import Arkham.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Log (inRecordSet)
 import Arkham.Helpers.Query (getLead)
-import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

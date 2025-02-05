@@ -12,7 +12,6 @@ import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
 import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

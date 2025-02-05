@@ -7,7 +7,6 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Query (getInvestigators, getLead)
-import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
 

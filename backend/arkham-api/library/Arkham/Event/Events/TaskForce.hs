@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (discoverAtYourLocation)
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Message qualified as Msg
 import Arkham.Modifier

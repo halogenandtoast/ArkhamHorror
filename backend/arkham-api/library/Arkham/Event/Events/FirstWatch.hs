@@ -5,7 +5,6 @@ import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Query (getInvestigators, getPlayerCount)
-import Arkham.Id
 
 newtype FirstWatchMetadata = FirstWatchMetadata {firstWatchPairings :: [(InvestigatorId, EncounterCard)]}
   deriving newtype (Show, Eq, Generic)

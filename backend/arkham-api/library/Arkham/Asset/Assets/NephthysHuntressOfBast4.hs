@@ -10,7 +10,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
 import Arkham.DamageEffect
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Window (Window (..))

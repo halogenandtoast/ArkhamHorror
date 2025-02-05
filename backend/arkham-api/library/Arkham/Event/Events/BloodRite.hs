@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg

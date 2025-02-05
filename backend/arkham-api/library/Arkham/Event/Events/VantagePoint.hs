@@ -12,7 +12,6 @@ import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
-import Arkham.Id
 import Arkham.Matcher hiding (PutLocationIntoPlay, RevealLocation)
 import Arkham.Window hiding (EndTurn)
 

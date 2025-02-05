@@ -8,7 +8,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Movement

@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (blastedHeath_248)

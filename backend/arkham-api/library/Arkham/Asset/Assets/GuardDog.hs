@@ -3,7 +3,6 @@ module Arkham.Asset.Assets.GuardDog (GuardDog (..), guardDog) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Id
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Prelude
 import Arkham.Window (Window (..))

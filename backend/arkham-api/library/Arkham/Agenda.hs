@@ -10,7 +10,6 @@ import Arkham.Agenda.Agendas
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Id
 
 lookupAgenda :: AgendaId -> Int -> CardId -> Agenda
 lookupAgenda agendaId = case lookup (unAgendaId agendaId) allAgendas of

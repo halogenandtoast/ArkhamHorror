@@ -47,8 +47,9 @@ getDeck = \case
         (map EncounterCard . unDeck . view (at other . non (Deck [], []) . _1))
 
 initDeckTrauma
-  :: MonadRandom m => Deck PlayerCard -> InvestigatorId -> PlayerId -> Target -> m [Message]
-initDeckTrauma deck' iid pid target = do
+  :: (MonadRandom m, HasPlayer m) => Deck PlayerCard -> InvestigatorId -> Target -> m [Message]
+initDeckTrauma deck' iid target = do
+  pid <- getPlayer iid
   let
     toMentalTrauma = \case
       PurchaseMentalTrauma n -> n

@@ -9,7 +9,6 @@ import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner hiding (Run)
 import Arkham.Classes
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.SkillTest.Type
 import Arkham.SkillType

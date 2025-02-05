@@ -3,7 +3,6 @@ module Arkham.Investigator.Cards.GloriaGoldberg (gloriaGoldberg, GloriaGoldberg 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorCardsUnderneath))

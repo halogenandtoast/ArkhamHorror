@@ -20,7 +20,7 @@ import Arkham.Helpers.Message as X hiding (
   PhaseStep,
  )
 import Arkham.Helpers.SkillTest as X
-import Arkham.Id as X (AsId (..))
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Spawn as X
@@ -42,7 +42,6 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Placement
 import Arkham.History
-import Arkham.Id
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher (

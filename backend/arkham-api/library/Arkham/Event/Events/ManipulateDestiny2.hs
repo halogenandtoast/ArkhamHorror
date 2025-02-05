@@ -7,7 +7,6 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy

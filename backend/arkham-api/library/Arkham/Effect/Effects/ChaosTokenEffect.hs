@@ -9,7 +9,6 @@ import Arkham.Prelude
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Id
 import Arkham.Window (Window)
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict (MonoidalMap (..))

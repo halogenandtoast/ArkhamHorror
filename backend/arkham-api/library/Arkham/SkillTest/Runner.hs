@@ -7,6 +7,7 @@ import Arkham.Prelude
 import Arkham.SkillTest as X
 
 import Arkham.Ability
+import Arkham.Id
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Card

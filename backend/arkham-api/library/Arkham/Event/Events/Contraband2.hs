@@ -4,7 +4,6 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (drawCards)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Helpers.Use
 import Arkham.Matcher
 

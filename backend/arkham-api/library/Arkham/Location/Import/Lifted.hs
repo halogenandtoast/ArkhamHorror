@@ -5,6 +5,7 @@ import Arkham.Classes as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Message as X (pattern R1, pattern R2)
 import Arkham.Helpers.Modifiers as X (toModifiers)
+import Arkham.Id as X
 import Arkham.Location.Helpers as X (adjacentLocations)
 import Arkham.Location.Runner as X (
   IsLocation,

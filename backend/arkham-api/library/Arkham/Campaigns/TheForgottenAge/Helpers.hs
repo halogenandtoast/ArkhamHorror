@@ -9,7 +9,6 @@ import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Draw.Types
-import Arkham.Game.Helpers (getPlayer)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Message ()
 import Arkham.Helpers.Query (getInvestigators)

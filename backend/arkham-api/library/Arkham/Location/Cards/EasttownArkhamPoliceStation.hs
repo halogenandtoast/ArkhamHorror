@@ -8,7 +8,6 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Asset.Uses
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (easttownArkhamPoliceStation)
 import Arkham.Location.Runner

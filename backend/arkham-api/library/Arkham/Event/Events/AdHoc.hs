@@ -5,7 +5,6 @@ import Arkham.Card.Id
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement

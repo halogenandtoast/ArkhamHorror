@@ -11,7 +11,6 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Id
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Cultist, SilverTwilight))

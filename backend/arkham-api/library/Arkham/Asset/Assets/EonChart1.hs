@@ -6,7 +6,6 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
-import Arkham.Helpers.Query (getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

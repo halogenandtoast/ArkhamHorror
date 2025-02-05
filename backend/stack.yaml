@@ -5,6 +5,7 @@ system-ghc: true
 install-ghc: false
 resolver: nightly-2025-01-12
 compiler: ghc-9.10.1
+notify-if-nix-on-path: false
 
 ghc-options:
   "$locals":

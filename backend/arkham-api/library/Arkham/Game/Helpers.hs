@@ -468,9 +468,7 @@ filterDepthSpecificAbilities usedAbilities = do
 
 getAbilityLimit :: HasGame m => InvestigatorId -> Ability -> m AbilityLimit
 getAbilityLimit iid ability = do
-  ignoreLimit <-
-    (IgnoreLimit `elem`)
-      <$> getModifiers (AbilityTarget iid ability)
+  ignoreLimit <- (IgnoreLimit `elem`) <$> getModifiers (AbilityTarget iid ability)
   pure $ if ignoreLimit then PlayerLimit PerWindow 1 else abilityLimit ability
 
 -- TODO: The limits that are correct are the one that check usedTimes Group
@@ -544,7 +542,7 @@ getCanAffordUseWith f canIgnoreAbilityLimit iid ability ws = do
             usedAbilities
       PlayerLimit PerRound n -> do
         pure
-          $ maybe True ((< n) . usedTimes)
+          $ maybe True (and . sequence [not . usedThisWindow, (< n) . usedTimes])
           $ find ((== ability) . usedAbility) usedAbilities
       PlayerLimit _ n -> do
         pure

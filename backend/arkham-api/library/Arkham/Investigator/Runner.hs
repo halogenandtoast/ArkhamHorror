@@ -347,8 +347,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     depth <- getWindowDepth
     let
       filterAbility UsedAbility {..} = do
-        limit <- getAbilityLimit (toId a) usedAbility
-        pure $ case limit of
+        getAbilityLimit (toId a) usedAbility <&> \case
           NoLimit -> False
           PlayerLimit PerWindow _ -> depth >= usedDepth
           GroupLimit PerWindow _ -> depth >= usedDepth

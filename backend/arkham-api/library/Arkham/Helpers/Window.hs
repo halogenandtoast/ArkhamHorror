@@ -277,6 +277,11 @@ wouldRevealChaosToken =
     (windowType -> Window.WouldRevealChaosToken _ who) -> Just who
     _ -> Nothing
 
+getDrawSource :: HasCallStack => [Window] -> Source
+getDrawSource [] = error "No draw source"
+getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
+getDrawSource (_ : rest) = getDrawSource rest
+
 enters
   :: (Be investigator InvestigatorMatcher, Be location LocationMatcher)
   => Timing

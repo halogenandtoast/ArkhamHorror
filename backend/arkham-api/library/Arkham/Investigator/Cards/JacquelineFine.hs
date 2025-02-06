@@ -3,11 +3,10 @@ module Arkham.Investigator.Cards.JacquelineFine (jacquelineFine) where
 import Arkham.Ability
 import Arkham.ChaosBagStepState
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Window
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype JacquelineFine = JacquelineFine InvestigatorAttrs
   deriving anyclass (IsInvestigator, HasModifiersFor)
@@ -30,11 +29,6 @@ instance HasChaosTokenValue JacquelineFine where
   getChaosTokenValue iid ElderSign (JacquelineFine attrs) | attrs `is` iid = do
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
-
-getDrawSource :: [Window] -> Source
-getDrawSource [] = error "No draw source"
-getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
-getDrawSource (_ : rest) = getDrawSource rest
 
 getSteps :: ChaosBagStepState -> [ChaosBagStepState]
 getSteps = \case

@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.TheGreatWebCosmicWeb (theGreatWebCosmicWeb, TheGreatWebCosmicWeb (..)) where
+module Arkham.Location.Cards.TheGreatWebCosmicWeb (theGreatWebCosmicWeb) where
 
 import Arkham.Ability
 import Arkham.Direction
@@ -14,12 +14,9 @@ newtype TheGreatWebCosmicWeb = TheGreatWebCosmicWeb LocationAttrs
 
 theGreatWebCosmicWeb :: LocationCard TheGreatWebCosmicWeb
 theGreatWebCosmicWeb =
-  locationWith
-    TheGreatWebCosmicWeb
-    Cards.theGreatWebCosmicWeb
-    4
-    (PerPlayer 1)
-    (connectsToL .~ setFromList [Above, Below])
+  locationWith TheGreatWebCosmicWeb Cards.theGreatWebCosmicWeb 4 (PerPlayer 1)
+    $ connectsToL
+    .~ setFromList [Above, Below]
 
 instance HasAbilities TheGreatWebCosmicWeb where
   getAbilities (TheGreatWebCosmicWeb attrs) =
@@ -35,7 +32,7 @@ instance RunMessage TheGreatWebCosmicWeb where
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOrRunOneM iid do
         when canDiscard do
-          labeled ("Discard " <> pluralize n "card") $ chooseAndDiscardCard iid (attrs.ability 1)
+          labeled ("Discard " <> pluralize n "card") $ chooseAndDiscardCards iid (attrs.ability 1) n
         labeled "Place 1 doom on this location" $ placeDoom (attrs.ability 1) attrs 1
       pure l
     _ -> TheGreatWebCosmicWeb <$> liftRunMessage msg attrs

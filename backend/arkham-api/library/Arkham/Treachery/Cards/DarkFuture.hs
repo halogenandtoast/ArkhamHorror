@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.DarkFuture (darkFuture, DarkFuture (..)) where
+module Arkham.Treachery.Cards.DarkFuture (darkFuture) where
 
 import Arkham.Ability
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Classes
 import Arkham.Game.Helpers
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.RequestedChaosTokenStrategy
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype DarkFuture = DarkFuture TreacheryAttrs
   deriving anyclass IsTreachery
@@ -25,25 +21,20 @@ instance HasModifiersFor DarkFuture where
 
 instance HasAbilities DarkFuture where
   getAbilities (DarkFuture a) =
-    [ restrictedAbility a 1 (InThreatAreaOf You)
-        $ forced
-        $ TurnEnds #after You
-    ]
+    [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #after You]
 
 instance RunMessage DarkFuture where
-  runMessage msg t@(DarkFuture attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      push $ placeInThreatArea attrs iid
+  runMessage msg t@(DarkFuture attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 5) SetAside
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      requestChaosTokens iid (attrs.ability 1) 5
       pure t
-    RequestedChaosTokens source (Just iid) tokens | isSource attrs source -> do
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
       chaosTokenFaces <- getModifiedChaosTokenFaces tokens
-      push $ ResetChaosTokens source
-      pushWhen (ElderSign `elem` chaosTokenFaces)
-        $ toDiscardBy iid (toAbilitySource attrs 1) attrs
-      player <- getPlayer iid
-      push $ chooseOne player [Label "Continue" []]
+      resetChaosTokens (attrs.ability 1)
+      when (ElderSign `elem` chaosTokenFaces) $ toDiscardBy iid (attrs.ability 1) attrs
+      continue_ iid
       pure t
-    _ -> DarkFuture <$> runMessage msg attrs
+    _ -> DarkFuture <$> liftRunMessage msg attrs

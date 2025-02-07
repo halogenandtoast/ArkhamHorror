@@ -275,11 +275,13 @@ wouldRevealChaosToken :: HasCallStack => [Window] -> InvestigatorId
 wouldRevealChaosToken =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.WouldRevealChaosToken _ who) -> Just who
+    (windowType -> Window.WouldRevealChaosTokens _ who) -> Just who
     _ -> Nothing
 
 getDrawSource :: HasCallStack => [Window] -> Source
 getDrawSource [] = error "No draw source"
 getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
+getDrawSource ((windowType -> Window.WouldRevealChaosTokens drawSource _) : _) = drawSource
 getDrawSource (_ : rest) = getDrawSource rest
 
 enters

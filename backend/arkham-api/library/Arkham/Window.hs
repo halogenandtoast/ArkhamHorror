@@ -297,6 +297,7 @@ data WindowType
   | WouldReady Target
   | Readies Target
   | WouldRevealChaosToken Source InvestigatorId
+  | WouldRevealChaosTokens Source InvestigatorId
   | WouldTakeDamage Source Target Int DamageStrategy
   | WouldTakeDamageOrHorror Source Target Int Int
   | WouldTakeHorror Source Target Int

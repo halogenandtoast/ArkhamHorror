@@ -232,8 +232,7 @@ resolveFirstUnresolved source iid strategy = \case
                     $ if tokenStrategy == ResolveChoice
                       then
                         ( Decided
-                            ( ChooseMatch chooseSource n' tokenStrategy remainingSteps (tokens' <> tokens'') matcher nested
-                            )
+                            (ChooseMatch chooseSource n' tokenStrategy remainingSteps (tokens' <> tokens'') matcher nested)
                         , []
                         )
                       else (Resolved $ concatMap toChaosTokens steps, [])
@@ -270,9 +269,9 @@ resolveFirstUnresolved source iid strategy = \case
                               [ chooseOne
                                   player
                                   [ ChaosTokenGroupChoice
-                                    source
-                                    iid
-                                    (ChooseMatch chooseSource (nFunc n) tokenStrategy remaining chosen matcher nested)
+                                      source
+                                      iid
+                                      (ChooseMatch chooseSource (nFunc n) tokenStrategy remaining chosen matcher nested)
                                   | (remaining, chosen) <- groups'
                                   ]
                               ]
@@ -621,7 +620,10 @@ instance RunMessage ChaosBag where
           pushAll [RequestChaosTokens source miid a strategy, RequestChaosTokens source miid b strategy]
           pure c
         Reveal n -> do
-          push (RunBag source miid strategy)
+          mWouldReveal <- case miid of
+            Just iid -> Just <$> checkWhen (Window.WouldRevealChaosTokens source iid)
+            Nothing -> pure Nothing
+          pushAll $ maybeToList mWouldReveal <> [RunBag source miid strategy]
           case n of
             0 -> pure $ c & revealedChaosTokensL .~ []
             1 -> pure $ c & choiceL ?~ Undecided Draw & revealedChaosTokensL .~ []
@@ -679,6 +681,8 @@ instance RunMessage ChaosBag where
         removeAllMessagesMatching $ \case
           CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
+          CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _] -> True
+          Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _]) -> True
           _ -> False
 
         let
@@ -694,6 +698,8 @@ instance RunMessage ChaosBag where
       removeAllMessagesMatching $ \case
         CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
         Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
+        CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _] -> True
+        Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _]) -> True
         _ -> False
 
       iids <- getInvestigators
@@ -712,6 +718,8 @@ instance RunMessage ChaosBag where
         removeAllMessagesMatching $ \case
           CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _] -> True
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosToken {}) _]) -> True
+          CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _] -> True
+          Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _]) -> True
           _ -> False
 
         iids <- getInvestigators

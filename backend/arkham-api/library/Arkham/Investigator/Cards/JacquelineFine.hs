@@ -22,7 +22,7 @@ instance HasAbilities JacquelineFine where
   getAbilities (JacquelineFine a) =
     [ playerLimit PerRound
         $ restricted a 1 Self
-        $ freeReaction (WouldRevealChaosToken #when $ affectsOthers $ at_ YourLocation)
+        $ freeReaction (WouldRevealChaosTokens #when $ affectsOthers $ at_ YourLocation)
     ]
 
 instance HasChaosTokenValue JacquelineFine where

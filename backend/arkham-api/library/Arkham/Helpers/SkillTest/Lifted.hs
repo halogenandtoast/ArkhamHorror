@@ -129,6 +129,7 @@ cancelTokenDraw = lift $ do
   let
     removeWindow window = case window.kind of
       Window.WouldRevealChaosToken {} -> True
+      Window.WouldRevealChaosTokens {} -> True
       _ -> False
   popMessageMatching_ $ \case
     CheckWindows windows' -> any removeWindow windows'

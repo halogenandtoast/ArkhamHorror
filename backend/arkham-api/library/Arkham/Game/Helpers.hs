@@ -2837,6 +2837,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.WouldRevealChaosToken timing whoMatcher -> guardTiming timing $ \case
       Window.WouldRevealChaosToken _ who -> matchWho iid who whoMatcher
       _ -> noMatch
+    Matcher.WouldRevealChaosTokens timing whoMatcher -> guardTiming timing $ \case
+      Window.WouldRevealChaosTokens _ who -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.RevealChaosToken timing whoMatcher tokenMatcher -> guardTiming timing $ \case
       Window.RevealChaosToken who token ->
         andM

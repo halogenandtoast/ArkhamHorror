@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.GrotesqueStatue2 ( grotesqueStatue2,) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.ChaosBagStepState
 import Arkham.Matcher
 import Arkham.Window (Window (..))

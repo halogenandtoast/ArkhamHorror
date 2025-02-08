@@ -60,7 +60,7 @@ instance RunMessage JacquelineFine where
             Deciding s -> guard (s /= Draw) $> s
 
       push
-        $ ReplaceEntireDraw drawSource iid
+        $ ReplaceCurrentDraw drawSource iid
         $ ChooseMatchChoice
           (steps <> [Undecided Draw, Undecided Draw])
           []

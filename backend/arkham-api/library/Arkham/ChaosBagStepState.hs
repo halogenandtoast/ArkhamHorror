@@ -55,8 +55,8 @@ data ChaosBagStep
   deriving stock (Show, Eq, Ord, Data)
 
 $( do
-    tokenStrategy <- deriveJSON defaultOptions ''ChaosTokenStrategy
-    chaosBagStep <- deriveJSON defaultOptions ''ChaosBagStep
-    chaosBagStepState <- deriveJSON defaultOptions ''ChaosBagStepState
-    pure $ concat [tokenStrategy, chaosBagStep, chaosBagStepState]
+     tokenStrategy <- deriveJSON defaultOptions ''ChaosTokenStrategy
+     chaosBagStep <- deriveJSON defaultOptions ''ChaosBagStep
+     chaosBagStepState <- deriveJSON defaultOptions ''ChaosBagStepState
+     pure $ concat [tokenStrategy, chaosBagStep, chaosBagStepState]
  )

@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.GrotesqueStatue4 (
-  GrotesqueStatue4 (..),
-  grotesqueStatue4,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.GrotesqueStatue4 (grotesqueStatue4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
 import Arkham.Matcher
-import Arkham.Window (Window (..), mkWindow)
+import Arkham.Asset.Uses
+import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 AssetAttrs
@@ -22,8 +18,8 @@ grotesqueStatue4 = assetWith GrotesqueStatue4 Cards.grotesqueStatue4 (whenNoUses
 
 instance HasAbilities GrotesqueStatue4 where
   getAbilities (GrotesqueStatue4 x) =
-    [ restrictedAbility x 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken #when You)
+    [ restricted x 1 ControlsThis
+        $ triggered (WouldRevealChaosToken #when You)
         $ assetUseCost x Charge 1
     ]
 
@@ -33,14 +29,12 @@ toDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = d
 toDrawSource (_ : rest) = toDrawSource rest
 
 instance RunMessage GrotesqueStatue4 where
-  runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
+  runMessage msg a@(GrotesqueStatue4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (toDrawSource -> drawSource) _ -> do
-      ignoreWindow <-
-        checkWindows [mkWindow #after (Window.CancelledOrIgnoredCardOrGameEffect (toSource attrs))]
-      pushAll
-        [ ReplaceCurrentDraw drawSource iid
-            $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] [] Nothing
-        , ignoreWindow
-        ]
+      checkWhen $ Window.WouldRevealChaosTokens drawSource iid
+      push
+        $ ReplaceCurrentDraw drawSource iid
+        $ Choose (toSource attrs) 1 ResolveChoice [Undecided Draw, Undecided Draw] [] Nothing
+      cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure a
-    _ -> GrotesqueStatue4 <$> runMessage msg attrs
+    _ -> GrotesqueStatue4 <$> liftRunMessage msg attrs

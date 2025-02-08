@@ -469,6 +469,12 @@ replaceDeciding current replacement = case current of
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       Deciding
         $ Choose chooseSource n tokenStrategy (replaceDecidingList steps replacement) tokens' nested
+  Decided inner -> Decided $ case inner of
+    Choose s n st steps gs after -> Choose s n st (replaceDecidingList steps replacement) gs after
+    ChooseMatch s n st steps gs mtchr after -> ChooseMatch s n st (replaceDecidingList steps replacement) gs mtchr after
+    ChooseMatchChoice steps gs choices -> ChooseMatchChoice (replaceDecidingList steps replacement) gs choices
+    _ -> error $ "should be impossible, seen: Deciding " <> show inner
+  Undecided _ -> replacement
   _ -> error $ "should be impossible, seen: " <> show current
 
 replaceDecidingList
@@ -614,38 +620,35 @@ instance RunMessage ChaosBag where
         & (revealedChaosTokensL .~ mempty)
         & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
-    RequestChaosTokens source miid revealStrategy strategy -> do
-      case revealStrategy of
-        MultiReveal a b -> do
-          pushAll [RequestChaosTokens source miid a strategy, RequestChaosTokens source miid b strategy]
-          pure c
-        Reveal n -> do
-          mWouldReveal <- case miid of
-            Just iid -> Just <$> checkWhen (Window.WouldRevealChaosTokens source iid)
-            Nothing -> pure Nothing
-          pushAll $ maybeToList mWouldReveal <> [RunBag source miid strategy]
-          case n of
-            0 -> pure $ c & revealedChaosTokensL .~ []
-            1 -> pure $ c & choiceL ?~ Undecided Draw & revealedChaosTokensL .~ []
-            x ->
-              pure
-                $ c
-                & ( choiceL
-                      ?~ Undecided (Choose source x ResolveChoice (replicate x (Undecided Draw)) [] Nothing)
-                  )
-                & (revealedChaosTokensL .~ [])
-        RevealAndChoose n m -> do
-          push (RunBag source miid strategy)
-          case n of
-            0 -> error "should be more than 1"
-            1 -> error "should be more than 1"
-            x ->
-              pure
-                $ c
-                & ( choiceL
-                      ?~ Undecided (Choose source m ResolveChoice (replicate x (Undecided Draw)) [] Nothing)
-                  )
-                & (revealedChaosTokensL .~ [])
+    RequestChaosTokens source miid revealStrategy strategy -> case revealStrategy of
+      MultiReveal a b -> do
+        pushAll [RequestChaosTokens source miid a strategy, RequestChaosTokens source miid b strategy]
+        pure c
+      Reveal n -> do
+        mWouldReveal <- traverse (checkWhen . Window.WouldRevealChaosTokens source) miid
+        pushAll $ maybeToList mWouldReveal <> [RunBag source miid strategy]
+        case n of
+          0 -> pure $ c & revealedChaosTokensL .~ []
+          1 -> pure $ c & choiceL ?~ Undecided Draw & revealedChaosTokensL .~ []
+          x ->
+            pure
+              $ c
+              & ( choiceL
+                    ?~ Undecided (Choose source x ResolveChoice (replicate x (Undecided Draw)) [] Nothing)
+                )
+              & (revealedChaosTokensL .~ [])
+      RevealAndChoose n m -> do
+        push (RunBag source miid strategy)
+        case n of
+          0 -> error "should be more than 1"
+          1 -> error "should be more than 1"
+          x ->
+            pure
+              $ c
+              & ( choiceL
+                    ?~ Undecided (Choose source m ResolveChoice (replicate x (Undecided Draw)) [] Nothing)
+                )
+              & (revealedChaosTokensL .~ [])
     RunBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' ->

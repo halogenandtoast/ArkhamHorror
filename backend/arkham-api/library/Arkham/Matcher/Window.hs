@@ -131,8 +131,8 @@ data WindowMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher
-  | WouldRevealChaosTokens Timing Who
   | WouldRevealChaosToken Timing Who
+  | WouldRevealChaosTokens Timing Who
   | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
   | WouldDiscardFromHand Timing Who SourceMatcher
   | AssetHealed Timing DamageType AssetMatcher SourceMatcher

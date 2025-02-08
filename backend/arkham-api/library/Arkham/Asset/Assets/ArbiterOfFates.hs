@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Asset.Assets.ArbiterOfFates (arbiterOfFates, arbiterOfFatesEffect) where
 
 import Arkham.Ability

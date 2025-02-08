@@ -50,13 +50,13 @@ instance HasModifiersFor CustomModifications where
       guard $ a `hasCustomization` ExtendedStock
       pure $ SkillModifier #combat 2
 
-    controller <- modified_ a a.controller $ maybeToList notchedSight <> maybeToList extendedStock
-    self <-
-      modifySelfWhen
-        a
-        (a `hasCustomization` LeatherGrip)
-        [ReduceCostOf (CardWithId a.cardId) 1, BecomesFast (DuringTurn You)]
-    pure $ self <> controller
+    modified_ a a.controller $ maybeToList notchedSight <> maybeToList extendedStock
+    modifiedWhen_
+      a
+      (a `hasCustomization` LeatherGrip)
+      a.controller
+      [ReduceCostOf (CardWithId a.cardId) 1]
+    modifiedWhen_ a (a `hasCustomization` LeatherGrip) a.cardId [BecomesFast (DuringTurn You)]
 
 instance HasAbilities CustomModifications where
   getAbilities (CustomModifications a) =
@@ -72,26 +72,26 @@ instance HasAbilities CustomModifications where
             $ ReactionAbility (RevealChaosToken #when You (not_ #autofail)) (exhaust a)
         ]
           <> [ restrictedAbility a 2 (ControlsThis <> can.draw.cards You)
-              $ CustomizationReaction
-                "Counterbalance"
-                ( AttachCard
-                    #after
-                    (Just You)
-                    (CardWithTrait Upgrade <> not_ (CardWithId $ toCardId a))
-                    (TargetIs $ AssetTarget aid)
-                )
-                Free
+                 $ CustomizationReaction
+                   "Counterbalance"
+                   ( AttachCard
+                       #after
+                       (Just You)
+                       (CardWithTrait Upgrade <> not_ (CardWithId $ toCardId a))
+                       (TargetIs $ AssetTarget aid)
+                   )
+                   Free
              | a `hasCustomization` Counterbalance
              ]
           <> [ restrictedAbility a 3 ControlsThis
-              $ CustomizationReaction
-                "Extended Magazine"
-                ( oneOf
-                    [ SpentUses #after Anyone (SourceIsEvent $ not_ $ EventWithId a.id) Ammo (AssetWithId aid) AnyValue
-                    , PlacedToken #after (SourceIsEvent $ not_ $ EventWithId a.id) (TargetIs $ AssetTarget aid) Ammo
-                    ]
-                )
-                Free
+                 $ CustomizationReaction
+                   "Extended Magazine"
+                   ( oneOf
+                       [ SpentUses #after Anyone (SourceIsEvent $ not_ $ EventWithId a.id) Ammo (AssetWithId aid) AnyValue
+                       , PlacedToken #after (SourceIsEvent $ not_ $ EventWithId a.id) (TargetIs $ AssetTarget aid) Ammo
+                       ]
+                   )
+                   Free
              | a `hasCustomization` ExtendedMagazine
              ]
       _ -> []

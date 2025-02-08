@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheShadowOfTheEclipse (TheShadowOfTheEclipse (..), theShadowOfTheEclipse) where
+module Arkham.Agenda.Cards.TheShadowOfTheEclipse (theShadowOfTheEclipse) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Helpers
@@ -28,7 +28,7 @@ instance RunMessage TheShadowOfTheEclipse where
             when isInnocent $ placeUnderneath AgendaDeckTarget [card]
       doStep 1 msg
       pure a
-    Do (AdvanceAgenda (isSide B attrs -> True)) -> do
+    DoStep 1 (AdvanceAgenda (isSide B attrs -> True)) -> do
       selectAny (AssetWithTitle "Masked Carnevale-Goer") >>= \case
         True -> revertAgenda attrs
         False -> advanceAgendaDeck attrs

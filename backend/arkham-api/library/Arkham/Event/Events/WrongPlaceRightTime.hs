@@ -1,8 +1,4 @@
-module Arkham.Event.Events.WrongPlaceRightTime (
-  wrongPlaceRightTime,
-  WrongPlaceRightTime (..),
-)
-where
+module Arkham.Event.Events.WrongPlaceRightTime (wrongPlaceRightTime) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (InvestigatorDamage)
@@ -48,40 +44,40 @@ instance RunMessage WrongPlaceRightTime where
         chooseOne iid
           $ Label "Done moving damage/horror" [DoStep 0 msg']
           : [ DamageLabel
-              iid
-              [ Msg.chooseOne
-                  player
-                  [ targetLabel
-                    asset
-                    [ handleTargetChoice iid attrs asset
-                    , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #damage 1
-                    , DoStep (n - 1) msg'
-                    ]
-                  | asset <- canDamageAssets
-                  ]
-              ]
-            | dmg > 0 && notNull canDamageAssets
-            ]
-            <> [ HorrorLabel
                 iid
                 [ Msg.chooseOne
                     player
                     [ targetLabel
-                      asset
-                      [ handleTargetChoice iid attrs asset
-                      , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #horror 1
-                      , DoStep (n - 1) msg'
-                      ]
-                    | asset <- canHorrorAssets
+                        asset
+                        [ handleTargetChoice iid attrs asset
+                        , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #damage 1
+                        , DoStep (n - 1) msg'
+                        ]
+                    | asset <- canDamageAssets
                     ]
                 ]
+            | dmg > 0 && notNull canDamageAssets
+            ]
+            <> [ HorrorLabel
+                   iid
+                   [ Msg.chooseOne
+                       player
+                       [ targetLabel
+                           asset
+                           [ handleTargetChoice iid attrs asset
+                           , MoveTokensNoDefeated (toSource attrs) (toSource iid) (toTarget asset) #horror 1
+                           , DoStep (n - 1) msg'
+                           ]
+                       | asset <- canHorrorAssets
+                       ]
+                   ]
                | hrr > 0 && notNull canHorrorAssets
                ]
 
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
       pure . WrongPlaceRightTime $ attrs `with` Meta (aid : chosenAssets meta)
-    AssetDefeated (isSource attrs -> True) _ -> do
+    After (AssetDefeated (isSource attrs -> True) _) -> do
       drawCardsIfCan attrs.controller attrs 1
       pure e
     _ -> WrongPlaceRightTime . (`with` meta) <$> liftRunMessage msg attrs

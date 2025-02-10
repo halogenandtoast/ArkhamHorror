@@ -6,10 +6,11 @@ import Arkham.Prelude
 
 import Arkham.Ability.Limit
 import Arkham.Ability.Type
+import Arkham.Action
 import Arkham.Card.CardCode
 import Arkham.Card.EncounterCard
 import Arkham.Cost
-import Arkham.Criteria (Criterion)
+import Arkham.Criteria (Criterion (NoRestriction))
 import Arkham.Json
 import Arkham.Matcher
 import Arkham.SkillType
@@ -42,6 +43,38 @@ data Ability = Ability
   , abilityWantsSkillTest :: Maybe SkillTestMatcher
   }
   deriving stock (Show, Ord, Data)
+
+overAbilityActions :: ([Action] -> [Action]) -> Ability -> Ability
+overAbilityActions f ab = ab {Arkham.Ability.Types.abilityType = overAbilityTypeActions f ab.kind}
+
+buildFightAbility :: (Sourceable source, HasCardCode source) => source -> Int -> Ability
+buildFightAbility source idx =
+  (buildAbility source idx (ActionAbility [#fight] Free))
+    { abilityDoesNotProvokeAttacksOfOpportunity = True
+    }
+
+buildAbility :: (Sourceable source, HasCardCode source) => source -> Int -> AbilityType -> Ability
+buildAbility source idx abilityType =
+  Ability
+    { abilitySource = toSource source
+    , abilityCardCode = toCardCode source
+    , abilityIndex = idx
+    , abilityType = abilityType
+    , abilityLimit = NoLimit
+    , abilityWindow = AnyWindow
+    , abilityMetadata = Nothing
+    , abilityCriteria = NoRestriction
+    , abilityDoesNotProvokeAttacksOfOpportunity = False
+    , abilityTooltip = Nothing
+    , abilityCanBeCancelled = True
+    , abilityDisplayAsAction = False
+    , abilityDelayAdditionalCosts = Nothing
+    , abilityBasic = False
+    , abilityAdditionalCosts = []
+    , abilityRequestor = toSource source
+    , abilityTriggersSkillTest = False
+    , abilityWantsSkillTest = Nothing
+    }
 
 skillTestAbility :: Ability -> Ability
 skillTestAbility ab = ab {abilityTriggersSkillTest = True}

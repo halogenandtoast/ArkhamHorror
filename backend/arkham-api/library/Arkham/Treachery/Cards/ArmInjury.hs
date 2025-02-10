@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.ArmInjury (armInjury, ArmInjury (..)) where
+module Arkham.Treachery.Cards.ArmInjury (armInjury) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -18,7 +18,7 @@ instance HasModifiersFor ArmInjury where
 
 instance HasAbilities ArmInjury where
   getAbilities (ArmInjury a) =
-    [ restrictedAbility a 1 injuryCriteria
+    [ restricted a 1 injuryCriteria
         $ forced
         $ ActivateAbility #after You
         $ oneOf

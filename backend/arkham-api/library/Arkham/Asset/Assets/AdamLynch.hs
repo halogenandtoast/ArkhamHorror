@@ -19,7 +19,7 @@ instance HasAbilities AdamLynch where
 
 instance HasModifiersFor AdamLynch where
   getModifiersFor (AdamLynch a) = for_ a.controller \iid -> do
-    selectForMaybeM (AbilityOnLocation $ LocationWithTitle "Security Office") \ab ->
+    selectForMaybeM (AbilityOnLocation (LocationWithTitle "Security Office") <> AbilityWithIndex 1) \ab ->
       modified_ a (AbilityTarget iid ab) [ActionCostSetToModifier 1]
 
 instance RunMessage AdamLynch where

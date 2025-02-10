@@ -136,6 +136,7 @@ const debug = useDebug()
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
+      :game="game"
       class="sideways"
       @click="$emit('choose', ability.index)"
       />

@@ -23,10 +23,7 @@ theNecronomicon =
 
 instance HasModifiersFor TheNecronomicon where
   getModifiersFor (TheNecronomicon a) = for_ a.controller \iid -> do
-    modifySelect
-      a
-      (ChaosTokenRevealedBy $ InvestigatorWithId iid)
-      [ForcedChaosTokenChange #eldersign [#autofail]]
+    modifySelect a (ChaosTokenRevealedBy $ be iid) [ForcedChaosTokenChange #eldersign [#autofail]]
 
 instance HasAbilities TheNecronomicon where
   getAbilities (TheNecronomicon a) = [controlledAbility a 1 AnyHorrorOnThis #action]

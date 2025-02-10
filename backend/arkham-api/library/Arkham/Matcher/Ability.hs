@@ -19,6 +19,7 @@ import GHC.OverloadedLabels
 
 data AbilityMatcher
   = AbilityOnLocation LocationMatcher
+  | AbilityWithIndex Int
   | AbilityOnAsset AssetMatcher
   | AbilityOnEnemy EnemyMatcher
   | AbilityOnStory StoryMatcher

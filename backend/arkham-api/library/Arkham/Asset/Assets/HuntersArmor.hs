@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.HuntersArmor (huntersArmor, HuntersArmor (..)) where
+module Arkham.Asset.Assets.HuntersArmor (huntersArmor) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -15,24 +15,24 @@ newtype HuntersArmor = HuntersArmor AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor HuntersArmor where
-  getModifiersFor (HuntersArmor a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      self <-
-        modifySelf a
-          $ (guard (a `hasCustomization` Enchanted) *> [DoNotTakeUpSlot #body, AdditionalSlot #arcane])
-          <> (guard (a `hasCustomization` Durable) $> HealthModifier 2)
-          <> (guard (a `hasCustomization` Hallowed) $> SanityModifier 2)
-          <> ( guard (a `hasCustomization` Lightweight)
-                *> [ReduceCostOf (CardWithId a.cardId) 1, ActionDoesNotCauseAttacksOfOpportunity #play]
-             )
-      other <-
-        modifySelectWhen
-          a
-          (a `hasCustomization` ProtectiveRunes)
-          (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
-          [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
-      pure $ self <> other
+  getModifiersFor (HuntersArmor a) = do
+    modifiedWhen_
+      a
+      (a `hasCustomization` Lightweight)
+      (CardIdTarget a.cardId)
+      [ReduceCostOf (CardWithId a.cardId) 1, ActionDoesNotCauseAttacksOfOpportunity #play]
+
+    for_ a.controller \iid -> do
+      modifySelf a
+        $ (guard (a `hasCustomization` Enchanted) *> [DoNotTakeUpSlot #body, AdditionalSlot #arcane])
+        <> (guard (a `hasCustomization` Durable) $> HealthModifier 2)
+        <> (guard (a `hasCustomization` Hallowed) $> SanityModifier 2)
+
+      modifySelectWhen
+        a
+        (a `hasCustomization` ProtectiveRunes)
+        (not_ (InvestigatorWithId iid) <> at_ (locationWithAsset a))
+        [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 huntersArmor :: AssetCard HuntersArmor
 huntersArmor = assetWith HuntersArmor Cards.huntersArmor $ (healthL ?~ 2) . (sanityL ?~ 2)
@@ -40,21 +40,21 @@ huntersArmor = assetWith HuntersArmor Cards.huntersArmor $ (healthL ?~ 2) . (san
 instance HasAbilities HuntersArmor where
   getAbilities (HuntersArmor a) =
     [ restrictedAbility a 1 (ControlsThis <> can.draw.cards You <> thisIs a AssetReady)
-      $ CustomizationReaction
-        "Hexdrinker"
-        (AssetDealtDamageOrHorror #after (SourceIsTreacheryEffect AnyTreachery) (be a))
-        Free
+        $ CustomizationReaction
+          "Hexdrinker"
+          (AssetDealtDamageOrHorror #after (SourceIsTreacheryEffect AnyTreachery) (be a))
+          Free
     | a `hasCustomization` Hexdrinker
     ]
       <> [ restrictedAbility a 2 ControlsThis
-          $ CustomizationReaction
-            "Armor of Thorns"
-            ( AssetDealtDamageOrHorror
-                #after
-                (SourceIsEnemyAttack $ EnemyCanBeDamagedBySource (a.ability 1))
-                (be a)
-            )
-            (exhaust a)
+             $ CustomizationReaction
+               "Armor of Thorns"
+               ( AssetDealtDamageOrHorror
+                   #after
+                   (SourceIsEnemyAttack $ EnemyCanBeDamagedBySource (a.ability 1))
+                   (be a)
+               )
+               (exhaust a)
          | a `hasCustomization` ArmorOfThorns
          ]
 

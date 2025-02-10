@@ -102,6 +102,27 @@ data AbilityType
   | ConstantAbility
   deriving stock (Show, Ord, Eq, Data)
 
+overAbilityTypeActions :: ([Action] -> [Action]) -> AbilityType -> AbilityType
+overAbilityTypeActions f = \case
+  FastAbility' cost actions -> FastAbility' cost (f actions)
+  ActionAbility actions cost -> ActionAbility (f actions) cost
+  ActionAbilityWithSkill actions skillType cost ->
+    ActionAbilityWithSkill (f actions) skillType cost
+  AbilityEffect actions cost -> AbilityEffect (f actions) cost
+  Objective abilityType -> Objective (overAbilityTypeActions f abilityType)
+  DelayedAbility abilityType -> DelayedAbility (overAbilityTypeActions f abilityType)
+  ForcedWhen criteria abilityType -> ForcedWhen criteria (overAbilityTypeActions f abilityType)
+  ReactionAbility window cost -> ReactionAbility window cost
+  CustomizationReaction label window cost -> CustomizationReaction label window cost
+  ConstantReaction label window cost -> ConstantReaction label window cost
+  ServitorAbility action -> ServitorAbility action
+  SilentForcedAbility window -> SilentForcedAbility window
+  ForcedAbility window -> ForcedAbility window
+  ForcedAbilityWithCost window cost -> ForcedAbilityWithCost window cost
+  Haunted -> Haunted
+  Cosmos -> Cosmos
+  ConstantAbility -> ConstantAbility
+
 instance HasCost AbilityType where
   overCost f = \case
     FastAbility' cost actions -> FastAbility' (f cost) actions

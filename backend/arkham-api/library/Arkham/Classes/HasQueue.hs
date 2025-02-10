@@ -83,6 +83,9 @@ popMessage = withQueue \case
 clearQueue :: HasQueue msg m => m ()
 clearQueue = withQueue_ $ const []
 
+setQueue :: HasQueue msg m => [msg] -> m ()
+setQueue msgs = withQueue_ $ const msgs
+
 peekMessage :: HasQueue msg m => m (Maybe msg)
 peekMessage = withQueue \case
   [] -> ([], Nothing)
@@ -116,6 +119,17 @@ replaceMessageMatching matcher replacer = withQueue \queue ->
    in case after of
         [] -> (before, ())
         (msg' : rest) -> (before <> replacer msg' <> rest, ())
+
+replaceMessageMatchingM
+  :: HasQueue msg m => (msg -> Bool) -> (msg -> m [msg]) -> m ()
+replaceMessageMatchingM matcher replacer = do
+  queue <- peekQueue
+  let (before, after) = break matcher queue
+  case after of
+    [] -> pure ()
+    (msg' : rest) -> do
+      msgs <- replacer msg' 
+      setQueue $ before <> msgs <> rest
 
 replaceAllMessagesMatching
   :: HasQueue msg m => (msg -> Bool) -> (msg -> [msg]) -> m ()

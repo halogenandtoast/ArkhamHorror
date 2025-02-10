@@ -172,7 +172,8 @@ flare1 =
     , cdCardTraits = singleton Tactic
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     , cdLevel = Just 1
-    , cdCriteria = Just $ exists $ affectsOthers can.manipulate.deck
+    , cdCriteria =
+        Just $ oneOf [exists $ affectsOthers can.manipulate.deck, exists $ CanFightEnemy ThisCard]
     }
 
 standTogether3 :: CardDef

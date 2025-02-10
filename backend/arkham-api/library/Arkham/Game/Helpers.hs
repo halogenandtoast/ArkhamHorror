@@ -2183,9 +2183,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       _ -> noMatch
     Matcher.ActivateAbility timing whoMatcher abilityMatcher -> guardTiming timing $ \case
       Window.ActivateAbility who _ ability ->
+        -- N.B. For cases like Flare (1) we need to "extend" the ability which
+        -- means it will differ from the original, for this reason we can not
+        -- use the typicaly `elem ability <$> select abilityMatcher` format and
+        -- must instead use the `abilityMatches` function which allows us to
+        -- check against the modified ability
         andM
           [ matchWho iid who whoMatcher
-          , elem ability <$> select abilityMatcher
+          , abilityMatches ability abilityMatcher
           ]
       _ -> noMatch
     Matcher.CommittedCard timing whoMatcher cardMatcher -> guardTiming timing $ \case

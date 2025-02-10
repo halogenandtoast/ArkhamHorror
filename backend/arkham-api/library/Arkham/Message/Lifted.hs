@@ -1638,6 +1638,13 @@ insteadOfMatching pred f = do
   msgs <- evalQueueT f
   lift $ replaceMessageMatching pred (const msgs)
 
+insteadOfMatchingWith
+  :: (MonadTrans t, HasQueue Message m)
+  => (Message -> Bool)
+  -> (Message -> m [Message])
+  -> t m ()
+insteadOfMatchingWith pred f = lift $ replaceMessageMatchingM pred f
+
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 don't msg = lift $ popMessageMatching_ (== msg)
 

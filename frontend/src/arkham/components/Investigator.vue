@@ -336,6 +336,7 @@ function onDrop(event: DragEvent) {
           v-for="ability in abilities"
           :key="ability.index"
           :ability="ability.contents"
+          :game="game"
           @click="$emit('choose', ability.index)"
           />
         <button

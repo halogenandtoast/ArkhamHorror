@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
+import type { Game } from '@/arkham/types/Game';
 import type { Cost } from '@/arkham/types/Cost';
 import type { AbilityLabel, FightLabel, EvadeLabel, EngageLabel } from '@/arkham/types/Message';
 import type { Ability } from '@/arkham/types/Ability';
@@ -11,12 +12,43 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n()
 const props = withDefaults(defineProps<{
+ game: Game
  ability: AbilityLabel | FightLabel | EvadeLabel | EngageLabel
  tooltipIsButtonText?: boolean
  showMove?: boolean
 }>(), { tooltipIsButtonText: false, showMove: true })
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
+
+const tooltip = computed(() => {
+  var body = ability.value && ability.value.tooltip
+  if (body) {
+    body = body.startsWith("$") ? handleI18n(body, t) : body
+    const content = replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
+    return { content, html: true }
+  }
+
+  return null
+})
+
+const modifiers = computed(() => {
+  return props.game.modifiers.filter((m) => {
+    if (m[0].tag === "AbilityTarget") {
+      return m[0].contents.ability.source.contents === ability.value?.source?.contents
+        && m[0].contents.ability.index === ability.value?.index
+    }
+    return false
+  })
+})
+
+const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
+const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
+const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
+const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
+const isDelayedAbility = computed(() => ability.value && ability.value.type.tag === "DelayedAbility")
+const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
+
+const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
 const isButtonText = computed(() => {
   return (props.tooltipIsButtonText && tooltip.value) || (tooltip.value && tooltip.value.content == "Use True Magick")
@@ -55,6 +87,10 @@ function totalActionCost(cost: Cost) {
   if (cost.tag === "Costs") {
     return cost.contents.reduce((acc, v) => v.tag === "ActionCost" ? acc + v.contents : acc, 0)
   } else if (cost.tag === "ActionCost") {
+    const setActions = modifiers.value.find((m) => m[1][0].type.tag === "ActionCostSetToModifier")
+    if (setActions) {
+      return setActions[1][0].type.contents
+    }
     return cost.contents
   }
 
@@ -135,31 +171,7 @@ const abilityLabel = computed(() => {
 
   return ""
 })
-const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove) && abilityLabel != ""
-
-const isSingleActionAbility = computed(() => {
-  if (!ability.value) {
-    return false
-  }
-
-  if (ability.value.type.tag !== "ActionAbility") {
-    return false
-  }
-
-  const cost = ability.value.type.cost
-  return totalActionCost(cost) === 1
-})
-
-const tooltip = computed(() => {
-  var body = ability.value && ability.value.tooltip
-  if (body) {
-    body = body.startsWith("$") ? handleI18n(body, t) : body
-    const content = replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
-    return { content, html: true }
-  }
-
-  return null
-})
+const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove) && abilityLabel.value != ""
 
 const isZeroedActionAbility = computed(() => {
   if (!ability.value) {
@@ -173,42 +185,6 @@ const isZeroedActionAbility = computed(() => {
   const cost = ability.value.type.cost
   return totalActionCost(cost) === 0
 })
-
-const isDoubleActionAbility = computed(() => {
-  if (!ability.value) {
-    return false
-  }
-
-  if (ability.value.type.tag !== "ActionAbility") {
-    return false
-  }
-
-  const cost = ability.value.type.cost
-  return totalActionCost(cost) === 2
-})
-
-const isTripleActionAbility = computed(() => {
-  if (!ability.value) {
-    return false
-  }
-
-  if (ability.value.type.tag !== "ActionAbility") {
-    return false
-  }
-
-  const cost = ability.value.type.cost
-  return totalActionCost(cost) === 3
-})
-
-const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
-const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
-const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
-const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
-const isDelayedAbility = computed(() => ability.value && ability.value.type.tag === "DelayedAbility")
-const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
-
-const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
-
 
 const classObject = computed(() => {
   if (isButtonText.value) {
@@ -309,24 +285,6 @@ const classObject = computed(() => {
     content: "\0049";
     margin-right: 5px;
     color: rgba(255, 255, 255, 0.5);
-  }
-}
-
-.double-ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049\0049";
-    margin-right: 5px;
-  }
-}
-
-.triple-ability-button {
-  background-color: #555;
-  &:before {
-    font-family: "arkham";
-    content: "\0049\0049\0049";
-    margin-right: 5px;
   }
 }
 

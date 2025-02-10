@@ -254,6 +254,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
             v-model="showAbilities"
             :abilities="abilities"
             :position="atLocation ? 'right' : (inVoid || global) ? 'left' : 'top'"
+            :game="game"
             @choose="chooseAbility"
             />
         </div>

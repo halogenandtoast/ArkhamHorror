@@ -150,6 +150,7 @@ const breaches = computed(() => {
       :frame="frame"
       v-model="showAbilities"
       :abilities="abilities"
+      :game="game"
       position="bottom"
       @choose="chooseAbility"
       />

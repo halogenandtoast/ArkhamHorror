@@ -418,6 +418,7 @@ const tokenEffects = computed(() => {
         :key="ability.index"
         :ability="ability.contents"
         :tooltipIsButtonText="true"
+        :game="game"
         @click="choose(ability.index)"
         />
 

@@ -293,6 +293,7 @@ function onDrop(event: DragEvent) {
           :abilities="abilities"
           :frame="frame"
           :show-move="false"
+          :game="game"
           position="left"
           @choose="chooseAbility"
         />

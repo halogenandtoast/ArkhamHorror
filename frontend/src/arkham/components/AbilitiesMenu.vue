@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { Game } from '@/arkham/types/Game';
 import { OnClickOutside } from '@vueuse/components'
 import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import type { AbilityMessage } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
 const props = withDefaults(defineProps<{
+  game: Game;
   abilities: AbilityMessage[];
   frame: HTMLElement | null;
   position?: 'top' | 'bottom' | 'left' | 'right';
@@ -87,6 +89,7 @@ watch(showAbilities, (newValue) => {
           :key="ability.index"
           :ability="ability.contents"
           :show-move="showMove"
+          :game="game"
           @click="chooseAbility(ability.index)"
         />
       </div>

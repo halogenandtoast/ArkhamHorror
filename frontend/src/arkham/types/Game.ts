@@ -1,10 +1,12 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
+import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Story, storyDecoder } from '@/arkham/types/Story';
 import { Location, locationDecoder } from '@/arkham/types/Location';
 import { Message } from '@/arkham/types/Message';
 import { Source } from '@/arkham/types/Source';
+import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Scenario, ScenarioDetails, scenarioDecoder, scenarioDetailsDecoder } from '@/arkham/types/Scenario';
 import { Campaign, CampaignDetails, campaignDecoder, campaignDetailsDecoder } from '@/arkham/types/Campaign';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
@@ -93,6 +95,7 @@ export type Game = {
   removedFromPlay: Card[];
   encounterDeckSize: number;
   cards: Record<string, Card>;
+  modifiers: [Target, Modifier[]][];
 }
 
 export function choices(game: Game, playerId: string): Message[] {
@@ -221,6 +224,7 @@ export const gameDecoder = JsonDecoder.object<Game>(
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
     encounterDeckSize: JsonDecoder.number,
     cards: JsonDecoder.dictionary<Card>(cardDecoder, 'Dict<string, Card>'),
+    modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]')
   },
   'Game',
   {

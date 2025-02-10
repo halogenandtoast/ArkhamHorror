@@ -80,6 +80,7 @@ export type ModifierType
   | CancelEffects
   | CannotPerformSkillTest
   | GainVictory
+  | ActionCostSetToModifier
   | OtherModifier
   | SkillModifier
   | UseEncounterDeck
@@ -162,6 +163,11 @@ export type AnySkillValue = {
 
 export type GainVictory = {
   tag: "GainVictory"
+  contents: number
+}
+
+export type ActionCostSetToModifier = {
+  tag: "ActionCostSetToModifier"
   contents: number
 }
 
@@ -278,6 +284,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.isExactly('GainVictory'),
       contents: JsonDecoder.number
     }, 'GainVictory'),
+  JsonDecoder.object<ActionCostSetToModifier>(
+    {
+      tag: JsonDecoder.isExactly('ActionCostSetToModifier'),
+      contents: JsonDecoder.number
+    }, 'ActionCostSetToModifier'),
   JsonDecoder.object<AddKeyword>(
     {
       tag: JsonDecoder.isExactly('AddKeyword'),

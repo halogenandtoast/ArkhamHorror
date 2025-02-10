@@ -92,6 +92,7 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
+      :game="game"
       @click="$emit('choose', ability.index)"
       />
     <div class="pool">

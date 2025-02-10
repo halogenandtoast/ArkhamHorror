@@ -276,6 +276,7 @@ const assetStory = computed(() => {
           v-model="showAbilities"
           :frame="frame"
           :abilities="abilities"
+          :game="game"
           @choose="chooseAbility"
         />
       </div>

@@ -121,6 +121,7 @@ const choose = (index: number) => emits('choose', index)
       :key="ability.index"
       :ability="ability.contents"
       :data-image="image"
+      :game="game"
       @click="$emit('choose', ability.index)"
       />
 

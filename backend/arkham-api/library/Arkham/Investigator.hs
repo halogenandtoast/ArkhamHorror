@@ -130,6 +130,7 @@ allInvestigators =
       , SomeInvestigatorCard alessandraZorzi
       , SomeInvestigatorCard kohakuNarukami
       , SomeInvestigatorCard hankSamson
+      , SomeInvestigatorCard marionTavares
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

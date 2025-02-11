@@ -103,6 +103,7 @@ allPlayerTreacheryCards =
       , hospitalDebts
       , hospitalDebtsAdvanced
       , hypochondria
+      , illDoItMyself
       , indebted
       , internalInjury
       , legInjury
@@ -2687,6 +2688,10 @@ wheresPa =
   (weakness "10018" "\"Where's Pa?\"")
     { cdCardTraits = setFromList [Flaw]
     }
+
+illDoItMyself :: CardDef
+illDoItMyself =
+  (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

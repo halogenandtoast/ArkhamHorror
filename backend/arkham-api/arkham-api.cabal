@@ -2374,6 +2374,7 @@ library
       Arkham.Investigator.Cards.LukeRobinson
       Arkham.Investigator.Cards.MandyThompson
       Arkham.Investigator.Cards.MarieLambeau
+      Arkham.Investigator.Cards.MarionTavares
       Arkham.Investigator.Cards.MarkHarrigan
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.MontereyJack
@@ -3363,6 +3364,7 @@ library
       Arkham.Skill.Cards.Defiance
       Arkham.Skill.Cards.Defiance2
       Arkham.Skill.Cards.DesperateSearch
+      Arkham.Skill.Cards.Determined
       Arkham.Skill.Cards.DiabolicalLuck
       Arkham.Skill.Cards.DoubleOrNothing
       Arkham.Skill.Cards.DreamParasite
@@ -3767,6 +3769,7 @@ library
       Arkham.Treachery.Cards.Hypothermia
       Arkham.Treachery.Cards.ICantSee
       Arkham.Treachery.Cards.IceShaft
+      Arkham.Treachery.Cards.IllDoItMyself
       Arkham.Treachery.Cards.IllOmen
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted

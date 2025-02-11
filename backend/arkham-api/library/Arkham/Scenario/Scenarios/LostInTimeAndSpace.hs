@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Game.Helpers hiding (defeated)
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)
@@ -142,6 +143,7 @@ instance RunMessage LostInTimeAndSpace where
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
+        ElderThing -> withLocationOf iid (toDiscardBy iid ElderThing)
         _ -> pure ()
       pure s
     ResolveChaosToken _ Cultist iid -> do

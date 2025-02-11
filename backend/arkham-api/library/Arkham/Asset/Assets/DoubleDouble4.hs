@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DoubleDouble4 (doubleDouble4, DoubleDouble4 (..)) where
+module Arkham.Asset.Assets.DoubleDouble4 (doubleDouble4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,7 +18,7 @@ doubleDouble4 = asset DoubleDouble4 Cards.doubleDouble4
 instance HasAbilities DoubleDouble4 where
   getAbilities (DoubleDouble4 a) =
     [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+        $ triggered
           ( PlayCard #after You
               $ PlayableCard (UnpaidCost NoAction)
               $ #event

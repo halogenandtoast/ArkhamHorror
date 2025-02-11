@@ -22,7 +22,7 @@ instance HasAbilities TheyreGettingOut where
     [ restricted
         x
         1
-        (exists (UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")) <> exists (location_ "Parlor"))
+        (exists (InPlayEnemy $ UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")) <> exists (location_ "Parlor"))
         $ forced (PhaseEnds #when #enemy)
     , restricted x 2 (exists $ enemy_ $ at_ (oneOf ["Parlor", "Hallway"]) <> #ghoul)
         $ forced (RoundEnds #when)
@@ -35,7 +35,7 @@ instance RunMessage TheyreGettingOut where
       push $ if actSequence `elem` [1, 2] then R3 else ScenarioResolution NoResolution
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      enemiesToMove <- select $ UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")
+      enemiesToMove <- select $ InPlayEnemy $ UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")
 
       when (notNull enemiesToMove) do
         lead <- getLead

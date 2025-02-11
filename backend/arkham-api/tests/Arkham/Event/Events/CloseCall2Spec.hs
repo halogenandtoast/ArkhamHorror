@@ -2,7 +2,7 @@ module Arkham.Event.Events.CloseCall2Spec (spec) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Matcher (EnemyMatcher (AnyEnemy))
+import Arkham.Matcher (EnemyMatcher (InPlayEnemy, AnyEnemy))
 import Arkham.Scenario.Types (Field (..))
 import TestImport.New
 

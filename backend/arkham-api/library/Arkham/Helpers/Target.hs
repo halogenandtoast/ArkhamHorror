@@ -16,6 +16,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EventCard)
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Types (Field (..))
@@ -129,7 +130,10 @@ targetMatches s = \case
       InvestigatorTarget iid -> isLocation InvestigatorLocation iid
       EnemyTarget eid -> isLocation EnemyLocation eid
       LocationTarget lid -> pure $ lid `elem` locations
-      TreacheryTarget tid -> isLocation TreacheryLocation tid
+      TreacheryTarget tid ->
+        field TreacheryPlacement tid >>= \case
+          Limbo -> field TreacheryDrawnBy tid >>= isLocation InvestigatorLocation
+          _ -> isLocation TreacheryLocation tid
       EventTarget eid -> fieldMapM EventPlacement placementLocation eid <&> maybe False (`elem` locations)
       _ -> pure False
   TargetWithDoom -> case s of

@@ -1,22 +1,16 @@
-module Arkham.Location.Cards.BaseOfTheHill (
-  baseOfTheHill,
-  BaseOfTheHill (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BaseOfTheHill (baseOfTheHill) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Helpers.Query
-import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype BaseOfTheHill = BaseOfTheHill LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baseOfTheHill :: LocationCard BaseOfTheHill
@@ -25,26 +19,29 @@ baseOfTheHill =
     $ revealedConnectedMatchersL
     <>~ [LocationWithTitle "Diverging Path"]
 
+instance HasModifiersFor BaseOfTheHill where
+  getModifiersFor (BaseOfTheHill a) = do
+    modifySelectWhen a a.revealed (LocationWithTitle "Diverging Path") [ConnectedToWhen (be a) Anywhere]
+
 instance HasAbilities BaseOfTheHill where
   getAbilities (BaseOfTheHill attrs) =
     withResignAction
       attrs
       [ withTooltip
-        "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
-        $ limitedAbility (PlayerLimit PerRound 1)
-        $ investigateAbility attrs 1 mempty Here
-      | locationRevealed attrs
+          "{action}: _Investigate_. If you succeed, instead of discovering clues, put a random set-aside Diverging Path into play. (Limit once per round.)"
+          $ limitedAbility (PlayerLimit PerRound 1)
+          $ investigateAbility attrs 1 mempty Here
+      | attrs.revealed
       ]
 
 instance RunMessage BaseOfTheHill where
-  runMessage msg l@(BaseOfTheHill attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(BaseOfTheHill attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid (toAbilitySource attrs 1)
+      investigate sid iid (attrs.ability 1)
       pure l
-    Successful (Action.Investigate, _) _ (AbilitySource source 1) _ _ | isSource attrs source -> do
+    Successful (Action.Investigate, _) _ (isAbilitySource attrs 1 -> True) _ _ -> do
       divergingPaths <- getSetAsideCardsMatching $ CardWithTitle "Diverging Path"
-      for_ (nonEmpty divergingPaths) $ \ne -> do
-        pushM $ placeLocation_ =<< sample ne
+      for_ (nonEmpty divergingPaths) (sample >=> placeLocation_)
       pure l
-    _ -> BaseOfTheHill <$> runMessage msg attrs
+    _ -> BaseOfTheHill <$> liftRunMessage msg attrs

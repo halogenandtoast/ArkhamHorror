@@ -203,6 +203,9 @@ instance Targetable StoryId where
 instance Targetable SkillTestId where
   toTarget = SkillTestTarget
 
+instance Targetable ChaosTokenFace where
+  toTarget = ChaosTokenFaceTarget
+
 toActionTarget :: Target -> Target
 toActionTarget (ProxyTarget _ actionTarget) = actionTarget
 toActionTarget target = target

@@ -804,7 +804,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
   prevents (CannotPutIntoPlay matcher) = cardMatch c matcher
   prevents _ = False
   go :: forall n. HasGame n => n Bool
-  go = withDepthGuard 3 False $ do
+  go = withDepthGuard 3 False do
     attrs <- getAttrs @Investigator iid
     isBobJenkins <- case source of
       AbilitySource (InvestigatorSource "08016") 1 -> do
@@ -897,7 +897,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       handleCriteriaReplacement _ (CanPlayWithOverride (Criteria.CriteriaOverride cOverride)) = Just cOverride
       handleCriteriaReplacement m _ = m
       duringTurnWindow = mkWhen (Window.DuringTurn iid)
-      notFastWindow = any (`elem` windows') [duringTurnWindow]
+      notFastWindow = duringTurnWindow `elem` windows'
       canBecomeFast =
         CannotPlay Matcher.FastCard
           `notElem` modifiers
@@ -933,7 +933,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       doAsIfTurn = any isDuringTurnWindow windows'
 
     canEvade <- withGrantedActions iid GameSource ac do
-      if (#evade `elem` cdActions pcDef)
+      if #evade `elem` cdActions pcDef
         then
           if inFastWindow || doAsIfTurn
             then
@@ -974,15 +974,18 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NeedsAction -> True
         AuxiliaryCost _ inner -> isPlayAction inner
 
+    -- N.B. We're checking if the cost is paid here and ignoring the additional cost
+    -- not sure if this is correct, but going to see if any new issues come up (25/11/2)
     additionalCosts <-
       flip mapMaybeM (modifiers <> cardModifiers) \case
-        AdditionalCost n -> pure (Just n)
+        AdditionalCost n -> pure (guard (costStatus /= PaidCost) $> n)
         AdditionalActionCostOf match n -> do
           performedActions <- field InvestigatorActionsPerformed iid
           takenActions <- field InvestigatorActionsTaken iid
           let cardActions = if isPlayAction costStatus then #play : c.actions else c.actions
           pure
-            $ guard (any (Matcher.matchTarget takenActions performedActions match) cardActions)
+            $ guard
+              (costStatus /= PaidCost && any (Matcher.matchTarget takenActions performedActions match) cardActions)
             $> ActionCost n
         _ -> pure Nothing
 
@@ -1022,16 +1025,18 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     -- But we removed it because it conflicted with additional action costs
     let
       goActionCost = \case
-        PaidCost -> const 0 ac
+        PaidCost -> 0
         UnpaidCost NoAction -> max 0 $ subtract 1 ac
         UnpaidCost NeedsAction -> ac
         AuxiliaryCost _ inner -> goActionCost inner
       actionCost = goActionCost costStatus
 
+    -- NOTE: WE just changed this to pass False for can modify We may want to
+    -- consolidate this in a way where this is covered by the default case
     canAffordAdditionalCosts <-
-      getCanAffordCost iid (CardIdSource c.id) c.actions windows'
+      getCanAffordCost_ iid (CardIdSource c.id) c.actions windows' False
         $ fold
-        $ [ActionCost actionCost | actionCost > 0 && not inFastWindow]
+        $ [ActionCost actionCost | actionCost > 0 && not inFastWindow && costStatus /= PaidCost]
         <> additionalCosts
         <> auxiliaryCosts
         <> investigateCosts
@@ -1051,7 +1056,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         UnpaidCost NoAction -> True
         AuxiliaryCost _ inner -> goNoAction inner
         _ -> False
-      noAction = if isNothing (cdFastWindow pcDef) then goNoAction costStatus else False
+      noAction = isNothing (cdFastWindow pcDef) && goNoAction costStatus
 
     pure
       $ (cdCardType pcDef /= SkillType)
@@ -1059,13 +1064,13 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       && (none prevents modifiers)
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction)
       && ( (#evade `notElem` pcDef.actions)
-             || canEvade
-             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
-         )
+            || canEvade
+            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #evade `elem` cdActions pcDef)
+        )
       && ( (#fight `notElem` pcDef.actions)
-             || canFight
-             || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
-         )
+            || canFight
+            || (cdOverrideActionPlayableIfCriteriaMet pcDef && #fight `elem` cdActions pcDef)
+        )
       && ((#investigate `notElem` cdActions pcDef) || canInvestigate)
       && passesCriterias
       && passesLimits'

@@ -1,8 +1,9 @@
-module Arkham.Skill.Cards.Defiance (defiance, defianceEffect, Defiance (..)) where
+module Arkham.Skill.Cards.Defiance (defiance, defianceEffect) where
 
 import Arkham.ChaosToken
 import Arkham.Effect.Import
-import Arkham.Game.Helpers
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Modifier
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Skill.Cards qualified as Cards
@@ -34,19 +35,18 @@ instance RunMessage Defiance where
     _ -> Defiance <$> liftRunMessage msg attrs
 
 newtype DefianceEffect = DefianceEffect EffectAttrs
-  deriving anyclass (HasAbilities, IsEffect)
+  deriving anyclass (HasAbilities, IsEffect, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 defianceEffect :: EffectArgs -> DefianceEffect
 defianceEffect = cardEffect DefianceEffect Cards.defiance
 
-instance HasModifiersFor DefianceEffect where
-  getModifiersFor (DefianceEffect a) = modified_ a a.target [IgnoreChaosTokenEffects]
-
 instance RunMessage DefianceEffect where
   runMessage msg e@(DefianceEffect attrs) = runQueueT $ case msg of
-    ResolveChaosToken _drawnToken chaosTokenFace _ | not attrs.finished && ChaosTokenFaceTarget chaosTokenFace == attrs.target -> do
-      cancelledOrIgnoredCardOrGameEffect attrs.source
-      pure $ DefianceEffect $ finishedEffect attrs
+    ResolveChaosToken drawnToken chaosTokenFace _ | ChaosTokenFaceTarget chaosTokenFace == attrs.target -> do
+      withSkillTest \sid -> do
+        skillTestModifier sid attrs.source drawnToken IgnoreChaosTokenEffects
+        cancelledOrIgnoredCardOrGameEffect attrs.source
+      pure e
     SkillTestEnded _ -> disableReturn e
     _ -> DefianceEffect <$> liftRunMessage msg attrs

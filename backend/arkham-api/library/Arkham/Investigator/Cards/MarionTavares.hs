@@ -1,8 +1,10 @@
 module Arkham.Investigator.Cards.MarionTavares (marionTavares) where
 
+import Arkham.Ability
+import Arkham.Capability
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted
-import Arkham.Matcher
+import Arkham.Investigator.Import.Lifted hiding (PlayCard)
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Slot
 import Arkham.Strategy
 
@@ -23,7 +25,11 @@ marionTavares =
     setSlots
 
 instance HasAbilities MarionTavares where
-  getAbilities (MarionTavares _) = []
+  getAbilities (MarionTavares a) =
+    [ playerLimit PerRound
+        $ restricted a 1 (Self <> DuringTurn You <> youExist can.draw.cards)
+        $ freeReaction (PlayCard #after You (basic #event))
+    ]
 
 instance HasChaosTokenValue MarionTavares where
   getChaosTokenValue iid ElderSign (MarionTavares attrs) | iid == toId attrs = do

@@ -70,7 +70,7 @@ calculate = go
         Just (EnemyTarget eid) -> field fld eid
         _ -> pure 0
     LocationFieldCalculation lid fld -> field fld lid
-    LocationMaybeFieldCalculation lid fld -> fromMaybe 0 <$> field fld lid
+    LocationMaybeFieldCalculation lid fld -> fromMaybe 0 . join <$> fieldMay fld lid
     -- In the boundary beyond if you pass a skill test it could trigger the act
     -- to advance, during that advancement it will cause the location to be
     -- removed mid-test so we need to need to just zero out the value. We may

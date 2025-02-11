@@ -42,5 +42,5 @@ spec = describe "Pickpocketing" $ do
         applyResults
         useReaction
         chooseTarget closeCall2
-        assert $ selectNone AnyEnemy
+        assert $ selectNone $ InPlayEnemy AnyEnemy
         scenarioField ScenarioEncounterDeck `shouldReturn` Deck (onlyEncounterCards [toCard enemy])

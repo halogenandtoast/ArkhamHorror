@@ -20,7 +20,7 @@ spec = describe "Close Call (2)" $ do
     chooseTarget closeCall2
     deckSize <- scenarioFieldMap ScenarioEncounterDeck length
     deckSize `shouldBe` (1 :: Int)
-    selectCount AnyEnemy `shouldReturn` 0
+    selectCount (InPlayEnemy AnyEnemy) `shouldReturn` 0
 
   it "does not work on Elite enemies" . gameTest $ \self -> do
     withProp @"resources" 2 self

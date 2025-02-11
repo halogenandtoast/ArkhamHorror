@@ -77,6 +77,7 @@ allInvestigatorCards =
       , kohakuNarukami
       , hankSamson
       , hankSamsonB
+      , marionTavares
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -543,6 +544,14 @@ hankSamsonB =
     ("Hank Samson" <:> "The Farmhand")
     Survivor
     [Assistant, Resolute]
+
+marionTavares :: CardDef
+marionTavares =
+  investigator
+    "11001"
+    ("Marion Tavares" <:> "The Trawler")
+    Guardian
+    [Drifter, Entrepreneur]
 
 nathanielCho :: CardDef
 nathanielCho =

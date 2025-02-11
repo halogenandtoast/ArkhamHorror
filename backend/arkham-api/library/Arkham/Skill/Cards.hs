@@ -54,6 +54,7 @@ allPlayerSkillCards =
       , defiance
       , defiance2
       , desperateSearch
+      , determined
       , diabolicalLuck
       , doubleOrNothing
       , dreamParasite
@@ -885,6 +886,13 @@ wellDressed =
   (skill "10130" "Well-Dressed" [#wild] Neutral)
     { cdCardTraits = setFromList [Practiced, Fortune]
     }
+
+determined :: CardDef
+determined =
+  signature "11001"
+  $ (skill "11002" "Determined" [#wild] Neutral)
+      { cdCardTraits = setFromList [Innate]
+      }
 
 riseToTheOccasion3 :: CardDef
 riseToTheOccasion3 =

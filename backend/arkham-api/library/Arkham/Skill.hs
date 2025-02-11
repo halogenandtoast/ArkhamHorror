@@ -252,6 +252,9 @@ allSkills =
     , SomeSkillCard providential2
     , --- neutral [fhv]
       SomeSkillCard wellDressed
+    , -- The Drowned City
+      --- signature [tdc]
+      SomeSkillCard determined
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

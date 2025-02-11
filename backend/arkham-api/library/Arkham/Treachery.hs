@@ -560,6 +560,9 @@ allTreacheries =
       SomeTreacheryCard hastyRepairs
     , SomeTreacheryCard failedExperiment
     , SomeTreacheryCard wheresPa
+    , -- The Drowned City
+      -- signature [tdc]
+      SomeTreacheryCard illDoItMyself
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

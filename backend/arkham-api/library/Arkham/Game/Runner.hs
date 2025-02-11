@@ -1284,15 +1284,9 @@ runGameMessage msg g = case msg of
     pure g
   PlayCard iid card mtarget payment windows' False -> do
     investigator' <- getInvestigator iid
-    playableCards <- getPlayableCards (toAttrs investigator') Cost.PaidCost windows'
-    case find (== card) playableCards of
-      Nothing -> do
-        debugOut InfoLevel
-          $ "Tried to play "
-          <> tshow card
-          <> " but it is not in the list of playable cards"
-        pure g
-      Just _ -> do
+    isPlayable <- getIsPlayable iid (toSource iid) Cost.PaidCost windows' card
+    if isPlayable
+      then do
         mods <- getModifiers iid
         cardMods <- getModifiers (CardIdTarget $ toCardId card)
         let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
@@ -1306,6 +1300,12 @@ runGameMessage msg g = case msg of
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
             _ -> g''
         pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
+      else do
+        debugOut InfoLevel
+          $ "Tried to play "
+          <> tshow card
+          <> " but it is not in the list of playable cards"
+        pure g
   PutCardIntoPlay iid card mtarget payment windows' -> do
     let cardId = toCardId card
     case card of

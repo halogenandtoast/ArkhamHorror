@@ -1,8 +1,4 @@
-module Arkham.Event.Events.AethericCurrentYoth (
-  aethericCurrentYoth,
-  AethericCurrentYoth (..),
-)
-where
+module Arkham.Event.Events.AethericCurrentYoth (aethericCurrentYoth) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))

@@ -477,18 +477,18 @@ instance RunMessage Scenario where
               | (iid, player) <- defeatedInvestigatorPlayers
               ]
       pure x
-    ResolveChaosToken _ chaosTokenFace _ -> do
-      modifiers' <- getModifiers (ChaosTokenFaceTarget chaosTokenFace)
+    ResolveChaosToken drawnToken chaosTokenFace _ -> do
+      modifiers' <- foldMapM getModifiers [toTarget chaosTokenFace, toTarget drawnToken]
       if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
     FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-      modifiers' <- getModifiers (ChaosTokenFaceTarget $ chaosTokenFace token)
+      modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
       if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
     PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
-      modifiers' <- getModifiers (ChaosTokenFaceTarget $ chaosTokenFace token)
+      modifiers' <- foldMapM getModifiers [toTarget token.face, toTarget token]
       if any (`elem` modifiers') [IgnoreChaosTokenEffects, IgnoreChaosToken]
         then pure x
         else go
@@ -496,7 +496,7 @@ instance RunMessage Scenario where
     SetupInvestigators -> do
       result <- go
       let isTowerXVI = (== TheTowerXVI) . toTarotArcana
-      for_ (filter isTowerXVI $ concat $ toList $ attr scenarioTarotCards s) $ \card -> do
+      for_ (concatMap (filter isTowerXVI) (toList $ attr scenarioTarotCards s)) \card -> do
         lead <- getLead
         mInvestigator <- tarotInvestigator card
         let investigator = fromMaybe lead mInvestigator

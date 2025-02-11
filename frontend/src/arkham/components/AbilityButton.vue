@@ -171,7 +171,7 @@ const abilityLabel = computed(() => {
 
   return ""
 })
-const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove) && abilityLabel.value != ""
+const display = computed(() => !(isAction("Move") && ability.value.index === 102) || props.showMove)
 
 const isZeroedActionAbility = computed(() => {
   if (!ability.value) {

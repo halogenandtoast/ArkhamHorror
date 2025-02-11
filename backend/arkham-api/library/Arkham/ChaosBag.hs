@@ -537,6 +537,8 @@ instance RunMessage ChaosBag where
       activeInvestigatorId <- getActiveInvestigatorId
       push $ StartSkillTest activeInvestigatorId
       pure $ c & forceDrawL ?~ face
+    ForceChaosTokenDrawToken token -> do
+      pure $ c & forceDrawL ?~ token.face
     SetChaosTokens tokens' -> do
       tokens'' <- traverse createChaosToken tokens'
       blessTokens <- replicateM 10 $ createChaosToken #bless

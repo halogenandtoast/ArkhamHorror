@@ -35,6 +35,7 @@ import Arkham.Location.Runner as X (
   symbolLabel,
   veiled,
   veiled1,
+  withResignAction,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,

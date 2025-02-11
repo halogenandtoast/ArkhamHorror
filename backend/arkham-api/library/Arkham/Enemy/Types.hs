@@ -164,6 +164,9 @@ enemy
   -> CardBuilder EnemyId a
 enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 
+preyIsBearer :: EnemyAttrs -> EnemyAttrs
+preyIsBearer a = a { enemyPrey = BearerOf (toId a) }
+
 enemyWith
   :: (EnemyAttrs -> a)
   -> CardDef

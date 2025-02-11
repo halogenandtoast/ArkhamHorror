@@ -27,7 +27,7 @@ instance HasAbilities RavenousMyconidUnidentified where
         $ controlled a 1 (youExist $ InvestigatorWithBondedCard $ cardIs Events.uncannyGrowth) actionAbility
     , withTooltip
         "Move each growth to your resource pool, as resources. Record in your Campaign Log that \"you have classified a new species\""
-        $ restrictedAbility a 2 (exists $ be a <> AssetWithUseCount Growth (atLeast 3)) actionAbility
+        $ controlled a 2 (exists $ be a <> AssetWithUseCount Growth (atLeast 3)) actionAbility
     ]
 
 instance RunMessage RavenousMyconidUnidentified where

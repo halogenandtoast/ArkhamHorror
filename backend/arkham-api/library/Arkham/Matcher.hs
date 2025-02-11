@@ -36,6 +36,9 @@ instance Be InvestigatorId LocationMatcher where
 instance Be CardDef LocationMatcher where
   be = locationIs
 
+notAt_ :: (Not a, Locatable a) => LocationMatcher -> a
+notAt_ = not_ . at_
+
 class Locatable a where
   at_ :: LocationMatcher -> a
 
@@ -50,6 +53,9 @@ instance Locatable EnemyMatcher where
 
 instance Locatable AssetMatcher where
   at_ = AssetAt
+
+instance Locatable SkillTestMatcher where
+  at_ = SkillTestAt
 
 have :: Has matcher a => a -> matcher
 have = has

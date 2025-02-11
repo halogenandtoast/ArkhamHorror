@@ -28,6 +28,7 @@ import Arkham.Enemy.Runner as X (
   setMeta,
   spawnAtL,
   tokensL,
+  preyIsBearer,
   pattern R3,
  )
 import Arkham.GameValue as X

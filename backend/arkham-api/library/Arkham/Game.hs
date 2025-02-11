@@ -2697,7 +2697,11 @@ enemyMatcherFilter es matcher' = case matcher' of
     (>= n)
       <$> countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
   EnemyCanMove -> flip filterM es \enemy -> do
-    selectAny $ LocationCanBeEnteredBy (toId enemy) <> ConnectedFrom (locationWithEnemy $ toId enemy)
+    modifiers <- getModifiers enemy
+    if CannotMove `elem` modifiers
+      then pure False
+      else
+        selectAny $ LocationCanBeEnteredBy (toId enemy) <> ConnectedFrom (locationWithEnemy $ toId enemy)
   EnemyCanEnter locationMatcher -> do
     locations <- traverse (traverseToSnd getModifiers) =<< select locationMatcher
     flip filterM es \enemy -> do

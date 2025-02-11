@@ -814,10 +814,11 @@ instance RunMessage EnemyAttrs where
         ]
       pure a
     InitiateEnemyAttack details | details.enemy == enemyId -> do
-      mods <- getModifiers a
-      let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
-      let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
-      push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
+      whenWithoutModifier a CannotAttack do
+        mods <- getModifiers a
+        let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
+        let strategy = fromMaybe details.strategy $ listToMaybe [s | SetAttackDamageStrategy s <- mods]
+        push $ EnemyAttack $ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
       pure a
     ChangeEnemyAttackTarget eid target | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking

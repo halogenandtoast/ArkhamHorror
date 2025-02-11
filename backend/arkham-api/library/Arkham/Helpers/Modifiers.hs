@@ -122,12 +122,15 @@ hasModifier a m = (m `elem`) <$> getModifiers (toTarget a)
 semaphore :: (HasGame m, Targetable target) => target -> m () -> m ()
 semaphore target body = whenM (withoutModifier target Semaphore) body
 
-withoutModifier
-  :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
+whenWithoutModifier :: (HasGame m, Targetable a) => a -> ModifierType -> m () -> m ()
+whenWithoutModifier a m body = do
+  b <- withoutModifier a m
+  when b body
+
+withoutModifier :: (HasGame m, Targetable a) => a -> ModifierType -> m Bool
 withoutModifier a m = not <$> hasModifier a m
 
-withoutModifiers
-  :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
+withoutModifiers :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
 withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 
 toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier

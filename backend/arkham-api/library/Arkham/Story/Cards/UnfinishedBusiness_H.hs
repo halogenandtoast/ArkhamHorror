@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Story.Cards.UnfinishedBusiness_H (
   UnfinishedBusiness_H (..),
   unfinishedBusiness_H,

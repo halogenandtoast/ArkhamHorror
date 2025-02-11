@@ -946,6 +946,7 @@ data Message
   | SetLocationLabel LocationId Text
   | SetRole InvestigatorId ClassSymbol
   | ForceChaosTokenDraw ChaosTokenFace
+  | ForceChaosTokenDrawToken ChaosToken
   | SetActiveInvestigator InvestigatorId
   | SetActivePlayer PlayerId
   | SetChaosTokens [ChaosTokenFace]

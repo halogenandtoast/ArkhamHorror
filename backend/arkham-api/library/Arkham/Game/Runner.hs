@@ -1240,8 +1240,8 @@ runGameMessage msg g = case msg of
   ShuffleIntoDeck deck (EnemyTarget enemyId) -> do
     -- The Thing That Follows
     card <- field EnemyCard enemyId
-    push $ ShuffleCardsIntoDeck deck [card]
-    pure $ g & entitiesL . enemiesL %~ deleteMap enemyId
+    pushAll $ resolve (RemoveEnemy enemyId) <> [ShuffleCardsIntoDeck deck [card]]
+    pure g
   ShuffleIntoDeck deck (LocationTarget locationId) -> do
     -- The Thing That Follows
     card <- field LocationCard locationId
@@ -2438,11 +2438,11 @@ runGameMessage msg g = case msg of
     replaceCard cardId card -- We must update the IORef
     pure $ g & cardsL %~ insertMap cardId card
   After (InvestigatorEliminated iid) -> pure $ g & playerOrderL %~ filter (/= iid)
-  SetActivePlayer pid -> do
-    let investigator =
-          fromJustNote "No such player"
-            $ find (\i -> i.player == pid) (toList $ g ^. entitiesL . investigatorsL)
-    pure $ g & activeInvestigatorIdL .~ investigator.id & activePlayerIdL .~ pid
+  SetActivePlayer pid -> pure do
+    -- We might not have setup the players like (like in the TCU) and so we can't switch
+    case find (\i -> i.player == pid) (toList $ g ^. entitiesL . investigatorsL) of
+      Nothing -> g
+      Just investigator -> g & activeInvestigatorIdL .~ investigator.id & activePlayerIdL .~ pid
   SetActiveInvestigator iid -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

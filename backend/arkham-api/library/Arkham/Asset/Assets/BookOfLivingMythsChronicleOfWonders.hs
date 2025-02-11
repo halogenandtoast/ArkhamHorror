@@ -42,8 +42,7 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
       let cIn = filter ((== #curse) . (.face)) tokens
       case take 1 (if n == 1 then bIn else cIn) of
         [token] -> do
-          cancelTokenDraw
-          push $ SetChaosTokenAside token
+          push $ ForceChaosTokenDrawToken token
           checkWhen $ Window.RevealChaosToken iid token
           withSkillTest \sid -> push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
         _ -> error "invalid token"

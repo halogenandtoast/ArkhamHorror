@@ -1,3 +1,5 @@
+{- HLINT ignore "Use camelCase" -}
+
 module Arkham.Story.Cards.UnfinishedBusiness_L (unfinishedBusiness_L) where
 
 import Arkham.Ability
@@ -8,7 +10,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Import.Lifted
 
-{- HLint ignore "Use camelCase" -}
 
 newtype UnfinishedBusiness_L = UnfinishedBusiness_L StoryAttrs
   deriving anyclass (IsStory, HasModifiersFor, HasAbilities)

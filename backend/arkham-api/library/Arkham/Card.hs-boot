@@ -29,6 +29,7 @@ class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
+  removeCard :: CardId -> m ()
   clearCardCache :: m ()
 
 class (HasTraits a, HasCardDef a, HasCardCode a) => IsCard a where

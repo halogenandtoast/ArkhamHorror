@@ -373,12 +373,16 @@ handleMessageLog logRef writeChannel msg = liftIO $ do
     ClientCard t v -> GameCard t v
     ClientCardOnly i t v -> GameCardOnly i t v
     ClientTarot v -> GameTarot v
+    ClientShowDiscard v -> GameShowDiscard v
+    ClientShowUnder v -> GameShowUnder v
   toClientText = \case
     ClientText txt -> Just txt
     ClientError {} -> Nothing
     ClientCard {} -> Nothing
     ClientCardOnly {} -> Nothing
     ClientTarot {} -> Nothing
+    ClientShowDiscard {} -> Nothing
+    ClientShowUnder {} -> Nothing
 
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()

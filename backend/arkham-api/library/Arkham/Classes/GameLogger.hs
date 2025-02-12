@@ -29,6 +29,8 @@ data ClientMessage
   | ClientCard Text Value
   | ClientCardOnly PlayerId Text Value
   | ClientTarot Value
+  | ClientShowDiscard InvestigatorId
+  | ClientShowUnder InvestigatorId
 
 send :: HasGameLogger m => Text -> m ()
 send msg = do
@@ -59,6 +61,16 @@ sendTarot :: HasGameLogger m => Value -> m ()
 sendTarot msg = do
   f <- getLogger
   liftIO $ f (ClientTarot msg)
+
+sendShowDiscard :: HasGameLogger m => InvestigatorId -> m ()
+sendShowDiscard iid = do
+  f <- getLogger
+  liftIO $ f (ClientShowDiscard iid)
+
+sendShowUnder :: HasGameLogger m => InvestigatorId -> m ()
+sendShowUnder iid = do
+  f <- getLogger
+  liftIO $ f (ClientShowUnder iid)
 
 pluralize :: Int -> Text -> Text
 pluralize n a = if n == 1 then "1 " <> a else tshow n <> " " <> a <> "s"

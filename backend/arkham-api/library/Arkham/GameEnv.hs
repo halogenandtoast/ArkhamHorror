@@ -60,6 +60,10 @@ instance CardGen GameT where
     ref <- asks gameEnvGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId card (gameCards g)}, ())
+  removeCard cardId = do
+    ref <- asks gameEnvGame
+    atomicModifyIORef' ref $ \g ->
+      (g {gameCards = deleteMap cardId (gameCards g)}, ())
   clearCardCache = do
     ref <- asks gameEnvGame
     atomicModifyIORef' ref $ \g -> (g {gameCards = filterMap (not . isEncounterCard) (gameCards g)}, ())

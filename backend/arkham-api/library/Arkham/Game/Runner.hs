@@ -2562,12 +2562,12 @@ runGameMessage msg g = case msg of
   Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)
     let
-      removeCard = filter ((/= Just card) . preview _EncounterCard)
+      deleteCard = filter ((/= Just card) . preview _EncounterCard)
       g' =
         g
           & (resolvingCardL ?~ toCard card)
-          & (focusedCardsL %~ removeCard)
-          & (foundCardsL %~ Map.map removeCard)
+          & (focusedCardsL %~ deleteCard)
+          & (foundCardsL %~ Map.map deleteCard)
 
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
     -- [ALERT]: If you extend this make sure to update LetMeHandleThis
@@ -2626,12 +2626,12 @@ runGameMessage msg g = case msg of
   ResolveRevelation iid card -> do
     getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
     let
-      removeCard = filter (/= card)
+      deleteCard = filter (/= card)
       g' =
         g
           & (resolvingCardL ?~ toCard card)
-          & (focusedCardsL %~ removeCard)
-          & (foundCardsL %~ Map.map removeCard)
+          & (focusedCardsL %~ deleteCard)
+          & (foundCardsL %~ Map.map deleteCard)
     modifiers' <- getModifiers card
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'
     case toCardType card of

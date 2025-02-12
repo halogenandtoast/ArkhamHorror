@@ -33,6 +33,7 @@ import { TarotCard, tarotCardDecoder, tarotCardImage } from '@/arkham/types/Taro
 import { useCardStore } from '@/stores/cards'
 import { onBeforeRouteLeave } from 'vue-router'
 import { useDebug } from '@/arkham/debug'
+import useEmitter from '@/composeable/useEmitter'
 
 // Types
 interface GameCard {
@@ -54,6 +55,8 @@ type ServerResult =
   | { tag: "GameCard"; contents: string }
   | { tag: "GameCardOnly"; contents: string }
   | { tag: "GameUpdate"; contents: string }
+  | { tag: "GameShowDiscard"; contents: string }
+  | { tag: "GameShowUnder"; contents: string }
 
 // Setup
 export interface Props {
@@ -63,6 +66,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
+const emitter = useEmitter()
 const source = ref(`${window.location.href}/join`) // fix-syntax`
 const store = useCardStore()
 const userStore = useUserStore()
@@ -181,6 +185,13 @@ const handleResult = (result: ServerResult) => {
       return
     case "GameMessage":
       gameLog.value = Object.freeze([...gameLog.value, result.contents])
+      return
+    case "GameShowDiscard":
+      emitter.emit('showDiscards', result.contents)
+      return
+    case "GameShowUnder":
+      console.log(result);
+      emitter.emit('showUnder', result.contents)
       return
     case "GameTarot":
       if (props.spectate) return

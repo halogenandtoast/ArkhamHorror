@@ -601,21 +601,21 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   CardEnteredPlay _ card -> liftRunMessage (ObtainCard card.id) a
   ObtainCard cardId -> do
     let
-      removeCard :: IsCard c => [c] -> [c]
-      removeCard = deleteFirstMatch ((== cardId) . toCardId)
+      deleteCard :: IsCard c => [c] -> [c]
+      deleteCard = deleteFirstMatch ((== cardId) . toCardId)
     pure
       $ a
-      & (setAsideCardsL %~ removeCard)
-      & (encounterDeckL %~ withDeck removeCard)
-      & (victoryDisplayL %~ removeCard)
-      & (discardL %~ removeCard)
-      & (cardsUnderScenarioReferenceL %~ removeCard)
-      & (cardsUnderAgendaDeckL %~ removeCard)
-      & (cardsUnderActDeckL %~ removeCard)
-      & (cardsNextToActDeckL %~ removeCard)
-      & (cardsNextToAgendaDeckL %~ removeCard)
-      & (decksL . each %~ removeCard)
-      & (encounterDecksL . each %~ bimap (withDeck removeCard) removeCard)
+      & (setAsideCardsL %~ deleteCard)
+      & (encounterDeckL %~ withDeck deleteCard)
+      & (victoryDisplayL %~ deleteCard)
+      & (discardL %~ deleteCard)
+      & (cardsUnderScenarioReferenceL %~ deleteCard)
+      & (cardsUnderAgendaDeckL %~ deleteCard)
+      & (cardsUnderActDeckL %~ deleteCard)
+      & (cardsNextToActDeckL %~ deleteCard)
+      & (cardsNextToAgendaDeckL %~ deleteCard)
+      & (decksL . each %~ deleteCard)
+      & (encounterDecksL . each %~ bimap (withDeck deleteCard) deleteCard)
   PlacedUnderneath ActDeckTarget card -> do
     pure $ a & cardsUnderActDeckL %~ (card :)
   PlacedUnderneath AgendaDeckTarget card -> do

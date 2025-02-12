@@ -8,6 +8,7 @@ import Arkham.Asset.Uses
 import {-# SOURCE #-} Arkham.Calculation
 import {-# SOURCE #-} Arkham.Card (Card, CardCode)
 import Arkham.Card.CardType
+import {-# SOURCE #-} Arkham.Card.EncounterCard
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
@@ -374,6 +375,7 @@ data ModifierType
   | StartingClues Int
   | StartingHand Int
   | StartingResources Int
+  | StartsInEncounterDeck EncounterCard
   | SwarmingValue Int
   | TakeUpFewerSlots SlotType Int
   | TopCardOfDeckIsRevealed

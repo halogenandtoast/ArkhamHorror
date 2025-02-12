@@ -49,6 +49,7 @@ instance CardGen m => CardGen (SkillTestT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cid card = lift $ replaceCard cid card
+  removeCard = lift . removeCard
   clearCardCache = lift clearCardCache
 
 instance MonadRandom m => MonadRandom (SkillTestT m) where

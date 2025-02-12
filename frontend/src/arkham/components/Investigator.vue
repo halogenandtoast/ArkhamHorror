@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import Draggable from '@/components/Draggable.vue';
 import CardView from '@/arkham/components/Card.vue';
 import { useDebug } from '@/arkham/debug'
@@ -18,6 +18,7 @@ import Key from '@/arkham/components/Key.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
 import { useI18n } from 'vue-i18n';
+import useEmitter from '@/composeable/useEmitter'
 const { t } = useI18n();
 
 export interface Props {
@@ -171,9 +172,19 @@ const portraitImage = computed(() => {
 })
 
 
+const emitter = useEmitter()
 const cardsUnderneath = computed(() => props.investigator.cardsUnderneath)
 const cardsUnderneathLabel = computed(() => t('investigator.underneathCards', {count: cardsUnderneath.value.length}))
 const devoured = computed(() => props.investigator.devoured)
+
+onMounted(() => {
+  emitter.on('showUnder', (id: string) => {
+    if (id === props.investigator.id) {
+      showCardsUnderneath(new Event('click'))
+    }
+  })
+})
+
 
 const showCardsUnderneath = (e: Event) => emit('showCards', e, cardsUnderneath, "Cards Underneath", false)
 const showDevoured = (e: Event) => emit('showCards', e, devoured, "Devoured", false)

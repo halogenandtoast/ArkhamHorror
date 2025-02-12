@@ -54,6 +54,7 @@ data ModifierType
   | AdditionalActionCostOf ActionTarget Int
   | AdditionalActions Text Source Int
   | AdditionalCost Cost
+  | AdditionalPlayCostOf ExtendedCardMatcher Cost
   | AdditionalCostToCommit InvestigatorId Cost
   | AdditionalCostToEnter Cost
   | AdditionalCostToEnterMatching LocationMatcher Cost

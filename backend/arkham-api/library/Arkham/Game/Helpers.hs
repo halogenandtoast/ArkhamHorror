@@ -943,7 +943,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
         else pure False
 
     canFight <- withGrantedActions iid GameSource ac do
-      if (#fight `elem` pcDef.actions)
+      if #fight `elem` pcDef.actions
         then
           if inFastWindow || doAsIfTurn
             then
@@ -979,6 +979,9 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     additionalCosts <-
       flip mapMaybeM (modifiers <> cardModifiers) \case
         AdditionalCost n -> pure (guard (costStatus /= PaidCost) $> n)
+        AdditionalPlayCostOf match additionalCost -> do
+          isMatch <- c <=~> match
+          pure $ guard isMatch $> additionalCost
         AdditionalActionCostOf match n -> do
           performedActions <- field InvestigatorActionsPerformed iid
           takenActions <- field InvestigatorActionsTaken iid

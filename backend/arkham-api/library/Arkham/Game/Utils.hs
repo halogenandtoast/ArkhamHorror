@@ -9,6 +9,7 @@ import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
+import Arkham.Classes.Query ((<=~>))
 import Arkham.Cost qualified as Cost
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy.Types (Enemy, Field (..))
@@ -325,6 +326,9 @@ createActiveCostForCard iid card isPlayAction windows' = do
   additionalCosts <- flip mapMaybeM allModifiers $ \case
     AdditionalCost (Cost.ActionCost _) -> pure Nothing
     AdditionalCost c -> pure $ Just c
+    AdditionalPlayCostOf matcher additionalCost -> do
+      isMatch <- card <=~> matcher
+      pure $ guard isMatch $> additionalCost
     _ -> pure Nothing
 
   let

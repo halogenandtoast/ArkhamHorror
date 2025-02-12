@@ -28,7 +28,7 @@ instance RunMessage Unrelenting1 where
             [ TargetLabel
               (ChaosTokenFaceTarget $ token.face)
               [ SealChaosToken token
-              , SealedChaosToken token (toTarget attrs)
+              , SealedChaosToken token (Just iid) (toTarget attrs)
               ]
             | token <- filter ((/= #autofail) . (.face)) chaosTokensInBag
             ]

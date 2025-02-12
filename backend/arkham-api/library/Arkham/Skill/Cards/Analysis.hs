@@ -27,9 +27,9 @@ instance HasAbilities Analysis where
 
 instance RunMessage Analysis where
   runMessage msg s@(Analysis attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       whenJustM getSkillTestInvestigator \iid' -> do
-        cancelChaosToken (attrs.ability 1) token
+        cancelChaosToken (attrs.ability 1) iid token
         pushAll
           [ ReturnChaosTokens [token]
           , UnfocusChaosTokens

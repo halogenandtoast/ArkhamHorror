@@ -179,9 +179,9 @@ instance RunMessage AssetAttrs where
           pure
             $ a {assetCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i assetCustomizations}
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
-    SealedChaosToken token (isTarget a -> True) -> do
+    SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
-    SealedChaosToken token _ -> do
+    SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)

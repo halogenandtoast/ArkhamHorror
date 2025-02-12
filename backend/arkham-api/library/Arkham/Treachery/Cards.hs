@@ -97,6 +97,7 @@ allPlayerTreacheryCards =
       , finalRhapsody
       , finalRhapsodyAdvanced
       , finePrint
+      , glimpseTheVoid
       , greed
       , hardTimes
       , hastyRepairs
@@ -2697,6 +2698,10 @@ illDoItMyself =
 dreamsOfTheFlood :: CardDef
 dreamsOfTheFlood =
   (weakness "11006" "Dreams of the Flood") {cdCardTraits = setFromList [Omen, Endtimes]}
+
+glimpseTheVoid :: CardDef
+glimpseTheVoid =
+  (weakness "11010" "Glimpse the Void") {cdCardTraits = setFromList [Blunder, Insight]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

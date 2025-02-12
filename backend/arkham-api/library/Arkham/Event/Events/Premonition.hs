@@ -31,9 +31,9 @@ instance RunMessage Premonition where
         , RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) RemoveChaosTokens
         ]
       pure e
-    RequestedChaosTokens (isSource attrs -> True) _ ts -> do
+    RequestedChaosTokens (isSource attrs -> True) miid ts -> do
       pushAll
-        $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t (toTarget attrs)]) ts
+        $ concatMap (\t -> [SealChaosToken t, SealedChaosToken t miid (toTarget attrs)]) ts
         <> [ResetChaosTokens (toSource attrs)]
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do

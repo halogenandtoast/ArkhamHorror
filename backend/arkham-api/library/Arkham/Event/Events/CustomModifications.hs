@@ -112,7 +112,7 @@ instance RunMessage CustomModifications where
       pure e
     UseCardAbility iid (isSource attrs -> True) 1 (revealedChaosTokens -> [token]) _ -> do
       let source = toAbilitySource attrs 1
-      cancelChaosToken source token
+      cancelChaosToken source iid token
       pushAll
         [ ReturnChaosTokens [token]
         , UnfocusChaosTokens

@@ -13,7 +13,7 @@ counterspell2 = event Counterspell2 Cards.counterspell2
 
 instance RunMessage Counterspell2 where
   runMessage msg e@(Counterspell2 attrs) = runQueueT $ case msg of
-    InvestigatorPlayEvent _ (is attrs -> True) _ (getChaosToken -> token) _ -> do
-      cancelChaosToken attrs token
+    InvestigatorPlayEvent iid (is attrs -> True) _ (getChaosToken -> token) _ -> do
+      cancelChaosToken attrs iid token
       pure e
     _ -> Counterspell2 <$> liftRunMessage msg attrs

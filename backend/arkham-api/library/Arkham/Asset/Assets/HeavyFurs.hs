@@ -24,7 +24,7 @@ instance HasAbilities HeavyFurs where
 instance RunMessage HeavyFurs where
   runMessage msg a@(HeavyFurs attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      cancelChaosToken (attrs.ability 1) token
+      cancelChaosToken (attrs.ability 1) iid token
       pushAll
         [ ReturnChaosTokens [token]
         , UnfocusChaosTokens

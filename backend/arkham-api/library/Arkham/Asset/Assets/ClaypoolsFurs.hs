@@ -22,7 +22,7 @@ instance HasAbilities ClaypoolsFurs where
 instance RunMessage ClaypoolsFurs where
   runMessage msg a@(ClaypoolsFurs attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> t) _ -> do
-      cancelChaosToken (attrs.ability 1) t
+      cancelChaosToken (attrs.ability 1) iid t
       pushAll
         [ ReturnChaosTokens [t]
         , UnfocusChaosTokens

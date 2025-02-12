@@ -1250,7 +1250,7 @@ instance RunMessage ActiveCost where
           card <- sourceToCard ability.source
           pushAll
             $ [whenActivateAbilityWindow | not isForced]
-            <> [SealedChaosToken token (toTarget card) | token <- c.sealedChaosTokens]
+            <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
             <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
             <> afterMsgs
             <> [afterActivateAbilityWindow | not isForced]
@@ -1263,11 +1263,11 @@ instance RunMessage ActiveCost where
           pushAll
             $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]
             <> [PlayCard iid card Nothing c.payments c.windows False]
-            <> [SealedChaosToken token (toTarget card) | token <- c.sealedChaosTokens]
+            <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]
             <> [afterActivateAbilityWindow | isPlayAction == IsPlayAction]
-        ForCost card -> pushAll [SealedChaosToken token (toTarget card) | token <- c.sealedChaosTokens]
+        ForCost card -> pushAll [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
         ForAdditionalCost _ -> pure ()
       push PaidAllCosts
       pure c

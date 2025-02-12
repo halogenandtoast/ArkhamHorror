@@ -39,9 +39,9 @@ instance HasModifiersFor StrongArmed1 where
 
 instance RunMessage StrongArmed1 where
   runMessage msg s@(StrongArmed1 attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
       whenJustM getSkillTestInvestigator \iid' -> do
-        cancelChaosToken (attrs.ability 1) token
+        cancelChaosToken (attrs.ability 1) iid token
         pushAll
           [ ReturnChaosTokens [token]
           , UnfocusChaosTokens

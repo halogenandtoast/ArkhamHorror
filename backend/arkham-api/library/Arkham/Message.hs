@@ -1018,7 +1018,7 @@ data Message
   | ClearFound Zone
   | UnfocusChaosTokens
   | SealChaosToken ChaosToken
-  | SealedChaosToken ChaosToken Target
+  | SealedChaosToken ChaosToken (Maybe InvestigatorId) Target
   | SetChaosTokenAside ChaosToken -- see: Favor of the Moon (1)
   | UnsealChaosToken ChaosToken
   | ChaosTokenIgnored InvestigatorId Source ChaosToken
@@ -1139,10 +1139,11 @@ instance FromJSON Message where
           Right (Left (iid, cardDef :: CardDef)) -> pure $ AddCampaignCardToDeck iid ShuffleIn (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
           Right (Right (iid, shouldShuffleIn, card :: Card)) -> pure $ AddCampaignCardToDeck iid shouldShuffleIn card
       "SealedChaosToken" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        contents <- (Left <$> o .: "contents") <|> (Right . Left <$> o .: "contents") <|> (Right . Right <$> o .: "contents")
         case contents of
-          Left (token, card :: Card) -> pure $ SealedChaosToken token (toTarget card)
-          Right (token, target) -> pure $ SealedChaosToken token target
+          Left (token, card :: Card) -> pure $ SealedChaosToken token Nothing (toTarget card)
+          Right (Left (token, target)) -> pure $ SealedChaosToken token Nothing target
+          Right (Right (token, miid, target)) -> pure $ SealedChaosToken token miid target
       "ExcessHealHorror" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

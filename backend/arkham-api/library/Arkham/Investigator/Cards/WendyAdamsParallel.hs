@@ -54,7 +54,7 @@ instance RunMessage WendyAdamsParallel where
           chooseOneM iid do
             targets inBag \token -> do
               push $ SealChaosToken token
-              push $ SealedChaosToken token (toTarget eid)
+              push $ SealedChaosToken token (Just iid) (toTarget eid)
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i
@@ -67,7 +67,7 @@ instance RunMessage WendyAdamsParallel where
           chooseUpToNM iid (length revealedTokens) "Done sealing tokens" do
             targets revealedTokens \token -> do
               push $ SealChaosToken token
-              push $ SealedChaosToken token (toTarget eid)
+              push $ SealedChaosToken token (Just iid) (toTarget eid)
           push $ UnfocusChaosTokens
         _ -> pure ()
       pure i

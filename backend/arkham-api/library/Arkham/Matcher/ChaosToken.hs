@@ -12,6 +12,9 @@ import Data.Aeson.TH
 import Data.Text qualified as T
 import GHC.OverloadedLabels
 
+pattern NonSymbol :: ChaosTokenMatcher
+pattern NonSymbol = NotChaosToken IsSymbol
+
 data ChaosTokenMatcher
   = WithNegativeModifier
   | OnlyInBag ChaosTokenMatcher

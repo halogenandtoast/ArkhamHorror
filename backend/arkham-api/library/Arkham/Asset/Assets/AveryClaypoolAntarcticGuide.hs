@@ -29,8 +29,8 @@ instance HasAbilities AveryClaypoolAntarcticGuide where
 
 instance RunMessage AveryClaypoolAntarcticGuide where
   runMessage msg a@(AveryClaypoolAntarcticGuide attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      cancelChaosToken (attrs.ability 1) token
+    UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
+      cancelChaosToken (attrs.ability 1) iid token
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       getSkillTestInvestigator >>= traverse_ drawAnotherChaosToken
       pure a

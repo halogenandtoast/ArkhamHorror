@@ -2,9 +2,15 @@ module Arkham.Investigator.Cards.MarionTavares (marionTavares) where
 
 import Arkham.Ability
 import Arkham.Capability
+import Arkham.Card
+import Arkham.Draw.Types
+import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (PlayCard)
+import Arkham.Investigator.Projection ()
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
 import Arkham.Slot
 import Arkham.Strategy
 
@@ -41,7 +47,19 @@ instance RunMessage MarionTavares where
     ElderSignEffect iid | iid == attrs.id -> do
       search iid ElderSign iid [fromTopOfDeck 3] (basic #event) (DrawFound iid 1)
       pure i
-    ResetGame -> do
-      result <- liftRunMessage msg attrs
-      pure $ MarionTavares $ setSlots result
+    ResetGame -> MarionTavares . setSlots <$> liftRunMessage msg attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      drawCardsEdit iid (attrs.ability 1) 1 \c ->
+        c {cardDrawAndThen = Just (DoStep 1 msg)}
+      pure i
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card) _) -> do
+      cards <-
+        filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) ws)
+          . filterCards (#event <> not_ (CardWithTitle card.title))
+          =<< iid.hand
+      when (notNull cards) do
+        chooseOneM iid do
+          labeled "Do not play another event" nothing
+          targets cards (playCardPayingCost iid)
+      pure i
     _ -> MarionTavares <$> liftRunMessage msg attrs

@@ -90,6 +90,7 @@ allPlayerTreacheryCards =
       , doomed
       , drawingTheSign
       , dreadCurse
+      , dreamsOfTheFlood
       , failedExperiment
       , falseAwakening
       , falseAwakeningPointOfNoReturn
@@ -2692,6 +2693,10 @@ wheresPa =
 illDoItMyself :: CardDef
 illDoItMyself =
   (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
+
+dreamsOfTheFlood :: CardDef
+dreamsOfTheFlood =
+  (weakness "11006" "Dreams of the Flood") {cdCardTraits = setFromList [Omen, Endtimes]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

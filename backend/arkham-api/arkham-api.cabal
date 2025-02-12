@@ -565,6 +565,7 @@ library
       Arkham.Asset.Assets.BookOfPsalms
       Arkham.Asset.Assets.BookOfShadows1
       Arkham.Asset.Assets.BookOfShadows3
+      Arkham.Asset.Assets.BookOfVerseUnCommonplaceBook
       Arkham.Asset.Assets.BorrowedTime3
       Arkham.Asset.Assets.BountyContracts
       Arkham.Asset.Assets.BoxingGloves
@@ -1308,6 +1309,7 @@ library
       Arkham.Asset.Cards.Starter
       Arkham.Asset.Cards.TheCircleUndone
       Arkham.Asset.Cards.TheDreamEaters
+      Arkham.Asset.Cards.TheDrownedCity
       Arkham.Asset.Cards.TheDunwichLegacy
       Arkham.Asset.Cards.TheFeastOfHemlochVale
       Arkham.Asset.Cards.TheForgottenAge
@@ -1460,6 +1462,7 @@ library
       Arkham.Effect.Effects.GenericEffect
       Arkham.Effect.Effects.MaxEffect
       Arkham.Effect.Effects.OnRevealChaosTokenEffect
+      Arkham.Effect.Effects.OnSucceedByEffect
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Effect.Effects.WindowModifierEffect
@@ -2371,6 +2374,7 @@ library
       Arkham.Investigator.Cards.LeoAnderson
       Arkham.Investigator.Cards.LilyChen
       Arkham.Investigator.Cards.LolaHayes
+      Arkham.Investigator.Cards.LuciusGalloway
       Arkham.Investigator.Cards.LukeRobinson
       Arkham.Investigator.Cards.MandyThompson
       Arkham.Investigator.Cards.MarieLambeau
@@ -3708,6 +3712,7 @@ library
       Arkham.Treachery.Cards.DreamersCurse
       Arkham.Treachery.Cards.DreamlandsEclipse
       Arkham.Treachery.Cards.DreamsOfRlyeh
+      Arkham.Treachery.Cards.DreamsOfTheFlood
       Arkham.Treachery.Cards.DrivenToMadness
       Arkham.Treachery.Cards.EagerForDeath
       Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion

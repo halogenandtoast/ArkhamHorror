@@ -564,6 +564,7 @@ data Message
     CreateWindowModifierEffect EffectWindow (EffectMetadata Window Message) Source Target
   | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
   | CreateOnRevealChaosTokenEffect SkillTestId ChaosTokenMatcher Source Target [Message]
+  | CreateOnSucceedByEffect SkillTestId ValueMatcher Source Target [Message]
   | CreateEndOfTurnEffect Source InvestigatorId [Message]
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement

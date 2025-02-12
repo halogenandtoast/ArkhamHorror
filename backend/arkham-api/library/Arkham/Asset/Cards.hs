@@ -9,6 +9,7 @@ import Arkham.Asset.Cards.Standalone as X
 import Arkham.Asset.Cards.Starter as X
 import Arkham.Asset.Cards.TheCircleUndone as X
 import Arkham.Asset.Cards.TheDreamEaters as X
+import Arkham.Asset.Cards.TheDrownedCity as X
 import Arkham.Asset.Cards.TheDunwichLegacy as X
 import Arkham.Asset.Cards.TheFeastOfHemlochVale as X
 import Arkham.Asset.Cards.TheForgottenAge as X
@@ -122,6 +123,7 @@ allPlayerAssetCards =
       , bookOfPsalms
       , bookOfShadows1
       , bookOfShadows3
+      , bookOfVerseUnCommonplaceBook
       , borrowedTime3
       , bountyContracts
       , boxingGloves

@@ -438,7 +438,8 @@ addCampaignCardToDeck
 addCampaignCardToDeck investigator shouldShuffleIn card = do
   push . Msg.AddCampaignCardToDeck (asId investigator) shouldShuffleIn =<< fetchCard card
 
-addCampaignCardToDeckChoice :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
+addCampaignCardToDeckChoice
+  :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
 addCampaignCardToDeckChoice choices shouldShuffleIn card = do
   lead <- getLeadPlayer
   card' <- fetchCard card
@@ -1565,6 +1566,18 @@ failOnReveal
   -> attrs
   -> m ()
 failOnReveal matchr sid attrs = onRevealChaosTokenEffect sid matchr attrs attrs failSkillTest
+
+onSucceedByEffect
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> ValueMatcher
+  -> source
+  -> target
+  -> QueueT Message m ()
+  -> m ()
+onSucceedByEffect sid matchr source target f = do
+  msgs <- evalQueueT f
+  push $ Msg.onSucceedByEffect sid matchr source target msgs
 
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()

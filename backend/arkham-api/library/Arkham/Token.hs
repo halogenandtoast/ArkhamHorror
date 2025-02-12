@@ -21,6 +21,7 @@ data Token
   | Evidence
   | Growth
   | Horror
+  | Inspiration
   | Key
   | Lead
   | Leyline

@@ -1008,6 +1008,8 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
     InvestigatorWithMentalTrauma -> pure $ filter ((> 0) . attr investigatorMentalTrauma) as
+    DiscoveredCluesThis historyProjection -> flip filterM as $ \i -> do
+      (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
     InvestigatorWithAnyKey -> flip filterM as $ \i ->

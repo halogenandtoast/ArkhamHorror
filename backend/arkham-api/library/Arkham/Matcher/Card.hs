@@ -268,6 +268,9 @@ instance IsLabel "tool" CardMatcher where
 instance IsLabel "weapon" CardMatcher where
   fromLabel = CardWithTrait Weapon
 
+instance IsLabel "firearm" CardMatcher where
+  fromLabel = CardWithTrait Firearm
+
 instance IsLabel "guardian" CardMatcher where
   fromLabel = CardWithClass Guardian
 

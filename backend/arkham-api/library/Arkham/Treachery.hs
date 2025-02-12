@@ -565,6 +565,7 @@ allTreacheries =
       SomeTreacheryCard illDoItMyself
     , SomeTreacheryCard dreamsOfTheFlood
     , SomeTreacheryCard glimpseTheVoid
+    , SomeTreacheryCard confiscation
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

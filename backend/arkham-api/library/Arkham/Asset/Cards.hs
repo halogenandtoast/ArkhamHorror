@@ -804,6 +804,7 @@ allPlayerAssetCards =
       , vaultOfKnowledge
       , venturer
       , versatile2
+      , violaCase
       , virgilGray
       , vowOfDrzytelech
       , wavewornIdol

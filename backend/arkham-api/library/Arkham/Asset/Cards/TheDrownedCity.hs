@@ -21,3 +21,12 @@ oculaObscuraEsotericEyepiece =
     , cdDeckRestrictions = [Signature "11007", Signature "11008"]
     , cdSlots = [#accessory]
     }
+
+violaCase :: CardDef
+violaCase =
+  signature "11011"
+    $ (asset "11012" "\"Viola\" Case" 2 Neutral)
+      { cdCardTraits = setFromList [Item, Illicit]
+      , cdSkills = [#willpower, #combat, #agility, #wild]
+      , cdSlots = [#accessory]
+      }

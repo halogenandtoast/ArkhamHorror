@@ -1273,6 +1273,7 @@ library
       Arkham.Asset.Assets.VaultOfKnowledge
       Arkham.Asset.Assets.Venturer
       Arkham.Asset.Assets.Versatile2
+      Arkham.Asset.Assets.ViolaCase
       Arkham.Asset.Assets.VirgilGray
       Arkham.Asset.Assets.VirgilGrayTrulyInspired
       Arkham.Asset.Assets.VowOfDrzytelech
@@ -2384,6 +2385,7 @@ library
       Arkham.Investigator.Cards.MarieLambeau
       Arkham.Investigator.Cards.MarionTavares
       Arkham.Investigator.Cards.MarkHarrigan
+      Arkham.Investigator.Cards.MichaelMcGlen
       Arkham.Investigator.Cards.MinhThiPhan
       Arkham.Investigator.Cards.MontereyJack
       Arkham.Investigator.Cards.MontereyJackParallel
@@ -3671,6 +3673,7 @@ library
       Arkham.Treachery.Cards.ClawsOfSteam
       Arkham.Treachery.Cards.CloseWatch
       Arkham.Treachery.Cards.CollapsingReality
+      Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.ConspiracyOfBlood
       Arkham.Treachery.Cards.ConspiracyOfDeepOnes
       Arkham.Treachery.Cards.Corrosion

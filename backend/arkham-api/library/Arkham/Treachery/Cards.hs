@@ -77,6 +77,7 @@ allPlayerTreacheryCards =
       , calledByTheMists
       , caughtRedHanded
       , chronophobia
+      , confiscation
       , coverUp
       , coverUpAdvanced
       , crisisOfFaith
@@ -2702,6 +2703,10 @@ dreamsOfTheFlood =
 glimpseTheVoid :: CardDef
 glimpseTheVoid =
   (weakness "11010" "Glimpse the Void") {cdCardTraits = setFromList [Blunder, Insight]}
+
+confiscation :: CardDef
+confiscation =
+  (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

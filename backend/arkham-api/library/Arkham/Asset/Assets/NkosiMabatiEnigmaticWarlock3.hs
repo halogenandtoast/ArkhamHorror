@@ -49,7 +49,7 @@ instance RunMessage NkosiMabatiEnigmaticWarlock3 where
     UseCardAbility iid (isSource attrs -> True) 2 (getChaosToken -> token) _ -> do
       for_ (toResult @(Maybe ChaosTokenFace) attrs.meta) $ \face -> do
         let source = toAbilitySource attrs 2
-        cancelChaosToken source token
+        cancelChaosToken source iid token
         pushAll
           [ CancelEachNext source [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
           , ReturnChaosTokens [token]

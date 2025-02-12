@@ -132,6 +132,8 @@ allInvestigators =
       , SomeInvestigatorCard hankSamson
       , SomeInvestigatorCard marionTavares
       , SomeInvestigatorCard luciusGalloway
+      , SomeInvestigatorCard agathaCrane_Seeker
+      , SomeInvestigatorCard agathaCrane_Mystic
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

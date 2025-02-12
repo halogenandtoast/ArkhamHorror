@@ -40,9 +40,9 @@ instance RunMessage SkillAttrs where
             $ a
               { skillCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i a.customizations
               }
-    SealedChaosToken token (isTarget a -> True) -> do
+    SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
-    SealedChaosToken token _ -> do
+    SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
     UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> do

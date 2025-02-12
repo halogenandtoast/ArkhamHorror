@@ -48,7 +48,7 @@ instance RunMessage ShardsOfTheVoid3 where
           skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
           pushAll
             [ SealChaosToken token
-            , SealedChaosToken token (toTarget attrs)
+            , SealedChaosToken token (Just iid) (toTarget attrs)
             ]
       pure a
     _ -> ShardsOfTheVoid3 <$> liftRunMessage msg attrs

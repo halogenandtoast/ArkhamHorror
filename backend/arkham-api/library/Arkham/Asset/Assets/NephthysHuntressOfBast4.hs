@@ -41,9 +41,9 @@ getRemovedBlessTokens = foldMap \case
 
 instance RunMessage NephthysHuntressOfBast4 where
   runMessage msg a@(NephthysHuntressOfBast4 attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getRemovedBlessTokens -> tokens) _ -> do
       for_ tokens $ \token ->
-        pushAll [SealChaosToken token, SealedChaosToken token $ toTarget attrs]
+        pushAll [SealChaosToken token, SealedChaosToken token (Just iid) $ toTarget attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
@@ -53,12 +53,12 @@ instance RunMessage NephthysHuntressOfBast4 where
       chooseOrRunOne iid
         $ [Label "Release 3 {bless} tokens" $ map UnsealChaosToken blessTokens]
         <> [ Label
-            "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location"
-            [ ReturnChaosTokensToPool blessTokens
-            , Msg.chooseOrRunOne
-                player
-                [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 2) 2] | enemy <- enemies]
-            ]
+               "Return 3 {bless} tokens to the pool to do 2 damage to an enemy at your location"
+               [ ReturnChaosTokensToPool blessTokens
+               , Msg.chooseOrRunOne
+                   player
+                   [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 2) 2] | enemy <- enemies]
+               ]
            | notNull enemies
            ]
       pure a

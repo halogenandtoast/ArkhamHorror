@@ -36,11 +36,11 @@ instance HasAbilities FluteOfTheOuterGods4 where
 
 instance RunMessage FluteOfTheOuterGods4 where
   runMessage msg a@(FluteOfTheOuterGods4 attrs) = runQueueT $ case msg of
-    PaidForCardCost _ card payment | toCardId card == toCardId attrs -> do
+    PaidForCardCost iid card payment | toCardId card == toCardId attrs -> do
       let x = totalResourcePayment payment
       curseTokens <- take x <$> select (ChaosTokenFaceIs #curse)
       for_ curseTokens $ \token -> do
-        pushAll [SealChaosToken token, SealedChaosToken token (toTarget attrs)]
+        pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget attrs)]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveableEnemies <-

@@ -19,8 +19,8 @@ serpentsOfYigAdvanced =
 
 instance RunMessage SerpentsOfYigAdvanced where
   runMessage msg e@(SerpentsOfYigAdvanced attrs) = runQueueT $ case msg of
-    Revelation _ source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source -> do
       selectEach (IncludeSealed $ oneOf [#eldersign, #bless]) \chaosToken -> do
-        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (toTarget attrs)]
+        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (Just iid) (toTarget attrs)]
       pure e
     _ -> SerpentsOfYigAdvanced <$> liftRunMessage msg attrs

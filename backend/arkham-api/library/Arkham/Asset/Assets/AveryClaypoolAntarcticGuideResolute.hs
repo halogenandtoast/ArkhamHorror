@@ -35,7 +35,7 @@ instance HasAbilities AveryClaypoolAntarcticGuideResolute where
 instance RunMessage AveryClaypoolAntarcticGuideResolute where
   runMessage msg a@(AveryClaypoolAntarcticGuideResolute attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      cancelChaosToken (attrs.ability 1) token
+      cancelChaosToken (attrs.ability 1) iid token
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       chooseOneM iid do
         labeled "Reveal a new chaos token" do

@@ -1,3 +1,4 @@
+{- HLINT ignore "Use camelCase" -}
 module Arkham.Investigator.Cards where
 
 import Arkham.Prelude
@@ -79,6 +80,8 @@ allInvestigatorCards =
       , hankSamsonB
       , marionTavares
       , luciusGalloway
+      , agathaCrane_Seeker
+      , agathaCrane_Mystic
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -561,6 +564,22 @@ luciusGalloway =
     ("Lucius Galloway" <:> "The Poet")
     Seeker
     [Scholar, Dreamer]
+
+agathaCrane_Seeker :: CardDef
+agathaCrane_Seeker =
+  investigator
+    "11007"
+    ("Agatha Crane" <:> "The Parapsychologist")
+    Seeker
+    [Miskatonic, Scholar]
+
+agathaCrane_Mystic :: CardDef
+agathaCrane_Mystic =
+  investigator
+    "11008"
+    ("Agatha Crane" <:> "The Parapsychologist")
+    Mystic
+    [Miskatonic, Scholar]
 
 nathanielCho :: CardDef
 nathanielCho =

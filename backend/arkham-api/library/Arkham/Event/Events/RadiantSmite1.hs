@@ -37,10 +37,10 @@ instance RunMessage RadiantSmite1 where
         labeled "Use {willpower}" $ push $ withSkillType #willpower fight
         labeled "Use {combat}" $ push fight
       pure e
-    ResolveAmounts _iid (getChoiceAmount "Bless Tokens" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "Bless Tokens" -> n) (isTarget attrs -> True) -> do
       blessedTokens <- take n <$> select (ChaosTokenFaceIs #bless)
       for_ blessedTokens $ \blessedToken -> do
-        pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (toTarget attrs)]
+        pushAll [SealChaosToken blessedToken, SealedChaosToken blessedToken (Just iid) (toTarget attrs)]
       pure e
     Msg.EnemyDefeated _ _ (isSource attrs -> True) _ -> do
       pure $ RadiantSmite1 $ attrs & sealedChaosTokensL %~ filter ((/= #bless) . (.face))

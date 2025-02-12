@@ -23,10 +23,10 @@ serpentsOfYig =
 
 instance RunMessage SerpentsOfYig where
   runMessage msg e@(SerpentsOfYig attrs) = case msg of
-    Revelation _ source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source -> do
       chaosTokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
       let mElderSignToken = find ((== ElderSign) . chaosTokenFace) chaosTokens
       for_ mElderSignToken $ \chaosToken -> do
-        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (toTarget attrs)]
+        pushAll [SealChaosToken chaosToken, SealedChaosToken chaosToken (Just iid) (toTarget attrs)]
       pure e
     _ -> SerpentsOfYig <$> runMessage msg attrs

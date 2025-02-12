@@ -18,6 +18,6 @@ instance RunMessage DayOfReckoning where
       selectWhenNotNull AnyAgenda \agendas -> do
         chooseOrRunOne iid $ targetLabels agendas $ only . Msg.attachTreachery attrs
         selectOne (ChaosTokenFaceIs #eldersign) >>= traverse_ \token -> do
-          pushAll [SealChaosToken token, SealedChaosToken token (toTarget attrs)]
+          pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget attrs)]
       pure t
     _ -> DayOfReckoning <$> liftRunMessage msg attrs

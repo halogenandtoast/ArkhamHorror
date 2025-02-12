@@ -131,9 +131,9 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     pure $ a & beingPaidForL .~ True
   CardEnteredPlay _ card | toCardId a == toCardId card -> do
     pure $ a & beingPaidForL .~ False
-  SealedChaosToken token (isTarget a -> True) -> do
+  SealedChaosToken token _ (isTarget a -> True) -> do
     pure $ a & sealedChaosTokensL %~ (token :)
-  SealedChaosToken token _ -> do
+  SealedChaosToken token _ _ -> do
     pure $ a & sealedChaosTokensL %~ filter (/= token)
   ReturnChaosTokens tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)

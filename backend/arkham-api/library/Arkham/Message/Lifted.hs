@@ -1907,14 +1907,16 @@ cancelledOrIgnoredCardOrGameEffect source = checkAfter $ Window.CancelledOrIgnor
 cancelChaosToken
   :: (ReverseQueue (t m), HasQueue Message m, MonadTrans t, Sourceable source)
   => source
+  -> InvestigatorId
   -> ChaosToken
   -> t m ()
-cancelChaosToken source token = do
+cancelChaosToken source iid token = do
   lift $ Msg.cancelChaosToken token
   push
     $ CancelEachNext
       (toSource source)
       [CheckWindowMessage, DrawChaosTokenMessage, RevealChaosTokenMessage]
+  push $ ChaosTokenCanceled iid (toSource source) token
   cancelledOrIgnoredCardOrGameEffect source
 
 cancelCardDraw
@@ -2318,6 +2320,9 @@ cancelSkillTestEffects source = do
     when canCancelSkillTestEffects do
       skillTestModifier sid source sid CancelEffects
       cancelledOrIgnoredCardOrGameEffect source
+
+sealChaosToken :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
+sealChaosToken iid target token = pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget target)]
 
 resolveChaosTokens
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [ChaosToken] -> m ()

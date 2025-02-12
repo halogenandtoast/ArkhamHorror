@@ -1058,6 +1058,7 @@ allAssets =
     , -- The Drowned City
       --- signature [tdc]
       SomeAssetCard bookOfVerseUnCommonplaceBook
+    , SomeAssetCard oculaObscuraEsotericEyepiece
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

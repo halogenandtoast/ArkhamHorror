@@ -64,7 +64,7 @@ instance RunMessage FatherMateoParallel where
       focusChaosTokens tokens \unfocus -> do
         chooseTargetM iid tokens \t -> do
           push $ SealChaosToken t
-          push $ SealedChaosToken t (toTarget iid')
+          push $ SealedChaosToken t (Just iid) (toTarget iid')
           push unfocus
       pure i
     UseCardAbility iid (isSource attrs -> True) 2 (wouldRevealChaosToken -> iid') _ -> do

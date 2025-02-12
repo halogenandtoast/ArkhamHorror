@@ -992,6 +992,7 @@ library
       Arkham.Asset.Assets.OccultLexicon3
       Arkham.Asset.Assets.OccultReliquary3
       Arkham.Asset.Assets.OccultScraps
+      Arkham.Asset.Assets.OculaObscuraEsotericEyepiece
       Arkham.Asset.Assets.Ofuda
       Arkham.Asset.Assets.OldBookOfLore
       Arkham.Asset.Assets.OldBookOfLore3
@@ -2334,6 +2335,9 @@ library
       Arkham.Investigate.Types
       Arkham.Investigator
       Arkham.Investigator.Cards
+      Arkham.Investigator.Cards.AgathaCrane
+      Arkham.Investigator.Cards.AgathaCrane_Mystic
+      Arkham.Investigator.Cards.AgathaCrane_Seeker
       Arkham.Investigator.Cards.AgnesBaker
       Arkham.Investigator.Cards.AgnesBakerParallel
       Arkham.Investigator.Cards.AkachiOnyele
@@ -3751,6 +3755,7 @@ library
       Arkham.Treachery.Cards.GiftOfMadnessPity
       Arkham.Treachery.Cards.GlimpseOfTheUnderworld
       Arkham.Treachery.Cards.GlimpseTheUnspeakable
+      Arkham.Treachery.Cards.GlimpseTheVoid
       Arkham.Treachery.Cards.GlowingEyes
       Arkham.Treachery.Cards.GraspingHands
       Arkham.Treachery.Cards.GraveLight

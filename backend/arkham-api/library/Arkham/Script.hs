@@ -323,9 +323,26 @@ chooseEnemy
 chooseEnemy = chooseAmong
 
 elderSignEffect
-  :: (?this :: a, Entity a, Is (EntityAttrs a) InvestigatorId) => ((?this :: a, ?source :: Source, ?you :: InvestigatorId, ?msg :: Message, ?windows :: [Window], ?ability :: Source) => ScriptT a ()) -> ScriptT a ()
+  :: (?this :: a, Entity a, Is (EntityAttrs a) InvestigatorId)
+  => ( ( ?this :: a
+       , ?source :: Source
+       , ?you :: InvestigatorId
+       , ?msg :: Message
+       , ?windows :: [Window]
+       , ?ability :: Source
+       )
+       => ScriptT a ()
+     )
+  -> ScriptT a ()
 elderSignEffect body = onMessage matchHandler \case
-  msg@(ResolveChaosToken _ ElderSign iid) | is (toAttrs this) iid -> let ?you = iid; ?source = toSource ElderSign; ?msg = msg; ?windows = []; ?ability = (toSource ElderSign); in body
+  msg@(ResolveChaosToken _ ElderSign iid)
+    | is (toAttrs this) iid ->
+        let ?you = iid
+            ?source = toSource ElderSign
+            ?msg = msg
+            ?windows = []
+            ?ability = (toSource ElderSign)
+         in body
   _ -> pure ()
  where
   matchHandler (ResolveChaosToken _ ElderSign iid) = is (toAttrs this) iid
@@ -427,14 +444,17 @@ discardTokens
   => Token -> Int -> ScriptT a ()
 discardTokens t n = push $ RemoveTokens (toSource ?source) (toTarget $ toAttrs ?this) t n
 
-cancelChaosToken :: Sourceable source => source -> ChaosToken -> ScriptT a ()
-cancelChaosToken s token = Script $ lift $ lift $ lift $ Msg.cancelChaosToken (toSource s) token
+cancelChaosToken
+  :: (?you :: InvestigatorId, Sourceable source) => source -> ChaosToken -> ScriptT a ()
+cancelChaosToken s token = Script $ lift $ lift $ lift $ Msg.cancelChaosToken (toSource s) ?you token
 
 onPlay
   :: (?this :: a, Entity a, Is (EntityAttrs a) EventId, HasField "windows" (EntityAttrs a) [Window])
   => ((?you :: InvestigatorId, ?source :: Source, ?windows :: [Window]) => ScriptT a ()) -> ScriptT a ()
 onPlay handler = onMessage matchHandler \case
-  PlayThisEvent iid eid | is (toAttrs ?this) eid -> let ?you = iid; ?source = EventSource eid; ?windows = (toAttrs ?this).windows; in handler
+  PlayThisEvent iid eid
+    | is (toAttrs ?this) eid ->
+        let ?you = iid; ?source = EventSource eid; ?windows = (toAttrs ?this).windows in handler
   _ -> pure ()
  where
   matchHandler (PlayThisEvent _ eid) = is (toAttrs ?this) eid

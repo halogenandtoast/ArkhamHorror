@@ -120,6 +120,7 @@ allPlayerTreacheryCards =
       , panic
       , paranoia
       , poisoned
+      , prophecyOfTheEnd
       , psychosis
       , rationalThought
       , realityAcid5U21
@@ -358,6 +359,7 @@ allEncounterTreacheryCards =
       , possessionTraitorous
       , primordialGateway
       , prismaticPhenomenon
+      , prophecyOfTheEnd
       , psychicPull
       , psychopompsSong
       , psychopompsSongUnionAndDisillusion
@@ -2707,6 +2709,15 @@ glimpseTheVoid =
 confiscation :: CardDef
 confiscation =
   (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
+
+prophecyOfTheEnd :: CardDef
+prophecyOfTheEnd =
+  (weakness "11016" "Prophecy of the End")
+    { cdCardTraits = setFromList [Omen, Endtimes]
+    , cdKeywords = setFromList [Keyword.Surge]
+    , cdCardInSearchEffects = True
+    , cdCardType = TreacheryType
+    }
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

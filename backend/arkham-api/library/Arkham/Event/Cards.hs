@@ -17,6 +17,7 @@ import Arkham.Event.Cards.TheForgottenAge as X
 import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
+import Arkham.Event.Cards.TheDrownedCity as X
 import Arkham.Prelude
 
 allPlayerEventCards :: Map CardCode CardDef
@@ -314,6 +315,7 @@ allPlayerEventCards =
       , preposterousSketches
       , preposterousSketches2
       , protectingTheAnirniq2
+      , psychicSensitivity
       , pushedToTheLimit
       , putrescentRot
       , quantumFlux

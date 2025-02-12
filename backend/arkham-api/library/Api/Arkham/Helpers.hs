@@ -69,6 +69,8 @@ data ApiResponse
   | GameCard {title :: Text, card :: Aeson.Value}
   | GameCardOnly {player :: PlayerId, title :: Text, card :: Aeson.Value}
   | GameTarot Aeson.Value
+  | GameShowDiscard InvestigatorId
+  | GameShowUnder InvestigatorId
   deriving stock Generic
   deriving anyclass ToJSON
 
@@ -107,6 +109,10 @@ instance CardGen GameAppT where
     ref <- asks appGame
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = Map.insert cardId card (gameCards g)}, ())
+  removeCard cardId = do
+    ref <- asks appGame
+    atomicModifyIORef' ref $ \g ->
+      (g {gameCards = Map.delete cardId (gameCards g)}, ())
   clearCardCache = do
     ref <- asks appGame
     atomicModifyIORef' ref $ \g -> (g {gameCards = Map.filter (not . isEncounterCard) (gameCards g)}, ())

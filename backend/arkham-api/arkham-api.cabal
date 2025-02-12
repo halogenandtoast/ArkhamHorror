@@ -1830,6 +1830,7 @@ library
       Arkham.Event.Cards.Starter
       Arkham.Event.Cards.TheCircleUndone
       Arkham.Event.Cards.TheDreamEaters
+      Arkham.Event.Cards.TheDrownedCity
       Arkham.Event.Cards.TheDunwichLegacy
       Arkham.Event.Cards.TheFeastOfHemlochVale
       Arkham.Event.Cards.TheForgottenAge
@@ -2127,6 +2128,7 @@ library
       Arkham.Event.Events.PreposterousSketches
       Arkham.Event.Events.PreposterousSketches2
       Arkham.Event.Events.ProtectingTheAnirniq2
+      Arkham.Event.Events.PsychicSensitivity
       Arkham.Event.Events.PushedToTheLimit
       Arkham.Event.Events.PutrescentRot
       Arkham.Event.Events.QuantumFlux
@@ -3862,6 +3864,7 @@ library
       Arkham.Treachery.Cards.PossessionTraitorous
       Arkham.Treachery.Cards.PrimordialGateway
       Arkham.Treachery.Cards.PrismaticPhenomenon
+      Arkham.Treachery.Cards.ProphecyOfTheEnd
       Arkham.Treachery.Cards.PsychicPull
       Arkham.Treachery.Cards.PsychopompsSong
       Arkham.Treachery.Cards.PsychopompsSongUnionAndDisillusion

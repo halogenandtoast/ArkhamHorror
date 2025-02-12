@@ -637,6 +637,9 @@ allEvents =
     , --- netural [fhv]
       SomeEventCard bideYourTime
     , SomeEventCard dawnStar1
+    , -- The Drowned City
+      --- signature [tdc]
+      SomeEventCard psychicSensitivity
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

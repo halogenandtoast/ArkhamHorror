@@ -206,6 +206,10 @@ instance CardGen TestAppT where
     ref <- gets game
     atomicModifyIORef' ref $ \g ->
       (g {gameCards = insertMap cardId card (gameCards g)}, ())
+  removeCard cardId = do
+    ref <- gets game
+    atomicModifyIORef' ref $ \g ->
+      (g {gameCards = deleteMap cardId (gameCards g)}, ())
   clearCardCache = do
     ref <- gets game
     atomicModifyIORef' ref $ \g -> (g {gameCards = filterMap (not . isEncounterCard) (gameCards g)}, ())

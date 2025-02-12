@@ -104,6 +104,7 @@ class MonadRandom m => CardGen m where
   genEncounterCard :: HasCardDef a => a -> m EncounterCard
   genPlayerCard :: HasCardDef a => a -> m PlayerCard
   replaceCard :: CardId -> Card -> m ()
+  removeCard :: CardId -> m ()
   clearCardCache :: m ()
 
 instance (CardGen m, Monoid w) => CardGen (WriterT w m) where
@@ -111,30 +112,35 @@ instance (CardGen m, Monoid w) => CardGen (WriterT w m) where
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
+  removeCard = lift . removeCard
 
 instance CardGen m => CardGen (MaybeT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
+  removeCard = lift . removeCard
 
 instance CardGen m => CardGen (StateT s m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
+  removeCard = lift . removeCard
 
 instance CardGen m => CardGen (ReaderT r m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
+  removeCard = lift . removeCard
 
 instance CardGen m => CardGen (QueueT msg m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cardId card = lift $ replaceCard cardId card
   clearCardCache = lift clearCardCache
+  removeCard = lift . removeCard
 
 overPlayerCard :: (PlayerCard -> PlayerCard) -> Card -> Card
 overPlayerCard f = \case

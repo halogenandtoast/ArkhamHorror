@@ -184,6 +184,6 @@ returnToBody :: Investigator -> Investigator
 returnToBody i =
   i
     `handleInvestigator` ( \(BodyOfAYithian (_ `With` meta)) -> case fromJSON (originalBody meta) of
-                            Success x -> x
-                            _ -> error "Investigator mind is too corrupted to return to their body"
+                             Success x -> x
+                             _ -> error "Investigator mind is too corrupted to return to their body"
                          )

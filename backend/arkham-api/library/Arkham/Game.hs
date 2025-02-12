@@ -4172,6 +4172,9 @@ instance Query ExtendedCardMatcher where
         iids <- select who
         cards <- concatMapM (field InvestigatorCardsUnderneath) iids
         pure $ filter (`elem` cards) cs
+      CardSharesTitleWith inner -> do
+        titles <- map toTitle <$> select inner
+        pure $ filter ((`elem` titles) . toTitle) cs
       CardIsBeneathAsset assetMatcher -> do
         assets <- select assetMatcher
         cards <- concatMapM (field AssetCardsUnderneath) assets

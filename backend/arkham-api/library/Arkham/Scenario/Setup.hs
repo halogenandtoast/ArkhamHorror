@@ -15,6 +15,7 @@ import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)
+import Arkham.Helpers.Modifiers (getModifiers, ModifierType(..))
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -26,11 +27,14 @@ import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, getLead, hasB
 import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
+import Arkham.Target
 import Arkham.Token (Token, addTokens)
 import Control.Lens
 import Control.Monad.Random (MonadRandom (..))
-import Control.Monad.State
+import Control.Monad.State.Strict
 import Data.List.NonEmpty qualified as NE
+import Data.List (nubBy)
+import Data.Function (on)
 
 class SampleOneOf a where
   type Sampled a
@@ -76,6 +80,7 @@ instance CardGen m => CardGen (ScenarioBuilderT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cid = lift . replaceCard cid
+  removeCard = lift . removeCard
   clearCardCache = lift clearCardCache
 
 instance HasQueue Message m => HasQueue Message (ScenarioBuilderT m) where
@@ -88,7 +93,7 @@ instance HasGame m => HasGame (ScenarioBuilderT m) where
 instance ReverseQueue m => ReverseQueue (ScenarioBuilderT m)
 
 runScenarioSetup
-  :: MonadRandom m
+  :: (MonadRandom m, HasGame m)
   => (ScenarioAttrs -> b)
   -> ScenarioAttrs
   -> ScenarioBuilderT m ()
@@ -100,10 +105,12 @@ runScenarioSetup f attrs body =
       (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
       (ScenarioBuilderState attrs [])
 
-shuffleEncounterDeck :: (MonadRandom m, MonadState ScenarioBuilderState m) => m ()
+shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do
+  mods <- getModifiers ScenarioTarget
+  let extraCards = nubBy ((==) `on` toCardId) [card | StartsInEncounterDeck card <- mods]
   encounterDeck <- use (attrsL . encounterDeckL)
-  shuffledEncounterDeck <- withDeckM shuffleM encounterDeck
+  shuffledEncounterDeck <- withDeckM shuffleM (Deck $ unDeck encounterDeck <> extraCards)
   attrsL . encounterDeckL .= shuffledEncounterDeck
 
 clearCards :: MonadState ScenarioBuilderState m => m ()

@@ -590,6 +590,16 @@ michaelMcGlen =
     Rogue
     [Criminal, Hunter]
 
+gloriaGoldberg :: CardDef
+gloriaGoldberg =
+  withAlternate "98019"
+  $ investigator
+    "11014"
+    ("Gloria Goldberg" <:> "The Writer")
+    Mystic
+    [Clairvoyant]
+
+
 nathanielCho :: CardDef
 nathanielCho =
   investigator
@@ -637,14 +647,6 @@ subject5U21 =
     ("Subject 5U-21" <:> "The Anomaly")
     Neutral
     [Manifold]
-
-gloriaGoldberg :: CardDef
-gloriaGoldberg =
-  investigator
-    "98019"
-    ("Gloria Goldberg" <:> "The Writer")
-    Mystic
-    [Clairvoyant]
 
 daisyWalkerParallel :: CardDef
 daisyWalkerParallel =

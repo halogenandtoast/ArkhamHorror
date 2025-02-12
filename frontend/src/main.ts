@@ -14,6 +14,7 @@ import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
 import { faSearch, faList, faImage, faAngleDown, faUndo, faTrash, faEye, faCopy, faExternalLink, faRefresh } from '@fortawesome/free-solid-svg-icons'
 import * as VueI18n from 'vue-i18n'
 import messages from '@/locales/messages'
+import mitt from 'mitt';
 
 const currentLanguage = localStorage.getItem('language') ?? 'en'
 
@@ -29,6 +30,7 @@ library.add(faSearch, faList, faImage, faAngleDown, faExpeditedssl, faUndo, faTr
 
 const pinia = createPinia()
 const vfm = createVfm()
+const emitter = mitt()
 
 const app = createApp(App).
   use(router).
@@ -38,5 +40,7 @@ const app = createApp(App).
   use(vfm).
   use(i18n).
   component("font-awesome-icon", FontAwesomeIcon)
+
+app.config.globalProperties.emitter = emitter
 
 app.mount('#app')

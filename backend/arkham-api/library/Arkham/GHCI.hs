@@ -16,4 +16,5 @@ instance CardGen GHCI where
     cardId <- GHCI $ unsafeMakeCardId <$> getRandom
     pure $ lookupPlayerCard (toCardDef a) cardId
   replaceCard _ _ = pure ()
+  removeCard _ = pure ()
   clearCardCache = pure ()

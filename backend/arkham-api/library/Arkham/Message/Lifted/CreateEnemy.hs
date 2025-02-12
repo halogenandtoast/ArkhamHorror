@@ -24,6 +24,7 @@ instance CardGen m => CardGen (CreateEnemyT m) where
   genEncounterCard = lift . genEncounterCard
   genPlayerCard = lift . genPlayerCard
   replaceCard cId card = lift $ replaceCard cId card
+  removeCard = lift . removeCard
   clearCardCache = lift clearCardCache
 
 instance HasQueue Message m => HasQueue Message (CreateEnemyT m) where

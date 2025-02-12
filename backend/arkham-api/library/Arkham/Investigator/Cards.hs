@@ -82,6 +82,7 @@ allInvestigatorCards =
       , luciusGalloway
       , agathaCrane_Seeker
       , agathaCrane_Mystic
+      , michaelMcGlen
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -580,6 +581,14 @@ agathaCrane_Mystic =
     ("Agatha Crane" <:> "The Parapsychologist")
     Mystic
     [Miskatonic, Scholar]
+
+michaelMcGlen :: CardDef
+michaelMcGlen =
+  investigator
+    "11011"
+    ("Michael McGlen" <:> "The Gangster")
+    Rogue
+    [Criminal, Hunter]
 
 nathanielCho :: CardDef
 nathanielCho =

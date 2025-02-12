@@ -1059,6 +1059,7 @@ allAssets =
       --- signature [tdc]
       SomeAssetCard bookOfVerseUnCommonplaceBook
     , SomeAssetCard oculaObscuraEsotericEyepiece
+    , SomeAssetCard violaCase
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

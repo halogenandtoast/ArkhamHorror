@@ -563,6 +563,7 @@ allTreacheries =
     , -- The Drowned City
       -- signature [tdc]
       SomeTreacheryCard illDoItMyself
+    , SomeTreacheryCard dreamsOfTheFlood
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

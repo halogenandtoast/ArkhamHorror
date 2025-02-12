@@ -690,6 +690,16 @@ onRevealChaosTokenEffect
   -> Message
 onRevealChaosTokenEffect sid matchr source target msgs = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msgs
 
+onSucceedByEffect
+  :: (Sourceable source, Targetable target)
+  => SkillTestId
+  -> ValueMatcher
+  -> source
+  -> target
+  -> [Message]
+  -> Message
+onSucceedByEffect sid matchr source target msgs = CreateOnSucceedByEffect sid matchr (toSource source) (toTarget target) msgs
+
 uiEffect
   :: (HasGame m, Sourceable source, Targetable target) => source -> target -> UIModifier -> m Message
 uiEffect source target modifier = createWindowModifierEffect EffectUI source target [UIModifier modifier]

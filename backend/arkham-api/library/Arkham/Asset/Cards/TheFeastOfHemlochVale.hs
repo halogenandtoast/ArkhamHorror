@@ -9,7 +9,7 @@ fluxStabilizerInactive :: CardDef
 fluxStabilizerInactive =
   signature "10004"
     $ permanent
-    $ (asset "10005" ("Flux Stablizer" <:> "Inactive") 0 Guardian)
+    $ (asset "10005" ("Flux Stablizer" <:> "Inactive") 0 Neutral)
       { cdCardTraits = setFromList [Item, Tool, Science]
       , cdUnique = True
       , cdBondedWith = [(1, "10006"), (1, "10007")]
@@ -20,7 +20,7 @@ fluxStabilizerActive :: CardDef
 fluxStabilizerActive =
   signature "10004"
     $ permanent
-    $ (asset "10005b" ("Flux Stablizer" <:> "Active") 0 Guardian)
+    $ (asset "10005b" ("Flux Stablizer" <:> "Active") 0 Neutral)
       { cdCardTraits = setFromList [Item, Tool, Science]
       , cdUnique = True
       , cdBondedWith = [(1, "10006"), (1, "10007")]

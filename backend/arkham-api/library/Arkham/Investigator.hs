@@ -131,6 +131,7 @@ allInvestigators =
       , SomeInvestigatorCard kohakuNarukami
       , SomeInvestigatorCard hankSamson
       , SomeInvestigatorCard marionTavares
+      , SomeInvestigatorCard luciusGalloway
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock

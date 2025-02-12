@@ -603,6 +603,10 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createOnRevealChaosTokenEffect sid matchr source target message
     push $ CreatedEffect effectId Nothing source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  CreateOnSucceedByEffect sid matchr source target message -> do
+    (effectId, effect) <- createOnSucceedByEffect sid matchr source target message
+    push $ CreatedEffect effectId Nothing source target
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateEndOfTurnEffect source iid message -> do
     (effectId, effect) <- createEndOfTurnEffect source iid message
     push $ CreatedEffect effectId Nothing source (toTarget iid)

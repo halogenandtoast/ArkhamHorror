@@ -241,6 +241,20 @@ createChaosTokenEffect effectMetadata source token = do
   eid <- getRandom
   pure (eid, buildChaosTokenEffect eid effectMetadata source token)
 
+createOnSucceedByEffect
+  :: (MonadRandom m, HasGame m)
+  => SkillTestId
+  -> ValueMatcher
+  -> Source
+  -> Target
+  -> [Message]
+  -> m (EffectId, Effect)
+createOnSucceedByEffect sid matchr source target messages = do
+  eid <- getRandom
+  mCardId <- toCardId <$$> sourceToMaybeCard source
+  let effect = buildOnSucceedByEffect eid sid matchr source target messages
+  pure (eid, updateAttrs effect \a -> a {effectCardId = mCardId})
+
 createOnRevealChaosTokenEffect
   :: (MonadRandom m, HasGame m)
   => SkillTestId
@@ -321,6 +335,11 @@ buildChaosTokenEffect
   :: EffectId -> EffectMetadata Window Message -> Source -> ChaosToken -> Effect
 buildChaosTokenEffect eid metadata source token =
   Effect $ chaosTokenEffect' eid metadata source token
+
+buildOnSucceedByEffect
+  :: EffectId -> SkillTestId -> ValueMatcher -> Source -> Target -> [Message] -> Effect
+buildOnSucceedByEffect eid sid matchr source token msgs =
+  Effect $ onSucceedByEffect' eid sid matchr source token msgs
 
 buildOnRevealChaosTokenEffect
   :: EffectId -> SkillTestId -> ChaosTokenMatcher -> Source -> Target -> [Message] -> Effect
@@ -533,6 +552,7 @@ allEffects =
     , ("wmode", SomeEffect windowModifierEffect)
     , ("tokef", SomeEffect chaosTokenEffect)
     , ("ontok", SomeEffect onRevealChaosTokenEffect)
+    , ("onsuc", SomeEffect onSucceedByEffect)
     , ("eotef", SomeEffect endOfTurnEffect)
     , ("surge", SomeEffect surgeEffect)
     , ("maxef", SomeEffect maxEffect)

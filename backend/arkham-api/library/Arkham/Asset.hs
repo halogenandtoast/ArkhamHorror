@@ -1055,6 +1055,9 @@ allAssets =
     , SomeAssetCard backInjury
     , SomeAssetCard theSilverMoth
     , SomeAssetCard vowOfDrzytelech
+    , -- The Drowned City
+      --- signature [tdc]
+      SomeAssetCard bookOfVerseUnCommonplaceBook
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

@@ -78,6 +78,7 @@ allInvestigatorCards =
       , hankSamson
       , hankSamsonB
       , marionTavares
+      , luciusGalloway
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -552,6 +553,14 @@ marionTavares =
     ("Marion Tavares" <:> "The Trawler")
     Guardian
     [Drifter, Entrepreneur]
+
+luciusGalloway :: CardDef
+luciusGalloway =
+  investigator
+    "11004"
+    ("Lucius Galloway" <:> "The Poet")
+    Seeker
+    [Scholar, Dreamer]
 
 nathanielCho :: CardDef
 nathanielCho =

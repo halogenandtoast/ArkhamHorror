@@ -9,6 +9,7 @@ import Arkham.Card.CardCode
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Damage
+import Arkham.History.Types
 import Arkham.Id
 import Arkham.Key
 import Arkham.Matcher.Asset
@@ -154,6 +155,7 @@ data InvestigatorMatcher
   | InvestigatorWithAnyFailedSkillTestsThisTurn
   | InvestigatorWithPhysicalTrauma
   | InvestigatorWithMentalTrauma
+  | DiscoveredCluesThis HistoryType
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher

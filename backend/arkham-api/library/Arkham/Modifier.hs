@@ -383,6 +383,7 @@ data ModifierType
   | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace
+  | UpgradeTargetIfAble Target
   | UpkeepResources Int
   | UseEncounterDeck ScenarioEncounterDeckKey -- The Wages of Sin
   | UseSkillInPlaceOf SkillType SkillType -- oh no, why are these similar, this let's you choose

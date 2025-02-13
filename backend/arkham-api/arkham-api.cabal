@@ -2130,6 +2130,7 @@ library
       Arkham.Event.Events.PreparedForTheWorst2
       Arkham.Event.Events.PreposterousSketches
       Arkham.Event.Events.PreposterousSketches2
+      Arkham.Event.Events.PrimedForAction
       Arkham.Event.Events.ProtectingTheAnirniq2
       Arkham.Event.Events.PsychicSensitivity
       Arkham.Event.Events.PushedToTheLimit
@@ -3176,6 +3177,7 @@ library
       Arkham.Message.Lifted.Placement
       Arkham.Message.Lifted.Queue
       Arkham.Message.Lifted.SkillTest
+      Arkham.Message.Lifted.Upgrade
       Arkham.Message.Type
       Arkham.Modifier
       Arkham.ModifierData

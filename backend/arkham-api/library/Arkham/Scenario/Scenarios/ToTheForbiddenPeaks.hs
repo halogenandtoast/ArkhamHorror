@@ -205,7 +205,7 @@ instance RunMessage ToTheForbiddenPeaks where
           elderThings <- select $ NearestEnemyTo iid $ withTrait Trait.ElderThing
           chooseTargetM iid elderThings \elderThing -> do
             moveTowardsMatching ElderThing elderThing (LocationWithId loc)
-            forTarget elderThing $ push msg
+            forTarget elderThing msg
         _ -> pure ()
       pure s
     ForTarget (EnemyTarget eid) (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) -> do

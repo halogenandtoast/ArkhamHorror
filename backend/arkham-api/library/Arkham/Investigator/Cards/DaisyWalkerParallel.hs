@@ -42,7 +42,7 @@ instance RunMessage DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       tomeAssets <- select $ assetControlledBy iid <> #tome
-      forTargets tomeAssets (push msg)
+      forTargets tomeAssets msg
       pure i
     ForTargets [] (UseThisAbility _iid (isSource attrs -> True) 1) -> pure i
     ForTargets ts msg'@(UseCardAbility iid (isSource attrs -> True) 1 windows' _) -> do
@@ -63,7 +63,7 @@ instance RunMessage DaisyWalkerParallel where
           for_ (eachWithRest canTrigger) \((tome, actions), rest) -> do
             targeting tome do
               chooseOne iid $ map toLabel actions
-              forTargets (map fst rest) (push msg')
+              forTargets (map fst rest) msg'
       pure i
     ElderSignEffect iid | attrs `is` iid -> do
       chooseOneM iid do

@@ -39,7 +39,7 @@ instance RunMessage Refine where
           chooseOneM iid do
             for_ availableCustomizations \customization -> do
               labeled (tshow customization) do
-                forTarget attrs $ push $ IncreaseCustomization iid card.cardCode customization []
+                forTarget attrs $ IncreaseCustomization iid card.cardCode customization []
         _ -> pure ()
       pure e
     ForTarget (isTarget attrs -> True) msg'@(IncreaseCustomization iid cardCode customization choices) -> do

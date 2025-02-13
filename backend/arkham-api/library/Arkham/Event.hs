@@ -640,6 +640,8 @@ allEvents =
     , -- The Drowned City
       --- signature [tdc]
       SomeEventCard psychicSensitivity
+    , --- guardian [tdc]
+      SomeEventCard primedForAction
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

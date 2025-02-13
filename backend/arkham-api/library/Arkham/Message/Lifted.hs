@@ -834,6 +834,7 @@ chooseOneToHandle
   -> source
   -> [target]
   -> m ()
+chooseOneToHandle _ _ [] = pure ()
 chooseOneToHandle iid source targets =
   Arkham.Message.Lifted.chooseOne iid
     $ targetLabels targets
@@ -2178,16 +2179,25 @@ discardCard
   -> m ()
 discardCard investigator source card = push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
 
-forTarget :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> m ()
+forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =
-  evalQueueT f >>= \case
+  evalQueueT (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
 
-forTargets :: (ReverseQueue m, Targetable target) => [target] -> QueueT Message m () -> m ()
+class ReverseQueue m => LiftMessage m a where
+  liftMessage :: a -> QueueT Message m ()
+
+instance ReverseQueue m => LiftMessage m (QueueT Message m ()) where
+  liftMessage = id
+
+instance ReverseQueue m => LiftMessage m Message where
+  liftMessage = push
+
+forTargets :: (LiftMessage m body, Targetable target) => [target] -> body -> m ()
 forTargets targets f =
-  evalQueueT f >>= \case
+  evalQueueT (liftMessage f) >>= \case
     [] -> pure ()
     [msg] -> push $ ForTargets (map toTarget targets) msg
     msgs -> push $ ForTargets (map toTarget targets) (Run msgs)

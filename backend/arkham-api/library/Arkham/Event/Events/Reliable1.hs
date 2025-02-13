@@ -1,15 +1,14 @@
-module Arkham.Event.Events.Reliable1 (reliable1, Reliable1 (..)) where
+module Arkham.Event.Events.Reliable1 (reliable1) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait
 
@@ -31,15 +30,9 @@ instance HasModifiersFor Reliable1 where
     pure [AnySkillValue 1]
 
 instance RunMessage Reliable1 where
-  runMessage msg e@(Reliable1 attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- select $ assetControlledBy iid <> AssetWithTrait Item
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
-          | asset <- assets
-          ]
+  runMessage msg e@(Reliable1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      assets <- getUpgradeTargets iid $ assetControlledBy iid <> AssetWithTrait Item
+      chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
-    _ -> Reliable1 <$> runMessage msg attrs
+    _ -> Reliable1 <$> liftRunMessage msg attrs

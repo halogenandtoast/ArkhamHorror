@@ -1,15 +1,10 @@
-module Arkham.Event.Events.Trusted (
-  trusted,
-  Trusted (..),
-) where
+module Arkham.Event.Events.Trusted (trusted) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 
 newtype Trusted = Trusted EventAttrs
@@ -20,20 +15,13 @@ trusted :: EventCard Trusted
 trusted = event Trusted Cards.trusted
 
 instance HasModifiersFor Trusted where
-  getModifiersFor (Trusted a) = case eventAttachedTarget a of
-    Just (AssetTarget aid) -> modified_ a aid [HealthModifier 1, SanityModifier 1]
-    _ -> pure mempty
+  getModifiersFor (Trusted a) = for_ a.attachedTo.asset \aid ->
+    modified_ a aid [HealthModifier 1, SanityModifier 1]
 
 instance RunMessage Trusted where
-  runMessage msg e@(Trusted attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- select $ assetControlledBy iid <> AllyAsset
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel asset [PlaceEvent eid $ AttachedToAsset asset Nothing]
-          | asset <- assets
-          ]
+  runMessage msg e@(Trusted attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      assets <- getUpgradeTargets iid $ assetControlledBy iid <> AllyAsset
+      chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
-    _ -> Trusted <$> runMessage msg attrs
+    _ -> Trusted <$> liftRunMessage msg attrs

@@ -224,6 +224,9 @@ instance IsLabel "any" CardMatcher where
 instance IsLabel "charm" CardMatcher where
   fromLabel = CardWithTrait Charm
 
+instance IsLabel "upgrade" CardMatcher where
+  fromLabel = CardWithTrait Upgrade
+
 instance IsLabel "talent" CardMatcher where
   fromLabel = CardWithTrait Talent
 

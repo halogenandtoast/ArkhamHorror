@@ -190,7 +190,7 @@ instance RunMessage TheWitchingHour where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of
         Skull | isEasyStandard attrs -> discardTopOfEncounterDeck iid Skull n
-        Tablet -> afterSkillTest $ forTarget attrs $ push msg
+        Tablet -> afterSkillTest $ forTarget attrs msg
         ElderThing -> do
           enemies <-
             select $ enemy_ $ withTrait Witch <> #exhausted <> at_ (orConnected $ locationWithInvestigator iid)

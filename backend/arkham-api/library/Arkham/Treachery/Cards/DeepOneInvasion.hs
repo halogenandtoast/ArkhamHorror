@@ -29,7 +29,7 @@ instance RunMessage DeepOneInvasion where
 
       for_ mpos \(Pos x y) ->
         for_ [0 .. (abs x - 1)] \x' ->
-          for_ (viewGrid (Pos (-x') y) grid) \(GridLocation _ loc) -> forTarget loc $ push msg
+          for_ (viewGrid (Pos (-x') y) grid) \(GridLocation _ loc) -> forTarget loc msg
       pure t
     ForTarget (LocationTarget lid) (Revelation iid (isSource attrs -> True)) -> do
       discardUntilFirst

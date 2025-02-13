@@ -31,11 +31,11 @@ instance RunMessage RunningOutOfTime where
       if null locations
         then do
           crashSite <- selectJust $ locationIs Locations.crashSite
-          forTarget crashSite $ push msg
+          forTarget crashSite msg
         else do
           lead <- getLead
           chooseOrRunOneM lead do
-            targets locations \lid -> forTarget lid $ push msg
+            targets locations \lid -> forTarget lid msg
 
       pure a
     ForTarget (LocationTarget lid) (AdvanceAgenda (isSide B attrs -> True)) -> do

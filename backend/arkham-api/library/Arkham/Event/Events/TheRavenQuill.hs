@@ -1,4 +1,4 @@
-module Arkham.Event.Events.TheRavenQuill (theRavenQuill, TheRavenQuill (..)) where
+module Arkham.Event.Events.TheRavenQuill (theRavenQuill) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
@@ -12,6 +12,7 @@ import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_, modified_, modifyEachMap)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, getSkillTestSource)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)
@@ -49,21 +50,21 @@ instance HasAbilities TheRavenQuill where
         $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
     ]
       <> [ controlledAbility
-          a
-          2
-          ( exists
-              $ AssetControlledBy You
-              <> oneOf (AssetWithUses <$> [Charge, Secret])
-              <> not_ (assetWithAttachedEvent a.id)
-          )
-          $ FastAbility (exhaust a)
+             a
+             2
+             ( exists
+                 $ AssetControlledBy You
+                 <> oneOf (AssetWithUses <$> [Charge, Secret])
+                 <> not_ (assetWithAttachedEvent a.id)
+             )
+             $ FastAbility (exhaust a)
          | a `hasCustomization` EnergySap
          ]
       <> [ controlledAbility
-          a
-          3
-          (exists $ AssetControlledBy You <> #exhausted <> not_ (assetWithAttachedEvent a.id))
-          $ SilentForcedAbility (ActivateAbility #after You $ AbilityOnAsset $ assetWithAttachedEvent a.id)
+             a
+             3
+             (exists $ AssetControlledBy You <> #exhausted <> not_ (assetWithAttachedEvent a.id))
+             $ SilentForcedAbility (ActivateAbility #after You $ AbilityOnAsset $ assetWithAttachedEvent a.id)
          | a `hasCustomization` InterwovenInk && a.ready
          ]
 
@@ -72,7 +73,7 @@ instance RunMessage TheRavenQuill where
     PlayThisEvent iid (is attrs -> True) -> do
       -- Handles EndlessInkwell
       let titles = [t | ChosenCard t <- concatMap snd (toList attrs.customizations)]
-      assets <- select $ assetControlledBy iid <> oneOf (AssetWithTitle <$> titles)
+      assets <- getUpgradeTargets iid $ assetControlledBy iid <> oneOf (AssetWithTitle <$> titles)
 
       defaultChoose <-
         evalQueueT

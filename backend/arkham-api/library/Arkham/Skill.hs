@@ -255,6 +255,7 @@ allSkills =
     , -- The Drowned City
       --- signature [tdc]
       SomeSkillCard determined
+    , SomeSkillCard grimResolve
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

@@ -2296,6 +2296,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , extendedCardMatch card cardMatcher
             ]
         _ -> noMatch
+    Matcher.DiscardedFromHand timing whoMatcher sourceMatcher cardMatcher ->
+      guardTiming timing $ \case
+        Window.DiscardedFromHand who source' card ->
+          andM
+            [ matchWho iid who whoMatcher
+            , sourceMatches source' sourceMatcher
+            , extendedCardMatch card cardMatcher
+            ]
+        _ -> noMatch
     Matcher.AssetWouldBeDiscarded timing assetMatcher -> guardTiming timing $ \case
       Window.WouldBeDiscarded (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch

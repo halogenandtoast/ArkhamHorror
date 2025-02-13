@@ -1064,6 +1064,8 @@ allAssets =
       SomeAssetCard theBookOfWarSunTzusLegacy
     , SomeAssetCard crowbar
     , SomeAssetCard remingtonModel1858
+    , --- seeker [tdc]
+      SomeAssetCard dialOfAncientsUnidentified
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

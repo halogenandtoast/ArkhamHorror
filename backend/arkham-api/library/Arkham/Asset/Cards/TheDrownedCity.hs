@@ -57,3 +57,14 @@ remingtonModel1858 =
     , cdUses = uses Ammo 2
     , cdSlots = [#hand]
     }
+
+dialOfAncientsUnidentified :: CardDef
+dialOfAncientsUnidentified =
+  (asset "11035" ("Dial of Ancients" <:> "Unidentified") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSkills = [#intellect]
+    , cdUses = uses Charge 0
+    , cdSlots = [#accessory]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdUnique = True
+    }

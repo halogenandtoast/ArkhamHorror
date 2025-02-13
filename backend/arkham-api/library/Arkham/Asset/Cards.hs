@@ -204,6 +204,7 @@ allPlayerAssetCards =
       , dendromorphosis
       , detectivesColt1911s
       , devilFriendOrFoe2
+      , dialOfAncientsUnidentified
       , digDeep
       , digDeep2
       , digDeep4

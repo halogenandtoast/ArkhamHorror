@@ -61,6 +61,7 @@ data CampaignLogKey
   | Teachings1
   | Teachings2
   | Teachings3
+  | YouHaveCalculatedTheDayOfReckoning
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveToJSON defaultOptions ''CampaignLogKey)

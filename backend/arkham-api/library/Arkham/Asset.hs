@@ -1068,6 +1068,7 @@ allAssets =
       SomeAssetCard altonOConnellGhostHunter
     , SomeAssetCard artisticInspiration
     , SomeAssetCard dialOfAncientsUnidentified
+    , SomeAssetCard forensicKit
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

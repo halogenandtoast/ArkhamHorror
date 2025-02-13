@@ -329,6 +329,7 @@ allPlayerAssetCards =
       , forbiddenTomeDarkKnowledge3
       , forbiddenTomeSecretsRevealed3
       , forcedLearning
+      , forensicKit
       , fortyFiveAutomatic
       , fortyFiveAutomatic2
       , fortyFiveThompson

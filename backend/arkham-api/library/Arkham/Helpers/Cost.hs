@@ -240,17 +240,21 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     events <- select eventMatcher
     uses <- sum <$> traverse (fieldMap EventUses (findWithDefault 0 uType)) events
     pure $ uses >= n
-  DynamicUseCost assetMatcher uType useCost -> case useCost of
-    DrawnCardsValue -> do
-      let
-        toDrawnCards = \case
-          (windowType -> Window.DrawCards _ xs) -> length xs
-          _ -> 0
-        drawnCardsValue = sum $ map toDrawnCards windows'
-      assets <- select assetMatcher
-      uses <-
-        sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
-      pure $ uses >= drawnCardsValue
+  DynamicUseCost assetMatcher uType useCost -> do
+    assets <- select assetMatcher
+    uses <-
+      sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
+    case useCost of
+      DynamicCalculation calc -> do
+        n <- calculate calc
+        pure $ uses >= n
+      DrawnCardsValue -> do
+        let
+          toDrawnCards = \case
+            (windowType -> Window.DrawCards _ xs) -> length xs
+            _ -> 0
+          drawnCardsValue = sum $ map toDrawnCards windows'
+        pure $ uses >= drawnCardsValue
   UseCostUpTo assetMatcher uType n _ -> do
     assets <- select assetMatcher
     uses <-

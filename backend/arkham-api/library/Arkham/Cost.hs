@@ -206,6 +206,9 @@ clueCost n = ClueCost (Static n)
 assetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> Int -> Cost
 assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 
+dynamicAssetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> GameCalculation -> Cost
+dynamicAssetUseCost a uType c = DynamicUseCost (AssetWithId $ toId a) uType (DynamicCalculation c)
+
 exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget
 
@@ -224,7 +227,7 @@ exileCost = ExileCost . toTarget
 removeCost :: Targetable a => a -> Cost
 removeCost = RemoveCost . toTarget
 
-data DynamicUseCostValue = DrawnCardsValue
+data DynamicUseCostValue = DrawnCardsValue | DynamicCalculation GameCalculation
   deriving stock (Show, Eq, Ord, Data)
 
 displayCostType :: Cost -> Text

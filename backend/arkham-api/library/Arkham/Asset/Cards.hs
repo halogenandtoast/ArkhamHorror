@@ -613,6 +613,7 @@ allPlayerAssetCards =
       , relicOfAgesForestallingTheFuture
       , relicOfAgesRepossessThePast
       , relicOfAgesUnleashTheTimestream
+      , remingtonModel1858
       , researchLibrarian
       , researchNotes
       , riotWhistle

@@ -1063,6 +1063,7 @@ allAssets =
     , --- guardian [tdc]
       SomeAssetCard theBookOfWarSunTzusLegacy
     , SomeAssetCard crowbar
+    , SomeAssetCard remingtonModel1858
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

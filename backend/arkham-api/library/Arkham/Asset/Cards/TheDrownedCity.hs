@@ -103,3 +103,12 @@ mortarAndPestle =
     , cdSkills = [#willpower]
     , cdUses = uses Resource 0
     }
+
+oculusMortuum :: CardDef
+oculusMortuum =
+  (asset "11038" "Oculus Mortuum" 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tool, Occult]
+    , cdUses = uses Evidence 0
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }

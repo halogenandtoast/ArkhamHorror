@@ -1070,6 +1070,7 @@ allAssets =
     , SomeAssetCard dialOfAncientsUnidentified
     , SomeAssetCard forensicKit
     , SomeAssetCard mortarAndPestle
+    , SomeAssetCard oculusMortuum
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

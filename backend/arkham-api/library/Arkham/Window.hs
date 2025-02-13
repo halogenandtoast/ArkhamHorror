@@ -270,6 +270,7 @@ data WindowType
   | TokensWouldBeRemovedFromChaosBag [ChaosToken]
   | ResolvesTreachery InvestigatorId TreacheryId
   | ResolvesChaosToken InvestigatorId ChaosToken
+  | ChaosTokenSealed InvestigatorId ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken
   | CancelChaosToken InvestigatorId ChaosToken
   | RevealChaosTokenEffect InvestigatorId ChaosToken EffectId

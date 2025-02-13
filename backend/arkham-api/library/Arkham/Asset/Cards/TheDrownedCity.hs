@@ -48,3 +48,12 @@ crowbar =
     , cdSkills = [#intellect, #combat]
     , cdSlots = [#hand]
     }
+
+remingtonModel1858 :: CardDef
+remingtonModel1858 =
+  (asset "11022" "Remington Model 1858" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSkills = [#agility]
+    , cdUses = uses Ammo 2
+    , cdSlots = [#hand]
+    }

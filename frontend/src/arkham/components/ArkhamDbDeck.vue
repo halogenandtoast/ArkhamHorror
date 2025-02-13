@@ -22,7 +22,7 @@ function loadDeck() {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
     fetch(deckUrl.value)
       .then((response) => response.json(), () => model.value = null)
-      .then(({ data }) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
+      .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else {
     return
   }

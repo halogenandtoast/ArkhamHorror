@@ -1071,6 +1071,7 @@ allAssets =
     , SomeAssetCard forensicKit
     , SomeAssetCard mortarAndPestle
     , SomeAssetCard oculusMortuum
+    , SomeAssetCard uncannySpecimen
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

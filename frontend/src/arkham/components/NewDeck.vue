@@ -92,7 +92,7 @@ function loadDeckFromFile(e: Event) {
         }
 
       } else {
-        investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck`
+        investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck ${data}`
       }
       deckId.value = data.id.toString()
       deckName.value = data.name
@@ -126,7 +126,7 @@ function loadDeck() {
       }
     }
   } else {
-    investigatorError.value = `${deckList.value.investigator_name} is not yet implemented, please use a different deck`
+    investigatorError.value = `${deckList.value.investigator_name} is not yet implemented, please use a different deck ${JSON.stringify(deckList.value)}`
   }
   deckId.value = String(deckList.value.id)
   deckName.value = deckList.value.name

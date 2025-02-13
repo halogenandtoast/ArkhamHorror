@@ -35,6 +35,7 @@ import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
+import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
 import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
@@ -428,6 +429,9 @@ instance FetchCard PlayerCard where
 
 instance FetchCard AssetId where
   fetchCard = field Field.AssetCard
+
+instance FetchCard EventId where
+  fetchCard = field Field.EventCard
 
 addCampaignCardToDeck
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)
@@ -2321,7 +2325,8 @@ cancelSkillTestEffects source = do
       skillTestModifier sid source sid CancelEffects
       cancelledOrIgnoredCardOrGameEffect source
 
-sealChaosToken :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
+sealChaosToken
+  :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
 sealChaosToken iid target token = pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget target)]
 
 resolveChaosTokens

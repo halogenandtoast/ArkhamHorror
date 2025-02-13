@@ -1060,6 +1060,8 @@ allAssets =
       SomeAssetCard bookOfVerseUnCommonplaceBook
     , SomeAssetCard oculaObscuraEsotericEyepiece
     , SomeAssetCard violaCase
+    , --- guardian [tdc]
+      SomeAssetCard theBookOfWarSunTzusLegacy
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

@@ -520,6 +520,7 @@ allPlayerAssetCards =
       , monstrousTransformation
       , moonPendant2
       , moonstone
+      , mortarAndPestle
       , mouseMaskTheMeekWatcher
       , moxie1
       , moxie3

@@ -1069,6 +1069,7 @@ allAssets =
     , SomeAssetCard artisticInspiration
     , SomeAssetCard dialOfAncientsUnidentified
     , SomeAssetCard forensicKit
+    , SomeAssetCard mortarAndPestle
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

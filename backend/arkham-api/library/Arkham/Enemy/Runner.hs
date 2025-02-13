@@ -704,6 +704,7 @@ instance RunMessage EnemyAttrs where
       afterSuccessfulWindow <- checkWindows [mkAfter (Window.SuccessfulAttackEnemy iid source enemyId n)]
       pushAll
         [ whenWindow
+        , UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
         , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
         , afterSuccessfulWindow
         ]

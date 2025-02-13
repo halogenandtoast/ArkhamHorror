@@ -72,6 +72,9 @@ data Target
   | ThisTarget -- Used with withModifiers
   deriving stock (Show, Eq, Ord, Data, Generic)
 
+instance HasField "asset" (Maybe Target) (Maybe AssetId) where
+  getField = ((.asset) =<<)
+
 instance HasField "asset" Target (Maybe AssetId) where
   getField = \case
     AssetTarget aid -> Just aid

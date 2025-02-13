@@ -1,4 +1,4 @@
-module Arkham.Event.Events.AdHoc (adHoc, AdHoc (..)) where
+module Arkham.Event.Events.AdHoc (adHoc) where
 
 import Arkham.Ability
 import Arkham.Card.Id
@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Game.Helpers (getCanPerformAbility)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Window (defaultWindows)
@@ -19,8 +20,8 @@ adHoc = event AdHoc Cards.adHoc
 
 instance HasAbilities AdHoc where
   getAbilities (AdHoc a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           (ActivateAbility #after You $ AbilityOnAsset (AssetWithAttachedEvent (be a)))
           ( exhaust a
               <> HandDiscardCost
@@ -35,7 +36,8 @@ instance HasAbilities AdHoc where
 instance RunMessage AdHoc where
   runMessage msg e@(AdHoc attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ assetControlledBy iid <> oneOf [#tool, #weapon]
+      upgradeTargets <- getUpgradeTargets iid $ assetControlledBy iid <> oneOf [#tool, #weapon]
+      chooseOneToHandle iid attrs upgradeTargets
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (AssetTarget aid) -> do
       push $ PlaceEvent attrs.id (AttachedToAsset aid Nothing)

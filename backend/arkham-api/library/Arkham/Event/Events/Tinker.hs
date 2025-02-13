@@ -1,10 +1,11 @@
-module Arkham.Event.Events.Tinker (tinker, Tinker (..)) where
+module Arkham.Event.Events.Tinker (tinker) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.SlotType
@@ -30,10 +31,12 @@ instance HasModifiersFor Tinker where
 instance RunMessage Tinker where
   runMessage msg e@(Tinker (With attrs meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs
-        $ assetInPlayAreaOf iid
-        <> #tool
-        <> not_ (AssetWithAttachedEvent $ eventIs Cards.tinker)
+      upgradeTargets <-
+        getUpgradeTargets iid
+          $ assetInPlayAreaOf iid
+          <> #tool
+          <> not_ (AssetWithAttachedEvent $ eventIs Cards.tinker)
+      chooseOneToHandle iid attrs upgradeTargets
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       push $ PlaceEvent attrs.id $ AttachedToAsset aid Nothing

@@ -1,8 +1,4 @@
-module Arkham.Event.Events.TelescopicSight3 (
-  telescopicSight3,
-  telescopicSight3Effect,
-  TelescopicSight3 (..),
-) where
+module Arkham.Event.Events.TelescopicSight3 (telescopicSight3, telescopicSight3Effect) where
 
 import Arkham.Ability
 import Arkham.Effect.Import
@@ -13,6 +9,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 import Arkham.Taboo
 import Arkham.Window qualified as Window
@@ -61,9 +58,9 @@ instance HasAbilities TelescopicSight3 where
 
 instance RunMessage TelescopicSight3 where
   runMessage msg e@(TelescopicSight3 attrs) = runQueueT $ case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
-      assets <- select $ assetControlledBy iid <> AssetInTwoHandSlots
-      chooseTargetM iid assets \asset -> push $ PlaceEvent eid $ AttachedToAsset asset Nothing
+    PlayThisEvent iid (is attrs -> True) -> do
+      assets <- getUpgradeTargets iid $ assetControlledBy iid <> AssetInTwoHandSlots
+      chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       createCardEffect Cards.telescopicSight3 Nothing (attrs.ability 1) iid

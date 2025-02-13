@@ -1,4 +1,4 @@
-module Arkham.Event.Events.EnchantWeapon3 (enchantWeapon3, EnchantWeapon3 (..)) where
+module Arkham.Event.Events.EnchantWeapon3 (enchantWeapon3) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
@@ -6,6 +6,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Trait (Trait (Relic))
@@ -37,16 +38,16 @@ instance RunMessage EnchantWeapon3 where
   runMessage msg e@(EnchantWeapon3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       assets <-
-        selectWithField AssetController
+        getUpgradeTargets iid
           $ AssetControlledBy (affectsOthers $ colocatedWith iid)
           <> #weapon
           <> not_ (AssetWithAttachedEvent $ eventIs Cards.enchantWeapon3)
-      chooseOne
-        iid
-        [ targetLabel asset [PlaceEvent attrs.id $ AttachedToAsset asset Nothing, RefillSlots owner]
-        | (asset, Just owner) <- assets
-        ]
-
+      chooseOneM iid do
+        for_ assets \asset ->
+          field AssetController asset >>= traverse_ \controller ->
+            targeting asset do
+              place attrs $ AttachedToAsset asset Nothing
+              push $ RefillSlots controller
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       owner <- field EventOwner (toId attrs)

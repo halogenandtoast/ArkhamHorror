@@ -17,6 +17,7 @@ import Arkham.Helpers.SkillTest (
   withSkillTest,
  )
 import Arkham.Matcher
+import Arkham.Message.Lifted.Upgrade
 import Arkham.Placement
 import Arkham.Trait (Trait (Upgrade))
 import Arkham.Window (revealedChaosTokens)
@@ -100,7 +101,7 @@ instance RunMessage CustomModifications where
   runMessage msg e@(CustomModifications attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       assets <-
-        select
+        getUpgradeTargets iid
           $ assetControlledBy iid
           <> #firearm
           <> not_ (AssetWithAttachedEvent $ eventIs Cards.customModifications)
@@ -125,7 +126,7 @@ instance RunMessage CustomModifications where
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       for_ attrs.attachedTo \t -> placeTokens (attrs.ability 3) t Ammo 1
       pure e
-    When (PassedThisSkillTestBy iid (AbilitySource source _) n) | maybe False ((`isSource` source) . targetToSource) (attrs.attachedTo) && n >= 3 -> do
+    When (PassedThisSkillTestBy iid (AbilitySource source _) n) | maybe False ((`isSource` source) . targetToSource) attrs.attachedTo && n >= 3 -> do
       whenM inAttackSkillTest do
         withSkillTest \sid ->
           skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)

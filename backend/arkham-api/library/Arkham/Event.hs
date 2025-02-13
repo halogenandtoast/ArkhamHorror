@@ -642,6 +642,7 @@ allEvents =
       SomeEventCard psychicSensitivity
     , --- guardian [tdc]
       SomeEventCard primedForAction
+    , SomeEventCard readyForAnything
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

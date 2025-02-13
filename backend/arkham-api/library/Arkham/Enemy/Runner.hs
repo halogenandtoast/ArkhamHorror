@@ -1269,7 +1269,8 @@ instance RunMessage EnemyAttrs where
             , attackDealDamage = True
             }
       pure a
-    InvestigatorDrawEnemy iid eid | eid == enemyId -> do
+    InvestigatorDrawEnemy iid eid | eid == enemyId -> runQueueT do
+      push $ UpdateHistory iid (HistoryItem HistoryEnemiesDrawn [toCardCode a])
       mods <- (<>) <$> getModifiers enemyId <*> getModifiers (CardIdTarget $ toCardId a)
       let
         getModifiedSpawnAt [] = enemySpawnAt

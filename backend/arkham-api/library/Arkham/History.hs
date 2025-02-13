@@ -26,6 +26,7 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
 
 data History = History
   { historyTreacheriesDrawn :: [CardCode]
+  , historyEnemiesDrawn :: [CardCode]
   , historyDealtDamageTo :: [Target]
   , historyEnemiesDefeated :: [DefeatedEnemyAttrs]
   , historyMoved :: Bool
@@ -41,6 +42,7 @@ data History = History
 
 data HistoryField k where
   HistoryTreacheriesDrawn :: HistoryField [CardCode]
+  HistoryEnemiesDrawn :: HistoryField [CardCode]
   HistoryDealtDamageTo :: HistoryField [Target]
   HistoryEnemiesDefeated :: HistoryField [DefeatedEnemyAttrs]
   HistoryMoved :: HistoryField Bool
@@ -58,6 +60,7 @@ deriving stock instance Eq (HistoryField k)
 viewHistoryField :: HistoryField k -> History -> k
 viewHistoryField = \case
   HistoryTreacheriesDrawn -> historyTreacheriesDrawn
+  HistoryEnemiesDrawn -> historyEnemiesDrawn
   HistoryDealtDamageTo -> historyDealtDamageTo
   HistoryEnemiesDefeated -> historyEnemiesDefeated
   HistoryMoved -> historyMoved
@@ -89,6 +92,7 @@ instance FromJSON SomeHistoryField where
     "HistoryPlayedCards" -> pure $ SomeHistoryField HistoryPlayedCards
     "HistoryCluesDiscovered" -> pure $ SomeHistoryField HistoryCluesDiscovered
     "HistoryAttacksOfOpportunity" -> pure $ SomeHistoryField HistoryAttacksOfOpportunity
+    "HistoryEnemiesDrawn" -> pure $ SomeHistoryField HistoryEnemiesDrawn
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
 data HistoryItem where
@@ -120,6 +124,7 @@ instance FromJSON HistoryItem where
 insertHistoryItem :: HistoryItem -> History -> History
 insertHistoryItem (HistoryItem fld k) h =
   case fld of
+    HistoryEnemiesDrawn -> h {historyEnemiesDrawn = nub $ historyEnemiesDrawn h <> k}
     HistoryTreacheriesDrawn -> h {historyTreacheriesDrawn = nub $ historyTreacheriesDrawn h <> k}
     HistoryDealtDamageTo -> h {historyDealtDamageTo = nub $ historyDealtDamageTo h <> k}
     HistoryEnemiesDefeated -> h {historyEnemiesDefeated = nub $ historyEnemiesDefeated h <> k}
@@ -139,26 +144,17 @@ insertHistoryItem (HistoryItem fld k) h =
 instance Semigroup History where
   h <> g =
     History
-      { historyTreacheriesDrawn =
-          historyTreacheriesDrawn h
-            <> historyTreacheriesDrawn g
+      { historyTreacheriesDrawn = historyTreacheriesDrawn h <> historyTreacheriesDrawn g
+      , historyEnemiesDrawn = historyEnemiesDrawn h <> historyEnemiesDrawn g
       , historyDealtDamageTo = historyDealtDamageTo h <> historyDealtDamageTo g
-      , historyEnemiesDefeated =
-          historyEnemiesDefeated h
-            <> historyEnemiesDefeated g
+      , historyEnemiesDefeated = historyEnemiesDefeated h <> historyEnemiesDefeated g
       , historyMoved = historyMoved h || historyMoved g
       , historyLocationsSuccessfullyInvestigated =
           historyLocationsSuccessfullyInvestigated h
             <> historyLocationsSuccessfullyInvestigated g
-      , historySuccessfulExplore =
-          historySuccessfulExplore h
-            || historySuccessfulExplore g
-      , historyActionsCompleted =
-          historyActionsCompleted h
-            + historyActionsCompleted g
-      , historySkillTestsPerformed =
-          historySkillTestsPerformed h
-            <> historySkillTestsPerformed g
+      , historySuccessfulExplore = historySuccessfulExplore h || historySuccessfulExplore g
+      , historyActionsCompleted = historyActionsCompleted h + historyActionsCompleted g
+      , historySkillTestsPerformed = historySkillTestsPerformed h <> historySkillTestsPerformed g
       , historyPlayedCards = historyPlayedCards h <> historyPlayedCards g
       , historyCluesDiscovered = Map.unionWith (+) (historyCluesDiscovered h) (historyCluesDiscovered g)
       , historyAttacksOfOpportunity =
@@ -167,7 +163,7 @@ instance Semigroup History where
       }
 
 instance Monoid History where
-  mempty = History [] [] [] False mempty False 0 [] [] mempty 0
+  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0
 
 insertHistory
   :: InvestigatorId
@@ -192,4 +188,5 @@ instance FromJSON History where
     historyPlayedCards <- o .: "historyPlayedCards"
     historyCluesDiscovered <- o .: "historyCluesDiscovered"
     historyAttacksOfOpportunity <- o .:? "historyAttacksOfOpportunity" .!= 0
+    historyEnemiesDrawn <- o .:? "historyEnemiesDrawn" .!= []
     pure History {..}

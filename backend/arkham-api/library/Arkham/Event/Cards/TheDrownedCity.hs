@@ -24,8 +24,17 @@ psychicSensitivity =
 
 primedForAction :: CardDef
 primedForAction =
-    (event "11023" "Primed for Action" 0 Neutral)
+    (event "11023" "Primed for Action" 0 Guardian)
       { cdSkills = [#intellect, #agility]
       , cdCardTraits = setFromList [Tactic, Bold]
       , cdCriteria = Just $ Criteria.FirstAction <> Criteria.PlayableCardExistsWithCostReduction (Reduce 2) (InHandOf ForPlay You <> basic #firearm)
+      }
+
+readyForAnything :: CardDef
+readyForAnything =
+    (event "11024" "Ready for Anything" 1 Guardian)
+      { cdSkills = [#willpower]
+      , cdCardTraits = setFromList [Spirit, Bold]
+      , cdCriteria = Just $ Criteria.FirstAction <> can.draw.cards You
+      , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
       }

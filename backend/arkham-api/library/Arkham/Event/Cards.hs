@@ -325,6 +325,7 @@ allPlayerEventCards =
       , radiantSmite1
       , readTheSigns
       , readTheSigns2
+      , readyForAnything
       , recharge2
       , recharge4
       , refine

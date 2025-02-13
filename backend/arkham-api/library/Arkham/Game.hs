@@ -2466,6 +2466,10 @@ getEventsMatching matcher = do
     EventIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     EventWithClass role -> pure $ filter (member role . cdClassSymbols . toCardDef) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
+    EventWillNotBeRemoved -> do
+      let willRemove a = attr eventAfterPlay a `elem` [ExileThis, RemoveThisFromGame, AbsoluteRemoveThisFromGame]
+      let xs = filter (not . willRemove) as
+      filterMatcher xs (EventWithoutModifier RemoveFromGameInsteadOfDiscard)
     EventCardMatch cardMatcher -> filterM (fmap (`cardMatch` cardMatcher) . field EventCard . toId) as
     EventIsAction actionMatcher -> do
       lead <- getLead

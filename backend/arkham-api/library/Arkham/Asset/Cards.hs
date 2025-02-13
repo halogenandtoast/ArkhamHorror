@@ -736,6 +736,7 @@ allPlayerAssetCards =
       , theBlackBook
       , theBlackCat5
       , theBlackFan3
+      , theBookOfWarSunTzusLegacy
       , theChthonianStone
       , theChthonianStone3
       , theCodexOfAges

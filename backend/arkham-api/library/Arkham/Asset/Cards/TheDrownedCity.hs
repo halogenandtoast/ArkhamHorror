@@ -30,3 +30,13 @@ violaCase =
       , cdSkills = [#willpower, #combat, #agility, #wild]
       , cdSlots = [#accessory]
       }
+
+theBookOfWarSunTzusLegacy :: CardDef
+theBookOfWarSunTzusLegacy =
+  (asset "11020" ("The Book of War" <:> "Sun Tzu's Legacy") 4 Guardian)
+    { cdCardTraits = setFromList [Item, Tome]
+    , cdSkills = [#intellect]
+    , cdUnique = True
+    , cdUses = uses Secret 3
+    , cdSlots = [#hand]
+    }

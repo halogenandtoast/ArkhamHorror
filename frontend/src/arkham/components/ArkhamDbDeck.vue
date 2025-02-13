@@ -15,15 +15,18 @@ function loadDeck() {
   let matches
   if ((matches = deck.value.match(arkhamDbRegex))) {
     deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
+    fetch(deckUrl.value)
+      .then((response) => response.json(), () => model.value = null)
+      .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
+    fetch(deckUrl.value)
+      .then((response) => response.json(), () => model.value = null)
+      .then(({ data }) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else {
     return
   }
 
-  fetch(deckUrl.value)
-    .then((response) => response.json(), () => model.value = null)
-    .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
 }
 
 function pasteDeck(evt: ClipboardEvent) {

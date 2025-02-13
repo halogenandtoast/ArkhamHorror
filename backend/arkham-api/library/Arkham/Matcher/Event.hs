@@ -18,8 +18,9 @@ import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Arkham.Token
-import Arkham.Trait (Trait)
+import Arkham.Trait (Trait(Tactic))
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 instance IsMatcher EventMatcher
 
@@ -38,6 +39,7 @@ data EventMatcher
   | EventAttachedToAsset AssetMatcher
   | EventAttachedTo TargetMatcher
   | EventWithModifier ModifierType
+  | EventWillNotBeRemoved
   | EventWithoutModifier ModifierType
   | EventIs CardCode
   | EventReady
@@ -52,6 +54,9 @@ data EventMatcher
   | EventWithMetaKey Key
   | EventIsAction ActionMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "tactic" EventMatcher where
+  fromLabel = EventWithTrait Tactic
 
 instance Not EventMatcher where
   not_ = NotEvent

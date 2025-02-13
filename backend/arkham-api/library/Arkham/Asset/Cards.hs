@@ -76,6 +76,7 @@ allPlayerAssetCards =
       , armageddon4
       , armorOfArdennes5
       , artStudent
+      , artisticInspiration
       , astralMirror2
       , astronomicalAtlas3
       , augur

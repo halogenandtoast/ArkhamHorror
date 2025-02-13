@@ -74,6 +74,7 @@ allPlayerSkillCards =
       , gumption1
       , guts
       , guts2
+      , hardboiled
       , hatchetMan
       , helpingHand
       , inquiringMind
@@ -900,6 +901,14 @@ grimResolve =
   signature "11017"
   $ (skill "11018" "Grim Resolve" [#wild] Neutral)
       { cdCardTraits = setFromList [Innate, Developed]
+      }
+
+hardboiled :: CardDef
+hardboiled =
+  (skill "11025" "Hardboiled" [#combat, #wild] Guardian)
+      { cdCardTraits = setFromList [Innate]
+      , cdCommitRestrictions = [MaxOnePerTest]
+      , cdCardInHandEffects = True
       }
 
 riseToTheOccasion3 :: CardDef

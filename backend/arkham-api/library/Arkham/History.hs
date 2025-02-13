@@ -37,6 +37,7 @@ data History = History
   , historyPlayedCards :: [Card]
   , historyCluesDiscovered :: Map LocationId Int
   , historyAttacksOfOpportunity :: Int
+  , historySuccessfulAttacks :: Int
   }
   deriving stock (Show, Eq)
 
@@ -53,6 +54,7 @@ data HistoryField k where
   HistoryPlayedCards :: HistoryField [Card]
   HistoryCluesDiscovered :: HistoryField (Map LocationId Int)
   HistoryAttacksOfOpportunity :: HistoryField Int
+  HistorySuccessfulAttacks :: HistoryField Int
 
 deriving stock instance Show (HistoryField k)
 deriving stock instance Eq (HistoryField k)
@@ -71,6 +73,7 @@ viewHistoryField = \case
   HistoryPlayedCards -> historyPlayedCards
   HistoryCluesDiscovered -> historyCluesDiscovered
   HistoryAttacksOfOpportunity -> historyAttacksOfOpportunity
+  HistorySuccessfulAttacks -> historySuccessfulAttacks
 
 instance ToJSON (HistoryField k) where
   toJSON = toJSON . show
@@ -92,6 +95,7 @@ instance FromJSON SomeHistoryField where
     "HistoryPlayedCards" -> pure $ SomeHistoryField HistoryPlayedCards
     "HistoryCluesDiscovered" -> pure $ SomeHistoryField HistoryCluesDiscovered
     "HistoryAttacksOfOpportunity" -> pure $ SomeHistoryField HistoryAttacksOfOpportunity
+    "HistorySuccessfulAttacks" -> pure $ SomeHistoryField HistorySuccessfulAttacks
     "HistoryEnemiesDrawn" -> pure $ SomeHistoryField HistoryEnemiesDrawn
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
@@ -140,6 +144,7 @@ insertHistoryItem (HistoryItem fld k) h =
     HistoryPlayedCards -> h {historyPlayedCards = nub $ historyPlayedCards h <> k}
     HistoryCluesDiscovered -> h {historyCluesDiscovered = Map.unionWith (+) (historyCluesDiscovered h) k}
     HistoryAttacksOfOpportunity -> h {historyAttacksOfOpportunity = historyAttacksOfOpportunity h + k}
+    HistorySuccessfulAttacks -> h {historySuccessfulAttacks = historySuccessfulAttacks h + k}
 
 instance Semigroup History where
   h <> g =
@@ -157,13 +162,12 @@ instance Semigroup History where
       , historySkillTestsPerformed = historySkillTestsPerformed h <> historySkillTestsPerformed g
       , historyPlayedCards = historyPlayedCards h <> historyPlayedCards g
       , historyCluesDiscovered = Map.unionWith (+) (historyCluesDiscovered h) (historyCluesDiscovered g)
-      , historyAttacksOfOpportunity =
-          historyAttacksOfOpportunity h
-            + historyAttacksOfOpportunity g
+      , historyAttacksOfOpportunity = historyAttacksOfOpportunity h + historyAttacksOfOpportunity g
+      , historySuccessfulAttacks = historySuccessfulAttacks h + historySuccessfulAttacks g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0
+  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0
 
 insertHistory
   :: InvestigatorId
@@ -188,5 +192,6 @@ instance FromJSON History where
     historyPlayedCards <- o .: "historyPlayedCards"
     historyCluesDiscovered <- o .: "historyCluesDiscovered"
     historyAttacksOfOpportunity <- o .:? "historyAttacksOfOpportunity" .!= 0
+    historySuccessfulAttacks <- o .:? "historySuccessfulAttacks" .!= 0
     historyEnemiesDrawn <- o .:? "historyEnemiesDrawn" .!= []
     pure History {..}

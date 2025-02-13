@@ -256,6 +256,8 @@ allSkills =
       --- signature [tdc]
       SomeSkillCard determined
     , SomeSkillCard grimResolve
+    , --- guardian [tdc]
+      SomeSkillCard hardboiled
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

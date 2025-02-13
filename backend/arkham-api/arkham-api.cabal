@@ -2141,6 +2141,7 @@ library
       Arkham.Event.Events.RadiantSmite1
       Arkham.Event.Events.ReadTheSigns
       Arkham.Event.Events.ReadTheSigns2
+      Arkham.Event.Events.ReadyForAnything
       Arkham.Event.Events.Recharge2
       Arkham.Event.Events.Recharge4
       Arkham.Event.Events.Refine

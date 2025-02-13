@@ -67,6 +67,15 @@ altonOConnellGhostHunter =
     , cdUnique = True
     }
 
+artisticInspiration :: CardDef
+artisticInspiration =
+  (asset "11034" "Artistic Inspiration" 2 Seeker)
+    { cdCardTraits = setFromList [Talent]
+    , cdSkills = [#wild]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdUses = uses Inspiration 1
+    }
+
 dialOfAncientsUnidentified :: CardDef
 dialOfAncientsUnidentified =
   (asset "11035" ("Dial of Ancients" <:> "Unidentified") 3 Seeker)

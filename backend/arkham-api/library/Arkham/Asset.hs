@@ -1066,6 +1066,7 @@ allAssets =
     , SomeAssetCard remingtonModel1858
     , --- seeker [tdc]
       SomeAssetCard altonOConnellGhostHunter
+    , SomeAssetCard artisticInspiration
     , SomeAssetCard dialOfAncientsUnidentified
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

@@ -87,3 +87,11 @@ dialOfAncientsUnidentified =
     , cdUnique = True
     }
 
+forensicKit :: CardDef
+forensicKit =
+  (asset "11036" "Forensic Kit" 3 Seeker)
+    { cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSkills = [#intellect, #agility]
+    , cdUses = uses Supply 4
+    , cdSlots = [#hand]
+    }

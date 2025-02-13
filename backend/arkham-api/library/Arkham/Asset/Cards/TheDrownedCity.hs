@@ -58,6 +58,15 @@ remingtonModel1858 =
     , cdSlots = [#hand]
     }
 
+altonOConnellGhostHunter :: CardDef
+altonOConnellGhostHunter =
+  (asset "11033" ("Alton O'Connell" <:> "Ghost Hunter") 3 Seeker)
+    { cdCardTraits = setFromList [Ally, Detective, Reporter]
+    , cdSkills = [#intellect, #agility]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 dialOfAncientsUnidentified :: CardDef
 dialOfAncientsUnidentified =
   (asset "11035" ("Dial of Ancients" <:> "Unidentified") 3 Seeker)
@@ -68,3 +77,4 @@ dialOfAncientsUnidentified =
     , cdDeckRestrictions = [PerDeckLimit 1]
     , cdUnique = True
     }
+

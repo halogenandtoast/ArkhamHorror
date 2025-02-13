@@ -1065,7 +1065,8 @@ allAssets =
     , SomeAssetCard crowbar
     , SomeAssetCard remingtonModel1858
     , --- seeker [tdc]
-      SomeAssetCard dialOfAncientsUnidentified
+      SomeAssetCard altonOConnellGhostHunter
+    , SomeAssetCard dialOfAncientsUnidentified
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

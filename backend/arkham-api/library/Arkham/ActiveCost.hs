@@ -831,18 +831,20 @@ payCost msg c iid skipAdditionalCosts cost = do
       push
         $ chooseOrRunOne player [targetLabel eid [SpendUses source (EventTarget eid) uType n] | eid <- events]
       withPayment $ UsesPayment n
-    DynamicUseCost assetMatcher uType costValue -> case costValue of
-      DrawnCardsValue -> do
-        let
-          getDrawnCards [] = error "can not find drawn card in windows"
-          getDrawnCards (x : xs) = case x of
-            (windowType -> Window.DrawCards _ cards) -> length cards
-            _ -> getDrawnCards xs
-          n = getDrawnCards c.windows
-        assets <- select assetMatcher
-        push
-          $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
-        withPayment $ UsesPayment n
+    DynamicUseCost assetMatcher uType costValue -> do
+      n <- case costValue of
+        DynamicCalculation calc -> calculate calc
+        DrawnCardsValue -> pure do
+          let
+            getDrawnCards [] = error "can not find drawn card in windows"
+            getDrawnCards (x : xs) = case x of
+              (windowType -> Window.DrawCards _ cards) -> length cards
+              _ -> getDrawnCards xs
+          getDrawnCards c.windows
+      assets <- select assetMatcher
+      push
+        $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
+      withPayment $ UsesPayment n
     UseCostUpTo assetMatcher uType n m -> do
       assets <- select assetMatcher
       uses <- sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
@@ -1267,7 +1269,9 @@ instance RunMessage ActiveCost where
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]
             <> [afterActivateAbilityWindow | isPlayAction == IsPlayAction]
-        ForCost card -> pushAll [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
+        ForCost card ->
+          pushAll
+            [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
         ForAdditionalCost _ -> pure ()
       push PaidAllCosts
       pure c

@@ -173,6 +173,7 @@ allPlayerAssetCards =
       , cookiesCustom32
       , cornered2
       , crafty3
+      , crowbar
       , crypticGrimoireTextOfTheElderGuardian4
       , crypticGrimoireTextOfTheElderHerald4
       , crypticGrimoireUntranslated

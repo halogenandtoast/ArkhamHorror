@@ -40,3 +40,11 @@ theBookOfWarSunTzusLegacy =
     , cdUses = uses Secret 3
     , cdSlots = [#hand]
     }
+
+crowbar :: CardDef
+crowbar =
+  (asset "11021" "Crowbar" 3 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Tool, Melee]
+    , cdSkills = [#intellect, #combat]
+    , cdSlots = [#hand]
+    }

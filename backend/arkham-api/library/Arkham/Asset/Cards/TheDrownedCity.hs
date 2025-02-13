@@ -1,6 +1,7 @@
 module Arkham.Asset.Cards.TheDrownedCity where
 
 import Arkham.Asset.Cards.Import
+import Arkham.Keyword qualified as Keyword
 
 bookOfVerseUnCommonplaceBook :: CardDef
 bookOfVerseUnCommonplaceBook =
@@ -111,4 +112,11 @@ oculusMortuum =
     , cdUses = uses Evidence 0
     , cdSlots = [#hand]
     , cdUnique = True
+    }
+
+uncannySpecimen :: CardDef
+uncannySpecimen =
+  (asset "11039" "Uncanny Specimen" 1 Seeker)
+    { cdSlots = [#arcane]
+    , cdKeywords = setFromList [Keyword.Myriad]
     }

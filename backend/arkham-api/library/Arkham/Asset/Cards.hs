@@ -805,6 +805,7 @@ allPlayerAssetCards =
       , twilaKatherinePrice3
       , twilightBlade
       , twilightDiademCrownOfDyingLight
+      , uncannySpecimen
       , underworldMarket2
       , underworldSupport
       , unscrupulousLoan3

@@ -135,13 +135,14 @@ allInvestigators =
       , SomeInvestigatorCard agathaCrane_Seeker
       , SomeInvestigatorCard agathaCrane_Mystic
       , SomeInvestigatorCard michaelMcGlen
+      , SomeInvestigatorCard gloriaGoldberg
+      , SomeInvestigatorCard georgeBarnaby
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock
       , SomeInvestigatorCard stellaClark
       , SomeInvestigatorCard jacquelineFine
       , SomeInvestigatorCard subject5U21
-      , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard daisyWalkerParallel
       , SomeInvestigatorCard skidsOTooleParallel
       , SomeInvestigatorCard agnesBakerParallel

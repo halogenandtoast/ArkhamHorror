@@ -2365,6 +2365,7 @@ library
       Arkham.Investigator.Cards.FatherMateoParallel
       Arkham.Investigator.Cards.FinnEdwards
       Arkham.Investigator.Cards.GavriellaMizrah
+      Arkham.Investigator.Cards.GeorgeBarnaby
       Arkham.Investigator.Cards.GloriaGoldberg
       Arkham.Investigator.Cards.HankSamson
       Arkham.Investigator.Cards.HarveyWalters
@@ -3391,6 +3392,7 @@ library
       Arkham.Skill.Cards.Fey1
       Arkham.Skill.Cards.FightingLessons
       Arkham.Skill.Cards.GhastlyPossession1
+      Arkham.Skill.Cards.GrimResolve
       Arkham.Skill.Cards.Grizzled
       Arkham.Skill.Cards.Gumption1
       Arkham.Skill.Cards.Guts
@@ -3663,6 +3665,7 @@ library
       Arkham.Treachery.Cards.CallOfTheUnknown
       Arkham.Treachery.Cards.CallToOrder
       Arkham.Treachery.Cards.CaptiveMind
+      Arkham.Treachery.Cards.CastAdrift
       Arkham.Treachery.Cards.CaughtInAWeb
       Arkham.Treachery.Cards.CaughtRedHanded
       Arkham.Treachery.Cards.CenturiesOfSecrets

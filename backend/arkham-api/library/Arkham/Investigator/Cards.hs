@@ -83,13 +83,14 @@ allInvestigatorCards =
       , agathaCrane_Seeker
       , agathaCrane_Mystic
       , michaelMcGlen
+      , gloriaGoldberg
+      , georgeBarnaby
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
       , jacquelineFine
       , stellaClark
       , subject5U21
-      , gloriaGoldberg
       , daisyWalkerParallel
       , skidsOTooleParallel
       , agnesBakerParallel
@@ -599,6 +600,13 @@ gloriaGoldberg =
     Mystic
     [Clairvoyant]
 
+georgeBarnaby :: CardDef
+georgeBarnaby =
+  investigator
+    "11017"
+    ("George Barnaby" <:> "The Lawyer")
+    Survivor
+    [Civic, Drifter]
 
 nathanielCho :: CardDef
 nathanielCho =

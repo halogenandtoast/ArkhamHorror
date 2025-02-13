@@ -259,6 +259,7 @@ data ModifierType
   | GainVictory Int
   | GiveAdditionalAction AdditionalAction
   | HandSize Int
+  | MaxHandSize Int
   | HandSizeCardCount Int
   | HealHorrorAsIfOnInvestigator Target Int
   | HealHorrorOnThisAsIfInvestigator InvestigatorId -- DEPRECATED

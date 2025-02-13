@@ -69,6 +69,7 @@ allPlayerSkillCards =
       , fey1
       , fightingLessons
       , ghastlyPossession1
+      , grimResolve
       , grizzled
       , gumption1
       , guts
@@ -892,6 +893,13 @@ determined =
   signature "11001"
   $ (skill "11002" "Determined" [#wild] Neutral)
       { cdCardTraits = setFromList [Innate]
+      }
+
+grimResolve :: CardDef
+grimResolve =
+  signature "11017"
+  $ (skill "11018" "Grim Resolve" [#wild] Neutral)
+      { cdCardTraits = setFromList [Innate, Developed]
       }
 
 riseToTheOccasion3 :: CardDef

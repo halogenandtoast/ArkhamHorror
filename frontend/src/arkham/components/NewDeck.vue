@@ -145,7 +145,7 @@ function runValidations() {
         const { name, xp } = match
         return xp ? `${name} (${xp})` : name
       }
-      return "Unknown card"
+      return `Unknown card: ${error.contents}`
     })
   })
 }

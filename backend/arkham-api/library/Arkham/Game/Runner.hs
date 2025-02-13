@@ -435,7 +435,9 @@ runGameMessage msg g = case msg of
     pure g
   InvestigatorsMulligan -> do
     iids <- getInvestigatorsInOrder
-    g <$ pushAll [InvestigatorMulligan iid | iid <- iids]
+    for_ (reverse iids) \iid -> do
+      pushAll [InvestigatorMulligan iid, After (InvestigatorMulligan iid)]
+    pure g
   InvestigatorMulligan iid -> pure $ g & activeInvestigatorIdL .~ iid
   Will msg'@(ResolveChaosToken token tokenFace iid) -> do
     mods <- getModifiers iid

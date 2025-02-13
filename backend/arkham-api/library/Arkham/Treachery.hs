@@ -567,6 +567,7 @@ allTreacheries =
     , SomeTreacheryCard glimpseTheVoid
     , SomeTreacheryCard confiscation
     , SomeTreacheryCard prophecyOfTheEnd
+    , SomeTreacheryCard castAdrift
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

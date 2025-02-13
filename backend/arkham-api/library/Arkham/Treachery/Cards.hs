@@ -75,6 +75,7 @@ allPlayerTreacheryCards =
       , buriedSecretsAdvanced
       , callOfTheUnknown
       , calledByTheMists
+      , castAdrift
       , caughtRedHanded
       , chronophobia
       , confiscation
@@ -710,8 +711,7 @@ unhallowedCountry =
 
 sordidAndSilent :: CardDef
 sordidAndSilent =
-  ( treachery "02089" "Sordid and Silent" EncounterSet.Dunwich 2
-  )
+  (treachery "02089" "Sordid and Silent" EncounterSet.Dunwich 2)
     { cdCardTraits = setFromList [Terror]
     }
 
@@ -975,8 +975,7 @@ descentIntoMadness =
 
 huntedByByakhee :: CardDef
 huntedByByakhee =
-  ( treachery "03087" "Hunted by Byakhee" EncounterSet.Byakhee 2
-  )
+  (treachery "03087" "Hunted by Byakhee" EncounterSet.Byakhee 2)
     { cdCardTraits = singleton Pact
     }
 
@@ -1122,8 +1121,7 @@ eyesInTheWalls =
 
 theShadowBehindYou :: CardDef
 theShadowBehindYou =
-  ( treachery "03261" "The Shadow Behind You" ThePallidMask 3
-  )
+  (treachery "03261" "The Shadow Behind You" ThePallidMask 3)
     { cdCardTraits = singleton Terror
     }
 
@@ -2695,8 +2693,7 @@ wheresPa =
     }
 
 illDoItMyself :: CardDef
-illDoItMyself =
-  (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
+illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
 
 dreamsOfTheFlood :: CardDef
 dreamsOfTheFlood =
@@ -2707,17 +2704,18 @@ glimpseTheVoid =
   (weakness "11010" "Glimpse the Void") {cdCardTraits = setFromList [Blunder, Insight]}
 
 confiscation :: CardDef
-confiscation =
-  (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
+confiscation = (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
 
 prophecyOfTheEnd :: CardDef
 prophecyOfTheEnd =
   (weakness "11016" "Prophecy of the End")
     { cdCardTraits = setFromList [Omen, Endtimes]
     , cdKeywords = setFromList [Keyword.Surge]
-    , cdCardInSearchEffects = True
     , cdCardType = TreacheryType
     }
+
+castAdrift :: CardDef
+castAdrift = (weakness "11019" "Cast Adrift") {cdCardTraits = setFromList [Hardship]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

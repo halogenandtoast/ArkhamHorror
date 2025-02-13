@@ -95,3 +95,11 @@ forensicKit =
     , cdUses = uses Supply 4
     , cdSlots = [#hand]
     }
+
+mortarAndPestle :: CardDef
+mortarAndPestle =
+  (asset "11037" "Mortar and Pestle" 2 Seeker)
+    { cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSkills = [#willpower]
+    , cdUses = uses Resource 0
+    }

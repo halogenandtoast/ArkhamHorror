@@ -540,6 +540,7 @@ allPlayerAssetCards =
       , occultReliquary3
       , occultScraps
       , oculaObscuraEsotericEyepiece
+      , oculusMortuum
       , ofuda
       , oldBookOfLore
       , oldBookOfLore3

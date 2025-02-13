@@ -2887,6 +2887,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.IgnoreChaosToken who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
         _ -> noMatch
+    Matcher.ChaosTokenSealed timing whoMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.ChaosTokenSealed who token ->
+          andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> noMatch
     Matcher.AddedToVictory timing cardMatcher -> guardTiming timing $ \case
       Window.AddedToVictory card -> pure $ cardMatch card cardMatcher
       _ -> noMatch

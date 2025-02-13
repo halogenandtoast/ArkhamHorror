@@ -326,9 +326,17 @@ runWindow attrs windows actions playableCards = do
 
 runInvestigatorMessage :: Runner InvestigatorAttrs
 runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
-  SealedChaosToken token _ (isTarget a -> True) -> do
+  SealedChaosToken token miid (isTarget a -> True) -> do
+    when (a.id `elem` miid) do
+      whenWindow <- checkWindows [mkWhen (Window.ChaosTokenSealed a.id token)]
+      afterWindow <- checkWindows [mkAfter (Window.ChaosTokenSealed a.id token)]
+      pushAll [whenWindow, afterWindow]
     pure $ a & sealedChaosTokensL %~ (token :)
-  SealedChaosToken token _ _ -> do
+  SealedChaosToken token miid _ -> do
+    when (a.id `elem` miid) do
+      whenWindow <- checkWindows [mkWhen (Window.ChaosTokenSealed a.id token)]
+      afterWindow <- checkWindows [mkAfter (Window.ChaosTokenSealed a.id token)]
+      pushAll [whenWindow, afterWindow]
     pure $ a & sealedChaosTokensL %~ filter (/= token)
   UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
   ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)

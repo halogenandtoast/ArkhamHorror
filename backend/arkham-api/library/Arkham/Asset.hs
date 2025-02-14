@@ -1074,6 +1074,7 @@ allAssets =
     , SomeAssetCard uncannySpecimen
     , --- rogue [tdc]
       SomeAssetCard lugerP08
+    , SomeAssetCard robertCastaigneHasYourBack
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

@@ -631,6 +631,7 @@ allPlayerAssetCards =
       , ritualCandles
       , roaldEllsworthIntrepidExplorer
       , roaldEllsworthIntrepidExplorerResolute
+      , robertCastaigneHasYourBack
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rodOfAnimalism1

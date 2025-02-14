@@ -2158,6 +2158,12 @@ initiateEnemyAttackWith
   -> m ()
 initiateEnemyAttackWith enemy source target f = push $ InitiateEnemyAttack $ f $ enemyAttack enemy source target
 
+withCardEntity :: (IsCard card, ReverseQueue m) => card -> m () -> m ()
+withCardEntity (toCard -> card) body = do
+  push $ AddCardEntity card
+  body
+  push $ RemoveCardEntity card
+
 handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 handleTarget iid source target = push $ Msg.handleTargetChoice iid source target

@@ -3,7 +3,6 @@ module Arkham.Skill.Cards.Grizzled (grizzled, Grizzled (..)) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyTraits))
-import Arkham.Game.Helpers (sourceMatches)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestSource, getSkillTestTarget)

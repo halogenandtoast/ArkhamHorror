@@ -231,6 +231,7 @@ allPlayerEventCards =
       , infighting3
       , intelReport
       , interrogate
+      , intimidation
       , iveGotAPlan
       , iveGotAPlan2
       , iveHadWorse2

@@ -649,6 +649,7 @@ allEvents =
       SomeEventCard wheresTheParty
     , SomeEventCard youveHadWorse
     , SomeEventCard bumsRush
+    , SomeEventCard intimidation
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

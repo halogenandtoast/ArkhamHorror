@@ -30,6 +30,7 @@ import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Data.Aeson.TH
+import Data.UUID qualified as UUID
 import GHC.Records
 
 data Result b a = Success a | Failure b
@@ -133,7 +134,7 @@ instance HasField "needsAction" CardPlay Bool where
   getField = cardPlayedNeedsAction
 
 data WindowType
-  = AttemptToEvadeEnemy InvestigatorId EnemyId
+  = AttemptToEvadeEnemy SkillTestId InvestigatorId EnemyId
   | ResolvingRevelation InvestigatorId TreacheryId
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
@@ -325,6 +326,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "AttemptToEvadeEnemy" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (i, e) -> pure $ AttemptToEvadeEnemy (SkillTestId UUID.nil) i e
+                Right (sid, i, e) -> pure $ AttemptToEvadeEnemy sid i e
             "PlayCard" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

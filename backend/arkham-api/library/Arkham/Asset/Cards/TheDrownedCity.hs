@@ -139,3 +139,10 @@ robertCastaigneHasYourBack =
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+stringAlong :: CardDef
+stringAlong =
+  (asset "11052" "String Along" 3 Rogue)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Talent]
+    }

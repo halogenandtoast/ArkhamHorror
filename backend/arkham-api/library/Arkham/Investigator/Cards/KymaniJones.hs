@@ -1,12 +1,14 @@
-module Arkham.Investigator.Cards.KymaniJones (kymaniJones, kymaniJonesEffect, KymaniJones (..)) where
+module Arkham.Investigator.Cards.KymaniJones (kymaniJones, kymaniJonesEffect) where
 
 import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.Window (windowSkillTestId)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (SkillTestEnded)
+import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
 
@@ -22,16 +24,9 @@ kymaniJones =
 
 instance HasAbilities KymaniJones where
   getAbilities (KymaniJones x) =
-    [ restrictedAbility
-        x
-        1
-        ( Self
-            <> exists (CanEngageEnemy (x.ability 1) <> ExhaustedEnemy <> at_ (locationWithInvestigator x.id))
-        )
+    [ selfAbility x 1 (exists (CanEngageEnemy (x.ability 1) <> #exhausted <> enemyAtLocationWith x.id))
         $ FastAbility Free
-    , restrictedAbility x 2 Self
-        $ freeReaction
-        $ AttemptToEvade #when You (NonEliteEnemy <> ExhaustedEnemy)
+    , selfAbility_ x 2 $ freeReaction $ AttemptToEvade #when You (NonEliteEnemy <> ExhaustedEnemy)
     ]
 
 instance HasChaosTokenValue KymaniJones where
@@ -42,16 +37,15 @@ instance HasChaosTokenValue KymaniJones where
 instance RunMessage KymaniJones where
   runMessage msg i@(KymaniJones attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <-
-        select $ CanEngageEnemy (attrs.ability 1) <> ExhaustedEnemy <> at_ (locationWithInvestigator iid)
-      chooseOne iid [targetLabel enemy [EngageEnemy iid enemy Nothing False] | enemy <- enemies]
+      enemies <- select $ CanEngageEnemy (attrs.ability 1) <> #exhausted <> enemyAtLocationWith iid
+      chooseTargetM iid enemies (engageEnemy iid)
       pure i
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      nextSkillTestModifier (attrs.ability 1) iid (AddSkillValue #intellect)
+    UseCardAbility iid (isSource attrs -> True) 2 (windowSkillTestId -> sid) _ -> do
+      skillTestModifier sid (attrs.ability 1) iid (AddSkillValue #intellect)
       createCardEffect Cards.kymaniJones Nothing (attrs.ability 1) iid
       pure i
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      whenAny (ExhaustedEnemy <> enemyAtLocationWith iid) $ push PassSkillTest
+    ElderSignEffect (is attrs -> True) -> do
+      whenAny (ExhaustedEnemy <> enemyAtLocationWith attrs.id) passSkillTest
       pure i
     _ -> KymaniJones <$> liftRunMessage msg attrs
 

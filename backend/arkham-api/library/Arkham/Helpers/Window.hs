@@ -151,6 +151,13 @@ engagedEnemy =
     (windowType -> Window.EnemyEngaged _ eid) -> Just eid
     _ -> Nothing
 
+windowSkillTestId :: HasCallStack => [Window] -> SkillTestId
+windowSkillTestId =
+  fromMaybe (error "missing enemy") . asum . map \case
+    (windowType -> Window.AttemptToEvadeEnemy sid _ _) -> Just sid
+    (windowType -> Window.InitiatedSkillTest st) -> Just st.id
+    _ -> Nothing
+
 enteringEnemy :: HasCallStack => [Window] -> EnemyId
 enteringEnemy =
   fromMaybe (error "missing enemy") . asum . map \case

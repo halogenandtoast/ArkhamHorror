@@ -73,6 +73,7 @@ allPlayerEventCards =
       , breachTheDoor
       , breakingAndEntering
       , breakingAndEntering2
+      , bumsRush
       , burnAfterReading1
       , burningTheMidnightOil
       , buryThemDeep

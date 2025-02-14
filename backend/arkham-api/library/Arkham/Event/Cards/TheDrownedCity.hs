@@ -72,3 +72,11 @@ youveHadWorse =
             (SourceIsCancelable AnySource)
             (affectsOthers $ at_ (orConnected YourLocation) <> can.spend.resources)
     }
+
+bumsRush :: CardDef
+bumsRush =
+  (event "11055" "Bum's Rush" 2 Rogue)
+    { cdSkills = [#intellect, #combat]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdActions = [#evade]
+    }

@@ -1899,6 +1899,7 @@ library
       Arkham.Event.Events.BreachTheDoor
       Arkham.Event.Events.BreakingAndEntering
       Arkham.Event.Events.BreakingAndEntering2
+      Arkham.Event.Events.BumsRush
       Arkham.Event.Events.BurnAfterReading1
       Arkham.Event.Events.BurningTheMidnightOil
       Arkham.Event.Events.BuryThemDeep

@@ -1072,6 +1072,8 @@ allAssets =
     , SomeAssetCard mortarAndPestle
     , SomeAssetCard oculusMortuum
     , SomeAssetCard uncannySpecimen
+    , --- rogue [tdc]
+      SomeAssetCard lugerP08
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

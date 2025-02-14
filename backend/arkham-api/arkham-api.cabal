@@ -935,6 +935,7 @@ library
       Arkham.Asset.Assets.LuckyDice2
       Arkham.Asset.Assets.LuckyDice3
       Arkham.Asset.Assets.LuckyPennyOmenOfMisfortune2
+      Arkham.Asset.Assets.LugerP08
       Arkham.Asset.Assets.Lupara3
       Arkham.Asset.Assets.M1918Bar4
       Arkham.Asset.Assets.Machete
@@ -1916,6 +1917,7 @@ library
       Arkham.Event.Events.Contraband
       Arkham.Event.Events.Contraband2
       Arkham.Event.Events.ControlVariable
+      Arkham.Event.Events.CorrelateAllItsContents
       Arkham.Event.Events.Counterespionage1
       Arkham.Event.Events.Counterpunch
       Arkham.Event.Events.Counterpunch2

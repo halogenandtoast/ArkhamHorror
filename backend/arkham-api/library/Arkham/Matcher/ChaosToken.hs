@@ -38,6 +38,7 @@ data ChaosTokenMatcher
   | ChaosTokenMatchesOrElse ChaosTokenMatcher ChaosTokenMatcher
   | ChaosTokenIs ChaosTokenId
   | CancelableChaosToken ChaosTokenMatcher
+  | FirstChaosTokenRevealedThisSkillTest
   deriving stock (Show, Eq, Ord, Data)
 
 chaosTokenIs :: ChaosToken -> ChaosTokenMatcher
@@ -70,6 +71,7 @@ instance ToDisplay ChaosTokenMatcher where
     ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
     ChaosTokenRevealedBy _ -> "Revealed chaos token"
     CancelableChaosToken inner -> toDisplay inner
+    FirstChaosTokenRevealedThisSkillTest -> "First chaos token revealed this skill test"
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

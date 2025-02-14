@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -3856,6 +3856,10 @@ instance Query ChaosTokenMatcher where
       IncludeSealed m -> go m
       IncludeTokenPool m -> go m
       IsInfestationToken m -> go m
+      FirstChaosTokenRevealedThisSkillTest -> \t ->
+        getSkillTest <&> \case
+          Nothing -> False
+          Just (traceShowId -> st) -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
 
 instance Query AssetMatcher where
   select = fmap (map toId) . getAssetsMatching

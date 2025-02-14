@@ -93,6 +93,7 @@ allPlayerEventCards =
       , contraband
       , contraband2
       , controlVariable
+      , correlateAllItsContents
       , coupDeGrace
       , counterespionage1
       , counterpunch

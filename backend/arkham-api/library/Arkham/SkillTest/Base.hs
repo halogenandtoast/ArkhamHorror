@@ -53,6 +53,7 @@ data SkillTest = SkillTest
   , skillTestTargetCard :: Maybe CardId
   , skillTestCard :: Maybe CardId
   , skillTestStep :: SkillTestStep
+  , skillTestRevealedChaosTokensCount :: Int
   }
   deriving stock (Show, Eq, Data)
 
@@ -79,6 +80,9 @@ instance HasField "investigator" SkillTest InvestigatorId where
 
 instance HasField "revealedChaosTokens" SkillTest [ChaosToken] where
   getField = skillTestRevealedChaosTokens
+
+instance HasField "revealedChaosTokensCount" SkillTest Int where
+  getField = skillTestRevealedChaosTokensCount
 
 instance HasField "chaosTokens" SkillTest [ChaosToken] where
   getField = skillTestSetAsideChaosTokens
@@ -158,6 +162,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestSourceCard = Nothing
     , skillTestCard = Nothing
     , skillTestStep = DetermineSkillOfTestStep
+    , skillTestRevealedChaosTokensCount = 0
     }
 
 iconValuesForSkillTestType :: SkillTestType -> Map SkillIcon Int
@@ -210,4 +215,5 @@ instance FromJSON SkillTest where
     skillTestSourceCard <- o .:? "sourceCard"
     skillTestCard <- o .:? "card"
     skillTestStep <- o .:? "step" .!= DetermineSkillOfTestStep
+    skillTestRevealedChaosTokensCount <- o .:? "revealedChaosTokensCount" .!= 0
     pure SkillTest {..}

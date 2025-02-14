@@ -743,6 +743,12 @@ instance RunMessage ChaosBag where
             cancelTokenIfShould $ token {chaosTokenRevealedBy = miid}
           -- let tokens' = filter (not . chaosTokenCancelled) tokens''
 
+          -- If we are dealing with the skill test, then the after window will be managed by it
+          let
+            sourceIsSkillTest = case source of
+              SkillTestSource _ -> True
+              _ -> False
+            
           checkWindowMsgs <- case miid of
             Just iid ->
               (\x y -> [x, y])
@@ -753,7 +759,8 @@ instance RunMessage ChaosBag where
                   ]
                 <*> checkWindows
                   [ mkAfter (Window.RevealChaosToken iid token)
-                  | token <- tokens'
+                  | not sourceIsSkillTest
+                  , token <- tokens'
                   , not token.cancelled
                   ]
             Nothing -> pure []

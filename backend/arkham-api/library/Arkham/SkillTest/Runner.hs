@@ -323,12 +323,15 @@ instance RunMessage SkillTest where
               , After revealMsg
               ]
       pure $ s & (setAsideChaosTokensL %~ (<> chaosTokens))
-    RevealChaosToken SkillTestSource {} _iid token -> do
+    RevealChaosToken SkillTestSource {} iid token -> do
+      pushM $ checkAfter $ Window.RevealChaosToken iid token
+
       pure
         $ s
         & (revealedChaosTokensL %~ (<> [token]))
         & (toResolveChaosTokensL %~ nub . (<> [token]))
         & (setAsideChaosTokensL %~ nub . (<> [token]))
+        & (revealedChaosTokensCountL +~ 1)
     RevealSkillTestChaosTokens iid -> do
       -- NOTE: this exists here because of Sacred Covenant (2), we want to
       -- cancel the modifiers but retain the effects so the effects are queued,
@@ -336,6 +339,7 @@ instance RunMessage SkillTest where
       -- to move this window we will need an alternate solution.
       afterRevealMsg <- checkWindows [mkAfter $ Window.SkillTestStep RevealChaosTokenStep]
       afterResolveMsg <- checkWindows [mkAfter $ Window.SkillTestStep ResolveChaosSymbolEffectsStep]
+
       revealedChaosTokenFaces <- flip
         concatMapM
         skillTestToResolveChaosTokens

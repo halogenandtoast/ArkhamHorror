@@ -118,5 +118,15 @@ uncannySpecimen :: CardDef
 uncannySpecimen =
   (asset "11039" "Uncanny Specimen" 1 Seeker)
     { cdSlots = [#arcane]
+    , cdCardTraits = setFromList [Creature, Science]
     , cdKeywords = setFromList [Keyword.Myriad]
+    }
+
+lugerP08 :: CardDef
+lugerP08 =
+  (asset "11050" "Luger P08" 2 Rogue)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+    , cdSlots = [#hand]
+    , cdUses = uses Ammo 2
     }

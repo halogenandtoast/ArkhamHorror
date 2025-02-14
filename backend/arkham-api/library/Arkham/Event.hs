@@ -643,6 +643,8 @@ allEvents =
     , --- guardian [tdc]
       SomeEventCard primedForAction
     , SomeEventCard readyForAnything
+    , --- seeker [tdc]
+      SomeEventCard correlateAllItsContents
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

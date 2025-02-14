@@ -478,6 +478,7 @@ allPlayerAssetCards =
       , luckyDice2
       , luckyDice3
       , luckyPennyOmenOfMisfortune2
+      , lugerP08
       , lupara3
       , m1918Bar4
       , machete

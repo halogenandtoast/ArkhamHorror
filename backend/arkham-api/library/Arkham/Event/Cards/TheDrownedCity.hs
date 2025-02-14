@@ -38,3 +38,11 @@ readyForAnything =
       , cdCriteria = Just $ Criteria.FirstAction <> can.draw.cards You
       , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
       }
+
+correlateAllItsContents :: CardDef
+correlateAllItsContents =
+    (event "11040" "Correlate All Its Contents" 1 Seeker)
+      { cdSkills = [#willpower, #intellect]
+      , cdCardTraits = setFromList [Insight]
+      , cdActions = [#investigate]
+      }

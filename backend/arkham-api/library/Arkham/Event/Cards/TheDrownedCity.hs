@@ -1,5 +1,6 @@
 module Arkham.Event.Cards.TheDrownedCity where
 
+import Arkham.Capability
 import Arkham.Event.Cards.Import
 import Arkham.Criteria qualified as Criteria
 
@@ -45,4 +46,13 @@ correlateAllItsContents =
       { cdSkills = [#willpower, #intellect]
       , cdCardTraits = setFromList [Insight]
       , cdActions = [#investigate]
+      }
+
+wheresTheParty :: CardDef
+wheresTheParty =
+    (event "11053" "\"Where's the party?\"" 0 Rogue)
+      { cdSkills = [#intellect, #agility]
+      , cdCardTraits = setFromList [Trick, Improvised]
+      , cdActions = [#parley]
+      , cdCriteria = Just $ can.target.encounterDeck You
       }

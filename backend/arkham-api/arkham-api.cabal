@@ -2259,6 +2259,7 @@ library
       Arkham.Event.Events.WarningShot
       Arkham.Event.Events.Waylay
       Arkham.Event.Events.WellMaintained1
+      Arkham.Event.Events.WheresTheParty
       Arkham.Event.Events.WillToSurvive
       Arkham.Event.Events.WillToSurvive3
       Arkham.Event.Events.WindsOfPower1

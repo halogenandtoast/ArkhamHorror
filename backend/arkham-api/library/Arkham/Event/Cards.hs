@@ -432,6 +432,7 @@ allPlayerEventCards =
       , warningShot
       , waylay
       , wellMaintained1
+      , wheresTheParty
       , willToSurvive
       , willToSurvive3
       , windsOfPower1

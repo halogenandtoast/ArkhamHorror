@@ -80,3 +80,12 @@ bumsRush =
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdActions = [#evade]
     }
+
+intimidation :: CardDef
+intimidation =
+  (event "11056" "Intimidation" 3 Rogue)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Tactic]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithRemainingHealth (atLeast 1)
+    }

@@ -41,6 +41,7 @@ allPlayerSkillCards =
       , beloved
       , bruteForce1
       , calculatedRisk
+      , crackShot
       , copycat3
       , cunning
       , curiosity
@@ -892,24 +893,36 @@ wellDressed =
 determined :: CardDef
 determined =
   signature "11001"
-  $ (skill "11002" "Determined" [#wild] Neutral)
+    $ (skill "11002" "Determined" [#wild] Neutral)
       { cdCardTraits = setFromList [Innate]
       }
 
 grimResolve :: CardDef
 grimResolve =
   signature "11017"
-  $ (skill "11018" "Grim Resolve" [#wild] Neutral)
+    $ (skill "11018" "Grim Resolve" [#wild] Neutral)
       { cdCardTraits = setFromList [Innate, Developed]
       }
 
 hardboiled :: CardDef
 hardboiled =
   (skill "11025" "Hardboiled" [#combat, #wild] Guardian)
-      { cdCardTraits = setFromList [Innate]
-      , cdCommitRestrictions = [MaxOnePerTest]
-      , cdCardInHandEffects = True
-      }
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdCardInHandEffects = True
+    }
+
+crackShot :: CardDef
+crackShot =
+  (skill "11057" "Crack Shot" [#wild, #wild, #wild] Rogue)
+    { cdCardTraits = setFromList [Practiced]
+    , cdCommitRestrictions =
+        [ OnlySkillTestSource
+            $ SourceIsAsset
+            $ AssetControlledBy You
+            <> mapOneOf AssetWithTrait [Firearm, Ranged]
+        ]
+    }
 
 riseToTheOccasion3 :: CardDef
 riseToTheOccasion3 =

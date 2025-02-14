@@ -258,6 +258,8 @@ allSkills =
     , SomeSkillCard grimResolve
     , --- guardian [tdc]
       SomeSkillCard hardboiled
+    , --- rogue [tdc]
+      SomeSkillCard crackShot
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

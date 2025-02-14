@@ -2057,6 +2057,7 @@ library
       Arkham.Event.Events.IntelReport
       Arkham.Event.Events.Interrogate
       Arkham.Event.Events.InTheShadows
+      Arkham.Event.Events.Intimidation
       Arkham.Event.Events.IveGotAPlan
       Arkham.Event.Events.IveGotAPlan2
       Arkham.Event.Events.IveHadWorse2
@@ -3385,6 +3386,7 @@ library
       Arkham.Skill.Cards.BruteForce1
       Arkham.Skill.Cards.CalculatedRisk
       Arkham.Skill.Cards.Copycat3
+      Arkham.Skill.Cards.CrackShot
       Arkham.Skill.Cards.Cunning
       Arkham.Skill.Cards.Curiosity
       Arkham.Skill.Cards.Daredevil

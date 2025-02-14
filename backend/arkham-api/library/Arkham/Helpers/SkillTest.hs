@@ -22,6 +22,7 @@ import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Target as X
+import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
@@ -494,6 +495,7 @@ getIsCommittable a c = do
                 let
                   committedCardTitles = map toTitle allCommittedCards
                   passesCommitRestriction = \case
+                    OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
                     CommittableTreachery -> error "unhandled"
                     AnyCommitRestriction cs -> anyM passesCommitRestriction cs
                     OnlyFightAgainst matcher -> case skillTest.target.enemy of

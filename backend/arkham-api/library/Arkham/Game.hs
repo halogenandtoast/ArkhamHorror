@@ -3990,6 +3990,10 @@ instance Query ExtendedCardMatcher where
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case
+            OnlySkillTestSource smatcher -> 
+              getSkillTestSource >>= \case
+                Just source -> sourceMatches source smatcher
+                Nothing -> pure False
             CommittableTreachery -> error "unhandled"
             AnyCommitRestriction crs -> anyM (passesCommitRestriction card) crs
             OnlyFightAgainst ematcher ->

@@ -647,6 +647,7 @@ allEvents =
       SomeEventCard correlateAllItsContents
     , --- rogue [tdc]
       SomeEventCard wheresTheParty
+    , SomeEventCard youveHadWorse
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

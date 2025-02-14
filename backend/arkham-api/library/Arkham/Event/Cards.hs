@@ -445,6 +445,7 @@ allPlayerEventCards =
       , wrongPlaceRightTime
       , youHandleThisOne
       , youOweMeOne
+      , youveHadWorse
       ]
 
 allEncounterEventCards :: Map CardCode CardDef

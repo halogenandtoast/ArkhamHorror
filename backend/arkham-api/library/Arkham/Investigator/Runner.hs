@@ -1140,7 +1140,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   EvadeEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
     handleSkillTestNesting_ sid msg do
-      attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy iid eid]
+      attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy sid iid eid]
       pushAll [attemptWindow, TryEvadeEnemy sid iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
   MoveAction iid lid cost True | iid == investigatorId -> do

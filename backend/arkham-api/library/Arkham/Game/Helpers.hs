@@ -2823,7 +2823,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.AttemptToEvade timing whoMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.AttemptToEvadeEnemy who enemyId ->
+        Window.AttemptToEvadeEnemy _ who enemyId ->
           andM
             [ matchWho iid who whoMatcher
             , enemyMatches enemyId enemyMatcher

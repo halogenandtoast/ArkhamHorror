@@ -721,6 +721,7 @@ allPlayerAssetCards =
       , strayCat
       , streetwise
       , streetwise3
+      , stringAlong
       , studious3
       , stylishCoat1
       , suggestion1

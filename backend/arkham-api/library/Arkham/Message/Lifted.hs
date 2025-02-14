@@ -481,6 +481,16 @@ createEnemyEngagedWithPrey c = do
 createEnemyEngagedWithPrey_ :: ReverseQueue m => Card -> m ()
 createEnemyEngagedWithPrey_ = void . createEnemyEngagedWithPrey
 
+engageEnemy
+  :: ( AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     , ReverseQueue m
+     )
+  => investigator -> enemy -> m ()
+engageEnemy investigator enemy = push $ EngageEnemy (asId investigator) (asId enemy) Nothing False
+
 createEnemyAt_
   :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId)
   => card -> location -> m ()

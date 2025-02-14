@@ -1,8 +1,8 @@
-module Arkham.Event.Events.IveHadWorse4 (iveHadWorse4, IveHadWorse4 (..)) where
+module Arkham.Event.Events.IveHadWorse4 (iveHadWorse4) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Message (MessageType (..), messageType)
+import Arkham.Helpers.Healing
 
 newtype IveHadWorse4 = IveHadWorse4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -11,18 +11,10 @@ newtype IveHadWorse4 = IveHadWorse4 EventAttrs
 iveHadWorse4 :: EventCard IveHadWorse4
 iveHadWorse4 = event IveHadWorse4 Cards.iveHadWorse4
 
-dropUntilDamage :: [Message] -> [Message]
-dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
-
 instance RunMessage IveHadWorse4 where
   runMessage msg e@(IveHadWorse4 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == toId attrs -> do
-      (damage, horror) <- fromQueue $ \queue -> case dropUntilDamage queue of
-        dmsg : _ -> case dmsg of
-          InvestigatorDamage iid' _ damage' horror' | iid' == iid -> (damage', horror')
-          InvestigatorDoAssignDamage iid' _ _ _ damage' horror' _ _ | iid' == iid -> (damage', horror')
-          _ -> error "mismatch"
-        _ -> error "unhandled"
+      (damage, horror) <- getDamageAmounts iid
       let amounts = [("Damage", (0, damage)) | damage > 0] <> [("Horror", (0, horror)) | horror > 0]
       chooseAmounts iid "Amount of Damage/Horror to cancel" (MaxAmountTarget 5) amounts attrs
       pure e

@@ -2272,6 +2272,7 @@ library
       Arkham.Event.Events.WrongPlaceRightTime
       Arkham.Event.Events.YouHandleThisOne
       Arkham.Event.Events.YouOweMeOne
+      Arkham.Event.Events.YouveHadWorse
       Arkham.Event.Helpers
       Arkham.Event.Import.Lifted
       Arkham.Event.Runner

@@ -280,6 +280,11 @@ cardsDrawn [] = []
 cardsDrawn ((windowType -> Window.DrawCards _ cs) : rest) = cs <> cardsDrawn rest
 cardsDrawn (_ : xs) = cardsDrawn xs
 
+damagedInvestigator :: [Window] -> InvestigatorId
+damagedInvestigator [] = error "no damaged investigator"
+damagedInvestigator ((windowType -> Window.WouldTakeDamageOrHorror _ (InvestigatorTarget iid) _ _) : _) = iid
+damagedInvestigator (_ : xs) = damagedInvestigator xs
+
 dealtDamage :: [Window] -> Int
 dealtDamage [] = 0
 dealtDamage ((windowType -> Window.WouldTakeDamageOrHorror _ _ n _) : _) = n

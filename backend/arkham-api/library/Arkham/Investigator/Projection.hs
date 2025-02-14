@@ -33,6 +33,9 @@ instance HasField "hand" InvestigatorId (QueueT Message GameT [Card]) where
 instance HasField "clues" InvestigatorId (QueueT Message GameT Int) where
   getField = field InvestigatorClues
 
+instance HasField "resources" InvestigatorId (QueueT Message GameT Int) where
+  getField = field InvestigatorResources
+
 instance HasField "placement" InvestigatorId (QueueT Message GameT Placement) where
   getField = field InvestigatorPlacement
 

@@ -648,6 +648,7 @@ allEvents =
     , --- rogue [tdc]
       SomeEventCard wheresTheParty
     , SomeEventCard youveHadWorse
+    , SomeEventCard bumsRush
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

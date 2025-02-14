@@ -130,3 +130,12 @@ lugerP08 =
     , cdSlots = [#hand]
     , cdUses = uses Ammo 2
     }
+
+robertCastaigneHasYourBack :: CardDef
+robertCastaigneHasYourBack =
+  (asset "11051" ("Robert Castaigne" <:> "Has Your Back") 4 Rogue)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Ally, Veteran]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }

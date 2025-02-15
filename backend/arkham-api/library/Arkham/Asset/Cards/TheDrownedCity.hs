@@ -165,6 +165,15 @@ breathOfTheSleeper =
     , cdSlots = [#arcane]
     }
 
+eyesOfTheDreamer :: CardDef
+eyesOfTheDreamer =
+  (asset "11067" "Eyes of the Dreamer" 3 Mystic)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Spell]
+    , cdUses = uses Charge 9
+    , cdSlots = [#arcane]
+    }
+
 theGreatWorkDivideAndUnite :: CardDef
 theGreatWorkDivideAndUnite =
   permanent

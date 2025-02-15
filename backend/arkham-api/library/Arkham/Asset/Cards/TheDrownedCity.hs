@@ -146,3 +146,11 @@ stringAlong =
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Talent]
     }
+
+theGreatWorkDivideAndUnite :: CardDef
+theGreatWorkDivideAndUnite = permanent $
+  (asset "11068a" ("The Great Work" <:> "Divide and Unite") 0 Mystic)
+    { cdCardTraits = setFromList [Pact, Science]
+    , cdUnique = True
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }

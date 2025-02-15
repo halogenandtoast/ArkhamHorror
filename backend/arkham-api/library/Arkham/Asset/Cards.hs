@@ -756,6 +756,7 @@ allPlayerAssetCards =
       , theCustodian
       , theDevilXv
       , theFool03
+      , theGreatWorkDivideAndUnite
       , theGoldPocketWatch4
       , theHierophantV3
       , theHungeringBlade1

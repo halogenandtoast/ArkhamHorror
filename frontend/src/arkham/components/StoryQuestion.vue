@@ -25,7 +25,11 @@ const cardLabelImage = (cardCode: string) => {
 const portraitLabelImage = (investigatorId: string) => {
   const player = props.game.investigators[investigatorId]
 
-  if (player.isYithian) {
+  if (player.form === 'YithianForm') {
+    return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
+  }
+
+  if (player.form === 'HomunculusForm') {
     return imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)
   }
 

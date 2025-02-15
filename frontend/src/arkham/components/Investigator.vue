@@ -154,8 +154,12 @@ const skipTriggersAction = computed(() => {
 })
 
 const image = computed(() => {
-  if (props.investigator.isYithian) {
+  if (props.investigator.form === 'YithianForm') {
     return imgsrc("cards/04244.avif");
+  }
+
+  if (props.investigator.form === 'HomunculusForm') {
+    return imgsrc("cards/11068b.avif");
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
@@ -164,7 +168,11 @@ const image = computed(() => {
 })
 
 const portraitImage = computed(() => {
-  if (props.investigator.isYithian) {
+  if (props.investigator.form === "YithianForm") {
+    return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
+  }
+
+  if (props.investigator.form === "HomunculusForm") {
     return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
   }
 

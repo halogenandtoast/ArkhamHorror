@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -631,6 +631,7 @@ getInvestigatorsMatching matcher = do
     _ -> pure results
  where
   includeEliminated Anyone = True
+  includeEliminated InvestigatorCanAddCardsToDeck = True
   includeEliminated TurnInvestigator = True
   includeEliminated ActiveInvestigator = True
   includeEliminated ResignedInvestigator = True
@@ -1008,6 +1009,8 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
     InvestigatorWithMentalTrauma -> pure $ filter ((> 0) . attr investigatorMentalTrauma) as
+    InvestigatorCanAddCardsToDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, traceShowId . attr investigatorKilled]) as
+    InvestigatorCanRemoveCardsFromDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
     DiscoveredCluesThis historyProjection -> flip filterM as $ \i -> do
       (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
     InvestigatorWithKey key -> flip filterM as $ \i ->
@@ -3859,7 +3862,7 @@ instance Query ChaosTokenMatcher where
       FirstChaosTokenRevealedThisSkillTest -> \t ->
         getSkillTest <&> \case
           Nothing -> False
-          Just (traceShowId -> st) -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
+          Just st -> st.revealedChaosTokensCount == 1 && t `elem` st.revealedChaosTokens
 
 instance Query AssetMatcher where
   select = fmap (map toId) . getAssetsMatching

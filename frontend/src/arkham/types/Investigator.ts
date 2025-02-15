@@ -15,6 +15,13 @@ import {
 } from '@/arkham/types/Card';
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
+type Form = 'RegularForm' | 'YithianForm' | 'HomunculusForm'
+
+export const formDecoder = JsonDecoder.oneOf<Form>([
+  JsonDecoder.isExactly('RegularForm'),
+  JsonDecoder.isExactly('YithianForm'),
+  JsonDecoder.isExactly('HomunculusForm'),
+], 'Form');
 
 export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
   JsonDecoder.isExactly('Guardian'),
@@ -109,6 +116,7 @@ export type Investigator = {
   deckSize?: number;
   connectedLocations: string[];
   modifiers?: Modifier[];
+  form: Form;
   name: Name;
   id: string;
   playerId: string;
@@ -150,7 +158,6 @@ export type Investigator = {
   hunchDeck?: CardContents[];
   revealedHunchCard?: string | null;
   devoured?: Card[]
-  isYithian: boolean;
   mutated?: string;
   taboo?: string;
   deckUrl?: string;
@@ -253,7 +260,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
-  isYithian: JsonDecoder.boolean,
+  form: formDecoder,
   mutated: JsonDecoder.optional(JsonDecoder.string),
   taboo: JsonDecoder.optional(JsonDecoder.string),
   deckUrl: JsonDecoder.optional(JsonDecoder.string),

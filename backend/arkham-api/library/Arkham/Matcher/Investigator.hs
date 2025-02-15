@@ -156,6 +156,8 @@ data InvestigatorMatcher
   | InvestigatorWithPhysicalTrauma
   | InvestigatorWithMentalTrauma
   | DiscoveredCluesThis HistoryType
+  | InvestigatorCanRemoveCardsFromDeck
+  | InvestigatorCanAddCardsToDeck
   deriving stock (Show, Eq, Ord, Data)
 
 investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher

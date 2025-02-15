@@ -392,6 +392,7 @@ data ModifierType
   | WillCancelHorror Int
   | XPModifier Text Int
   | UIModifier UIModifier
+  | BecomeHomunculusWhenDefeated
   deriving stock (Show, Eq, Ord, Data)
 
 data UIModifier

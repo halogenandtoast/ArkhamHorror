@@ -233,6 +233,10 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorSupplies" -> pure $ SomeField InvestigatorSupplies
     _ -> error "Unknown Field Investigator"
 
+data InvestigatorForm = RegularForm | YithianForm | HomunculusForm
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
   , investigatorPlayerId :: PlayerId
@@ -288,7 +292,7 @@ data InvestigatorAttrs = InvestigatorAttrs
   , -- the forgotten age
     investigatorSupplies :: [Supply]
   , investigatorDrawnCards :: [PlayerCard] -- temporarily track drawn cards mid shuffle
-  , investigatorIsYithian :: Bool
+  , investigatorForm :: InvestigatorForm
   , -- keys
     investigatorKeys :: Set ArkhamKey
   , -- monterey jack
@@ -582,7 +586,8 @@ instance FromJSON InvestigatorAttrs where
     investigatorHorrorHealed <- o .: "horrorHealed"
     investigatorSupplies <- o .: "supplies"
     investigatorDrawnCards <- o .: "drawnCards"
-    investigatorIsYithian <- o .: "isYithian"
+    investigatorIsYithian <- o .:? "isYithian" .!= False
+    investigatorForm <- o .:? "form" .!= if investigatorIsYithian then YithianForm else RegularForm
     investigatorKeys <- o .: "keys"
     investigatorBeganRoundAt <- o .:? "beganRoundAt"
     investigatorLog <- o .: "log"

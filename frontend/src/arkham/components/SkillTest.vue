@@ -88,7 +88,11 @@ const investigatorPortrait = computed(() => {
   if (choice) {
     const player = props.game.investigators[choice.investigatorId]
 
-    if (player.isYithian) {
+    if (player.form === "YithianForm") {
+      return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
+    }
+
+    if (player.form === "HomunculusForm") {
       return imgsrc(`portraits/${choice.investigatorId.replace('c', '')}.jpg`)
     }
 
@@ -98,7 +102,11 @@ const investigatorPortrait = computed(() => {
   if (props.skillTest) {
     const player = props.game.investigators[props.skillTest.investigator]
 
-    if (player.isYithian) {
+    if (player.form === "YithianForm") {
+      return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
+    }
+
+    if (player.form === "HomunculusForm") {
       return imgsrc(`portraits/${props.skillTest.investigator.replace('c', '')}.jpg`)
     }
 

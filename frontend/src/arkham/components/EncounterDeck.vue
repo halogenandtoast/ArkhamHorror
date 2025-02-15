@@ -45,7 +45,11 @@ const investigatorPortrait = computed(() => {
     return null;
   }
 
-  if (investigator.value.isYithian) {
+  if (investigator.value.form === "HomunculusForm") {
+    return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
+  }
+
+  if (investigator.value.form === "YithianForm") {
     return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
   }
 

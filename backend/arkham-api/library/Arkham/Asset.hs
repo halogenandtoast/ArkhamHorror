@@ -1079,6 +1079,7 @@ allAssets =
     , --- mystic [tdc]
       SomeAssetCard bloodOfThothLawIncarnate
     , SomeAssetCard breathOfTheSleeper
+    , SomeAssetCard eyesOfTheDreamer
     , SomeAssetCard theGreatWorkDivideAndUnite
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

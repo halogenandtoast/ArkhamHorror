@@ -293,6 +293,7 @@ allPlayerAssetCards =
       , eyeOfChaos
       , eyeOfChaos4
       , eyeOfTheDjinnVesselOfGoodAndEvil2
+      , eyesOfTheDreamer
       , eyesOfValusiaTheMothersCunning4
       , fakeCredentials
       , fakeCredentials4

@@ -52,12 +52,12 @@ data ScenarioLogKey
   | IchtacasPrey (Labeled EnemyId `With` Envelope "cardCode" CardCode)
   | -- | Threads of Fate
     IchtacasDestination (Labeled LocationId)
-  | FoundTheProcess
+  | -- | The City of Archives
+    FoundTheProcess
   | DissectedAnOrgan
   | InterviewedASubject
   | RealizedWhatYearItIs
-  | -- | The City of Archives
-    ActivatedTheDevice
+  | ActivatedTheDevice
   | -- | The Depths of Yoth
     CollectedAStrangeLiquid
   | MeddledWithThePast (Labeled InvestigatorId)

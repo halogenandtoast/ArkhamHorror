@@ -17,5 +17,12 @@
     "perfected": "Gains insight into the secrets of the Earth.",
     "successful": "Gains insight into the secrets of the Earth.",
     "backfired": "Gains insight into the secrets of the Earth."
+  },
+  "remembered": {
+    "foundTheProcess": "You found the process.",
+    "dissectedAnOrgan": "You dissected an organ.",
+    "interviewedASubject": "You interviewed a subject.",
+    "realizedWhatYearItIs": "You realized what year it is.",
+    "activatedTheDevice": "You activated the device."
   }
 }

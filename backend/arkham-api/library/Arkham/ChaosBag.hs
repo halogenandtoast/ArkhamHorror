@@ -209,7 +209,7 @@ resolveFirstUnresolved source iid strategy = \case
         then
           pure
             ( Resolved $ concat tokens'
-            , concatMap (map (ChaosTokenIgnored iid chooseSource) . toChaosTokens) steps
+            , map (ChaosTokenSelected iid chooseSource) (concat tokens') <> concatMap (map (ChaosTokenIgnored iid chooseSource) . toChaosTokens) steps
             )
         else
           if all isResolved steps

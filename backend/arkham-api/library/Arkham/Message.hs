@@ -1021,6 +1021,7 @@ data Message
   | SealedChaosToken ChaosToken (Maybe InvestigatorId) Target
   | SetChaosTokenAside ChaosToken -- see: Favor of the Moon (1)
   | UnsealChaosToken ChaosToken
+  | ChaosTokenSelected InvestigatorId Source ChaosToken
   | ChaosTokenIgnored InvestigatorId Source ChaosToken
   | ChaosTokenCanceled InvestigatorId Source ChaosToken
   | SetActiveCard Card

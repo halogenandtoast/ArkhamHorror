@@ -133,6 +133,7 @@ allPlayerAssetCards =
       , boxingGloves3
       , brandOfCthugha1
       , brandOfCthugha4
+      , breathOfTheSleeper
       , britishBullDog
       , britishBullDog2
       , brokenDiademCrownOfDyingLight5

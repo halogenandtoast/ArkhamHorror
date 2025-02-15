@@ -1078,6 +1078,7 @@ allAssets =
     , SomeAssetCard stringAlong
     , --- mystic [tdc]
       SomeAssetCard bloodOfThothLawIncarnate
+    , SomeAssetCard breathOfTheSleeper
     , SomeAssetCard theGreatWorkDivideAndUnite
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

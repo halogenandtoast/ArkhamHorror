@@ -156,6 +156,15 @@ bloodOfThothLawIncarnate =
     , cdSlots = [#arcane]
     }
 
+breathOfTheSleeper :: CardDef
+breathOfTheSleeper =
+  (asset "11066" "Breath of the Sleeper" 3 Mystic)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Spell]
+    , cdUses = uses Charge 9
+    , cdSlots = [#arcane]
+    }
+
 theGreatWorkDivideAndUnite :: CardDef
 theGreatWorkDivideAndUnite =
   permanent

@@ -1077,7 +1077,8 @@ allAssets =
     , SomeAssetCard robertCastaigneHasYourBack
     , SomeAssetCard stringAlong
     , --- mystic [tdc]
-      SomeAssetCard theGreatWorkDivideAndUnite
+      SomeAssetCard bloodOfThothLawIncarnate
+    , SomeAssetCard theGreatWorkDivideAndUnite
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

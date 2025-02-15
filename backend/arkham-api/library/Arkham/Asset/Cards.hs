@@ -114,6 +114,7 @@ allPlayerAssetCards =
       , blessedBlade
       , blessedBlade4
       , blessingOfIsis3
+      , bloodOfThothLawIncarnate
       , bloodPact
       , bloodPact3
       , bloodstainedDagger

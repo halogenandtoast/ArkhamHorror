@@ -163,6 +163,7 @@ data Cost
   | FieldResourceCost FieldCost
   | MaybeFieldResourceCost MaybeFieldCost
   | UseCost AssetMatcher UseType Int
+  | AllUsesCost AssetMatcher UseType
   | EventUseCost EventMatcher UseType Int
   | DynamicUseCost AssetMatcher UseType DynamicUseCostValue
   | UseCostUpTo AssetMatcher UseType Int Int -- (e.g. Spend 1-5 ammo, see M1918 BAR)
@@ -365,6 +366,9 @@ displayCostType = \case
   ResourceCost n -> pluralize n "Resource"
   ScenarioResourceCost n -> pluralize n "Resource from the scenario reference"
   EventUseCost _ b c -> displayCostType (UseCost AnyAsset b c)
+  AllUsesCost _ uType -> case uType of
+    Offering -> "All Offerings"
+    _ -> "All Uses"
   UseCost _ uType n -> case uType of
     Clue -> error "Not a use"
     Damage -> error "Not a use"

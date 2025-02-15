@@ -240,6 +240,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     events <- select eventMatcher
     uses <- sum <$> traverse (fieldMap EventUses (findWithDefault 0 uType)) events
     pure $ uses >= n
+
+  AllUsesCost {} -> pure True
   DynamicUseCost assetMatcher uType useCost -> do
     assets <- select assetMatcher
     uses <-

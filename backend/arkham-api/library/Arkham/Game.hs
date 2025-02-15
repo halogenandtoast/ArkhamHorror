@@ -1009,7 +1009,7 @@ getInvestigatorsMatching matcher = do
       isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
     InvestigatorWithPhysicalTrauma -> pure $ filter ((> 0) . attr investigatorPhysicalTrauma) as
     InvestigatorWithMentalTrauma -> pure $ filter ((> 0) . attr investigatorMentalTrauma) as
-    InvestigatorCanAddCardsToDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, traceShowId . attr investigatorKilled]) as
+    InvestigatorCanAddCardsToDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
     InvestigatorCanRemoveCardsFromDeck -> pure $ filter (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
     DiscoveredCluesThis historyProjection -> flip filterM as $ \i -> do
       (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered

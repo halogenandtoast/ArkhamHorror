@@ -195,7 +195,11 @@ instance RunMessage AssetAttrs where
         _ -> push (Ready $ toTarget a)
       pure a
     RemoveAllDoom _ target | isTarget a target -> pure $ a & tokensL %~ removeAllTokens Doom
-    PlaceTokens source target tType n | isTarget a target -> do
+    PlaceTokens source target tType n | isTarget a target -> runQueueT do
+      pushM $ checkWhen $ Window.PlacedToken source target tType n
+      push $ Do msg
+      pure a
+    Do (PlaceTokens source target tType n) | isTarget a target -> do
       pushM $ checkAfter $ Window.PlacedToken source target tType n
       when (tType == Doom && a.doom == 0) do
         pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source target n

@@ -826,6 +826,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       push
         $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | aid <- assets]
       withPayment $ UsesPayment n
+    AllUsesCost assetMatcher uType -> do
+      assets <- select $ assetMatcher <> AssetWithSpendableUses (atLeast 1) uType
+      assetsWithUses <- for assets \aid -> do
+        uses <- fieldMap AssetUses (findWithDefault 0 uType) aid
+        pure (aid, uses)
+      push
+        $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | (aid, n) <- assetsWithUses]
+      pure c
     EventUseCost eventMatcher uType n -> do
       events <- select eventMatcher
       push

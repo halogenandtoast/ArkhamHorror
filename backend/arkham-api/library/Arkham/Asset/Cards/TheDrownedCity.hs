@@ -147,10 +147,20 @@ stringAlong =
     , cdCardTraits = setFromList [Talent]
     }
 
-theGreatWorkDivideAndUnite :: CardDef
-theGreatWorkDivideAndUnite = permanent $
-  (asset "11068a" ("The Great Work" <:> "Divide and Unite") 0 Mystic)
-    { cdCardTraits = setFromList [Pact, Science]
+bloodOfThothLawIncarnate :: CardDef
+bloodOfThothLawIncarnate =
+  (asset "11065" ("Blood of Thoth" <:> "Law Incarnate") 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Item, Relic]
     , cdUnique = True
-    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdSlots = [#arcane]
     }
+
+theGreatWorkDivideAndUnite :: CardDef
+theGreatWorkDivideAndUnite =
+  permanent
+    $ (asset "11068a" ("The Great Work" <:> "Divide and Unite") 0 Mystic)
+      { cdCardTraits = setFromList [Pact, Science]
+      , cdUnique = True
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      }

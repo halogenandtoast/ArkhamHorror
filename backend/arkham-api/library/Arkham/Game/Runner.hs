@@ -12,6 +12,7 @@ import Arkham.ActiveCost
 import Arkham.Agenda
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Asset
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
@@ -49,7 +50,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (spawnAt)
-import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
+import Arkham.Helpers.Investigator hiding (findCard, investigator, matchTarget)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -60,6 +61,7 @@ import Arkham.Helpers.Message hiding (
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
+  becomeHomunculus,
   becomeYithian,
   lookupInvestigator,
   returnToBody,
@@ -2290,10 +2292,11 @@ runGameMessage msg g = case msg of
           EncounterCard _ -> Nothing
           PlayerCard pc -> pcOwner pc
           VengeanceCard vc -> getBearer vc
-    enemy'' <- overAttrs (delayEngagementL .~ False) <$>
-      runMessage
-        (SetOriginalCardCode $ originalCardCode card)
-        (createEnemy card enemyId)
+    enemy'' <-
+      overAttrs (delayEngagementL .~ False)
+        <$> runMessage
+          (SetOriginalCardCode $ originalCardCode card)
+          (createEnemy card enemyId)
 
     let
       miid = enemyCreationInvestigator enemyCreation
@@ -2849,9 +2852,18 @@ runGameMessage msg g = case msg of
         if turn then turnHistoryL %~ insertHistory iid historyItem else id
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   BecomeYithian iid -> do
-    original <- getInvestigator iid
-    let yithian = becomeYithian original
+    yithian <- becomeYithian <$> getInvestigator iid
     pure $ g & (entitiesL . investigatorsL . at iid ?~ yithian)
+  BecomeHomunculus iid -> do
+    findCard (`cardMatch` cardIs Assets.theGreatWorkDivideAndUnite) >>= \case
+      Nothing -> error "The Great Work not found"
+      Just theGreatWork -> do
+        homunculus <- becomeHomunculus <$> getInvestigator iid
+        removeCard theGreatWork.id
+        push $ RemoveCardFromDeckForCampaign "11068b" theGreatWork.id
+        pure
+          $ g
+          & (entitiesL . investigatorsL %~ deleteMap iid . insertMap "11068b" homunculus)
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy

@@ -85,6 +85,7 @@ allInvestigatorCards =
       , michaelMcGlen
       , gloriaGoldberg
       , georgeBarnaby
+      , lostHomunculus
       , nathanielCho
       , harveyWalters
       , winifredHabbamock
@@ -607,6 +608,14 @@ georgeBarnaby =
     ("George Barnaby" <:> "The Lawyer")
     Survivor
     [Civic, Drifter]
+
+lostHomunculus :: CardDef
+lostHomunculus =
+  investigator
+      "11068b"
+      ("Lost Humonculus" <:> "The Forgotten Child")
+      Mystic
+      [Construct, Scion]
 
 nathanielCho :: CardDef
 nathanielCho =

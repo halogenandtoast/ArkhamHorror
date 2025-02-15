@@ -137,6 +137,7 @@ allInvestigators =
       , SomeInvestigatorCard michaelMcGlen
       , SomeInvestigatorCard gloriaGoldberg
       , SomeInvestigatorCard georgeBarnaby
+      , SomeInvestigatorCard lostHomunculus
       , SomeInvestigatorCard nathanielCho
       , SomeInvestigatorCard harveyWalters
       , SomeInvestigatorCard winifredHabbamock
@@ -172,14 +173,31 @@ becomeYithian (Investigator a) =
       , investigatorCardCode = "04244"
       , investigatorClass = Neutral
       , investigatorTraits = setFromList [Monster, Yithian]
-      , investigatorIsYithian = True
+      , investigatorForm = YithianForm
       , investigatorDiscarding = Nothing
       }
 
+becomeHomunculus :: Investigator -> Investigator
+becomeHomunculus (Investigator a) =
+  Investigator
+    $ LostHomunculus
+    $ (toAttrs a)
+      { investigatorHealth = 6
+      , investigatorSanity = 6
+      , investigatorWillpower = 2
+      , investigatorIntellect = 2
+      , investigatorCombat = 2
+      , investigatorAgility = 2
+      , investigatorCardCode = "11068b"
+      , investigatorId = "11068b"
+      , investigatorClass = Mystic
+      , investigatorTraits = setFromList [Construct, Scion]
+      , investigatorDiscarding = Nothing
+      , investigatorForm = HomunculusForm
+      }
+
 handleInvestigator :: IsInvestigator a => Investigator -> (a -> Investigator) -> Investigator
-handleInvestigator o@(Investigator a) f = case cast a of
-  Just i -> f i
-  Nothing -> o
+handleInvestigator o@(Investigator a) f = maybe o f (cast a)
 
 returnToBody :: Investigator -> Investigator
 returnToBody i =

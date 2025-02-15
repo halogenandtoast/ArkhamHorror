@@ -391,6 +391,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , investigatorMutated = investigatorMutated
         , investigatorSlots = defaultSlots a.id
         , investigatorDeckUrl = investigatorDeckUrl
+        , investigatorKilled = investigatorKilled
+        , investigatorDrivenInsane = investigatorDrivenInsane
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)
@@ -645,10 +647,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       mentalTrauma = if investigatorSanityDamage a >= modifiedSanity then 1 else 0
     windowMsg <- checkWindows [mkAfter $ Window.InvestigatorDefeated defeatedBy iid]
     killed <- hasModifier a KilledIfDefeated
+    becomeHomunculus <- hasModifier a BecomeHomunculusWhenDefeated
+
     pushAll
       $ windowMsg
       : [ChooseLeadInvestigator | isLead]
         <> [InvestigatorKilled (toSource a) iid | killed]
+        <> [BecomeHomunculus iid | not killed && becomeHomunculus]
         <> [InvestigatorWhenEliminated (toSource a) iid Nothing]
     pure
       $ a
@@ -2129,7 +2134,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let n = sum [x | DamageTaken x <- mods]
     pure $ a & assignedHealthDamageL +~ max 0 (damage + n) & assignedSanityDamageL +~ horror
   DrivenInsane iid | iid == investigatorId -> do
-    pure $ a & mentalTraumaL .~ investigatorSanity
+    pure $ a & mentalTraumaL .~ investigatorSanity & drivenInsaneL .~ True
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do
     facingDefeat <- getFacingDefeat a
     if facingDefeat
@@ -2430,10 +2435,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorKilled source iid | iid == investigatorId -> do
-    unless investigatorDefeated $ do
+    unless investigatorDefeated do
       isLead <- (== iid) <$> getLead
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
-    pure $ a & defeatedL .~ True & endedTurnL .~ True
+    pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do
     a <$ push (MoveTo $ move source investigatorId lid)
   MoveTo movement | isTarget a (moveTarget movement) -> do

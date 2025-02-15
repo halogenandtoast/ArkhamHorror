@@ -51,6 +51,7 @@ data Trait
   | Condition
   | Connection
   | Conspirator
+  | Construct
   | Coterie
   | Courage
   | Covenant
@@ -195,6 +196,7 @@ data Trait
   | Scheme
   | Scholar
   | Science
+  | Scion
   | SecondFloor
   | SentinelHill
   | Serpent

@@ -36,6 +36,12 @@ import Data.Map.Strict qualified as Map
 
 defaultCampaignRunner :: IsCampaign a => Runner a
 defaultCampaignRunner msg a = case msg of
+  BecomeHomunculus iid -> do
+    pure $ flip overAttrs a
+      $ (decksL %~ Map.mapKeys (\iid' -> if iid == iid' then "11068b" else iid'))
+      . (storyCardsL %~ Map.mapKeys (\iid' -> if iid == iid' then "11068b" else iid'))
+      . (modifiersL %~ Map.mapKeys (\iid' -> if iid == iid' then "11068b" else iid'))
+      . (logL . recordedSetsL %~ insertWith (<>) KilledInvestigators (singleton $ recorded $ unInvestigatorId iid))
   SetGlobal CampaignTarget k v -> do
     pure $ updateAttrs a (storeL . at (Aeson.toText k) ?~ v)
   StartCampaign -> do
@@ -59,7 +65,8 @@ defaultCampaignRunner msg a = case msg of
     -- [ALERT] Update TheDreamEaters if this alters a
     pure a
   CampaignStep (UpgradeDeckStep _) -> do
-    players <- allPlayers
+    investigators <- select InvestigatorCanAddCardsToDeck
+    players <- traverse getPlayer investigators
     pushAll $ ResetGame : map chooseUpgradeDeck players <> [FinishedUpgradingDecks]
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)

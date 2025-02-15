@@ -350,7 +350,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   DiscardCardCost _ -> pure True -- TODO: Make better
   DiscardRandomCardCost -> iid <=~> Matcher.InvestigatorWithDiscardableCard
   DiscardDrawnCardCost -> pure True -- TODO: Make better
-  ExileCost _ -> pure True -- TODO: Make better
+  ExileCost _ -> iid <=~> Matcher.InvestigatorCanRemoveCardsFromDeck -- TODO: Make better
   RemoveCost _ -> pure True -- TODO: Make better
   HorrorCost {} -> pure True -- TODO: Make better
   HorrorCostX {} -> pure True -- TODO: Make better

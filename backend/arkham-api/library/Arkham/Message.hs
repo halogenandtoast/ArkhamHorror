@@ -1057,6 +1057,7 @@ data Message
   | UseSupply InvestigatorId Supply
   | Explore InvestigatorId Source CardMatcher
   | BecomeYithian InvestigatorId
+  | BecomeHomunculus InvestigatorId
   | SetScenarioMeta Value
   | ScenarioSpecific Text Value
   | SetCampaignMeta Value

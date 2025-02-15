@@ -100,11 +100,11 @@ instance RunMessage TheGathering where
       resigned <- select ResignedInvestigator
       leadId <- getLead
       let
-        chooseToAddLita killed =
-          addCampaignCardToDeckChoice
-            (if leadId `elem` killed then resigned else [leadId])
-            DoNotShuffleIn
-            Assets.litaChantler
+        chooseToAddLita killed = do
+          let valids = if leadId `elem` killed then resigned else [leadId]
+          valids' <- select $ InvestigatorCanAddCardsToDeck <> mapOneOf InvestigatorWithId valids
+          unless (null valids') do
+            addCampaignCardToDeckChoice valids' DoNotShuffleIn Assets.litaChantler
       case resolution of
         NoResolution -> do
           story $ i18n "resolutions.noResolution"

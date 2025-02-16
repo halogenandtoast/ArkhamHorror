@@ -2182,6 +2182,11 @@ spendUses
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> UseType -> Int -> m ()
 spendUses source target tType n = push $ SpendUses (toSource source) (toTarget target) tType n
 
+spendResources
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> Int -> m ()
+spendResources investigator n = push $ SpendResources (asId investigator) n
+
 discardCard
   :: ( ReverseQueue m
      , Sourceable source

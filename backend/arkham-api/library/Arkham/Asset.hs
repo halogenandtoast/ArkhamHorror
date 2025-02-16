@@ -1082,6 +1082,7 @@ allAssets =
     , SomeAssetCard eyesOfTheDreamer
     , SomeAssetCard theGreatWorkDivideAndUnite
     , SomeAssetCard katarinaSojkamissaryFromUlthar
+    , SomeAssetCard signOfXelotaphSymbolOfProtection
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

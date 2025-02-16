@@ -442,6 +442,7 @@ allPlayerAssetCards =
       , joeyTheRatVigil
       , joeyTheRatVigil3
       , katana
+      , katarinaSojkamissaryFromUlthar
       , katjaEastbankKeeperOfEsotericLore2
       , keenEye
       , keenEye3

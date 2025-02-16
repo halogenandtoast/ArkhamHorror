@@ -48,6 +48,7 @@ instance RunMessage BreathOfTheSleeper where
       push
         $ ReplaceCurrentDraw drawSource iid
         $ Choose (toSource attrs) 1 ResolveChoice (Undecided Draw : replicate n (Undecided Draw)) [] Nothing
+      cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       pure a
     ChaosTokenSelected _ (isSource attrs -> True) chaosToken -> do
       let otherTokens = getMetaKeyDefault "breathSelected" [] attrs

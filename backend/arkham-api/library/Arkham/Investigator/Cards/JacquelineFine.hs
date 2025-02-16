@@ -39,6 +39,7 @@ getSteps = \case
  where
   go = \case
     Draw -> [Undecided Draw]
+    DrawUntil inner -> [Undecided (DrawUntil inner)]
     Choose {..} -> steps
     ChooseMatch {..} -> steps
     ChooseMatchChoice {..} -> steps

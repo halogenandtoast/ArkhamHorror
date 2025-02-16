@@ -1081,6 +1081,7 @@ allAssets =
     , SomeAssetCard breathOfTheSleeper
     , SomeAssetCard eyesOfTheDreamer
     , SomeAssetCard theGreatWorkDivideAndUnite
+    , SomeAssetCard katarinaSojkamissaryFromUlthar
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

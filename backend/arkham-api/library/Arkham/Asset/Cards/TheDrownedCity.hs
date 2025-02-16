@@ -182,3 +182,12 @@ theGreatWorkDivideAndUnite =
       , cdUnique = True
       , cdDeckRestrictions = [PerDeckLimit 1]
       }
+
+katarinaSojkamissaryFromUlthar :: CardDef
+katarinaSojkamissaryFromUlthar =
+  (asset "11069" ("Katarina Sojka" <:> "Emissary from Ulthar") 2 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ally, Clairvoyant, Dreamer]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }

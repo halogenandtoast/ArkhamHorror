@@ -30,6 +30,7 @@ data ChaosTokenStrategy
 
 data ChaosBagStep
   = Draw
+  | DrawUntil ChaosTokenMatcher
   | Choose
       { source :: Source
       , amount :: Int

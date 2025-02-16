@@ -75,6 +75,7 @@ replaceFirstChoice source iid strategy replacement = \case
   Resolved tokens' -> Resolved tokens'
   Decided step -> case step of
     Draw -> Decided Draw
+    DrawUntil inner -> Decided (DrawUntil inner)
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       if all isResolved steps
         then Decided replacement
@@ -140,6 +141,39 @@ resolveFirstUnresolved source iid strategy = \case
   Deciding _ -> error "should not be ran with undecided"
   Resolved tokens' -> pure (Resolved tokens', [])
   Decided step -> case step of
+    DrawUntil inner -> do
+      bagChaosTokens <- gets chaosBagChaosTokens
+      forceDraw <- gets chaosBagForceDraw
+      case forceDraw of
+        Just face -> do
+          -- force draw acts like a regular draw
+          case find ((== face) . chaosTokenFace) bagChaosTokens of
+            Nothing -> do
+              (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
+              modify'
+                ( (forceDrawL .~ Nothing)
+                    . (chaosTokensL .~ remaining)
+                    . (setAsideChaosTokensL %~ (<> drawn))
+                )
+              pure (Resolved drawn, [])
+            Just drawn -> do
+              let remaining = delete drawn bagChaosTokens
+              modify'
+                ( (forceDrawL .~ Nothing)
+                    . (chaosTokensL .~ remaining)
+                    . (setAsideChaosTokensL %~ (<> [drawn]))
+                )
+              pure (Resolved [drawn], [])
+        Nothing -> do
+          (ignored, drawnAndRemaining) <- breakM (`chaosTokenMatches` inner) =<< shuffleM bagChaosTokens
+          case drawnAndRemaining of
+            [] -> do
+              modify' ((chaosTokensL .~ []) . (setAsideChaosTokensL %~ (<> ignored)))
+              pure (Resolved [], map (ChaosTokenIgnored iid source) ignored)
+            (drawn : remaining) -> do
+              modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ (drawn : ignored)))
+              resolveFirstUnresolved source iid strategy $
+                Decided (ChooseMatch source 1 ResolveChoice [Resolved [drawn], Resolved ignored] [] inner Nothing)
     Draw -> do
       bagChaosTokens <- gets chaosBagChaosTokens
       forceDraw <- gets chaosBagForceDraw
@@ -290,6 +324,7 @@ resolveFirstUnresolved source iid strategy = \case
             allChaosTokens = concatMap toChaosTokens steps
             toStrategy = \case
               Draw -> ResolveChoice
+              DrawUntil {} -> ResolveChoice
               Choose _ _ st _ _ _ -> st
               ChooseMatch _ _ st _ _ _ _ -> st
               ChooseMatchChoice {} -> error "Do not nest these"
@@ -304,6 +339,7 @@ resolveFirstUnresolved source iid strategy = \case
           let
             fixStep = \case
               Draw -> Draw
+              DrawUntil inner -> DrawUntil inner
               Choose chooseSource n tokenStrategy _ _ nested -> Choose chooseSource n tokenStrategy steps [] nested
               ChooseMatch chooseSource n tokenStrategy _ _ matcher nested -> ChooseMatch chooseSource n tokenStrategy steps [] matcher nested
               ChooseMatchChoice _ _ matchers -> ChooseMatchChoice steps [] matchers
@@ -363,6 +399,14 @@ decideFirstUndecided source iid iids strategy f = \case
         , NextChaosBagStep source (Just iid) strategy
         ]
       )
+    DrawUntil inner ->
+      ( f $ Undecided (DrawUntil inner)
+      ,
+        [ CheckWindows
+            [mkWhen (Window.WouldRevealChaosToken source iid)]
+        , NextChaosBagStep source (Just iid) strategy
+        ]
+      )
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       if any isUndecided steps
         then
@@ -392,6 +436,7 @@ decideFirstUndecided source iid iids strategy f = \case
         else (f $ Deciding (ChooseMatchChoice steps tokens' matchers), [])
   Deciding step -> case step of
     Draw -> (f $ Deciding Draw, [NextChaosBagStep source (Just iid) strategy])
+    DrawUntil inner -> (f $ Deciding (DrawUntil inner), [NextChaosBagStep source (Just iid) strategy])
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       if any isUndecided steps
         then
@@ -453,6 +498,7 @@ replaceDeciding :: ChaosBagStepState -> ChaosBagStepState -> ChaosBagStepState
 replaceDeciding current replacement = case current of
   Deciding step -> case step of
     Draw -> replacement
+    DrawUntil {} -> replacement
     ChooseMatch chooseSource n tokenStrategy steps tokens' matcher nested ->
       Deciding
         $ ChooseMatch
@@ -483,6 +529,7 @@ replaceDecidingList steps replacement = case steps of
   [] -> []
   (Deciding step : xs) -> case step of
     Draw -> replacement : xs
+    DrawUntil {} -> replacement : xs
     ChooseMatch {} -> replaceDeciding (Deciding step) replacement : xs
     ChooseMatchChoice {} -> replaceDeciding (Deciding step) replacement : xs
     Choose {} -> replaceDeciding (Deciding step) replacement : xs
@@ -492,6 +539,7 @@ replaceChooseMatchChoice :: ChaosBagStepState -> ChaosBagStepState -> ChaosBagSt
 replaceChooseMatchChoice current replacement = case current of
   Decided step -> case step of
     Draw -> Decided Draw
+    DrawUntil inner -> Decided (DrawUntil inner)
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       Decided
         $ Choose chooseSource n tokenStrategy (replaceChooseMatchChoiceList steps replacement) tokens' nested
@@ -519,6 +567,7 @@ replaceChooseMatchChoiceList steps replacement = case steps of
   (Decided step : xs) -> case step of
     ChooseMatchChoice {} -> replaceChooseMatchChoice (Decided step) replacement : xs
     Draw -> Decided Draw : replaceChooseMatchChoiceList xs replacement
+    DrawUntil inner -> Decided (DrawUntil inner) : replaceChooseMatchChoiceList xs replacement
     ChooseMatch chooseSource n tokenStrategy steps' tokens' matcher nested ->
       let candidate = replaceChooseMatchChoiceList steps' replacement
        in if candidate == steps'

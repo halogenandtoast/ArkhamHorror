@@ -116,11 +116,12 @@ oculusMortuum =
 
 uncannySpecimen :: CardDef
 uncannySpecimen =
-  (asset "11039" "Uncanny Specimen" 1 Seeker)
-    { cdSlots = [#arcane]
-    , cdCardTraits = setFromList [Creature, Science]
-    , cdKeywords = setFromList [Keyword.Myriad]
-    }
+  fast
+    $ (asset "11039" "Uncanny Specimen" 1 Seeker)
+      { cdSlots = [#arcane]
+      , cdCardTraits = setFromList [Creature, Science]
+      , cdKeywords = setFromList [Keyword.Myriad]
+      }
 
 lugerP08 :: CardDef
 lugerP08 =

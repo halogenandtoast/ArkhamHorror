@@ -192,3 +192,13 @@ katarinaSojkamissaryFromUlthar =
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+signOfXelotaphSymbolOfProtection :: CardDef
+signOfXelotaphSymbolOfProtection =
+  (asset "11070" ("Sign of Xelotaph" <:> "Symbol of Protection") 3 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdKeywords = setFromList [Keyword.Myriad, seal $ oneOf @ChaosTokenMatcher [#skull, #cultist, #tablet, #elderthing]]
+    , cdUses = uses Charge 3
+    }

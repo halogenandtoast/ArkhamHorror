@@ -685,6 +685,7 @@ allPlayerAssetCards =
       , shroudOfShadows4
       , signMagick
       , signMagick3
+      , signOfXelotaphSymbolOfProtection
       , silassNet
       , sinEater3
       , sinhasMedicalKit

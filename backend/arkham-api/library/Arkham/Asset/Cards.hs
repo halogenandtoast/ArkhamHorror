@@ -462,6 +462,7 @@ allPlayerAssetCards =
       , ladyEsprit
       , lantern
       , lantern2
+      , lawrenceCarlisleSculptingHisDreams
       , leatherCoat
       , leatherCoat1
       , leatherJacket

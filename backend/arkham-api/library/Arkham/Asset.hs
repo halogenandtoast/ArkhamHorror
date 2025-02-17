@@ -1086,6 +1086,7 @@ allAssets =
     , --- survivor [tdc]
       SomeAssetCard anchorChain
     , SomeAssetCard handHook
+    , SomeAssetCard lawrenceCarlisleSculptingHisDreams
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

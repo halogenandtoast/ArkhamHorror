@@ -810,6 +810,17 @@ runGameMessage msg g = case msg of
       $ EnemyCheckEngagement eid
     -- todo: should we just run this in place?
     pure $ g & entitiesL . enemiesL . at eid ?~ enemy'
+  Do (DiscardCard iid _ cid) -> do
+    card <- getCard cid
+    if cdCardInHandEffects (toCardDef card)
+      then do
+        let
+          setAssetPlacement :: forall a. Typeable a => a -> a
+          setAssetPlacement a = case eqT @a @Asset of
+            Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand iid, assetController = Just iid}) a
+            Nothing -> a
+        pure $ g & actionRemovedEntitiesL %~ (\e -> addCardEntityWith iid setAssetPlacement e card)
+      else pure g
   RemoveAsset aid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)

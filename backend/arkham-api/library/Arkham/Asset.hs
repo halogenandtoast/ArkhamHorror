@@ -1088,6 +1088,7 @@ allAssets =
     , SomeAssetCard handHook
     , SomeAssetCard lawrenceCarlisleSculptingHisDreams
     , SomeAssetCard nauticalCharts
+    , SomeAssetCard profaneIdol
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

@@ -23,6 +23,7 @@ instance HasAbilities NauticalCharts where
     , controlled x 1 (not_ InYourHand) $ investigateAction (exhaust x)
     ]
 
+-- TODO: We need a way to know if additional clues can be discovered
 instance RunMessage NauticalCharts where
   runMessage msg a@(NauticalCharts attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do

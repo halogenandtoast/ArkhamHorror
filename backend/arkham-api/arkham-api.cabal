@@ -1919,6 +1919,7 @@ library
       Arkham.Event.Events.CallingInFavors
       Arkham.Event.Events.CallTheBeyond2
       Arkham.Event.Events.CaptivatingDiscovery
+      Arkham.Event.Events.Catch
       Arkham.Event.Events.CheapShot
       Arkham.Event.Events.CheapShot2
       Arkham.Event.Events.CheatDeath5

@@ -18,7 +18,7 @@ import Arkham.Event.Cards.TheInnsmouthConspiracy as X
 import Arkham.Event.Cards.ThePathToCarcosa as X
 import Arkham.Event.Cards.TheScarletKeys as X
 import Arkham.Event.Cards.TheDrownedCity as X
-import Arkham.Prelude
+import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards =
@@ -82,6 +82,7 @@ allPlayerEventCards =
       , callTheBeyond2
       , callingInFavors
       , captivatingDiscovery
+      , catch
       , cheapShot
       , cheapShot2
       , cheatDeath5

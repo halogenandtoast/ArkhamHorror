@@ -106,3 +106,12 @@ whispersOfDoom =
     , cdActions = [#parley]
     , cdCriteria = Just $ exists $ at_ YourLocation <> NonWeaknessEnemy
     }
+
+catch :: CardDef
+catch =
+  (event "11086" "\"Catch!\"" 0 Survivor)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Tactic, Trick]
+    , cdActions = [#evade]
+    , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
+    }

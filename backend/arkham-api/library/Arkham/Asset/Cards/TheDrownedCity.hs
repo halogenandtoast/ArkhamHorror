@@ -210,7 +210,6 @@ anchorChain =
     , cdCardTraits = setFromList [Item, Tool]
     , cdSlots = [#hand]
     , cdCardInHandEffects = True
-    , cdCardInDiscardEffects = True -- a bit of a hack here
     }
 
 handHook :: CardDef
@@ -220,5 +219,13 @@ handHook =
     , cdCardTraits = setFromList [Item, Weapon, Tool, Melee]
     , cdSlots = [#hand]
     , cdCardInHandEffects = True
-    , cdCardInDiscardEffects = True -- a bit of a hack here
+    }
+
+lawrenceCarlisleSculptingHisDreams :: CardDef
+lawrenceCarlisleSculptingHisDreams =
+  (asset "11083" ("Lawrence Carlisle" <:> "Sculpting His Dreams") 3 Survivor)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Ally, Artist, Patron]
+    , cdSlots = [#ally]
+    , cdUnique = True
     }

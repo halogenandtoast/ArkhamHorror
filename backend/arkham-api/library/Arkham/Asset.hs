@@ -1085,6 +1085,7 @@ allAssets =
     , SomeAssetCard signOfXelotaphSymbolOfProtection
     , --- survivor [tdc]
       SomeAssetCard anchorChain
+    , SomeAssetCard handHook
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

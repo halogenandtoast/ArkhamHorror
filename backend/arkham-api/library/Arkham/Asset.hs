@@ -1087,6 +1087,7 @@ allAssets =
       SomeAssetCard anchorChain
     , SomeAssetCard handHook
     , SomeAssetCard lawrenceCarlisleSculptingHisDreams
+    , SomeAssetCard nauticalCharts
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

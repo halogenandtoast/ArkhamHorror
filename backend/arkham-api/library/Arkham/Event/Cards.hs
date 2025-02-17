@@ -418,6 +418,7 @@ allPlayerEventCards =
       , uncageTheSoul
       , uncageTheSoul3
       , uncannyGrowth
+      , unconventionalMethod
       , underSurveillance1
       , underprepared
       , unearthTheAncients

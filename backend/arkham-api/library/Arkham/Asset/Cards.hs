@@ -380,6 +380,7 @@ allPlayerAssetCards =
       , hallowedChalice
       , hallowedMirror
       , hallowedMirror3
+      , handHook
       , handcuffs
       , handcuffs2
       , hardKnocks

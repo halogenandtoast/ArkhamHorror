@@ -212,3 +212,13 @@ anchorChain =
     , cdCardInHandEffects = True
     , cdCardInDiscardEffects = True -- a bit of a hack here
     }
+
+handHook :: CardDef
+handHook =
+  (asset "11082" "Hand Hook" 3 Survivor)
+    { cdSkills = [#combat]
+    , cdCardTraits = setFromList [Item, Weapon, Tool, Melee]
+    , cdSlots = [#hand]
+    , cdCardInHandEffects = True
+    , cdCardInDiscardEffects = True -- a bit of a hack here
+    }

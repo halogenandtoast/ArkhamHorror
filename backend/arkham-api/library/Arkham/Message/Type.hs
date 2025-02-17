@@ -14,6 +14,7 @@ data MessageType
   | EnemyDefeatedMessage
   | InvestigatorDefeatedMessage
   | DamageMessage
+  | AssetDamageMessage
   | DrawEncounterCardMessage
   | ExploreMessage
   deriving stock (Eq, Show, Generic, Data)

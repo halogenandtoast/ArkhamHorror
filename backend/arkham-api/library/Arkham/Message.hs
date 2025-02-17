@@ -111,6 +111,9 @@ messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg
 messageType (MoveWithSkillTest msg) = messageType msg
+messageType DealAssetDamageWithCheck {} = Just AssetDamageMessage
+messageType DealAssetDirectDamage {} = Just AssetDamageMessage
+messageType AssignAssetDamageWithCheck {} = Just AssetDamageMessage
 messageType _ = Nothing
 
 isBlanked :: Message -> Bool
@@ -512,6 +515,7 @@ data Message
   | CancelHorror InvestigatorId Int
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
+  | CancelAssetHorror AssetId Source Int
   | CheckAttackOfOpportunity InvestigatorId Bool
   | CheckDefeated Source Target
   | AssignDamage Target

@@ -650,6 +650,8 @@ allEvents =
     , SomeEventCard youveHadWorse
     , SomeEventCard bumsRush
     , SomeEventCard intimidation
+    , --- mystic [tdc]
+      SomeEventCard spectralShield
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

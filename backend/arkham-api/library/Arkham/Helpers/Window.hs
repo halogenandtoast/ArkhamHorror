@@ -1,16 +1,17 @@
-{-# LANGUAGE NoFieldSelectors #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE NoFieldSelectors #-}
+
 module Arkham.Helpers.Window where
 
 import Arkham.Prelude
 
 import Arkham.Attack.Types
 import Arkham.Card
-import Arkham.Deck
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
+import Arkham.Deck
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Id
@@ -24,6 +25,8 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Window
 import Arkham.Window qualified as Window
+import Data.Map.Monoidal.Strict qualified as MonoidalMap
+import Data.Map.Strict qualified as Map
 
 checkWindow :: HasGame m => Window -> m Message
 checkWindow = checkWindows . pure
@@ -398,6 +401,14 @@ getDamageOrHorrorSource = \case
   ((windowType -> Window.DealtHorror source _ _) : _) -> source
   ((windowType -> Window.DealtExcessDamage source _ _ _) : _) -> source
   (_ : rest) -> getDamageSource rest
+
+getTotalDamageAmounts :: Targetable target => target -> [Window] -> Map Source (Int, Int)
+getTotalDamageAmounts target =
+  Map.map (bimap getSum getSum) . MonoidalMap.getMonoidalMap . foldMap \case
+    (windowType -> Window.DealtDamage source _ (isTarget target -> True) d) -> MonoidalMap.singleton source (Sum d, Sum 0)
+    (windowType -> Window.DealtHorror source (isTarget target -> True) h) -> MonoidalMap.singleton source (Sum 0, Sum h)
+    (windowType -> Window.DealtExcessDamage source _ (isTarget target -> True) d) -> MonoidalMap.singleton source (Sum d, Sum 0)
+    _ -> mempty
 
 replaceWindow
   :: (HasCallStack, HasQueue Message m) => (Window -> Bool) -> (Window -> Window) -> m ()

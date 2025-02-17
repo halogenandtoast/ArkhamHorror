@@ -89,3 +89,11 @@ intimidation =
     , cdActions = [#parley]
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithRemainingHealth (atLeast 1)
     }
+
+spectralShield :: CardDef
+spectralShield =
+  (event "11071" "Spectral Shield" 1 Mystic)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Spell, Spirit]
+    , cdFastWindow = Just $ DuringTurn You
+    }

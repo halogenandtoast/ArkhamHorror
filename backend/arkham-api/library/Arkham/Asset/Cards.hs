@@ -596,6 +596,7 @@ allPlayerAssetCards =
       , pressPass2
       , priestOfTwoFaiths1
       , prismaticSpectaclesLensToTheOtherworld2
+      , profaneIdol
       , professorWarrenRice
       , professorWilliamDyerProfessorOfGeology
       , professorWilliamDyerProfessorOfGeologyResolute

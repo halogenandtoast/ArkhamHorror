@@ -1,6 +1,7 @@
 module Arkham.Asset.Cards.TheDrownedCity where
 
 import Arkham.Asset.Cards.Import
+import Arkham.Criteria qualified as Criteria
 import Arkham.Keyword qualified as Keyword
 
 bookOfVerseUnCommonplaceBook :: CardDef
@@ -199,7 +200,9 @@ signOfXelotaphSymbolOfProtection =
     { cdSkills = [#willpower]
     , cdCardTraits = setFromList [Ritual]
     , cdSlots = [#arcane]
-    , cdKeywords = setFromList [Keyword.Myriad, seal $ oneOf @ChaosTokenMatcher [#skull, #cultist, #tablet, #elderthing]]
+    , cdKeywords =
+        setFromList
+          [Keyword.Myriad, seal $ oneOf @ChaosTokenMatcher [#skull, #cultist, #tablet, #elderthing]]
     , cdUses = uses Charge 3
     }
 
@@ -237,4 +240,13 @@ nauticalCharts =
     , cdCardTraits = setFromList [Item, Tome, Tool]
     , cdSlots = [#hand]
     , cdCardInHandEffects = True
+    }
+
+profaneIdol :: CardDef
+profaneIdol =
+  (asset "11085" "Profane Idol" 1 Survivor)
+    { cdCardTraits = setFromList [Item, Charm]
+    , cdSlots = [#accessory]
+    , cdCriteria = Just Criteria.InYourDiscard
+    , cdPlayableFromDiscard = True
     }

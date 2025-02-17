@@ -147,20 +147,19 @@ export function investigatorClass(code: string) {
     case "10009": return { rogue : true }
     case "10012": return { mystic : true }
     case "10015": return { survivor : true }
+    case "11001": return { guardian : true }
+    case "11004": return { seeker : true }
+    case "11007": return { seeker : true }
+    case "11008": return { mystic : true }
+    case "11011": return { rogue : true }
+    case "11014": return { mystic : true }
+    case "11017": return { survivor : true }
     case "60101": return { guardian : true }
     case "60201": return { seeker : true }
     case "60301": return { rogue : true }
     case "60401": return { mystic : true }
     case "60501": return { survivor : true }
     case "89001": return { neutral : true }
-    case "98001": return { rogue : true }
-    case "98004": return { guardian : true }
-    case "98007": return { seeker : true }
-    case "98010": return { guardian : true }
-    case "98013": return { survivor : true }
-    case "98016": return { mystic : true }
-    case "98019": return { mystic : true }
-    case "99001": return { mystic : true }
     case "90001": return { seeker : true }
     case "90008": return { rogue : true }
     case "90017": return { mystic : true }
@@ -172,6 +171,14 @@ export function investigatorClass(code: string) {
     case "90062": return { rogue : true }
     case "90078": return { seeker : true }
     case "90084": return { rogue : true }
+    case "98001": return { rogue : true }
+    case "98004": return { guardian : true }
+    case "98007": return { seeker : true }
+    case "98010": return { guardian : true }
+    case "98013": return { survivor : true }
+    case "98016": return { mystic : true }
+    case "98019": return { mystic : true }
+    case "99001": return { mystic : true }
     default: return {}
   }
 }

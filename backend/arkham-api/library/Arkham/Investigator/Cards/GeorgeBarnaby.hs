@@ -27,7 +27,7 @@ instance HasModifiersFor GeorgeBarnaby where
 instance HasAbilities GeorgeBarnaby where
   getAbilities (GeorgeBarnaby x) =
     [ playerLimit PerPhase
-        $ restricted x 1 Self
+        $ restricted x 1 (Self <> NotSetup)
         $ freeReaction (DiscardedFromHand #after You AnySource #any)
     ]
 

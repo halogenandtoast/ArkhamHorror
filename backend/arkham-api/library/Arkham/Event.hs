@@ -2,7 +2,7 @@
 
 module Arkham.Event where
 
-import Arkham.Prelude
+import Arkham.Prelude hiding (catch)
 
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
@@ -653,6 +653,8 @@ allEvents =
     , --- mystic [tdc]
       SomeEventCard spectralShield
     , SomeEventCard whispersOfDoom
+    , --- survivor [tdc]
+      SomeEventCard catch
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

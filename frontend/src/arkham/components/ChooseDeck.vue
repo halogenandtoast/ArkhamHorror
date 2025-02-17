@@ -4,6 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Deck'
+import {deckClass} from '@/arkham/types/Deck'
 import type { Investigator } from '@/arkham/types/Investigator'
 import Question from '@/arkham/components/Question.vue';
 import NewDeck from '@/arkham/components/NewDeck.vue'
@@ -227,7 +228,7 @@ const chosenDeckTabooList = computed(() => {
               <form v-if="deckType == 'UseExistingDeck'" class="choose-deck" @submit.prevent="choose">
                 <select v-model="deckId">
                   <option disabled :value="null">{{$t('create.selectADeck')}}</option>
-                  <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+                  <option v-for="deck in decks" :key="deck.id" :value="deck.id" :class="deckClass(deck)">{{deck.name}}</option>
                 </select>
                 <p class="error" v-if="error">{{error}}</p>
                 <button type="submit" :disabled="disabled">{{$t('create.choose')}}</button>
@@ -525,5 +526,13 @@ form {
   button.current {
     background-color: var(--button-1);
   }
+}
+
+option.guardian {
+  background-color: var(--guardian-dark);
+}
+
+option.mystic {
+  background-color: var(--mystic-dark);
 }
 </style>

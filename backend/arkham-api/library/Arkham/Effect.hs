@@ -102,7 +102,6 @@ import Arkham.Enemy.Enemies (
   yogSothothEffect,
  )
 import Arkham.Event.Events (
-  actOfDesperationEffect,
   atACrossroads1Effect,
   backstab3Effect,
   bideYourTimeEffect,
@@ -435,7 +434,7 @@ allEffects =
     , ("05016", SomeEffect imDoneRunninEffect)
     , ("05018", SomeEffect mystifyingSongEffect)
     , ("05028", SomeEffect $ noop "05028")
-    , ("05037", SomeEffect actOfDesperationEffect)
+    , ("05037", SomeEffect $ noop "05037")
     , ("05040", SomeEffect aceOfRods1Effect)
     , ("05049", SomeEffect pennyWhiteEffect)
     , ("05085b", SomeEffect josefsPlanEffect)

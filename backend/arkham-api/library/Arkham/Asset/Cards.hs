@@ -534,6 +534,7 @@ allPlayerAssetCards =
       , moxie3
       , mrRook
       , mysteriousRaven
+      , nauticalCharts
       , nephthysHuntressOfBast4
       , newspaper
       , newspaper2

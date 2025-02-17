@@ -229,3 +229,12 @@ lawrenceCarlisleSculptingHisDreams =
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+nauticalCharts :: CardDef
+nauticalCharts =
+  (asset "11084" "Nautical Charts" 3 Survivor)
+    { cdSkills = [#intellect]
+    , cdCardTraits = setFromList [Item, Tome, Tool]
+    , cdSlots = [#hand]
+    , cdCardInHandEffects = True
+    }

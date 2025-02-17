@@ -2501,3 +2501,8 @@ revealCard card = push $ RevealCard (toCardId card)
 
 addToEncounterDiscard :: (ReverseQueue m, IsCard a, Element xs ~ a, MonoFoldable xs) => xs -> m ()
 addToEncounterDiscard = traverse_ (push . AddToEncounterDiscard) . mapMaybe (preview _EncounterCard . toCard) . otoList
+
+priority :: ReverseQueue m => QueueT Message m () -> m ()
+priority body = do
+  msgs <- evalQueueT body
+  push $ Priority $ Run msgs

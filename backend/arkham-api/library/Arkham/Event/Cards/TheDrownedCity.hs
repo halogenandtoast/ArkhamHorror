@@ -115,3 +115,12 @@ catch =
     , cdActions = [#evade]
     , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
     }
+
+unconventionalMethod :: CardDef
+unconventionalMethod =
+  (event "11087" "Unconventional Method" 0 Survivor)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Insight, Tactic]
+    , cdActions = [#investigate]
+    , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
+    }

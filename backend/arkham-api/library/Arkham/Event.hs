@@ -655,6 +655,7 @@ allEvents =
     , SomeEventCard whispersOfDoom
     , --- survivor [tdc]
       SomeEventCard catch
+    , SomeEventCard unconventionalMethod
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

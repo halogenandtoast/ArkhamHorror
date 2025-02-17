@@ -436,6 +436,7 @@ allPlayerEventCards =
       , waylay
       , wellMaintained1
       , wheresTheParty
+      , whispersOfDoom
       , willToSurvive
       , willToSurvive3
       , windsOfPower1

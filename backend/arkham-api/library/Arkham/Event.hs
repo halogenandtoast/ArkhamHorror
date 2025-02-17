@@ -652,6 +652,7 @@ allEvents =
     , SomeEventCard intimidation
     , --- mystic [tdc]
       SomeEventCard spectralShield
+    , SomeEventCard whispersOfDoom
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

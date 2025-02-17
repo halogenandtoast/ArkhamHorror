@@ -97,3 +97,12 @@ spectralShield =
     , cdCardTraits = setFromList [Spell, Spirit]
     , cdFastWindow = Just $ DuringTurn You
     }
+
+whispersOfDoom :: CardDef
+whispersOfDoom =
+  (event "11072" "Whispers of Doom" 3 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spell, Cursed]
+    , cdActions = [#parley]
+    , cdCriteria = Just $ exists $ at_ YourLocation <> NonWeaknessEnemy
+    }

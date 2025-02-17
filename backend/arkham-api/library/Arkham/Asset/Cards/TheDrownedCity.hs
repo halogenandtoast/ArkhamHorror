@@ -202,3 +202,13 @@ signOfXelotaphSymbolOfProtection =
     , cdKeywords = setFromList [Keyword.Myriad, seal $ oneOf @ChaosTokenMatcher [#skull, #cultist, #tablet, #elderthing]]
     , cdUses = uses Charge 3
     }
+
+anchorChain :: CardDef
+anchorChain =
+  (asset "11081" "Anchor Chain" 3 Survivor)
+    { cdSkills = [#agility]
+    , cdCardTraits = setFromList [Item, Tool]
+    , cdSlots = [#hand]
+    , cdCardInHandEffects = True
+    , cdCardInDiscardEffects = True -- a bit of a hack here
+    }

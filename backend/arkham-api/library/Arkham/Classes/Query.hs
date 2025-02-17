@@ -361,3 +361,23 @@ matches a matcher = elem a <$> select matcher
 
 (<!=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
 (<!=~>) el q = not <$> matches el q
+
+unlessMatch
+  :: (HasCallStack, Query matcher, HasGame m)
+  => QueryElement matcher
+  -> matcher
+  -> m ()
+  -> m ()
+unlessMatch a m body = do
+  p <- isMatch a m
+  unless p body
+
+whenMatch
+  :: (HasCallStack, Query matcher, HasGame m)
+  => QueryElement matcher
+  -> matcher
+  -> m ()
+  -> m ()
+whenMatch a m body = do
+  p <- isMatch a m
+  when p body

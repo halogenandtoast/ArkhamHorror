@@ -1083,6 +1083,8 @@ allAssets =
     , SomeAssetCard theGreatWorkDivideAndUnite
     , SomeAssetCard katarinaSojkamissaryFromUlthar
     , SomeAssetCard signOfXelotaphSymbolOfProtection
+    , --- survivor [tdc]
+      SomeAssetCard anchorChain
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

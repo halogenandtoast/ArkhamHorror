@@ -482,6 +482,7 @@ library
       Arkham.Asset.Assets.AnalyticalMind
       Arkham.Asset.Assets.AncestralKnowledge3
       Arkham.Asset.Assets.AncestralToken
+      Arkham.Asset.Assets.AnchorChain
       Arkham.Asset.Assets.AncientCovenant2
       Arkham.Asset.Assets.AncientStone1
       Arkham.Asset.Assets.AncientStoneKnowledgeOfTheElders4
@@ -2269,6 +2270,7 @@ library
       Arkham.Event.Events.Waylay
       Arkham.Event.Events.WellMaintained1
       Arkham.Event.Events.WheresTheParty
+      Arkham.Event.Events.WhispersOfDoom
       Arkham.Event.Events.WillToSurvive
       Arkham.Event.Events.WillToSurvive3
       Arkham.Event.Events.WindsOfPower1

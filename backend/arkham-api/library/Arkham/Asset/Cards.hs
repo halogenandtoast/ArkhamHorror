@@ -42,6 +42,7 @@ allPlayerAssetCards =
       , analyticalMind
       , ancestralKnowledge3
       , ancestralToken
+      , anchorChain
       , ancientCovenant2
       , ancientStone1
       , ancientStoneKnowledgeOfTheElders4

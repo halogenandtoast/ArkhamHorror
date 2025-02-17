@@ -2200,6 +2200,7 @@ library
       Arkham.Event.Events.SoothingMelody
       Arkham.Event.Events.SpectralRazor
       Arkham.Event.Events.SpectralRazor2
+      Arkham.Event.Events.SpectralShield
       Arkham.Event.Events.StallForTime
       Arkham.Event.Events.StandTogether
       Arkham.Event.Events.StandTogether3

@@ -368,6 +368,7 @@ allPlayerEventCards =
       , soothingMelody
       , spectralRazor
       , spectralRazor2
+      , spectralShield
       , stallForTime
       , standTogether
       , standTogether3

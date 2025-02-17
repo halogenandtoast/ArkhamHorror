@@ -287,6 +287,9 @@ instance RunMessage AssetAttrs where
     CancelAssetDamage aid _ n | aid == assetId -> do
       pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a)
       pure $ a & tokensL %~ decrementTokensBy Token.Damage n
+    CancelAssetHorror aid _ n | aid == assetId -> do
+      pushM $ checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect (toSource a)
+      pure $ a & tokensL %~ decrementTokensBy Token.Horror n
     AssetDefeated source aid | aid == assetId -> do
       push $ toDiscard source a
       pure a

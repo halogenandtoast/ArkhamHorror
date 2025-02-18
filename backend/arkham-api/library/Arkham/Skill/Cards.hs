@@ -41,8 +41,9 @@ allPlayerSkillCards =
       , beloved
       , bruteForce1
       , calculatedRisk
-      , crackShot
+      , contemplative
       , copycat3
+      , crackShot
       , cunning
       , curiosity
       , daredevil
@@ -930,7 +931,8 @@ contemplative =
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions =
         [ OnlySkillTest
-            $ WhileParleying <> SkillTestAt (orConnected YourLocation)
+            $ WhileParleying
+            <> SkillTestAt (orConnected YourLocation)
         ]
     }
 

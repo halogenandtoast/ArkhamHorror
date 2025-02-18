@@ -8,7 +8,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations

@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.Newspaper (newspaper, Newspaper (..)) where
+module Arkham.Asset.Assets.Newspaper (newspaper) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection
@@ -14,11 +15,9 @@ newspaper :: AssetCard Newspaper
 newspaper = asset Newspaper Cards.newspaper
 
 instance HasModifiersFor Newspaper where
-  getModifiersFor (Newspaper a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      clueCount <- field InvestigatorClues iid
-      modifiedWhen_ a (clueCount == 0) iid [ActionSkillModifier #investigate #intellect 2]
+  getModifiersFor (Newspaper a) = for_ a.controller \iid -> do
+    clueCount <- field InvestigatorClues iid
+    modifiedWhen_ a (clueCount == 0) iid [ActionSkillModifier #investigate #intellect 2]
 
 instance RunMessage Newspaper where
   runMessage msg (Newspaper attrs) = Newspaper <$> runMessage msg attrs

@@ -1,15 +1,14 @@
-module Arkham.Act.Cards.IntoTheDarkness where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.IntoTheDarkness (intoTheDarkness) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype IntoTheDarkness = IntoTheDarkness ActAttrs
@@ -43,7 +42,7 @@ instance RunMessage IntoTheDarkness where
               $ BasicCardMatch (CardWithType EnemyType)
           ]
         <> [ DiscardUntilFirst lead (ActSource actId) Deck.EncounterDeck
-            $ BasicCardMatch (CardWithType EnemyType)
+               $ BasicCardMatch (CardWithType EnemyType)
            | playerCount > 3
            ]
         <> [advanceActDeck attrs]

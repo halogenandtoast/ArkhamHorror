@@ -1,9 +1,9 @@
-module Arkham.Event.Events.Barricade3 (barricade3, Barricade3 (..)) where
+module Arkham.Event.Events.Barricade3 (barricade3) where
 
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
@@ -17,9 +17,8 @@ barricade3 :: EventCard Barricade3
 barricade3 = event Barricade3 Cards.barricade3
 
 instance HasModifiersFor Barricade3 where
-  getModifiersFor (Barricade3 attrs) = case attrs.attachedTo of
-    Just target -> modified_ attrs target [CannotBeEnteredBy NonEliteEnemy, SpawnNonEliteAtConnectingInstead]
-    _ -> pure mempty
+  getModifiersFor (Barricade3 attrs) = for_ attrs.attachedTo \target -> do
+    modified_ attrs target [CannotBeEnteredBy NonEliteEnemy, SpawnNonEliteAtConnectingInstead]
 
 instance HasAbilities Barricade3 where
   getAbilities (Barricade3 x) = case x.attachedTo of

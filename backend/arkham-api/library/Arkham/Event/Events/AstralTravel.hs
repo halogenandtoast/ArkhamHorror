@@ -1,11 +1,11 @@
-module Arkham.Event.Events.AstralTravel (astralTravel, AstralTravel (..)) where
+module Arkham.Event.Events.AstralTravel (astralTravel) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher hiding (MoveAction)
 import Arkham.RequestedChaosTokenStrategy

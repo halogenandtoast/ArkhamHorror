@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.DressingRoom (
-  dressingRoom,
-  DressingRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DressingRoom (dressingRoom) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -11,9 +6,9 @@ import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DressingRoom = DressingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,14 +22,14 @@ instance HasAbilities DressingRoom where
     withBaseAbilities
       attrs
       [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> InvestigatorExists
-              (HealableInvestigator (toSource attrs) HorrorType You)
-        )
-        $ ActionAbility []
-        $ ActionCost 3
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists
+                (HealableInvestigator (toSource attrs) HorrorType You)
+          )
+          $ ActionAbility []
+          $ ActionCost 3
       | locationRevealed attrs
       ]
 

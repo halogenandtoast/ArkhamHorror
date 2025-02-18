@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.SalvatoreNeri (salvatoreNeri, SalvatoreNeri (..)) where
+module Arkham.Enemy.Cards.SalvatoreNeri (salvatoreNeri) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade)
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Modifier qualified as Modifier
 import Arkham.Prelude
 import Control.Monad.Fail

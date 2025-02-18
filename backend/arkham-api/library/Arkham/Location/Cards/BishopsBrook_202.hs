@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.BishopsBrook_202 (bishopsBrook_202, BishopsBrook_202 (..)) where
 
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (bishopsBrook_202)
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (withDrawCardUnderneathAction)

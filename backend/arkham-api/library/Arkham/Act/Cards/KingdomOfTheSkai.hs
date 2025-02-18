@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.KingdomOfTheSkai (KingdomOfTheSkai (..), kingdomOfTheSkai) where
+module Arkham.Act.Cards.KingdomOfTheSkai (kingdomOfTheSkai) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -9,6 +9,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet (EncounterSet (Zoogs))
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude

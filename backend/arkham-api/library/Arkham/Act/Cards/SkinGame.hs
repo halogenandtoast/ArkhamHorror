@@ -1,20 +1,16 @@
-module Arkham.Act.Cards.SkinGame (
-  SkinGame (..),
-  skinGame,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.SkinGame (skinGame) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype SkinGame = SkinGame ActAttrs

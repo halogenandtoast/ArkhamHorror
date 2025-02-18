@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.ExhibitHallNatureExhibit (
-  exhibitHallNatureExhibit,
-  ExhibitHallNatureExhibit (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ExhibitHallNatureExhibit (exhibitHallNatureExhibit) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (exhibitHallNatureExhibit)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallNatureExhibit = ExhibitHallNatureExhibit LocationAttrs
@@ -31,10 +26,10 @@ instance HasAbilities ExhibitHallNatureExhibit where
     withBaseAbilities
       x
       [ mkAbility x 1
-        $ ForcedAbility
-        $ Enters Timing.After You
-        $ LocationWithId
-        $ toId x
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId x
       | locationRevealed x
       ]
 

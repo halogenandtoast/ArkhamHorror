@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.BleakPlainsBleakDesolation (bleakPlainsBleakDesolation) where
 
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (revealedL)

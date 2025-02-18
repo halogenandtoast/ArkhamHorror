@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.YourHouse (YourHouse (..), yourHouse) where
+module Arkham.Location.Cards.YourHouse (yourHouse) where
 
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

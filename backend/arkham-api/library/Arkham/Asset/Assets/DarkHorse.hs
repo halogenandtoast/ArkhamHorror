@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.DarkHorse (darkHorse, DarkHorse (..)) where
+module Arkham.Asset.Assets.DarkHorse (darkHorse) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection

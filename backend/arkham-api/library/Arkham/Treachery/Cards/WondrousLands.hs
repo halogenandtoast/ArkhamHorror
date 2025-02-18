@@ -1,7 +1,8 @@
-module Arkham.Treachery.Cards.WondrousLands (wondrousLands, WondrousLands (..)) where
+module Arkham.Treachery.Cards.WondrousLands (wondrousLands) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

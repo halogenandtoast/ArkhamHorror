@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.VictorianHalls (
-  victorianHalls,
-  VictorianHalls (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.VictorianHalls (victorianHalls) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype VictorianHalls = VictorianHalls LocationAttrs

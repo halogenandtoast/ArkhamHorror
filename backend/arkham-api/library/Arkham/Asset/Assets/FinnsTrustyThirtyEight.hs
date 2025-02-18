@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.FinnsTrustyThirtyEight (finnsTrustyThirtyEight, FinnsTrustyThirtyEight (..)) where
+module Arkham.Asset.Assets.FinnsTrustyThirtyEight (finnsTrustyThirtyEight) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -15,9 +16,8 @@ finnsTrustyThirtyEight :: AssetCard FinnsTrustyThirtyEight
 finnsTrustyThirtyEight = asset FinnsTrustyThirtyEight Cards.finnsTrustyThirtyEight
 
 instance HasModifiersFor FinnsTrustyThirtyEight where
-  getModifiersFor (FinnsTrustyThirtyEight a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
+  getModifiersFor (FinnsTrustyThirtyEight a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
       guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
       EnemyTarget eid <- MaybeT getSkillTestTarget
       guardM $ (== iid) <$> MaybeT getSkillTestInvestigator

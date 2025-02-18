@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.Xochimilco (xochimilco, Xochimilco (..)) where
+module Arkham.Location.Cards.Xochimilco (xochimilco) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

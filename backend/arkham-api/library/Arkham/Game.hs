@@ -46,14 +46,6 @@ import Arkham.Entities
 import Arkham.Event.Types
 import Arkham.Game.Base as X
 import Arkham.Game.Diff
-import Arkham.Game.Helpers hiding (
-  EnemyEvade,
-  EnemyFight,
-  createWindowModifierEffect,
-  getSpendableClueCount,
-  withModifiers,
- )
-import Arkham.Game.Helpers qualified as Helpers
 import Arkham.Game.Json ()
 import Arkham.Game.Runner (preloadEntities, runPreGameMessage)
 import Arkham.Game.Settings
@@ -61,14 +53,22 @@ import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameT
-import Arkham.GameValue (GameValue (Static))
 import Arkham.Git (gitHash)
 import Arkham.Helpers
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation (GameCalculation (LocationMaybeFieldCalculation), calculate)
-import Arkham.Helpers.Card (extendedCardMatch, getHasVictoryPoints, iconsForCard)
+import Arkham.Helpers.Card (cardListMatches, extendedCardMatch, getHasVictoryPoints, iconsForCard)
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Cost
+import Arkham.Helpers.Criteria
+import Arkham.Helpers.Doom
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
-import Arkham.Helpers.Investigator hiding (investigator, matchTarget)
+import Arkham.Helpers.Game
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Investigator hiding (investigator)
+import Arkham.Helpers.Location hiding (getConnectedMatcher)
 import Arkham.Helpers.Location qualified as Helpers
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
@@ -77,7 +77,25 @@ import Arkham.Helpers.Message hiding (
   InvestigatorResigned,
   createEnemy,
  )
+import Arkham.Helpers.Modifiers (
+  getFullModifiers,
+  getModifiers,
+  getModifiers',
+  hasModifier,
+  ignoreActionCost,
+  toModifiers,
+  withoutModifier,
+ )
+import Arkham.Helpers.Modifiers qualified as Helpers
+import Arkham.Helpers.Playable
+import Arkham.Helpers.Query
+import Arkham.Helpers.Ref
+import Arkham.Helpers.Scenario
+import Arkham.Helpers.Slot
+import Arkham.Helpers.Source
+import Arkham.Helpers.Target
 import Arkham.Helpers.Use (toStartingUses)
+import Arkham.Helpers.Window (maybeDiscoveredLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
@@ -133,6 +151,7 @@ import Arkham.Matcher hiding (
  )
 import Arkham.Matcher qualified as M
 import Arkham.Message qualified as Msg
+import Arkham.Modifier hiding (EnemyEvade, EnemyFight)
 import Arkham.ModifierData
 import Arkham.Name
 import Arkham.Phase
@@ -650,7 +669,7 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do
       filterM
         ( fmap (> 0)
-            . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
+            . countM (`matches` IncludeSealed chaosTokenMatcher)
             . attr investigatorSealedChaosTokens
         )
         as
@@ -2365,7 +2384,7 @@ getAssetsMatching matcher = do
     AssetWithSealedChaosTokens n chaosTokenMatcher -> do
       filterM
         ( fmap (>= n)
-            . countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher)
+            . countM (`matches` IncludeSealed chaosTokenMatcher)
             . attr assetSealedChaosTokens
         )
         as
@@ -2704,7 +2723,7 @@ enemyMatcherFilter es matcher' = case matcher' of
   EnemyWithCardId cardId -> pure $ filter ((== cardId) . toCardId) es
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> flip filterM es \enemy -> do
     (>= n)
-      <$> countM (`chaosTokenMatches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
+      <$> countM (`matches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
   EnemyCanMove -> flip filterM es \enemy -> do
     modifiers <- getModifiers enemy
     if CannotMove `elem` modifiers
@@ -3993,9 +4012,15 @@ instance Query ExtendedCardMatcher where
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case
-            OnlySkillTestSource smatcher -> 
+            OnlySkillTestSource smatcher ->
               getSkillTestSource >>= \case
                 Just source -> sourceMatches source smatcher
+                Nothing -> pure False
+            OnlySkillTest smatcher ->
+              getSkillTest >>= \case
+                Just st -> do
+                  iid <- getActiveInvestigatorId
+                  skillTestMatches iid st.source st smatcher
                 Nothing -> pure False
             CommittableTreachery -> error "unhandled"
             AnyCommitRestriction crs -> anyM (passesCommitRestriction card) crs

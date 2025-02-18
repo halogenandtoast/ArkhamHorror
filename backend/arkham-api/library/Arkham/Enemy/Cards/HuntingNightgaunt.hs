@@ -1,13 +1,10 @@
-module Arkham.Enemy.Cards.HuntingNightgaunt (
-  huntingNightgaunt,
-  HuntingNightgaunt (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HuntingNightgaunt (huntingNightgaunt) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving anyclass IsEnemy

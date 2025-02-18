@@ -1,12 +1,7 @@
-module Arkham.Location.Cards.LodgeCellarMembersOnly (
-  lodgeCellarMembersOnly,
-  LodgeCellarMembersOnly (..),
-)
-where
+module Arkham.Location.Cards.LodgeCellarMembersOnly (lodgeCellarMembersOnly) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -28,9 +23,9 @@ instance HasAbilities LodgeCellarMembersOnly where
     extend
       attrs
       [ withTooltip
-        "{action}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
-        $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 Here
-        $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
+          "{action}: Investigators at the Lodge Gates spend 1 {perPlayer} clues, as a group: Reveal the Lodge Cellar."
+          $ restricted (proxied (LocationMatcherSource "Lodge Gates") attrs) 1 Here
+          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (LocationWithTitle "Lodge Gates"))
       | attrs.unrevealed
       ]
 

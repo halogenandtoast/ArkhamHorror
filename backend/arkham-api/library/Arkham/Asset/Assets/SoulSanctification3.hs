@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.SoulSanctification3 (soulSanctification3, SoulSanctification3 (..)) where
+module Arkham.Asset.Assets.SoulSanctification3 (soulSanctification3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (sourceMatches)
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher

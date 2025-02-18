@@ -1,16 +1,13 @@
-module Arkham.Agenda.Cards.QuietHalls (
-  QuietHalls (..),
-  quietHalls,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.QuietHalls (quietHalls) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype QuietHalls = QuietHalls AgendaAttrs

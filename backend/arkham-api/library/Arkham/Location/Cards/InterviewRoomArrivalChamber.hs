@@ -1,11 +1,7 @@
-module Arkham.Location.Cards.InterviewRoomArrivalChamber (
-  interviewRoomArrivalChamber,
-  InterviewRoomArrivalChamber (..),
-) where
+module Arkham.Location.Cards.InterviewRoomArrivalChamber (interviewRoomArrivalChamber) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

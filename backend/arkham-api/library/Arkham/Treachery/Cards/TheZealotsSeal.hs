@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.TheZealotsSeal where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection

@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.TheCouncilsCoffer2 (
-  theCouncilsCoffer2,
-  TheCouncilsCoffer2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheCouncilsCoffer2 (theCouncilsCoffer2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype TheCouncilsCoffer2 = TheCouncilsCoffer2 AssetAttrs
@@ -35,10 +32,10 @@ instance RunMessage TheCouncilsCoffer2 where
       investigators <- getInvestigatorPlayers
       pushAll
         $ [ chooseOne
-            player
-            [ Label "Search Deck" [search iid attrs iid [(FromDeck, ShuffleBackIn)] #any (PlayFoundNoCost iid 1)]
-            , Label "Search Discard" [search iid attrs iid [(FromDiscard, PutBack)] #any (PlayFoundNoCost iid 1)]
-            ]
+              player
+              [ Label "Search Deck" [search iid attrs iid [(FromDeck, ShuffleBackIn)] #any (PlayFoundNoCost iid 1)]
+              , Label "Search Discard" [search iid attrs iid [(FromDiscard, PutBack)] #any (PlayFoundNoCost iid 1)]
+              ]
           | (iid, player) <- investigators
           ]
         <> [Exile (toTarget attrs)]

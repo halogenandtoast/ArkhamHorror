@@ -1,8 +1,7 @@
-module Arkham.Location.Cards.CrystalPillars (crystalPillars, CrystalPillars (..)) where
+module Arkham.Location.Cards.CrystalPillars (crystalPillars) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

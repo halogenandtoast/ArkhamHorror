@@ -1,15 +1,15 @@
-module Arkham.Event.Events.FriendsInLowPlaces (friendsInLowPlaces, FriendsInLowPlaces (..)) where
+module Arkham.Event.Events.FriendsInLowPlaces (friendsInLowPlaces) where
 
 import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayable)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Matcher
 import Arkham.Strategy
 import Arkham.Window (defaultWindows)

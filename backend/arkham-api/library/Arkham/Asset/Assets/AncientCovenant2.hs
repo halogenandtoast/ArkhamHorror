@@ -1,8 +1,10 @@
-module Arkham.Asset.Assets.AncientCovenant2 (ancientCovenant2, AncientCovenant2 (..)) where
+module Arkham.Asset.Assets.AncientCovenant2 (ancientCovenant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Taboo
@@ -16,8 +18,8 @@ ancientCovenant2 = asset AncientCovenant2 Cards.ancientCovenant2
 
 instance HasAbilities AncientCovenant2 where
   getAbilities (AncientCovenant2 x) =
-    [ controlledAbility x 1 (DuringSkillTest SkillTestAtYourLocation)
-        $ ReactionAbility
+    [ controlled x 1 (DuringSkillTest SkillTestAtYourLocation)
+        $ triggered
           ( ResolvesChaosToken
               #when
               (if tabooed TabooList21 x then You else affectsOthers (InvestigatorAt YourLocation))

@@ -1,9 +1,9 @@
 module Arkham.Agenda.Cards.RiseOfTheGhouls (riseOfTheGhouls) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Trait
 

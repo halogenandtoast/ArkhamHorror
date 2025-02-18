@@ -9,6 +9,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
@@ -184,7 +185,10 @@ instance RunMessage TheMiskatonicMuseum where
       investigatorIds <- allInvestigators
       story resolution2
       record TheInvestigatorsTookCustodyOfTheNecronomicon
-      addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.theNecronomiconOlausWormiusTranslation
+      addCampaignCardToDeckChoice
+        investigatorIds
+        DoNotShuffleIn
+        Assets.theNecronomiconOlausWormiusTranslation
       addChaosToken ElderThing
       allGainXp attrs
       endOfScenario

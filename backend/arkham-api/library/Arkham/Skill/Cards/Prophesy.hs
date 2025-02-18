@@ -1,8 +1,9 @@
-module Arkham.Skill.Cards.Prophesy (prophesy, Prophesy (..)) where
+module Arkham.Skill.Cards.Prophesy (prophesy) where
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Doom
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner

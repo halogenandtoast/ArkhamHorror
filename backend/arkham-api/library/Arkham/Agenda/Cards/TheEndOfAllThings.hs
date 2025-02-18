@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheEndOfAllThings (
-  TheEndOfAllThings (..),
-  theEndOfAllThings,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheEndOfAllThings (theEndOfAllThings) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -11,8 +6,10 @@ import Arkham.Agenda.Runner
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype TheEndOfAllThings = TheEndOfAllThings AgendaAttrs

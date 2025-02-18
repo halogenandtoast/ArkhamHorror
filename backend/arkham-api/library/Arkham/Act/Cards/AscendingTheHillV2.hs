@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.AscendingTheHillV2 (AscendingTheHillV2 (..), ascendingTheHillV2) where
+module Arkham.Act.Cards.AscendingTheHillV2 (ascendingTheHillV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -6,6 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait

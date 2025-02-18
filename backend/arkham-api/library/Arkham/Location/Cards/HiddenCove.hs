@@ -1,7 +1,8 @@
-module Arkham.Location.Cards.HiddenCove (hiddenCove, HiddenCove (..)) where
+module Arkham.Location.Cards.HiddenCove (hiddenCove) where
 
 import Arkham.Ability
 import Arkham.Card.CardType
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid

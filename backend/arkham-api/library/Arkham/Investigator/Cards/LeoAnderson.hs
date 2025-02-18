@@ -1,16 +1,14 @@
-module Arkham.Investigator.Cards.LeoAnderson (
-  leoAnderson,
-  LeoAnderson (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.LeoAnderson (leoAnderson) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Cost
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard)
+import Arkham.Prelude
 import Arkham.Window (duringTurnWindow)
 
 newtype Meta = Meta {responseCard :: Maybe Card}

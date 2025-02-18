@@ -1,18 +1,14 @@
-module Arkham.Event.Events.Shortcut2 (
-  shortcut2,
-  Shortcut2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Shortcut2 (shortcut2, Shortcut2 (..)) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype Shortcut2 = Shortcut2 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)

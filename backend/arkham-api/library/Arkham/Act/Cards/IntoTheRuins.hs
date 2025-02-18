@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.IntoTheRuins (IntoTheRuins (..), intoTheRuins) where
+module Arkham.Act.Cards.IntoTheRuins (intoTheRuins) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -9,6 +9,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude

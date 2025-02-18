@@ -1,8 +1,10 @@
-module Arkham.Act.Cards.PathsIntoTwilight (PathsIntoTwilight (..), pathsIntoTwilight) where
+module Arkham.Act.Cards.PathsIntoTwilight (pathsIntoTwilight) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

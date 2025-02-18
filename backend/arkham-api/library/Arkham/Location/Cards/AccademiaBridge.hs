@@ -1,19 +1,13 @@
-module Arkham.Location.Cards.AccademiaBridge (
-  accademiaBridge,
-  AccademiaBridge (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AccademiaBridge (accademiaBridge) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype AccademiaBridge = AccademiaBridge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,23 +15,13 @@ newtype AccademiaBridge = AccademiaBridge LocationAttrs
 
 accademiaBridge :: LocationCard AccademiaBridge
 accademiaBridge =
-  locationWith
-    AccademiaBridge
-    Cards.accademiaBridge
-    2
-    (PerPlayer 1)
-    (connectsToL .~ singleton RightOf)
+  locationWith AccademiaBridge Cards.accademiaBridge 2 (PerPlayer 1)
+    $ connectsToL
+    .~ singleton RightOf
 
 instance HasAbilities AccademiaBridge where
   getAbilities (AccademiaBridge attrs) =
-    withBaseAbilities attrs
-      $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ Leaves Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs $ mkAbility attrs 1 $ forced $ Leaves #after You (be attrs)
 
 instance RunMessage AccademiaBridge where
   runMessage msg l@(AccademiaBridge attrs) = case msg of

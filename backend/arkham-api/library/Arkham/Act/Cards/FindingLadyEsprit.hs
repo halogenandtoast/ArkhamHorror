@@ -1,15 +1,15 @@
 module Arkham.Act.Cards.FindingLadyEsprit (findingLadyEsprit) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
-import Arkham.Message.Lifted.Choose
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.EncounterSet
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 import Arkham.Trait

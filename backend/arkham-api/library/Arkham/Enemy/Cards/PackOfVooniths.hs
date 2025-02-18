@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.PackOfVooniths (packOfVooniths, PackOfVooniths (..)) where
+module Arkham.Enemy.Cards.PackOfVooniths (packOfVooniths) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Modifier qualified as Mod
 import Arkham.Prelude

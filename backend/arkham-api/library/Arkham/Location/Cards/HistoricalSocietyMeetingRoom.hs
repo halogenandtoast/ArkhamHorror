@@ -1,6 +1,5 @@
 module Arkham.Location.Cards.HistoricalSocietyMeetingRoom (
   historicalSocietyMeetingRoom,
-  HistoricalSocietyMeetingRoom (..),
 ) where
 
 import Arkham.Ability
@@ -8,7 +7,6 @@ import Arkham.Classes
 import Arkham.Discover
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues, RevealLocation)
 import Arkham.Message qualified as Msg

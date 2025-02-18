@@ -1,10 +1,7 @@
 module Arkham.Act.Cards.InfiltratingTheLodge (
-  InfiltratingTheLodge (..),
   infiltratingTheLodge,
   infiltratingTheLodgeEffect,
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -16,9 +13,12 @@ import Arkham.Classes.HasGame
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
+import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype InfiltratingTheLodge = InfiltratingTheLodge ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -1,9 +1,4 @@
-module Arkham.Asset.Assets.ForbiddenTomeDarkKnowledge3 (
-  forbiddenTomeDarkKnowledge3,
-  ForbiddenTomeDarkKnowledge3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ForbiddenTomeDarkKnowledge3 (forbiddenTomeDarkKnowledge3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -11,30 +6,27 @@ import Arkham.Asset.Runner
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype ForbiddenTomeDarkKnowledge3 = ForbiddenTomeDarkKnowledge3 AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 forbiddenTomeDarkKnowledge3 :: AssetCard ForbiddenTomeDarkKnowledge3
-forbiddenTomeDarkKnowledge3 =
-  asset ForbiddenTomeDarkKnowledge3 Cards.forbiddenTomeDarkKnowledge3
+forbiddenTomeDarkKnowledge3 = asset ForbiddenTomeDarkKnowledge3 Cards.forbiddenTomeDarkKnowledge3
 
 instance HasModifiersFor ForbiddenTomeDarkKnowledge3 where
-  getModifiersFor (ForbiddenTomeDarkKnowledge3 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      selectOne (AbilityIs (toSource a) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab -> do
-          handCount <- getHandCount iid
-          let n = handCount `div` 4
-          modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
+  getModifiersFor (ForbiddenTomeDarkKnowledge3 a) = for_ a.controller \iid -> do
+    selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
+      handCount <- getHandCount iid
+      let n = handCount `div` 4
+      modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
 
 instance HasAbilities ForbiddenTomeDarkKnowledge3 where
   getAbilities (ForbiddenTomeDarkKnowledge3 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         ( exists (EnemyAt YourLocation)
@@ -61,14 +53,14 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
         $ chooseOne
           player
           [ TargetLabel
-            target
-            [ HealDamage target (toSource attrs) 1
-            , chooseOne
-                player
-                [ targetLabel enemy [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
-                | enemy <- enemies
-                ]
-            ]
+              target
+              [ HealDamage target (toSource attrs) 1
+              , chooseOne
+                  player
+                  [ targetLabel enemy [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
+                  | enemy <- enemies
+                  ]
+              ]
           | target <- investigators <> assets
           ]
       pure a

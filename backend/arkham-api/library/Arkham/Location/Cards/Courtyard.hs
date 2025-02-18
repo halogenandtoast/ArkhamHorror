@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.Courtyard (
-  courtyard,
-  Courtyard (..),
-) where
+module Arkham.Location.Cards.Courtyard ( courtyard,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card.CardType
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

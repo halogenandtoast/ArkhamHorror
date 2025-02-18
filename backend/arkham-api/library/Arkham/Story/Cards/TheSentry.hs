@@ -1,7 +1,7 @@
 module Arkham.Story.Cards.TheSentry (theSentry) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted hiding (story)

@@ -1,7 +1,8 @@
-module Arkham.Location.Cards.DarkAbyss (darkAbyss, DarkAbyss (..)) where
+module Arkham.Location.Cards.DarkAbyss (darkAbyss) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Helpers.Scenario
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel

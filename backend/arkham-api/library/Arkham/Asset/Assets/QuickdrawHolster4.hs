@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.QuickdrawHolster4 (quickdrawHolster4, QuickdrawHolster4 (..)) where
+module Arkham.Asset.Assets.QuickdrawHolster4 (quickdrawHolster4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (getCanPerformAbility)
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement

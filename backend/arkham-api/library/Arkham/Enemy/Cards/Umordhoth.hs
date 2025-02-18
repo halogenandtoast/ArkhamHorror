@@ -1,16 +1,14 @@
-module Arkham.Enemy.Cards.Umordhoth (
-  Umordhoth (..),
-  umordhoth,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Umordhoth (umordhoth) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype Umordhoth = Umordhoth EnemyAttrs

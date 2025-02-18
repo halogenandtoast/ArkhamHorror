@@ -1,13 +1,13 @@
-module Arkham.Treachery.Cards.ThreadsOfReality (threadsOfReality, ThreadsOfReality (..)) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ThreadsOfReality (threadsOfReality) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (BlankExceptForcedAbilities), modified_)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

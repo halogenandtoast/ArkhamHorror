@@ -2,10 +2,7 @@
 
 module Arkham.Helpers.Investigator where
 
-import Arkham.Prelude
-
 import Arkham.Action
-import Arkham.Action.Additional
 import Arkham.Asset.Types qualified as Field
 import Arkham.CampaignLog
 import Arkham.Capability
@@ -24,16 +21,17 @@ import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
-import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, InvestigatorResigned, matchTarget)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message (
   Message (CheckWindows, Do, HealDamageDirectly, HealHorrorDirectly, InvestigatorMulligan),
  )
 import Arkham.Name
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Source
@@ -57,9 +55,10 @@ getSkillValue st iid = do
         SkillAgility -> InvestigatorBaseAgility
   base <- field fld iid
   let canBeIncreased = SkillCannotBeIncreased st `notElem` mods
-  x <- if canBeIncreased
-    then sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
-    else pure 0
+  x <-
+    if canBeIncreased
+      then sum <$> sequence [calculate calc | CalculatedSkillModifier st' calc <- mods, st' == st]
+      else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
 skillValueFor
@@ -95,11 +94,12 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd modifiers
       pure $ max 0 (n + m)
-    applyModifier (SkillModifier skillType m) n | canBeIncreased || m < 0 =
-      pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
+    applyModifier (SkillModifier skillType m) n
+      | canBeIncreased || m < 0 =
+          pure $ if skillType `elem` matchingSkills then max 0 (n + m) else n
     applyModifier (CalculatedSkillModifier skillType calc) n = do
       m <- calculate calc
-      pure $ if (canBeIncreased || m < 0)  && skillType `elem` matchingSkills then max 0 (n + m) else n
+      pure $ if (canBeIncreased || m < 0) && skillType `elem` matchingSkills then max 0 (n + m) else n
     applyModifier (ActionSkillModifier action skillType m) n | canBeIncreased || m < 0 = do
       pure
         $ if skillType `elem` matchingSkills && Just action == maction
@@ -407,23 +407,6 @@ defaultSlots iid =
     , (TarotSlot, [Slot (InvestigatorSource iid) []])
     ]
 
-matchTarget :: InvestigatorAttrs -> ActionTarget -> Action -> Bool
-matchTarget attrs (AnyActionTarget as) action = any (\atarget -> matchTarget attrs atarget action) as
-matchTarget attrs (FirstOneOfPerformed as) action =
-  action `elem` as && all (\a -> all (notElem a) $ investigatorActionsPerformed attrs) as
-matchTarget _ (IsAction a) action = action == a
-matchTarget _ (EnemyAction a _) action = action == a
-matchTarget _ IsAnyAction _ = True
-
-getActionCost :: HasGame m => InvestigatorAttrs -> [Action] -> m Int
-getActionCost attrs as = do
-  modifiers <- getModifiers (toTarget attrs)
-  pure $ foldr applyModifier 1 modifiers
- where
-  applyModifier (ActionCostOf match m) n =
-    if any (matchTarget attrs match) as then n + m else n
-  applyModifier _ n = n
-
 getSpendableClueCount :: HasGame m => InvestigatorAttrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
@@ -431,28 +414,6 @@ getSpendableClueCount a = do
 
 getCanSpendNClues :: HasGame m => InvestigatorId -> Int -> m Bool
 getCanSpendNClues iid n = iid <=~> InvestigatorCanSpendClues (Static n)
-
-getAdditionalActions :: HasGame m => InvestigatorAttrs -> m [AdditionalAction]
-getAdditionalActions attrs = do
-  mods <- getModifiers attrs
-  let
-    toAdditionalAction = \case
-      GiveAdditionalAction ac -> [ac]
-      AdditionalActions label source n | n > 0 -> map (\x -> AdditionalAction label (IndexedSource x source) AnyAdditionalAction) [1 .. n]
-      _ -> []
-    additionalActions = concatMap toAdditionalAction mods
-
-  pure $ filter (`notElem` investigatorUsedAdditionalActions attrs) additionalActions
-
-getCanAfford :: HasGame m => InvestigatorAttrs -> [Action] -> m Bool
-getCanAfford a@InvestigatorAttrs {..} as = do
-  actionCost <- getActionCost a as
-  additionalActions <- getAdditionalActions a
-  additionalActionCount <-
-    countM
-      (\aa -> anyM (\ac -> additionalActionCovers (toSource a) [ac] aa) as)
-      additionalActions
-  pure $ actionCost <= (investigatorRemainingActions + additionalActionCount)
 
 drawOpeningHand
   :: (HasCallStack, HasGame m) => InvestigatorAttrs -> Int -> m ([PlayerCard], [Card], [PlayerCard])
@@ -565,24 +526,6 @@ canHaveHorrorHealed a = selectAny . HealableInvestigator (toSource a) HorrorType
 canHaveDamageHealed :: (HasGame m, Sourceable a) => a -> InvestigatorId -> m Bool
 canHaveDamageHealed a = selectAny . HealableInvestigator (toSource a) DamageType . InvestigatorWithId
 
-additionalActionCovers
-  :: HasGame m => Source -> [Action] -> AdditionalAction -> m Bool
-additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType of
-  PlayCardRestrictedAdditionalAction matcher -> case source of
-    CardIdSource cid -> elem cid . map toCardId <$> select matcher
-    _ -> pure False
-  TraitRestrictedAdditionalAction t actionRestriction -> case actionRestriction of
-    NoRestriction -> member t <$> sourceTraits source
-    AbilitiesOnly -> case source of
-      AbilitySource {} -> member t <$> sourceTraits source
-      _ -> pure False
-  AbilityRestrictedAdditionalAction s idx -> pure $ isAbilitySource s idx source
-  ActionRestrictedAdditionalAction a -> pure $ a `elem` actions
-  EffectAction _ _ -> pure False
-  AnyAdditionalAction -> pure True
-  BountyAction -> pure False -- Has to be handled by Tony Morgan
-  BobJenkinsAction -> pure False -- Has to be handled by Bob Jenkins
-
 -- canFight <- selectAny $ CanFightEnemy source <> EnemyWithBounty
 -- canEngage <- selectAny $ CanEngageEnemy <> EnemyWithBounty
 -- pure $ (canFight && maction == Just #fight) || (canEngage && maction == Just #engage)
@@ -688,3 +631,59 @@ healAdditional (toSource -> source) dType ws' additional = do
   case dType of
     HorrorType -> push $ HealHorrorDirectly healedTarget source 1
     DamageType -> push $ HealDamageDirectly healedTarget source 1
+
+getAsIfInHandCards :: (HasCallStack, HasGame m) => InvestigatorId -> m [Card]
+getAsIfInHandCards iid = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  let
+    modifiersPermitPlayOfDiscard discard c =
+      any (modifierPermitsPlayOfDiscard discard c) modifiers
+    modifierPermitsPlayOfDiscard discard (c, _) = \case
+      CanPlayTopmostOfDiscard (mType, traits) ->
+        let cardMatcher = maybe AnyCard CardWithType mType <> foldMap CardWithTrait traits
+            allMatches = filter (`cardMatch` cardMatcher) discard
+         in case allMatches of
+              (topmost : _) -> topmost == c
+              _ -> False
+      _ -> False
+    modifiersPermitPlayOfDeck c = any (modifierPermitsPlayOfDeck c) modifiers
+    modifierPermitsPlayOfDeck (c, depth) = \case
+      CanPlayTopOfDeck cardMatcher | depth == 0 -> cardMatch c cardMatcher
+      _ -> False
+    cardsAddedViaModifiers = flip mapMaybe modifiers $ \case
+      AsIfInHand c -> Just c
+      _ -> Nothing
+  discard <- field InvestigatorDiscard iid
+  deck <- fieldMap InvestigatorDeck unDeck iid
+  pure
+    $ map
+      (PlayerCard . fst)
+      (filter (modifiersPermitPlayOfDiscard discard) (zip discard [0 :: Int ..]))
+    <> map
+      (PlayerCard . fst)
+      (filter modifiersPermitPlayOfDeck (zip deck [0 :: Int ..]))
+    <> cardsAddedViaModifiers
+
+matchWho
+  :: HasGame m
+  => InvestigatorId
+  -> InvestigatorId
+  -> Matcher.InvestigatorMatcher
+  -> m Bool
+matchWho iid who Matcher.You = pure $ iid == who
+matchWho iid who Matcher.NotYou = pure $ iid /= who
+matchWho _ _ Matcher.Anyone = pure True
+matchWho iid who (Matcher.InvestigatorAt matcher) = do
+  who <=~> Matcher.InvestigatorAt (Matcher.replaceYouMatcher iid matcher)
+matchWho iid who matcher = do
+  matcher' <- replaceMatchWhoLocations iid (Matcher.replaceYouMatcher iid matcher)
+  who <=~> matcher'
+ where
+  replaceMatchWhoLocations iid' = \case
+    Matcher.InvestigatorAt matcher' -> do
+      pure $ Matcher.InvestigatorAt $ Matcher.replaceYouMatcher iid matcher'
+    Matcher.HealableInvestigator source damageType inner -> do
+      Matcher.HealableInvestigator source damageType
+        <$> replaceMatchWhoLocations iid' inner
+    other -> pure other
+

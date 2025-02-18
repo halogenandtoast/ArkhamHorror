@@ -26,7 +26,6 @@ import Arkham.Asset.Runner as X (
   hasUses,
   healthL,
   is,
-  modified,
   noSlots,
   overMeta,
   printedUsesL,
@@ -42,11 +41,12 @@ import Arkham.Asset.Runner as X (
   setTokens,
   slotsL,
   toMessage,
-  toModifiers,
   tokensL,
   unsetMetaKey,
   whenNoUsesL,
  )
+
+import Arkham.Helpers.Modifiers as X (toModifiers, modified)
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Id as X

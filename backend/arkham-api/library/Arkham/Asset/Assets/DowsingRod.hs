@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.DowsingRod (dowsingRod, DowsingRod (..)) where
+module Arkham.Asset.Assets.DowsingRod (dowsingRod) where
 
 import Arkham.Ability.Builder
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Investigate
 import Arkham.Matcher hiding (DiscoveringLastClue)
 import Arkham.Message.Lifted.Choose

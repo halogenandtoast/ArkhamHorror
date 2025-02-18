@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.LolaHayes where
+module Arkham.Investigator.Cards.LolaHayes (lolaHayes) where
 
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher

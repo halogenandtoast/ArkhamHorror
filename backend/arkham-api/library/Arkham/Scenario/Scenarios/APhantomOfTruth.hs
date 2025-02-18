@@ -7,13 +7,16 @@ import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers hiding (recordSetInsert, setupModifier, skillTestModifier)
+import Arkham.Helpers.Doom
+import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.APhantomOfTruth.Helpers

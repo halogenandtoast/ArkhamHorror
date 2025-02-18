@@ -1,8 +1,10 @@
-module Arkham.Asset.Assets.FalseCovenant2 (falseCovenant2, FalseCovenant2 (..)) where
+module Arkham.Asset.Assets.FalseCovenant2 (falseCovenant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -15,8 +17,8 @@ falseCovenant2 = asset FalseCovenant2 Cards.falseCovenant2
 
 instance HasAbilities FalseCovenant2 where
   getAbilities (FalseCovenant2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           (RevealChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #curse)
           (exhaust a)
     ]

@@ -1,17 +1,14 @@
-module Arkham.Act.Cards.TheReallyBadOnesV2 (
-  TheReallyBadOnesV2 (..),
-  theReallyBadOnesV2,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheReallyBadOnesV2 (theReallyBadOnesV2) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheReallyBadOnesV2 = TheReallyBadOnesV2 ActAttrs

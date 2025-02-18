@@ -1,18 +1,11 @@
-module Arkham.Location.Cards.WitchHauntedWoodsHermitsHouse (
-  witchHauntedWoodsHermitsHouse,
-  WitchHauntedWoodsHermitsHouse (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.WitchHauntedWoodsHermitsHouse (witchHauntedWoodsHermitsHouse) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 
@@ -27,13 +20,9 @@ instance HasAbilities WitchHauntedWoodsHermitsHouse where
   getAbilities (WitchHauntedWoodsHermitsHouse a) =
     withBaseAbilities
       a
-      [ restrictedAbility a 1 (InvestigatorExists $ investigatorAt $ toId a)
-          $ ForcedAbility
-          $ DiscoverClues
-            Timing.After
-            You
-            (LocationWithId $ toId a)
-            (AtLeast $ Static 1)
+      [ restricted a 1 (exists $ investigatorAt $ toId a)
+          $ forced
+          $ DiscoverClues #after You (be a) (atLeast 1)
       ]
 
 getCount :: [Window] -> Int

@@ -1,18 +1,14 @@
-module Arkham.Agenda.Cards.TheArkhamWoods (
-  TheArkhamWoods (..),
-  theArkhamWoods,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheArkhamWoods (theArkhamWoods) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs

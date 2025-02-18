@@ -9,13 +9,14 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
+import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ExtracurricularActivity.FlavorText
 import Arkham.Scenarios.ExtracurricularActivity.Helpers

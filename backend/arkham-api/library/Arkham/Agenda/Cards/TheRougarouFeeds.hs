@@ -1,16 +1,12 @@
-module Arkham.Agenda.Cards.TheRougarouFeeds (
-  TheRougarouFeeds (..),
-  theRougarouFeeds,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheRougarouFeeds (theRougarouFeeds) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 

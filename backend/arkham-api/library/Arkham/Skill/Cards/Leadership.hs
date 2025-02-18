@@ -1,8 +1,8 @@
-module Arkham.Skill.Cards.Leadership (leadership, Leadership (..)) where
+module Arkham.Skill.Cards.Leadership (leadership) where
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards

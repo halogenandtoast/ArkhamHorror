@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.WordsOfPower (wordsOfPower, WordsOfPower (..)) where
+module Arkham.Treachery.Cards.WordsOfPower (wordsOfPower) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_, modifySelect)
 import Arkham.Matcher hiding (treacheryInThreatAreaOf)
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

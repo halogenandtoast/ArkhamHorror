@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.JennysTwin45s (JennysTwin45s (..), jennysTwin45s) where
+module Arkham.Asset.Assets.JennysTwin45s (jennysTwin45s) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype JennysTwin45s = JennysTwin45s AssetAttrs
@@ -15,7 +16,7 @@ jennysTwin45s :: AssetCard JennysTwin45s
 jennysTwin45s = asset JennysTwin45s Cards.jennysTwin45s
 
 instance HasAbilities JennysTwin45s where
-  getAbilities (JennysTwin45s a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (JennysTwin45s a) = [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of

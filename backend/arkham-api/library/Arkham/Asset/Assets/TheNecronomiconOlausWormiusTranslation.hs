@@ -1,13 +1,12 @@
 module Arkham.Asset.Assets.TheNecronomiconOlausWormiusTranslation (
   theNecronomiconOlausWormiusTranslation,
-  TheNecronomiconOlausWormiusTranslation (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation AssetAttrs
   deriving anyclass IsAsset
@@ -22,7 +21,7 @@ theNecronomiconOlausWormiusTranslation =
 
 instance HasAbilities TheNecronomiconOlausWormiusTranslation where
   getAbilities (TheNecronomiconOlausWormiusTranslation a) =
-    [restrictedAbility a 1 ControlsThis $ ActionAbility [] $ ActionCost 1]
+    [restricted a 1 ControlsThis $ ActionAbility [] $ ActionCost 1]
 
 instance HasModifiersFor TheNecronomiconOlausWormiusTranslation where
   getModifiersFor (TheNecronomiconOlausWormiusTranslation a) = controllerGets a [SkillModifier #intellect 1]

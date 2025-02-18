@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.EndsAndMeans (
-  EndsAndMeans (..),
-  endsAndMeans,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.EndsAndMeans (endsAndMeans) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -12,8 +7,12 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Sanctum, SilverTwilight))
 

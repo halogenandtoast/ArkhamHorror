@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.CanalSaintMartin (
-  canalSaintMartin,
-  CanalSaintMartin (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CanalSaintMartin (canalSaintMartin) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype CanalSaintMartin = CanalSaintMartin LocationAttrs
@@ -28,12 +23,12 @@ instance HasAbilities CanalSaintMartin where
     withBaseAbilities
       attrs
       [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility attrs 1 Here
-        $ ReactionAbility
-          ( Matcher.EnemyEvaded Timing.After You
-              $ EnemyAt (LocationWithId $ toId attrs)
-          )
-          Free
+          $ restrictedAbility attrs 1 Here
+          $ ReactionAbility
+            ( Matcher.EnemyEvaded Timing.After You
+                $ EnemyAt (LocationWithId $ toId attrs)
+            )
+            Free
       | locationRevealed attrs
       ]
 

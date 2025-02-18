@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.BalefulReveler (
-  balefulReveler,
-  BalefulReveler (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.BalefulReveler (balefulReveler) where
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
@@ -11,8 +6,11 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Query
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers
 import Arkham.Timing qualified as Timing

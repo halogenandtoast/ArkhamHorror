@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.ChicagoTypewriter4 (ChicagoTypewriter4 (..), chicagoTypewriter4) where
+module Arkham.Asset.Assets.ChicagoTypewriter4 (chicagoTypewriter4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype ChicagoTypewriter4 = ChicagoTypewriter4 AssetAttrs
@@ -16,7 +17,7 @@ chicagoTypewriter4 = asset ChicagoTypewriter4 Cards.chicagoTypewriter4
 instance HasAbilities ChicagoTypewriter4 where
   getAbilities (ChicagoTypewriter4 a) =
     [ withAdditionalCost AdditionalActionsCost
-        $ restrictedAbility a 1 ControlsThis
+        $ restricted a 1 ControlsThis
         $ fightAction
         $ assetUseCost a Ammo 1
     ]

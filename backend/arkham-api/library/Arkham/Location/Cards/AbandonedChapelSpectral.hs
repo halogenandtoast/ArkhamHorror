@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.AbandonedChapelSpectral (abandonedChapelSpectral, AbandonedChapelSpectral (..)) where
+module Arkham.Location.Cards.AbandonedChapelSpectral (abandonedChapelSpectral) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
@@ -31,8 +31,7 @@ instance HasModifiersFor AbandonedChapelSpectral where
 
 instance HasAbilities AbandonedChapelSpectral where
   getAbilities (AbandonedChapelSpectral a) =
-    withRevealedAbilities a
-      $ [haunted "Until the end of the round, you get -1 to each skill." a 1]
+    withRevealedAbilities a [haunted "Until the end of the round, you get -1 to each skill." a 1]
 
 instance RunMessage AbandonedChapelSpectral where
   runMessage msg l@(AbandonedChapelSpectral attrs) = case msg of

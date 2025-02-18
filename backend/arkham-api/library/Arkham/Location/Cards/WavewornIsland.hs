@@ -1,8 +1,9 @@
-module Arkham.Location.Cards.WavewornIsland (wavewornIsland, WavewornIsland (..)) where
+module Arkham.Location.Cards.WavewornIsland (wavewornIsland) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card.CardType
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid

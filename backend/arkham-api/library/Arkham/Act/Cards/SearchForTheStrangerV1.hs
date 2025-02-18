@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.SearchForTheStrangerV1 (
-  SearchForTheStrangerV1 (..),
-  searchForTheStrangerV1,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.SearchForTheStrangerV1 (searchForTheStrangerV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,7 +7,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SearchForTheStrangerV1 = SearchForTheStrangerV1 ActAttrs
   deriving anyclass IsAct

@@ -1,7 +1,7 @@
 module Arkham.Investigator.Cards.DaisyWalkerSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Game.Helpers
+import Arkham.Helpers.Cost
 import Arkham.Investigator.Cards (daisyWalker)
 import Arkham.Trait
 import TestImport.New

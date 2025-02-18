@@ -1,13 +1,11 @@
-module Arkham.Asset.Assets.RandolphCarterExpertDreamer (
-  randolphCarterExpertDreamer,
-  RandolphCarterExpertDreamer (..),
-) where
+module Arkham.Asset.Assets.RandolphCarterExpertDreamer (randolphCarterExpertDreamer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Window qualified as Window
@@ -20,14 +18,13 @@ randolphCarterExpertDreamer :: AssetCard RandolphCarterExpertDreamer
 randolphCarterExpertDreamer = ally RandolphCarterExpertDreamer Cards.randolphCarterExpertDreamer (3, 2)
 
 instance HasModifiersFor RandolphCarterExpertDreamer where
-  getModifiersFor (RandolphCarterExpertDreamer a) = case a.controller of
-    Just iid -> modified_ a iid [SkillModifier #combat 1, SkillModifier #agility 1]
-    Nothing -> pure mempty
+  getModifiersFor (RandolphCarterExpertDreamer a) = for_ a.controller \iid -> do
+    modified_ a iid [SkillModifier #combat 1, SkillModifier #agility 1]
 
 instance HasAbilities RandolphCarterExpertDreamer where
   getAbilities (RandolphCarterExpertDreamer x) =
-    [ controlledAbility x 1 (exists $ You <> can.draw.cards FromPlayerCardEffect)
-        $ ReactionAbility (RevealChaosToken #when (InvestigatorAt YourLocation) $ ChaosTokenFaceIs Tablet)
+    [ controlled x 1 (exists $ You <> can.draw.cards FromPlayerCardEffect)
+        $ triggered (RevealChaosToken #when (InvestigatorAt YourLocation) $ ChaosTokenFaceIs Tablet)
         $ exhaust x
     ]
 

@@ -7,6 +7,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Message
 import Arkham.Helpers.Window
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Placement as X
 import Arkham.Prelude
 import Arkham.Projection
@@ -54,3 +55,56 @@ attachTo t = case toTarget t of
   AgendaTarget aid -> AttachedToAgenda aid
   InvestigatorTarget iid -> AttachedToInvestigator iid
   _ -> error $ "cannot attach to target: " <> show t
+
+onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m Bool
+onSameLocation iid = \case
+  AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  InVehicle aid -> do
+    field AssetLocation aid >>= \case
+      Nothing -> pure False
+      Just lid -> fieldMap InvestigatorLocation (== Just lid) iid
+  InPlayArea iid' ->
+    if iid == iid'
+      then pure True
+      else do
+        l1 <- join <$> fieldMay InvestigatorLocation iid
+        l2 <- join <$> fieldMay InvestigatorLocation iid'
+        pure $ isJust l1 && l1 == l2
+  InThreatArea iid' ->
+    if iid == iid'
+      then pure True
+      else do
+        l1 <- join <$> fieldMay InvestigatorLocation iid
+        l2 <- join <$> fieldMay InvestigatorLocation iid'
+        pure $ isJust l1 && l1 == l2
+  AttachedToEnemy eid ->
+    liftA2 (==) (field EnemyLocation eid) (field InvestigatorLocation iid)
+  AttachedToTreachery tid ->
+    liftA2 (==) (field TreacheryLocation tid) (field InvestigatorLocation iid)
+  AttachedToAsset aid _ -> do
+    placement' <- field AssetPlacement aid
+    onSameLocation iid placement'
+
+  -- fieldMay AssetPlacement aid >>= \case
+  --   Nothing -> pure False
+  --   Just placement' -> onSameLocation iid placement'
+  AttachedToAct _ -> pure False
+  AttachedToAgenda _ -> pure False
+  AttachedToInvestigator iid' ->
+    liftA2
+      (==)
+      (field InvestigatorLocation iid')
+      (field InvestigatorLocation iid)
+  AsSwarm eid _ -> onSameLocation iid =<< field EnemyPlacement eid
+  Unplaced -> pure False
+  Global -> pure True
+  Limbo -> pure False
+  OutOfPlay _ -> pure False
+  StillInHand _ -> pure False
+  StillInDiscard _ -> pure False
+  StillInEncounterDiscard -> pure False
+  HiddenInHand _ -> pure False
+  OnTopOfDeck _ -> pure False
+  NextToAgenda -> pure False
+  Near _ -> pure False

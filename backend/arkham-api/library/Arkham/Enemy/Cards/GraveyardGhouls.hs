@@ -1,14 +1,11 @@
-module Arkham.Enemy.Cards.GraveyardGhouls (
-  graveyardGhouls,
-  GraveyardGhouls (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.GraveyardGhouls (graveyardGhouls) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype GraveyardGhouls = GraveyardGhouls EnemyAttrs
   deriving anyclass IsEnemy

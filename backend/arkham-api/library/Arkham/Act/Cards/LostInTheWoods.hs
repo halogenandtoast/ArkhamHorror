@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.LostInTheWoods (
-  LostInTheWoods (..),
-  lostInTheWoods,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.LostInTheWoods (lostInTheWoods) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,9 +7,12 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

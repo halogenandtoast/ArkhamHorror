@@ -5,8 +5,6 @@ module Arkham.Location.Runner (
   module X,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.Calculation as X
 import Arkham.Card.CardDef as X
@@ -41,6 +39,9 @@ import Arkham.Direction
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Exception
+import Arkham.Helpers.GameValue (getPlayerCountValue)
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, windows, wouldDoEach)
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.I18n
 import Arkham.Investigate
@@ -61,7 +62,9 @@ import Arkham.Matcher (
  )
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token

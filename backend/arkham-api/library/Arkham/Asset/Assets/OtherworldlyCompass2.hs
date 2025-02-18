@@ -1,16 +1,13 @@
-module Arkham.Asset.Assets.OtherworldlyCompass2 (
-  otherworldlyCompass2,
-  OtherworldlyCompass2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.OtherworldlyCompass2 (otherworldlyCompass2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype OtherworldlyCompass2 = OtherworldlyCompass2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

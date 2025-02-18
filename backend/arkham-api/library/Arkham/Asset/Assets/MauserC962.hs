@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.MauserC962 (mauserC962, MauserC962 (..)) where
+module Arkham.Asset.Assets.MauserC962 (mauserC962) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -17,7 +18,7 @@ mauserC962 = asset MauserC962 Cards.mauserC962
 
 instance HasAbilities MauserC962 where
   getAbilities (MauserC962 a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction $ exhaust a <> assetUseCost a Ammo 1]
+    [restricted a 1 ControlsThis $ fightAction $ exhaust a <> assetUseCost a Ammo 1]
 
 instance RunMessage MauserC962 where
   runMessage msg a@(MauserC962 attrs) = case msg of

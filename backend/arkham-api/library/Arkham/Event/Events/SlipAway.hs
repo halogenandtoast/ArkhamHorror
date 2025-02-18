@@ -1,12 +1,10 @@
-module Arkham.Event.Events.SlipAway (slipAway, SlipAway (..)) where
+module Arkham.Event.Events.SlipAway (slipAway) where
 
-import Arkham.Classes
-import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.SkillType
 
 newtype SlipAway = SlipAway EventAttrs
@@ -17,19 +15,14 @@ slipAway :: EventCard SlipAway
 slipAway = event SlipAway Cards.slipAway
 
 instance RunMessage SlipAway where
-  runMessage msg e@(SlipAway attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
+  runMessage msg e@(SlipAway attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      chooseEvade <- toMessage <$> mkChooseEvade sid iid attrs
-      enabled <- skillTestModifier sid attrs iid (AddSkillValue SkillAgility)
-      pushAll [enabled, chooseEvade]
+      skillTestModifier sid attrs iid (AddSkillValue SkillAgility)
+      chooseEvadeEnemy sid iid attrs
       pure e
-    PassedSkillTest _ _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ n | n >= 2 -> do
-      mTarget <- getSkillTestTarget
-      case mTarget of
-        Just (EnemyTarget enemyId) -> do
-          nonElite <- enemyId <=~> NonEliteEnemy
-          when nonElite $ pushM $ nextPhaseModifier #upkeep attrs enemyId DoesNotReadyDuringUpkeep
-        _ -> error "Invalid call, expected enemy skill test target"
+    PassedThisSkillTestBy _ (isSource attrs -> True) n | n >= 2 -> do
+      getSkillTestTargetedEnemy >>= traverse_ \x ->
+        whenMatch x NonEliteEnemy $ nextPhaseModifier #upkeep attrs x DoesNotReadyDuringUpkeep
       pure e
-    _ -> SlipAway <$> runMessage msg attrs
+    _ -> SlipAway <$> liftRunMessage msg attrs

@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheTrueCulpritV9 (
-  TheTrueCulpritV9 (..),
-  theTrueCulpritV9,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTrueCulpritV9 (theTrueCulpritV9) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -12,8 +7,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 
@@ -28,20 +25,20 @@ instance HasAbilities TheTrueCulpritV9 where
   getAbilities (TheTrueCulpritV9 attrs) =
     guard (onSide A attrs)
       *> [ skillTestAbility
-            $ restrictedAbility
-              (proxied (locationIs Cards.room212) attrs)
-              1
-              (exists (assetIs Cards.tomeOfRituals <> AssetAt (locationIs Cards.room212)))
-              actionAbility
+             $ restrictedAbility
+               (proxied (locationIs Cards.room212) attrs)
+               1
+               (exists (assetIs Cards.tomeOfRituals <> AssetAt (locationIs Cards.room212)))
+               actionAbility
          , restrictedAbility
-            attrs
-            2
-            ( exists
-                $ treacheryIs Cards.harvestedBrain
-                <> TreacheryWithHorror (AtLeast $ PerPlayer 3)
-            )
-            $ Objective
-            $ ForcedAbility AnyWindow
+             attrs
+             2
+             ( exists
+                 $ treacheryIs Cards.harvestedBrain
+                 <> TreacheryWithHorror (AtLeast $ PerPlayer 3)
+             )
+             $ Objective
+             $ ForcedAbility AnyWindow
          ]
 
 instance RunMessage TheTrueCulpritV9 where

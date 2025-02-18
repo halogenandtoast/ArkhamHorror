@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.HallsOfStMarys (
-  HallsOfStMarys (..),
-  hallsOfStMarys,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.HallsOfStMarys (hallsOfStMarys) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -12,8 +7,11 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.GameValue
+import Arkham.Helpers.Query
+import Arkham.Helpers.EncounterSet
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Stories
 import Arkham.Treachery.Cards qualified as Treacheries
 

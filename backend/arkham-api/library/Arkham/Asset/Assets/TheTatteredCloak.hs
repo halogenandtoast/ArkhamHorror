@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.TheTatteredCloak (
-  theTatteredCloak,
-  TheTatteredCloak (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheTatteredCloak (theTatteredCloak) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
@@ -15,8 +12,7 @@ newtype TheTatteredCloak = TheTatteredCloak AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theTatteredCloak :: AssetCard TheTatteredCloak
-theTatteredCloak =
-  assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
+theTatteredCloak = assetWith TheTatteredCloak Cards.theTatteredCloak (healthL ?~ 1)
 
 instance HasModifiersFor TheTatteredCloak where
   getModifiersFor (TheTatteredCloak a) = case a.controller of

@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Becky (becky, Becky (..)) where
+module Arkham.Asset.Assets.Becky (becky) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 -- N.B: The constant ability is handled on Tommy Muldoon
@@ -16,7 +17,7 @@ becky :: AssetCard Becky
 becky = asset Becky Cards.becky
 
 instance HasAbilities Becky where
-  getAbilities (Becky a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+  getAbilities (Becky a) = [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage Becky where
   runMessage msg a@(Becky attrs) = case msg of

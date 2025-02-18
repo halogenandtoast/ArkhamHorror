@@ -1,8 +1,9 @@
-module Arkham.Location.Cards.BlackReef (blackReef, BlackReef (..)) where
+module Arkham.Location.Cards.BlackReef (blackReef) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Card.CardType
+import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Grid

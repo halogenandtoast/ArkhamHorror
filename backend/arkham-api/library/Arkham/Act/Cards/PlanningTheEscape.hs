@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.PlanningTheEscape (
-  PlanningTheEscape (..),
-  planningTheEscape,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.PlanningTheEscape (planningTheEscape) where
 
 import Arkham.Ability hiding (discardedCards)
 import Arkham.Act.Cards qualified as Cards
@@ -11,7 +6,11 @@ import Arkham.Act.Runner hiding (discardedCards)
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Trait
@@ -72,10 +71,10 @@ instance RunMessage PlanningTheEscape where
           , ShuffleEncounterDiscardBackIn
           ]
         <> [ DiscardUntilFirst
-            lead
-            (toSource attrs)
-            Deck.EncounterDeck
-            (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
+               lead
+               (toSource attrs)
+               Deck.EncounterDeck
+               (BasicCardMatch $ CardWithType EnemyType <> CardWithTrait Monster)
            | monsterCount >= 3
            ]
         <> [AdvanceActDeck (actDeckId attrs) $ toSource attrs]

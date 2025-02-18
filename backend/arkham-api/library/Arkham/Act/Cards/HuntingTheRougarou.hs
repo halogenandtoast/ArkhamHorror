@@ -1,16 +1,18 @@
-module Arkham.Act.Cards.HuntingTheRougarou where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.HuntingTheRougarou (huntingTheRougarou) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Cost
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey

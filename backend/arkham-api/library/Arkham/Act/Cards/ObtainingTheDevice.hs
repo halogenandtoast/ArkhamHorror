@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.ObtainingTheDevice (
-  ObtainingTheDevice (..),
-  obtainingTheDevice,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.ObtainingTheDevice (obtainingTheDevice) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,7 +6,9 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype ObtainingTheDevice = ObtainingTheDevice ActAttrs

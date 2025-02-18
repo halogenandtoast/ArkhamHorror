@@ -1,10 +1,12 @@
-module Arkham.Agenda.Cards.Vengeance (Vengeance (..), vengeance) where
+module Arkham.Agenda.Cards.Vengeance (vengeance) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner hiding (InvestigatorDefeated)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Doom
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Data.List (cycle)

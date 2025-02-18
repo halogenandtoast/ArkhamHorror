@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheCloverClub (
-  TheCloverClub (..),
-  theCloverClub,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheCloverClub (theCloverClub) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -11,8 +6,11 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
@@ -32,12 +30,12 @@ instance HasModifiersFor TheCloverClub where
 instance HasAbilities TheCloverClub where
   getAbilities (TheCloverClub x) =
     [ mkAbility x 1
-      $ ForcedAbility
-      $ EnemyDealtDamage
-        Timing.When
-        AnyDamageEffect
-        (EnemyWithTrait Criminal)
-        AnySource
+        $ ForcedAbility
+        $ EnemyDealtDamage
+          Timing.When
+          AnyDamageEffect
+          (EnemyWithTrait Criminal)
+          AnySource
     | onSide A x
     ]
 

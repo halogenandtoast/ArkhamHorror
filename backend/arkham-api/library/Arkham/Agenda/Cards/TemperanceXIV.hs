@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TemperanceXIV (TemperanceXIV (..), temperanceXIV) where
+module Arkham.Agenda.Cards.TemperanceXIV (temperanceXIV) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -6,6 +6,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))

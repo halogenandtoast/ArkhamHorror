@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.FireAxe (FireAxe (..), fireAxe) where
+module Arkham.Asset.Assets.FireAxe (fireAxe) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -18,9 +19,8 @@ fireAxe :: AssetCard FireAxe
 fireAxe = asset FireAxe Cards.fireAxe
 
 instance HasModifiersFor FireAxe where
-  getModifiersFor (FireAxe a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
+  getModifiersFor (FireAxe a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
       guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
       Action.Fight <- MaybeT getSkillTestAction
       resourceCount <- lift $ field InvestigatorResources iid
@@ -30,7 +30,7 @@ instance HasModifiersFor FireAxe where
 instance HasAbilities FireAxe where
   getAbilities (FireAxe a) =
     [ fightAbility a 1 mempty ControlsThis
-    , limitedAbility (PlayerLimit PerTestOrAbility 3)
+    , limited (PlayerLimit PerTestOrAbility 3)
         $ fastAbility a 2 (ResourceCost 1)
         $ ControlsThis
         <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)

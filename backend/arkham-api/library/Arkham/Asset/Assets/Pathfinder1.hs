@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.Pathfinder1 (
-  pathfinder1,
-  Pathfinder1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Pathfinder1 (pathfinder1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Location
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype Pathfinder1 = Pathfinder1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,7 +17,7 @@ pathfinder1 = asset Pathfinder1 Cards.pathfinder1
 
 instance HasAbilities Pathfinder1 where
   getAbilities (Pathfinder1 attrs) =
-    [ controlledAbility
+    [ controlled
         attrs
         1
         (exists (You <> UnengagedInvestigator) <> exists AccessibleLocation <> DuringTurn You)

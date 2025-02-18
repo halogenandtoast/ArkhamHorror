@@ -6,7 +6,6 @@ module Arkham.Effect.Effects.OnRevealChaosTokenEffect (
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import Arkham.Game.Helpers (chaosTokenMatches)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Window qualified as Window
@@ -49,8 +48,8 @@ instance RunMessage OnRevealChaosTokenEffect where
   runMessage msg e@(OnRevealChaosTokenEffect attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token -> do
       void $ runMaybeT do
-        matchr <- hoistMaybe $ maybeResult $ effectExtraMetadata attrs
-        liftGuardM $ chaosTokenMatches token matchr
+        matchr :: ChaosTokenMatcher <- hoistMaybe $ maybeResult $ effectExtraMetadata attrs
+        liftGuardM $ matches token matchr
         sid <- MaybeT getSkillTestId
         guard $ maybe False (== sid) (effectSkillTest attrs)
         case attrs.metadata of

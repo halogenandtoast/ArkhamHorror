@@ -1,15 +1,11 @@
-module Arkham.Treachery.Cards.SomethingInTheDrinks (
-  SomethingInTheDrinks (..),
-  somethingInTheDrinks,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.SomethingInTheDrinks (somethingInTheDrinks) where
 
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Id
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Cards

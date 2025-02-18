@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings, ShrewdDealings (..)) 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
-import Arkham.Game.Helpers (passesLimits)
+import Arkham.Helpers.Card (passesLimits)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Matcher

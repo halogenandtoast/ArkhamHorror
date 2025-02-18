@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.DarkHollow (
-  darkHollow,
-  DarkHollow (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DarkHollow (darkHollow) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype DarkHollow = DarkHollow LocationAttrs

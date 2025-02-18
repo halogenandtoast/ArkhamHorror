@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.LaboratoryAssistant (LaboratoryAssistant (..), laboratoryAssistant) where
+module Arkham.Asset.Assets.LaboratoryAssistant (laboratoryAssistant) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -18,7 +19,7 @@ instance HasModifiersFor LaboratoryAssistant where
 
 instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =
-    [ restrictedAbility x 1 ControlsThis
+    [ restricted x 1 ControlsThis
         $ freeReaction
         $ AssetEntersPlay #when (AssetWithId $ toId x)
     ]

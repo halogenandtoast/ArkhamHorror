@@ -1,7 +1,9 @@
-module Arkham.Treachery.Cards.DetachedFromReality (detachedFromReality, DetachedFromReality (..)) where
+module Arkham.Treachery.Cards.DetachedFromReality (detachedFromReality) where
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Location
+import Arkham.Helpers.Window
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (PutLocationIntoPlay)

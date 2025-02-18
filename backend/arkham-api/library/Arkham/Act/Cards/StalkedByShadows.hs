@@ -2,7 +2,6 @@ module Arkham.Act.Cards.StalkedByShadows (stalkedByShadows) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Matcher hiding (EnemyEvaded)

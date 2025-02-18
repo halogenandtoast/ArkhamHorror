@@ -1,15 +1,10 @@
-module Arkham.Location.Cards.NorthsideTrainStation (
-  NorthsideTrainStation (..),
-  northsideTrainStation,
-) where
+module Arkham.Location.Cards.NorthsideTrainStation ( northsideTrainStation,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (northsideTrainStation)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement

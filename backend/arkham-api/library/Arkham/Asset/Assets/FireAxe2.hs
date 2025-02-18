@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.FireAxe2 (FireAxe2 (..), fireAxe2) where
+module Arkham.Asset.Assets.FireAxe2 (fireAxe2) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -18,9 +19,8 @@ fireAxe2 :: AssetCard FireAxe2
 fireAxe2 = asset FireAxe2 Cards.fireAxe2
 
 instance HasModifiersFor FireAxe2 where
-  getModifiersFor (FireAxe2 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ a iid do
+  getModifiersFor (FireAxe2 a) = for_ a.controller \iid -> do
+    maybeModified_ a iid do
       guardM $ isAbilitySource a 1 <$> MaybeT getSkillTestSource
       Action.Fight <- MaybeT getSkillTestAction
       resourceCount <- lift $ field InvestigatorResources iid

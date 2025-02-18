@@ -1,16 +1,13 @@
-module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise (
-  TheRitualBeginsBlackStarsRise (..),
-  theRitualBeginsBlackStarsRise,
-) where
+module Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise (theRitualBeginsBlackStarsRise) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Import.Lifted
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Projection
 

@@ -1,16 +1,12 @@
-module Arkham.Skill.Cards.SurvivalInstinct2 (
-  survivalInstinct2,
-  SurvivalInstinct2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.SurvivalInstinct2 (survivalInstinct2) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card.Id
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getCanPerformAbility)
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade
 import Arkham.Modifier

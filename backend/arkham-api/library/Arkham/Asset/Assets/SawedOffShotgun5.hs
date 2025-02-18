@@ -1,6 +1,7 @@
-module Arkham.Asset.Assets.SawedOffShotgun5 (SawedOffShotgun5 (..), sawedOffShotgun5) where
+module Arkham.Asset.Assets.SawedOffShotgun5 (sawedOffShotgun5) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight

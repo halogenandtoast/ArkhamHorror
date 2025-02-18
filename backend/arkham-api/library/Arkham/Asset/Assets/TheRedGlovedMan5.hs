@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.TheRedGlovedMan5 (
-  theRedGlovedMan5,
-  TheRedGlovedMan5 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TheRedGlovedMan5 (theRedGlovedMan5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype Metadata = Metadata {chosenSkills :: [SkillType]}

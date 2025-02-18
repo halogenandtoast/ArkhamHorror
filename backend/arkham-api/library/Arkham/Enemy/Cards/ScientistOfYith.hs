@@ -1,8 +1,10 @@
-module Arkham.Enemy.Cards.ScientistOfYith (scientistOfYith, ScientistOfYith (..)) where
+module Arkham.Enemy.Cards.ScientistOfYith (scientistOfYith) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Prelude

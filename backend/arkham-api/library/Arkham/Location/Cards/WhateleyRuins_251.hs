@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.WhateleyRuins_251 (
-  whateleyRuins_251,
-  WhateleyRuins_251 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.WhateleyRuins_251 (whateleyRuins_251) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers.Enemy
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (whateleyRuins_251)
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs

@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.MuseumEntrance (museumEntrance, MuseumEntrance (..)) where
+module Arkham.Location.Cards.MuseumEntrance (museumEntrance) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (museumEntrance)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

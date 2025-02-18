@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.TwistedUnderbrush (
-  TwistedUnderbrush (..),
-  twistedUnderbrush,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TwistedUnderbrush (twistedUnderbrush) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (twistedUnderbrush)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 
 newtype TwistedUnderbrush = TwistedUnderbrush LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

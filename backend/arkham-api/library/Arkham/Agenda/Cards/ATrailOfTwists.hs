@@ -1,11 +1,8 @@
-module Arkham.Agenda.Cards.ATrailOfTwists (
-  ATrailOfTwists (..),
-  aTrailOfTwists,
-) where
+module Arkham.Agenda.Cards.ATrailOfTwists (aTrailOfTwists) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 

@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.Office (
-  office,
-  Office (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Office (office) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
 

@@ -1,9 +1,4 @@
-module Arkham.Investigator.Cards.GavriellaMizrah (
-  gavriellaMizrah,
-  GavriellaMizrah (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.GavriellaMizrah (gavriellaMizrah, GavriellaMizrah) where
 
 import Arkham.Asset.Cards qualified as Cards hiding (gavriellaMizrah)
 import Arkham.Card
@@ -14,6 +9,8 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 

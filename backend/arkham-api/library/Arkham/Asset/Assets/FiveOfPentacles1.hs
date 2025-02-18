@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.FiveOfPentacles1 (fiveOfPentacles1, FiveOfPentacles1 (..)) where
+module Arkham.Asset.Assets.FiveOfPentacles1 (fiveOfPentacles1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

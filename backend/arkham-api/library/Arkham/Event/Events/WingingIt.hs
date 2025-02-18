@@ -1,13 +1,9 @@
-module Arkham.Event.Events.WingingIt (wingingIt, WingingIt (..)) where
+module Arkham.Event.Events.WingingIt (wingingIt) where
 
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
-import Arkham.Investigate
+import Arkham.Event.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Zone qualified as Zone
 
@@ -19,20 +15,14 @@ wingingIt :: EventCard WingingIt
 wingingIt = event WingingIt Cards.wingingIt
 
 instance RunMessage WingingIt where
-  runMessage msg e@(WingingIt attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ _ zone | eid == toId attrs -> do
+  runMessage msg e@(WingingIt attrs) = runQueueT $ case msg of
+    InvestigatorPlayEvent iid (is attrs -> True) _ _ zone -> do
       lid <- fieldJust InvestigatorLocation iid
       sid <- getRandom
-      modifiers <-
-        if zone == Zone.FromDiscard
-          then (: []) <$> skillTestModifier sid attrs iid (DiscoveredClues 1)
-          else pure []
-      investigation <- mkInvestigate sid iid attrs
-      enabled <- skillTestModifier sid attrs lid (ShroudModifier (-1))
-      pushAll
-        $ enabled
-        : modifiers
-          <> [toMessage investigation]
-          <> [ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs) | zone == Zone.FromDiscard]
+      skillTestModifier sid attrs lid (ShroudModifier (-1))
+      when (zone == Zone.FromDiscard) do
+        skillTestModifier sid attrs iid (DiscoveredClues 1)
+      investigate sid iid attrs
+      when (zone == Zone.FromDiscard) $ shuffleIntoDeck iid attrs
       pure e
-    _ -> WingingIt <$> runMessage msg attrs
+    _ -> WingingIt <$> liftRunMessage msg attrs

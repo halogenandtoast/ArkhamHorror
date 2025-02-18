@@ -1,14 +1,11 @@
-module Arkham.Agenda.Cards.CrossroadsOfFate (
-  CrossroadsOfFate (..),
-  crossroadsOfFate,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.CrossroadsOfFate (crossroadsOfFate) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
+import Arkham.Prelude
 
 newtype CrossroadsOfFate = CrossroadsOfFate AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

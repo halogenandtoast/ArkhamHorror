@@ -1,19 +1,14 @@
-module Arkham.Location.Cards.WitchesCircle (
-  witchesCircle,
-  WitchesCircle (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.WitchesCircle (witchesCircle) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Witch))
 
 newtype WitchesCircle = WitchesCircle LocationAttrs

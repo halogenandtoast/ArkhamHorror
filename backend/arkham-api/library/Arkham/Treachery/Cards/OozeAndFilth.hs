@@ -1,14 +1,10 @@
-module Arkham.Treachery.Cards.OozeAndFilth (
-  oozeAndFilth,
-  OozeAndFilth (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.OozeAndFilth (oozeAndFilth) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner

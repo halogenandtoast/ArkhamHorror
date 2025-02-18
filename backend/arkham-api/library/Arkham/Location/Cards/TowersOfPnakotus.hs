@@ -1,9 +1,8 @@
-module Arkham.Location.Cards.TowersOfPnakotus (towersOfPnakotus, TowersOfPnakotus (..)) where
+module Arkham.Location.Cards.TowersOfPnakotus (towersOfPnakotus) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner

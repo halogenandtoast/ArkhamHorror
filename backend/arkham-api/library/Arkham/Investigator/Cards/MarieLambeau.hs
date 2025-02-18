@@ -1,11 +1,11 @@
-module Arkham.Investigator.Cards.MarieLambeau (marieLambeau, MarieLambeau (..)) where
+module Arkham.Investigator.Cards.MarieLambeau (marieLambeau) where
 
 import Arkham.Action.Additional
 import Arkham.Action.Additional qualified as Additional
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Event.Types (Field (..))
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner

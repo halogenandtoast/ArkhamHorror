@@ -1,13 +1,11 @@
-module Arkham.Asset.Assets.FortyFiveThompsonRogue3 (
-  fortyFiveThompsonRogue3,
-  FortyFiveThompsonRogue3 (..),
-) where
+module Arkham.Asset.Assets.FortyFiveThompsonRogue3 (fortyFiveThompsonRogue3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (EnemyFight)
+import Arkham.Asset.Runner
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Fight
+import Arkham.Helpers.Modifiers hiding (EnemyFight)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
@@ -21,7 +19,7 @@ fortyFiveThompsonRogue3 = asset FortyFiveThompsonRogue3 Cards.fortyFiveThompsonR
 
 instance HasAbilities FortyFiveThompsonRogue3 where
   getAbilities (FortyFiveThompsonRogue3 a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
+    [restricted a 1 ControlsThis $ fightAction (assetUseCost a Ammo 1)]
 
 instance RunMessage FortyFiveThompsonRogue3 where
   runMessage msg a@(FortyFiveThompsonRogue3 attrs) = case msg of
@@ -44,10 +42,10 @@ instance RunMessage FortyFiveThompsonRogue3 where
               $ chooseOrRunOne player
               $ Label "Do not damage any enemies" []
               : [ targetLabel
-                  eid'
-                  [ SpendUses (attrs.ability 1) (toTarget attrs) Ammo 1
-                  , InvestigatorDamageEnemy iid eid' (toSource attrs)
-                  ]
+                    eid'
+                    [ SpendUses (attrs.ability 1) (toTarget attrs) Ammo 1
+                    , InvestigatorDamageEnemy iid eid' (toSource attrs)
+                    ]
                 | canDealDamage
                 , eid' <- enemies
                 ]

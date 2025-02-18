@@ -1,10 +1,10 @@
-module Arkham.Event.Events.OnTheLamAdvanced where
+module Arkham.Event.Events.OnTheLamAdvanced (onTheLamAdvanced, onTheLamAdvancedEffect) where
 
 import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getCanMoveToMatchingLocations)
+import Arkham.Helpers.Location (getCanMoveToMatchingLocations)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement

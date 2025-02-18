@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.PatientConfinementDanielsCell (
-  patientConfinementDanielsCell,
-  PatientConfinementDanielsCell (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.PatientConfinementDanielsCell (patientConfinementDanielsCell) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype PatientConfinementDanielsCell = PatientConfinementDanielsCell LocationAttrs
@@ -32,11 +27,11 @@ instance HasAbilities PatientConfinementDanielsCell where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation
-          Timing.After
-          Anyone
-          (LocationWithId $ toId attrs)
+          $ ForcedAbility
+          $ RevealLocation
+            Timing.After
+            Anyone
+            (LocationWithId $ toId attrs)
       | locationRevealed attrs
       ]
 

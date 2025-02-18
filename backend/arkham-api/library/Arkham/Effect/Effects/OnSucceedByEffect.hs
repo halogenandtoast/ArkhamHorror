@@ -5,8 +5,8 @@ module Arkham.Effect.Effects.OnSucceedByEffect (
 ) where
 
 import Arkham.Classes
-import Arkham.Effect.Runner
-import Arkham.Game.Helpers (gameValueMatches)
+import Arkham.Effect.Runner hiding (onSucceedByEffect)
+import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Prelude
 

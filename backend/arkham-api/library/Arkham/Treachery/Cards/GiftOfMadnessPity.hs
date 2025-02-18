@@ -3,14 +3,13 @@ module Arkham.Treachery.Cards.GiftOfMadnessPity (giftOfMadnessPity, GiftOfMadnes
 import Arkham.Ability
 import Arkham.Choose
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (CannotFight), modified_)
 import Arkham.Matcher hiding (PlaceUnderneath, treacheryInHandOf)
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessPity = GiftOfMadnessPity TreacheryAttrs

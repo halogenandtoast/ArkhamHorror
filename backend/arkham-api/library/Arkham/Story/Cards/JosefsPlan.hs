@@ -1,12 +1,11 @@
-module Arkham.Story.Cards.JosefsPlan (JosefsPlan (..), josefsPlan, josefsPlanEffect) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.JosefsPlan (josefsPlan, josefsPlanEffect) where
 
 import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 import Arkham.Trait (Trait (SilverTwilight))

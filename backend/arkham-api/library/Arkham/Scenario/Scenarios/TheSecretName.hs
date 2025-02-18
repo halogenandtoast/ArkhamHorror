@@ -13,13 +13,13 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (EnemyDefeated, RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheSecretName.Helpers
 import Arkham.Scenarios.TheSecretName.Story

@@ -1,9 +1,9 @@
-module Arkham.Enemy.Cards.BrownJenkin (brownJenkin, BrownJenkin (..)) where
+module Arkham.Enemy.Cards.BrownJenkin (brownJenkin) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyFight)
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

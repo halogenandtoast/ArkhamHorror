@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.TennesseeSourMashSurvivor3 (
-  tennesseeSourMashSurvivor3,
-  TennesseeSourMashSurvivor3 (..),
-) where
+module Arkham.Asset.Assets.TennesseeSourMashSurvivor3 (tennesseeSourMashSurvivor3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Prelude
 

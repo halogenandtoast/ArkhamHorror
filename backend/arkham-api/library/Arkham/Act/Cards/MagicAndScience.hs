@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.MagicAndScience (MagicAndScience (..), magicAndScience) where
+module Arkham.Act.Cards.MagicAndScience (magicAndScience) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Direction
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -79,12 +80,12 @@ instance RunMessage MagicAndScience where
           , chooseOneAtATime
               lead
               [ TargetLabel
-                (CardIdTarget $ toCardId $ locationCandidateCard c)
-                [ HandleTargetChoice
-                    leadInvestigatorId
-                    (toSource attrs)
-                    (LocationTarget $ locationCandidateId c)
-                ]
+                  (CardIdTarget $ toCardId $ locationCandidateCard c)
+                  [ HandleTargetChoice
+                      leadInvestigatorId
+                      (toSource attrs)
+                      (LocationTarget $ locationCandidateId c)
+                  ]
               | c <- cs
               ]
           , UnfocusCards

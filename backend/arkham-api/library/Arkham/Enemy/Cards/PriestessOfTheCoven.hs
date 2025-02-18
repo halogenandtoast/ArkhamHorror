@@ -1,10 +1,12 @@
-module Arkham.Enemy.Cards.PriestessOfTheCoven (priestessOfTheCoven, PriestessOfTheCoven (..)) where
+module Arkham.Enemy.Cards.PriestessOfTheCoven (priestessOfTheCoven) where
 
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Prelude

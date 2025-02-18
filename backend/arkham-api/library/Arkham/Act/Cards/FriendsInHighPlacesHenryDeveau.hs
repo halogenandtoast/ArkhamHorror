@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.FriendsInHighPlacesHenryDeveau (
-  FriendsInHighPlacesHenryDeveau (..),
-  friendsInHighPlacesHenryDeveau,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.FriendsInHighPlacesHenryDeveau (friendsInHighPlacesHenryDeveau) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -14,8 +9,10 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype FriendsInHighPlacesHenryDeveau = FriendsInHighPlacesHenryDeveau ActAttrs
@@ -33,15 +30,15 @@ friendsInHighPlacesHenryDeveau =
 instance HasAbilities FriendsInHighPlacesHenryDeveau where
   getAbilities (FriendsInHighPlacesHenryDeveau a) =
     [ restrictedAbility
-      a
-      1
-      ( AssetExists
-          $ assetIs Assets.henryDeveau
-          <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-      )
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        ( AssetExists
+            $ assetIs Assets.henryDeveau
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+        )
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide C a
     ]
 

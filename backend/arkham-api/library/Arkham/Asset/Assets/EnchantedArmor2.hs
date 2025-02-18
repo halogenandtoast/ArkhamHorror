@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EnchantedArmor2 (enchantedArmor2, EnchantedArmor2 (..)) where
+module Arkham.Asset.Assets.EnchantedArmor2 (enchantedArmor2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing
@@ -17,15 +18,13 @@ enchantedArmor2 :: AssetCard EnchantedArmor2
 enchantedArmor2 = assetWith EnchantedArmor2 Cards.enchantedArmor2 (setMeta @(Int, Int) (0, 0))
 
 instance HasModifiersFor EnchantedArmor2 where
-  getModifiersFor (EnchantedArmor2 a) =
-    case a.controller of
-      Nothing -> pure mempty
-      Just iid -> modified_ a iid [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
+  getModifiersFor (EnchantedArmor2 a) = for_ a.controller \iid -> do
+    modified_ a iid [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 instance HasAbilities EnchantedArmor2 where
   getAbilities (EnchantedArmor2 attrs) =
     [ skillTestAbility
-        $ restrictedAbility attrs 1 ControlsThis
+        $ restricted attrs 1 ControlsThis
         $ forced
         $ oneOf
           [PlacedCounterOnAsset #after (be attrs) AnySource cType $ atLeast 1 | cType <- [#horror, #damage]]

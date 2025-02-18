@@ -1,16 +1,12 @@
-module Arkham.Location.Cards.YithianOrrery (
-  yithianOrrery,
-  YithianOrrery (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.YithianOrrery (yithianOrrery) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype YithianOrrery = YithianOrrery LocationAttrs

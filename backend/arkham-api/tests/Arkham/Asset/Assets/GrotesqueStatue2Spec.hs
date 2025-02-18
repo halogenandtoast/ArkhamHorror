@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosBag.Base
 import Arkham.ChaosBagStepState
 import Arkham.Game.Settings
+import Arkham.Helpers.Scenario
 import Arkham.Scenario.Types (Field (..))
 import TestImport.New
 

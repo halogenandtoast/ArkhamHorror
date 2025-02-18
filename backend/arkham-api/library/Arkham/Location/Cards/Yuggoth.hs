@@ -1,9 +1,8 @@
-module Arkham.Location.Cards.Yuggoth (yuggoth, Yuggoth (..)) where
+module Arkham.Location.Cards.Yuggoth (yuggoth) where
 
 import Arkham.Ability
 import Arkham.Draw.Types
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -20,7 +19,7 @@ instance HasAbilities Yuggoth where
   getAbilities (Yuggoth a) =
     withBaseAbilities
       a
-      [restrictedAbility a 1 (Here <> oneOf [CluesOnThis (atLeast 1), CanDrawCards]) actionAbility]
+      [restricted a 1 (Here <> oneOf [CluesOnThis (atLeast 1), CanDrawCards]) actionAbility]
 
 instance RunMessage Yuggoth where
   runMessage msg l@(Yuggoth attrs) = case msg of

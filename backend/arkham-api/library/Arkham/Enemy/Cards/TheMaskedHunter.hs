@@ -1,8 +1,10 @@
-module Arkham.Enemy.Cards.TheMaskedHunter (TheMaskedHunter (..), theMaskedHunter) where
+module Arkham.Enemy.Cards.TheMaskedHunter (theMaskedHunter) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

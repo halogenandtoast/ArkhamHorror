@@ -1,17 +1,13 @@
-module Arkham.Investigator.Cards.PrestonFairmont (
-  prestonFairmont,
-  PrestonFairmont (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.PrestonFairmont (prestonFairmont) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
-import Arkham.Game.Helpers
+import Arkham.Helpers.Cost
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype PrestonFairmont = PrestonFairmont InvestigatorAttrs

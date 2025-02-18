@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.JoeMazurewiczsRoom (
-  joeMazurewiczsRoom,
-  JoeMazurewiczsRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.JoeMazurewiczsRoom (joeMazurewiczsRoom) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Blessed, Item))
 
 newtype JoeMazurewiczsRoom = JoeMazurewiczsRoom LocationAttrs
@@ -56,8 +51,8 @@ instance RunMessage JoeMazurewiczsRoom where
           "Take 1 horror"
           [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
         : [ Label
-            "Choose and discard an asset you control"
-            [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
+              "Choose and discard an asset you control"
+              [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
           | hasAssets
           ]
       pure l

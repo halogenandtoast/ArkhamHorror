@@ -1,11 +1,12 @@
-module Arkham.Investigator.Cards.JennyBarnesParallel (jennyBarnesParallel, JennyBarnesParallel (..)) where
+module Arkham.Investigator.Cards.JennyBarnesParallel (jennyBarnesParallel) where
 
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Game.Helpers (getIsPlayableWithResources, getSpendableResources)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Playable (getIsPlayableWithResources)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)

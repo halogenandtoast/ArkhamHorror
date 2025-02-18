@@ -1,12 +1,9 @@
-module Arkham.Treachery.Cards.WhispersInYourHeadAnxiety (
-  whispersInYourHeadAnxiety,
-  WhispersInYourHeadAnxiety (..),
-) where
+module Arkham.Treachery.Cards.WhispersInYourHeadAnxiety (whispersInYourHeadAnxiety) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Import.Lifted
 
 newtype WhispersInYourHeadAnxiety = WhispersInYourHeadAnxiety TreacheryAttrs

@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.OperaGarnier212 (operaGarnier212, OperaGarnier212 (..)) where
+module Arkham.Location.Cards.OperaGarnier212 (operaGarnier212) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTest, isInvestigating)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype OperaGarnier212 = OperaGarnier212 LocationAttrs

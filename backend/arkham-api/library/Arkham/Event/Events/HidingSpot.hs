@@ -1,18 +1,14 @@
-module Arkham.Event.Events.HidingSpot (
-  hidingSpot,
-  HidingSpot (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.HidingSpot (hidingSpot) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype HidingSpot = HidingSpot EventAttrs
   deriving anyclass IsEvent

@@ -1,17 +1,14 @@
-module Arkham.Agenda.Cards.TheRitualBegins (
-  TheRitualBegins (..),
-  theRitualBegins,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheRitualBegins (theRitualBegins) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheRitualBegins = TheRitualBegins AgendaAttrs

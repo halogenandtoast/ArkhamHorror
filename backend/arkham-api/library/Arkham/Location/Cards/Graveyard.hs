@@ -1,15 +1,13 @@
-module Arkham.Location.Cards.Graveyard where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Graveyard (graveyard) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (graveyard)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype Graveyard = Graveyard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

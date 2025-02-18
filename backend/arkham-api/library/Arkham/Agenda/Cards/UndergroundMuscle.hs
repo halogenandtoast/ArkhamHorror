@@ -1,12 +1,6 @@
-module Arkham.Agenda.Cards.UndergroundMuscle (
-  UndergroundMuscle (..),
-  undergroundMuscle,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.UndergroundMuscle (undergroundMuscle) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
@@ -14,8 +8,11 @@ import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
+import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Data.Maybe (fromJust)
 

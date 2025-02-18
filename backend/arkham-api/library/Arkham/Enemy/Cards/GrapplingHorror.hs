@@ -1,14 +1,11 @@
-module Arkham.Enemy.Cards.GrapplingHorror (
-  GrapplingHorror (..),
-  grapplingHorror,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.GrapplingHorror (grapplingHorror) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype GrapplingHorror = GrapplingHorror EnemyAttrs
   deriving anyclass IsEnemy

@@ -10,12 +10,13 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers
 import Arkham.Helpers.Deck
 import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
+import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
 import Arkham.Matcher hiding (assetAt)
-import Arkham.Helpers.Modifiers (getModifiers, ModifierType(..))
 import Arkham.Message
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -23,7 +24,7 @@ import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Message.Lifted.Placement (IsPlacement (..))
 import Arkham.Placement
 import Arkham.Prelude hiding ((.=))
-import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, getLead, hasBSide, isDoubleSided)
+import Arkham.Scenario.Helpers (excludeBSides, excludeDoubleSided, hasBSide, isDoubleSided)
 import Arkham.Scenario.Runner (createEnemyWithPlacement_, pushM)
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
@@ -32,9 +33,9 @@ import Arkham.Token (Token, addTokens)
 import Control.Lens
 import Control.Monad.Random (MonadRandom (..))
 import Control.Monad.State.Strict
-import Data.List.NonEmpty qualified as NE
-import Data.List (nubBy)
 import Data.Function (on)
+import Data.List (nubBy)
+import Data.List.NonEmpty qualified as NE
 
 class SampleOneOf a where
   type Sampled a

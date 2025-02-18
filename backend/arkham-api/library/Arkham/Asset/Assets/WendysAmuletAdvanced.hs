@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.WendysAmuletAdvanced where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.WendysAmuletAdvanced (wendysAmuletAdvanced) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype WendysAmuletAdvanced = WendysAmuletAdvanced AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

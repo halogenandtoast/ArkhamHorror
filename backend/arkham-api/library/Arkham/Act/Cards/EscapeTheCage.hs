@@ -1,15 +1,12 @@
-module Arkham.Act.Cards.EscapeTheCage (
-  EscapeTheCage (..),
-  escapeTheCage,
-) where
+module Arkham.Act.Cards.EscapeTheCage ( escapeTheCage,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Card
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))

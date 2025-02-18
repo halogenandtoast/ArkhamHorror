@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.ParlorCar (parlorCar, ParlorCar (..)) where
+module Arkham.Location.Cards.ParlorCar (parlorCar) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Discover
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (parlorCar)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

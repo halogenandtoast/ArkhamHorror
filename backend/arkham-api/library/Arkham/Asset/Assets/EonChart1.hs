@@ -1,11 +1,12 @@
-module Arkham.Asset.Assets.EonChart1 (eonChart1, EonChart1 (..)) where
+module Arkham.Asset.Assets.EonChart1 (eonChart1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
-import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
+import Arkham.Helpers.Action (getActionsWith)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

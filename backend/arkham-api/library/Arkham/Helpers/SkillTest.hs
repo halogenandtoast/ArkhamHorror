@@ -1,39 +1,47 @@
 module Arkham.Helpers.SkillTest (module X, module Arkham.Helpers.SkillTest) where
 
-import Arkham.Prelude
+import {-# SOURCE #-} Arkham.GameEnv as X (getSkillTest, getSkillTestId)
+import Arkham.Helpers.SkillTest.Target as X
 
 import Arkham.Ability
 import Arkham.Action
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosToken
+import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (HasQueue, popMessageMatching_, pushAfter)
 import Arkham.Classes.Query hiding (matches)
+import Arkham.Classes.Query qualified as Query
 import Arkham.CommitRestriction
 import Arkham.Enemy.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.GameEnv as X (getSkillTest, getSkillTestId)
+import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.Cost
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator hiding (investigator)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.SkillTest.Target as X
+import Arkham.Helpers.Ref (sourceToCard)
 import Arkham.Helpers.Source
+import Arkham.Helpers.Target
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message (Message (..), pattern BeginSkillTest)
+import Arkham.Modifier
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Question
 import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
+import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Stats
@@ -496,6 +504,7 @@ getIsCommittable a c = do
                   committedCardTitles = map toTitle allCommittedCards
                   passesCommitRestriction = \case
                     OnlySkillTestSource matcher -> sourceMatches skillTest.source matcher
+                    OnlySkillTest matcher -> skillTestMatches iid skillTest.source skillTest matcher
                     CommittableTreachery -> error "unhandled"
                     AnyCommitRestriction cs -> anyM passesCommitRestriction cs
                     OnlyFightAgainst matcher -> case skillTest.target.enemy of
@@ -600,3 +609,152 @@ getCanCancelSkillTestEffects = do
   getSkillTestTarget >>= \case
     Nothing -> pure False
     Just target -> withoutModifier target EffectsCannotBeCanceled
+
+skillTestMatches
+  :: HasGame m
+  => InvestigatorId
+  -> Source
+  -> SkillTest
+  -> Matcher.SkillTestMatcher
+  -> m Bool
+skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr of
+  Matcher.PerilousSkillTest -> getIsPerilous st
+  Matcher.IfSkillTestMatcher p thenMatcher elseMatcher -> do
+    p' <- skillTestMatches iid source st p
+    skillTestMatches iid source st $ if p' then thenMatcher else elseMatcher
+  Matcher.SkillTestWithDifficulty gv ->
+    getSkillTestDifficulty >>= \case
+      Nothing -> pure False
+      Just n -> gameValueMatches n gv
+  Matcher.SkillTestOnEncounterCard -> skillTestSource st `sourceMatches` Matcher.EncounterCardSource
+  Matcher.NotSkillTest matcher ->
+    not <$> skillTestMatches iid source st matcher
+  Matcher.AnySkillTest -> pure True
+  Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
+    FailedBy _ _ -> True
+    _ -> False
+  Matcher.YourSkillTest matcher ->
+    liftA2
+      (&&)
+      (pure $ skillTestInvestigator st == iid)
+      (skillTestMatches iid source st matcher)
+  Matcher.UsingThis -> pure $ case skillTestSource st of
+    AbilitySource (ProxySource _ s) _ -> s == source
+    AbilitySource s _ -> s == source
+    ProxySource (CardIdSource _) s -> s == source
+    ProxySource _ s -> s == source
+    IndexedSource _ s -> s == source
+    s -> s == source
+  Matcher.SkillTestSourceMatches sourceMatcher ->
+    sourceMatches (skillTestSource st) sourceMatcher
+  Matcher.SkillTestBeforeRevealingChaosTokens ->
+    pure $ null $ skillTestRevealedChaosTokens st
+  Matcher.SkillTestWithRevealedChaosToken matcher ->
+    anyM (`Query.matches` Matcher.IncludeSealed matcher)
+      $ skillTestRevealedChaosTokens st
+  Matcher.SkillTestWithRevealedChaosTokenCount n matcher ->
+    (>= n)
+      <$> countM
+        (`Query.matches` Matcher.IncludeSealed matcher)
+        (skillTestRevealedChaosTokens st)
+  Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
+  Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
+  Matcher.SkillTestOnLocation match -> case skillTestSource st of
+    AbilitySource s n | n < 100 -> case s.location of
+      Just lid -> lid <=~> match
+      Nothing -> pure False
+    _ -> pure False
+  Matcher.SkillTestWithResolvedChaosTokenBy whoMatcher matcher -> do
+    iids <- select whoMatcher
+    anyM (`Query.matches` Matcher.IncludeSealed matcher)
+      . filter (maybe False (`elem` iids) . chaosTokenRevealedBy)
+      $ skillTestRevealedChaosTokens st
+  Matcher.SkillTestFromRevelation -> pure $ skillTestIsRevelation st
+  Matcher.SkillTestWithAction actionMatcher -> case skillTestAction st of
+    Just action -> actionMatches iid action actionMatcher
+    Nothing -> pure False
+  Matcher.WhileInvestigating locationMatcher -> case skillTestAction st of
+    Just Action.Investigate -> case skillTestTarget st of
+      LocationTarget lid -> elem lid <$> select locationMatcher
+      ProxyTarget (LocationTarget lid) _ ->
+        elem lid <$> select locationMatcher
+      BothTarget (LocationTarget lid1) (LocationTarget lid2) -> do
+        selectAny $ locationMatcher <> Matcher.mapOneOf Matcher.LocationWithId [lid1, lid2]
+      _ -> pure False
+    _ -> pure False
+  Matcher.SkillTestOnTreachery treacheryMatcher -> case st.source.treachery of
+    Just tid -> elem tid <$> select treacheryMatcher
+    _ -> pure False
+  Matcher.SkillTestOnAsset assetMatcher -> case st.source.asset of
+    Just aid -> elem aid <$> select assetMatcher
+    _ -> pure False
+  Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
+    Just Action.Fight -> case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    _ -> pure False
+  Matcher.WhileEvadingAnEnemy enemyMatcher -> case skillTestAction st of
+    Just Action.Evade -> case st.target.enemy of
+      Just eid -> elem eid <$> select enemyMatcher
+      _ -> pure False
+    _ -> pure False
+  Matcher.WhileParleyingWithAnEnemy enemyMatcher ->
+    case st.target.enemy of
+      Just eid -> andM [isParley, elem eid <$> select enemyMatcher]
+      _ -> pure False
+  Matcher.WhileParleying -> isParley
+  Matcher.SkillTestWithSkill sk -> selectAny sk
+  Matcher.SkillTestWithSkillType sType -> pure $ case skillTestType st of
+    SkillSkillTest sType' -> sType' == sType
+    AndSkillTest types -> sType `elem` types
+    ResourceSkillTest -> False
+    BaseValueSkillTest _ _ -> False
+  Matcher.SkillTestAtYourLocation -> do
+    canAffectOthers <- withoutModifier iid CannotAffectOtherPlayersWithPlayerEffectsExceptDamage
+    mlid1 <- field InvestigatorLocation iid
+    mlid2 <- field InvestigatorLocation st.investigator
+    case (mlid1, mlid2) of
+      (Just lid1, Just lid2) ->
+        pure $ lid1 == lid2 && (canAffectOthers || iid == st.investigator)
+      _ -> pure False
+  Matcher.SkillTestAt locationMatcher -> targetMatches st.target (Matcher.TargetAtLocation locationMatcher)
+  Matcher.SkillTestOfInvestigator whoMatcher -> st.investigator <=~> whoMatcher
+  Matcher.SkillTestMatches ms -> allM (skillTestMatches iid source st) ms
+  Matcher.SkillTestOneOf ms -> anyM (skillTestMatches iid source st) ms
+
+skillTestValueMatches
+  :: HasGame m
+  => InvestigatorId
+  -> Maybe Action
+  -> SkillTestType
+  -> Matcher.SkillTestValueMatcher
+  -> m Bool
+skillTestValueMatches iid maction skillTestType = \case
+  Matcher.AnySkillTestValue -> pure True
+  Matcher.SkillTestGameValue valueMatcher -> do
+    maybe (pure False) (`gameValueMatches` valueMatcher) =<< getSkillTestDifficulty
+  Matcher.GreaterThanBaseValue -> do
+    getSkillTestDifficulty >>= \case
+      Nothing -> pure False
+      Just n -> case skillTestType of
+        SkillSkillTest skillType -> do
+          baseSkill <- baseSkillValueFor skillType maction iid
+          pure $ n > baseSkill
+        AndSkillTest types -> do
+          baseSkill <- sum <$> traverse (\skillType -> baseSkillValueFor skillType maction iid) types
+          pure $ n > baseSkill
+        ResourceSkillTest -> do
+          resources <- field InvestigatorResources iid
+          pure $ n > resources
+        BaseValueSkillTest x _ -> pure $ n > x
+
+onSucceedByEffect
+  :: (Sourceable source, Targetable target)
+  => SkillTestId
+  -> ValueMatcher
+  -> source
+  -> target
+  -> [Message]
+  -> Message
+onSucceedByEffect sid matchr source target msgs = CreateOnSucceedByEffect sid matchr (toSource source) (toTarget target) msgs
+

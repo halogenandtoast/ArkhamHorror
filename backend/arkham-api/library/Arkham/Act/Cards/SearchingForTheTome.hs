@@ -1,17 +1,13 @@
-module Arkham.Act.Cards.SearchingForTheTome (
-  SearchingForTheTome (..),
-  searchingForTheTome,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.SearchingForTheTome (searchingForTheTome) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

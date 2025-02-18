@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MakeshiftTrap (makeshiftTrap, MakeshiftTrap (..)) where
+module Arkham.Event.Events.MakeshiftTrap (makeshiftTrap) where
 
 import Arkham.Ability
 import Arkham.DamageEffect
@@ -9,7 +9,6 @@ import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
-  UIModifier (..),
   modifySelectMapM,
   modifySelfWhen,
  )
@@ -17,6 +16,7 @@ import Arkham.Helpers.Use (toModifiedStartingUses)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Token
+import Arkham.UI
 import Arkham.Window qualified as Window
 import Data.Map.Strict qualified as Map
 

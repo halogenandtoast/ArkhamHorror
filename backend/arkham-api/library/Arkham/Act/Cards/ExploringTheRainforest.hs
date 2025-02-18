@@ -1,15 +1,12 @@
-module Arkham.Act.Cards.ExploringTheRainforest (
-  ExploringTheRainforest (..),
-  exploringTheRainforest,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.ExploringTheRainforest (exploringTheRainforest) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
 

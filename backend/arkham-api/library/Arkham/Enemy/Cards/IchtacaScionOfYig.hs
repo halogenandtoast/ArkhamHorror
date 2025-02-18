@@ -1,10 +1,4 @@
-module Arkham.Enemy.Cards.IchtacaScionOfYig (
-  ichtacaScionOfYig,
-  ichtacaScionOfYigEffect,
-  IchtacaScionOfYig (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.IchtacaScionOfYig (ichtacaScionOfYig, ichtacaScionOfYigEffect) where
 
 import Arkham.Ability
 import Arkham.Attack
@@ -15,6 +9,8 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype IchtacaScionOfYig = IchtacaScionOfYig EnemyAttrs

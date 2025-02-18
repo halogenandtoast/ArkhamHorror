@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.MysteriousStairs_186 (mysteriousStairs_186, MysteriousStairs_186 (..)) where
+module Arkham.Location.Cards.MysteriousStairs_186 (mysteriousStairs_186) where
 
 import Arkham.Direction
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

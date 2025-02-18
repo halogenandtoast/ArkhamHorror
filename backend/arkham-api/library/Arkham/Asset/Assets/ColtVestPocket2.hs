@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.ColtVestPocket2 (coltVestPocket2, ColtVestPocket2 (..)) where
+module Arkham.Asset.Assets.ColtVestPocket2 (coltVestPocket2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -20,8 +21,8 @@ coltVestPocket2 = asset (ColtVestPocket2 . (`with` Metadata False)) Cards.coltVe
 
 instance HasAbilities ColtVestPocket2 where
   getAbilities (ColtVestPocket2 (a `With` meta)) =
-    restrictedAbility a 1 ControlsThis (fightAction $ assetUseCost a Ammo 1)
-      : [restrictedAbility a 2 ControlsThis $ ForcedAbility $ RoundEnds #when | abilityTriggered meta]
+    restricted a 1 ControlsThis (fightAction $ assetUseCost a Ammo 1)
+      : [restricted a 2 ControlsThis $ forced $ RoundEnds #when | abilityTriggered meta]
 
 instance RunMessage ColtVestPocket2 where
   runMessage msg a@(ColtVestPocket2 (attrs `With` meta)) = case msg of

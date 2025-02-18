@@ -7,11 +7,14 @@ import Arkham.Campaigns.TheDunwichLegacy.ChaosBag
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Cost
+import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice, chaosTokenEffect)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers

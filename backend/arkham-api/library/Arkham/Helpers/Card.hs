@@ -19,20 +19,29 @@ import Arkham.Enemy.Types
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign
-import Arkham.Helpers.Matchers
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario (scenarioFieldMap)
+import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
+import Arkham.Investigator.Types qualified as Field
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types
 import Arkham.Matcher hiding (AssetCard, LocationCard)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Name
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
+import Arkham.Source
 import Arkham.Target
+import Arkham.Trait
 import Arkham.Treachery.Types
+import Arkham.Window (Window)
+import Data.List.Extra (nubOrdOn)
 import Data.Proxy
 
 isDiscardable :: Card -> Bool
@@ -201,3 +210,124 @@ playIsValidAfterSeal iid c = do
       Keyword.Seal sealing -> sealingToMatcher sealing
       _ -> Nothing
   allM (\matcher -> anyM (\t -> matchChaosToken iid t matcher) tokens) sealChaosTokenMatchers
+
+cardListMatches :: HasGame m => [Card] -> Matcher.CardListMatcher -> m Bool
+cardListMatches cards = \case
+  Matcher.AnyCards -> pure $ notNull cards
+  Matcher.LengthIs valueMatcher -> gameValueMatches (length cards) valueMatcher
+  Matcher.DifferentLengthIsAtLeast n cardMatcher -> pure $ length (nubOrdOn toTitle $ filter (`cardMatch` cardMatcher) cards) >= n
+  Matcher.HasCard cardMatcher -> pure $ any (`cardMatch` cardMatcher) cards
+  Matcher.NoCards -> pure $ null cards
+
+passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
+passesLimits iid c = allM go (cdLimits $ toCardDef c)
+ where
+  go = \case
+    LimitPerInvestigator m -> case toCardType c of
+      AssetType -> do
+        n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    LimitPerTrait t m -> case toCardType c of
+      AssetType -> do
+        n <- selectCount (Matcher.assetControlledBy iid <> Matcher.AssetWithTrait t)
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    MaxPerAttack m -> case toCardType c of
+      EventType -> do
+        n <- selectCount $ Matcher.eventIs c
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
+    MaxPerGame m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerTurn m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerRound m -> do
+      n <- getCardUses (toCardCode c)
+      pure $ m > n
+    MaxPerTraitPerRound t m -> do
+      n <- count (elem t) . map toTraits <$> getAllCardUses
+      pure $ m > n
+
+cardInFastWindows
+  :: HasGame m
+  => InvestigatorId
+  -> Source
+  -> Card
+  -> [Window]
+  -> Matcher.WindowMatcher
+  -> m Bool
+cardInFastWindows iid source card windows' matcher =
+  anyM (\window -> windowMatches iid source' window matcher) windows'
+ where
+  source' = case card of
+    PlayerCard pc -> BothSource source (CardIdSource pc.id)
+    _ -> source
+
+getPotentiallyModifiedCardCost
+  :: HasGame m => InvestigatorId -> Card -> Bool -> Int -> m Int
+getPotentiallyModifiedCardCost iid c@(PlayerCard _) excludeChuckFergus startingCost = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+  foldM applyModifier startingCost (modifiers <> cardModifiers)
+ where
+  applyModifier n (CanReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (ChuckFergus2Modifier cardMatcher m) | not excludeChuckFergus = do
+    -- get is playable will check if this has to be used, will likely break if
+    -- anything else aside from Chuck Fergus (2) interacts with this
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n _ = pure n
+getPotentiallyModifiedCardCost iid c@(EncounterCard _) excludeChuckFergus _ = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  foldM
+    applyModifier
+    (error "we need so specify ecCost for this to work")
+    modifiers
+ where
+  applyModifier n (CanReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (ChuckFergus2Modifier cardMatcher m) | not excludeChuckFergus = do
+    -- get is playable will check if this has to be used
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n _ = pure n
+getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
+  error "should not check vengeance card"
+
+getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
+getModifiedCardCost iid c@(PlayerCard _) = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
+  startingCost <- getStartingCost
+  foldM applyModifier startingCost (modifiers <> cardModifiers)
+ where
+  pcDef = toCardDef c
+  getStartingCost = case cdCost pcDef of
+    Just (StaticCost n) -> pure n
+    Just DynamicCost -> pure 0
+    Just (MaxDynamicCost _) -> pure 0
+    Just DiscardAmountCost -> fieldMap Field.InvestigatorDiscard (count ((== toCardCode c) . toCardCode)) iid
+    Nothing -> pure 0
+  -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
+  applyModifier n _ | isNothing (cdCost pcDef) = pure n
+  applyModifier n (ReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (IncreaseCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then n + m else n
+  applyModifier n _ = pure n
+getModifiedCardCost iid c@(EncounterCard _) = do
+  modifiers <- getModifiers (InvestigatorTarget iid)
+  foldM
+    applyModifier
+    (error "we need so specify ecCost for this to work")
+    modifiers
+ where
+  applyModifier n (ReduceCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
+  applyModifier n (IncreaseCostOf cardMatcher m) = do
+    pure $ if c `cardMatch` cardMatcher then n + m else n
+  applyModifier n _ = pure n
+getModifiedCardCost _ (VengeanceCard _) =
+  error "should not happen for vengeance"

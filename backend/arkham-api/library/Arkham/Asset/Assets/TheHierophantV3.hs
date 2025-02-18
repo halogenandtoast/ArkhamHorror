@@ -1,11 +1,13 @@
-module Arkham.Asset.Assets.TheHierophantV3 (theHierophantV3, TheHierophantV3 (..)) where
+module Arkham.Asset.Assets.TheHierophantV3 (theHierophantV3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
+import Arkham.Slot
 
 newtype TheHierophantV3 = TheHierophantV3 AssetAttrs
   deriving anyclass IsAsset

@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.WellPrepared2 (wellPrepared2, WellPrepared2 (..)) where
+module Arkham.Asset.Assets.WellPrepared2 (wellPrepared2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card.CardDef
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Prelude
 import Arkham.Projection

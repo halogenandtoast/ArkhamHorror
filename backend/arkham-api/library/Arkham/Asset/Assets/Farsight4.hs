@@ -1,16 +1,13 @@
-module Arkham.Asset.Assets.Farsight4 (
-  farsight4,
-  Farsight4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Farsight4 (farsight4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Window (mkWindow)
@@ -61,8 +58,8 @@ instance RunMessage Farsight4 where
         $ chooseOne
           player
           [ TargetLabel
-            (CardIdTarget $ toCardId event)
-            [PayCardCost iid event windows'']
+              (CardIdTarget $ toCardId event)
+              [PayCardCost iid event windows'']
           | event <- playableEvents
           ]
       pure a

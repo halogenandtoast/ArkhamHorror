@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.TennesseeSourMash (tennesseeSourMash, TennesseeSourMash (..)) where
+module Arkham.Asset.Assets.TennesseeSourMash (tennesseeSourMash) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

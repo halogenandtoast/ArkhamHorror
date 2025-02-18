@@ -1,7 +1,7 @@
 module Arkham.Story.Cards.ScoutingTheVale (ScoutingTheVale (..), scoutingTheVale) where
 
 import Arkham.Card
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
@@ -33,8 +33,8 @@ instance RunMessage ScoutingTheVale where
       chooseOne iid
         $ [Label "Done discarding" [msg']]
         <> [ TargetLabel
-            (CardIdTarget $ toCardId c)
-            [AddToEncounterDiscard ec, DoStep (x - 1) (SearchFound iid (toTarget attrs) sig rest)]
+               (CardIdTarget $ toCardId c)
+               [AddToEncounterDiscard ec, DoStep (x - 1) (SearchFound iid (toTarget attrs) sig rest)]
            | (c@(EncounterCard ec), rest) <- eachWithRest cards
            ]
       pure s
@@ -42,8 +42,8 @@ instance RunMessage ScoutingTheVale where
       chooseOne
         iid
         [ TargetLabel
-          (CardIdTarget $ toCardId c)
-          [PutCardOnTopOfDeck iid sig c, DoStep 0 (SearchFound iid (toTarget attrs) sig rest)]
+            (CardIdTarget $ toCardId c)
+            [PutCardOnTopOfDeck iid sig c, DoStep 0 (SearchFound iid (toTarget attrs) sig rest)]
         | (c, rest) <- eachWithRest cards
         ]
       pure s

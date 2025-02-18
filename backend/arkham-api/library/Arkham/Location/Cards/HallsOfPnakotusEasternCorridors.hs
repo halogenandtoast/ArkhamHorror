@@ -1,17 +1,14 @@
 module Arkham.Location.Cards.HallsOfPnakotusEasternCorridors (
   hallsOfPnakotusEasternCorridors,
-  HallsOfPnakotusEasternCorridors (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype HallsOfPnakotusEasternCorridors = HallsOfPnakotusEasternCorridors LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

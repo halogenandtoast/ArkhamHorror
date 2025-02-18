@@ -1,19 +1,17 @@
-module Arkham.Act.Cards.TheReallyBadOnesV1 (
-  TheReallyBadOnesV1 (..),
-  theReallyBadOnesV1,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheReallyBadOnesV1 (theReallyBadOnesV1) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait
 
@@ -40,8 +38,8 @@ instance RunMessage TheReallyBadOnesV1 where
         $ chooseOne
           lead
           [ targetLabel
-            iid
-            [TakeControlOfSetAsideAsset iid danielChesterfield]
+              iid
+              [TakeControlOfSetAsideAsset iid danielChesterfield]
           | iid <- investigators
           ]
         : [ ShuffleCardsIntoDeck Deck.EncounterDeck enemiesUnderAct

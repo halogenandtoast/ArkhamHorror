@@ -1,18 +1,14 @@
-module Arkham.Event.Events.Lure1 (
-  lure1,
-  Lure1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Lure1 (lure1) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

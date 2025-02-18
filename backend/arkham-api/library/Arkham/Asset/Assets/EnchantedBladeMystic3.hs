@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EnchantedBladeMystic3 (enchantedBladeMystic3, EnchantedBladeMystic3 (..)) where
+module Arkham.Asset.Assets.EnchantedBladeMystic3 (enchantedBladeMystic3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype EnchantedBladeMystic3 = EnchantedBladeMystic3 AssetAttrs
@@ -21,7 +22,7 @@ getUsesPaid _ = 0
 instance HasAbilities EnchantedBladeMystic3 where
   getAbilities (EnchantedBladeMystic3 attrs) =
     [ withAdditionalCost (UpTo (Fixed 2) $ assetUseCost attrs Charge 1)
-        $ restrictedAbility attrs 1 ControlsThis fightAction_
+        $ restricted attrs 1 ControlsThis fightAction_
     ]
 
 instance RunMessage EnchantedBladeMystic3 where

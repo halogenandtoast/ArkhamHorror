@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.BidingItsTime (
-  BidingItsTime (..),
-  bidingItsTime,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.BidingItsTime (bidingItsTime) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -14,8 +9,10 @@ import Arkham.Classes
 import Arkham.Enemy.Creation
 import Arkham.Exception
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (ChosenRandomLocation)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 

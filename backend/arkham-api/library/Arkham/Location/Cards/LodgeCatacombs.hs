@@ -1,8 +1,9 @@
-module Arkham.Location.Cards.LodgeCatacombs (lodgeCatacombs, LodgeCatacombs (..)) where
+module Arkham.Location.Cards.LodgeCatacombs (lodgeCatacombs) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

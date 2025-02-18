@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.TheDevilXV (theDevilXv, TheDevilXV (..)) where
+module Arkham.Asset.Assets.TheDevilXV (theDevilXv) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

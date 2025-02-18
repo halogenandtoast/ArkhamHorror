@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.HiddenAgendas (
-  HiddenAgendas (..),
-  hiddenAgendas,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.HiddenAgendas (hiddenAgendas) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
@@ -12,10 +7,12 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Monster))
 
@@ -73,8 +70,8 @@ instance RunMessage HiddenAgendas where
            , NextAdvanceActStep (toId a) 1
            , SpawnEnemyAt theSpectralWatcher entryHall
            , ShuffleCardsIntoDeck
-              Deck.EncounterDeck
-              (theWatcherSet <> realmOfDeathSet)
+               Deck.EncounterDeck
+               (theWatcherSet <> realmOfDeathSet)
            , ShuffleEncounterDiscardBackIn
            , advanceActDeck attrs
            ]

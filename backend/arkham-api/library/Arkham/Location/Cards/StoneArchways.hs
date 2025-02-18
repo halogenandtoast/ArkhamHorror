@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.StoneArchways (stoneArchways, StoneArchways (..)) where
+module Arkham.Location.Cards.StoneArchways (stoneArchways) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted

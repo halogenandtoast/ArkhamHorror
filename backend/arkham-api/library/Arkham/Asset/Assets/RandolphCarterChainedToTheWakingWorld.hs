@@ -1,12 +1,12 @@
 module Arkham.Asset.Assets.RandolphCarterChainedToTheWakingWorld (
   randolphCarterChainedToTheWakingWorld,
-  RandolphCarterChainedToTheWakingWorld (..),
 )
 where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -23,7 +23,7 @@ instance HasModifiersFor RandolphCarterChainedToTheWakingWorld where
 
 instance HasAbilities RandolphCarterChainedToTheWakingWorld where
   getAbilities (RandolphCarterChainedToTheWakingWorld attrs) =
-    [ restrictedAbility attrs 1 (ControlsThis <> DuringSkillTest SkillTestAtYourLocation)
+    [ controlled attrs 1 (DuringSkillTest SkillTestAtYourLocation)
         $ ReactionAbility (RevealChaosToken #after Anyone #elderthing) (exhaust attrs)
     ]
 

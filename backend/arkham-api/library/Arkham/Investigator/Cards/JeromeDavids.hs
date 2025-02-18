@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.JeromeDavids (jeromeDavids, JeromeDavids (..)) where
+module Arkham.Investigator.Cards.JeromeDavids (jeromeDavids, JeromeDavids) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (jeromeDavids)
@@ -6,12 +6,13 @@ import Arkham.Card
 import Arkham.Discover hiding (discoverAtYourLocation)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Investigator (startsWithInHand)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
+import Arkham.Helpers.Modifiers (modifySelfWith)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 

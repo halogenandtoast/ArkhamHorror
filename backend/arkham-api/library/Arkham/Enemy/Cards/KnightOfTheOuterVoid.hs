@@ -1,17 +1,14 @@
-module Arkham.Enemy.Cards.KnightOfTheOuterVoid (
-  knightOfTheOuterVoid,
-  KnightOfTheOuterVoid (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.KnightOfTheOuterVoid (knightOfTheOuterVoid) where
 
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Modifier
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype KnightOfTheOuterVoid = KnightOfTheOuterVoid EnemyAttrs

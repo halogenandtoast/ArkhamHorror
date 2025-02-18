@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.MoonLizard (moonLizard, MoonLizard (..)) where
+module Arkham.Enemy.Cards.MoonLizard (moonLizard) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Mod
 import Arkham.Matcher
 import Arkham.Prelude

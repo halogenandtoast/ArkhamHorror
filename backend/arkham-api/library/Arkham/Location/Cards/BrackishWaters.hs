@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.BrackishWaters (BrackishWaters (..), brackishWaters) where
+module Arkham.Location.Cards.BrackishWaters (brackishWaters) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

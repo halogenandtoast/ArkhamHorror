@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.AshleighClarke (ashleighClarke, AshleighClarke (..)) where
+module Arkham.Enemy.Cards.AshleighClarke (ashleighClarke) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Phase
 import Arkham.Prelude

@@ -1,19 +1,15 @@
-module Arkham.Location.Cards.DestroyedPath (
-  destroyedPath,
-  DestroyedPath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DestroyedPath (destroyedPath) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards (destroyedPath)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

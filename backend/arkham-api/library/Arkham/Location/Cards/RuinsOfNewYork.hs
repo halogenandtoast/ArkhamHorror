@@ -1,21 +1,16 @@
-module Arkham.Location.Cards.RuinsOfNewYork (
-  ruinsOfNewYork,
-  RuinsOfNewYork (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RuinsOfNewYork (ruinsOfNewYork) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

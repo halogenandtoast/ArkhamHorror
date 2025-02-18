@@ -1,8 +1,8 @@
-module Arkham.Investigator.Cards.JimCulverParallel (jimCulverParallel, JimCulverParallel (..)) where
+module Arkham.Investigator.Cards.JimCulverParallel (jimCulverParallel) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Game.Helpers (getModifiedChaosTokenFace)
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Import.Lifted qualified as Msg (Message (RevealChaosToken))

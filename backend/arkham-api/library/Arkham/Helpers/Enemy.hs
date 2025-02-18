@@ -1,8 +1,7 @@
 module Arkham.Helpers.Enemy where
 
-import Arkham.Prelude
-
 import Arkham.Asset.Types (Field (..))
+import Arkham.Attack.Types
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
@@ -10,31 +9,24 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.DamageEffect
 import Arkham.Enemy.Types
-import Arkham.Game.Helpers (damageEffectMatches, sourceMatches)
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Damage (damageEffectMatches)
+import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location
-import Arkham.Helpers.Message (
-  Message (
-    DefeatEnemy,
-    EnemySpawnAtLocationMatching,
-    EnemySpawnEngagedWith,
-    PlaceEnemy,
-    ShuffleBackIntoEncounterDeck,
-    Surge
-  ),
-  placeLocation,
-  resolve,
-  toDiscard,
- )
+import Arkham.Helpers.Message (placeLocation, toDiscard)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
+import Arkham.Helpers.Ref
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Keyword hiding (Surge)
 import Arkham.Matcher hiding (canEnterLocation)
+import Arkham.Matcher qualified as Matcher
+import Arkham.Message
 import Arkham.Modifier qualified as Modifier
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Spawn
@@ -42,6 +34,7 @@ import Arkham.Target
 import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Data.Foldable (foldrM)
+import Data.List qualified as List
 
 spawned :: EnemyAttrs -> Bool
 spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
@@ -198,3 +191,71 @@ enemyEngagedInvestigators eid = do
     AsSwarm eid' _ -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others
+
+enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
+enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
+
+enemyAttackMatches
+  :: HasGame m => InvestigatorId -> EnemyAttackDetails -> Matcher.EnemyAttackMatcher -> m Bool
+enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
+  Matcher.EnemyAttackMatches as -> allM (enemyAttackMatches youId details) as
+  Matcher.AnyEnemyAttack -> pure True
+  Matcher.NotEnemyAttack inner -> not <$> enemyAttackMatches youId details inner
+  Matcher.AttackOfOpportunityAttack -> pure $ attackType == AttackOfOpportunity
+  Matcher.AttackDealtDamageOrHorror -> pure $ any ((> 0) . uncurry max) (toList attackDamaged)
+  Matcher.AttackDamagedAsset inner -> do
+    flip anyM (mapToList attackDamaged) \(target, (x, y)) -> case target of
+      AssetTarget aid | x > 0 || y > 0 -> aid <=~> inner
+      _ -> pure False
+  Matcher.AttackOfOpportunityAttackYouProvoked ->
+    pure $ attackType == AttackOfOpportunity && isTarget youId attackOriginalTarget
+  Matcher.AttackViaAlert -> pure $ attackType == AlertAttack
+  Matcher.AttackViaSource sourceMatcher -> sourceMatches details.source sourceMatcher
+  Matcher.CancelableEnemyAttack matcher -> do
+    modifiers' <- getModifiers (sourceToTarget attackSource)
+    enemyModifiers <- getModifiers attackEnemy
+    andM
+      [ pure $ EffectsCannotBeCanceled `notElem` modifiers'
+      , pure $ AttacksCannotBeCancelled `notElem` enemyModifiers
+      , enemyAttackMatches youId details matcher
+      ]
+
+spawnAtOneOf
+  :: (HasGame m, HasQueue Message m) => Maybe InvestigatorId -> EnemyId -> [LocationId] -> m ()
+spawnAtOneOf miid eid targetLids = do
+  locations' <- select $ Matcher.IncludeEmptySpace Matcher.Anywhere
+  player <- maybe getLeadPlayer getPlayer miid
+  case targetLids `List.intersect` locations' of
+    [] -> push (toDiscard GameSource eid)
+    [lid] -> do
+      windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
+      pushAll $ windows' : resolve (EnemySpawn miid lid eid)
+    lids -> do
+      windowPairs <- for lids $ \lid -> do
+        windows' <- checkWindows [mkWhen (Window.EnemyWouldSpawnAt eid lid)]
+        pure (windows', lid)
+
+      push
+        $ chooseOne
+          player
+          [ targetLabel lid $ windows' : resolve (EnemySpawn miid lid eid)
+          | (windows', lid) <- windowPairs
+          ]
+
+sourceCanDamageEnemy :: HasGame m => EnemyId -> Source -> m Bool
+sourceCanDamageEnemy eid source = do
+  modifiers' <- getModifiers (EnemyTarget eid)
+  not <$> anyM prevents modifiers'
+ where
+  prevents = \case
+    CannotBeDamagedByPlayerSourcesExcept matcher ->
+      not
+        <$> sourceMatches
+          source
+          (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
+    CannotBeDamagedByPlayerSources matcher ->
+      sourceMatches
+        source
+        (Matcher.SourceMatchesAny [Matcher.EncounterCardSource, matcher])
+    CannotBeDamaged -> pure True
+    _ -> pure False

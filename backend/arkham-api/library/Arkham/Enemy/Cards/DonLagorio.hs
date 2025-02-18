@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.DonLagorio (donLagorio, DonLagorio (..)) where
+module Arkham.Enemy.Cards.DonLagorio (donLagorio) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.CarnevaleOfHorrors.Helpers

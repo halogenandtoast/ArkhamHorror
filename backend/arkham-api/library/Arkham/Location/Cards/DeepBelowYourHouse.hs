@@ -1,13 +1,11 @@
-module Arkham.Location.Cards.DeepBelowYourHouse where
+module Arkham.Location.Cards.DeepBelowYourHouse (deepBelowYourHouse) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (deepBelowYourHouse)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

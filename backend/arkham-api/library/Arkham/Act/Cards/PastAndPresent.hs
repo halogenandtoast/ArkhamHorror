@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.PastAndPresent (
-  PastAndPresent (..),
-  pastAndPresent,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.PastAndPresent (pastAndPresent) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -14,8 +9,10 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Trait
@@ -30,14 +27,14 @@ pastAndPresent = act (2, A) PastAndPresent Cards.pastAndPresent Nothing
 instance HasAbilities PastAndPresent where
   getAbilities (PastAndPresent a) =
     [ restrictedAbility
-      a
-      1
-      ( LocationCount 6
-          $ LocationWithTrait Tenochtitlan
-          <> LocationWithoutClues
-      )
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        ( LocationCount 6
+            $ LocationWithTrait Tenochtitlan
+            <> LocationWithoutClues
+        )
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide A a
     ]
 
@@ -69,12 +66,12 @@ instance RunMessage PastAndPresent where
         $ chooseOneAtATime
           lead
           [ targetLabel
-            lid
-            [ HandleTargetChoice
-                leadInvestigatorId
-                (toSource attrs)
-                (LocationTarget lid)
-            ]
+              lid
+              [ HandleTargetChoice
+                  leadInvestigatorId
+                  (toSource attrs)
+                  (LocationTarget lid)
+              ]
           | lid <- presentDayLocations
           ]
       pure a
@@ -89,10 +86,10 @@ instance RunMessage PastAndPresent where
         , chooseOrRunOne
             player
             [ targetLabel
-              (toCardId replacement)
-              [ RemoveCardFromScenarioDeck ExplorationDeck replacement
-              , ReplaceLocation lid replacement DefaultReplace
-              ]
+                (toCardId replacement)
+                [ RemoveCardFromScenarioDeck ExplorationDeck replacement
+                , ReplaceLocation lid replacement DefaultReplace
+                ]
             | replacement <- replacements
             ]
         , UnfocusCards

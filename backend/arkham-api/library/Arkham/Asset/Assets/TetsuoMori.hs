@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.TetsuoMori (tetsuoMori, TetsuoMori (..)) where
+module Arkham.Asset.Assets.TetsuoMori (tetsuoMori) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher

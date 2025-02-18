@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.CuriositieShoppe (
-  curiositieShoppe,
-  CuriositieShoppe (..),
-) where
+module Arkham.Location.Cards.CuriositieShoppe (curiositieShoppe) where
 
-import Arkham.Prelude
-
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMap)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype CuriositieShoppe = CuriositieShoppe LocationAttrs

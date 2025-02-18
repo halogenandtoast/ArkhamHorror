@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.MadnessDrowns (
-  MadnessDrowns (..),
-  madnessDrowns,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.MadnessDrowns (madnessDrowns) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -11,7 +6,10 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MadnessDrowns = MadnessDrowns AgendaAttrs
   deriving anyclass IsAgenda
@@ -27,17 +25,12 @@ instance HasModifiersFor MadnessDrowns where
 instance HasAbilities MadnessDrowns where
   getAbilities (MadnessDrowns a)
     | onSide A a =
-        [ restrictedAbility
+        [ restricted
             a
             1
-            ( EnemyCriteria
-                $ EnemyExists
-                  ( EnemyWithTitle "Hastur"
-                      <> EnemyWithDamage (AtLeast $ PerPlayer 5)
-                  )
-            )
+            (exists $ EnemyWithTitle "Hastur" <> EnemyWithDamage (AtLeast $ PerPlayer 5))
             $ Objective
-            $ ForcedAbility AnyWindow
+            $ forced AnyWindow
         ]
   getAbilities _ = []
 

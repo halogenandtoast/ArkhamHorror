@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.JoeyTheRatVigil3 (joeyTheRatVigil3, JoeyTheRatVigil3 (..)) where
+module Arkham.Asset.Assets.JoeyTheRatVigil3 (joeyTheRatVigil3) where
 
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
-import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Message.Lifted.Choose
@@ -25,7 +25,10 @@ instance HasAbilities JoeyTheRatVigil3 where
         $ controlledAbility
           x
           1
-          (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf ForPlay You <> #item))
+          ( PlayableCardExists
+              (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction)
+              (InHandOf ForPlay You <> #item)
+          )
           (FastAbility $ ResourceCost 1)
     , withTooltip "Discard an _Item_ asset from play: Gain 2 resources."
         $ controlledAbility x 2 (can.gain.resources You)

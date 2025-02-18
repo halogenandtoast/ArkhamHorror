@@ -1,16 +1,10 @@
-module Arkham.Location.Cards.EntryHallAtDeathsDoorstep (
-  entryHallAtDeathsDoorstep,
-  EntryHallAtDeathsDoorstep (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EntryHallAtDeathsDoorstep (entryHallAtDeathsDoorstep) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 
 newtype EntryHallAtDeathsDoorstep = EntryHallAtDeathsDoorstep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,8 +18,8 @@ instance HasAbilities EntryHallAtDeathsDoorstep where
     withBaseAbilities
       attrs
       [ withTooltip
-        "\"I guess there is nothing to those disappearances after all.\""
-        (locationResignAction attrs)
+          "\"I guess there is nothing to those disappearances after all.\""
+          (locationResignAction attrs)
       | locationRevealed attrs
       ]
 

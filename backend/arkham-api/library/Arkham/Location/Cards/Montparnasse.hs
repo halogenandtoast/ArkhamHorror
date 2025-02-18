@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.Montparnasse (
-  montparnasse,
-  Montparnasse (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Montparnasse (montparnasse) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype Montparnasse = Montparnasse LocationAttrs
@@ -25,9 +20,9 @@ instance HasAbilities Montparnasse where
     withBaseAbilities
       attrs
       [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility attrs 1 Here
-        $ FastAbility
-        $ HandDiscardCost 1 #any
+          $ restrictedAbility attrs 1 Here
+          $ FastAbility
+          $ HandDiscardCost 1 #any
       | locationRevealed attrs
       ]
 

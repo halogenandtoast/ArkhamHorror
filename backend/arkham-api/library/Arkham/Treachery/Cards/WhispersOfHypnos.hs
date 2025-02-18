@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.WhispersOfHypnos (
-  whispersOfHypnos,
-  whispersOfHypnosEffect,
-  WhispersOfHypnos (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WhispersOfHypnos (whispersOfHypnos, whispersOfHypnosEffect) where
 
 import Arkham.Classes
 import Arkham.Effect.Runner
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

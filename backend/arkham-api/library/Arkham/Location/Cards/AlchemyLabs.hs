@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.AlchemyLabs (alchemyLabs, AlchemyLabs (..)) where
+module Arkham.Location.Cards.AlchemyLabs (alchemyLabs) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,8 +6,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

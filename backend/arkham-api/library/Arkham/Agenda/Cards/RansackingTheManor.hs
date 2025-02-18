@@ -1,21 +1,18 @@
-module Arkham.Agenda.Cards.RansackingTheManor (
-  RansackingTheManor (..),
-  ransackingTheManor,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.RansackingTheManor (ransackingTheManor) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

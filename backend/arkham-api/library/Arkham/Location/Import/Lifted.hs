@@ -52,6 +52,7 @@ import Arkham.Target as X
 
 import Arkham.Classes.HasGame
 import Arkham.Helpers.Modifiers
+import Arkham.Modifier
 import Control.Monad.Writer.Class
 import Data.Map.Monoidal.Strict
 

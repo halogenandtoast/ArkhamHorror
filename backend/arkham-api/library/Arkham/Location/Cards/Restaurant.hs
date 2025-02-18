@@ -1,19 +1,13 @@
-module Arkham.Location.Cards.Restaurant (
-  restaurant,
-  restaurantEffect,
-  Restaurant (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Restaurant (restaurant, restaurantEffect) where
 
 import Arkham.Effect.Runner
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Restaurant = Restaurant LocationAttrs

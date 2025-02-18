@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.PendantOfTheQueen (pendantOfTheQueen, PendantOfTheQueen (..)) where
+module Arkham.Asset.Assets.PendantOfTheQueen (pendantOfTheQueen) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Discover
 import Arkham.Helpers.Investigator (searchBonded)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
 import Arkham.Movement
@@ -24,7 +25,7 @@ pendantOfTheQueen = assetWith PendantOfTheQueen Cards.pendantOfTheQueen $ whenNo
 
 instance HasAbilities PendantOfTheQueen where
   getAbilities (PendantOfTheQueen attrs) =
-    [ controlledAbility
+    [ controlled
         attrs
         1
         ( oneOf
@@ -83,13 +84,13 @@ instance RunMessage PendantOfTheQueen where
           | canMove && moveChoice
           ]
         <> [ Label
-            "Discover a clue at this location"
-            [Msg.DiscoverClues iid $ discover lid (attrs.ability 1) 1]
+               "Discover a clue at this location"
+               [Msg.DiscoverClues iid $ discover lid (attrs.ability 1) 1]
            | discoverChoice
            ]
         <> [ Label
-            "Evade an enemy at this location"
-            [chooseOrRunOne player $ targetLabels enemies (only . EnemyEvaded iid)]
+               "Evade an enemy at this location"
+               [chooseOrRunOne player $ targetLabels enemies (only . EnemyEvaded iid)]
            | notNull enemies
            ]
       pure a

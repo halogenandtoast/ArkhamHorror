@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.FortyFiveThompson (fortyFiveThompson, FortyFiveThompson (..)) where
+module Arkham.Asset.Assets.FortyFiveThompson (fortyFiveThompson) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype FortyFiveThompson = FortyFiveThompson AssetAttrs
@@ -15,7 +16,7 @@ fortyFiveThompson = asset FortyFiveThompson Cards.fortyFiveThompson
 
 instance HasAbilities FortyFiveThompson where
   getAbilities (FortyFiveThompson a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
+    [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1]
 
 instance RunMessage FortyFiveThompson where
   runMessage msg a@(FortyFiveThompson attrs) = case msg of

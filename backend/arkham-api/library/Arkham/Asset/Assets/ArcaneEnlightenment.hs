@@ -1,13 +1,12 @@
-module Arkham.Asset.Assets.ArcaneEnlightenment (
-  ArcaneEnlightenment (..),
-  arcaneEnlightenment,
-) where
+module Arkham.Asset.Assets.ArcaneEnlightenment (arcaneEnlightenment) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.Trait
+import Arkham.Slot
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

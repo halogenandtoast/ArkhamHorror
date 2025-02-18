@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.BerettaM19184 (berettaM19184, BerettaM19184 (..)) where
+module Arkham.Asset.Assets.BerettaM19184 (berettaM19184) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype BerettaM19184 = BerettaM19184 AssetAttrs
@@ -15,7 +16,7 @@ berettaM19184 = asset BerettaM19184 Cards.berettaM19184
 
 instance HasAbilities BerettaM19184 where
   getAbilities (BerettaM19184 a) =
-    [restrictedAbility a 1 ControlsThis $ fightAction $ exhaust a <> assetUseCost a Ammo 1]
+    [restricted a 1 ControlsThis $ fightAction $ exhaust a <> assetUseCost a Ammo 1]
 
 instance RunMessage BerettaM19184 where
   runMessage msg a@(BerettaM19184 attrs) = case msg of

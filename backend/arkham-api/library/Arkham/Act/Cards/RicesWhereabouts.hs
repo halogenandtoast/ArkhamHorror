@@ -1,13 +1,7 @@
-module Arkham.Act.Cards.RicesWhereabouts (
-  RicesWhereabouts (..),
-  ricesWhereabouts,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.RicesWhereabouts (ricesWhereabouts) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))
@@ -17,7 +11,9 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -81,8 +77,8 @@ instance RunMessage RicesWhereabouts where
           ]
         <> [createTheExperiment | step <= 2]
         <> [ CreateStoryAssetAtLocationMatching
-            alchemicalConcoction
-            (LocationWithTitle "Alchemy Labs")
+               alchemicalConcoction
+               (LocationWithTitle "Alchemy Labs")
            | completedTheHouseAlwaysWins
            ]
         <> [AdvanceActDeck (actDeckId attrs) (toSource attrs)]

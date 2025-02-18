@@ -1,10 +1,12 @@
-module Arkham.Act.Cards.BeyondTheMistV2 (BeyondTheMistV2 (..), beyondTheMistV2) where
+module Arkham.Act.Cards.BeyondTheMistV2 (beyondTheMistV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.ChaosToken
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Movement

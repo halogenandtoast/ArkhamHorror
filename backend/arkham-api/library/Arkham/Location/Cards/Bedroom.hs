@@ -1,12 +1,10 @@
-module Arkham.Location.Cards.Bedroom where
+module Arkham.Location.Cards.Bedroom (bedroom) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (bedroom)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

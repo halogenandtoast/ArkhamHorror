@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.RestrictedAccess (RestrictedAccess (..), restrictedAccess) where
+module Arkham.Agenda.Cards.RestrictedAccess (restrictedAccess) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers

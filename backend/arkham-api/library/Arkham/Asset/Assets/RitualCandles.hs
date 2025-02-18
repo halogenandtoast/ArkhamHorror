@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.RitualCandles (ritualCandles, RitualCandles (..)) where
+module Arkham.Asset.Assets.RitualCandles (ritualCandles) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Taboo

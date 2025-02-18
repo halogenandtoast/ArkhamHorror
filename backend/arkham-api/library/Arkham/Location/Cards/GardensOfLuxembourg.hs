@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.GardensOfLuxembourg (gardensOfLuxembourg, GardensOfLuxembourg (..)) where
+module Arkham.Location.Cards.GardensOfLuxembourg (gardensOfLuxembourg) where
 
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait

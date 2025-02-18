@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.DarioElAmin (darioElAmin, DarioElAmin (..)) where
+module Arkham.Asset.Assets.DarioElAmin (darioElAmin) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -16,11 +17,9 @@ darioElAmin :: AssetCard DarioElAmin
 darioElAmin = ally DarioElAmin Cards.darioElAmin (2, 2)
 
 instance HasModifiersFor DarioElAmin where
-  getModifiersFor (DarioElAmin a) = case a.controller of
-    Just iid -> do
-      resources <- field InvestigatorResources iid
-      modifiedWhen_ a (resources >= 10) iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
-    Nothing -> pure mempty
+  getModifiersFor (DarioElAmin a) = for_ a.controller \iid -> do
+    resources <- field InvestigatorResources iid
+    modifiedWhen_ a (resources >= 10) iid [SkillModifier #willpower 1, SkillModifier #intellect 1]
 
 instance HasAbilities DarioElAmin where
   getAbilities (DarioElAmin attrs) =

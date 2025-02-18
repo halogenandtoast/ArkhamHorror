@@ -1,4 +1,4 @@
-module Arkham.Event.Events.Marksmanship1 (marksmanship1, marksmanship1Effect, Marksmanship1 (..)) where
+module Arkham.Event.Events.Marksmanship1 (marksmanship1, marksmanship1Effect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -8,7 +8,10 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner hiding (targetL)
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
+import Arkham.Helpers.Source
+import Arkham.Helpers.Window
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
 import Arkham.Matcher hiding (EventCard)
 import Arkham.Prelude

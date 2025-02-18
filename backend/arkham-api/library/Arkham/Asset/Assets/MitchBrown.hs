@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.MitchBrown (mitchBrown, MitchBrown (..)) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.MitchBrown (mitchBrown) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Slot
 
 newtype MitchBrown = MitchBrown AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.HasturTheKingInYellow (
-  hasturTheKingInYellow,
-  HasturTheKingInYellow (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HasturTheKingInYellow (hasturTheKingInYellow) where
 
 import Arkham.Ability
 import Arkham.Attack hiding (damageStrategyL)
@@ -11,8 +6,10 @@ import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype HasturTheKingInYellow = HasturTheKingInYellow EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

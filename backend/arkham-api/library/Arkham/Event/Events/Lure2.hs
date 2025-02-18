@@ -1,17 +1,13 @@
-module Arkham.Event.Events.Lure2 (
-  lure2,
-  Lure2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.Lure2 (lure2) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype Lure2 = Lure2 EventAttrs

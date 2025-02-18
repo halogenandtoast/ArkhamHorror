@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.FamiliarSpirit (
-  familiarSpirit,
-  FamiliarSpirit (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.FamiliarSpirit (familiarSpirit) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Slot
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype FamiliarSpirit = FamiliarSpirit AssetAttrs

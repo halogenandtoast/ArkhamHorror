@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.EscapeTheRuins (
-  EscapeTheRuins (..),
-  escapeTheRuins,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.EscapeTheRuins (escapeTheRuins) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,7 +6,10 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype EscapeTheRuins = EscapeTheRuins ActAttrs
@@ -31,8 +29,8 @@ instance HasAbilities EscapeTheRuins where
     withBaseAbilities
       x
       [ restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
-        $ Objective
-        $ ForcedAbility AnyWindow
+          $ Objective
+          $ ForcedAbility AnyWindow
       | onSide A x
       ]
 

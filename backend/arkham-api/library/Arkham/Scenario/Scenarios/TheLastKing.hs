@@ -10,7 +10,8 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -22,11 +23,6 @@ import Arkham.Name hiding (labeled)
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (
-  crossOutRecordSetEntries,
-  recordSetInsert,
-  resolutionModifier,
- )
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheLastKing.Story

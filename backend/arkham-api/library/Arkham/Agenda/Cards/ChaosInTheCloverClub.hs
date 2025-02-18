@@ -1,16 +1,13 @@
-module Arkham.Agenda.Cards.ChaosInTheCloverClub (
-  ChaosInTheCloverClub (..),
-  chaosInTheCloverClub,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.ChaosInTheCloverClub (chaosInTheCloverClub) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs

@@ -15,8 +15,10 @@ import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -25,7 +27,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (checkWhen, setupModifier)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (victoryDisplayL)
 import Arkham.Scenarios.ShatteredAeons.Helpers

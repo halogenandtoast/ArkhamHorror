@@ -52,14 +52,49 @@ import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
-import Arkham.Game.Helpers hiding (discoveredClues, windows)
-import Arkham.Game.Helpers qualified as Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Card (drawThisCardFrom, extendedCardMatch)
+import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
+import Arkham.Helpers.Action (
+  additionalActionCovers,
+  canDo,
+  getActions,
+  getAdditionalActions,
+  getCanAfford,
+ )
+import Arkham.Helpers.Card (drawThisCardFrom, extendedCardMatch, getModifiedCardCost, passesLimits)
+import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources)
+import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
+import Arkham.Helpers.Game (withAlteredGame)
+import Arkham.Helpers.Location (getCanMoveTo, getCanMoveToMatchingLocations)
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources, getPlayableCards)
+import Arkham.Helpers.Ref (sourceToCard)
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Slot (
+  canPutIntoSlot,
+  emptySlot,
+  putIntoSlot,
+  removeIfMatches,
+  removeIfMatchesOnce,
+  slotItems,
+ )
+import Arkham.Helpers.Source (sourceMatches, sourceTraits)
+import Arkham.Helpers.Window (
+  batchedTimings,
+  checkAfter,
+  checkWhen,
+  checkWindows,
+  frame,
+  pushBatch,
+  pushBatched,
+  timings,
+  windowMatches,
+  wouldDo,
+ )
+import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Attrs
@@ -87,6 +122,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard)
+import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
@@ -97,6 +133,7 @@ import Arkham.Search hiding (drawnCardsL, foundCardsL)
 import Arkham.Search qualified as Search
 import Arkham.Skill.Types (Field (..))
 import Arkham.SkillTest
+import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token

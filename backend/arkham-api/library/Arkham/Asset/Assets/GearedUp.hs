@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.GearedUp (gearedUp, GearedUp (..)) where
+module Arkham.Asset.Assets.GearedUp (gearedUp) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Game.Helpers (getPlayableCards)
 import Arkham.Helpers.Modifiers (withModifiers)
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

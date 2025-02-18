@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.SiteOfTheSacrifice (siteOfTheSacrifice, SiteOfTheSacrifice (..)) where
+module Arkham.Location.Cards.SiteOfTheSacrifice (siteOfTheSacrifice) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers.Enemy
+import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

@@ -1,8 +1,9 @@
-module Arkham.Location.Cards.TombOfShadows (tombOfShadows, TombOfShadows (..)) where
+module Arkham.Location.Cards.TombOfShadows (tombOfShadows) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted

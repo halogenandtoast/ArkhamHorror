@@ -13,6 +13,9 @@ import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
+import Arkham.Helpers.Doom
+import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (
   CardMatcher (..),
@@ -24,9 +27,13 @@ import Arkham.Matcher (
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice, recordSetInsert)
-import Arkham.Scenario.Import.Lifted hiding (chooseOrRunOne, createEnemyAt, placeLocationCard, story)
 import Arkham.Scenario.Deck
+import Arkham.Scenario.Import.Lifted hiding (
+  chooseOrRunOne,
+  createEnemyAt,
+  placeLocationCard,
+  story,
+ )
 import Arkham.Scenarios.TheMidnightMasks.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait

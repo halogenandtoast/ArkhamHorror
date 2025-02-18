@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.BeatCop2 (BeatCop2 (..), beatCop2) where
+module Arkham.Asset.Assets.BeatCop2 (beatCop2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Prelude
 
@@ -18,7 +19,7 @@ instance HasModifiersFor BeatCop2 where
 
 instance HasAbilities BeatCop2 where
   getAbilities (BeatCop2 x) =
-    [ controlledAbility x 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
+    [ controlled x 1 (exists (EnemyAt YourLocation) <> CanDealDamage)
         $ FastAbility
         $ Costs [exhaust x, DamageCost (toSource x) (toTarget x) 1]
     ]

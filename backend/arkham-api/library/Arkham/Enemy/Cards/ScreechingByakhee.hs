@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.ScreechingByakhee (screechingByakhee, ScreechingByakhee (..)) where
+module Arkham.Enemy.Cards.ScreechingByakhee (screechingByakhee) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade)
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier

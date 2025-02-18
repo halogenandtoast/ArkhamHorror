@@ -1,6 +1,4 @@
-module Arkham.Act.Cards.StrangeOccurences (StrangeOccurences (..), strangeOccurences) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.StrangeOccurences (strangeOccurences) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -10,10 +8,13 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.History
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types
@@ -38,11 +39,11 @@ instance HasModifiersFor StrangeOccurences where
 instance HasAbilities StrangeOccurences where
   getAbilities (StrangeOccurences a) =
     [ restrictedAbility
-      a
-      1
-      (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        (AllLocationsMatch IsIchtacasDestination LocationWithoutClues)
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide E a
     ]
 

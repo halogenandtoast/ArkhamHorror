@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.TheRedClockBrokenButReliable5 (
-  theRedClockBrokenButReliable5,
-  TheRedClockBrokenButReliable5 (..),
-)
-where
+module Arkham.Asset.Assets.TheRedClockBrokenButReliable5 (theRedClockBrokenButReliable5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (getCanMoveToLocations)
+import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement

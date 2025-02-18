@@ -1,17 +1,13 @@
-module Arkham.Act.Cards.MistakesOfThePast (
-  MistakesOfThePast (..),
-  mistakesOfThePast,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.MistakesOfThePast (mistakesOfThePast) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MistakesOfThePast = MistakesOfThePast ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -43,10 +39,10 @@ instance RunMessage MistakesOfThePast where
           | location <- locations
           ]
         <> [ chooseOne
-              lead
-              [ targetLabel iid [TakeControlOfSetAsideAsset iid mrPeabody]
-              | iid <- investigatorIds
-              ]
+               lead
+               [ targetLabel iid [TakeControlOfSetAsideAsset iid mrPeabody]
+               | iid <- investigatorIds
+               ]
            , placeHiddenLibrary
            , AdvanceActDeck (actDeckId attrs) (toSource attrs)
            ]

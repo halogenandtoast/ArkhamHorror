@@ -1,8 +1,8 @@
-module Arkham.Event.Events.ThinkOnYourFeet (thinkOnYourFeet, ThinkOnYourFeet (..)) where
+module Arkham.Event.Events.ThinkOnYourFeet (thinkOnYourFeet) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Movement
 
 newtype ThinkOnYourFeet = ThinkOnYourFeet EventAttrs

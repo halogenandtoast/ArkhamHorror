@@ -1,12 +1,12 @@
-module Arkham.Event.Events.IveGotAPlan2 (iveGotAPlan2, IveGotAPlan2 (..)) where
+module Arkham.Event.Events.IveGotAPlan2 (iveGotAPlan2) where
 
 import Arkham.Action
 import Arkham.Aspect
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection

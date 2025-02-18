@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.SpringfieldM19034 (springfieldM19034, SpringfieldM19034 (..)) where
+module Arkham.Asset.Assets.SpringfieldM19034 (springfieldM19034) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Taboo
@@ -17,29 +18,24 @@ springfieldM19034 = asset SpringfieldM19034 Cards.springfieldM19034
 
 instance HasModifiersFor SpringfieldM19034 where
   getModifiersFor (SpringfieldM19034 a) =
-    if tabooed TabooList19 a
-      then case a.controller of
-        Nothing -> pure mempty
-        Just iid ->
-          selectOne (AbilityIs (toSource a) 1) >>= \case
-            Nothing -> pure mempty
-            Just ab ->
-              modified_
-                a
-                (AbilityTarget iid ab)
-                [ CanModify
-                    $ EnemyFightActionCriteria
-                    $ CriteriaOverride
-                    $ EnemyCriteria
-                    $ ThisEnemy
-                    $ EnemyWithoutModifier CannotBeAttacked
-                    <> not_ (enemyEngagedWith iid)
-                    <> oneOf
-                      [ EnemyAt YourLocation
-                      , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
-                      ]
-                ]
-      else pure mempty
+    when (tabooed TabooList19 a) do
+      for_ a.controller \iid -> do
+        selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
+          modified_
+            a
+            (AbilityTarget iid ab)
+            [ CanModify
+                $ EnemyFightActionCriteria
+                $ CriteriaOverride
+                $ EnemyCriteria
+                $ ThisEnemy
+                $ EnemyWithoutModifier CannotBeAttacked
+                <> not_ (enemyEngagedWith iid)
+                <> oneOf
+                  [ EnemyAt YourLocation
+                  , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
+                  ]
+            ]
 
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where

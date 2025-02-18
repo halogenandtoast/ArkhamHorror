@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.AbbeyChurch (abbeyChurch, AbbeyChurch (..)) where
+module Arkham.Location.Cards.AbbeyChurch (abbeyChurch) where
 
 import Arkham.Ability
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (AgendaSequence))
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

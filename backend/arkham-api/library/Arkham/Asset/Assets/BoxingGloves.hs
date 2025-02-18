@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.BoxingGloves (boxingGloves, BoxingGloves (..)) where
+module Arkham.Asset.Assets.BoxingGloves (boxingGloves) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait
@@ -19,7 +20,7 @@ instance HasModifiersFor BoxingGloves where
 
 instance HasAbilities BoxingGloves where
   getAbilities (BoxingGloves a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility (EnemyDefeated #after You ByAny AnyEnemy)
         $ exhaust a
     ]

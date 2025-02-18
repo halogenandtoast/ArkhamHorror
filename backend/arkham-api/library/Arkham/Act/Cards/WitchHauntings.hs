@@ -1,9 +1,10 @@
-module Arkham.Act.Cards.WitchHauntings (WitchHauntings (..), witchHauntings) where
+module Arkham.Act.Cards.WitchHauntings (witchHauntings) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

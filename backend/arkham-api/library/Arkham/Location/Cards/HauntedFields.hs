@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.HauntedFields (
-  hauntedFields,
-  HauntedFields (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.HauntedFields (hauntedFields) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFields = HauntedFields LocationAttrs

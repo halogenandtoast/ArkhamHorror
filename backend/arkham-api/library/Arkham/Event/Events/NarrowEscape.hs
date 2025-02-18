@@ -2,8 +2,9 @@ module Arkham.Event.Events.NarrowEscape (narrowEscape) where
 
 import Arkham.Effect.Window
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
 import Arkham.Event.Import.Lifted
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher
 
 newtype NarrowEscape = NarrowEscape EventAttrs
@@ -21,9 +22,9 @@ instance RunMessage NarrowEscape where
       ems <- effectModifiers attrs [AnySkillValue 2]
       push
         $ CreateWindowModifierEffect
-            (FirstEffectWindow [EffectNextSkillTestWindow, EffectTurnWindow iid'])
-            ems
-            (toSource attrs)
-            (InvestigatorTarget iid)
+          (FirstEffectWindow [EffectNextSkillTestWindow, EffectTurnWindow iid'])
+          ems
+          (toSource attrs)
+          (InvestigatorTarget iid)
       pure e
     _ -> NarrowEscape <$> liftRunMessage msg attrs

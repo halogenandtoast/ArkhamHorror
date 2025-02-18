@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.AgathaCrane where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.GameT
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()

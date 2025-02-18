@@ -1,18 +1,16 @@
-module Arkham.Act.Cards.AtTheExhibitTheRelicsLocation (
-  AtTheExhibitTheRelicsLocation (..),
-  atTheExhibitTheRelicsLocation,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.AtTheExhibitTheRelicsLocation (atTheExhibitTheRelicsLocation) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheRelicsLocation = AtTheExhibitTheRelicsLocation ActAttrs

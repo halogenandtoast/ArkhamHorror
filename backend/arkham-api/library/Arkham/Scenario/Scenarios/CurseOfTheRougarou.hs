@@ -11,12 +11,14 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice, roundModifier)
 import Arkham.Scenario.Runner hiding (chooseOne, story)
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.CurseOfTheRougarou.FlavorText

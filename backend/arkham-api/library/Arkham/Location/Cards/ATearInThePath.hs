@@ -1,18 +1,12 @@
-module Arkham.Location.Cards.ATearInThePath (
-  aTearInThePath,
-  ATearInThePath (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ATearInThePath (aTearInThePath) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (aTearInThePath)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype ATearInThePath = ATearInThePath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,21 +17,14 @@ aTearInThePath = location ATearInThePath Cards.aTearInThePath 3 (PerPlayer 1)
 
 instance HasAbilities ATearInThePath where
   getAbilities (ATearInThePath attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs
+      $ restricted attrs 1 (youExist InvestigatorWithoutActionsRemaining)
+      $ forced
+      $ RevealLocation #after You (be attrs)
 
 instance RunMessage ATearInThePath where
   runMessage msg l@(ATearInThePath attrs) = case msg of
-    UseCardAbility iid source 1 _ _
-      | isSource attrs source ->
-          l <$ push (InvestigatorAssignDamage iid source DamageAny 2 0)
+    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+      push (InvestigatorAssignDamage iid source DamageAny 2 0)
+      pure l
     _ -> ATearInThePath <$> runMessage msg attrs

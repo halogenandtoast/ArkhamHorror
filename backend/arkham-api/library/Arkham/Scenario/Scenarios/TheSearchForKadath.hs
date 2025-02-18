@@ -25,12 +25,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (
-  defeated,
-  forceAddCampaignCardToDeckChoice,
-  roundModifier,
-  skillTestModifier,
- )
+import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.TheSearchForKadath.FlavorText
@@ -90,7 +85,9 @@ standaloneChaosTokens =
 
 standaloneCampaignLog :: CampaignLog
 standaloneCampaignLog =
-  mkCampaignLog {campaignLogRecorded = setFromList [toCampaignLogKey TheInvestigatorsWereSavedByRandolphCarder]}
+  mkCampaignLog
+    { campaignLogRecorded = setFromList [toCampaignLogKey TheInvestigatorsWereSavedByRandolphCarder]
+    }
 
 readInvestigatorDefeat :: ReverseQueue m => m ()
 readInvestigatorDefeat = do
@@ -247,8 +244,8 @@ instance RunMessage TheSearchForKadath where
           [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
           _ ->
             [ Ask lead
-              $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
-              $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
+                $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
+                $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
             | t <- tenebrousNightgaunts
             ]
 

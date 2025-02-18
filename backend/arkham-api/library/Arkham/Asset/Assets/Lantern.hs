@@ -1,17 +1,14 @@
-module Arkham.Asset.Assets.Lantern (
-  lantern,
-  Lantern (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Lantern (lantern) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype Lantern = Lantern AssetAttrs

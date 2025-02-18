@@ -1,18 +1,17 @@
-module Arkham.Act.Cards.ExploringPnakotus (
-  ExploringPnakotus (..),
-  exploringPnakotus,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.ExploringPnakotus (exploringPnakotus) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Prelude
 import Data.List.NonEmpty qualified as NE
 
 newtype ExploringPnakotus = ExploringPnakotus ActAttrs
@@ -29,10 +28,8 @@ exploringPnakotus =
 
 instance HasModifiersFor ExploringPnakotus where
   getModifiersFor (ExploringPnakotus attrs) =
-    if onSide A attrs
-      then
-        modifySelectWith attrs (enemyIs Enemies.yithianObserver) setActiveDuringSetup [AddKeyword Aloof]
-      else pure mempty
+    when (onSide A attrs) do
+      modifySelectWith attrs (enemyIs Enemies.yithianObserver) setActiveDuringSetup [AddKeyword Aloof]
 
 instance RunMessage ExploringPnakotus where
   runMessage msg a@(ExploringPnakotus attrs) = case msg of

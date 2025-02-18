@@ -1,14 +1,13 @@
 module Arkham.Treachery.Cards.CursedSwamp (CursedSwamp (..), cursedSwamp) where
 
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype CursedSwamp = CursedSwamp TreacheryAttrs

@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.OrnateBow3 (ornateBow3, OrnateBow3 (..)) where
+module Arkham.Asset.Assets.OrnateBow3 (ornateBow3) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -18,8 +18,8 @@ ornateBow3 = asset OrnateBow3 Cards.ornateBow3
 
 instance HasAbilities OrnateBow3 where
   getAbilities (OrnateBow3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ActionAbilityWithSkill [Action.Fight] #agility
+    [ restricted a 1 ControlsThis
+        $ ActionAbilityWithSkill [#fight] #agility
         $ ActionCost 1
         <> assetUseCost a Ammo 1
     , withTooltip "You nock another arrow"

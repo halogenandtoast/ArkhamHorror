@@ -1,18 +1,12 @@
-module Arkham.Location.Cards.CityOfTheUnseen (
-  cityOfTheUnseen,
-  CityOfTheUnseen (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CityOfTheUnseen (cityOfTheUnseen) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 import Arkham.Window
 
 newtype Metadata = Metadata {inUse :: Bool}
@@ -35,15 +29,10 @@ instance HasAbilities CityOfTheUnseen where
   getAbilities (CityOfTheUnseen (attrs `With` meta)) =
     withBaseAbilities
       attrs
-      [ limitedAbility (GroupLimit PerWindow 1)
-          $ restrictedAbility attrs 1 (if inUse meta then Never else NoRestriction)
-          $ ForcedAbility
-          $ PlacedCounterOnEnemy
-            Timing.After
-            (enemyAt $ toId attrs)
-            AnySource
-            DoomCounter
-            (AtLeast $ Static 1)
+      [ groupLimit PerWindow
+          $ restricted attrs 1 (if inUse meta then Never else NoRestriction)
+          $ forced
+          $ PlacedCounterOnEnemy #after (enemyAt $ toId attrs) AnySource DoomCounter (atLeast 1)
       ]
 
 getEnemyId :: [Window] -> EnemyId
@@ -57,13 +46,7 @@ instance RunMessage CityOfTheUnseen where
       do
         pushAll
           [ PlaceDoom (toAbilitySource attrs 1) (toTarget enemyId) 1
-          , UseCardAbilityChoice
-              iid
-              (toSource attrs)
-              1
-              NoAbilityMetadata
-              []
-              payment
+          , UseCardAbilityChoice iid (toSource attrs) 1 NoAbilityMetadata [] payment
           ]
         pure . CityOfTheUnseen $ attrs `with` Metadata True
     UseCardAbilityChoice _ (isSource attrs -> True) _ _ _ _ -> do

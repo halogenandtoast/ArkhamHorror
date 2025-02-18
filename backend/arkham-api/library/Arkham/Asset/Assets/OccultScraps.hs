@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.OccultScraps (
-  occultScraps,
-  OccultScraps (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.OccultScraps (occultScraps) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype OccultScraps = OccultScraps AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

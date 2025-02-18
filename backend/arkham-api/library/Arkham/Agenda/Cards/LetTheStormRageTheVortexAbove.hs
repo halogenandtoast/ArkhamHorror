@@ -1,11 +1,7 @@
-module Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove (
-  LetTheStormRageTheVortexAbove (..),
-  letTheStormRageTheVortexAbove,
-) where
+module Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove (letTheStormRageTheVortexAbove) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
@@ -13,6 +9,8 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

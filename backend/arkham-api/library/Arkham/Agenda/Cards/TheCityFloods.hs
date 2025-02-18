@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheCityFloods (TheCityFloods (..), theCityFloods) where
+module Arkham.Agenda.Cards.TheCityFloods (theCityFloods) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -6,6 +6,7 @@ import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries

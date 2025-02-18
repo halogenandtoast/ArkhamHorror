@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.RehearsalRoom (
-  rehearsalRoom,
-  RehearsalRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RehearsalRoom (rehearsalRoom) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype RehearsalRoom = RehearsalRoom LocationAttrs
@@ -26,12 +21,12 @@ instance HasAbilities RehearsalRoom where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ SkillTestResult
-          Timing.After
-          You
-          (WhileInvestigating $ LocationWithId $ toId attrs)
-          (SuccessResult $ AtLeast $ Static 2)
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+            (SuccessResult $ AtLeast $ Static 2)
       | locationRevealed attrs
       ]
 

@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.Haunted (Haunted (..), haunted) where
+module Arkham.Treachery.Cards.Haunted (haunted) where
 
 import Arkham.Ability hiding (Haunted, haunted)
 import Arkham.Classes
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Treachery.Cards qualified as Cards

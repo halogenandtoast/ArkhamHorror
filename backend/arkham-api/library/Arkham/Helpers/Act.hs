@@ -10,6 +10,7 @@ import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Id
 import Arkham.Matcher
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Projection
 import Arkham.Source
@@ -26,3 +27,7 @@ advanceVia method (toId -> actId) (toSource -> source) = AdvanceAct actId source
 
 getCurrentAct :: HasGame m => m ActId
 getCurrentAct = selectOnlyOne AnyAct
+
+actMatches :: HasGame m => ActId -> Matcher.ActMatcher -> m Bool
+actMatches _ Matcher.AnyAct = pure True
+actMatches !actId mtchr = elem actId <$> select mtchr

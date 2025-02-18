@@ -1,16 +1,14 @@
-module Arkham.Act.Cards.RecoverTheRelic (
-  RecoverTheRelic (..),
-  recoverTheRelic,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.RecoverTheRelic (recoverTheRelic) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 import Arkham.Timing qualified as Timing

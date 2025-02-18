@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.TrophyRoom (trophyRoom, TrophyRoom (..)) where
+module Arkham.Location.Cards.TrophyRoom (trophyRoom) where
 
 import Arkham.Ability
 import Arkham.Capability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Cost
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

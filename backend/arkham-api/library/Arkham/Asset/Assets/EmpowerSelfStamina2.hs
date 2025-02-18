@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EmpowerSelfStamina2 (empowerSelfStamina2, EmpowerSelfStamina2 (..)) where
+module Arkham.Asset.Assets.EmpowerSelfStamina2 (empowerSelfStamina2) where
 
 import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -16,14 +17,11 @@ empowerSelfStamina2 = asset EmpowerSelfStamina2 Cards.empowerSelfStamina2
 
 instance HasModifiersFor EmpowerSelfStamina2 where
   getModifiersFor (EmpowerSelfStamina2 a) = do
-    controller <-
-      controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #combat]
-    self <- modifySelf a [SharesSlotWith 3 "Empower Self"]
-
-    pure $ controller <> self
+    controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #combat]
+    modifySelf a [SharesSlotWith 3 "Empower Self"]
 
 instance HasAbilities EmpowerSelfStamina2 where
-  getAbilities (EmpowerSelfStamina2 a) = [controlledAbility a 1 DuringAnySkillTest (FastAbility $ exhaust a)]
+  getAbilities (EmpowerSelfStamina2 a) = [controlled a 1 DuringAnySkillTest (FastAbility $ exhaust a)]
 
 instance RunMessage EmpowerSelfStamina2 where
   runMessage msg a@(EmpowerSelfStamina2 attrs) = case msg of

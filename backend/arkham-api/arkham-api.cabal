@@ -453,7 +453,6 @@ library
       Arkham.Agenda.Cards.WhatLurksBelowV2
       Arkham.Agenda.Cards.WhatsGoingOn
       Arkham.Agenda.Cards.WheelOfFortuneX
-      Arkham.Agenda.Helpers
       Arkham.Agenda.Import.Lifted
       Arkham.Agenda.Runner
       Arkham.Agenda.Sequence
@@ -1342,7 +1341,6 @@ library
       Arkham.Asset.Cards.TheInnsmouthConspiracy
       Arkham.Asset.Cards.ThePathToCarcosa
       Arkham.Asset.Cards.TheScarletKeys
-      Arkham.Asset.Helpers
       Arkham.Asset.Import.Lifted
       Arkham.Asset.Runner
       Arkham.Asset.Types
@@ -1492,7 +1490,6 @@ library
       Arkham.Effect.Effects.SurgeEffect
       Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken
       Arkham.Effect.Effects.WindowModifierEffect
-      Arkham.Effect.Helpers
       Arkham.Effect.Import
       Arkham.Effect.Runner
       Arkham.Effect.Types
@@ -2290,7 +2287,6 @@ library
       Arkham.Event.Events.YouHandleThisOne
       Arkham.Event.Events.YouOweMeOne
       Arkham.Event.Events.YouveHadWorse
-      Arkham.Event.Helpers
       Arkham.Event.Import.Lifted
       Arkham.Event.Runner
       Arkham.Event.Types
@@ -2304,7 +2300,6 @@ library
       Arkham.Game
       Arkham.Game.Base
       Arkham.Game.Diff
-      Arkham.Game.Helpers
       Arkham.Game.Json
       Arkham.Game.Runner
       Arkham.Game.Settings
@@ -2318,6 +2313,7 @@ library
       Arkham.Helpers
       Arkham.Helpers.Ability
       Arkham.Helpers.Act
+      Arkham.Helpers.Action
       Arkham.Helpers.Agenda
       Arkham.Helpers.Asset
       Arkham.Helpers.Calculation
@@ -2325,10 +2321,14 @@ library
       Arkham.Helpers.Card
       Arkham.Helpers.ChaosBag
       Arkham.Helpers.ChaosBag.Lifted
+      Arkham.Helpers.ChaosToken
       Arkham.Helpers.Choose
       Arkham.Helpers.Cost
+      Arkham.Helpers.Criteria
       Arkham.Helpers.Customization
+      Arkham.Helpers.Damage
       Arkham.Helpers.Deck
+      Arkham.Helpers.Defeat
       Arkham.Helpers.Discover
       Arkham.Helpers.Doom
       Arkham.Helpers.Effect
@@ -2336,8 +2336,10 @@ library
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
+      Arkham.Helpers.Game
       Arkham.Helpers.GameValue
       Arkham.Helpers.Healing
+      Arkham.Helpers.History
       Arkham.Helpers.Investigator
       Arkham.Helpers.Location
       Arkham.Helpers.Log
@@ -2346,7 +2348,9 @@ library
       Arkham.Helpers.Message.Discard
       Arkham.Helpers.Message.Discard.Lifted
       Arkham.Helpers.Modifiers
+      Arkham.Helpers.Phase
       Arkham.Helpers.Placement
+      Arkham.Helpers.Playable
       Arkham.Helpers.Projection
       Arkham.Helpers.Query
       Arkham.Helpers.Ref
@@ -2355,12 +2359,14 @@ library
       Arkham.Helpers.SkillTest
       Arkham.Helpers.SkillTest.Lifted
       Arkham.Helpers.SkillTest.Target
+      Arkham.Helpers.SkillType
       Arkham.Helpers.Slot
       Arkham.Helpers.Source
       Arkham.Helpers.Story
       Arkham.Helpers.Target
       Arkham.Helpers.Tarot
       Arkham.Helpers.Text
+      Arkham.Helpers.UI
       Arkham.Helpers.Use
       Arkham.Helpers.Vehicle
       Arkham.Helpers.Window
@@ -3401,6 +3407,7 @@ library
       Arkham.Skill.Cards.Beloved
       Arkham.Skill.Cards.BruteForce1
       Arkham.Skill.Cards.CalculatedRisk
+      Arkham.Skill.Cards.Contemplative
       Arkham.Skill.Cards.Copycat3
       Arkham.Skill.Cards.CrackShot
       Arkham.Skill.Cards.Cunning
@@ -4080,6 +4087,7 @@ library
       Arkham.Treachery.Runner
       Arkham.Treachery.Treacheries
       Arkham.Treachery.Types
+      Arkham.UI
       Arkham.Window
       Arkham.Xp
       Arkham.Zone

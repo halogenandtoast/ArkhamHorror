@@ -1,19 +1,18 @@
-module Arkham.Treachery.Cards.GiftOfMadnessMisery (giftOfMadnessMisery, GiftOfMadnessMisery (..)) where
+module Arkham.Treachery.Cards.GiftOfMadnessMisery (giftOfMadnessMisery) where
 
 import Arkham.Ability
 import Arkham.Choose
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher hiding (
   PlaceUnderneath,
   TreacheryInHandOf,
   treacheryInHandOf,
  )
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype GiftOfMadnessMisery = GiftOfMadnessMisery TreacheryAttrs

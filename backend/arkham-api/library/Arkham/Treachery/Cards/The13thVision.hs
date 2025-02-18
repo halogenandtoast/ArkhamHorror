@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.The13thVision (the13thVision, The13thVision (..)) where
+module Arkham.Treachery.Cards.The13thVision (the13thVision) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

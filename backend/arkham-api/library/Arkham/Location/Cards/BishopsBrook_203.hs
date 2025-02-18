@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.BishopsBrook_203 (bishopsBrook_203, BishopsBrook_203 (..)) where
+module Arkham.Location.Cards.BishopsBrook_203 (bishopsBrook_203) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (CannotEnter), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards (bishopsBrook_203)
 import Arkham.Location.Runner
 import Arkham.Matcher

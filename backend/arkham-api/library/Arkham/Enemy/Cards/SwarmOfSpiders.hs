@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.SwarmOfSpiders (swarmOfSpiders, SwarmOfSpiders (..)) where
+module Arkham.Enemy.Cards.SwarmOfSpiders (swarmOfSpiders) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Modifier qualified as Mods
 import Arkham.Prelude

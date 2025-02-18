@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.MagnifyingGlass where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.MagnifyingGlass (magnifyingGlass) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype MagnifyingGlass = MagnifyingGlass AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

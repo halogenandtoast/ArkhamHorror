@@ -8,20 +8,20 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
+import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (CardMatcher (..))
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted hiding (placeLocationCard, story)
 import Arkham.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Scenarios.TheDevourerBelow.Story
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasChaosTokenValue)
 

@@ -1,15 +1,10 @@
-module Arkham.Location.Cards.LaboratoryOfTheGreatRace (
-  laboratoryOfTheGreatRace,
-  LaboratoryOfTheGreatRace (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.LaboratoryOfTheGreatRace (laboratoryOfTheGreatRace) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.SkillType
 

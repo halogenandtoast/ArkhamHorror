@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.ColdSpringGlen_244 (coldSpringGlen_244, ColdSpringGlen_244 (..)) where
+module Arkham.Location.Cards.ColdSpringGlen_244 (coldSpringGlen_244) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_244)
 import Arkham.Location.Runner
@@ -28,16 +28,15 @@ instance HasAbilities ColdSpringGlen_244 where
     withResignAction
       attrs
       [ limitedAbility (GroupLimit PerGame 1)
-        $ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists (You <> InvestigatorWithAnyClues)
-              <> EnemyCriteria
-                ( EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination
-                )
-          )
-          (FastAbility Free)
+          $ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> InvestigatorExists (You <> InvestigatorWithAnyClues)
+                <> EnemyCriteria
+                  (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Abomination)
+            )
+            (FastAbility Free)
       | locationRevealed attrs
       ]
 
@@ -66,10 +65,10 @@ instance RunMessage ColdSpringGlen_244 where
       pushAll
         $ placeClueOnAbomination
         : [ chooseOne
-            player
-            [ Label "Spend a second clue" [placeClueOnAbomination]
-            , Label "Do not spend a second clue" []
-            ]
+              player
+              [ Label "Spend a second clue" [placeClueOnAbomination]
+              , Label "Do not spend a second clue" []
+              ]
           | totalClues > 1
           ]
       pure l

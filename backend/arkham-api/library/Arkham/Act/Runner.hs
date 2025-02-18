@@ -12,7 +12,6 @@ import Arkham.Act.Sequence as X
 import Arkham.Act.Types as X
 import Arkham.Calculation as X
 import Arkham.Cost as X
-import Arkham.Id as X
 import Arkham.GameValue as X
 import Arkham.Helpers.Act as X
 import Arkham.Helpers.Effect as X
@@ -27,6 +26,7 @@ import Arkham.Helpers.Message as X hiding (
   RevealChaosToken,
  )
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
@@ -34,7 +34,11 @@ import Arkham.Target as X
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Query
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (FastPlayerWindow, InvestigatorResigned)
+import Arkham.Modifier
 import Arkham.Tarot
 import Arkham.Token (Token (Clue))
 import Arkham.Window hiding (InvestigatorResigned)

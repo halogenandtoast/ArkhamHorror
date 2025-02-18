@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.PerilousGulch (
-  perilousGulch,
-  PerilousGulch (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.PerilousGulch (perilousGulch) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype PerilousGulch = PerilousGulch LocationAttrs

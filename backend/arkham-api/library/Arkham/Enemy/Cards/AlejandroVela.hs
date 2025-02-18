@@ -1,10 +1,4 @@
-module Arkham.Enemy.Cards.AlejandroVela (
-  alejandroVela,
-  alejandroVelaEffect,
-  AlejandroVela (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.AlejandroVela (alejandroVela, alejandroVelaEffect) where
 
 import Arkham.Ability
 import Arkham.Attack
@@ -14,6 +8,8 @@ import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs

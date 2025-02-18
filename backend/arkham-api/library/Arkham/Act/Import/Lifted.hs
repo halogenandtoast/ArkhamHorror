@@ -15,15 +15,12 @@ import Arkham.Act.Runner as X (
   ShuffleIn (..),
   act,
   actWith,
-  getLeadPlayer,
-  getSetAsideCard,
   isSide,
   metaL,
   onSide,
   push,
   pushAll,
   targetLabel,
-  whenHasRecord,
   pattern PassedThisSkillTest,
   pattern R1,
   pattern R2,
@@ -39,9 +36,8 @@ import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.Cost as X
 import Arkham.GameValue as X
-import Arkham.Helpers.Ability as X (extend, extend1)
-import Arkham.Helpers.Log as X (getHasRecord)
-import Arkham.Helpers.Query as X (getLead)
+import Arkham.Helpers.Log as X (getHasRecord, whenHasRecord)
+import Arkham.Helpers.Query as X (getLead, getLeadPlayer, getSetAsideCard)
 import Arkham.Id as X
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X

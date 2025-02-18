@@ -1,11 +1,11 @@
-module Arkham.Treachery.Cards.SearchingForIzzieAdvanced (SearchingForIzzieAdvanced (..), searchingForIzzieAdvanced) where
+module Arkham.Treachery.Cards.SearchingForIzzieAdvanced (searchingForIzzieAdvanced) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Investigate
 import Arkham.Matcher
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (modified_, ModifierType(..))
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

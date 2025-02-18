@@ -1,9 +1,9 @@
-module Arkham.Enemy.Cards.GugSentinel (gugSentinel, GugSentinel (..)) where
+module Arkham.Enemy.Cards.GugSentinel (gugSentinel) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
@@ -23,7 +23,7 @@ instance HasAbilities GugSentinel where
   getAbilities (GugSentinel attrs) =
     extend
       attrs
-      [ restrictedAbility attrs 1 (exists $ InvestigatorAt (locationWithEnemy attrs.id))
+      [ restricted attrs 1 (exists $ InvestigatorAt (locationWithEnemy attrs.id))
           $ forced
           $ EnemyReadies #after (be attrs)
       ]

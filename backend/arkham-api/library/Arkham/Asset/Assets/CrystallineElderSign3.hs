@@ -1,10 +1,8 @@
-module Arkham.Asset.Assets.CrystallineElderSign3 (
-  crystallineElderSign3,
-  CrystallineElderSign3 (..),
-) where
+module Arkham.Asset.Assets.CrystallineElderSign3 (crystallineElderSign3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype CrystallineElderSign3 = CrystallineElderSign3 AssetAttrs

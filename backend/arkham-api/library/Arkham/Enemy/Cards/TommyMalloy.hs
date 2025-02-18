@@ -1,17 +1,13 @@
-module Arkham.Enemy.Cards.TommyMalloy (
-  tommyMalloy,
-  tommyMalloyEffect,
-  TommyMalloy (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.TommyMalloy (tommyMalloy, tommyMalloyEffect) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

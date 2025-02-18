@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn (
-  witchHauntedWoodsOvergrownBarn,
-  WitchHauntedWoodsOvergrownBarn (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.WitchHauntedWoodsOvergrownBarn (witchHauntedWoodsOvergrownBarn) where
 
 import Arkham.Ability
 import Arkham.Attack
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

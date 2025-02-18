@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.WhittonGreene2 (whittonGreene2, WhittonGreene2 (..)) where
+module Arkham.Asset.Assets.WhittonGreene2 (whittonGreene2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude

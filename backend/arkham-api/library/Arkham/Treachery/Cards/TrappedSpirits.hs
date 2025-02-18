@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.TrappedSpirits (trappedSpirits, TrappedSpirits (..)) where
+module Arkham.Treachery.Cards.TrappedSpirits (trappedSpirits) where
 
 import Arkham.Classes
 import Arkham.Cost
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (CommitCost), modifySelectMaybe)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

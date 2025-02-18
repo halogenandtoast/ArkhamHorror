@@ -1,14 +1,10 @@
-module Arkham.Story.Cards.SongsThatTheHyadesShallSing (
-  SongsThatTheHyadesShallSing (..),
-  songsThatTheHyadesShallSing,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.SongsThatTheHyadesShallSing (songsThatTheHyadesShallSing) where
 
 import Arkham.DamageEffect
-import Arkham.Game.Helpers
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 

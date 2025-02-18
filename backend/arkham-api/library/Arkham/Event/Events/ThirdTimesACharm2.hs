@@ -1,11 +1,11 @@
-module Arkham.Event.Events.ThirdTimesACharm2 (thirdTimesACharm2, thirdTimesACharm2Effect, ThirdTimesACharm2 (..)) where
+module Arkham.Event.Events.ThirdTimesACharm2 (thirdTimesACharm2, thirdTimesACharm2Effect) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Effect.Runner hiding (RevealChaosToken)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner hiding (RevealChaosToken)
-import Arkham.Game.Helpers
+import Arkham.Helpers.ChaosToken
 import Arkham.Matcher hiding (SkillTestEnded)
 import Arkham.Prelude
 import Arkham.Window (revealedChaosTokens)
@@ -39,10 +39,10 @@ instance HasAbilities ThirdTimesACharm2Effect where
     Just (EffectInt n) -> case a.target of
       SkillTestTarget sid ->
         [ withTooltip "Cancel it, return it to the chaos bag, and reveal a new chaos token"
-          $ limitedAbility (GroupLimit PerTestOrAbility 2)
-          $ mkAbility (proxied (SkillTestSource sid) a) 1
-          $ freeReaction
-          $ RevealChaosToken #when You #any
+            $ limitedAbility (GroupLimit PerTestOrAbility 2)
+            $ mkAbility (proxied (SkillTestSource sid) a) 1
+            $ freeReaction
+            $ RevealChaosToken #when You #any
         | n > 0
         ]
       _ -> error "incorrect source"

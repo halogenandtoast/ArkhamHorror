@@ -1,7 +1,7 @@
 module Arkham.Investigator.Cards.StellaClark where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (healDamage, healHorror)

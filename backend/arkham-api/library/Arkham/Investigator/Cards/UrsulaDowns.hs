@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.UrsulaDowns (ursulaDowns, UrsulaDowns (..)) where
+module Arkham.Investigator.Cards.UrsulaDowns (ursulaDowns) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher

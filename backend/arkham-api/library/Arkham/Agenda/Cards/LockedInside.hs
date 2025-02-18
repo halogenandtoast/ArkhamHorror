@@ -1,11 +1,11 @@
-module Arkham.Agenda.Cards.LockedInside (LockedInside (..), lockedInside) where
+module Arkham.Agenda.Cards.LockedInside (lockedInside) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Choose
+import Arkham.Helpers.Query
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 

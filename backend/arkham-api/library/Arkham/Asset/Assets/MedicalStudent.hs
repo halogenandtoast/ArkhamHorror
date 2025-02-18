@@ -1,15 +1,10 @@
-module Arkham.Asset.Assets.MedicalStudent (
-  medicalStudent,
-  MedicalStudent (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.MedicalStudent (medicalStudent) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (allInvestigators)
+import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MedicalStudent = MedicalStudent AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,7 +15,7 @@ medicalStudent = ally MedicalStudent Cards.medicalStudent (1, 1)
 
 instance HasAbilities MedicalStudent where
   getAbilities (MedicalStudent x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         ( AnyCriterion
@@ -74,15 +69,15 @@ instance RunMessage MedicalStudent where
                 asset'
                 [ chooseOneAtATime player
                     $ [ componentLabel
-                        DamageToken
-                        target
-                        [HealDamage target (toSource attrs) 1]
+                          DamageToken
+                          target
+                          [HealDamage target (toSource attrs) 1]
                       | asset' `elem` damageAssets
                       ]
                     <> [ componentLabel
-                        HorrorToken
-                        target
-                        [HealHorror target (toSource attrs) 1]
+                           HorrorToken
+                           target
+                           [HealHorror target (toSource attrs) 1]
                        | asset' `elem` horrorAssets
                        ]
                 ]
@@ -104,9 +99,9 @@ instance RunMessage MedicalStudent where
               i
               [ chooseOneAtATime player
                   $ [ componentLabel
-                      DamageToken
-                      target
-                      [HealDamage target (toSource attrs) 1]
+                        DamageToken
+                        target
+                        [HealDamage target (toSource attrs) 1]
                     | i `elem` damageInvestigators
                     ]
                   <> [ componentLabel HorrorToken target [HealHorror target (toSource attrs) 1]

@@ -1,10 +1,10 @@
-module Arkham.Agenda.Cards.TheFirstNight (TheFirstNight (..), theFirstNight) where
+module Arkham.Agenda.Cards.TheFirstNight (theFirstNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 

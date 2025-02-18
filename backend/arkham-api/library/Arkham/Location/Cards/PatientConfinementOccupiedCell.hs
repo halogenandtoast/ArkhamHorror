@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.PatientConfinementOccupiedCell (
-  patientConfinementOccupiedCell,
-  PatientConfinementOccupiedCell (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.PatientConfinementOccupiedCell (patientConfinementOccupiedCell) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype PatientConfinementOccupiedCell = PatientConfinementOccupiedCell LocationAttrs

@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.EntryHall (
-  entryHall,
-  EntryHall (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EntryHall (entryHall) where
 
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype EntryHall = EntryHall LocationAttrs

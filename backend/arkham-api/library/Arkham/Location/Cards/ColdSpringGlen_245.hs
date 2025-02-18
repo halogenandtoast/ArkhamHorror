@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.ColdSpringGlen_245 (coldSpringGlen_245, ColdSpringGlen_245 (..)) where
+module Arkham.Location.Cards.ColdSpringGlen_245 (coldSpringGlen_245) where
 
 import Arkham.Ability
 import Arkham.Classes.HasQueue (replaceMessageMatching)
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (coldSpringGlen_245)
 import Arkham.Location.Import.Lifted hiding (ChosenRandomLocation)
 import Arkham.Matcher

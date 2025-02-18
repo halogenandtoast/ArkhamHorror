@@ -1,11 +1,11 @@
-module Arkham.Event.Events.CallForBackup2 (callForBackup2, CallForBackup2 (..)) where
+module Arkham.Event.Events.CallForBackup2 (callForBackup2) where
 
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Modifier

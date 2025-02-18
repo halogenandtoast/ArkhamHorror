@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.StrangeSigns (strangeSigns, StrangeSigns (..)) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

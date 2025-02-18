@@ -6,7 +6,6 @@ module Arkham.Location.Cards.VillageCommons (
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (villageCommons)
 import Arkham.Location.Runner

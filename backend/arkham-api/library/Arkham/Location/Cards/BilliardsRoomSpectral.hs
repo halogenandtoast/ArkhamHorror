@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.BilliardsRoomSpectral (
-  billiardsRoomSpectral,
-  BilliardsRoomSpectral (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BilliardsRoomSpectral (billiardsRoomSpectral) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype BilliardsRoomSpectral = BilliardsRoomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,11 +19,7 @@ instance HasAbilities BilliardsRoomSpectral where
   getAbilities (BilliardsRoomSpectral attrs) =
     withBaseAbilities
       attrs
-      [ haunted
-          "You must either discard an asset you control or take 1 damage."
-          attrs
-          1
-      ]
+      [haunted "You must either discard an asset you control or take 1 damage." attrs 1]
 
 instance RunMessage BilliardsRoomSpectral where
   runMessage msg l@(BilliardsRoomSpectral attrs) = case msg of
@@ -41,8 +32,8 @@ instance RunMessage BilliardsRoomSpectral where
           "Take 1 damage"
           [InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0]
         : [ Label
-            "Discard an asset"
-            [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
+              "Discard an asset"
+              [ChooseAndDiscardAsset iid (toSource attrs) AnyAsset]
           | notNull assets
           ]
       pure l

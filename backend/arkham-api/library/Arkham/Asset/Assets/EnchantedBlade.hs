@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EnchantedBlade (enchantedBlade, EnchantedBlade (..)) where
+module Arkham.Asset.Assets.EnchantedBlade (enchantedBlade) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype EnchantedBlade = EnchantedBlade AssetAttrs
@@ -21,8 +22,7 @@ getPaidUse _ = False
 instance HasAbilities EnchantedBlade where
   getAbilities (EnchantedBlade attrs) =
     [ withAdditionalCost (UpTo (Fixed 1) $ assetUseCost attrs Charge 1)
-        $ restrictedAbility attrs 1 ControlsThis
-        $ fightAction_
+        $ restricted attrs 1 ControlsThis fightAction_
     ]
 
 instance RunMessage EnchantedBlade where

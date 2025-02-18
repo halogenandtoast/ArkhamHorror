@@ -1,18 +1,14 @@
-module Arkham.Act.Cards.FindingAWayInside (
-  FindingAWayInside (..),
-  findingAWayInside,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.FindingAWayInside (findingAWayInside) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Prelude
 
 newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

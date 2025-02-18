@@ -1,16 +1,12 @@
-module Arkham.Enemy.Cards.NathanWickMasterOfInitiation (
-  nathanWickMasterOfInitiation,
-  NathanWickMasterOfInitiation (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.NathanWickMasterOfInitiation (nathanWickMasterOfInitiation) where
 
 import Arkham.Action qualified as Action
 import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
+import Arkham.Prelude
 import Arkham.SkillType
 
 newtype NathanWickMasterOfInitiation = NathanWickMasterOfInitiation EnemyAttrs

@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.EerieGlade (
-  eerieGlade,
-  EerieGlade (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EerieGlade (eerieGlade) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (eerieGlade)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 
@@ -27,13 +22,13 @@ instance HasAbilities EerieGlade where
   getAbilities (EerieGlade attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId attrs
         | locationRevealed attrs
         ]
 

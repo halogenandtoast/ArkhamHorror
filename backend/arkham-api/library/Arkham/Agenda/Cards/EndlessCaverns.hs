@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.EndlessCaverns (
-  EndlessCaverns (..),
-  endlessCaverns,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.EndlessCaverns (endlessCaverns) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -11,6 +6,8 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
+import Arkham.Prelude
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
@@ -30,10 +27,10 @@ instance RunMessage EndlessCaverns where
       pushAll
         $ enemyMsgs
         <> [ questionLabel "Choose a scout" lead
-              $ ChooseOne
-                [ targetLabel iid [HandleTargetChoice leadId (toSource attrs) (InvestigatorTarget iid)]
-                | iid <- iids
-                ]
+               $ ChooseOne
+                 [ targetLabel iid [HandleTargetChoice leadId (toSource attrs) (InvestigatorTarget iid)]
+                 | iid <- iids
+                 ]
            , AdvanceAgendaDeck (agendaDeckId attrs) (toSource attrs)
            ]
       pure a

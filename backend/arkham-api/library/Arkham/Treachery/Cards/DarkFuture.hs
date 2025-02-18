@@ -2,7 +2,8 @@ module Arkham.Treachery.Cards.DarkFuture (darkFuture) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
-import Arkham.Game.Helpers
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

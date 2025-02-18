@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Flashlight (Flashlight (..), flashlight) where
+module Arkham.Asset.Assets.Flashlight (flashlight) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Prelude
 

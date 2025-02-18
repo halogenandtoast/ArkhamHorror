@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.BlastedHeath_249 (
-  blastedHeath_249,
-  BlastedHeath_249 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BlastedHeath_249 (blastedHeath_249) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (blastedHeath_249)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype BlastedHeath_249 = BlastedHeath_249 LocationAttrs
@@ -26,10 +21,10 @@ instance HasAbilities BlastedHeath_249 where
   getAbilities (BlastedHeath_249 attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 Here
-          $ ForcedAbility
-          $ TurnEnds
-            Timing.When
-            You
+            $ ForcedAbility
+            $ TurnEnds
+              Timing.When
+              You
         | locationRevealed attrs
         ]
 

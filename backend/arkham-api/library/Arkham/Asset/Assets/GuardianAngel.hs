@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.GuardianAngel (guardianAngel, GuardianAngel (..)) where
+module Arkham.Asset.Assets.GuardianAngel (guardianAngel) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection

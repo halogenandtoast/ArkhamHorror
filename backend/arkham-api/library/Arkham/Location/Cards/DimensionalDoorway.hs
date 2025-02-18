@@ -1,17 +1,14 @@
-module Arkham.Location.Cards.DimensionalDoorway (
-  dimensionalDoorway,
-  DimensionalDoorway (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DimensionalDoorway (dimensionalDoorway) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Location.Cards qualified as Cards (dimensionalDoorway)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -28,10 +25,10 @@ instance HasAbilities DimensionalDoorway where
   getAbilities (DimensionalDoorway attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility attrs 1 Here
-          $ ForcedAbility
-          $ TurnEnds
-            Timing.When
-            You
+            $ ForcedAbility
+            $ TurnEnds
+              Timing.When
+              You
         | locationRevealed attrs
         ]
 

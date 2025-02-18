@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheTrueCulpritV7 (
-  TheTrueCulpritV7 (..),
-  theTrueCulpritV7,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTrueCulpritV7 (theTrueCulpritV7) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -12,9 +7,11 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Trait (Trait (Cultist, Guest, Innocent))
 
 newtype TheTrueCulpritV7 = TheTrueCulpritV7 AgendaAttrs
@@ -32,27 +29,26 @@ instance HasAbilities TheTrueCulpritV7 where
   getAbilities (TheTrueCulpritV7 attrs) =
     guard (onSide A attrs)
       *> ( [ notSkillTestAbility
-            $ controlledAbility
-              (proxied (assetIs asset) attrs)
-              1
-              ( exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs))
-              )
-              (evadeAction $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
+               $ controlledAbility
+                 (proxied (assetIs asset) attrs)
+                 1
+                 (exists (enemyIs Cards.dimensionalShambler <> EnemyAt YourLocation <> CanEvadeEnemy (toSource attrs)))
+                 (evadeAction $ AssetClueCost (toTitle asset) (assetIs asset) $ Static 1)
            | asset <-
-              [ Cards.alienDevice
-              , Cards.managersKey
-              , Cards.sinisterSolution
-              , Cards.timeWornLocket
-              , Cards.tomeOfRituals
-              ]
-           ]
-            <> [ restrictedAbility
-                  attrs
-                  2
-                  (Negate $ exists (EnemyWithTrait Cultist))
-                  $ Objective
-                  $ ForcedAbility AnyWindow
+               [ Cards.alienDevice
+               , Cards.managersKey
+               , Cards.sinisterSolution
+               , Cards.timeWornLocket
+               , Cards.tomeOfRituals
                ]
+           ]
+             <> [ restrictedAbility
+                    attrs
+                    2
+                    (Negate $ exists (EnemyWithTrait Cultist))
+                    $ Objective
+                    $ ForcedAbility AnyWindow
+                ]
          )
 
 instance RunMessage TheTrueCulpritV7 where

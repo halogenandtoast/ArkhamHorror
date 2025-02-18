@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Lupara3 (lupara3, Lupara3 (..)) where
+module Arkham.Asset.Assets.Lupara3 (lupara3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Metadata = Metadata {justPlayed :: Bool}

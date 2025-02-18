@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.AtTheStationInShadowedTalons (
-  AtTheStationInShadowedTalons (..),
-  atTheStationInShadowedTalons,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.AtTheStationInShadowedTalons (atTheStationInShadowedTalons) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
@@ -12,8 +7,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
@@ -61,17 +58,17 @@ instance RunMessage AtTheStationInShadowedTalons where
           ((`HealAllDamage` toSource attrs) . EnemyTarget)
           huntingNightgaunts
         <> [ chooseOrRunOne
-              lead
-              [ targetLabel huntingNightgaunt
-                $ CreateAssetAt
-                  assetId
-                  alejandroVela
-                  (AttachedToEnemy huntingNightgaunt)
-                : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
-                  | deckCount <= 2
-                  ]
-              | huntingNightgaunt <- farthestHuntingNightGaunts
-              ]
+               lead
+               [ targetLabel huntingNightgaunt
+                   $ CreateAssetAt
+                     assetId
+                     alejandroVela
+                     (AttachedToEnemy huntingNightgaunt)
+                   : [ PlaceDoom (toSource attrs) (EnemyTarget huntingNightgaunt) 1
+                     | deckCount <= 2
+                     ]
+               | huntingNightgaunt <- farthestHuntingNightGaunts
+               ]
            ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do

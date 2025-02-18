@@ -10,9 +10,9 @@ import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers hiding (defeated)
-import Arkham.Investigator.Types (Field (..))
 import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Xp
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)

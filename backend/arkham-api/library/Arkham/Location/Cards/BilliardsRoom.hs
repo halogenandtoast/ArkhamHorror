@@ -1,8 +1,7 @@
-module Arkham.Location.Cards.BilliardsRoom (billiardsRoom, BilliardsRoom (..)) where
+module Arkham.Location.Cards.BilliardsRoom (billiardsRoom) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Prelude

@@ -1,17 +1,13 @@
-module Arkham.Asset.Assets.WishEater (
-  wishEater,
-  WishEater (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.WishEater (wishEater) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (AssetCard)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Window qualified as Window
 
@@ -24,16 +20,15 @@ wishEater = asset WishEater Cards.wishEater
 
 instance HasAbilities WishEater where
   getAbilities (WishEater attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility
+    [ restricted attrs 1 ControlsThis
+        $ triggered
           (RevealChaosToken #when You $ oneOf [#skull, #cultist, #tablet, #elderthing])
           (assetUseCost attrs Charge 1)
-    , restrictedAbility
+    , controlled
         attrs
         2
-        ( ControlsThis <> exists (AssetWithId (toId attrs) <> AssetWithUseCount Charge (EqualTo $ Static 0))
-        )
-        $ ForcedAbility AnyWindow
+        (exists (be attrs <> AssetWithUseCount Charge (EqualTo $ Static 0)))
+        $ forced AnyWindow
     ]
 
 instance RunMessage WishEater where

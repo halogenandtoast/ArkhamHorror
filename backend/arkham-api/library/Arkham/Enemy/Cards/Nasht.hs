@@ -1,16 +1,12 @@
-module Arkham.Enemy.Cards.Nasht (
-  nasht,
-  Nasht (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Nasht (nasht) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype Nasht = Nasht EnemyAttrs

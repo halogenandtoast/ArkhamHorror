@@ -1,14 +1,11 @@
-module Arkham.Enemy.Cards.CovenInitiate (
-  covenInitiate,
-  CovenInitiate (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.CovenInitiate (covenInitiate) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (Hex))
 

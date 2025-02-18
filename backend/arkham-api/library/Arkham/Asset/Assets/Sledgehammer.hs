@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Sledgehammer (sledgehammer, Sledgehammer (..)) where
+module Arkham.Asset.Assets.Sledgehammer (sledgehammer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Sledgehammer = Sledgehammer AssetAttrs

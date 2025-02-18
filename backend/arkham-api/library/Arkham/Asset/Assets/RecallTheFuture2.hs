@@ -1,10 +1,12 @@
-module Arkham.Asset.Assets.RecallTheFuture2 (recallTheFuture2, RecallTheFuture2 (..)) where
+module Arkham.Asset.Assets.RecallTheFuture2 (recallTheFuture2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosBag.Base
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
@@ -24,7 +26,7 @@ recallTheFuture2 = asset (RecallTheFuture2 . (`with` Metadata Nothing)) Cards.re
 
 instance HasAbilities RecallTheFuture2 where
   getAbilities (RecallTheFuture2 a) =
-    [restrictedAbility a 1 ControlsThis $ freeReaction $ InitiatedSkillTest #when You #any #any #any]
+    [restricted a 1 ControlsThis $ freeReaction $ InitiatedSkillTest #when You #any #any #any]
 
 instance RunMessage RecallTheFuture2 where
   runMessage msg a@(RecallTheFuture2 (attrs `With` metadata)) = case msg of

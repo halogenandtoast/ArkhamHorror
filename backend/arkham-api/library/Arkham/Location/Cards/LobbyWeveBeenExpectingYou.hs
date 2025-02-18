@@ -1,12 +1,7 @@
-module Arkham.Location.Cards.LobbyWeveBeenExpectingYou (
-  lobbyWeveBeenExpectingYou,
-  LobbyWeveBeenExpectingYou (..),
-)
-where
+module Arkham.Location.Cards.LobbyWeveBeenExpectingYou (lobbyWeveBeenExpectingYou) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -27,12 +22,12 @@ instance HasAbilities LobbyWeveBeenExpectingYou where
     extend
       attrs
       [ withTooltip
-        "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
-        $ restricted
-          (proxied (LocationMatcherSource "Lodge Gates") attrs)
-          1
-          (OnLocation "Lodge Gates")
-          parleyAction_
+          "{action}: _Parley._ The guards recognize you from the Meiger estate and let you pass. Reveal the Lobby."
+          $ restricted
+            (proxied (LocationMatcherSource "Lodge Gates") attrs)
+            1
+            (OnLocation "Lodge Gates")
+            parleyAction_
       | attrs.unrevealed
       ]
 

@@ -1,16 +1,13 @@
-module Arkham.Act.Cards.Awakening (
-  Awakening (..),
-  awakening,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.Awakening (awakening) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 
 newtype Awakening = Awakening ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.Studious3 (
-  studious3,
-  Studious3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Studious3 (studious3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Modifier
+import Arkham.Prelude
 
 newtype Studious3 = Studious3 AssetAttrs
   deriving anyclass (IsAsset, HasAbilities)

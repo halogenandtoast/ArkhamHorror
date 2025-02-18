@@ -9,6 +9,8 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Message.Discard.Lifted
+import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
@@ -16,12 +18,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (
-  addCampaignCardToDeckChoice,
-  forceAddCampaignCardToDeckChoice,
-  recordSetInsert,
-  roundModifier,
- )
 import Arkham.Scenario.Import.Lifted hiding (replicate)
 import Arkham.Scenarios.EchoesOfThePast.Helpers
 import Arkham.Scenarios.EchoesOfThePast.Story

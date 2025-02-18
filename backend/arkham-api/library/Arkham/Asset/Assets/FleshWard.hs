@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.FleshWard (fleshWard, FleshWard (..)) where
+module Arkham.Asset.Assets.FleshWard (fleshWard) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Window qualified as Window

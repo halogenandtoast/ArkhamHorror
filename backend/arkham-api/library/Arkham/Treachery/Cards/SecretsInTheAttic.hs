@@ -1,7 +1,8 @@
-module Arkham.Treachery.Cards.SecretsInTheAttic (secretsInTheAttic, SecretsInTheAttic (..)) where
+module Arkham.Treachery.Cards.SecretsInTheAttic (secretsInTheAttic) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude

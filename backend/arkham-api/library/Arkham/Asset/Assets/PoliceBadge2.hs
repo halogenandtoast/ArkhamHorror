@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.PoliceBadge2 (PoliceBadge2 (..), policeBadge2) where
+module Arkham.Asset.Assets.PoliceBadge2 (policeBadge2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -17,7 +18,7 @@ instance HasModifiersFor PoliceBadge2 where
   getModifiersFor (PoliceBadge2 a) = controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities PoliceBadge2 where
-  getAbilities (PoliceBadge2 a) = [controlledAbility a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]
+  getAbilities (PoliceBadge2 a) = [controlled a 1 criteria $ FastAbility $ DiscardCost FromPlay (toTarget a)]
    where
     criteria = exists (affectsOthers $ TurnInvestigator <> at_ YourLocation)
 

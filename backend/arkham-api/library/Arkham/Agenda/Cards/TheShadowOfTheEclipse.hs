@@ -1,10 +1,10 @@
 module Arkham.Agenda.Cards.TheShadowOfTheEclipse (theShadowOfTheEclipse) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (AssetCard, PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 

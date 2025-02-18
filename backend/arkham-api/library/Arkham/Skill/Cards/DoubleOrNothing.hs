@@ -1,13 +1,9 @@
-module Arkham.Skill.Cards.DoubleOrNothing (
-  doubleOrNothing,
-  DoubleOrNothing (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.DoubleOrNothing (doubleOrNothing) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestId)
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner
 

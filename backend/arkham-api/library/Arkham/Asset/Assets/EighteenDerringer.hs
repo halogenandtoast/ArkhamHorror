@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EighteenDerringer (eighteenDerringer, EighteenDerringer (..)) where
+module Arkham.Asset.Assets.EighteenDerringer (eighteenDerringer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype EighteenDerringer = EighteenDerringer AssetAttrs
@@ -15,7 +16,7 @@ eighteenDerringer = asset EighteenDerringer Cards.eighteenDerringer
 
 instance HasAbilities EighteenDerringer where
   getAbilities (EighteenDerringer attrs) =
-    [restrictedAbility attrs 1 ControlsThis $ fightAction $ assetUseCost attrs Ammo 1]
+    [restricted attrs 1 ControlsThis $ fightAction $ assetUseCost attrs Ammo 1]
 
 instance RunMessage EighteenDerringer where
   runMessage msg a@(EighteenDerringer attrs) = case msg of

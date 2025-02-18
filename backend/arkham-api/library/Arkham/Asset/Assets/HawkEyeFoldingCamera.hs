@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.HawkEyeFoldingCamera (hawkEyeFoldingCamera, HawkEyeFoldingCamera (..)) where
+module Arkham.Asset.Assets.HawkEyeFoldingCamera (hawkEyeFoldingCamera) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Window (Window (..))
@@ -21,19 +22,15 @@ hawkEyeFoldingCamera =
   asset (HawkEyeFoldingCamera . (`with` Metadata [])) Cards.hawkEyeFoldingCamera
 
 instance HasModifiersFor HawkEyeFoldingCamera where
-  getModifiersFor (HawkEyeFoldingCamera (a `With` _)) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      modified_ a iid
-        $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
-        <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
-        <> [SanityModifier 1 | a.use Evidence >= 3]
+  getModifiersFor (HawkEyeFoldingCamera (a `With` _)) = for_ a.controller \iid -> do
+    modified_ a iid
+      $ [SkillModifier #willpower 1 | a.use Evidence >= 1]
+      <> [SkillModifier #intellect 1 | a.use Evidence >= 2]
+      <> [SanityModifier 1 | a.use Evidence >= 3]
 
 instance HasAbilities HawkEyeFoldingCamera where
   getAbilities (HawkEyeFoldingCamera (a `With` meta)) =
-    [ restrictedAbility a 1 ControlsThis
-        $ freeReaction (DiscoveringLastClue #after You locationMatcher)
-    ]
+    [restricted a 1 ControlsThis $ freeReaction (DiscoveringLastClue #after You locationMatcher)]
    where
     locationMatcher =
       if null (locations meta)

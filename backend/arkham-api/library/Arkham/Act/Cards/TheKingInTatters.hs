@@ -1,10 +1,11 @@
-module Arkham.Act.Cards.TheKingInTatters (TheKingInTatters (..), theKingInTatters) where
+module Arkham.Act.Cards.TheKingInTatters (theKingInTatters) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher

@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.GeneBeauregard3 (
-  geneBeauregard3,
-  GeneBeauregard3 (..),
-)
-where
+module Arkham.Asset.Assets.GeneBeauregard3 (geneBeauregard3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 
@@ -91,8 +88,8 @@ instance RunMessage GeneBeauregard3 where
         $ chooseOrRunOne
           player
           [ targetLabel
-            enemy
-            [chooseOrRunOne player [targetLabel location [EnemyMove enemy location]] | location <- connected]
+              enemy
+              [chooseOrRunOne player [targetLabel location [EnemyMove enemy location]] | location <- connected]
           | enemy <- enemies
           ]
 

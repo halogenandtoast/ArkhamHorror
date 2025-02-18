@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.HiredMuscle1 (
-  hiredMuscle1,
-  HiredMuscle1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.HiredMuscle1 (hiredMuscle1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype HiredMuscle1 = HiredMuscle1 AssetAttrs
   deriving anyclass IsAsset

@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.DavidRenfield (davidRenfield, DavidRenfield (..)) where
+module Arkham.Asset.Assets.DavidRenfield (davidRenfield) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.Taboo
 
@@ -15,12 +16,10 @@ davidRenfield = ally DavidRenfield Cards.davidRenfield (2, 1)
 
 instance HasModifiersFor DavidRenfield where
   getModifiersFor (DavidRenfield a) =
-    if a.doom > 0
-      then controllerGets a [SkillModifier #willpower 1]
-      else pure mempty
+    when (a.doom > 0) $ controllerGets a [SkillModifier #willpower 1]
 
 instance HasAbilities DavidRenfield where
-  getAbilities (DavidRenfield a) = [restrictedAbility a 1 ControlsThis $ FastAbility $ exhaust a]
+  getAbilities (DavidRenfield a) = [restricted a 1 ControlsThis $ FastAbility $ exhaust a]
 
 instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = case msg of

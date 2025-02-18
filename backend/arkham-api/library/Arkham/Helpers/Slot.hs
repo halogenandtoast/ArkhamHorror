@@ -3,12 +3,15 @@ module Arkham.Helpers.Slot (
   module X,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes.HasGame
+import Arkham.Classes.Query
 import Arkham.Helpers.Modifiers
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher.Asset
+import Arkham.Prelude
+import Arkham.Projection
 import Arkham.Slot as X
 
 isEmptySlot :: Slot -> Bool
@@ -67,3 +70,35 @@ removeIfMatchesOnce aid = \case
   Slot source assets -> Slot source (deleteFirst aid assets)
   RestrictedSlot source trait assets -> RestrictedSlot source trait (deleteFirst aid assets)
   AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (deleteFirst aid assets)
+
+getPotentialSlots
+  :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
+getPotentialSlots card iid = do
+  slots <- field InvestigatorSlots iid
+  let
+    slotTypesAndSlots :: [(SlotType, Slot)] =
+      concatMap (\(slotType, slots') -> map (slotType,) slots')
+        $ mapToList slots
+    passesRestriction = \case
+      RestrictedSlot _ matcher _ -> cardMatch card matcher
+      Slot {} -> True
+      AdjustableSlot {} -> True
+  map fst
+    <$> filterM
+      ( \(_, slot) ->
+          if passesRestriction slot
+            then case slotItems slot of
+              [] -> pure True
+              (x : xs) -> do
+                mods <- getModifiers x
+                let canFit = \case
+                      SharesSlotWith n matcher -> length xs + 1 < n && cardMatch card matcher
+                      _ -> False
+                let willFit = any canFit mods
+                orM
+                  [ allM (<=~> DiscardableAsset) (x : xs) -- either all can be discarded
+                  , pure willFit
+                  ]
+            else pure False
+      )
+      slotTypesAndSlots

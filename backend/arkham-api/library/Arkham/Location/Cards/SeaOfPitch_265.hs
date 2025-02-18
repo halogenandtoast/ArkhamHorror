@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.SeaOfPitch_265 (seaOfPitch_265, SeaOfPitch_265 (..)) where
+module Arkham.Location.Cards.SeaOfPitch_265 (seaOfPitch_265) where
 
-import Arkham.Game.Helpers (perPlayer)
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story (readStory)
@@ -26,8 +26,7 @@ instance HasModifiersFor SeaOfPitch_265 where
     modifySelf attrs [ShroudModifier n | n > 0]
 
 instance HasAbilities SeaOfPitch_265 where
-  getAbilities (SeaOfPitch_265 attrs) =
-    veiled attrs []
+  getAbilities (SeaOfPitch_265 attrs) = veiled attrs []
 
 instance RunMessage SeaOfPitch_265 where
   runMessage msg (SeaOfPitch_265 attrs) = runQueueT $ case msg of

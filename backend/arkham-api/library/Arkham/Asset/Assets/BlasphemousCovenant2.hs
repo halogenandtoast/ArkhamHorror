@@ -1,9 +1,11 @@
-module Arkham.Asset.Assets.BlasphemousCovenant2 (blasphemousCovenant2, BlasphemousCovenant2 (..)) where
+module Arkham.Asset.Assets.BlasphemousCovenant2 (blasphemousCovenant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -16,8 +18,8 @@ blasphemousCovenant2 = asset BlasphemousCovenant2 Cards.blasphemousCovenant2
 
 instance HasAbilities BlasphemousCovenant2 where
   getAbilities (BlasphemousCovenant2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           (RevealChaosToken #when (affectsOthers $ InvestigatorAt YourLocation) #curse)
           (exhaust a)
     ]

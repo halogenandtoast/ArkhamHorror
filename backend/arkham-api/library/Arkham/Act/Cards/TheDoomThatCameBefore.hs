@@ -1,9 +1,11 @@
-module Arkham.Act.Cards.TheDoomThatCameBefore (TheDoomThatCameBefore (..), theDoomThatCameBefore) where
+module Arkham.Act.Cards.TheDoomThatCameBefore (theDoomThatCameBefore) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Types

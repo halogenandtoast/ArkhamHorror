@@ -1,9 +1,9 @@
-module Arkham.Event.Events.Elusive where
+module Arkham.Event.Events.Elusive (elusive) where
 
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Taboo

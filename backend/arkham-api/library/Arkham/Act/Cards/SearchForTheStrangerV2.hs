@@ -1,10 +1,12 @@
-module Arkham.Act.Cards.SearchForTheStrangerV2 (SearchForTheStrangerV2 (..), searchForTheStrangerV2) where
+module Arkham.Act.Cards.SearchForTheStrangerV2 (searchForTheStrangerV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

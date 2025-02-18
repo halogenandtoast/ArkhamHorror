@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.TrapRoom (
-  trapRoom,
-  TrapRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TrapRoom (trapRoom) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -11,9 +6,9 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype TrapRoom = TrapRoom LocationAttrs
@@ -28,10 +23,10 @@ instance HasAbilities TrapRoom where
     withBaseAbilities
       attrs
       [ mkAbility attrs 1
-        $ ForcedAbility
-        $ RevealLocation Timing.After You
-        $ LocationWithId
-        $ toId attrs
+          $ ForcedAbility
+          $ RevealLocation Timing.After You
+          $ LocationWithId
+          $ toId attrs
       | locationRevealed attrs
       ]
 

@@ -1,9 +1,9 @@
-module Arkham.Treachery.Cards.Snakescourge (snakescourge, Snakescourge (..)) where
+module Arkham.Treachery.Cards.Snakescourge (snakescourge) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

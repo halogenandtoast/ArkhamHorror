@@ -1,17 +1,15 @@
-module Arkham.Enemy.Cards.HarbingerOfValusia (
-  harbingerOfValusia,
-  HarbingerOfValusia (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HarbingerOfValusia (harbingerOfValusia) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token

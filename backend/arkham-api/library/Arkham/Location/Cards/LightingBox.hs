@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.LightingBox (lightingBox, LightingBox (..)) where
+module Arkham.Location.Cards.LightingBox (lightingBox) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

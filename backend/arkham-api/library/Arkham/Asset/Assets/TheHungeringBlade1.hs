@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.TheHungeringBlade1 (theHungeringBlade1, TheHungeringBlade1 (..)) where
+module Arkham.Asset.Assets.TheHungeringBlade1 (theHungeringBlade1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (Offering)
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Token

@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.BogGator (bogGator, BogGator (..)) where
+module Arkham.Enemy.Cards.BogGator (bogGator) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Prelude

@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.Infirmary (
-  infirmary,
-  Infirmary (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Infirmary (infirmary) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
+import Arkham.Prelude
 
 newtype Infirmary = Infirmary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,7 +20,7 @@ instance HasAbilities Infirmary where
     withBaseAbilities
       attrs
       [ limitedAbility (PlayerLimit PerRound 1)
-        $ restrictedAbility attrs 1 Here (ActionAbility [] $ ActionCost 1)
+          $ restrictedAbility attrs 1 Here (ActionAbility [] $ ActionCost 1)
       | locationRevealed attrs
       ]
 

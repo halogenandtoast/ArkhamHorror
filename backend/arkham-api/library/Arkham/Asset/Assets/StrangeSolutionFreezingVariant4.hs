@@ -1,13 +1,11 @@
-module Arkham.Asset.Assets.StrangeSolutionFreezingVariant4 (
-  strangeSolutionFreezingVariant4,
-  StrangeSolutionFreezingVariant4 (..),
-) where
+module Arkham.Asset.Assets.StrangeSolutionFreezingVariant4 (strangeSolutionFreezingVariant4) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Evade
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype StrangeSolutionFreezingVariant4 = StrangeSolutionFreezingVariant4 AssetAttrs

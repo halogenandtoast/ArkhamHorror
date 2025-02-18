@@ -1,5 +1,6 @@
 module Arkham.Treachery.Cards.HospitalDebtsSpec (spec) where
 
+import Arkham.Helpers.Xp
 import Arkham.Treachery.Cards qualified as Treacheries
 import TestImport.New
 

@@ -4,10 +4,10 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (getAccessibleLocations)
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (ModifierType (..), getMetaMaybe, modifySelfWhen)
+import Arkham.Helpers.Modifiers hiding (abilityModifier)
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

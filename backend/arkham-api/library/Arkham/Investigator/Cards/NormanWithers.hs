@@ -1,10 +1,11 @@
-module Arkham.Investigator.Cards.NormanWithers where
+module Arkham.Investigator.Cards.NormanWithers (normanWithers) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import Arkham.Game.Helpers
 import Arkham.Helpers
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
@@ -69,10 +70,10 @@ instance RunMessage NormanWithers where
           $ chooseOne player
           $ Label "Do not swap" []
           : [ targetLabel
-              (toCardId c)
-              [ drawCards iid (ChaosTokenEffectSource ElderSign) 1
-              , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
-              ]
+                (toCardId c)
+                [ drawCards iid (ChaosTokenEffectSource ElderSign) 1
+                , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
+                ]
             | c <- onlyPlayerCards hand
             ]
       pure nw

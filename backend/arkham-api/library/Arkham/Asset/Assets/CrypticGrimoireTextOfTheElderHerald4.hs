@@ -1,12 +1,13 @@
 module Arkham.Asset.Assets.CrypticGrimoireTextOfTheElderHerald4 (
   crypticGrimoireTextOfTheElderHerald4,
-  CrypticGrimoireTextOfTheElderHerald4 (..),
 )
 where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (PlayCard)
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 import Arkham.SkillTest.Step
@@ -29,11 +30,11 @@ instance HasModifiersFor CrypticGrimoireTextOfTheElderHerald4 where
 
 instance HasAbilities CrypticGrimoireTextOfTheElderHerald4 where
   getAbilities (CrypticGrimoireTextOfTheElderHerald4 x) =
-    [ controlledAbility x 1 (DuringSkillTest $ SkillTestWithResolvedChaosTokenBy You #curse)
+    [ controlled x 1 (DuringSkillTest $ SkillTestWithResolvedChaosTokenBy You #curse)
         $ freeReaction
         $ SkillTestStep #after ResolveChaosSymbolEffectsStep
-    , controlledAbility x 2 (DuringTurn You)
-        $ ReactionAbility (PlayCard #when You $ basic $ withTrait Insight <> #event) (assetUseCost x Secret 2)
+    , controlled x 2 (DuringTurn You)
+        $ triggered (PlayCard #when You $ basic $ withTrait Insight <> #event) (assetUseCost x Secret 2)
     ]
 
 instance RunMessage CrypticGrimoireTextOfTheElderHerald4 where

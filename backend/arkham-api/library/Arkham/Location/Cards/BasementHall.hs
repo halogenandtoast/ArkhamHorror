@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.BasementHall (basementHall, BasementHall (..)) where
+module Arkham.Location.Cards.BasementHall (basementHall) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

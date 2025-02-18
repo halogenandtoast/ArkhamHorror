@@ -1,17 +1,14 @@
-module Arkham.Asset.Assets.SignMagick3 (
-  signMagick3,
-  SignMagick3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SignMagick3 (signMagick3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Ability
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
+import Arkham.Slot
 import Arkham.Trait
 import Arkham.Window (Window (..), defaultWindows)
 import Arkham.Window qualified as Window
@@ -21,27 +18,22 @@ newtype SignMagick3 = SignMagick3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 signMagick3 :: AssetCard SignMagick3
-signMagick3 =
-  asset SignMagick3 Cards.signMagick3
+signMagick3 = asset SignMagick3 Cards.signMagick3
 
 instance HasAbilities SignMagick3 where
   getAbilities (SignMagick3 a) =
-    [ restrictedAbility
+    [ controlled
         a
         1
-        ( ControlsThis
-            <> ExcludeWindowAssetExists
-              ( AssetControlledBy You
-                  <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
-                  <> AssetWithPerformableAbility AbilityIsActionAbility [ActionCostSetToModifier 0]
-              )
+        ( ExcludeWindowAssetExists
+            ( AssetControlledBy You
+                <> hasAnyTrait [Spell, Ritual]
+                <> AssetWithPerformableAbility AbilityIsActionAbility [ActionCostSetToModifier 0]
+            )
         )
         $ ReactionAbility
-          ( ActivateAbility Timing.After You
-              $ AssetAbility
-              $ AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
-          )
-        $ ExhaustCost (toTarget a)
+          (ActivateAbility #after You $ AssetAbility $ hasAnyTrait [Spell, Ritual])
+          (exhaust a)
     ]
 
 toOriginalAsset :: [Window] -> AssetId

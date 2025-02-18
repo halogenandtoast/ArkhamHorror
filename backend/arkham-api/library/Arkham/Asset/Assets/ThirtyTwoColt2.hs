@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.ThirtyTwoColt2 (thirtyTwoColt2, ThirtyTwoColt2 (..)) where
+module Arkham.Asset.Assets.ThirtyTwoColt2 (thirtyTwoColt2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype ThirtyTwoColt2 = ThirtyTwoColt2 AssetAttrs

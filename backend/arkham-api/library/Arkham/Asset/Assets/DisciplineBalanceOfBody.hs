@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.DisciplineBalanceOfBody (
-  disciplineBalanceOfBody,
-  DisciplineBalanceOfBody (..),
-)
-where
+module Arkham.Asset.Assets.DisciplineBalanceOfBody (disciplineBalanceOfBody) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Game.Helpers (canDo, getPlayableCards)
+import Arkham.Helpers.Action (canDo)
 import Arkham.Helpers.Modifiers (modified_, withGrantedAction)
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

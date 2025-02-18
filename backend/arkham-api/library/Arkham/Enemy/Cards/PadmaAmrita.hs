@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.PadmaAmrita (padmaAmrita, PadmaAmrita (..)) where
+module Arkham.Enemy.Cards.PadmaAmrita (padmaAmrita) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

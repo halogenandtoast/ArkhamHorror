@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.CityOfBlood (
-  CityOfBlood (..),
-  cityOfBlood,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.CityOfBlood (cityOfBlood) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -11,7 +6,9 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenarios.TheDepthsOfYoth.Helpers
 import Arkham.Zone
 

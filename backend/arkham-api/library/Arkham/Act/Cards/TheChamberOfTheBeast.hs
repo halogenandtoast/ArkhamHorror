@@ -1,18 +1,14 @@
-module Arkham.Act.Cards.TheChamberOfTheBeast (
-  TheChamberOfTheBeast (..),
-  theChamberOfTheBeast,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheChamberOfTheBeast (theChamberOfTheBeast) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 

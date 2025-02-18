@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.FaubourgMarigny (FaubourgMarigny (..), faubourgMarigny) where
+module Arkham.Location.Cards.FaubourgMarigny (faubourgMarigny) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (faubourgMarigny)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

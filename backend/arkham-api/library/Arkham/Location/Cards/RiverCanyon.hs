@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.RiverCanyon (
-  riverCanyon,
-  RiverCanyon (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RiverCanyon (riverCanyon) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -11,10 +6,10 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype RiverCanyon = RiverCanyon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

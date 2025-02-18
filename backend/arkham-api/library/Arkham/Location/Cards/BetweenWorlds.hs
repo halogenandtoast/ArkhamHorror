@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Card.EncounterCard
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

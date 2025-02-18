@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheMurder (
-  TheMurder (..),
-  theMurder,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheMurder (theMurder) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -12,8 +7,12 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 import Arkham.Treachery.Cards qualified as Treacheries
 

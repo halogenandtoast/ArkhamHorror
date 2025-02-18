@@ -924,6 +924,16 @@ crackShot =
         ]
     }
 
+contemplative :: CardDef
+contemplative =
+  (skill "11088" "Contemplative" [] Survivor)
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions =
+        [ OnlySkillTest
+            $ WhileParleying <> SkillTestAt (orConnected YourLocation)
+        ]
+    }
+
 riseToTheOccasion3 :: CardDef
 riseToTheOccasion3 =
   ( skill

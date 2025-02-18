@@ -3,15 +3,15 @@ module Arkham.Effect.Effects.UndimensionedAndUnseenTabletToken (
   UndimensionedAndUnseenTabletToken (..),
 ) where
 
-import Arkham.Prelude
-
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Difficulty
-import Arkham.Effect.Helpers
 import Arkham.Effect.Runner
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
@@ -52,10 +52,10 @@ instance RunMessage UndimensionedAndUnseenTabletToken where
           $ chooseOne player
           $ Label ("Do not remove clues from Brood of Yog-Sothoth and " <> result) []
           : [ targetLabel
-              enemyId
-              [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
-              , DisableEffect $ effectId attrs
-              ]
+                enemyId
+                [ RemoveAllClues (ChaosTokenEffectSource Tablet) (toTarget enemyId)
+                , DisableEffect $ effectId attrs
+                ]
             | enemyId <- broodOfYogSothothWithClues
             ]
       pure e

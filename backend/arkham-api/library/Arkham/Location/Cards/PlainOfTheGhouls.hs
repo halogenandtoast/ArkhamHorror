@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.PlainOfTheGhouls (plainOfTheGhouls) where
 
-import Arkham.Game.Helpers (perPlayer)
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story (readStory)
 import Arkham.Investigator.Types (Field (InvestigatorClues))

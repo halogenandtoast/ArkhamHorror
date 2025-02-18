@@ -1,10 +1,12 @@
-module Arkham.Act.Cards.AlejandrosPrison (AlejandrosPrison (..), alejandrosPrison) where
+module Arkham.Act.Cards.AlejandrosPrison (alejandrosPrison) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
@@ -23,11 +25,11 @@ instance HasModifiersFor AlejandrosPrison where
 instance HasAbilities AlejandrosPrison where
   getAbilities (AlejandrosPrison a) =
     [ restrictedAbility
-      a
-      1
-      (exists $ LocationWithAsset (assetIs Assets.alejandroVela) <> LocationWithoutClues)
-      $ Objective
-      $ forced AnyWindow
+        a
+        1
+        (exists $ LocationWithAsset (assetIs Assets.alejandroVela) <> LocationWithoutClues)
+        $ Objective
+        $ forced AnyWindow
     | onSide C a
     ]
 

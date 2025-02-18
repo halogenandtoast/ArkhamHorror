@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.OnWingsOfDarkness where
 
 import Arkham.Classes
-import Arkham.Game.Helpers (getCanMoveToMatchingLocations)
+import Arkham.Helpers.Location (getCanMoveToMatchingLocations)
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude

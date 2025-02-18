@@ -1,8 +1,8 @@
-module Arkham.Investigator.Cards.CalvinWright (calvinWright, CalvinWright (..)) where
+module Arkham.Investigator.Cards.CalvinWright (calvinWright) where
 
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 

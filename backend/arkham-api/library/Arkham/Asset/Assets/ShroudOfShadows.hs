@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.ShroudOfShadows (shroudOfShadows, shroudOfShadowsEffect, ShroudOfShadows (..)) where
+module Arkham.Asset.Assets.ShroudOfShadows (shroudOfShadows, shroudOfShadowsEffect) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -8,7 +8,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Evade
-import Arkham.Game.Helpers (getConnectedMoveLocations)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.Matcher hiding (EnemyEvaded, RevealChaosToken)
 import Arkham.Message.Lifted.Choose

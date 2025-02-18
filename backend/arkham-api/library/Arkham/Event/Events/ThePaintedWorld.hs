@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ThePaintedWorld (thePaintedWorld, thePaintedWorldEffect, ThePaintedWorld (..)) where
+module Arkham.Event.Events.ThePaintedWorld (thePaintedWorld, thePaintedWorldEffect) where
 
 import Arkham.Card
 import Arkham.Classes
@@ -6,7 +6,8 @@ import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher

@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.PeterSylvestre2 (
-  PeterSylvestre2 (..),
-  peterSylvestre2,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.PeterSylvestre2 (peterSylvestre2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs
   deriving anyclass IsAsset
@@ -24,14 +20,11 @@ instance HasModifiersFor PeterSylvestre2 where
 
 instance HasAbilities PeterSylvestre2 where
   getAbilities (PeterSylvestre2 x) =
-    [ restrictedAbility
+    [ controlled
         x
         1
-        ( ControlsThis
-            <> AssetExists
-              (HealableAsset (toSource x) HorrorType $ AssetWithId (toId x))
-        )
-        (ReactionAbility (TurnEnds Timing.After You) Free)
+        (exists (HealableAsset (toSource x) HorrorType $ AssetWithId (toId x)))
+        (ReactionAbility (TurnEnds #after You) Free)
     ]
 
 instance RunMessage PeterSylvestre2 where

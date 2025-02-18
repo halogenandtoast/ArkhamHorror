@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.HouseInTheReeds_210 (houseInTheReeds_210, HouseInTheReeds_210 (..)) where
+module Arkham.Location.Cards.HouseInTheReeds_210 (houseInTheReeds_210) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (houseInTheReeds_210)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (withDrawCardUnderneathAction)
 import Arkham.Matcher

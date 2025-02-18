@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.JordanPerry (jordanPerry, JordanPerry (..)) where
+module Arkham.Asset.Assets.JordanPerry (jordanPerry) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
@@ -18,13 +19,13 @@ jordanPerry = asset JordanPerry Cards.jordanPerry
 instance HasAbilities JordanPerry where
   getAbilities (JordanPerry a) =
     [ skillTestAbility
-        $ restrictedAbility
+        $ restricted
           a
           1
           (OnSameLocation <> youExist (InvestigatorWithResources $ atLeast 10))
           parleyAction_
     , groupLimit PerGame
-        $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_66)
+        $ restricted a 2 (not_ $ exists Story.sickeningReality_66)
         $ forced
         $ LastClueRemovedFromAsset #when (be a)
     ]

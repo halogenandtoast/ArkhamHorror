@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.TheCodexOfAges (theCodexOfAges, TheCodexOfAges (..)) where
+module Arkham.Asset.Assets.TheCodexOfAges (theCodexOfAges) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing

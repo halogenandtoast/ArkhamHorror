@@ -1,9 +1,11 @@
-module Arkham.Asset.Assets.Stealth (stealth, Stealth (..)) where
+module Arkham.Asset.Assets.Stealth (stealth) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Evade
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTestResult

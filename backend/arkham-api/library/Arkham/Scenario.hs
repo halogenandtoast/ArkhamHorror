@@ -1,10 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Scenario (
-  module Arkham.Scenario,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario (module Arkham.Scenario) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -17,10 +13,14 @@ import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.EncounterSet qualified as EncounterSet
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator qualified as Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Tarot
 import Arkham.History
@@ -28,10 +28,13 @@ import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Runner
 import Arkham.Scenario.Scenarios
+import Arkham.Slot
 import Arkham.Tarot
 import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (duringTurnWindow)
@@ -272,19 +275,20 @@ instance RunMessage Scenario where
       investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       pushAll
         [ search
-          iid
-          source
-          iid
-          [fromDeck]
-          (#asset <> #ally)
-          (if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1)
+            iid
+            source
+            iid
+            [fromDeck]
+            (#asset <> #ally)
+            (if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1)
         | iid <- investigators
         ]
       pure x
     UseThisAbility _ source@(TarotSource card@(TarotCard Upright StrengthVIII)) 1 -> do
       investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       msgs <- forMaybeM investigators $ \investigator -> do
-        results <- select (Matcher.InHandOf Matcher.ForPlay (Matcher.InvestigatorWithId investigator) <> #asset)
+        results <-
+          select (Matcher.InHandOf Matcher.ForPlay (Matcher.InvestigatorWithId investigator) <> #asset)
         resources <- getSpendableResources investigator
         cards <-
           filterM
@@ -332,10 +336,10 @@ instance RunMessage Scenario where
         Upright -> do
           pushAll
             [ chooseOne
-              player
-              [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
-              | slotType <- allSlotTypes
-              ]
+                player
+                [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
+                | slotType <- allSlotTypes
+                ]
             | (investigator, player) <- investigatorPlayers
             ]
         Reversed -> do
@@ -355,12 +359,12 @@ instance RunMessage Scenario where
         Upright ->
           pushAll
             [ search
-              iid
-              source
-              iid
-              [fromDeck]
-              (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
-              (RemoveFoundFromGame iid 1)
+                iid
+                source
+                iid
+                [fromDeck]
+                (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
+                (RemoveFoundFromGame iid 1)
             | iid <- investigators
             ]
         Reversed ->
@@ -459,9 +463,9 @@ instance RunMessage Scenario where
 
           pushAll
             $ [ chooseOne player
-                $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
-                <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
-                <> [Label "Do not remove trauma" []]
+                  $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
+                  <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
+                  <> [Label "Do not remove trauma" []]
               | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
               ]
         Reversed -> do
@@ -470,10 +474,10 @@ instance RunMessage Scenario where
           defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
           pushAll
             $ [ chooseOne
-                player
-                [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
-                ]
+                  player
+                  [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                  , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                  ]
               | (iid, player) <- defeatedInvestigatorPlayers
               ]
       pure x

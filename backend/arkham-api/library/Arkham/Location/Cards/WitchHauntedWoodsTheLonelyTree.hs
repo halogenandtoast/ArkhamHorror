@@ -1,14 +1,11 @@
-module Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree (
-  witchHauntedWoodsTheLonelyTree,
-  WitchHauntedWoodsTheLonelyTree (..),
-) where
+module Arkham.Location.Cards.WitchHauntedWoodsTheLonelyTree (witchHauntedWoodsTheLonelyTree) where
 
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Discard
 import Arkham.Draw.Types
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
@@ -73,24 +70,24 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
       push
         $ chooseOrRunOne player
         $ [ Label
-            "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
-            [ toMessage
-                $ (chooseAndDiscardCard iid attrs)
-                  { discardThen = guard (notNull chooseOtherDraw) $> chooseOrRunOne player chooseOtherDraw
-                  }
-            ]
+              "You choose and discard 1 card from your hand, then an investigator at a different Witch-Haunted Woods draws 1 card"
+              [ toMessage
+                  $ (chooseAndDiscardCard iid attrs)
+                    { discardThen = guard (notNull chooseOtherDraw) $> chooseOrRunOne player chooseOtherDraw
+                    }
+              ]
           | handLength > 0
           ]
         <> [ Label
-            "vice versa"
-            [ chooseOrRunOne
-                player
-                [ targetLabel
-                  other
-                  [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards iid drawing}]
-                | other <- iidsForDiscard
-                ]
-            ]
+               "vice versa"
+               [ chooseOrRunOne
+                   player
+                   [ targetLabel
+                       other
+                       [toMessage $ (chooseAndDiscardCard other attrs) {discardThen = Just $ DrawCards iid drawing}]
+                   | other <- iidsForDiscard
+                   ]
+               ]
            | notNull iidsForDiscard && canDraw
            ]
       pure l

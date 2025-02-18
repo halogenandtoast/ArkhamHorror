@@ -1,12 +1,9 @@
-module Arkham.Location.Cards.ExhibitHallRestrictedHall (
-  exhibitHallRestrictedHall,
-  ExhibitHallRestrictedHall (..),
-) where
+module Arkham.Location.Cards.ExhibitHallRestrictedHall (exhibitHallRestrictedHall) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

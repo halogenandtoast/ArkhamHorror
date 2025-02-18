@@ -1,15 +1,12 @@
-module Arkham.Act.Cards.TheParisianConspiracyV2 (
-  TheParisianConspiracyV2 (..),
-  theParisianConspiracyV2,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheParisianConspiracyV2 (theParisianConspiracyV2) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheParisianConspiracyV2 = TheParisianConspiracyV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.CloverClubCardroom (
-  cloverClubCardroom,
-  CloverClubCardroom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CloverClubCardroom (cloverClubCardroom) where
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Location.Cards qualified as Cards (cloverClubCardroom)
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 
 newtype CloverClubCardroom = CloverClubCardroom LocationAttrs

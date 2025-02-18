@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.GarroteWire2 (garroteWire2, GarroteWire2 (..)) where
+module Arkham.Asset.Assets.GarroteWire2 (garroteWire2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Prelude
 
@@ -16,7 +17,7 @@ garroteWire2 = asset GarroteWire2 Cards.garroteWire2
 
 instance HasAbilities GarroteWire2 where
   getAbilities (GarroteWire2 attrs) =
-    [ controlledAbility
+    [ controlled
         attrs
         1
         (DuringTurn You <> exists (CanFightEnemy (toSource attrs) <> EnemyWithRemainingHealth (static 1)))

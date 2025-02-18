@@ -1,9 +1,9 @@
-module Arkham.Treachery.Cards.Overgrowth (overgrowth, Overgrowth (..)) where
+module Arkham.Treachery.Cards.Overgrowth (overgrowth) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (modifySelect, ModifierType(..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

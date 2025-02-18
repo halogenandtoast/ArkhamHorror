@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.M1918Bar4 (m1918Bar4, M1918Bar4 (..)) where
+module Arkham.Asset.Assets.M1918Bar4 (m1918Bar4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

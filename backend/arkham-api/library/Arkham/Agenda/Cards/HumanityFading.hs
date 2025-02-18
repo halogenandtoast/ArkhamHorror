@@ -1,15 +1,12 @@
-module Arkham.Agenda.Cards.HumanityFading (
-  HumanityFading (..),
-  humanityFading,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.HumanityFading (humanityFading) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Prelude
 
 newtype HumanityFading = HumanityFading AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

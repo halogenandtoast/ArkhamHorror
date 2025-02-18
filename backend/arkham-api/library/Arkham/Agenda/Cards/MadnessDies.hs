@@ -1,16 +1,13 @@
-module Arkham.Agenda.Cards.MadnessDies (
-  MadnessDies (..),
-  madnessDies,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.MadnessDies (madnessDies) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 
 newtype MadnessDies = MadnessDies AgendaAttrs

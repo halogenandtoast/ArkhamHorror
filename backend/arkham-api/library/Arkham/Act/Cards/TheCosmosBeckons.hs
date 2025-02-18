@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheCosmosBeckons (TheCosmosBeckons (..), theCosmosBeckons) where
+module Arkham.Act.Cards.TheCosmosBeckons (theCosmosBeckons) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -9,6 +9,8 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types qualified as Field
@@ -57,13 +59,13 @@ instance RunMessage TheCosmosBeckons where
         , chooseOrRunOne
             player
             [ targetLabel
-              (toCardId card)
-              [ UnfocusCards
-              , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
-              , placement
-              , RevealLocation (Just iid) lid
-              , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
-              ]
+                (toCardId card)
+                [ UnfocusCards
+                , ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) (List.delete card cards)
+                , placement
+                , RevealLocation (Just iid) lid
+                , RunCosmos iid lid [Move $ move (toAbilitySource attrs 1) iid lid]
+                ]
             | (card, (lid, placement)) <- cardsWithMsgs
             ]
         ]

@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.ExpeditionIntoTheWild (ExpeditionIntoTheWild (..), expeditionIntoTheWild) where
+module Arkham.Agenda.Cards.ExpeditionIntoTheWild (expeditionIntoTheWild) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -10,6 +10,7 @@ import Arkham.EncounterSet
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 

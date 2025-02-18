@@ -1,20 +1,16 @@
-module Arkham.Location.Cards.TheEdgeOfTheUniverse (
-  theEdgeOfTheUniverse,
-  TheEdgeOfTheUniverse (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TheEdgeOfTheUniverse (theEdgeOfTheUniverse) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (theEdgeOfTheUniverse)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 
 newtype TheEdgeOfTheUniverse = TheEdgeOfTheUniverse LocationAttrs
   deriving anyclass IsLocation

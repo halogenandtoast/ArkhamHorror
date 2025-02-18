@@ -1,8 +1,8 @@
-module Arkham.Asset.Assets.FirstAid3 (firstAid3, FirstAid3 (..)) where
+module Arkham.Asset.Assets.FirstAid3 (firstAid3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner hiding (allInvestigators)
+import Arkham.Asset.Runner
 import Arkham.Classes.HasGame
 import Arkham.Damage
 import Arkham.Matcher

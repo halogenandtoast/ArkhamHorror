@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheThingWithNoName (TheThingWithNoName (..), theThingWithNoName) where
+module Arkham.Agenda.Cards.TheThingWithNoName (theThingWithNoName) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Swarming))
 import Arkham.Matcher
 import Arkham.Prelude

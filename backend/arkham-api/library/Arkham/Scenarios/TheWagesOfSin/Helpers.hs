@@ -1,8 +1,6 @@
 module Arkham.Scenarios.TheWagesOfSin.Helpers
 where
 
-import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes.Entity
@@ -12,8 +10,13 @@ import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Enemy.Runner
 import Arkham.Helpers
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing

@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.Dormitories where
+module Arkham.Location.Cards.Dormitories (dormitories) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (dormitories)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (FastPlayerWindow)

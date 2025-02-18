@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.GareDOrsay (
-  gareDOrsay,
-  GareDOrsay (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.GareDOrsay (gareDOrsay) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype GareDOrsay = GareDOrsay LocationAttrs

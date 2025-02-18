@@ -1,10 +1,7 @@
 module Arkham.Asset.Assets.MiskatonicArchaeologyFunding4 (
   miskatonicArchaeologyFunding4,
   miskatonicArchaeologyFunding4Effect,
-  MiskatonicArchaeologyFunding4 (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +9,10 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Slot
 import Arkham.Trait (Trait (Miskatonic))
 
 newtype MiskatonicArchaeologyFunding4 = MiskatonicArchaeologyFunding4 AssetAttrs

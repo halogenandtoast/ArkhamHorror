@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.StrayCat (
-  StrayCat (..),
-  strayCat,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.StrayCat (strayCat) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Prelude
 
 newtype StrayCat = StrayCat AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheTrialOfNashtAndKamanThah (
-  TheTrialOfNashtAndKamanThah (..),
-  theTrialOfNashtAndKamanThah,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheTrialOfNashtAndKamanThah (theTrialOfNashtAndKamanThah) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,8 +6,10 @@ import Arkham.Act.Runner
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheTrialOfNashtAndKamanThah = TheTrialOfNashtAndKamanThah ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

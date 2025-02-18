@@ -3,7 +3,8 @@ module Arkham.Investigator.Cards.WilliamYorick where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Effect.Import
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher

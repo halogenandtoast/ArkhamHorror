@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.SlitheringDhole (slitheringDhole, SlitheringDhole (..)) where
+module Arkham.Enemy.Cards.SlitheringDhole (slitheringDhole) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries

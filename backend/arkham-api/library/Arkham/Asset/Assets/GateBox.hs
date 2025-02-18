@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.GateBox (gateBox, GateBox (..)) where
+module Arkham.Asset.Assets.GateBox (gateBox) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (PutLocationIntoPlay)
 import Arkham.Movement
@@ -18,7 +19,7 @@ gateBox = asset GateBox Cards.gateBox
 
 instance HasAbilities GateBox where
   getAbilities (GateBox a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (oneOf [youExist $ InvestigatorEngagedWith AnyEnemy, notExists $ LocationWithTitle "Dream-Gate"])

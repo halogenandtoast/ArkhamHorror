@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Shotgun4 (Shotgun4 (..), shotgun4) where
+module Arkham.Asset.Assets.Shotgun4 (shotgun4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Shotgun4 = Shotgun4 AssetAttrs

@@ -1,14 +1,13 @@
-module Arkham.Treachery.Cards.InsatiableBloodlust where
+module Arkham.Treachery.Cards.InsatiableBloodlust (insatiableBloodlust) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust TreacheryAttrs

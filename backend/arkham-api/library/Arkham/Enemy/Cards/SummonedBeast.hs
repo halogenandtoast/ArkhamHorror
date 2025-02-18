@@ -1,16 +1,13 @@
-module Arkham.Enemy.Cards.SummonedBeast (
-  summonedBeast,
-  SummonedBeast (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SummonedBeast (summonedBeast) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyEvade, EnemyFight)
+import Arkham.Helpers.Doom
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Humanoid))
 
 newtype SummonedBeast = SummonedBeast EnemyAttrs

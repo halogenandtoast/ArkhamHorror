@@ -1,8 +1,8 @@
 module Arkham.Location.Cards.PalaceOfTheKing (palaceOfTheKing) where
 
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers
-import Arkham.GameValue
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (revealedL)

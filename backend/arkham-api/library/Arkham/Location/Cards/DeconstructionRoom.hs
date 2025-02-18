@@ -1,17 +1,11 @@
-module Arkham.Location.Cards.DeconstructionRoom (
-  deconstructionRoom,
-  DeconstructionRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DeconstructionRoom (deconstructionRoom) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
-import Arkham.SkillType
 
 newtype DeconstructionRoom = DeconstructionRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -29,7 +23,7 @@ instance HasAbilities DeconstructionRoom where
   getAbilities (DeconstructionRoom attrs) =
     withBaseAbilities
       attrs
-      [skillTestAbility $ restrictedAbility attrs 1 Here $ ActionAbility [] $ ActionCost 1]
+      [skillTestAbility $ restricted attrs 1 Here $ ActionAbility [] $ ActionCost 1]
 
 instance RunMessage DeconstructionRoom where
   runMessage msg l@(DeconstructionRoom attrs) = case msg of
@@ -39,9 +33,9 @@ instance RunMessage DeconstructionRoom where
         $ beginSkillTest
           sid
           iid
-          (toAbilitySource attrs 1)
-          (InvestigatorTarget iid)
-          SkillCombat
+          (attrs.ability 1)
+          iid
+          #combat
           (SumCalculation [Fixed 4, LocationFieldCalculation attrs.id LocationClues])
       pure l
     PassedSkillTest _ _ (isAbilitySource attrs 1 -> True) SkillTestInitiatorTarget {} _ _ ->

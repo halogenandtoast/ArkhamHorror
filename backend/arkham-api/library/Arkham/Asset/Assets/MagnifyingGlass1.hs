@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.MagnifyingGlass1 where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.MagnifyingGlass1 (magnifyingGlass1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 AssetAttrs
   deriving anyclass IsAsset

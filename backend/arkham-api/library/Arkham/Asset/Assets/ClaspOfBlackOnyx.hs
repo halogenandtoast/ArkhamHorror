@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.ClaspOfBlackOnyx (claspOfBlackOnyx, ClaspOfBlackOnyx (..)) where
+module Arkham.Asset.Assets.ClaspOfBlackOnyx (claspOfBlackOnyx) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Mk1Grenades4 (mk1Grenades4, Mk1Grenades4 (..)) where
+module Arkham.Asset.Assets.Mk1Grenades4 (mk1Grenades4) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,6 +6,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -17,7 +18,7 @@ mk1Grenades4 :: AssetCard Mk1Grenades4
 mk1Grenades4 = assetWith Mk1Grenades4 Cards.mk1Grenades4 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 instance HasAbilities Mk1Grenades4 where
-  getAbilities (Mk1Grenades4 a) = [restrictedAbility a 1 ControlsThis $ fightAction (assetUseCost a Supply 1)]
+  getAbilities (Mk1Grenades4 a) = [restricted a 1 ControlsThis $ fightAction (assetUseCost a Supply 1)]
 
 instance RunMessage Mk1Grenades4 where
   runMessage msg a@(Mk1Grenades4 attrs) = case msg of

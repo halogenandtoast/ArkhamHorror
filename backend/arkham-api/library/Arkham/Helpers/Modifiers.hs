@@ -1,13 +1,7 @@
-module Arkham.Helpers.Modifiers (
-  module Arkham.Helpers.Modifiers,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Helpers.Modifiers (module Arkham.Helpers.Modifiers, module X) where
 
 import Arkham.Ability.Types
 import Arkham.Card
-import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Cost
@@ -19,9 +13,11 @@ import Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Matcher.Types
 import Arkham.Message
-import Arkham.Modifier as X
+import Arkham.Modifier
+import Arkham.Modifier as X (ModifierType (..), pattern CannotMoveExceptByScenarioCardEffects)
 import Arkham.Phase (Phase)
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Query
 import Arkham.Source
 import Arkham.Target
@@ -673,36 +669,6 @@ abilityModifier
   -> ModifierType
   -> m Message
 abilityModifier abilityRef source target modifier = createWindowModifierEffect (EffectAbilityWindow abilityRef) source target [modifier]
-
-chaosTokenEffect
-  :: (HasGame m, Sourceable source) => source -> ChaosToken -> ModifierType -> m Message
-chaosTokenEffect (toSource -> source) token modifier = do
-  ems <- effectModifiers source [modifier]
-  pure $ CreateChaosTokenEffect ems source token
-
-onRevealChaosTokenEffect
-  :: (Sourceable source, Targetable target)
-  => SkillTestId
-  -> ChaosTokenMatcher
-  -> source
-  -> target
-  -> [Message]
-  -> Message
-onRevealChaosTokenEffect sid matchr source target msgs = CreateOnRevealChaosTokenEffect sid matchr (toSource source) (toTarget target) msgs
-
-onSucceedByEffect
-  :: (Sourceable source, Targetable target)
-  => SkillTestId
-  -> ValueMatcher
-  -> source
-  -> target
-  -> [Message]
-  -> Message
-onSucceedByEffect sid matchr source target msgs = CreateOnSucceedByEffect sid matchr (toSource source) (toTarget target) msgs
-
-uiEffect
-  :: (HasGame m, Sourceable source, Targetable target) => source -> target -> UIModifier -> m Message
-uiEffect source target modifier = createWindowModifierEffect EffectUI source target [UIModifier modifier]
 
 getAdditionalSearchTargets :: HasGame m => InvestigatorId -> m Int
 getAdditionalSearchTargets iid = sumOf (each . _AdditionalTargets) <$> getModifiers iid

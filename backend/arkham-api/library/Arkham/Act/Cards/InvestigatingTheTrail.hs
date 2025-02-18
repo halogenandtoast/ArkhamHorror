@@ -6,6 +6,8 @@ import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Card
 import Arkham.EncounterCard
+import Arkham.Helpers.Query
+import Arkham.Helpers.Log
 import Arkham.Location.Cards qualified as Locations
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs

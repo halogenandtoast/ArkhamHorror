@@ -1,12 +1,13 @@
-module Arkham.Location.Cards.Montmartre209 (montmartre209, Montmartre209 (..)) where
+module Arkham.Location.Cards.Montmartre209 (montmartre209) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Playable
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 

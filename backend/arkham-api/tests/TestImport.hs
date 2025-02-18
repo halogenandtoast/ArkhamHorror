@@ -22,7 +22,6 @@ import Arkham.Enemy as X
 import Arkham.Entities as X
 import Arkham.Event as X
 import Arkham.Game as X hiding (newGame, runMessages, withModifiers)
-import Arkham.Game.Helpers as X hiding (getCanAffordCost)
 import Arkham.Game.Utils as X hiding (getAsset)
 import Arkham.GameValue as X
 import Arkham.Helpers as X
@@ -72,6 +71,7 @@ import Arkham.Game qualified as Game
 import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Git
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types hiding (settingsL)
 import Arkham.Keyword qualified as Keyword
@@ -493,8 +493,7 @@ testAgenda cardCode f = do
   let
     agenda' =
       cbCardBuilder
-        ( Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f
-        )
+        (Agenda <$> agendaWith (1, A) WhatsGoingOn Cards.whatsGoingOn (Static 100) f)
         (toCardId card)
         (1, AgendaId cardCode)
   env <- get

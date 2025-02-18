@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Tonys38LongColt (tonys38LongColt, Tonys38LongColt (..)) where
+module Arkham.Asset.Assets.Tonys38LongColt (tonys38LongColt) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyDefeated)
 import Arkham.Prelude
 import Arkham.Projection

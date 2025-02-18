@@ -1,16 +1,13 @@
-module Arkham.Act.Cards.SearchForThePattern (
-  SearchForThePattern (..),
-  searchForThePattern,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.SearchForThePattern (searchForThePattern) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SearchForThePattern = SearchForThePattern ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

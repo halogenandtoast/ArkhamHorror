@@ -1,10 +1,12 @@
-module Arkham.Asset.Assets.DragonPole (dragonPole, DragonPole (..)) where
+module Arkham.Asset.Assets.DragonPole (dragonPole) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Slot
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection
@@ -17,7 +19,7 @@ dragonPole :: AssetCard DragonPole
 dragonPole = asset DragonPole Cards.dragonPole
 
 instance HasAbilities DragonPole where
-  getAbilities (DragonPole a) = [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (DragonPole a) = [restricted a 1 ControlsThis fightAction_]
 
 instance HasModifiersFor DragonPole where
   getModifiersFor (DragonPole a) = case a.controller of

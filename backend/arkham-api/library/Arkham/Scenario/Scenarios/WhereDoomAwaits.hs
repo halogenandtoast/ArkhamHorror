@@ -11,11 +11,13 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers hiding (skillTestModifier)
+import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted

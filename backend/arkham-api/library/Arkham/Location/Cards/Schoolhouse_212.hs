@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.Schoolhouse_212 (schoolhouse_212, Schoolhouse_212 (..)) where
+module Arkham.Location.Cards.Schoolhouse_212 (schoolhouse_212) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (withDrawCardUnderneathAction)
 import Arkham.Matcher

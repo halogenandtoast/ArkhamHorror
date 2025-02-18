@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.ExhibitHallMedusaExhibit (
-  exhibitHallMedusaExhibit,
-  ExhibitHallMedusaExhibit (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ExhibitHallMedusaExhibit (exhibitHallMedusaExhibit) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (exhibitHallMedusaExhibit)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallMedusaExhibit = ExhibitHallMedusaExhibit LocationAttrs
@@ -31,12 +26,12 @@ instance HasAbilities ExhibitHallMedusaExhibit where
     withBaseAbilities
       x
       [ mkAbility x 1
-        $ ForcedAbility
-        $ SkillTestResult
-          Timing.After
-          You
-          (WhileInvestigating $ LocationWithId $ toId x)
-        $ FailureResult AnyValue
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId x)
+          $ FailureResult AnyValue
       | locationRevealed x
       ]
 

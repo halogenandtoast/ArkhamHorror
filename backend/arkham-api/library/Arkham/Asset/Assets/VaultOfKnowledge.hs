@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.VaultOfKnowledge (
-  vaultOfKnowledge,
-  VaultOfKnowledge (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.VaultOfKnowledge (vaultOfKnowledge) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype VaultOfKnowledge = VaultOfKnowledge AssetAttrs

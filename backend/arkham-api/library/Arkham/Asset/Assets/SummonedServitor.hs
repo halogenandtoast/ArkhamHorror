@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.SummonedServitor (summonedServitor, SummonedServitor (..)) where
+module Arkham.Asset.Assets.SummonedServitor (summonedServitor) where
 
 import Arkham.Ability
 import Arkham.Action (Action)
@@ -6,8 +6,8 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
@@ -43,10 +43,10 @@ instance HasAbilities SummonedServitor where
   getAbilities (SummonedServitor a) =
     guard (length used < if a `hasCustomization` DæmonicInfluence then 2 else 1)
       *> [ controlledAbility
-          a
-          1
-          (exists $ RevealedLocation <> ConnectedFrom (locationWithAsset a.id))
-          $ ServitorAbility #move
+             a
+             1
+             (exists $ RevealedLocation <> ConnectedFrom (locationWithAsset a.id))
+             $ ServitorAbility #move
          | #move `notElem` used
          ]
       <> [ controlledAbility a 2 (exists $ EnemyAt $ locationWithAsset a.id) $ ServitorAbility #fight
@@ -58,7 +58,7 @@ instance HasAbilities SummonedServitor where
          , #evade `notElem` used
          ]
       <> [ controlledAbility a 4 (exists $ InvestigatableLocation <> locationWithAsset a.id)
-          $ ServitorAbility #investigate
+             $ ServitorAbility #investigate
          | a `hasCustomization` EyesOfFlame
          , #investigate `notElem` used
          ]
@@ -89,9 +89,9 @@ instance RunMessage SummonedServitor where
         chooseOne
           iid
           [ targetLabel lid $ PlaceAsset attrs.id (AtLocation lid)
-            : [ handleTargetChoice iid attrs lid
-              | attrs `hasCustomization` WingsOfNight && onSame && lid `elem` locationsCanEnter
-              ]
+              : [ handleTargetChoice iid attrs lid
+                | attrs `hasCustomization` WingsOfNight && onSame && lid `elem` locationsCanEnter
+                ]
           | lid <- locations
           ]
       pure . SummonedServitor $ overMeta (<>) [Action.Move] attrs

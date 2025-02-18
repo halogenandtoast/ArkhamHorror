@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheBrotherhoodIsRevealed (
-  TheBrotherhoodIsRevealed (..),
-  theBrotherhoodIsRevealed,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheBrotherhoodIsRevealed (theBrotherhoodIsRevealed) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,8 +7,12 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 

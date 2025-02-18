@@ -1,12 +1,8 @@
-module Arkham.Act.Helpers (
-  module X,
-  module Arkham.Act.Helpers,
-) where
+module Arkham.Act.Helpers where
 
 import Arkham.Act.Types
 import Arkham.Classes.Entity
 import Arkham.Cost
-import Arkham.Game.Helpers as X
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message

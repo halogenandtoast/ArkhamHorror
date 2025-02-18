@@ -1,9 +1,11 @@
-module Arkham.Act.Cards.TheKingsDecree (TheKingsDecree (..), theKingsDecree) where
+module Arkham.Act.Cards.TheKingsDecree (theKingsDecree) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Types

@@ -10,8 +10,9 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.EncounterSet
-import Arkham.Game.Helpers as X
 import Arkham.Helpers
+import Arkham.Helpers.EncounterSet (gatherEncounterSet)
+import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Campaign as X
 import Arkham.Matcher
 

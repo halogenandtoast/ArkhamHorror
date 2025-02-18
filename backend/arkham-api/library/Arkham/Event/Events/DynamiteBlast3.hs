@@ -1,10 +1,11 @@
-module Arkham.Event.Events.DynamiteBlast3 where
+module Arkham.Event.Events.DynamiteBlast3 (dynamiteBlast3) where
 
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.UI
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Prelude

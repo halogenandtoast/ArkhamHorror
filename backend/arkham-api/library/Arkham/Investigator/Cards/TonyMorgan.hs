@@ -1,11 +1,13 @@
-module Arkham.Investigator.Cards.TonyMorgan (tonyMorgan, TonyMorgan (..)) where
+module Arkham.Investigator.Cards.TonyMorgan (tonyMorgan) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Fight
-import Arkham.Game.Helpers
+import Arkham.Helpers.Action
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
@@ -37,11 +39,11 @@ instance HasModifiersFor TonyMorgan where
 instance HasAbilities TonyMorgan where
   getAbilities (TonyMorgan (attrs `With` _)) =
     [ doesNotProvokeAttacksOfOpportunity
-      $ restrictedAbility
-        attrs
-        1
-        (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy source, CanEngageEnemy source]))
-      $ ActionAbility [] mempty
+        $ restricted
+          attrs
+          1
+          (Self <> exists (EnemyWithBounty <> oneOf [CanFightEnemy source, CanEngageEnemy source]))
+        $ ActionAbility [] mempty
     | BountyAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
    where

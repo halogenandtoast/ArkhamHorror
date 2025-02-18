@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.ArkhamPoliceStation (arkhamPoliceStation, ArkhamPoliceStation (..)) where
+module Arkham.Location.Cards.ArkhamPoliceStation (arkhamPoliceStation) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMap)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.LostMemories (LostMemories (..), lostMemories, lostMemoriesEffect) where
+module Arkham.Agenda.Cards.LostMemories (lostMemories, lostMemoriesEffect) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -9,6 +9,8 @@ import Arkham.Classes
 import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

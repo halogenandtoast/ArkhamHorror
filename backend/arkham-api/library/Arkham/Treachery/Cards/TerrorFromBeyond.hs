@@ -7,7 +7,6 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
 import Arkham.Investigator.Types (Field (..))

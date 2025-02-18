@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.TheFinalDescent (
-  TheFinalDescent (..),
-  theFinalDescent,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheFinalDescent (theFinalDescent) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -13,7 +8,9 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Helpers
 import Arkham.Trait (Trait (Steps))
 

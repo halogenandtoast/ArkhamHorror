@@ -1,12 +1,13 @@
-module Arkham.Act.Cards.AllIn (AllIn (..), allIn) where
+module Arkham.Act.Cards.AllIn (allIn) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
@@ -24,14 +25,14 @@ instance HasAbilities AllIn where
     withBaseAbilities x
       $ guard (onSide A x)
       *> [ skillTestAbility
-            $ restrictedAbility
-              (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
-              1
-              (Uncontrolled <> OnSameLocation)
-              parleyAction_
+             $ restrictedAbility
+               (proxied (AssetMatcherSource $ assetIs Assets.drFrancisMorgan) x)
+               1
+               (Uncontrolled <> OnSameLocation)
+               parleyAction_
          , restrictedAbility x 1 AllUndefeatedInvestigatorsResigned
-            $ Objective
-            $ forced AnyWindow
+             $ Objective
+             $ forced AnyWindow
          ]
 
 instance RunMessage AllIn where

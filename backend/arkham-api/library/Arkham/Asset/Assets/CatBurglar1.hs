@@ -1,8 +1,10 @@
-module Arkham.Asset.Assets.CatBurglar1 (CatBurglar1 (..), catBurglar1) where
+module Arkham.Asset.Assets.CatBurglar1 (catBurglar1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude
@@ -20,7 +22,7 @@ instance HasModifiersFor CatBurglar1 where
 instance HasAbilities CatBurglar1 where
   getAbilities (CatBurglar1 a) =
     [ doesNotProvokeAttacksOfOpportunity
-        $ controlledAbility a 1 (oneOf [exists EnemyEngagedWithYou, CanMoveTo ConnectedLocation])
+        $ controlled a 1 (oneOf [exists EnemyEngagedWithYou, CanMoveTo ConnectedLocation])
         $ actionAbilityWithCost (exhaust a)
     ]
 

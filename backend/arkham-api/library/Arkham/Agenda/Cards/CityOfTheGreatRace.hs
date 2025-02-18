@@ -1,17 +1,15 @@
-module Arkham.Agenda.Cards.CityOfTheGreatRace (
-  CityOfTheGreatRace (..),
-  cityOfTheGreatRace,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.CityOfTheGreatRace (cityOfTheGreatRace) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Trait (Trait (Item))
 
 newtype CityOfTheGreatRace = CityOfTheGreatRace AgendaAttrs

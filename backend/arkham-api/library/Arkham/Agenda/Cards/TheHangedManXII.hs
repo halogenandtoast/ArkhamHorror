@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheHangedManXII (
-  TheHangedManXII (..),
-  theHangedManXII,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheHangedManXII (theHangedManXII) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -12,7 +7,10 @@ import Arkham.Classes
 import Arkham.Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
@@ -46,8 +44,8 @@ instance RunMessage TheHangedManXII where
           $ [Flip lead (toSource attrs) (toTarget location) | location <- flippableLocations]
           <> [ createSpectralWatcher
              , ShuffleCardsIntoDeck
-                (EncounterDeckByKey SpectralEncounterDeck)
-                (watchersGrasps <> map EncounterCard spectralDiscards)
+                 (EncounterDeckByKey SpectralEncounterDeck)
+                 (watchersGrasps <> map EncounterCard spectralDiscards)
              , advanceAgendaDeck attrs
              ]
         pure a

@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EnchantedBladeGuardian3 (enchantedBladeGuardian3, EnchantedBladeGuardian3 (..)) where
+module Arkham.Asset.Assets.EnchantedBladeGuardian3 (enchantedBladeGuardian3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Metadata = Metadata {empowered :: Maybe SkillTestId}
@@ -19,7 +20,7 @@ enchantedBladeGuardian3 = asset (EnchantedBladeGuardian3 . (`with` Metadata Noth
 
 instance HasAbilities EnchantedBladeGuardian3 where
   getAbilities (EnchantedBladeGuardian3 (attrs `With` _)) =
-    [restrictedAbility attrs 1 ControlsThis fightAction_]
+    [restricted attrs 1 ControlsThis fightAction_]
 
 instance RunMessage EnchantedBladeGuardian3 where
   runMessage msg a@(EnchantedBladeGuardian3 (attrs `With` meta)) = case msg of

@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.OldBookOfLore3 (OldBookOfLore3 (..), oldBookOfLore3) where
+module Arkham.Asset.Assets.OldBookOfLore3 (oldBookOfLore3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,7 +6,9 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Deck qualified as Deck
-import Arkham.Game.Helpers hiding (reduceCostOf)
+import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
+import Arkham.Helpers.Playable (getIsPlayableWithResources)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

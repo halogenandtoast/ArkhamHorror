@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.HiddenLibrary (hiddenLibrary, HiddenLibrary (..)) where
+module Arkham.Location.Cards.HiddenLibrary (hiddenLibrary) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Trait

@@ -1,16 +1,12 @@
-module Arkham.Enemy.Cards.KamanThah (
-  kamanThah,
-  KamanThah (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.KamanThah (kamanThah) where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
 
 newtype KamanThah = KamanThah EnemyAttrs
@@ -38,8 +34,8 @@ instance RunMessage KamanThah where
         $ chooseOne
           player
           [ SkillLabel
-            sType
-            [parley sid iid (toAbilitySource attrs 1) iid sType (Fixed $ 2 + n)]
+              sType
+              [parley sid iid (toAbilitySource attrs 1) iid sType (Fixed $ 2 + n)]
           | sType <- [#willpower, #intellect]
           ]
       pure e

@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.JourneyAcrossTheDreamlands (JourneyAcrossTheDreamlands (..), journeyAcrossTheDreamlands) where
+module Arkham.Agenda.Cards.JourneyAcrossTheDreamlands (journeyAcrossTheDreamlands) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -8,6 +8,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait (Trait (Port))

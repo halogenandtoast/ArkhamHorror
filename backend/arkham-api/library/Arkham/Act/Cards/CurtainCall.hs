@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.CurtainCall (
-  CurtainCall (..),
-  curtainCall,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.CurtainCall (curtainCall) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -11,8 +6,10 @@ import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Timing qualified as Timing
 
@@ -42,8 +39,8 @@ instance HasAbilities CurtainCall where
         $ RoundEnds Timing.When
     ]
       <> [ restrictedAbility attrs 3 AllUndefeatedInvestigatorsResigned
-          $ Objective
-          $ ForcedAbility AnyWindow
+             $ Objective
+             $ ForcedAbility AnyWindow
          | onSide A attrs
          ]
 

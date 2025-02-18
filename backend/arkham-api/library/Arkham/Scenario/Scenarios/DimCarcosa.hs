@@ -7,18 +7,20 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.Log hiding (recordSetInsert)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.DimCarcosa.Helpers

@@ -2,7 +2,7 @@ module Arkham.Location.Cards.OnyxGates (onyxGates) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheDreamEaters.Key
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

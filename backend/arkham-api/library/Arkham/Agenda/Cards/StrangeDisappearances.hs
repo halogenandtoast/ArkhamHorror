@@ -1,10 +1,12 @@
-module Arkham.Agenda.Cards.StrangeDisappearances (StrangeDisappearances (..), strangeDisappearances) where
+module Arkham.Agenda.Cards.StrangeDisappearances (strangeDisappearances) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Choose
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 

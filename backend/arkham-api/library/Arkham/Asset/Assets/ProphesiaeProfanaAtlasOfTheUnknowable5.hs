@@ -12,6 +12,7 @@ import Arkham.History
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Taboo
+import Arkham.UI
 
 newtype ProphesiaeProfanaAtlasOfTheUnknowable5 = ProphesiaeProfanaAtlasOfTheUnknowable5 AssetAttrs
   deriving anyclass IsAsset

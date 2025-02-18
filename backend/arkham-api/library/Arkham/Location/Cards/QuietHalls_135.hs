@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.QuietHalls_135 (
-  quietHalls_135,
-  QuietHalls_135 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.QuietHalls_135 (quietHalls_135) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype QuietHalls_135 = QuietHalls_135 LocationAttrs

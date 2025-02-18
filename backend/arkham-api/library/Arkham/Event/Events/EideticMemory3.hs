@@ -1,4 +1,4 @@
-module Arkham.Event.Events.EideticMemory3 (eideticMemory3, eideticMemory3Effect, EideticMemory3 (..)) where
+module Arkham.Event.Events.EideticMemory3 (eideticMemory3, eideticMemory3Effect) where
 
 import Arkham.Capability
 import Arkham.Card
@@ -7,7 +7,8 @@ import Arkham.Cost
 import Arkham.Effect.Runner
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Matcher qualified as Matcher

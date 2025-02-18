@@ -1,10 +1,13 @@
-module Arkham.Act.Cards.AlejandrosPlight (AlejandrosPlight (..), alejandrosPlight) where
+module Arkham.Act.Cards.AlejandrosPlight (alejandrosPlight) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers

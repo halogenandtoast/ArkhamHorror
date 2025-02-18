@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.GrandChamber (
-  grandChamber,
-  GrandChamber (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.GrandChamber (grandChamber) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype GrandChamber = GrandChamber LocationAttrs

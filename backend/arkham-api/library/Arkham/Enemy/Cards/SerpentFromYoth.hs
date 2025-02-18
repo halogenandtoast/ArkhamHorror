@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.SerpentFromYoth (serpentFromYoth, SerpentFromYoth (..)) where
+module Arkham.Enemy.Cards.SerpentFromYoth (serpentFromYoth) where
 
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Prelude

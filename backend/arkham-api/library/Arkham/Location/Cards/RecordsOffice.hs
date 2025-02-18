@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.RecordsOffice (recordsOffice, RecordsOffice (..)) where
+module Arkham.Location.Cards.RecordsOffice (recordsOffice) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers (getActions)
 import Arkham.GameValue
+import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

@@ -1,7 +1,6 @@
-module Arkham.Agenda.Cards.TorturousDescent (TorturousDescent (..), torturousDescent) where
+module Arkham.Agenda.Cards.TorturousDescent (torturousDescent) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Campaigns.ThePathToCarcosa.Helpers
 import Arkham.Card
@@ -10,6 +9,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
 import Arkham.Helpers.Choose
+import Arkham.Helpers.Query
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 

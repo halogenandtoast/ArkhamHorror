@@ -1,13 +1,8 @@
-module Arkham.Location.Cards.OfficeMurderAtTheExcelsiorHotel (
-  officeMurderAtTheExcelsiorHotel,
-  OfficeMurderAtTheExcelsiorHotel (..),
-)
-where
+module Arkham.Location.Cards.OfficeMurderAtTheExcelsiorHotel (officeMurderAtTheExcelsiorHotel) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards

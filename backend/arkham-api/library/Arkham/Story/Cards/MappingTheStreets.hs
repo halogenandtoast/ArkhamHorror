@@ -1,7 +1,7 @@
 module Arkham.Story.Cards.MappingTheStreets (MappingTheStreets (..), mappingTheStreets) where
 
 import Arkham.DamageEffect
-import Arkham.Game.Helpers
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

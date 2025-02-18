@@ -1,10 +1,12 @@
-module Arkham.Act.Cards.NoAsylum (NoAsylum (..), noAsylum) where
+module Arkham.Act.Cards.NoAsylum (noAsylum) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Action qualified as Action
 import Arkham.Classes
+import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
@@ -24,13 +26,13 @@ instance HasAbilities NoAsylum where
     withBaseAbilities x
       $ guard (onSide A x)
       *> [ restricted
-            (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
-            99
-            (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
-            (ActionAbility [Action.Resign] $ ActionCost 1)
+             (proxied (LocationMatcherSource $ locationIs Locations.garden) x)
+             99
+             (Here <> not_ (exists $ ReadyEnemy <> EnemyAt YourLocation))
+             (ActionAbility [Action.Resign] $ ActionCost 1)
          , restricted x 1 AllUndefeatedInvestigatorsResigned
-            $ Objective
-            $ ForcedAbility AnyWindow
+             $ Objective
+             $ ForcedAbility AnyWindow
          ]
 
 instance HasModifiersFor NoAsylum where

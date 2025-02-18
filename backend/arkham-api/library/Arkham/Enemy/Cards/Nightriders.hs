@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.Nightriders (nightriders, Nightriders (..)) where
+module Arkham.Enemy.Cards.Nightriders (nightriders) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Modifier qualified as Mod
 import Arkham.Prelude

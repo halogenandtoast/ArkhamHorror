@@ -10,6 +10,7 @@ import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (CanAdvance (..))
@@ -17,7 +18,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (recordSetInsert)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BlackStarsRise.Story
 import Arkham.SkillTest

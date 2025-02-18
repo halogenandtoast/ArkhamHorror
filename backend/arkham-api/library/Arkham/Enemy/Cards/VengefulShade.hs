@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.VengefulShade (vengefulShade, VengefulShade (..)) where
+module Arkham.Enemy.Cards.VengefulShade (vengefulShade) where
 
 import Arkham.Attack
 import Arkham.Classes
@@ -7,6 +7,7 @@ import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 

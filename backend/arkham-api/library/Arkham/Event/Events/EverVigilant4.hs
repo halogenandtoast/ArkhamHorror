@@ -4,8 +4,9 @@ import Arkham.Card
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getAsIfInHandCards, getIsPlayable)
+import Arkham.Helpers.Investigator (getAsIfInHandCards)
 import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers, withModifiers)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection

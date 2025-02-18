@@ -1,18 +1,14 @@
-module Arkham.Agenda.Cards.TheTruthIsHidden (
-  TheTruthIsHidden (..),
-  theTruthIsHidden,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheTruthIsHidden (theTruthIsHidden) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Phase
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

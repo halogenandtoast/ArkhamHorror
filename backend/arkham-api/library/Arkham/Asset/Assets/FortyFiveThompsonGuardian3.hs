@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.FortyFiveThompsonGuardian3 (
-  fortyFiveThompsonGuardian3,
-  FortyFiveThompsonGuardian3 (..),
-) where
+module Arkham.Asset.Assets.FortyFiveThompsonGuardian3 (fortyFiveThompsonGuardian3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype FortyFiveThompsonGuardian3 = FortyFiveThompsonGuardian3 AssetAttrs

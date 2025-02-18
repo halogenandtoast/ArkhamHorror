@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.MasterBedroom (
-  masterBedroom,
-  MasterBedroom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.MasterBedroom (masterBedroom) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (SilverTwilight))
 

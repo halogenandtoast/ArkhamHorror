@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheDunwichLegacy where
+module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
@@ -7,8 +7,9 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
-import Arkham.Game.Helpers
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -152,7 +153,10 @@ instance RunMessage TheDunwichLegacy where
         TakePowderOfIbnGhazi -> when (c.attrs.step == UndimensionedAndUnseen) do
           forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.powderOfIbnGhazi
         TakeTheNecronomicon -> unlessHasRecord TheNecronomiconWasStolen do
-          forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.theNecronomiconOlausWormiusTranslation
+          forceAddCampaignCardToDeckChoice
+            investigators
+            ShuffleIn
+            Assets.theNecronomiconOlausWormiusTranslation
         AddAcrossTimeAndSpace -> do
           acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
           lead <- getActiveInvestigatorId

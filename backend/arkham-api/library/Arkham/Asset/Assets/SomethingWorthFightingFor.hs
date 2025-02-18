@@ -1,10 +1,8 @@
-module Arkham.Asset.Assets.SomethingWorthFightingFor (
-  somethingWorthFightingFor,
-  SomethingWorthFightingFor (..),
-) where
+module Arkham.Asset.Assets.SomethingWorthFightingFor (somethingWorthFightingFor) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

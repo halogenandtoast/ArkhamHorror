@@ -1,15 +1,11 @@
-module Arkham.Enemy.Cards.LodgeEnforcer (
-  lodgeEnforcer,
-  LodgeEnforcer (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.LodgeEnforcer (lodgeEnforcer) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype LodgeEnforcer = LodgeEnforcer EnemyAttrs
   deriving anyclass IsEnemy

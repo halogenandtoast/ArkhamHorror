@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.DreamsOfRlyeh (DreamsOfRlyeh (..), dreamsOfRlyeh) where
+module Arkham.Treachery.Cards.DreamsOfRlyeh (dreamsOfRlyeh) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Helpers

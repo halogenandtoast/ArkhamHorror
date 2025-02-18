@@ -1,6 +1,5 @@
 module Arkham.Location.Cards.HistoricalSocietyPeabodysOffice (
   historicalSocietyPeabodysOffice,
-  HistoricalSocietyPeabodysOffice (..),
 ) where
 
 import Arkham.Ability
@@ -9,7 +8,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg
 

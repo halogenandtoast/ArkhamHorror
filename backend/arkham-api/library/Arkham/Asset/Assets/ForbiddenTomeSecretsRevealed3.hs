@@ -1,18 +1,16 @@
-module Arkham.Asset.Assets.ForbiddenTomeSecretsRevealed3 (
-  forbiddenTomeSecretsRevealed3,
-  ForbiddenTomeSecretsRevealed3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ForbiddenTomeSecretsRevealed3 (forbiddenTomeSecretsRevealed3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Discover
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype ForbiddenTomeSecretsRevealed3 = ForbiddenTomeSecretsRevealed3 AssetAttrs
   deriving anyclass IsAsset
@@ -22,19 +20,15 @@ forbiddenTomeSecretsRevealed3 :: AssetCard ForbiddenTomeSecretsRevealed3
 forbiddenTomeSecretsRevealed3 = asset ForbiddenTomeSecretsRevealed3 Cards.forbiddenTomeSecretsRevealed3
 
 instance HasModifiersFor ForbiddenTomeSecretsRevealed3 where
-  getModifiersFor (ForbiddenTomeSecretsRevealed3 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      selectOne (AbilityIs (toSource a) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab -> do
-          handCount <- getHandCount iid
-          let n = handCount `div` 4
-          modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
+  getModifiersFor (ForbiddenTomeSecretsRevealed3 a) = for_ a.controller \iid -> do
+    selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
+      handCount <- getHandCount iid
+      let n = handCount `div` 4
+      modifiedWhen_ a (n > 0) (AbilityTarget iid ab) [ActionCostModifier (-n)]
 
 instance HasAbilities ForbiddenTomeSecretsRevealed3 where
   getAbilities (ForbiddenTomeSecretsRevealed3 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (exists $ oneOf [AccessibleLocation, YourLocation <> LocationWithAnyClues])

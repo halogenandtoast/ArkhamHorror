@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.ChoeurGothique_292 (
-  choeurGothique_292,
-  ChoeurGothique_292 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ChoeurGothique_292 (choeurGothique_292) where
 
 import Arkham.Ability
 import Arkham.Agenda.Sequence (AgendaSide (A))
@@ -11,9 +6,9 @@ import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype ChoeurGothique_292 = ChoeurGothique_292 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

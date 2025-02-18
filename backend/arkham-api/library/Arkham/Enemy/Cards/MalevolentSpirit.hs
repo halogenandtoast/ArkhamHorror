@@ -1,16 +1,14 @@
-module Arkham.Enemy.Cards.MalevolentSpirit (
-  malevolentSpirit,
-  MalevolentSpirit (..),
-)
+module Arkham.Enemy.Cards.MalevolentSpirit (malevolentSpirit)
 where
-
-import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword (Keyword (Hunter))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Relic, Spectral, Spell))
 

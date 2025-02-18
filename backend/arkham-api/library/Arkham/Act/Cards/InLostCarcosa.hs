@@ -1,16 +1,13 @@
-module Arkham.Act.Cards.InLostCarcosa (
-  InLostCarcosa (..),
-  inLostCarcosa,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.InLostCarcosa (inLostCarcosa) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype InLostCarcosa = InLostCarcosa ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,10 +21,10 @@ instance HasAbilities InLostCarcosa where
     withBaseAbilities
       x
       [ mkAbility x 1
-        $ Objective
-        $ ForcedAbilityWithCost
-          AnyWindow
-          (GroupClueCost (PerPlayer 2) Anywhere)
+          $ Objective
+          $ ForcedAbilityWithCost
+            AnyWindow
+            (GroupClueCost (PerPlayer 2) Anywhere)
       | onSide A x
       ]
 

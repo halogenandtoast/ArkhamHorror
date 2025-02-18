@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.VipArea (vipArea, VipArea (..)) where
+module Arkham.Location.Cards.VipArea (vipArea) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (vipArea)
 import Arkham.Location.Runner
 import Arkham.Matcher

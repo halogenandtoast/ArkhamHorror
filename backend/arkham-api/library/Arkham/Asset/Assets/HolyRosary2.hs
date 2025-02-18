@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.HolyRosary2 (holyRosary2, HolyRosary2 (..)) where
+module Arkham.Asset.Assets.HolyRosary2 (holyRosary2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -20,8 +21,8 @@ instance HasModifiersFor HolyRosary2 where
 
 instance HasAbilities HolyRosary2 where
   getAbilities (HolyRosary2 x) =
-    [ controlledAbility x 1 HasRemainingBlessTokens
-        $ ReactionAbility
+    [ controlled x 1 HasRemainingBlessTokens
+        $ triggered
           ( SkillTestResult
               #after
               You

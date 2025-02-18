@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.TrainTracks (trainTracks, TrainTracks (..)) where
+module Arkham.Location.Cards.TrainTracks (trainTracks) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.JessicaHyde1 (jessicaHyde1, JessicaHyde1 (..)) where
+module Arkham.Asset.Assets.JessicaHyde1 (jessicaHyde1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -19,7 +20,7 @@ instance HasModifiersFor JessicaHyde1 where
 
 instance HasAbilities JessicaHyde1 where
   getAbilities (JessicaHyde1 x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         (exists $ HealableAsset (toSource x) #damage $ AssetWithId (toId x))

@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.Yaotl1 (yaotl1, Yaotl1 (..), yaotl1Effect, Yaotl1Effect (..)) where
+module Arkham.Asset.Assets.Yaotl1 (yaotl1, yaotl1Effect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

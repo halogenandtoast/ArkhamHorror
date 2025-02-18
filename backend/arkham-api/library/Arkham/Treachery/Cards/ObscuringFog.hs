@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.ObscuringFog where
+module Arkham.Treachery.Cards.ObscuringFog (obscuringFog) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

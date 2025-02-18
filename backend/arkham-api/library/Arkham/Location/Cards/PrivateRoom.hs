@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.PrivateRoom (privateRoom, PrivateRoom (..)) where
+module Arkham.Location.Cards.PrivateRoom (privateRoom) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

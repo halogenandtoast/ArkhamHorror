@@ -1,20 +1,17 @@
 module Arkham.Location.Cards.WitchHauntedWoodsChildsTreeHouse (
   witchHauntedWoodsChildsTreeHouse,
-  WitchHauntedWoodsChildsTreeHouse (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype WitchHauntedWoodsChildsTreeHouse = WitchHauntedWoodsChildsTreeHouse LocationAttrs

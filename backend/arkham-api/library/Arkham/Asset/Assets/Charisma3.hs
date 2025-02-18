@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.Charisma3 (
-  charisma3,
-  Charisma3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Charisma3 (charisma3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Prelude
+import Arkham.Slot
 
 newtype Charisma3 = Charisma3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

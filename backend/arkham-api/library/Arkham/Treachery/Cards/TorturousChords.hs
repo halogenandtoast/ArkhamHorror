@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.TorturousChords (torturousChords, TorturousChords (..)) where
+module Arkham.Treachery.Cards.TorturousChords (torturousChords) where
 
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher (CardMatcher (AnyCard))
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards

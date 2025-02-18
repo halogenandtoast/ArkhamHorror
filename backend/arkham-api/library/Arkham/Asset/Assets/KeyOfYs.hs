@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.KeyOfYs (keyOfYs, KeyOfYs (..)) where
+module Arkham.Asset.Assets.KeyOfYs (keyOfYs) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -18,8 +19,8 @@ instance HasModifiersFor KeyOfYs where
 
 instance HasAbilities KeyOfYs where
   getAbilities (KeyOfYs x) =
-    [ restrictedAbility x 1 ControlsThis $ forced $ PlacedCounter #when You AnySource #horror (atLeast 1)
-    , restrictedAbility x 2 ControlsThis $ forced $ AssetLeavesPlay #when (be x)
+    [ restricted x 1 ControlsThis $ forced $ PlacedCounter #when You AnySource #horror (atLeast 1)
+    , restricted x 2 ControlsThis $ forced $ AssetLeavesPlay #when (be x)
     ]
 
 instance RunMessage KeyOfYs where

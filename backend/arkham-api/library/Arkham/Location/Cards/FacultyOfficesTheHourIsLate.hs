@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.FacultyOfficesTheHourIsLate where
+module Arkham.Location.Cards.FacultyOfficesTheHourIsLate (facultyOfficesTheHourIsLate) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (facultyOfficesTheHourIsLate)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate LocationAttrs

@@ -13,13 +13,14 @@ import Arkham.Cost.FieldCost
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Action (additionalActionCovers)
+import Arkham.Helpers.ChaosToken (matchChaosToken)
 import {-# SOURCE #-} Arkham.Helpers.Calculation
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card (extendedCardMatch, getModifiedCardCost)
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
-import Arkham.Helpers.Investigator (additionalActionCovers)
-import Arkham.Helpers.Matchers
+import {-# SOURCE #-} Arkham.Helpers.Investigator ()
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
@@ -105,8 +106,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                <> Matcher.InvestigatorAt Matcher.Anywhere
-                <> Matcher.InvestigatorWithAnyClues
+                 <> Matcher.InvestigatorAt Matcher.Anywhere
+                 <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -118,8 +119,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                <> Matcher.InvestigatorAt Matcher.Anywhere
-                <> Matcher.InvestigatorWithAnyClues
+                 <> Matcher.InvestigatorAt Matcher.Anywhere
+                 <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -240,7 +241,6 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     events <- select eventMatcher
     uses <- sum <$> traverse (fieldMap EventUses (findWithDefault 0 uType)) events
     pure $ uses >= n
-
   AllUsesCost {} -> pure True
   DynamicUseCost assetMatcher uType useCost -> do
     assets <- select assetMatcher
@@ -459,7 +459,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   SupplyCost locationMatcher supply ->
     iid
       <=~> ( Matcher.InvestigatorWithSupply supply
-              <> Matcher.InvestigatorAt locationMatcher
+               <> Matcher.InvestigatorAt locationMatcher
            )
   ResolveEachHauntedAbility _ -> pure True
 
@@ -474,42 +474,6 @@ getSpendableResources iid = do
         AssetResources
         (Matcher.assetIs Assets.familyInheritance)
   fieldMap InvestigatorResources (+ (familyInheritanceResources + extraResources)) iid
-
-getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
-getModifiedCardCost iid c@(PlayerCard _) = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
-  cardModifiers <- getModifiers (CardIdTarget $ toCardId c)
-  startingCost <- getStartingCost
-  foldM applyModifier startingCost (modifiers <> cardModifiers)
- where
-  pcDef = toCardDef c
-  getStartingCost = case cdCost pcDef of
-    Just (StaticCost n) -> pure n
-    Just DynamicCost -> pure 0
-    Just (MaxDynamicCost _) -> pure 0
-    Just DiscardAmountCost -> fieldMap InvestigatorDiscard (count ((== toCardCode c) . toCardCode)) iid
-    Nothing -> pure 0
-  -- A card like The Painted World which has no cost, but can be "played", should not have it's cost modified
-  applyModifier n _ | isNothing (cdCost pcDef) = pure n
-  applyModifier n (ReduceCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
-  applyModifier n (IncreaseCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then n + m else n
-  applyModifier n _ = pure n
-getModifiedCardCost iid c@(EncounterCard _) = do
-  modifiers <- getModifiers (InvestigatorTarget iid)
-  foldM
-    applyModifier
-    (error "we need so specify ecCost for this to work")
-    modifiers
- where
-  applyModifier n (ReduceCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
-  applyModifier n (IncreaseCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then n + m else n
-  applyModifier n _ = pure n
-getModifiedCardCost _ (VengeanceCard _) =
-  error "should not happen for vengeance"
 
 getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =

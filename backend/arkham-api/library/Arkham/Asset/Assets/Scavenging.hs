@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Scavenging (Scavenging (..), scavenging) where
+module Arkham.Asset.Assets.Scavenging (scavenging) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Matcher
+import Arkham.Modifier
 import Arkham.Prelude
 
 newtype Scavenging = Scavenging AssetAttrs

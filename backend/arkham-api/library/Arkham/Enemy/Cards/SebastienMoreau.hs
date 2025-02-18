@@ -1,13 +1,10 @@
-module Arkham.Enemy.Cards.SebastienMoreau (
-  sebastienMoreau,
-  SebastienMoreau (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SebastienMoreau (sebastienMoreau) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Prelude
 
 newtype SebastienMoreau = SebastienMoreau EnemyAttrs
   deriving anyclass IsEnemy

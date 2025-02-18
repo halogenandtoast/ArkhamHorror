@@ -1,6 +1,8 @@
-module Arkham.Location.Cards.TidalPool (tidalPool, TidalPool (..)) where
+module Arkham.Location.Cards.TidalPool (tidalPool) where
 
 import Arkham.Ability
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Scenario
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel

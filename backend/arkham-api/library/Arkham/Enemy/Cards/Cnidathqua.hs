@@ -1,9 +1,4 @@
-module Arkham.Enemy.Cards.Cnidathqua (
-  cnidathqua,
-  Cnidathqua (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.Cnidathqua (cnidathqua) where
 
 import Arkham.Ability
 import Arkham.Card
@@ -11,7 +6,9 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype Cnidathqua = Cnidathqua EnemyAttrs

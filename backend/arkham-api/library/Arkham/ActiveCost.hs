@@ -31,18 +31,26 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.Game (withoutCanModifiers)
-import Arkham.Game.Helpers
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.GameValue
 import Arkham.Helpers
+import Arkham.Helpers.Ability
 import Arkham.Helpers.Calculation
-import Arkham.Helpers.Card (extendedCardMatch)
+import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.ChaosToken
+import Arkham.Helpers.Cost
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Effect (createCardEffect)
+import Arkham.Helpers.Game
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Message
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Ref
+import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest (beginSkillTest, getSkillTestDifficulty, getSkillTestTarget)
+import Arkham.Helpers.Target
+import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
@@ -832,7 +840,9 @@ payCost msg c iid skipAdditionalCosts cost = do
         uses <- fieldMap AssetUses (findWithDefault 0 uType) aid
         pure (aid, uses)
       push
-        $ chooseOrRunOne player [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | (aid, n) <- assetsWithUses]
+        $ chooseOrRunOne
+          player
+          [targetLabel aid [SpendUses source (AssetTarget aid) uType n] | (aid, n) <- assetsWithUses]
       pure c
     EventUseCost eventMatcher uType n -> do
       events <- select eventMatcher

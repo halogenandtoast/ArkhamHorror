@@ -1,16 +1,13 @@
-module Arkham.Asset.Assets.GreteWagner (
-  greteWagner,
-  GreteWagner (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.GreteWagner (greteWagner) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Discover
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 
 newtype GreteWagner = GreteWagner AssetAttrs
   deriving anyclass IsAsset
@@ -24,11 +21,11 @@ instance HasModifiersFor GreteWagner where
 
 instance HasAbilities GreteWagner where
   getAbilities (GreteWagner a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (ClueOnLocation <> exists (You <> InvestigatorCanDiscoverCluesAt YourLocation))
-        $ ReactionAbility
+        $ triggered
           (EnemyDefeated #after You ByAny AnyEnemy)
           (exhaust a <> DamageCost (toSource a) (toTarget a) 1)
     ]

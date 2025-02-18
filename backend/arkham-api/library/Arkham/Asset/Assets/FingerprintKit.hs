@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.FingerprintKit (
-  fingerprintKit,
-  FingerprintKit (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.FingerprintKit (fingerprintKit) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
+import Arkham.Prelude
 
 newtype FingerprintKit = FingerprintKit AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

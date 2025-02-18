@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.VelmasDiner (velmasDiner, VelmasDiner (..)) where
+module Arkham.Location.Cards.VelmasDiner (velmasDiner) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

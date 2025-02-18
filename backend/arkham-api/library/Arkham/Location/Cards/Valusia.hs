@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.Valusia (
-  valusia,
-  Valusia (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Valusia (valusia) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (DiscoverClues)
+import Arkham.Prelude
 
 newtype Valusia = Valusia LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

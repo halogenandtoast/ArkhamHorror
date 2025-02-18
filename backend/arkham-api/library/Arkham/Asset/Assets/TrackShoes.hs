@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.TrackShoes (trackShoes) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -1,13 +1,13 @@
-module Arkham.Location.Cards.BoneFilledCaverns (boneFilledCaverns, BoneFilledCaverns (..)) where
+module Arkham.Location.Cards.BoneFilledCaverns (boneFilledCaverns) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigate ()
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck

@@ -1,15 +1,11 @@
-module Arkham.Story.Cards.TheFall (
-  TheFall (..),
-  theFall,
-) where
-
-import Arkham.Prelude
+module Arkham.Story.Cards.TheFall (theFall) where
 
 import Arkham.DamageEffect
-import Arkham.Game.Helpers
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Story.Cards qualified as Cards
 import Arkham.Story.Runner
 

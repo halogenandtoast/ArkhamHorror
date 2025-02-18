@@ -1,12 +1,12 @@
-module Arkham.Asset.Assets.SergeantMonroe (sergeantMonroe, SergeantMonroe (..)) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SergeantMonroe (sergeantMonroe) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Innocent))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
@@ -19,23 +19,19 @@ sergeantMonroe :: AssetCard SergeantMonroe
 sergeantMonroe = ally SergeantMonroe Cards.sergeantMonroe (3, 3)
 
 instance HasModifiersFor SergeantMonroe where
-  getModifiersFor (SergeantMonroe a) = case a.controller of
-    Just controller ->
-      modifySelect
-        a
-        (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a))
-        [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
-    _ -> pure mempty
+  getModifiersFor (SergeantMonroe a) = for_ a.controller \controller -> do
+    modifySelect
+      a
+      (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a))
+      [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 instance HasAbilities SergeantMonroe where
   getAbilities (SergeantMonroe attrs) =
-    [ restrictedAbility
+    [ restricted
         attrs
         1
         (OnSameLocation <> exists (EnemyAt YourLocation <> EnemyWithoutTrait Innocent))
-        $ ReactionAbility
-          (AssetDealtDamageOrHorror #when AnySource $ AssetWithId $ toId attrs)
-          (exhaust attrs)
+        $ triggered (AssetDealtDamageOrHorror #when AnySource (be attrs)) (exhaust attrs)
     ]
 
 getDamage :: [Window] -> Int

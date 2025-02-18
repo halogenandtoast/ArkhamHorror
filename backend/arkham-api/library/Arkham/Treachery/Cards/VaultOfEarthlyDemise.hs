@@ -1,10 +1,11 @@
-module Arkham.Treachery.Cards.VaultOfEarthlyDemise where
+module Arkham.Treachery.Cards.VaultOfEarthlyDemise (vaultOfEarthlyDemise) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (EnemyFight, HealthModifier), modified_)
+import Arkham.Helpers.GameValue (getPlayerCountValue)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

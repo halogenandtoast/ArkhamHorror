@@ -14,7 +14,9 @@ import Arkham.Helpers.Act
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Log
+import Arkham.Helpers.Modifiers hiding (setupModifier)
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (LocationName))
 import Arkham.Matcher
@@ -26,7 +28,6 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (checkWhen, setupModifier)
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenarios.TheBoundaryBeyond.Helpers
 import Arkham.Scenarios.TheBoundaryBeyond.Story

@@ -6,10 +6,10 @@ where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (skillTestMatches)
 import {-# SOURCE #-} Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.EncounterCard
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsMaybe)
+import Arkham.Helpers.SkillTest (skillTestMatches)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Matcher
 

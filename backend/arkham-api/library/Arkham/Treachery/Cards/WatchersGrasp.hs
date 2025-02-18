@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.WatchersGrasp (watchersGrasp, WatchersGrasp (..)) where
+module Arkham.Treachery.Cards.WatchersGrasp (watchersGrasp) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted

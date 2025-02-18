@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.DimStreetsTheArchway (dimStreetsTheArchway) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

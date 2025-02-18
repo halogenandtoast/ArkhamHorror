@@ -1,14 +1,11 @@
-module Arkham.Enemy.Cards.StealthyByakhee (
-  stealthyByakhee,
-  StealthyByakhee (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.StealthyByakhee (stealthyByakhee) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Modifier qualified as Modifier
+import Arkham.Prelude
 
 newtype StealthyByakhee = StealthyByakhee EnemyAttrs
   deriving anyclass IsEnemy

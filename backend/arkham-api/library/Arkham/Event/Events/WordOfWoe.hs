@@ -1,10 +1,10 @@
-module Arkham.Event.Events.WordOfWoe (wordOfWoe, WordOfWoe (..)) where
+module Arkham.Event.Events.WordOfWoe (wordOfWoe) where
 
 import Arkham.Ability
 import Arkham.Deck
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getCanPerformAbility)
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
 import Arkham.Modifier

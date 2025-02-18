@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.StoneAltar (
-  stoneAltar,
-  StoneAltar (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.StoneAltar (stoneAltar) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
 

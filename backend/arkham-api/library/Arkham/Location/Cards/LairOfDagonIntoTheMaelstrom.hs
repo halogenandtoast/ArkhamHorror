@@ -2,6 +2,7 @@ module Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom (lairOfDagonIntoTheMael
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
+import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers

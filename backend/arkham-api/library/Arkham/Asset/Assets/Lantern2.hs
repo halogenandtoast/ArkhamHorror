@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Lantern2 (lantern2, Lantern2 (..)) where
+module Arkham.Asset.Assets.Lantern2 (lantern2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

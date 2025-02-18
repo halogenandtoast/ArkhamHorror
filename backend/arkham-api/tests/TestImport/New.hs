@@ -2,12 +2,12 @@
 
 module TestImport.New (module TestImport.New, module X) where
 
+import Arkham.Helpers.Modifiers as X
 import TestImport.Lifted as X hiding (
   addToHand,
   drawCards,
   duringTurn,
   evadedBy,
-  evadedEnemy,
   exhaust,
   fightEnemy,
   investigate,
@@ -37,9 +37,11 @@ import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
 import Arkham.Game.Settings
 import Arkham.GameEnv
+import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
+import Arkham.Helpers.Playable
 import Arkham.Helpers.Use (asStartingUses)
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Field
@@ -53,6 +55,7 @@ import Arkham.Projection
 import Arkham.Query
 import Arkham.SkillTest.Runner
 import Arkham.SkillTestResult
+import Arkham.Slot
 import Arkham.Token qualified as Token
 import Arkham.Treachery.Types
 import Arkham.Window (defaultWindows)

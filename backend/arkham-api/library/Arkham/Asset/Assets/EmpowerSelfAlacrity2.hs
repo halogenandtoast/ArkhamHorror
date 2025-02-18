@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EmpowerSelfAlacrity2 (empowerSelfAlacrity2, EmpowerSelfAlacrity2 (..)) where
+module Arkham.Asset.Assets.EmpowerSelfAlacrity2 (empowerSelfAlacrity2) where
 
 import Arkham.Ability
 import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -12,15 +13,12 @@ newtype EmpowerSelfAlacrity2 = EmpowerSelfAlacrity2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 empowerSelfAlacrity2 :: AssetCard EmpowerSelfAlacrity2
-empowerSelfAlacrity2 =
-  asset EmpowerSelfAlacrity2 Cards.empowerSelfAlacrity2
+empowerSelfAlacrity2 = asset EmpowerSelfAlacrity2 Cards.empowerSelfAlacrity2
 
 instance HasModifiersFor EmpowerSelfAlacrity2 where
   getModifiersFor (EmpowerSelfAlacrity2 a) = do
-    controller <-
-      controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
-    self <- modifySelf a [SharesSlotWith 3 "Empower Self"]
-    pure $ controller <> self
+    controllerGets a [CanIgnoreAspect $ AspectIs $ InsteadOfAspect $ #willpower `InsteadOf` #agility]
+    modifySelf a [SharesSlotWith 3 "Empower Self"]
 
 instance HasAbilities EmpowerSelfAlacrity2 where
   getAbilities (EmpowerSelfAlacrity2 a) =

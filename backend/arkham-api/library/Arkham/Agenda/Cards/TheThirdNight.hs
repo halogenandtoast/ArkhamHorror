@@ -1,16 +1,12 @@
-module Arkham.Agenda.Cards.TheThirdNight (
-  TheThirdNight (..),
-  theThirdNight,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheThirdNight (theThirdNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 

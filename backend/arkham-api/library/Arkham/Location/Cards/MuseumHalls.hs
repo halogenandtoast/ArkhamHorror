@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.MuseumHalls (museumHalls, MuseumHalls (..)) where
+module Arkham.Location.Cards.MuseumHalls (museumHalls) where
 
 import Arkham.Ability
 import Arkham.Draw.Types
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (museumHalls)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck

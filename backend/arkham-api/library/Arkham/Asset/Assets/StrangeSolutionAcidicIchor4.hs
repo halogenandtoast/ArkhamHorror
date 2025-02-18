@@ -1,13 +1,11 @@
-module Arkham.Asset.Assets.StrangeSolutionAcidicIchor4 (
-  strangeSolutionAcidicIchor4,
-  StrangeSolutionAcidicIchor4 (..),
-) where
+module Arkham.Asset.Assets.StrangeSolutionAcidicIchor4 (strangeSolutionAcidicIchor4) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Taboo

@@ -1,8 +1,10 @@
-module Arkham.Enemy.Cards.PitchSpider (pitchSpider, PitchSpider (..)) where
+module Arkham.Enemy.Cards.PitchSpider (pitchSpider) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Log
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.ScenarioLogKey

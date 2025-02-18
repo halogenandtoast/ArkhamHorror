@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot (AtTheExhibitTheBrotherhoodsPlot (..), atTheExhibitTheBrotherhoodsPlot) where
+module Arkham.Act.Cards.AtTheExhibitTheBrotherhoodsPlot (atTheExhibitTheBrotherhoodsPlot) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude
@@ -47,12 +48,12 @@ instance RunMessage AtTheExhibitTheBrotherhoodsPlot where
       pushAll
         $ map ((`HealAllDamage` toSource attrs) . toTarget) brotherhoodCultists
         <> [ chooseOrRunOne
-              lead
-              [ targetLabel cultist
-                $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
-                : [PlaceDoom (toSource attrs) (toTarget cultist) 1 | deckCount <= 2]
-              | cultist <- farthestBrotherhoodCultists
-              ]
+               lead
+               [ targetLabel cultist
+                   $ CreateAssetAt assetId relicOfAges (AttachedToEnemy cultist)
+                   : [PlaceDoom (toSource attrs) (toTarget cultist) 1 | deckCount <= 2]
+               | cultist <- farthestBrotherhoodCultists
+               ]
            ]
       pure a
     FoundEncounterCard _ target card | isTarget attrs target -> do

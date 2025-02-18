@@ -1,16 +1,12 @@
-module Arkham.Agenda.Cards.ACreatureOfTheBayou (
-  ACreatureOfTheBayou (..),
-  aCreatureOfTheBayou,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.ACreatureOfTheBayou (aCreatureOfTheBayou) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Types (Field (..))
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenarios.CurseOfTheRougarou.Helpers
 
@@ -25,15 +21,13 @@ aCreatureOfTheBayou =
 instance RunMessage ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
-      mrougarou <- getTheRougarou
-      case mrougarou of
-        Nothing ->
-          a
-            <$ pushAll
-              [ ShuffleEncounterDiscardBackIn
-              , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-              , placeDoomOnAgenda
-              ]
+      getTheRougarou >>= \case
+        Nothing -> do
+          pushAll
+            [ ShuffleEncounterDiscardBackIn
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+            , placeDoomOnAgenda
+            ]
         Just eid -> do
           lead <- getLeadPlayer
           targets <- nonBayouLocations
@@ -56,10 +50,10 @@ instance RunMessage ACreatureOfTheBayou where
                         [ targetLabel x [MoveUntil x (EnemyTarget eid)]
                         | (x, _) <- xs
                         ]
-          a
-            <$ pushAll
-              [ ShuffleEncounterDiscardBackIn
-              , moveMessage
-              , AdvanceAgendaDeck agendaDeckId (toSource attrs)
-              ]
+          pushAll
+            [ ShuffleEncounterDiscardBackIn
+            , moveMessage
+            , AdvanceAgendaDeck agendaDeckId (toSource attrs)
+            ]
+      pure a
     _ -> ACreatureOfTheBayou <$> runMessage msg attrs

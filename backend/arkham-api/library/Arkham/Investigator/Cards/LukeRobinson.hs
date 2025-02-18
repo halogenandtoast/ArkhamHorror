@@ -1,11 +1,11 @@
-module Arkham.Investigator.Cards.LukeRobinson (lukeRobinson, LukeRobinson (..)) where
+module Arkham.Investigator.Cards.LukeRobinson (lukeRobinson) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Cost
-import Arkham.Game.Helpers (canDo, getActions, getIsPlayable, getPlayableCards)
+import Arkham.Helpers.Action (canDo, getActions)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   getModifiers,
@@ -13,6 +13,7 @@ import Arkham.Helpers.Modifiers (
   toModifiers,
   withModifiers,
  )
+import Arkham.Helpers.Playable (getIsPlayable, getPlayableCards)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -81,8 +82,8 @@ instance RunMessage LukeRobinson where
           let
             asIfActions =
               [ targetLabel
-                (toCardId c)
-                [InitiatePlayCard (toId attrs) c Nothing NoPayment (defaultWindows iid) usesAction]
+                  (toCardId c)
+                  [InitiatePlayCard (toId attrs) c Nothing NoPayment (defaultWindows iid) usesAction]
               | c <- concatMap snd lukePlayable
               ]
           LukeRobinson

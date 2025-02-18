@@ -1,15 +1,11 @@
-module Arkham.Enemy.Cards.SuspiciousOrderly (
-  suspiciousOrderly,
-  SuspiciousOrderly (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.SuspiciousOrderly (suspiciousOrderly) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype SuspiciousOrderly = SuspiciousOrderly EnemyAttrs
   deriving anyclass IsEnemy
@@ -26,9 +22,8 @@ suspiciousOrderly =
 
 instance HasModifiersFor SuspiciousOrderly where
   getModifiersFor (SuspiciousOrderly a) = do
-    self <- modifySelf a [CannotAttack, CannotBeDamaged, CannotBeAttacked]
-    investigators <- modifySelect a (investigatorEngagedWith a) [CannotInvestigate]
-    pure $ self <> investigators
+    modifySelf a [CannotAttack, CannotBeDamaged, CannotBeAttacked]
+    modifySelect a (investigatorEngagedWith a) [CannotInvestigate]
 
 instance RunMessage SuspiciousOrderly where
   runMessage msg (SuspiciousOrderly attrs) =

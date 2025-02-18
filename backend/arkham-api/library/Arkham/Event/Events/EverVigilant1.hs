@@ -1,11 +1,11 @@
-module Arkham.Event.Events.EverVigilant1 (everVigilant1, EverVigilant1 (..)) where
+module Arkham.Event.Events.EverVigilant1 (everVigilant1) where
 
 import Arkham.Card
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayable)
 import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers, withModifiers)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Projection

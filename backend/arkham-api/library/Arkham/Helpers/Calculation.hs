@@ -9,7 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Distance
 import {-# SOURCE #-} Arkham.GameEnv (getCard, getDistance)
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.Cost
+import Arkham.Helpers.Card (getModifiedCardCost)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator

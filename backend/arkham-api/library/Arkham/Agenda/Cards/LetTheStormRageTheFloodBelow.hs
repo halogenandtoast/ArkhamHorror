@@ -1,17 +1,15 @@
-module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow (
-  LetTheStormRageTheFloodBelow (..),
-  letTheStormRageTheFloodBelow,
-) where
+module Arkham.Agenda.Cards.LetTheStormRageTheFloodBelow (letTheStormRageTheFloodBelow) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Prelude

@@ -1,11 +1,11 @@
-module Arkham.Asset.Assets.DrElliHorowitz (drElliHorowitz, DrElliHorowitz (..)) where
+module Arkham.Asset.Assets.DrElliHorowitz (drElliHorowitz) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosBag.Base
-import Arkham.Helpers.Matchers
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.Keyword (Sealing (..))

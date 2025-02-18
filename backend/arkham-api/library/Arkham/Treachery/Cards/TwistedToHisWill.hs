@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.TwistedToHisWill (twistedToHisWill, TwistedToHisWill (..)) where
+module Arkham.Treachery.Cards.TwistedToHisWill (twistedToHisWill) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Prelude
+import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 

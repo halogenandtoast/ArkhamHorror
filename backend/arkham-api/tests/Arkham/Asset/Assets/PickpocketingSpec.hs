@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.PickpocketingSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Types
 import TestImport.New

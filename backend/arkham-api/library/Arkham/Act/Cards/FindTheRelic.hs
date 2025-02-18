@@ -1,16 +1,14 @@
-module Arkham.Act.Cards.FindTheRelic (
-  FindTheRelic (..),
-  findTheRelic,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.FindTheRelic (findTheRelic) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype FindTheRelic = FindTheRelic ActAttrs
@@ -27,14 +25,14 @@ instance HasModifiersFor FindTheRelic where
 instance HasAbilities FindTheRelic where
   getAbilities (FindTheRelic a) =
     [ restrictedAbility
-      a
-      1
-      ( LocationExists
-          $ LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
-          <> LocationWithoutClues
-      )
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        ( LocationExists
+            $ LocationWithAsset (assetIs Assets.relicOfAgesADeviceOfSomeSort)
+            <> LocationWithoutClues
+        )
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide A a
     ]
 

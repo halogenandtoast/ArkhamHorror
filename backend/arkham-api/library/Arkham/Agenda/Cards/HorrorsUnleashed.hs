@@ -1,17 +1,15 @@
-module Arkham.Agenda.Cards.HorrorsUnleashed (
-  HorrorsUnleashed (..),
-  horrorsUnleashed,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.HorrorsUnleashed (horrorsUnleashed) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Modifier qualified as Modifier
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype HorrorsUnleashed = HorrorsUnleashed AgendaAttrs

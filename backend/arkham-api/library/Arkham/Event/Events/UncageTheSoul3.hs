@@ -1,11 +1,11 @@
-module Arkham.Event.Events.UncageTheSoul3 (uncageTheSoul3, UncageTheSoul3 (..)) where
+module Arkham.Event.Events.UncageTheSoul3 (uncageTheSoul3) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Cost
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayableWithResources)
 import Arkham.Helpers.Cost (getSpendableResources)
+import Arkham.Helpers.Playable (getIsPlayableWithResources)
 import Arkham.Matcher hiding (AssetCard, PlayCard)
 import Arkham.Projection
 import Arkham.Window (defaultWindows)

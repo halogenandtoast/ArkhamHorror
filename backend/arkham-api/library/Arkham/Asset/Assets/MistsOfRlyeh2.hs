@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.MistsOfRlyeh2 (mistsOfRlyeh2, MistsOfRlyeh2 (..), mistsOfRlyeh2Effect) where
+module Arkham.Asset.Assets.MistsOfRlyeh2 (mistsOfRlyeh2, mistsOfRlyeh2Effect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -8,7 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Evade
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message.Discard (chooseAndDiscardCard)
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Message.Lifted.Choose

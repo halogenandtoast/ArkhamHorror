@@ -1,15 +1,10 @@
-module Arkham.Treachery.Cards.WhispersInYourHeadDread (
-  whispersInYourHeadDread,
-  WhispersInYourHeadDread (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WhispersInYourHeadDread (whispersInYourHeadDread) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Modifier
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype WhispersInYourHeadDread = WhispersInYourHeadDread TreacheryAttrs

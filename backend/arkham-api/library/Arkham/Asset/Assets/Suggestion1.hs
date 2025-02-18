@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Suggestion1 (suggestion1, Suggestion1 (..)) where
+module Arkham.Asset.Assets.Suggestion1 (suggestion1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Evade
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Suggestion1 = Suggestion1 AssetAttrs

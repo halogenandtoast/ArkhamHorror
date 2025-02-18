@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.HuntressOfTheEztli (
-  HuntressOfTheEztli (..),
-  huntressOfTheEztli,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.HuntressOfTheEztli (huntressOfTheEztli) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -13,7 +8,10 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
 import Arkham.Trait (Trait (Ruins))

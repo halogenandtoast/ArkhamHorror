@@ -1,16 +1,13 @@
-module Arkham.Agenda.Cards.RampagingCreatures (
-  RampagingCreatures (..),
-  rampagingCreatures,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.RampagingCreatures (rampagingCreatures) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (ChosenRandomLocation)
+import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs

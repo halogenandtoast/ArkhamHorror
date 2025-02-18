@@ -1,18 +1,15 @@
 module Arkham.Location.Cards.AsylumHallsEasternPatientWing_170 (
   asylumHallsEasternPatientWing_170,
-  AsylumHallsEasternPatientWing_170 (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 LocationAttrs
@@ -22,28 +19,15 @@ newtype AsylumHallsEasternPatientWing_170 = AsylumHallsEasternPatientWing_170 Lo
 asylumHallsEasternPatientWing_170
   :: LocationCard AsylumHallsEasternPatientWing_170
 asylumHallsEasternPatientWing_170 =
-  location
-    AsylumHallsEasternPatientWing_170
-    Cards.asylumHallsEasternPatientWing_170
-    3
-    (Static 0)
+  location AsylumHallsEasternPatientWing_170 Cards.asylumHallsEasternPatientWing_170 3 (Static 0)
 
 instance HasAbilities AsylumHallsEasternPatientWing_170 where
   getAbilities (AsylumHallsEasternPatientWing_170 attrs) =
-    withBaseAbilities
-      attrs
-      [ notSkillTestAbility
-        $ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> EnemyCriteria
-                (EnemyExists $ EnemyAt YourLocation <> EnemyWithTrait Lunatic)
-          )
-        $ ActionAbility [#evade]
-        $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
-      | locationRevealed attrs
-      ]
+    extendRevealed1 attrs
+      $ notSkillTestAbility
+      $ restricted attrs 1 (Here <> exists (EnemyAt YourLocation <> EnemyWithTrait Lunatic))
+      $ ActionAbility [#evade]
+      $ Costs [ActionCost 1, HorrorCost (toSource attrs) YouTarget 1]
 
 instance RunMessage AsylumHallsEasternPatientWing_170 where
   runMessage msg l@(AsylumHallsEasternPatientWing_170 attrs) = case msg of

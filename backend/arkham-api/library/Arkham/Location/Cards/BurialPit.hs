@@ -3,7 +3,6 @@ module Arkham.Location.Cards.BurialPit (burialPit, BurialPit (..)) where
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

@@ -1,6 +1,7 @@
 module Arkham.Event.Events.WardOfProtectionSpec (spec) where
 
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Scenario.Types
 import Arkham.Treachery.Cards qualified as Treacheries

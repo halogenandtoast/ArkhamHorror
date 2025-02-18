@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.AsylumGorger (asylumGorger, AsylumGorger (..)) where
+module Arkham.Enemy.Cards.AsylumGorger (asylumGorger) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype AsylumGorger = AsylumGorger EnemyAttrs

@@ -1,7 +1,7 @@
-module Arkham.Location.Cards.Library (library, Library (..)) where
+module Arkham.Location.Cards.Library (library) where
 
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards

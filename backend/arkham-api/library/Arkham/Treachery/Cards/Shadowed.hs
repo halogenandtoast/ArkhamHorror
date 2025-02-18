@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Shadowed (shadowed, Shadowed (..)) where
+module Arkham.Treachery.Cards.Shadowed (shadowed) where
 
 import Arkham.Classes
 import Arkham.Enemy.Types
@@ -6,7 +6,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner hiding (EnemyFight)
+import Arkham.Treachery.Runner
 
 newtype Shadowed = Shadowed TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -32,10 +32,10 @@ instance RunMessage Shadowed where
             $ chooseOrRunOne
               player
               [ targetLabel
-                cultist
-                [ PlaceDoom (toSource attrs) (toTarget cultist) 1
-                , revelationSkillTest sid iid source #willpower (EnemyMaybeFieldCalculation cultist EnemyFight)
-                ]
+                  cultist
+                  [ PlaceDoom (toSource attrs) (toTarget cultist) 1
+                  , revelationSkillTest sid iid source #willpower (EnemyMaybeFieldCalculation cultist EnemyFight)
+                  ]
               | cultist <- cultists
               ]
       pure t

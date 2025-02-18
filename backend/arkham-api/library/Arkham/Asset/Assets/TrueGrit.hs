@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.TrueGrit (trueGrit, TrueGrit (..)) where
+module Arkham.Asset.Assets.TrueGrit (trueGrit) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

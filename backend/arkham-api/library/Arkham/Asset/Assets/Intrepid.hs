@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.Intrepid (intrepid, Intrepid (..)) where
+module Arkham.Asset.Assets.Intrepid (intrepid) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -18,7 +19,7 @@ instance HasModifiersFor Intrepid where
 
 instance HasAbilities Intrepid where
   getAbilities (Intrepid a) =
-    [restrictedAbility a 1 ControlsThis $ ForcedAbility $ RoundEnds #when]
+    [restricted a 1 ControlsThis $ ForcedAbility $ RoundEnds #when]
 
 instance RunMessage Intrepid where
   runMessage msg a@(Intrepid attrs) = case msg of

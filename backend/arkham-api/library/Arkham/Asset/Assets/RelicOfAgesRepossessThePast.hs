@@ -1,11 +1,9 @@
-module Arkham.Asset.Assets.RelicOfAgesRepossessThePast (
-  relicOfAgesRepossessThePast,
-  RelicOfAgesRepossessThePast (..),
-) where
+module Arkham.Asset.Assets.RelicOfAgesRepossessThePast ( relicOfAgesRepossessThePast,) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Doom (targetsWithDoom)
 import Arkham.Prelude
 
 newtype Metadata = Metadata {successTriggered :: Bool}

@@ -1,16 +1,14 @@
-module Arkham.Treachery.Cards.Bloodlust (bloodlust, Bloodlust (..)) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.Bloodlust (bloodlust) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
-import Arkham.Deck
+import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Modifier
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype Bloodlust = Bloodlust TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -21,8 +19,8 @@ bloodlust = treachery Bloodlust Cards.bloodlust
 
 instance HasAbilities Bloodlust where
   getAbilities (Bloodlust attrs) =
-    [ limitedAbility (MaxPer Cards.bloodlust PerTestOrAbility 1)
-        $ restrictedAbility
+    [ limited (MaxPer Cards.bloodlust PerTestOrAbility 1)
+        $ restricted
           attrs
           1
           ( DuringSkillTest
@@ -34,7 +32,7 @@ instance HasAbilities Bloodlust where
     ]
 
 instance RunMessage Bloodlust where
-  runMessage msg t@(Bloodlust attrs) = case msg of
+  runMessage msg t@(Bloodlust attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       mTheHungeringBlade <-
         selectOne
@@ -43,17 +41,15 @@ instance RunMessage Bloodlust where
           <> AssetWithTokens (atLeast 2) Offering
 
       case mTheHungeringBlade of
-        Nothing ->
-          pushAll
-            [assignHorror iid (toSource attrs) 1, ShuffleIntoDeck (InvestigatorDeck iid) (toTarget attrs)]
-        Just theHungeringBlade ->
-          pushAll
-            [ RemoveTokens (toSource attrs) (toTarget theHungeringBlade) Offering 2
-            , attachTreachery attrs theHungeringBlade
-            ]
+        Nothing -> do
+          assignHorror iid attrs 1
+          shuffleIntoDeck iid attrs
+        Just theHungeringBlade -> do
+          removeTokens attrs theHungeringBlade Offering 2
+          attachTreachery attrs theHungeringBlade
 
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid -> pushM $ skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       pure t
-    _ -> Bloodlust <$> runMessage msg attrs
+    _ -> Bloodlust <$> liftRunMessage msg attrs

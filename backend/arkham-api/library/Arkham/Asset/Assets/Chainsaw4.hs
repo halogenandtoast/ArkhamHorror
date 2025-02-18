@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.Chainsaw4 (chainsaw4, Chainsaw4 (..)) where
+module Arkham.Asset.Assets.Chainsaw4 (chainsaw4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Chainsaw4 = Chainsaw4 AssetAttrs
@@ -15,7 +16,7 @@ chainsaw4 :: AssetCard Chainsaw4
 chainsaw4 = asset Chainsaw4 Cards.chainsaw4
 
 instance HasAbilities Chainsaw4 where
-  getAbilities (Chainsaw4 a) = [restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Supply 1]
+  getAbilities (Chainsaw4 a) = [restricted a 1 ControlsThis $ fightAction $ assetUseCost a Supply 1]
 
 instance RunMessage Chainsaw4 where
   runMessage msg a@(Chainsaw4 attrs) = case msg of

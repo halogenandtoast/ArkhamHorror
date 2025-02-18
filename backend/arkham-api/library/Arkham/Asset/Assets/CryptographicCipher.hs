@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.CryptographicCipher (
-  cryptographicCipher,
-  CryptographicCipher (..),
-)
-where
+module Arkham.Asset.Assets.CryptographicCipher (cryptographicCipher) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Prelude
 
@@ -23,7 +20,7 @@ instance HasAbilities CryptographicCipher where
   getAbilities (CryptographicCipher x) =
     [ withTooltip
         "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets +1 shroud for this investigation."
-        $ restrictedAbility x 1 ControlsThis
+        $ restricted x 1 ControlsThis
         $ FastAbility' (assetUseCost x Secret 1 <> exhaust x) [#investigate]
     , withTooltip
         "Exhaust Cryptographic Cipher and spend 1 secret: Investigate. Your location gets -2 shroud for this investigation."

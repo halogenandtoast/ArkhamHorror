@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.RiotWhistle (riotWhistle, RiotWhistle (..)) where
+module Arkham.Asset.Assets.RiotWhistle (riotWhistle) where
 
 import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype RiotWhistle = RiotWhistle AssetAttrs

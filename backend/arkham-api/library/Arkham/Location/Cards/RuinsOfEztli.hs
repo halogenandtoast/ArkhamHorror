@@ -1,9 +1,8 @@
-module Arkham.Location.Cards.RuinsOfEztli (ruinsOfEztli, RuinsOfEztli (..)) where
+module Arkham.Location.Cards.RuinsOfEztli (ruinsOfEztli) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

@@ -1,15 +1,10 @@
-module Arkham.Location.Cards.ReturnToAttic (
-  returnToAttic,
-  ReturnToAttic (..),
-) where
+module Arkham.Location.Cards.ReturnToAttic ( returnToAttic,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

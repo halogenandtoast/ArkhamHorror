@@ -3,12 +3,14 @@ module Arkham.Asset.Assets.Duke (duke) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers hiding (skillTestModifiers)
+import Arkham.Helpers.Ability
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
+import Arkham.Modifier
 import Arkham.Window (defaultWindows)
 
 newtype Duke = Duke AssetAttrs

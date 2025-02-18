@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.SanMarcoBasilica (
-  sanMarcoBasilica,
-  SanMarcoBasilica (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.SanMarcoBasilica (sanMarcoBasilica) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -14,9 +9,9 @@ import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Prelude
 
 newtype SanMarcoBasilica = SanMarcoBasilica LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -35,11 +30,11 @@ instance HasAbilities SanMarcoBasilica where
   getAbilities (SanMarcoBasilica attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility
-          attrs
-          1
-          (Here <> exists (AssetControlledBy You <> assetIs Assets.innocentReveler))
-          $ ActionAbility []
-          $ ActionCost 1
+            attrs
+            1
+            (Here <> exists (AssetControlledBy You <> assetIs Assets.innocentReveler))
+            $ ActionAbility []
+            $ ActionCost 1
         | locationRevealed attrs
         ]
 
@@ -55,12 +50,12 @@ instance RunMessage SanMarcoBasilica where
         $ chooseOne
           player
           [ targetLabel
-            innocentReveler
-            [ PlaceUnderneath
-                ActDeckTarget
-                [PlayerCard $ lookupPlayerCard Assets.innocentReveler cardId]
-            , RemoveFromGame (toTarget innocentReveler)
-            ]
+              innocentReveler
+              [ PlaceUnderneath
+                  ActDeckTarget
+                  [PlayerCard $ lookupPlayerCard Assets.innocentReveler cardId]
+              , RemoveFromGame (toTarget innocentReveler)
+              ]
           | (innocentReveler, cardId) <- innocentRevelers
           ]
       pure l

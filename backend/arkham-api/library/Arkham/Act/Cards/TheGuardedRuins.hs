@@ -1,10 +1,11 @@
-module Arkham.Act.Cards.TheGuardedRuins (TheGuardedRuins (..), theGuardedRuins) where
+module Arkham.Act.Cards.TheGuardedRuins (theGuardedRuins) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Prelude

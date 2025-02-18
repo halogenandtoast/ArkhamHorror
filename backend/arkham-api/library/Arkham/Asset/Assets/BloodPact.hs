@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.BloodPact (bloodPact, BloodPact (..)) where
+module Arkham.Asset.Assets.BloodPact (bloodPact) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

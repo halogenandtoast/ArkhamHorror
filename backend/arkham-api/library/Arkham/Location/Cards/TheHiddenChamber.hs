@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.TheHiddenChamber (theHiddenChamber, TheHiddenChamber (..)) where
+module Arkham.Location.Cards.TheHiddenChamber (theHiddenChamber) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (RevealLocation)

@@ -1,13 +1,10 @@
-module Arkham.Enemy.Cards.TheOrganistDrapedInMystery (
-  theOrganistDrapedInMystery,
-  TheOrganistDrapedInMystery (..),
-) where
+module Arkham.Enemy.Cards.TheOrganistDrapedInMystery (theOrganistDrapedInMystery) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Helpers
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers

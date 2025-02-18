@@ -1,14 +1,9 @@
-module Arkham.Location.Cards.OvergrownRuins (
-  overgrownRuins,
-  OvergrownRuins (..),
-) where
+module Arkham.Location.Cards.OvergrownRuins ( overgrownRuins,) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

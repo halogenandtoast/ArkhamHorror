@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.ButterflySwords2 (butterflySwords2, ButterflySwords2 (..)) where
+module Arkham.Asset.Assets.ButterflySwords2 (butterflySwords2) where
 
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Classes.HasQueue (evalQueueT)
-import Arkham.Game.Helpers (hasFightActions)
+import Arkham.Helpers.Action (hasFightActions)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Matcher
 import Arkham.Modifier

@@ -1,6 +1,6 @@
-module Arkham.Skill.Cards.Nimble (nimble, Nimble (..)) where
+module Arkham.Skill.Cards.Nimble (nimble) where
 
-import Arkham.Game.Helpers
+import Arkham.Helpers.Location
 import Arkham.Movement
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -33,8 +33,8 @@ instance RunMessage Nimble where
         chooseOne iid
           $ Label "Do not move" []
           : [ targetLabel
-              location
-              [Move $ move (toSource attrs) iid location, ResolveSkill (toId attrs)]
+                location
+                [Move $ move (toSource attrs) iid location, ResolveSkill (toId attrs)]
             | location <- connectingLocations
             ]
       pure $ Nimble $ attrs `with` Metadata (moveCount meta - 1)

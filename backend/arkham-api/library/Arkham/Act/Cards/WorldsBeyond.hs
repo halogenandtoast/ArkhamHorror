@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.WorldsBeyond (
-  WorldsBeyond (..),
-  worldsBeyond,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.WorldsBeyond (worldsBeyond) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,8 +7,10 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.Timing qualified as Timing
 

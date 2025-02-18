@@ -1,7 +1,7 @@
 module Arkham.Story.Cards.TheWayOut (TheWayOut (..), theWayOut) where
 
-import Arkham.Game.Helpers (perPlayer)
 import Arkham.Helpers.Act
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher

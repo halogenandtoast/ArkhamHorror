@@ -1,13 +1,15 @@
-module Arkham.Asset.Assets.MoonPendant2 (moonPendant2, MoonPendant2 (..)) where
+module Arkham.Asset.Assets.MoonPendant2 (moonPendant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Slot
 
 newtype MoonPendant2 = MoonPendant2 AssetAttrs
   deriving anyclass IsAsset
@@ -25,7 +27,7 @@ instance HasModifiersFor MoonPendant2 where
       modifyEach a (hand <> committed) [AddSkillIcons [#wild, #wild]]
 
 instance HasAbilities MoonPendant2 where
-  getAbilities (MoonPendant2 a) = [restrictedAbility a 1 InYourHand $ freeReaction (GameBegins #when)]
+  getAbilities (MoonPendant2 a) = [restricted a 1 InYourHand $ freeReaction (GameBegins #when)]
 
 instance RunMessage MoonPendant2 where
   runMessage msg a@(MoonPendant2 attrs) = case msg of

@@ -1,9 +1,11 @@
-module Arkham.Enemy.Cards.AvianThrall (AvianThrall (..), avianThrall) where
+module Arkham.Enemy.Cards.AvianThrall (avianThrall) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (EnemyFight)
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Source
 import Arkham.Matcher
 import Arkham.Modifier qualified as Modifier
 import Arkham.Prelude

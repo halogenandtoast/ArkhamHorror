@@ -1,10 +1,4 @@
-module Arkham.Investigator.Cards.PennyWhite (
-  pennyWhite,
-  pennyWhiteEffect,
-  PennyWhite (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Investigator.Cards.PennyWhite (pennyWhite, pennyWhiteEffect, PennyWhite) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
@@ -20,6 +14,8 @@ import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
+import Arkham.Modifier
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.SkillTest.Base

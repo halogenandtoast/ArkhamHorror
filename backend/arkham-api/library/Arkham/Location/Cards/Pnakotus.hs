@@ -1,11 +1,10 @@
-module Arkham.Location.Cards.Pnakotus (pnakotus, Pnakotus (..)) where
+module Arkham.Location.Cards.Pnakotus (pnakotus) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

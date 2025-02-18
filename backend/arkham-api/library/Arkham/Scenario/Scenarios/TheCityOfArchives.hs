@@ -10,6 +10,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (enemyAt)
@@ -17,7 +18,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (setAsideCardsL)
 import Arkham.ScenarioLogKey

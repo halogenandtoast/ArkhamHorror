@@ -1,16 +1,17 @@
-module Arkham.Investigator.Cards.ValentinoRivas (valentinoRivas, ValentinoRivas (..)) where
+module Arkham.Investigator.Cards.ValentinoRivas (valentinoRivas, ValentinoRivas) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (valentinoRivas)
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Investigator (startsWithInHand)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 

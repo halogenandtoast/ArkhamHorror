@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.ConstanceDumaine (constanceDumaine, ConstanceDumaine (..)) where
+module Arkham.Asset.Assets.ConstanceDumaine (constanceDumaine) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
@@ -17,9 +18,9 @@ constanceDumaine = asset ConstanceDumaine Cards.constanceDumaine
 
 instance HasAbilities ConstanceDumaine where
   getAbilities (ConstanceDumaine a) =
-    [ skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_
+    [ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
     , groupLimit PerGame
-        $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_65)
+        $ restricted a 2 (not_ $ exists Story.sickeningReality_65)
         $ forced
         $ LastClueRemovedFromAsset #when (be a)
     ]

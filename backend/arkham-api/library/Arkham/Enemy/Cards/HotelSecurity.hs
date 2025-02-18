@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.HotelSecurity (hotelSecurity, HotelSecurity (..)) where
+module Arkham.Enemy.Cards.HotelSecurity (hotelSecurity) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Prelude

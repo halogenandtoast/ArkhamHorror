@@ -1,18 +1,14 @@
-module Arkham.Agenda.Cards.TheSecondNight (
-  TheSecondNight (..),
-  theSecondNight,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheSecondNight (theSecondNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.APhantomOfTruth.Helpers
 
 newtype TheSecondNight = TheSecondNight AgendaAttrs

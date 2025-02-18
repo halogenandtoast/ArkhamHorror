@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.MistsOfRlyeh (mistsOfRlyeh, MistsOfRlyeh (..), mistsOfRlyehEffect) where
+module Arkham.Asset.Assets.MistsOfRlyeh (mistsOfRlyeh, mistsOfRlyehEffect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -7,7 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Effect.Import
 import Arkham.Evade
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.SkillTest (getSkillTest, getSkillTestInvestigator)
 import Arkham.Matcher

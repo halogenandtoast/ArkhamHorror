@@ -1,9 +1,8 @@
-module Arkham.Location.Cards.Room212 (room212, Room212 (..)) where
+module Arkham.Location.Cards.Room212 (room212) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards

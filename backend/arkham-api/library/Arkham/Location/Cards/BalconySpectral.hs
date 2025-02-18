@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.BalconySpectral (
-  balconySpectral,
-  BalconySpectral (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BalconySpectral (balconySpectral) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype BalconySpectral = BalconySpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

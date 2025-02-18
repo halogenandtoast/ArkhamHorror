@@ -1,8 +1,8 @@
-module Arkham.Skill.Cards.Defiance2 (defiance2, defiance2Effect, Defiance2 (..)) where
+module Arkham.Skill.Cards.Defiance2 (defiance2, defiance2Effect) where
 
 import Arkham.ChaosToken
 import Arkham.Effect.Import
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

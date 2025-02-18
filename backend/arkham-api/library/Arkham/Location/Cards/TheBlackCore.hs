@@ -1,7 +1,6 @@
-module Arkham.Location.Cards.TheBlackCore (theBlackCore, TheBlackCore (..)) where
+module Arkham.Location.Cards.TheBlackCore (theBlackCore) where
 
-import Arkham.Game.Helpers (perPlayer)
-import Arkham.GameValue
+import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Location.Cards qualified as Cards

@@ -1,17 +1,14 @@
 module Arkham.Location.Cards.HistoricalSocietyReadingRoom (
   historicalSocietyReadingRoom,
-  HistoricalSocietyReadingRoom (..),
 ) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg

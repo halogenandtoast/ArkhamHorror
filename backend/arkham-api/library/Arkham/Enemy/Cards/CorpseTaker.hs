@@ -1,15 +1,12 @@
-module Arkham.Enemy.Cards.CorpseTaker (
-  CorpseTaker (..),
-  corpseTaker,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.CorpseTaker (corpseTaker) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token
 

@@ -1,12 +1,8 @@
-module Arkham.Location.Cards.LandlordsQuarters (
-  landlordsQuarters,
-  LandlordsQuarters (..),
-) where
+module Arkham.Location.Cards.LandlordsQuarters (landlordsQuarters) where
 
 import Arkham.Card
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
@@ -27,10 +23,10 @@ instance HasAbilities LandlordsQuarters where
     withBaseAbilities a
       $ guard (locationRevealed a)
       *> [ restrictedAbility a 1 Here
-            $ ForcedAbility
-            $ RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId a
+             $ ForcedAbility
+             $ RevealLocation Timing.After You
+             $ LocationWithId
+             $ toId a
          , haunted hauntedText a 2
          ]
    where

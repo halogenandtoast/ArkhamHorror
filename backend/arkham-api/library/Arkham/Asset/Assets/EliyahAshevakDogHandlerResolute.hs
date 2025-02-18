@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move

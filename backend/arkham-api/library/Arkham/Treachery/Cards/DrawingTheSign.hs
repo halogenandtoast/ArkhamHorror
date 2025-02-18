@@ -1,8 +1,8 @@
-module Arkham.Treachery.Cards.DrawingTheSign (drawingTheSign, DrawingTheSign (..)) where
+module Arkham.Treachery.Cards.DrawingTheSign (drawingTheSign) where
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (HandSize), inThreatAreaGets)
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

@@ -1,12 +1,12 @@
-module Arkham.Treachery.Cards.CreepingDarkness (creepingDarkness, CreepingDarkness (..)) where
+module Arkham.Treachery.Cards.CreepingDarkness (creepingDarkness) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers
-import Arkham.GameValue
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude

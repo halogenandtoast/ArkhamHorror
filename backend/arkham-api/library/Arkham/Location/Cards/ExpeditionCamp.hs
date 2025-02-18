@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.ExpeditionCamp (
-  expeditionCamp,
-  ExpeditionCamp (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ExpeditionCamp (expeditionCamp) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
@@ -12,9 +7,9 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.Scenario.Deck
 
 newtype ExpeditionCamp = ExpeditionCamp LocationAttrs
@@ -54,24 +49,24 @@ instance RunMessage ExpeditionCamp where
         , questionLabel "Place one card on bottom of exploration deck" player
             $ ChooseOne
               [ targetLabel
-                (toCardId c)
-                [ PutCardOnBottomOfDeck
-                    iid
-                    (Deck.ScenarioDeckByKey ExplorationDeck)
-                    c
-                , FocusCards remaining
-                , questionLabel "Place card on top of exploration deck" player
-                    $ ChooseOneAtATime
-                      [ targetLabel
-                        (toCardId r)
-                        [ PutCardOnTopOfDeck
-                            iid
-                            (Deck.ScenarioDeckByKey ExplorationDeck)
-                            r
+                  (toCardId c)
+                  [ PutCardOnBottomOfDeck
+                      iid
+                      (Deck.ScenarioDeckByKey ExplorationDeck)
+                      c
+                  , FocusCards remaining
+                  , questionLabel "Place card on top of exploration deck" player
+                      $ ChooseOneAtATime
+                        [ targetLabel
+                            (toCardId r)
+                            [ PutCardOnTopOfDeck
+                                iid
+                                (Deck.ScenarioDeckByKey ExplorationDeck)
+                                r
+                            ]
+                        | r <- remaining
                         ]
-                      | r <- remaining
-                      ]
-                ]
+                  ]
               | (c, remaining) <- cardPairs
               ]
         , UnfocusCards

@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.Cornered2 (cornered2, Cornered2 (..)) where
+module Arkham.Asset.Assets.Cornered2 (cornered2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -17,7 +18,7 @@ instance HasAbilities Cornered2 where
   getAbilities (Cornered2 a) =
     [ playerLimit PerTestOrAbility
         $ wantsSkillTest (YourSkillTest AnySkillTest)
-        $ controlledAbility a 1 (DuringSkillTest AnySkillTest)
+        $ controlled a 1 (DuringSkillTest AnySkillTest)
         $ FastAbility
         $ HandDiscardCost 1 #any
     ]

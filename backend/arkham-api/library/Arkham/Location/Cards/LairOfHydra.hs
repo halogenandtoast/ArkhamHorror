@@ -1,7 +1,8 @@
-module Arkham.Location.Cards.LairOfHydra (lairOfHydra, LairOfHydra (..)) where
+module Arkham.Location.Cards.LairOfHydra (lairOfHydra) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers

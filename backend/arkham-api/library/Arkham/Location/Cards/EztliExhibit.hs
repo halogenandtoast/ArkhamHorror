@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.EztliExhibit (
-  eztliExhibit,
-  EztliExhibit (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.EztliExhibit (eztliExhibit) where
 
 import Arkham.Ability
 import Arkham.ChaosToken
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner hiding (RevealChaosToken)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype EztliExhibit = EztliExhibit LocationAttrs

@@ -1,18 +1,13 @@
-module Arkham.Treachery.Cards.WhispersInYourHeadDoubt (
-  whispersInYourHeadDoubt,
-  WhispersInYourHeadDoubt (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.WhispersInYourHeadDoubt (whispersInYourHeadDoubt) where
 
 import Arkham.Ability
 import Arkham.Card.CardType
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher hiding (treacheryInHandOf)
-import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype WhispersInYourHeadDoubt = WhispersInYourHeadDoubt TreacheryAttrs

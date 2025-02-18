@@ -1,13 +1,11 @@
-module Arkham.Investigator.Cards.RitaYoung (
-  ritaYoung,
-  ritaYoungElderSignEffect,
-  RitaYoung (..),
-) where
+module Arkham.Investigator.Cards.RitaYoung (ritaYoung, ritaYoungElderSignEffect) where
 
 import Arkham.Ability
 import Arkham.DamageEffect
 import Arkham.Effect.Import
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Location (getAccessibleLocations)
+import Arkham.Helpers.Window (evadedEnemy)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher

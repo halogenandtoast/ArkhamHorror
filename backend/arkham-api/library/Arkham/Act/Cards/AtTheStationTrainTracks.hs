@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.AtTheStationTrainTracks (
-  AtTheStationTrainTracks (..),
-  atTheStationTrainTracks,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.AtTheStationTrainTracks (atTheStationTrainTracks) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Cards qualified as Cards
@@ -11,9 +6,11 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype AtTheStationTrainTracks = AtTheStationTrainTracks ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

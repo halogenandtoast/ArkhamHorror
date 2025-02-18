@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TwistOfFate (twistOfFate) where
 
 import Arkham.ChaosToken
-import Arkham.Game.Helpers (getModifiedChaosTokenFaces)
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -10,13 +10,13 @@ import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (addCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (cardsUnderActDeckL, cardsUnderAgendaDeckL)
 import Arkham.Scenarios.CarnevaleOfHorrors.FlavorText qualified as Flavor

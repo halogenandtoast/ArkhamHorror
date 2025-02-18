@@ -3,7 +3,6 @@ module Arkham.Location.Cards.DescentToYoth (descentToYoth, DescentToYoth (..)) w
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Location.Cards qualified as Cards

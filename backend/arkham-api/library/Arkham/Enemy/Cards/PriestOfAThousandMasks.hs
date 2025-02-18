@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.PriestOfAThousandMasks (priestOfAThousandMasks, PriestOfAThousandMasks (..)) where
+module Arkham.Enemy.Cards.PriestOfAThousandMasks (priestOfAThousandMasks) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Retaliate))
 import Arkham.Modifier qualified as Mod
 import Arkham.Prelude

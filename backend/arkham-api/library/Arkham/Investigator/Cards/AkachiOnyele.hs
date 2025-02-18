@@ -1,8 +1,8 @@
-module Arkham.Investigator.Cards.AkachiOnyele where
+module Arkham.Investigator.Cards.AkachiOnyele (akachiOnyele) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Use
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted

@@ -1,15 +1,16 @@
 module Arkham.Helpers.Deck where
 
-import Arkham.Prelude
-
 import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
+import {-# SOURCE #-} Arkham.Helpers.Investigator (matchWho)
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Matcher.Card qualified as Matcher
 import Arkham.Message
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
@@ -78,3 +79,18 @@ initDeckTrauma deck' iid target = do
   pure
     $ [SufferTrauma iid physicalTrauma mentalTrauma | mentalTrauma > 0 || physicalTrauma > 0]
     <> [chooseMsg | anyTrauma > 0]
+
+deckMatch
+  :: HasGame m
+  => InvestigatorId
+  -> Deck.DeckSignifier
+  -> Matcher.DeckMatcher
+  -> m Bool
+deckMatch iid deckSignifier = \case
+  Matcher.EncounterDeck -> pure $ deckSignifier == Deck.EncounterDeck
+  Matcher.DeckOf investigatorMatcher -> case deckSignifier of
+    Deck.InvestigatorDeck iid' -> matchWho iid iid' investigatorMatcher
+    _ -> pure False
+  Matcher.AnyDeck -> pure True
+  Matcher.DeckIs deckSignifier' -> pure $ deckSignifier == deckSignifier'
+  Matcher.DeckOneOf matchers' -> anyM (deckMatch iid deckSignifier) matchers'

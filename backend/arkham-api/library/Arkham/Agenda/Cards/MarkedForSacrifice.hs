@@ -1,7 +1,4 @@
-module Arkham.Agenda.Cards.MarkedForSacrifice (
-  MarkedForSacrifice (..),
-  markedForSacrifice,
-) where
+module Arkham.Agenda.Cards.MarkedForSacrifice (markedForSacrifice) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -9,6 +6,8 @@ import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Timing qualified as Timing

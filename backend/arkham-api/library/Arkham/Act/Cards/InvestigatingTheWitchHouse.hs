@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.InvestigatingTheWitchHouse (
-  InvestigatingTheWitchHouse (..),
-  investigatingTheWitchHouse,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.InvestigatingTheWitchHouse (investigatingTheWitchHouse) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -12,8 +7,10 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Constants
 import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Prelude
 
 newtype InvestigatingTheWitchHouse = InvestigatingTheWitchHouse ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -52,12 +49,12 @@ instance RunMessage InvestigatingTheWitchHouse where
         $ ReplaceLocation lid keziahsRoom Swap
         : map RemoveLocation otherLocations
           <> [ chooseOne
-                lead
-                [ targetLabel
-                  iid
-                  [TakeControlOfSetAsideAsset iid theBlackBook]
-                | iid <- iids
-                ]
+                 lead
+                 [ targetLabel
+                     iid
+                     [TakeControlOfSetAsideAsset iid theBlackBook]
+                 | iid <- iids
+                 ]
              , ShuffleCardsIntoDeck Deck.EncounterDeck strangeGeometries
              , advanceActDeck attrs
              ]

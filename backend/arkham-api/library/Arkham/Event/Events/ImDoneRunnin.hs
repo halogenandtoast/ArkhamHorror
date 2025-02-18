@@ -1,10 +1,4 @@
-module Arkham.Event.Events.ImDoneRunnin (
-  imDoneRunnin,
-  imDoneRunninEffect,
-  ImDoneRunnin (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Event.Events.ImDoneRunnin (imDoneRunnin, imDoneRunninEffect, ImDoneRunnin (..)) where
 
 import Arkham.Classes
 import Arkham.DamageEffect
@@ -12,8 +6,9 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier, modified_)
 import Arkham.Matcher hiding (EnemyEvaded)
+import Arkham.Prelude
 
 newtype ImDoneRunnin = ImDoneRunnin EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

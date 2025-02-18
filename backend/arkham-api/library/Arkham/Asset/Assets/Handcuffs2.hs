@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Handcuffs2 (handcuffs2, Handcuffs2 (..)) where
+module Arkham.Asset.Assets.Handcuffs2 (handcuffs2) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,6 +6,7 @@ import Arkham.Aspect
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Evade
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Placement
 import Arkham.Prelude

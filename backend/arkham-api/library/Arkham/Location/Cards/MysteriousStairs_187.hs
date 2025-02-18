@@ -1,10 +1,11 @@
-module Arkham.Location.Cards.MysteriousStairs_187 (mysteriousStairs_187, MysteriousStairs_187 (..)) where
+module Arkham.Location.Cards.MysteriousStairs_187 (mysteriousStairs_187) where
 
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyDamage))
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher

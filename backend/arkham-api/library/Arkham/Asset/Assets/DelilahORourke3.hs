@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.DelilahORourke3 (
-  delilahORourke3,
-  DelilahORourke3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DelilahORourke3 (delilahORourke3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +6,9 @@ import Arkham.Asset.Runner
 import Arkham.Cost.FieldCost
 import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DelilahORourke3 = DelilahORourke3 AssetAttrs
@@ -27,7 +23,7 @@ instance HasModifiersFor DelilahORourke3 where
 
 instance HasAbilities DelilahORourke3 where
   getAbilities (DelilahORourke3 a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ FastAbility
         $ MaybeFieldResourceCost
           (MaybeFieldCost (EnemyAt YourLocation) Field.EnemyEvade)

@@ -1,17 +1,13 @@
-module Arkham.Asset.Assets.NightmareBauble3 (
-  nightmareBauble3,
-  NightmareBauble3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.NightmareBauble3 (nightmareBauble3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Investigator
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Skills
 import Arkham.Window qualified as Window
 
@@ -24,8 +20,8 @@ nightmareBauble3 = asset NightmareBauble3 Cards.nightmareBauble3
 
 instance HasAbilities NightmareBauble3 where
   getAbilities (NightmareBauble3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           (RevealChaosToken #when You #autofail)
           (ShuffleAttachedCardIntoDeckCost (toTarget a) (cardIs Skills.dreamParasite))
     ]

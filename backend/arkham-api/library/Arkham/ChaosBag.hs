@@ -8,9 +8,12 @@ import Arkham.ChaosBagStepState
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Message
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, hasModifier)
+import Arkham.Helpers.Query (getActiveInvestigatorId, getInvestigators, getLead)
+import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
@@ -165,15 +168,15 @@ resolveFirstUnresolved source iid strategy = \case
                 )
               pure (Resolved [drawn], [])
         Nothing -> do
-          (ignored, drawnAndRemaining) <- breakM (`chaosTokenMatches` inner) =<< shuffleM bagChaosTokens
+          (ignored, drawnAndRemaining) <- breakM (`matches` inner) =<< shuffleM bagChaosTokens
           case drawnAndRemaining of
             [] -> do
               modify' ((chaosTokensL .~ []) . (setAsideChaosTokensL %~ (<> ignored)))
               pure (Resolved [], map (ChaosTokenIgnored iid source) ignored)
             (drawn : remaining) -> do
               modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ (drawn : ignored)))
-              resolveFirstUnresolved source iid strategy $
-                Decided (ChooseMatch source 1 ResolveChoice [Resolved [drawn], Resolved ignored] [] inner Nothing)
+              resolveFirstUnresolved source iid strategy
+                $ Decided (ChooseMatch source 1 ResolveChoice [Resolved [drawn], Resolved ignored] [] inner Nothing)
     Draw -> do
       bagChaosTokens <- gets chaosBagChaosTokens
       forceDraw <- gets chaosBagForceDraw
@@ -243,7 +246,8 @@ resolveFirstUnresolved source iid strategy = \case
         then
           pure
             ( Resolved $ concat tokens'
-            , map (ChaosTokenSelected iid chooseSource) (concat tokens') <> concatMap (map (ChaosTokenIgnored iid chooseSource) . toChaosTokens) steps
+            , map (ChaosTokenSelected iid chooseSource) (concat tokens')
+                <> concatMap (map (ChaosTokenIgnored iid chooseSource) . toChaosTokens) steps
             )
         else
           if all isResolved steps
@@ -797,7 +801,7 @@ instance RunMessage ChaosBag where
             sourceIsSkillTest = case source of
               SkillTestSource _ -> True
               _ -> False
-            
+
           checkWindowMsgs <- case miid of
             Just iid ->
               (\x y -> [x, y])

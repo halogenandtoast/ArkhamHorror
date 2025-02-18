@@ -1,16 +1,13 @@
-module Arkham.Enemy.Cards.AnetteMasonReincarnatedEvil (
-  anetteMasonReincarnatedEvil,
-  AnetteMasonReincarnatedEvil (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.AnetteMasonReincarnatedEvil (anetteMasonReincarnatedEvil) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype AnetteMasonReincarnatedEvil = AnetteMasonReincarnatedEvil EnemyAttrs
@@ -43,9 +40,9 @@ instance RunMessage AnetteMasonReincarnatedEvil where
       investigators <- getInvestigatorPlayers
       pushAll
         [ chooseOne player
-          $ [ assignDamageLabel investigator (toAbilitySource attrs 1) 1
-            , assignHorrorLabel investigator (toAbilitySource attrs 1) 1
-            ]
+            $ [ assignDamageLabel investigator (toAbilitySource attrs 1) 1
+              , assignHorrorLabel investigator (toAbilitySource attrs 1) 1
+              ]
         | (investigator, player) <- investigators
         ]
       pure e

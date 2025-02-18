@@ -1,11 +1,10 @@
 module Arkham.Location.Cards.AsylumHallsWesternPatientWing_169 (
   asylumHallsWesternPatientWing_169,
-  AsylumHallsWesternPatientWing_169 (..),
 ) where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

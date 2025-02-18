@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.DreamEnhancingSerum (
-  dreamEnhancingSerum,
-  DreamEnhancingSerum (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DreamEnhancingSerum (dreamEnhancingSerum) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DreamEnhancingSerum = DreamEnhancingSerum AssetAttrs
   deriving anyclass IsAsset
@@ -25,8 +21,8 @@ instance HasModifiersFor DreamEnhancingSerum where
 -- TODO: No good way to handle reveal
 instance HasAbilities DreamEnhancingSerum where
   getAbilities (DreamEnhancingSerum a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis
+        $ triggered
           (DrawCard #after (You <> can.draw.cards) (CardWithCopyInHand You) AnyDeck)
           (exhaust a)
     ]

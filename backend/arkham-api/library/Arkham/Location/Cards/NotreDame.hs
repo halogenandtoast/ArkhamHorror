@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.NotreDame (notreDame, NotreDame (..)) where
+module Arkham.Location.Cards.NotreDame (notreDame) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message (pattern RemoveDoom)
@@ -33,7 +33,7 @@ instance RunMessage NotreDame where
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       agenda <- selectJust AnyAgenda
-      hasDoom <- agendaMatches agenda AgendaWithAnyDoom
+      hasDoom <- matches agenda AgendaWithAnyDoom
       chooseOrRunOne iid
         $ Label "Place 1 doom on current agenda" [PlaceDoom (attrs.ability 1) (toTarget agenda) 1]
         : [ Label "Remove 1 doom on current agenda" [RemoveDoom (attrs.ability 1) (toTarget agenda) 1]

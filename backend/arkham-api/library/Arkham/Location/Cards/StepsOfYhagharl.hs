@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.StepsOfYhagharl (stepsOfYhagharl, StepsOfYhagharl (..)) where
+module Arkham.Location.Cards.StepsOfYhagharl (stepsOfYhagharl) where
 
 import Arkham.Ability
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.GameValue
+import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Cards (stepsOfYhagharl)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Movement

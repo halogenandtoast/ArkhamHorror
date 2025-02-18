@@ -1,13 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Treachery.Runner (
-  module X,
-  addHiddenToHand,
-  forcedOnElimination,
-  on,
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Runner (module X, addHiddenToHand, forcedOnElimination, on) where
 
 import Arkham.Calculation as X
 import Arkham.Classes.Entity as X
@@ -38,9 +31,12 @@ import Arkham.Treachery.Types as X
 import Arkham.Ability.Type
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Helpers.Ref (sourceToTarget)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows)
 import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Treachery (TreacheryMatcher (TreacheryWithId))
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Token
 import Arkham.Window (mkWindow)
 import Arkham.Window qualified as Window

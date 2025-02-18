@@ -1,13 +1,12 @@
-module Arkham.Treachery.Cards.ToughCrowd (toughCrowd, ToughCrowd (..)) where
+module Arkham.Treachery.Cards.ToughCrowd (toughCrowd) where
 
 import Arkham.Ability
 import Arkham.Action
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype ToughCrowd = ToughCrowd TreacheryAttrs

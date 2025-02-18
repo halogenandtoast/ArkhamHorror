@@ -1,11 +1,8 @@
-module Arkham.Agenda.Cards.TheBridgeOfWebs (
-  TheBridgeOfWebs (..),
-  theBridgeOfWebs,
-) where
+module Arkham.Agenda.Cards.TheBridgeOfWebs (theBridgeOfWebs) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Game.Helpers (perPlayer)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 

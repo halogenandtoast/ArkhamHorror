@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.SebastienMoreau (sebastienMoreau, SebastienMoreau (..)) where
+module Arkham.Asset.Assets.SebastienMoreau (sebastienMoreau) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story

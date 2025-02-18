@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.SurvivalKnife2 (survivalKnife2, SurvivalKnife2 (..)) where
+module Arkham.Asset.Assets.SurvivalKnife2 (survivalKnife2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyAttacks)
 import Arkham.Attack
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Window (Window, windowType)
@@ -20,8 +21,8 @@ survivalKnife2 = asset SurvivalKnife2 Cards.survivalKnife2
 instance HasAbilities SurvivalKnife2 where
   getAbilities (SurvivalKnife2 a) =
     [ fightAbility a 1 mempty ControlsThis
-    , restrictedAbility a 2 (ControlsThis <> DuringPhase #enemy)
-        $ ReactionAbility (EnemyAttacks #when You AnyEnemyAttack AnyEnemy) (exhaust a)
+    , controlled a 2 (DuringPhase #enemy)
+        $ triggered (EnemyAttacks #when You AnyEnemyAttack AnyEnemy) (exhaust a)
     ]
 
 toEnemy :: [Window] -> EnemyId

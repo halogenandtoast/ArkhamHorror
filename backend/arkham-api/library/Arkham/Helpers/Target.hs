@@ -16,6 +16,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (EventCard)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
@@ -202,3 +203,12 @@ targetMatches s = \case
     BothTarget left right ->
       orM [targetMatches left ScenarioCardTarget, targetMatches right ScenarioCardTarget]
     _ -> pure False
+
+targetListMatches
+  :: HasGame m => [Target] -> Matcher.TargetListMatcher -> m Bool
+targetListMatches targets = \case
+  Matcher.AnyTargetList -> pure True
+  Matcher.HasTarget targetMatcher ->
+    anyM (`targetMatches` targetMatcher) targets
+  Matcher.ExcludesTarget targetMatcher ->
+    noneM (`targetMatches` targetMatcher) targets

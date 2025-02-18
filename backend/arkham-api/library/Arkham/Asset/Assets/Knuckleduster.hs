@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.Knuckleduster (knuckleduster, Knuckleduster (..)) where
+module Arkham.Asset.Assets.Knuckleduster (knuckleduster) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Prelude
 
@@ -20,14 +21,11 @@ instance HasAbilities Knuckleduster where
 
 instance HasModifiersFor Knuckleduster where
   getModifiersFor (Knuckleduster attrs) =
-    getSkillTestTarget >>= \case
-      Nothing -> pure mempty
-      Just target -> case target.enemy of
-        Nothing -> pure mempty
-        Just eid -> maybeModified_ attrs eid do
-          guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-          Action.Fight <- MaybeT getSkillTestAction
-          pure [AddKeyword Keyword.Retaliate]
+    getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+      maybeModified_ attrs eid do
+        guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
+        Action.Fight <- MaybeT getSkillTestAction
+        pure [AddKeyword Keyword.Retaliate]
 
 instance RunMessage Knuckleduster where
   runMessage msg a@(Knuckleduster attrs) = case msg of

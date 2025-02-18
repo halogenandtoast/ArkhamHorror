@@ -1,14 +1,13 @@
-module Arkham.Act.Cards.MysteriousGateway where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.MysteriousGateway (mysteriousGateway) where
 
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -34,10 +33,10 @@ instance RunMessage MysteriousGateway where
         , chooseOne
             lead
             [ targetLabel
-              iid'
-              [ Move $ move (toSource attrs) iid' holeInTheWallId
-              , beginSkillTest sid iid' (ActSource aid) iid' #willpower (Fixed 4)
-              ]
+                iid'
+                [ Move $ move (toSource attrs) iid' holeInTheWallId
+                , beginSkillTest sid iid' (ActSource aid) iid' #willpower (Fixed 4)
+                ]
             | iid' <- investigatorIds
             ]
         , AdvanceActDeck actDeckId (toSource attrs)

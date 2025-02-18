@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.ProtectiveIncantation1 (
-  protectiveIncantation1,
-  ProtectiveIncantation1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ProtectiveIncantation1 (protectiveIncantation1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Cost
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype ProtectiveIncantation1 = ProtectiveIncantation1 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,13 +17,7 @@ protectiveIncantation1 =
 
 instance HasAbilities ProtectiveIncantation1 where
   getAbilities (ProtectiveIncantation1 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ForcedAbility
-        $ TurnEnds Timing.When
-        $ HasMatchingAsset
-        $ AssetWithId
-        $ toId a
-    ]
+    [restricted a 1 ControlsThis $ forced $ TurnEnds #when $ HasMatchingAsset (be a)]
 
 instance RunMessage ProtectiveIncantation1 where
   runMessage msg a@(ProtectiveIncantation1 attrs) = case msg of

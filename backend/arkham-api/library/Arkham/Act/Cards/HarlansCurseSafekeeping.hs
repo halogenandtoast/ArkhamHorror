@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.HarlansCurseSafekeeping (
-  HarlansCurseSafekeeping (..),
-  harlansCurseSafekeeping,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.HarlansCurseSafekeeping (harlansCurseSafekeeping) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -13,9 +8,12 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Scenarios.ThreadsOfFate.Helpers
 
 newtype HarlansCurseSafekeeping = HarlansCurseSafekeeping ActAttrs
@@ -29,15 +27,15 @@ harlansCurseSafekeeping =
 instance HasAbilities HarlansCurseSafekeeping where
   getAbilities (HarlansCurseSafekeeping a) =
     [ restrictedAbility
-      a
-      1
-      ( AssetExists
-          $ assetIs Assets.harlanEarnstone
-          <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-      )
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        ( AssetExists
+            $ assetIs Assets.harlanEarnstone
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+        )
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide A a
     ]
 

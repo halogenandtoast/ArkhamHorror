@@ -1,13 +1,11 @@
-module Arkham.Treachery.Cards.RexsCurseSpec (
-  spec,
-) where
-
-import TestImport.Lifted
+module Arkham.Treachery.Cards.RexsCurseSpec (spec) where
 
 import Arkham.Calculation
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.SkillTest.Base
 import Arkham.Treachery.Cards qualified as Cards
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Rex's Curse" $ do

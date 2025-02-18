@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.TheBlackFan3 (theBlackFan3, TheBlackFan3 (..)) where
+module Arkham.Asset.Assets.TheBlackFan3 (theBlackFan3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection

@@ -1,12 +1,9 @@
-module Arkham.Location.Cards.ExhibitHallAthabaskanExhibit (
-  exhibitHallAthabaskanExhibit,
-  ExhibitHallAthabaskanExhibit (..),
-) where
+module Arkham.Location.Cards.ExhibitHallAthabaskanExhibit (exhibitHallAthabaskanExhibit) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (exhibitHallAthabaskanExhibit)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

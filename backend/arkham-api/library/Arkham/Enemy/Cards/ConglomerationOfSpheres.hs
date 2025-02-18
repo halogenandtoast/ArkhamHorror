@@ -1,12 +1,10 @@
-module Arkham.Enemy.Cards.ConglomerationOfSpheres (
-  conglomerationOfSpheres,
-  ConglomerationOfSpheres (..),
-) where
+module Arkham.Enemy.Cards.ConglomerationOfSpheres (conglomerationOfSpheres) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Ref
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait

@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.AbandonedChapel (abandonedChapel, AbandonedChapel (..)) where
+module Arkham.Location.Cards.AbandonedChapel (abandonedChapel) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner

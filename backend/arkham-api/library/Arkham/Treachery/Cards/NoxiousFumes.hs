@@ -1,6 +1,7 @@
-module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes, NoxiousFumes (..)) where
+module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes) where
 
 import Arkham.Classes
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
@@ -27,10 +28,10 @@ instance RunMessage NoxiousFumes where
 
       pushAll
         [ chooseOne
-          player
-          [ SkillLabel skill [revelationSkillTest sid investigator attrs skill (Fixed 3)]
-          | skill <- [#agility, #combat]
-          ]
+            player
+            [ SkillLabel skill [revelationSkillTest sid investigator attrs skill (Fixed 3)]
+            | skill <- [#agility, #combat]
+            ]
         | (investigator, player) <- investigatorPlayers
         ]
 

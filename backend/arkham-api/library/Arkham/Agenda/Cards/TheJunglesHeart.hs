@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheJunglesHeart (TheJunglesHeart (..), theJunglesHeart) where
+module Arkham.Agenda.Cards.TheJunglesHeart (theJunglesHeart) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -11,6 +11,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 

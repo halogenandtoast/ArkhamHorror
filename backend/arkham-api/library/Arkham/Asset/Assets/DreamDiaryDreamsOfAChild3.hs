@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.DreamDiaryDreamsOfAChild3 (
-  dreamDiaryDreamsOfAChild3,
-  DreamDiaryDreamsOfAChild3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DreamDiaryDreamsOfAChild3 (dreamDiaryDreamsOfAChild3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,8 +6,10 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Skills
 
@@ -26,19 +22,15 @@ dreamDiaryDreamsOfAChild3 =
   asset DreamDiaryDreamsOfAChild3 Cards.dreamDiaryDreamsOfAChild3
 
 instance HasModifiersFor DreamDiaryDreamsOfAChild3 where
-  getModifiersFor (DreamDiaryDreamsOfAChild3 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      valid <- fieldMap InvestigatorHand ((>= 8) . length) iid
-      if valid
-        then do
-          essences <- findAllCards (`cardMatch` (CardOwnedBy iid <> cardIs Skills.essenceOfTheDream))
-          modifyEach a essences [AddSkillIcons [#wild, #wild]]
-        else pure mempty
+  getModifiersFor (DreamDiaryDreamsOfAChild3 a) = for_ a.controller \iid -> do
+    valid <- fieldMap InvestigatorHand ((>= 8) . length) iid
+    when valid do
+      essences <- findAllCards (`cardMatch` (CardOwnedBy iid <> cardIs Skills.essenceOfTheDream))
+      modifyEach a essences [AddSkillIcons [#wild, #wild]]
 
 instance HasAbilities DreamDiaryDreamsOfAChild3 where
   getAbilities (DreamDiaryDreamsOfAChild3 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (exists $ You <> InvestigatorWithBondedCard (cardIs Skills.essenceOfTheDream))

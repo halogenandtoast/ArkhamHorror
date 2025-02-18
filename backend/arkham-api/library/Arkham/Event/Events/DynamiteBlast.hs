@@ -1,9 +1,10 @@
-module Arkham.Event.Events.DynamiteBlast where
+module Arkham.Event.Events.DynamiteBlast (dynamiteBlast) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), UIModifier(..), withoutModifier)
+import Arkham.Helpers.Modifiers (ModifierType (..), withoutModifier)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
+import Arkham.UI
 
 newtype DynamiteBlast = DynamiteBlast EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

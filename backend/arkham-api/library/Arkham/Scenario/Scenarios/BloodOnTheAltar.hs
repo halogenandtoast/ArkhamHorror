@@ -9,6 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Card
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath, RevealLocation)
@@ -17,7 +18,7 @@ import Arkham.Name
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (recordSetInsert)
+import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.BloodOnTheAltar.Helpers
 import Arkham.Scenarios.BloodOnTheAltar.Story

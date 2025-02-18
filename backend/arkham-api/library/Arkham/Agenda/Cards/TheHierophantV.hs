@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheHierophantV (
-  TheHierophantV (..),
-  theHierophantV,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheHierophantV (theHierophantV) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -11,7 +6,10 @@ import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Window (defeatedEnemy)
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 import Arkham.Trait (Trait (Cultist, SilverTwilight))
 
@@ -45,16 +43,16 @@ buildDrawCultists focused ((investigator, player) :| (nextInvestigator : remaini
     , chooseOne
         player
         [ targetLabel
-          (toCardId card)
-          ( UnfocusCards
-              : InvestigatorDrewEncounterCard investigator card
-              : [ buildDrawCultists
-                  (deleteFirst (toCard card) focused)
-                  (nextInvestigator :| remainingInvestigators)
-                  rest'
-                | rest' <- maybeToList (nonEmpty rest)
-                ]
-          )
+            (toCardId card)
+            ( UnfocusCards
+                : InvestigatorDrewEncounterCard investigator card
+                : [ buildDrawCultists
+                      (deleteFirst (toCard card) focused)
+                      (nextInvestigator :| remainingInvestigators)
+                      rest'
+                  | rest' <- maybeToList (nonEmpty rest)
+                  ]
+            )
         | (card, rest) <- eachWithRest (toList cards)
         ]
     ]

@@ -38,20 +38,24 @@ import Arkham.Evade qualified as Evade
 import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
-import Arkham.Game.Helpers (getActionsWith, getIsPlayable)
 import Arkham.Helpers
 import Arkham.Helpers.Act
+import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Campaign qualified as Msg
 import Arkham.Helpers.Card (getCardEntityTarget)
+import Arkham.Helpers.ChaosToken qualified as Msg
 import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
-import Arkham.Helpers.Modifiers (getMetaMaybe)
+import Arkham.Helpers.Modifiers qualified as Msg
+import Arkham.Helpers.UI qualified as Msg
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.History
 import Arkham.Id
@@ -1722,7 +1726,7 @@ oncePerCampaign k body = do
 oncePerAbility
   :: (ReverseQueue m, Sourceable attrs, Targetable attrs) => attrs -> Int -> m () -> m ()
 oncePerAbility attrs n f = do
-  unlessM (getMetaMaybe False attrs "_oncePerAbility") do
+  unlessM (Msg.getMetaMaybe False attrs "_oncePerAbility") do
     abilityModifier
       (AbilityRef (toSource attrs) n)
       attrs

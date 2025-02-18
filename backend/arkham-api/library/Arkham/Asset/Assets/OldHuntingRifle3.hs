@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.OldHuntingRifle3 (oldHuntingRifle3, OldHuntingRifle3 (..)) where
+module Arkham.Asset.Assets.OldHuntingRifle3 (oldHuntingRifle3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.ChaosToken
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
 

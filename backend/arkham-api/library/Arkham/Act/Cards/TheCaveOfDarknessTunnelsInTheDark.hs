@@ -1,9 +1,6 @@
 module Arkham.Act.Cards.TheCaveOfDarknessTunnelsInTheDark (
-  TheCaveOfDarknessTunnelsInTheDark (..),
   theCaveOfDarknessTunnelsInTheDark,
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -11,9 +8,11 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
@@ -68,10 +67,10 @@ instance RunMessage TheCaveOfDarknessTunnelsInTheDark where
         $ townHallMessages
         <> [DiscardTopOfEncounterDeck iid 1 (toSource attrs) (Just $ toTarget attrs) | iid <- iids]
         <> [ AdvanceToAct
-              (actDeckId attrs)
-              Acts.strangeOccurences
-              E
-              (toSource attrs)
+               (actDeckId attrs)
+               Acts.strangeOccurences
+               E
+               (toSource attrs)
            ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do

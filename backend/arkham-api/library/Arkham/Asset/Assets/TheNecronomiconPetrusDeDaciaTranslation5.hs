@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.TheNecronomiconPetrusDeDaciaTranslation5 (
   theNecronomiconPetrusDeDaciaTranslation5,
-  TheNecronomiconPetrusDeDaciaTranslation5 (..),
 ) where
 
 import Arkham.Ability
@@ -8,6 +7,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Discover
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
 import Arkham.Prelude

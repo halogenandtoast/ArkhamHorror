@@ -1,16 +1,14 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Enemy (
-  module Arkham.Enemy,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy where
 
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 createEnemy :: (HasCallStack, IsCard a) => a -> EnemyId -> Enemy
 createEnemy a eid = lookupEnemy (toCardCode a) eid (toCardId a)

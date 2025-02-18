@@ -1,18 +1,15 @@
-module Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove (
-  TheEntityAboveTheVortexAbove (..),
-  theEntityAboveTheVortexAbove,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheEntityAboveTheVortexAbove (theEntityAboveTheVortexAbove) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype TheEntityAboveTheVortexAbove = TheEntityAboveTheVortexAbove AgendaAttrs

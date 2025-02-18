@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.WarmWelcome (
-  WarmWelcome (..),
-  warmWelcome,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.WarmWelcome (warmWelcome) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
@@ -11,9 +6,11 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype WarmWelcome = WarmWelcome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

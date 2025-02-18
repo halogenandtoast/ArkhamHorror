@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.Newspaper2 (newspaper2, Newspaper2 (..)) where
+module Arkham.Asset.Assets.Newspaper2 (newspaper2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
@@ -22,17 +23,15 @@ newspaper2 :: AssetCard Newspaper2
 newspaper2 = asset (Newspaper2 . (`with` Metadata False)) Cards.newspaper2
 
 instance HasModifiersFor Newspaper2 where
-  getModifiersFor (Newspaper2 (a `With` metadata)) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      clueCount <- field InvestigatorClues iid
-      modifiedWhen_ a (clueCount == 0) iid
-        $ ActionSkillModifier #investigate #intellect 2
-        : [DiscoveredClues 1 | active metadata]
+  getModifiersFor (Newspaper2 (a `With` metadata)) = for_ a.controller \iid -> do
+    clueCount <- field InvestigatorClues iid
+    modifiedWhen_ a (clueCount == 0) iid
+      $ ActionSkillModifier #investigate #intellect 2
+      : [DiscoveredClues 1 | active metadata]
 
 instance HasAbilities Newspaper2 where
   getAbilities (Newspaper2 (a `With` _)) =
-    [ controlledAbility a 1 (youExist $ InvestigatorWithoutAnyClues <> at_ LocationWithAnyClues)
+    [ controlled a 1 (youExist $ InvestigatorWithoutAnyClues <> at_ LocationWithAnyClues)
         $ freeReaction
         $ Matcher.DiscoverClues #when You YourLocation (atLeast 1)
     ]

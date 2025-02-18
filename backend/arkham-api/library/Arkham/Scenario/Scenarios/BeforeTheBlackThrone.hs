@@ -13,6 +13,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
+import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (mkLabel)
@@ -24,7 +25,6 @@ import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (defeated)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (locationLayoutL, metaL)
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
@@ -182,19 +182,23 @@ instance RunMessage BeforeTheBlackThrone where
       mTopLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
+          $ not_ (be lid)
+          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridUp)
       mBottomLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
+          $ not_ (be lid)
+          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridDown)
       mLeftLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
+          $ not_ (be lid)
+          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridLeft)
       mRightLocation <-
         selectOne
           $ IncludeEmptySpace
-          $ not_ (be lid) <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
+          $ not_ (be lid)
+          <> LocationWithLabel (mkLabel $ cosmicLabel $ updatePosition pos GridRight)
       currentMsgs <- case current of
         Just (EmptySpace _ c) -> case toCardOwner c of
           Nothing -> error "Unhandled"

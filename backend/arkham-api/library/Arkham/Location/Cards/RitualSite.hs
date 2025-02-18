@@ -1,14 +1,13 @@
-module Arkham.Location.Cards.RitualSite where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.RitualSite (ritualSite) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.Cards qualified as Cards (ritualSite)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype RitualSite = RitualSite LocationAttrs

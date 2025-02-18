@@ -1,10 +1,6 @@
-module Arkham.Enemy.Helpers (
-  module Arkham.Enemy.Helpers,
-  module X,
-) where
+module Arkham.Enemy.Helpers where
 
 import Arkham.Classes.HasQueue
-import Arkham.Game.Helpers as X
 import Arkham.Id
 import Arkham.Message
 import Arkham.Prelude

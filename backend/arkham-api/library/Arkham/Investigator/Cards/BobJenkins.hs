@@ -1,13 +1,13 @@
-module Arkham.Investigator.Cards.BobJenkins (bobJenkins, BobJenkins (..)) where
+module Arkham.Investigator.Cards.BobJenkins (bobJenkins) where
 
 import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Capability
 import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.Game.Helpers (getPlayableCards, toModifiers, withModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, toModifiers, withModifiers)
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
@@ -46,14 +46,14 @@ instance HasModifiersFor BobJenkins where
 instance HasAbilities BobJenkins where
   getAbilities (BobJenkins attrs) =
     [ restrictedAbility
-      attrs
-      1
-      ( Self
-          <> PlayableCardExists
-            (UnpaidCost NoAction)
-            (basic (#asset <> #item) <> InHandOf ForPlay (affectsOthers $ InvestigatorAt YourLocation))
-      )
-      $ ActionAbility [] mempty
+        attrs
+        1
+        ( Self
+            <> PlayableCardExists
+              (UnpaidCost NoAction)
+              (basic (#asset <> #item) <> InHandOf ForPlay (affectsOthers $ InvestigatorAt YourLocation))
+        )
+        $ ActionAbility [] mempty
     | BobJenkinsAction `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
     ]
 

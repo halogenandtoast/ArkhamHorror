@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.OldBookOfLore (OldBookOfLore (..), oldBookOfLore) where
+module Arkham.Asset.Assets.OldBookOfLore (oldBookOfLore) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -16,7 +17,9 @@ oldBookOfLore = asset OldBookOfLore Cards.oldBookOfLore
 
 instance HasAbilities OldBookOfLore where
   getAbilities (OldBookOfLore a) =
-    [ (controlledAbility a 1)
+    [ controlled
+        a
+        1
         ( exists
             $ affectsOthers
             $ InvestigatorAt YourLocation

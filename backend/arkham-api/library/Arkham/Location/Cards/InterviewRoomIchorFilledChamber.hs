@@ -1,16 +1,13 @@
 module Arkham.Location.Cards.InterviewRoomIchorFilledChamber (
   interviewRoomIchorFilledChamber,
-  InterviewRoomIchorFilledChamber (..),
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype InterviewRoomIchorFilledChamber = InterviewRoomIchorFilledChamber LocationAttrs
@@ -27,14 +24,15 @@ interviewRoomIchorFilledChamber =
 
 instance HasAbilities InterviewRoomIchorFilledChamber where
   getAbilities (InterviewRoomIchorFilledChamber a) =
-    withBaseAbilities a
-      $ [ skillTestAbility
-            $ mkAbility a 1
-            $ ForcedAbility
-            $ Enters Timing.After You
-            $ LocationWithId
-            $ toId a
-        ]
+    withBaseAbilities
+      a
+      [ skillTestAbility
+          $ mkAbility a 1
+          $ ForcedAbility
+          $ Enters Timing.After You
+          $ LocationWithId
+          $ toId a
+      ]
 
 instance RunMessage InterviewRoomIchorFilledChamber where
   runMessage msg l@(InterviewRoomIchorFilledChamber attrs) = case msg of

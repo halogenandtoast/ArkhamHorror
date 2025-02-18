@@ -1,8 +1,8 @@
-module Arkham.Location.Cards.Vault (vault, Vault (..)) where
+module Arkham.Location.Cards.Vault (vault) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

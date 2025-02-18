@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheDeadWithNoName (TheDeadWithNoName (..), theDeadWithNoName) where
+module Arkham.Agenda.Cards.TheDeadWithNoName (theDeadWithNoName) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Attack
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Aloof, Massive, Swarming))
 import Arkham.Matcher
 import Arkham.Prelude

@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.OvergrownCairns (
-  OvergrownCairns (..),
-  overgrownCairns,
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.OvergrownCairns (overgrownCairns) where
 
 import Arkham.Ability
 import Arkham.Classes
@@ -11,9 +6,9 @@ import Arkham.Damage
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards (overgrownCairns)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype OvergrownCairns = OvergrownCairns LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,15 +22,15 @@ instance HasAbilities OvergrownCairns where
     withBaseAbilities
       attrs
       [ limitedAbility (PlayerLimit PerGame 1)
-        $ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> InvestigatorExists
-                (HealableInvestigator (toSource attrs) HorrorType You)
-          )
-        $ ActionAbility []
-        $ Costs [ActionCost 1, ResourceCost 2]
+          $ restrictedAbility
+            attrs
+            1
+            ( Here
+                <> InvestigatorExists
+                  (HealableInvestigator (toSource attrs) HorrorType You)
+            )
+          $ ActionAbility []
+          $ Costs [ActionCost 1, ResourceCost 2]
       | locationRevealed attrs
       ]
 

@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.ReturnToCellar (
-  returnToCellar,
-  ReturnToCellar (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ReturnToCellar (returnToCellar) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype ReturnToCellar = ReturnToCellar LocationAttrs
@@ -25,10 +20,10 @@ instance HasAbilities ReturnToCellar where
   getAbilities (ReturnToCellar attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId attrs
         | locationRevealed attrs
         ]
 

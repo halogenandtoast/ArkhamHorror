@@ -1,15 +1,12 @@
-module Arkham.Enemy.Cards.DevoteeOfTheKey (
-  devoteeOfTheKey,
-  DevoteeOfTheKey (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.DevoteeOfTheKey (devoteeOfTheKey) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DevoteeOfTheKey = DevoteeOfTheKey EnemyAttrs

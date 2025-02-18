@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.CosmicGate (
-  cosmicGate,
-  CosmicGate (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CosmicGate (cosmicGate) where
 
 import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
+import Arkham.Location.Helpers (adjacentLocations)
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
 import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
 import Arkham.Timing qualified as Timing
@@ -92,13 +88,13 @@ instance RunMessage CosmicGate where
           player
           "Done moving investigators"
           [ targetLabel
-            investigator
-            [ chooseOne
-                player
-                [ targetLabel other [Move $ move (toAbilitySource attrs 3) investigator other]
-                | other <- otherLocations
-                ]
-            ]
+              investigator
+              [ chooseOne
+                  player
+                  [ targetLabel other [Move $ move (toAbilitySource attrs 3) investigator other]
+                  | other <- otherLocations
+                  ]
+              ]
           | investigator <- investigators
           ]
       pure l

@@ -2,10 +2,10 @@ module Arkham.Act.Cards.TheBarrier (theBarrier) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Placement
 

@@ -1,9 +1,9 @@
-module Arkham.Location.Cards.OrneLibrary where
+module Arkham.Location.Cards.OrneLibrary (orneLibrary) where
 
 import Arkham.Cost
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (orneLibrary)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype OrneLibrary = OrneLibrary LocationAttrs

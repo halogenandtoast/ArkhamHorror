@@ -1,9 +1,10 @@
-module Arkham.Agenda.Cards.BesetByMonsters (BesetByMonsters (..), besetByMonsters) where
+module Arkham.Agenda.Cards.BesetByMonsters (besetByMonsters) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner hiding (advanceAgendaDeck, chooseOrRunOne)
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Log
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message.Lifted
 import Arkham.Prelude

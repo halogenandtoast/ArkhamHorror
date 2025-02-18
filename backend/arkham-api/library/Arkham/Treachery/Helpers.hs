@@ -1,9 +1,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-redundant-constraints -Wno-operator-whitespace #-}
 
-module Arkham.Treachery.Helpers (module X, module Arkham.Treachery.Helpers) where
-
-import Arkham.Game.Helpers as X
+module Arkham.Treachery.Helpers (module Arkham.Treachery.Helpers) where
 
 import Arkham.Helpers.Placement
 import Arkham.Id

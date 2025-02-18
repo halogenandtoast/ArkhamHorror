@@ -4,10 +4,10 @@ import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayable)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (ModifierType (..), toModifiers, withModifiers)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)
 

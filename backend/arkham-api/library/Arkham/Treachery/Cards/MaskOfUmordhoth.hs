@@ -1,16 +1,14 @@
-module Arkham.Treachery.Cards.MaskOfUmordhoth where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.MaskOfUmordhoth (maskOfUmordhoth) where
 
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
 import Arkham.Treachery.Runner
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth TreacheryAttrs

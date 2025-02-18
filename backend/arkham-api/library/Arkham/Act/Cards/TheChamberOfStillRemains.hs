@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.TheChamberOfStillRemains (TheChamberOfStillRemains (..), theChamberOfStillRemains) where
+module Arkham.Act.Cards.TheChamberOfStillRemains (theChamberOfStillRemains) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -10,6 +10,7 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude

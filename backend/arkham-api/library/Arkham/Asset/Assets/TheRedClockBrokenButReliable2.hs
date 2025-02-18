@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.TheRedClockBrokenButReliable2 (
-  theRedClockBrokenButReliable2,
-  TheRedClockBrokenButReliable2 (..),
-)
-where
+module Arkham.Asset.Assets.TheRedClockBrokenButReliable2 (theRedClockBrokenButReliable2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (getCanMoveToLocations)
+import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
@@ -31,8 +27,8 @@ instance RunMessage TheRedClockBrokenButReliable2 where
         iid
         $ [Label "Place 1 charge here" [AddUses (attrs.ability 1) attrs.id Charge 1, Do msg]]
         <> [ Label
-            "Take all charges here as resources"
-            [MoveTokens (attrs.ability 1) (toSource attrs) (ResourceTarget iid) Charge charges]
+               "Take all charges here as resources"
+               [MoveTokens (attrs.ability 1) (toSource attrs) (ResourceTarget iid) Charge charges]
            | charges > 0
            ]
       pure a

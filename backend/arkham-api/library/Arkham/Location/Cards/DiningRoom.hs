@@ -1,9 +1,4 @@
-module Arkham.Location.Cards.DiningRoom (
-  diningRoom,
-  DiningRoom (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DiningRoom (diningRoom) where
 
 import Arkham.Ability
 import Arkham.ChaosBag.RevealStrategy
@@ -11,11 +6,12 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Damage
 import Arkham.GameValue
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 
 newtype DiningRoom = DiningRoom LocationAttrs
@@ -30,14 +26,14 @@ instance HasAbilities DiningRoom where
     withBaseAbilities
       attrs
       [ restrictedAbility
-        attrs
-        1
-        ( Here
-            <> InvestigatorExists
-              (HealableInvestigator (toSource attrs) HorrorType You)
-        )
-        $ ActionAbility []
-        $ ActionCost 1
+          attrs
+          1
+          ( Here
+              <> InvestigatorExists
+                (HealableInvestigator (toSource attrs) HorrorType You)
+          )
+          $ ActionAbility []
+          $ ActionCost 1
       | locationRevealed attrs
       ]
 

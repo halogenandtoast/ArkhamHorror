@@ -1,22 +1,16 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Asset.Runner (
-  module X,
-  hasUses,
-) where
+module Arkham.Asset.Runner (module X, hasUses) where
 
-import Arkham.Prelude
-
-import Arkham.Asset.Helpers as X hiding (defeated, getMeta)
 import Arkham.Asset.Types as X
 import Arkham.Asset.Uses as X
 import Arkham.Calculation as X
 import Arkham.Classes as X
 import Arkham.GameValue as X
-import Arkham.Id as X
 import Arkham.Helpers.Effect as X
 import Arkham.Helpers.Message as X hiding (RevealChaosToken)
 import Arkham.Helpers.SkillTest as X
+import Arkham.Id as X
 import Arkham.SkillTest.Base as X (SkillTestDifficulty (..))
 import Arkham.Source as X
 import Arkham.Target as X
@@ -30,14 +24,18 @@ import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Customization
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Placement
+import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Use
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, doFrame, frame, windows)
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
   EventMatcher (EventAttachedToAsset),
  )
 import Arkham.Message qualified as Msg
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
@@ -142,20 +140,20 @@ instance RunMessage AssetAttrs where
         $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [ CheckWindows
-              $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
-                | damage > 0
-                ]
-              <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
-                 | horror > 0
+               $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                 | damage > 0
                  ]
+               <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
+                  | horror > 0
+                  ]
            , checkDefeated source aid
            , CheckWindows
-              $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
-                | damage > 0
-                ]
-              <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
-                 | horror > 0
+               $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
+                 | damage > 0
                  ]
+               <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
+                  | horror > 0
+                  ]
            ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do

@@ -10,6 +10,7 @@ import Arkham.Campaigns.TheForgottenAge.Meta qualified as CampaignMeta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types
+import Arkham.Helpers.Campaign
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -21,7 +22,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (checkWhen, defeated)
 import Arkham.Scenario.Import.Lifted hiding (EnemyDamage)
 import Arkham.Scenarios.TheDoomOfEztli.Story
 import Arkham.Token

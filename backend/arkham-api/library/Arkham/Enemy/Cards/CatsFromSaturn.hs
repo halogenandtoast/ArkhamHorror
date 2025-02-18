@@ -1,8 +1,10 @@
-module Arkham.Enemy.Cards.CatsFromSaturn (catsFromSaturn, CatsFromSaturn (..)) where
+module Arkham.Enemy.Cards.CatsFromSaturn (catsFromSaturn) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (chooseOne)
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude

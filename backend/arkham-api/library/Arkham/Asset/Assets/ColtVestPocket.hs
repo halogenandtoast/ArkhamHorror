@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.ColtVestPocket (coltVestPocket, ColtVestPocket (..)) where
+module Arkham.Asset.Assets.ColtVestPocket (coltVestPocket) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -16,8 +17,8 @@ coltVestPocket = asset ColtVestPocket Cards.coltVestPocket
 
 instance HasAbilities ColtVestPocket where
   getAbilities (ColtVestPocket a) =
-    [ restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
-    , restrictedAbility a 2 ControlsThis $ ForcedAbility $ RoundEnds #when
+    [ restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
+    , restricted a 2 ControlsThis $ forced $ RoundEnds #when
     ]
 
 instance RunMessage ColtVestPocket where

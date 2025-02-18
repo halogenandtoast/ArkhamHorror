@@ -1,9 +1,10 @@
-module Arkham.Act.Cards.TheParisianConspiracyV1 (TheParisianConspiracyV1 (..), theParisianConspiracyV1) where
+module Arkham.Act.Cards.TheParisianConspiracyV1 (theParisianConspiracyV1) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Prelude
 

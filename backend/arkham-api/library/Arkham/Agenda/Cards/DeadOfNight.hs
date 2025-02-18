@@ -1,18 +1,14 @@
-module Arkham.Agenda.Cards.DeadOfNight (
-  DeadOfNight (..),
-  deadOfNight,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.DeadOfNight (deadOfNight) where
 
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Helpers
 import Arkham.Agenda.Runner
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype DeadOfNight = DeadOfNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)
@@ -32,11 +28,7 @@ instance RunMessage DeadOfNight where
       mExperimentId <- selectOne $ enemyIs Enemies.theExperiment
       theExperiment <- genCard Enemies.theExperiment
       scienceBuildingId <- selectJust $ LocationWithTitle "Science Building"
-      createTheExperiment <-
-        createEnemyAt_
-          theExperiment
-          scienceBuildingId
-          Nothing
+      createTheExperiment <- createEnemyAt_ theExperiment scienceBuildingId Nothing
       pushAll
         $ [ PlaceLocationMatching (CardWithTitle "Dormitories")
           | not dormitoriesInPlay

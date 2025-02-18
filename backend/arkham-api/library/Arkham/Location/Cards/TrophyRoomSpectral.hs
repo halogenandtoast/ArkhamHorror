@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.TrophyRoomSpectral (
-  trophyRoomSpectral,
-  TrophyRoomSpectral (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TrophyRoomSpectral (trophyRoomSpectral) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Ability
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype TrophyRoomSpectral = TrophyRoomSpectral LocationAttrs
@@ -41,11 +36,11 @@ instance RunMessage TrophyRoomSpectral where
       pushAll
         $ LoseResources iid (toSource attrs) resourcesToLose
         : [ InvestigatorAssignDamage
-            iid
-            (toSource attrs)
-            DamageAny
-            0
-            horrorToTake
+              iid
+              (toSource attrs)
+              DamageAny
+              0
+              horrorToTake
           | horrorToTake > 0
           ]
       pure l

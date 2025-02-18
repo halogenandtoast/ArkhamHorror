@@ -1,7 +1,7 @@
-module Arkham.Investigator.Cards.JimCulver where
+module Arkham.Investigator.Cards.JimCulver (jimCulver) where
 
 import Arkham.ChaosToken
-import Arkham.Game.Helpers (getModifiedChaosTokenFace)
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Cards

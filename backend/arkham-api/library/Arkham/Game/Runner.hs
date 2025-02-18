@@ -36,21 +36,15 @@ import Arkham.Event
 import Arkham.Event.Types
 import Arkham.Game.Base
 import Arkham.Game.Diff
-import Arkham.Game.Helpers hiding (
-  EnemyEvade,
-  EnemyFight,
-  createWindowModifierEffect,
-  getSpendableClueCount,
-  withModifiers,
- )
 import Arkham.Game.Json ()
 import Arkham.Game.State
 import Arkham.Game.Utils
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (spawnAt)
-import Arkham.Helpers.Investigator hiding (findCard, investigator, matchTarget)
+import Arkham.Helpers.Investigator hiding (findCard, investigator)
 import Arkham.Helpers.Message hiding (
   EnemyDamage,
   InvestigatorDamage,
@@ -58,6 +52,13 @@ import Arkham.Helpers.Message hiding (
   InvestigatorResigned,
   createEnemy,
  )
+import Arkham.Helpers.Modifiers hiding (createWindowModifierEffect)
+import Arkham.Helpers.Playable
+import Arkham.Helpers.Query
+import Arkham.Helpers.Ref
+import Arkham.Helpers.Scenario
+import Arkham.Helpers.Source
+import Arkham.Helpers.Window
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (

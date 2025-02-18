@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.AgentsOfTheOuterGods (AgentsOfTheOuterGods (..), agentsOfTheOuterGods) where
+module Arkham.Agenda.Cards.AgentsOfTheOuterGods (agentsOfTheOuterGods) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,6 +6,7 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Prelude
 import Arkham.Trait (Trait (Port))

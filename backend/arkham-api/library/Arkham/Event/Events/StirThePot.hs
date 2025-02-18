@@ -1,9 +1,9 @@
-module Arkham.Event.Events.StirThePot (stirThePot, StirThePot (..)) where
+module Arkham.Event.Events.StirThePot (stirThePot) where
 
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher

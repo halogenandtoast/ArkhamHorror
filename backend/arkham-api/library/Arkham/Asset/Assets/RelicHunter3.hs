@@ -1,13 +1,10 @@
-module Arkham.Asset.Assets.RelicHunter3 (
-  relicHunter3,
-  RelicHunter3 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.RelicHunter3 (relicHunter3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Prelude
+import Arkham.Slot
 
 newtype RelicHunter3 = RelicHunter3 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

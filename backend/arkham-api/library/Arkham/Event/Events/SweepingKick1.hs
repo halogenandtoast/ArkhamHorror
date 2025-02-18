@@ -1,11 +1,9 @@
-module Arkham.Event.Events.SweepingKick1 (sweepingKick1, SweepingKick1 (..)) where
+module Arkham.Event.Events.SweepingKick1 (sweepingKick1) where
 
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Helpers
-import Arkham.Event.Runner
-import Arkham.Fight
-import Arkham.Prelude
+import Arkham.Event.Import.Lifted
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
+import Arkham.Modifier
 
 newtype SweepingKick1 = SweepingKick1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -15,17 +13,13 @@ sweepingKick1 :: EventCard SweepingKick1
 sweepingKick1 = event SweepingKick1 Cards.sweepingKick1
 
 instance RunMessage SweepingKick1 where
-  runMessage msg e@(SweepingKick1 attrs) = case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+  runMessage msg e@(SweepingKick1 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid attrs
-      enabled <- skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid attrs iid [AddSkillValue #agility, DamageDealt 1]
+      chooseFightEnemy sid iid attrs
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      mSkillTestTarget <- getSkillTestTarget
-      for_ mSkillTestTarget \case
-        EnemyTarget eid -> push $ EnemyEvaded iid eid
-        _ -> pure ()
+      getSkillTestTargetedEnemy >>= traverse_ (automaticallyEvadeEnemy iid)
       pure e
-    _ -> SweepingKick1 <$> runMessage msg attrs
+    _ -> SweepingKick1 <$> liftRunMessage msg attrs

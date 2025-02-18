@@ -7,17 +7,19 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.Log
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
-import Arkham.Scenario.Helpers
 import Arkham.Scenario.Runner hiding (placeLocationCard, story)
 import Arkham.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Scenario.Setup
 import Arkham.Scenarios.TheMidnightMasks.Story
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
-  deriving stock (Generic)
+  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasChaosTokenValue)
 

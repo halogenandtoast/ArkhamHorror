@@ -1,10 +1,11 @@
-module Arkham.Asset.Assets.MauserC96 (mauserC96, MauserC96 (..)) where
+module Arkham.Asset.Assets.MauserC96 (mauserC96) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Capability
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

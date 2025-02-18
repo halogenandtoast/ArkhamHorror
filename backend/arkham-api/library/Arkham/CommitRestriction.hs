@@ -6,6 +6,7 @@ import Arkham.Action (Action)
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Source
+import Arkham.Matcher.SkillTest
 import Arkham.Prelude
 import Data.Aeson.TH
 
@@ -27,6 +28,7 @@ data CommitRestriction
   | OnlyEvasionAgainst EnemyMatcher
   | AnyCommitRestriction [CommitRestriction]
   | OnlySkillTestSource SourceMatcher
+  | OnlySkillTest SkillTestMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''CommitRestriction)

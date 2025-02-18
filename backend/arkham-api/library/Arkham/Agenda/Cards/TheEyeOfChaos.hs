@@ -4,8 +4,8 @@ import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers (getGameValue)
 import Arkham.Helpers.Act (getCurrentActStep)
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

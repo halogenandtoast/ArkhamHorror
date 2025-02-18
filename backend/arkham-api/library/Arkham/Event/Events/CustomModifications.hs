@@ -6,9 +6,9 @@ import Arkham.Capability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Game.Helpers (targetToSource)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
+import Arkham.Helpers.Ref (targetToSource)
 import Arkham.Helpers.SkillTest (
   getSkillTestInvestigator,
   getSkillTestSource,

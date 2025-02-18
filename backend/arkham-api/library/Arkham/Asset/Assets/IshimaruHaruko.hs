@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.IshimaruHaruko (ishimaruHaruko, IshimaruHaruko (..)) where
+module Arkham.Asset.Assets.IshimaruHaruko (ishimaruHaruko) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Story.Cards qualified as Story
@@ -18,9 +19,9 @@ ishimaruHaruko = asset IshimaruHaruko Cards.ishimaruHaruko
 instance HasAbilities IshimaruHaruko where
   getAbilities (IshimaruHaruko a) =
     [ skillTestAbility
-        $ restrictedAbility a 1 (OnSameLocation <> youExist (HandWith (LengthIs $ atLeast 6))) parleyAction_
+        $ restricted a 1 (OnSameLocation <> youExist (HandWith (LengthIs $ atLeast 6))) parleyAction_
     , groupLimit PerGame
-        $ restrictedAbility a 2 (not_ $ exists Story.sickeningReality_67)
+        $ restricted a 2 (not_ $ exists Story.sickeningReality_67)
         $ forced
         $ LastClueRemovedFromAsset #when (be a)
     ]

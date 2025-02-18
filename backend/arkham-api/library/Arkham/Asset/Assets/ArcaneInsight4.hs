@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.ArcaneInsight4 (
-  arcaneInsight4,
-  ArcaneInsight4 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.ArcaneInsight4 (arcaneInsight4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype ArcaneInsight4 = ArcaneInsight4 AssetAttrs
@@ -21,10 +18,10 @@ arcaneInsight4 = asset ArcaneInsight4 Cards.arcaneInsight4
 
 instance HasAbilities ArcaneInsight4 where
   getAbilities (ArcaneInsight4 a) =
-    [ limitedAbility (PlayerLimit PerTurn 1)
-        $ restrictedAbility a 1 (ControlsThis <> DuringTurn Anyone)
+    [ limited (PlayerLimit PerTurn 1)
+        $ controlled a 1 (DuringTurn Anyone)
         $ FastAbility
-        $ UseCost (AssetWithId $ toId a) Charge 1
+        $ assetUseCost a Charge 1
     ]
 
 instance RunMessage ArcaneInsight4 where

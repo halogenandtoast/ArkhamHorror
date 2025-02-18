@@ -1,16 +1,13 @@
-module Arkham.Enemy.Cards.HotelManager (
-  hotelManager,
-  HotelManager (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.HotelManager (hotelManager) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Guest))
 
 newtype HotelManager = HotelManager EnemyAttrs
@@ -40,16 +37,16 @@ instance RunMessage HotelManager where
       pushAll
         $ ( guard (notNull edibleGuests)
               *> [ chooseOrRunOne
-                    lead
-                    [ targetLabel
-                      guest
-                      [AddToVictory (toTarget guest), PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2]
-                    | guest <- edibleGuests
-                    ]
+                     lead
+                     [ targetLabel
+                         guest
+                         [AddToVictory (toTarget guest), PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 2]
+                     | guest <- edibleGuests
+                     ]
                  ]
           )
         <> ( guard (notNull otherGuests)
-              *> [MoveToward (toTarget guest) $ locationWithEnemy $ toId attrs | guest <- otherGuests]
+               *> [MoveToward (toTarget guest) $ locationWithEnemy $ toId attrs | guest <- otherGuests]
            )
 
       pure e

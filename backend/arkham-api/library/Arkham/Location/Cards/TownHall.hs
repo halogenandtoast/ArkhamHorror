@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.TownHall (
-  townHall,
-  TownHall (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.TownHall (townHall) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Timing qualified as Timing
 

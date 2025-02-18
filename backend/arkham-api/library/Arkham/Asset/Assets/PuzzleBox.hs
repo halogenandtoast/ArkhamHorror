@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.PuzzleBox (
-  puzzleBox,
-  PuzzleBox (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.PuzzleBox (puzzleBox) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,10 +6,11 @@ import Arkham.Asset.Runner hiding (InvestigatorDefeated)
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Field
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype PuzzleBox = PuzzleBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -29,7 +24,7 @@ instance HasAbilities PuzzleBox where
   getAbilities (PuzzleBox attrs) =
     [ restrictedAbility attrs 1 (ControlsThis <> InvestigatorExists (NotInvestigator You))
         $ ForcedAbility
-        $ InvestigatorDefeated Timing.When ByAny You
+        $ InvestigatorDefeated #when ByAny You
     , limitedAbility (GroupLimit PerGame 1)
         $ restrictedAbility
           attrs
@@ -62,8 +57,8 @@ instance RunMessage PuzzleBox where
       push
         $ chooseOrRunOne player
         $ [ Label
-            "Unlight a brazier at your location"
-            [UpdateLocation location (LocationBrazier ?=. Unlit)]
+              "Unlight a brazier at your location"
+              [UpdateLocation location (LocationBrazier ?=. Unlit)]
           | location <- maybeToList locationLit
           ]
         <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]

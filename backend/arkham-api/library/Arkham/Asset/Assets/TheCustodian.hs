@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.TheCustodian (theCustodian, TheCustodian (..)) where
+module Arkham.Asset.Assets.TheCustodian (theCustodian) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection

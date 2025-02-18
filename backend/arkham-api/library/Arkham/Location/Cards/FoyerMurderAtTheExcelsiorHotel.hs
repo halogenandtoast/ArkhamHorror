@@ -1,16 +1,11 @@
-module Arkham.Location.Cards.FoyerMurderAtTheExcelsiorHotel (
-  foyerMurderAtTheExcelsiorHotel,
-  FoyerMurderAtTheExcelsiorHotel (..),
-)
-where
+module Arkham.Location.Cards.FoyerMurderAtTheExcelsiorHotel (foyerMurderAtTheExcelsiorHotel) where
 
-import Arkham.Prelude
-
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Guest))
 import Arkham.Window (getBatchId)
 
@@ -27,8 +22,8 @@ instance HasAbilities FoyerMurderAtTheExcelsiorHotel where
       attrs
       [ withTooltip " You flee the scene of the crime." $ locationResignAction attrs
       , skillTestAbility
-          $ restrictedAbility attrs 1 (exists $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
-          $ ForcedAbility (Leaves #when You $ LocationWithId $ toId attrs)
+          $ restricted attrs 1 (exists $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
+          $ forced (Leaves #when You $ be attrs)
       ]
 
 instance RunMessage FoyerMurderAtTheExcelsiorHotel where
@@ -39,10 +34,10 @@ instance RunMessage FoyerMurderAtTheExcelsiorHotel where
         $ beginSkillTest
           sid
           iid
-          (toAbilitySource attrs 1)
+          (attrs.ability 1)
           (BatchTarget batchId)
           #agility
-          (CountEnemies $ enemyAt (toId attrs) <> EnemyWithTrait Guest)
+          $ CountEnemies (enemyAt (toId attrs) <> EnemyWithTrait Guest)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mtarget <- getSkillTestTarget

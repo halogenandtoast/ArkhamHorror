@@ -1,16 +1,12 @@
-module Arkham.Location.Cards.OsbornsGeneralStore_206 (
-  osbornsGeneralStore_206,
-  OsbornsGeneralStore_206 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.OsbornsGeneralStore_206 (osbornsGeneralStore_206) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (CannotGainResources), modifySelect)
 import Arkham.Location.Cards qualified as Cards (osbornsGeneralStore_206)
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype OsbornsGeneralStore_206 = OsbornsGeneralStore_206 LocationAttrs
   deriving anyclass IsLocation

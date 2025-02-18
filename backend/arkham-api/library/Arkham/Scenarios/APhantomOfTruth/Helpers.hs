@@ -3,18 +3,17 @@ module Arkham.Scenarios.APhantomOfTruth.Helpers (
   module X,
 ) where
 
-import Arkham.Prelude
-
 import Arkham.Campaigns.ThePathToCarcosa.Helpers as X
 import Arkham.Classes
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator (getMaybeLocation)
+import Arkham.Helpers.Query (getInvestigators, getLeadPlayer)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Source
 
 getTheOrganist :: HasGame m => m EnemyId
@@ -60,18 +59,18 @@ disengageEachEnemyAndMoveToConnectingLocation source = do
       , enemy <- enemies
       ]
     <> [ chooseOneAtATime
-          lead
-          [ targetLabel
-            iid
-            [ chooseOne
-                player
-                $ Label "Do not move" []
-                : [ targetLabel lid [Move $ move source iid lid]
-                  | lid <- locations
-                  ]
-            ]
-          | (iid, player, locations) <- locationPairs
-          ]
+           lead
+           [ targetLabel
+               iid
+               [ chooseOne
+                   player
+                   $ Label "Do not move" []
+                   : [ targetLabel lid [Move $ move source iid lid]
+                     | lid <- locations
+                     ]
+               ]
+           | (iid, player, locations) <- locationPairs
+           ]
        ]
 
 scenarioI18n :: (HasI18n => a) -> a

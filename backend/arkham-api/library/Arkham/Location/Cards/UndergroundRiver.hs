@@ -1,7 +1,8 @@
-module Arkham.Location.Cards.UndergroundRiver (undergroundRiver, UndergroundRiver (..)) where
+module Arkham.Location.Cards.UndergroundRiver (undergroundRiver) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers

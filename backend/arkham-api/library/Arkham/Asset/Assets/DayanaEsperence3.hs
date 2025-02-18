@@ -1,9 +1,11 @@
-module Arkham.Asset.Assets.DayanaEsperence3 (dayanaEsperence3, DayanaEsperence3 (..)) where
+module Arkham.Asset.Assets.DayanaEsperence3 (dayanaEsperence3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window
 import Arkham.Matcher hiding (EventCard, PlaceUnderneath, PlayCard)
 import Arkham.Prelude
 import Arkham.Window (mkAfter, mkWhen)
@@ -18,21 +20,18 @@ dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)
 
 instance HasModifiersFor DayanaEsperence3 where
   getModifiersFor (DayanaEsperence3 a) = do
-    investigator <- case a.controller of
-      Nothing -> pure mempty
-      Just iid -> modified_ a iid $ map AsIfInHand $ assetCardsUnderneath a
+    for_ a.controller \iid ->
+      modified_ a iid $ map AsIfInHand $ assetCardsUnderneath a
 
-    cards <-
-      modifyEach
-        a
-        (assetCardsUnderneath a)
-        [LeaveCardWhereItIs, AdditionalCost $ assetUseCost a Secret 1 <> exhaust a]
-
-    pure $ investigator <> cards
+    modifyEach
+      a
+      (assetCardsUnderneath a)
+      [LeaveCardWhereItIs, AdditionalCost $ assetUseCost a Secret 1 <> exhaust a]
 
 instance HasAbilities DayanaEsperence3 where
   getAbilities (DayanaEsperence3 a) =
-    [ controlled a 1 (exists $ InHandOf ForPlay You <> basic (NonWeakness <> #spell <> #event)) $ FastAbility Free
+    [ controlled a 1 (exists $ InHandOf ForPlay You <> basic (NonWeakness <> #spell <> #event))
+        $ FastAbility Free
     ]
 
 instance RunMessage DayanaEsperence3 where
@@ -45,12 +44,12 @@ instance RunMessage DayanaEsperence3 where
         $ chooseOne
           player
           [ targetLabel
-            (toCardId c)
-            ( PlaceUnderneath (toTarget attrs) [c]
-                : map
-                  (\other -> AddToDiscard (fromMaybe iid $ toCardOwner other) other)
-                  (onlyPlayerCards $ assetCardsUnderneath attrs)
-            )
+              (toCardId c)
+              ( PlaceUnderneath (toTarget attrs) [c]
+                  : map
+                    (\other -> AddToDiscard (fromMaybe iid $ toCardOwner other) other)
+                    (onlyPlayerCards $ assetCardsUnderneath attrs)
+              )
           | c <- cards
           ]
       pure a

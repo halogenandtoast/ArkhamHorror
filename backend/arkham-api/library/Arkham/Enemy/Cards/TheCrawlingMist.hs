@@ -1,15 +1,11 @@
-module Arkham.Enemy.Cards.TheCrawlingMist (
-  theCrawlingMist,
-  TheCrawlingMist (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.TheCrawlingMist (theCrawlingMist) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TheCrawlingMist = TheCrawlingMist EnemyAttrs
   deriving anyclass IsEnemy

@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.CorruptedOrderly (corruptedOrderly, corruptedOrderlyEffect, CorruptedOrderly (..)) where
+module Arkham.Enemy.Cards.CorruptedOrderly (corruptedOrderly, corruptedOrderlyEffect) where
 
 import Arkham.Classes
 import Arkham.Effect.Runner
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenarios.WakingNightmare.Helpers

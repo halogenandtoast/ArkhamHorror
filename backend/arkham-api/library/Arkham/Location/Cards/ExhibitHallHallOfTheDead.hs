@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.ExhibitHallHallOfTheDead (
-  exhibitHallHallOfTheDead,
-  ExhibitHallHallOfTheDead (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ExhibitHallHallOfTheDead (exhibitHallHallOfTheDead) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (exhibitHallHallOfTheDead)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype ExhibitHallHallOfTheDead = ExhibitHallHallOfTheDead LocationAttrs
@@ -31,12 +26,12 @@ instance HasAbilities ExhibitHallHallOfTheDead where
     withBaseAbilities
       x
       [ mkAbility x 1
-        $ ForcedAbility
-        $ SkillTestResult
-          Timing.After
-          You
-          (WhileInvestigating $ LocationWithId $ toId x)
-        $ FailureResult AnyValue
+          $ ForcedAbility
+          $ SkillTestResult
+            Timing.After
+            You
+            (WhileInvestigating $ LocationWithId $ toId x)
+          $ FailureResult AnyValue
       | locationRevealed x
       ]
 

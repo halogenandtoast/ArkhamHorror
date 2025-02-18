@@ -1,16 +1,12 @@
-module Arkham.Enemy.Cards.LaboringGug (
-  laboringGug,
-  LaboringGug (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.LaboringGug (laboringGug) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype LaboringGug = LaboringGug EnemyAttrs
   deriving anyclass IsEnemy

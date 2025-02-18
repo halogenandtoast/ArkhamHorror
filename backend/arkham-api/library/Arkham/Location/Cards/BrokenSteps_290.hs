@@ -1,18 +1,14 @@
-module Arkham.Location.Cards.BrokenSteps_290 (
-  brokenSteps_290,
-  BrokenSteps_290 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BrokenSteps_290 (brokenSteps_290) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Timing qualified as Timing
 import Arkham.Trait
@@ -47,8 +43,8 @@ instance RunMessage BrokenSteps_290 where
           | hasAssets
           ]
             <> [ Label
-                "Draw the topmost cultist enemy in the encounter discard pile"
-                [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
+                   "Draw the topmost cultist enemy in the encounter discard pile"
+                   [findAndDrawEncounterCard iid (CardWithId $ toCardId c)]
                | c <- maybeToList mCultistCard
                ]
       player <- getPlayer iid

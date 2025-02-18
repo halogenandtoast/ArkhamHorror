@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.PassengerCar_169 (passengerCar_169, PassengerCar_169 (..)) where
+module Arkham.Location.Cards.PassengerCar_169 (passengerCar_169) where
 
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.GameValue
+import Arkham.Helpers.Cost
 import Arkham.Location.Cards qualified as Cards (passengerCar_169)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

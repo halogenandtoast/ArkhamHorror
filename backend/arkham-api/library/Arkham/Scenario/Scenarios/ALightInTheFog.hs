@@ -14,7 +14,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Investigator (withLocationOf, getMaybeLocation)
 import Arkham.Helpers.Log
-import Arkham.Helpers.Modifiers (ModifierType(..), setActiveDuringSetup, modifySelectMaybe, modifySelectMaybeWith)
+import Arkham.Helpers.Modifiers (modifySelectMaybe, modifySelectMaybeWith)
+import Arkham.Modifier
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.I18n
 import Arkham.Id

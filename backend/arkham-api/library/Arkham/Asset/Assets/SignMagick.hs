@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.SignMagick (
-  signMagick,
-  SignMagick (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.SignMagick (signMagick) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Slot
 import Arkham.Trait
 
 newtype SignMagick = SignMagick AssetAttrs

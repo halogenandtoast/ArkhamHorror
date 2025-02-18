@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.TrueMagickReworkingReality5 (
-  trueMagickReworkingReality5,
-  TrueMagickReworkingReality5 (..),
-)
-where
+module Arkham.Asset.Assets.TrueMagickReworkingReality5 (trueMagickReworkingReality5) where
 
 import Arkham.Ability
 import {-# SOURCE #-} Arkham.Asset (createAsset)
@@ -10,8 +6,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (createAsset)
 import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
-import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -34,8 +30,8 @@ trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metad
 instance HasAbilities TrueMagickReworkingReality5 where
   getAbilities (TrueMagickReworkingReality5 (With attrs (Metadata Nothing))) =
     [ withTooltip "Use True Magick"
-      $ doesNotProvokeAttacksOfOpportunity
-      $ controlled attrs 1 HasTrueMagick aform
+        $ doesNotProvokeAttacksOfOpportunity
+        $ controlled attrs 1 HasTrueMagick aform
     | aform <- [ActionAbility [] mempty, FastAbility Free, freeReaction AnyWindow]
     ]
   getAbilities (TrueMagickReworkingReality5 (With _ (Metadata (Just inner)))) = getAbilities inner

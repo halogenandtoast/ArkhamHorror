@@ -1,10 +1,10 @@
-module Arkham.Event.Events.FalseSurrender (falseSurrender, FalseSurrender (..)) where
+module Arkham.Event.Events.FalseSurrender (falseSurrender) where
 
 import Arkham.Ability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getCanPerformAbility)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Window (defaultWindows)

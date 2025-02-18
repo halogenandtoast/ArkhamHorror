@@ -1,10 +1,10 @@
-module Arkham.Event.Events.CheatDeath5 (cheatDeath5, CheatDeath5 (..)) where
+module Arkham.Event.Events.CheatDeath5 (cheatDeath5) where
 
 import Arkham.Classes.HasQueue (replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Matcher
 import Arkham.Movement

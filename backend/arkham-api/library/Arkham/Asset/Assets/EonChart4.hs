@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.EonChart4 (eonChart4, EonChart4 (..)) where
+module Arkham.Asset.Assets.EonChart4 (eonChart4) where
 
 import Arkham.Ability
 import Arkham.Action (Action)
@@ -7,7 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
@@ -94,13 +94,13 @@ instance RunMessage EonChart4 where
       unless (null abilities' && null cards') do
         chooseOne iid
           $ [ AbilityLabel
-              iid
-              (decreaseCost ab)
-              []
-              []
-              [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid $ decreaseCost ab)
-              , DoStep (n - 1) msg'
-              ]
+                iid
+                (decreaseCost ab)
+                []
+                []
+                [ HandleTargetChoice iid (toSource attrs) (AbilityTarget iid $ decreaseCost ab)
+                , DoStep (n - 1) msg'
+                ]
             | ab <- abilities'
             ]
           <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- cards']

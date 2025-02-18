@@ -12,6 +12,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Act
+import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Cards qualified as Locations
@@ -21,7 +22,6 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
 import Arkham.Scenarios.AtDeathsDoorstep.Story

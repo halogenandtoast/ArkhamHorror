@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.Gondola (
-  gondola,
-  Gondola (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Gondola (gondola) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Data.List qualified as List
 
 newtype Gondola = Gondola LocationAttrs

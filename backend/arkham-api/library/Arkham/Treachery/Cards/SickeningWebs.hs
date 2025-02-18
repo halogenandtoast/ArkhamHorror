@@ -1,7 +1,8 @@
-module Arkham.Treachery.Cards.SickeningWebs (sickeningWebs, SickeningWebs (..)) where
+module Arkham.Treachery.Cards.SickeningWebs (sickeningWebs) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Alert, Retaliate))
 import Arkham.Matcher

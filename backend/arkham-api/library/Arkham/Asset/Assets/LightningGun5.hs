@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.LightningGun5 (lightningGun5, LightningGun5 (..)) where
+module Arkham.Asset.Assets.LightningGun5 (lightningGun5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype LightningGun5 = LightningGun5 AssetAttrs

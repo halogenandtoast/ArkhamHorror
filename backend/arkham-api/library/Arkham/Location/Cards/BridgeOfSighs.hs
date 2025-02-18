@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.BridgeOfSighs (
-  bridgeOfSighs,
-  BridgeOfSighs (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BridgeOfSighs (bridgeOfSighs) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype BridgeOfSighs = BridgeOfSighs LocationAttrs
@@ -32,10 +27,10 @@ instance HasAbilities BridgeOfSighs where
   getAbilities (BridgeOfSighs attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ Leaves Timing.After You
-          $ LocationWithId
-          $ toId attrs
+            $ ForcedAbility
+            $ Leaves Timing.After You
+            $ LocationWithId
+            $ toId attrs
         | locationRevealed attrs
         ]
 

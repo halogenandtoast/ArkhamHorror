@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.KnightsHall (knightsHall, KnightsHall (..)) where
+module Arkham.Location.Cards.KnightsHall (knightsHall) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Prelude
 import Arkham.ScenarioLogKey

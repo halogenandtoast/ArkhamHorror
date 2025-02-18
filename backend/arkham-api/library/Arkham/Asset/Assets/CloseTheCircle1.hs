@@ -6,10 +6,11 @@ import Arkham.Asset.Import.Lifted hiding (drawCards)
 import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Game.Helpers (canDo, getCanPerformAbility, getPlayableCards)
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Action (canDo, getCanAfford)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Investigator.Types (Investigator, remainingActionsL)
 import Arkham.Matcher
 import Arkham.Projection

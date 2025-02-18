@@ -2,7 +2,6 @@ module Arkham.Location.Cards.SecondFloorHall (secondFloorHall, SecondFloorHall (
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner

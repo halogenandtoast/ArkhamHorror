@@ -1,9 +1,6 @@
 module Arkham.Act.Cards.FriendsInHighPlacesHenrysInformation (
-  FriendsInHighPlacesHenrysInformation (..),
   friendsInHighPlacesHenrysInformation,
 ) where
-
-import Arkham.Prelude
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -12,9 +9,11 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype FriendsInHighPlacesHenrysInformation = FriendsInHighPlacesHenrysInformation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -32,15 +31,15 @@ friendsInHighPlacesHenrysInformation =
 instance HasAbilities FriendsInHighPlacesHenrysInformation where
   getAbilities (FriendsInHighPlacesHenrysInformation a) =
     [ restrictedAbility
-      a
-      1
-      ( AssetExists
-          $ assetIs Assets.henryDeveau
-          <> AssetWithClues
-            (AtLeast $ PerPlayer 1)
-      )
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        ( AssetExists
+            $ assetIs Assets.henryDeveau
+            <> AssetWithClues
+              (AtLeast $ PerPlayer 1)
+        )
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide C a
     ]
 

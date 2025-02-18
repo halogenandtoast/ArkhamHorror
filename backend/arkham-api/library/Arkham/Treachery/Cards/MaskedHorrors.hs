@@ -3,7 +3,6 @@ module Arkham.Treachery.Cards.MaskedHorrors where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards

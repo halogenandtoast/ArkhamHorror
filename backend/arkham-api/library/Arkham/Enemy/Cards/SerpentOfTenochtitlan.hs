@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.SerpentOfTenochtitlan (serpentOfTenochtitlan, SerpentOfTenochtitlan (..)) where
+module Arkham.Enemy.Cards.SerpentOfTenochtitlan (serpentOfTenochtitlan) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher
 import Arkham.Prelude

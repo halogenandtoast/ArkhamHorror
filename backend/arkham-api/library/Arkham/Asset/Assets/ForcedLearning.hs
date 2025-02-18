@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.ForcedLearning (forcedLearning, ForcedLearning (..)) where
+module Arkham.Asset.Assets.ForcedLearning (forcedLearning) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Draw.Types
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype ForcedLearning = ForcedLearning AssetAttrs

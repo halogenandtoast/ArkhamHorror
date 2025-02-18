@@ -5,10 +5,10 @@ import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.GameValue (getPlayerCountValue)
 import Arkham.History
 import Arkham.Location.Types (Field (..))
 import Arkham.Message qualified as Msg

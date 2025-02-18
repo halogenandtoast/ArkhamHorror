@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.GildedVolto (gildedVolto, gildedVoltoEffect, GildedVolto (..)) where
+module Arkham.Asset.Assets.GildedVolto (gildedVolto, gildedVoltoEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Effect.Runner
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.SkillTest
@@ -19,9 +20,9 @@ gildedVolto = asset GildedVolto Cards.gildedVolto
 
 instance HasAbilities GildedVolto where
   getAbilities (GildedVolto a) =
-    [ restrictedAbility a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)
-    , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis $ freeReaction $ AssetEntersPlay #after (be a)
+    , restricted a 2 ControlsThis
+        $ triggered
           (InitiatedSkillTest #when You (NotSkillType #agility) AnySkillTestValue #any)
           (DiscardCost FromPlay $ toTarget a)
     ]

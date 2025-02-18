@@ -1,13 +1,14 @@
-module Arkham.Act.Cards.Fold (Fold (..), fold) where
+module Arkham.Act.Cards.Fold (fold) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Prelude hiding (fold)
 import Arkham.Projection

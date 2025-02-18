@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.HauntedFieldsSpectral (
-  hauntedFieldsSpectral,
-  HauntedFieldsSpectral (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.HauntedFieldsSpectral (hauntedFieldsSpectral) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFieldsSpectral = HauntedFieldsSpectral LocationAttrs
@@ -42,8 +37,8 @@ instance RunMessage HauntedFieldsSpectral where
           $ chooseOne
             player
             [ targetLabel
-              enemy
-              [MoveToward (EnemyTarget enemy) (LocationWithId $ toId attrs)]
+                enemy
+                [MoveToward (EnemyTarget enemy) (LocationWithId $ toId attrs)]
             | enemy <- enemies
             ]
       pure l

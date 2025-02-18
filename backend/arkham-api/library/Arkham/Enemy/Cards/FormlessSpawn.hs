@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.FormlessSpawn (formlessSpawn, FormlessSpawn (..)) where
+module Arkham.Enemy.Cards.FormlessSpawn (formlessSpawn) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner hiding (enemyDoom)
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Mod
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations

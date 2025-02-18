@@ -1,8 +1,8 @@
 module Arkham.Location.Cards.Easttown where
 
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (easttown)
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

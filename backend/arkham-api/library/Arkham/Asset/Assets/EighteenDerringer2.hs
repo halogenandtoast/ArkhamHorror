@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.EighteenDerringer2 (eighteenDerringer2, EighteenDerringer2 (..)) where
+module Arkham.Asset.Assets.EighteenDerringer2 (eighteenDerringer2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Metadata = Metadata {givesBonus :: Bool}
@@ -19,7 +20,7 @@ eighteenDerringer2 = asset (EighteenDerringer2 . (`with` Metadata False)) Cards.
 
 instance HasAbilities EighteenDerringer2 where
   getAbilities (EighteenDerringer2 (attrs `With` _)) =
-    [restrictedAbility attrs 1 ControlsThis $ fightAction $ assetUseCost attrs Ammo 1]
+    [restricted attrs 1 ControlsThis $ fightAction $ assetUseCost attrs Ammo 1]
 
 instance RunMessage EighteenDerringer2 where
   runMessage msg (EighteenDerringer2 (attrs `With` metadata)) = case msg of

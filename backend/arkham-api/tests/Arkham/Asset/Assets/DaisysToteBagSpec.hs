@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.DaisysToteBagSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Investigator.Cards
+import Arkham.Slot
 import Arkham.Trait (Trait (Tome))
 import TestImport.New
 

@@ -1,15 +1,11 @@
-module Arkham.Location.Cards.CanalsOfTenochtitlan_180 (
-  canalsOfTenochtitlan_180,
-  CanalsOfTenochtitlan_180 (..),
-) where
+module Arkham.Location.Cards.CanalsOfTenochtitlan_180 (canalsOfTenochtitlan_180) where
 
-import Arkham.Prelude
-
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype CanalsOfTenochtitlan_180 = CanalsOfTenochtitlan_180 LocationAttrs
   deriving anyclass IsLocation

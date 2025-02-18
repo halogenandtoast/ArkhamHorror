@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Act
+import Arkham.Helpers.Modifiers hiding (roundModifiers)
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.SkillTest
 import Arkham.Location.Cards qualified as Locations
@@ -20,7 +21,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
-import Arkham.Scenario.Helpers hiding (recordSetInsert, roundModifiers)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheWagesOfSin.Story
 import Arkham.Trait (Trait (Spectral))

@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.FoxMaskTheWiseTrickster (
-  foxMaskTheWiseTrickster,
-  FoxMaskTheWiseTrickster (..),
-)
-where
+module Arkham.Asset.Assets.FoxMaskTheWiseTrickster (foxMaskTheWiseTrickster) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (windowMatches)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Window (windowMatches)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier

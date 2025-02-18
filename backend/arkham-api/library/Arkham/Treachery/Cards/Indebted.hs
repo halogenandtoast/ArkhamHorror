@@ -1,6 +1,7 @@
-module Arkham.Treachery.Cards.Indebted (Indebted (..), indebted) where
+module Arkham.Treachery.Cards.Indebted (indebted) where
 
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (modifiedWith_)
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude

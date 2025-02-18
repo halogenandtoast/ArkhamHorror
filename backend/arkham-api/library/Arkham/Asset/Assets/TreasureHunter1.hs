@@ -1,14 +1,11 @@
-module Arkham.Asset.Assets.TreasureHunter1 (
-  treasureHunter1,
-  TreasureHunter1 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.TreasureHunter1 (treasureHunter1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype TreasureHunter1 = TreasureHunter1 AssetAttrs
   deriving anyclass IsAsset

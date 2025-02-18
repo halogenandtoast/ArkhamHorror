@@ -1,11 +1,11 @@
-module Arkham.Enemy.Cards.AcolyteOfUmordhoth where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.AcolyteOfUmordhoth (acolyteOfUmordhoth) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving anyclass IsEnemy

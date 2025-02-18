@@ -1,18 +1,12 @@
-module Arkham.Asset.Assets.CrystalPendulum (
-  crystalPendulum,
-  crystalPendulumEffect,
-  CrystalPendulum (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.CrystalPendulum (crystalPendulum, crystalPendulumEffect) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype CrystalPendulum = CrystalPendulum AssetAttrs
@@ -53,17 +47,17 @@ crystalPendulumEffect = cardEffect CrystalPendulumEffect Cards.crystalPendulum
 
 instance RunMessage CrystalPendulumEffect where
   runMessage msg e@(CrystalPendulumEffect attrs) = case msg of
-    PassedThisSkillTestBy _ _ n | Just (EffectInt n) == effectMetadata attrs -> do
-      case effectTarget attrs of
+    PassedThisSkillTestBy _ _ n | Just (EffectInt n) == attrs.meta -> do
+      case attrs.target of
         InvestigatorTarget iid -> do
-          let drawing = drawCards iid (toAbilitySource (effectSource attrs) 1) 1
+          let drawing = drawCards iid (toAbilitySource attrs.source 1) 1
           pushAll [drawing, DisableEffect $ toId attrs]
         _ -> error "Invalid target"
       pure e
-    FailedThisSkillTestBy _ _ n | Just (EffectInt n) == effectMetadata attrs -> do
-      case effectTarget attrs of
+    FailedThisSkillTestBy _ _ n | Just (EffectInt n) == attrs.meta -> do
+      case attrs.target of
         InvestigatorTarget iid -> do
-          let drawing = drawCards iid (toAbilitySource (effectSource attrs) 1) 1
+          let drawing = drawCards iid (toAbilitySource attrs.source 1) 1
           pushAll [drawing, DisableEffect $ toId attrs]
         _ -> error "Invalid target"
       pure e

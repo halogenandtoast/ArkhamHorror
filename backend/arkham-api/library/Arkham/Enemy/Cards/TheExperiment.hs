@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.TheExperiment (TheExperiment (..), theExperiment) where
+module Arkham.Enemy.Cards.TheExperiment (theExperiment) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -6,6 +6,8 @@ import Arkham.Act.Sequence
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

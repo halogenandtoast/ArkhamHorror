@@ -3,7 +3,7 @@ module Arkham.Event.Events.CustomAmmunition3 (customAmmunition3) where
 import Arkham.Asset.Uses
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Matcher
 import Arkham.Message.Lifted.Upgrade

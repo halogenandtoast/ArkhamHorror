@@ -1,9 +1,9 @@
-module Arkham.Asset.Assets.JoeyTheRatVigil (joeyTheRatVigil, JoeyTheRatVigil (..)) where
+module Arkham.Asset.Assets.JoeyTheRatVigil (joeyTheRatVigil) where
 
 import Arkham.Ability hiding (DuringTurn)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn, FastPlayerWindow)
 import Arkham.Message.Lifted.Choose
@@ -24,7 +24,10 @@ instance HasAbilities JoeyTheRatVigil where
     [ controlledAbility
         x
         1
-        (PlayableCardExists (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction) (InHandOf ForPlay You <> #item))
+        ( PlayableCardExists
+            (AuxiliaryCost (ResourceCost 1) $ UnpaidCost NoAction)
+            (InHandOf ForPlay You <> #item)
+        )
         (FastAbility $ ResourceCost 1)
     ]
 

@@ -1,10 +1,11 @@
-module Arkham.Enemy.Cards.Poltergeist (poltergeist, Poltergeist (..)) where
+module Arkham.Enemy.Cards.Poltergeist (poltergeist) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher hiding (NonAttackDamageEffect)
 import Arkham.Message qualified as Msg
 import Arkham.Prelude

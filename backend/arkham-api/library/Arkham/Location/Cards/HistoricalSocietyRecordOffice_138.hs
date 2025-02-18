@@ -1,12 +1,11 @@
 module Arkham.Location.Cards.HistoricalSocietyRecordOffice_138 (
   historicalSocietyRecordOffice_138,
-  HistoricalSocietyRecordOffice_138 (..),
 ) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg

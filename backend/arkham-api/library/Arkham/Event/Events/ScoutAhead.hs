@@ -1,8 +1,8 @@
-module Arkham.Event.Events.ScoutAhead (scoutAhead, ScoutAhead (..)) where
+module Arkham.Event.Events.ScoutAhead (scoutAhead) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Modifier
 import Arkham.Movement
 

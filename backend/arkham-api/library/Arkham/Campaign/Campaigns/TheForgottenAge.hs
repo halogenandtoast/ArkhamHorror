@@ -7,10 +7,13 @@ import Arkham.Campaigns.TheForgottenAge.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
-import Arkham.Game.Helpers
 import Arkham.GameValue
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Investigator.Cards (leoAnderson, montereyJack, ursulaDowns)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

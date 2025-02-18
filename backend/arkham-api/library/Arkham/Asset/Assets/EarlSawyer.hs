@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.EarlSawyer (
-  earlSawyer,
-  EarlSawyer (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.EarlSawyer (earlSawyer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
+import Arkham.Prelude
 
 newtype EarlSawyer = EarlSawyer AssetAttrs
   deriving anyclass IsAsset
@@ -21,8 +17,8 @@ earlSawyer = ally EarlSawyer Cards.earlSawyer (3, 2)
 
 instance HasAbilities EarlSawyer where
   getAbilities (EarlSawyer attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility (Matcher.EnemyEvaded Timing.After You AnyEnemy) (exhaust attrs)
+    [ restricted attrs 1 ControlsThis
+        $ ReactionAbility (Matcher.EnemyEvaded #after You AnyEnemy) (exhaust attrs)
     ]
 
 instance HasModifiersFor EarlSawyer where

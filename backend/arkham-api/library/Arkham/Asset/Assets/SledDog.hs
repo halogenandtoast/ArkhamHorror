@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.SledDog (sledDog) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Game.Helpers (getCanMoveToLocations)
+import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Movement
 

@@ -1,14 +1,10 @@
-module Arkham.Treachery.Cards.ToweringBeasts (
-  toweringBeasts,
-  ToweringBeasts (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.ToweringBeasts (toweringBeasts) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner

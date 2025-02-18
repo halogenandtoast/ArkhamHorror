@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.MarinersCompass (marinersCompass, MarinersCompass (..)) where
+module Arkham.Asset.Assets.MarinersCompass (marinersCompass) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

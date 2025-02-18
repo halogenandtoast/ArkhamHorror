@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.TheMoonXIII1 (theMoonXiii1, TheMoonXIII1 (..)) where
+module Arkham.Asset.Assets.TheMoonXIII1 (theMoonXiii1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

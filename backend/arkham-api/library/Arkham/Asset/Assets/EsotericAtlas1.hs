@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.EsotericAtlas1 (esotericAtlas1, EsotericAtlas1 (..)) where
+module Arkham.Asset.Assets.EsotericAtlas1 (esotericAtlas1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
 import Arkham.Prelude
@@ -16,7 +17,7 @@ esotericAtlas1 = asset EsotericAtlas1 Cards.esotericAtlas1
 
 instance HasAbilities EsotericAtlas1 where
   getAbilities (EsotericAtlas1 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (CanMoveTo $ LocationWithDistanceFrom 2 YourLocation RevealedLocation)

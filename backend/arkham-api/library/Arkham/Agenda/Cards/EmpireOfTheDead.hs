@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.EmpireOfTheDead (
-  EmpireOfTheDead (..),
-  empireOfTheDead,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.EmpireOfTheDead (empireOfTheDead) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
@@ -12,7 +7,9 @@ import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Placement
+import Arkham.Prelude
 
 newtype EmpireOfTheDead = EmpireOfTheDead AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

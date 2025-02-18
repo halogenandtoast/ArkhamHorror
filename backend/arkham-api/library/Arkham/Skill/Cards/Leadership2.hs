@@ -1,7 +1,7 @@
-module Arkham.Skill.Cards.Leadership2 (leadership2, Leadership2 (..)) where
+module Arkham.Skill.Cards.Leadership2 (leadership2) where
 
 import Arkham.Capability
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

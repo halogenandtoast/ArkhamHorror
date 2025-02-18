@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.UntilTheEndOfTime (untilTheEndOfTime, UntilTheEndOfTime (..)) where
+module Arkham.Asset.Assets.UntilTheEndOfTime (untilTheEndOfTime) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype UntilTheEndOfTime = UntilTheEndOfTime AssetAttrs

@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.Switchblade (Switchblade (..), switchblade) where
+module Arkham.Asset.Assets.Switchblade (switchblade) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype Switchblade = Switchblade AssetAttrs

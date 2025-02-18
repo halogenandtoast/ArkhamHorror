@@ -1,10 +1,4 @@
-module Arkham.Asset.Assets.DreamDiaryDreamsOfAMadman3 (
-  dreamDiaryDreamsOfAMadman3,
-  DreamDiaryDreamsOfAMadman3 (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DreamDiaryDreamsOfAMadman3 (dreamDiaryDreamsOfAMadman3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -12,7 +6,9 @@ import Arkham.Asset.Runner
 import Arkham.Card
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Skills
 
 newtype DreamDiaryDreamsOfAMadman3 = DreamDiaryDreamsOfAMadman3 AssetAttrs
@@ -20,23 +16,18 @@ newtype DreamDiaryDreamsOfAMadman3 = DreamDiaryDreamsOfAMadman3 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamDiaryDreamsOfAMadman3 :: AssetCard DreamDiaryDreamsOfAMadman3
-dreamDiaryDreamsOfAMadman3 =
-  asset DreamDiaryDreamsOfAMadman3 Cards.dreamDiaryDreamsOfAMadman3
+dreamDiaryDreamsOfAMadman3 = asset DreamDiaryDreamsOfAMadman3 Cards.dreamDiaryDreamsOfAMadman3
 
 instance HasModifiersFor DreamDiaryDreamsOfAMadman3 where
-  getModifiersFor (DreamDiaryDreamsOfAMadman3 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      engaged <- iid <=~> InvestigatorEngagedWith AnyEnemy
-      if engaged
-        then do
-          essences <- findAllCards (`cardMatch` (CardOwnedBy iid <> cardIs Skills.essenceOfTheDream))
-          modifyEach a essences [AddSkillIcons [#wild, #wild]]
-        else pure mempty
+  getModifiersFor (DreamDiaryDreamsOfAMadman3 a) = for_ a.controller \iid -> do
+    engaged <- iid <=~> InvestigatorEngagedWith AnyEnemy
+    when engaged do
+      essences <- findAllCards (`cardMatch` (CardOwnedBy iid <> cardIs Skills.essenceOfTheDream))
+      modifyEach a essences [AddSkillIcons [#wild, #wild]]
 
 instance HasAbilities DreamDiaryDreamsOfAMadman3 where
   getAbilities (DreamDiaryDreamsOfAMadman3 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (exists $ You <> InvestigatorWithBondedCard (cardIs Skills.essenceOfTheDream))

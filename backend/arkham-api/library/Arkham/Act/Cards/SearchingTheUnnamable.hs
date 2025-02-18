@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.SearchingTheUnnamable (SearchingTheUnnamable (..), searchingTheUnnamable) where
+module Arkham.Act.Cards.SearchingTheUnnamable (searchingTheUnnamable) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner hiding (advanceActDeck, placeLabeledLocations)
@@ -6,6 +6,7 @@ import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Placement

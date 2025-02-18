@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.HasturTheTatteredKing (hasturTheTatteredKing, HasturTheTatteredKing (..)) where
+module Arkham.Enemy.Cards.HasturTheTatteredKing (hasturTheTatteredKing) where
 
 import Arkham.ChaosToken (ChaosTokenFace (..))
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude

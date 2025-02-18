@@ -1,14 +1,8 @@
-module Arkham.Location.Cards.DreamGatePointlessReality (
-  dreamGatePointlessReality,
-  DreamGatePointlessReality (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.DreamGatePointlessReality (dreamGatePointlessReality) where
 
 import Arkham.Card
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
@@ -16,6 +10,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DreamGatePointlessReality = DreamGatePointlessReality LocationAttrs
@@ -35,18 +30,19 @@ instance HasModifiersFor DreamGatePointlessReality where
 
 instance HasAbilities DreamGatePointlessReality where
   getAbilities (DreamGatePointlessReality attrs) =
-    withRevealedAbilities attrs
-      $ [ mkAbility attrs 1
-            $ freeReaction
-            $ SkillTestResult
-              #after
-              You
-              (WhileInvestigating $ LocationWithId $ toId attrs)
-              (SuccessResult AnyValue)
-        , restrictedAbility attrs 2 (exists $ You <> investigatorIs Investigators.lukeRobinson)
-            $ ForcedAbility
-            $ PhaseEnds #when #investigation
-        ]
+    withRevealedAbilities
+      attrs
+      [ mkAbility attrs 1
+          $ freeReaction
+          $ SkillTestResult
+            #after
+            You
+            (WhileInvestigating $ LocationWithId $ toId attrs)
+            (SuccessResult AnyValue)
+      , restrictedAbility attrs 2 (exists $ You <> investigatorIs Investigators.lukeRobinson)
+          $ ForcedAbility
+          $ PhaseEnds #when #investigation
+      ]
 
 instance RunMessage DreamGatePointlessReality where
   runMessage msg l@(DreamGatePointlessReality attrs) = case msg of

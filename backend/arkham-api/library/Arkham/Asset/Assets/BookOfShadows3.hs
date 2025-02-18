@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.BookOfShadows3 (
-  BookOfShadows3 (..),
-  bookOfShadows3,
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.BookOfShadows3 (bookOfShadows3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
 import Arkham.Matcher
+import Arkham.Prelude
+import Arkham.Slot
 import Arkham.Trait
 
 newtype BookOfShadows3 = BookOfShadows3 AssetAttrs

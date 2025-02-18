@@ -1,14 +1,11 @@
-module Arkham.Act.Cards.TheSpectralRealm (
-  TheSpectralRealm (..),
-  theSpectralRealm,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.TheSpectralRealm (theSpectralRealm) where
 
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Runner
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (RevealLocation)
+import Arkham.Prelude
 
 newtype TheSpectralRealm = TheSpectralRealm ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

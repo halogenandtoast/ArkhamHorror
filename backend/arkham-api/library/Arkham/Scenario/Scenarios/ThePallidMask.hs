@@ -10,9 +10,10 @@ import Arkham.Card
 import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers hiding (recordSetInsert, skillTestModifier)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
+import Arkham.Helpers.Modifiers hiding (skillTestModifier)
+import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Label (unLabel)

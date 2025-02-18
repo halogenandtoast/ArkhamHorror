@@ -1,8 +1,9 @@
-module Arkham.Enemy.Cards.FangOfYig (fangOfYig, FangOfYig (..)) where
+module Arkham.Enemy.Cards.FangOfYig (fangOfYig) where
 
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Treacheries

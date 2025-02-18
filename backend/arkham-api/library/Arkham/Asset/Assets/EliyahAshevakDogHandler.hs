@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.EliyahAshevakDogHandler (
-  eliyahAshevakDogHandler,
-  EliyahAshevakDogHandler (..),
-)
-where
+module Arkham.Asset.Assets.EliyahAshevakDogHandler (eliyahAshevakDogHandler) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier

@@ -1,16 +1,12 @@
-module Arkham.Asset.Assets.LonnieRitter (
-  lonnieRitter,
-  LonnieRitter (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.LonnieRitter (lonnieRitter) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Damage
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Item))
 
 newtype LonnieRitter = LonnieRitter AssetAttrs
@@ -53,8 +49,8 @@ instance RunMessage LonnieRitter where
         $ chooseOne
           player
           [ targetLabel item
-            $ HealDamage (AssetTarget item) (toSource attrs) 1
-            : [HealHorror (toTarget attrs) (toSource attrs) 1 | canHealHorror]
+              $ HealDamage (AssetTarget item) (toSource attrs) 1
+              : [HealHorror (toTarget attrs) (toSource attrs) 1 | canHealHorror]
           | item <- items
           ]
       pure a

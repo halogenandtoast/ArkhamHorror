@@ -7,7 +7,6 @@ import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Game.Helpers ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Xp

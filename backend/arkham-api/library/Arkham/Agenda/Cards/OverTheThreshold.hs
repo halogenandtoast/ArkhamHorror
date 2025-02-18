@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.OverTheThreshold (
-  OverTheThreshold (..),
-  overTheThreshold,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.OverTheThreshold (overTheThreshold) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
@@ -15,7 +10,10 @@ import Arkham.Enemy.Types (Field (EnemyHealthDamage))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Act
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Matcher hiding (InvestigatorDefeated)
+import Arkham.Prelude
 import Arkham.Trait (Trait (Humanoid, SilverTwilight, Spectral))
 
 newtype OverTheThreshold = OverTheThreshold AgendaAttrs
@@ -68,9 +66,9 @@ instance RunMessage OverTheThreshold where
       pushWhen (notNull enemyPairs)
         $ chooseOrRunOneAtATime lead
         $ [ targetLabel enemy
-            $ [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
-              | humanoid <- humanoids
-              ]
+              $ [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
+                | humanoid <- humanoids
+                ]
           | (enemy, damage, humanoids) <- enemyPairs
           ]
       pure a

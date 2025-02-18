@@ -1,11 +1,11 @@
-module Arkham.Location.Cards.Backstage (backstage, Backstage (..)) where
+module Arkham.Location.Cards.Backstage (backstage) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

@@ -1,11 +1,7 @@
-module Arkham.Location.Cards.MarshRefineryInTooDeep (
-  marshRefineryInTooDeep,
-  MarshRefineryInTooDeep (..),
-)
-where
+module Arkham.Location.Cards.MarshRefineryInTooDeep (marshRefineryInTooDeep) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers (getCanMoveToLocations)
+import Arkham.Helpers.Location (getCanMoveToLocations)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted

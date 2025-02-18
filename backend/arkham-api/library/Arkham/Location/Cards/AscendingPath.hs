@@ -1,9 +1,10 @@
-module Arkham.Location.Cards.AscendingPath (ascendingPath, AscendingPath (..)) where
+module Arkham.Location.Cards.AscendingPath (ascendingPath) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 

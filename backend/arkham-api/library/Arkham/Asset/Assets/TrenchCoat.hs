@@ -1,7 +1,8 @@
-module Arkham.Asset.Assets.TrenchCoat (trenchCoat, TrenchCoat (..)) where
+module Arkham.Asset.Assets.TrenchCoat (trenchCoat) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype TrenchCoat = TrenchCoat AssetAttrs

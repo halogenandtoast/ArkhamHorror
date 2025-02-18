@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.CanalSide (
-  canalSide,
-  CanalSide (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.CanalSide (canalSide) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Direction
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype CanalSide = CanalSide LocationAttrs
@@ -32,9 +27,9 @@ instance HasAbilities CanalSide where
   getAbilities (CanalSide attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-          $ ReactionAbility
-            (Enters Timing.After You $ LocationWithId $ toId attrs)
-            Free
+            $ ReactionAbility
+              (Enters Timing.After You $ LocationWithId $ toId attrs)
+              Free
         | locationRevealed attrs
         ]
 

@@ -1,16 +1,12 @@
-module Arkham.Treachery.Cards.NoTurningBack (
-  noTurningBack,
-  NoTurningBack (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.NoTurningBack (noTurningBack) where
 
 import Arkham.Ability
 import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
 
@@ -27,7 +23,7 @@ instance HasModifiersFor NoTurningBack where
       modifySelectMaybe attrs Anyone \iid -> do
         onNoTurningBack <- iid <=~> investigatorAt lid
         pure [if onNoTurningBack then CannotMove else CannotEnter lid]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance HasAbilities NoTurningBack where
   getAbilities (NoTurningBack a) =

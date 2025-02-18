@@ -1,7 +1,4 @@
-module Arkham.Asset.Assets.IchtacaTheForgottenGuardian (
-  ichtacaTheForgottenGuardian,
-  IchtacaTheForgottenGuardian (..),
-) where
+module Arkham.Asset.Assets.IchtacaTheForgottenGuardian (ichtacaTheForgottenGuardian) where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
@@ -11,6 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Card.CardType
 import Arkham.Damage
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Prelude

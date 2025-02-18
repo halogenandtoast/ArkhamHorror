@@ -5,9 +5,9 @@ import Arkham.Capability
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
+import Arkham.Helpers.Modifiers (ModifierType (EnemyFight, HealthModifier), modified_)
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

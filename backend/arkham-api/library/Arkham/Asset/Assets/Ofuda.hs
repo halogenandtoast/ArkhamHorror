@@ -1,10 +1,10 @@
-module Arkham.Asset.Assets.Ofuda (ofuda, Ofuda (..)) where
+module Arkham.Asset.Assets.Ofuda (ofuda) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Game.Helpers (onSameLocation)
+import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Modifier

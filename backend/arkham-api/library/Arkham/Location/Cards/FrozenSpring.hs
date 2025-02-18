@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.FrozenSpring (
-  frozenSpring,
-  FrozenSpring (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.FrozenSpring (frozenSpring) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (frozenSpring)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype FrozenSpring = FrozenSpring LocationAttrs
@@ -25,10 +20,10 @@ instance HasAbilities FrozenSpring where
   getAbilities (FrozenSpring attrs) =
     withBaseAbilities attrs
       $ [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId attrs
         | locationRevealed attrs
         ]
 

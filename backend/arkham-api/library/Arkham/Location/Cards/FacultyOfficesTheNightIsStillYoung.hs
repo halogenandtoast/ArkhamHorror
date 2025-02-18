@@ -1,11 +1,10 @@
 module Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung (
   facultyOfficesTheNightIsStillYoung,
-  FacultyOfficesTheNightIsStillYoung (..),
 ) where
 
 import Arkham.Ability
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

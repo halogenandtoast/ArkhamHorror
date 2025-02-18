@@ -1,13 +1,12 @@
 module Arkham.Location.Cards.HistoricalSocietyHistoricalMuseum_130 (
   historicalSocietyHistoricalMuseum_130,
-  HistoricalSocietyHistoricalMuseum_130 (..),
 ) where
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message qualified as Msg

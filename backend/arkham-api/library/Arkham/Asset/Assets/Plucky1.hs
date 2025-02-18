@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.Plucky1 (plucky1, Plucky1 (..)) where
+module Arkham.Asset.Assets.Plucky1 (plucky1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 

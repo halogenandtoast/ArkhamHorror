@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card.Id
-import Arkham.Game.Helpers (getCanPerformAbility)
+import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

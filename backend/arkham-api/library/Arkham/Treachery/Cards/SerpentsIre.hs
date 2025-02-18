@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SerpentsIre (serpentsIre, SerpentsIre (..)) where
+module Arkham.Treachery.Cards.SerpentsIre (serpentsIre) where
 
 import Arkham.Attack
 import Arkham.Classes
@@ -10,7 +10,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Trait (Trait (Serpent))
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner hiding (EnemyFight)
+import Arkham.Treachery.Runner
 import Arkham.Zone
 
 newtype Metadata = Metadata {selectedEnemy :: Maybe EnemyId}
@@ -51,10 +51,10 @@ instance RunMessage SerpentsIre where
               $ chooseOne
                 player
                 [ targetLabel
-                  eid
-                  [ EnemySpawn (Just iid) lid eid
-                  , HandleTargetChoice iid source (EnemyTarget eid)
-                  ]
+                    eid
+                    [ EnemySpawn (Just iid) lid eid
+                    , HandleTargetChoice iid source (EnemyTarget eid)
+                    ]
                 | eid <- choices
                 ]
       pure t

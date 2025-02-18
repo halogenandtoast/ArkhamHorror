@@ -1,12 +1,10 @@
-module Arkham.Location.Cards.ForgottenMarsh where
+module Arkham.Location.Cards.ForgottenMarsh (forgottenMarsh) where
 
 import Arkham.Prelude
-
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (forgottenMarsh)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Timing qualified as Timing

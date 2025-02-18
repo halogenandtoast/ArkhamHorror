@@ -1,7 +1,8 @@
-module Arkham.Treachery.Cards.DissonantVoices where
+module Arkham.Treachery.Cards.DissonantVoices (dissonantVoices) where
 
 import Arkham.Ability
 import Arkham.Classes
+import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards

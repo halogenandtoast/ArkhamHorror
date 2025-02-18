@@ -1,19 +1,15 @@
-module Arkham.Location.Cards.WhateleyRuins_250 (
-  whateleyRuins_250,
-  WhateleyRuins_250 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.WhateleyRuins_250 (whateleyRuins_250) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Exception
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (whateleyRuins_250)
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait
 
 newtype WhateleyRuins_250 = WhateleyRuins_250 LocationAttrs
@@ -32,14 +28,14 @@ instance HasAbilities WhateleyRuins_250 where
   getAbilities (WhateleyRuins_250 attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility
-          attrs
-          1
-          ( Here
-              <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
-              <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
-          )
-          (FastAbility Free)
-          & (abilityLimitL .~ GroupLimit PerGame 1)
+            attrs
+            1
+            ( Here
+                <> exists (InvestigatorAt YourLocation <> InvestigatorWithAnyClues)
+                <> exists (EnemyAt YourLocation <> EnemyWithTrait Abomination)
+            )
+            (FastAbility Free)
+            & (abilityLimitL .~ GroupLimit PerGame 1)
         | locationRevealed attrs
         ]
 
@@ -62,8 +58,8 @@ instance RunMessage WhateleyRuins_250 where
           chooseOne
             player'
             [ targetLabel
-              target
-              [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
+                target
+                [PlaceClues (toAbilitySource attrs 1) target 1, InvestigatorSpendClues iid' 1]
             | target <- abominations
             ]
 
@@ -72,21 +68,21 @@ instance RunMessage WhateleyRuins_250 where
         $ chooseOne
           player
           [ targetLabel iid'
-            $ placeClueOnAbomination iid' player'
-            : [ chooseOne
-                player'
-                [ Label "Spend a second clue" [placeClueOnAbomination iid' player']
-                , Label "Do not spend a second clue" []
+              $ placeClueOnAbomination iid' player'
+              : [ chooseOne
+                    player'
+                    [ Label "Spend a second clue" [placeClueOnAbomination iid' player']
+                    , Label "Do not spend a second clue" []
+                    ]
+                | clueCount > 1
                 ]
-              | clueCount > 1
-              ]
-              <> [ chooseOne
-                  player'
-                  [ Label "Spend a third clue" [placeClueOnAbomination iid' player']
-                  , Label "Do not spend a third clue" []
-                  ]
-                 | clueCount > 2
-                 ]
+                <> [ chooseOne
+                       player'
+                       [ Label "Spend a third clue" [placeClueOnAbomination iid' player']
+                       , Label "Do not spend a third clue" []
+                       ]
+                   | clueCount > 2
+                   ]
           | ((iid', clueCount), player') <- investigatorPlayersWithCluePairs
           ]
       pure l

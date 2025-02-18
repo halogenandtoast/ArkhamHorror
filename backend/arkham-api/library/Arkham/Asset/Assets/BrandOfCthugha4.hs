@@ -1,9 +1,10 @@
-module Arkham.Asset.Assets.BrandOfCthugha4 (brandOfCthugha4, BrandOfCthugha4 (..)) where
+module Arkham.Asset.Assets.BrandOfCthugha4 (brandOfCthugha4) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Fight
+import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype BrandOfCthugha4 = BrandOfCthugha4 AssetAttrs
@@ -14,7 +15,7 @@ brandOfCthugha4 :: AssetCard BrandOfCthugha4
 brandOfCthugha4 = asset BrandOfCthugha4 Cards.brandOfCthugha4
 
 instance HasAbilities BrandOfCthugha4 where
-  getAbilities (BrandOfCthugha4 a) = [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (BrandOfCthugha4 a) = [restricted a 1 ControlsThis fightAction_]
 
 instance RunMessage BrandOfCthugha4 where
   runMessage msg a@(BrandOfCthugha4 attrs) = case msg of

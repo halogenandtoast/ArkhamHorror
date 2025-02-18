@@ -1,15 +1,12 @@
-module Arkham.Asset.Assets.EsotericAtlas2 (
-  esotericAtlas2,
-  EsotericAtlas2 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.EsotericAtlas2 (esotericAtlas2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 
 newtype EsotericAtlas2 = EsotericAtlas2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,7 +17,7 @@ esotericAtlas2 = asset EsotericAtlas2 Cards.esotericAtlas2
 
 instance HasAbilities EsotericAtlas2 where
   getAbilities (EsotericAtlas2 a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (CanMoveTo $ oneOf [LocationWithDistanceFrom n YourLocation RevealedLocation | n <- [1 .. 3]])

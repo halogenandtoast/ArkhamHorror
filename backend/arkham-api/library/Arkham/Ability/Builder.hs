@@ -10,7 +10,6 @@ import Arkham.Action
 import Arkham.Card.CardCode
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
-import Arkham.Helpers.Ability (withBaseAbilities)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Source

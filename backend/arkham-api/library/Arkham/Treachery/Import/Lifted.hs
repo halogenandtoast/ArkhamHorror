@@ -37,7 +37,6 @@ import Arkham.Treachery.Runner as X (
   pushM,
   pushWhen,
   setMeta,
-  toModifiers,
   tokensL,
   treachery,
   treacheryHorror,

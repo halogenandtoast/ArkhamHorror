@@ -1,8 +1,9 @@
-module Arkham.Asset.Assets.AnalyticalMind (analyticalMind, AnalyticalMind (..)) where
+module Arkham.Asset.Assets.AnalyticalMind (analyticalMind) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
 
@@ -15,15 +16,13 @@ analyticalMind = asset AnalyticalMind Cards.analyticalMind
 
 instance HasAbilities AnalyticalMind where
   getAbilities (AnalyticalMind attrs) =
-    [ restrictedAbility attrs 1 ControlsThis
-        $ ReactionAbility (CommittedCards #after You $ LengthIs $ EqualTo $ Static 1)
-        $ exhaust attrs
+    [ restricted attrs 1 ControlsThis
+        $ triggered (CommittedCards #after You $ LengthIs $ EqualTo $ Static 1) (exhaust attrs)
     ]
 
 instance HasModifiersFor AnalyticalMind where
-  getModifiersFor (AnalyticalMind a) = case a.controller of
-    Just iid -> modified_ a iid [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
-    Nothing -> pure mempty
+  getModifiersFor (AnalyticalMind a) = for_ a.controller \iid -> do
+    modified_ a iid [CanCommitToSkillTestPerformedByAnInvestigatorAt Anywhere]
 
 instance RunMessage AnalyticalMind where
   runMessage msg a@(AnalyticalMind attrs) = case msg of

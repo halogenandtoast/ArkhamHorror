@@ -1,13 +1,12 @@
 module Arkham.Enemy.Cards.TerrorOfTheStarsBringerOfIceAndDeath (
   terrorOfTheStarsBringerOfIceAndDeath,
-  TerrorOfTheStarsBringerOfIceAndDeath (..),
 )
 where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Game.Helpers (onSameLocation)
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM, modifySelf)
 import Arkham.Matcher
 

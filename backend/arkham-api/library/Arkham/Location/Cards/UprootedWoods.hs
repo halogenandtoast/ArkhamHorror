@@ -1,17 +1,12 @@
-module Arkham.Location.Cards.UprootedWoods (
-  uprootedWoods,
-  UprootedWoods (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.UprootedWoods (uprootedWoods) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (uprootedWoods)
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Timing qualified as Timing
 
 newtype UprootedWoods = UprootedWoods LocationAttrs
@@ -25,13 +20,13 @@ instance HasAbilities UprootedWoods where
   getAbilities (UprootedWoods attrs) =
     withBaseAbilities attrs
       $ [ restrictedAbility
-          attrs
-          1
-          (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
+            attrs
+            1
+            (InvestigatorExists $ You <> InvestigatorWithoutActionsRemaining)
+            $ ForcedAbility
+            $ RevealLocation Timing.After You
+            $ LocationWithId
+            $ toId attrs
         | locationRevealed attrs
         ]
 

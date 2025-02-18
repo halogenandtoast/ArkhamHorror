@@ -1,12 +1,13 @@
-module Arkham.Event.Events.KnowledgeIsPower (knowledgeIsPower, KnowledgeIsPower (..)) where
+module Arkham.Event.Events.KnowledgeIsPower (knowledgeIsPower) where
 
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
-import Arkham.Game.Helpers
+import Arkham.Helpers.Ability
 import Arkham.Helpers.Card
+import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Prelude
@@ -43,17 +44,17 @@ instance RunMessage KnowledgeIsPower where
         $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (AssetTarget asset)] | asset <- assets
           ]
         <> [ targetLabel (toCardId card)
-            $ [ AddCardEntity card
-              , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
-              , RemoveCardEntity card
-              ]
-            <> [ chooseOne
-                player
-                [ Label "Discard to draw 1 card" [DiscardCard iid (toSource attrs) (toCardId card), drawing]
-                , Label "Do not discard" []
-                ]
-               | drawing <- toList mDrawing
-               ]
+               $ [ AddCardEntity card
+                 , HandleTargetChoice iid (toSource attrs) (AssetTarget $ AssetId $ unsafeCardIdToUUID $ toCardId card)
+                 , RemoveCardEntity card
+                 ]
+               <> [ chooseOne
+                      player
+                      [ Label "Discard to draw 1 card" [DiscardCard iid (toSource attrs) (toCardId card), drawing]
+                      , Label "Do not discard" []
+                      ]
+                  | drawing <- toList mDrawing
+                  ]
            | card <- cards
            ]
       pure e

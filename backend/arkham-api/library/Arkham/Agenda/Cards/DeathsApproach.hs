@@ -1,15 +1,12 @@
-module Arkham.Agenda.Cards.DeathsApproach (
-  DeathsApproach (..),
-  deathsApproach,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.DeathsApproach (deathsApproach) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
 import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Trait (Trait (Spectral))
 
 -- Normally text like "Locations cannot be flipped" would be handled by

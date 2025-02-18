@@ -1,20 +1,16 @@
-module Arkham.Act.Cards.BreakingAndEntering (
-  BreakingAndEntering (..),
-  breakingAndEntering,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.BreakingAndEntering (breakingAndEntering) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Helpers
 import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs

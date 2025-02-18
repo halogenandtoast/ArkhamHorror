@@ -1,9 +1,4 @@
-module Arkham.Act.Cards.StrangeRelicsMariasInformation (
-  StrangeRelicsMariasInformation (..),
-  strangeRelicsMariasInformation,
-) where
-
-import Arkham.Prelude
+module Arkham.Act.Cards.StrangeRelicsMariasInformation (strangeRelicsMariasInformation) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
@@ -12,9 +7,11 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.Classes
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Name
+import Arkham.Prelude
 import Arkham.ScenarioLogKey
 
 newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
@@ -32,11 +29,11 @@ strangeRelicsMariasInformation =
 instance HasAbilities StrangeRelicsMariasInformation where
   getAbilities (StrangeRelicsMariasInformation a) =
     [ restrictedAbility
-      a
-      1
-      (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
-      $ Objective
-      $ ForcedAbility AnyWindow
+        a
+        1
+        (exists $ assetIs Assets.mariaDeSilva <> AssetWithClues (AtLeast $ PerPlayer 1))
+        $ Objective
+        $ ForcedAbility AnyWindow
     | onSide E a
     ]
 
@@ -54,17 +51,17 @@ instance RunMessage StrangeRelicsMariasInformation where
           , Remember $ IchtacasDestination (Labeled (toName Locations.rivertown) rivertown)
           ]
         <> [ DiscardTopOfEncounterDeck
-            iid
-            1
-            (toSource attrs)
-            (Just $ toTarget attrs)
+               iid
+               1
+               (toSource attrs)
+               (Just $ toTarget attrs)
            | iid <- iids
            ]
         <> [ AdvanceToAct
-              (actDeckId attrs)
-              Acts.strangeOccurences
-              E
-              (toSource attrs)
+               (actDeckId attrs)
+               Acts.strangeOccurences
+               E
+               (toSource attrs)
            ]
       pure a
     DiscardedTopOfEncounterDeck iid [card] _ target | isTarget attrs target -> do

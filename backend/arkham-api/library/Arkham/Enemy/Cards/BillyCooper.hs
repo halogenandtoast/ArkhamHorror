@@ -1,9 +1,10 @@
-module Arkham.Enemy.Cards.BillyCooper (billyCooper, BillyCooper (..)) where
+module Arkham.Enemy.Cards.BillyCooper (billyCooper) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Runner
+import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Trait

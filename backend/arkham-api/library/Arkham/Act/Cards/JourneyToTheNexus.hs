@@ -1,4 +1,4 @@
-module Arkham.Act.Cards.JourneyToTheNexus (JourneyToTheNexus (..), journeyToTheNexus) where
+module Arkham.Act.Cards.JourneyToTheNexus (journeyToTheNexus) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
@@ -7,6 +7,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
+import Arkham.Helpers.Scenario
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (InvestigatorDefeated, LocationCard)

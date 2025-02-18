@@ -1,16 +1,12 @@
-module Arkham.Skill.Cards.TheHomeFront (
-  theHomeFront,
-  TheHomeFront (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.TheHomeFront (theHomeFront) where
 
 import Arkham.Action
 import Arkham.Classes
 import Arkham.DamageEffect
-import Arkham.Game.Helpers
+import Arkham.Helpers.Enemy
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message hiding (InvestigatorDamage)
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Runner

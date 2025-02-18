@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Draw.Types
-import Arkham.Game.Helpers (getIsPlayable)
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (PlayCard)

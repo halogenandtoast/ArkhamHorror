@@ -1,18 +1,13 @@
-module Arkham.Location.Cards.Gallery (
-  gallery,
-  Gallery (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.Gallery (gallery) where
 
 import Arkham.Ability
 import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers
 import Arkham.Location.Runner
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.SkillType
 import Arkham.Timing qualified as Timing

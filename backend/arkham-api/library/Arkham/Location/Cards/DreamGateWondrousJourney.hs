@@ -1,19 +1,14 @@
-module Arkham.Location.Cards.DreamGateWondrousJourney (
-  dreamGateWondrousJourney,
-  DreamGateWondrousJourney (..),
-)
-where
+module Arkham.Location.Cards.DreamGateWondrousJourney (dreamGateWondrousJourney) where
 
-import Arkham.Prelude
-
-import Arkham.Game.Helpers
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Movement
+import Arkham.Prelude
 import Arkham.Projection
 
 newtype DreamGateWondrousJourney = DreamGateWondrousJourney LocationAttrs
@@ -41,11 +36,12 @@ instance HasModifiersFor DreamGateWondrousJourney where
 
 instance HasAbilities DreamGateWondrousJourney where
   getAbilities (DreamGateWondrousJourney attrs) =
-    withRevealedAbilities attrs
-      $ [ restrictedAbility attrs 1 (exists $ You <> investigatorIs Investigators.lukeRobinson)
-            $ ForcedAbility
-            $ PhaseEnds #when #investigation
-        ]
+    withRevealedAbilities
+      attrs
+      [ restricted attrs 1 (exists $ You <> investigatorIs Investigators.lukeRobinson)
+          $ forced
+          $ PhaseEnds #when #investigation
+      ]
 
 instance RunMessage DreamGateWondrousJourney where
   runMessage msg l@(DreamGateWondrousJourney attrs) = case msg of

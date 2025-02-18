@@ -5,8 +5,8 @@ import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Game.Helpers (getIsPlayable)
 import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Window (defaultWindows)

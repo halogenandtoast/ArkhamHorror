@@ -12,13 +12,13 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message (pushWhenM)
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
-import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted hiding (
   assignDamageAndHorror,
   chooseOrRunOne,

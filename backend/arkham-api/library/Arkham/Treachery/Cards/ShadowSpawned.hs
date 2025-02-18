@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.ShadowSpawned (shadowSpawned, ShadowSpawned (..)) where
+module Arkham.Treachery.Cards.ShadowSpawned (shadowSpawned) where
 
 import Arkham.Classes
-import Arkham.Game.Helpers
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Prelude
 import Arkham.Projection

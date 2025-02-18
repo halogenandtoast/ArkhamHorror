@@ -1,9 +1,4 @@
-module Arkham.Agenda.Cards.TheBarrierIsThin (
-  TheBarrierIsThin (..),
-  theBarrierIsThin,
-) where
-
-import Arkham.Prelude
+module Arkham.Agenda.Cards.TheBarrierIsThin (theBarrierIsThin) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -14,8 +9,10 @@ import Arkham.Card
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Types
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Trait
@@ -67,10 +64,10 @@ instance RunMessage TheBarrierIsThin where
         , chooseOrRunOne
             player
             [ targetLabel
-              (toCardId replacement)
-              [ RemoveCardFromScenarioDeck ExplorationDeck replacement
-              , ReplaceLocation lid replacement DefaultReplace
-              ]
+                (toCardId replacement)
+                [ RemoveCardFromScenarioDeck ExplorationDeck replacement
+                , ReplaceLocation lid replacement DefaultReplace
+                ]
             | replacement <- replacements
             ]
         , UnfocusCards

@@ -8,7 +8,7 @@ import Arkham.Classes.HasGame
 import Arkham.DamageEffect qualified as Msg
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (EnemyLocation))
-import Arkham.Game.Helpers (getAccessibleLocations)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg

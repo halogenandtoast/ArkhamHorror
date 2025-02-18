@@ -260,6 +260,8 @@ allSkills =
       SomeSkillCard hardboiled
     , --- rogue [tdc]
       SomeSkillCard crackShot
+    , --- survivor [tdc]
+      SomeSkillCard contemplative
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

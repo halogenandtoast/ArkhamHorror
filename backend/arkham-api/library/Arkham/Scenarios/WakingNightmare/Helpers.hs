@@ -27,7 +27,7 @@ pattern BecomesInfested t lmatcher <-
   where
     BecomesInfested t lmatcher = PlacedCounterOnLocation t lmatcher AnySource DamageCounter (GreaterThan (Static 0))
 
-makeInfestationTest :: (ReverseQueue m, Query StoryMatcher) => m ()
+makeInfestationTest :: ReverseQueue m => m ()
 makeInfestationTest = do
   theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
   push
@@ -35,8 +35,7 @@ makeInfestationTest = do
       (StoryTarget theInfestationBegins)
       (RequestChaosTokens (StorySource theInfestationBegins) Nothing (Reveal 1) SetAside)
 
-addInfestationToken
-  :: (HasGame m, Query StoryMatcher) => ChaosTokenFace -> m Message
+addInfestationToken :: HasGame m => ChaosTokenFace -> m Message
 addInfestationToken face = do
   theInfestationBegins <- selectJust $ storyIs Stories.theInfestationBegins
   pure $ SendMessage (StoryTarget theInfestationBegins) (AddChaosToken face)

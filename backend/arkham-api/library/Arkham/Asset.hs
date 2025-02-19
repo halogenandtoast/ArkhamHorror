@@ -1064,6 +1064,7 @@ allAssets =
       SomeAssetCard theBookOfWarSunTzusLegacy
     , SomeAssetCard crowbar
     , SomeAssetCard remingtonModel1858
+    , SomeAssetCard aliceLuxley2
     , --- seeker [tdc]
       SomeAssetCard altonOConnellGhostHunter
     , SomeAssetCard artisticInspiration

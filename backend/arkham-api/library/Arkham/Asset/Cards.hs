@@ -37,6 +37,7 @@ allPlayerAssetCards =
       , alchemicalTransmutation2
       , alejandroVela
       , aliceLuxley
+      , aliceLuxley2
       , altonOConnellGhostHunter
       , alyssaGraham
       , analyticalMind

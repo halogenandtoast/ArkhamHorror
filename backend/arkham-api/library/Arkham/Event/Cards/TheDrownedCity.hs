@@ -44,6 +44,15 @@ readyForAnything =
     , cdAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
     }
 
+huntersMark1 :: CardDef
+huntersMark1 =
+  (event "11026" "Hunter's Mark" 1 Guardian)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Spell]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> not_ (EnemyWithAttachedEvent $ EventIs "11026")
+    , cdFastWindow = Just $ DuringTurn You
+    }
+
 correlateAllItsContents :: CardDef
 correlateAllItsContents =
   (event "11040" "Correlate All Its Contents" 1 Seeker)

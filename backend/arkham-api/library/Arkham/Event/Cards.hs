@@ -217,6 +217,7 @@ allPlayerEventCards =
       , honedInstinct
       , hotStreak2
       , hotStreak4
+      , huntersMark1
       , hypnoticGaze
       , hypnoticGaze2
       , ifItBleeds

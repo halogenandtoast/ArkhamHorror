@@ -643,6 +643,7 @@ allEvents =
     , --- guardian [tdc]
       SomeEventCard primedForAction
     , SomeEventCard readyForAnything
+    , SomeEventCard huntersMark1
     , --- seeker [tdc]
       SomeEventCard correlateAllItsContents
     , --- rogue [tdc]

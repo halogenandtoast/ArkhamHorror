@@ -16,6 +16,7 @@ data ChaosBag = ChaosBag
   , chaosBagChoice :: Maybe ChaosBagStepState
   , chaosBagForceDraw :: Maybe ChaosTokenFace
   , chaosBagTokenPool :: [ChaosToken]
+  , chaosBagTotalRevealedChaosTokens :: [ChaosToken]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -26,7 +27,18 @@ allChaosBagChaosTokens ChaosBag {..} =
     <> chaosBagSetAsideChaosTokens
     <> chaosBagRevealedChaosTokens
 
-$(deriveJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
+$(deriveToJSON (aesonOptions $ Just "chaosBag") ''ChaosBag)
+
+instance FromJSON ChaosBag where
+  parseJSON = withObject "ChaosBag" \o -> do
+    chaosBagChaosTokens <- o .: "chaosTokens"
+    chaosBagSetAsideChaosTokens <- o .: "setAsideChaosTokens"
+    chaosBagRevealedChaosTokens <- o .: "revealedChaosTokens"
+    chaosBagChoice <- o .: "choice"
+    chaosBagForceDraw <- o .: "forceDraw"
+    chaosBagTokenPool <- o .: "tokenPool"
+    chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
+    pure ChaosBag {..}
 
 emptyChaosBag :: ChaosBag
 emptyChaosBag =
@@ -37,10 +49,14 @@ emptyChaosBag =
     , chaosBagChoice = Nothing
     , chaosBagForceDraw = Nothing
     , chaosBagTokenPool = []
+    , chaosBagTotalRevealedChaosTokens = []
     }
 
 instance HasField "revealed" ChaosBag [ChaosToken] where
   getField = chaosBagRevealedChaosTokens
+
+instance HasField "totalRevealed" ChaosBag [ChaosToken] where
+  getField = chaosBagTotalRevealedChaosTokens
 
 chaosTokensL :: Lens' ChaosBag [ChaosToken]
 chaosTokensL = lens chaosBagChaosTokens $ \m x -> m {chaosBagChaosTokens = x}
@@ -58,6 +74,10 @@ setAsideChaosTokensL =
 revealedChaosTokensL :: Lens' ChaosBag [ChaosToken]
 revealedChaosTokensL =
   lens chaosBagRevealedChaosTokens $ \m x -> m {chaosBagRevealedChaosTokens = x}
+
+totalRevealedChaosTokensL :: Lens' ChaosBag [ChaosToken]
+totalRevealedChaosTokensL =
+  lens chaosBagTotalRevealedChaosTokens $ \m x -> m {chaosBagTotalRevealedChaosTokens = x}
 
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m {chaosBagChoice = x}

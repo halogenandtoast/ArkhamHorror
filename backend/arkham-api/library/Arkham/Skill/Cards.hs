@@ -41,6 +41,7 @@ allPlayerSkillCards =
       , beloved
       , bruteForce1
       , calculatedRisk
+      , confidence
       , contemplative
       , copycat3
       , crackShot
@@ -934,6 +935,13 @@ contemplative =
             $ WhileParleying
             <> SkillTestAt (orConnected YourLocation)
         ]
+    }
+
+confidence :: CardDef
+confidence =
+  (skill "11097" "Confidence" [#wild] Neutral)
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [ MaxOnePerTest ]
     }
 
 riseToTheOccasion3 :: CardDef

@@ -673,6 +673,7 @@ instance RunMessage ChaosBag where
         & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
         & (setAsideChaosTokensL .~ mempty)
         & (revealedChaosTokensL .~ mempty)
+        & (totalRevealedChaosTokensL .~ mempty)
         & (tokenPoolL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToPool)
         & (choiceL .~ Nothing)
     RequestChaosTokens source miid revealStrategy strategy -> case revealStrategy of
@@ -842,7 +843,7 @@ instance RunMessage ChaosBag where
                   <> revealF tokens'
                   <> [RequestedChaosTokens source miid tokens', UnfocusChaosTokens]
             )
-          pure $ c & choiceL .~ Nothing
+          pure $ c & choiceL .~ Nothing & totalRevealedChaosTokensL %~ (nub . (<> tokens'))
         _ -> do
           iid <- maybe getLead pure miid
           ((choice'', msgs), c') <-
@@ -852,6 +853,12 @@ instance RunMessage ChaosBag where
           push (RunDrawFromBag source miid strategy)
           pushAll msgs
           pure $ c' & choiceL ?~ choice''
+    ChaosTokenSelected _ _ token -> do
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
+    ChaosTokenIgnored _ _ token -> do
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
+    ChaosTokenCanceled _ _ token -> do
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do

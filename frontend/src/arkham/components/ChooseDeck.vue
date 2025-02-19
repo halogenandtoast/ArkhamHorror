@@ -404,6 +404,9 @@ select {
   appearance: none;
   -moz-appearance: none;
   -webkit-appearance: none;
+  &::picker {
+    appearance: none;
+  }
 }
 
 .container {

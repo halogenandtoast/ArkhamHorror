@@ -262,6 +262,8 @@ allSkills =
       SomeSkillCard crackShot
     , --- survivor [tdc]
       SomeSkillCard contemplative
+    , --- neutral [tdc]
+      SomeSkillCard confidence
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

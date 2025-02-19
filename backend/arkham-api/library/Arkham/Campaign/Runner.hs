@@ -93,9 +93,11 @@ defaultCampaignRunner msg a = case msg of
     investigatorClass <- field InvestigatorClass iid
     (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
     purchaseTrauma <- initDeckTrauma deck' iid CampaignTarget
+    initXp <- initDeckXp deck' iid CampaignTarget
     pushAll
       $ map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
       <> purchaseTrauma
+      <> initXp
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
@@ -113,10 +115,11 @@ defaultCampaignRunner msg a = case msg of
           (unDeck oldDeck)
 
     purchaseTrauma <- initDeckTrauma (Deck deckDiff) iid CampaignTarget
+    initXp <- initDeckXp (Deck deckDiff) iid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
-    pushAll purchaseTrauma
+    pushAll $ purchaseTrauma <> initXp
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   ReplaceInvestigator oldIid _ -> do
     pure $ updateAttrs a $ decksL %~ deleteMap oldIid

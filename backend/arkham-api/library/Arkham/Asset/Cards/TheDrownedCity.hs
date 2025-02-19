@@ -250,3 +250,12 @@ profaneIdol =
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
     }
+
+ascetic :: CardDef
+ascetic =
+  permanent
+    (asset "11095" "Ascetic" 0 Neutral)
+      { cdCardTraits = setFromList [Condition]
+      , cdDeckRestrictions = [PurchaseAtDeckCreation, PerDeckLimit 1]
+      , cdGrantedXp = Just 10
+      }

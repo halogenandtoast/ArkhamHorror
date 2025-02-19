@@ -10,11 +10,14 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher.Card qualified as Matcher
 import Arkham.Message
+import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Source
 import Arkham.Target
+import Arkham.Xp
 import Control.Lens (non, _1)
 import Data.Map.Strict qualified as Map
 
@@ -46,6 +49,19 @@ getDeck = \case
       scenarioFieldMap
         ScenarioEncounterDecks
         (map EncounterCard . unDeck . view (at other . non (Deck [], []) . _1))
+
+initDeckXp :: Monad m => Deck PlayerCard -> InvestigatorId -> Target -> m [Message]
+initDeckXp deck' iid _target = pure do
+  flip concatMap (toList deck') \card -> do
+    case cdGrantedXp (toCardDef card) of
+      Nothing -> []
+      Just xp ->
+        [ ReportXp
+            ( XpBreakdown
+                [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$xp." <> nameToLabel card) xp]
+            )
+        , GainXP iid (CardIdSource card.id) xp
+        ]
 
 initDeckTrauma
   :: (MonadRandom m, HasPlayer m) => Deck PlayerCard -> InvestigatorId -> Target -> m [Message]

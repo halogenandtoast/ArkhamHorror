@@ -12,6 +12,7 @@ import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
+import Arkham.Capability
 import Arkham.CampaignStep
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
@@ -50,11 +51,11 @@ import Arkham.Helpers.Enemy qualified as Msg
 import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers qualified as Msg
-import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.History
@@ -266,9 +267,11 @@ sufferPhysicalTrauma iid physical = sufferTrauma iid physical 0
 gainXp
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Text -> Int -> m ()
 gainXp iid (toSource -> source) from xp = do
-  let report = XpBreakdown [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$" <> from) xp]
-  push $ ReportXp report
-  push $ GainXP iid source xp
+  ok <- can.gain.xp iid
+  when ok do
+    let report = XpBreakdown [InvestigatorGainXp iid $ XpDetail XpFromCardEffect ("$" <> from) xp]
+    push $ ReportXp report
+    push $ GainXP iid source xp
 
 allGainXpWithBonus :: (ReverseQueue m, Sourceable source) => source -> XpBonus -> m ()
 allGainXpWithBonus source xp = do

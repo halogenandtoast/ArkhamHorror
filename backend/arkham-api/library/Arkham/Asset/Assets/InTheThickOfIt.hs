@@ -1,8 +1,8 @@
-module Arkham.Asset.Assets.InTheThickOfIt ( inTheThickOfIt , InTheThickOfIt(..)) where
+module Arkham.Asset.Assets.InTheThickOfIt (inTheThickOfIt, InTheThickOfIt (..)) where
 
-import Arkham.Prelude
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
+import Arkham.Prelude
 
 newtype InTheThickOfIt = InTheThickOfIt AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor, HasAbilities)

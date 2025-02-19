@@ -6,6 +6,7 @@ module Arkham.Investigator.Runner (
 ) where
 
 import Arkham.Prelude
+import Arkham.Debug
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
@@ -4023,10 +4024,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do
+    info "START"
     let
       windows = [mkWhen (Window.DuringTurn iid), mkWhen Window.FastPlayerWindow, mkWhen Window.NonFast]
+
     actions <- asIfTurn iid (getActions iid windows)
+    info $ "ACTIONS: " <> tshow actions
     anyForced <- anyM (isForcedAbility iid) actions
+    info $ "FORCED: " <> tshow anyForced
     if anyForced
       then do
         -- Silent forced abilities should trigger automatically
@@ -4041,9 +4046,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           <> [PlayerWindow iid additionalActions isAdditional]
       else do
         modifiers <- getModifiers (InvestigatorTarget iid)
+        info $ "MODIFIERS: " <> tshow modifiers
         canAffordTakeResources <- getCanAfford a [#resource]
+        info $ "CAN AFFORD TAKE RESOURCES: " <> tshow canAffordTakeResources
         canAffordDrawCards <- getCanAfford a [#draw]
+        info $ "CAN AFFORD DRAW CARDS: " <> tshow canAffordDrawCards
         additionalActions' <- getAdditionalActions a
+        info $ "ADDITIONAL ACTIONS: " <> tshow additionalActions'
         let
           usesAction = not isAdditional
           drawCardsF = if usesAction then drawCardsAction else drawCards
@@ -4057,12 +4066,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             _ -> Nothing
 
         playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+        info $ "PLAYABLE CARDS: " <> tshow playableCards
         let drawing = drawCardsF iid a 1
 
         canDraw <- canDo iid #draw
+        info $ "CAN DRAW: " <> tshow canDraw
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
+        info $ "CAN TAKE RESOURCES: " <> tshow canTakeResource
         canPlay <- canDo iid #play
+        info $ "CAN PLAY: " <> tshow canPlay
         player <- getPlayer iid
+        info $ "GET PLAYER: " <> tshow player
 
         push
           $ AskPlayer

@@ -3,8 +3,9 @@ module Arkham.Asset.Assets.Bulwark2 (bulwark2) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Matcher
 import Arkham.Helpers.Window (getAttackDetails)
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype Bulwark2 = Bulwark2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

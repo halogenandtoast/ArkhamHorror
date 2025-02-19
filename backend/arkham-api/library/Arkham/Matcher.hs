@@ -25,6 +25,7 @@ import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
 import Control.Lens (over, transform)
 import Data.Data.Lens (biplate)
+import GHC.Records
 
 instance IsLocationMatcher CardDef where
   toLocationMatcher = locationIs
@@ -267,6 +268,9 @@ rightOf = LocationInDirection RightOf . LocationWithId . asId
 locationWithInvestigator :: InvestigatorId -> LocationMatcher
 locationWithInvestigator = LocationWithInvestigator . InvestigatorWithId
 {-# INLINE locationWithInvestigator #-}
+
+instance HasField "location" InvestigatorId LocationMatcher where
+  getField = locationWithInvestigator
 
 locationWithLowerPrintedShroudThan :: (AsId a, IdOf a ~ LocationId) => a -> LocationMatcher
 locationWithLowerPrintedShroudThan = LocationWithLowerPrintedShroudThan . LocationWithId . asId

@@ -656,6 +656,8 @@ allEvents =
     , --- survivor [tdc]
       SomeEventCard catch
     , SomeEventCard unconventionalMethod
+    , --- neutral [tdc]
+      SomeEventCard shortRest
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

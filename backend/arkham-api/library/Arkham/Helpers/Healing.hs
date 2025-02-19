@@ -1,6 +1,7 @@
 module Arkham.Helpers.Healing where
 
 import Arkham.Classes.HasQueue hiding (fromQueue)
+import Arkham.Helpers.Asset
 import Arkham.Helpers.Investigator
 import Arkham.Id
 import Arkham.Message (Message (..), MessageType (..), messageType)
@@ -10,16 +11,23 @@ import Arkham.Prelude
 import Arkham.Source
 import Control.Monad.Trans.Class
 
+assetChooseHealDamageOrHorror
+  :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> AssetId -> m ()
+assetChooseHealDamageOrHorror source iid aid = do
+  chooseOrRunOneM iid do
+    whenM (assetCanHaveDamageHealed source aid) do
+      assetDamageLabeled aid $ healDamage aid source 1
+    whenM (assetCanHaveHorrorHealed source aid) do
+      assetHorrorLabeled aid $ healHorror aid source 1
+
 chooseHealDamageOrHorror
   :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
 chooseHealDamageOrHorror source iid = do
   chooseOrRunOneM iid do
     whenM (canHaveDamageHealed source iid) do
-      damageLabeled iid do
-        healDamage iid source 1
+      damageLabeled iid $ healDamage iid source 1
     whenM (canHaveHorrorHealed source iid) do
-      horrorLabeled iid do
-        healHorror iid source 1
+      horrorLabeled iid $ healHorror iid source 1
 
 getDamageAmounts :: (MonadTrans t, HasQueue Message m) => InvestigatorId -> t m (Int, Int)
 getDamageAmounts iid = fromQueue \queue -> case dropUntilDamage queue of

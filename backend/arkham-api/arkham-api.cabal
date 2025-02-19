@@ -2189,6 +2189,7 @@ library
       Arkham.Event.Events.ShedALight
       Arkham.Event.Events.Shortcut
       Arkham.Event.Events.Shortcut2
+      Arkham.Event.Events.ShortRest
       Arkham.Event.Events.ShrineOfTheMoirai3
       Arkham.Event.Events.SleightOfHand
       Arkham.Event.Events.SlipAway

@@ -3,6 +3,7 @@ module Arkham.Event.Cards.TheDrownedCity where
 import Arkham.Capability
 import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.Keyword qualified as Keyword
 
 psychicSensitivity :: CardDef
 psychicSensitivity =
@@ -113,7 +114,8 @@ catch =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdActions = [#evade]
-    , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
+    , cdAdditionalCost =
+        Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
     }
 
 unconventionalMethod :: CardDef
@@ -122,5 +124,29 @@ unconventionalMethod =
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdActions = [#investigate]
-    , cdAdditionalCost = Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
+    , cdAdditionalCost =
+        Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
+    }
+
+shortRest :: CardDef
+shortRest =
+  (event "11096" "Short Rest" 1 Neutral)
+    { cdSkills = [#willpower]
+    , cdKeywords = setFromList [Keyword.Myriad]
+    , cdCardInHandEffects = True
+    , cdCardTraits = setFromList [Spirit]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ exists
+                $ oneOf
+                  [ HealableInvestigator ThisCard kind (InvestigatorAt YourLocation)
+                  | kind <- [#damage, #horror]
+                  ]
+            , exists
+                $ oneOf
+                  [ HealableAsset ThisCard kind (AssetAt YourLocation)
+                  | kind <- [#damage, #horror]
+                  ]
+            ]
     }

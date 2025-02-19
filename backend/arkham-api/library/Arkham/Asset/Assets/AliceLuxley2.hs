@@ -19,10 +19,11 @@ aliceLuxley2 = ally AliceLuxley2 Cards.aliceLuxley2 (2, 2)
 instance HasModifiersFor AliceLuxley2 where
   getModifiersFor (AliceLuxley2 a) = do
     controllerGets a [SkillModifier #intellect 1]
-    for_ a.controller \iid -> modified_ a iid $ do
-      actions <- lift $ fieldMap InvestigatorActionsTaken concat iid
-      guard $ #investigate `notElem` actions
-      pure $ ActionDoesNotCauseAttacksOfOpportunity #investigate
+    for_ a.controller \iid -> do
+      actions <- fieldMap InvestigatorActionsTaken concat iid
+      modified_ a iid $ do
+        guard $ #investigate `notElem` actions
+        pure $ ActionDoesNotCauseAttacksOfOpportunity #investigate
 
 instance HasAbilities AliceLuxley2 where
   getAbilities (AliceLuxley2 a) =

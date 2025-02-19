@@ -70,6 +70,16 @@ aliceLuxley2 =
     , cdLevel = Just 2
     }
 
+bulwark2 :: CardDef
+bulwark2 =
+  (asset "11028" "Bulwark" 2 Guardian)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Ritual]
+    , cdSlots = [#arcane]
+    , cdLevel = Just 2
+    , cdKeywords = setFromList [seal $ oneOf @ChaosTokenMatcher [#eldersign, #"+1"]]
+    , cdLimits = [LimitPerInvestigator 1]
+    }
 
 altonOConnellGhostHunter :: CardDef
 altonOConnellGhostHunter =

@@ -35,6 +35,12 @@ pattern AssetCanHaveUses uType <-
   where
     AssetCanHaveUses uType = AssetOneOf [AssetMatches [AssetWithUseType uType, AssetNotAtUseLimit], AssetWithoutUses]
 
+pattern AssetCanReady :: AssetMatcher
+pattern AssetCanReady <- AssetExhausted
+  where
+    AssetCanReady = AssetExhausted
+
+
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text

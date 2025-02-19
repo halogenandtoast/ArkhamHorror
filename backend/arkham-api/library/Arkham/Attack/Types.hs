@@ -44,6 +44,9 @@ instance HasField "strategy" EnemyAttackDetails DamageStrategy where
 instance HasField "damaged" EnemyAttackDetails (Map Target (Int, Int)) where
   getField = attackDamaged
 
+instance HasField "canBeCanceled" EnemyAttackDetails Bool where
+  getField = attackCanBeCanceled
+
 damageStrategyL :: Lens' EnemyAttackDetails DamageStrategy
 damageStrategyL = lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = x}
 

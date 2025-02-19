@@ -352,6 +352,7 @@ allPlayerEventCards =
       , seekingAnswers
       , seekingAnswers2
       , shedALight
+      , shortRest
       , shortcut
       , shortcut2
       , shrineOfTheMoirai3

@@ -661,9 +661,14 @@ getInvestigatorsMatching matcher = do
   includeEliminated (IncludeEliminated _) = True
   includeEliminated KilledInvestigator = True
   includeEliminated InsaneInvestigator = True
+  includeEliminated InvestigatorCanGainXp = True
   includeEliminated _ = False
   go [] = const (pure [])
   go as = \case
+    InvestigatorCanGainXp -> flip filterM as $ \i -> do
+      cardCodes <- map toCardCode . toList <$> getOriginalDeck (toId i)
+      ok <- withoutModifier (toId i) CannotGainXP
+      pure $ ok && Assets.ascetic.cardCode `notElem` cardCodes
     KilledInvestigator -> pure $ filter (attr investigatorKilled) as
     InsaneInvestigator -> pure $ filter (attr investigatorDrivenInsane) as
     InvestigatorWithSealedChaosToken chaosTokenMatcher -> do

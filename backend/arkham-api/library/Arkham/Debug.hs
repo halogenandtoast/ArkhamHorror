@@ -26,6 +26,9 @@ debugOut n txt = liftIO do
   debugLevel <- getDebugLevel
   when (n <= debugLevel) $ T.putStrLn txt
 
+info :: MonadIO m => Text -> m ()
+info = debugOut InfoLevel
+
 timeIt :: Monad m => Text -> m a -> m a
 timeIt label body = do
   let start = unsafePerformIO getCurrentTime

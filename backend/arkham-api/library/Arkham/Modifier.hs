@@ -13,6 +13,7 @@ import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Cost
+import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Criteria.Override
 import Arkham.Damage
 import {-# SOURCE #-} Arkham.Enemy.Types
@@ -27,7 +28,6 @@ import Arkham.Scenario.Deck
 import Arkham.SkillType
 import Arkham.SlotType
 import Arkham.SortedPair
-import {-# SOURCE #-} Arkham.Criteria
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Spawn
 import {-# SOURCE #-} Arkham.Strategy
@@ -171,6 +171,7 @@ data ModifierType
   | CannotFight EnemyMatcher
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
+  | CannotGainXP
   | CannotHealDamage
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target
@@ -433,7 +434,7 @@ data Modifier = Modifier
   deriving stock (Show, Eq, Ord, Data)
 
 overModifierTypeM :: Monad m => (ModifierType -> m ModifierType) -> Modifier -> m Modifier
-overModifierTypeM f m = f (modifierType m) <&> \mt -> m { modifierType = mt }
+overModifierTypeM f m = f (modifierType m) <&> \mt -> m {modifierType = mt}
 
 setActiveDuringSetup :: Modifier -> Modifier
 setActiveDuringSetup m = m {modifierActiveDuringSetup = True}

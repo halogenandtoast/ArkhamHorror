@@ -37,6 +37,11 @@ const name = computed(() => {
     return "Resupply Point"
   }
 
+  if (props.step.tag === 'PrologueStep') {
+    // This is a lie, we might need to split this out somehow
+    return "Deck Creation"
+  }
+
   return "Unknown step: " + props.step.tag
 })
 

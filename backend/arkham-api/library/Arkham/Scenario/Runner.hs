@@ -153,11 +153,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
+        initXp <- initDeckXp deck' iid (toTarget a)
         let deck'' = withDeck (<> weaknesses) deck'
 
         pushAll
           $ LoadDeck iid deck''
           : purchaseTrauma
+          <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
   EndSetup -> do

@@ -129,9 +129,7 @@ findInDiscard matcher =
   scenarioFieldMap ScenarioDiscard (filter (`cardMatch` matcher))
 
 getOriginalDeck :: HasGame m => InvestigatorId -> m (Deck PlayerCard)
-getOriginalDeck iid = do
-  dict <- withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
-  pure $ findWithDefault mempty iid dict
+getOriginalDeck iid = findWithDefault mempty iid <$> withStandalone (field CampaignDecks) (field ScenarioPlayerDecks)
 
 getKnownRemainingOriginalDeckCards
   :: HasGame m => InvestigatorId -> m [PlayerCard]

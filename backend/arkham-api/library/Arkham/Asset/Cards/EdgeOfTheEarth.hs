@@ -785,6 +785,7 @@ inTheThickOfIt =
     $ (asset "08125" "In the Thick of It" 0 Neutral)
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
+      , cdGrantedXp = Just 3
       }
 
 heavyFurs :: CardDef

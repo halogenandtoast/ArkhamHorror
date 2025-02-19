@@ -5,7 +5,6 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Helpers.Card
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
@@ -43,7 +42,7 @@ getXpWithBonus bonus = snd <$> getXpWithBonus' bonus
 getXpWithBonus' :: forall m. (HasCallStack, HasGame m) => Int -> m (Int, [(InvestigatorId, Int)])
 getXpWithBonus' bonus = do
   initialAmount <- (bonus +) <$> getInitialVictory
-  investigatorIds <- allInvestigators
+  investigatorIds <- select InvestigatorCanGainXp
   details <- for investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure (iid, foldl' applyModifier initialAmount modifiers')
@@ -93,13 +92,15 @@ generateXpReport bonus = do
     fmap (map AllGainXp) . toVictory =<< select (OutOfPlayEnemy VictoryDisplayZone AnyEnemy)
   locationVictory <-
     fmap (map AllGainXp) . toVictory =<< select (RevealedLocation <> LocationWithoutClues)
-  investigatorIds <- allInvestigators
+  investigatorIds <- select InvestigatorCanGainXp
   fromModifiers <- concatForM investigatorIds $ \iid -> do
     modifiers' <- getModifiers iid
     pure $ mapMaybe (modifierToXpDetail iid) modifiers'
   pure
     $ XpBreakdown
-    $ [ InvestigatorGainXp iid $ XpDetail XpBonus txt n | WithBonus txt n <- bonus.flatten, iid <- investigatorIds
+    $ [ InvestigatorGainXp iid $ XpDetail XpBonus txt n
+      | WithBonus txt n <- bonus.flatten
+      , iid <- investigatorIds
       ]
     <> victoryPileVictory
     <> enemyVictory

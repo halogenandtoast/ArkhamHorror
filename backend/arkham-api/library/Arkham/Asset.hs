@@ -1089,6 +1089,8 @@ allAssets =
     , SomeAssetCard lawrenceCarlisleSculptingHisDreams
     , SomeAssetCard nauticalCharts
     , SomeAssetCard profaneIdol
+    , --- survivor [tdc]
+      SomeAssetCard ascetic
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

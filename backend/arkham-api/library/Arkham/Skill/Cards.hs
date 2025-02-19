@@ -82,6 +82,7 @@ allPlayerSkillCards =
       , helpingHand
       , inquiringMind
       , inspiringPresence
+      , inspiringPresence2
       , intrepid
       , justifyTheMeans3
       , lastChance
@@ -912,6 +913,13 @@ hardboiled =
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdCardInHandEffects = True
+    }
+
+inspiringPresence2 :: CardDef
+inspiringPresence2 =
+  (skill "11029" "Inspiring Presence" [#willpower, #intellect, #combat, #wild] Guardian)
+    { cdCardTraits = singleton Innate
+    , cdLevel = Just 2
     }
 
 crackShot :: CardDef

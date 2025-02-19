@@ -7,6 +7,8 @@ import Arkham.Id
 import Arkham.Message (Message (..), MessageType (..), messageType)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Matcher.Base
+import Arkham.Matcher.Asset
 import Arkham.Prelude
 import Arkham.Source
 import Control.Monad.Trans.Class
@@ -49,3 +51,7 @@ getAssetDamageAmounts aid = fromQueue \queue -> case dropUntilDamage queue of
   _ -> error "unhandled"
  where
   dropUntilDamage = dropWhile (notElem DamageMessage . messageType)
+
+healableAsset :: Sourceable source => source -> AssetMatcher -> AssetMatcher
+healableAsset source inner = oneOf [HealableAsset (toSource source) kind inner | kind <- [#damage, #horror]]
+

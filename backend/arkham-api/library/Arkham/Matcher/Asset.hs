@@ -40,7 +40,6 @@ pattern AssetCanReady <- AssetExhausted
   where
     AssetCanReady = AssetExhausted
 
-
 data AssetMatcher
   = AssetWithTitle Text
   | AssetWithFullTitle Text Text

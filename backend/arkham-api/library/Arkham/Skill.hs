@@ -258,6 +258,7 @@ allSkills =
     , SomeSkillCard grimResolve
     , --- guardian [tdc]
       SomeSkillCard hardboiled
+    , SomeSkillCard inspiringPresence2
     , --- rogue [tdc]
       SomeSkillCard crackShot
     , --- survivor [tdc]

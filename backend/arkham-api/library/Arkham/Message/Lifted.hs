@@ -1974,7 +1974,8 @@ quietCancelCardDraw card = do
   for_ mtarget $ push . QuietlyRemoveFromGame
 
 cancelAttack :: (ReverseQueue m, Sourceable source) => source -> EnemyAttackDetails -> m ()
-cancelAttack source _ = push $ Priority $ CancelNext (toSource source) AttackMessage
+cancelAttack source details = when details.canBeCanceled do
+  push $ Priority $ CancelNext (toSource source) AttackMessage
 
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details

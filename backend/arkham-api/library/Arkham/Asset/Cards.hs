@@ -143,6 +143,7 @@ allPlayerAssetCards =
       , brotherXavier1
       , bruiser3
       , bulletproofVest3
+      , bulwark2
       , burglary
       , burglary2
       , butterflySwords2

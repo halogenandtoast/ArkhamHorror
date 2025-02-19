@@ -1065,6 +1065,7 @@ allAssets =
     , SomeAssetCard crowbar
     , SomeAssetCard remingtonModel1858
     , SomeAssetCard aliceLuxley2
+    , SomeAssetCard bulwark2
     , --- seeker [tdc]
       SomeAssetCard altonOConnellGhostHunter
     , SomeAssetCard artisticInspiration

@@ -1,11 +1,7 @@
+{-# OPTIONS_GHC -O0 #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Message (
-  module Arkham.Message,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Message (module Arkham.Message, module X) where
 
 import Arkham.Message.Type as X
 import Arkham.Question as X
@@ -67,6 +63,7 @@ import Arkham.Movement
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.RequestedChaosTokenStrategy
 import Arkham.Resolution
 import Arkham.Scenario.Deck
@@ -85,11 +82,11 @@ import Arkham.Token qualified as Token
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Arkham.Xp
+import Control.Monad.Fail
 import Data.Aeson.Key qualified as Aeson
 import Data.Aeson.TH
 import Data.UUID (nil)
 import GHC.OverloadedLabels
-import Control.Monad.Fail
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack {} = Just AttackMessage
@@ -367,7 +364,6 @@ data Message
   | MovedWithSkillTest SkillTestId Message
   | NextSkillTest SkillTestId
   | AddSubscriber Target
-  | WithSource Source Message
   | SetInvestigator PlayerId Investigator
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | -- Story Card Messages
@@ -782,17 +778,19 @@ data Message
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
-  | -- | When bool is True, This triggers the windows for PerformAction, as
-    -- well as BeginAction and Finish action brackets.
-    -- When bool is false it only triggers the after move action window, but
-    -- also the (When, After) messages
-    -- Eventually calls the Move message with a movement it built
+  | {- | When bool is True, This triggers the windows for PerformAction, as
+    well as BeginAction and Finish action brackets.
+    When bool is false it only triggers the after move action window, but
+    also the (When, After) messages
+    Eventually calls the Move message with a movement it built
+    -}
     MoveAction InvestigatorId LocationId Cost Bool
   | -- | Only calls MoveTo for all investigators
     MoveAllTo Source LocationId
-  | -- | Pretty useless, simply triggers Will/After variants that just push
-    -- windows, possibly we could inline this, the only benefit seems to be the
-    -- ability to cancel the batch easily
+  | {- | Pretty useless, simply triggers Will/After variants that just push
+    windows, possibly we could inline this, the only benefit seems to be the
+    ability to cancel the batch easily
+    -}
     MoveFrom Source InvestigatorId LocationId
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement
@@ -1139,13 +1137,20 @@ instance FromJSON Message where
           Left (st, uim) -> pure $ CommitToSkillTest (skillTestId st) uim
           Right (stId, uim) -> pure $ CommitToSkillTest stId uim
       "AddCampaignCardToDeck" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right . Left <$> o .: "contents") <|> (Right . Right <$> o .: "contents") <|> fail ("Invalid AddCampaignCardToDeck: " <> show o)
+        contents <-
+          (Left <$> o .: "contents")
+            <|> (Right . Left <$> o .: "contents")
+            <|> (Right . Right <$> o .: "contents")
+            <|> fail ("Invalid AddCampaignCardToDeck: " <> show o)
         case contents of
           Left (iid, card :: Card) -> pure $ AddCampaignCardToDeck iid ShuffleIn card
           Right (Left (iid, cardDef :: CardDef)) -> pure $ AddCampaignCardToDeck iid ShuffleIn (lookupCard cardDef.cardCode (unsafeMakeCardId nil))
           Right (Right (iid, shouldShuffleIn, card :: Card)) -> pure $ AddCampaignCardToDeck iid shouldShuffleIn card
       "SealedChaosToken" -> do
-        contents <- (Left <$> o .: "contents") <|> (Right . Left <$> o .: "contents") <|> (Right . Right <$> o .: "contents")
+        contents <-
+          (Left <$> o .: "contents")
+            <|> (Right . Left <$> o .: "contents")
+            <|> (Right . Right <$> o .: "contents")
         case contents of
           Left (token, card :: Card) -> pure $ SealedChaosToken token Nothing (toTarget card)
           Right (Left (token, target)) -> pure $ SealedChaosToken token Nothing target

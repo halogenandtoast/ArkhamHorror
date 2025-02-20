@@ -370,7 +370,7 @@ const setSet = (set: CardSet) => {
 .cards {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill,minmax(min(300px, 100%),1fr));
   padding: 10px;
 }
 

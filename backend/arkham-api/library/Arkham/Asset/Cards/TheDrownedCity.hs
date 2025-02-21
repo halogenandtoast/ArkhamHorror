@@ -81,6 +81,14 @@ bulwark2 =
     , cdLimits = [LimitPerInvestigator 1]
     }
 
+lockedAndLoaded3 :: CardDef
+lockedAndLoaded3 = permanent
+  (asset "11030" "Locked and Loaded" 0 Guardian)
+    { cdCardTraits = setFromList [Condition]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
 altonOConnellGhostHunter :: CardDef
 altonOConnellGhostHunter =
   (asset "11033" ("Alton O'Connell" <:> "Ghost Hunter") 3 Seeker)

@@ -1066,6 +1066,7 @@ allAssets =
     , SomeAssetCard remingtonModel1858
     , SomeAssetCard aliceLuxley2
     , SomeAssetCard bulwark2
+    , SomeAssetCard lockedAndLoaded3
     , --- seeker [tdc]
       SomeAssetCard altonOConnellGhostHunter
     , SomeAssetCard artisticInspiration

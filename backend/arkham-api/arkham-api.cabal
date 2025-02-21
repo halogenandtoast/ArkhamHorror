@@ -2165,6 +2165,7 @@ library
       Arkham.Event.Events.QuantumFlux
       Arkham.Event.Events.QuantumParadox
       Arkham.Event.Events.QuickGetaway
+      Arkham.Event.Events.QuickShot3
       Arkham.Event.Events.RadiantSmite1
       Arkham.Event.Events.ReadTheSigns
       Arkham.Event.Events.ReadTheSigns2

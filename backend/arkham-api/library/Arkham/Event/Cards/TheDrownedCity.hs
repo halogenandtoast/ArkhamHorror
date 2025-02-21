@@ -53,6 +53,17 @@ huntersMark1 =
     , cdFastWindow = Just $ DuringTurn You
     }
 
+quickShot3 :: CardDef
+quickShot3 =
+  (event "11031" "Quick Shot" 2 Guardian)
+    { cdSkills = [#combat, #agility]
+    , cdCardTraits = setFromList [Spirit]
+    , cdKeywords = setFromList [Keyword.Myriad]
+    , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCardInHandEffects = True
+    }
+
 correlateAllItsContents :: CardDef
 correlateAllItsContents =
   (event "11040" "Correlate All Its Contents" 1 Seeker)

@@ -2368,6 +2368,9 @@ sealChaosToken
   :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
 sealChaosToken iid target token = pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget target)]
 
+unsealChaosToken :: (ReverseQueue m) => ChaosToken -> m ()
+unsealChaosToken token = push $ UnsealChaosToken token
+
 resolveChaosTokens
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> [ChaosToken] -> m ()
 resolveChaosTokens iid source tokens = do

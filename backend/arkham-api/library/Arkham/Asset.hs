@@ -1076,6 +1076,7 @@ allAssets =
     , SomeAssetCard mortarAndPestle
     , SomeAssetCard oculusMortuum
     , SomeAssetCard uncannySpecimen
+    , SomeAssetCard dialOfAncientsSignsOfCataclysm4
     , --- rogue [tdc]
       SomeAssetCard lugerP08
     , SomeAssetCard robertCastaigneHasYourBack

@@ -163,6 +163,19 @@ uncannySpecimen =
       , cdKeywords = setFromList [Keyword.Myriad]
       }
 
+dialOfAncientsSignsOfCataclysm4 :: CardDef
+dialOfAncientsSignsOfCataclysm4 =
+  (asset "11046" ("Dial of Ancients" <:> "Signs of Cataclysm") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSkills = [#intellect]
+    , cdUses = uses Charge 4
+    , cdSlots = [#accessory]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdKeywords = setFromList [Keyword.Researched YouHaveCalculatedTheDayOfReckoning]
+    , cdUnique = True
+    , cdLevel = Just 4
+    }
+
 lugerP08 :: CardDef
 lugerP08 =
   (asset "11050" "Luger P08" 2 Rogue)

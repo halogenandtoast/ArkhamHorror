@@ -235,6 +235,7 @@ data Criterion
   | ActionCanBeUndone
   | DuringPhase PhaseMatcher
   | ChaosTokenCountIs ChaosTokenMatcher ValueMatcher
+  | ChaosTokenExists ChaosTokenMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
   | TabooCriteria TabooList Criterion Criterion
@@ -335,6 +336,9 @@ overrideExists = CriteriaOverride . exists
 
 notExists :: Exists a => a -> Criterion
 notExists = not_ . exists
+
+instance Exists ChaosTokenMatcher where
+  exists = ChaosTokenExists
 
 instance Exists TargetMatcher where
   exists = TargetExists

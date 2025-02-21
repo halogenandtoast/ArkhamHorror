@@ -3767,28 +3767,34 @@ instance Query TargetMatcher where
     filterM (`targetMatches` matcher) . overEntities ((: []) . toTarget) . view entitiesL =<< getGame
 
 instance Query ChaosTokenMatcher where
-  select (ChaosTokenRevealedBy iMatcher) =
-    getSkillTest >>= \case
-      Nothing -> pure []
-      Just st -> do
-        iids <- select iMatcher
-        pure $ filter (\t -> any (`elem` t.revealedBy) iids) st.revealedChaosTokens
   select matcher = do
-    tokenPool :: [ChaosToken] <- getTokenPool `given` includeTokenPool matcher
-    tokens :: [ChaosToken] <-
-      if
-        | inTokenPool matcher -> pure []
-        | includeSealed matcher -> getAllChaosTokens
-        | isInfestation -> getInfestationTokens
-        | isOnlyInBag matcher -> getOnlyChaosTokensInBag
-        | otherwise -> getBagChaosTokens
     case matcher of
-      ChaosTokenMatchesOrElse matcher' orElseMatch -> do
-        results <- filterM (go matcher') (tokens <> tokenPool)
-        if null results
-          then filterM (go orElseMatch) (tokens <> tokenPool)
-          else pure results
-      _ -> filterM (go matcher) (tokens <> tokenPool)
+      RevealedChaosTokens inner ->
+        getSkillTest >>= \case
+          Nothing -> pure []
+          Just st -> filterM (go inner) st.revealedChaosTokens
+      ChaosTokenRevealedBy iMatcher ->
+        getSkillTest >>= \case
+          Nothing -> pure []
+          Just st -> do
+            iids <- select iMatcher
+            pure $ filter (\t -> any (`elem` t.revealedBy) iids) st.revealedChaosTokens
+      _ -> do
+        tokenPool :: [ChaosToken] <- getTokenPool `given` includeTokenPool matcher
+        tokens :: [ChaosToken] <-
+          if
+            | inTokenPool matcher -> pure []
+            | includeSealed matcher -> getAllChaosTokens
+            | isInfestation -> getInfestationTokens
+            | isOnlyInBag matcher -> getOnlyChaosTokensInBag
+            | otherwise -> getBagChaosTokens
+        case matcher of
+          ChaosTokenMatchesOrElse matcher' orElseMatch -> do
+            results <- filterM (go matcher') (tokens <> tokenPool)
+            if null results
+              then filterM (go orElseMatch) (tokens <> tokenPool)
+              else pure results
+          _ -> filterM (go matcher) (tokens <> tokenPool)
    where
     isOnlyInBag = \case
       OnlyInBag _ -> True

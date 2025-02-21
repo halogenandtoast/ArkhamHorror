@@ -603,6 +603,7 @@ passesCriteria iid mcard source' requestor windows' = \case
       , selectAny $ Matcher.TreacheryWithDoom (Matcher.atLeast 1)
       , selectAny $ Matcher.AgendaWithDoom (Matcher.atLeast 1)
       ]
+  Criteria.ChaosTokenExists matcher -> selectAny matcher
   Criteria.AssetExists matcher -> do
     -- N.B. Old Shotgun (2) needs to have a different uses when playing an
     -- event We add the event card to the "game" when asking for a matching

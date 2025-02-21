@@ -50,4 +50,7 @@ instance RunMessage DialOfAncientsSignsOfAberration4 where
           , RerunSkillTest
           ]
       pure a
+    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
+      getSkillTestTargetedEnemy >>= traverse_ (nonAttackEnemyDamage attrs 1 )
+      pure a
     _ -> DialOfAncientsSignsOfAberration4 <$> liftRunMessage msg attrs

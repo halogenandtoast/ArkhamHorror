@@ -89,6 +89,16 @@ lockedAndLoaded3 = permanent
     , cdDeckRestrictions = [PerDeckLimit 1]
     }
 
+remingtonModel18584 :: CardDef
+remingtonModel18584 =
+  (asset "11032" "Remington Model 1858" 2 Guardian)
+    { cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSkills = [#combat, #combat, #agility, #agility]
+    , cdUses = uses Ammo 3
+    , cdSlots = [#hand]
+    , cdLevel = Just 4
+    }
+
 altonOConnellGhostHunter :: CardDef
 altonOConnellGhostHunter =
   (asset "11033" ("Alton O'Connell" <:> "Ghost Hunter") 3 Seeker)

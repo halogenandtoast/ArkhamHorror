@@ -644,6 +644,7 @@ allEvents =
       SomeEventCard primedForAction
     , SomeEventCard readyForAnything
     , SomeEventCard huntersMark1
+    , SomeEventCard quickShot3
     , --- seeker [tdc]
       SomeEventCard correlateAllItsContents
     , --- rogue [tdc]

@@ -327,6 +327,7 @@ allPlayerEventCards =
       , quantumFlux
       , quantumParadox
       , quickGetaway
+      , quickShot3
       , radiantSmite1
       , readTheSigns
       , readTheSigns2

@@ -478,6 +478,7 @@ allPlayerAssetCards =
       , litaChantler
       , livingInk
       , livreDeibon
+      , lockedAndLoaded3
       , lockpicks
       , lockpicks1
       , lolaSantiago3

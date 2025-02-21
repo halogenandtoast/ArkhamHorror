@@ -24,8 +24,8 @@ instance HasAbilities SwordCane where
         $ freeReaction
         $ AssetEntersPlay #after
         $ AssetWithId (toId x)
-    , displayAsAction $ restrictedAbility x 2 ControlsThis $ fightAction $ exhaust x
-    , displayAsAction $ restrictedAbility x 2 ControlsThis $ evadeAction $ exhaust x
+    , restrictedAbility x 1 ControlsThis $ fightAction $ exhaust x
+    , restrictedAbility x 2 ControlsThis $ evadeAction $ exhaust x
     ]
 
 instance RunMessage SwordCane where

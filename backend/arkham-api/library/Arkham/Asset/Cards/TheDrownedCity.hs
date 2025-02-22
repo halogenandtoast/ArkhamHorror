@@ -189,6 +189,19 @@ dialOfAncientsSignsOfAberration4 =
     , cdLevel = Just 4
     }
 
+dialOfAncientsSignsOfRevelation4 :: CardDef
+dialOfAncientsSignsOfRevelation4 =
+  (asset "11048" ("Dial of Ancients" <:> "Signs of Revelation") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSkills = [#willpower, #wild]
+    , cdUses = uses Charge 4
+    , cdSlots = [#accessory]
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdKeywords = setFromList [Keyword.Researched YouHaveCalculatedTheDayOfReckoning]
+    , cdUnique = True
+    , cdLevel = Just 4
+    }
+
 lugerP08 :: CardDef
 lugerP08 =
   (asset "11050" "Luger P08" 2 Rogue)

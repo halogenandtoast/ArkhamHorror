@@ -1078,6 +1078,7 @@ allAssets =
     , SomeAssetCard uncannySpecimen
     , SomeAssetCard dialOfAncientsSignsOfCataclysm4
     , SomeAssetCard dialOfAncientsSignsOfAberration4
+    , SomeAssetCard dialOfAncientsSignsOfRevelation4
     , --- rogue [tdc]
       SomeAssetCard lugerP08
     , SomeAssetCard robertCastaigneHasYourBack

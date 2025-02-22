@@ -214,6 +214,7 @@ allPlayerAssetCards =
       , devilFriendOrFoe2
       , dialOfAncientsSignsOfAberration4
       , dialOfAncientsSignsOfCataclysm4
+      , dialOfAncientsSignsOfRevelation4
       , dialOfAncientsUnidentified
       , digDeep
       , digDeep2

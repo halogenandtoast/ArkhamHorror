@@ -28,6 +28,9 @@ getLead = do
   mOthers <- selectOne $ IncludeEliminated Anyone
   pure $ fromJustNote "No lead found" (mLead <|> mOthers)
 
+inTurnOrder :: HasGame m => [InvestigatorId] -> m [InvestigatorId]
+inTurnOrder xs = filter (`elem` xs) <$> allInvestigators
+
 instance HasGame m => HasPlayer m where
   getPlayer = field InvestigatorPlayerId
 

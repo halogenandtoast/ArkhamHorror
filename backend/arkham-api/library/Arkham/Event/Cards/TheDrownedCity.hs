@@ -72,6 +72,14 @@ correlateAllItsContents =
     , cdActions = [#investigate]
     }
 
+cosmicRevelation1 :: CardDef
+cosmicRevelation1 =
+  (event "11041" "Cosmic Revelation" 0 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Insight, Spell]
+    , cdCriteria = Just $ exists $ investigator_ can.reveal.cards
+    }
+
 wheresTheParty :: CardDef
 wheresTheParty =
   (event "11053" "\"Where's the party?\"" 0 Rogue)

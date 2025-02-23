@@ -1938,6 +1938,7 @@ library
       Arkham.Event.Events.Contraband2
       Arkham.Event.Events.ControlVariable
       Arkham.Event.Events.CorrelateAllItsContents
+      Arkham.Event.Events.CosmicRevelation1
       Arkham.Event.Events.Counterespionage1
       Arkham.Event.Events.Counterpunch
       Arkham.Event.Events.Counterpunch2

@@ -115,6 +115,7 @@ allPlayerSkillCards =
       , providential2
       , purified
       , quickThinking
+      , quickWitted1
       , reckless
       , recklessAssault
       , resourceful
@@ -920,6 +921,15 @@ inspiringPresence2 =
   (skill "11029" "Inspiring Presence" [#willpower, #intellect, #combat, #wild] Guardian)
     { cdCardTraits = singleton Innate
     , cdLevel = Just 2
+    }
+
+quickWitted1 :: CardDef
+quickWitted1 =
+  (skill "11042" "Quick-Witted" [#intellect, #agility] Seeker)
+    { cdCardTraits = singleton Innate
+    , cdKeywords = setFromList [Keyword.Myriad]
+    , cdLevel = Just 1
+    , cdCardInHandEffects = True
     }
 
 crackShot :: CardDef

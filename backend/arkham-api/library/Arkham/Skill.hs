@@ -259,6 +259,8 @@ allSkills =
     , --- guardian [tdc]
       SomeSkillCard hardboiled
     , SomeSkillCard inspiringPresence2
+    , --- seeker [tdc]
+      SomeSkillCard quickWitted1
     , --- rogue [tdc]
       SomeSkillCard crackShot
     , --- survivor [tdc]

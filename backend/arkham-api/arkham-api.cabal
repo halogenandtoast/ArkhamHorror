@@ -490,6 +490,7 @@ library
       Arkham.Asset.Assets.AncientStoneTransientThoughts4
       Arkham.Asset.Assets.AnnaKaslow4
       Arkham.Asset.Assets.AnotherDayAnotherDollar3
+      Arkham.Asset.Assets.AntikytheraPropheticTimepiece5
       Arkham.Asset.Assets.Antiquary3
       Arkham.Asset.Assets.AnyuFaithfulCompanion
       Arkham.Asset.Assets.Aquinnah1
@@ -1495,6 +1496,7 @@ library
       Arkham.Effect.Effects.EndOfTurnEffect
       Arkham.Effect.Effects.GenericEffect
       Arkham.Effect.Effects.MaxEffect
+      Arkham.Effect.Effects.OnNextTurnEffect
       Arkham.Effect.Effects.OnRevealChaosTokenEffect
       Arkham.Effect.Effects.OnSucceedByEffect
       Arkham.Effect.Effects.SurgeEffect

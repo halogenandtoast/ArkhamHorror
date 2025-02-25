@@ -565,6 +565,7 @@ data Message
   | CreateChaosTokenEffect (EffectMetadata Window Message) Source ChaosToken
   | CreateOnRevealChaosTokenEffect SkillTestId ChaosTokenMatcher Source Target [Message]
   | CreateOnSucceedByEffect SkillTestId ValueMatcher Source Target [Message]
+  | CreateOnNextTurnEffect Source InvestigatorId [Message]
   | CreateEndOfTurnEffect Source InvestigatorId [Message]
   | CreateEndOfRoundEffect Source [Message]
   | CreateAssetAt AssetId Card Placement

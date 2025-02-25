@@ -51,6 +51,7 @@ allPlayerAssetCards =
       , ancientStoneTransientThoughts4
       , annaKaslow4
       , anotherDayAnotherDollar3
+      , antikytheraPropheticTimepiece5
       , antiquary3
       , anyuFaithfulCompanion
       , aquinnah1

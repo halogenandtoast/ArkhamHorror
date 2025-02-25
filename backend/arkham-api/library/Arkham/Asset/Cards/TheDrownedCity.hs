@@ -220,6 +220,16 @@ dialOfAncientsSignsOfRevelation4 =
     , cdLevel = Just 4
     }
 
+antikytheraPropheticTimepiece5 :: CardDef
+antikytheraPropheticTimepiece5 =
+  (asset "11049" ("Antikythera" <:> "Prophetic Timepiece") 3 Seeker)
+    { cdCardTraits = setFromList [Item, Relic, Science]
+    , cdSkills = [#intellect, #wild, #wild]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdLevel = Just 5
+    }
+
 lugerP08 :: CardDef
 lugerP08 =
   (asset "11050" "Luger P08" 2 Rogue)

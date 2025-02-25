@@ -23,3 +23,9 @@ gameValueMatches n = \case
   Matcher.LessThanOrEqualTo gv -> (n <=) <$> getPlayerCountValue gv
   Matcher.GreaterThanOrEqualTo gv -> (n >=) <$> getPlayerCountValue gv
   Matcher.EqualTo gv -> (n ==) <$> getPlayerCountValue gv
+  Matcher.Between l h -> do
+    andM
+      [ (n >=) <$> getPlayerCountValue l
+      , (n <=) <$> getPlayerCountValue h
+      ]
+  Matcher.GameValueOneOf xs -> anyM (gameValueMatches n) xs

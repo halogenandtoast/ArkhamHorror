@@ -1601,6 +1601,16 @@ onSucceedByEffect sid matchr source target f = do
   msgs <- evalQueueT f
   push $ Msg.onSucceedByEffect sid matchr source target msgs
 
+onNextTurnEffect
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => source
+  -> investigator
+  -> QueueT Message m ()
+  -> m ()
+onNextTurnEffect source iid f = do
+  msgs <- evalQueueT f
+  push $ Msg.onNextTurnEffect source iid msgs
+
 eventModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 eventModifier source target modifier = Msg.pushM $ Msg.eventModifier source target modifier

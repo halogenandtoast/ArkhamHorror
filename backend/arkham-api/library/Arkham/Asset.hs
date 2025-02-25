@@ -1081,6 +1081,7 @@ allAssets =
     , SomeAssetCard dialOfAncientsSignsOfCataclysm4
     , SomeAssetCard dialOfAncientsSignsOfAberration4
     , SomeAssetCard dialOfAncientsSignsOfRevelation4
+    , SomeAssetCard antikytheraPropheticTimepiece5
     , --- rogue [tdc]
       SomeAssetCard lugerP08
     , SomeAssetCard robertCastaigneHasYourBack

@@ -411,6 +411,7 @@ getPassedBy = \case
   [] -> 0
   ((windowType -> Window.PassInvestigationSkillTest _ _ n) : _) -> n
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
+  ((windowType -> Window.PassSkillTest _ _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
 
 damagedEnemy :: [Window] -> EnemyId

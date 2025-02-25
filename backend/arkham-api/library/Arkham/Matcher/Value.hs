@@ -12,7 +12,9 @@ data ValueMatcher
   | LessThanOrEqualTo GameValue
   | GreaterThanOrEqualTo GameValue
   | EqualTo GameValue
+  | Between GameValue GameValue
   | AnyValue
+  | GameValueOneOf [ValueMatcher]
   deriving stock (Show, Eq, Ord, Data)
 
 $(deriveJSON defaultOptions ''ValueMatcher)

@@ -758,3 +758,11 @@ onSucceedByEffect
   -> Message
 onSucceedByEffect sid matchr source target msgs = CreateOnSucceedByEffect sid matchr (toSource source) (toTarget target) msgs
 
+onNextTurnEffect
+  :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => source
+  -> investigator
+  -> [Message]
+  -> Message
+onNextTurnEffect source investigator msgs = CreateOnNextTurnEffect (toSource source) (asId investigator) msgs
+

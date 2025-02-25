@@ -648,6 +648,7 @@ allEvents =
     , --- seeker [tdc]
       SomeEventCard correlateAllItsContents
     , SomeEventCard cosmicRevelation1
+    , SomeEventCard workingAHunch2
     , --- rogue [tdc]
       SomeEventCard wheresTheParty
     , SomeEventCard youveHadWorse

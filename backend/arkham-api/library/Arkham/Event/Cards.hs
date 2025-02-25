@@ -451,6 +451,7 @@ allPlayerEventCards =
       , wordOfWeal
       , wordOfWoe
       , workingAHunch
+      , workingAHunch2
       , writtenInTheStars
       , wrongPlaceRightTime
       , youHandleThisOne

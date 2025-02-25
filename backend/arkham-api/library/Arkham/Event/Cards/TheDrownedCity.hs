@@ -80,6 +80,16 @@ cosmicRevelation1 =
     , cdCriteria = Just $ exists $ investigator_ can.reveal.cards
     }
 
+workingAHunch2 :: CardDef
+workingAHunch2 =
+  (event "11045" "Working a Hunch" 2 Seeker)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = setFromList [Insight]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdCriteria = Just $ exists $ You <> InvestigatorCanDiscoverCluesAt RevealedLocation
+    , cdLevel = Just 2
+    }
+
 wheresTheParty :: CardDef
 wheresTheParty =
   (event "11053" "\"Where's the party?\"" 0 Rogue)

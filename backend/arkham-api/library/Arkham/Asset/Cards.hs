@@ -666,6 +666,7 @@ allPlayerAssetCards =
       , scavenging
       , scavenging2
       , schoffnersCatalogue
+      , scientificStudiesGrant2
       , scientificTheory1
       , scientificTheory3
       , scrapper

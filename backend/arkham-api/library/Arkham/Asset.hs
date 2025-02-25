@@ -1077,6 +1077,7 @@ allAssets =
     , SomeAssetCard oculusMortuum
     , SomeAssetCard uncannySpecimen
     , SomeAssetCard misdirection2
+    , SomeAssetCard scientificStudiesGrant2
     , SomeAssetCard dialOfAncientsSignsOfCataclysm4
     , SomeAssetCard dialOfAncientsSignsOfAberration4
     , SomeAssetCard dialOfAncientsSignsOfRevelation4

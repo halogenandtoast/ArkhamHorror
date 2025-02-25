@@ -116,7 +116,7 @@ instance IsLabel "0" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs Zero
 
 instance IsLabel "+1" ChaosTokenMatcher where
-  fromLabel = ChaosTokenFaceIs Zero
+  fromLabel = ChaosTokenFaceIs PlusOne
 
 instance Semigroup ChaosTokenMatcher where
   AnyChaosToken <> x = x

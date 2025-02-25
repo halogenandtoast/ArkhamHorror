@@ -163,6 +163,15 @@ uncannySpecimen =
       , cdKeywords = setFromList [Keyword.Myriad]
       }
 
+misdirection2 :: CardDef
+misdirection2 =
+  (asset "11043" "Misdirection" 2 Seeker)
+    { cdSlots = [#arcane]
+    , cdCardTraits = setFromList [Ritual]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdKeywords = setFromList [seal $ oneOf @ChaosTokenMatcher [#"0", #"+1"]]
+    }
+
 dialOfAncientsSignsOfCataclysm4 :: CardDef
 dialOfAncientsSignsOfCataclysm4 =
   (asset "11046" ("Dial of Ancients" <:> "Signs of Cataclysm") 3 Seeker)

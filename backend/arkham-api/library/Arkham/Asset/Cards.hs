@@ -524,6 +524,7 @@ allPlayerAssetCards =
       , microscope4
       , mindsEye2
       , mineralSpecimen
+      , misdirection2
       , miskatonicArchaeologyFunding4
       , missDoyle1
       , mistsOfRlyeh

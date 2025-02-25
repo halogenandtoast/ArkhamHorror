@@ -166,10 +166,19 @@ uncannySpecimen =
 misdirection2 :: CardDef
 misdirection2 =
   (asset "11043" "Misdirection" 2 Seeker)
-    { cdSlots = [#arcane]
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdSlots = [#arcane]
     , cdCardTraits = setFromList [Ritual]
     , cdLimits = [LimitPerInvestigator 1]
     , cdKeywords = setFromList [seal $ oneOf @ChaosTokenMatcher [#"0", #"+1"]]
+    }
+
+scientificStudiesGrant2 :: CardDef
+scientificStudiesGrant2 =
+  (asset "11044" "Scientific Studies Grant" 3 Seeker)
+    { cdSkills = [#willpower, #intellect]
+    , cdCardTraits = setFromList [Grant]
+    , cdLimits = [LimitPerInvestigator 1]
     }
 
 dialOfAncientsSignsOfCataclysm4 :: CardDef

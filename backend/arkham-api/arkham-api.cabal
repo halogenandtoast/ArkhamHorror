@@ -2296,6 +2296,7 @@ library
       Arkham.Event.Events.WordOfWeal
       Arkham.Event.Events.WordOfWoe
       Arkham.Event.Events.WorkingAHunch
+      Arkham.Event.Events.WorkingAHunch2
       Arkham.Event.Events.WrittenInTheStars
       Arkham.Event.Events.WrongPlaceRightTime
       Arkham.Event.Events.YouHandleThisOne

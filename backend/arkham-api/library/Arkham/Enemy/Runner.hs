@@ -300,15 +300,21 @@ instance RunMessage EnemyAttrs where
           swarm <- select $ SwarmOf eid
           pushAll
             =<< traverse
-              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkAfter]))
-              (eid : swarm)
-          pushAll
-            =<< traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)
           case a.placement of
             InThreatArea {} -> pure a
             _ -> pure $ a & placementL .~ AtLocation lid
+    After (EnemyEntered eid lid) | eid == enemyId -> do
+      case enemyPlacement of
+        AsSwarm eid' _ -> push $ After (EnemyEntered eid' lid)
+        _ -> do
+          swarm <- select $ SwarmOf eid
+          pushAll
+            =<< traverse
+              (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkAfter]))
+              (eid : swarm)
+      pure a
     Ready (isTarget a -> True) -> do
       whenM (getCanReady a) do
         wouldDo msg (Window.WouldReady $ toTarget a) (Window.Readies $ toTarget a)
@@ -1246,6 +1252,16 @@ instance RunMessage EnemyAttrs where
           if #massive `notElem` keywords && willMove
             then push $ EnemyEntered enemyId lid
             else push $ DisengageEnemy iid enemyId
+        _ -> pure ()
+      pure a
+    After (WhenWillEnterLocation iid lid) -> do
+      case enemyPlacement of
+        InThreatArea iid' | iid' == iid -> do
+          keywords <- getModifiedKeywords a
+          willMove <- canEnterLocation enemyId lid
+          -- TODO: we may not need to check massive anymore since we look at placement
+          when (#massive `notElem` keywords && willMove) do
+            push $ After (EnemyEntered enemyId lid)
         _ -> pure ()
       pure a
     InvestigatorDamage iid (EnemyAttackSource eid) x y | eid == enemyId -> do

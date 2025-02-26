@@ -232,6 +232,9 @@ canParleyEnemy = CanParleyEnemy . InvestigatorWithId
 enemyEngagedWith :: InvestigatorId -> EnemyMatcher
 enemyEngagedWith = EnemyIsEngagedWith . InvestigatorWithId
 
+enemyWillMoveWith :: InvestigatorId -> EnemyMatcher
+enemyWillMoveWith = EnemyWillMoveWith . InvestigatorWithId
+
 onlyEnemyEngagedWith :: InvestigatorId -> EnemyMatcher
 onlyEnemyEngagedWith = OnlyEnemyEngagedWith . InvestigatorWithId
 

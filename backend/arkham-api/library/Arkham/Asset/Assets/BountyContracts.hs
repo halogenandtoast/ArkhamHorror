@@ -1,20 +1,14 @@
-module Arkham.Asset.Assets.BountyContracts (
-  bountyContracts,
-  BountyContracts (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.BountyContracts (bountyContracts) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner hiding (EnemyDefeated)
 import Arkham.Enemy.Types (Field (..))
+import Arkham.Helpers.Window (getEnemy)
 import Arkham.Matcher
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token qualified as Token
-import Arkham.Window (Window, windowType)
-import Arkham.Window qualified as Window
 
 newtype BountyContracts = BountyContracts AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -32,13 +26,6 @@ instance HasAbilities BountyContracts where
     ]
    where
     available = if hasUses a then mempty else Never
-
-getEnemy :: [Window] -> EnemyId
-getEnemy = \case
-  ((windowType -> Window.EnemySpawns eid _) : _) -> eid
-  ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
-  (_ : rest) -> getEnemy rest
-  _ -> error "invalid window"
 
 instance RunMessage BountyContracts where
   runMessage msg a@(BountyContracts attrs) = case msg of

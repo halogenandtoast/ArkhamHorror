@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Cost where
 
 import Arkham.Action (Action)
@@ -404,6 +405,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     (> 0) <$> countM (`extendedCardMatch` extendedCardMatcher) cards
   ReturnMatchingAssetToHandCost assetMatcher -> selectAny $ Matcher.AssetCanLeavePlayByNormalMeans <> assetMatcher
   ReturnAssetToHandCost assetId -> selectAny $ Matcher.AssetWithId assetId
+  ReturnEventToHandCost eventId -> selectAny $ Matcher.EventWithId eventId
   SealCost tokenMatcher -> do
     tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
     anyM (\token -> matchChaosToken iid token tokenMatcher) tokens

@@ -2502,6 +2502,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         pushAll
           $ [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
+            , After (WhenWillEnterLocation iid lid)
             , EnterLocation iid lid
             ]
           <> [ chooseOne
@@ -4233,6 +4234,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         pushAll
           [ WhenWillEnterLocation iid lid
           , Do (WhenWillEnterLocation iid lid)
+          , After (WhenWillEnterLocation iid lid)
           , EnterLocation iid lid
           ]
         pure a

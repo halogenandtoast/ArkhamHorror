@@ -149,6 +149,7 @@ data Cost
   | HandDiscardAnyNumberCost ExtendedCardMatcher
   | ReturnMatchingAssetToHandCost AssetMatcher
   | ReturnAssetToHandCost AssetId
+  | ReturnEventToHandCost EventId
   | SkillTestCost Source SkillType GameCalculation
   | SkillIconCost Int (Set SkillIcon)
   | SameSkillIconCost Int
@@ -357,6 +358,7 @@ displayCostType = \case
   HandDiscardAnyNumberCost _ -> "Discard any number of cards from you hand"
   ReturnMatchingAssetToHandCost {} -> "Return matching asset to hand"
   ReturnAssetToHandCost {} -> "Return asset to hand"
+  ReturnEventToHandCost {} -> "Return event to hand"
   SkillIconCost n _ -> tshow n <> " Matching Icons"
   SkillTestCost _ sType n -> "Test {" <> tshow sType <> "}(" <> tshow n <> ")"
   SameSkillIconCost n -> tshow n <> " instances of the same skill icon"

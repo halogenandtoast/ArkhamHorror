@@ -2729,6 +2729,7 @@ enemyMatcherFilter es matcher' = case matcher' of
   EnemyWithSealedChaosTokens n chaosTokenMatcher -> flip filterM es \enemy -> do
     (>= n)
       <$> countM (`matches` IncludeSealed chaosTokenMatcher) (attr enemySealedChaosTokens enemy)
+  EnemyWillMoveWith imatcher -> enemyMatcherFilter es (EnemyIsEngagedWith imatcher <> not_ MassiveEnemy)
   EnemyCanMove -> flip filterM es \enemy -> do
     modifiers <- getModifiers enemy
     if CannotMove `elem` modifiers

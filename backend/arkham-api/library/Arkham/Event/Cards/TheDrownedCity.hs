@@ -129,6 +129,17 @@ intimidation =
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyWithRemainingHealth (atLeast 1)
     }
 
+doppelganger1 :: CardDef
+doppelganger1 =
+  (event "11058" "Doppelgänger" 2 Rogue)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Spell, Trick]
+    , cdFastWindow = Just $ DuringTurn You
+    , cdKeywords = setFromList [Keyword.Myriad]
+    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11058")
+    , cdLevel = Just 1
+    }
+
 spectralShield :: CardDef
 spectralShield =
   (event "11071" "Spectral Shield" 1 Mystic)

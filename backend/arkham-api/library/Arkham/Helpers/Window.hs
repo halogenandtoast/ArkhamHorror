@@ -1,6 +1,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Helpers.Window where
 
@@ -413,6 +414,20 @@ getPassedBy = \case
   ((windowType -> Window.SuccessfulEvadeEnemy _ _ n) : _) -> n
   ((windowType -> Window.PassSkillTest _ _ _ n) : _) -> n
   (_ : rest) -> getPassedBy rest
+
+getEnemy :: [Window] -> EnemyId
+getEnemy = \case
+  ((windowType -> Window.EnemySpawns eid _) : _) -> eid
+  ((windowType -> Window.EnemyDefeated _ _ eid) : _) -> eid
+  (_ : rest) -> getEnemy rest
+  _ -> error "invalid window"
+
+getEnemies :: [Window] -> [EnemyId]
+getEnemies = \case
+  [] -> []
+  ((windowType -> Window.EnemyEnters eid _) : rest) -> eid : getEnemies rest
+  ((windowType -> Window.EnemyLeaves eid _) : rest) -> eid : getEnemies rest
+  (_ : rest) -> getEnemies rest
 
 damagedEnemy :: [Window] -> EnemyId
 damagedEnemy = \case

@@ -30,6 +30,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
+import Arkham.Event.Types (Field (EventCard, EventController))
 import Arkham.Exception
 import Arkham.GameValue
 import Arkham.Helpers
@@ -1028,6 +1029,11 @@ payCost msg c iid skipAdditionalCosts cost = do
       card <- field AssetCard assetId
       controller <- fieldMap AssetController (fromJustNote "Missing controller") assetId
       push $ ReturnToHand controller $ AssetTarget assetId
+      withPayment $ ReturnToHandPayment card
+    ReturnEventToHandCost eventId -> do
+      card <- field EventCard eventId
+      controller <- field EventController eventId
+      push $ ReturnToHand controller $ EventTarget eventId
       withPayment $ ReturnToHandPayment card
     DiscardHandCost -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid

@@ -55,6 +55,7 @@ data EnemyMatcher
   | EnemyCanEnter LocationMatcher
   | EnemyCanSpawnIn LocationMatcher
   | EnemyCanMove
+  | EnemyWillMoveWith InvestigatorMatcher
   | EnemyWithSealedChaosTokens Int ChaosTokenMatcher
   | EnemyWithoutTrait Trait
   | EnemyWithKeyword Keyword

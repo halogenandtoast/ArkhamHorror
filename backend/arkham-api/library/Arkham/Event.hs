@@ -654,6 +654,7 @@ allEvents =
     , SomeEventCard youveHadWorse
     , SomeEventCard bumsRush
     , SomeEventCard intimidation
+    , SomeEventCard doppelganger1
     , --- mystic [tdc]
       SomeEventCard spectralShield
     , SomeEventCard whispersOfDoom

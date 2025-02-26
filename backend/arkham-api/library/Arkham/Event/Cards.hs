@@ -128,6 +128,7 @@ allPlayerEventCards =
       , dirtyDeeds3
       , dodge
       , dodge2
+      , doppelganger1
       , drainEssence
       , drawnToTheFlame
       , dumbLuck

@@ -58,7 +58,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Source
-import Arkham.Helpers.Window
+import Arkham.Helpers.Window hiding (getEnemy)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
@@ -1244,7 +1244,13 @@ runGameMessage msg g = case msg of
   ReturnToHand iid (EventTarget eventId) -> do
     card <- field EventCard eventId
     push $ addToHand iid card
-    pure $ g & entitiesL . eventsL %~ deleteMap eventId
+    removedEntitiesF <-
+      if gameInAction g
+        then do
+          entity <- getEvent eventId
+          pure $ actionRemovedEntitiesL . eventsL %~ insertEntity entity
+        else pure id
+    pure $ g & entitiesL . eventsL %~ deleteMap eventId & removedEntitiesF
   After (ShuffleIntoDeck _ (AssetTarget aid)) -> do
     runMessage (RemoveAsset aid) g
   After (ShuffleIntoDeck _ (EventTarget eid)) ->

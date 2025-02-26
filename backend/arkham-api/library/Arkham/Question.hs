@@ -160,6 +160,13 @@ data ReadChoices msg = BasicReadChoices [UI msg] | LeadInvestigatorMustDecide [U
 data ChoosePlayerChoice = SetLeadInvestigator | SetTurnPlayer
   deriving stock (Show, Eq, Data)
 
+evadeLabel
+  :: (AsId enemy, IdOf enemy ~ EnemyId,  msg ~ Element (t msg), MonoFoldable (t msg))
+  => enemy
+  -> t msg
+  -> UI msg
+evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
+
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
   => target

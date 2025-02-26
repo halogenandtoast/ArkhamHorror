@@ -78,6 +78,9 @@ instance HasField "asset" (Maybe Target) (Maybe AssetId) where
 instance HasField "enemy" (Maybe Target) (Maybe EnemyId) where
   getField = ((.enemy) =<<)
 
+instance HasField "location" (Maybe Target) (Maybe LocationId) where
+  getField = ((.location) =<<)
+
 instance HasField "asset" Target (Maybe AssetId) where
   getField = \case
     AssetTarget aid -> Just aid

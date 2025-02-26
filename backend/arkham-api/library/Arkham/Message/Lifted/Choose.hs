@@ -215,6 +215,11 @@ targeting target action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [targetLabel target msgs]
 
+evading :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
+evading enemy action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [evadeLabel enemy msgs]
+
 batching :: ReverseQueue m => BatchId -> QueueT Message m () -> QueueT Message m ()
 batching batchId action = do
   msgs <- lift $ evalQueueT action

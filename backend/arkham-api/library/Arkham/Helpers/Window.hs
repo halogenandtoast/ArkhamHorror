@@ -174,6 +174,12 @@ locationLeavingPlay =
     (windowType -> Window.LeavePlay (LocationTarget lid)) -> Just lid
     _ -> Nothing
 
+assetLeavingPlay :: HasCallStack => [Window] -> AssetId
+assetLeavingPlay =
+  fromMaybe (error "missing assetLeavingPlay") . asum . map \case
+    (windowType -> Window.LeavePlay (AssetTarget aid)) -> Just aid
+    _ -> Nothing
+
 maybeDiscoveredLocation :: [Window] -> Maybe LocationId
 maybeDiscoveredLocation =
   asum . map \case
@@ -1798,6 +1804,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.EnterPlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
     Matcher.AssetLeavesPlay timing assetMatcher -> guardTiming timing $ \case
+      Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
+      _ -> noMatch
+    Matcher.AssetDiscarded timing assetMatcher -> guardTiming timing $ \case
       Window.LeavePlay (AssetTarget aid) -> elem aid <$> select assetMatcher
       _ -> noMatch
     Matcher.EnemyEntersPlay timing enemyMatcher -> guardTiming timing $ \case

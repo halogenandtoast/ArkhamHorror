@@ -255,6 +255,13 @@ stringAlong =
     , cdCardTraits = setFromList [Talent]
     }
 
+mobConnections2 :: CardDef
+mobConnections2 =
+  (asset "11059" "Mob Connections" 1 Rogue)
+    { cdCardTraits = setFromList [Connection, Illicit]
+    , cdKeywords = setFromList [Keyword.Exceptional]
+    }
+
 bloodOfThothLawIncarnate :: CardDef
 bloodOfThothLawIncarnate =
   (asset "11065" ("Blood of Thoth" <:> "Law Incarnate") 2 Mystic)

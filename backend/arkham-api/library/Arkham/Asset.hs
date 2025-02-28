@@ -1086,6 +1086,7 @@ allAssets =
       SomeAssetCard lugerP08
     , SomeAssetCard robertCastaigneHasYourBack
     , SomeAssetCard stringAlong
+    , SomeAssetCard mobConnections2
     , --- mystic [tdc]
       SomeAssetCard bloodOfThothLawIncarnate
     , SomeAssetCard breathOfTheSleeper

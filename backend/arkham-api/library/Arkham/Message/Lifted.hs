@@ -12,8 +12,8 @@ import Arkham.Asset.Types qualified as Field
 import Arkham.Asset.Uses (UseType)
 import Arkham.Attack
 import Arkham.Calculation
-import Arkham.Capability
 import Arkham.CampaignStep
+import Arkham.Capability
 import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
@@ -997,6 +997,15 @@ addToHand iid (toList -> cards) = do
   for_ cards obtainCard
   push $ AddToHand iid (map toCard cards)
 
+drawToHand
+  :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
+  => InvestigatorId
+  -> cards
+  -> m ()
+drawToHand iid (toList -> cards) = do
+  for_ cards obtainCard
+  push $ DrawToHand iid (map toCard cards)
+
 addToDiscard
   :: (ReverseQueue m, MonoFoldable cards, Element cards ~ card, IsCard card)
   => InvestigatorId
@@ -1816,8 +1825,15 @@ costModifiers
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> [ModifierType] -> m ()
 costModifiers source target modifiers = Msg.pushM $ Msg.costModifiers source target modifiers
 
-placeUnderneath :: (ReverseQueue m, Targetable target, IsCard card) => target -> [card] -> m ()
-placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard cards
+placeUnderneath
+  :: ( ReverseQueue m
+     , Targetable target
+     , Element cards ~ card
+     , MonoFoldable cards
+     , IsCard card
+     )
+  => target -> cards -> m ()
+placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard (toList cards)
 
 gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
@@ -2378,7 +2394,7 @@ sealChaosToken
   :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> ChaosToken -> m ()
 sealChaosToken iid target token = pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget target)]
 
-unsealChaosToken :: (ReverseQueue m) => ChaosToken -> m ()
+unsealChaosToken :: ReverseQueue m => ChaosToken -> m ()
 unsealChaosToken token = push $ UnsealChaosToken token
 
 resolveChaosTokens

@@ -142,6 +142,9 @@ instance IsLabel "melee" AssetMatcher where
 instance IsLabel "firearm" AssetMatcher where
   fromLabel = AssetWithTrait Firearm
 
+instance IsLabel "illicit" AssetMatcher where
+  fromLabel = AssetWithTrait Illicit
+
 instance IsLabel "weapon" AssetMatcher where
   fromLabel = AssetWithTrait Weapon
 

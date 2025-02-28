@@ -533,6 +533,7 @@ allPlayerAssetCards =
       , mistsOfRlyeh4
       , mitchBrown
       , mk1Grenades4
+      , mobConnections2
       , mollyMaxwell
       , monstrousTransformation
       , moonPendant2

@@ -105,6 +105,7 @@ data WindowMatcher
   | AgendaEntersPlay Timing AgendaMatcher
   | AssetEntersPlay Timing AssetMatcher
   | AssetLeavesPlay Timing AssetMatcher
+  | AssetDiscarded Timing AssetMatcher
   | AssetDealtDamage Timing SourceMatcher AssetMatcher
   | AssetDealtDamageOrHorror Timing SourceMatcher AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher

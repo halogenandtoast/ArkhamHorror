@@ -41,6 +41,10 @@ data ChaosTokenMatcher
   | FirstChaosTokenRevealedThisSkillTest
   deriving stock (Show, Eq, Ord, Data)
 
+chaosToken_ :: ChaosTokenMatcher -> ChaosTokenMatcher
+chaosToken_ = id
+{-# INLINE chaosToken_ #-}
+
 chaosTokenIs :: ChaosToken -> ChaosTokenMatcher
 chaosTokenIs = ChaosTokenIs . chaosTokenId
 

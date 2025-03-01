@@ -151,6 +151,7 @@ allPlayerSkillCards =
       , viciousBlow
       , viciousBlow2
       , watchThis
+      , watchThis3
       , wellDressed
       , wellFunded
       , whispersFromTheDeep
@@ -942,6 +943,13 @@ crackShot =
             $ AssetControlledBy You
             <> mapOneOf AssetWithTrait [Firearm, Ranged]
         ]
+    }
+
+watchThis3 :: CardDef
+watchThis3 =
+  (skill "11061" "\"Watch this!\"" [#wild, #wild, #wild] Rogue)
+    { cdCardTraits = singleton Gambit
+    , cdCommitRestrictions = [OnlyYourTest]
     }
 
 contemplative :: CardDef

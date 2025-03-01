@@ -262,6 +262,15 @@ mobConnections2 =
     , cdKeywords = setFromList [Keyword.Exceptional]
     }
 
+obscure2 :: CardDef
+obscure2 =
+  (asset "11060" "Obscure" 2 Rogue)
+    { cdSkills = [#intellect, #agility, #wild]
+    , cdCardTraits = setFromList [Ritual]
+    , cdLimits = [LimitPerInvestigator 1]
+    , cdKeywords = setFromList [seal $ chaosToken_ #"0"]
+    }
+
 bloodOfThothLawIncarnate :: CardDef
 bloodOfThothLawIncarnate =
   (asset "11065" ("Blood of Thoth" <:> "Law Incarnate") 2 Mystic)

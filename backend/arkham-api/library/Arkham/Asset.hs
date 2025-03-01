@@ -1088,6 +1088,7 @@ allAssets =
     , SomeAssetCard stringAlong
     , SomeAssetCard mobConnections2
     , SomeAssetCard obscure2
+    , SomeAssetCard robertCastaigneStillHasYourBack4
     , --- mystic [tdc]
       SomeAssetCard bloodOfThothLawIncarnate
     , SomeAssetCard breathOfTheSleeper

@@ -653,6 +653,7 @@ allPlayerAssetCards =
       , roaldEllsworthIntrepidExplorer
       , roaldEllsworthIntrepidExplorerResolute
       , robertCastaigneHasYourBack
+      , robertCastaigneStillHasYourBack4
       , robesOfEndlessNight
       , robesOfEndlessNight2
       , rodOfAnimalism1

@@ -271,6 +271,16 @@ obscure2 =
     , cdKeywords = setFromList [seal $ chaosToken_ #"0"]
     }
 
+robertCastaigneStillHasYourBack4 :: CardDef
+robertCastaigneStillHasYourBack4 =
+  (asset "11062" ("Robert Castaigne" <:> "Still Has Your Back") 3 Rogue)
+    { cdSkills = [#combat, #agility, #wild]
+    , cdCardTraits = setFromList [Ally, Veteran]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdLevel = Just 4
+    }
+
 bloodOfThothLawIncarnate :: CardDef
 bloodOfThothLawIncarnate =
   (asset "11065" ("Blood of Thoth" <:> "Law Incarnate") 2 Mystic)

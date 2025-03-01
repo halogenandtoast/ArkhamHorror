@@ -167,6 +167,13 @@ evadeLabel
   -> UI msg
 evadeLabel (asId -> enemy) (toList -> msgs) = EvadeLabel enemy msgs
 
+fightLabel
+  :: (AsId enemy, IdOf enemy ~ EnemyId,  msg ~ Element (t msg), MonoFoldable (t msg))
+  => enemy
+  -> t msg
+  -> UI msg
+fightLabel (asId -> enemy) (toList -> msgs) = FightLabel enemy msgs
+
 targetLabel
   :: (Targetable target, msg ~ Element (t msg), MonoFoldable (t msg))
   => target

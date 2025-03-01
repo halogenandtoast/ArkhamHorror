@@ -1010,6 +1010,7 @@ library
       Arkham.Asset.Assets.NineOfRods3
       Arkham.Asset.Assets.NkosiMabatiEnigmaticWarlock3
       Arkham.Asset.Assets.Obfuscation
+      Arkham.Asset.Assets.Obscure2
       Arkham.Asset.Assets.Observed4
       Arkham.Asset.Assets.ObsidianBracelet
       Arkham.Asset.Assets.OccultLexicon
@@ -3536,6 +3537,7 @@ library
       Arkham.Skill.Cards.ViciousBlow
       Arkham.Skill.Cards.ViciousBlow2
       Arkham.Skill.Cards.WatchThis
+      Arkham.Skill.Cards.WatchThis3
       Arkham.Skill.Cards.WellDressed
       Arkham.Skill.Cards.WellFunded
       Arkham.Skill.Cards.WhispersFromTheDeep

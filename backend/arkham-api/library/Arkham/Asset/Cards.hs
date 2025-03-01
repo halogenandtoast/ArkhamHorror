@@ -552,6 +552,7 @@ allPlayerAssetCards =
       , nineOfRods3
       , nkosiMabatiEnigmaticWarlock3
       , obfuscation
+      , obscure2
       , observed4
       , obsidianBracelet
       , occultLexicon

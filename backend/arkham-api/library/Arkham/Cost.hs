@@ -596,6 +596,9 @@ instance HasField "exhausted" Payment [Target] where
 instance HasField "resources" Payment Int where
   getField = totalResourcePayment
 
+instance HasField "resources" (Maybe Payment) Int where
+  getField = fromMaybe 0 . fmap totalResourcePayment
+
 instance HasField "investigatorDamage" Payment Int where
   getField = totalInvestigatorDamagePayment
 

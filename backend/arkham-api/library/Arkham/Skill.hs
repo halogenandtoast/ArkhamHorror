@@ -263,6 +263,7 @@ allSkills =
       SomeSkillCard quickWitted1
     , --- rogue [tdc]
       SomeSkillCard crackShot
+    , SomeSkillCard watchThis3
     , --- survivor [tdc]
       SomeSkillCard contemplative
     , --- neutral [tdc]

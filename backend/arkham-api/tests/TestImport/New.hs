@@ -35,6 +35,7 @@ import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Entities qualified as Entities
+import Arkham.Fight
 import Arkham.Game.Settings
 import Arkham.GameEnv
 import Arkham.Helpers.Action
@@ -155,7 +156,7 @@ instance CanMoveTo LocationId where
 fightEnemy :: Investigator -> Enemy -> TestAppT SkillTestId
 fightEnemy i e = do
   sid <- getRandom
-  run $ FightEnemy sid (toId i) (toId e) (toSource i) Nothing SkillCombat False
+  run $ FightEnemy (toId e) $ mkChooseFightPure sid (toId i) (toSource i)
   pure sid
 
 evadeEnemy :: Investigator -> Enemy -> TestAppT ()

@@ -1,10 +1,10 @@
-module Arkham.Event.Events.ImprovisedWeapon (improvisedWeapon, ImprovisedWeapon (..)) where
+module Arkham.Event.Events.ImprovisedWeapon (improvisedWeapon) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Matcher
+import Arkham.Fight
 import Arkham.Modifier
-import Arkham.SkillType
 import Arkham.Zone
 
 newtype ImprovisedWeapon = ImprovisedWeapon EventAttrs
@@ -22,7 +22,7 @@ instance RunMessage ImprovisedWeapon where
       enemyIds <- select $ CanFightEnemy (toSource attrs)
       chooseTargetM iid enemyIds \enemyId -> do
         skillTestModifier sid attrs enemyId (EnemyFight (-1))
-        push $ FightEnemy sid iid enemyId (toSource attrs) Nothing SkillCombat False
+        push $ FightEnemy enemyId $ mkChooseFightPure sid iid attrs
       when (zone == FromDiscard) $ shuffleIntoDeck iid attrs
       pure e
     _ -> ImprovisedWeapon <$> liftRunMessage msg attrs

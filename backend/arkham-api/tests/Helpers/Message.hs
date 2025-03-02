@@ -11,6 +11,7 @@ import Arkham.Classes
 import Arkham.Cost
 import Arkham.Enemy.Types
 import Arkham.Event.Types
+import Arkham.Fight
 import Arkham.Helpers
 import Arkham.Id
 import Arkham.Investigate.Types (Investigate (..))
@@ -53,7 +54,7 @@ enemyAttack i e = EnemyAttack $ Attack.enemyAttack (toId e) e (toId i)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
-  FightEnemy (SkillTestId nil) (toId i) (toId e) (toSource i) Nothing SkillCombat False
+  FightEnemy (toId e) $ mkChooseFightPure (SkillTestId nil) (toId i) (toSource i)
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (toId i) (toId e) Nothing False

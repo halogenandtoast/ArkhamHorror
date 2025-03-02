@@ -6,6 +6,7 @@ where
 
 import Arkham.Action qualified as Action
 import Arkham.Attack
+import Arkham.Fight
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -36,14 +37,14 @@ instance RunMessage ForsakenTowerOfEternalFlame where
       chooseOne
         iid
         [ targetLabel
-          nyarlathotep
-          [HandleTargetChoice iid (attrs.ability 1) (toTarget nyarlathotep)]
+            nyarlathotep
+            [HandleTargetChoice iid (attrs.ability 1) (toTarget nyarlathotep)]
         | nyarlathotep <- nyarlathoteps
         ]
       pure l
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget nyarlathotep) -> do
       sid <- getRandom
-      push $ FightEnemy sid iid nyarlathotep (attrs.ability 1) (Just $ toTarget attrs) #combat False
+      push $ FightEnemy nyarlathotep $ setTarget attrs $ mkChooseFightPure sid iid (attrs.ability 1)
       pure l
     Successful (Action.Fight, EnemyTarget eid) _iid _ (isTarget attrs -> True) _ -> do
       discardWhisperingChaos attrs

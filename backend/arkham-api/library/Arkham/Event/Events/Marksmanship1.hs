@@ -96,7 +96,9 @@ instance HasModifiersFor Marksmanship1Effect where
 
 instance RunMessage Marksmanship1Effect where
   runMessage msg e@(Marksmanship1Effect attrs@EffectAttrs {..}) = case msg of
-    FightEnemy sid iid eid _ _ _ _ -> do
+    FightEnemy eid choose -> do
+      let sid = choose.skillTest 
+      let iid = choose.investigator
       ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       ignoreWindow <- checkWindows [mkAfter $ Window.CancelledOrIgnoredCardOrGameEffect effectSource]
       enabled <- skillTestModifiers sid attrs iid [IgnoreRetaliate, IgnoreAloof]

@@ -17,11 +17,9 @@ onlyChooseFight = fmap $ \chooseFight -> chooseFight {chooseFightOnlyChoose = Tr
 withFightOverride :: ChooseFight -> ChooseFight
 withFightOverride chooseFight = chooseFight {chooseFightOverride = True}
 
-mkChooseFight
-  :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m ChooseFight
-mkChooseFight sid iid source =
-  pure
-    $ ChooseFight
+mkChooseFightPure :: Sourceable source => SkillTestId -> InvestigatorId -> source -> ChooseFight
+mkChooseFightPure sid iid source =
+    ChooseFight
       { chooseFightInvestigator = iid
       , chooseFightEnemyMatcher = AnyInPlayEnemy
       , chooseFightSource = toSource source
@@ -31,7 +29,12 @@ mkChooseFight sid iid source =
       , chooseFightOnlyChoose = False
       , chooseFightOverride = False
       , chooseFightSkillTest = sid
+      , chooseFightDifficulty = DefaultChooseFightDifficulty
       }
+
+mkChooseFight
+  :: (Sourceable source, HasGame m) => SkillTestId -> InvestigatorId -> source -> m ChooseFight
+mkChooseFight sid iid source = pure $ mkChooseFightPure sid iid source
 
 mkChooseFightMatch
   :: (Sourceable source, HasGame m)

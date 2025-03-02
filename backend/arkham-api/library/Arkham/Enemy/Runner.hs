@@ -37,6 +37,7 @@ import Arkham.Constants
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
+import Arkham.Fight
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.GameValue
@@ -673,7 +674,18 @@ instance RunMessage EnemyAttrs where
               , attackExhaustsEnemy = True
               }
       pure a
-    AttackEnemy sid iid eid source mTarget skillType | eid == enemyId -> do
+    AttackEnemy eid choose | eid == enemyId -> do
+      let iid = choose.investigator
+      let source = choose.source
+      let sid = choose.skillTest
+      let target = maybe (toTarget eid) (ProxyTarget (toTarget eid)) choose.target
+      let skillType = choose.skillType
+      let
+        difficulty =
+          case choose.difficulty of
+            DefaultChooseFightDifficulty -> EnemyMaybeFieldCalculation eid EnemyFight
+            CalculatedChooseFightDifficulty c -> c
+
       whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
       afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
       keywords <- getModifiedKeywords a
@@ -682,13 +694,7 @@ instance RunMessage EnemyAttrs where
 
       pushAll
         [ whenWindow
-        , fight
-            sid
-            iid
-            source
-            (maybe (toTarget eid) (ProxyTarget (toTarget eid)) mTarget)
-            skillType
-            (EnemyMaybeFieldCalculation eid EnemyFight)
+        , fight sid iid source target skillType difficulty
         , afterWindow
         ]
       pure a
@@ -1434,7 +1440,7 @@ instance RunMessage EnemyAttrs where
     Blanked msg' -> runMessage msg' a
     UseCardAbility iid (isSource a -> True) AbilityAttack _ _ -> do
       sid <- getRandom
-      push $ FightEnemy sid iid (toId a) (a.ability AbilityAttack) Nothing #combat False
+      push $ FightEnemy (toId a) $ mkChooseFightPure sid iid (a.ability AbilityAttack)
       pure a
     UseCardAbility iid (isSource a -> True) AbilityEvade _ _ -> do
       sid <- getRandom

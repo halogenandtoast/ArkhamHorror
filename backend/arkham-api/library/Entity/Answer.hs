@@ -11,6 +11,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Cost
 import Arkham.Decklist
 import Arkham.Entities
 import Arkham.Game
@@ -262,9 +263,12 @@ handleAnswer Game {..} playerId = \case
     case Map.lookup playerId gameQuestion of
       Just (ChoosePaymentAmounts _ _ info) -> do
         let costMap = Map.fromList $ map (\(PaymentAmountChoice cId _ _ _ _ cost) -> (cId, cost)) info
-        pure
-          $ concatMap (\(cId, n) -> replicate n (Map.findWithDefault Noop cId costMap))
-          $ Map.toList (parAmounts response)
+        let
+          combinePaymentAmounts n = \case
+            PayCost acId iid skip (UseCost aMatcher uType m) -> [PayCost acId iid skip (UseCost aMatcher uType (n * m))]
+            payMsg -> replicate n payMsg
+        let handleCost (cId, n) = combinePaymentAmounts n $ Map.findWithDefault Noop cId costMap
+        pure $ concatMap handleCost $ Map.toList (parAmounts response)
       _ -> error "Wrong question type"
   Raw message -> do
     let isPlayerWindowChoose = \case

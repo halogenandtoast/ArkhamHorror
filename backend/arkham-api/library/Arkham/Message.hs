@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -O0 #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS_GHC -O0 #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
 
@@ -482,7 +482,7 @@ data Message
     AttachAsset AssetId Target
   | AttachEvent EventId Target
   | AttachStoryTreacheryTo TreacheryId Card Target
-  | AttackEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType
+  | AttackEnemy EnemyId ChooseFight
   | BeforeRevealChaosTokens
   | AfterRevealChaosTokens
   | BeforeSkillTest SkillTestId
@@ -662,7 +662,7 @@ data Message
   | FailedAttackEnemy InvestigatorId EnemyId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillTestType Int
   | ChoseEnemy SkillTestId InvestigatorId Source EnemyId
-  | FightEnemy SkillTestId InvestigatorId EnemyId Source (Maybe Target) SkillType Bool
+  | FightEnemy EnemyId ChooseFight
   | FindAndDrawEncounterCard InvestigatorId CardMatcher IncludeDiscard
   | FindEncounterCard InvestigatorId Target [ScenarioZone] CardMatcher
   | FinishedWithMulligan InvestigatorId
@@ -1117,6 +1117,42 @@ instance FromJSON Message where
   parseJSON = withObject "Message" \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "FightEnemy" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (sid, iid, eid, src, mTarget, sType, isAction) ->
+            pure
+              $ FightEnemy eid
+              $ ChooseFight
+                iid
+                (EnemyWithId eid)
+                src
+                mTarget
+                sType
+                isAction
+                False
+                False
+                sid
+                DefaultChooseFightDifficulty
+          Right (eid, cf) -> pure $ FightEnemy eid cf
+      "AttackEnemy" -> do
+        contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case contents of
+          Left (sid, iid, eid, src, mTarget, sType) ->
+            pure
+              $ AttackEnemy eid
+              $ ChooseFight
+                iid
+                (EnemyWithId eid)
+                src
+                mTarget
+                sType
+                False
+                False
+                False
+                sid
+                DefaultChooseFightDifficulty
+          Right (eid, cf) -> pure $ AttackEnemy eid cf
       "ObtainCard" -> do
         contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case contents of

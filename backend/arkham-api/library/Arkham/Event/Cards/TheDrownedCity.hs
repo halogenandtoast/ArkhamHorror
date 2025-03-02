@@ -140,6 +140,19 @@ doppelganger1 =
     , cdLevel = Just 1
     }
 
+youveHadWorse4 :: CardDef
+youveHadWorse4 =
+  (event "11063" "\"You've had worse…\"" 0 Rogue)
+    { cdSkills = [#willpower, #agility, #agility]
+    , cdCardTraits = setFromList [Favor]
+    , cdFastWindow =
+        Just
+          $ DealtDamageOrHorror
+            #when
+            (SourceIsCancelable AnySource)
+            (affectsOthers $ at_ (orConnected YourLocation) <> InvestigatorWithResources (atLeast 1))
+    }
+
 spectralShield :: CardDef
 spectralShield =
   (event "11071" "Spectral Shield" 1 Mystic)

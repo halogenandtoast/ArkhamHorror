@@ -802,6 +802,7 @@ library
       Arkham.Asset.Assets.GabrielCarilloTrustedConfidante1
       Arkham.Asset.Assets.GarroteWire2
       Arkham.Asset.Assets.GateBox
+      Arkham.Asset.Assets.GatlingGun5
       Arkham.Asset.Assets.GavriellaMizrah
       Arkham.Asset.Assets.GearedUp
       Arkham.Asset.Assets.Geas2
@@ -2308,6 +2309,7 @@ library
       Arkham.Event.Events.YouHandleThisOne
       Arkham.Event.Events.YouOweMeOne
       Arkham.Event.Events.YouveHadWorse
+      Arkham.Event.Events.YouveHadWorse4
       Arkham.Event.Import.Lifted
       Arkham.Event.Runner
       Arkham.Event.Types

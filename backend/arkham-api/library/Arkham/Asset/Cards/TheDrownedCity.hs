@@ -281,6 +281,16 @@ robertCastaigneStillHasYourBack4 =
     , cdLevel = Just 4
     }
 
+gatlingGun5 :: CardDef
+gatlingGun5 =
+  (asset "11064" "Gatling Gun" 5 Rogue)
+    { cdSkills = [#combat, #combat, #agility, #wild]
+    , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
+    , cdSlots = [#hand, #hand]
+    , cdUses = uses Ammo 12
+    , cdLevel = Just 5
+    }
+
 bloodOfThothLawIncarnate :: CardDef
 bloodOfThothLawIncarnate =
   (asset "11065" ("Blood of Thoth" <:> "Law Incarnate") 2 Mystic)

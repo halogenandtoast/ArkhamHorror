@@ -62,6 +62,9 @@ calculate = go
     InvestigatorHandLengthCalculation iid -> fieldMap InvestigatorHand length iid
     InvestigatorKeyCountCalculation matcher -> length <$> selectAgg id InvestigatorKeys matcher
     EnemyMaybeFieldCalculation eid fld -> fromMaybe 0 . join <$> fieldMay fld eid
+    SumEnemyMaybeFieldCalculation matcher fld -> do
+      enemies <- select matcher
+      getSum <$> foldMapM (fmap (Sum . fromMaybe 0 . join) . fieldMay fld) enemies
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
     EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid
     EnemyFieldCalculation eid fld -> fromMaybe 0 <$> fieldMay fld eid

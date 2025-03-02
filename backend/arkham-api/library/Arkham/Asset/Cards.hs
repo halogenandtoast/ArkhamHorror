@@ -353,6 +353,7 @@ allPlayerAssetCards =
       , gabrielCarilloTrustedConfidante1
       , garroteWire2
       , gateBox
+      , gatlingGun5
       , gavriellaMizrah
       , gearedUp
       , geas2

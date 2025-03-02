@@ -458,6 +458,7 @@ allPlayerEventCards =
       , youHandleThisOne
       , youOweMeOne
       , youveHadWorse
+      , youveHadWorse4
       ]
 
 allEncounterEventCards :: Map CardCode CardDef

@@ -204,6 +204,19 @@ beginSkillTest
 beginSkillTest sid iid (toSource -> source) (toTarget -> target) sType n =
   BeginSkillTest $ initSkillTest sid iid source target sType (SkillTestDifficulty n)
 
+beginSkillTestEdit
+  :: (Sourceable source, Targetable target)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> GameCalculation
+  -> (SkillTest -> SkillTest)
+  -> Message
+beginSkillTestEdit sid iid (toSource -> source) (toTarget -> target) sType n f =
+  BeginSkillTest $ f $ initSkillTest sid iid source target sType (SkillTestDifficulty n)
+
 parley
   :: (Sourceable source, Targetable target)
   => SkillTestId

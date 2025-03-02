@@ -56,6 +56,7 @@ data GameCalculation
   | InvestigatorKeyCountCalculation InvestigatorMatcher
   | InvestigatorHandLengthCalculation InvestigatorId
   | EnemyMaybeFieldCalculation EnemyId (Field Enemy (Maybe Int))
+  | SumEnemyMaybeFieldCalculation EnemyMatcher (Field Enemy (Maybe Int))
   | EnemyMaybeGameValueFieldCalculation EnemyId (Field Enemy (Maybe GameValue))
   | EnemyFieldCalculation EnemyId (Field Enemy Int)
   | VictoryDisplayCountCalculation ExtendedCardMatcher

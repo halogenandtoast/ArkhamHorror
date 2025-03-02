@@ -10,6 +10,7 @@ import Arkham.Message (Message (..))
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.SkillTest.Base (SkillTest)
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
@@ -18,6 +19,7 @@ import Control.Monad.Trans.Class
 
 import Arkham.Helpers.SkillTest as X hiding (
   beginSkillTest,
+  beginSkillTestEdit,
   cancelTokenDraw,
   evade,
   exploreTest,
@@ -51,6 +53,18 @@ beginSkillTest
   -> GameCalculation
   -> m ()
 beginSkillTest sid iid source target sType n = push $ Msg.beginSkillTest sid iid source target sType n
+
+beginSkillTestEdit
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> SkillType
+  -> GameCalculation
+  -> (SkillTest -> SkillTest)
+  -> m ()
+beginSkillTestEdit sid iid source target sType n f = push $ Msg.beginSkillTestEdit sid iid source target sType n f
 
 parley
   :: (Sourceable source, Targetable target, ReverseQueue m)

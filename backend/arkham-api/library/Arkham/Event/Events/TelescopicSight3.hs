@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Effect.Import
 import Arkham.Effect.Types (targetL)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (choose)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
@@ -102,7 +102,9 @@ instance HasModifiersFor TelescopicSight3Effect where
 
 instance RunMessage TelescopicSight3Effect where
   runMessage msg e@(TelescopicSight3Effect attrs) = runQueueT $ case msg of
-    FightEnemy sid iid eid _ _ _ _ -> do
+    FightEnemy eid choose -> do
+      let sid = choose.skillTest
+      let iid = choose.investigator
       ignored <- selectAny $ EnemyWithId eid <> oneOf [EnemyWithKeyword Retaliate, EnemyWithKeyword Aloof]
       skillTestModifiers sid attrs.source iid [IgnoreRetaliate, IgnoreAloof]
       when ignored do

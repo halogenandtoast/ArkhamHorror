@@ -45,7 +45,7 @@ instance RunMessage SurvivalKnife where
 
       pushAll
         [ enabled
-        , FightEnemy sid iid (toEnemy $ map Window.windowType windows') source Nothing #combat False
+        , FightEnemy (toEnemy $ map Window.windowType windows') $ mkChooseFightPure sid iid source
         ]
       pure a
     _ -> SurvivalKnife <$> runMessage msg attrs

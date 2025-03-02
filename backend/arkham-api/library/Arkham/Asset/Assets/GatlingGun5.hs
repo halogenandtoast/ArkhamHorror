@@ -1,16 +1,17 @@
 module Arkham.Asset.Assets.GatlingGun5 (gatlingGun5) where
 
 import Arkham.Ability
+import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.DamageEffect
 import Arkham.Enemy.Types (Field (EnemyFight))
+import Arkham.Fight.Types
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.SkillTest.Lifted (beginSkillTestEdit)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.SkillTest.Base
+import Arkham.Modifier (ModifierType (NoStandardDamage, SkillModifier))
 
 newtype GatlingGun5 = GatlingGun5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -27,21 +28,25 @@ instance RunMessage GatlingGun5 where
   runMessage msg a@(GatlingGun5 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> n) -> do
       sid <- getRandom
-      beginSkillTestEdit
+      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat n, NoStandardDamage]
+      chooseFightEnemyEdit
         sid
         iid
         (attrs.ability 1)
-        attrs
-        #combat
-        (SumEnemyMaybeFieldCalculation (at_ $ locationWithInvestigator iid) EnemyFight)
-        \s -> s {skillTestAction = Just #fight}
+        \x ->
+          setTarget attrs
+            $ x
+              { chooseFightDifficulty =
+                  CalculatedChooseFightDifficulty
+                    $ SumEnemyMaybeFieldCalculation (at_ $ locationWithInvestigator iid) EnemyFight
+              }
       pure $ GatlingGun5 $ attrs & setMetaKey "gatlingGun5_ammo" n
-    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      let n = getMetaKeyDefault "gatlingGun5_ammo" 0 attrs
-      damage <- damageValueFor n iid DamageForEnemy
+    Successful (Action.Fight, EnemyTarget _) iid _ (isTarget attrs -> True) _ -> do
+      let x = getMetaKeyDefault "gatlingGun5_ammo" 0 attrs
+      damage <- damageValueFor x iid DamageForEnemy
       doStep damage msg
       pure a
-    DoStep n msg'@(PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
+    DoStep n msg'@(Successful (Action.Fight, EnemyTarget _) iid _ (isTarget attrs -> True) _) -> do
       if n == 0
         then do
           let enemies :: [EnemyId] = getMetaKeyDefault "gatlingGun5_damaged" [] attrs

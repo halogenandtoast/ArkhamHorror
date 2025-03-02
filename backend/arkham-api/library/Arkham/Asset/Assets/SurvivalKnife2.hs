@@ -45,7 +45,7 @@ instance RunMessage SurvivalKnife2 where
       enabled <- skillTestModifiers sid (attrs.ability 2) iid [SkillModifier #combat 2, DamageDealt 1]
       pushAll
         [ enabled
-        , FightEnemy sid iid enemy source Nothing #combat False
+        , FightEnemy enemy $ mkChooseFightPure sid iid source
         ]
       pure a
     _ -> SurvivalKnife2 <$> runMessage msg attrs

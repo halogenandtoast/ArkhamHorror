@@ -2,6 +2,7 @@
 
 module Arkham.Fight.Types where
 
+import Arkham.Calculation
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
@@ -10,6 +11,11 @@ import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
+
+data ChooseFightDifficulty
+  = DefaultChooseFightDifficulty
+  | CalculatedChooseFightDifficulty GameCalculation
+  deriving stock (Show, Eq, Data)
 
 data ChooseFight = ChooseFight
   { chooseFightInvestigator :: InvestigatorId
@@ -21,6 +27,7 @@ data ChooseFight = ChooseFight
   , chooseFightOnlyChoose :: Bool
   , chooseFightOverride :: Bool
   , chooseFightSkillTest :: SkillTestId
+  , chooseFightDifficulty :: ChooseFightDifficulty
   }
   deriving stock (Show, Eq, Data)
 
@@ -42,6 +49,9 @@ instance HasField "target" ChooseFight (Maybe Target) where
 instance HasField "matcher" ChooseFight EnemyMatcher where
   getField = chooseFightEnemyMatcher
 
+instance HasField "difficulty" ChooseFight ChooseFightDifficulty where
+  getField = chooseFightDifficulty
+
 instance HasField "overriden" ChooseFight Bool where
   getField = chooseFightOverride
 
@@ -55,4 +65,5 @@ instance WithTarget ChooseFight where
   getTarget = chooseFightTarget
   setTarget t i = i {chooseFightTarget = Just (toTarget t)}
 
+$(deriveJSON defaultOptions ''ChooseFightDifficulty)
 $(deriveJSON defaultOptions ''ChooseFight)

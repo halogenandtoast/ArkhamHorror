@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ToeToToe (toeToToe, toeToToeEffect, ToeToToe (..)) where
+module Arkham.Event.Events.ToeToToe (toeToToe, toeToToeEffect) where
 
 import Arkham.Card
 import Arkham.Cost
@@ -23,7 +23,7 @@ instance RunMessage ToeToToe where
       enemy <- fromJustNote "enemy should be set" <$> getMeta (toCardId attrs) "chosenEnemy"
       skillTestModifier sid attrs iid (DamageDealt 1)
       skillTestModifier sid attrs sid SkillTestAutomaticallySucceeds
-      push $ FightEnemy sid iid enemy (toSource attrs) Nothing #combat False
+      push $ FightEnemy enemy $ mkChooseFightPure sid iid attrs
       pure e
     _ -> ToeToToe <$> liftRunMessage msg attrs
 

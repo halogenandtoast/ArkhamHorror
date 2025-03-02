@@ -1,8 +1,4 @@
-module Arkham.Investigator.Cards.RolandBanksParallel (
-  rolandBanksParallel,
-  RolandBanksParallel (..),
-)
-where
+module Arkham.Investigator.Cards.RolandBanksParallel (rolandBanksParallel) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -10,7 +6,7 @@ import Arkham.Asset.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.History
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Import.Lifted hiding (choose)
 import Arkham.Investigator.Meta.RolandBanksParallel
 import Arkham.Matcher hiding (PlayCard)
 import Arkham.Movement
@@ -57,8 +53,8 @@ instance RunMessage RolandBanksParallel where
         chooseOne
           attrs.id
           [ Label
-            (fromMaybe "Unknown" $ nameSubtitle name)
-            [HandleTargetChoice attrs.id (ChaosTokenEffectSource ElderSign) (AssetTarget directive)]
+              (fromMaybe "Unknown" $ nameSubtitle name)
+              [HandleTargetChoice attrs.id (ChaosTokenEffectSource ElderSign) (AssetTarget directive)]
           | (directive, name) <- availableDirectives
           ]
 
@@ -70,17 +66,15 @@ instance RunMessage RolandBanksParallel where
         . RolandBanksParallel
         $ attrs
         & setMeta
-          ( internalMeta {ignoredDirectives = label : ignoredDirectives internalMeta}
-          )
-    FightEnemy _ (is attrs -> True) _ _ _ _ False -> do
+          (internalMeta {ignoredDirectives = label : ignoredDirectives internalMeta})
+    FightEnemy _ choose | is attrs choose.investigator -> do
       let internalMeta = toResultDefault defaultMeta attrs.meta
       attrs' <- liftRunMessage msg attrs
       pure
         . RolandBanksParallel
         $ attrs'
         & setMeta
-          ( internalMeta {dueDiligence = dueDiligence internalMeta + 1}
-          )
+          (internalMeta {dueDiligence = dueDiligence internalMeta + 1})
     MoveTo movement | isTarget attrs (moveTarget movement) -> do
       let internalMeta = toResultDefault defaultMeta attrs.meta
       attrs' <- liftRunMessage msg attrs
@@ -90,8 +84,7 @@ instance RunMessage RolandBanksParallel where
             . RolandBanksParallel
             $ attrs'
             & setMeta
-              ( internalMeta {leaveNoDoubt = leaveNoDoubt internalMeta + 1}
-              )
+              (internalMeta {leaveNoDoubt = leaveNoDoubt internalMeta + 1})
         _ -> pure . RolandBanksParallel $ attrs'
     PlayCard (is attrs -> True) _ _ _ _ False -> do
       let internalMeta = toResultDefault defaultMeta attrs.meta
@@ -100,8 +93,7 @@ instance RunMessage RolandBanksParallel where
         . RolandBanksParallel
         $ attrs'
         & setMeta
-          ( internalMeta {redTape = redTape internalMeta + 1}
-          )
+          (internalMeta {redTape = redTape internalMeta + 1})
     Flip (is attrs -> True) _ (AssetTarget aid) -> do
       attrs' <- liftRunMessage msg attrs
       isConsultExperts <- aid <=~> assetIs Assets.directiveConsultExperts

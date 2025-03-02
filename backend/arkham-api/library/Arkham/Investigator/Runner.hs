@@ -51,6 +51,7 @@ import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
+import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
@@ -976,10 +977,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ChooseFightEnemy choose | choose.investigator == investigatorId -> do
     modifiers <- getModifiers a
     let source = choose.source
-    let mTarget = choose.target
-    let skillType = choose.skillType
     let enemyMatcher = choose.matcher
-    let isAction = choose.isAction
     let
       isOverride = \case
         EnemyFightActionCriteria override -> Just override
@@ -1008,7 +1006,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         [ FightLabel
             eid
             $ ChoseEnemy choose.skillTest investigatorId source eid
-            : [ FightEnemy choose.skillTest investigatorId eid source mTarget skillType isAction
+            : [ FightEnemy eid choose
               | not choose.onlyChoose
               ]
         | eid <- enemyIds
@@ -1030,8 +1028,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       <> [EngageEnemy iid eid Nothing False, afterWindowMsg, FinishAction, TakenActions iid [#engage]]
 
     pure a
-  FightEnemy sid iid eid source mTarget skillType True | iid == investigatorId -> do
-    handleSkillTestNesting_ sid msg do
+  FightEnemy eid choose | choose.investigator == investigatorId && choose.isAction -> do
+    let iid = investigatorId
+    handleSkillTestNesting_ choose.skillTest msg do
       modifiers' <- getModifiers (toTarget a)
       beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid #fight]
       afterWindowMsg <- checkWindows [mkAfter $ Window.PerformAction iid #fight]
@@ -1052,15 +1051,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         [ BeginAction
         , beforeWindowMsg
         , TakeActions iid [#fight] (foldl' applyFightCostModifiers (ActionCost 1) modifiers')
-        , FightEnemy sid iid eid source mTarget skillType False
+        , FightEnemy eid choose {chooseFightIsAction = False}
         , afterWindowMsg
         , FinishAction
         , TakenActions iid [#fight]
         ]
     pure a
-  FightEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
-    handleSkillTestNesting_ sid msg do
-      push (AttackEnemy sid iid eid source mTarget skillType)
+  FightEnemy eid choose | choose.investigator == investigatorId && not choose.isAction -> do
+    handleSkillTestNesting_ choose.skillTest msg do
+      push (AttackEnemy eid choose)
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier a DoesNotDamageOtherInvestigator

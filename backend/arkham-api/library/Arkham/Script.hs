@@ -66,7 +66,9 @@ newtype ScriptT b a = Script
     , MonadRandom
     )
 
-instance ReverseQueue (ScriptT a)
+instance ReverseQueue (ScriptT a) where
+  filterInbox = Script . lift . lift . lift . filterInbox
+
 instance HasQueue Message (ScriptT a) where
   messageQueue = Script messageQueue
   pushAll = Script . pushAll
@@ -402,7 +404,8 @@ instance HasQueue msg m => HasQueue msg (FightT m) where
   messageQueue = lift messageQueue
   pushAll = lift . pushAll
 
-instance ReverseQueue m => ReverseQueue (FightT m)
+instance ReverseQueue m => ReverseQueue (FightT m) where
+  filterInbox = lift . filterInbox
 
 instance WithEffect (ScriptT a)
 

@@ -11,7 +11,7 @@ import Arkham.Fight.Types
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier (ModifierType (NoStandardDamage, SkillModifier))
+import Arkham.Modifier (ModifierType (DamageDealt, NoStandardDamage, SkillModifier))
 
 newtype GatlingGun5 = GatlingGun5 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -28,18 +28,18 @@ instance RunMessage GatlingGun5 where
   runMessage msg a@(GatlingGun5 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> n) -> do
       sid <- getRandom
-      skillTestModifiers sid (attrs.ability 1) iid [SkillModifier #combat n, NoStandardDamage]
-      chooseFightEnemyEdit
+      skillTestModifiers
         sid
-        iid
         (attrs.ability 1)
-        \x ->
-          setTarget attrs
-            $ x
-              { chooseFightDifficulty =
-                  CalculatedChooseFightDifficulty
-                    $ SumEnemyMaybeFieldCalculation (at_ $ locationWithInvestigator iid) EnemyFight
-              }
+        iid
+        [SkillModifier #combat n, NoStandardDamage, DamageDealt n]
+      chooseFightEnemyEdit sid iid (attrs.ability 1) \x -> do
+        setTarget attrs
+          $ x
+            { chooseFightDifficulty =
+                CalculatedChooseFightDifficulty
+                  $ SumEnemyMaybeFieldCalculation (at_ $ locationWithInvestigator iid) EnemyFight
+            }
       pure $ GatlingGun5 $ attrs & setMetaKey "gatlingGun5_ammo" n
     Successful (Action.Fight, EnemyTarget _) iid _ (isTarget attrs -> True) _ -> do
       let x = getMetaKeyDefault "gatlingGun5_ammo" 0 attrs

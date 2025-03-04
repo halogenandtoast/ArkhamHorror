@@ -31,7 +31,8 @@ instance HasQueue Message m => HasQueue Message (CreateEnemyT m) where
   messageQueue = lift messageQueue
   pushAll = lift . pushAll
 
-instance ReverseQueue m => ReverseQueue (CreateEnemyT m)
+instance ReverseQueue m => ReverseQueue (CreateEnemyT m) where
+  filterInbox = lift . filterInbox
 
 createEnemyT
   :: (ReverseQueue m, FetchCard a, IsEnemyCreationMethod creation)

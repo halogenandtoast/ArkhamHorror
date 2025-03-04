@@ -854,11 +854,11 @@ instance RunMessage ChaosBag where
           pushAll msgs
           pure $ c' & choiceL ?~ choice''
     ChaosTokenSelected _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
     ChaosTokenIgnored _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
     ChaosTokenCanceled _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token:))
+      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
@@ -903,11 +903,17 @@ instance RunMessage ChaosBag where
       pure $ c & chaosTokensL %~ (token :) & tokenPoolL %~ delete token
     SwapChaosToken originalFace newFace -> do
       let
-        replaceToken [] = []
-        replaceToken (token : rest) | chaosTokenFace token == originalFace = token {chaosTokenFace = newFace} : rest
-        replaceToken (token : rest) = token : replaceToken rest
+        replaceToken _needle _new [] = []
+        replaceToken needle new (token : rest) | chaosTokenFace token == needle = token {chaosTokenFace = new} : rest
+        replaceToken needle new (token : rest) = token : replaceToken needle new rest
 
-      pure $ c & chaosTokensL %~ replaceToken
+      -- if we are replacing with a token in the token pool, we need to change its face too
+      pure
+        $ c
+        & chaosTokensL
+        %~ replaceToken originalFace newFace
+        & tokenPoolL
+        %~ replaceToken newFace originalFace
     SealChaosToken token ->
       pure
         $ c

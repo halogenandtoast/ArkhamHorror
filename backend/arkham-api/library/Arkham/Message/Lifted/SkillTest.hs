@@ -58,7 +58,8 @@ instance MonadRandom m => MonadRandom (SkillTestT m) where
   getRandomRs = lift . getRandomRs
   getRandoms = lift getRandoms
 
-instance Lifted.ReverseQueue m => Lifted.ReverseQueue (SkillTestT m)
+instance Lifted.ReverseQueue m => Lifted.ReverseQueue (SkillTestT m) where
+  filterInbox = lift . Lifted.filterInbox
 
 skillTest
   :: (Lifted.ReverseQueue m, Sourceable attrs, Targetable attrs)

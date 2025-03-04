@@ -30,7 +30,8 @@ instance RunMessage YouveHadWorse4 where
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let damageAmount = getChoiceAmount "Damage" choices
       let horrorAmount = getChoiceAmount "Horror" choices
-      moveTokens attrs iid attrs.owner #resource (damageAmount + horrorAmount)
+      when (iid /= attrs.owner) do
+        moveTokens attrs iid attrs.owner #resource (damageAmount + horrorAmount)
       pushAll
         $ [CancelDamage iid damageAmount | damageAmount > 0]
         <> [CancelHorror iid horrorAmount | horrorAmount > 0]

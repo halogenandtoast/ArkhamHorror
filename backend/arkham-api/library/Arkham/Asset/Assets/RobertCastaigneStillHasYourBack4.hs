@@ -70,7 +70,7 @@ instance RunMessage RobertCastaigneStillHasYourBack4 where
             discardCard iid (attrs.ability 1) card
             drawCards iid (attrs.ability 1) 1
           when canPlay do
-            labeled "Discard the revealed asset to draw 1 card" do
+            labeled "Play card paying cost" do
               playCardPayingCost iid card
             
       pure a

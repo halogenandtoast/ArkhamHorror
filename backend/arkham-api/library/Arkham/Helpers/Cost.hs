@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Cost where
 
 import Arkham.Action (Action)
@@ -114,7 +113,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       if canParallelRex
         then fieldMap InvestigatorClues (* 2) iid
         else pure 0
-    pure $ (x + z >= n)
+    pure $ x + z >= n
   AddCurseTokensCost n _ -> do
     x <- getRemainingCurseTokens
     canParallelRex <-

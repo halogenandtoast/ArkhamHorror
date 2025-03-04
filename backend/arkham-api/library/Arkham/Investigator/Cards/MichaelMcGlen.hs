@@ -51,8 +51,9 @@ instance RunMessage MichaelMcGlen where
       pure $ MichaelMcGlen $ setMetaKey "perFirearmAssetPerRound" (aid : firearms) attrs
     ElderSignEffect iid | iid == attrs.id -> do
       firearms <- select $ assetControlledBy iid <> #firearm
-      chooseOneM iid do
-        labeled "Do not add any ammo" nothing
-        targets firearms \firearm -> addUses ElderSign firearm Ammo 1
+      unless (null firearms) do
+        chooseOneM iid do
+          labeled "Do not add any ammo" nothing
+          targets firearms \firearm -> addUses ElderSign firearm Ammo 1
       pure i
     _ -> MichaelMcGlen <$> liftRunMessage msg attrs

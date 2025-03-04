@@ -2043,7 +2043,11 @@ cancelEndTurn iid = lift $ Msg.removeAllMessagesMatching \case
     _ -> False
 
 obtainCard :: (IsCard a, ReverseQueue m) => a -> m ()
-obtainCard = push . ObtainCard . toCardId
+obtainCard card = do
+  filterInbox \case
+    Arkham.Message.Discarded _ _ discarded -> discarded.id == toCardId card
+    _ -> False
+  push $ ObtainCard $ toCardId card
 
 removeCardFromGame :: (ReverseQueue m, IsCard card) => card -> m ()
 removeCardFromGame card = do

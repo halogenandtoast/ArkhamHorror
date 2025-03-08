@@ -64,6 +64,7 @@ export type Scenario = {
   counts: Record<string, number>; // eslint-disable-line
   encounterDecks: Record<string, [CardContents[], CardContents[]]>;
   hasEncounterDeck: boolean;
+  encounterDeck: CardContents[];
   tarotCards: TarotCard[];
   xpBreakdown?: XpEntry[];
   meta: any;
@@ -133,6 +134,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   chaosBag: chaosBagDecoder,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+  encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
   xpBreakdown: JsonDecoder.optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,

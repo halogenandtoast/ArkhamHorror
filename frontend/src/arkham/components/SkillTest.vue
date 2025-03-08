@@ -185,7 +185,6 @@ function sourceCardCode(source: Source) {
     return sourceCardCode(inner)
   }
 
-  console.log(source)
   if (source.tag === 'EventSource') {
     const event = props.game.events[source.contents]
     if (!event) return null

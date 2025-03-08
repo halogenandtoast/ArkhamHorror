@@ -190,7 +190,6 @@ const handleResult = (result: ServerResult) => {
       emitter.emit('showDiscards', result.contents)
       return
     case "GameShowUnder":
-      console.log(result);
       emitter.emit('showUnder', result.contents)
       return
     case "GameTarot":

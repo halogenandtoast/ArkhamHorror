@@ -348,6 +348,16 @@ signOfXelotaphSymbolOfProtection =
     , cdUses = uses Charge 3
     }
 
+eyeOfGhatanothoaArtifactOfTheDarkGod2 :: CardDef
+eyeOfGhatanothoaArtifactOfTheDarkGod2 =
+  (asset "11073" ("Eye of Ghatanothoa" <:> "Artifact of the Dark God") 2 Mystic)
+    { cdSkills = [#willpower, #wild]
+    , cdCardTraits = setFromList [Item, Relic, Cursed]
+    , cdSlots = [#accessory]
+    , cdUnique = True
+    , cdKeywords = setFromList [Keyword.Exceptional]
+    }
+
 anchorChain :: CardDef
 anchorChain =
   (asset "11081" "Anchor Chain" 3 Survivor)

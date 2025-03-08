@@ -29,7 +29,6 @@ const remembered = computed(() => {
   const prefix = scenarioToI18n(props.game.scenario)
   return log.map((record: Remembered) => {
     if (record.tag == 'YouOweBiancaResources') {
-      console.log(record);
       return `You owe Bianca resources (${record.contents})`
     }
 

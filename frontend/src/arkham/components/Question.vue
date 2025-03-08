@@ -27,17 +27,6 @@ const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
 
-function formatEntry(entry: FlavorTextEntry): any {
-  console.log(entry)
-  switch (entry.tag) {
-    //case 'BasicEntry': return h('div', formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text))
-    // case 'I18nEntry': return h('div', formatContent(t(entry.key, entry.variables)))
-    // case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(entry.entry)])
-    // case 'CompositeEntry': return h('div', entry.entries.map(formatEntry))
-    default: return h('div', "Unknown entry type")
-  }
-}
-
 function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'

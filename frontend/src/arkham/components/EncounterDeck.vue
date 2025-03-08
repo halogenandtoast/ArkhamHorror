@@ -30,6 +30,24 @@ const usingSpectral = computed(() => {
   return modifiers ? modifiers.some((m) => m.type.tag === "UseEncounterDeck" && m.type.contents === "SpectralEncounterDeck") : false
 })
 
+const revealTopCard = computed(() => {
+  return Object.values(props.game.investigators).some((i) => {
+    const { modifiers } = investigator?.value ?? { modifiers: [] }
+    return modifiers.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfEncounterDeckIsRevealed")
+  })
+})
+
+const deckImage = computed(() => {
+  if (revealTopCard.value) {
+    let card = props.game.scenario.encounterDeck[0]
+    if (card) {
+      return imgsrc(`cards/${card.cardCode.replace('c', '')}.avif`)
+    }
+  }
+
+  return imgsrc('back.png')
+})
+
 const deckAction = computed(() => {
   if (usingSpectral.value != isSpectral.value) {
     return -1;
@@ -71,8 +89,8 @@ const debug = useDebug()
     <div class="top-of-deck">
       <img
         class="deck"
-        :src="imgsrc('back.png')"
-        :class="{ 'can-interact': deckAction !== -1 }"
+        :src="deckImage"
+        :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
         @click="$emit('choose', deckAction)"
       />
       <span class="deck-size">{{props.spectral || game.encounterDeckSize}}</span>
@@ -92,6 +110,9 @@ const debug = useDebug()
 </template>
 
 <style scoped lang="scss">
+.revealed {
+  filter: brightness(50%);
+}
 .deck {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;

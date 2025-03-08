@@ -1097,6 +1097,7 @@ allAssets =
     , SomeAssetCard theGreatWorkDivideAndUnite
     , SomeAssetCard katarinaSojkamissaryFromUlthar
     , SomeAssetCard signOfXelotaphSymbolOfProtection
+    , SomeAssetCard eyeOfGhatanothoaArtifactOfTheDarkGod2
     , --- survivor [tdc]
       SomeAssetCard anchorChain
     , SomeAssetCard handHook

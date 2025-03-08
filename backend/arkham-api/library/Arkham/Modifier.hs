@@ -381,6 +381,7 @@ data ModifierType
   | SwarmingValue Int
   | TakeUpFewerSlots SlotType Int
   | TopCardOfDeckIsRevealed
+  | TopCardOfEncounterDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
   | TreatRevealedChaosTokenAs ChaosTokenFace

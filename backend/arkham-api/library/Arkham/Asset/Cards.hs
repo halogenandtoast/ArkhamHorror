@@ -300,6 +300,7 @@ allPlayerAssetCards =
       , expeditionJournal
       , eyeOfChaos
       , eyeOfChaos4
+      , eyeOfGhatanothoaArtifactOfTheDarkGod2
       , eyeOfTheDjinnVesselOfGoodAndEvil2
       , eyesOfTheDreamer
       , eyesOfValusiaTheMothersCunning4

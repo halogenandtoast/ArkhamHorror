@@ -102,7 +102,6 @@ function isAbility(v: Message): v is AbilityLabel {
   const { source } = v.ability;
 
   if (source.sourceTag === 'ProxySource') {
-    console.log(source.source.tag)
     if (source.source.tag === 'CardCodeSource') {
       return source.originalSource.contents === id.value
     }

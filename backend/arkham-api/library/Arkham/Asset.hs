@@ -1098,6 +1098,7 @@ allAssets =
     , SomeAssetCard katarinaSojkamissaryFromUlthar
     , SomeAssetCard signOfXelotaphSymbolOfProtection
     , SomeAssetCard eyeOfGhatanothoaArtifactOfTheDarkGod2
+    , SomeAssetCard swordCaneDesignedByTheCouncilOfPolls2
     , --- survivor [tdc]
       SomeAssetCard anchorChain
     , SomeAssetCard handHook

@@ -761,6 +761,7 @@ allPlayerAssetCards =
       , switchblade
       , switchblade2
       , swordCane
+      , swordCaneDesignedByTheCouncilOfPolls2
       , takadaHirokoAeroplaneMechanic
       , takadaHirokoAeroplaneMechanicResolute
       , talismanOfProtection

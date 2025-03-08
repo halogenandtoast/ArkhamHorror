@@ -192,6 +192,9 @@ instance HasField "printedCost" CardDef Int where
 instance HasField "cardCode" CardDef CardCode where
   getField = cdCardCode
 
+instance HasField "cardCodes" CardDef [CardCode] where
+  getField c = cdCardCode c : cdAlternateCardCodes c
+
 instance HasField "customizations" CardDef (Map Customization Int) where
   getField = cdCustomizations
 

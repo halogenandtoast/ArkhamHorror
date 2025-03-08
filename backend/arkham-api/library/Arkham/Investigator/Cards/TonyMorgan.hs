@@ -21,9 +21,11 @@ newtype Meta = Meta {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TonyMorgan = TonyMorgan (InvestigatorAttrs `With` Meta)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator TonyMorgan where
+  investigatorFromAttrs = TonyMorgan . (`with` Meta False)
 
 tonyMorgan :: InvestigatorCard TonyMorgan
 tonyMorgan =
@@ -101,8 +103,9 @@ instance RunMessage TonyMorgan where
     DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       pure $ TonyMorgan $ attrs `with` Meta False
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      bountyContracts <- selectJust $ assetIs Assets.bountyContracts
-      push $ AddUses #elderSign bountyContracts Bounty 1
+      mBountyContracts <- selectOne $ assetIs Assets.bountyContracts
+      for_ mBountyContracts $ \bountyContracts -> 
+        push $ AddUses #elderSign bountyContracts Bounty 1
       pure i
     ResetGame -> TonyMorgan . (`with` Meta False) <$> runMessage msg attrs
     _ -> TonyMorgan . (`with` meta) <$> runMessage msg attrs

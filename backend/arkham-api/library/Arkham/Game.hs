@@ -1,8 +1,8 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
-import Arkham.Ability hiding (you, ignoreActionCost)
+import Arkham.Ability hiding (ignoreActionCost, you)
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
 import Arkham.Act.Types (ActAttrs (..), Field (..))
@@ -99,10 +99,12 @@ import Arkham.Helpers.Window (maybeDiscoveredLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
+import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Investigator.Types (
   Field (..),
   Investigator,
   InvestigatorAttrs (..),
+  InvestigatorForm (..),
   investigatorClues,
   investigatorDoom,
   investigatorHealthDamage,
@@ -441,6 +443,10 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           ]
     treacheries <- select (treacheryInThreatAreaOf $ toId investigator')
     mLocation <- field InvestigatorLocation (toId investigator')
+    willpower <- field InvestigatorBaseWillpower (toId investigator')
+    intellect <- field InvestigatorBaseIntellect (toId investigator')
+    combat <- field InvestigatorBaseCombat (toId investigator')
+    agility <- field InvestigatorBaseAgility (toId investigator')
     let
       additionalData =
         object
@@ -450,6 +456,10 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "events" .= events
           , "skills" .= skills
           , "treacheries" .= treacheries
+          , "willpower" .= willpower
+          , "intellect" .= intellect
+          , "combat" .= combat
+          , "agility" .= agility
           ]
     case mLocation of
       Nothing -> pure $ inner `with` ConnectionData [] `with` additionalData
@@ -1266,7 +1276,9 @@ abilityMatches a@Ability {..} = \case
       let ab = applyAbilityModifiers a modifiers'
       iid <- view activeInvestigatorIdL <$> getGame
       case getFirst $ fold [First (Just lid) | AsIfAt lid <- modifiers'] of
-        Just lid -> Helpers.withModifiers iid (toModifiers GameSource [AsIfAt lid]) $ getCanPerformAbility iid (Window.defaultWindows iid) ab
+        Just lid ->
+          Helpers.withModifiers iid (toModifiers GameSource [AsIfAt lid])
+            $ getCanPerformAbility iid (Window.defaultWindows iid) ab
         Nothing -> getCanPerformAbility iid (Window.defaultWindows iid) ab
   PerformableAbilityBy investigatorMatcher modifiers' -> do
     withDepthGuard 3 False $ do
@@ -3711,10 +3723,26 @@ instance Projection Investigator where
       InvestigatorIntellect -> skillValueFor #intellect Nothing attrs.id
       InvestigatorCombat -> skillValueFor #combat Nothing attrs.id
       InvestigatorAgility -> skillValueFor #agility Nothing attrs.id
-      InvestigatorBaseWillpower -> pure investigatorWillpower
-      InvestigatorBaseIntellect -> pure investigatorIntellect
-      InvestigatorBaseCombat -> pure investigatorCombat
-      InvestigatorBaseAgility -> pure investigatorAgility
+      InvestigatorBaseWillpower -> case investigatorForm of
+        TransfiguredForm inner -> pure $
+          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+          in (toAttrs iinvestigator).willpower
+        _ -> pure investigatorWillpower
+      InvestigatorBaseIntellect -> case investigatorForm of
+        TransfiguredForm inner -> pure $
+          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+          in (toAttrs iinvestigator).intellect
+        _ -> pure investigatorIntellect
+      InvestigatorBaseCombat -> case investigatorForm of
+        TransfiguredForm inner -> pure $
+          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+          in (toAttrs iinvestigator).combat
+        _ -> pure investigatorCombat
+      InvestigatorBaseAgility -> case investigatorForm of
+        TransfiguredForm inner -> pure $
+          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+          in (toAttrs iinvestigator).agility
+        _ -> pure investigatorAgility
       InvestigatorHorror -> pure $ investigatorSanityDamage attrs
       InvestigatorDamage -> pure $ investigatorHealthDamage attrs
       InvestigatorAssignedHorror -> pure investigatorAssignedSanityDamage
@@ -3753,7 +3781,11 @@ instance Projection Investigator where
       InvestigatorActionsPerformed -> pure investigatorActionsPerformed
       InvestigatorSlots -> pure investigatorSlots
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
-      InvestigatorTraits -> pure investigatorTraits
+      InvestigatorTraits -> case investigatorForm of
+        TransfiguredForm inner -> case lookup inner allInvestigatorCards of
+          Nothing -> error "no valid card def"
+          Just c -> pure $ cdCardTraits c
+        _ -> pure investigatorTraits
       InvestigatorAbilities -> pure $ filter ((< 1000) . abilityIndex) $ getAbilities i
       InvestigatorCommittedCards -> do
         mskillTest <- getSkillTest

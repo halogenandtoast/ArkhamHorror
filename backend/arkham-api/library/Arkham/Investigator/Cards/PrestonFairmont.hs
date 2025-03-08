@@ -28,19 +28,22 @@ instance HasChaosTokenValue PrestonFairmont where
 instance RunMessage PrestonFairmont where
   runMessage msg i@(PrestonFairmont attrs) = case msg of
     TakeResources iid n source False | iid == toId attrs -> do
-      familyInheritance <- selectJust $ assetIs Assets.familyInheritance
-      canGainResources <- not <$> hasModifier attrs CannotGainResources
-      case source of
-        InvestigatorSource iid' | iid == iid' -> PrestonFairmont <$> runMessage msg attrs
-        AbilitySource abilitySource _ -> do
-          if abilitySource == AssetSource familyInheritance
-            then PrestonFairmont <$> runMessage msg attrs
-            else do
+      mFamilyInheritance <- selectOne $ assetIs Assets.familyInheritance
+      case mFamilyInheritance of
+        Nothing -> pure i
+        Just familyInheritance -> do
+          canGainResources <- not <$> hasModifier attrs CannotGainResources
+          case source of
+            InvestigatorSource iid' | iid == iid' -> PrestonFairmont <$> runMessage msg attrs
+            AbilitySource abilitySource _ -> do
+              if abilitySource == AssetSource familyInheritance
+                then PrestonFairmont <$> runMessage msg attrs
+                else do
+                  pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
+                  pure i
+            _ -> do
               pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
               pure i
-        _ -> do
-          pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
-          pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       hasResources <- (> 0) <$> getSpendableResources iid
       player <- getPlayer iid
@@ -51,20 +54,23 @@ instance RunMessage PrestonFairmont where
       pure i
     Blanked msg'@(SpendResources iid _) | iid == toId attrs -> runMessage msg' i
     SpendResources iid n | iid == toId attrs -> do
-      familyInheritance <- selectJust $ assetIs Assets.familyInheritance
-      familyInheritanceResources <- field AssetResources familyInheritance
-      if familyInheritanceResources > 0
-        then do
-          if attrs.resources > 0
+      mFamilyInheritance <- selectOne $ assetIs Assets.familyInheritance
+      case mFamilyInheritance of
+        Nothing -> PrestonFairmont <$> runMessage msg attrs
+        Just familyInheritance -> do
+          familyInheritanceResources <- field AssetResources familyInheritance
+          if familyInheritanceResources > 0
             then do
-              player <- getPlayer iid
-              push
-                $ chooseOrRunN player n
-                $ replicate
-                  familyInheritanceResources
-                  (targetLabel familyInheritance [RemoveResources (toSource attrs) (toTarget familyInheritance) 1])
-                <> replicate attrs.resources (ResourceLabel iid [Do (SpendResources iid 1)])
-            else push $ RemoveResources (toSource attrs) (toTarget familyInheritance) n
-          pure i
-        else PrestonFairmont <$> runMessage msg attrs
+              if attrs.resources > 0
+                then do
+                  player <- getPlayer iid
+                  push
+                    $ chooseOrRunN player n
+                    $ replicate
+                      familyInheritanceResources
+                      (targetLabel familyInheritance [RemoveResources (toSource attrs) (toTarget familyInheritance) 1])
+                    <> replicate attrs.resources (ResourceLabel iid [Do (SpendResources iid 1)])
+                else push $ RemoveResources (toSource attrs) (toTarget familyInheritance) n
+              pure i
+            else PrestonFairmont <$> runMessage msg attrs
     _ -> PrestonFairmont <$> runMessage msg attrs

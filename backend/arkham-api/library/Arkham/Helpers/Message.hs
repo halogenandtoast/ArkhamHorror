@@ -547,8 +547,8 @@ gainResourcesIfCan a source n = do
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage
 
-nonAttackEnemyDamage :: Sourceable a => a -> Int -> EnemyId -> Message
-nonAttackEnemyDamage source damage enemy = EnemyDamage enemy (nonAttack source damage)
+nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a) => a -> Int -> enemy -> Message
+nonAttackEnemyDamage source damage enemy = EnemyDamage (asId enemy) (nonAttack source damage)
 
 placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target n

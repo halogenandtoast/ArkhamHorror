@@ -1,4 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeAbstractions #-}
+{-# LANGUAGE DefaultSignatures #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Types where
@@ -28,6 +30,7 @@ import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Helpers
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Cards
 import Arkham.Investigator.Deck
 import Arkham.Json
@@ -86,7 +89,10 @@ class
   , EntityAttrs a ~ InvestigatorAttrs
   , RunType a ~ a
   ) =>
-  IsInvestigator a
+  IsInvestigator a where
+  investigatorFromAttrs :: InvestigatorAttrs -> a
+  default investigatorFromAttrs :: (Coercible a InvestigatorAttrs) => InvestigatorAttrs -> a
+  investigatorFromAttrs = coerce
 
 type InvestigatorCard a = CardBuilder PlayerId a
 
@@ -233,7 +239,11 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorSupplies" -> pure $ SomeField InvestigatorSupplies
     _ -> error "Unknown Field Investigator"
 
-data InvestigatorForm = RegularForm | YithianForm | HomunculusForm
+data InvestigatorForm
+  = RegularForm
+  | YithianForm
+  | HomunculusForm
+  | TransfiguredForm CardCode
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -388,6 +398,9 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
+instance HasField "form" InvestigatorAttrs InvestigatorForm where
+  getField = investigatorForm
+
 instance HasField "settings" InvestigatorAttrs CardSettings where
   getField = investigatorSettings
 
@@ -433,6 +446,18 @@ instance HasField "ability" InvestigatorAttrs (Int -> Source) where
 instance HasField "doom" InvestigatorAttrs Int where
   getField = countTokens Doom . investigatorTokens
 
+instance HasField "willpower" InvestigatorAttrs Int where
+  getField = investigatorWillpower
+
+instance HasField "intellect" InvestigatorAttrs Int where
+  getField = investigatorIntellect
+
+instance HasField "combat" InvestigatorAttrs Int where
+  getField = investigatorCombat
+
+instance HasField "agility" InvestigatorAttrs Int where
+  getField = investigatorAgility
+
 instance HasField "classSymbol" InvestigatorAttrs ClassSymbol where
   getField = investigatorClass
 
@@ -474,20 +499,27 @@ instance HasModifiersFor Investigator where
 instance HasChaosTokenValue Investigator where
   getChaosTokenValue iid chaosTokenFace (Investigator a) = getChaosTokenValue iid chaosTokenFace a
 
+data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
+
 instance HasAbilities Investigator where
-  getAbilities i@(Investigator a) =
-    getAbilities a
-      <> [ restricted
-             i
-             500
-             (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
-             $ ActionAbility []
-             $ ActionCost 1
-         | notNull (investigatorKeys $ toAttrs a)
-         ]
-      <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
-         , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
-         ]
+  getAbilities i@(Investigator a) = case investigatorForm (toAttrs a) of
+    TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
+      getAbilities @a (investigatorFromAttrs @a (toAttrs a)) <> inateAbilities
+    _ -> baseAbilities <> inateAbilities
+    where
+      baseAbilities = getAbilities a
+      inateAbilities = 
+        [ restricted
+               i
+               500
+               (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
+               $ ActionAbility []
+               $ ActionCost 1
+           | notNull (investigatorKeys $ toAttrs a)
+           ]
+        <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
+           , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
+           ]
 
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId

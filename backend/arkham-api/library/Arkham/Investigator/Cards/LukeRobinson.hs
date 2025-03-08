@@ -29,9 +29,12 @@ newtype Meta = Meta {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LukeRobinson = LukeRobinson (InvestigatorAttrs `With` Meta)
-  deriving anyclass (IsInvestigator, HasAbilities)
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator LukeRobinson where
+  investigatorFromAttrs = LukeRobinson . (`with` Meta False)
 
 instance HasModifiersFor LukeRobinson where
   getModifiersFor (LukeRobinson (a `With` meta)) = do
@@ -68,8 +71,8 @@ getLukePlayable attrs windows' = do
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = runQueueT $ case msg of
     ElderSignEffect iid | attrs `is` iid -> do
-      gateBox <- selectJust $ assetIs Assets.gateBox
-      push $ AddUses #elderSign gateBox Charge 1
+      mGateBox <- selectOne $ assetIs Assets.gateBox
+      for_ mGateBox $ \gateBox -> push $ AddUses #elderSign gateBox Charge 1
       pure i
     PlayerWindow iid additionalActions isAdditional | active meta -> do
       -- N.B. we are not checking if iid is us so we must be careful not to use it incorrectly

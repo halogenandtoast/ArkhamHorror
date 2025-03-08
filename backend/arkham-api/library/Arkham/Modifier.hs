@@ -395,6 +395,7 @@ data ModifierType
   | XPModifier Text Int
   | UIModifier UIModifier
   | BecomeHomunculusWhenDefeated
+  | BecomeInvestigator InvestigatorId
   deriving stock (Show, Eq, Ord, Data)
 
 data UIModifier

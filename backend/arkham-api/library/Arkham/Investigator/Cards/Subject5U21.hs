@@ -20,9 +20,12 @@ newtype Meta = Meta {devoured :: [Card]}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype Subject5U21 = Subject5U21 (InvestigatorAttrs `With` Meta)
-  deriving anyclass (IsInvestigator, HasModifiersFor)
+  deriving anyclass HasModifiersFor
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator Subject5U21 where
+  investigatorFromAttrs = Subject5U21 . (`with` Meta [])
 
 subject5U21 :: InvestigatorCard Subject5U21
 subject5U21 =

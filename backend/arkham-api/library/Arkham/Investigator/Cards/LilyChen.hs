@@ -14,9 +14,12 @@ newtype Metadata = Metadata {flipDiscipline :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LilyChen = LilyChen (InvestigatorAttrs `With` Metadata)
-  deriving anyclass (IsInvestigator, HasAbilities, HasModifiersFor)
+  deriving anyclass (HasAbilities, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator LilyChen where
+  investigatorFromAttrs = LilyChen . (`with` Metadata False)
 
 lilyChen :: InvestigatorCard LilyChen
 lilyChen =

@@ -413,6 +413,7 @@ allPlayerEventCards =
       , timeWarp2
       , tinker
       , toeToToe
+      , transfiguration2
       , transmogrify
       , trialByFire
       , trialByFire3

@@ -199,6 +199,9 @@ onMounted(() => {
   -webkit-backdrop-filter: blur(5px); /* Safari support */
   transition-behavior: allow-discrete;
   max-width: 50%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
 
   &.minimized {
     header .header-title {
@@ -254,6 +257,7 @@ onMounted(() => {
   }
 
   .content {
+    height: 100%;
     overflow: auto;
     border-radius: 0 0 16px 16px;
   }

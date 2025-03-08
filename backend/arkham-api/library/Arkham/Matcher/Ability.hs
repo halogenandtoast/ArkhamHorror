@@ -80,6 +80,9 @@ instance IsLabel "fight" AbilityMatcher where
 instance IsLabel "action" AbilityMatcher where
   fromLabel = AbilityIsActionAbility
 
+instance IsLabel "fast" AbilityMatcher where
+  fromLabel = AbilityIsFastAbility
+
 instance IsLabel "basic" AbilityMatcher where
   fromLabel = BasicAbility
 

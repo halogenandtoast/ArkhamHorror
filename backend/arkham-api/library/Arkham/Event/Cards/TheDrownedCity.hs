@@ -170,6 +170,15 @@ whispersOfDoom =
     , cdCriteria = Just $ exists $ at_ YourLocation <> NonWeaknessEnemy
     }
 
+spiritualEcho2 :: CardDef
+spiritualEcho2 =
+  (event "11075" "Spiritual Echo" 1 Mystic)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Ritual]
+    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11075")
+    , cdLevel = Just 2
+    }
+
 catch :: CardDef
 catch =
   (event "11086" "\"Catch!\"" 0 Survivor)

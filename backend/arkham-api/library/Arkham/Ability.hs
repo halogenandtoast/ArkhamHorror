@@ -33,6 +33,9 @@ import GHC.Records
 withAdditionalCost :: Cost -> Ability -> Ability
 withAdditionalCost c ab = ab {abilityAdditionalCosts = c : abilityAdditionalCosts ab}
 
+ignoreActionCost :: Ability -> Ability
+ignoreActionCost ab = doesNotProvokeAttacksOfOpportunity $ applyAbilityModifiers ab [IgnoreActionCost]
+
 inHandAbility :: Ability -> Bool
 inHandAbility = inHandCriteria . abilityCriteria
  where

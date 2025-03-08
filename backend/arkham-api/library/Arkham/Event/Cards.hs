@@ -375,6 +375,7 @@ allPlayerEventCards =
       , spectralRazor
       , spectralRazor2
       , spectralShield
+      , spiritualEcho2
       , stallForTime
       , standTogether
       , standTogether3

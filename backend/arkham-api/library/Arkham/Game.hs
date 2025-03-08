@@ -2,7 +2,7 @@
 
 module Arkham.Game (module Arkham.Game, module X) where
 
-import Arkham.Ability hiding (you)
+import Arkham.Ability hiding (you, ignoreActionCost)
 import Arkham.Act
 import Arkham.Act.Sequence qualified as AC
 import Arkham.Act.Types (ActAttrs (..), Field (..))
@@ -1265,7 +1265,9 @@ abilityMatches a@Ability {..} = \case
     withDepthGuard 3 False $ do
       let ab = applyAbilityModifiers a modifiers'
       iid <- view activeInvestigatorIdL <$> getGame
-      getCanPerformAbility iid (Window.defaultWindows iid) ab
+      case getFirst $ fold [First (Just lid) | AsIfAt lid <- modifiers'] of
+        Just lid -> Helpers.withModifiers iid (toModifiers GameSource [AsIfAt lid]) $ getCanPerformAbility iid (Window.defaultWindows iid) ab
+        Nothing -> getCanPerformAbility iid (Window.defaultWindows iid) ab
   PerformableAbilityBy investigatorMatcher modifiers' -> do
     withDepthGuard 3 False $ do
       let ab = applyAbilityModifiers a modifiers'

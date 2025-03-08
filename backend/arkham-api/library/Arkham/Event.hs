@@ -659,6 +659,7 @@ allEvents =
     , --- mystic [tdc]
       SomeEventCard spectralShield
     , SomeEventCard whispersOfDoom
+    , SomeEventCard spiritualEcho2
     , --- survivor [tdc]
       SomeEventCard catch
     , SomeEventCard unconventionalMethod

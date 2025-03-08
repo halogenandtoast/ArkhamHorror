@@ -358,6 +358,14 @@ eyeOfGhatanothoaArtifactOfTheDarkGod2 =
     , cdKeywords = setFromList [Keyword.Exceptional]
     }
 
+swordCaneDesignedByTheCouncilOfPolls2 :: CardDef
+swordCaneDesignedByTheCouncilOfPolls2 =
+  fast (asset "11074" ("Sword Cane" <:> "Designed by the Council of Polls") 2 Mystic)
+    { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+    , cdSkills = [#combat, #agility]
+    , cdSlots = [#hand]
+    }
+
 anchorChain :: CardDef
 anchorChain =
   (asset "11081" "Anchor Chain" 3 Survivor)

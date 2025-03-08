@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.SwordCane (swordCane) where
+module Arkham.Asset.Assets.SwordCaneDesignedByTheCouncilOfPolls2 (swordCaneDesignedByTheCouncilOfPolls2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -6,27 +6,34 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Evade
 import Arkham.Fight
 import Arkham.Matcher
+import Arkham.Modifier (ModifierType(..))
 import Arkham.Message.Lifted.Choose
 
-newtype SwordCane = SwordCane AssetAttrs
+newtype SwordCaneDesignedByTheCouncilOfPolls2 = SwordCaneDesignedByTheCouncilOfPolls2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-swordCane :: AssetCard SwordCane
-swordCane = asset SwordCane Cards.swordCane
+swordCaneDesignedByTheCouncilOfPolls2 :: AssetCard SwordCaneDesignedByTheCouncilOfPolls2
+swordCaneDesignedByTheCouncilOfPolls2 = asset SwordCaneDesignedByTheCouncilOfPolls2 Cards.swordCaneDesignedByTheCouncilOfPolls2
 
-instance HasAbilities SwordCane where
-  getAbilities (SwordCane x) =
-    [ controlled x 1 (any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2)])
+instance HasAbilities SwordCaneDesignedByTheCouncilOfPolls2 where
+  getAbilities (SwordCaneDesignedByTheCouncilOfPolls2 x) =
+    [ controlled x 1 (any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2), EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)])
         $ freeReaction
         $ AssetEntersPlay #after (be x)
     , restricted x 1 ControlsThis $ fightAction $ exhaust x
     , restricted x 2 ControlsThis $ evadeAction $ exhaust x
     ]
 
-instance RunMessage SwordCane where
-  runMessage msg a@(SwordCane attrs) = runQueueT $ case msg of
+instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
+  runMessage msg a@(SwordCaneDesignedByTheCouncilOfPolls2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 windows' payments -> do
+      enemies <- select $ enemyEngagedWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
+
+      chooseOneM iid do
+        labeled "Do not deal damage" nothing
+        targets enemies (nonAttackEnemyDamage (attrs.ability 2) 1)
+
       liftRunMessage (UseCardAbility iid (toSource attrs) 2 windows' payments) a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let source = attrs.ability 2
@@ -34,6 +41,8 @@ instance RunMessage SwordCane where
       evadeableEnemies <- select $ CanEvadeEnemy source
 
       sid <- getRandom
+
+      skillTestModifier sid source iid (AnySkillValue 1)
 
       chooseOrRunOneM iid do
         unless (null evadeableEnemies) $ labeled "Evade" do
@@ -45,4 +54,4 @@ instance RunMessage SwordCane where
             for_ [#willpower, #combat] \sk -> do
               skillLabeled sk $ chooseFightEnemyEdit sid iid source (Arkham.Fight.withSkillType sk)
       pure a
-    _ -> SwordCane <$> liftRunMessage msg attrs
+    _ -> SwordCaneDesignedByTheCouncilOfPolls2 <$> liftRunMessage msg attrs

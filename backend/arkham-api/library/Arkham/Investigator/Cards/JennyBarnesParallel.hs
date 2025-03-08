@@ -17,9 +17,11 @@ data Meta = Meta {responseCard :: Maybe Card, resourcesGained :: Int}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype JennyBarnesParallel = JennyBarnesParallel (InvestigatorAttrs `With` Meta)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator JennyBarnesParallel where
+  investigatorFromAttrs = JennyBarnesParallel . (`with` Meta Nothing 0)
 
 jennyBarnesParallel :: InvestigatorCard JennyBarnesParallel
 jennyBarnesParallel =

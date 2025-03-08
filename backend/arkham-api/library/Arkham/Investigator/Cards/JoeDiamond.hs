@@ -24,9 +24,11 @@ newtype Metadata = Metadata {revealedHunchCard :: Maybe CardId}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype JoeDiamond = JoeDiamond (InvestigatorAttrs `With` Metadata)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator JoeDiamond where
+  investigatorFromAttrs = JoeDiamond . (`with` Metadata Nothing)
 
 joeDiamond :: InvestigatorCard JoeDiamond
 joeDiamond =

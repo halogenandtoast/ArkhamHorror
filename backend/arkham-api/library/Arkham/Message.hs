@@ -1089,6 +1089,7 @@ data Message
   | UnfocusTarotCards
   | RotateTarot TarotCard
   | Incursion LocationId
+  | SetInvestigatorForm InvestigatorId InvestigatorForm
   | -- The Dream Eaters
     PlaceSwarmCards InvestigatorId EnemyId Int
   | PlacedSwarmCard EnemyId Card

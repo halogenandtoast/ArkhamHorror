@@ -15,9 +15,11 @@ newtype YithianMetadata = YithianMetadata {originalBody :: Value}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BodyOfAYithian = BodyOfAYithian (InvestigatorAttrs `With` YithianMetadata)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator BodyOfAYithian where
+  investigatorFromAttrs attrs = BodyOfAYithian $ attrs `with` YithianMetadata (toJSON attrs)
 
 instance HasModifiersFor BodyOfAYithian where
   getModifiersFor (BodyOfAYithian (a `With` _)) = do

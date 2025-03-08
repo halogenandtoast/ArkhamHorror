@@ -15,12 +15,17 @@ import {
 } from '@/arkham/types/Card';
 
 type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
-type Form = 'RegularForm' | 'YithianForm' | 'HomunculusForm'
+type Form
+  = { tag: 'RegularForm' }
+  | { tag: 'YithianForm' }
+  | { tag: 'HomunculusForm' }
+  | { tag: 'TransfiguredForm', contents: string }
 
 export const formDecoder = JsonDecoder.oneOf<Form>([
-  JsonDecoder.isExactly('RegularForm'),
-  JsonDecoder.isExactly('YithianForm'),
-  JsonDecoder.isExactly('HomunculusForm'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('RegularForm') }, 'RegularForm'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('YithianForm') }, 'YithianForm'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('HomunculusForm') }, 'HomunculusForm'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('TransfiguredForm'), contents: JsonDecoder.string }, 'TransfiguredForm'),
 ], 'Form');
 
 export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([

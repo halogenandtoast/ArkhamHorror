@@ -16,9 +16,11 @@ newtype Meta = Meta {responseCard :: Maybe Card}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype LeoAnderson = LeoAnderson (InvestigatorAttrs `With` Meta)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator LeoAnderson where
+  investigatorFromAttrs = LeoAnderson . (`with` Meta Nothing)
 
 leoAnderson :: InvestigatorCard LeoAnderson
 leoAnderson =

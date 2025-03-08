@@ -54,8 +54,7 @@ instance FromJSON Investigator where
     withInvestigatorCardCode cCode
       $ \(SomeInvestigator @a) -> Investigator <$> parseJSON @a (Object o)
 
-withInvestigatorCardCode
-  :: CardCode -> (SomeInvestigator -> r) -> r
+withInvestigatorCardCode :: CardCode -> (SomeInvestigator -> r) -> r
 withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
   Nothing -> case cCode of
     "04244" -> f (SomeInvestigator @BodyOfAYithian)
@@ -65,8 +64,6 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
     "05049" -> f (SomeInvestigator @PennyWhite)
     _ -> error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator @a)
-
-data SomeInvestigator = forall a. IsInvestigator a => SomeInvestigator
 
 allInvestigators :: Map CardCode SomeInvestigatorCard
 allInvestigators =

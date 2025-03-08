@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE TypeAbstractions #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -98,6 +99,7 @@ import Arkham.Helpers.Window (
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
 import Arkham.Investigate.Types
+import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Location.Types (Field (..))
@@ -151,10 +153,16 @@ import Data.Monoid
 import Data.UUID (nil)
 
 instance RunMessage Investigator where
-  runMessage msg i@(Investigator a) = do
+  runMessage msg i@(Investigator (a :: original)) = do
     modifiers' <- getModifiers (toTarget i)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg
-    Investigator <$> runMessage msg' a
+    case investigatorForm (toAttrs a) of
+      TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
+        Investigator
+          . investigatorFromAttrs @original
+          . toAttrs
+          <$> runMessage @a msg' (investigatorFromAttrs @a (toAttrs a))
+      _ -> Investigator <$> runMessage msg' a
 
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
@@ -4224,6 +4232,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> liftRunMessage msg' a
+  SetInvestigatorForm iid form | iid == toId a -> pure $ a & formL .~ form
   RemovedLocation lid | investigatorLocation a == Just lid -> do
     -- needs to look at the "real" location not as if
     pure $ a & placementL .~ Unplaced

@@ -1843,10 +1843,10 @@ takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
   push $ PlayerWindow iid [] False
 
-nonAttackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
+nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => a -> Int -> enemy -> m ()
 nonAttackEnemyDamage source damage enemy = do
-  whenM (enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.EnemyDamage enemy (nonAttack source damage)
+  whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
+    push $ Msg.EnemyDamage (asId enemy) (nonAttack source damage)
 
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 attackEnemyDamage source damage enemy = do
@@ -2073,8 +2073,8 @@ payCardCostWithWindows iid card ws = push $ Msg.PayCardCost iid card ws
 removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
 removeFromGame = push . Msg.RemoveFromGame . toTarget
 
-automaticallyEvadeEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
-automaticallyEvadeEnemy iid eid = push $ Msg.EnemyEvaded iid eid
+automaticallyEvadeEnemy :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> enemy -> m ()
+automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId investigator) (asId enemy)
 
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 placeInBonded iid = push . PlaceInBonded iid . toCard

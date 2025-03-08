@@ -179,6 +179,15 @@ spiritualEcho2 =
     , cdLevel = Just 2
     }
 
+transfiguration2 :: CardDef
+transfiguration2 =
+  (event "11076" "Transfiguration" 0 Mystic)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ritual]
+    , cdLevel = Just 2
+    , cdLimits = [MaxPerGame 1]
+    }
+
 catch :: CardDef
 catch =
   (event "11086" "\"Catch!\"" 0 Survivor)

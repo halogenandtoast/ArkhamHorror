@@ -12,7 +12,7 @@ import Arkham.Investigator.Runner as X (
   Field (InvestigatorDiscard),
   InvestigatorAttrs (..),
   InvestigatorCard,
-  IsInvestigator,
+  IsInvestigator(..),
   Stats (..),
   deckL,
   decksL,

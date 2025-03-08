@@ -13,9 +13,12 @@ newtype Metadata = Metadata {moveAfterTest :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype UrsulaDowns = UrsulaDowns (InvestigatorAttrs `With` Metadata)
-  deriving anyclass (IsInvestigator, HasModifiersFor)
+  deriving anyclass HasModifiersFor
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator UrsulaDowns where
+  investigatorFromAttrs = UrsulaDowns . (`with` Metadata False)
 
 ursulaDowns :: InvestigatorCard UrsulaDowns
 ursulaDowns =

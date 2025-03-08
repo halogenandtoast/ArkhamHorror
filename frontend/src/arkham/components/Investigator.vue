@@ -154,12 +154,16 @@ const skipTriggersAction = computed(() => {
 })
 
 const image = computed(() => {
-  if (props.investigator.form === 'YithianForm') {
+  if (props.investigator.form.tag === 'YithianForm') {
     return imgsrc("cards/04244.avif");
   }
 
-  if (props.investigator.form === 'HomunculusForm') {
+  if (props.investigator.form.tag === 'HomunculusForm') {
     return imgsrc("cards/11068b.avif");
+  }
+
+  if (props.investigator.form.tag === "TransfiguredForm") {
+    return imgsrc(`cards/${props.investigator.form.contents.replace('c', '')}.avif`)
   }
 
   const mutated = props.investigator.mutated ? `_${props.investigator.mutated}` : ''
@@ -168,11 +172,11 @@ const image = computed(() => {
 })
 
 const portraitImage = computed(() => {
-  if (props.investigator.form === "YithianForm") {
+  if (props.investigator.form.tag === "YithianForm") {
     return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
   }
 
-  if (props.investigator.form === "HomunculusForm") {
+  if (props.investigator.form.tag === "HomunculusForm") {
     return imgsrc(`portraits/${id.value.replace('c', '')}.jpg`)
   }
 

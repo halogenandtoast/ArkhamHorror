@@ -2266,6 +2266,7 @@ library
       Arkham.Event.Events.TimeWarp2
       Arkham.Event.Events.Tinker
       Arkham.Event.Events.ToeToToe
+      Arkham.Event.Events.Transfiguration2
       Arkham.Event.Events.Transmogrify
       Arkham.Event.Events.TrialByFire
       Arkham.Event.Events.TrialByFire3

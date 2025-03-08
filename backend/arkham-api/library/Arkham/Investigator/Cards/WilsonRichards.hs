@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.WilsonRichards (wilsonRichards, WilsonRichards (..)) where
+module Arkham.Investigator.Cards.WilsonRichards (wilsonRichards) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
@@ -17,9 +17,12 @@ newtype Meta = Meta {active :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype WilsonRichards = WilsonRichards (InvestigatorAttrs `With` Meta)
-  deriving anyclass (IsInvestigator, HasAbilities)
+  deriving anyclass HasAbilities
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator WilsonRichards where
+  investigatorFromAttrs = WilsonRichards . (`with` Meta False)
 
 wilsonRichards :: InvestigatorCard WilsonRichards
 wilsonRichards =
@@ -34,7 +37,9 @@ instance HasModifiersFor WilsonRichards where
       liftGuardM $ aid <=~> AssetWithTrait Tool
       pure [AnySkillValue 1]
     validCards <-
-      if active meta then findAllCards (`cardMatch` (CardOwnedBy a.id <> #asset <> #tool)) else pure []
+      if active meta
+        then findAllCards (`cardMatch` (CardOwnedBy a.id <> #asset <> #tool))
+        else pure []
     modifyEachMap a validCards \card -> [ReduceCostOf (CardWithId card.id) 1]
 
 instance HasChaosTokenValue WilsonRichards where

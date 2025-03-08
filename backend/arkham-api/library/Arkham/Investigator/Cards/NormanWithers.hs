@@ -17,9 +17,11 @@ newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
   deriving anyclass (ToJSON, FromJSON)
 
 newtype NormanWithers = NormanWithers (InvestigatorAttrs `With` Metadata)
-  deriving anyclass IsInvestigator
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
   deriving stock Data
+
+instance IsInvestigator NormanWithers where
+  investigatorFromAttrs = NormanWithers . (`with` Metadata False)
 
 normanWithers :: InvestigatorCard NormanWithers
 normanWithers =

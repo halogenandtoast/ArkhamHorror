@@ -1,17 +1,11 @@
-module Arkham.Skill.Cards.Enraptured (
-  enraptured,
-  Enraptured (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.Enraptured (enraptured) where
 
 import Arkham.Action qualified as Action
 import Arkham.Asset.Uses qualified as Uses
-import Arkham.Classes
 import Arkham.Matcher
-import Arkham.Message
+import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Enraptured = Enraptured SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -21,26 +15,13 @@ enraptured :: SkillCard Enraptured
 enraptured = skill Enraptured Cards.enraptured
 
 instance RunMessage Enraptured where
-  runMessage msg s@(Enraptured attrs) = case msg of
-    PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ ->
-      do
-        chargeAssets <-
-          select
-            $ assetControlledBy (skillOwner attrs)
-            <> AssetWithUseType Uses.Charge
-        secretAssets <-
-          select
-            $ assetControlledBy (skillOwner attrs)
-            <> AssetWithUseType Uses.Secret
-        player <- getPlayer (skillOwner attrs)
-        unless (null chargeAssets && null secretAssets)
-          $ push
-          $ chooseOne player
-          $ [ targetLabel aid [AddUses (toSource attrs) aid Uses.Charge 1]
-            | aid <- chargeAssets
-            ]
-          <> [ targetLabel aid [AddUses (toSource attrs) aid Uses.Secret 1]
-             | aid <- secretAssets
-             ]
-        pure s
-    _ -> Enraptured <$> runMessage msg attrs
+  runMessage msg s@(Enraptured attrs) = runQueueT $ case msg of
+    PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
+      chargeAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Charge
+      secretAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Secret
+      unless (null chargeAssets && null secretAssets) do
+        chooseOneM attrs.owner do
+          targets chargeAssets \aid -> addUses attrs aid Uses.Charge 1
+          targets secretAssets \aid -> addUses attrs aid Uses.Secret 1
+      pure s
+    _ -> Enraptured <$> liftRunMessage msg attrs

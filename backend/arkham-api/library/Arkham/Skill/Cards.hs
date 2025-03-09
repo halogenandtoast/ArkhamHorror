@@ -63,6 +63,7 @@ allPlayerSkillCards =
       , dreamParasite
       , dreamsOfTheDeepTheDeepGate
       , enraptured
+      , enraptured2
       , essenceOfTheDream
       , esotericMethod1
       , eureka
@@ -950,6 +951,14 @@ watchThis3 =
   (skill "11061" "\"Watch this!\"" [#wild, #wild, #wild] Rogue)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyYourTest]
+    }
+
+enraptured2 :: CardDef
+enraptured2 =
+  (skill "11077" "Enraptured" [#intellect, #wild] Mystic)
+    { cdCardTraits = singleton Practiced
+    , cdLevel = Just 2
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 contemplative :: CardDef

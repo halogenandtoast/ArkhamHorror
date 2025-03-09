@@ -264,6 +264,8 @@ allSkills =
     , --- rogue [tdc]
       SomeSkillCard crackShot
     , SomeSkillCard watchThis3
+    , --- mystic [tdc]
+      SomeSkillCard enraptured2
     , --- survivor [tdc]
       SomeSkillCard contemplative
     , --- neutral [tdc]

@@ -245,7 +245,7 @@ data InvestigatorForm
   | HomunculusForm
   | TransfiguredForm CardCode
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON)
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -634,3 +634,10 @@ instance FromJSON InvestigatorAttrs where
     investigatorSettings <- o .:? "settings" .!= defaultCardSettings
 
     pure $ InvestigatorAttrs {..}
+
+instance FromJSON InvestigatorForm where
+  parseJSON (String "RegularForm") = pure RegularForm
+  parseJSON (String "YithianForm") = pure YithianForm
+  parseJSON (String "HomunculusForm") = pure HomunculusForm
+  parseJSON v = $(mkParseJSON defaultOptions ''InvestigatorForm) v
+

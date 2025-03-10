@@ -26,6 +26,7 @@ import Arkham.Asset.Runner as X (
   hasUses,
   healthL,
   is,
+  metaMapL,
   noSlots,
   overMeta,
   printedUsesL,

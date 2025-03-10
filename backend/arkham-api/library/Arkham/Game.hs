@@ -2289,6 +2289,7 @@ getAssetsMatching matcher = do
           AttachedToAsset placementId _ -> placementId `elem` placements
           _ -> False
       pure $ filter isValid as
+    AssetWithMetaKeyValue k v -> pure $ filter ((== Just v) . KeyMap.lookup k . attr assetMetaMap) as
     AssetWithAttachedEvent eventMatcher -> do
       events <- select eventMatcher
       aids <- flip mapMaybeM events $ \eid -> do
@@ -3397,6 +3398,7 @@ instance Projection Asset where
     case f of
       AssetTokens -> pure assetTokens
       AssetDriver -> pure assetDriver
+      AssetMetaMap -> pure assetMetaMap
       AssetName -> pure $ toName attrs
       AssetCost -> pure . maybe 0 toPrintedCost . cdCost $ toCardDef attrs
       AssetClues -> pure $ assetClues attrs

@@ -1,5 +1,5 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
 {-# LANGUAGE TypeAbstractions #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Runner (
   module Arkham.Investigator.Runner,
@@ -756,6 +756,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ a
       & (slotsL . each %~ filter (not . isSlotSource source))
       & (slotsL %~ removeFromSlots aid)
+  SlotSourceRemovedFromPlay source@(AssetSource aid) -> do
+    pushWhen (providedSlot a aid) $ RefillSlots a.id
+    pure
+      $ a
+      & (slotsL . each %~ filter (not . isSlotSource source))
+      & (slotsL %~ removeFromSlots aid)
   RemovedFromPlay source@(EventSource aid) -> do
     pushWhen (providedSlot a aid) $ RefillSlots a.id
     pure $ a & slotsL . each %~ filter (not . isSlotSource source)
@@ -1343,6 +1349,38 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                           ]
                        <> maybeToList mRunAfterLeaving
                    ]
+            Place -> do
+              -- like Direct, but no moves windows and no costs
+
+              let
+                (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
+                (mWhenLeaving, mAtIfLeaving, mAfterLeaving) = case mFromLocation of
+                  Just from ->
+                    batchedTimings batchId (Window.Leaving iid from) & \case
+                      (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
+                  Nothing -> (Nothing, Nothing, Nothing)
+              mRunWhenLeaving <- case mWhenLeaving of
+                Just whenLeaving -> Just <$> checkWindows [whenLeaving]
+                Nothing -> pure Nothing
+              mRunAtIfLeaving <- case mAtIfLeaving of
+                Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
+                Nothing -> pure Nothing
+              mRunAfterLeaving <- case mAfterLeaving of
+                Just afterLeaving -> Just <$> checkWindows [afterLeaving]
+                Nothing -> pure Nothing
+              runWhenEntering <- checkWindows [whenEntering]
+              runAtIfEntering <- checkWindows [atIfEntering]
+              runAfterEntering <- checkWindows [afterEntering]
+
+              pushBatched batchId
+                $ maybeToList mRunWhenLeaving
+                <> maybeToList mRunAtIfLeaving
+                <> [ runWhenEntering
+                   , runAtIfEntering
+                   , MoveTo movement
+                   , runAfterEntering
+                   ]
+                <> maybeToList mRunAfterLeaving
     pure a
   WhenCanMove iid msgs | iid == investigatorId -> do
     canMove <- withoutModifier a CannotMove
@@ -2484,7 +2522,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll $ [ChooseLeadInvestigator | isLead] <> [Msg.InvestigatorDefeated source iid]
     pure $ a & defeatedL .~ True & endedTurnL .~ True & killedL .~ True
   MoveAllTo source lid | not (a ^. defeatedL || a ^. resignedL) -> do
-    a <$ push (MoveTo $ move source investigatorId lid)
+    push $ MoveTo $ (move source investigatorId lid) {moveMeans = Place}
+    pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
     case moveDestination movement of
       ToLocationMatching matcher -> do
@@ -2499,9 +2538,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         let iid = investigatorId
 
         moveWith <-
-          select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
-            >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
-            >>= traverse (traverseToSnd getPlayer)
+          if movement.means == Place
+            then pure []
+            else do
+              select (InvestigatorWithModifier (CanMoveWith $ InvestigatorWithId iid) <> colocatedWith iid)
+                >>= filterM (\iid' -> getCanMoveTo iid' (moveSource movement) lid)
+                >>= traverse (traverseToSnd getPlayer)
 
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]

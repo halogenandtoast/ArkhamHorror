@@ -43,6 +43,7 @@ import Arkham.Window (mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (non)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.IntMap.Strict qualified as IntMap
 import Data.Map.Strict qualified as Map
 
@@ -70,6 +71,7 @@ instance RunMessage Asset where
 
 instance RunMessage AssetAttrs where
   runMessage msg a@AssetAttrs {..} = case msg of
+    SetGlobal (is a -> True) key value -> pure $ a & metaMapL %~ KeyMap.insert key value
     SetDriver aid iid | aid == assetId -> do
       pure $ a & driverL ?~ iid
     Msg.DealAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
@@ -175,7 +177,7 @@ instance RunMessage AssetAttrs where
         Nothing -> pure a
         Just i ->
           pure
-            $ a {assetCustomizations = IntMap.adjust (second (const choices) . first (+ 1)) i assetCustomizations}
+            $ a {assetCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i assetCustomizations}
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
@@ -609,8 +611,7 @@ instance RunMessage AssetAttrs where
           Just iid | entersPlay -> controllerL ?~ iid
           _ -> id
       -- we should update control here if need be
-      for_ placement.attachedTo \target ->
-        pushM $ checkAfter $ Window.AttachCard a.controller (toCard a) target
+      for_ placement.attachedTo $ pushM . checkAfter . Window.AttachCard a.controller (toCard a)
       checkEntersThreatArea a placement
 
       when entersPlay do

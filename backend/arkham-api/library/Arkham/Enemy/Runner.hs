@@ -385,6 +385,7 @@ instance RunMessage EnemyAttrs where
       case moveDestination movement of
         ToLocation destinationLocationId -> case moveMeans movement of
           Direct -> push $ EnemyMove (toId a) destinationLocationId
+          Place -> push $ EnemyMove (toId a) destinationLocationId
           OneAtATime -> push $ MoveUntil destinationLocationId (toTarget a)
           Towards -> push $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
         ToLocationMatching matcher -> do

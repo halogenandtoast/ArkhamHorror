@@ -3,8 +3,6 @@
 
 module Arkham.Asset.Types where
 
-import Arkham.Prelude
-
 import Arkham.Ability.Types
 import Arkham.Asset.Cards
 import Arkham.Asset.Uses
@@ -29,12 +27,14 @@ import Arkham.Matcher.Location (LocationMatcher)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Slot
 import Arkham.Source
 import Arkham.Taboo.Types
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
+import Data.Aeson.KeyMap (KeyMap)
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Data
@@ -193,6 +193,7 @@ data instance Field Asset :: Type -> Type where
   AssetAssignedHealthDamage :: Field Asset Int
   AssetAssignedSanityDamage :: Field Asset Int
   AssetDriver :: Field Asset (Maybe InvestigatorId)
+  AssetMetaMap :: Field Asset (KeyMap Value)
   -- virtual
   AssetClasses :: Field Asset (Set ClassSymbol)
   AssetTraits :: Field Asset (Set Trait)
@@ -249,6 +250,7 @@ instance FromJSON (SomeField Asset) where
     "AssetAssignedSanityDamage" -> pure $ SomeField AssetAssignedSanityDamage
     "AssetTokens" -> pure $ SomeField AssetTokens
     "AssetDriver" -> pure $ SomeField AssetDriver
+    "AssetMetaMap" -> pure $ SomeField AssetMetaMap
     _ -> error "no such field"
 
 data WhenNoUses = DiscardWhenNoUses | ReturnToHandWhenNoUses | NotifySelfOfNoUses
@@ -281,6 +283,7 @@ data AssetAttrs = AssetAttrs
   , assetAssignedSanityHeal :: Map Source Int
   , assetCustomizations :: Customizations
   , assetMeta :: Value
+  , assetMetaMap :: KeyMap Value
   , assetFlipped :: Bool
   , assetTaboo :: Maybe TabooList
   , assetMutated :: Maybe Text -- for art display
@@ -300,6 +303,9 @@ instance Be AssetAttrs AssetMatcher where
 
 instance HasField "placement" Asset Placement where
   getField = (.placement) . toAttrs
+
+instance HasField "isInPlay" Asset Bool where
+  getField a = a.placement.isInPlay
 
 instance HasField "id" Asset AssetId where
   getField = (.id) . toAttrs
@@ -333,6 +339,9 @@ instance HasField "flipped" AssetAttrs Bool where
 
 instance HasField "placement" AssetAttrs Placement where
   getField = assetPlacement
+
+instance HasField "isInPlay" AssetAttrs Bool where
+  getField a = a.placement.isInPlay
 
 instance HasField "exiled" AssetAttrs Bool where
   getField = assetExiled
@@ -478,6 +487,7 @@ assetWith f cardDef g =
             , assetAssignedSanityHeal = mempty
             , assetCustomizations = mempty
             , assetMeta = Null
+            , assetMetaMap = mempty
             , assetFlipped = False
             , assetTaboo = Nothing
             , assetMutated = Nothing
@@ -517,12 +527,7 @@ controls :: (Entity attrs, EntityAttrs attrs ~ AssetAttrs) => InvestigatorId -> 
 controls iid attrs = toAttrs attrs `controlledBy` iid
 
 controlledBy :: AssetAttrs -> InvestigatorId -> Bool
-controlledBy AssetAttrs {..} iid =
-  if isInPlayPlacement assetPlacement
-    then case assetController of
-      Nothing -> False
-      Just iid' -> iid == iid'
-    else False
+controlledBy a iid = a.isInPlay && a.controller == Just iid
 
 ownedBy :: AssetAttrs -> InvestigatorId -> Bool
 ownedBy a iid = a.owner == Just iid
@@ -620,4 +625,38 @@ getMetaKeyDefault k def attrs = case attrs.meta of
       Success v' -> v'
   _ -> def
 
-$(deriveJSON (aesonOptions $ Just "asset") ''AssetAttrs)
+$(deriveToJSON (aesonOptions $ Just "asset") ''AssetAttrs)
+
+instance FromJSON AssetAttrs where
+  parseJSON = withObject "AssetAttrs" \o -> do
+    assetId <- o .: "id"
+    assetCardId <- o .: "cardId"
+    assetCardCode <- o .: "cardCode"
+    assetOriginalCardCode <- o .: "originalCardCode"
+    assetPlacement <- o .: "placement"
+    assetOwner <- o .: "owner"
+    assetController <- o .: "controller"
+    assetSlots <- o .: "slots"
+    assetHealth <- o .: "health"
+    assetSanity <- o .: "sanity"
+    assetPrintedUses <- o .: "printedUses"
+    assetExhausted <- o .: "exhausted"
+    assetExiled <- o .: "exiled"
+    assetTokens <- o .: "tokens"
+    assetCanLeavePlayByNormalMeans <- o .: "canLeavePlayByNormalMeans"
+    assetWhenNoUses <- o .: "whenNoUses"
+    assetCardsUnderneath <- o .: "cardsUnderneath"
+    assetSealedChaosTokens <- o .: "sealedChaosTokens"
+    assetKeys <- o .: "keys"
+    assetAssignedHealthDamage <- o .: "assignedHealthDamage"
+    assetAssignedSanityDamage <- o .: "assignedSanityDamage"
+    assetAssignedHealthHeal <- o .: "assignedHealthHeal"
+    assetAssignedSanityHeal <- o .: "assignedSanityHeal"
+    assetCustomizations <- o .: "customizations"
+    assetMeta <- o .: "meta"
+    assetMetaMap <- o .:? "metaMap" .!= mempty
+    assetFlipped <- o .: "flipped"
+    assetTaboo <- o .: "taboo"
+    assetMutated <- o .: "mutated"
+    assetDriver <- o .: "driver"
+    pure AssetAttrs {..}

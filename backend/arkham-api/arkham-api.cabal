@@ -2495,7 +2495,6 @@ library
       Arkham.Investigator.Deck
       Arkham.Investigator.Import.Lifted
       Arkham.Investigator.Investigators
-      Arkham.Investigator.Meta.RolandBanksParallel
       Arkham.Investigator.Projection
       Arkham.Investigator.Runner
       Arkham.Investigator.Types

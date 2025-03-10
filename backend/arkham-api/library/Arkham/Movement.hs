@@ -10,6 +10,7 @@ import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 import Data.Aeson.TH
+import GHC.Records
 
 data Movement = Movement
   { moveSource :: Source
@@ -23,7 +24,31 @@ data Movement = Movement
   }
   deriving stock (Show, Eq, Data)
 
-data MovementMeans = Direct | OneAtATime | Towards
+instance HasField "source" Movement Source where
+  getField = moveSource
+
+instance HasField "target" Movement Target where
+  getField = moveTarget
+
+instance HasField "destination" Movement Destination where
+  getField = moveDestination
+
+instance HasField "means" Movement MovementMeans where
+  getField = moveMeans
+
+instance HasField "cancelable" Movement Bool where
+  getField = moveCancelable
+
+instance HasField "payAdditionalCosts" Movement Bool where
+  getField = movePayAdditionalCosts
+
+instance HasField "after" Movement [Message] where
+  getField = moveAfter
+
+instance HasField "additionalEnterCosts" Movement Cost where
+  getField = moveAdditionalEnterCosts
+
+data MovementMeans = Direct | OneAtATime | Towards | Place
   deriving stock (Show, Eq, Data)
 
 -- Forced movement should not require additional costs

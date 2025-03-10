@@ -892,6 +892,7 @@ data Message
   | PlaceInBonded InvestigatorId Card
   | RemoveFromPlay Source
   | RemovedFromPlay Source
+  | SlotSourceRemovedFromPlay Source
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | ReplaceEntireDraw Source InvestigatorId ChaosBagStep
   | SetChaosBagChoice Source InvestigatorId ChaosBagStep -- internal

@@ -21,7 +21,7 @@ instance HasAbilities OculaObscuraEsotericEyepiece where
     [ playerLimit PerPhase
         $ controlled x 1 (criteria1 <> DuringSkillTest (SkillTestWithRevealedChaosToken NonSymbol))
         $ freeReaction (SkillTestResult #after You #any #success)
-    , controlled x 2 criteria2 $ forced $ WouldRevealChaosToken #when You
+    , playerLimit PerTestOrAbility $ controlled x 2 criteria2 $ forced $ WouldRevealChaosToken #when You
     ]
    where
     criteria1 = if null x.sealedChaosTokens then NoRestriction else Never

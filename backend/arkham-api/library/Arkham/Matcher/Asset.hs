@@ -54,6 +54,7 @@ data AssetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
   | AssetOwnedBy InvestigatorMatcher
+  | AssetWithMetaKeyValue Key Value
   | UnownedAsset
   | AssetMatches [AssetMatcher]
   | AssetOneOf [AssetMatcher]
@@ -114,6 +115,9 @@ data AssetMatcher
 
 asset_ :: AssetMatcher -> AssetMatcher
 asset_ = id
+
+assetWithMetaKeyValue :: ToJSON a => Key -> a -> AssetMatcher
+assetWithMetaKeyValue key value = AssetWithMetaKeyValue key (toJSON value)
 
 instance Not AssetMatcher where
   not_ = NotAsset

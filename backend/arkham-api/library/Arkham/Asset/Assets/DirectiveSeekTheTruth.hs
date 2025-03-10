@@ -1,18 +1,14 @@
-module Arkham.Asset.Assets.DirectiveSeekTheTruth (
-  directiveSeekTheTruth,
-  DirectiveSeekTheTruth (..),
-)
-where
+module Arkham.Asset.Assets.DirectiveSeekTheTruth (directiveSeekTheTruth) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (DiscoverClues)
 import Arkham.Capability
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
-import Arkham.Investigator.Meta.RolandBanksParallel
-import Arkham.Investigator.Types (Field (..))
+import Arkham.History
 import Arkham.Matcher
-import Arkham.Projection
+import Data.Aeson.Lens (_Bool)
 
 newtype DirectiveSeekTheTruth = DirectiveSeekTheTruth AssetAttrs
   deriving anyclass IsAsset
@@ -22,26 +18,22 @@ directiveSeekTheTruth :: AssetCard DirectiveSeekTheTruth
 directiveSeekTheTruth = asset DirectiveSeekTheTruth Cards.directiveSeekTheTruth
 
 instance HasModifiersFor DirectiveSeekTheTruth where
-  getModifiersFor (DirectiveSeekTheTruth a) = case a.controller of
-    Just iid | not a.flipped -> do
+  getModifiersFor (DirectiveSeekTheTruth a) = for_ a.controller \iid ->
+    unless a.flipped do
+      discoveredClue <- notNull <$> getHistoryField RoundHistory iid HistoryCluesDiscovered
       valid <- selectAny $ locationWithInvestigator iid <> LocationWithAnyClues
-      if valid
-        then do
-          meta <- fieldMap InvestigatorMeta (toResultDefault defaultMeta) iid
-          modifiedWhen_
-            a
-            (seekTheTruth meta && "seekTheTruth" `notElem` ignoredDirectives meta)
-            iid
-            [CannotCommitCards AnyCard]
-        else pure mempty
-    _ -> pure mempty
+      when valid do
+        let ignored = fromMaybe False $ a ^? metaMapL . ix "ignore_regulation" . _Bool
+        modifiedWhen_
+          a
+          (not discoveredClue && not ignored)
+          iid
+          [CannotCommitCards AnyCard]
 
 instance HasAbilities DirectiveSeekTheTruth where
   getAbilities (DirectiveSeekTheTruth a) =
-    [ controlledAbility a 1 (exists (EnemyAt YourLocation) <> can.draw.cards You)
-      $ ReactionAbility
-        (DiscoverClues #after You Anywhere AnyValue)
-        (exhaust a)
+    [ controlled a 1 (exists (EnemyAt YourLocation) <> can.draw.cards You)
+        $ triggered (DiscoverClues #after You Anywhere AnyValue) (exhaust a)
     | not a.flipped
     ]
 

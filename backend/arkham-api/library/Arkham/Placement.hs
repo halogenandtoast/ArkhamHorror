@@ -51,6 +51,9 @@ instance HasField "attachedTo" Placement (Maybe Target) where
 instance HasField "isAttached" Placement Bool where
   getField = isJust . placementToAttached
 
+instance HasField "isInPlay" Placement Bool where
+  getField = isInPlayPlacement
+
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
   AttachedToLocation lid -> Just $ LocationTarget lid

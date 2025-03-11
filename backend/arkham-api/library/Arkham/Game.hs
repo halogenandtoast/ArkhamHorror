@@ -875,8 +875,8 @@ getInvestigatorsMatching matcher = do
             then pure False
             else elem lid <$> select locationMatcher
     InvestigatorWithId iid -> flip filterM as $ pure . (== iid) . toId
-    InvestigatorIs cardCode -> flip filterM as \a ->
-      pure $ toCardCode a == cardCode || case a.form of
+    InvestigatorIs cardCode -> pure $ flip filter as \a ->
+      toCardCode a == cardCode || case a.form of
         TransfiguredForm c -> c == cardCode
         _ -> False
     InvestigatorWithLowestSkill skillType inner -> flip filterM as $ \i ->

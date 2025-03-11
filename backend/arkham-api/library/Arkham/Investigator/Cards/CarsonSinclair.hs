@@ -68,7 +68,7 @@ newtype CarsonSinclairEffect = CarsonSinclairEffect EffectAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 carsonSinclairEffect :: EffectArgs -> CarsonSinclairEffect
-carsonSinclairEffect = cardEffectWith CarsonSinclairEffect Cards.carsonSinclair (setEffectMeta False)
+carsonSinclairEffect = cardEffect CarsonSinclairEffect Cards.carsonSinclair
 
 instance HasModifiersFor CarsonSinclairEffect where
   getModifiersFor (CarsonSinclairEffect a) = for_ a.target.investigator \iid -> do

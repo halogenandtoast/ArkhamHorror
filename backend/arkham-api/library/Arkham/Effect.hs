@@ -146,6 +146,7 @@ import Arkham.Investigator.Investigators (
   carsonSinclairEffect,
   dexterDrakeEffect,
   kymaniJonesEffect,
+  lilyChenEffect,
   nathanielChoEffect,
   pennyWhiteEffect,
   ritaYoungElderSignEffect,
@@ -506,6 +507,7 @@ allEffects =
     , ("07228", SomeEffect shroudOfShadows4Effect)
     , ("07307", SomeEffect luckyDice3Effect)
     , ("08013a", SomeEffect disciplinePrescienceOfFateEffect)
+    , ("08010", SomeEffect lilyChenEffect)
     , ("08020", SomeEffect toeToToeEffect)
     , ("08021", SomeEffect getBehindMeEffect)
     , ("08034", SomeEffect writtenInTheStarsEffect)

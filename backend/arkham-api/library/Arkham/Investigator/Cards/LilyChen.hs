@@ -1,13 +1,14 @@
-module Arkham.Investigator.Cards.LilyChen (lilyChen, LilyChen (..)) where
+module Arkham.Investigator.Cards.LilyChen (lilyChen, lilyChenEffect) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Effect.Import
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Trait (Trait (Broken))
-import Data.Aeson.KeyMap qualified as KM
 
 newtype Metadata = Metadata {flipDiscipline :: Bool}
   deriving stock (Show, Eq, Generic, Data)
@@ -39,17 +40,9 @@ instance HasChaosTokenValue LilyChen where
 
 instance RunMessage LilyChen where
   runMessage msg i@(LilyChen (With attrs meta)) = runQueueT $ case msg of
-    Blanked msg'@(Do BeginRound) -> liftRunMessage msg' i
-    Do BeginRound -> do
-      attrs' <- liftRunMessage msg attrs
-      quiescent <- fieldMap InvestigatorHand ((<= 2) . length) (toId attrs)
-      balanced <- selectNone $ enemyAtLocationWith attrs.id
-      pure
-        . LilyChen
-        . (`with` meta)
-        $ attrs'
-        & setMeta
-          (object ["aligned" .= True, "balanced" .= balanced, "prescient" .= True, "quiescent" .= quiescent])
+    BeginGame -> do
+      createCardEffect Cards.lilyChen Nothing attrs attrs
+      pure i
     ElderSignEffect iid | iid == toId attrs -> do
       pure $ LilyChen $ attrs `with` Metadata True
     SkillTestEnds _ iid _ | attrs.id == iid && flipDiscipline meta -> do
@@ -58,37 +51,48 @@ instance RunMessage LilyChen where
         chooseOne attrs.id
           $ targetLabels brokenDisciplines (only . Flip attrs.id #elderSign . toTarget)
       pure $ LilyChen $ attrs `with` Metadata False
-    Blanked msg'@(StartSkillTest iid) | iid == attrs.id -> liftRunMessage msg' i
-    StartSkillTest iid | iid == attrs.id -> do
-      attrs' <- liftRunMessage msg attrs
-      let
-        meta' = case attrs.meta of
-          Object o -> Object $ KM.insert "prescient" (Bool False) o
-          _ -> object ["balanced" .= True, "quiescent" .= True, "prescient" .= False, "aligned" .= True]
-      pure . LilyChen . (`with` meta) $ attrs' & setMeta meta'
-    Blanked msg'@(InvestigatorDamage iid _ _ _) | iid == attrs.id -> liftRunMessage msg' i
-    InvestigatorDamage iid _source damage horror | iid == attrs.id -> do
-      attrs' <- lift $ runMessage msg attrs
-      if damage > 0 || horror > 0
-        then do
-          let
-            meta' =
-              case attrs.meta of
-                Object o -> Object $ KM.insert "aligned" (Bool False) o
-                _ -> object ["balanced" .= True, "quiescent" .= True, "prescient" .= True, "aligned" .= False]
-          pure . LilyChen . (`with` meta) $ attrs' & setMeta meta'
-        else pure $ LilyChen $ attrs' `with` meta
-    _ ->
-      do
-        quiescent <- fieldMap InvestigatorHand ((< 2) . length) attrs.id
-        balanced <- selectNone (enemyAtLocationWith attrs.id)
+    _ -> LilyChen . (`with` meta) <$> liftRunMessage msg attrs
 
-        let
-          setQuiescent = if quiescent then id else KM.insert "quiescent" (Bool False)
-          setBalanced = if balanced then id else KM.insert "balanced" (Bool False)
-          meta' = case attrs.meta of
-            Object o -> Object $ setQuiescent $ setBalanced o
-            _ ->
-              object ["balanced" .= balanced, "quiescent" .= quiescent, "prescient" .= True, "aligned" .= True]
+newtype LilyChenEffect = LilyChenEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-        LilyChen . (`with` meta) . setMeta meta' <$> liftRunMessage msg attrs
+lilyChenEffect :: EffectArgs -> LilyChenEffect
+lilyChenEffect = cardEffect LilyChenEffect Cards.lilyChen
+
+instance HasModifiersFor LilyChenEffect where
+  getModifiersFor (LilyChenEffect a) = for_ a.target.investigator \iid -> do
+    modifiedWhen_ a (hasEffectKey "balanced" a) iid [MetaModifier "balanced"]
+    modifiedWhen_ a (hasEffectKey "quiescent" a) iid [MetaModifier "quiescent"]
+    modifiedWhen_ a (hasEffectKey "aligned" a) iid [MetaModifier "aligned"]
+    modifiedWhen_ a (hasEffectKey "prescient" a) iid [MetaModifier "prescient"]
+
+instance RunMessage LilyChenEffect where
+  runMessage msg e@(LilyChenEffect attrs) = runQueueT $ case msg of
+    Do BeginRound -> case attrs.target.investigator of
+      Nothing -> pure e
+      Just iid -> do
+        quiescent <- fieldMap InvestigatorHand ((<= 2) . length) iid
+        balanced <- selectNone $ enemyAtLocationWith iid
+        pure
+          . LilyChenEffect
+          $ attrs
+          & setEffectKey "aligned"
+          & setEffectKey "prescient"
+          & (if quiescent then setEffectKey else unsetEffectKey) "quiescent"
+          & (if balanced then setEffectKey else unsetEffectKey) "balanced"
+    StartSkillTest iid | isTarget iid attrs.target -> do
+      pure $ LilyChenEffect $ attrs & unsetEffectKey "prescient"
+    InvestigatorDamage iid _source damage horror | isTarget iid attrs.target -> do
+      pure
+        $ if damage > 0 || horror > 0
+          then LilyChenEffect $ attrs & unsetEffectKey "aligned"
+          else e
+    _ -> case attrs.target.investigator of
+      Nothing -> pure e
+      Just iid -> do
+        quiescent <- fieldMap InvestigatorHand ((< 2) . length) iid
+        balanced <- selectNone $ enemyAtLocationWith iid
+        let setQuiescent = (if quiescent then setEffectKey else unsetEffectKey) "quiescent"
+        let setBalanced = (if balanced then setEffectKey else unsetEffectKey) "balanced"
+        LilyChenEffect <$> liftRunMessage msg (attrs & setQuiescent & setBalanced)

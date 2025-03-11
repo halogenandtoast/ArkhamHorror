@@ -366,6 +366,16 @@ swordCaneDesignedByTheCouncilOfPolls2 =
     , cdSlots = [#hand]
     }
 
+lostArcana3 :: CardDef
+lostArcana3 =
+  (asset "11074" "Lost Arcana" 3 Mystic)
+    { cdCardTraits = setFromList [Item, Tome, Occult]
+    , cdSkills = [#willpower, #intellect]
+    , cdSlots = [#hand]
+    , cdUses = uses Charge 2
+    , cdLevel = Just 3
+    }
+
 anchorChain :: CardDef
 anchorChain =
   (asset "11081" "Anchor Chain" 3 Survivor)

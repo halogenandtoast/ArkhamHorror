@@ -1099,6 +1099,7 @@ allAssets =
     , SomeAssetCard signOfXelotaphSymbolOfProtection
     , SomeAssetCard eyeOfGhatanothoaArtifactOfTheDarkGod2
     , SomeAssetCard swordCaneDesignedByTheCouncilOfPolls2
+    , SomeAssetCard lostArcana3
     , --- survivor [tdc]
       SomeAssetCard anchorChain
     , SomeAssetCard handHook

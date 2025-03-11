@@ -490,6 +490,7 @@ allPlayerAssetCards =
       , lolaSantiago3
       , loneWolf
       , lonnieRitter
+      , lostArcana3
       , luckyCigaretteCase
       , luckyCigaretteCase3
       , luckyDice2

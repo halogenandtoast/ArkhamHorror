@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.TheDirgeOfReason (theDirgeOfReason, TheDirgeOfReason (..)) where
+module Arkham.Treachery.Cards.TheDirgeOfReason (theDirgeOfReason) where
 
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Projection

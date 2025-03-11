@@ -24,7 +24,7 @@ instance HasModifiersFor TheCodexOfAgesAdvanced where
 
 instance HasAbilities TheCodexOfAgesAdvanced where
   getAbilities (TheCodexOfAgesAdvanced a) =
-    [ controlledAbility a 1 (thisExists a (AssetWithSealedChaosTokens 1 AnyChaosToken))
+    [ controlled a 1 (thisExists a (AssetWithSealedChaosTokens 1 AnyChaosToken))
         $ freeReaction
         $ WouldRevealChaosToken #when (affectsOthers $ at_ YourLocation)
     ]
@@ -42,6 +42,6 @@ instance RunMessage TheCodexOfAgesAdvanced where
       pure a
     ResolveChaosToken drawnToken _ _ -> do
       whenM (drawnToken <=~> SealedOnAsset (be attrs) AnyChaosToken) do
-        push $ UnsealChaosToken drawnToken
+        unsealChaosToken drawnToken
       pure a
     _ -> TheCodexOfAgesAdvanced <$> liftRunMessage msg attrs

@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.TheBeyondBleakNetherworld (
-  theBeyondBleakNetherworld,
-  TheBeyondBleakNetherworld (..),
-)
-where
+module Arkham.Asset.Assets.TheBeyondBleakNetherworld (theBeyondBleakNetherworld) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -35,18 +31,11 @@ theBeyondBleakNetherworld = asset (TheBeyondBleakNetherworld . (`with` Meta [] N
 
 instance HasAbilities TheBeyondBleakNetherworld where
   getAbilities (TheBeyondBleakNetherworld (With attrs _)) =
-    [restrictedAbility attrs 1 ControlsThis $ forced $ TurnBegins #when You]
+    [restricted attrs 1 ControlsThis $ forced $ TurnBegins #when You]
 
 instance HasModifiersFor TheBeyondBleakNetherworld where
-  getModifiersFor (TheBeyondBleakNetherworld (With a _)) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      modifySelect
-        a
-        (AssetAttachedToAsset $ be a)
-        [ AsIfUnderControlOf iid
-        , IsSpirit iid
-        ]
+  getModifiersFor (TheBeyondBleakNetherworld (With a _)) = for_ a.controller \iid -> do
+    modifySelect a (AssetAttachedToAsset $ be a) [AsIfUnderControlOf iid, IsSpirit iid]
 
 instance RunMessage TheBeyondBleakNetherworld where
   runMessage msg a@(TheBeyondBleakNetherworld (With attrs meta)) = runQueueT $ case msg of
@@ -56,32 +45,26 @@ instance RunMessage TheBeyondBleakNetherworld where
         Just sideDeck -> do
           spiritDeck' <- shuffleM =<< traverse (setOwner iid . toCard) sideDeck
           pure . TheBeyondBleakNetherworld $ attrs `with` Meta spiritDeck' Nothing
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      case spiritDeck meta of
-        [] -> pure a
-        card : rest -> do
-          case card.kind of
-            AssetType -> do
-              mustDiscard <- select $ AssetWithTitle (toTitle card) <> UniqueAsset
-              for_ mustDiscard \remove -> toDiscard GameSource remove
-              mVengefulShade <- selectOne $ enemyIs Enemies.vengefulShade
-              for_ mVengefulShade \vengefulShade -> do
-                chooseOne
-                  iid
-                  [ AbilityLabel
-                      iid
-                      (mkAbility (SourceableWithCardCode @CardCode "90053" vengefulShade) 1 $ forced NotAnyWindow)
-                      []
-                      []
-                      []
-                  ]
-              assetId <- getRandom
-              push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
-            PlayerEnemyType -> do
-              pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
-            _ -> error "Invalid card type"
-          doStep 1 msg
-          pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
+    UseThisAbility iid (isSource attrs -> True) 1 -> case spiritDeck meta of
+      [] -> pure a
+      card : rest -> do
+        case card.kind of
+          AssetType -> do
+            mustDiscard <- select $ AssetWithTitle (toTitle card) <> UniqueAsset
+            for_ mustDiscard (toDiscard GameSource)
+            mVengefulShade <- selectOne $ enemyIs Enemies.vengefulShade
+            for_ mVengefulShade \vengefulShade -> chooseOneM iid do
+              abilityLabeled
+                iid
+                (mkAbility (SourceableWithCardCode @CardCode "90053" vengefulShade) 1 $ forced NotAnyWindow)
+                nothing
+            assetId <- getRandom
+            push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+          PlayerEnemyType -> do
+            pushM $ createEnemyWithPlacement_ card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
+          _ -> error "Invalid card type"
+        doStep 1 msg
+        pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       n <-
         (+)
@@ -132,13 +115,11 @@ instance RunMessage TheBeyondBleakNetherworld where
           assetId <- getRandom
           push $ CreateAssetAt assetId card $ AttachedToAsset attrs.id (Just $ InPlayArea iid)
           pure . TheBeyondBleakNetherworld $ attrs `with` Meta rest Nothing
-    Discarded _ _ card@(PlayerCard pc) -> do
-      case attrs.controller of
-        Nothing -> pure a
-        Just iid ->
-          field InvestigatorSideDeck iid >>= \case
-            Just cards
-              | pc `elem` cards ->
-                  pure . TheBeyondBleakNetherworld $ attrs `with` Meta (spiritDeck meta <> [card]) Nothing
-            _ -> pure a
+    Discarded _ _ card@(PlayerCard pc) -> case attrs.controller of
+      Nothing -> pure a
+      Just iid ->
+        field InvestigatorSideDeck iid >>= \case
+          Just cards | pc `elem` cards -> do
+            pure . TheBeyondBleakNetherworld $ attrs `with` Meta (spiritDeck meta <> [card]) Nothing
+          _ -> pure a
     _ -> TheBeyondBleakNetherworld . (`with` meta) <$> liftRunMessage msg attrs

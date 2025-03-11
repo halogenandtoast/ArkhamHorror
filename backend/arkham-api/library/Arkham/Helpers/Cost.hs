@@ -167,15 +167,13 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     if Blank `elem` mods
       then pure True
       else getCanAffordCost_ iid source actions windows' canModify c
-  GloriaCost -> do
-    mtarget <- getSkillTestTarget
-    case mtarget of
-      Nothing -> pure False
-      Just t -> do
-        gloria <- selectJust $ Matcher.investigatorIs Investigators.gloriaGoldberg
-        cardsUnderneath <- field InvestigatorCardsUnderneath gloria
-        traits <- targetTraits t
-        pure $ any (\trait -> any (`cardMatch` Matcher.CardWithTrait trait) cardsUnderneath) traits
+  GloriaCost -> fromMaybe False <$> runMaybeT do
+    t <- MaybeT getSkillTestTarget
+    gloria <- MaybeT $ selectOne $ Matcher.investigatorIs Investigators.gloriaGoldberg
+    lift do
+      cardsUnderneath <- field InvestigatorCardsUnderneath gloria
+      traits <- targetTraits t
+      pure $ any (\trait -> any (`cardMatch` Matcher.CardWithTrait trait) cardsUnderneath) traits
   ShuffleIntoDeckCost target -> case target of
     TreacheryTarget tid ->
       andM

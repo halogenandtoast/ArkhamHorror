@@ -1,11 +1,4 @@
-module Arkham.Event.Events.MystifyingSong (
-  mystifyingSong,
-  mystifyingSongEffect,
-  MystifyingSong (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Event.Events.MystifyingSong (mystifyingSong, mystifyingSongEffect) where
 
 import Arkham.Classes
 import Arkham.Effect.Runner ()
@@ -14,6 +7,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher.Agenda
+import Arkham.Prelude
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

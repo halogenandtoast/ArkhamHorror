@@ -91,6 +91,7 @@ data EffectAttrs = EffectAttrs
   -- to track and escape recursion
   , effectExtraMetadata :: Value
   , effectSkillTest :: Maybe SkillTestId
+  , effectMetaKeys :: [Text]
   }
   deriving stock (Show, Eq, Data)
 
@@ -134,6 +135,9 @@ finishedL = lens effectFinished $ \m x -> m {effectFinished = x}
 extraL :: Lens' EffectAttrs Value
 extraL = lens effectExtraMetadata $ \m x -> m {effectExtraMetadata = x}
 
+metaKeysL :: Lens' EffectAttrs [Text]
+metaKeysL = lens effectMetaKeys $ \m x -> m {effectMetaKeys = x}
+
 instance HasField "finished" EffectAttrs Bool where
   getField = effectFinished
 
@@ -162,6 +166,9 @@ instance HasField "metaInt" EffectAttrs (Maybe Int) where
 instance HasField "extra" EffectAttrs Value where
   getField = effectExtraMetadata
 
+instance HasField "metaKeys" EffectAttrs [Text] where
+  getField = effectMetaKeys
+
 type EffectArgs = (EffectId, EffectBuilder)
 
 baseAttrs
@@ -183,6 +190,7 @@ baseAttrs cardCode eid EffectBuilder {..} =
     , effectExtraMetadata = effectBuilderExtraMetadata
     , effectSkillTest = effectBuilderSkillTest
     , effectCardId = effectBuilderCardId
+    , effectMetaKeys = []
     }
 
 targetL :: Lens' EffectAttrs Target
@@ -317,4 +325,5 @@ instance FromJSON EffectAttrs where
     effectFinished <- o .: "finished"
     effectExtraMetadata <- o .: "extraMetadata"
     effectSkillTest <- o .: "skillTest"
+    effectMetaKeys <- o .:? "metaKeys" .!= []
     pure EffectAttrs {..}

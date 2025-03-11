@@ -1,13 +1,14 @@
-module Arkham.Investigator.Cards.CarsonSinclair (carsonSinclair, CarsonSinclair (..)) where
+module Arkham.Investigator.Cards.CarsonSinclair (carsonSinclair, carsonSinclairEffect) where
 
 import Arkham.Ability
 import Arkham.Action.Additional
-import Arkham.Helpers.Message (handleTargetChoice)
+import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype CarsonSinclair = CarsonSinclair InvestigatorAttrs
   deriving anyclass IsInvestigator
@@ -20,22 +21,15 @@ carsonSinclair =
     $ Stats {health = 6, sanity = 6, willpower = 2, intellect = 2, combat = 2, agility = 2}
 
 instance HasModifiersFor CarsonSinclair where
-  getModifiersFor (CarsonSinclair a) =
-    modifySelf
-      a
-      [ GiveAdditionalAction
-          $ AdditionalAction "Carson Sinclair" (toSource a)
-          $ AbilityRestrictedAdditionalAction (toSource a) 1
-      ]
+  getModifiersFor (CarsonSinclair a) = modifySelf a [GiveAdditionalAction additionalAction]
+   where
+    additionalAction =
+      AdditionalAction "Carson Sinclair" (toSource a)
+        $ AbilityRestrictedAdditionalAction (toSource a) 1
 
 instance HasAbilities CarsonSinclair where
   getAbilities (CarsonSinclair a) =
-    [ restrictedAbility
-        a
-        1
-        (Self <> exists (affectsOthers $ InvestigatorAt YourLocation <> notOneOf invalid))
-        actionAbility
-    ]
+    [selfAbility a 1 (exists (affectsOthers $ at_ YourLocation <> notOneOf invalid)) actionAbility]
    where
     invalid = You : (InvestigatorWithId <$> lookupMetaKeyWithDefault "used" [] a)
 
@@ -46,40 +40,52 @@ instance HasChaosTokenValue CarsonSinclair where
 
 instance RunMessage CarsonSinclair where
   runMessage msg i@(CarsonSinclair attrs) = runQueueT $ case msg of
-    BeginTurn iid | iid == attrs.id -> do
-      pure . CarsonSinclair $ attrs & insertMetaKey "wasNotSelfless"
+    BeginGame -> do
+      createCardEffect Cards.carsonSinclair Nothing attrs attrs
+      pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let invalid = InvestigatorWithId <$> (iid : lookupMetaKeyWithDefault "used" [] attrs)
       investigators <- select $ affectsOthers $ colocatedWith iid <> notOneOf invalid
-
-      when (notNull investigators) do
-        chooseOne iid $ targetLabels investigators $ only . handleTargetChoice iid (attrs.ability 1)
+      chooseTargetM iid investigators $ handleTarget iid (attrs.ability 1)
       pure i
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid') -> do
-      pushAll [GainActions iid' (attrs.ability 1) 1, PlayerWindow iid' [] False]
+      takeActionAsIfTurn iid' (attrs.ability 1)
       pure . CarsonSinclair $ attrs & overMetaKey "used" (<>) [iid']
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       drawCardsIfCan attrs.id attrs 1
       pure i
     ResolveChaosToken t ElderSign iid | not (attrs `is` iid) -> do
       whenM (iid <=~> colocatedWith attrs.id) do
-        chooseOne
-          attrs.id
-          [ Label "Resolve your Elder Sign ability" [ResolveChaosToken t ElderSign attrs.id]
-          , Label "Do not resolve your Elder Sign ability" []
-          ]
+        chooseOneM attrs.id do
+          labeled "Resolve your Elder Sign ability" $ push $ ResolveChaosToken t ElderSign attrs.id
+          labeled "Do not resolve your Elder Sign ability" nothing
       pure i
     EndRound -> CarsonSinclair <$> liftRunMessage msg (attrs & deleteMetaKey "used")
-    InvestigatorCommittedCard iid _ | attrs `is` iid -> do
-      attrs' <- liftRunMessage msg attrs
-      isTurn <- iid <=~> TurnInvestigator
-      getSkillTestInvestigator >>= \case
-        Just iid' | isTurn, iid' /= iid -> pure . CarsonSinclair $ attrs' & deleteMetaKey "wasNotSelfless"
-        _ -> pure $ CarsonSinclair attrs'
-    InvestigatorCommittedSkill iid _ | attrs `is` iid -> do
-      attrs' <- liftRunMessage msg attrs
-      isTurn <- iid <=~> TurnInvestigator
-      getSkillTestInvestigator >>= \case
-        Just iid' | isTurn, iid' /= iid -> pure . CarsonSinclair $ attrs' & deleteMetaKey "wasNotSelfless"
-        _ -> pure $ CarsonSinclair attrs'
     _ -> CarsonSinclair <$> liftRunMessage msg attrs
+
+newtype CarsonSinclairEffect = CarsonSinclairEffect EffectAttrs
+  deriving anyclass (HasAbilities, IsEffect)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+carsonSinclairEffect :: EffectArgs -> CarsonSinclairEffect
+carsonSinclairEffect = cardEffectWith CarsonSinclairEffect Cards.carsonSinclair (setEffectMeta False)
+
+instance HasModifiersFor CarsonSinclairEffect where
+  getModifiersFor (CarsonSinclairEffect a) = for_ a.target.investigator \iid -> do
+    modifiedWhen_ a (hasEffectKey "wasNotSelfless" a) iid [MetaModifier "wasNotSelfless"]
+
+instance RunMessage CarsonSinclairEffect where
+  runMessage msg e@(CarsonSinclairEffect attrs) = runQueueT $ case msg of
+    BeginTurn iid | isTarget iid attrs.target -> do
+      pure . CarsonSinclairEffect $ attrs & setEffectKey "wasNotSelfless"
+    InvestigatorCommittedCard iid _ | isTarget iid attrs.target -> do
+      isTurn <- iid <=~> TurnInvestigator
+      getSkillTestInvestigator >>= \case
+        Just iid' | isTurn, iid' /= iid -> pure . CarsonSinclairEffect $ attrs & unsetEffectKey "wasNotSelfless"
+        _ -> pure e
+    InvestigatorCommittedSkill iid _ | isTarget iid attrs.target -> do
+      isTurn <- iid <=~> TurnInvestigator
+      getSkillTestInvestigator >>= \case
+        Just iid' | isTurn, iid' /= iid -> pure . CarsonSinclairEffect $ attrs & unsetEffectKey "wasNotSelfless"
+        _ -> pure e
+    _ -> CarsonSinclairEffect <$> liftRunMessage msg attrs

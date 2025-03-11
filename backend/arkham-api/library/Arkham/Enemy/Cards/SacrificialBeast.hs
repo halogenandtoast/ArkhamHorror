@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.SacrificialBeast (sacrificialBeast, SacrificialBeast (..)) where
+module Arkham.Enemy.Cards.SacrificialBeast (sacrificialBeast) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted

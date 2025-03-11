@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.GreenManMedallionHourOfTheHuntress (
   greenManMedallionHourOfTheHuntress,
-  GreenManMedallionHourOfTheHuntress (..),
 )
 where
 

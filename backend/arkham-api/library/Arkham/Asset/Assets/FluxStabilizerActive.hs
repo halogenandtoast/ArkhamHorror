@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.FluxStabilizerActive (
-  fluxStabilizerActive,
-  FluxStabilizerActive (..),
-)
-where
+module Arkham.Asset.Assets.FluxStabilizerActive (fluxStabilizerActive) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

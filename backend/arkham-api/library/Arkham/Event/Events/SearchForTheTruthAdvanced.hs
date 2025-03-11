@@ -1,4 +1,4 @@
-module Arkham.Event.Events.SearchForTheTruthAdvanced where
+module Arkham.Event.Events.SearchForTheTruthAdvanced (searchForTheTruthAdvanced) where
 
 import Arkham.Capability
 import Arkham.Card

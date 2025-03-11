@@ -479,6 +479,9 @@ instance HasField "id" Investigator InvestigatorId where
 instance HasField "classSymbol" Investigator ClassSymbol where
   getField = (.classSymbol) . toAttrs
 
+instance HasField "form" Investigator InvestigatorForm where
+  getField = (.form) . toAttrs
+
 instance Named Investigator where
   toName (Investigator a) = toName (toAttrs a)
 

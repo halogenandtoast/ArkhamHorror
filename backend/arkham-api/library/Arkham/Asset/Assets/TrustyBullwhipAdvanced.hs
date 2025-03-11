@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.TrustyBullwhipAdvanced (trustyBullwhipAdvanced, TrustyBullwhipAdvanced (..)) where
+module Arkham.Asset.Assets.TrustyBullwhipAdvanced (trustyBullwhipAdvanced) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)

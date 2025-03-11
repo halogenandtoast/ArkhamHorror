@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.SplitTheAngleIreOfTheVoid (
-  splitTheAngleIreOfTheVoid,
-  SplitTheAngleIreOfTheVoid (..),
-)
-where
+module Arkham.Asset.Assets.SplitTheAngleIreOfTheVoid (splitTheAngleIreOfTheVoid) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards

@@ -1,12 +1,10 @@
-module Arkham.Asset.Assets.ZoeysCrossAdvanced (ZoeysCrossAdvanced (..), zoeysCrossAdvanced) where
+module Arkham.Asset.Assets.ZoeysCrossAdvanced (zoeysCrossAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.DamageEffect
+import Arkham.Helpers.Window (engagedEnemy)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype ZoeysCrossAdvanced = ZoeysCrossAdvanced AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,17 +15,16 @@ zoeysCrossAdvanced = asset ZoeysCrossAdvanced Cards.zoeysCrossAdvanced
 
 instance HasAbilities ZoeysCrossAdvanced where
   getAbilities (ZoeysCrossAdvanced x) =
-    [ restrictedAbility x 1 (ControlsThis <> CanDealDamage)
-        $ ReactionAbility (EnemyEngaged #after You AnyEnemy)
-        $ Costs [exhaust x, ResourceCost 1]
-    , controlledAbility x 2 (exists $ EnemyAt YourLocation <> CanEngageEnemy (x.ability 2))
+    [ controlled x 1 CanDealDamage
+        $ triggered (EnemyEngaged #after You AnyEnemy) (exhaust x <> ResourceCost 1)
+    , controlled x 2 (exists $ EnemyAt YourLocation <> CanEngageEnemy (x.ability 2))
         $ FastAbility (ReturnChaosTokensToPoolCost 2 #bless)
     ]
 
 instance RunMessage ZoeysCrossAdvanced where
   runMessage msg a@(ZoeysCrossAdvanced attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 [(windowType -> Window.EnemyEngaged _ eid)] _ -> do
-      push $ EnemyDamage eid $ nonAttack attrs 1
+    UseCardAbility _ (isSource attrs -> True) 1 (engagedEnemy -> eid) _ -> do
+      nonAttackEnemyDamage (attrs.ability 1) 1 eid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       selectOneToHandle iid (attrs.ability 2)

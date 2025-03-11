@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.SelflessToAFault (selflessToAFault, SelflessToAFault (..)) where
+module Arkham.Treachery.Cards.SelflessToAFault (selflessToAFault) where
 
 import Arkham.Ability
 import Arkham.Matcher
@@ -14,7 +14,7 @@ selflessToAFault = treachery SelflessToAFault Cards.selflessToAFault
 
 instance HasAbilities SelflessToAFault where
   getAbilities (SelflessToAFault x) =
-    [ restrictedAbility x 1 (InThreatAreaOf (You <> InvestigatorWithMetaKey "wasNotSelfless"))
+    [ restricted x 1 (InThreatAreaOf (You <> InvestigatorWithMetaKey "wasNotSelfless"))
         $ forced
         $ TurnEnds #when You
     ]

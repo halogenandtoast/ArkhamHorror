@@ -1,7 +1,6 @@
 module Arkham.Asset.Assets.DaisysToteBagAdvanced (
   daisysToteBagAdvanced,
   daisysToteBagAdvancedEffect,
-  DaisysToteBagAdvanced (..),
 ) where
 
 import Arkham.Ability
@@ -26,8 +25,7 @@ daisysToteBagAdvanced = asset DaisysToteBagAdvanced Cards.daisysToteBagAdvanced
 instance HasAbilities DaisysToteBagAdvanced where
   getAbilities (DaisysToteBagAdvanced a) =
     [ controlled a 1 (DuringTurn You)
-        $ ReactionAbility (Matcher.PlayCard #when You (basic #tome))
-        $ (exhaust a)
+        $ triggered (Matcher.PlayCard #when You (basic #tome)) (exhaust a)
     ]
 
 instance HasModifiersFor DaisysToteBagAdvanced where

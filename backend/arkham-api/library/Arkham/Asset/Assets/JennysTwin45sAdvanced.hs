@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.JennysTwin45sAdvanced (JennysTwin45sAdvanced (..), jennysTwin45sAdvanced) where
+module Arkham.Asset.Assets.JennysTwin45sAdvanced (jennysTwin45sAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -21,9 +21,9 @@ jennysTwin45sAdvanced = asset JennysTwin45sAdvanced Cards.jennysTwin45sAdvanced
 
 instance HasAbilities JennysTwin45sAdvanced where
   getAbilities (JennysTwin45sAdvanced a) =
-    [ restrictedAbility a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
-    , restrictedAbility a 2 ControlsThis
-        $ ReactionAbility
+    [ restricted a 1 ControlsThis $ fightAction $ assetUseCost a Ammo 1
+    , restricted a 2 ControlsThis
+        $ triggered
           (EnemyDefeated #after You (BySource $ SourceIs $ a.ability 1) EnemyWithHealth)
           (exhaust a)
     ]

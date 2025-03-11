@@ -875,7 +875,10 @@ getInvestigatorsMatching matcher = do
             then pure False
             else elem lid <$> select locationMatcher
     InvestigatorWithId iid -> flip filterM as $ pure . (== iid) . toId
-    InvestigatorIs cardCode -> flip filterM as $ pure . (== cardCode) . toCardCode
+    InvestigatorIs cardCode -> flip filterM as \a ->
+      pure $ toCardCode a == cardCode || case a.form of
+        TransfiguredForm c -> c == cardCode
+        _ -> False
     InvestigatorWithLowestSkill skillType inner -> flip filterM as $ \i ->
       isLowestAmongst (toId i) inner (getSkillValue skillType)
     InvestigatorWithHighestSkill skillType inner -> flip filterM as $ \i ->
@@ -1001,13 +1004,16 @@ getInvestigatorsMatching matcher = do
       slots <- fieldMap InvestigatorSlots (findWithDefault [] sType) (toId i)
       pure $ count (not . isEmptySlot) slots > 0
     InvestigatorWithMetaKey k -> flip filterM as $ \i -> do
-      meta <- field InvestigatorMeta (toId i)
-      case meta of
-        Object o ->
-          case KeyMap.lookup (Key.fromText k) o of
-            Just (Bool b) -> pure b
+      hasEffectKey <- hasModifier (toId i) (MetaModifier (String k))
+      if hasEffectKey
+        then pure True
+        else
+          field InvestigatorMeta (toId i) >>= \case
+            Object o ->
+              case KeyMap.lookup (Key.fromText k) o of
+                Just (Bool b) -> pure b
+                _ -> pure False
             _ -> pure False
-        _ -> pure False
     ContributedMatchingIcons valueMatcher -> flip filterM as $ \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of

@@ -35,6 +35,7 @@ endOfRoundEffect' eid source msgs =
       , effectExtraMetadata = Null
       , effectSkillTest = Nothing
       , effectCardId = Nothing
+      , effectMetaKeys = []
       }
 
 instance HasModifiersFor EndOfRoundEffect

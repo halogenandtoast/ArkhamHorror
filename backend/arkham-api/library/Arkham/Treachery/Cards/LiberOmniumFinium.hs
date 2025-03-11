@@ -1,8 +1,4 @@
-module Arkham.Treachery.Cards.LiberOmniumFinium (
-  liberOmniumFinium,
-  LiberOmniumFinium (..),
-)
-where
+module Arkham.Treachery.Cards.LiberOmniumFinium (liberOmniumFinium) where
 
 import Arkham.Card
 import Arkham.Deck qualified as Deck

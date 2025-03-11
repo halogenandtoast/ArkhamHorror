@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.JimsTrumpetAdvanced (JimsTrumpetAdvanced (..), jimsTrumpetAdvanced) where
+module Arkham.Asset.Assets.JimsTrumpetAdvanced (jimsTrumpetAdvanced) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -14,7 +14,7 @@ jimsTrumpetAdvanced = asset JimsTrumpetAdvanced Cards.jimsTrumpetAdvanced
 
 instance HasAbilities JimsTrumpetAdvanced where
   getAbilities (JimsTrumpetAdvanced x) =
-    [ controlledAbility
+    [ controlled
         x
         1
         ( oneOf
@@ -23,7 +23,7 @@ instance HasAbilities JimsTrumpetAdvanced where
             ]
             <> DuringSkillTest (YourSkillTest AnySkillTest)
         )
-        $ ReactionAbility (RevealChaosToken #when Anyone $ oneOf [#skull, #curse]) (exhaust x)
+        $ triggered (RevealChaosToken #when Anyone $ oneOf [#skull, #curse]) (exhaust x)
     ]
 
 instance RunMessage JimsTrumpetAdvanced where

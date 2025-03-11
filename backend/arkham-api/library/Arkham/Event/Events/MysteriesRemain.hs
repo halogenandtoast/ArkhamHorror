@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MysteriesRemain (mysteriesRemain, MysteriesRemain (..)) where
+module Arkham.Event.Events.MysteriesRemain (mysteriesRemain) where
 
 import Arkham.Prelude
 

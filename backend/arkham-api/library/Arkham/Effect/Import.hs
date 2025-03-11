@@ -7,6 +7,7 @@ import Arkham.Effect.Types as X (
   cardEffect,
   cardEffectWith,
   setEffectMeta,
+  metaKeysL,
  )
 
 import Arkham.Effect.Runner as X (extraL)
@@ -30,3 +31,12 @@ finishedEffect = Msg.finishedL .~ True
 
 getEffectMetaDefault :: FromJSON a => a -> EffectAttrs -> a
 getEffectMetaDefault a attrs = toResultDefault a $ attrs ^. extraL
+
+setEffectKey :: Text -> EffectAttrs -> EffectAttrs
+setEffectKey key = metaKeysL %~ nub . (key:)
+
+unsetEffectKey :: Text -> EffectAttrs -> EffectAttrs
+unsetEffectKey key = metaKeysL %~ filter (/= key)
+
+hasEffectKey :: Text -> EffectAttrs -> Bool
+hasEffectKey k a = k `elem` view metaKeysL a

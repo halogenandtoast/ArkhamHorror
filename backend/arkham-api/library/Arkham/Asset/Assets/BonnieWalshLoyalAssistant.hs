@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.BonnieWalshLoyalAssistant (
-  bonnieWalshLoyalAssistant,
-  BonnieWalshLoyalAssistant (..),
-)
-where
+module Arkham.Asset.Assets.BonnieWalshLoyalAssistant (bonnieWalshLoyalAssistant) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -19,12 +15,10 @@ bonnieWalshLoyalAssistant = ally BonnieWalshLoyalAssistant Cards.bonnieWalshLoya
 instance HasAbilities BonnieWalshLoyalAssistant where
   getAbilities (BonnieWalshLoyalAssistant x) =
     [ playerLimit PerRound
-        $ restrictedAbility
+        $ controlled
           x
           1
-          ( ControlsThis
-              <> exists (AssetExhausted <> AssetControlledBy (HasMatchingAsset (be x)) <> not_ (be x))
-          )
+          (exists (#exhausted <> AssetControlledBy (HasMatchingAsset (be x)) <> not_ (be x)))
         $ freeReaction
         $ Exhausts #after You (TargetIs $ toTarget x)
     ]

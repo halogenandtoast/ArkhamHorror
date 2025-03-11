@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.FoolishnessFoolishCatOfUlthar (
-  foolishnessFoolishCatOfUlthar,
-  FoolishnessFoolishCatOfUlthar (..),
-)
-where
+module Arkham.Asset.Assets.FoolishnessFoolishCatOfUlthar (foolishnessFoolishCatOfUlthar) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
@@ -21,18 +17,19 @@ newtype FoolishnessFoolishCatOfUlthar = FoolishnessFoolishCatOfUlthar AssetAttrs
 
 foolishnessFoolishCatOfUlthar :: AssetCard FoolishnessFoolishCatOfUlthar
 foolishnessFoolishCatOfUlthar =
-  allyWith FoolishnessFoolishCatOfUlthar Cards.foolishnessFoolishCatOfUlthar (1, 4)
-    $ (tokensL %~ setTokens Horror 3)
+  allyWith
+    FoolishnessFoolishCatOfUlthar
+    Cards.foolishnessFoolishCatOfUlthar
+    (1, 4)
+    (tokensL %~ setTokens Horror 3)
 
 instance HasModifiersFor FoolishnessFoolishCatOfUlthar where
-  getModifiersFor (FoolishnessFoolishCatOfUlthar a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      horror <- field AssetHorror a.id
-      modified_ a iid
-        $ if horror == 0
-          then [SkillModifier stype 1 | stype <- allSkills]
-          else [HealHorrorAsIfOnInvestigator (toTarget a) horror]
+  getModifiersFor (FoolishnessFoolishCatOfUlthar a) = for_ a.controller \iid -> do
+    horror <- field AssetHorror a.id
+    modified_ a iid
+      $ if horror == 0
+        then [SkillModifier stype 1 | stype <- allSkills]
+        else [HealHorrorAsIfOnInvestigator (toTarget a) horror]
 
 instance RunMessage FoolishnessFoolishCatOfUlthar where
   runMessage msg (FoolishnessFoolishCatOfUlthar attrs) = runQueueT $ case msg of

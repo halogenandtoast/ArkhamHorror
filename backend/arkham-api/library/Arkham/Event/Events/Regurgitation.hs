@@ -1,8 +1,4 @@
-module Arkham.Event.Events.Regurgitation (
-  regurgitation,
-  Regurgitation (..),
-)
-where
+module Arkham.Event.Events.Regurgitation (regurgitation) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Cards

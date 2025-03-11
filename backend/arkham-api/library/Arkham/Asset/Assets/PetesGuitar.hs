@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.PetesGuitar (petesGuitar, PetesGuitar (..)) where
+module Arkham.Asset.Assets.PetesGuitar (petesGuitar) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,7 +17,7 @@ petesGuitar = asset PetesGuitar Cards.petesGuitar
 
 instance HasAbilities PetesGuitar where
   getAbilities (PetesGuitar a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         ( exists

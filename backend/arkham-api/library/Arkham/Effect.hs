@@ -143,6 +143,7 @@ import Arkham.Event.Events (
   writtenInTheStarsEffect,
  )
 import Arkham.Investigator.Investigators (
+  carsonSinclairEffect,
   dexterDrakeEffect,
   kymaniJonesEffect,
   nathanielChoEffect,
@@ -511,6 +512,7 @@ allEffects =
     , ("08055", SomeEffect blackMarket2Effect)
     , ("08087", SomeEffect snipe1Effect)
     , ("08727", SomeEffect tekelili_227Effect)
+    , ("09001", SomeEffect carsonSinclairEffect)
     , ("09008", SomeEffect kymaniJonesEffect)
     , ("09009", SomeEffect grapplingHookEffect)
     , ("09029", SomeEffect oneInTheChamberEffect)

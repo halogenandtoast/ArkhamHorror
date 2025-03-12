@@ -239,6 +239,15 @@ goodWeather2 =
     , cdLimits = [LimitInPlay 1]
     }
 
+improvisedWeapon2 :: CardDef
+improvisedWeapon2 =
+  (event "11092" "Improvised Weapon" 1 Survivor)
+    { cdCardTraits = setFromList [Tactic, Improvised]
+    , cdActions = [#fight]
+    , cdPlayableFromDiscard = True
+    , cdLevel = Just 2
+    }
+
 shortRest :: CardDef
 shortRest =
   (event "11096" "Short Rest" 1 Neutral)

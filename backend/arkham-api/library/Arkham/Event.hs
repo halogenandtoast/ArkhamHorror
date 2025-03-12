@@ -666,6 +666,7 @@ allEvents =
       SomeEventCard catch
     , SomeEventCard unconventionalMethod
     , SomeEventCard aGlimmerOfHope2
+    , SomeEventCard improvisedWeapon2
     , --- neutral [tdc]
       SomeEventCard shortRest
     , -- Return to Night of the Zealot

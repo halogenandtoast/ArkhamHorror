@@ -233,6 +233,7 @@ allPlayerEventCards =
       , impromptuBarrier
       , improvisation
       , improvisedWeapon
+      , improvisedWeapon2
       , inTheShadows
       , infighting3
       , intelReport

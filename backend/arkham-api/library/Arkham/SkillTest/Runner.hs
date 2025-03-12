@@ -462,8 +462,9 @@ instance RunMessage SkillTest where
             )
             modifiers'
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
+      whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts
-        then pushAll $ msgs <> [afterMsg]
+        then pushAll $ msgs <> [whenMsg, afterMsg]
         else do
           canPay <- getCanAffordCost iid (toSource s) [] [mkWhen Window.NonFast] (mconcat additionalCosts)
           iid' <- getActiveInvestigatorId

@@ -16,6 +16,10 @@ export interface Props {
 }
 
 const question = computed(() => props.game.question[props.playerId])
+const questionLabel = computed(() => {
+  if (question.value)
+    return question.value.tag === 'QuestionLabel' ? question.value.label : null
+})
 const model = defineModel()
 const fetching = ref(false)
 const props = defineProps<Props>()
@@ -263,6 +267,7 @@ const tabooList = function (investigator: Investigator) {
         <template v-if="question && investigator && question.tag !== 'ChooseUpgradeDeck'">
           <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
           <div v-if="question && playerId == investigator.playerId" class="question">
+            <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
             <Question :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <div v-else>

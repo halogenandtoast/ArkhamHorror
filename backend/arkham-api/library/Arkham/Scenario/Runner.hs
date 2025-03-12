@@ -21,6 +21,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Card.PlayerCard (setPlayerCardOwner)
+import Arkham.Card.Settings
 import Arkham.ChaosBag ()
 import Arkham.ChaosToken
 import Arkham.Choose
@@ -44,6 +45,7 @@ import Arkham.Helpers
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
 import Arkham.Helpers.GameValue
+import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -150,6 +152,19 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       then do
         investigatorClass <- field InvestigatorClass iid
         playerCount <- getPlayerCount
+        let cardCodes = map toCardCode $ unDeck deck
+
+        mEldritchBrand <-
+          if "11080" `elem` cardCodes
+            then
+              getMaybeCardAttachments iid (CardCode "11080") >>= \case
+                Nothing -> do
+                  pid <- getPlayer iid
+                  let cards = nub $ map toCardCode $ filterCards (card_ #spell) (unDeck deck)
+                  pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+                    CardLabel c [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
+                Just _ -> pure Nothing
+            else pure Nothing
         (deck', randomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck
         weaknesses <- traverse (`genPlayerCardWith` setPlayerCardOwner iid) randomWeaknesses
         purchaseTrauma <- initDeckTrauma deck' iid (toTarget a)
@@ -159,6 +174,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         pushAll
           $ LoadDeck iid deck''
           : purchaseTrauma
+            <> toList mEldritchBrand
             <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a

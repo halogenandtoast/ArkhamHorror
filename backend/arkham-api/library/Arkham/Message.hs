@@ -708,6 +708,7 @@ data Message
   | LoadDecklist PlayerId ArkhamDBDecklist
   | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to upgrade deck during campaign
+  | UpgradeDecklist InvestigatorId ArkhamDBDecklist
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card

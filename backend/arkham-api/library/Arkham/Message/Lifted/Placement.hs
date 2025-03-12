@@ -9,6 +9,7 @@ import Arkham.Message
 import Arkham.Message.Lifted.Queue
 import Arkham.Placement
 import Arkham.Prelude
+import Arkham.Skill.Types
 import Arkham.Treachery.Types
 
 class IsPlacement a where
@@ -43,6 +44,9 @@ instance Placeable EnemyId where
 
 instance Placeable EnemyAttrs where
   place attrs placement = push $ PlaceEnemy attrs.id (toPlacement placement)
+
+instance Placeable SkillAttrs where
+  place attrs placement = push $ PlaceSkill attrs.id (toPlacement placement)
 
 instance Placeable InvestigatorId where
   place iid placement = push $ PlaceInvestigator iid (toPlacement placement)

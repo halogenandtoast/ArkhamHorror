@@ -133,6 +133,7 @@ allPlayerAssetCards =
       , bookOfShadows3
       , bookOfVerseUnCommonplaceBook
       , borrowedTime3
+      , boundForTheHorizon2
       , bountyContracts
       , boxingGloves
       , boxingGloves3

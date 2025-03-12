@@ -474,6 +474,16 @@ libraryPass1 =
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
     }
 
+boundForTheHorizon2 :: CardDef
+boundForTheHorizon2 =
+  (asset "11102" "Bound for the Horizon" 2 Neutral)
+    { cdCardTraits = setFromList [Talent]
+    , cdSkills = [#agility, #agility]
+    , cdLevel = Just 2
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Drifter, Hunter, Wayfarer]]
+    , cdLimits = [LimitPerInvestigator 1]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent (asset "11118" "Library Pass" 0 Neutral)

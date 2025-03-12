@@ -665,6 +665,7 @@ allEvents =
     , --- survivor [tdc]
       SomeEventCard catch
     , SomeEventCard unconventionalMethod
+    , SomeEventCard aGlimmerOfHope2
     , --- neutral [tdc]
       SomeEventCard shortRest
     , -- Return to Night of the Zealot

@@ -1107,6 +1107,7 @@ allAssets =
     , SomeAssetCard lawrenceCarlisleSculptingHisDreams
     , SomeAssetCard nauticalCharts
     , SomeAssetCard profaneIdol
+    , SomeAssetCard ampleSupplies2
     , --- survivor [tdc]
       SomeAssetCard ascetic
     , -- Return to Night of the Zealot

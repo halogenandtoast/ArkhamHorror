@@ -3,6 +3,7 @@ module Arkham.Asset.Cards.TheDrownedCity where
 import Arkham.Asset.Cards.Import
 import Arkham.Criteria qualified as Criteria
 import Arkham.Keyword qualified as Keyword
+import Arkham.Trait qualified as Trait
 
 bookOfVerseUnCommonplaceBook :: CardDef
 bookOfVerseUnCommonplaceBook =
@@ -427,6 +428,14 @@ profaneIdol =
     , cdSlots = [#accessory]
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
+    }
+
+ampleSupplies2 :: CardDef
+ampleSupplies2 =
+  (asset "11089" "Ample Supplies" 1 Survivor)
+    { cdCardTraits = setFromList [Trait.Supply]
+    , cdUses = uses Supply 2
+    , cdLimits = [LimitPerInvestigator 1]
     }
 
 ascetic :: CardDef

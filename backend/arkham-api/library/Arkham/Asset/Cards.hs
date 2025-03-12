@@ -40,6 +40,7 @@ allPlayerAssetCards =
       , aliceLuxley2
       , altonOConnellGhostHunter
       , alyssaGraham
+      , ampleSupplies2
       , analyticalMind
       , ancestralKnowledge3
       , ancestralToken

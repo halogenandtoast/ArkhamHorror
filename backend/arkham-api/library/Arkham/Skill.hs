@@ -268,6 +268,7 @@ allSkills =
       SomeSkillCard enraptured2
     , --- survivor [tdc]
       SomeSkillCard contemplative
+    , SomeSkillCard lastChance3
     , --- neutral [tdc]
       SomeSkillCard confidence
     , -- Return to the Dunwich Legacy

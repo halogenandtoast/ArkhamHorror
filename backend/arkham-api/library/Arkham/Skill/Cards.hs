@@ -87,6 +87,7 @@ allPlayerSkillCards =
       , intrepid
       , justifyTheMeans3
       , lastChance
+      , lastChance3
       , leadership
       , leadership2
       , lightfooted
@@ -970,6 +971,15 @@ contemplative =
             $ WhileParleying
             <> SkillTestAt (orConnected YourLocation)
         ]
+    }
+
+lastChance3 :: CardDef
+lastChance3 =
+  (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild, #wild] Survivor)
+    { cdCardTraits = singleton Gambit
+    , cdCommitRestrictions = [OnlyCardCommittedToTest]
+    , cdCardInHandEffects = True
+    , cdLevel = Just 3
     }
 
 confidence :: CardDef

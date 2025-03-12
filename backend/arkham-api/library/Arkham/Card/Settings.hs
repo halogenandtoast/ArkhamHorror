@@ -36,18 +36,28 @@ data GlobalSettings = GlobalSettings
 data PerCardSettings = PerCardSettings
   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
   , cardIgnoreDuringSkillTests :: Bool
+  , cardAttachments :: [CardCode]
   }
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON)
+
+instance FromJSON PerCardSettings where
+  parseJSON = withObject "PerCardSettings" \o -> do
+    cardIgnoreUnrelatedSkillTestTriggers <- o .: "cardIgnoreUnrelatedSkillTestTriggers"
+    cardIgnoreDuringSkillTests <- o .: "cardIgnoreDuringSkillTests"
+    cardAttachments <- o .:? "cardAttachments" .!= []
+    pure PerCardSettings {..}
 
 data PerCardSetting a where
   CardIgnoreUnrelatedSkillTestTriggers :: PerCardSetting Bool
   CardIgnoreDuringSkillTests :: PerCardSetting Bool
+  CardAttachments :: PerCardSetting [CardCode]
 
 instance Show (PerCardSetting a) where
   show = \case
     CardIgnoreUnrelatedSkillTestTriggers -> "CardIgnoreUnrelatedSkillTestTriggers"
     CardIgnoreDuringSkillTests -> "CardIgnoreDuringSkillTests"
+    CardAttachments -> "CardAttachments"
 
 instance Data (PerCardSetting Bool) where
   gfoldl _ z c = z c
@@ -60,17 +70,31 @@ instance Data (PerCardSetting Bool) where
     CardIgnoreDuringSkillTests -> perCardSettingConstr2
   dataTypeOf _ = perCardSettingDataType
 
+instance Data (PerCardSetting [CardCode]) where
+  gfoldl _ z c = z c
+  gunfold _ z c
+    | constrIndex c == 3 = z CardAttachments
+    | otherwise = error "gunfold: unknown constructor for PerCardSetting"
+  toConstr = \case
+    CardAttachments -> perCardSettingConstr3
+  dataTypeOf _ = perCardSettingDataType
+
 perCardSettingConstr1 :: Constr
 perCardSettingConstr1 = mkConstr perCardSettingDataType "CardIgnoreUnrelatedSkillTestTriggers" [] Prefix
 
 perCardSettingConstr2 :: Constr
 perCardSettingConstr2 = mkConstr perCardSettingDataType "CardIgnoreDuringSkillTests" [] Prefix
 
+perCardSettingConstr3 :: Constr
+perCardSettingConstr3 = mkConstr perCardSettingDataType "CardAttachments" [] Prefix
+
 perCardSettingDataType :: DataType
 perCardSettingDataType = mkDataType "PerCardSetting" [perCardSettingConstr1, perCardSettingConstr2]
 
 deriving stock instance Eq (PerCardSetting Bool)
 deriving stock instance Ord (PerCardSetting Bool)
+deriving stock instance Eq (PerCardSetting [CardCode])
+deriving stock instance Ord (PerCardSetting [CardCode])
 
 instance ToJSON (PerCardSetting a) where
   toJSON = String . tshow
@@ -102,6 +126,7 @@ instance FromJSON SomePerCardSetting where
   parseJSON = withText "SomePerCardSetting" \case
     "CardIgnoreUnrelatedSkillTestTriggers" -> pure $ SomePerCardSetting CardIgnoreUnrelatedSkillTestTriggers
     "CardIgnoreDuringSkillTests" -> pure $ SomePerCardSetting CardIgnoreDuringSkillTests
+    "CardAttachments" -> pure $ SomePerCardSetting CardAttachments
     _ -> fail "Unknown PerCardSetting"
 
 data SetCardSetting where
@@ -177,6 +202,7 @@ defaultPerCardSettings =
   PerCardSettings
     { cardIgnoreUnrelatedSkillTestTriggers = False
     , cardIgnoreDuringSkillTests = False
+    , cardAttachments = []
     }
 
 globalSettingsL :: Lens' CardSettings GlobalSettings
@@ -197,8 +223,9 @@ perCardSettingsL = lens perCardSettings \m x -> m {perCardSettings = x}
 
 perCardSettingsLens :: PerCardSetting a -> Lens' PerCardSettings a
 perCardSettingsLens = \case
-  CardIgnoreUnrelatedSkillTestTriggers -> lens cardIgnoreUnrelatedSkillTestTriggers \m x -> m {cardIgnoreUnrelatedSkillTestTriggers = x}
-  CardIgnoreDuringSkillTests -> lens cardIgnoreDuringSkillTests \m x -> m {cardIgnoreDuringSkillTests = x}
+  CardIgnoreUnrelatedSkillTestTriggers -> cardIgnoreUnrelatedSkillTestTriggersL
+  CardIgnoreDuringSkillTests -> cardIgnoreDuringSkillTestsL
+  CardAttachments -> cardAttachmentsL
 
 cardIgnoreUnrelatedSkillTestTriggersL :: Lens' PerCardSettings Bool
 cardIgnoreUnrelatedSkillTestTriggersL =
@@ -207,6 +234,9 @@ cardIgnoreUnrelatedSkillTestTriggersL =
 cardIgnoreDuringSkillTestsL :: Lens' PerCardSettings Bool
 cardIgnoreDuringSkillTestsL =
   lens cardIgnoreDuringSkillTests \m x -> m {cardIgnoreDuringSkillTests = x}
+
+cardAttachmentsL :: Lens' PerCardSettings [CardCode]
+cardAttachmentsL = lens cardAttachments \m x -> m {cardAttachments = x}
 
 updateCardSetting :: CardCode -> SetCardSetting -> CardSettings -> CardSettings
 updateCardSetting cCode = \case
@@ -223,6 +253,13 @@ updateCardSetting cCode = \case
       . cardIgnoreDuringSkillTestsL
       .~ v
 
+  SetCardSetting CardAttachments v ->
+    perCardSettingsL
+      . at cCode
+      . non defaultPerCardSettings
+      . cardAttachmentsL
+      .~ v
+
 toPerCardSettings :: [SetCardSetting] -> PerCardSettings
 toPerCardSettings = foldr go defaultPerCardSettings
  where
@@ -230,3 +267,4 @@ toPerCardSettings = foldr go defaultPerCardSettings
   go (SetCardSetting k v) x = case k of
     CardIgnoreUnrelatedSkillTestTriggers -> x & cardIgnoreUnrelatedSkillTestTriggersL .~ v
     CardIgnoreDuringSkillTests -> x & cardIgnoreDuringSkillTestsL .~ v
+    CardAttachments -> x & cardAttachmentsL .~ v

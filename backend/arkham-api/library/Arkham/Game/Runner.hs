@@ -18,6 +18,7 @@ import Arkham.Attack
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
 import Arkham.Card
 import Arkham.Card.PlayerCard
+import Arkham.Card.Settings
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Cost qualified as Cost
@@ -228,12 +229,23 @@ runGameMessage msg g = case msg of
     let iid' = decklistInvestigator dl
     let deck = decklistCards dl
     let sideDeck = decklistExtraDeck dl
+    let
+      setCardAttachments (cCode, attachments) =
+        flip Map.alter cCode \case
+          Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
+          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
           overAttrs
             ( \ia ->
                 ia
                   { investigatorTaboo = decklistTaboo dl
                   , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  , investigatorSettings =
+                      let settings = investigatorSettings ia
+                       in settings
+                            { perCardSettings =
+                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
+                            }
                   }
             )
             (lookupInvestigator iid' playerId)

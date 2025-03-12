@@ -2,9 +2,9 @@
 import { useI18n } from 'vue-i18n';
 import { handleI18n } from '@/arkham/i18n';
 import { choiceRequiresModal, MessageType } from '@/arkham/types/Message';
-import { computed, inject, ref, watch, onMounted, h } from 'vue';
+import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
-import { AmountChoice, QuestionType, FlavorTextEntry, FlavorTextModifier } from '@/arkham/types/Question';
+import { AmountChoice, QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
@@ -26,27 +26,6 @@ const emit = defineEmits(['choose'])
 const { t } = useI18n()
 const choose = (idx: number) => emit('choose', idx)
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
-
-function modifierToStyle(modifier: FlavorTextModifier): string {
-  switch (modifier) {
-    case 'BlueEntry': return 'blue'
-    case 'RightAligned': return 'right'
-    case 'PlainText': return 'basic'
-    case 'InvalidEntry': return 'invalid'
-    case 'ValidEntry': return 'valid'
-    default: throw new Error("Unknown modifier")
-  }
-}
-
-function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
-  switch (entry.tag) {
-    case 'BasicEntry': return {}
-    case 'I18nEntry': return {}
-    case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
-    case 'CompositeEntry': return {}
-    default: return {}
-  }
-}
 
 function zoneToLabel(s: string) {
   switch(s) {

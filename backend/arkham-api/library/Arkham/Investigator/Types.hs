@@ -100,6 +100,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorSealedChaosTokens :: Field Investigator [ChaosToken]
   InvestigatorTaboo :: Field Investigator (Maybe TabooList)
   InvestigatorName :: Field Investigator Name
+  InvestigatorSettings :: Field Investigator CardSettings
   InvestigatorRemainingActions :: Field Investigator Int
   InvestigatorAdditionalActions :: Field Investigator [AdditionalAction]
   InvestigatorHealth :: Field Investigator Int
@@ -180,6 +181,7 @@ instance Typeable typ => FromJSON (Field Investigator typ) where
 instance FromJSON (SomeField Investigator) where
   parseJSON = withText "Field Investigator" $ \case
     "InvestigatorName" -> pure $ SomeField InvestigatorName
+    "InvestigatorSettings" -> pure $ SomeField InvestigatorSettings
     "InvestigatorTaboo" -> pure $ SomeField InvestigatorTaboo
     "InvestigatorSealedChaosTokens" -> pure $ SomeField InvestigatorSealedChaosTokens
     "InvestigatorRemainingActions" -> pure $ SomeField InvestigatorRemainingActions

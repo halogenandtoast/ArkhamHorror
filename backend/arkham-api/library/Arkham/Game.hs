@@ -3694,6 +3694,7 @@ instance Projection Investigator where
       InvestigatorKeys -> pure investigatorKeys
       InvestigatorPlayerId -> pure investigatorPlayerId
       InvestigatorName -> pure investigatorName
+      InvestigatorSettings -> pure investigatorSettings
       InvestigatorTaboo -> pure investigatorTaboo
       InvestigatorSealedChaosTokens -> pure investigatorSealedChaosTokens
       InvestigatorRemainingActions -> pure investigatorRemainingActions

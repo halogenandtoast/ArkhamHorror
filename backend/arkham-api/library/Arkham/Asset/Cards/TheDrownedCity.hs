@@ -376,6 +376,14 @@ lostArcana3 =
     , cdLevel = Just 3
     }
 
+eldritchBrand5 :: CardDef
+eldritchBrand5 =
+  permanent (asset "11080" "Eldritch Brand" 0 Mystic)
+    { cdCardTraits = setFromList [Pact]
+    , cdExceptional = True
+    , cdLevel = Just 5
+    }
+
 anchorChain :: CardDef
 anchorChain =
   (asset "11081" "Anchor Chain" 3 Survivor)

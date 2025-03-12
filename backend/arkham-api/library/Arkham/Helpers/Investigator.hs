@@ -687,3 +687,10 @@ matchWho iid who matcher = do
         <$> replaceMatchWhoLocations iid' inner
     other -> pure other
 
+getCardAttachments :: (HasGame m, HasCardCode c) => InvestigatorId -> c -> m [CardCode]
+getCardAttachments iid c = fromMaybe [] <$> getMaybeCardAttachments iid c
+
+getMaybeCardAttachments :: (HasGame m, HasCardCode c) => InvestigatorId -> c -> m (Maybe [CardCode])
+getMaybeCardAttachments iid c = do
+  settings <- field InvestigatorSettings iid
+  pure $ cardAttachments <$> lookup (toCardCode c) (perCardSettings settings)

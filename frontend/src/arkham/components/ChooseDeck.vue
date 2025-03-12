@@ -82,6 +82,10 @@ fetchDecks().then((result) => {
   ready.value = true;
 })
 
+const emit = defineEmits(['choose'])
+
+const chooseChoice = (idx: number) => emit('choose', idx)
+
 async function choose() {
   if (deckId.value && error.value === null) {
     if (chooseDeck) {
@@ -198,7 +202,7 @@ const chosenDeckTabooList = computed(() => {
               />
             </div>
             <div v-if="question && playerId == player.investigator.playerId" class="question">
-              <Question :game="game" :playerId="playerId" @choose="choose" />
+              <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
             </div>
             <div v-else>
               <div v-if="tabooList(player.investigator)" class="taboo-list">

@@ -457,3 +457,11 @@ ascetic =
       , cdDeckRestrictions = [PurchaseAtDeckCreation, PerDeckLimit 1]
       , cdGrantedXp = Just 10
       }
+
+spiritualHealing4 :: CardDef
+spiritualHealing4 =
+  permanent $ (asset "11098" "Spiritual Healing" 0 Neutral)
+    { cdCardTraits = setFromList [Condition, Blessed]
+    , cdLevel = Just 4
+    , cdDeckRestrictions = [PerDeckLimit 1]
+    }

@@ -1111,6 +1111,7 @@ allAssets =
     , SomeAssetCard giftOfNodens5
     , --- survivor [tdc]
       SomeAssetCard ascetic
+    , SomeAssetCard spiritualHealing4
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

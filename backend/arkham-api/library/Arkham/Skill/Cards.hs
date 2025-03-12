@@ -967,9 +967,10 @@ contemplative =
   (skill "11088" "Contemplative" [] Survivor)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions =
-        [ OnlySkillTest
-            $ WhileParleying
-            <> SkillTestAt (orConnected YourLocation)
+        [ OnlySkillTest $ oneOf
+            [ WhileParleying <> SkillTestAt (orConnected YourLocation)
+            , WhileInvestigating (orConnected YourLocation)
+            ]
         ]
     }
 

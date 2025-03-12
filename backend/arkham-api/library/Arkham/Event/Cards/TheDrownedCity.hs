@@ -219,6 +219,16 @@ unconventionalMethod =
         Just $ DiscardFromCost 1 (FromHandOf You <> FromPlayAreaOf You) (#item <> CardFillsSlot #hand)
     }
 
+aGlimmerOfHope2 :: CardDef
+aGlimmerOfHope2 =
+  (event "11090" "A Glimmer of Hope" 1 Survivor)
+    { cdSkills = [#willpower, #agility, #wild]
+    , cdCardTraits = setFromList [Blessed, Fortune]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdCriteria = Just Criteria.InYourDiscard
+    , cdPlayableFromDiscard = True
+    }
+
 shortRest :: CardDef
 shortRest =
   (event "11096" "Short Rest" 1 Neutral)

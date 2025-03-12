@@ -28,6 +28,7 @@ allPlayerEventCards =
       [ aChanceEncounter
       , aChanceEncounter2
       , aGlimmerOfHope
+      , aGlimmerOfHope2
       , aTestOfWill
       , aTestOfWill1
       , aTestOfWill2

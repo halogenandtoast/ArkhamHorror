@@ -193,12 +193,23 @@ runGameMessage msg g = case msg of
     let iid' = decklistInvestigator dl
     let deck = decklistCards dl
     let sideDeck = decklistExtraDeck dl
+    let
+      setCardAttachments (cCode, attachments) =
+        flip Map.alter cCode \case
+          Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
+          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
     let investigator =
           overAttrs
             ( \ia ->
                 ia
                   { investigatorTaboo = decklistTaboo dl
                   , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  , investigatorSettings =
+                      let settings = investigatorSettings ia
+                       in settings
+                            { perCardSettings =
+                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
+                            }
                   }
             )
             (lookupInvestigator iid' playerId)
@@ -267,6 +278,42 @@ runGameMessage msg g = case msg of
         )
       & activeInvestigatorF
       & turnPlayerInvestigatorF
+  UpgradeDecklist investigatorId decklist -> do
+    cards <- loadDecklistCards slots decklist
+    dl <- loadDecklist decklist
+    investigator <- getInvestigator investigatorId
+    let playerId = attr investigatorPlayerId investigator
+    let iid' = decklistInvestigator dl
+    -- let sideDeck = decklistExtraDeck dl
+    let
+      setCardAttachments (cCode, attachments) =
+        flip Map.alter cCode \case
+          Nothing -> Just $ defaultPerCardSettings {cardAttachments = attachments}
+          Just current -> Just $ current {cardAttachments = attachments <> cardAttachments current}
+    let investigator' =
+          overAttrs
+            ( \ia ->
+                ia
+                  { investigatorTaboo = decklistTaboo dl
+                  , investigatorMutated = tabooMutated' (decklistTaboo dl) (coerce iid')
+                  , investigatorSettings =
+                      let settings = investigatorSettings ia
+                       in settings
+                            { perCardSettings =
+                                foldr setCardAttachments (perCardSettings settings) (mapToList $ decklistCardAttachments dl)
+                            }
+                  }
+            )
+            investigator
+    push $ UpgradeDeck investigatorId decklist.url (Deck cards)
+
+    pure
+      $ g
+      & ( entitiesL
+            . investigatorsL
+            %~ insertEntity investigator'
+            . Map.filter ((/= playerId) . attr investigatorPlayerId)
+        )
   SetInvestigator playerId investigator -> do
     -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
     let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)

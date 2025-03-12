@@ -136,12 +136,26 @@ defaultCampaignRunner msg a = case msg of
           (unDeck deck)
           (unDeck oldDeck)
 
+    let cardCodes = map toCardCode deckDiff
+
+    mEldritchBrand <-
+      if "11080" `elem` cardCodes
+        then
+          getMaybeCardAttachments iid (CardCode "11080") >>= \case
+            Nothing -> do
+              pid <- getPlayer iid
+              let cards = nub $ map toCardCode $ filterCards (card_ #spell) (unDeck deck)
+              pure $ Just $ Ask pid $ QuestionLabel "Choose card for Eldritch Brand (5)" Nothing $ ChooseOne $ flip map cards \c ->
+                CardLabel c [UpdateCardSetting iid "11080" (SetCardSetting CardAttachments [c])]
+            Just _ -> pure Nothing
+        else pure Nothing
+
     purchaseTrauma <- initDeckTrauma (Deck deckDiff) iid CampaignTarget
     initXp <- initDeckXp (Deck deckDiff) iid CampaignTarget
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
-    pushAll $ purchaseTrauma <> initXp
+    pushAll $ purchaseTrauma <> toList mEldritchBrand <> initXp
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   ReplaceInvestigator oldIid _ -> do
     pure $ updateAttrs a $ decksL %~ deleteMap oldIid

@@ -16,7 +16,6 @@ import Arkham.Classes.HasQueue
 import Arkham.Decklist
 import Arkham.Game
 import Arkham.Game.Diff
-import Arkham.Helpers
 import Arkham.Id
 import Arkham.Message
 import Arkham.PlayerCard
@@ -120,12 +119,11 @@ putApiV1ArkhamGameDecksR gameId = do
         edecklist <- getDeckList deckUrl
         case edecklist of
           Left err -> error $ show err
-          Right decklist -> do
-            if investigatorId /= investigator_code decklist
-              then pure $ ReplaceInvestigator investigatorId decklist
-              else do
-                cards <- loadDecklistCards slots decklist
-                pure $ UpgradeDeck investigatorId (Just deckUrl) (Deck cards)
+          Right decklist ->
+            pure
+              $ if investigatorId /= investigator_code decklist
+                then ReplaceInvestigator investigatorId decklist
+                else UpgradeDecklist investigatorId decklist
     push msg
     runMessages Nothing
   ge <- readIORef gameRef

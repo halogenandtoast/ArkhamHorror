@@ -25,6 +25,11 @@ const props = defineProps<{
 const chooseDeck = inject<(deckId: string) => Promise<void>>('chooseDeck')
 const question = computed(() => props.game.question[props.playerId])
 
+const questionLabel = computed(() => {
+  if (question.value)
+    return question.value.tag === 'QuestionLabel' ? question.value.label : null
+})
+
 async function setPortrait(src: string) {
   createdPortrait.value = src
 }
@@ -197,11 +202,10 @@ const chosenDeckTabooList = computed(() => {
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
             <div class="portrait">
-              <img
-                :src="portraitImage(player.investigator)"
-              />
+              <img :src="portraitImage(player.investigator)" />
             </div>
             <div v-if="question && playerId == player.investigator.playerId" class="question">
+              <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
               <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
             </div>
             <div v-else>

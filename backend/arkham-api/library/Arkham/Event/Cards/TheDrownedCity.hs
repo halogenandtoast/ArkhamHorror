@@ -229,6 +229,16 @@ aGlimmerOfHope2 =
     , cdPlayableFromDiscard = True
     }
 
+goodWeather2 :: CardDef
+goodWeather2 =
+  (event "11091" "Good Weather" 1 Survivor)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Blessed, Fortune]
+    , cdKeywords = singleton Keyword.Myriad
+    , cdFastWindow = Just $ PhaseBegins #after #investigation
+    , cdLimits = [LimitInPlay 1]
+    }
+
 shortRest :: CardDef
 shortRest =
   (event "11096" "Short Rest" 1 Neutral)

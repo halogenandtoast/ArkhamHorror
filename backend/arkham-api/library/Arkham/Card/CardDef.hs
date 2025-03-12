@@ -55,6 +55,7 @@ data EventChoice = EventChooseN Int EventChoicesRepeatable
 
 data CardLimit
   = LimitPerInvestigator Int
+  | LimitInPlay Int
   | LimitPerTrait Trait Int
   | MaxPerGame Int
   | MaxPerRound Int

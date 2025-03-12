@@ -223,6 +223,11 @@ passesLimits :: HasGame m => InvestigatorId -> Card -> m Bool
 passesLimits iid c = allM go (cdLimits $ toCardDef c)
  where
   go = \case
+    LimitInPlay m -> case toCardType c of
+      EventType -> do
+        n <- selectCount $ Matcher.AssetWithTitle (nameTitle $ toName c)
+        pure $ m > n
+      _ -> error $ "Not handling card type: " <> show (toCardType c)
     LimitPerInvestigator m -> case toCardType c of
       AssetType -> do
         n <- selectCount $ Matcher.assetControlledBy iid <> Matcher.AssetWithTitle (nameTitle $ toName c)

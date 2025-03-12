@@ -666,6 +666,7 @@ allEvents =
       SomeEventCard catch
     , SomeEventCard unconventionalMethod
     , SomeEventCard aGlimmerOfHope2
+    , SomeEventCard goodWeather2
     , SomeEventCard improvisedWeapon2
     , --- neutral [tdc]
       SomeEventCard shortRest

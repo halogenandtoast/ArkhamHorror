@@ -119,15 +119,39 @@ defaultCampaignRunner msg a = case msg of
       $ map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
       <> purchaseTrauma
       <> toList mEldritchBrand
+      <> [DoStep 1 msg]
       <> initXp
 
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
+  DoStep 1 (InitDeck iid _ deck) -> do
+    let cardCodes = map toCardCode $ unDeck deck
+    mSpiritualHealing <-
+      if "11098" `elem` cardCodes
+        then do
+          mentalTrauma <- field InvestigatorMentalTrauma iid
+          physicalTrauma <- field InvestigatorPhysicalTrauma iid
+          pid <- getPlayer iid
+          pure
+            $ if
+              | mentalTrauma > 0 && physicalTrauma > 0 ->
+                  Just
+                    $ chooseOne
+                      pid
+                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
+                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      ]
+              | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
+              | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
+              | otherwise -> Nothing
+        else pure Nothing
+    for_ mSpiritualHealing push
+    pure a
   ResolveAmounts iid choiceMap (LabeledTarget "Purchase Trauma" CampaignTarget) -> do
     let physical = getChoiceAmount "Physical" choiceMap
     let mental = getChoiceAmount "Mental" choiceMap
     push $ SufferTrauma iid physical mental
     pure a
-  UpgradeDeck iid _ deck -> do
+  UpgradeDeck iid mUrl deck -> do
     let
       oldDeck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)
       deckDiff =
@@ -155,8 +179,40 @@ defaultCampaignRunner msg a = case msg of
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
-    pushAll $ purchaseTrauma <> toList mEldritchBrand <> initXp
+    pushAll $ purchaseTrauma <> toList mEldritchBrand <> [DoStep 1 (UpgradeDeck iid mUrl oldDeck)] <> initXp
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
+  DoStep 1 (UpgradeDeck iid _ oldDeck) -> do
+    -- we have lost the old deck data, so we swap in the message
+    let
+      deck = fromJustNote "No deck?" $ lookup iid (campaignDecks $ toAttrs a)
+      deckDiff =
+        foldr
+          (\x -> deleteFirstMatch ((== toCardCode x) . toCardCode))
+          (unDeck deck)
+          (unDeck oldDeck)
+
+    let cardCodes = map toCardCode deckDiff
+    mSpiritualHealing <-
+      if "11098" `elem` cardCodes
+        then do
+          mentalTrauma <- field InvestigatorMentalTrauma iid
+          physicalTrauma <- field InvestigatorPhysicalTrauma iid
+          pid <- getPlayer iid
+          pure
+            $ if
+              | mentalTrauma > 0 && physicalTrauma > 0 ->
+                  Just
+                    $ chooseOne
+                      pid
+                      [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
+                      , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                      ]
+              | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
+              | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
+              | otherwise -> Nothing
+        else pure Nothing
+    for_ mSpiritualHealing push
+    pure a
   ReplaceInvestigator oldIid _ -> do
     pure $ updateAttrs a $ decksL %~ deleteMap oldIid
   FinishedUpgradingDecks -> case campaignStep (toAttrs a) of

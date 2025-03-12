@@ -175,9 +175,35 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
           $ LoadDeck iid deck''
           : purchaseTrauma
             <> toList mEldritchBrand
+            <> [DoStep 1 msg]
             <> initXp
         pure $ a & playerDecksL %~ insertMap iid deck''
       else pure a
+  DoStep 1 (InitDeck iid _ deck) -> do
+    standalone <- getIsStandalone
+    when standalone do
+      let cardCodes = map toCardCode $ unDeck deck
+      mSpiritualHealing <-
+        if "11098" `elem` cardCodes
+          then do
+            mentalTrauma <- field InvestigatorMentalTrauma iid
+            physicalTrauma <- field InvestigatorPhysicalTrauma iid
+            pid <- getPlayer iid
+            pure
+              $ if
+                | mentalTrauma > 0 && physicalTrauma > 0 ->
+                    Just
+                      $ chooseOne
+                        pid
+                        [ Label "Heal 1 Physical Trauma" [HealTrauma iid 1 0]
+                        , Label "Heal 1 Mental Trauma" [HealTrauma iid 0 1]
+                        ]
+                | physicalTrauma > 0 -> Just $ HealTrauma iid 1 0
+                | mentalTrauma > 0 -> Just $ HealTrauma iid 0 1
+                | otherwise -> Nothing
+          else pure Nothing
+      for_ mSpiritualHealing push
+    pure a
   EndSetup -> do
     pushAll [BeginGame, BeginRound, Begin InvestigationPhase]
     pure a

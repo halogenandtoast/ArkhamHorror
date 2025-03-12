@@ -55,24 +55,32 @@ windowModifierEffect' eid metadata effectWindow source target =
     _ -> Nothing
 
 instance HasModifiersFor WindowModifierEffect where
-  getModifiersFor (WindowModifierEffect attrs) = case effectMetadata attrs of
-    Just (EffectModifiers modifiers) -> case effectWindow attrs of
-      Just EffectSetupWindow -> tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
-      Just (EffectScenarioSetupWindow scenarioId) -> do
-        selectOne TheScenario >>= traverse_ \currentScenarioId ->
-          when (scenarioId == currentScenarioId) do
-            tell $ MonoidalMap $ singletonMap attrs.target $ map setActiveDuringSetup modifiers
-      Just (EffectSkillTestWindow sid) -> do
-        msid <- getSkillTestId
-        when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
-      Just (EffectPhaseWindowFor p) -> do
-        p' <- getPhase
-        when (p == p') $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
-      Just (EffectTurnWindow iid) -> do
-        isTurn <- iid <=~> TurnInvestigator
-        when isTurn $ tell $ MonoidalMap $ singletonMap attrs.target modifiers
-      _ -> tell $ MonoidalMap $ singletonMap attrs.target modifiers
-    _ -> pure ()
+  getModifiersFor (WindowModifierEffect attrs) = do
+    targets <- getTargets
+    for_ targets \target -> do
+      case effectMetadata attrs of
+        Just (EffectModifiers modifiers) -> case effectWindow attrs of
+          Just EffectSetupWindow -> tell $ MonoidalMap $ singletonMap target $ map setActiveDuringSetup modifiers
+          Just (EffectScenarioSetupWindow scenarioId) -> do
+            selectOne TheScenario >>= traverse_ \currentScenarioId ->
+              when (scenarioId == currentScenarioId) do
+                tell $ MonoidalMap $ singletonMap target $ map setActiveDuringSetup modifiers
+          Just (EffectSkillTestWindow sid) -> do
+            msid <- getSkillTestId
+            when (msid == Just sid) $ tell $ MonoidalMap $ singletonMap target modifiers
+          Just (EffectPhaseWindowFor p) -> do
+            p' <- getPhase
+            when (p == p') $ tell $ MonoidalMap $ singletonMap target modifiers
+          Just (EffectTurnWindow iid) -> do
+            isTurn <- iid <=~> TurnInvestigator
+            when isTurn $ tell $ MonoidalMap $ singletonMap target modifiers
+          _ -> tell $ MonoidalMap $ singletonMap target modifiers
+        _ -> pure ()
+   where
+    getTargets = do
+      case attrs.target of
+        CardMatcherTarget matcher -> selectTargets matcher
+        other -> pure [other]
 
 instance RunMessage WindowModifierEffect where
   runMessage msg (WindowModifierEffect attrs) =

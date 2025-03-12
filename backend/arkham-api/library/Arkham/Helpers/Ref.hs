@@ -134,6 +134,7 @@ targetToSource = \case
   ProxyTarget {} -> error "can not convert"
   StoryTarget code -> StorySource code
   AgendaMatcherTarget _ -> error "can not convert"
+  CardMatcherTarget _ -> error "can not convert"
   CampaignTarget -> CampaignSource
   TarotTarget arcana -> TarotSource arcana
   AbilityTarget _ _ -> error "can not convert"

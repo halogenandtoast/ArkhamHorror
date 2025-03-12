@@ -188,6 +188,17 @@ transfiguration2 =
     , cdLimits = [MaxPerGame 1]
     }
 
+deliverance3 :: CardDef
+deliverance3 =
+  (event "11079" "Deliverance" 0 Mystic)
+    { cdSkills = [#willpower]
+    , cdCardTraits = setFromList [Spirit]
+    , cdLevel = Just 3
+    , cdFastWindow = Just $ MythosStep WhenAllDrawEncounterCard
+    , cdCriteria = Just $ exists $ You <> can.target.encounterDeck
+    , cdLimits = [MaxPerGame 2]
+    }
+
 catch :: CardDef
 catch =
   (event "11086" "\"Catch!\"" 0 Survivor)

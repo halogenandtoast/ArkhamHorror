@@ -14,6 +14,7 @@ import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
 import Arkham.Id
 import Arkham.Matcher.Agenda
+import Arkham.Matcher.Card
 import Arkham.Matcher.Enemy
 import Arkham.Phase
 import Arkham.Tarot
@@ -62,6 +63,7 @@ data Target
   | ProxyTarget Target Target
   | StoryTarget StoryId
   | AgendaMatcherTarget AgendaMatcher
+  | CardMatcherTarget ExtendedCardMatcher
   | CampaignTarget
   | AbilityTarget InvestigatorId Ability
   | BothTarget Target Target

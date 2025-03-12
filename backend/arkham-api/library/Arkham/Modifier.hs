@@ -396,6 +396,7 @@ data ModifierType
   | UIModifier UIModifier
   | BecomeHomunculusWhenDefeated
   | BecomeInvestigator InvestigatorId
+  | DrawsEachEncounterCard
   deriving stock (Show, Eq, Ord, Data)
 
 data UIModifier

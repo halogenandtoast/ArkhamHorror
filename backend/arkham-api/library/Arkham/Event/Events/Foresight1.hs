@@ -1,8 +1,8 @@
-module Arkham.Event.Events.Foresight1 (foresight1, Foresight1 (..)) where
+module Arkham.Event.Events.Foresight1 (foresight1) where
 
 import Arkham.Classes.HasGame
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (cardDrawModifier)
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Modifiers
 import Arkham.Name
@@ -37,7 +37,7 @@ instance RunMessage Foresight1 where
       cardNames <- allCardNames
 
       chooseOneDropDown iid =<< for cardNames \name -> do
-        enabled <- cardDrawModifier attrs iid' [Foresight name]
+        enabled <- cardDrawModifier attrs iid' (Foresight name)
         pure (name, enabled)
       pure e
     _ -> Foresight1 <$> liftRunMessage msg attrs

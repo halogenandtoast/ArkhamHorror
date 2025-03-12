@@ -121,6 +121,7 @@ allPlayerEventCards =
       , decoy
       , deepKnowledge
       , delayTheInevitable
+      , deliverance3
       , delveTooDeep
       , denyExistence
       , denyExistence5

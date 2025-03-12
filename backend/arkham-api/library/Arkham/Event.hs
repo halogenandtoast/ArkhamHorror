@@ -661,6 +661,7 @@ allEvents =
     , SomeEventCard whispersOfDoom
     , SomeEventCard spiritualEcho2
     , SomeEventCard transfiguration2
+    , SomeEventCard deliverance3
     , --- survivor [tdc]
       SomeEventCard catch
     , SomeEventCard unconventionalMethod

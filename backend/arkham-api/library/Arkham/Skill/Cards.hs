@@ -976,7 +976,7 @@ contemplative =
 
 lastChance3 :: CardDef
 lastChance3 =
-  (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild, #wild] Survivor)
+  (skill "11093" "Last Chance" [#wild, #wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
     , cdCardInHandEffects = True

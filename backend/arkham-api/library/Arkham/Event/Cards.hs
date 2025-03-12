@@ -200,6 +200,7 @@ allPlayerEventCards =
       , glimpseTheUnthinkable1
       , glimpseTheUnthinkable5
       , glory
+      , goodWeather2
       , grievousWound
       , grift
       , gritYourTeeth

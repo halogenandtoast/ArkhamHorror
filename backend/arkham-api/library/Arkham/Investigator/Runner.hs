@@ -439,6 +439,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , investigatorDeckUrl = investigatorDeckUrl
         , investigatorKilled = investigatorKilled
         , investigatorDrivenInsane = investigatorDrivenInsane
+        , investigatorSettings = investigatorSettings
         }
   AddDeckBuildingAdjustment iid adjustment | iid == investigatorId -> do
     pure $ a & deckBuildingAdjustmentsL %~ (adjustment :)

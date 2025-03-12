@@ -271,6 +271,7 @@ allPlayerAssetCards =
       , eighteenDerringer
       , eighteenDerringer2
       , elderSignAmulet3
+      , eldritchBrand5
       , eldritchSophist
       , eldritchTongue
       , elinaHarperKnowsTooMuch

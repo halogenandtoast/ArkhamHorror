@@ -42,7 +42,9 @@ data Decklist = Decklist
   , decklistExtraDeck :: [PlayerCard]
   , decklistTaboo :: Maybe TabooList
   , decklistUrl :: Maybe Text
+  , decklistCardAttachments :: Map CardCode [CardCode]
   }
+  deriving stock Show
 
 type Parser = ParsecT Text () Identity
 
@@ -53,16 +55,13 @@ loadDecklist decklist =
     <*> loadExtraDeck decklist
     <*> pure (fromTabooId $ taboo_id decklist)
     <*> pure (url decklist)
+    <*> pure (decklistAttachments decklist)
 
 decklistInvestigatorId :: ArkhamDBDecklist -> InvestigatorId
-decklistInvestigatorId decklist = case meta decklist of
-  Nothing -> investigator_code decklist
-  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
-    Nothing -> investigator_code decklist
-    Just ArkhamDBDecklistMeta {..} ->
-      if alternate_front == ""
-        then investigator_code decklist
-        else alternate_front
+decklistInvestigatorId decklist = fromMaybe (investigator_code decklist) do
+  meta' <- meta decklist
+  ArkhamDBDecklistMeta{alternate_front} <- decode (encodeUtf8 $ fromStrict meta')
+  guard (alternate_front /= Just "") *> alternate_front
 
 loadDecklistCards
   :: CardGen m => (ArkhamDBDecklist -> Map CardCode Int) -> ArkhamDBDecklist -> m [PlayerCard]
@@ -92,8 +91,9 @@ loadExtraDeck decklist = case meta decklist of
     _ -> loadDecklistCards sideSlots decklist
   _ -> loadDecklistCards sideSlots decklist
 
-newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
-  { alternate_front :: InvestigatorId
+data ArkhamDBDecklistMeta = ArkhamDBDecklistMeta
+  { alternate_front :: Maybe InvestigatorId
+  , attachments_11080 :: Maybe Text
   }
   deriving stock (Generic, Show)
   deriving anyclass FromJSON
@@ -151,3 +151,15 @@ parseCustomizations = IntMap.fromList <$> sepBy parseEntry (char ',')
     case fromJSON @Trait (String . T.concat . T.words . T.toTitle $ pack t) of
       Success x -> pure $ ChosenTrait x
       _ -> unexpected ("invalid trait: " ++ t)
+
+decklistAttachments :: ArkhamDBDecklist -> Map CardCode [CardCode]
+decklistAttachments decklist = case meta decklist of
+  Nothing -> mempty
+  Just meta' -> case decode (encodeUtf8 $ fromStrict meta') of
+    Nothing -> mempty
+    Just ArkhamDBDecklistMeta {attachments_11080} ->
+      case attachments_11080 of
+        Nothing -> mempty
+        Just s ->
+          let codes = T.splitOn "," s
+           in Map.fromList [(CardCode "11080", map CardCode codes)]

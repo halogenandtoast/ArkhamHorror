@@ -1100,6 +1100,7 @@ allAssets =
     , SomeAssetCard eyeOfGhatanothoaArtifactOfTheDarkGod2
     , SomeAssetCard swordCaneDesignedByTheCouncilOfPolls2
     , SomeAssetCard lostArcana3
+    , SomeAssetCard eldritchBrand5
     , --- survivor [tdc]
       SomeAssetCard anchorChain
     , SomeAssetCard handHook

@@ -1708,6 +1708,9 @@ fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f
 
+cardDrawModifier :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+cardDrawModifier source target modifier = Msg.pushM $ Msg.cardDrawModifier source target modifier
+
 enemyAttackModifier
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 enemyAttackModifier source target modifier = Msg.pushM $ Msg.enemyAttackModifier source target modifier
@@ -1941,6 +1944,7 @@ twice :: ReverseQueue m => m () -> m ()
 twice = repeated 2
 
 repeated :: ReverseQueue m => Int -> m () -> m ()
+repeated 0 = const (pure ())
 repeated n = replicateM_ n
 
 disengageEnemy :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()

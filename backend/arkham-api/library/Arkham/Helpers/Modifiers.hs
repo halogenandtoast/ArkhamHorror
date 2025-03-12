@@ -622,8 +622,8 @@ phaseModifiers
 phaseModifiers source target modifiers = createWindowModifierEffect EffectPhaseWindow source target modifiers
 
 cardDrawModifier
-  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
-cardDrawModifier source target modifiers = createWindowModifierEffect EffectCardDrawWindow source target modifiers
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
+cardDrawModifier source target modifier = createWindowModifierEffect EffectCardDrawWindow source target [modifier]
 
 cardResolutionModifier
   :: (Sourceable source, Targetable target, IsCard card, HasGame m)

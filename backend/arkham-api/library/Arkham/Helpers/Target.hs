@@ -75,6 +75,7 @@ targetTraits = \case
   ChaosTokenFaceTarget _ -> pure mempty
   InvestigationTarget _ _ -> pure mempty
   AgendaMatcherTarget _ -> pure mempty
+  CardMatcherTarget _ -> pure mempty
   CampaignTarget -> pure mempty
   TarotTarget _ -> pure mempty
   AbilityTarget _ _ -> pure mempty

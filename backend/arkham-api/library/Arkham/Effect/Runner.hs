@@ -41,6 +41,8 @@ instance RunMessage EffectAttrs where
       selectOne TheScenario >>= traverse_ \scenarioId ->
         pushWhen (isEndOfWindow a (EffectScenarioSetupWindow scenarioId)) (DisableEffect effectId)
       pure a
+    Begin p | isEndOfWindow a (EffectUntilEndOfNextPhaseWindowFor p) -> do
+      pure $ a {effectWindow = Just $ EffectUntilEndOfPhaseWindowFor p}
     EndPhase | isEndOfWindow a EffectPhaseWindow -> do
       a <$ push (DisableEffect effectId)
     EndPhase -> do

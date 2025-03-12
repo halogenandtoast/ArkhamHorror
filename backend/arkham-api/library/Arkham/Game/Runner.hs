@@ -2028,7 +2028,7 @@ runGameMessage msg g = case msg of
         ]
         <> [phaseStep CheckDoomThresholdStep [AdvanceAgendaIfThresholdSatisfied, afterCheckDoomThreshold]]
         <> [ phaseStep EachInvestigatorDrawsEncounterCardStep [allDrawWindow, AllDrawEncounterCard]
-           | hasEncounterDeck
+           | hasEncounterDeck && SkipMythosPhaseStep EachInvestigatorDrawsEncounterCardStep `notElem` modifiers
            ]
         <> [ phaseStep MythosPhaseWindow [fastWindow]
            , phaseStep
@@ -2045,10 +2045,11 @@ runGameMessage msg g = case msg of
     for_ (reverse investigators) \iid -> push $ ForInvestigator iid AllDrawEncounterCard
     pure g
   ForInvestigator iid AllDrawEncounterCard -> do
+    iid' <- fromMaybe iid <$> selectOne (InvestigatorWithModifier DrawsEachEncounterCard)
     whenM (not <$> isEliminated iid) do
-      player <- getPlayer iid
-      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid GameSource]]
-    pure $ g & activeInvestigatorIdL .~ iid
+      player <- getPlayer iid'
+      push $ chooseOne player [TargetLabel EncounterDeckTarget [drawEncounterCard iid' GameSource]]
+    pure $ g & activeInvestigatorIdL .~ iid'
   EndMythos -> do
     pushAll
       . (: [EndPhase, After EndPhase])

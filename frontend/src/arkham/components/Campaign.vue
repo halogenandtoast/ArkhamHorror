@@ -68,7 +68,7 @@ const questionHash = computed(() => {
     <UpgradeDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="chooseDeck" id="game" class="game">
-    <h2 v-if="questionLabel" class="question-label">{{ questionLabel }}</h2>
+    <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
     <ChooseDeck :game="game" :key="playerId" :playerId="playerId" @choose="choose" />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive'" id="game" class="game">

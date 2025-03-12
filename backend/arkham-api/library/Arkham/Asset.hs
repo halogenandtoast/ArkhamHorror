@@ -1112,6 +1112,9 @@ allAssets =
     , --- survivor [tdc]
       SomeAssetCard ascetic
     , SomeAssetCard spiritualHealing4
+    , --- specialist [tdc]
+      SomeAssetCard libraryPass1
+    , SomeAssetCard libraryPass5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

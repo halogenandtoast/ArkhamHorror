@@ -481,6 +481,8 @@ allPlayerAssetCards =
       , leoDeLuca
       , leoDeLuca1
       , libraryDocent1
+      , libraryPass1
+      , libraryPass5
       , lightningGun5
       , liquidCourage
       , liquidCourage1

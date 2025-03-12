@@ -639,4 +639,9 @@ instance RunMessage AssetAttrs where
         Just attached | target == attached -> push $ toDiscard source a
         _ -> pure ()
       pure a
+    PutOnBottomOfDeck iid deck target | a `isTarget` target -> do
+      pushAll
+        $ resolve (RemoveAsset $ toId a)
+        <> [PutCardOnBottomOfDeck iid deck (toCard a)]
+      pure a
     _ -> pure a

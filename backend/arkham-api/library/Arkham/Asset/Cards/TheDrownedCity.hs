@@ -369,7 +369,7 @@ swordCaneDesignedByTheCouncilOfPolls2 =
 
 lostArcana3 :: CardDef
 lostArcana3 =
-  (asset "11074" "Lost Arcana" 3 Mystic)
+  (asset "11078" "Lost Arcana" 3 Mystic)
     { cdCardTraits = setFromList [Item, Tome, Occult]
     , cdSkills = [#willpower, #intellect]
     , cdSlots = [#hand]
@@ -464,4 +464,20 @@ spiritualHealing4 =
     { cdCardTraits = setFromList [Condition, Blessed]
     , cdLevel = Just 4
     , cdDeckRestrictions = [PerDeckLimit 1]
+    }
+
+libraryPass1 :: CardDef
+libraryPass1 =
+  (asset "11099" "Library Pass" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Miskatonic]
+    , cdLevel = Just 1
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
+    }
+
+libraryPass5 :: CardDef
+libraryPass5 =
+  permanent (asset "11118" "Library Pass" 0 Neutral)
+    { cdCardTraits = setFromList [Item, Miskatonic]
+    , cdLevel = Just 5
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
     }

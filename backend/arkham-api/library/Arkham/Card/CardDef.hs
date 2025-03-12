@@ -38,6 +38,7 @@ data DeckRestriction
   | MultiplayerOnly
   | PurchaseAtDeckCreation
   | OnlyClass ClassSymbol
+  | OnlyInvestigatorWithTraits [Trait]
   deriving stock (Show, Eq, Ord, Data)
 
 data AttackOfOpportunityModifier

@@ -271,6 +271,8 @@ allSkills =
     , SomeSkillCard lastChance3
     , --- neutral [tdc]
       SomeSkillCard confidence
+    , --- specialist [tdc]
+      SomeSkillCard dreamsOfTheClay1
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

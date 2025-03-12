@@ -61,6 +61,7 @@ allPlayerSkillCards =
       , diabolicalLuck
       , doubleOrNothing
       , dreamParasite
+      , dreamsOfTheClay1
       , dreamsOfTheDeepTheDeepGate
       , enraptured
       , enraptured2
@@ -988,6 +989,14 @@ confidence =
   (skill "11097" "Confidence" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [ MaxOnePerTest ]
+    }
+
+dreamsOfTheClay1 :: CardDef
+dreamsOfTheClay1 =
+  (skill "11100" "Dreams of the Clay" [#wild] Neutral)
+    { cdCardTraits = setFromList [Innate, Augury]
+    , cdCommitRestrictions = [ OnlySkillTestSource (SourceIsTreacheryEffect AnyTreachery) ]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Clairvoyant, Dreamer, Performer]]
     }
 
 riseToTheOccasion3 :: CardDef

@@ -273,6 +273,7 @@ allSkills =
       SomeSkillCard confidence
     , --- specialist [tdc]
       SomeSkillCard dreamsOfTheClay1
+    , SomeSkillCard inquisitive1
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

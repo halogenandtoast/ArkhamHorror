@@ -83,6 +83,7 @@ allPlayerSkillCards =
       , hatchetMan
       , helpingHand
       , inquiringMind
+      , inquisitive1
       , inspiringPresence
       , inspiringPresence2
       , intrepid
@@ -997,6 +998,13 @@ dreamsOfTheClay1 =
     { cdCardTraits = setFromList [Innate, Augury]
     , cdCommitRestrictions = [ OnlySkillTestSource (SourceIsTreacheryEffect AnyTreachery) ]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Clairvoyant, Dreamer, Performer]]
+    }
+
+inquisitive1 :: CardDef
+inquisitive1 =
+  (skill "11101" "Inquisitive" [#wild] Neutral)
+    { cdCardTraits = setFromList [Innate]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Assistant, Miskatonic, Scholar]]
     }
 
 riseToTheOccasion3 :: CardDef

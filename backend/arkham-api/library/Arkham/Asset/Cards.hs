@@ -361,6 +361,7 @@ allPlayerAssetCards =
       , gearedUp
       , geas2
       , geneBeauregard3
+      , giftOfNodens5
       , gildedVolto
       , girishKadakiaIcpcPunjabDetective4
       , grannyOrne

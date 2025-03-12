@@ -436,6 +436,17 @@ ampleSupplies2 =
     { cdCardTraits = setFromList [Trait.Supply]
     , cdUses = uses Supply 2
     , cdLimits = [LimitPerInvestigator 1]
+    , cdLevel = Just 2
+    }
+
+giftOfNodens5 :: CardDef
+giftOfNodens5 =
+  (asset "11094" "Gift of Nodens" 2 Survivor)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#willpower]
+    , cdLevel = Just 5
+    , cdSlots = [#arcane]
+    , cdUnique = True
     }
 
 ascetic :: CardDef

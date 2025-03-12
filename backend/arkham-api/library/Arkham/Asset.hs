@@ -1108,6 +1108,7 @@ allAssets =
     , SomeAssetCard nauticalCharts
     , SomeAssetCard profaneIdol
     , SomeAssetCard ampleSupplies2
+    , SomeAssetCard giftOfNodens5
     , --- survivor [tdc]
       SomeAssetCard ascetic
     , -- Return to Night of the Zealot

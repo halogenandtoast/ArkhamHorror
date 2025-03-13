@@ -345,6 +345,27 @@ payCost msg c iid skipAdditionalCosts cost = do
               Nothing
               [PaymentAmountChoice choiceId iid 0 maxUpTo name $ pay cost']
           pure c
+    AtLeastOne calc cost' -> do
+      n <- calculate calc
+      if n == 0
+        then pure c
+        else do
+          canAfford <- andM $ map (\a -> getCanAffordCost iid source [a] [] cost') actions
+          maxUpTo <- case cost' of
+            ResourceCost resources -> do
+              availableResources <- getSpendableResources iid
+              pure $ min n (availableResources `div` resources)
+            SealCost matcher -> selectCount matcher
+            _ -> pure n
+          name <- fieldMap InvestigatorName toTitle iid
+          choiceId <- getRandom
+          pushWhen canAfford
+            $ Ask player
+            $ ChoosePaymentAmounts
+              ("Pay " <> displayCostType cost)
+              Nothing
+              [PaymentAmountChoice choiceId iid 1 maxUpTo name $ pay cost']
+          pure c
     DiscardTopOfDeckCost n -> do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
       push $ DiscardTopOfDeck iid n source Nothing

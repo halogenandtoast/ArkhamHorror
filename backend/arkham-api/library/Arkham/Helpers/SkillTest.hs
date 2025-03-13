@@ -701,6 +701,9 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.SkillTestOnAsset assetMatcher -> case st.source.asset of
     Just aid -> elem aid <$> select assetMatcher
     _ -> pure False
+  Matcher.SkillTestOnEvent eventMatcher -> case st.source.event of
+    Just eid -> elem eid <$> select eventMatcher
+    _ -> pure False
   Matcher.WhileAttackingAnEnemy enemyMatcher -> case skillTestAction st of
     Just Action.Fight -> case st.target.enemy of
       Just eid -> elem eid <$> select enemyMatcher

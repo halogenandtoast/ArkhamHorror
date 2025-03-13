@@ -174,6 +174,7 @@ data Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost
   | UpTo GameCalculation Cost
+  | AtLeastOne GameCalculation Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
   | AddFrostTokenCost Int
@@ -466,6 +467,8 @@ displayCostType = \case
     Leyline -> tshow n <> "-" <> tshow m <> " Leylines"
   UpTo (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
   UpTo _ c -> displayCostType c <> " up to X times"
+  AtLeastOne (Fixed n) c -> displayCostType c <> " up to " <> pluralize n "time"
+  AtLeastOne _ c -> displayCostType c <> " up to X times"
   SealCost chaosTokenMatcher -> "Seal " <> toDisplay chaosTokenMatcher
   SealMultiCost n _ -> "Seal " <> tshow n <> " matching tokens"
   SealChaosTokenCost _ -> "Seal token"
@@ -586,6 +589,9 @@ exhaustedPayments = concat . toListOf (cosmos . _ExhaustPayment)
 
 removedPayments :: Payment -> [Target]
 removedPayments = concat . toListOf (cosmos . _RemovePayment)
+
+horrorPaid :: Payment -> Int
+horrorPaid = sumOf (cosmos . _HorrorPayment)
 
 instance HasField "discards" Payment [(Zone, Card)] where
   getField = discardPayments

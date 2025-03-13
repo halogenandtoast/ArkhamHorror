@@ -484,6 +484,16 @@ boundForTheHorizon2 =
     , cdLimits = [LimitPerInvestigator 1]
     }
 
+forbiddenSutra2 :: CardDef
+forbiddenSutra2 =
+  (asset "11103" "Forbidden Sutra" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Tome, Blessed, Cursed]
+    , cdSkills = [#willpower, #wild]
+    , cdLevel = Just 2
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Blessed, Cursed, Sorcerer]]
+    , cdSlots = [#hand]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent (asset "11118" "Library Pass" 0 Neutral)

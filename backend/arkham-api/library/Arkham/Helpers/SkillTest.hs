@@ -774,6 +774,16 @@ onSucceedByEffect
   -> Message
 onSucceedByEffect sid matchr source target msgs = CreateOnSucceedByEffect sid matchr (toSource source) (toTarget target) msgs
 
+onFailedByEffect
+  :: (Sourceable source, Targetable target)
+  => SkillTestId
+  -> ValueMatcher
+  -> source
+  -> target
+  -> [Message]
+  -> Message
+onFailedByEffect sid matchr source target msgs = CreateOnFailedByEffect sid matchr (toSource source) (toTarget target) msgs
+
 onNextTurnEffect
   :: (Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source

@@ -671,6 +671,10 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createOnSucceedByEffect sid matchr source target message
     push $ CreatedEffect effectId Nothing source target
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
+  CreateOnFailedByEffect sid matchr source target message -> do
+    (effectId, effect) <- createOnFailedByEffect sid matchr source target message
+    push $ CreatedEffect effectId Nothing source target
+    pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   CreateOnNextTurnEffect source iid message -> do
     (effectId, effect) <- createOnNextTurnEffect source iid message
     push $ CreatedEffect effectId Nothing source (toTarget iid)

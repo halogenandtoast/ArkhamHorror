@@ -541,6 +541,15 @@ dakotaGarofaloOnTheHunt3 =
     , cdUnique = True
     }
 
+noseToTheGrindstone3 :: CardDef
+noseToTheGrindstone3 =
+  (asset "11111" "Nose to the Grindstone" 2 Neutral)
+    { cdCardTraits = setFromList [Talent]
+    , cdSkills = [#intellect, #intellect]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Drifter, Entrepreneur]]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

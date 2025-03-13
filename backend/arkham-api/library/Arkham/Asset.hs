@@ -1123,6 +1123,7 @@ allAssets =
     , SomeAssetCard noseToTheGrindstone3
     , SomeAssetCard soundSupport3
     , SomeAssetCard trenchArmor3
+    , SomeAssetCard stormRuler4
     , SomeAssetCard libraryPass5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

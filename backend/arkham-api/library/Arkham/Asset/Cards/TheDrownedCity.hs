@@ -519,6 +519,17 @@ captivatingPerformance3 =
     , cdLimits = [LimitPerInvestigator 1]
     }
 
+cowlOfSekhmetCloakOfPharaohs3 :: CardDef
+cowlOfSekhmetCloakOfPharaohs3 =
+  (asset "11109" ("Cowl of Sekhmet" <:> "Cloak of Pharaohs") 2 Neutral)
+    { cdCardTraits = setFromList [Item, Clothing, Relic]
+    , cdSkills = [#willpower]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Believer, Chosen, Cultist]]
+    , cdSlots = [#body]
+    , cdUnique = True
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

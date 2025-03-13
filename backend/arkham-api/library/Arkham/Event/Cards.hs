@@ -289,6 +289,7 @@ allPlayerEventCards =
       , motivationalSpeech
       , mysteriesRemain
       , mystifyingSong
+      , nameYourPrice2
       , narrowEscape
       , natureOfTheBeast1
       , noStoneUnturned

@@ -670,6 +670,8 @@ allEvents =
     , SomeEventCard improvisedWeapon2
     , --- neutral [tdc]
       SomeEventCard shortRest
+    , --- specialist [tdc]
+      SomeEventCard nameYourPrice2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

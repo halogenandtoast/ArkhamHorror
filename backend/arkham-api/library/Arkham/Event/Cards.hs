@@ -288,6 +288,7 @@ allPlayerEventCards =
       , moonlightRitual
       , moonlightRitual2
       , motivationalSpeech
+      , motivationalSpeech4
       , mysteriesRemain
       , mystifyingSong
       , nameYourPrice2

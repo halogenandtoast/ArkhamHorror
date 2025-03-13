@@ -2260,6 +2260,9 @@ forTarget target f =
     [msg] -> push $ ForTarget (toTarget target) msg
     msgs -> push $ ForTarget (toTarget target) (Run msgs)
 
+forTarget_ :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
+forTarget_ target = push . ForTarget (toTarget target)
+
 class (Monad m, ReverseQueue m) => LiftMessage m a where
   liftMessage :: a -> QueueT Message m ()
 

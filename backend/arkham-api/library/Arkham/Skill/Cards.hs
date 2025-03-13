@@ -59,6 +59,7 @@ allPlayerSkillCards =
       , desperateSearch
       , determined
       , diabolicalLuck
+      , doubleDown2
       , doubleOrNothing
       , dreamParasite
       , dreamsOfTheClay1
@@ -1005,6 +1006,14 @@ inquisitive1 =
   (skill "11101" "Inquisitive" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Assistant, Miskatonic, Scholar]]
+    }
+
+doubleDown2 :: CardDef
+doubleDown2 =
+  (skill "11107" "Double Down" [#wild] Neutral)
+    { cdCardTraits = setFromList [Innate]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Entrepreneur, Socialite]]
     }
 
 riseToTheOccasion3 :: CardDef

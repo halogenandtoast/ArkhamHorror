@@ -317,3 +317,14 @@ motivationalSpeech4 =
     , cdLevel = Just 4
     , cdActions = [#parley]
     }
+
+dimensionalVortex5 :: CardDef
+dimensionalVortex5 =
+  (event "11124" "Dimensional Vortex" 2 Neutral)
+    { cdSkills = [#willpower, #combat, #wild]
+    , cdCardTraits = setFromList [Spell]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Performer, Sorcerer]]
+    , cdLevel = Just 5
+    , cdFastWindow = Just $ PhaseBegins #when #investigation
+    , cdCriteria = Just $ exists $ LocationWithEnemy NonEliteEnemy
+    }

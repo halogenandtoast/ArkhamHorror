@@ -340,6 +340,7 @@ allPlayerAssetCards =
       , fluxStabilizerInactive
       , foolishnessFoolishCatOfUlthar
       , forbiddenKnowledge
+      , forbiddenSutra2
       , forbiddenTome
       , forbiddenTomeDarkKnowledge3
       , forbiddenTomeSecretsRevealed3

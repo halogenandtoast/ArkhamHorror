@@ -7,6 +7,7 @@ import Arkham.Matcher.Asset
 import Arkham.Matcher.Card
 import Arkham.Matcher.ChaosToken
 import Arkham.Matcher.Enemy
+import Arkham.Matcher.Event
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Location
 import Arkham.Matcher.Skill
@@ -37,6 +38,7 @@ data SkillTestMatcher
   | SkillTestOnTreachery TreacheryMatcher
   | SkillTestOnLocation LocationMatcher
   | SkillTestOnAsset AssetMatcher
+  | SkillTestOnEvent EventMatcher
   | UsingThis
   | SkillTestOnEncounterCard
   | SkillTestSourceMatches SourceMatcher

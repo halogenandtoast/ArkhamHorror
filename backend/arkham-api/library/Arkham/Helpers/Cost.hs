@@ -82,6 +82,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   ChosenCardCost cid -> selectAny (Matcher.basic $ Matcher.CardWithId cid)
   Free -> pure True
   UpTo {} -> pure True
+  AtLeastOne _ c -> getCanAffordCost_ iid source actions windows' canModify c
   OptionalCost {} -> pure True
   AddCurseTokensEqualToShroudCost -> do
     mloc <- field InvestigatorLocation iid

@@ -30,20 +30,6 @@ instance HasChaosTokenValue JacquelineFine where
     pure $ ChaosTokenValue ElderSign (PositiveModifier 1)
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
-getSteps :: ChaosBagStepState -> [ChaosBagStepState]
-getSteps = \case
-  Resolved {} -> []
-  Decided {} -> []
-  Undecided s -> go s
-  Deciding s -> go s
- where
-  go = \case
-    Draw -> [Undecided Draw]
-    DrawUntil inner -> [Undecided (DrawUntil inner)]
-    Choose {..} -> steps
-    ChooseMatch {..} -> steps
-    ChooseMatchChoice {..} -> steps
-
 -- TODO: ChooseTokenMatch should have matchers that check the token results
 -- and then prompt the user to choose an option rather than having the bag
 -- handle the logic, this should work without changing behavior too much

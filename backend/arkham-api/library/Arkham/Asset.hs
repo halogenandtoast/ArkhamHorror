@@ -1115,6 +1115,7 @@ allAssets =
     , --- specialist [tdc]
       SomeAssetCard libraryPass1
     , SomeAssetCard boundForTheHorizon2
+    , SomeAssetCard forbiddenSutra2
     , SomeAssetCard libraryPass5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

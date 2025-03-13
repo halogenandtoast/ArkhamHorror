@@ -54,3 +54,18 @@ getChaosBagChoice = scenarioFieldMap ScenarioChaosBag chaosBagChoice
 
 getChaosBag :: HasGame m => m ChaosBag
 getChaosBag = scenarioField ScenarioChaosBag
+
+getSteps :: ChaosBagStepState -> [ChaosBagStepState]
+getSteps = \case
+  Resolved {} -> []
+  Decided {} -> []
+  Undecided s -> go s
+  Deciding s -> go s
+ where
+  go = \case
+    Draw -> [Undecided Draw]
+    DrawUntil inner -> [Undecided (DrawUntil inner)]
+    Choose {..} -> steps
+    ChooseMatch {..} -> steps
+    ChooseMatchChoice {..} -> steps
+

@@ -344,10 +344,13 @@ wouldRevealChaosToken =
     _ -> Nothing
 
 getDrawSource :: HasCallStack => [Window] -> Source
-getDrawSource [] = error "No draw source"
-getDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = drawSource
-getDrawSource ((windowType -> Window.WouldRevealChaosTokens drawSource _) : _) = drawSource
-getDrawSource (_ : rest) = getDrawSource rest
+getDrawSource = fromMaybe (error "missing draw source") . getMaybeDrawSource
+
+getMaybeDrawSource :: [Window] -> Maybe Source
+getMaybeDrawSource [] = Nothing
+getMaybeDrawSource ((windowType -> Window.WouldRevealChaosToken drawSource _) : _) = Just drawSource
+getMaybeDrawSource ((windowType -> Window.WouldRevealChaosTokens drawSource _) : _) = Just drawSource
+getMaybeDrawSource (_ : rest) = getMaybeDrawSource rest
 
 enters
   :: (Be investigator InvestigatorMatcher, Be location LocationMatcher)

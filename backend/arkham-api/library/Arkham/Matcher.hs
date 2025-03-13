@@ -126,6 +126,10 @@ instance WithTrait AssetMatcher where
   withTrait = AssetWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait EventMatcher where
+  withTrait = EventWithTrait
+  {-# INLINE withTrait #-}
+
 instance WithTrait EnemyMatcher where
   withTrait = EnemyWithTrait
   {-# INLINE withTrait #-}

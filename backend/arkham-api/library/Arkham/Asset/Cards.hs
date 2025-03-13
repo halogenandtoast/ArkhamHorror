@@ -198,6 +198,7 @@ allPlayerAssetCards =
       , cyclopeanHammer5
       , daisysToteBag
       , daisysToteBagAdvanced
+      , dakotaGarofaloOnTheHunt3
       , damningTestimony
       , danforthBrilliantStudent
       , danforthBrilliantStudentResolute

@@ -30,8 +30,6 @@ instance RunMessage MemoriesOfAnotherLife5 where
               && (def.level == Just 0)
               && not def.permanent
               && isJust def.cost
-              && isNothing def.encounterSet
-              && not (isSignature def)
       let cards =
             filter filterIt
               $ mapMaybe lookupCardDef

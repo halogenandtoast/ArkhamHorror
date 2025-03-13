@@ -24,6 +24,7 @@ oculaObscuraEsotericEyepiece =
     , cdUnique = True
     , cdDeckRestrictions = [Signature "11007", Signature "11008"]
     , cdSlots = [#accessory]
+    , cdLevel = Nothing
     }
 
 violaCase :: CardDef

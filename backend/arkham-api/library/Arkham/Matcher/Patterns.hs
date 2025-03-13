@@ -477,6 +477,13 @@ pattern SuccessfulInvestigation timing who where_ <-
   where
     SuccessfulInvestigation timing who where_ = SkillTestResult timing who (WhileInvestigating where_) (SuccessResult AnyValue)
 
+pattern SuccessfulParley
+  :: Timing -> Who -> WindowMatcher
+pattern SuccessfulParley timing who <-
+  SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
+  where
+    SuccessfulParley timing who = SkillTestResult timing who WhileParleying (SuccessResult AnyValue)
+
 pattern EnemyEntersPlay :: Timing -> EnemyMatcher -> WindowMatcher
 pattern EnemyEntersPlay timing enemyMatcher <- EnemySpawns timing Anywhere enemyMatcher
   where

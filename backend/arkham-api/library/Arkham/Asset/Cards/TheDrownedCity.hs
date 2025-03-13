@@ -4,6 +4,7 @@ import Arkham.Asset.Cards.Import
 import Arkham.Criteria qualified as Criteria
 import Arkham.Keyword qualified as Keyword
 import Arkham.Trait qualified as Trait
+import Arkham.Token qualified as Token
 
 bookOfVerseUnCommonplaceBook :: CardDef
 bookOfVerseUnCommonplaceBook =
@@ -611,4 +612,15 @@ mauserTankgewehrM19185 =
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Hunter, Veteran, Warden]]
     , cdSlots = [#hand, #hand]
     , cdUses = uses Shell 1
+    }
+
+onTheirHeels5 :: CardDef
+onTheirHeels5 =
+  (asset "11120" "On Their Heels" 2 Neutral)
+    { cdCardTraits = setFromList [Talent]
+    , cdSkills = [#intellect, #combat, #wild]
+    , cdLevel = Just 5
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Detective, Hunter, Police, Reporter]]
+    , cdUses = uses Token.Lead 5
+    , cdLimits = [LimitPerInvestigator 1]
     }

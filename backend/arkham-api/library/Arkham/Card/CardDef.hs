@@ -34,6 +34,7 @@ data DeckRestriction
   = Signature InvestigatorId
   | CampaignModeOnly
   | PerDeckLimit Int
+  | PerDeckLimitByTitle Int
   | TraitPerDeckLimit Trait Int
   | MultiplayerOnly
   | PurchaseAtDeckCreation

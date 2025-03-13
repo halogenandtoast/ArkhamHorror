@@ -422,6 +422,7 @@ allPlayerEventCards =
       , transmogrify
       , trialByFire
       , trialByFire3
+      , trueAwakening2
       , trueSurvivor3
       , trusted
       , truthFromFiction

@@ -672,6 +672,7 @@ allEvents =
       SomeEventCard shortRest
     , --- specialist [tdc]
       SomeEventCard nameYourPrice2
+    , SomeEventCard trueAwakening2
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

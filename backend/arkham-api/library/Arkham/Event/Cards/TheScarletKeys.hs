@@ -328,7 +328,7 @@ cleanSneak4 =
             [ youExist (oneOf [can.gain.resources, can.draw.cards])
             , exists
                 (EnemyAt YourLocation <> not_ IsSwarm <> ExhaustedEnemy <> EnemyCanBeDamagedBySource ThisCard)
-            , exists (LocationWithDiscoverableCluesBy You)
+            , exists (YourLocation <> LocationWithDiscoverableCluesBy You)
             ]
     , cdLevel = Just 4
     }

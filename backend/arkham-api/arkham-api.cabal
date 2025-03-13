@@ -2285,6 +2285,7 @@ library
       Arkham.Event.Events.Transmogrify
       Arkham.Event.Events.TrialByFire
       Arkham.Event.Events.TrialByFire3
+      Arkham.Event.Events.TrueAwakening2
       Arkham.Event.Events.TrueSurvivor3
       Arkham.Event.Events.Trusted
       Arkham.Event.Events.TruthFromFiction

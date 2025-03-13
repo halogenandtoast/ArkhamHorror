@@ -1610,6 +1610,18 @@ onSucceedByEffect sid matchr source target f = do
   msgs <- evalQueueT f
   push $ Msg.onSucceedByEffect sid matchr source target msgs
 
+onFailedByEffect
+  :: (ReverseQueue m, Sourceable source, Targetable target)
+  => SkillTestId
+  -> ValueMatcher
+  -> source
+  -> target
+  -> QueueT Message m ()
+  -> m ()
+onFailedByEffect sid matchr source target f = do
+  msgs <- evalQueueT f
+  push $ Msg.onFailedByEffect sid matchr source target msgs
+
 onNextTurnEffect
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source

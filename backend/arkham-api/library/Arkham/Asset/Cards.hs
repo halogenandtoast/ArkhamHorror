@@ -564,6 +564,7 @@ allPlayerAssetCards =
       , nightmareBauble3
       , nineOfRods3
       , nkosiMabatiEnigmaticWarlock3
+      , noseToTheGrindstone3
       , obfuscation
       , obscure2
       , observed4

@@ -270,3 +270,13 @@ shortRest =
                   ]
             ]
     }
+
+nameYourPrice2 :: CardDef
+nameYourPrice2 =
+  (event "11105" "Name Your Price" 20 Neutral)
+    { cdSkills = [#willpower, #agility]
+    , cdCardTraits = setFromList [Favor]
+    , cdCriteria = Just $ exists $ EnemyCanBeDamagedBySource ThisCard <> at_ YourLocation
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Socialite]]
+    , cdActions = [#parley]
+    }

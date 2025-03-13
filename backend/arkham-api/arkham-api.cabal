@@ -2151,6 +2151,7 @@ library
       Arkham.Event.Events.MotivationalSpeech
       Arkham.Event.Events.MysteriesRemain
       Arkham.Event.Events.MystifyingSong
+      Arkham.Event.Events.NameYourPrice2
       Arkham.Event.Events.NarrowEscape
       Arkham.Event.Events.NatureOfTheBeast1
       Arkham.Event.Events.NoStoneUnturned

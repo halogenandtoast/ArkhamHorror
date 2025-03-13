@@ -675,6 +675,7 @@ allEvents =
     , SomeEventCard trueAwakening2
     , SomeEventCard bloodOfKnYan3
     , SomeEventCard motivationalSpeech4
+    , SomeEventCard dimensionalVortex5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeEventCard dynamiteBlast2

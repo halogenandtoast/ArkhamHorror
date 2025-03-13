@@ -111,6 +111,7 @@ import Arkham.Event.Events (
   cheapShot2Effect,
   dawnStar1Effect,
   deliverance3Effect,
+  dimensionalVortex5Effect,
   eideticMemory3Effect,
   explosiveWardEffect,
   exposeWeakness1Effect,
@@ -553,6 +554,7 @@ allEffects =
     , ("10129", SomeEffect bideYourTimeEffect)
     , ("10131", SomeEffect dawnStar1Effect)
     , ("11079", SomeEffect deliverance3Effect)
+    , ("11124", SomeEffect dimensionalVortex5Effect)
     , ("50044", SomeEffect jeremiahPierceEffect)
     , ("52007", SomeEffect $ noop "52007")
     , ("52008", SomeEffect stormOfSpirits3Effect)

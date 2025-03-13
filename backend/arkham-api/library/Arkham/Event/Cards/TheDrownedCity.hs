@@ -307,3 +307,13 @@ bloodOfKnYan3 =
     , cdActions = [#fight]
     , cdLevel = Just 3
     }
+
+motivationalSpeech4 :: CardDef
+motivationalSpeech4 =
+  (event "11116" "Motivational Speech" 0 Neutral)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Spirit]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Civic, Performer, Socialite]]
+    , cdLevel = Just 4
+    , cdActions = [#parley]
+    }

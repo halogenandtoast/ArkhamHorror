@@ -587,4 +587,4 @@ relicOfAgesUnleashTheTimestream =
 -- created via the Intepid Skill
 intrepid :: CardDef
 intrepid =
-  (asset "xintrepid" "Intrepid" 0 Guardian) {cdCardTraits = singleton Innate}
+  (asset "xintrepid" "Intrepid" 0 Guardian) {cdCardTraits = singleton Innate, cdLevel = Nothing}

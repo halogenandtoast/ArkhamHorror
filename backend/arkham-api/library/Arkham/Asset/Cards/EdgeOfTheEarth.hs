@@ -1060,76 +1060,62 @@ takadaHirokoAeroplaneMechanic =
 claypoolsFurs :: CardDef
 claypoolsFurs =
   fast
-    $ (asset "08730" "Claypool's Furs" 2 Neutral)
+    $ (storyAsset "08730" "Claypool's Furs" 2 MemorialsOfTheLost)
       { cdCardTraits = setFromList [Item, Clothing]
       , cdSlots = [#body]
       , cdSkills = [#combat, #wild]
-      , cdEncounterSet = Just MemorialsOfTheLost
-      , cdEncounterSetQuantity = Just 1
       }
 
 collectedWorksOfPoe :: CardDef
 collectedWorksOfPoe =
-  (asset "08731" "Collected Works of Poe" 1 Neutral)
+  (storyAsset "08731" "Collected Works of Poe" 1 MemorialsOfTheLost)
     { cdCardTraits = setFromList [Item, Tome]
     , cdSlots = [#hand]
     , cdUses = uses Charge 3
     , cdSkills = [#willpower, #wild]
-    , cdEncounterSet = Just MemorialsOfTheLost
-    , cdEncounterSetQuantity = Just 1
     }
 
 cookiesCustom32 :: CardDef
 cookiesCustom32 =
   fast
-    $ (asset "08732" "Cookie's Custom .32" 2 Neutral)
+    $ (storyAsset "08732" "Cookie's Custom .32" 2 MemorialsOfTheLost)
       { cdCardTraits = setFromList [Item, Weapon, Firearm]
       , cdSlots = [#hand]
       , cdUses = uses Ammo 2
       , cdSkills = [#combat, #wild]
-      , cdEncounterSet = Just MemorialsOfTheLost
-      , cdEncounterSetQuantity = Just 1
       }
 
 ellsworthsBoots :: CardDef
 ellsworthsBoots =
-  (asset "08734" "Ellsworth's Boots" 2 Neutral)
+  (storyAsset "08734" "Ellsworth's Boots" 2 MemorialsOfTheLost)
     { cdCardTraits = setFromList [Item, Clothing, Footwear]
     , cdSkills = [#agility, #wild]
     , cdLimits = [LimitPerTrait Footwear 1]
-    , cdEncounterSet = Just MemorialsOfTheLost
-    , cdEncounterSetQuantity = Just 1
     }
 
 kenslersLog :: CardDef
 kenslersLog =
   fast
-    $ (asset "08735" "Kensler's Log" 2 Neutral)
+    $ (storyAsset "08735" "Kensler's Log" 2 MemorialsOfTheLost)
       { cdCardTraits = setFromList [Item, Tome]
       , cdSkills = [#intellect, #wild]
       , cdSlots = [#hand]
-      , cdEncounterSet = Just MemorialsOfTheLost
-      , cdEncounterSetQuantity = Just 1
       }
 
 sinhasMedicalKit :: CardDef
 sinhasMedicalKit =
   fast
-    $ (asset "08736" "Sinha's Medical Kit" 1 Neutral)
+    $ (storyAsset "08736" "Sinha's Medical Kit" 1 MemorialsOfTheLost)
       { cdCardTraits = setFromList [Item, Science]
       , cdSkills = [#willpower, #wild]
       , cdUses = uses Supply 3
-      , cdEncounterSet = Just MemorialsOfTheLost
-      , cdEncounterSetQuantity = Just 1
       }
 
 anyuFaithfulCompanion :: CardDef
 anyuFaithfulCompanion =
-  (asset "08738" ("Anyu" <:> "Faithful Companion") 3 Neutral)
+  (storyAsset "08738" ("Anyu" <:> "Faithful Companion") 3 MemorialsOfTheLost)
     { cdCardTraits = setFromList [Ally, Creature]
     , cdSkills = [#agility, #wild]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdEncounterSet = Just MemorialsOfTheLost
-    , cdEncounterSetQuantity = Just 1
     }

@@ -174,6 +174,7 @@ misdirection2 =
     , cdCardTraits = setFromList [Ritual]
     , cdLimits = [LimitPerInvestigator 1]
     , cdKeywords = setFromList [seal $ oneOf @ChaosTokenMatcher [#"0", #"+1"]]
+    , cdLevel = Just 2
     }
 
 scientificStudiesGrant2 :: CardDef
@@ -182,6 +183,7 @@ scientificStudiesGrant2 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Grant]
     , cdLimits = [LimitPerInvestigator 1]
+    , cdLevel = Just 2
     }
 
 dialOfAncientsSignsOfCataclysm4 :: CardDef
@@ -263,6 +265,7 @@ mobConnections2 =
   (asset "11059" "Mob Connections" 1 Rogue)
     { cdCardTraits = setFromList [Connection, Illicit]
     , cdKeywords = setFromList [Keyword.Exceptional]
+    , cdLevel = Just 2
     }
 
 obscure2 :: CardDef
@@ -272,6 +275,7 @@ obscure2 =
     , cdCardTraits = setFromList [Ritual]
     , cdLimits = [LimitPerInvestigator 1]
     , cdKeywords = setFromList [seal $ chaosToken_ #"0"]
+    , cdLevel = Just 2
     }
 
 robertCastaigneStillHasYourBack4 :: CardDef
@@ -359,6 +363,7 @@ eyeOfGhatanothoaArtifactOfTheDarkGod2 =
     , cdSlots = [#accessory]
     , cdUnique = True
     , cdKeywords = setFromList [Keyword.Exceptional]
+    , cdLevel = Just 2
     }
 
 swordCaneDesignedByTheCouncilOfPolls2 :: CardDef
@@ -368,6 +373,7 @@ swordCaneDesignedByTheCouncilOfPolls2 =
       { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
       , cdSkills = [#combat, #agility]
       , cdSlots = [#hand]
+      , cdLevel = Just 2
       }
 
 lostArcana3 :: CardDef

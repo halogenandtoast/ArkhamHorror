@@ -411,6 +411,7 @@ uncageTheSoul3 =
             , InDiscardOf You <> basic (oneOf [#spell, #ritual])
             , CardIsAsset $ AssetControlledBy You <> oneOf [#spell, #ritual]
             ]
+    , cdLevel = Just 3
     }
 
 makeshiftTrap :: CardDef

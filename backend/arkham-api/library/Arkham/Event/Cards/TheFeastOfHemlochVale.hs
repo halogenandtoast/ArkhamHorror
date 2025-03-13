@@ -195,6 +195,7 @@ uncannyGrowth =
           , Keyword.Bonded 1 "10060"
           , Keyword.Bonded 1 "10061"
           ]
+    , cdLevel = Nothing
     }
 
 controlVariable :: CardDef
@@ -346,6 +347,7 @@ snitch2 =
         Just
           $ exists (LocationWithDiscoverableCluesBy You <> oneOf [YourLocation, ConnectedFrom YourLocation])
     , cdTags = ["parley"]
+    , cdLevel = Just 2
     }
 
 dirtyDeeds3 :: CardDef
@@ -385,6 +387,7 @@ abyssalRot =
     { cdCardTraits = setFromList [Spell, Rot, Cursed]
     , cdCost = Nothing
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    , cdLevel = Nothing
     }
 
 aemberRot :: CardDef
@@ -393,6 +396,7 @@ aemberRot =
     { cdCardTraits = setFromList [Spell, Rot, Cursed]
     , cdCost = Nothing
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    , cdLevel = Nothing
     }
 
 putrescentRot :: CardDef
@@ -401,6 +405,7 @@ putrescentRot =
     { cdCardTraits = setFromList [Spell, Rot, Cursed]
     , cdCost = Nothing
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    , cdLevel = Nothing
     }
 
 scarletRot :: CardDef
@@ -409,6 +414,7 @@ scarletRot =
     { cdCardTraits = setFromList [Spell, Rot, Cursed]
     , cdCost = Nothing
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    , cdLevel = Nothing
     }
 
 virescentRot :: CardDef
@@ -417,6 +423,7 @@ virescentRot =
     { cdCardTraits = setFromList [Spell, Rot, Cursed]
     , cdCost = Nothing
     , cdKeywords = setFromList [Keyword.Bonded 1 "10085", Keyword.Bonded 1 "10098"]
+    , cdLevel = Nothing
     }
 
 antediluvianHymn :: CardDef
@@ -455,6 +462,7 @@ callTheBeyond2 =
                       [IgnoreActionCost]
                   ]
             )
+    , cdLevel = Just 2
     }
 
 etherealForm2 :: CardDef
@@ -463,6 +471,7 @@ etherealForm2 =
     { cdSkills = [#willpower, #agility, #wild]
     , cdActions = [#evade]
     , cdCardTraits = setFromList [Spell]
+    , cdLevel = Just 2
     }
 
 readTheSigns2 :: CardDef
@@ -471,6 +480,7 @@ readTheSigns2 =
     { cdSkills = [#willpower, #intellect, #wild]
     , cdActions = [#investigate]
     , cdCardTraits = setFromList [Spell]
+    , cdLevel = Just 2
     }
 
 spectralRazor2 :: CardDef
@@ -481,6 +491,7 @@ spectralRazor2 =
     , cdActions = [#fight]
     , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
+    , cdLevel = Just 2
     }
 
 etherealWeaving3 :: CardDef
@@ -491,6 +502,7 @@ etherealWeaving3 =
     , cdAdditionalCost = Just (ActionCost 1)
     , cdCriteria =
         Just $ Criteria.PlayableCardExistsWithCostReduction (Reduce 1) $ InHandOf ForPlay You <> #spell <> #event
+    , cdLevel = Just 3
     }
 
 -- We need to include the token pool because after this skill test the tokens
@@ -509,6 +521,7 @@ sealOfTheElders5 =
             , SkillTestWithRevealedChaosTokenCount 2 (IncludeTokenPool #bless)
             ]
     , cdBondedWith = [(1, "10106"), (1, "10107")]
+    , cdLevel = Just 5
     }
 
 elaborateDistraction :: CardDef
@@ -588,4 +601,5 @@ dawnStar1 =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Ritual, Blessed]
     , cdFastWindow = Just $ RevealChaosTokensDuringSkillTest #after Anyone SkillTestAtYourLocation #curse
+    , cdLevel = Just 1
     }

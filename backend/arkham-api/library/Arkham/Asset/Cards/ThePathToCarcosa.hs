@@ -534,4 +534,4 @@ thePallidMask =
 
 courage :: CardDef
 courage =
-  (asset "xcourage" "Courage" 0 Neutral) {cdCardTraits = singleton Courage}
+  (asset "xcourage" "Courage" 0 Neutral) {cdCardTraits = singleton Courage, cdLevel = Nothing}

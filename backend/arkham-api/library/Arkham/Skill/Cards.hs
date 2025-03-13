@@ -97,6 +97,7 @@ allPlayerSkillCards =
       , longShot
       , manualDexterity
       , manualDexterity2
+      , memoriesOfAnotherLife5
       , mesmericInfluence1
       , momentum1
       , nauticalProwess
@@ -1014,6 +1015,13 @@ doubleDown2 =
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Entrepreneur, Socialite]]
+    }
+
+memoriesOfAnotherLife5 :: CardDef
+memoriesOfAnotherLife5 =
+  (skill "11125" "Memories of Another Life" [#wild, #wild] Neutral)
+    { cdCardTraits = setFromList [Innate]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Believer, Dreamer, Sorcerer]]
     }
 
 riseToTheOccasion3 :: CardDef

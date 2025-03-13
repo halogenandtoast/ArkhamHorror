@@ -171,6 +171,15 @@ data CardDef = CardDef
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where
   getField = cdAttackOfOpportunityModifiers
 
+instance HasField "permanent" CardDef Bool where
+  getField = cdPermanent
+
+instance HasField "level" CardDef (Maybe Int) where
+  getField = cdLevel
+
+instance HasField "kind" CardDef CardType where
+  getField = cdCardType
+
 instance HasField "meta" CardDef (Map Text Value) where
   getField = cdMeta
 
@@ -191,6 +200,12 @@ instance HasField "keywords" CardDef (Set Keyword) where
 
 instance HasField "printedCost" CardDef Int where
   getField = maybe 0 toPrintedCost . cdCost
+
+instance HasField "cost" CardDef (Maybe CardCost) where
+  getField = cdCost
+
+instance HasField "encounterSet" CardDef (Maybe EncounterSet) where
+  getField = cdEncounterSet
 
 instance HasField "cardCode" CardDef CardCode where
   getField = cdCardCode

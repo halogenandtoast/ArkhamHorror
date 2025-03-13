@@ -586,6 +586,7 @@ allPlayerAssetCards =
       , oldShotgun2
       , oliveMcBride
       , oliveMcBride2
+      , onTheirHeels5
       , onYourOwn3
       , onYourOwn3_Exceptional
       , onyxPentacle

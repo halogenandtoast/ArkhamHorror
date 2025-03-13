@@ -286,6 +286,7 @@ data WindowType
   | SuccessfulAttackEnemy InvestigatorId Source EnemyId Int
   | SuccessfulEvadeEnemy InvestigatorId EnemyId Int
   | SuccessfulInvestigation InvestigatorId LocationId
+  | SuccessfulParley InvestigatorId
   | TakeDamage Source DamageEffect Target Int
   | TakeHorror Source Target
   | TookControlOfAsset InvestigatorId AssetId

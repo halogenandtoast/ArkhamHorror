@@ -857,6 +857,7 @@ allPlayerAssetCards =
       , violaCase
       , virgilGray
       , vowOfDrzytelech
+      , walterFitzpatrickPlayingBothSides2
       , wavewornIdol
       , wellConnected
       , wellConnected3

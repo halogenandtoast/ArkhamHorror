@@ -494,6 +494,17 @@ forbiddenSutra2 =
     , cdSlots = [#hand]
     }
 
+walterFitzpatrickPlayingBothSides2 :: CardDef
+walterFitzpatrickPlayingBothSides2 =
+  (asset "11104" ("Walter Fitzpatrick" <:> "Playing Both Sides") 3 Neutral)
+    { cdCardTraits = setFromList [Ally, Patron, SilverTwilight]
+    , cdSkills = [#willpower, #intellect]
+    , cdLevel = Just 2
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Civic, SilverTwilight, Socialite]]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent (asset "11118" "Library Pass" 0 Neutral)

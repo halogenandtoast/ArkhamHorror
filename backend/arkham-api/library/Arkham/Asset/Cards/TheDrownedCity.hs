@@ -560,6 +560,16 @@ soundSupport3 =
     , cdLimits = [LimitPerInvestigator 1]
     }
 
+trenchArmor3 :: CardDef
+trenchArmor3 =
+  (asset "11113" "Trench Armor" 2 Neutral)
+    { cdCardTraits = setFromList [Item, Armor]
+    , cdSkills = [#willpower, #combat, #combat]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Agency, Police, Veteran]]
+    , cdSlots = [#body]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

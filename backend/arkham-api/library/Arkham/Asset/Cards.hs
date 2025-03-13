@@ -835,6 +835,7 @@ allPlayerAssetCards =
       , toothOfEztli
       , trackShoes
       , treasureHunter1
+      , trenchArmor3
       , trenchCoat
       , trenchKnife
       , triggerMan3

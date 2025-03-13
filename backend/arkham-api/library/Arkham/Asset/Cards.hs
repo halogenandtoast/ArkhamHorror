@@ -735,6 +735,7 @@ allPlayerAssetCards =
       , songOfTheDead2
       , sophieInLovingMemory
       , sophieItWasAllMyFault
+      , soundSupport3
       , soulSanctification3
       , spareParts
       , sparrowMaskTheWanderersCompanion

@@ -179,6 +179,12 @@ getAbilitiesForTurn attrs = do
   applyModifier (FewerActions m) n = max 0 (n - m)
   applyModifier _ n = n
 
+canDiscoverCluesAtYourLocation :: HasGame m => IsInvestigate -> InvestigatorId -> m Bool
+canDiscoverCluesAtYourLocation isInvestigate iid = do
+  getMaybeLocation iid >>= \case
+    Nothing -> pure False
+    Just lid -> getCanDiscoverClues isInvestigate iid lid
+
 getCanDiscoverClues
   :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
 getCanDiscoverClues isInvestigation iid lid = do

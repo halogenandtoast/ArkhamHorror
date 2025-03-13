@@ -280,3 +280,18 @@ nameYourPrice2 =
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Socialite]]
     , cdActions = [#parley]
     }
+
+trueAwakening2 :: CardDef
+trueAwakening2 =
+  (event "11106" "True Awakening" 0 Neutral)
+    { cdSkills = [#wild]
+    , cdCardTraits = setFromList [Insight, Spirit]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Blessed, Chosen, Drifter]]
+    , cdCriteria =
+        Just
+          $ oneOf
+            [ youExist can.draw.cards
+            , exists $ oneOf [HealableInvestigator ThisCard kind You | kind <- [#damage, #horror]]
+            , exists $ YourLocation <> LocationWithDiscoverableCluesBy You
+            ]
+    }

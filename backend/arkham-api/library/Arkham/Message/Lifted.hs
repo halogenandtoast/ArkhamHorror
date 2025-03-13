@@ -48,7 +48,7 @@ import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.ChaosToken qualified as Msg
 import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
+import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf, canDiscoverCluesAtYourLocation)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
@@ -1889,9 +1889,8 @@ healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource s
 discoverAtYourLocation
   :: (ReverseQueue m, Sourceable source) => IsInvestigate -> InvestigatorId -> source -> Int -> m ()
 discoverAtYourLocation isInvestigate iid s n = do
-  withLocationOf iid \loc -> do
-    whenM (getCanDiscoverClues isInvestigate iid loc) do
-      push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
+  whenM (canDiscoverCluesAtYourLocation isInvestigate iid) do
+    push $ Msg.DiscoverClues iid $ Msg.discoverAtYourLocation s n
 
 discoverAtYourLocationAndThen
   :: (ReverseQueue m, Sourceable source)

@@ -29,6 +29,7 @@ data Token
   | LostSoul
   | Offering
   | Resource
+  | Shell
   | Secret
   | Supply
   | Suspicion

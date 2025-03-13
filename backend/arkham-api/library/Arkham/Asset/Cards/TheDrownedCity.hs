@@ -530,6 +530,17 @@ cowlOfSekhmetCloakOfPharaohs3 =
     , cdUnique = True
     }
 
+dakotaGarofaloOnTheHunt3 :: CardDef
+dakotaGarofaloOnTheHunt3 =
+  (asset "11110" ("Dakota Garofalo" <:> "On the Hunt") 4 Neutral)
+    { cdCardTraits = setFromList [Ally, Hunter, Wayfarer]
+    , cdSkills = [#willpower, #combat]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Detective, Hunter, Wayfarer]]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

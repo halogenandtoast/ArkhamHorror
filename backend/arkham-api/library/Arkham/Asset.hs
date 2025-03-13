@@ -1122,6 +1122,7 @@ allAssets =
     , SomeAssetCard dakotaGarofaloOnTheHunt3
     , SomeAssetCard noseToTheGrindstone3
     , SomeAssetCard soundSupport3
+    , SomeAssetCard trenchArmor3
     , SomeAssetCard libraryPass5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]

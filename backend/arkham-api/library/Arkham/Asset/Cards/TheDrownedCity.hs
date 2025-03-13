@@ -581,6 +581,18 @@ stormRuler4 =
     , cdUnique = True
     }
 
+archibaldMacVeighBeleaguredLecturer5 :: CardDef
+archibaldMacVeighBeleaguredLecturer5 =
+  (asset "11117" ("Archibald MacVeigh" <:> "Beleagured Lecturer") 4 Neutral)
+    { cdCardTraits = setFromList [Ally]
+    , cdSkills = [#intellect, #wild]
+    , cdLevel = Just 5
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Assistant, Reporter, Scholar]]
+    , cdSlots = [#ally]
+    , cdUnique = True
+    , cdUses = uses Secret 4
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

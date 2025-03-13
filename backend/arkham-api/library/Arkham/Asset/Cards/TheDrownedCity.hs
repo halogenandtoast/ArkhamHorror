@@ -570,6 +570,17 @@ trenchArmor3 =
     , cdSlots = [#body]
     }
 
+stormRuler4 :: CardDef
+stormRuler4 =
+  (asset "11115" "Storm Ruler" 3 Neutral)
+    { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+    , cdSkills = [#willpower, #combat]
+    , cdLevel = Just 4
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Blessed, Clairvoyant, Sorcerer]]
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

@@ -753,6 +753,7 @@ allPlayerAssetCards =
       , stealth
       , stealth3
       , stickToThePlan3
+      , stormRuler4
       , strangeSolution
       , strangeSolutionAcidicIchor4
       , strangeSolutionEmpoweringElixir4

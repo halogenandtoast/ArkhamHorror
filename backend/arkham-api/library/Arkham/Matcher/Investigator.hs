@@ -59,6 +59,7 @@ data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InVehicleMatching AssetMatcher
   | IsDriverOf AssetMatcher
+  | CanTakeUntakenAction
   | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode

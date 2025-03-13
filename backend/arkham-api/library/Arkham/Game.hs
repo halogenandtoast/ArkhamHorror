@@ -954,6 +954,23 @@ getInvestigatorsMatching matcher = do
       _ -> pure False
     IsDriverOf am -> flip filterM as \a -> do
       anyM (fieldMap AssetDriver (== Just a.id)) =<< select am
+    CanTakeUntakenAction -> do
+      flip filterM as \a -> do
+        let iid = toId a
+        taken <- nub . concat <$> field InvestigatorActionsTaken iid
+        let allowed = filter (`notElem` taken) [minBound ..]
+        actions <- Helpers.withGrantedAction iid (toAttrs a) do
+          filter (\x -> any (abilityIs x) allowed) <$> getActions iid (Window.defaultWindows iid)
+        (resourceOk, drawOk) <- Helpers.withModifiersOf iid (toAttrs a) [ActionCostOf IsAnyAction (-1)] do
+          (,)
+            <$> andM [pure $ #resource `elem` allowed, canDo iid #resource, getCanAfford (toAttrs a) [#resource]]
+            <*> andM [pure $ #draw `elem` allowed, canDo iid #draw, getCanAfford (toAttrs a) [#draw]]
+        playOk <- andM [pure $ #play `elem` allowed, canDo iid #play]
+        playableCards <- if playOk
+          then filterCards (not_ FastCard) <$> getPlayableCards (toAttrs a) (UnpaidCost NoAction) (Window.defaultWindows iid)
+          else pure []
+
+        pure $ notNull actions || notNull playableCards || resourceOk || drawOk
     InvestigatorMatches xs -> foldM go as xs
     AnyInvestigator xs -> do
       as' <- traverse (go as) xs

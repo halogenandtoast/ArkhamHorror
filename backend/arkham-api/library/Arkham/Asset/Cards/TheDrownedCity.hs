@@ -550,6 +550,16 @@ noseToTheGrindstone3 =
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Drifter, Entrepreneur]]
     }
 
+soundSupport3 :: CardDef
+soundSupport3 =
+  (asset "11112" "Sound Support" 2 Neutral)
+    { cdCardTraits = setFromList [Talent]
+    , cdSkills = [#willpower, #willpower]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Assistant, Medic, Warden]]
+    , cdLimits = [LimitPerInvestigator 1]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
   permanent

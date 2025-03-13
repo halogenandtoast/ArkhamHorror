@@ -68,6 +68,7 @@ allPlayerEventCards =
       , blindingLight2
       , bloodEclipse1
       , bloodEclipse3
+      , bloodOfKnYan3
       , bloodRite
       , bloodWillHaveBlood2
       , bolas

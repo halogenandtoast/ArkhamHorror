@@ -279,6 +279,7 @@ nameYourPrice2 =
     , cdCriteria = Just $ exists $ EnemyCanBeDamagedBySource ThisCard <> at_ YourLocation
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Socialite]]
     , cdActions = [#parley]
+    , cdLevel = Just 2
     }
 
 trueAwakening2 :: CardDef
@@ -294,4 +295,15 @@ trueAwakening2 =
             , exists $ oneOf [HealableInvestigator ThisCard kind You | kind <- [#damage, #horror]]
             , exists $ YourLocation <> LocationWithDiscoverableCluesBy You
             ]
+    , cdLevel = Just 2
+    }
+
+bloodOfKnYan3 :: CardDef
+bloodOfKnYan3 =
+  (event "11114" "Blood of K'n-yan" 2 Neutral)
+    { cdSkills = [#willpower, #combat]
+    , cdCardTraits = setFromList [Spell]
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Clairvoyant, Hunter, Sorcerer]]
+    , cdActions = [#fight]
+    , cdLevel = Just 3
     }

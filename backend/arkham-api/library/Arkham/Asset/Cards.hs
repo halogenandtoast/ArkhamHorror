@@ -151,6 +151,7 @@ allPlayerAssetCards =
       , burglary2
       , butterflySwords2
       , butterflySwords5
+      , captivatingPerformance3
       , catBurglar1
       , catMaskTheCapriciousMeddler
       , celaenoFragments

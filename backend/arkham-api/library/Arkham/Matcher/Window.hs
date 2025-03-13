@@ -55,6 +55,7 @@ data WindowMatcher
   | AddedToVictory Timing CardMatcher
   | PerformAction Timing Who ActionMatcher
   | PerformedSameTypeOfAction Timing Who ActionMatcher
+  | PerformedDifferentTypesOfActionsInARow Timing Who Int ActionMatcher
   | DrawingStartingHand Timing Who
   | InvestigatorDefeated Timing DefeatedByMatcher Who
   | InvestigatorWouldBeDefeated Timing DefeatedByMatcher Who

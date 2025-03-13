@@ -167,6 +167,16 @@ instance RunMessage Investigator where
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
+longestUniqueStreak :: (Ord a) => [[a]] -> [[a]]
+longestUniqueStreak = go []
+  where
+    go uniq [] = uniq
+    go uniq (xs : xss) = 
+      let seen = mconcat uniq
+      in if any (`notElem` seen) xs
+        then go (xs : uniq) xss
+        else go [] xss
+
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case
   Zone.FromDeck -> Just $ Deck.toDeck iid
@@ -3365,10 +3375,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   TakenActions iid actions | iid == investigatorId -> do
     let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
     let duplicated = actions `List.intersect` previous
+    let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
 
     when (notNull duplicated)
       $ pushM
       $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
+
+    when (length streak > 1)
+      $ pushM
+      $ checkWindows [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) (nub $ concat streak))]
 
     when (#parley `elem` actions && #parley `notElem` previous)
       $ pushM

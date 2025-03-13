@@ -83,12 +83,13 @@ bulwark2 =
     }
 
 lockedAndLoaded3 :: CardDef
-lockedAndLoaded3 = permanent
-  (asset "11030" "Locked and Loaded" 0 Guardian)
-    { cdCardTraits = setFromList [Condition]
-    , cdLevel = Just 3
-    , cdDeckRestrictions = [PerDeckLimit 1]
-    }
+lockedAndLoaded3 =
+  permanent
+    (asset "11030" "Locked and Loaded" 0 Guardian)
+      { cdCardTraits = setFromList [Condition]
+      , cdLevel = Just 3
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      }
 
 remingtonModel18584 :: CardDef
 remingtonModel18584 =
@@ -361,11 +362,12 @@ eyeOfGhatanothoaArtifactOfTheDarkGod2 =
 
 swordCaneDesignedByTheCouncilOfPolls2 :: CardDef
 swordCaneDesignedByTheCouncilOfPolls2 =
-  fast (asset "11074" ("Sword Cane" <:> "Designed by the Council of Polls") 2 Mystic)
-    { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
-    , cdSkills = [#combat, #agility]
-    , cdSlots = [#hand]
-    }
+  fast
+    (asset "11074" ("Sword Cane" <:> "Designed by the Council of Polls") 2 Mystic)
+      { cdCardTraits = setFromList [Item, Relic, Weapon, Melee]
+      , cdSkills = [#combat, #agility]
+      , cdSlots = [#hand]
+      }
 
 lostArcana3 :: CardDef
 lostArcana3 =
@@ -379,11 +381,12 @@ lostArcana3 =
 
 eldritchBrand5 :: CardDef
 eldritchBrand5 =
-  permanent (asset "11080" "Eldritch Brand" 0 Mystic)
-    { cdCardTraits = setFromList [Pact]
-    , cdExceptional = True
-    , cdLevel = Just 5
-    }
+  permanent
+    (asset "11080" "Eldritch Brand" 0 Mystic)
+      { cdCardTraits = setFromList [Pact]
+      , cdExceptional = True
+      , cdLevel = Just 5
+      }
 
 anchorChain :: CardDef
 anchorChain =
@@ -460,11 +463,12 @@ ascetic =
 
 spiritualHealing4 :: CardDef
 spiritualHealing4 =
-  permanent $ (asset "11098" "Spiritual Healing" 0 Neutral)
-    { cdCardTraits = setFromList [Condition, Blessed]
-    , cdLevel = Just 4
-    , cdDeckRestrictions = [PerDeckLimit 1]
-    }
+  permanent
+    $ (asset "11098" "Spiritual Healing" 0 Neutral)
+      { cdCardTraits = setFromList [Condition, Blessed]
+      , cdLevel = Just 4
+      , cdDeckRestrictions = [PerDeckLimit 1]
+      }
 
 libraryPass1 :: CardDef
 libraryPass1 =
@@ -505,10 +509,21 @@ walterFitzpatrickPlayingBothSides2 =
     , cdUnique = True
     }
 
+captivatingPerformance3 :: CardDef
+captivatingPerformance3 =
+  (asset "11108" "Captivating Performance" 3 Neutral)
+    { cdCardTraits = setFromList [Ritual]
+    , cdSkills = [#willpower, #wild]
+    , cdLevel = Just 3
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Dreamer, Performer, Sorcerer]]
+    , cdLimits = [LimitPerInvestigator 1]
+    }
+
 libraryPass5 :: CardDef
 libraryPass5 =
-  permanent (asset "11118" "Library Pass" 0 Neutral)
-    { cdCardTraits = setFromList [Item, Miskatonic]
-    , cdLevel = Just 5
-    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
-    }
+  permanent
+    (asset "11118" "Library Pass" 0 Neutral)
+      { cdCardTraits = setFromList [Item, Miskatonic]
+      , cdLevel = Just 5
+      , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
+      }

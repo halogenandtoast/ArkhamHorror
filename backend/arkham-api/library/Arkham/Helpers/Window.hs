@@ -1269,6 +1269,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.PerformedSameTypeOfAction iid' actions ->
         andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
+    Matcher.PerformedDifferentTypesOfActionsInARow timing whoMatcher n actionMatcher -> guardTiming timing $ \case
+      Window.PerformedDifferentTypesOfActionsInARow iid' m actions | m >= n ->
+        andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
+      _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is
       -- only meant to have a When window

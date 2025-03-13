@@ -275,6 +275,7 @@ allSkills =
       SomeSkillCard dreamsOfTheClay1
     , SomeSkillCard inquisitive1
     , SomeSkillCard doubleDown2
+    , SomeSkillCard memoriesOfAnotherLife5
     , -- Return to the Dunwich Legacy
       --- survivor [rtdwl]
       SomeSkillCard riseToTheOccasion3

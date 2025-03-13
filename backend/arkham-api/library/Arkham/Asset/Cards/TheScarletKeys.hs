@@ -577,6 +577,7 @@ baseballBat2 =
     { cdSkills = [#combat, #combat]
     , cdCardTraits = setFromList [Item, Weapon, Melee]
     , cdSlots = [#hand, #hand]
+    , cdLevel = Just 2
     }
 
 katjaEastbankKeeperOfEsotericLore2 :: CardDef

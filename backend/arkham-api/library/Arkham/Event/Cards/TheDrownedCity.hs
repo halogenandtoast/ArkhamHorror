@@ -62,6 +62,7 @@ quickShot3 =
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard
     , cdFastWindow = Just $ DuringTurn You
     , cdCardInHandEffects = True
+    , cdLevel = Just 3
     }
 
 correlateAllItsContents :: CardDef
@@ -78,6 +79,7 @@ cosmicRevelation1 =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Insight, Spell]
     , cdCriteria = Just $ exists $ investigator_ can.reveal.cards
+    , cdLevel = Just 1
     }
 
 workingAHunch2 :: CardDef

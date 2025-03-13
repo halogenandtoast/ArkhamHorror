@@ -377,6 +377,7 @@ rodOfCarnamagosScepterOfTheMadSeer2 =
     , cdCardTraits = setFromList [Item, Relic, Occult, Cursed]
     , cdSlots = [#hand]
     , cdBondedWith = [(1, "10086"), (1, "10087"), (1, "10088"), (1, "10089"), (1, "10090")]
+    , cdLevel = Just 2
     }
 
 theKeyOfSolomonSecretsOfTheUnknown4 :: CardDef
@@ -464,6 +465,7 @@ fireAxe2 =
       { cdSkills = [#combat, #combat]
       , cdCardTraits = setFromList [Item, Weapon, Melee]
       , cdSlots = [#hand]
+      , cdLevel = Just 2
       }
 
 huntingJacket2 :: CardDef

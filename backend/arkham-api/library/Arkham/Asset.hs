@@ -1126,6 +1126,7 @@ allAssets =
     , SomeAssetCard stormRuler4
     , SomeAssetCard archibaldMacVeighBeleaguredLecturer5
     , SomeAssetCard libraryPass5
+    , SomeAssetCard mauserTankgewehrM19185
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

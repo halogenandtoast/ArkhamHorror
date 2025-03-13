@@ -601,3 +601,14 @@ libraryPass5 =
       , cdLevel = Just 5
       , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Miskatonic, Scholar], PerDeckLimit 1]
       }
+
+mauserTankgewehrM19185 :: CardDef
+mauserTankgewehrM19185 =
+  (asset "11119" "Mauser Tankgewehr M1918" 4 Neutral)
+    { cdCardTraits = setFromList [Item, Weapon, Firearm]
+    , cdSkills = [#combat, #combat]
+    , cdLevel = Just 5
+    , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Hunter, Veteran, Warden]]
+    , cdSlots = [#hand, #hand]
+    , cdUses = uses Shell 1
+    }

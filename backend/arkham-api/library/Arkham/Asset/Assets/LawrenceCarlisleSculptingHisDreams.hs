@@ -26,6 +26,6 @@ instance HasAbilities LawrenceCarlisleSculptingHisDreams where
 instance RunMessage LawrenceCarlisleSculptingHisDreams where
   runMessage msg a@(LawrenceCarlisleSculptingHisDreams attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      gainResourcesIfCan iid (attrs.ability 1) 1
+      gainResources iid (attrs.ability 1) 1
       pure a
     _ -> LawrenceCarlisleSculptingHisDreams <$> liftRunMessage msg attrs

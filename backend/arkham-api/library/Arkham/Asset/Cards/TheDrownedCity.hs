@@ -3,8 +3,8 @@ module Arkham.Asset.Cards.TheDrownedCity where
 import Arkham.Asset.Cards.Import
 import Arkham.Criteria qualified as Criteria
 import Arkham.Keyword qualified as Keyword
-import Arkham.Trait qualified as Trait
 import Arkham.Token qualified as Token
+import Arkham.Trait qualified as Trait
 
 bookOfVerseUnCommonplaceBook :: CardDef
 bookOfVerseUnCommonplaceBook =
@@ -624,3 +624,45 @@ onTheirHeels5 =
     , cdUses = uses Token.Lead 5
     , cdLimits = [LimitPerInvestigator 1]
     }
+
+sacredOathOathOfLoyalty5 :: CardDef
+sacredOathOathOfLoyalty5 =
+  fast
+    (asset "11121" ("Sacred Oath" <:> "Oath of Loyalty") 1 Neutral)
+      { cdCardTraits = setFromList [Pact]
+      , cdSkills = [#willpower, #agility, #wild]
+      , cdLevel = Just 5
+      , cdDeckRestrictions =
+          [OnlyInvestigatorWithTraits [Cultist, Cursed, SilverTwilight], PerDeckLimitByTitle 1]
+      , cdLimits = [LimitInPlay 3]
+      , cdKeywords = setFromList [Keyword.Myriad]
+      , cdSlots = [#arcane]
+      }
+
+sacredOathOathOfOrder5 :: CardDef
+sacredOathOathOfOrder5 =
+  fast
+    (asset "11122" ("Sacred Oath" <:> "Oath of Order") 1 Neutral)
+      { cdCardTraits = setFromList [Pact]
+      , cdSkills = [#willpower, #combat, #wild]
+      , cdLevel = Just 5
+      , cdDeckRestrictions =
+          [OnlyInvestigatorWithTraits [Cultist, Cursed, SilverTwilight], PerDeckLimitByTitle 1]
+      , cdLimits = [LimitInPlay 3]
+      , cdKeywords = setFromList [Keyword.Myriad]
+      , cdSlots = [#arcane]
+      }
+
+sacredOathOathOfWisdom5 :: CardDef
+sacredOathOathOfWisdom5 =
+  fast
+    (asset "11123" ("Sacred Oath" <:> "Oath of Wisdom") 1 Neutral)
+      { cdCardTraits = setFromList [Pact]
+      , cdSkills = [#willpower, #intellect, #wild]
+      , cdLevel = Just 5
+      , cdDeckRestrictions =
+          [OnlyInvestigatorWithTraits [Cultist, Cursed, SilverTwilight], PerDeckLimitByTitle 1]
+      , cdLimits = [LimitInPlay 3]
+      , cdKeywords = setFromList [Keyword.Myriad]
+      , cdSlots = [#arcane]
+      }

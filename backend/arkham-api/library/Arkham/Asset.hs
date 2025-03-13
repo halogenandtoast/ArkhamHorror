@@ -1128,6 +1128,9 @@ allAssets =
     , SomeAssetCard libraryPass5
     , SomeAssetCard mauserTankgewehrM19185
     , SomeAssetCard onTheirHeels5
+    , SomeAssetCard sacredOathOathOfLoyalty5
+    , SomeAssetCard sacredOathOathOfOrder5
+    , SomeAssetCard sacredOathOathOfWisdom5
     , -- Return to Night of the Zealot
       --- guardian [rtnotz]
       SomeAssetCard physicalTraining2

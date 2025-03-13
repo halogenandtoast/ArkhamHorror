@@ -681,6 +681,9 @@ allPlayerAssetCards =
       , runicAxe
       , ruthWestmacottDarkRevelations
       , sacredCovenant2
+      , sacredOathOathOfLoyalty5
+      , sacredOathOathOfOrder5
+      , sacredOathOathOfWisdom5
       , safeguard
       , safeguard2
       , sawedOffShotgun5

@@ -38,6 +38,8 @@ data History = History
   , historyCluesDiscovered :: Map LocationId Int
   , historyAttacksOfOpportunity :: Int
   , historySuccessfulAttacks :: Int
+  , historySuccessfulEvasions :: Int
+  , historySuccessfulInvestigations :: Int
   }
   deriving stock (Show, Eq)
 
@@ -55,6 +57,8 @@ data HistoryField k where
   HistoryCluesDiscovered :: HistoryField (Map LocationId Int)
   HistoryAttacksOfOpportunity :: HistoryField Int
   HistorySuccessfulAttacks :: HistoryField Int
+  HistorySuccessfulEvasions :: HistoryField Int
+  HistorySuccessfulInvestigations :: HistoryField Int
 
 deriving stock instance Show (HistoryField k)
 deriving stock instance Eq (HistoryField k)
@@ -74,6 +78,8 @@ viewHistoryField = \case
   HistoryCluesDiscovered -> historyCluesDiscovered
   HistoryAttacksOfOpportunity -> historyAttacksOfOpportunity
   HistorySuccessfulAttacks -> historySuccessfulAttacks
+  HistorySuccessfulEvasions -> historySuccessfulEvasions
+  HistorySuccessfulInvestigations -> historySuccessfulInvestigations
 
 instance ToJSON (HistoryField k) where
   toJSON = toJSON . show
@@ -96,6 +102,8 @@ instance FromJSON SomeHistoryField where
     "HistoryCluesDiscovered" -> pure $ SomeHistoryField HistoryCluesDiscovered
     "HistoryAttacksOfOpportunity" -> pure $ SomeHistoryField HistoryAttacksOfOpportunity
     "HistorySuccessfulAttacks" -> pure $ SomeHistoryField HistorySuccessfulAttacks
+    "HistorySuccessfulEvasions" -> pure $ SomeHistoryField HistorySuccessfulEvasions
+    "HistorySuccessfulInvestigations" -> pure $ SomeHistoryField HistorySuccessfulInvestigations
     "HistoryEnemiesDrawn" -> pure $ SomeHistoryField HistoryEnemiesDrawn
     _ -> fail $ "Invalid HistoryField: " <> T.unpack t
 
@@ -145,6 +153,8 @@ insertHistoryItem (HistoryItem fld k) h =
     HistoryCluesDiscovered -> h {historyCluesDiscovered = Map.unionWith (+) (historyCluesDiscovered h) k}
     HistoryAttacksOfOpportunity -> h {historyAttacksOfOpportunity = historyAttacksOfOpportunity h + k}
     HistorySuccessfulAttacks -> h {historySuccessfulAttacks = historySuccessfulAttacks h + k}
+    HistorySuccessfulEvasions -> h {historySuccessfulEvasions = historySuccessfulEvasions h + k}
+    HistorySuccessfulInvestigations -> h {historySuccessfulInvestigations = historySuccessfulInvestigations h + k}
 
 instance Semigroup History where
   h <> g =
@@ -164,10 +174,12 @@ instance Semigroup History where
       , historyCluesDiscovered = Map.unionWith (+) (historyCluesDiscovered h) (historyCluesDiscovered g)
       , historyAttacksOfOpportunity = historyAttacksOfOpportunity h + historyAttacksOfOpportunity g
       , historySuccessfulAttacks = historySuccessfulAttacks h + historySuccessfulAttacks g
+      , historySuccessfulEvasions = historySuccessfulEvasions h + historySuccessfulEvasions g
+      , historySuccessfulInvestigations = historySuccessfulInvestigations h + historySuccessfulInvestigations g
       }
 
 instance Monoid History where
-  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0
+  mempty = History [] [] [] [] False mempty False 0 [] [] mempty 0 0 0 0
 
 insertHistory
   :: InvestigatorId
@@ -193,5 +205,7 @@ instance FromJSON History where
     historyCluesDiscovered <- o .: "historyCluesDiscovered"
     historyAttacksOfOpportunity <- o .:? "historyAttacksOfOpportunity" .!= 0
     historySuccessfulAttacks <- o .:? "historySuccessfulAttacks" .!= 0
+    historySuccessfulEvasions <- o .:? "historySuccessfulEvasions" .!= 0
+    historySuccessfulInvestigations <- o .:? "historySuccessfulInvestigations" .!= 0
     historyEnemiesDrawn <- o .:? "historyEnemiesDrawn" .!= []
     pure History {..}

@@ -805,6 +805,7 @@ instance RunMessage EnemyAttrs where
       afterWindow <- checkWindows [mkAfter $ Window.SuccessfulEvadeEnemy iid enemyId n]
       pushAll
         [ whenWindow
+        , UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
         , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
         , afterWindow
         ]

@@ -62,6 +62,9 @@ data InvestigatorMatcher
   | IsDriverOf AssetMatcher
   | CanTakeUntakenAction
   | TakenActionThisRound ActionMatcher
+  | SuccessfullyEvadedThisRound
+  | SuccessfullyAttackedThisRound
+  | SuccessfullyInvestigatedThisRound
   | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode

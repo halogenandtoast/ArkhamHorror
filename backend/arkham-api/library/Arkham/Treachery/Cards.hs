@@ -89,6 +89,7 @@ allPlayerTreacheryCards =
       , dayOfReckoning
       , deafeningSilence
       , detachedFromReality
+      , disruptivePoltergeist
       , doomed
       , downAndOut
       , drawingTheSign
@@ -100,6 +101,7 @@ allPlayerTreacheryCards =
       , finalRhapsody
       , finalRhapsodyAdvanced
       , finePrint
+      , frenzied
       , glimpseTheVoid
       , greed
       , hardTimes
@@ -113,6 +115,7 @@ allPlayerTreacheryCards =
       , internalInjury
       , legInjury
       , lostSoul
+      , morbidCuriosity
       , narcolepsy
       , nihilism
       , obsessive
@@ -2720,6 +2723,15 @@ castAdrift = (weakness "11019" "Cast Adrift") {cdCardTraits = setFromList [Hards
 
 downAndOut :: CardDef
 downAndOut = (basicWeakness "11126" "Down and Out") {cdCardTraits = setFromList [Hardship]}
+
+morbidCuriosity :: CardDef
+morbidCuriosity = (basicWeakness "11127" "Morbid Curiosity") {cdCardTraits = setFromList [Flaw]}
+
+disruptivePoltergeist :: CardDef
+disruptivePoltergeist = (basicWeakness "11128" "Disruptive Poltergeist") {cdCardTraits = setFromList [Curse]}
+
+frenzied :: CardDef
+frenzied = (basicWeakness "11129" "Frenzied") {cdCardTraits = setFromList [Madness]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

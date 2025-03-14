@@ -570,6 +570,9 @@ allTreacheries =
     , SomeTreacheryCard castAdrift
     , -- basic weakness [tdc]
       SomeTreacheryCard downAndOut
+    , SomeTreacheryCard morbidCuriosity
+    , SomeTreacheryCard disruptivePoltergeist
+    , SomeTreacheryCard frenzied
     , -- Return to the Night of the Zealot
       -- Return to the Gathering
       SomeTreacheryCard theZealotsSeal

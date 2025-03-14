@@ -3830,6 +3830,7 @@ library
       Arkham.Treachery.Cards.DiabolicVoices
       Arkham.Treachery.Cards.DismalCurse
       Arkham.Treachery.Cards.DisquietingDreams
+      Arkham.Treachery.Cards.DisruptivePoltergeist
       Arkham.Treachery.Cards.DissonantVoices
       Arkham.Treachery.Cards.Doomed
       Arkham.Treachery.Cards.DownAndOut
@@ -3869,6 +3870,7 @@ library
       Arkham.Treachery.Cards.FogOverInnsmouth
       Arkham.Treachery.Cards.ForcedIntoHiding
       Arkham.Treachery.Cards.FracturedConsciousness
+      Arkham.Treachery.Cards.Frenzied
       Arkham.Treachery.Cards.FromTheDepths
       Arkham.Treachery.Cards.FrozenInFear
       Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
@@ -3946,6 +3948,7 @@ library
       Arkham.Treachery.Cards.Mesmerize
       Arkham.Treachery.Cards.MiasmaticTorment
       Arkham.Treachery.Cards.MorbidAwareness
+      Arkham.Treachery.Cards.MorbidCuriosity
       Arkham.Treachery.Cards.MyriadForms
       Arkham.Treachery.Cards.MysteriesOfTheLodge
       Arkham.Treachery.Cards.MysteriousChanting

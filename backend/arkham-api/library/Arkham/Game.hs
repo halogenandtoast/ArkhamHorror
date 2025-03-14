@@ -954,6 +954,12 @@ getInvestigatorsMatching matcher = do
       _ -> pure False
     IsDriverOf am -> flip filterM as \a -> do
       anyM (fieldMap AssetDriver (== Just a.id)) =<< select am
+    SuccessfullyEvadedThisRound -> flip filterM as $ \i -> do
+      (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulEvasions
+    SuccessfullyAttackedThisRound -> flip filterM as $ \i -> do
+      (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulAttacks
+    SuccessfullyInvestigatedThisRound -> flip filterM as $ \i -> do
+      (> 0) <$> getHistoryField RoundHistory (toId i) HistorySuccessfulInvestigations
     TakenActionThisRound actionMatcher -> do
       flip filterM as \a -> do
         let iid = toId a

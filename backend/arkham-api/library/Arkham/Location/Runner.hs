@@ -43,6 +43,7 @@ import Arkham.Helpers.GameValue (getPlayerCountValue)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, frame, windows, wouldDoEach)
 import Arkham.Helpers.Window qualified as Helpers
+import Arkham.History
 import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
@@ -131,7 +132,9 @@ instance RunMessage LocationAttrs where
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       pushAll
         $ [before | clues == 0]
-        <> [Successful (Action.Investigate, toTarget a) iid source (toTarget a) n]
+        <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
+           , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
+           ]
         <> [after | clues == 0]
       pure a
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do

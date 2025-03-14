@@ -63,9 +63,6 @@ import Arkham.Asset.Assets (
   grislyTotemSeeker3Effect,
   grislyTotemSurvivor3Effect,
   highRoller2Effect,
-  ineffableTruth3Effect,
-  ineffableTruth5Effect,
-  ineffableTruthEffect,
   lockpicks1Effect,
   lockpicksEffect,
   luckyDice2Effect,
@@ -574,15 +571,15 @@ allEffects =
     , ("60402", SomeEffect arbiterOfFatesEffect)
     , ("60407", SomeEffect $ noop "60407")
     , ("60408", SomeEffect $ noop "60408")
-    , ("60409", SomeEffect ineffableTruthEffect)
+    , ("60409", SomeEffect $ noop "60409")
     , ("60411", SomeEffect crystalPendulumEffect)
     , ("60419", SomeEffect prescientEffect)
     , ("60425", SomeEffect $ noop "60425")
     , ("60426", SomeEffect $ noop "60426")
-    , ("60427", SomeEffect ineffableTruth3Effect)
+    , ("60427", SomeEffect $ noop "60427")
     , ("60430", SomeEffect $ noop "60430")
     , ("60431", SomeEffect $ noop "60431")
-    , ("60432", SomeEffect ineffableTruth5Effect)
+    , ("60432", SomeEffect $ noop "60432")
     , ("60512", SomeEffect willToSurviveEffect)
     , ("81007", SomeEffect cursedShoresEffect)
     , ("82026", SomeEffect gildedVoltoEffect)

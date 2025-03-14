@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2210,7 +2210,8 @@ getLocationsMatching lmatcher = do
           Just lid -> pure $ filter ((== lid) . toId) ls
         _ ->
           maybeToList <$> runMaybeT do
-            LocationTarget lid <- MaybeT getSkillTestTarget
+            target <- MaybeT getSkillTestTarget
+            lid <- hoistMaybe target.location
             Action.Investigate <- MaybeT getSkillTestAction
             hoistMaybe $ find ((== lid) . toId) ls
     LocationWithAdjacentBarrier -> do
@@ -4182,7 +4183,7 @@ instance Query ExtendedCardMatcher where
         selectOne TurnInvestigator >>= \case
           Nothing -> pure []
           Just iid -> do
-            let windows' = Window.defaultWindows iid
+            windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
             go cs matcher'
               >>= filterM
                 (getIsPlayableWithResources iid GameSource 1000 (Cost.UnpaidCost actionStatus) windows')
@@ -4190,7 +4191,7 @@ instance Query ExtendedCardMatcher where
         selectOne TurnInvestigator >>= \case
           Nothing -> pure []
           Just iid -> do
-            let windows' = Window.defaultWindows iid
+            windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
             go cs matcher' >>= filterM (getIsPlayable iid GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator

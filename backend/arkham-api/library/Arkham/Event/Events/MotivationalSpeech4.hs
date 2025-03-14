@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Event.Events.MotivationalSpeech4 (motivationalSpeech4) where
 
 import Arkham.Ability
@@ -39,7 +38,7 @@ instance RunMessage MotivationalSpeech4 where
           selectMap (ignoreAllCosts . noAOO)
             $ AssetAbility (AssetWithCardId cid)
             <> oneOf [AbilityIsActionAbility, AbilityIsFastAbility]
-        abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) (traceShowId abilities)
+        abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
         unless (null abilities') do
           chooseOneM iid do
             labeled "Do not trigger ability" nothing

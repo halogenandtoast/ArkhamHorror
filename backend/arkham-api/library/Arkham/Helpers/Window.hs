@@ -78,6 +78,12 @@ checkWindows windows' = do
 windows :: [WindowType] -> [Message]
 windows windows' = [CheckWindows $ map (mkWindow timing) windows' | timing <- [#when, #at, #after]]
 
+fromWindows :: HasGame m => ([Window] -> a) -> m a
+fromWindows f = f . concat <$> getWindowStack
+
+allWindows :: HasGame m => m [Window]
+allWindows = fromWindows id
+
 wouldWindows :: MonadRandom m => WindowType -> m (BatchId, [Message])
 wouldWindows window = do
   batchId <- getRandom

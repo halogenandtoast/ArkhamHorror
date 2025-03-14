@@ -352,7 +352,6 @@ runWindow attrs windows actions playableCards = do
         pushAll
           $ toForcedAbilities isSilent
           <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
-          <> [Do (CheckWindows windows)]
       else do
         let globalSkip = attrs.settings.globalSettings.ignoreUnrelatedSkillTestTriggers
         let

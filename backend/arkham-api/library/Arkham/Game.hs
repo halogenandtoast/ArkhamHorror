@@ -954,6 +954,11 @@ getInvestigatorsMatching matcher = do
       _ -> pure False
     IsDriverOf am -> flip filterM as \a -> do
       anyM (fieldMap AssetDriver (== Just a.id)) =<< select am
+    TakenActionThisRound actionMatcher -> do
+      flip filterM as \a -> do
+        let iid = toId a
+        taken <- nub . concat <$> field InvestigatorActionsTaken iid
+        anyM (\action -> actionMatches iid action actionMatcher) taken
     CanTakeUntakenAction -> do
       flip filterM as \a -> do
         let iid = toId a

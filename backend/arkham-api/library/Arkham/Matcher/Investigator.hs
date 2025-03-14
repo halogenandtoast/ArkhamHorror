@@ -12,6 +12,7 @@ import Arkham.Damage
 import Arkham.History.Types
 import Arkham.Id
 import Arkham.Key
+import Arkham.Matcher.Action
 import Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.Card
@@ -60,6 +61,7 @@ data InvestigatorMatcher
   | InVehicleMatching AssetMatcher
   | IsDriverOf AssetMatcher
   | CanTakeUntakenAction
+  | TakenActionThisRound ActionMatcher
   | InvestigatorWithPlacement Placement
   | InvestigatorWhenCriteria Criterion
   | InvestigatorIs CardCode

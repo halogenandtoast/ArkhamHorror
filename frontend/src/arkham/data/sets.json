@@ -58,7 +58,7 @@
 
   { "name": "The Feast of Hemloch Vale Investigator Expansion", "min": 10001, "max": 10138, "playerCards": 138, "code": "fhvp", "cycle": 10 },
   { "name": "The Feast of Hemloch Vale Campaign Expansion", "min": 10501, "max": 10742, "playerCards": 0, "code": "fhvc", "cycle": 10 },
-  { "name": "The Drowned City", "min": 11001, "max": 11129, "playerCards": 129, "code": "tdcp", "cycle": 11 },
+  { "name": "The Drowned City Investigator Expansion", "min": 11001, "max": 11129, "playerCards": 129, "code": "tdcp", "cycle": 11 },
 
   { "name": "Return to Night of the Zealot", "min": 50001, "max": 50046, "playerCards": 10, "code": "rtnotz", "cycle": 50 },
   { "name": "Return to The Dunwich Legacy", "min": 51001, "max": 51072, "playerCards": 11, "code": "rtdwl", "cycle": 50 },

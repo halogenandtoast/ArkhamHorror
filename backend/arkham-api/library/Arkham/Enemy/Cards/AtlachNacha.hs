@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AtlachNacha (atlachNacha, AtlachNacha (..)) where
+module Arkham.Enemy.Cards.AtlachNacha (atlachNacha) where
 
 import Arkham.Ability
 import Arkham.Attack
@@ -6,12 +6,14 @@ import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Window (getLocation)
 import Arkham.Label
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Match
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Placement
 import Arkham.Movement
 import Arkham.Placement
 import Arkham.Projection
@@ -26,12 +28,9 @@ newtype AtlachNacha = AtlachNacha EnemyAttrs
 
 atlachNacha :: EnemyCard AtlachNacha
 atlachNacha =
-  enemyWith
-    AtlachNacha
-    Cards.atlachNacha
-    (4, PerPlayer 4, 4)
-    (2, 2)
-    ((asSelfLocationL ?~ "atlachNacha") . setMeta @Meta (Meta 0))
+  enemyWith AtlachNacha Cards.atlachNacha (4, PerPlayer 4, 4) (2, 2)
+    $ (asSelfLocationL ?~ "atlachNacha")
+    . setMeta @Meta (Meta 0)
 
 instance HasModifiersFor AtlachNacha where
   getModifiersFor (AtlachNacha attrs) = do
@@ -54,7 +53,7 @@ instance HasAbilities AtlachNacha where
   getAbilities (AtlachNacha attrs) =
     extend
       attrs
-      [ mkAbility attrs 1 $ forced $ EnemyLeaves #when Anywhere (be attrs)
+      [ groupLimit PerTestOrAbility $ mkAbility attrs 1 $ forced $ EnemyLeaves #when Anywhere (be attrs)
       , mkAbility attrs 2 $ forced $ Match.EnemyEvaded #when You (be attrs)
       ]
 
@@ -63,24 +62,30 @@ instance RunMessage AtlachNacha where
     Flip iid _ (isTarget attrs -> True) -> do
       lids <- liftA2 (<|>) (selectMax LocationDoom Anywhere) (select Anywhere)
       push $ Flipped (toSource attrs) (toCard attrs)
-      chooseOrRunOneM iid do
-        targets lids \lid -> push $ PlaceEnemy attrs.id $ AtLocation lid
+      chooseOrRunOneM iid $ targets lids (place attrs . AtLocation)
       pure $ AtlachNacha $ attrs & asSelfLocationL .~ Nothing & flippedL .~ True
     HandleAbilityOption _ (isSource attrs -> True) n -> do
-      let Meta m = toResult attrs.meta
-      legs <- select $ EnemyWithTitle "Legs of Atlach-Nacha"
-      for_ legs \leg -> do
-        label <- field LocationLabel =<< selectJust (locationWithEnemy leg)
-        let newLabel = mkLabel $ rotateLocation n label
-        newLocation <- selectJust (LocationWithLabel newLabel)
-        push $ Move $ move (toSource attrs) leg newLocation
-      pure $ AtlachNacha $ setMeta @Meta (Meta ((m + (45 * n)) `mod` 360)) attrs
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lid <- selectJust $ locationWithEnemy attrs.id
+      if enemyFlipped attrs
+        then do
+          label <- field LocationLabel =<< selectJust (locationWithEnemy attrs.id)
+          let newLabel = mkLabel $ rotateLocation n label
+          newLocation <- selectJust (LocationWithLabel newLabel)
+          push $ Move $ move (toSource attrs) attrs newLocation
+          pure e
+        else do
+          let Meta m = toResult attrs.meta
+          legs <- select $ InPlayEnemy $ EnemyWithTitle "Legs of Atlach-Nacha"
+          for_ legs \leg -> do
+            label <- field LocationLabel =<< selectJust (locationWithEnemy leg)
+            let newLabel = mkLabel $ rotateLocation n label
+            newLocation <- selectJust (LocationWithLabel newLabel)
+            push $ Move $ move (toSource attrs) leg newLocation
+          pure $ AtlachNacha $ setMeta @Meta (Meta ((m + (45 * n)) `mod` 360)) attrs
+    UseCardAbility _ (isSource attrs -> True) 1 (getLocation -> Just lid) _ -> do
       iids <- select $ investigatorAt lid
       if null iids
         then placeDoom (attrs.ability 1) lid 1
-        else eachInvestigator (\iid' -> push $ EnemyWillAttack $ enemyAttack attrs (attrs.ability 1) iid')
+        else for_ iids (push . EnemyWillAttack . enemyAttack attrs (attrs.ability 1))
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       iids <- select $ InvestigatorAt $ locationWithInvestigator iid

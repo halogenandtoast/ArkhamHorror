@@ -437,6 +437,13 @@ getEnemy = \case
   (_ : rest) -> getEnemy rest
   _ -> error "invalid window"
 
+getLocation :: [Window] -> Maybe LocationId
+getLocation = \case
+  [] -> Nothing
+  ((windowType -> Window.EnemyEnters _ lid) : _) -> Just lid
+  ((windowType -> Window.EnemyLeaves _ lid) : _) -> Just lid
+  (_ : rest) -> getLocation rest
+
 getEnemies :: [Window] -> [EnemyId]
 getEnemies = \case
   [] -> []

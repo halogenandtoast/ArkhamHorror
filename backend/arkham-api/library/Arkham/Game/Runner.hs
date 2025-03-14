@@ -59,7 +59,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Source
-import Arkham.Helpers.Window hiding (getEnemy)
+import Arkham.Helpers.Window hiding (getEnemy, getLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (

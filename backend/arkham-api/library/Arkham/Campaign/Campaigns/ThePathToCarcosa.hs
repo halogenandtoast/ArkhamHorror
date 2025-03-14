@@ -75,7 +75,6 @@ instance RunMessage ThePathToCarcosa where
             markDoubt
             addChaosToken ElderThing
             addChaosToken ElderThing
-            nextCampaignStep
         labeled "I don't trust this place one bit. Let's block the door and get the hell out of here!" do
           story lunacysReward2
           record YouFledTheDinnerParty

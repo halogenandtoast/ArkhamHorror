@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.TrishScarborough (trishScarborough, TrishScarborough (..)) where
+module Arkham.Investigator.Cards.TrishScarborough (trishScarborough) where
 
 import Arkham.Ability
 import Arkham.Discover

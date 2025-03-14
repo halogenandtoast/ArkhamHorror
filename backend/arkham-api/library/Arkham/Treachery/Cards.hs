@@ -90,6 +90,7 @@ allPlayerTreacheryCards =
       , deafeningSilence
       , detachedFromReality
       , doomed
+      , downAndOut
       , drawingTheSign
       , dreadCurse
       , dreamsOfTheFlood
@@ -2716,6 +2717,9 @@ prophecyOfTheEnd =
 
 castAdrift :: CardDef
 castAdrift = (weakness "11019" "Cast Adrift") {cdCardTraits = setFromList [Hardship]}
+
+downAndOut :: CardDef
+downAndOut = (basicWeakness "11126" "Down and Out") {cdCardTraits = setFromList [Hardship]}
 
 theZealotsSeal :: CardDef
 theZealotsSeal =

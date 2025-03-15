@@ -17,7 +17,7 @@ newtype StatuesInTheDeep = StatuesInTheDeep LocationAttrs
 
 statuesInTheDeep :: LocationCard StatuesInTheDeep
 statuesInTheDeep =
-  locationWith StatuesInTheDeep Cards.statuesInTheDeep 0 (Static 0)
+  locationWith StatuesInTheDeep Cards.statuesInTheDeep 0 (PerPlayer 1)
     $ connectsToAdjacent
     . (floodLevelL ?~ FullyFlooded)
 

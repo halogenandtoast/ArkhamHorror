@@ -1,5 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Event.Types where
 

@@ -34,6 +34,7 @@ import Arkham.Investigator.Runner as X (
   setMetaKey,
   slotsL,
   startsWith,
+  startsWithInHand,
   usedAdditionalActionsL,
   pattern PositiveModifier,
   pattern ZeroModifier,

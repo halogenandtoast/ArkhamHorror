@@ -5,7 +5,6 @@ import Arkham.Asset.Cards qualified as Cards hiding (jeromeDavids)
 import Arkham.Card
 import Arkham.Discover hiding (discoverAtYourLocation)
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Helpers.Investigator (startsWithInHand)
 import Arkham.Helpers.Modifiers (modifySelfWith)
 import Arkham.Helpers.Window (cardDrawn)
 import Arkham.Investigator.Cards qualified as Cards

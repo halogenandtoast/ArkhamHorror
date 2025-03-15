@@ -2,15 +2,14 @@ module Arkham.Investigator.Cards.GavriellaMizrah (gavriellaMizrah, GavriellaMizr
 
 import Arkham.Asset.Cards qualified as Cards hiding (gavriellaMizrah)
 import Arkham.Card
-import Arkham.Discover
+import Arkham.Ability
+import Arkham.Investigator.Types (Field(..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Modifier
-import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 
@@ -36,22 +35,20 @@ gavriellaMizrah =
 
 instance HasModifiersFor GavriellaMizrah where
   getModifiersFor (GavriellaMizrah a) = do
-    self <-
-      modifySelfWith
-        a
-        setActiveDuringSetup
-        [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
-    uses <-
-      modifySelectWith
-        a
-        (assetIs Cards.fortyFiveAutomatic)
-        setActiveDuringSetup
-        [AdditionalStartingUses (-2)]
-    pure $ self <> uses
+    modifySelfWith
+      a
+      setActiveDuringSetup
+      [CannotTakeAction #draw, CannotDrawCards, CannotManipulateDeck, StartingResources (-4)]
+    modifySelectWith
+      a
+      (assetIs Cards.fortyFiveAutomatic)
+      setActiveDuringSetup
+      [AdditionalStartingUses (-2)]
 
 instance HasAbilities GavriellaMizrah where
   getAbilities (GavriellaMizrah a) =
-    [ restrictedAbility a 1 (Self <> ClueOnLocation)
+    [ playerLimit PerRound
+        $ restricted a 1 (Self <> ClueOnLocation)
         $ freeReaction (EnemyAttacksEvenIfCancelled #after You AnyEnemyAttack AnyEnemy)
     ]
 
@@ -61,25 +58,25 @@ instance HasChaosTokenValue GavriellaMizrah where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage GavriellaMizrah where
-  runMessage msg i@(GavriellaMizrah attrs) = case msg of
+  runMessage msg i@(GavriellaMizrah attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (attrs.ability 1) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
-      pushAll
-        [HealHorror (toTarget attrs) (toSource attrs) 1, HealDamage (toTarget attrs) (toSource attrs) 1]
+      healDamage iid ElderSign 1
+      healHorror iid ElderSign 1
       pure i
     InvestigatorMulligan iid | iid == toId attrs -> do
       push $ FinishedWithMulligan iid
       pure i
     AddToDiscard iid pc | attrs `is` iid -> do
-      push $ RemovedFromGame (PlayerCard pc)
+      removeCardFromGame pc
       pure i
     DiscardCard iid _ cardId | attrs `is` iid -> do
       hand <- field InvestigatorHand iid
       let card = fromJustNote "must be in hand" $ find @[Card] ((== cardId) . toCardId) hand
-      pushAll [RemoveCardFromHand iid cardId, RemovedFromGame card]
+      removeCardFromGame card
       pure i
     Do (DiscardCard iid _ _) | attrs `is` iid -> pure i
     DrawCards iid cardDraw | iid == attrs.id && cardDraw.isPlayerDraw -> pure i
-    _ -> GavriellaMizrah <$> runMessage msg attrs
+    _ -> GavriellaMizrah <$> liftRunMessage msg attrs

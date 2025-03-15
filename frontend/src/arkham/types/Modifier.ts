@@ -88,6 +88,9 @@ export type ModifierType
   | DoNotDrawConnection
   | Difficulty
   | ScenarioModifier
+  | RevealAnotherChaosToken
+  | DoubleDifficulty
+  | DoubleSuccess
 
 export type BaseSkillOf = {
   tag: "BaseSkillOf"
@@ -103,6 +106,18 @@ export type Difficulty = {
 export type ScenarioModifier = {
   tag: "ScenarioModifier"
   contents: string
+}
+
+export type RevealAnotherChaosToken = {
+  tag: "RevealAnotherChaosToken"
+}
+
+export type DoubleDifficulty = {
+  tag: "DoubleDifficulty"
+}
+
+export type DoubleSuccess = {
+  tag: "DoubleSuccess"
 }
 
 export type CancelEffects = {
@@ -239,6 +254,18 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
     {
       tag: JsonDecoder.isExactly('CancelEffects')
     }, 'CancelEffects'),
+  JsonDecoder.object<RevealAnotherChaosToken>(
+    {
+      tag: JsonDecoder.isExactly('RevealAnotherChaosToken')
+    }, 'RevealAnotherChaosToken'),
+  JsonDecoder.object<DoubleSuccess>(
+    {
+      tag: JsonDecoder.isExactly('DoubleSuccess')
+    }, 'DoubleSuccess'),
+  JsonDecoder.object<DoubleDifficulty>(
+    {
+      tag: JsonDecoder.isExactly('DoubleDifficulty')
+    }, 'DoubleDifficulty'),
   JsonDecoder.object<CannotPerformSkillTest>(
     {
       tag: JsonDecoder.isExactly('CannotPerformSkillTest')

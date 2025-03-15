@@ -393,7 +393,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     pure
       $ (cdCardType pcDef /= SkillType)
       && ((costStatus == PaidCost) || (canAffordCost || canAffordAlternateResourceCost))
-      && (none prevents modifiers)
+      && none prevents modifiers
       && ((isNothing (cdFastWindow pcDef) && notFastWindow) || inFastWindow || isBobJenkins || noAction)
       && ( (#evade `notElem` pcDef.actions)
              || canEvade

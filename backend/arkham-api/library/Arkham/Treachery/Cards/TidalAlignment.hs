@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.TidalAlignment (tidalAlignment, TidalAlignment (..)) where
+module Arkham.Treachery.Cards.TidalAlignment (tidalAlignment) where
 
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.Cards qualified as Locations
@@ -25,6 +25,8 @@ instance RunMessage TidalAlignment where
       selectEach (investigatorAt lid) \iid' -> assignDamage iid' attrs 1
       isDesolateCoastline <- lid <=~> locationIs Locations.desolateCoastline
       fl <- getFloodLevel lid
-      when (fl == FullyFlooded || isDesolateCoastline) $ gainSurge attrs
+      if fl == FullyFlooded || isDesolateCoastline
+        then gainSurge attrs
+        else increaseThisFloodLevel lid
       pure t
     _ -> TidalAlignment <$> liftRunMessage msg attrs

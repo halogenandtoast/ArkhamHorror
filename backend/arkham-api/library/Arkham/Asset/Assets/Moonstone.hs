@@ -28,7 +28,7 @@ instance HasAbilities Moonstone where
 
 instance RunMessage Moonstone where
   runMessage msg a@(Moonstone attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do
       payCardCost iid attrs
       putCardIntoPlay iid attrs
       pure a

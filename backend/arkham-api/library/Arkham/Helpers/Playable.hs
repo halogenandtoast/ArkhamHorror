@@ -241,6 +241,7 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
       applyModifier (ChuckFergus2Modifier cardMatcher _) _ = not needsChuckFergus && cardMatch c cardMatcher
       applyModifier _ val = val
       source' = replaceThisCardSource source
+
     passesCriterias <-
       maybe
         (pure True)

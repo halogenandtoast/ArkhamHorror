@@ -4172,37 +4172,37 @@ instance Query ExtendedCardMatcher where
         cards <- filter (`elem` cs) <$> getVictoryDisplay
         go cards matcher'
       PlayableCardWithCostReduction actionStatus n matcher' -> do
-        selectOne TurnInvestigator >>= \case
-          Nothing -> pure []
-          Just iid -> do
-            let ws = Window.defaultWindows iid
-            resources <- (+ n) <$> getSpendableResources iid
-            filterM (getIsPlayableWithResources iid GameSource resources (Cost.UnpaidCost actionStatus) ws)
-              =<< go cs matcher'
+        mTurnInvestigator <- selectOne TurnInvestigator
+        active <- selectJust ActiveInvestigator
+        let iid = fromMaybe active mTurnInvestigator
+        let ws = Window.defaultWindows iid
+        resources <- (+ n) <$> getSpendableResources active
+        filterM (getIsPlayableWithResources active GameSource resources (Cost.UnpaidCost actionStatus) ws)
+          =<< go cs matcher'
       PlayableCardWithNoCost actionStatus matcher' -> do
-        selectOne TurnInvestigator >>= \case
-          Nothing -> pure []
-          Just iid -> do
-            windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
-            go cs matcher'
-              >>= filterM
-                (getIsPlayableWithResources iid GameSource 1000 (Cost.UnpaidCost actionStatus) windows')
+        mTurnInvestigator <- selectOne TurnInvestigator
+        active <- selectJust ActiveInvestigator
+        let iid = fromMaybe active mTurnInvestigator
+        windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
+        go cs matcher'
+          >>= filterM
+            (getIsPlayableWithResources active GameSource 1000 (Cost.UnpaidCost actionStatus) windows')
       PlayableCard costStatus matcher' -> do
-        selectOne TurnInvestigator >>= \case
-          Nothing -> pure []
-          Just iid -> do
-            windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
-            go cs matcher' >>= filterM (getIsPlayable iid GameSource costStatus windows')
+        mTurnInvestigator <- selectOne TurnInvestigator
+        active <- selectJust ActiveInvestigator
+        let iid = fromMaybe active mTurnInvestigator
+        windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
+        go cs matcher' >>= filterM (getIsPlayable active GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
-        activeInvestigator <- selectJust ActiveInvestigator
-        let iid = fromMaybe activeInvestigator mTurnInvestigator
+        active <- selectJust ActiveInvestigator
+        let iid = fromMaybe active mTurnInvestigator
         let windows' = Window.defaultWindows iid
         go cs matcher'
           >>= filterM
             ( \r ->
                 Helpers.withModifiers (toCardId r) (toModifiers GameSource [CanPlayWithOverride override])
-                  $ getIsPlayable iid GameSource (UnpaidCost actionStatus) windows' r
+                  $ getIsPlayable active GameSource (UnpaidCost actionStatus) windows' r
             )
       CommittableCard imatch matcher' -> do
         iid <- selectJust imatch
@@ -5020,6 +5020,11 @@ asIfTurn :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
 asIfTurn iid body = do
   g <- getGame
   runReaderT body (g {gameTurnPlayerInvestigatorId = Just iid})
+
+asActive :: HasGame m => InvestigatorId -> (forall n. HasGame n => n a) -> m a
+asActive iid body = do
+  g <- getGame
+  runReaderT body (g {gameActiveInvestigatorId = iid})
 
 {- | Preloads Modifiers
 We only preload modifiers while the scenario is active in order to prevent

@@ -1,14 +1,11 @@
-module Arkham.Location.Cards.ArkhamWoodsGreatWillow where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ArkhamWoodsGreatWillow (arkhamWoodsGreatWillow) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
+import Arkham.Helpers.SkillTest (getSkillTestSource)
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsGreatWillow)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,21 +17,17 @@ arkhamWoodsGreatWillow =
 
 instance HasAbilities ArkhamWoodsGreatWillow where
   getAbilities (ArkhamWoodsGreatWillow attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 Here
-          $ ForcedAbility
-          $ SkillTestResult Timing.After You (SkillTestOnTreachery AnyTreachery)
-          $ SuccessResult AnyValue
-        | locationRevealed attrs
-        ]
+    extendRevealed1 attrs
+      $ restrictedAbility attrs 1 Here
+      $ forced
+      $ SkillTestResult #after You (SkillTestOnTreachery AnyTreachery) #success
 
 instance RunMessage ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          getSkillTestSource >>= \case
-            Just (TreacherySource tid) -> do
-              push $ GainSurge (toSource attrs) (toTarget tid)
-              pure l
-            _ -> error "Invalid use of Arkham Woods: Great Willow ability"
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      void $ runMaybeT do
+        source <- MaybeT getSkillTestSource
+        tid <- hoistMaybe source.treachery
+        lift $ push $ GainSurge (toSource attrs) (toTarget tid)
+      pure l
     _ -> ArkhamWoodsGreatWillow <$> runMessage msg attrs

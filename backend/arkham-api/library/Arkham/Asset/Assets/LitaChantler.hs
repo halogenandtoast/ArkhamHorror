@@ -22,7 +22,8 @@ instance HasModifiersFor LitaChantler where
 
 instance HasAbilities LitaChantler where
   getAbilities (LitaChantler a) =
-    [ restricted a 1 ControlsThis
+    [ playerLimit PerTestOrAbility
+        $ restricted a 1 ControlsThis
         $ freeReaction
         $ EnemyAttackedSuccessfully #when (at_ YourLocation) AnySource (withTrait Monster)
     ]

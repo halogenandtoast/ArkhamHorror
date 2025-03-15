@@ -1,20 +1,13 @@
-module Arkham.Skill.Cards.HatchetMan (
-  hatchetMan,
-  hatchetManEffect,
-  HatchetMan (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Skill.Cards.HatchetMan (hatchetMan, hatchetManEffect) where
 
 import Arkham.Action qualified as Action
 import Arkham.Classes
-import Arkham.Effect.Runner ()
-import Arkham.Effect.Types
+import Arkham.Effect.Import
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype HatchetMan = HatchetMan SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -24,15 +17,11 @@ hatchetMan :: SkillCard HatchetMan
 hatchetMan = skill HatchetMan Cards.hatchetMan
 
 instance RunMessage HatchetMan where
-  runMessage msg s@(HatchetMan attrs) = case msg of
+  runMessage msg s@(HatchetMan attrs) = runQueueT $ case msg of
     PassedSkillTest _ (Just Action.Evade) _ (isTarget attrs -> True) _ _ -> do
-      target <- getSkillTestTarget
-      case target of
-        Just (EnemyTarget eid) ->
-          push =<< createCardEffect Cards.hatchetMan Nothing attrs eid
-        _ -> pure ()
+      getSkillTestTargetedEnemy >>= traverse_ (createCardEffect Cards.hatchetMan Nothing attrs)
       pure s
-    _ -> HatchetMan <$> runMessage msg attrs
+    _ -> HatchetMan <$> liftRunMessage msg attrs
 
 newtype HatchetManEffect = HatchetManEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -45,8 +34,7 @@ instance HasModifiersFor HatchetManEffect where
   getModifiersFor (HatchetManEffect a) = modified_ a a.target [DamageTaken 1]
 
 instance RunMessage HatchetManEffect where
-  runMessage msg e@(HatchetManEffect attrs@EffectAttrs {..}) = case msg of
-    EndTurn _ -> do
-      push $ DisableEffect effectId
-      pure e
-    _ -> HatchetManEffect <$> runMessage msg attrs
+  runMessage msg e@(HatchetManEffect attrs) = runQueueT $ case msg of
+    EndTurn _ -> disableReturn e
+    EnemyDamaged eid _ | isTarget eid attrs.target -> disableReturn e
+    _ -> HatchetManEffect <$> liftRunMessage msg attrs

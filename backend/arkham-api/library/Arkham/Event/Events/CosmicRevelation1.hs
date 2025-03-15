@@ -1,5 +1,6 @@
 module Arkham.Event.Events.CosmicRevelation1 (cosmicRevelation1) where
 
+import {-# SOURCE #-} Arkham.Game (asActive)
 import Arkham.Capability
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
@@ -34,7 +35,7 @@ instance RunMessage CosmicRevelation1 where
       pure e
     ForTarget (InvestigatorTarget iid) (ForChoice n (PlayThisEvent _iid (is attrs -> True))) -> do
       let matcher = if even n then CardWithEvenCost else CardWithOddCost
-      cards <-
+      cards <- asActive iid do
         select
           $ PlayableCard (UnpaidCost NoAction)
           $ inHandOf NotForPlay iid

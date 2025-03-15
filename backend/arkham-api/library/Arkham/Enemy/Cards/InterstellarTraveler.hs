@@ -1,18 +1,12 @@
-module Arkham.Enemy.Cards.InterstellarTraveler (
-  interstellarTraveler,
-  InterstellarTraveler (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.InterstellarTraveler (interstellarTraveler) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
+import Arkham.Enemy.Types (Field (..))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 import Arkham.Trait
 
 newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
@@ -21,31 +15,20 @@ newtype InterstellarTraveler = InterstellarTraveler EnemyAttrs
 
 interstellarTraveler :: EnemyCard InterstellarTraveler
 interstellarTraveler =
-  enemyWith
-    InterstellarTraveler
-    Cards.interstellarTraveler
-    (4, Static 3, 2)
-    (1, 2)
-    (spawnAtL ?~ SpawnAt (LocationWithTrait Extradimensional))
+  enemyWith InterstellarTraveler Cards.interstellarTraveler (4, Static 3, 2) (1, 2)
+    $ spawnAtL
+    ?~ SpawnAt (LocationWithTrait Extradimensional)
 
 instance HasAbilities InterstellarTraveler where
-  getAbilities (InterstellarTraveler attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ EnemyEnters Timing.When Anywhere
-          $ EnemyWithId
-          $ toId attrs
-      ]
+  getAbilities (InterstellarTraveler a) =
+    extend1 a $ mkAbility a 1 $ forced $ EnemyEnters #when Anywhere (be a)
 
 instance RunMessage InterstellarTraveler where
-  runMessage msg e@(InterstellarTraveler attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      enemyLocation <- field EnemyLocation (toId attrs)
-      for_ enemyLocation $ \loc -> do
+  runMessage msg e@(InterstellarTraveler attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      field EnemyLocation attrs.id >>= traverse_ \loc -> do
+        placeDoom (attrs.ability 1) attrs 1
         clueCount <- field LocationClues loc
-        push $ PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-        when (clueCount > 0) (push $ RemoveClues (toAbilitySource attrs 1) (toTarget loc) 1)
+        when (clueCount > 0) (removeClues (attrs.ability 1) loc 1)
       pure e
-    _ -> InterstellarTraveler <$> runMessage msg attrs
+    _ -> InterstellarTraveler <$> liftRunMessage msg attrs

@@ -28,7 +28,7 @@ friendsInLowPlaces = event (FriendsInLowPlaces . (`with` Metadata [])) Cards.fri
 
 instance HasModifiersFor FriendsInLowPlaces where
   getModifiersFor (FriendsInLowPlaces (With a _)) =
-    modifySelfWhen a (a `hasCustomization` Prompt) [BecomesFast FastPlayerWindow]
+    modifySelfWhen a.cardId (a `hasCustomization` Prompt) [BecomesFast FastPlayerWindow]
 
 instance RunMessage FriendsInLowPlaces where
   runMessage msg e@(FriendsInLowPlaces (With attrs meta)) = runQueueT $ case msg of

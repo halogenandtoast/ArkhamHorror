@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Wracked (wracked, Wracked (..)) where
+module Arkham.Treachery.Cards.Wracked (wracked) where
 
 import Arkham.Ability
 import {-# SOURCE #-} Arkham.GameEnv
@@ -21,26 +21,21 @@ wracked = treachery Wracked Cards.wracked
 
 instance HasModifiersFor Wracked where
   getModifiersFor (Wracked a) = do
-    investigator <- case a.placement of
+    case a.placement of
       InThreatArea iid -> maybeModified_ a iid do
         isSkillTestInvestigator iid
         liftGuardM $ null . historySkillTestsPerformed <$> getHistory RoundHistory iid
         pure [AnySkillValue (-1)]
-      _ -> pure mempty
+      _ -> pure ()
 
-    skillTest <-
-      getSkillTest >>= \case
-        Nothing -> pure mempty
-        Just st -> maybeModified_ a (SkillTestTarget st.id) do
-          isSkillTestSource a
-          guardInThreatArea st.investigator a
-          liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith st.investigator
-          pure [SkillTestAutomaticallySucceeds]
-
-    pure $ investigator <> skillTest
+    getSkillTest >>= traverse_ \st -> do
+      maybeModified_ a (SkillTestTarget st.id) do
+        isSkillTestSource a
+        liftGuardM $ selectAny $ #exhausted <> withTrait Witch <> enemyAtLocationWith st.investigator
+        pure [SkillTestAutomaticallySucceeds]
 
 instance HasAbilities Wracked where
-  getAbilities (Wracked a) = [skillTestAbility $ restrictedAbility a 1 OnSameLocation actionAbility]
+  getAbilities (Wracked a) = [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage Wracked where
   runMessage msg t@(Wracked attrs) = runQueueT $ case msg of

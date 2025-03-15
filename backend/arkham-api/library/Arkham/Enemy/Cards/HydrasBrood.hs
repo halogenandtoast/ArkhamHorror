@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.HydrasBrood (hydrasBrood, HydrasBrood (..)) where
+module Arkham.Enemy.Cards.HydrasBrood (hydrasBrood) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -13,7 +13,7 @@ newtype HydrasBrood = HydrasBrood EnemyAttrs
 
 hydrasBrood :: EnemyCard HydrasBrood
 hydrasBrood =
-  enemyWith HydrasBrood Cards.hydrasBrood (1, Static 4, 3) (1, 0)
+  enemyWith HydrasBrood Cards.hydrasBrood (3, Static 3, 2) (0, 1)
     $ spawnAtL
     ?~ SpawnAt
       ( FarthestLocationFromYou
@@ -26,19 +26,14 @@ instance HasAbilities HydrasBrood where
       $ restricted
         a
         1
-        ( exists
-            $ mapOneOf
-              enemyIs
-              [Cards.hydraDeepInSlumber, Cards.hydraAwakenedAndEnraged]
-        )
+        (exists $ mapOneOf enemyIs [Cards.hydraDeepInSlumber, Cards.hydraAwakenedAndEnraged])
       $ forced
       $ EnemyEngaged #after You (be a)
 
 instance RunMessage HydrasBrood where
   runMessage msg e@(HydrasBrood attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mHydraSlumbering <- selectOne $ enemyIs Cards.hydraDeepInSlumber
-      case mHydraSlumbering of
+      selectOne (enemyIs Cards.hydraDeepInSlumber) >>= \case
         Just hydra -> placeDoom (attrs.ability 1) hydra 1
         Nothing -> do
           hydra <- selectJust $ enemyIs Cards.hydraAwakenedAndEnraged

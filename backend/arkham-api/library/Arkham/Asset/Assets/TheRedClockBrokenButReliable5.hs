@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Movement
@@ -42,7 +42,7 @@ instance RunMessage TheRedClockBrokenButReliable5 where
         _ -> pure ()
       pure a
     DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
-      locations <- getCanMoveToLocations iid (attrs.ability 1)
+      locations <- getConnectedMoveLocations iid (attrs.ability 1)
       unless (null locations) $ do
         chooseOne
           iid

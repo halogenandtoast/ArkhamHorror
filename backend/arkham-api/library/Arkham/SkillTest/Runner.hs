@@ -452,15 +452,17 @@ instance RunMessage SkillTest where
       pure s
     CheckAdditionalCommitCosts iid cards -> do
       modifiers' <- getModifiers iid
+      cardModifiers <- concat <$> traverse getModifiers cards
       let
         msgs = map (CommitCard iid) cards
         additionalCosts =
           mapMaybe
             ( \case
                 CommitCost c -> Just c
+                AdditionalCostToCommit iid' c | iid' == iid -> Just c
                 _ -> Nothing
             )
-            modifiers'
+            (modifiers' <> cardModifiers)
       afterMsg <- checkWindows [mkAfter $ Window.CommittedCards iid cards]
       whenMsg <- checkWindows [mkWhen $ Window.CommittedCards iid cards]
       if null additionalCosts
@@ -494,6 +496,11 @@ instance RunMessage SkillTest where
         push $ CheckAdditionalCommitCosts iid [card]
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     CommitCard iid card | card `notElem` findWithDefault [] iid skillTestCommittedCards -> do
+      cmods <- getModifiers card
+      let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == iid]
+      batchId <- getRandom
+      when (costToCommit /= mempty) do
+        push $ PayAdditionalCost iid batchId costToCommit
       pure $ s & committedCardsL %~ insertWith (<>) iid [card]
     SkillTestUncommitCard _ card ->
       pure $ s & committedCardsL %~ map (filter (/= card))

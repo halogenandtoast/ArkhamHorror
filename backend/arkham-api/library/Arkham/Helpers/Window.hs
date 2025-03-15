@@ -1,7 +1,6 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Helpers.Window where
 

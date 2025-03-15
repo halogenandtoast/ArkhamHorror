@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.SledDog (sledDog) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 import Arkham.Movement
 
@@ -38,7 +38,7 @@ instance RunMessage SledDog where
       push $ DoStep x msg
       pure a
     DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 1 _ _) | n > 0 -> do
-      locations <- getCanMoveToLocations iid (attrs.ability 1)
+      locations <- getConnectedMoveLocations iid (attrs.ability 1)
       unless (null locations) $ do
         chooseOne
           iid

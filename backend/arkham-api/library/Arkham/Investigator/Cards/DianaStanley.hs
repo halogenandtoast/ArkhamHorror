@@ -7,7 +7,6 @@ import Arkham.Event.Cards qualified as Events
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Investigator (startsWithInHand)
 import Arkham.Message.Lifted.Choose
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted

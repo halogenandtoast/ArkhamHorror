@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards hiding (valentinoRivas)
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Helpers.Investigator (startsWithInHand)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Cards qualified as Cards

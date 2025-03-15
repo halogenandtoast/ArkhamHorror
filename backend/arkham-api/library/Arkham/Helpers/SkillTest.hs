@@ -548,9 +548,12 @@ getIsCommittable a c = do
 
                 passesCommitRestrictions <- allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
                 icons <- iconsForCard c
+                otherAdditionalCosts <- fold <$> for allCommittedCards \c' -> do
+                  mods <- getModifiers c'
+                  pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
                 cmods <- getModifiers (CardIdTarget $ toCardId c)
                 let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
-                affordable <- getCanAffordCost a (toSource a) [] [] costToCommit
+                affordable <- getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
                 skillIcons <- getSkillTestMatchingSkillIcons
 
                 pure

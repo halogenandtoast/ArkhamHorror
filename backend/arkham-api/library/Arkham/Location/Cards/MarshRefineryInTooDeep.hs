@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.MarshRefineryInTooDeep (marshRefineryInTooDeep) where
 
 import Arkham.Ability
-import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
@@ -29,7 +29,7 @@ instance HasAbilities MarshRefineryInTooDeep where
 instance RunMessage MarshRefineryInTooDeep where
   runMessage msg l@(MarshRefineryInTooDeep attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      choices <- getCanMoveToLocations iid (attrs.ability 1)
+      choices <- getConnectedMoveLocations iid (attrs.ability 1)
       chooseTargetM iid choices $ moveTo (attrs.ability 1) iid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

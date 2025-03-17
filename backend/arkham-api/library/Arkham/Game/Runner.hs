@@ -2957,17 +2957,18 @@ preloadEntities :: HasGame m => Game -> m Game
 preloadEntities g = do
   let
     investigators = view (entitiesL . investigatorsL) g
+    setPlacement :: forall a. Typeable a => Placement -> a -> a
+    setPlacement p a
+      | Just Refl <- eqT @a @Asset =
+          overAttrs (\attrs -> attrs {assetPlacement = p}) a
+      | Just Refl <- eqT @a @Skill =
+          overAttrs (\attrs -> attrs {skillPlacement = p}) a
+      | Just Refl <- eqT @a @Event =
+          overAttrs (\attrs -> attrs {eventPlacement = p}) a
+      | otherwise = a
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
       let
-        setAssetPlacement :: forall a. Typeable a => a -> a
-        setAssetPlacement a = case eqT @a @Asset of
-          Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInHand (toId investigator')}) a
-          Nothing -> a
-        setEventPlacement :: forall a. Typeable a => a -> a
-        setEventPlacement a = case eqT @a @Event of
-          Just Refl -> overAttrs (\attrs -> attrs {eventPlacement = StillInHand (toId investigator')}) a
-          Nothing -> a
         handEffectCards =
           filter (cdCardInHandEffects . toCardDef)
             $ investigatorHand (toAttrs investigator')
@@ -2979,24 +2980,16 @@ preloadEntities g = do
             let
               handEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') (setEventPlacement . setAssetPlacement))
+                  (addCardEntityWith (toId investigator') (setPlacement $ StillInHand investigator'.id))
                   defaultEntities
                   handEffectCards
              in
               insertMap (toId investigator') handEntities entities
     preloadDiscardEntities entities investigator' = do
       let
-        setAssetPlacement :: forall a. Typeable a => a -> a
-        setAssetPlacement a = case eqT @a @Asset of
-          Just Refl -> overAttrs (\attrs -> attrs {assetPlacement = StillInDiscard (toId investigator')}) a
-          Nothing -> a
-        setSkillPlacement :: forall a. Typeable a => a -> a
-        setSkillPlacement a = case eqT @a @Skill of
-          Just Refl -> overAttrs (\attrs -> attrs {skillPlacement = StillInDiscard (toId investigator')}) a
-          Nothing -> a
         discardEffectCards =
           map PlayerCard
-            . filter (cdCardInDiscardEffects . toCardDef)
+            . filter (or . sequence [cdCardInDiscardEffects, cdCardInHandEffects] . toCardDef)
             $ investigatorDiscard (toAttrs investigator')
       pure
         $ if null discardEffectCards
@@ -3005,7 +2998,7 @@ preloadEntities g = do
             let
               discardEntities =
                 foldl'
-                  (addCardEntityWith (toId investigator') (setAssetPlacement . setSkillPlacement))
+                  (addCardEntityWith (toId investigator') (setPlacement $ StillInDiscard investigator'.id))
                   defaultEntities
                   discardEffectCards
              in

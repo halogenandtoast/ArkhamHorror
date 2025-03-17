@@ -2,13 +2,13 @@ module Arkham.Investigator.Cards.AgathaCrane where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.GameT
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Modifier
 import Arkham.Trait (Trait (Insight, Spell))
 import Arkham.Window (defaultWindows)
 
@@ -20,22 +20,14 @@ agathaTokenValues _ token _ = pure $ ChaosTokenValue token mempty
 
 agathaAbilities :: InvestigatorAttrs -> [Ability]
 agathaAbilities a =
-  [ restricted
-      a
-      1
-      ( Self
-          <> criteria
-          <> exists
-            ( InDiscardOf (be a.id)
-                <> PlayableCard (UnpaidCost NoAction) (basic $ #event <> hasAnyTrait [Spell, Insight])
-            )
-      )
-      $ freeReaction (TurnEnds #when You)
-  ]
+  [selfAbility a 1 criteria $ freeReaction (TurnEnds #when You)]
  where
   criteria =
     if lookupMetaKeyWithDefault "agathaTrigger" False a
-      then NoRestriction
+      then
+        exists
+          $ inDiscardOf a
+          <> PlayableCard (UnpaidCost NoAction) (basic $ #event <> hasAnyTrait [Spell, Insight])
       else Never
 
 agathaRunner :: (InvestigatorAttrs -> a) -> Message -> InvestigatorAttrs -> GameT a
@@ -44,13 +36,14 @@ agathaRunner f msg attrs = runQueueT $ case msg of
     result <- liftRunMessage msg attrs
     pure $ f $ setMetaKey "agathaTrigger" False result
   UseThisAbility iid (isSource attrs -> True) 1 -> do
+    discards <- map toCard <$> iid.discard
     cards <-
-      filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) (defaultWindows iid))
-        . map toCard
-        . filterCards (card_ $ #event <> hasAnyTrait [Spell, Insight])
-        =<< iid.discard
+      filterM
+        (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) (defaultWindows iid))
+        (filterCards (card_ $ #event <> hasAnyTrait [Spell, Insight]) discards)
     focusCards cards $ chooseTargetM iid cards \card -> do
       cardResolutionModifier card (attrs.ability 1) card RemoveFromGameInsteadOfDiscard
+      cardResolutionModifier card (attrs.ability 1) iid (AsIfInHand card)
       playCardPayingCost iid card
     pure $ f attrs
   ResolveChaosToken token ElderSign iid | iid == attrs.id -> do

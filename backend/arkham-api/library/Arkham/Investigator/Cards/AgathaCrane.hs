@@ -19,8 +19,7 @@ agathaTokenValues iid ElderSign attrs | iid == toId attrs = do
 agathaTokenValues _ token _ = pure $ ChaosTokenValue token mempty
 
 agathaAbilities :: InvestigatorAttrs -> [Ability]
-agathaAbilities a =
-  [selfAbility a 1 criteria $ freeReaction (TurnEnds #when You)]
+agathaAbilities a = [selfAbility a 1 criteria $ freeReaction (TurnEnds #when You)]
  where
   criteria =
     if lookupMetaKeyWithDefault "agathaTrigger" False a

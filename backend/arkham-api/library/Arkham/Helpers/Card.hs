@@ -304,7 +304,7 @@ getPotentiallyModifiedCardCost _ (VengeanceCard _) _ _ =
 getModifiedCardCost :: HasGame m => InvestigatorId -> Card -> m Int
 getModifiedCardCost iid c@(PlayerCard _) = do
   modifiers <- getModifiers iid
-  cardModifiers <- getModifiers (toCardId c)
+  cardModifiers <- getModifiers c.id
   startingCost <- getStartingCost
   foldM applyModifier startingCost (modifiers <> cardModifiers)
  where

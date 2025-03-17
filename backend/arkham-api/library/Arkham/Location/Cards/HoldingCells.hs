@@ -26,6 +26,7 @@ instance HasModifiersFor HoldingCells where
       getSkillTest >>= \case
         Nothing -> pure mempty
         Just st -> maybeModified_ a (SkillTestTarget st.id) do
+          guard $ isAbilitySource a 1 st.source
           liftGuardM $ st.investigator <=~> InvestigatorWithKey YellowKey
           pure [SkillTestAutomaticallySucceeds]
     pure $ self <> enemies <> skillTest

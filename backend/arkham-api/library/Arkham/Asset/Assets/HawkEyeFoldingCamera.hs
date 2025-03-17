@@ -2,12 +2,11 @@ module Arkham.Asset.Assets.HawkEyeFoldingCamera (hawkEyeFoldingCamera) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window (discoveredLocation)
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype Metadata = Metadata {locations :: [LocationId]}
   deriving stock (Show, Eq, Generic)
@@ -18,8 +17,7 @@ newtype HawkEyeFoldingCamera = HawkEyeFoldingCamera (AssetAttrs `With` Metadata)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hawkEyeFoldingCamera :: AssetCard HawkEyeFoldingCamera
-hawkEyeFoldingCamera =
-  asset (HawkEyeFoldingCamera . (`with` Metadata [])) Cards.hawkEyeFoldingCamera
+hawkEyeFoldingCamera = asset (HawkEyeFoldingCamera . (`with` Metadata [])) Cards.hawkEyeFoldingCamera
 
 instance HasModifiersFor HawkEyeFoldingCamera where
   getModifiersFor (HawkEyeFoldingCamera (a `With` _)) = for_ a.controller \iid -> do
@@ -30,21 +28,16 @@ instance HasModifiersFor HawkEyeFoldingCamera where
 
 instance HasAbilities HawkEyeFoldingCamera where
   getAbilities (HawkEyeFoldingCamera (a `With` meta)) =
-    [restricted a 1 ControlsThis $ freeReaction (DiscoveringLastClue #after You locationMatcher)]
+    [restricted a 1 ControlsThis $ freeReaction (DiscoveringLastClue #after Anyone locationMatcher)]
    where
     locationMatcher =
       if null (locations meta)
         then YourLocation
-        else YourLocation <> NotLocation (LocationMatchAny $ map LocationWithId $ locations meta)
-
-toLocation :: [Window] -> LocationId
-toLocation [] = error "invalid call"
-toLocation ((windowType -> Window.DiscoveringLastClue _ lid) : _) = lid
-toLocation (_ : xs) = toLocation xs
+        else YourLocation <> not_ (mapOneOf LocationWithId $ locations meta)
 
 instance RunMessage HawkEyeFoldingCamera where
-  runMessage msg (HawkEyeFoldingCamera (attrs `With` meta)) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (toLocation -> lid) _ -> do
-      push $ PlaceTokens (toAbilitySource attrs 1) (toTarget attrs) Evidence 1
+  runMessage msg (HawkEyeFoldingCamera (attrs `With` meta)) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (discoveredLocation -> lid) _ -> do
+      placeTokens (attrs.ability 1) attrs Evidence 1
       pure $ HawkEyeFoldingCamera (attrs `with` Metadata (lid : locations meta))
-    _ -> HawkEyeFoldingCamera . (`with` meta) <$> runMessage msg attrs
+    _ -> HawkEyeFoldingCamera . (`with` meta) <$> liftRunMessage msg attrs

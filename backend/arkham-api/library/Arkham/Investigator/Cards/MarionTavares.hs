@@ -33,7 +33,7 @@ marionTavares =
 instance HasAbilities MarionTavares where
   getAbilities (MarionTavares a) =
     [ playerLimit PerRound
-        $ restricted a 1 (Self <> DuringTurn You <> youExist can.draw.cards)
+        $ selfAbility a 1 (DuringTurn You <> youExist can.draw.cards)
         $ freeReaction (PlayCard #after You (basic #event))
     ]
 
@@ -49,8 +49,7 @@ instance RunMessage MarionTavares where
       pure i
     ResetGame -> MarionTavares . setSlots <$> liftRunMessage msg attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      drawCardsEdit iid (attrs.ability 1) 1 \c ->
-        c {cardDrawAndThen = Just (DoStep 1 msg)}
+      drawCardsEdit iid (attrs.ability 1) 1 \c -> c {cardDrawAndThen = Just (DoStep 1 msg)}
       pure i
     DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card) _) -> do
       cards <-

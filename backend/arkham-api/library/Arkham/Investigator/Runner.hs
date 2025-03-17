@@ -167,15 +167,15 @@ instance RunMessage Investigator where
 instance RunMessage InvestigatorAttrs where
   runMessage = runInvestigatorMessage
 
-longestUniqueStreak :: (Ord a) => [[a]] -> [[a]]
+longestUniqueStreak :: Ord a => [[a]] -> [[a]]
 longestUniqueStreak = go []
-  where
-    go uniq [] = uniq
-    go uniq (xs : xss) = 
-      let seen = mconcat uniq
-      in if any (`notElem` seen) xs
-        then go (xs : uniq) xss
-        else go [] xss
+ where
+  go uniq [] = uniq
+  go uniq (xs : xss) =
+    let seen = mconcat uniq
+     in if any (`notElem` seen) xs
+          then go (xs : uniq) xss
+          else go [] xss
 
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case
@@ -3382,7 +3382,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     when (length streak > 1)
       $ pushM
-      $ checkWindows [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) (nub $ concat streak))]
+      $ checkWindows
+        [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) (nub $ concat streak))]
 
     when (#parley `elem` actions && #parley `notElem` previous)
       $ pushM
@@ -4157,7 +4158,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
     unless anyForced $ do
-      playableCards <- getPlayableCards iid iid (UnpaidCost NeedsAction) windows
+      playableCards <- getPlayableCards investigatorId investigatorId (UnpaidCost NeedsAction) windows
       let
         usesAction = not isAdditional
         choices =

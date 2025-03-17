@@ -171,6 +171,7 @@ discoveredLocation :: HasCallStack => [Window] -> LocationId
 discoveredLocation =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ lid _ _) -> Just lid
+    (windowType -> Window.DiscoveringLastClue _ lid) -> Just lid
     _ -> Nothing
 
 locationLeavingPlay :: HasCallStack => [Window] -> LocationId

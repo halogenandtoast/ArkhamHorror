@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Playable where
 
 import Arkham.Action.Additional
@@ -49,13 +48,12 @@ getPlayableCards
   :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => source -> investigator -> CostStatus -> [Window] -> m [Card]
 getPlayableCards source investigator costStatus windows' = do
-  let debug = if traceShowId (asId investigator) == "03006" then traceShowId else id
-  asIfInHandCards <- debug <$> getAsIfInHandCards (asId investigator)
-  otherPlayersPlayableCards <- debug <$> getOtherPlayersPlayableCards (asId investigator) costStatus windows'
-  playableDiscards <- debug <$> getPlayableDiscards source (asId investigator) costStatus windows'
-  hand <- debug <$> field InvestigatorHand (asId investigator)
+  asIfInHandCards <- getAsIfInHandCards (asId investigator)
+  otherPlayersPlayableCards <- getOtherPlayersPlayableCards (asId investigator) costStatus windows'
+  playableDiscards <- getPlayableDiscards source (asId investigator) costStatus windows'
+  hand <- field InvestigatorHand (asId investigator)
   playableHandCards <-
-    debug <$> filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
+    filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
 getPlayableDiscards

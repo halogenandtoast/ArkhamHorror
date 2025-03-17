@@ -56,7 +56,7 @@ instance RunMessage MarionTavares where
       cards <-
         filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) ws)
           . filterCards (#event <> not_ (CardWithTitle card.title))
-          =<< ((<>) <$> iid.hand <*> (map toCard <$> iid.discard))
+          =<< ((<>) <$> iid.hand <*> (filter (cdPlayableFromDiscard . toCardDef) . map toCard <$> iid.discard))
       when (notNull cards) do
         chooseOneM iid do
           labeled "Do not play another event" nothing

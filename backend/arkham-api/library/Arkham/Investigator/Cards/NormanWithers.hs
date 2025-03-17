@@ -31,21 +31,19 @@ normanWithers =
 instance HasModifiersFor NormanWithers where
   getModifiersFor (NormanWithers (a `With` metadata)) = do
     canReveal <- withoutModifier a CannotRevealCards
-    self <-
-      modifySelfWhen a canReveal
-        $ TopCardOfDeckIsRevealed
-        : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
-    card <- case unDeck (investigatorDeck a) of
+    modifySelfWhen a canReveal
+      $ TopCardOfDeckIsRevealed
+      : [CanPlayTopOfDeck AnyCard | not (playedFromTopOfDeck metadata)]
+    case unDeck (investigatorDeck a) of
       x : _ -> modifiedWhen_ a canReveal x [ReduceCostOf (CardWithId x.id) 1]
-      _ -> pure mempty
-    pure $ self <> card
+      _ -> pure ()
 
 instance HasAbilities NormanWithers where
   getAbilities (NormanWithers (a `With` _)) =
-    [ restricted
+    [ selfAbility
         a
         1
-        (Self <> youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck <> NotSetup)
+        (youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck <> NotSetup)
         (forced AnyWindow)
     ]
 

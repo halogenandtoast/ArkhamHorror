@@ -52,7 +52,7 @@ instance RunMessage CloseTheCircle1 where
             =<< select BasicAbility
         canDraw <- canDo iid #draw
         playableCards <-
-          filter (`cardMatch` CardWithoutAction) <$> getPlayableCards iattrs (UnpaidCost NoAction) windows
+          filter (`cardMatch` CardWithoutAction) <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) windows
         canTakeResource <- (&&) <$> canDo iid #resource <*> can.gain.resources FromOtherSource iid
         canAffordTakeResources <- getCanAfford (iattrs & remainingActionsL +~ 1) [#resource]
         let drawing = drawCards iid iid 1

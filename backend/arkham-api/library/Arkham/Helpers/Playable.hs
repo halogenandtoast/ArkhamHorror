@@ -5,7 +5,6 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Calculation
 import Arkham.Card
 import Arkham.ClassSymbol
-import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Cost
@@ -41,65 +40,68 @@ import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
-import Arkham.Target
 import Arkham.Window
 import Control.Lens (over)
 import Data.Data.Lens (biplate)
 
 getPlayableCards
-  :: (HasCallStack, HasGame m) => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
-getPlayableCards a costStatus windows' = do
-  asIfInHandCards <- getAsIfInHandCards (toId a)
-  otherPlayersPlayableCards <- getOtherPlayersPlayableCards (toId a) costStatus windows'
-  playableDiscards <- getPlayableDiscards a costStatus windows'
-  hand <- field InvestigatorHand (toId a)
+  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => source -> investigator -> CostStatus -> [Window] -> m [Card]
+getPlayableCards source investigator costStatus windows' = do
+  asIfInHandCards <- getAsIfInHandCards (asId investigator)
+  otherPlayersPlayableCards <- getOtherPlayersPlayableCards (asId investigator) costStatus windows'
+  playableDiscards <- getPlayableDiscards source (asId investigator) costStatus windows'
+  hand <- field InvestigatorHand (asId investigator)
   playableHandCards <-
-    filterM (getIsPlayable (toId a) (toSource a) costStatus windows') (hand <> asIfInHandCards)
+    filterM (getIsPlayable (asId investigator) source costStatus windows') (hand <> asIfInHandCards)
   pure $ playableHandCards <> playableDiscards <> otherPlayersPlayableCards
 
-getPlayableDiscards :: HasGame m => InvestigatorAttrs -> CostStatus -> [Window] -> m [Card]
-getPlayableDiscards attrs@InvestigatorAttrs {..} costStatus windows' = do
-  modifiers <- getModifiers (toTarget attrs)
+getPlayableDiscards
+  :: (HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => source -> investigator -> CostStatus -> [Window] -> m [Card]
+getPlayableDiscards source investigator costStatus windows' = do
+  attrs <- getAttrs @Investigator (asId investigator)
+  modifiers <- getModifiers (asId investigator)
   filterM
-    (getIsPlayable (toId attrs) (toSource attrs) costStatus windows')
-    (possibleCards modifiers)
+    (getIsPlayable (asId investigator) source costStatus windows')
+    (possibleCards attrs modifiers)
  where
-  possibleCards modifiers =
+  possibleCards attrs@InvestigatorAttrs {..} modifiers =
     map (PlayerCard . snd)
       $ filter
-        (canPlayFromDiscard modifiers)
+        (canPlayFromDiscard attrs modifiers)
         (withIndex investigatorDiscard)
-  canPlayFromDiscard modifiers (n, card) =
+  canPlayFromDiscard attrs modifiers (n, card) =
     cdPlayableFromDiscard (toCardDef card)
-      || any (allowsPlayFromDiscard n card) modifiers
-  allowsPlayFromDiscard 0 card (CanPlayTopmostOfDiscard (mcardType, traits)) =
+      || any (allowsPlayFromDiscard attrs n card) modifiers
+  allowsPlayFromDiscard InvestigatorAttrs {..} 0 card (CanPlayTopmostOfDiscard (mcardType, traits)) =
     let cardMatcher = maybe AnyCard CardWithType mcardType <> foldMap CardWithTrait traits
         allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
      in case allMatches of
           (topmost : _) -> topmost == card
           _ -> False
-  allowsPlayFromDiscard 0 card (CanPlayFromDiscard (mcardType, traits)) =
+  allowsPlayFromDiscard InvestigatorAttrs {..} 0 card (CanPlayFromDiscard (mcardType, traits)) =
     let cardMatcher = maybe AnyCard CardWithType mcardType <> foldMap CardWithTrait traits
         allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
      in card `elem` allMatches
-  allowsPlayFromDiscard _ _ _ = False
+  allowsPlayFromDiscard _ _ _ _ = False
 
 getIsPlayable
-  :: (HasCallStack, HasGame m, Sourceable source)
-  => InvestigatorId
+  :: (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
   -> source
   -> CostStatus
   -> [Window]
   -> Card
   -> m Bool
-getIsPlayable iid source costStatus windows' c = do
+getIsPlayable (asId -> iid) source costStatus windows' c = do
   availableResources <- getSpendableResources iid
   getIsPlayableWithResources iid source availableResources costStatus windows' c
 
 getIsPlayableWithResources
-  :: forall m source
-   . (HasCallStack, HasGame m, Sourceable source)
-  => InvestigatorId
+  :: forall m source investigator
+   . (HasCallStack, HasGame m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
   -> source
   -> Int
   -> CostStatus
@@ -108,7 +110,7 @@ getIsPlayableWithResources
   -> m Bool
 getIsPlayableWithResources _ _ _ _ _ (VengeanceCard _) = pure False
 getIsPlayableWithResources _ _ _ _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
-getIsPlayableWithResources iid (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) = do
+getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources costStatus windows' c@(PlayerCard _) = do
   if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
     then pure False
     else do

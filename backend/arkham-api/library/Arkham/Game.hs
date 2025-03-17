@@ -978,7 +978,7 @@ getInvestigatorsMatching matcher = do
             <*> andM [pure $ #draw `elem` allowed, canDo iid #draw, getCanAfford (toAttrs a) [#draw]]
         playOk <- andM [pure $ #play `elem` allowed, canDo iid #play]
         playableCards <- if playOk
-          then filterCards (not_ FastCard) <$> getPlayableCards (toAttrs a) (UnpaidCost NoAction) (Window.defaultWindows iid)
+          then filterCards (not_ FastCard) <$> getPlayableCards (toAttrs a) iid (UnpaidCost NoAction) (Window.defaultWindows iid)
           else pure []
 
         pure $ notNull actions || notNull playableCards || resourceOk || drawOk

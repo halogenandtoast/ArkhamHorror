@@ -3273,7 +3273,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         actions <- getActions a.id windows
         playableCards <-
           if not (investigatorDefeated || investigatorResigned)
-            then getPlayableCards a (UnpaidCost NeedsAction) windows
+            then getPlayableCards a a (UnpaidCost NeedsAction) windows
             else pure []
         runWindow a windows actions playableCards
         pure a
@@ -4122,7 +4122,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   [UseEffectAction iid effectId windows]
             _ -> Nothing
 
-        playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+        playableCards <- getPlayableCards iid iid (UnpaidCost NeedsAction) windows
         let drawing = drawCardsF iid a 1
 
         canDraw <- canDo iid #draw
@@ -4157,7 +4157,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     actions <- getActions investigatorId windows
     anyForced <- anyM (isForcedAbility investigatorId) actions
     unless anyForced $ do
-      playableCards <- getPlayableCards a (UnpaidCost NeedsAction) windows
+      playableCards <- getPlayableCards iid iid (UnpaidCost NeedsAction) windows
       let
         usesAction = not isAdditional
         choices =

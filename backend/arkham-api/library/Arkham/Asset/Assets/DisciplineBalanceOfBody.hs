@@ -7,11 +7,9 @@ import Arkham.Card
 import Arkham.Helpers.Action (canDo)
 import Arkham.Helpers.Modifiers (modified_, withGrantedAction)
 import Arkham.Helpers.Playable (getPlayableCards)
-import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 import Arkham.Window (defaultWindows)
 
 newtype Metadata = Metadata {chosenAbilities :: [DifferentAbility]}
@@ -46,10 +44,9 @@ instance RunMessage DisciplineBalanceOfBody where
           $ PerformableAbility [ActionCostModifier (-1)]
           <> oneOf [AbilityIsAction #fight, AbilityIsAction #evade]
 
-      iattrs <- getAttrs @Investigator iid
       playableCards <- withGrantedAction iid attrs do
         filterCards (mapOneOf CardWithAction [#fight, #evade])
-          <$> getPlayableCards iattrs (UnpaidCost NoAction) (defaultWindows iid)
+          <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
 
       chooseOrRunOneM iid do
         labeled "Take no more actions" nothing

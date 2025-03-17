@@ -44,7 +44,7 @@ actionMatches iid a RepeatableAction = do
 
   playableCards <-
     filterCards (not_ FastCard)
-      <$> getPlayableCards a' (UnpaidCost NoAction) (defaultWindows iid)
+      <$> getPlayableCards iid iid (UnpaidCost NoAction) (defaultWindows iid)
 
   canAffordTakeResources <- withModifiersOf iid GameSource [ActionCostOf IsAnyAction (-1)] do
     getCanAfford a' [#resource]

@@ -370,8 +370,8 @@ inPlayAreaOf = InPlayAreaOf . InvestigatorWithId
 inHandOf :: ForPlay -> InvestigatorId -> ExtendedCardMatcher
 inHandOf forPlay = InHandOf forPlay . InvestigatorWithId
 
-inDiscardOf :: InvestigatorId -> ExtendedCardMatcher
-inDiscardOf = InDiscardOf . InvestigatorWithId
+inDiscardOf :: (AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> ExtendedCardMatcher
+inDiscardOf = InDiscardOf . InvestigatorWithId . asId
 
 basic :: CardMatcher -> ExtendedCardMatcher
 basic = BasicCardMatch

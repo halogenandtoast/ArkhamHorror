@@ -1,6 +1,5 @@
 module Arkham.Asset.Assets.TheKeyOfSolomonSecretsOfTheUnknown4 (
   theKeyOfSolomonSecretsOfTheUnknown4,
-  TheKeyOfSolomonSecretsOfTheUnknown4 (..),
 )
 where
 

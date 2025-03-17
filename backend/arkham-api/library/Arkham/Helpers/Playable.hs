@@ -387,6 +387,12 @@ getIsPlayableWithResources iid (toSource -> source) availableResources costStatu
     let
       goNoAction = \case
         UnpaidCost NoAction -> True
+        PaidCost ->
+          -- NOTE: This addition is recent and is related to changes with
+          -- windows. Because we pass all windows now it confuses the logic for
+          -- playing a card outside of a normal window, but my choice here is
+          -- that if we've PaidCost then we should not care.
+          True
         AuxiliaryCost _ inner -> goNoAction inner
         _ -> False
       noAction = isNothing (cdFastWindow pcDef) && goNoAction costStatus

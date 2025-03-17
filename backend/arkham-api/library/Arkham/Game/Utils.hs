@@ -268,12 +268,7 @@ createActiveCostForCard
   -> m ActiveCost
 createActiveCostForCard iid card isPlayAction windows' = do
   acId <- getRandom
-  allModifiers <-
-    mconcat
-      <$> sequence
-        [ getModifiers card
-        , getModifiers iid
-        ]
+  allModifiers <- mconcat <$> sequence [getModifiers card, getModifiers iid]
   resources <- getModifiedCardCost iid card
   investigator' <- getInvestigator iid
   let

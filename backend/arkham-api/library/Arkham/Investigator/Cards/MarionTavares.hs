@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Draw.Types
-import Arkham.Helpers.Playable (getIsPlayable)
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Window (cardPlayed)
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (PlayCard)
@@ -54,9 +54,8 @@ instance RunMessage MarionTavares where
       pure i
     DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 ws@(cardPlayed -> card) _) -> do
       cards <-
-        filterM (getIsPlayable iid (attrs.ability 1) (UnpaidCost NoAction) ws)
-          . filterCards (#event <> not_ (CardWithTitle card.title))
-          =<< ((<>) <$> iid.hand <*> (filter (cdPlayableFromDiscard . toCardDef) . map toCard <$> iid.discard))
+        filterCards (#event <> not_ (CardWithTitle card.title))
+          <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) ws
       when (notNull cards) do
         chooseOneM iid do
           labeled "Do not play another event" nothing

@@ -35,7 +35,7 @@ instance RunMessage CaptivatingPerformance3 where
       actions <- withGrantedAction iid attrs do
         filter (\x -> any (abilityIs x) as) <$> getActions iid (defaultWindows iid)
       playableCards <-
-        filterCards (not_ FastCard) <$> getPlayableCards a' (UnpaidCost NoAction) (defaultWindows iid)
+        filterCards (not_ FastCard) <$> getPlayableCards (attrs.ability 1) iid (UnpaidCost NoAction) (defaultWindows iid)
       (resourceOk, drawOk) <- withModifiersOf iid attrs [ActionCostOf IsAnyAction (-1)] do
         (,)
           <$> andM [pure $ #resource `elem` as, canDo iid #resource, getCanAfford a' [#resource]]

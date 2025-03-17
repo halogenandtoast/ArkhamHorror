@@ -78,7 +78,7 @@ instance RunMessage BobJenkins where
           $ do
             withModifiers iid (toModifiers attrs $ map (PlayableCardOf iid') cards) $ do
               filter (`cardMatch` (CardWithType AssetType <> #item))
-                <$> getPlayableCards attrs (UnpaidCost NoAction) windows'
+                <$> getPlayableCards attrs iid (UnpaidCost NoAction) windows'
 
       chooseOne iid
         $ [ targetLabel (toCardId c) [HandleTargetChoice iid (attrs.ability 1) (CardIdTarget $ toCardId c)]

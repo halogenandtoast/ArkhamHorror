@@ -66,7 +66,7 @@ getLukePlayable attrs windows' = do
     enemies <- select $ enemyAt lid
     withModifiers iid (toModifiers attrs $ AsIfAt lid : map AsIfEngagedWith enemies) $ do
       filter (`cardMatch` CardWithType EventType)
-        <$> getPlayableCards attrs (UnpaidCost NeedsAction) windows'
+        <$> getPlayableCards attrs iid (UnpaidCost NeedsAction) windows'
 
 instance RunMessage LukeRobinson where
   runMessage msg i@(LukeRobinson (attrs `With` meta)) = runQueueT $ case msg of
@@ -100,7 +100,7 @@ instance RunMessage LukeRobinson where
           || Window.hasEliminatedWindow windows' -> do
           lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
           actions <- getActions attrs.id windows'
-          playableCards <- getPlayableCards attrs (UnpaidCost NeedsAction) windows'
+          playableCards <- getPlayableCards attrs attrs.id (UnpaidCost NeedsAction) windows'
           runWindow attrs windows' actions (nub $ playableCards <> lukePlayable)
           pure i
     InitiatePlayCard iid card mtarget payment windows' asAction | iid == toId attrs && active meta -> do

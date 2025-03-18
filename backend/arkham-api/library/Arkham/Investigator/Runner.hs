@@ -707,6 +707,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
     pushAll
       $ windowMsg
+      : CheckTrauma iid
       : [ChooseLeadInvestigator | isLead]
         <> [InvestigatorKilled (toSource a) iid | killed]
         <> [BecomeHomunculus iid | not killed && becomeHomunculus]
@@ -3911,21 +3912,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PlaceInBonded iid card | iid == investigatorId -> do
     pure
       $ a
-      & bondedCardsL
-      %~ nub
-      . (card :)
-      & handL
-      %~ filter (/= card)
-      & discardL
-      %~ filter ((/= card) . toCard)
-      & deckL
-      %~ filter ((/= card) . toCard)
+      & (bondedCardsL %~ nub . (card :))
+      & (handL %~ filter (/= card))
+      & (discardL %~ filter ((/= card) . toCard))
+      & (deckL %~ filter ((/= card) . toCard))
       & (foundCardsL . each %~ filter (/= card))
-      & cardsUnderneathL
-      %~ filter (/= card)
-      & decksL
-      . each
-      %~ filter (/= card)
+      & (cardsUnderneathL %~ filter (/= card))
+      & (decksL . each %~ filter (/= card))
   SufferTrauma iid physical mental | iid == investigatorId -> do
     push $ CheckTrauma iid
     pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental

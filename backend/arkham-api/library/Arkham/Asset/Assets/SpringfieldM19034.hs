@@ -41,10 +41,7 @@ instance HasModifiersFor SpringfieldM19034 where
 -- TODO: Can't fight enemies engaged, see Telescopic Sight (3)
 instance HasAbilities SpringfieldM19034 where
   getAbilities (SpringfieldM19034 a) =
-    [ controlledAbility
-        a
-        1
-        (exists $ CanFightEnemy (a.ability 1) <> not_ EnemyEngagedWithYou)
+    [ controlled a 1 (exists $ CanFightEnemy (a.ability 1) <> not_ EnemyEngagedWithYou)
         $ fightAction (assetUseCost a Ammo 1)
     ]
 

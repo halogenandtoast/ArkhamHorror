@@ -1,12 +1,13 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Asset.Assets.SpringfieldM19034 (springfieldM19034) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Taboo
 
 newtype SpringfieldM19034 = SpringfieldM19034 AssetAttrs
@@ -32,8 +33,8 @@ instance HasModifiersFor SpringfieldM19034 where
                 $ EnemyWithoutModifier CannotBeAttacked
                 <> not_ (enemyEngagedWith iid)
                 <> oneOf
-                  [ EnemyAt YourLocation
-                  , NonEliteEnemy <> EnemyAt (ConnectedTo YourLocation)
+                  [ at_ YourLocation
+                  , NonEliteEnemy <> at_ (ConnectedTo YourLocation)
                   ]
             ]
 
@@ -48,26 +49,25 @@ instance HasAbilities SpringfieldM19034 where
     ]
 
 instance RunMessage SpringfieldM19034 where
-  runMessage msg a@(SpringfieldM19034 attrs) = case msg of
+  runMessage msg a@(SpringfieldM19034 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       let tabooExtend =
             if tabooed TabooList19 attrs
               then
-                ( <>
-                    oneOf
-                      [ EnemyAt $ locationWithInvestigator iid
-                      , NonEliteEnemy <> EnemyAt (ConnectedFrom $ locationWithInvestigator iid)
-                      ]
-                )
+                fightOverride
+                  . ( <>
+                        oneOf
+                          [ EnemyAt $ locationWithInvestigator iid
+                          , NonEliteEnemy <> EnemyAt (ConnectedTo $ locationWithInvestigator iid)
+                          ]
+                    )
               else id
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFightMatch sid iid source (tabooExtend EnemyNotEngagedWithYou)
-      enabled <-
-        skillTestModifiers sid attrs iid $ DamageDealt 2
-          : SkillModifier #combat 3
-          : [IgnoreRetaliate | tabooed TabooList19 attrs]
+      skillTestModifiers sid attrs iid $ DamageDealt 2
+        : SkillModifier #combat 3
+        : [IgnoreRetaliate | tabooed TabooList19 attrs]
+      chooseFightEnemyMatch sid iid source (traceShowId $ tabooExtend (not_ (enemyEngagedWith iid)))
 
-      pushAll [enabled, chooseFight]
       pure a
-    _ -> SpringfieldM19034 <$> runMessage msg attrs
+    _ -> SpringfieldM19034 <$> liftRunMessage msg attrs

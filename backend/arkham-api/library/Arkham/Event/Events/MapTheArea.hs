@@ -1,4 +1,4 @@
-module Arkham.Event.Events.MapTheArea (mapTheArea, MapTheArea (..)) where
+module Arkham.Event.Events.MapTheArea (mapTheArea) where
 
 import Arkham.Action qualified as Action
 import Arkham.Event.Cards qualified as Cards
@@ -36,7 +36,7 @@ instance RunMessage MapTheArea where
       pushM $ setTarget attrs <$> mkInvestigate sid iid attrs
       pure e
     Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do
-      whenM (selectNone $ EventAt $ LocationWithId lid) do
+      whenM (selectNone $ EventAt (LocationWithId lid) <> eventIs Cards.mapTheArea) do
         push $ PlaceEvent attrs.id (AttachedToLocation lid)
       pure e
     _ -> MapTheArea <$> liftRunMessage msg attrs

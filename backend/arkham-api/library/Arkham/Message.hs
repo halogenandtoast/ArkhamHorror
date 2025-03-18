@@ -350,6 +350,8 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | SkillTestResultOption Text [Message]
+  | SkillTestResultOptions [UI Message]
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
   | SetDriver AssetId InvestigatorId

@@ -1,11 +1,9 @@
-module Arkham.Skill.Cards.AllIn5 (allIn5, AllIn5 (..)) where
+module Arkham.Skill.Cards.AllIn5 (allIn5) where
 
-import Arkham.Classes
 import Arkham.Draw.Types
 import Arkham.Message
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 import Arkham.Taboo
 
 newtype AllIn5 = AllIn5 SkillAttrs
@@ -16,14 +14,15 @@ allIn5 :: SkillCard AllIn5
 allIn5 = skill AllIn5 Cards.allIn5
 
 instance RunMessage AllIn5 where
-  runMessage msg s@(AllIn5 attrs) = case msg of
-    InvestigatorCommittedSkill _ skillId | skillId == attrs.id -> do
-      attrs' <- runMessage msg attrs
+  runMessage msg s@(AllIn5 attrs) = runQueueT $ case msg of
+    InvestigatorCommittedSkill _ (is attrs -> True) -> do
+      attrs' <- liftRunMessage msg attrs
       pure
         $ AllIn5
         $ attrs'
         & if tabooed TabooList18 attrs' then afterPlayL .~ RemoveThisFromGame else id
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ _ -> do
-      push $ DrawCards iid $ withCardDrawRule ShuffleBackInEachWeakness $ newCardDraw attrs iid 5
+      skillTestResultOption "All In" do
+        drawCardsEdit iid attrs 5 $ withCardDrawRule ShuffleBackInEachWeakness
       pure s
-    _ -> AllIn5 <$> runMessage msg attrs
+    _ -> AllIn5 <$> liftRunMessage msg attrs

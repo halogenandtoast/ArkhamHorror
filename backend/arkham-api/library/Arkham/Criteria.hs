@@ -414,6 +414,9 @@ data EnemyCriterion
 fightOverride :: EnemyMatcher -> EnemyMatcher
 fightOverride = CanFightEnemyWithOverride . CriteriaOverride . EnemyCriteria . ThisEnemy
 
+canFightOverride :: EnemyMatcher -> ModifierType
+canFightOverride = CanModify . EnemyFightActionCriteria . CriteriaOverride . EnemyCriteria . ThisEnemy
+
 ignoreAloofFightOverride :: EnemyMatcher -> EnemyMatcher
 ignoreAloofFightOverride matcher = fightOverride $ IgnoreAloofFightable <> matcher
 

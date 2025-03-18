@@ -9,7 +9,6 @@ import Arkham.Modifier
 import Arkham.Projection
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
-import Arkham.Skill.Types (setMeta)
 import Data.Aeson (Result (..))
 
 newtype GhastlyPossession1 = GhastlyPossession1 SkillAttrs

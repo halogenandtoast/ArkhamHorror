@@ -1,11 +1,10 @@
-module Arkham.Skill.Cards.Beloved (beloved, Beloved (..)) where
+module Arkham.Skill.Cards.Beloved (beloved) where
 
-import Arkham.Classes
-import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestId)
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Beloved = Beloved SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -15,27 +14,21 @@ beloved :: SkillCard Beloved
 beloved = skillWith Beloved Cards.beloved (setMeta @Bool True)
 
 instance RunMessage Beloved where
-  runMessage msg s@(Beloved attrs) = case msg of
+  runMessage msg s@(Beloved attrs) = runQueueT $ case msg of
     RevealChaosToken _ _ token | token.face == #bless -> do
       getSkillTestId >>= \case
         Nothing -> pure s
-        Just sid -> do
-          let meta = toResult @Bool attrs.meta
-          if meta
+        Just sid ->
+          if toResult @Bool attrs.meta
             then do
-              enabled <- skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
-              player <- getPlayer attrs.owner
-              push
-                $ chooseOne
-                  player
-                  [ Label
-                      "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\""
-                      [ RemoveFromGame (toTarget attrs)
-                      , enabled
-                      , PassSkillTest
-                      ]
-                  , Label "Do not remove" []
-                  ]
+              chooseOneM attrs.owner do
+                labeled
+                  "Remove Beloved from the game to replace that token's effects with the following: \"You automatically succeed. (Do not reveal another token. Return this token to the chaos bag after this test ends).\""
+                  do
+                    removeFromGame attrs
+                    skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
+                    passSkillTest
+                labeled "Do not remove" nothing
               pure $ Beloved $ attrs & setMeta @Bool False
             else pure s
-    _ -> Beloved <$> runMessage msg attrs
+    _ -> Beloved <$> liftRunMessage msg attrs

@@ -1709,6 +1709,29 @@ runGameMessage msg g = case msg of
         player <- getPlayer (gameLeadInvestigatorId g)
         push $ chooseOneAtATime player $ map toUI as
     pure g
+  SkillTestResultOption txt msgs -> do
+    push $ SkillTestResultOptions [Label txt msgs]
+    pure g
+  SkillTestResultOptions opts -> do
+    peekMessage >>= \case
+      Just (SkillTestResultOption txt msgs) -> do
+        _ <- popMessage
+        push $ SkillTestResultOptions (Label txt msgs:opts)
+      Just (SkillTestResultOptions opts') -> do
+        _ <- popMessage
+        push $ SkillTestResultOptions (opts <> opts')
+      Just msg'@(PassedSkillTest {}) -> do
+        _ <- popMessage
+        pushAll [msg', msg]
+      _ -> getSkillTest >>= \case
+        Just st -> do
+          case opts of
+            [Label _ msgs] -> pushAll msgs
+            _ -> do
+              pid <- getPlayer st.investigator
+              push $ Ask pid $ ChooseOneAtATime opts
+        Nothing -> error "missing skill test"
+    pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card
     runMessage (RemoveAsset aid) g

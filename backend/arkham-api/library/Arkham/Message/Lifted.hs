@@ -1513,6 +1513,11 @@ checkWhen = Msg.pushM . Msg.checkWhen
 cancelTokenDraw :: (MonadTrans t, HasQueue Message m) => t m ()
 cancelTokenDraw = lift Msg.cancelTokenDraw
 
+skillTestResultOption :: ReverseQueue m => Text -> QueueT Message m () -> m ()
+skillTestResultOption label body = do
+  msgs <- evalQueueT body
+  push $ SkillTestResultOption label msgs
+
 -- Use @SearchFound@ with this
 search
   :: (Targetable target, Sourceable source, ReverseQueue m)

@@ -23,7 +23,7 @@ instance RunMessage TheKingsEdict where
         [] -> gainSurge attrs
         xs -> for_ xs \cultist ->
           selectForMaybeM (locationWithEnemy cultist) \lid -> moveTokens attrs lid cultist #clue 1
-      selectEach (InPlayEnemy $ EnemyWithTrait Cultist)
+      selectEach (InPlayEnemy $ withTrait Cultist)
         $ createCardEffect Cards.theKingsEdict Nothing attrs
       pure t
     _ -> TheKingsEdict <$> liftRunMessage msg attrs
@@ -36,12 +36,12 @@ theKingsEdictEffect :: EffectArgs -> TheKingsEdictEffect
 theKingsEdictEffect = cardEffect TheKingsEdictEffect Cards.theKingsEdict
 
 instance HasModifiersFor TheKingsEdictEffect where
-  getModifiersFor (TheKingsEdictEffect a) = case a.target of
-    EnemyTarget eid -> do
-      clueCount <- field EnemyClues eid
-      doomCount <- field EnemyDoom eid
-      modified_ a eid [EnemyFight (clueCount + doomCount) | clueCount + doomCount > 0]
-    _ -> pure mempty
+  getModifiersFor (TheKingsEdictEffect a) = for_ a.target.enemy \eid ->
+    maybeModified_ a eid do
+      clueCount <- MaybeT $ fieldMay EnemyClues eid
+      doomCount <- MaybeT $ fieldMay EnemyDoom eid
+      guard $ clueCount + doomCount > 0
+      pure [EnemyFight (clueCount + doomCount)]
 
 instance RunMessage TheKingsEdictEffect where
   runMessage msg e@(TheKingsEdictEffect attrs) = runQueueT $ case msg of

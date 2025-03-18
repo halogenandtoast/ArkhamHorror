@@ -208,6 +208,7 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c04237": return "theForgottenAge.theCityOfArchives"
     case "c04277": return "theForgottenAge.theDepthsOfYoth"
     case "c04314": return "theForgottenAge.shatteredAeons"
+    case "c04344": return "theForgottenAge.turnBackTime"
     case "c05043": return "theCircleUndone.disappearanceAtTheTwilightEstate"
     case "c05050": return "theCircleUndone.theWitchingHour"
     case "c05065": return "theCircleUndone.atDeathsDoorstep"

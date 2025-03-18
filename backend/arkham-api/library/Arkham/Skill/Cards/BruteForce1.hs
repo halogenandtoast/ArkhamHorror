@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.BruteForce1 (bruteForce1, BruteForce1 (..)) where
+module Arkham.Skill.Cards.BruteForce1 (bruteForce1) where
 
 import Arkham.Action qualified as Action
 import Arkham.Card

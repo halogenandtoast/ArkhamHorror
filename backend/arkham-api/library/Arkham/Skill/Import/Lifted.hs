@@ -23,8 +23,8 @@ import Arkham.Skill.Runner as X (
   IsSkill,
   SkillAttrs (..),
   SkillCard,
-  afterPlayL,
   additionalCostL,
+  afterPlayL,
   is,
   push,
   pushAll,
@@ -32,6 +32,7 @@ import Arkham.Skill.Runner as X (
   pushM,
   pushWhen,
   pushWhenM,
+  setMeta,
   skill,
   skillWith,
  )

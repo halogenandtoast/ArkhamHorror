@@ -130,7 +130,8 @@ instance RunMessage LocationAttrs where
     PassedSkillTest iid (Just Action.Investigate) source (Initiator target) _ n | isTarget a target -> do
       let clues = locationClues a
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
-      pushAll
+      push
+        $ SkillTestResultOption "Discover Clue"
         $ [before | clues == 0]
         <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
            , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
@@ -140,7 +141,8 @@ instance RunMessage LocationAttrs where
     PassedSkillTest iid (Just Action.Investigate) source (InitiatorProxy target actual) _ n | isTarget a target -> do
       let clues = locationClues a
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
-      pushAll
+      push
+        $ SkillTestResultOption "Discover Clue"
         $ [before | clues == 0]
         <> [Successful (Action.Investigate, toTarget a) iid source actual n]
         <> [after | clues == 0]

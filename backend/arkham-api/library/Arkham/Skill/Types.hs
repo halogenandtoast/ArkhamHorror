@@ -14,6 +14,7 @@ import Arkham.Cost
 import Arkham.Customization
 import Arkham.Id
 import Arkham.Json
+import Arkham.Message (Is (..))
 import Arkham.Name
 import Arkham.Placement
 import Arkham.Projection
@@ -72,6 +73,10 @@ data SkillAttrs = SkillAttrs
   , skillTaboo :: Maybe TabooList
   }
   deriving stock (Show, Eq)
+
+instance Is SkillAttrs SkillId where
+  is = (==) . toId
+  {-# INLINE is #-}
 
 instance HasField "taboo" SkillAttrs (Maybe TabooList) where
   getField = skillTaboo

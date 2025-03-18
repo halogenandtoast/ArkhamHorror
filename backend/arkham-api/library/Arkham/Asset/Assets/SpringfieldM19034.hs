@@ -25,11 +25,7 @@ instance HasModifiersFor SpringfieldM19034 where
           modified_
             a
             (AbilityTarget iid ab)
-            [ CanModify
-                $ EnemyFightActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
+            [ canFightOverride
                 $ EnemyWithoutModifier CannotBeAttacked
                 <> not_ (enemyEngagedWith iid)
                 <> oneOf

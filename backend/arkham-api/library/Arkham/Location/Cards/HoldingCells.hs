@@ -47,7 +47,7 @@ instance RunMessage HoldingCells where
       sid <- getRandom
       chooseOneM iid do
         for_ [#combat, #agility] \sType ->
-          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 2)
+          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       iids <- select $ InvestigatorWithModifier (ScenarioModifier "captured")

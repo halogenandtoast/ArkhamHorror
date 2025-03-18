@@ -50,14 +50,18 @@ instance RunMessage UnderworldMarket2 where
           chooseOneM iid do
             labeled "Place the rest on the bottom, in any order" do
               chooseOneAtATimeM iid $ targets xs $ handleTarget iid (attrs.ability 2)
+              unfocusCards
             when (spendableResources > 0) do
               labeled "Spend 1 resource to draw 1 of them" do
                 push $ SpendResources iid 1
                 chooseOneM iid do
                   for_ (eachWithRest xs) \(card, cs) -> do
                     targeting card do
+                      unfocusCards
                       addToHand iid (only card)
-                      chooseOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
+                      focusCards cs do
+                        chooseOrRunOneAtATimeM iid $ targets cs $ handleTarget iid (attrs.ability 2)
+                        unfocusCards
 
       pure . UnderworldMarket2 . (`with` Meta rest) $ attrs
     HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (CardIdTarget cid) -> do

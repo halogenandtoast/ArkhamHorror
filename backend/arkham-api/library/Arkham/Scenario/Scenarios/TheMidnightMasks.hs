@@ -146,7 +146,8 @@ instance RunMessage TheMidnightMasks where
       cultistsWeInterrogated <-
         selectMap toCardCode (VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Cultist <> CardIsUnique)
       agenda <- getCurrentAgendaStep
-      inPlayCultistsWhoGotAway <- selectField EnemyCardCode (EnemyWithTrait Trait.Cultist <> UniqueEnemy)
+      inPlayCultistsWhoGotAway <-
+        selectField EnemyCardCode (InPlayEnemy $ EnemyWithTrait Trait.Cultist <> UniqueEnemy)
       let
         resolution = if n == 1 then resolution1 else resolution2
         cultistsWhoGotAway =

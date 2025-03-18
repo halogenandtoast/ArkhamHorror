@@ -121,7 +121,10 @@ const debug = useDebug()
         />
 
         <template v-if="debug.active">
-          <button @click="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})">+</button>
+          <button
+            @click.exact="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]})"
+            @click.shift="debug.send(game.id, {tag: 'PlaceTokens', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 5]})"
+          >+</button>
         </template>
       </div>
     </div>

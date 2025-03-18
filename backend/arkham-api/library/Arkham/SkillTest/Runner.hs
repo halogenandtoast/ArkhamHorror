@@ -273,6 +273,13 @@ instance RunMessage SkillTest where
                 applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
                 applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
                 applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
+                applyRevealStategyModifier n (DrawAdditionalChaosTokens m) = 
+                  let
+                    go = \case
+                      Reveal x -> RevealAndChoose (x + m) 1
+                      RevealAndChoose x z -> RevealAndChoose (x + m) z
+                      other -> other
+                  in go n
                 applyRevealStategyModifier n _ = n
                 revealStrategy =
                   foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')

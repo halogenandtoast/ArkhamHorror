@@ -1,43 +1,24 @@
-module Arkham.Event.Events.EatLead (eatLead, EatLead (..)) where
+module Arkham.Event.Events.EatLead (eatLead) where
 
-import Arkham.Ability
 import Arkham.Asset.Uses
-import Arkham.ChaosBag.RevealStrategy
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
-import Arkham.Window (Window (..), mkWindow)
-import Arkham.Window qualified as Window
+import Arkham.Modifier
 
-newtype Metadata = Metadata {asset :: Maybe AssetId}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype EatLead = EatLead (EventAttrs `With` Metadata)
+newtype EatLead = EatLead EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eatLead :: EventCard EatLead
-eatLead = event (EatLead . (`With` Metadata Nothing)) Cards.eatLead
+eatLead = event EatLead Cards.eatLead
 
 instance RunMessage EatLead where
-  runMessage msg (EatLead (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ [(windowType -> Window.ActivateAbility _ _ ability)] _ | eid == toId attrs -> do
-      case abilitySource ability of
-        AssetSource aid -> do
-          ignoreWindow <-
-            checkWindows [mkWindow Timing.After (Window.CancelledOrIgnoredCardOrGameEffect $ toSource attrs)]
-          withSkillTest \sid -> do
-            enabled <- skillTestModifier sid attrs iid (ChangeRevealStrategy $ RevealAndChoose 1 1)
-            pushAll
-              [ SpendUses (toSource attrs) (AssetTarget aid) Ammo 1
-              , enabled
-              , ignoreWindow
-              ]
-          pure . EatLead $ attrs `with` Metadata (Just aid)
-        _ -> error "Invalid source"
-    _ -> EatLead . (`with` metadata) <$> runMessage msg attrs
+  runMessage msg e@(EatLead attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      for_ (getWindowAsset attrs.windows) \aid -> do
+        spendUses attrs aid Ammo 1
+        nextSkillTestModifier attrs iid (DrawAdditionalChaosTokens 1)
+        cancelledOrIgnoredCardOrGameEffect attrs
+      pure e
+    _ -> EatLead <$> liftRunMessage msg attrs

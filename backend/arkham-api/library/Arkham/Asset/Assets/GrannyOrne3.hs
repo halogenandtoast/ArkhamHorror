@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -21,21 +21,21 @@ instance HasModifiersFor GrannyOrne3 where
 instance HasAbilities GrannyOrne3 where
   getAbilities (GrannyOrne3 a) =
     [ restricted a 1 ControlsThis
-        $ ReactionAbility
-          (WouldHaveSkillTestResult #when (affectsOthers $ InvestigatorAt YourLocation) #any #failure)
+        $ triggered
+          (WouldHaveSkillTestResult #when (affectsOthers $ at_ YourLocation) #any #failure)
           (exhaust a)
     ]
 
 instance RunMessage GrannyOrne3 where
   runMessage msg a@(GrannyOrne3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid -> do
+      getSkillTest >>= traverse_ \st -> do
         chooseOneM iid do
           labeled "Get +1 skill value" do
-            skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
+            skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue 1)
             push RerunSkillTest
           labeled "Get -1 skill value" do
-            skillTestModifier sid (attrs.ability 1) iid (AnySkillValue (-1))
+            skillTestModifier st.id (attrs.ability 1) st.investigator (AnySkillValue (-1))
             push RerunSkillTest
       pure a
     _ -> GrannyOrne3 <$> liftRunMessage msg attrs

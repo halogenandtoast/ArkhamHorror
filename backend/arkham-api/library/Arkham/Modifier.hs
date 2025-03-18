@@ -200,6 +200,7 @@ data ModifierType
   | CardsCannotLeaveYourDiscardPile
   | ChangeChaosTokenModifier ChaosTokenModifier
   | ChangeRevealStrategy RevealStrategy
+  | DrawAdditionalChaosTokens Int
   | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ChaosTokenFaceModifier [ChaosTokenFace]
   | ChaosTokenValueModifier Int

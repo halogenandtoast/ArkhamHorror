@@ -1,4 +1,4 @@
-module Arkham.Event.Events.QuickGetaway (quickGetaway, QuickGetaway (..)) where
+module Arkham.Event.Events.QuickGetaway (quickGetaway) where
 
 import Arkham.Attack.Types
 import Arkham.Event.Cards qualified as Cards

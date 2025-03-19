@@ -14,6 +14,7 @@ import Arkham.Enemy.Runner as X (
   cardCodeL,
   defeatedL,
   enemy,
+  enemyClues,
   enemyWith,
   evadeL,
   exhaustedL,

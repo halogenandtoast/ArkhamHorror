@@ -108,6 +108,7 @@ messageType CheckWindows {} = Just CheckWindowMessage
 messageType Explore {} = Just ExploreMessage
 messageType (Do msg) = messageType msg
 messageType (MoveWithSkillTest msg) = messageType msg
+messageType (MovedWithSkillTest _ msg) = messageType msg
 messageType DealAssetDamageWithCheck {} = Just AssetDamageMessage
 messageType DealAssetDirectDamage {} = Just AssetDamageMessage
 messageType AssignAssetDamageWithCheck {} = Just AssetDamageMessage

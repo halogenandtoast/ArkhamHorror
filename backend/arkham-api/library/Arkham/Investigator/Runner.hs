@@ -111,6 +111,7 @@ import Arkham.Matcher (
   ExtendedCardMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
+  SourceMatcher (..),
   TreacheryMatcher (..),
   assetControlledBy,
   assetIs,
@@ -1229,7 +1230,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pushAll $ (guard canMove *> resolve (Move $ move a iid lid)) <> [afterWindowMsg]
     pure a
   Move movement | isTarget a (moveTarget movement) -> do
-    canMove <- withoutModifier a CannotMove
+    scenarioEffect <- sourceMatches movement.source SourceIsScenarioCardEffect
+    canMove <- if scenarioEffect
+      then withoutModifier a CannotMove
+      else withoutModifiers a [CannotMove, CannotMoveExceptByScenarioCardEffects]
     when canMove do
       case moveDestination movement of
         ToLocationMatching matcher -> do

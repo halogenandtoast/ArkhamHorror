@@ -18,6 +18,8 @@
   },
   "remembered": {
     "youListenedToIchtacasTale": "You listened to Ichtaca's tale.",
+    "youFoughtWithIchtaca": "You fought with Ichtaca.",
+    "ichtacaLeftWithoutYou": "Ichtaca left without you.",
     "ichtacasDestination": "Ichtaca's destination: {name}.",
     "ichtacasPrey": "Ichtaca's Prey: {name}."
   }

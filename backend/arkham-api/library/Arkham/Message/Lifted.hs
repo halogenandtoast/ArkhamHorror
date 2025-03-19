@@ -48,7 +48,11 @@ import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.ChaosToken qualified as Msg
 import Arkham.Helpers.Effect qualified as Msg
 import Arkham.Helpers.Enemy qualified as Msg
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf, canDiscoverCluesAtYourLocation)
+import Arkham.Helpers.Investigator (
+  canDiscoverCluesAtYourLocation,
+  getCanDiscoverClues,
+  withLocationOf,
+ )
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
@@ -1725,7 +1729,8 @@ fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 matchingDon't :: (MonadTrans t, HasQueue Message m) => (Message -> Bool) -> t m ()
 matchingDon't f = lift $ popMessageMatching_ f
 
-cardDrawModifier :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
+cardDrawModifier
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> ModifierType -> m ()
 cardDrawModifier source target modifier = Msg.pushM $ Msg.cardDrawModifier source target modifier
 
 enemyAttackModifier
@@ -1863,7 +1868,8 @@ takeActionAsIfTurn iid (toSource -> source) = do
   gainActions iid source 1
   push $ PlayerWindow iid [] False
 
-nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => a -> Int -> enemy -> m ()
+nonAttackEnemyDamage
+  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => a -> Int -> enemy -> m ()
 nonAttackEnemyDamage source damage enemy = do
   whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
     push $ Msg.EnemyDamage (asId enemy) (nonAttack source damage)
@@ -2093,7 +2099,14 @@ payCardCostWithWindows iid card ws = push $ Msg.PayCardCost iid card ws
 removeFromGame :: (ReverseQueue m, Targetable target) => target -> m ()
 removeFromGame = push . Msg.RemoveFromGame . toTarget
 
-automaticallyEvadeEnemy :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> enemy -> m ()
+automaticallyEvadeEnemy
+  :: ( ReverseQueue m
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => investigator -> enemy -> m ()
 automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId investigator) (asId enemy)
 
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
@@ -2471,6 +2484,13 @@ withTimings w body = do
 
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
+
+cancelMovement :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
+cancelMovement source investigator =
+  -- Msg.getSkillTestTarget >>= \case
+  --   Just (BatchTarget batchId) -> cancelBatch batchId
+  --   _ -> error "Invalid target"
+  movementModifier source investigator CannotMove
 
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg

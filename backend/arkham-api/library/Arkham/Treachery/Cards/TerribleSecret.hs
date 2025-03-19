@@ -23,12 +23,11 @@ instance RunMessage TerribleSecret where
         else focusCards cardsUnderneath do
           chooseUpToNM iid (length cardsUnderneath) "Keep Remaining Cards" do
             for_ cardsUnderneath \pc -> do
-              for_ (preview _PlayerCard pc) \c -> targeting c (discardCard iid attrs c)
+              for_ (preview _PlayerCard pc) \c -> targeting c (addToDiscard iid [c])
           unfocusCards
           doStep 1 msg
       pure t
     DoStep 1 (Revelation iid source) | isSource attrs source -> do
-      cardsUnderneath <- field InvestigatorCardsUnderneath iid
-      assignHorror iid attrs (length cardsUnderneath)
+      assignHorror iid attrs =<< fieldLength InvestigatorCardsUnderneath iid
       pure t
     _ -> TerribleSecret <$> liftRunMessage msg attrs

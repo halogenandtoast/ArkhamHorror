@@ -3090,10 +3090,9 @@ enemyMatcherFilter es matcher' = case matcher' of
               )
               modifiers'
           window = mkWindow #when Window.NonFast
-          overrideFunc = case overrides of
-            [] -> id
-            [o] -> overrideAbilityCriteria o
-            _ -> error "multiple overrides found"
+          overrideFunc = case nonEmpty overrides of
+            Nothing -> id
+            Just os-> overrideAbilityCriteria $ combineOverrides os
         excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
         sourceIsExcluded <- flip anyM enemyModifiers \case
           CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of

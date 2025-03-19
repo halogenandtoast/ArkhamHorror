@@ -1,12 +1,10 @@
-module Arkham.Investigator.Cards.RexMurphy (RexMurphy (..), rexMurphy) where
+module Arkham.Investigator.Cards.RexMurphy (rexMurphy) where
 
 import Arkham.Ability
-import Arkham.Discover
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Runner
+import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 import Arkham.Taboo
 
 newtype RexMurphy = RexMurphy InvestigatorAttrs
@@ -21,10 +19,9 @@ rexMurphy =
 
 instance HasAbilities RexMurphy where
   getAbilities (RexMurphy x) =
-    [ (if (maybe False (>= TabooList15) x.taboo) then playerLimit PerRound else id)
-        $ (restrictedAbility x 1)
-          (OnLocation LocationWithAnyClues <> CanDiscoverCluesAt YourLocation)
-          (freeReaction $ SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
+    [ (if maybe False (>= TabooList15) x.taboo then playerLimit PerRound else id)
+        $ selfAbility x 1 (AbleToDiscoverCluesAt YourLocation)
+        $ freeReaction (SuccessfulInvestigationResult #after You Anywhere (atLeast 2))
     ]
 
 instance HasChaosTokenValue RexMurphy where
@@ -33,18 +30,13 @@ instance HasChaosTokenValue RexMurphy where
   getChaosTokenValue _ token _ = pure $ ChaosTokenValue token mempty
 
 instance RunMessage RexMurphy where
-  runMessage msg i@(RexMurphy attrs) = case msg of
+  runMessage msg i@(RexMurphy attrs) = runQueueT case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ Msg.DiscoverClues iid $ discoverAtYourLocation (toAbilitySource attrs 1) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ Label
-              "Automatically fail to draw 3"
-              [FailSkillTest, drawCards iid (ChaosTokenEffectSource ElderSign) 3]
-          , Label "Resolve normally" []
-          ]
+      chooseOneM iid do
+        labeled "Automatically fail to draw 3" $ failSkillTest >> drawCards iid ElderSign 3
+        labeled "Resolve normally" nothing
       pure i
-    _ -> RexMurphy <$> runMessage msg attrs
+    _ -> RexMurphy <$> liftRunMessage msg attrs

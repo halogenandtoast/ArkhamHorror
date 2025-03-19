@@ -181,7 +181,7 @@ const emptyLog = computed(() => {
       <div v-if="remembered.length > 0" class="remembered box">
         <h3 class="title">Remembered</h3>
         <ul>
-          <li v-for="record in remembered" :key="record">{{record}}.</li>
+          <li v-for="record in remembered" :key="record">{{record}}</li>
         </ul>
       </div>
       <div class="log-categories">

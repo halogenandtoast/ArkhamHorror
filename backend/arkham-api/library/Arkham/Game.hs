@@ -3082,13 +3082,7 @@ enemyMatcherFilter es matcher' = case matcher' of
             CanModify (EnemyFightActionCriteria override) -> Just override
             _ -> Nothing
           overrides = mapMaybe isOverride (enemyModifiers <> sourceModifiers)
-          enemyFilters =
-            mapMaybe
-              ( \case
-                  CannotFight m -> Just m
-                  _ -> Nothing
-              )
-              modifiers'
+          enemyFilters = mapMaybe (preview _CannotFight) modifiers'
           window = mkWindow #when Window.NonFast
           overrideFunc = case nonEmpty overrides of
             Nothing -> id

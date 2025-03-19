@@ -60,6 +60,19 @@ i
   flex-direction: column;
   gap: 5px;
 
+  &:deep(.card-wrapper) {
+    &::after {
+      border-radius: 6px;
+      pointer-events: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: #FFF;
+      opacity: .85;
+      mix-blend-mode: saturation;
+      z-index: 20;
+    }
+  }
   &:deep(.card) {
     box-shadow: unset;
     margin: 0;

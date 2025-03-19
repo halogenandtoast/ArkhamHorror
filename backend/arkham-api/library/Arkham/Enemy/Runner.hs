@@ -1195,6 +1195,8 @@ instance RunMessage EnemyAttrs where
       pure $ a & defeatedL .~ True
     DefeatedAddToVictory (isTarget a -> True) -> do
       pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
+    AddToVictory (isTarget a -> True) -> do
+      pure $ a & placementL .~ OutOfPlay VictoryDisplayZone
     Discard miid source target | a `isTarget` target -> do
       whenLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]
       afterLeavePlay <- checkWindows [mkWhen $ Window.LeavePlay (toTarget a)]

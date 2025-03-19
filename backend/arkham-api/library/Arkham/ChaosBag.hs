@@ -706,29 +706,25 @@ instance RunMessage ChaosBag where
                 )
               & (revealedChaosTokensL .~ [])
     RunBag source miid strategy -> case chaosBagChoice of
-      Nothing -> error "unexpected"
+      Nothing -> pure c
       Just choice' ->
         if isUndecided choice'
           then do
             iid <- maybe getLead pure miid
             iids <- getInvestigators
-            let
-              (choice'', msgs) =
-                decideFirstUndecided source iid iids strategy toDecided choice'
+            let (choice'', msgs) = decideFirstUndecided source iid iids strategy toDecided choice'
             push (RunBag source miid strategy)
             pushAll msgs
             pure $ c & choiceL ?~ choice''
-          else
-            c
-              <$ pushAll [BeforeRevealChaosTokens, RunDrawFromBag source miid strategy]
+          else do
+            pushAll [BeforeRevealChaosTokens, RunDrawFromBag source miid strategy]
+            pure c
     NextChaosBagStep source miid strategy -> case chaosBagChoice of
-      Nothing -> error "unexpected"
+      Nothing -> pure c
       Just choice' -> do
         iid <- maybe getLead pure miid
         iids <- getInvestigators
-        let
-          (updatedChoice, messages) =
-            decideFirstUndecided source iid iids strategy toDecided choice'
+        let (updatedChoice, messages) = decideFirstUndecided source iid iids strategy toDecided choice'
         unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     SetChaosBagChoice _ _ step -> case chaosBagChoice of
@@ -744,8 +740,7 @@ instance RunMessage ChaosBag where
           Do (CheckWindows [Window Timing.When (Window.WouldRevealChaosTokens {}) _]) -> True
           _ -> False
 
-        let
-          choice'' = replaceChooseMatchChoice choice' (Decided step)
+        let choice'' = replaceChooseMatchChoice choice' (Decided step)
         pure $ c & choiceL ?~ choice''
     ObtainChaosToken token -> do
       pure
@@ -785,8 +780,7 @@ instance RunMessage ChaosBag where
         -- if we have not decided we can use const to replace
         let
           choice'' = replaceDeciding choice' (Undecided step)
-          (updatedChoice, messages) =
-            decideFirstUndecided source iid iids SetAside toDecided choice''
+          (updatedChoice, messages) = decideFirstUndecided source iid iids SetAside toDecided choice''
         unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
@@ -862,28 +856,20 @@ instance RunMessage ChaosBag where
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
-        let
-          updatedChoice =
-            replaceFirstChoice source iid SetAside groupChoice choice'
+        let updatedChoice = replaceFirstChoice source iid SetAside groupChoice choice'
         pure $ c & choiceL ?~ updatedChoice
     RevealChaosToken SkillTestSource {} _ token ->
       pure
         $ c
-        & setAsideChaosTokensL
-        %~ (nub . ([token] <>))
-        & revealedChaosTokensL
-        %~ (nub . ([token] <>))
-        & chaosTokensL
-        %~ filter (/= token)
+        & (setAsideChaosTokensL %~ nub . ([token] <>))
+        & (revealedChaosTokensL %~ nub . ([token] <>))
+        & (chaosTokensL %~ filter (/= token))
     ForTarget (SkillTestTarget _) (RevealChaosToken SkillTestSource {} _ token) ->
       pure
         $ c
-        & setAsideChaosTokensL
-        %~ (nub . ([token] <>))
-        & revealedChaosTokensL
-        %~ (nub . ([token] <>))
-        & chaosTokensL
-        %~ filter (/= token)
+        & (setAsideChaosTokensL %~ nub . ([token] <>))
+        & (revealedChaosTokensL %~ nub . ([token] <>))
+        & (chaosTokensL %~ filter (/= token))
     RevealChaosToken _source _iid token ->
       -- TODO: we may need a map of source to tokens here
       pure $ c & revealedChaosTokensL %~ (<> [token])
@@ -910,10 +896,8 @@ instance RunMessage ChaosBag where
       -- if we are replacing with a token in the token pool, we need to change its face too
       pure
         $ c
-        & chaosTokensL
-        %~ replaceToken originalFace newFace
-        & tokenPoolL
-        %~ replaceToken newFace originalFace
+        & (chaosTokensL %~ replaceToken originalFace newFace)
+        & (tokenPoolL %~ replaceToken newFace originalFace)
     SealChaosToken token ->
       pure
         $ c
@@ -925,21 +909,15 @@ instance RunMessage ChaosBag where
     UnsealChaosToken token -> do
       pure
         $ c
-        & chaosTokensL
-        %~ (token :)
-        & setAsideChaosTokensL
-        %~ filter (/= token)
-        & revealedChaosTokensL
-        %~ filter (/= token)
+        & (chaosTokensL %~ (token :))
+        & (setAsideChaosTokensL %~ filter (/= token))
+        & (revealedChaosTokensL %~ filter (/= token))
     RemoveChaosToken face ->
       pure $ c & chaosTokensL %~ deleteFirstMatch ((== face) . chaosTokenFace)
     RemoveAllChaosTokens face ->
       pure
         $ c
-        & chaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
-        & setAsideChaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
-        & revealedChaosTokensL
-        %~ filter ((/= face) . chaosTokenFace)
+        & (chaosTokensL %~ filter ((/= face) . chaosTokenFace))
+        & (setAsideChaosTokensL %~ filter ((/= face) . chaosTokenFace))
+        & (revealedChaosTokensL %~ filter ((/= face) . chaosTokenFace))
     _ -> pure c

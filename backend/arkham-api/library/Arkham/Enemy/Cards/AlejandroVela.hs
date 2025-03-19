@@ -1,15 +1,13 @@
 module Arkham.Enemy.Cards.AlejandroVela (alejandroVela, alejandroVelaEffect) where
 
 import Arkham.Ability
-import Arkham.Attack
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
+import Arkham.Helpers.SkillTest.Lifted (getSkillTest, parley)
 import Arkham.Story.Cards qualified as Story
 
 newtype AlejandroVela = AlejandroVela EnemyAttrs
@@ -21,29 +19,26 @@ alejandroVela = enemy AlejandroVela Cards.alejandroVela (6, PerPlayer 4, 3) (1, 
 
 instance HasAbilities AlejandroVela where
   getAbilities (AlejandroVela a) =
-    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage AlejandroVela where
-  runMessage msg e@(AlejandroVela attrs) = case msg of
+  runMessage msg e@(AlejandroVela attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      enabled <- createCardEffect Cards.alejandroVela Nothing (toAbilitySource attrs 1) sid
-      pushAll
-        [ enabled
-        , parley sid iid (toAbilitySource attrs 1) attrs #intellect (Fixed 5)
-        ]
+      createCardEffect Cards.alejandroVela Nothing (attrs.ability 1) sid
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 5)
       pure e
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ InitiateEnemyAttack $ enemyAttack (toId attrs) (toAbilitySource attrs 1) iid
+      initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      push $ Flip iid (toAbilitySource attrs 1) (toTarget attrs)
+      push $ Flip iid (attrs.ability 1) (toTarget attrs)
       pure e
     Flip iid _ (isTarget attrs -> True) -> do
       anotherWay <- genCard Story.anotherWay
       push $ ReadStory iid anotherWay ResolveIt (Just $ toTarget attrs)
       pure e
-    _ -> AlejandroVela <$> runMessage msg attrs
+    _ -> AlejandroVela <$> liftRunMessage msg attrs
 
 newtype AlejandroVelaEffect = AlejandroVelaEffect EffectAttrs
   deriving anyclass (HasAbilities, IsEffect)
@@ -53,17 +48,13 @@ alejandroVelaEffect :: EffectArgs -> AlejandroVelaEffect
 alejandroVelaEffect = cardEffect AlejandroVelaEffect Cards.alejandroVela
 
 instance HasModifiersFor AlejandroVelaEffect where
-  getModifiersFor (AlejandroVelaEffect a) = do
-    getSkillTest >>= \case
-      Just st | isTarget st.id a.target -> do
-        let tokens = filter ((== Tablet) . (.face)) st.revealedChaosTokens
-        modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
-      _ -> pure mempty
+  getModifiersFor (AlejandroVelaEffect a) = void $ runMaybeT do
+    st <- MaybeT getSkillTest
+    guard $ isTarget st.id a.target
+    let tokens = filter ((== Tablet) . (.face)) st.revealedChaosTokens
+    lift $ modifyEach a (map ChaosTokenTarget tokens) [ChangeChaosTokenModifier AutoSuccessModifier]
 
 instance RunMessage AlejandroVelaEffect where
-  runMessage msg e@(AlejandroVelaEffect attrs) =
-    case msg of
-      SkillTestEnds sid _ _ | isTarget sid attrs.target -> do
-        push $ disable attrs
-        pure e
-      _ -> AlejandroVelaEffect <$> runMessage msg attrs
+  runMessage msg e@(AlejandroVelaEffect attrs) = runQueueT $ case msg of
+    SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e
+    _ -> AlejandroVelaEffect <$> liftRunMessage msg attrs

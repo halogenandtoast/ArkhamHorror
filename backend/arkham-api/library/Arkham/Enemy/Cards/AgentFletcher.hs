@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AgentFletcher (agentFletcher, AgentFletcher (..)) where
+module Arkham.Enemy.Cards.AgentFletcher (agentFletcher) where
 
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted

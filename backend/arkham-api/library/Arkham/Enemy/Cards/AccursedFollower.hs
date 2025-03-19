@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.AccursedFollower (accursedFollower, AccursedFollower (..)) where
+module Arkham.Enemy.Cards.AccursedFollower (accursedFollower) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -19,7 +19,8 @@ accursedFollower =
     (spawnAtL ?~ SpawnAt (FarthestLocationFromYou Anywhere))
 
 instance HasAbilities AccursedFollower where
-  getAbilities (AccursedFollower a) = extend a [restrictedAbility a 1 HasRemainingCurseTokens $ forced $ PhaseEnds #when #enemy]
+  getAbilities (AccursedFollower a) =
+    extend a [restricted a 1 HasRemainingCurseTokens $ forced $ PhaseEnds #when #enemy]
 
 instance RunMessage AccursedFollower where
   runMessage msg e@(AccursedFollower attrs) = runQueueT $ case msg of

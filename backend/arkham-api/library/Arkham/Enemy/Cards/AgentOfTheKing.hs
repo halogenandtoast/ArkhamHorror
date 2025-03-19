@@ -1,14 +1,8 @@
-module Arkham.Enemy.Cards.AgentOfTheKing (
-  agentOfTheKing,
-  AgentOfTheKing (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.AgentOfTheKing (agentOfTheKing) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks, EnemyDefeated)
 import Arkham.Matcher
 
 newtype AgentOfTheKing = AgentOfTheKing EnemyAttrs
@@ -23,23 +17,22 @@ agentOfTheKing =
 
 instance HasAbilities AgentOfTheKing where
   getAbilities (AgentOfTheKing a) =
-    withBaseAbilities a
-      $ [ mkAbility a 1
-            $ ForcedAbility
-            $ EnemyAttacks #after (You <> InvestigatorWithAnyClues) AnyEnemyAttack
-            $ be a
-        , mkAbility a 2 $ ForcedAbility $ EnemyDefeated #when You ByAny $ be a <> EnemyWithAnyClues
-        ]
+    extend
+      a
+      [ mkAbility a 1
+          $ forced
+          $ EnemyAttacks #after (You <> InvestigatorWithAnyClues) AnyEnemyAttack (be a)
+      , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny $ be a <> EnemyWithAnyClues
+      ]
 
 instance RunMessage AgentOfTheKing where
-  runMessage msg e@(AgentOfTheKing attrs) = case msg of
+  runMessage msg e@(AgentOfTheKing attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      pushAll [InvestigatorSpendClues iid 1, PlaceClues (toAbilitySource attrs 1) (toTarget attrs) 1]
+      spendClues iid 1
+      placeClues (attrs.ability 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      pushAll
-        [ RemoveClues (toAbilitySource attrs 2) (toTarget attrs) (enemyClues attrs)
-        , GainClues iid (toAbilitySource attrs 2) (enemyClues attrs)
-        ]
+      removeClues (attrs.ability 2) attrs (enemyClues attrs)
+      gainClues iid (attrs.ability 2) (enemyClues attrs)
       pure e
-    _ -> AgentOfTheKing <$> runMessage msg attrs
+    _ -> AgentOfTheKing <$> liftRunMessage msg attrs

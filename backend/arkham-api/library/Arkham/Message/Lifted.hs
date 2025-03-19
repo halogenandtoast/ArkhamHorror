@@ -648,6 +648,14 @@ removeClues
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 removeClues source target n = push $ RemoveClues (toSource source) (toTarget target) n
 
+spendClues
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> Int -> m ()
+spendClues investigator n = push $ InvestigatorSpendClues (asId investigator) n
+
+gainClues
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> source -> Int -> m ()
+gainClues investigator source n = push $ GainClues (asId investigator) (toSource source) n
+
 placeDoom
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Int -> m ()
 placeDoom source target n = push $ PlaceDoom (toSource source) (toTarget target) n

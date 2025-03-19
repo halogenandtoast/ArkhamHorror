@@ -39,7 +39,9 @@ instance RunMessage FatedSouls where
       locations <- select $ LocationIsInFrontOf Anyone
       pushAll $ map PutLocationInCenter locations
 
-      whenHasRecord TheInvestigatorsSidedWithTheCoven do
-        lightBrazier =<< placeSetAsideLocation Locations.theGeistTrap
+      sidedWithTheCoven <- getHasRecord TheInvestigatorsSidedWithTheCoven
+      if sidedWithTheCoven
+        then lightBrazier =<< placeSetAsideLocation Locations.theGeistTrap
+        else placeSetAsideLocation_ Locations.theGeistTrap
       pure a
     _ -> FatedSouls <$> liftRunMessage msg attrs

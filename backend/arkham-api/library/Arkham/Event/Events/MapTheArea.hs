@@ -6,7 +6,7 @@ import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest)
-import Arkham.Investigate
+import Arkham.Helpers.SkillTest.Lifted (investigateEdit_)
 import Arkham.Matcher
 import Arkham.Placement
 
@@ -19,11 +19,10 @@ mapTheArea = event MapTheArea Cards.mapTheArea
 
 instance HasModifiersFor MapTheArea where
   getModifiersFor (MapTheArea a) =
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> maybeModified_ a (SkillTestTarget st.id) do
+    getSkillTest >>= traverse_ \st -> do
+      maybeModified_ a st do
         lid <- MaybeT $ getMaybeLocation st.investigator
-        guard $ a.attachedTo == Just (LocationTarget lid)
+        guard $ a.attachedTo.location == Just lid
         pure [Difficulty (-1)]
 
 instance RunMessage MapTheArea where
@@ -33,10 +32,10 @@ instance RunMessage MapTheArea where
       chooseOneM iid do
         labeled "Add your {willpower}" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
         labeled "Add your {agility}" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
-      pushM $ setTarget attrs <$> mkInvestigate sid iid attrs
+      investigateEdit_ sid iid attrs (setTarget attrs)
       pure e
     Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do
-      whenM (selectNone $ EventAt (LocationWithId lid) <> eventIs Cards.mapTheArea) do
-        push $ PlaceEvent attrs.id (AttachedToLocation lid)
+      whenNone (EventAt (LocationWithId lid) <> eventIs Cards.mapTheArea) do
+        place attrs.id (AttachedToLocation lid)
       pure e
     _ -> MapTheArea <$> liftRunMessage msg attrs

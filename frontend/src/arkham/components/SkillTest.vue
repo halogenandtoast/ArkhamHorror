@@ -347,7 +347,7 @@ const tokenEffects = computed(() => {
             <span>{{cannotCommitCardsToWords(modifier.type)}}</span>
           </template>
           <template v-if="modifier.type.tag === 'Difficulty'">
-            <span>+{{modifier.type.contents}}</span>
+            <span><template v-if="modifier.type.contents >= 0">+</template>{{modifier.type.contents}}</span>
             Difficulty
           </template>
           <template v-if="modifier.type.tag === 'CancelEffects'">

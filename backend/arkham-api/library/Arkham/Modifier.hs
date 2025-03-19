@@ -180,6 +180,7 @@ data ModifierType
   | CannotMakeAttacksOfOpportunity
   | CannotManipulateDeck
   | CannotMove
+  | CannotMoveExceptByScenarioCardEffects
   | CannotMoveMoreThanOnceEachTurn
   | CannotMulligan
   | CannotParleyWith EnemyMatcher
@@ -405,11 +406,6 @@ data UIModifier
   | Explosion -- from Dyanamite Blast
   | Locus -- from Prophesiae Profana
   deriving stock (Show, Eq, Ord, Data)
-
-pattern CannotMoveExceptByScenarioCardEffects :: ModifierType
-pattern CannotMoveExceptByScenarioCardEffects <- CannotMove
-  where
-    CannotMoveExceptByScenarioCardEffects = CannotMove
 
 instance IsLabel "combat" (Int -> ModifierType) where
   fromLabel = SkillModifier #combat

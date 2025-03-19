@@ -303,6 +303,19 @@ sourceMatches s = \case
         _ -> False
      in
       pure $ check s
+  Matcher.SourceIsScenarioCardEffect ->
+    let
+      check = \case
+        AbilitySource source' _ -> check source'
+        ActSource _ -> True
+        AgendaSource _ -> True
+        EnemySource _ -> True
+        LocationSource _ -> True
+        TreacherySource _ -> True
+        StorySource _ -> True
+        _ -> False
+     in
+      pure $ check s
   Matcher.SourceIsPlayerCard ->
     let
       check = \case

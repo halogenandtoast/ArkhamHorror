@@ -1,5 +1,6 @@
 module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameExportR,
+  getApiV1ArkhamGameFullExportR,
   postApiV1ArkhamGamesImportR,
   postApiV1ArkhamGamesFixR,
   getApiV1ArkhamGamesReloadR,
@@ -27,6 +28,11 @@ getApiV1ArkhamGameExportR :: ArkhamGameId -> Handler ArkhamExport
 getApiV1ArkhamGameExportR gameId = do
   _ <- fromJustNote "Not authenticated" <$> getRequestUserId
   generateExport gameId
+
+getApiV1ArkhamGameFullExportR :: ArkhamGameId -> Handler ArkhamExport
+getApiV1ArkhamGameFullExportR gameId = do
+  _ <- fromJustNote "Not authenticated" <$> getRequestUserId
+  generateFullExport gameId
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do

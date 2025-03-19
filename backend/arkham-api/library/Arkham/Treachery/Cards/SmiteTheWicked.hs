@@ -1,15 +1,12 @@
-module Arkham.Treachery.Cards.SmiteTheWicked where
+module Arkham.Treachery.Cards.SmiteTheWicked (smiteTheWicked) where
 
 import Arkham.Ability
 import Arkham.Capability
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype SmiteTheWicked = SmiteTheWicked TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -20,28 +17,23 @@ smiteTheWicked = treachery SmiteTheWicked Cards.smiteTheWicked
 
 instance HasAbilities SmiteTheWicked where
   getAbilities (SmiteTheWicked a) =
-    [mkAbility a 1 $ forcedOnElimination iid | iid <- maybeToList (treacheryOwner a)]
+    [restricted a 1 criteria $ forcedOnElimination iid | iid <- maybeToList a.owner]
+   where
+    criteria = maybe Never (exists . EnemyWithId) a.placement.attachedTo.enemy
 
 instance RunMessage SmiteTheWicked where
-  runMessage msg t@(SmiteTheWicked attrs) = case msg of
+  runMessage msg t@(SmiteTheWicked attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      hasEncounterDeck <- can.target.encounterDeck iid
-      when hasEncounterDeck $ do
+      whenM (can.target.encounterDeck iid) do
         key <- getEncounterDeckKey iid
-        push $ DiscardUntilFirst iid (toSource attrs) (Deck.EncounterDeckByKey key) #enemy
+        discardUntilFirst iid attrs key #enemy
       pure t
-    RequestedEncounterCard (isSource attrs -> True) _ mcard -> do
-      for_ mcard $ \card -> do
-        let ownerId = fromJustNote "has to be set" attrs.owner
-        enemyCreation <-
-          createEnemy card $ FarthestLocationFromInvestigator (InvestigatorWithId ownerId) Anywhere
-        pushAll
-          [ toMessage $ enemyCreation {enemyCreationInvestigator = Just ownerId}
-          , attachTreachery attrs (enemyCreationEnemyId enemyCreation)
-          ]
+    RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
+      for_ attrs.owner \ownerId -> do
+        attachTreachery attrs
+          =<< createEnemyWith card (FarthestLocationFromInvestigator (be ownerId) Anywhere) \x -> x {enemyCreationInvestigator = Just ownerId}
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      let investigator = fromJustNote "missing investigator" attrs.owner
-      push $ SufferTrauma investigator 0 1
+      for_ attrs.owner (`sufferMentalTrauma` 1)
       pure t
-    _ -> SmiteTheWicked <$> runMessage msg attrs
+    _ -> SmiteTheWicked <$> liftRunMessage msg attrs

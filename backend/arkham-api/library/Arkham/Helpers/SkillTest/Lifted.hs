@@ -4,12 +4,13 @@ import Arkham.Calculation
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Message (toMessage)
+import Arkham.Investigate.Types qualified as I
+import Arkham.Investigate (mkInvestigateLocation)
 import Arkham.Id
-import Arkham.Location.Types (Field (..))
 import Arkham.Message (Message (..))
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Projection
 import Arkham.SkillTest.Base (SkillTest)
 import Arkham.SkillType
 import Arkham.Source
@@ -116,10 +117,16 @@ investigate_
   -> InvestigatorId
   -> source
   -> m ()
-investigate_ sid iid source = withLocationOf iid \lid -> do
-  sType <- field LocationInvestigateSkill lid
-  difficulty <- field LocationInvestigateDifficulty lid
-  push $ Msg.investigate sid iid source lid sType difficulty
+investigate_ sid iid source = investigateEdit_ sid iid source id
+
+investigateEdit_
+  :: (Sourceable source, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> (I.Investigate -> I.Investigate)
+  -> m ()
+investigateEdit_ sid iid source f = withLocationOf iid (push . toMessage . f <=< mkInvestigateLocation sid iid source)
 
 investigate
   :: (Sourceable source, Targetable target, ReverseQueue m)

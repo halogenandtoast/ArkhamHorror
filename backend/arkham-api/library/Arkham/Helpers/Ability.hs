@@ -134,10 +134,9 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
           CanModify (EnemyFightActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
-      case overrides of
-        [] -> notNull <$> select (Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex)
-        [o] -> notNull <$> select (Matcher.CanFightEnemyWithOverride o)
-        _ -> error "multiple overrides found"
+      selectAny $ case nonEmpty overrides of
+        Nothing -> Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex
+        Just os -> Matcher.CanFightEnemyWithOverride $ combineOverrides os
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
@@ -148,10 +147,9 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
           CanModify (EnemyEvadeActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
-      case overrides of
-        [] -> notNull <$> select (Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex)
-        [o] -> notNull <$> select (Matcher.CanEvadeEnemyWithOverride o)
-        _ -> error "multiple overrides found"
+      selectAny $ case nonEmpty overrides of
+        Nothing -> Matcher.CanEvadeEnemy $ AbilitySource abilitySource abilityIndex
+        Just os -> Matcher.CanEvadeEnemyWithOverride $ combineOverrides os
   Action.Engage -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do

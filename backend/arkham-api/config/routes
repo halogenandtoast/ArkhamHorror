@@ -36,4 +36,5 @@
           /file-bug ApiV1ArkhamGameBugR POST
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET
+          /full-export ApiV1ArkhamGameFullExportR GET
           /reload ApiV1ArkhamGameReloadR GET

@@ -35,6 +35,10 @@ instance IsDeck ScenarioDeckKey where
   toDeck = ScenarioDeckByKey
   {-# INLINE toDeck #-}
 
+instance IsDeck ScenarioEncounterDeckKey where
+  toDeck = EncounterDeckByKey
+  {-# INLINE toDeck #-}
+
 instance IsDeck DeckSignifier where
   toDeck = id
   {-# INLINE toDeck #-}

@@ -68,3 +68,24 @@ generateExport gameId = do
       { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
       , aeCampaignData = arkhamGameToExportData ge (map entityVal steps)
       }
+
+generateFullExport :: ArkhamGameId -> Handler ArkhamExport
+generateFullExport gameId = do
+  (ge, players, steps) <- runDB $ do
+    ge <- get404 gameId
+    players <- select $ do
+      players <- from $ table @ArkhamPlayer
+      where_ (players ^. ArkhamPlayerArkhamGameId ==. val gameId)
+      pure players
+    steps <- select $ do
+      steps <- from $ table @ArkhamStep
+      where_ $ steps ^. ArkhamStepArkhamGameId ==. val gameId
+      orderBy [desc $ steps ^. ArkhamStepStep]
+      pure steps
+    pure (ge, players, steps)
+
+  pure
+    $ ArkhamExport
+      { aeCampaignPlayers = map (arkhamPlayerInvestigatorId . entityVal) players
+      , aeCampaignData = arkhamGameToExportData ge (map entityVal steps)
+      }

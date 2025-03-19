@@ -1,14 +1,13 @@
-module Arkham.Location.Cards.ArkhamWoodsTwistingPaths where
+module Arkham.Location.Cards.ArkhamWoodsTwistingPaths (arkhamWoodsTwistingPaths) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (arkhamWoodsTwistingPaths)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher.Base
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Location
 import Arkham.Matcher.Window
-import Arkham.Prelude
 import Arkham.Window (getBatchId)
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths LocationAttrs
@@ -20,17 +19,18 @@ arkhamWoodsTwistingPaths = location ArkhamWoodsTwistingPaths Cards.arkhamWoodsTw
 
 instance HasAbilities ArkhamWoodsTwistingPaths where
   getAbilities (ArkhamWoodsTwistingPaths attrs) =
-    withRevealedAbilities attrs [skillTestAbility $ forcedAbility attrs 1 $ Leaves #when You $ be attrs]
+    extendRevealed1 attrs
+      $ skillTestAbility
+      $ forcedAbility attrs 1
+      $ WouldMove #when You #any (be attrs) Anywhere
 
 instance RunMessage ArkhamWoodsTwistingPaths where
-  runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = case msg of
+  runMessage msg l@(ArkhamWoodsTwistingPaths attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getBatchId -> batchId) _ -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (attrs.ability 1) (BatchTarget batchId) #intellect (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) (BatchTarget batchId) #intellect (Fixed 3)
       pure l
-    FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      getSkillTestTarget >>= \case
-        Just (BatchTarget batchId) -> push $ CancelBatch batchId
-        _ -> error "Invalid target"
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      cancelMovement (attrs.ability 1) iid
       pure l
-    _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs
+    _ -> ArkhamWoodsTwistingPaths <$> liftRunMessage msg attrs

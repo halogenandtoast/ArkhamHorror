@@ -5,6 +5,7 @@ import Arkham.Capability
 import Arkham.Enemy.Creation
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
@@ -30,8 +31,11 @@ instance RunMessage SmiteTheWicked where
       pure t
     RequestedEncounterCard (isSource attrs -> True) _ (Just card) -> do
       for_ attrs.owner \ownerId -> do
-        attachTreachery attrs
-          =<< createEnemyWith card (FarthestLocationFromInvestigator (be ownerId) Anywhere) \x -> x {enemyCreationInvestigator = Just ownerId}
+        createEnemyWith card (FarthestLocationFromInvestigator (be ownerId) Anywhere) \x ->
+          x
+            { enemyCreationInvestigator = Just ownerId
+            , enemyCreationBefore = [PlaceTreachery (toId attrs) (AttachedToEnemy $ enemyCreationEnemyId x)]
+            }
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       for_ attrs.owner (`sufferMentalTrauma` 1)

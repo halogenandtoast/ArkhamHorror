@@ -15,5 +15,10 @@
   },
   "xp": {
     "bonus": "Gains insight into the schemes of the Brotherhood."
+  },
+  "remembered": {
+    "youListenedToIchtacasTale": "You listened to Ichtaca's tale.",
+    "ichtacasDestination": "Ichtaca's destination: {name}.",
+    "ichtacasPrey": "Ichtaca's Prey: {name}."
   }
 }

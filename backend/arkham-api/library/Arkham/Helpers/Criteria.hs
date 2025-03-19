@@ -294,8 +294,7 @@ passesCriteria iid mcard source' requestor windows' = \case
           then pure False
           else do
             -- todo we should make a cleaner method for this
-            mCardId <- fieldMay InHandAssetCardId aid
-            pure $ maybe False (`elem` hand) mCardId
+            maybe False (`elem` hand) <$> fieldMay InHandAssetCardId aid
       TreacherySource tid -> elem tid <$> select (Matcher.treacheryInHandOf iid)
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InYourDiscard -> do

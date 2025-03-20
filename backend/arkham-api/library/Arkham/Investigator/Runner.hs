@@ -2263,14 +2263,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       else do
         push $ AssignDamage (InvestigatorTarget $ toId a)
         when (investigatorAssignedHealthDamage > 0 || investigatorAssignedSanityDamage > 0) do
-          pushM $
-            Helpers.checkWindows
-              $ [ mkAfter $ Window.PlacedToken source (toTarget a) Damage investigatorAssignedHealthDamage
-                | investigatorAssignedHealthDamage > 0
-                ]
-              <> [ mkAfter $ Window.PlacedToken source (toTarget a) Horror investigatorAssignedSanityDamage
-                 | investigatorAssignedSanityDamage > 0
-                 ]
+          pushM
+            $ Helpers.checkWindows
+            $ [ mkAfter $ Window.PlacedToken source (toTarget a) Damage investigatorAssignedHealthDamage
+              | investigatorAssignedHealthDamage > 0
+              ]
+            <> [ mkAfter $ Window.PlacedToken source (toTarget a) Horror investigatorAssignedSanityDamage
+               | investigatorAssignedSanityDamage > 0
+               ]
 
     pure a
   AssignDamage target | isTarget a target -> do
@@ -4244,7 +4244,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             ]
     pure a
   UseAbility iid ability windows | iid == investigatorId -> do
-    activeInvestigator <- getActiveInvestigatorId
+    activeInvestigator <- selectOne ActiveInvestigator
     mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
     let
       mayIgnore =
@@ -4254,9 +4254,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           ProxySource (LocationSource _) _ -> mayIgnoreLocationEffectsAndKeywords
           _ -> False
       resolveAbility =
-        [SetActiveInvestigator iid | iid /= activeInvestigator]
+        [SetActiveInvestigator iid | x <- maybeToList activeInvestigator, iid /= x]
           <> [PayForAbility ability windows, MoveWithSkillTest (ResolvedAbility ability)]
-          <> [SetActiveInvestigator activeInvestigator | iid /= activeInvestigator]
+          <> [SetActiveInvestigator x | x <- maybeToList activeInvestigator, iid /= x]
     player <- getPlayer iid
 
     if mayIgnore

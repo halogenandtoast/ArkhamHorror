@@ -17,6 +17,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Xp (XpBonus (WithBonus))
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Matcher
+import Arkham.Message (chooseDecks)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -78,6 +79,10 @@ instance RunMessage TheCircleUndone where
         push $ Ask lead PickCampaignSettings
       campaignStep_ $ if attrs.step == DisappearanceAtTheTwilightEstate then PrologueStep else attrs.step
       pure c
+    CampaignStep TheWitchingHour -> do
+      players <- allPlayers
+      push $ chooseDecks players
+      lift $ defaultCampaignRunner msg c
     CampaignStep PrologueStep -> do
       story prologue
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))

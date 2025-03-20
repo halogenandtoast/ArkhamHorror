@@ -1487,7 +1487,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              ]
       checkAssets = nub $ keys horrorMap <> keys damageMap
     whenPlacedWindowMsg <- checkWindows $ map mkWhen placedWindows
-    afterPlacedWindowMsg <- checkWindows $ map mkAfter placedWindows
     whenAssignedWindowMsg <- checkWhen $ Window.AssignedHorror source iid horrorTargets
     when
       ( damageStrategy
@@ -1500,33 +1499,31 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       do
         push $ InvestigatorDirectDamage iid source 1 0
     pushAll
-      $ [ whenPlacedWindowMsg
-        , afterPlacedWindowMsg
+      $ whenPlacedWindowMsg
+      : [ CheckWindows
+            $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
+              | target <- nub damageTargets
+              , let damage = count (== target) damageTargets
+              ]
+            <> [ mkWhen (Window.DealtHorror source target horror)
+               | target <- nub horrorTargets
+               , let horror = count (== target) horrorTargets
+               ]
+            <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
         ]
-      <> [ CheckWindows
-             $ [ mkWhen (Window.DealtDamage source damageEffect target damage)
-               | target <- nub damageTargets
-               , let damage = count (== target) damageTargets
-               ]
-             <> [ mkWhen (Window.DealtHorror source target horror)
-                | target <- nub horrorTargets
-                , let horror = count (== target) horrorTargets
-                ]
-             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-         ]
-      <> [whenAssignedWindowMsg | notNull horrorTargets]
-      <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
-      <> [ CheckWindows
-             $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
-               | target <- nub damageTargets
-               , let damage = count (== target) damageTargets
-               ]
-             <> [ mkAfter (Window.DealtHorror source target horror)
-                | target <- nub horrorTargets
-                , let horror = count (== target) horrorTargets
-                ]
-             <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
-         ]
+        <> [whenAssignedWindowMsg | notNull horrorTargets]
+        <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]
+        <> [ CheckWindows
+               $ [ mkAfter (Window.DealtDamage source damageEffect target damage)
+                 | target <- nub damageTargets
+                 , let damage = count (== target) damageTargets
+                 ]
+               <> [ mkAfter (Window.DealtHorror source target horror)
+                  | target <- nub horrorTargets
+                  , let horror = count (== target) horrorTargets
+                  ]
+               <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
+           ]
     pure a
   InvestigatorDoAssignDamage iid source DamageEvenly matcher health 0 damageTargets horrorTargets | iid == toId a -> do
     healthDamageableAssets <-
@@ -2263,10 +2260,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           , AssignDamage (InvestigatorTarget $ toId a)
           , InvestigatorWhenDefeated source investigatorId
           ]
-      else push $ AssignDamage (InvestigatorTarget $ toId a)
+      else do
+        push $ AssignDamage (InvestigatorTarget $ toId a)
+        when (investigatorAssignedHealthDamage > 0 || investigatorAssignedSanityDamage > 0) do
+          pushM $
+            Helpers.checkWindows
+              $ [ mkAfter $ Window.PlacedToken source (toTarget a) Damage investigatorAssignedHealthDamage
+                | investigatorAssignedHealthDamage > 0
+                ]
+              <> [ mkAfter $ Window.PlacedToken source (toTarget a) Horror investigatorAssignedSanityDamage
+                 | investigatorAssignedSanityDamage > 0
+                 ]
+
     pure a
   AssignDamage target | isTarget a target -> do
     push $ AssignedDamage target
+
     pure
       $ a
       & tokensL
@@ -3112,6 +3121,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushM $ checkAfter $ Window.PlacedDoomCounterOnTargetWithNoDoom source (toTarget a) n
     when (token == #damage || token == #horror) do
       push $ checkDefeated source a
+
+    afterPlacedWindowMsg <-
+      Helpers.checkWindow $ mkAfter $ Window.PlacedToken source (toTarget a) token n
+    push afterPlacedWindowMsg
     pure $ a & tokensL %~ addTokens token n
   RemoveTokens _ (isTarget a -> True) token n -> do
     pure $ a & tokensL %~ subtractTokens token n

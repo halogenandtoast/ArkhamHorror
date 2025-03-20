@@ -22,7 +22,7 @@ instance HasAbilities AgnesBaker where
   getAbilities (AgnesBaker x) =
     [ playerLimit PerPhase
         $ restricted x 1 (Self <> CanDealDamage <> exists (EnemyAt YourLocation))
-        $ freeReaction (PlacedCounter #when You AnySource #horror $ atLeast 1)
+        $ freeReaction (PlacedCounter #after You AnySource #horror $ atLeast 1)
     ]
 
 instance HasChaosTokenValue AgnesBaker where

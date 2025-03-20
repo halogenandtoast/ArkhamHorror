@@ -585,6 +585,13 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   AddToVictory (AgendaTarget aid) -> do
     card <- field AgendaCard aid
     pure $ a & (victoryDisplayL %~ (card :))
+  RemoveEnemy eid -> do
+    placement <- field EnemyPlacement eid
+    case placement of
+      OutOfPlay Zone.VictoryDisplayZone -> do
+        card <- field EnemyCard eid
+        pure $ a & (victoryDisplayL %~ (card :))
+      _ -> pure a
   AddToVictory (LocationTarget lid) -> do
     card <- field LocationCard lid
     pure $ a & (victoryDisplayL %~ (card :))

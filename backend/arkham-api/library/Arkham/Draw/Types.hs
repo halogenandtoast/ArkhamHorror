@@ -56,6 +56,9 @@ instance HasField "deck" (CardDraw msg) DeckSignifier where
 instance HasField "amount" (CardDraw msg) Int where
   getField = cardDrawAmount
 
+setDrawDeck :: AsDeck deck => deck -> CardDraw msg -> CardDraw msg
+setDrawDeck deck draw = draw {cardDrawDeck = asDeck deck}
+
 data CardDrew = CardDrew
   { cardDrewSource :: Source
   , cardDrewDeck :: DeckSignifier

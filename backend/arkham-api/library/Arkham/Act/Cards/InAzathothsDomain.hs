@@ -5,6 +5,7 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Helpers
 import Arkham.Helpers.Query (getJustLocationByName)
@@ -41,7 +42,7 @@ instance HasAbilities InAzathothsDomain where
 instance RunMessage InAzathothsDomain where
   runMessage msg a@(InAzathothsDomain attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePayment -> x) -> do
-      drawCardsEdit iid (attrs.ability 1) x (setTarget attrs)
+      drawCardsEdit iid (attrs.ability 1) x (setDrawDeck CosmosDeck . setTarget attrs)
       pure a
     DrewCards iid drewCards | maybe False (isTarget attrs) drewCards.target -> do
       focusCards (map flipCard drewCards.cards) do

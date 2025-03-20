@@ -292,6 +292,19 @@ const cardLabelImage = (cardCode: string) => {
   return imgsrc(`cards/${cardCode.replace('c', '')}.avif`);
 }
 
+const questionImage = computed(() => {
+
+  if (question.value.tag !== 'QuestionLabel') {
+    return null
+  }
+
+  if(question.value.card) {
+    return cardLabelImage(question.value.card)
+  }
+
+  return null
+})
+
 const cardIdImage = (cardId: string) => {
   return (imgsrc(cardImage(props.game.cards[cardId])))
 }
@@ -368,6 +381,11 @@ const cardPiles = computed(() => {
 
   <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
     <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+  </div>
+
+
+  <div class="question-image" v-if="questionImage">
+    <img :src="questionImage" class="card" />
   </div>
 
   <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
@@ -1033,4 +1051,8 @@ h2 {
   }
 }
 
+.question-image {
+  display: flex;
+  justify-content: center;
+}
 </style>

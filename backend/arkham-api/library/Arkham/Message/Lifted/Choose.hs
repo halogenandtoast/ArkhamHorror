@@ -55,11 +55,13 @@ leadChooseOneM choices = do
 
 chooseOneM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOneM iid choices = do
-  ((_, ChooseState {label}), choices') <- runChooseT choices
+  ((_, ChooseState {label, labelCardCode}), choices') <- runChooseT choices
   unless (null choices') do
     case label of
       Nothing -> chooseOne iid choices'
-      Just l -> questionLabel l iid $ ChooseOne choices'
+      Just l -> case labelCardCode of
+        Nothing -> questionLabel l iid $ ChooseOne choices'
+        Just cCode -> questionLabelWithCard l cCode iid $ ChooseOne choices'
 
 chooseSomeM :: ReverseQueue m => InvestigatorId -> Text -> ChooseT m a -> m ()
 chooseSomeM iid txt choices = do
@@ -143,6 +145,11 @@ labeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
+
+gridLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
+gridLabeled label action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [GridLabel label msgs]
 
 portraitLabeled :: ReverseQueue m => InvestigatorId -> QueueT Message m () -> ChooseT m ()
 portraitLabeled iid action = unterminated do

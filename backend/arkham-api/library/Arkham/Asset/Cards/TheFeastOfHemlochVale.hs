@@ -432,7 +432,7 @@ pitchfork =
 
 sparrowMaskTheWanderersCompanion :: CardDef
 sparrowMaskTheWanderersCompanion =
-  (asset "10111" ("Sparrow Mask" <:> "The Wanderer's Companion") 1 Seeker)
+  (asset "10111" ("Sparrow Mask" <:> "The Wanderer's Companion") 1 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Item, Charm, Mask]
     , cdUses = uses Offering 2

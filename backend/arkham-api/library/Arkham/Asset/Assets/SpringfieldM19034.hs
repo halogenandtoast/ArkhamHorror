@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Asset.Assets.SpringfieldM19034 (springfieldM19034) where
 
 import Arkham.Ability
@@ -60,7 +58,7 @@ instance RunMessage SpringfieldM19034 where
       skillTestModifiers sid attrs iid $ DamageDealt 2
         : SkillModifier #combat 3
         : [IgnoreRetaliate | tabooed TabooList19 attrs]
-      chooseFightEnemyMatch sid iid source (traceShowId $ tabooExtend (not_ (enemyEngagedWith iid)))
+      chooseFightEnemyMatch sid iid source (tabooExtend (not_ (enemyEngagedWith iid)))
 
       pure a
     _ -> SpringfieldM19034 <$> liftRunMessage msg attrs

@@ -78,6 +78,7 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     foldrM applyModifier base' modifiers
    where
     canBeIncreased = SkillCannotBeIncreased skill `notElem` modifiers
+    nestedCanBeIncreased kind = SkillCannotBeIncreased kind `notElem` modifiers
     matchingSkills = s : mapMaybe maybeAdditionalSkill modifiers -- must be the skill we are looking at
     maybeAdditionalSkill = \case
       SkillModifiersAffectOtherSkill s' t | t == skill -> Just s'
@@ -85,11 +86,17 @@ skillValueFor skill maction iid = go 2 skill =<< getModifiers iid
     applyBaseModifier (SetSkillValue s' n) m | s == s' && (n <= m || canBeIncreased) = pure n
     applyBaseModifier DoubleBaseSkillValue n | canBeIncreased = pure (n * 2)
     applyBaseModifier _ n = pure n
+    applyNestedModifier kind (SkillModifier skillType m) n | kind == skillType = do
+      pure $ if nestedCanBeIncreased kind || m < 0 then max 0 (n + m) else n
+    applyNestedModifier kind (CalculatedSkillModifier skillType calc) n | kind == skillType = do
+      m <- calculate calc
+      pure $ if nestedCanBeIncreased kind || m < 0 then max 0 (n + m) else n
+    applyNestedModifier _ _ n = pure n
     applyModifier (AddSkillValue sv) n | canBeIncreased = do
-      m <- getSkillValue sv iid
+      m <- getSkillValue sv iid >>= \x -> foldrM (applyNestedModifier sv) x modifiers
       pure $ max 0 (n + m)
     applyModifier (AddSkillValueOf sv iid') n | canBeIncreased = do
-      m <- getSkillValue sv iid'
+      m <- getSkillValue sv iid' >>= \x -> foldrM (applyNestedModifier sv) x modifiers
       pure $ max 0 (n + m)
     applyModifier (AddSkillToOtherSkill svAdd svType) n | canBeIncreased && svType `elem` matchingSkills = do
       m <- go (depth - 1) svAdd modifiers

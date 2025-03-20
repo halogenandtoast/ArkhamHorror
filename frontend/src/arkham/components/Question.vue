@@ -293,6 +293,9 @@ const cardLabelImage = (cardCode: string) => {
 }
 
 const questionImage = computed(() => {
+  if (!question.value) {
+    return null
+  }
 
   if (question.value.tag !== 'QuestionLabel') {
     return null

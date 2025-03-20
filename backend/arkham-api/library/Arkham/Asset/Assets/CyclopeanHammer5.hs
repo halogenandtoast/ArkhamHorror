@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.CyclopeanHammer5 (cyclopeanHammer5, CyclopeanHammer5 (..)) where
+module Arkham.Asset.Assets.CyclopeanHammer5 (cyclopeanHammer5) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,7 +17,7 @@ cyclopeanHammer5 :: AssetCard CyclopeanHammer5
 cyclopeanHammer5 = asset CyclopeanHammer5 Cards.cyclopeanHammer5
 
 instance HasAbilities CyclopeanHammer5 where
-  getAbilities (CyclopeanHammer5 a) = [restrictedAbility a 1 ControlsThis fightAction_]
+  getAbilities (CyclopeanHammer5 a) = [restricted a 1 ControlsThis fightAction_]
 
 instance RunMessage CyclopeanHammer5 where
   runMessage msg a@(CyclopeanHammer5 attrs) = runQueueT $ case msg of

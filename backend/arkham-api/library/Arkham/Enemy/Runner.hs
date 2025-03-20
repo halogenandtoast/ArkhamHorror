@@ -241,8 +241,16 @@ instance RunMessage EnemyAttrs where
         then push (toDiscard GameSource eid)
         else do
           keywords <- getModifiedKeywords a
-          canSwarm <- withoutModifier a NoInitialSwarm
+          mods <- getCombinedModifiers [toTarget eid, toTarget (toCardId a)]
+          let canSwarm = NoInitialSwarm `notElem` mods
           let swarms = guard canSwarm *> mapMaybe (preview _Swarming) (toList keywords)
+          let
+            isForcedEngagement = \case
+              ForceSpawn _ -> True
+              ForceSpawnLocation _ -> True
+              _ -> False
+
+          let forcedEngagement = any isForcedEngagement mods
 
           case swarms of
             [] -> pure ()
@@ -252,7 +260,7 @@ instance RunMessage EnemyAttrs where
               push $ PlaceSwarmCards lead eid n
             _ -> error "more than one swarming value"
 
-          if all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted
+          if (all (`notElem` keywords) [#aloof, #massive] && not enemyExhausted) || forcedEngagement
             then do
               prey <- getPreyMatcher a
               let

@@ -77,7 +77,7 @@ instance RunMessage DancersMist where
       pure l
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       startId <- fieldJust InvestigatorLocation iid
-      accessibleLocationIds <- select $ AccessibleFrom $ LocationWithId startId
+      accessibleLocationIds <- select $ accessibleFrom startId
       chooseTargetM iid accessibleLocationIds $ moveTo attrs iid
       pure l
     _ -> DancersMist <$> liftRunMessage msg attrs

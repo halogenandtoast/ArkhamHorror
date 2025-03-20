@@ -603,11 +603,12 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL .~ mempty)
         & (tokenPoolL .~ blessTokens <> curseTokens <> frostTokens)
     ReturnChaosTokensToPool tokensToPool -> do
+      let toPool = and . sequence [(`elem` [#bless, #curse, #frost]) . (.face), not . (.cancelled)]
       pure
         $ c
         & (chaosTokensL %~ filter (`notElem` tokensToPool))
         & (setAsideChaosTokensL %~ filter (`notElem` tokensToPool))
-        & (tokenPoolL <>~ filter ((`elem` [#bless, #curse, #frost]) . (.face)) tokensToPool)
+        & (tokenPoolL <>~ filter toPool tokensToPool)
     PassSkillTest -> do
       removeAllMessagesMatching \case
         NextChaosBagStep {} -> True
@@ -850,9 +851,17 @@ instance RunMessage ChaosBag where
     ChaosTokenSelected _ _ token -> do
       pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
     ChaosTokenIgnored _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
+      let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
+      pure
+        $ c
+        & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
+        & (setAsideChaosTokensL %~ map replaceToken)
     ChaosTokenCanceled _ _ token -> do
-      pure $ c & totalRevealedChaosTokensL %~ (nub . (token :))
+      let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
+      pure
+        $ c
+        & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
+        & (setAsideChaosTokensL %~ map replaceToken)
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do

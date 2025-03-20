@@ -1,12 +1,11 @@
-module Arkham.Asset.Assets.OliveMcBride2 (oliveMcBride2, OliveMcBride2 (..)) where
+module Arkham.Asset.Assets.OliveMcBride2 (oliveMcBride2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
+import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Window (Window (..))
-import Arkham.Window qualified as Window
 
 newtype OliveMcBride2 = OliveMcBride2 AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -17,19 +16,11 @@ oliveMcBride2 = ally OliveMcBride2 Cards.oliveMcBride2 (1, 3)
 
 instance HasAbilities OliveMcBride2 where
   getAbilities (OliveMcBride2 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (WouldRevealChaosToken #when You) (exhaust a)
-    ]
-
-toDrawSource :: [Window] -> Source
-toDrawSource = \case
-  ((windowType -> (Window.WouldRevealChaosToken source _)) : _) -> source
-  (_ : rest) -> toDrawSource rest
-  _ -> error "Expected WouldRevealChaosToken window"
+    [restricted a 1 ControlsThis $ triggered (WouldRevealChaosToken #when You) (exhaust a)]
 
 instance RunMessage OliveMcBride2 where
   runMessage msg a@(OliveMcBride2 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (toDrawSource -> drawSource) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 (getDrawSource -> drawSource) _ -> do
       push
         $ ReplaceCurrentDraw drawSource iid
         $ Choose

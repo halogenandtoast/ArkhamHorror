@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Punishment (punishment, Punishment (..)) where
+module Arkham.Treachery.Cards.Punishment (punishment) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -18,9 +18,8 @@ punishment = treachery Punishment Cards.punishment
 
 instance HasModifiersFor Punishment where
   getModifiersFor (Punishment attrs) = do
-    getSkillTest >>= \case
-      Nothing -> pure mempty
-      Just st -> maybeModified_ attrs (SkillTestTarget st.id) do
+    getSkillTest >>= traverse_ \st -> do
+      maybeModified_ attrs (SkillTestTarget st.id) do
         source <- MaybeT getSkillTestSource
         investigator <- MaybeT getSkillTestInvestigator
         guard $ isSource attrs source && treacheryInThreatArea investigator attrs
@@ -34,10 +33,8 @@ instance HasModifiersFor Punishment where
 
 instance HasAbilities Punishment where
   getAbilities (Punishment a) =
-    [ skillTestAbility
-        $ restrictedAbility a 1 (InThreatAreaOf You)
-        $ forced
-        $ EnemyDefeated #after Anyone ByAny AnyEnemy
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ EnemyDefeated #after Anyone ByAny AnyEnemy
+    , skillTestAbility $ restricted a 2 OnSameLocation actionAbility
     ]
 
 instance RunMessage Punishment where

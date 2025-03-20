@@ -21,24 +21,20 @@ persuasion = event Persuasion Cards.persuasion
 instance RunMessage Persuasion where
   runMessage msg e@(Persuasion attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      field InvestigatorLocation iid >>= \case
-        Just location -> do
-          let tabooMatcher = if tabooed TabooList21 attrs then id else (<> EnemyWithTrait Humanoid)
+      field InvestigatorLocation iid >>= traverse_ \location -> do
+        let tabooMatcher = if tabooed TabooList21 attrs then id else (<> EnemyWithTrait Humanoid)
 
-          enemies <- select $ tabooMatcher $ enemyAt location <> NonWeaknessEnemy <> canParleyEnemy iid
-          sid <- getRandom
-          chooseTargetM iid enemies \enemy ->
-            parley sid iid attrs enemy #intellect
-              $ SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemySanityDamage]
-        _ -> error "investigator not at location"
+        enemies <- select $ tabooMatcher $ enemyAt location <> NonWeaknessEnemy <> canParleyEnemy iid
+        sid <- getRandom
+        chooseTargetM iid enemies \enemy ->
+          parley sid iid attrs enemy #intellect
+            $ SumCalculation [Fixed 3, EnemyFieldCalculation enemy EnemySanityDamage]
       pure e
     PassedSkillTest iid _ (isSource attrs -> True) SkillTestInitiatorTarget {} _ _ -> do
-      getSkillTestTargetedEnemy >>= \case
-        Just eid -> do
-          isElite <- eid <=~> EliteEnemy
-          if isElite
-            then push $ EnemyEvaded iid eid
-            else push $ ShuffleBackIntoEncounterDeck (EnemyTarget eid)
-        _ -> pure ()
+      getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+        isElite <- eid <=~> EliteEnemy
+        if isElite
+          then automaticallyEvadeEnemy iid eid
+          else shuffleBackIntoEncounterDeck eid
       pure e
     _ -> Persuasion <$> liftRunMessage msg attrs

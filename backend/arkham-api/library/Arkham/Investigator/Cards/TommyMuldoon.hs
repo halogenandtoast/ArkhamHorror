@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.TommyMuldoon (tommyMuldoon, TommyMuldoon (..)) where
+module Arkham.Investigator.Cards.TommyMuldoon (tommyMuldoon) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
@@ -75,13 +75,13 @@ instance RunMessage TommyMuldoon where
 
       chooseOrRunOne iid
         $ [ Label
-            "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
-            [HandleAbilityOption iid (toSource ElderSign) 1]
+              "Move up to 2 damage and/or horror from Tommy Muldoon to an asset you control"
+              [HandleAbilityOption iid (toSource ElderSign) 1]
           | (hasDamage && assetsWithHealth) || (hasHorror && assetsWithSanity)
           ]
         <> [ Label
-            "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
-            [HandleAbilityOption iid (toSource ElderSign) 2]
+               "Move up to 2 damage and/or horror from an asset you control to Tommy Muldoon"
+               [HandleAbilityOption iid (toSource ElderSign) 2]
            | assetsWithDamage || assetsWithHorror
            ]
         <> [Label "Do not move any damage and/or horror" []]
@@ -89,21 +89,23 @@ instance RunMessage TommyMuldoon where
     HandleAbilityOption (is attrs -> True) _ n | n `elem` [1, 11] -> do
       hasDamage <- fieldSome InvestigatorDamage attrs.id
       hasHorror <- fieldSome InvestigatorHorror attrs.id
-      assetsWithHealth <- select (AssetWithHealth <> assetControlledBy attrs.id)
-      assetsWithSanity <- select (AssetWithSanity <> assetControlledBy attrs.id)
+      assetsWithHealth <- select (AssetCanBeAssignedDamageBy attrs.id <> assetControlledBy attrs.id)
+      assetsWithSanity <- select (AssetCanBeAssignedHorrorBy attrs.id <> assetControlledBy attrs.id)
 
       when ((hasDamage && notNull assetsWithHealth) || (hasHorror && notNull assetsWithSanity)) $ do
         chooseOrRunOne attrs.id
           $ [Label "Done moving damage/horror" [] | n == 11]
           <> [ AssetHorrorLabel asset
-              $ MovedHorror #elderSign (toSource attrs.id) (toTarget asset) 1
-              : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
-             | asset <- assetsWithSanity
+                 $ MovedHorror #elderSign (toSource attrs.id) (toTarget asset) 1
+                 : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
+             | hasHorror
+             , asset <- assetsWithSanity
              ]
           <> [ AssetDamageLabel asset
-              $ MovedDamage #elderSign (toSource attrs.id) (toTarget asset) 1
-              : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
-             | asset <- assetsWithHealth
+                 $ MovedDamage #elderSign (toSource attrs.id) (toTarget asset) 1
+                 : [HandleAbilityOption attrs.id (toSource ElderSign) 11 | n == 1]
+             | hasDamage
+             , asset <- assetsWithHealth
              ]
 
       pure i
@@ -114,13 +116,13 @@ instance RunMessage TommyMuldoon where
         chooseOrRunOne attrs.id
           $ [Label "Done moving damage/horror" [] | n == 22]
           <> [ AssetHorrorLabel asset
-              $ MovedHorror #elderSign (toSource asset) (toTarget attrs) 1
-              : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
+                 $ MovedHorror #elderSign (toSource asset) (toTarget attrs) 1
+                 : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
              | asset <- assetsWithHorror
              ]
           <> [ AssetDamageLabel asset
-              $ MovedDamage #elderSign (toSource asset) (toTarget attrs) 1
-              : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
+                 $ MovedDamage #elderSign (toSource asset) (toTarget attrs) 1
+                 : [HandleAbilityOption attrs.id (toSource ElderSign) 22 | n == 2]
              | asset <- assetsWithDamage
              ]
       pure i

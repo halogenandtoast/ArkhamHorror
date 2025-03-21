@@ -228,9 +228,8 @@ instance RunMessage AssetAttrs where
     MoveTokens s source _ tType n | isSource a source -> do
       runMessage (RemoveTokens s (toTarget a) tType n) a
     MoveTokens s _ target tType n | isTarget a target -> do
-      a' <- runMessage (PlaceTokens s (toTarget a) tType n) a
-      pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a'
-      pure a'
+      pushWhen (tType `elem` [Horror, Damage]) $ checkDefeated s a
+      runMessage (PlaceTokens s (toTarget a) tType n) a
     MoveTokensNoDefeated s _ target tType n | isTarget a target -> do
       runMessage (PlaceTokens s (toTarget a) tType n) a
     MoveTokensNoDefeated s source _ tType n | isSource a source -> do

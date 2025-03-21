@@ -901,12 +901,12 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       Discard _ _ (EventTarget eid') -> eid == eid'
       _ -> False
-    removedEntitiesF <-
-      if notNull (gameActiveAbilities g)
-        then do
-          event' <- getEvent eid
-          pure $ actionRemovedEntitiesL . eventsL %~ insertEntity event'
-        else pure id
+    event' <- getEvent eid
+    let
+      removedEntitiesF =
+        if notNull (gameActiveAbilities g) || attr eventWaiting event'
+          then actionRemovedEntitiesL . eventsL %~ insertEntity event'
+          else id
     pure $ g & entitiesL . eventsL %~ deleteMap eid & removedEntitiesF
   RemoveEnemy eid -> do
     popMessageMatching_ $ \case
@@ -2893,7 +2893,8 @@ runGameMessage msg g = case msg of
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
-    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty else id
+    let remainingEvents = Map.filter (attr eventWaiting) $ entitiesEvents (gameActionRemovedEntities g)
+    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty { entitiesEvents = remainingEvents } else id
     let remainingAbilities = filter (/= ab) $ view activeAbilitiesL g
     pure
       $ g

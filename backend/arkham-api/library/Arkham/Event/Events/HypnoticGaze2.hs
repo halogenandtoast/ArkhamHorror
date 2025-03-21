@@ -1,4 +1,5 @@
-module Arkham.Event.Events.HypnoticGaze2 (hypnoticGaze2, HypnoticGaze2 (..)) where
+{-# OPTIONS_GHC -Wno-deprecations #-}
+module Arkham.Event.Events.HypnoticGaze2 (hypnoticGaze2) where
 
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
@@ -25,13 +26,13 @@ hypnoticGaze2 :: EventCard HypnoticGaze2
 hypnoticGaze2 = event (HypnoticGaze2 . (`with` Metadata Nothing)) Cards.hypnoticGaze2
 
 instance RunMessage HypnoticGaze2 where
-  runMessage msg e@(HypnoticGaze2 (attrs `With` meta)) = runQueueT $ case msg of
+  runMessage msg (HypnoticGaze2 (attrs `With` meta)) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let currentAttack = getAttackDetails attrs.windows
       cancelAttack attrs currentAttack
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       cancelledOrIgnoredCardOrGameEffect attrs
-      pure $ HypnoticGaze2 (attrs `with` Metadata (Just currentAttack.enemy))
+      pure $ HypnoticGaze2 ((attrs & waitingL .~ True) `with` Metadata (Just currentAttack.enemy))
     RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
       let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
       let valid =
@@ -54,5 +55,5 @@ instance RunMessage HypnoticGaze2 where
                    ]
             ]
       push $ ResetChaosTokens (toSource attrs)
-      pure e
+      pure $ HypnoticGaze2 ((attrs & waitingL .~ False) `with` meta)
     _ -> HypnoticGaze2 . (`with` meta) <$> liftRunMessage msg attrs

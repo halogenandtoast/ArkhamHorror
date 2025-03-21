@@ -12,6 +12,7 @@ export type Treachery = {
   peril: boolean
   placement: Placement;
   sealedChaosTokens: ChaosToken[];
+  exhausted: boolean;
 }
 
 export const treacheryDecoder = JsonDecoder.object<Treachery>({
@@ -23,4 +24,5 @@ export const treacheryDecoder = JsonDecoder.object<Treachery>({
   placement: placementDecoder,
   peril: JsonDecoder.boolean,
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
+  exhausted: JsonDecoder.boolean,
 }, 'Treachery');

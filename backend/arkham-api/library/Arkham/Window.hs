@@ -170,6 +170,7 @@ data WindowType
   | DiscardedFromHand InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
   | DiscoverClues InvestigatorId LocationId Source Int
+  | WouldDiscoverClues InvestigatorId LocationId Source Int
   | SpentClues InvestigatorId Int
   | DiscoveringLastClue InvestigatorId LocationId
   | SuccessfullyInvestigateWithNoClues InvestigatorId LocationId

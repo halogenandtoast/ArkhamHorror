@@ -164,4 +164,11 @@ instance RunMessage TreacheryAttrs where
         Just target | isTarget target (sourceToTarget source) -> push $ toDiscard GameSource (toTarget a)
         _ -> pure ()
       pure a
+    Exhaust (isTarget a -> True) -> do
+      pure $ a & exhaustedL .~ True
+    ReadyExhausted -> do
+      push $ Ready $ toTarget a
+      pure a
+    Ready (isTarget a -> True) -> do
+      pure $ a & exhaustedL .~ False
     _ -> pure a

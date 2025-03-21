@@ -99,6 +99,7 @@ data EventAttrs = EventAttrs
   , eventPrintedUses :: Uses GameCalculation
   , eventTaboo :: Maybe TabooList
   , eventMutated :: Maybe Text -- for art display
+  , eventWaiting :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -221,6 +222,7 @@ event f cardDef =
             , eventPrintedUses = cdUses cardDef
             , eventTaboo = Nothing
             , eventMutated = Nothing
+            , eventWaiting = False
             }
     }
 
@@ -369,4 +371,33 @@ getMetaKeyDefault k def attrs = case attrs.meta of
       Success v' -> v'
   _ -> def
 
-$(deriveJSON (aesonOptions $ Just "event") ''EventAttrs)
+$(deriveToJSON (aesonOptions $ Just "event") ''EventAttrs)
+
+instance FromJSON EventAttrs where
+  parseJSON = withObject "EventAttrs" \o -> do
+    eventCardCode <- o .: "cardCode"
+    eventCardId <- o .: "cardId"
+    eventOriginalCardCode <- o .: "originalCardCode"
+    eventId <- o .: "id"
+    eventOwner <- o .: "owner"
+    eventController <- o .: "controller"
+    eventDoom <- o .: "doom"
+    eventExhausted <- o .: "exhausted"
+    eventBeingPaidFor <- o .: "beingPaidFor"
+    eventPayment <- o .: "payment"
+    eventPaymentMessages <- o .: "paymentMessages"
+    eventSealedChaosTokens <- o .: "sealedChaosTokens"
+    eventCardsUnderneath <- o .: "cardsUnderneath"
+    eventPlacement <- o .: "placement"
+    eventAfterPlay <- o .: "afterPlay"
+    eventPlayedFrom <- o .: "playedFrom"
+    eventWindows <- o .: "windows"
+    eventTarget <- o .: "target"
+    eventMeta <- o .: "meta"
+    eventTokens <- o .: "tokens"
+    eventCustomizations <- o .: "customizations"
+    eventPrintedUses <- o .: "printedUses"
+    eventTaboo <- o .: "taboo"
+    eventMutated <- o .: "mutated"
+    eventWaiting <- o .:? "waiting" .!= False
+    pure EventAttrs {..}

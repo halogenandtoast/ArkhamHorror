@@ -31,6 +31,7 @@ const image = computed(() => {
 })
 const id = computed(() => props.treachery.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+const isExhausted = computed(() => props.treachery.exhausted)
 
 function canInteract(c: Message): boolean {
   if (c.tag === "TargetLabel") {
@@ -79,7 +80,7 @@ const evidence = computed(() => props.treachery.tokens[TokenType.Evidence])
 const cardAction = computed(() => choices.value.findIndex(canInteract))
 </script>
 <template>
-  <div class="treachery" :class="{ attached }">
+  <div class="treachery" :class="{ attached, exhausted: isExhausted }">
     <img
       :src="image"
       class="card"
@@ -170,5 +171,12 @@ const cardAction = computed(() => choices.value.findIndex(canInteract))
 
 
   pointer-events: none;
+}
+
+.exhausted {
+  :deep(img) {
+    transition: transform 0.2s linear;
+    transform: rotate(90deg) translateX(-10px);
+  }
 }
 </style>

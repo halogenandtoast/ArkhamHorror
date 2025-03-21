@@ -1695,6 +1695,9 @@ runGameMessage msg g = case msg of
       toUI msg' = case msg' of
         EnemyAttack details -> targetLabel (attackEnemy details) [msg']
         _ -> error "unhandled"
+      attackedInvestigator = \case
+        EnemyAttack details -> details.target.investigator
+        _ -> Nothing
     case mNextMessage of
       Just (EnemyAttacks as2) -> do
         _ <- popMessage
@@ -1706,7 +1709,10 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         push $ EnemyAttacks (EnemyAttack details2 : as)
       _ -> do
-        player <- getPlayer (gameLeadInvestigatorId g)
+        let allAttacked = nub $ mapMaybe attackedInvestigator as
+        player <- case allAttacked of
+          [iid] -> getPlayer iid
+          _ -> getPlayer (gameLeadInvestigatorId g)
         push $ chooseOneAtATime player $ map toUI as
     pure g
   SkillTestResultOption txt msgs -> do
@@ -1716,21 +1722,22 @@ runGameMessage msg g = case msg of
     peekMessage >>= \case
       Just (SkillTestResultOption txt msgs) -> do
         _ <- popMessage
-        push $ SkillTestResultOptions (Label txt msgs:opts)
+        push $ SkillTestResultOptions (Label txt msgs : opts)
       Just (SkillTestResultOptions opts') -> do
         _ <- popMessage
         push $ SkillTestResultOptions (opts <> opts')
       Just msg'@(PassedSkillTest {}) -> do
         _ <- popMessage
         pushAll [msg', msg]
-      _ -> getSkillTest >>= \case
-        Just st -> do
-          case opts of
-            [Label _ msgs] -> pushAll msgs
-            _ -> do
-              pid <- getPlayer st.investigator
-              push $ Ask pid $ ChooseOneAtATime opts
-        Nothing -> error "missing skill test"
+      _ ->
+        getSkillTest >>= \case
+          Just st -> do
+            case opts of
+              [Label _ msgs] -> pushAll msgs
+              _ -> do
+                pid <- getPlayer st.investigator
+                push $ Ask pid $ ChooseOneAtATime opts
+          Nothing -> error "missing skill test"
     pure g
   Flipped (AssetSource aid) card | toCardType card /= AssetType -> do
     replaceCard card.id card

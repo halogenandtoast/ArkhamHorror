@@ -19,10 +19,10 @@ sergeantMonroe :: AssetCard SergeantMonroe
 sergeantMonroe = ally SergeantMonroe Cards.sergeantMonroe (3, 3)
 
 instance HasModifiersFor SergeantMonroe where
-  getModifiersFor (SergeantMonroe a) = for_ a.controller \controller -> do
+  getModifiersFor (SergeantMonroe a) =
     modifySelect
       a
-      (not_ (InvestigatorWithId controller) <> at_ (locationWithAsset a))
+      (not_ (HasMatchingAsset (be a)) <> at_ (locationWithAsset a))
       [CanAssignDamageToAsset a.id, CanAssignHorrorToAsset a.id]
 
 instance HasAbilities SergeantMonroe where

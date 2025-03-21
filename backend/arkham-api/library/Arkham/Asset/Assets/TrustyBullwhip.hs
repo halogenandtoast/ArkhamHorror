@@ -37,7 +37,7 @@ instance RunMessage TrustyBullwhip where
               when canEvade do
                 labeled "Automatically evade the enemy" do
                   exhaustThis attrs
-                  push $ EnemyEvaded iid eid
+                  automaticallyEvadeEnemy iid eid
               labeled "Deal +1 damage for this attack" do
                 exhaustThis attrs
                 skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

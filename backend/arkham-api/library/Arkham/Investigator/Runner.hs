@@ -1935,6 +1935,46 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       then do
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
+        checkWindowMsg <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
+        pushAll [ checkWindowMsg , DoStep 1 msg ]
+      else do
+        tokens <- field LocationTokens lid
+        putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
+
+    for_ (mapToList additionalDiscoveredAt) \(lid', n) -> do
+      whenM (getCanDiscoverClues d.isInvestigate iid lid') do
+        discoveredClues' <- min <$> total lid' (getSum n) <*> field LocationClues lid'
+        when (discoveredClues' > 0) do
+          checkWindowMsg' <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
+          pushAll
+            [ checkWindowMsg'
+            , DoStep 1
+                $ DiscoverClues iid
+                $ d {discoverLocation = DiscoverAtLocation lid', discoverCount = discoveredClues'}
+            ]
+    pure a
+  DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
+    mods <- getModifiers iid
+    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
+    let additionalDiscovered = getSum (fold [Sum x | DiscoveredClues x <- mods])
+
+    lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
+
+    let
+      total lid' n = do
+        let
+          getMaybeMax :: ModifierType -> Maybe Int -> Maybe Int
+          getMaybeMax (MaxCluesDiscovered x) Nothing = Just x
+          getMaybeMax (MaxCluesDiscovered x) (Just x') = Just $ min x x'
+          getMaybeMax _ x = x
+        mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
+        pure $ maybe n (min n) mMax
+
+    canDiscoverClues <- getCanDiscoverClues d.isInvestigate iid lid
+    if canDiscoverClues
+      then do
+        base <- total lid (d.count + additionalDiscovered)
+        discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
         pushAll
           [ checkWindowMsg

@@ -120,6 +120,7 @@ data WindowMatcher
   | TookControlOfAsset Timing Who AssetMatcher
   | DiscoveringLastClue Timing Who Where
   | DiscoverClues Timing Who Where ValueMatcher
+  | WouldDiscoverClues Timing Who Where ValueMatcher
   | GainsClues Timing Who ValueMatcher
   | GainsResources Timing Who SourceMatcher ValueMatcher
   | EnemyWouldAttack Timing Who EnemyAttackMatcher EnemyMatcher

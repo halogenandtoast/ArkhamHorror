@@ -2,44 +2,36 @@ module Arkham.Asset.Assets.Newspaper2 (newspaper2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_)
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Projection
 
-newtype Metadata = Metadata {active :: Bool}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype Newspaper2 = Newspaper2 (AssetAttrs `With` Metadata)
+newtype Newspaper2 = Newspaper2 AssetAttrs
   deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newspaper2 :: AssetCard Newspaper2
-newspaper2 = asset (Newspaper2 . (`with` Metadata False)) Cards.newspaper2
+newspaper2 = asset Newspaper2 Cards.newspaper2
 
 instance HasModifiersFor Newspaper2 where
-  getModifiersFor (Newspaper2 (a `With` metadata)) = for_ a.controller \iid -> do
+  getModifiersFor (Newspaper2 a) = for_ a.controller \iid -> do
     clueCount <- field InvestigatorClues iid
-    modifiedWhen_ a (clueCount == 0) iid
-      $ ActionSkillModifier #investigate #intellect 2
-      : [DiscoveredClues 1 | active metadata]
+    modifiedWhen_ a (clueCount == 0) iid [ActionSkillModifier #investigate #intellect 2]
 
 instance HasAbilities Newspaper2 where
-  getAbilities (Newspaper2 (a `With` _)) =
+  getAbilities (Newspaper2 a) =
     [ controlled a 1 (youExist $ InvestigatorWithoutAnyClues <> at_ LocationWithAnyClues)
         $ freeReaction
-        $ Matcher.DiscoverClues #when You YourLocation (atLeast 1)
+        $ Matcher.WouldDiscoverClues #when You YourLocation (atLeast 1)
     ]
 
 instance RunMessage Newspaper2 where
-  runMessage msg (Newspaper2 (attrs `With` metadata)) = case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      pure . Newspaper2 $ attrs `with` Metadata True
-    Do (Msg.DiscoverClues {}) -> do
-      pure . Newspaper2 $ attrs `with` Metadata False
-    _ -> Newspaper2 . (`with` metadata) <$> runMessage msg attrs
+  runMessage msg a@(Newspaper2 attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
+      pure a
+    _ -> Newspaper2 <$> liftRunMessage msg attrs

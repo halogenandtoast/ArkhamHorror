@@ -24,7 +24,6 @@ import Data.Text qualified as T
 import Data.UUID (UUID)
 import Foundation
 import Json
-import Safe (fromJustNote)
 
 data Answer
   = Answer QuestionResponse
@@ -282,8 +281,7 @@ handleAnswer Game {..} playerId = \case
         _ -> pure [message, AskMap gameQuestion]
       else pure [message]
   Answer response -> do
-    let q = fromJustNote "Invalid question type" (Map.lookup playerId gameQuestion)
-    pure $ go id q response
+    pure $ maybe [] (\q -> go id q response) $ Map.lookup playerId gameQuestion
  where
   go
     :: (Question Message -> Question Message)

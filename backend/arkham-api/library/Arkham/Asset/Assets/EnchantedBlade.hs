@@ -2,10 +2,9 @@ module Arkham.Asset.Assets.EnchantedBlade (enchantedBlade) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 
 newtype EnchantedBlade = EnchantedBlade AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -15,7 +14,7 @@ enchantedBlade :: AssetCard EnchantedBlade
 enchantedBlade = asset EnchantedBlade Cards.enchantedBlade
 
 getPaidUse :: Payment -> Bool
-getPaidUse (UsesPayment _) = True
+getPaidUse (UsesPayment n) = n > 0
 getPaidUse (Payments ps) = any getPaidUse ps
 getPaidUse _ = False
 
@@ -26,14 +25,12 @@ instance HasAbilities EnchantedBlade where
     ]
 
 instance RunMessage EnchantedBlade where
-  runMessage msg a@(EnchantedBlade attrs) = case msg of
+  runMessage msg a@(EnchantedBlade attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (getPaidUse -> paidUse) -> do
       let amount = if paidUse then 2 else 1
       let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <-
-        skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
-      pushAll [enabled, chooseFight]
+      skillTestModifiers sid source iid $ [SkillModifier #combat amount] <> [DamageDealt 1 | paidUse]
+      chooseFightEnemy sid iid source
       pure a
-    _ -> EnchantedBlade <$> runMessage msg attrs
+    _ -> EnchantedBlade <$> liftRunMessage msg attrs

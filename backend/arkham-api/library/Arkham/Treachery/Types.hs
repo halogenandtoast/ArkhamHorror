@@ -84,6 +84,7 @@ data TreacheryAttrs = TreacheryAttrs
   , treacheryTaboo :: Maybe TabooList
   , treacheryMutated :: Maybe Text -- for art
   , treacheryExhausted :: Bool
+  , treacheryWaiting :: Bool
   }
   deriving stock (Show, Eq)
 
@@ -288,6 +289,7 @@ treacheryWith f cardDef g =
             , treacheryTaboo = Nothing
             , treacheryMutated = Nothing
             , treacheryExhausted = False
+            , treacheryWaiting = False
             }
     }
 
@@ -394,5 +396,6 @@ instance FromJSON TreacheryAttrs where
     treacheryTaboo <- o .: "taboo"
     treacheryMutated <- o .: "mutated"
     treacheryExhausted <- o .:? "exhausted" .!= False
+    treacheryWaiting <- o .:? "waiting" .!= False
 
     pure TreacheryAttrs {..}

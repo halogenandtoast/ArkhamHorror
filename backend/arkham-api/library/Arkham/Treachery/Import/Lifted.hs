@@ -15,6 +15,7 @@ import Arkham.Message as X (
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,
+  pattern PassedThisSkillTestBy,
   pattern PlaceDoom,
   pattern UseThisAbility,
  )
@@ -48,6 +49,7 @@ import Arkham.Treachery.Runner as X (
   treacheryOnLocation,
   treacheryOnTopOfDeck,
   treacheryWith,
+  waitingL,
   withTreacheryInvestigator,
   pattern PlaceResources,
  )

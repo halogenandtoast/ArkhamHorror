@@ -1,7 +1,10 @@
 module Arkham.Attack (module Arkham.Attack, module Arkham.Attack.Types) where
 
 import Arkham.Attack.Types
+import Arkham.Classes.HasGame
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.Id
+import Arkham.Enemy.Types (EnemyAttrs)
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Strategy
@@ -39,3 +42,11 @@ attackOfOpportunity enemyId source target = do
 
 viaAlert :: EnemyAttackDetails -> EnemyAttackDetails
 viaAlert a = a {attackType = AlertAttack}
+
+attackIsValid :: HasGame m => EnemyAttackDetails -> EnemyAttrs -> m Bool
+attackIsValid details attrs = do
+  if attrs.ready
+    then pure True
+    else case details.kind of
+      RetaliateAttack -> hasModifier details.enemy CanRetaliateWhileExhausted
+      _ -> pure False

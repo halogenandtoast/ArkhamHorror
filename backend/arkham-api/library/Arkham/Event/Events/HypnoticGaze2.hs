@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Event.Events.HypnoticGaze2 (hypnoticGaze2) where
 
 import Arkham.ChaosBag.RevealStrategy

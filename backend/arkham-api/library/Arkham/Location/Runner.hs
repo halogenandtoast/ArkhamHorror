@@ -419,9 +419,10 @@ instance RunMessage LocationAttrs where
       targets <- selectTargets $ ConnectedTo (LocationWithId lid) <> NotLocation LocationWithIncursion
       lead <- getLeadPlayer
       pushAll
-        [ PlaceDoom (toSource a) (toTarget a) 1
-        , chooseOrRunOneAtATime lead [targetLabel target [PlaceBreaches target 1] | target <- targets]
-        ]
+        $ PlaceDoom (toSource a) (toTarget a) 1
+        : [ chooseOrRunOneAtATime lead [targetLabel target [PlaceBreaches target 1] | target <- targets]
+          | notNull targets
+          ]
       pure $ a & breachesL ?~ Breach.Incursion 0
     EndPhase -> do
       pure $ a & breachesL %~ fmap Breach.resetIncursion

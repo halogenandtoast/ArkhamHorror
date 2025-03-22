@@ -757,7 +757,11 @@ instance RunMessage EnemyAttrs where
       mods <- getModifiers iid
       keywords <- getModifiedKeywords a
       pushAll
-        [ EnemyAttack $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
+        [ EnemyAttack
+            $ (enemyAttack enemyId a iid)
+              { attackDamageStrategy = enemyDamageStrategy
+              , attackType = RetaliateAttack
+              }
         | Keyword.Retaliate `elem` keywords
         , IgnoreRetaliate `notElem` mods
         , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
@@ -786,6 +790,21 @@ instance RunMessage EnemyAttrs where
       pushWhen (DoNotDisengageEvaded `notElem` mods) $ DisengageEnemyFromAll eid
       pure a
     Exhaust (isTarget a -> True) -> do
+      let
+        isEnemyAttack = \case
+          TargetLabel (EnemyTarget eid) [EnemyAttack details] -> eid == enemyId && details.enemy == enemyId
+          _ -> False
+        isNotInvalidEnemyAttack = \case
+          msg'@(TargetLabel _ [EnemyAttack details]) | isEnemyAttack msg' ->
+            attackIsValid details (a & exhaustedL .~ True)
+          _ -> pure True
+      overMessagesM \case
+        Ask pid (ChooseOneAtATime xs) | any isEnemyAttack xs -> do
+          filterM isNotInvalidEnemyAttack xs >>= \case
+            [] -> pure []
+            xs' -> pure [Ask pid (ChooseOneAtATime xs')]
+        msg' -> pure [msg']
+
       afterWindow <- checkWindows [mkAfter $ Window.Exhausts (toTarget a)]
       push afterWindow
       case enemyPlacement of
@@ -869,18 +888,19 @@ instance RunMessage EnemyAttrs where
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       pure $ a & attackingL ?~ details {attackAfter = msgs}
-    EnemyAttack details | attackEnemy details == enemyId -> do
-      case attackTarget details of
-        InvestigatorTarget iid -> do
-          canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
-          willIgnore <- hasModifier iid IgnoreAttacksOfOpportunity
-          if (canIgnore || willIgnore) && attackType details == AttackOfOpportunity
-            then do
-              player <- getPlayer iid
-              when canIgnore do
-                push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
-            else push $ Do msg
-        _ -> push $ Do msg
+    EnemyAttack details | details.enemy == enemyId -> do
+      whenM (attackIsValid details a) do
+        case details.target.investigator of
+          Just iid -> do
+            canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
+            willIgnore <- hasModifier iid IgnoreAttacksOfOpportunity
+            if (canIgnore || willIgnore) && details.kind == AttackOfOpportunity
+              then do
+                player <- getPlayer iid
+                when canIgnore do
+                  push $ chooseOne player [Label "Ignore attack of opportunity" [], Label "Do not ignore" [Do msg]]
+              else push $ Do msg
+          _ -> push $ Do msg
       pure a
     Do (EnemyAttack details) | attackEnemy details == enemyId -> do
       mods <- getModifiers a

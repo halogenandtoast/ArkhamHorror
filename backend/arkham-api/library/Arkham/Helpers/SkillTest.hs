@@ -335,10 +335,10 @@ inEvasionSkillTest = (== Just #evade) <$> getSkillTestAction
 getIsPerilous :: HasGame m => SkillTest -> m Bool
 getIsPerilous skillTest = case skillTestSource skillTest of
   TreacherySource tid -> do
-    keywords <- field TreacheryKeywords tid
+    keywords <- fromMaybe mempty <$> fieldMay TreacheryKeywords tid
     pure $ Peril `elem` keywords
   EnemySource eid -> do
-    keywords <- field EnemyKeywords eid
+    keywords <- fromMaybe mempty <$> fieldMay EnemyKeywords eid
     pure $ Peril `elem` keywords
   _ -> pure False
 

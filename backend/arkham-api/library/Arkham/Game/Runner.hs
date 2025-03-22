@@ -117,7 +117,7 @@ import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Treachery
-import Arkham.Treachery.Types (Field (..), drawnFromL)
+import Arkham.Treachery.Types (Field (..), drawnFromL, treacheryWaiting)
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -953,14 +953,16 @@ runGameMessage msg g = case msg of
     popMessageMatching_ $ \case
       After (Revelation _ source) -> source == TreacherySource tid
       _ -> False
-    removedEntitiesF <-
-      if gameInAction g
-        then do
-          treachery <- getTreachery tid
-          pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery
-        else pure id
 
-    pure $ g & entitiesL . treacheriesL %~ deleteMap tid & removedEntitiesF
+    maybeTreachery tid >>= \case
+      Nothing -> pure $ g & entitiesL . treacheriesL %~ deleteMap tid
+      Just treachery' -> do
+        removedEntitiesF <-
+          if gameInAction g || attr treacheryWaiting treachery'
+            then pure $ actionRemovedEntitiesL . treacheriesL %~ insertEntity treachery'
+            else pure id
+
+        pure $ g & entitiesL . treacheriesL %~ deleteMap tid & removedEntitiesF
   When (RemoveLocation lid) -> do
     pushM $ checkWindows [mkWhen (Window.LeavePlay $ toTarget lid)]
     pure g
@@ -2582,15 +2584,18 @@ runGameMessage msg g = case msg of
   --   pure g
   RevelationSkillTest sid iid (TreacherySource tid) skillType difficulty -> do
     -- [ALERT] If changed update (DreamersCurse, Somniphobia)
-    card <- field TreacheryCard tid
+    mcard <- fieldMay TreacheryCard tid
 
-    let
-      skillTest =
-        (initSkillTest sid iid tid tid skillType difficulty)
-          { skillTestIsRevelation = True
-          }
-    pushAll [BeginSkillTest skillTest, UnsetActiveCard]
-    pure $ g & (activeCardL ?~ card)
+    case mcard of
+      Nothing -> pure g
+      Just card -> do
+        let
+          skillTest =
+            (initSkillTest sid iid tid tid skillType difficulty)
+              { skillTestIsRevelation = True
+              }
+        pushAll [BeginSkillTest skillTest, UnsetActiveCard]
+        pure $ g & (activeCardL ?~ card)
   Revelation iid (CardIdSource cid) -> do
     card <- getCard cid
     case toCardType card of
@@ -2894,7 +2899,8 @@ runGameMessage msg g = case msg of
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
     let remainingEvents = Map.filter (attr eventWaiting) $ entitiesEvents (gameActionRemovedEntities g)
-    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty { entitiesEvents = remainingEvents } else id
+    let remainingTreacheries = Map.filter (attr treacheryWaiting) $ entitiesTreacheries (gameActionRemovedEntities g)
+    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty { entitiesEvents = remainingEvents, entitiesTreacheries = remainingTreacheries } else id
     let remainingAbilities = filter (/= ab) $ view activeAbilitiesL g
     pure
       $ g

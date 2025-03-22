@@ -1,16 +1,15 @@
 module Arkham.Treachery.Cards.NoxiousFumes (noxiousFumes) where
 
-import Arkham.Classes
 import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Movement
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 import Arkham.Target
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype NoxiousFumes = NoxiousFumes TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -20,31 +19,28 @@ noxiousFumes :: TreacheryCard NoxiousFumes
 noxiousFumes = treachery NoxiousFumes Cards.noxiousFumes
 
 instance RunMessage NoxiousFumes where
-  runMessage msg t@(NoxiousFumes attrs) = case msg of
+  runMessage msg t@(NoxiousFumes attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       investigators <- select $ colocatedWith iid
-      investigatorPlayers <- traverse (traverseToSnd getPlayer) investigators
+      for_ investigators (`forInvestigator` msg)
+      doStep 1 msg
+      pure . NoxiousFumes $ attrs & waitingL .~ True
+    ForInvestigator iid (Revelation _ (isSource attrs -> True)) -> do
       sid <- getRandom
-
-      pushAll
-        [ chooseOne
-            player
-            [ SkillLabel skill [revelationSkillTest sid investigator attrs skill (Fixed 3)]
-            | skill <- [#agility, #combat]
-            ]
-        | (investigator, player) <- investigatorPlayers
-        ]
-
+      chooseOneM iid do
+        for_ [#agility, #combat] \skill -> do
+          skillLabeled skill $ revelationSkillTest sid iid attrs skill (Fixed 3)
       pure t
+    DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
+      pure . NoxiousFumes $ attrs & waitingL .~ False
     PassedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
-      accessibleLocationIds <- getAccessibleLocations iid attrs
-      player <- getPlayer iid
-      push $ chooseOne player [targetLabel lid [Move $ move attrs iid lid] | lid <- accessibleLocationIds]
+      accessibleLocations <- getAccessibleLocations iid attrs
+      chooseTargetM iid accessibleLocations $ moveTo attrs iid
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillAgility) _ -> do
-      push $ assignDamage iid (toSource attrs) 2
+      assignDamage iid attrs 2
       pure t
     FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest SkillCombat) n -> do
-      push $ assignDamage iid (toSource attrs) n
+      assignDamage iid attrs n
       pure t
-    _ -> NoxiousFumes <$> runMessage msg attrs
+    _ -> NoxiousFumes <$> liftRunMessage msg attrs

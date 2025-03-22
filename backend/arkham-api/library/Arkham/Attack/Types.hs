@@ -11,7 +11,7 @@ import Arkham.Target
 import Data.Aeson.TH
 import GHC.Records
 
-data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack
+data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack | RetaliateAttack
   deriving stock (Show, Eq, Data)
 
 data EnemyAttackDetails = EnemyAttackDetails
@@ -28,6 +28,9 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackDealDamage :: Bool
   }
   deriving stock (Show, Eq, Data)
+
+instance HasField "kind" EnemyAttackDetails EnemyAttackType where
+  getField = attackType
 
 instance HasField "target" EnemyAttackDetails Target where
   getField = attackTarget

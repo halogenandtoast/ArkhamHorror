@@ -20,15 +20,12 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.BloodOnTheAltar.Helpers
 import Arkham.Scenarios.BloodOnTheAltar.Story
 import Arkham.Token
 
-newtype BloodOnTheAltarMetadata = BloodOnTheAltarMetadata {sacrifices :: [Card]}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarMetadata)
+newtype BloodOnTheAltar = BloodOnTheAltar ScenarioAttrs
   deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq)
@@ -36,7 +33,7 @@ newtype BloodOnTheAltar = BloodOnTheAltar (ScenarioAttrs `With` BloodOnTheAltarM
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty =
   scenario
-    (BloodOnTheAltar . (`with` BloodOnTheAltarMetadata []))
+    BloodOnTheAltar
     "02195"
     "Blood on the Altar"
     difficulty
@@ -46,7 +43,7 @@ bloodOnTheAltar difficulty =
     ]
 
 instance HasChaosTokenValue BloodOnTheAltar where
-  getChaosTokenValue iid chaosTokenFace (BloodOnTheAltar (attrs `With` _)) =
+  getChaosTokenValue iid chaosTokenFace (BloodOnTheAltar attrs) =
     case chaosTokenFace of
       Skull -> do
         numLocations <- countM (fieldMap LocationCardsUnderneath null) =<< select Anywhere
@@ -72,7 +69,7 @@ removeNecronomicon = do
       removeCampaignCard Assets.theNecronomiconOlausWormiusTranslation
 
 instance RunMessage BloodOnTheAltar where
-  runMessage msg s@(BloodOnTheAltar (attrs `With` metadata@(BloodOnTheAltarMetadata sacrificed))) = runQueueT
+  runMessage msg s@(BloodOnTheAltar attrs) = runQueueT
     $ scenarioI18n
     $ case msg of
       PreScenarioSetup -> do
@@ -81,7 +78,7 @@ instance RunMessage BloodOnTheAltar where
       StandaloneSetup -> do
         setChaosTokens standaloneChaosTokens
         pure s
-      Setup -> runScenarioSetup (BloodOnTheAltar . (`with` metadata)) attrs do
+      Setup -> runScenarioSetup BloodOnTheAltar attrs do
         bishopsBrook <- sample2 Locations.bishopsBrook_202 Locations.bishopsBrook_203
         burnedRuins <- sample2 Locations.burnedRuins_204 Locations.burnedRuins_205
         osbornsGeneralStore <- sample2 Locations.osbornsGeneralStore_206 Locations.osbornsGeneralStore_207
@@ -188,6 +185,7 @@ instance RunMessage BloodOnTheAltar where
               _ -> error "missing deck"
         agendaId <- selectJust AnyAgenda
         placeUnderneath agendaId potentialSacrifices
+        sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
         for_ (potentialSacrifices <> sacrificed) removeCampaignCard
         removeNecronomicon
         allGainXpWithBonus attrs $ toBonus "bonus" 2
@@ -196,6 +194,7 @@ instance RunMessage BloodOnTheAltar where
       ScenarioResolution (Resolution 1) -> do
         story resolution1
         record TheInvestigatorsPutSilasBishopOutOfHisMisery
+        sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
         for_ sacrificed removeCampaignCard
         removeNecronomicon
         allGainXpWithBonus attrs $ toBonus "bonus" 2
@@ -204,6 +203,7 @@ instance RunMessage BloodOnTheAltar where
       ScenarioResolution (Resolution 2) -> do
         story resolution2
         record TheInvestigatorsRestoredSilasBishop
+        sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
         for_ sacrificed removeCampaignCard
         allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
@@ -211,10 +211,11 @@ instance RunMessage BloodOnTheAltar where
       ScenarioResolution (Resolution 3) -> do
         story resolution3
         record TheInvestigatorsBanishedSilasBishop
+        sacrificed <- filterCards CardIsUnique <$> scenarioField ScenarioCardsUnderAgendaDeck
         for_ sacrificed removeCampaignCard
         recordSetInsert SacrificedToYogSothoth $ map toCardCode sacrificed
         removeNecronomicon
         allGainXpWithBonus attrs $ toBonus "bonus" 2
         endOfScenario
         pure s
-      _ -> BloodOnTheAltar . (`with` metadata) <$> liftRunMessage msg attrs
+      _ -> BloodOnTheAltar <$> liftRunMessage msg attrs

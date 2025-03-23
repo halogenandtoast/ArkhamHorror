@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.FogOnTheBay (FogOnTheBay (..), fogOnTheBay) where
+module Arkham.Agenda.Cards.FogOnTheBay (fogOnTheBay) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts

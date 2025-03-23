@@ -271,7 +271,7 @@ instance RunMessage EnemyAttrs where
               case miid of
                 Just iid | not onlyPrey || iid `elem` preyIds -> do
                   atSameLocation <- iid <=~> investigatorAt lid
-                  pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | atSameLocation]
+                  pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | atSameLocation && not enemyDelayEngagement]
                 _ -> do
                   investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                   lead <- getLeadPlayer

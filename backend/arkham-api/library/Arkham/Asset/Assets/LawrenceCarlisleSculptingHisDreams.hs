@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype LawrenceCarlisleSculptingHisDreams = LawrenceCarlisleSculptingHisDreams AssetAttrs
   deriving anyclass IsAsset
@@ -19,7 +19,7 @@ instance HasModifiersFor LawrenceCarlisleSculptingHisDreams where
 
 instance HasAbilities LawrenceCarlisleSculptingHisDreams where
   getAbilities (LawrenceCarlisleSculptingHisDreams x) =
-    [ controlled x 1 (can.draw.cards You)
+    [ controlled x 1 (can.draw.cards You <> DuringTurn You)
         $ triggered (DiscardedFromHand #after You AnySource #any) (exhaust x)
     ]
 

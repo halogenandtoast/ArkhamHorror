@@ -163,7 +163,7 @@ fromPostData userId CreateDeckPost {..} = do
     }
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
-getDeckList url = liftIO $ eitherDecode <$> simpleHttp (T.unpack url)
+getDeckList url = liftIO $ second (\d -> d { url = Just url }) . eitherDecode <$> simpleHttp (T.unpack url)
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do

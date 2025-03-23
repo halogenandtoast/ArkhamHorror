@@ -2900,7 +2900,12 @@ runGameMessage msg g = case msg of
   ResolvedAbility ab -> do
     let remainingEvents = Map.filter (attr eventWaiting) $ entitiesEvents (gameActionRemovedEntities g)
     let remainingTreacheries = Map.filter (attr treacheryWaiting) $ entitiesTreacheries (gameActionRemovedEntities g)
-    let removedEntitiesF = if length (gameActiveAbilities g) <= 1 then actionRemovedEntitiesL .~ mempty { entitiesEvents = remainingEvents, entitiesTreacheries = remainingTreacheries } else id
+    let removedEntitiesF =
+          if length (gameActiveAbilities g) <= 1
+            then
+              actionRemovedEntitiesL
+                .~ mempty {entitiesEvents = remainingEvents, entitiesTreacheries = remainingTreacheries}
+            else id
     let remainingAbilities = filter (/= ab) $ view activeAbilitiesL g
     pure
       $ g

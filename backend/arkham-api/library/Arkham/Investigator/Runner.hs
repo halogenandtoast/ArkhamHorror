@@ -259,7 +259,7 @@ getWindowSkippable
           then pure True
           else getCanAffordCost (toId attrs) pc [#play] ws (ActionCost 1)
       ]
-getWindowSkippable _ _ w@(windowType -> Window.ActivateAbility iid _ ab) = do
+getWindowSkippable _ _ w@(windowTiming &&& windowType -> (Timing.When, Window.ActivateAbility iid _ ab)) = do
   let
     excludeOne [] = []
     excludeOne (uab : xs) | ab == usedAbility uab = do
@@ -1936,7 +1936,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
-        pushAll [ checkWindowMsg , DoStep 1 msg ]
+        pushAll [checkWindowMsg, DoStep 1 msg]
       else do
         tokens <- field LocationTokens lid
         putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
@@ -1945,7 +1945,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       whenM (getCanDiscoverClues d.isInvestigate iid lid') do
         discoveredClues' <- min <$> total lid' (getSum n) <*> field LocationClues lid'
         when (discoveredClues' > 0) do
-          checkWindowMsg' <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
+          checkWindowMsg' <-
+            checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
           pushAll
             [ checkWindowMsg'
             , DoStep 1
@@ -3035,7 +3036,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           : [ chooseOrRunOne player
                 $ [ Label
                       "Cancel card effects and discard it"
-                      [UnfocusCards, CancelNext GameSource RevelationMessage, DiscardCard iid GameSource card.id]
+                      [ UnfocusCards
+                      , CancelNext GameSource RevelationMessage
+                      , ObtainCard card.id
+                      , AddToHandQuiet iid [toCard card]
+                      , DiscardCard iid GameSource card.id
+                      ]
                   | canCancel
                   ]
                 <> [ Label

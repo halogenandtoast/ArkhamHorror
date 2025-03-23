@@ -1916,7 +1916,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DiscoverClues iid d | iid == investigatorId -> do
     mods <- getModifiers iid
     let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | DiscoveredClues x <- mods])
+    let additionalDiscovered = getSum (fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
 
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
 
@@ -1957,7 +1957,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
     mods <- getModifiers iid
     let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | DiscoveredClues x <- mods])
+    let additionalDiscovered = getSum (fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
 
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
 

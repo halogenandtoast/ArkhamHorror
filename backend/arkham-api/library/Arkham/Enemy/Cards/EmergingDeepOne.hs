@@ -20,7 +20,7 @@ emergingDeepOne =
 
 instance HasAbilities EmergingDeepOne where
   getAbilities (EmergingDeepOne a) =
-    extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after (You <> at_ FullyFloodedLocation) (be a)
+    extend1 a $ mkAbility a 1 $ forced $ EnemyEngaged #after (You <> at_ FloodedLocation) (be a)
 
 instance RunMessage EmergingDeepOne where
   runMessage msg e@(EmergingDeepOne attrs) = runQueueT $ case msg of

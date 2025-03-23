@@ -16,7 +16,7 @@ import Arkham.I18n as X
 import Arkham.Text as X
 
 import Arkham.Prelude
-import Control.Monad.Writer
+import Control.Monad.Writer.Strict
 import Data.Text qualified as T
 import GHC.Records
 

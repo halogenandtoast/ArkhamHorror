@@ -17,3 +17,6 @@ type EntityMap a = Map (EntityId a) a
 
 addCardEntityWith
   :: InvestigatorId -> (forall a. (Typeable a) => a -> a) -> Entities -> Card -> Entities
+
+addEntity :: forall a. Typeable a => a -> Entities -> Entities
+

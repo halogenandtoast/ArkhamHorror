@@ -36,6 +36,7 @@ import Arkham.Treachery
 import Arkham.Treachery.Types (Treachery)
 import Arkham.Zone
 import Data.Map.Strict qualified as Map
+import Data.Typeable
 import GHC.Records
 
 type EntityMap a = Map (EntityId a) a
@@ -200,6 +201,12 @@ addCardEntityWith i f e card = case card of
   VengeanceCard _ -> error "vengeance card"
  where
   uuid = unsafeCardIdToUUID (toCardId card)
+
+addEntity :: forall a. Typeable a => a -> Entities -> Entities
+addEntity a e =
+  if
+    | Just Refl <- eqT @a @Asset -> e & assetsL %~ insertMap (toId a) a
+    | otherwise -> e
 
 instance RunMessage Entities where
   runMessage msg entities =

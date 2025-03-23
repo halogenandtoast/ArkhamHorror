@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.EnchantedBow2 (enchantedBow2, EnchantedBow2 (..)) where
+module Arkham.Asset.Assets.EnchantedBow2 (enchantedBow2) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
@@ -18,26 +18,22 @@ enchantedBow2 :: AssetCard EnchantedBow2
 enchantedBow2 = asset EnchantedBow2 Cards.enchantedBow2
 
 instance HasModifiersFor EnchantedBow2 where
-  getModifiersFor (EnchantedBow2 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid ->
-      selectOne (AbilityIs (toSource a) 1) >>= \case
-        Nothing -> pure mempty
-        Just ab -> do
-          let meta = toResultDefault True a.meta
-          modifiedWhen_
-            a
-            (hasUses a && meta)
-            (AbilityTarget iid ab)
-            [ CanModify
-                $ EnemyFightActionCriteria
-                $ CriteriaOverride
-                $ EnemyCriteria
-                $ ThisEnemy
-                $ EnemyWithoutModifier CannotBeAttacked
-                <> oneOf
-                  [NonEliteEnemy <> EnemyAt (ConnectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
-            ]
+  getModifiersFor (EnchantedBow2 a) = for_ a.controller \iid -> do
+    selectOne (AbilityIs (toSource a) 1) >>= traverse_ \ab -> do
+      let meta = toResultDefault True a.meta
+      modifiedWhen_
+        a
+        (hasUses a && meta)
+        (AbilityTarget iid ab)
+        [ CanModify
+            $ EnemyFightActionCriteria
+            $ CriteriaOverride
+            $ EnemyCriteria
+            $ ThisEnemy
+            $ EnemyWithoutModifier CannotBeAttacked
+            <> oneOf
+              [NonEliteEnemy <> at_ (ConnectedFrom $ locationWithInvestigator iid), enemyAtLocationWith iid]
+        ]
 
 instance HasAbilities EnchantedBow2 where
   getAbilities (EnchantedBow2 a) =

@@ -6,6 +6,9 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (createAsset)
 import Arkham.Asset.Types (Asset (..))
 import Arkham.Card
+import Arkham.Classes.HasGame
+import {-# SOURCE #-} Arkham.Entities
+import {-# SOURCE #-} Arkham.Game
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Investigator.Types (Field (..))
@@ -13,7 +16,10 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Control.Lens (over)
+import Control.Monad.Reader (local)
+import Control.Monad.Writer.Strict (execWriterT)
 import Data.Data.Lens (biplate)
+import Data.Map.Monoidal.Strict (getMonoidalMap)
 
 newtype Metadata = Metadata {currentAsset :: Maybe Asset}
   deriving stock (Show, Eq, Generic)
@@ -43,20 +49,28 @@ instance RunMessage TrueMagickReworkingReality5 where
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
       let adjustCost = overCost (over biplate (const attrs.id))
-      let setUses otherAttrs = otherAttrs {assetTokens = attrs.tokens}
       choices <- forMaybeM hand \card -> do
+        let a = overAttrs (\attrs' -> attrs {assetCardCode = assetCardCode attrs'})
+                      $ createAsset card
+                      $ unsafeFromCardId card.id
         tmpAbilities <-
-          filterM
-            (getCanPerformAbility iid ws)
-            [ adjustCost $ ab {abilitySource = proxy (CardIdSource card.id) attrs}
-            | ab <- getAbilities (overAttrs setUses $ createAsset card attrs.id)
-            ]
+          getGame >>= runReaderT do
+            local (entitiesL %~ addEntity a) do
+              modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
+              local (modifiersL <>~ modifiers) do
+                filterM (getCanPerformAbility iid ws) [adjustCost ab | ab <- getAbilities a]
         pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
 
       player <- getPlayer iid
       chooseOne
         iid
-        [ targetLabel cardId [RevealCard cardId, Msg.chooseOne player [AbilityLabel iid a ws [] [] | a <- as]]
+        [ targetLabel
+            cardId
+            [ RevealCard cardId
+            , Msg.chooseOne
+                player
+                [AbilityLabel iid a {abilitySource = proxy (CardIdSource cardId) attrs} ws [] [] | a <- as]
+            ]
         | (cardId, as) <- choices
         ]
 

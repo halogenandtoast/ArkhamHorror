@@ -36,9 +36,11 @@ instance RunMessage AgendaAttrs where
     AdvanceToAgenda n _ _ _ | n == agendaDeckId -> do
       whenWindow <- checkWhen $ Window.AgendaAdvance agendaId
       afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
+      shouldRemove <- a.id <=~> removeDoomAgendas agendaRemoveDoomMatchers
+      let removeDoomAgenda' = if shouldRemove then AgendaWithId a.id else removeDoomAgendas agendaRemoveDoomMatchers
       pushAll
         [ whenWindow
-        , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = AgendaWithId a.id}
+        , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = removeDoomAgenda'}
         , Do msg
         , afterWindow
         ]
@@ -125,9 +127,11 @@ instance RunMessage AgendaAttrs where
           when (totalDoom >= modifiedPerPlayerDoomThreshold) $ do
             whenWindow <- checkWhen $ Window.AgendaAdvance agendaId
             afterWindow <- checkAfter $ Window.AgendaAdvance agendaId
+            shouldRemove <- a.id <=~> removeDoomAgendas agendaRemoveDoomMatchers
+            let removeDoomAgenda' = if shouldRemove then AgendaWithId a.id else removeDoomAgendas agendaRemoveDoomMatchers
             pushAll
               [ whenWindow
-              , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = AgendaWithId a.id}
+              , RemoveAllDoomFromPlay $ agendaRemoveDoomMatchers {removeDoomAgendas = removeDoomAgenda'}
               , AdvanceAgenda agendaId
               , afterWindow
               ]

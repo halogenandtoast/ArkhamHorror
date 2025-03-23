@@ -12,6 +12,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Event from '@/arkham/components/Event.vue';
+import Story from '@/arkham/components/Story.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue';
@@ -146,6 +147,12 @@ const attachedEnemies = computed(() => {
 
   return enemyIds
     .filter((e) => props.game.enemies[e].placement.tag === 'AttachedToLocation')
+})
+
+const stories = computed(() => {
+  return Object.values(props.game.stories)
+    .filter((s) => s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id)
+    .map((s) => s.id)
 })
 
 const treacheries = computed(() => {
@@ -345,6 +352,15 @@ function onDrop(event: DragEvent) {
           v-for="enemyId in enemies"
           :key="enemyId"
           :enemy="game.enemies[enemyId]"
+          :game="game"
+          :playerId="playerId"
+          :atLocation="true"
+          @choose="$emit('choose', $event)"
+        />
+        <Story
+          v-for="storyId in stories"
+          :key="storyId"
+          :story="game.stories[storyId]"
           :game="game"
           :playerId="playerId"
           :atLocation="true"

@@ -44,6 +44,17 @@ instance RunMessage TheBeyondBleakNetherworld where
         Nothing -> pure a
         Just sideDeck -> do
           spiritDeck' <- shuffleM =<< traverse (setOwner iid . toCard) sideDeck
+          let bonded = nub $ concatMap (cdBondedWith . toCardDef) spiritDeck'
+
+          for_ bonded \(n, cCode) -> do
+            case lookupCardDef cCode of
+              Nothing -> error "missing card"
+              Just def -> do
+                taboo <- field InvestigatorTaboo iid
+                cs :: [Card] <- replicateM n (genCard def)
+                cs' <- traverse (Arkham.Card.setTaboo taboo <=< setOwner iid) cs
+                for_ cs' (push . PlaceInBonded iid)
+
           pure . TheBeyondBleakNetherworld $ attrs `with` Meta spiritDeck' Nothing
     UseThisAbility iid (isSource attrs -> True) 1 -> case spiritDeck meta of
       [] -> pure a

@@ -3,8 +3,8 @@ module Arkham.Asset.Assets.EnchantedBlade (enchantedBlade) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Uses
+import Arkham.Helpers.Modifiers hiding (skillTestModifiers)
 
 newtype EnchantedBlade = EnchantedBlade AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

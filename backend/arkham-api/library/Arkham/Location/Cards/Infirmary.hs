@@ -1,12 +1,11 @@
 module Arkham.Location.Cards.Infirmary (infirmary) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
-import Arkham.Prelude
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Choose
 
 newtype Infirmary = Infirmary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -17,30 +16,20 @@ infirmary = location Infirmary Cards.infirmary 3 (PerPlayer 1)
 
 instance HasAbilities Infirmary where
   getAbilities (Infirmary attrs) =
-    withBaseAbilities
-      attrs
-      [ limitedAbility (PlayerLimit PerRound 1)
-          $ restrictedAbility attrs 1 Here (ActionAbility [] $ ActionCost 1)
-      | locationRevealed attrs
-      ]
+    extendRevealed1 attrs $ playerLimit PerRound $ restricted attrs 1 Here actionAbility
 
 instance RunMessage Infirmary where
-  runMessage msg l@(Infirmary attrs) = case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+  runMessage msg l@(Infirmary attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
-      healDamage <- canHaveDamageHealed source iid
-      healHorror <- canHaveHorrorHealed source iid
-      player <- getPlayer iid
-
-      push
-        $ chooseOne
-          player
-          [ Label "Heal 1 damage and take 1 direct horror"
-              $ [HealDamage (toTarget attrs) source 1 | healDamage]
-              <> [directHorror iid source 1]
-          , Label "Heal 1 horror and take 1 direct damage"
-              $ [HealHorror (toTarget attrs) source 1 | healHorror]
-              <> [directDamage iid source 1]
-          ]
+      canHealDamage <- canHaveDamageHealed source iid
+      canHealHorror <- canHaveHorrorHealed source iid
+      chooseOneM iid do
+        labeled "Heal 1 damage and take 1 direct horror" do
+          when canHealDamage $ healDamage iid source 1
+          directHorror iid source 1
+        labeled "Heal 1 horror and take 1 direct damage" do
+          when canHealHorror $ healHorror iid source 1
+          directDamage iid source 1
       pure l
-    _ -> Infirmary <$> runMessage msg attrs
+    _ -> Infirmary <$> liftRunMessage msg attrs

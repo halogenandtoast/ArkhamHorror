@@ -1,12 +1,11 @@
-module Arkham.Location.Cards.CityOfTheMoonBeasts (cityOfTheMoonBeasts, CityOfTheMoonBeasts (..)) where
+module Arkham.Location.Cards.CityOfTheMoonBeasts (cityOfTheMoonBeasts) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner hiding (beginSkillTest)
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted
-import Arkham.Prelude
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype CityOfTheMoonBeasts = CityOfTheMoonBeasts LocationAttrs
@@ -26,7 +25,7 @@ instance HasAbilities CityOfTheMoonBeasts where
     extendRevealed
       attrs
       [ skillTestAbility
-          $ restrictedAbility attrs 1 (exists (investigatorAt attrs))
+          $ restricted attrs 1 (exists (investigatorAt attrs))
           $ forced
           $ RoundEnds #when
       ]
@@ -34,7 +33,7 @@ instance HasAbilities CityOfTheMoonBeasts where
 instance RunMessage CityOfTheMoonBeasts where
   runMessage msg l@(CityOfTheMoonBeasts attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator $ \iid -> do
+      selectEach (investigatorAt attrs) \iid -> do
         sid <- getRandom
         beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
       pure l

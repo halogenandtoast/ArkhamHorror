@@ -56,7 +56,7 @@ getDoomCount = do
       . fold
       <$> sequence
         [ selectAgg Sum AssetDoom (AssetWithoutModifier DoomSubtracts)
-        , selectAgg Sum EnemyDoom (EnemyWithoutModifier DoomSubtracts)
+        , selectAgg Sum EnemyDoom (InPlayEnemy $ EnemyWithoutModifier DoomSubtracts)
         , selectAgg Sum EventDoom (EventWithoutModifier DoomSubtracts)
         , selectAgg Sum LocationDoom (LocationWithoutModifier DoomSubtracts)
         , selectAgg Sum TreacheryDoom (TreacheryWithoutModifier DoomSubtracts)

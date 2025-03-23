@@ -4642,7 +4642,9 @@ instance Projection Scenario where
       ScenarioEncounterDecks -> pure scenarioEncounterDecks
       ScenarioDifficulty -> pure scenarioDifficulty
       ScenarioDecks -> pure scenarioDecks
-      ScenarioVictoryDisplay -> pure scenarioVictoryDisplay
+      ScenarioVictoryDisplay -> do
+        enemies <- selectField EnemyCard $ EnemyWithPlacement (OutOfPlay VictoryDisplayZone)
+        pure $ scenarioVictoryDisplay <> enemies
       ScenarioRemembered -> pure scenarioLog
       ScenarioCounts -> pure scenarioCounts
       ScenarioStandaloneCampaignLog -> pure scenarioStandaloneCampaignLog

@@ -28,7 +28,7 @@ instance HasAbilities ArtisticInspiration where
 instance RunMessage ArtisticInspiration where
   runMessage msg a@(ArtisticInspiration attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      pure . ArtisticInspiration $ attrs & tokensL %~ replenish Evidence 1
+      pure . ArtisticInspiration $ attrs & tokensL %~ replenish Inspiration 1
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withSkillTest \sid -> do
         chooseOneM iid do

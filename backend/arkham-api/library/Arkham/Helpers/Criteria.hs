@@ -14,6 +14,7 @@ import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Query
 import Arkham.Cost
 import Arkham.Criteria (Criterion)
@@ -76,7 +77,10 @@ import Arkham.Treachery.Types (Field (..))
 import Arkham.Window (Window (..), mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (over)
+import Control.Monad.Reader (local)
+import Control.Monad.Writer.Strict (execWriterT)
 import Data.Data.Lens (biplate)
+import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Set qualified as Set
 import Data.Typeable
 
@@ -195,16 +199,16 @@ passesCriteria iid mcard source' requestor windows' = \case
                       $ unsafeFromCardId c.id
                 )
                 hand
-        let handAbilities =
-              map
-                ( \ab -> case ab.source of
-                    AssetSource aid ->
-                      overCost replaceAssetIds
-                        $ ab {abilitySource = proxy attrs (CardIdSource $ unsafeToCardId aid)}
-                    _ -> error "wrong source"
-                )
-                (concatMap getAbilities handEntities)
-        anyM (getCanPerformAbility iid windows') handAbilities
+        getGame >>= runReaderT do
+          anyM
+            ( \a -> do
+                local (entitiesL %~ addEntity a) do
+                  modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
+                  local (modifiersL <>~ modifiers) do
+                    let handAbilities = map (overCost replaceAssetIds) (getAbilities a)
+                    anyM (getCanPerformAbility iid windows') handAbilities
+            )
+            handEntities
       _ -> error "wrong source"
   Criteria.HasCalculation c valueMatcher -> do
     value <- calculate c

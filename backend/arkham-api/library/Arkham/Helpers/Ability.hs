@@ -127,7 +127,7 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
                 pure $ cardCode `elem` restrictions
               _ -> pure False
     _ -> do
-      modifiers <- getModifiers (AbilityTarget iid ab)
+      modifiers <- getModifiers $ AbilityTarget iid ab
       let
         isOverride = \case
           EnemyFightActionCriteria override -> Just override

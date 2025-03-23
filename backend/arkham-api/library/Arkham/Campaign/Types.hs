@@ -193,7 +193,7 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount deck = do
       _ -> True
     classOnlyFilter = not . any notForClass . cdDeckRestrictions
     weaknessFilter = and . sequence [multiplayerFilter, classOnlyFilter]
-  runWriterT $ do
+  runWriterT do
     Deck <$> flip filterM (unDeck deck) \card -> do
       when (toCardDef card == randomWeakness) do
         sample (NE.fromList $ filter weaknessFilter allBasicWeaknesses) >>= lift . genCard >>= tell . pure

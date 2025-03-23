@@ -2,13 +2,12 @@ module Arkham.Asset.Assets.DayanaEsperence3 (dayanaEsperence3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
+import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Window
 import Arkham.Matcher hiding (EventCard, PlaceUnderneath, PlayCard)
-import Arkham.Prelude
-import Arkham.Window (mkAfter, mkWhen)
+import Arkham.Message.Lifted.Choose
 import Arkham.Window qualified as Window
 
 newtype DayanaEsperence3 = DayanaEsperence3 AssetAttrs
@@ -20,8 +19,7 @@ dayanaEsperence3 = ally DayanaEsperence3 Cards.dayanaEsperence3 (3, 1)
 
 instance HasModifiersFor DayanaEsperence3 where
   getModifiersFor (DayanaEsperence3 a) = do
-    for_ a.controller \iid ->
-      modified_ a iid $ map AsIfInHand $ assetCardsUnderneath a
+    controllerGets a $ map AsIfInHand $ assetCardsUnderneath a
 
     modifyEach
       a
@@ -35,33 +33,22 @@ instance HasAbilities DayanaEsperence3 where
     ]
 
 instance RunMessage DayanaEsperence3 where
-  runMessage msg a@(DayanaEsperence3 attrs) = case msg of
+  runMessage msg a@(DayanaEsperence3 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cards <- select $ inHandOf ForPlay iid <> basic (NonWeakness <> #spell <> #event)
 
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-          [ targetLabel
-              (toCardId c)
-              ( PlaceUnderneath (toTarget attrs) [c]
-                  : map
-                    (\other -> AddToDiscard (fromMaybe iid $ toCardOwner other) other)
-                    (onlyPlayerCards $ assetCardsUnderneath attrs)
-              )
-          | c <- cards
-          ]
+      chooseTargetM iid cards \c -> do
+        placeUnderneath attrs (only c)
+        for_ (onlyPlayerCards $ assetCardsUnderneath attrs) \other ->
+          addToDiscard (fromMaybe iid other.owner) (only other)
       pure a
     InitiatePlayCard iid card mTarget payment windows' asAction | card `elem` assetCardsUnderneath attrs -> do
-      afterPlayCard <- checkWindows [mkAfter (Window.PlayCard iid $ Window.CardPlay card asAction)]
       if cdSkipPlayWindows (toCardDef card)
         then push $ PlayCard iid card mTarget payment windows' asAction
-        else
-          pushAll
-            [ CheckWindows [mkWhen (Window.PlayCard iid $ Window.CardPlay card asAction)]
-            , PlayCard iid card mTarget payment windows' asAction
-            , afterPlayCard
-            ]
+        else do
+          checkWhen $ Window.PlayCard iid $ Window.CardPlay card asAction
+          push $ PlayCard iid card mTarget payment windows' asAction
+          checkAfter $ Window.PlayCard iid $ Window.CardPlay card asAction
       pure a
-    _ -> DayanaEsperence3 <$> runMessage msg attrs
+    CardEnteredPlay _ card | card `elem` assetCardsUnderneath attrs -> pure a
+    _ -> DayanaEsperence3 <$> liftRunMessage msg attrs

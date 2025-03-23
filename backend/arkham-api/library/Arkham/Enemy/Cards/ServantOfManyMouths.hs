@@ -1,17 +1,11 @@
-module Arkham.Enemy.Cards.ServantOfManyMouths (
-  ServantOfManyMouths (..),
-  servantOfManyMouths,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.ServantOfManyMouths (servantOfManyMouths) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Discover
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted.Choose
 
 newtype ServantOfManyMouths = ServantOfManyMouths EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -27,31 +21,17 @@ servantOfManyMouths =
     (spawnAtL ?~ SpawnAt EmptyLocation)
 
 instance HasAbilities ServantOfManyMouths where
-  getAbilities (ServantOfManyMouths attrs) =
-    withBaseAbilities
-      attrs
-      [ restrictedAbility
-          attrs
-          1
-          (LocationExists LocationWithAnyClues <> CanDiscoverCluesAt Anywhere)
-          $ freeReaction
-          $ EnemyDefeated #after You ByAny
-          $ EnemyWithId attrs.id
-      ]
+  getAbilities (ServantOfManyMouths a) =
+    extend1 a
+      $ restricted a 1 (exists $ LocationWithDiscoverableCluesBy You)
+      $ freeReaction
+      $ EnemyDefeated #after You ByAny (be a)
 
 instance RunMessage ServantOfManyMouths where
-  runMessage msg e@(ServantOfManyMouths attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      locationsWithClues <- select LocationWithAnyClues
-      player <- getPlayer iid
-      unless (null locationsWithClues) do
-        push
-          $ chooseOne
-            player
-            [ targetLabel
-              lid
-              [Msg.DiscoverClues iid $ discover lid (toAbilitySource attrs 1) 1]
-            | lid <- locationsWithClues
-            ]
+  runMessage msg e@(ServantOfManyMouths attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      locationsWithClues <- select $ locationWithDiscoverableCluesBy iid
+      chooseTargetM iid locationsWithClues \lid ->
+        discoverAt NotInvestigate iid (attrs.ability 1) lid 1
       pure e
-    _ -> ServantOfManyMouths <$> runMessage msg attrs
+    _ -> ServantOfManyMouths <$> liftRunMessage msg attrs

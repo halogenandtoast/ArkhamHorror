@@ -8,9 +8,9 @@ import Arkham.Classes.HasGame
 import Arkham.DamageEffect qualified as Msg
 import Arkham.Discover
 import Arkham.Enemy.Types (Field (EnemyLocation))
-import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator (canHaveDamageHealed, canHaveHorrorHealed, withLocationOf)
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)
 import Arkham.Helpers.SkillTest.Target
@@ -50,18 +50,21 @@ override a iid =
       ]
 
 instance HasModifiersFor RunicAxe where
-  getModifiersFor (RunicAxe (With a _)) = for_ a.controller \iid -> do
-    modifySelfWhen
+  getModifiersFor (RunicAxe (With a _)) = do
+    modifiedWhen_
       a
       (a `hasCustomization` Heirloom)
+      (CardIdTarget a.cardId)
       [ReduceCostOf (CardWithId a.cardId) 1, AddTrait Relic]
-    void $ runMaybeT do
-      guard (a.use Charge > 0 && a `hasCustomization` InscriptionOfTheHunt)
-      ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
-      modified_
-        a
-        (AbilityTarget iid ab)
-        [CanModify $ EnemyFightActionCriteria $ override a iid]
+    for_ a.controller \iid -> do
+      modifySelfWhen a (a `hasCustomization` Heirloom) [AddTrait Relic]
+      void $ runMaybeT do
+        guard (a.use Charge > 0 && a `hasCustomization` InscriptionOfTheHunt)
+        ab <- MaybeT $ selectOne (AbilityIs (toSource a) 1)
+        modified_
+          a
+          (AbilityTarget iid ab)
+          [CanModify $ EnemyFightActionCriteria $ override a iid]
 
 instance HasAbilities RunicAxe where
   getAbilities (RunicAxe (With a _)) = [restrictedAbility a 1 ControlsThis fightAction_]

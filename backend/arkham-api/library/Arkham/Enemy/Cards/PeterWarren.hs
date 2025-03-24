@@ -1,15 +1,8 @@
-module Arkham.Enemy.Cards.PeterWarren (
-  PeterWarren (..),
-  peterWarren,
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Cards.PeterWarren (peterWarren) where
 
 import Arkham.Ability
-import Arkham.Action
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 
 newtype PeterWarren = PeterWarren EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -26,15 +19,13 @@ peterWarren =
 
 instance HasAbilities PeterWarren where
   getAbilities (PeterWarren attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility attrs 1 OnSameLocation
-            $ ActionAbility [Parley]
-            $ Costs [ActionCost 1, ClueCost (Static 2)]
-        ]
+    extend1 attrs
+      $ restricted attrs 1 OnSameLocation
+      $ parleyAction (ClueCost (Static 2))
 
 instance RunMessage PeterWarren where
-  runMessage msg e@(PeterWarren attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ AddToVictory $ toTarget attrs
+  runMessage msg e@(PeterWarren attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      addToVictory attrs
       pure e
-    _ -> PeterWarren <$> runMessage msg attrs
+    _ -> PeterWarren <$> liftRunMessage msg attrs

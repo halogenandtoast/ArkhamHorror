@@ -271,7 +271,8 @@ instance RunMessage EnemyAttrs where
               case miid of
                 Just iid | not onlyPrey || iid `elem` preyIds -> do
                   atSameLocation <- iid <=~> investigatorAt lid
-                  pushAll $ EnemyEntered eid lid : [EnemyEngageInvestigator eid iid | atSameLocation && not enemyDelayEngagement]
+                  pushAll $ EnemyEntered eid lid
+                    : [EnemyEngageInvestigator eid iid | atSameLocation && not enemyDelayEngagement]
                 _ -> do
                   investigatorIds <- if null preyIds then select $ investigatorAt lid else pure []
                   lead <- getLeadPlayer
@@ -624,11 +625,11 @@ instance RunMessage EnemyAttrs where
                 $ chooseOrRunOne
                   lead
                   [ targetLabel
-                      l
-                      [ EnemyMove enemyId l
-                      , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
-                      , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaHunter enemyId]
-                      ]
+                    l
+                    [ EnemyMove enemyId l
+                    , CheckWindows [mkAfter $ Window.MovedFromHunter enemyId]
+                    , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaHunter enemyId]
+                    ]
                   | l <- ls
                   ]
               pure $ a & movedFromHunterKeywordL .~ True
@@ -661,13 +662,13 @@ instance RunMessage EnemyAttrs where
                 $ chooseOrRunOne
                   lead
                   [ targetLabel
-                      l
-                      [ EnemyMove enemyId l
-                      , -- , CheckWindow
-                        --     [leadInvestigatorId]
-                        --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
-                        CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
-                      ]
+                    l
+                    [ EnemyMove enemyId l
+                    , -- , CheckWindow
+                      --     [leadInvestigatorId]
+                      --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
+                      CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
+                    ]
                   | l <- ls
                   ]
           pure a
@@ -758,10 +759,10 @@ instance RunMessage EnemyAttrs where
       keywords <- getModifiedKeywords a
       pushAll
         [ EnemyAttack
-            $ (enemyAttack enemyId a iid)
-              { attackDamageStrategy = enemyDamageStrategy
-              , attackType = RetaliateAttack
-              }
+          $ (enemyAttack enemyId a iid)
+            { attackDamageStrategy = enemyDamageStrategy
+            , attackType = RetaliateAttack
+            }
         | Keyword.Retaliate `elem` keywords
         , IgnoreRetaliate `notElem` mods
         , not enemyExhausted || CanRetaliateWhileExhausted `elem` mods
@@ -795,8 +796,9 @@ instance RunMessage EnemyAttrs where
           TargetLabel (EnemyTarget eid) [EnemyAttack details] -> eid == enemyId && details.enemy == enemyId
           _ -> False
         isNotInvalidEnemyAttack = \case
-          msg'@(TargetLabel _ [EnemyAttack details]) | isEnemyAttack msg' ->
-            attackIsValid details (a & exhaustedL .~ True)
+          msg'@(TargetLabel _ [EnemyAttack details])
+            | isEnemyAttack msg' ->
+                attackIsValid details (a & exhaustedL .~ True)
           _ -> pure True
       overMessagesM \case
         Ask pid (ChooseOneAtATime xs) | any isEnemyAttack xs -> do
@@ -1109,7 +1111,7 @@ instance RunMessage EnemyAttrs where
                   && not hasSwarm
               )
                 &&
-            )
+              )
               <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
           when validDefeat $ do
             field EnemyHealth (toId a) >>= traverse_ \modifiedHealth -> do
@@ -1141,22 +1143,22 @@ instance RunMessage EnemyAttrs where
                       else
                         [EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)]
                           <> ( guard (notNull excessDamageTargets && excess > 0)
-                                 *> [ ExcessDamage
-                                        eid
-                                        [ chooseOne
-                                            controller
-                                            [ Label
-                                                "Deal Excess Damage to Host or Swarm?"
-                                                [ chooseOrRunOne
-                                                    controller
-                                                    [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
-                                                    | other <- excessDamageTargets
-                                                    ]
-                                                ]
-                                            , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
-                                            ]
-                                        ]
-                                    ]
+                                *> [ ExcessDamage
+                                      eid
+                                      [ chooseOne
+                                          controller
+                                          [ Label
+                                              "Deal Excess Damage to Host or Swarm?"
+                                              [ chooseOrRunOne
+                                                  controller
+                                                  [ targetLabel other [Msg.EnemyDamage other (da {damageAssignmentAmount = excess})]
+                                                  | other <- excessDamageTargets
+                                                  ]
+                                              ]
+                                          , Label "Do not deal excess damage" $ map (CheckDefeated GameSource . toTarget) (toList mSwarmOf)
+                                          ]
+                                      ]
+                                   ]
                              )
 
                 pushAll $ [whenExcessMsg, afterExcessMsg, whenMsg, afterMsg] <> defeatMsgs
@@ -1178,7 +1180,7 @@ instance RunMessage EnemyAttrs where
               && (not canOnlyBeDefeatedByDamage || defeatedByDamage)
           )
             &&
-        )
+          )
           <$> maybe (pure True) (sourceMatches source) mOnlyBeDefeatedByModifier
       when validDefeat do
         push $ EnemyDefeated eid (toCardId a) source (setToList $ toTraits a)
@@ -1206,10 +1208,10 @@ instance RunMessage EnemyAttrs where
       pushAll
         $ [whenMsg, When msg, After msg]
         <> ( case miid of
-               Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
-               Nothing -> case mloc of
-                 Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
-                 _ -> []
+              Just iid -> [PlaceKey (toTarget iid) ekey | ekey <- toList enemyKeys]
+              Nothing -> case mloc of
+                Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
+                _ -> []
            )
         <> victoryMsgs
         <> [afterMsg]

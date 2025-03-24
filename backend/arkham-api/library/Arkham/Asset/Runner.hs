@@ -142,20 +142,20 @@ instance RunMessage AssetAttrs where
         $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [ CheckWindows
-               $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
-                 | damage > 0
+              $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                | damage > 0
+                ]
+              <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
+                 | horror > 0
                  ]
-               <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
-                  | horror > 0
-                  ]
            , checkDefeated source aid
            , CheckWindows
-               $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
-                 | damage > 0
+              $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
+                | damage > 0
+                ]
+              <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
+                 | horror > 0
                  ]
-               <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
-                  | horror > 0
-                  ]
            ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
@@ -541,6 +541,8 @@ instance RunMessage AssetAttrs where
       pure $ a & controllerL .~ Nothing
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
+    AddToVictory (AssetTarget aid) | aid == assetId -> do
+      pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [AddCardToScenarioDeck key (toCard a), RemoveFromGame (toTarget a)]

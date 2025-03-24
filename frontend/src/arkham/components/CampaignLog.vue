@@ -35,7 +35,7 @@ const remembered = computed(() => {
     if (record.tag === 'RememberNamed') {
       return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, { name: simpleName(record.name) })
     }
-      
+
     return t(`${prefix}.remembered.${record.tag.charAt(0).toLowerCase() + record.tag.slice(1)}`)
   })
 })
@@ -130,7 +130,7 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     return t(`theInnsmouthConspiracy.possibleHideouts.${hideout}`, hideout)
   }
 
-  if (key === 'SuppliesRecovered') {
+  if (key === 'edgeOfTheEarth.key.suppliesRecovered') {
     const contents = value.contents || value.recordVal?.contents
     const supply = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`edgeOfTheEarth.suppliesRecovered.${supply}`, supply)

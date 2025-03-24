@@ -825,10 +825,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     inHandCount <- getInHandCount a
     -- investigatorHand: can only discard cards actually in hand
     player <- getPlayer iid
-    pushWhen (inHandCount > handSize)
+    let viable = filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
+
+    pushWhen (inHandCount > handSize && notNull viable)
       $ chooseOne player
       $ [ targetLabel (toCardId card) [DiscardCard iid GameSource (toCardId card), Do (CheckHandSize iid)]
-        | card <- filter (isNothing . cdCardSubType . toCardDef) $ onlyPlayerCards investigatorHand
+        | card <- viable
         ]
     pure a
   AddToDiscard iid pc | iid == investigatorId -> do

@@ -233,6 +233,7 @@ tetsuoMori =
     , cdCardTraits = setFromList [Ally, Police]
     , cdSlots = [#ally]
     , cdUnique = True
+    , cdCardInDiscardEffects = True
     }
 
 otherworldCodex2 :: CardDef

@@ -195,7 +195,7 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithAvailableCustomization -> case toCard a of
     PlayerCard pc ->
       let customizations = cdCustomizations $ toCardDef a
-       in any (not . hasCustomization_ customizations (pcCustomizations pc)) (keys customizations)
+       in not $ all (hasCustomization_ customizations (pcCustomizations pc)) (keys customizations)
     _ -> False
   CardWithOddCost -> maybe False (odd . toPrintedCost) (cdCost $ toCardDef a)
   CardWithNonZeroCost -> maybe False ((> 0) . toPrintedCost) (cdCost $ toCardDef a)

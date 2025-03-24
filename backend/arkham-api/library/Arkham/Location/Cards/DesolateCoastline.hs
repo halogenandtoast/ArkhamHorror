@@ -1,4 +1,4 @@
-module Arkham.Location.Cards.DesolateCoastline (desolateCoastline, DesolateCoastline (..)) where
+module Arkham.Location.Cards.DesolateCoastline (desolateCoastline) where
 
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers (connectsToAdjacent)
@@ -12,5 +12,4 @@ desolateCoastline :: LocationCard DesolateCoastline
 desolateCoastline = locationWith DesolateCoastline Cards.desolateCoastline 2 (Static 1) connectsToAdjacent
 
 instance RunMessage DesolateCoastline where
-  runMessage msg (DesolateCoastline attrs) = runQueueT $ case msg of
-    _ -> DesolateCoastline <$> liftRunMessage msg attrs
+  runMessage msg (DesolateCoastline attrs) = DesolateCoastline <$> runMessage msg attrs

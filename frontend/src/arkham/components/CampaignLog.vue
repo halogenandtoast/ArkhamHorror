@@ -105,19 +105,26 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     return toCapitalizedWords(contents)
   }
 
-  if (key === 'MemoriesRecovered') {
+  if (key === 'theInnsmouthConspiracy.key.memoriesRecovered') {
     const contents = value.contents || value.recordVal?.contents
     const memory = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`theInnsmouthConspiracy.memoriesRecovered.${memory}`)
   }
 
-  if (key === 'PossibleSuspects') {
+  if (key === 'theInnsmouthConspiracy.key.outForBlood') {
     const contents = value.contents || value.recordVal?.contents
     const suspect = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`theInnsmouthConspiracy.possibleSuspects.${suspect}`, suspect)
   }
 
-  if (key === 'PossibleHideouts') {
+  if (key === 'theInnsmouthConspiracy.key.possibleSuspects') {
+    const contents = value.contents || value.recordVal?.contents
+    const suspect = contents.charAt(0).toLowerCase() + contents.slice(1)
+    return t(`theInnsmouthConspiracy.possibleSuspects.${suspect}`, suspect)
+  }
+
+  console.log(key)
+  if (key === 'theInnsmouthConspiracy.key.possibleHideouts') {
     const contents = value.contents || value.recordVal?.contents
     const hideout = contents.charAt(0).toLowerCase() + contents.slice(1)
     return t(`theInnsmouthConspiracy.possibleHideouts.${hideout}`, hideout)

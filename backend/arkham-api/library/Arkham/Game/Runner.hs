@@ -1313,7 +1313,10 @@ runGameMessage msg g = case msg of
       if gameInAction g
         then do
           entity <- getEvent eventId
-          pure $ actionRemovedEntitiesL . eventsL %~ insertEntity entity
+          pure
+            $ actionRemovedEntitiesL
+            . eventsL
+            %~ insertEntity (overAttrs (\e -> e {eventPlacement = Unplaced}) entity)
         else pure id
     pure $ g & entitiesL . eventsL %~ deleteMap eventId & removedEntitiesF
   After (ShuffleIntoDeck _ (AssetTarget aid)) -> do

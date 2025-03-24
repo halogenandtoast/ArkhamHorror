@@ -18,7 +18,11 @@ instance HasAbilities AscendTheMountain where
   getAbilities (AscendTheMountain x) =
     extend
       x
-      [ restricted x 1 (exists $ AssetAt YourLocation <> withTrait Expedition) actionAbility
+      [ restricted
+          x
+          1
+          (exists $ at_ YourLocation <> withTrait Expedition <> not_ (AssetControlledBy You))
+          actionAbility
       , restricted x 2 AllUndefeatedInvestigatorsResigned
           $ Objective
           $ forced AnyWindow

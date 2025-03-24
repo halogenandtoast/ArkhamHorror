@@ -14,10 +14,10 @@ import Arkham.Enemy.Types (Field (EnemySealedChaosTokens))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Action (additionalActionCovers)
-import Arkham.Helpers.ChaosToken (matchChaosToken)
 import {-# SOURCE #-} Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch, getModifiedCardCost)
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
@@ -168,13 +168,14 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     if Blank `elem` mods
       then pure True
       else getCanAffordCost_ iid source actions windows' canModify c
-  GloriaCost -> fromMaybe False <$> runMaybeT do
-    t <- MaybeT getSkillTestTarget
-    gloria <- MaybeT $ selectOne $ Matcher.investigatorIs Investigators.gloriaGoldberg
-    lift do
-      cardsUnderneath <- field InvestigatorCardsUnderneath gloria
-      traits <- targetTraits t
-      pure $ any (\trait -> any (`cardMatch` Matcher.CardWithTrait trait) cardsUnderneath) traits
+  GloriaCost ->
+    fromMaybe False <$> runMaybeT do
+      t <- MaybeT getSkillTestTarget
+      gloria <- MaybeT $ selectOne $ Matcher.investigatorIs Investigators.gloriaGoldberg
+      lift do
+        cardsUnderneath <- field InvestigatorCardsUnderneath gloria
+        traits <- targetTraits t
+        pure $ any (\trait -> any (`cardMatch` Matcher.CardWithTrait trait) cardsUnderneath) traits
   ShuffleIntoDeckCost target -> case target of
     TreacheryTarget tid ->
       andM
@@ -261,6 +262,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     uses <-
       sum <$> traverse (fieldMap AssetUses (findWithDefault 0 uType)) assets
     pure $ uses >= n
+  UnlessFastActionCost n ->
+    getCanAffordCost_ iid source actions windows' canModify (ActionCost n)
   ActionCost n -> do
     modifiers <- getModifiers (InvestigatorTarget iid)
     if any (`elem` modifiers) [ActionsAreFree, IgnoreActionCost]

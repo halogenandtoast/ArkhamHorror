@@ -370,6 +370,18 @@ payCost msg c iid skipAdditionalCosts cost = do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
       push $ DiscardTopOfDeck iid n source Nothing
       withPayment $ DiscardCardPayment cards
+    UnlessFastActionCost n -> do
+      case activeCostTarget c of
+        ForCard _ card -> do
+          mods <- getModifiers card
+          let
+            isFast = case card of
+              PlayerCard _ ->
+                isJust $ cdFastWindow (toCardDef card) <|> listToMaybe [w | BecomesFast w <- mods]
+              _ -> False
+          unless isFast $ push $ pay (ActionCost n)
+        _ -> push $ pay (ActionCost n)
+      pure c
     IncreaseCostOfThis cardId n -> do
       ems <- effectModifiers source [IncreaseCostOf (CardWithId cardId) n]
       push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems source (toTarget cardId)

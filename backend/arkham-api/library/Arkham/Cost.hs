@@ -101,6 +101,7 @@ instance Plated Payment where
 
 data Cost
   = ActionCost Int
+  | UnlessFastActionCost Int -- Eldritch Tongue
   | IncreaseCostOfThis CardId Int
   | AdditionalActionCost -- use the plural instead as this is internal
   | AdditionalActionsCost
@@ -279,6 +280,7 @@ displayCostType = \case
     Nothing -> error "impossible"
   ResolveEachHauntedAbility _ -> "Resolve each haunted ability on this location"
   ActionCost n -> pluralize n "Action"
+  UnlessFastActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
   DiscardAssetCost _ -> "Discard matching asset"
   DiscardCombinedCost n ->

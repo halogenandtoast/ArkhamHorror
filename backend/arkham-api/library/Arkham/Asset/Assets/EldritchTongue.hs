@@ -70,7 +70,7 @@ instance RunMessage EldritchTongueEffect where
                 attrs.source
                 card
                 [ SetAfterPlay AbsoluteRemoveThisFromGame
-                , AdditionalCost $ ActionCost 1 <> UseCost (AssetWithId aid) Charge 1
+                , AdditionalCost $ UnlessFastActionCost 1 <> UseCost (AssetWithId aid) Charge 1
                 ]
               playCardPayingCostWithWindows iid card ws
               disable attrs

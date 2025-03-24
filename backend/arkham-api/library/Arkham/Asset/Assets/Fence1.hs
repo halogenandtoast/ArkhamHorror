@@ -31,7 +31,7 @@ instance RunMessage Fence1 where
     UseCardAbility iid (isSource attrs -> True) 1 (cardPlayed -> card) _ -> do
       let source = attrs.ability 1
       if isFastCard card
-        then costModifier source iid (ReduceCostOf (CardWithId $ toCardId card) 1)
+        then costModifier source iid (ReduceCostOf (CardWithId card.id) 1)
         else cardResolutionModifier card source card (BecomesFast FastPlayerWindow)
       pure a
     _ -> Fence1 <$> liftRunMessage msg attrs

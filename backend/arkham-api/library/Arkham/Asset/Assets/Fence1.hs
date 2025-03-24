@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.Fence1 (fence1, Fence1 (..)) where
+module Arkham.Asset.Assets.Fence1 (fence1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,15 +17,13 @@ fence1 :: AssetCard Fence1
 fence1 = asset Fence1 Cards.fence1
 
 instance HasModifiersFor Fence1 where
-  getModifiersFor (Fence1 a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> modifiedWhen_ a a.ready iid [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
+  getModifiersFor (Fence1 a) = for_ a.controller \iid -> do
+    modifiedWhen_ a a.ready iid [CanBecomeFast #illicit, CanReduceCostOf (#illicit <> FastCard) 1]
 
 instance HasAbilities Fence1 where
   getAbilities (Fence1 a) =
     [ controlled a 1 (DuringTurn You)
-        $ ReactionAbility (Matcher.PlayCard #when You (basic #illicit))
-        $ exhaust a
+        $ triggered (Matcher.PlayCard #when You (basic #illicit)) (exhaust a)
     ]
 
 instance RunMessage Fence1 where

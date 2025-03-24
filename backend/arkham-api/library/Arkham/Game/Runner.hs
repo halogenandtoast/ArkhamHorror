@@ -1422,7 +1422,8 @@ runGameMessage msg g = case msg of
               let revelation = Revelation iid (TreacherySource tid)
               pushAll
                 $ CardEnteredPlay iid card
-                : (guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)])
+                : ( guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)]
+                  )
                   <> [UnsetActiveCard]
               pure
                 $ g
@@ -1810,9 +1811,9 @@ runGameMessage msg g = case msg of
           $ find ((== cardId) . toCardId)
           $ (g ^. focusedCardsL)
           <> ( concat
-                 . Map.elems
-                 . view Investigator.foundCardsL
-                 $ toAttrs investigator'
+                . Map.elems
+                . view Investigator.foundCardsL
+                $ toAttrs investigator'
              )
     case card of
       PlayerCard pc -> do
@@ -1866,10 +1867,16 @@ runGameMessage msg g = case msg of
       . ix eid
       %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
   DefeatedAddToVictory (EnemyTarget eid) -> do
-    -- when defeated, removal is handled by the defeat effect
     card <- field EnemyCard eid
-    pushAll $ windows [Window.AddedToVictory card]
-    pure g
+    pushAll
+      $ windows [Window.LeavePlay (EnemyTarget eid), Window.AddedToVictory card]
+      <> [RemoveEnemy eid]
+    pure
+      $ g
+      & entitiesL
+      . enemiesL
+      . ix eid
+      %~ overAttrs (\x -> x {enemyPlacement = OutOfPlay RemovedZone})
   AddToVictory (SkillTarget sid) -> do
     card <- field SkillCard sid
     pushAll $ windows [Window.AddedToVictory card]
@@ -1951,12 +1958,12 @@ runGameMessage msg g = case msg of
       $ questionLabel "Choose next in turn order" player
       $ ChooseOne
         [ PortraitLabel
-            iid
-            [ ChoosePlayerOrder
-                iid
-                (filter (/= iid) investigatorIds)
-                (orderedInvestigatorIds <> [iid])
-            ]
+          iid
+          [ ChoosePlayerOrder
+              iid
+              (filter (/= iid) investigatorIds)
+              (orderedInvestigatorIds <> [iid])
+          ]
         | iid <- investigatorIds
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
@@ -2130,8 +2137,8 @@ runGameMessage msg g = case msg of
            ]
         <> [ phaseStep MythosPhaseWindow [fastWindow]
            , phaseStep
-               MythosPhaseEndsStep
-               [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
+              MythosPhaseEndsStep
+              [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
            ]
     pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
   Msg.PhaseStep step msgs -> do
@@ -2464,10 +2471,10 @@ runGameMessage msg g = case msg of
             pushAll
               $ windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
               <> [ chooseOrRunOne
-                     player
-                     [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
-                     | lid <- lids
-                     ]
+                    player
+                    [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
+                    | lid <- lids
+                    ]
                  ]
       SpawnWithPlacement placement -> do
         mLocation <- getPlacementLocation placement

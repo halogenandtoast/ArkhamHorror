@@ -595,6 +595,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   AddToVictory (LocationTarget lid) -> do
     card <- field LocationCard lid
     pure $ a & (victoryDisplayL %~ nub . (card :))
+  AddToVictory (EnemyTarget eid) -> do
+    card <- field EnemyCard eid
+    pure $ a & (victoryDisplayL %~ nub . (card :))
+  DefeatedAddToVictory (EnemyTarget eid) -> do
+    card <- field EnemyCard eid
+    pure $ a & (victoryDisplayL %~ nub . (card :))
   AddToVictory (CardIdTarget cid) -> do
     card <- getCard cid
     selectOne (Matcher.EnemyWithCardId cid) >>= \case
@@ -1127,14 +1133,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let
       matches =
         [ targetLabel
-            (toCardId card)
-            [FoundAndDrewEncounterCard iid FromDiscard card]
+          (toCardId card)
+          [FoundAndDrewEncounterCard iid FromDiscard card]
         | includeDiscard == IncludeDiscard
         , card <- matchingDiscards
         ]
           <> [ targetLabel
-                 (toCardId card)
-                 [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+              (toCardId card)
+              [FoundAndDrewEncounterCard iid FromEncounterDeck card]
              | card <- matchingDeckCards
              ]
 

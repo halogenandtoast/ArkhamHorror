@@ -151,7 +151,13 @@ const attachedEnemies = computed(() => {
 
 const stories = computed(() => {
   return Object.values(props.game.stories)
-    .filter((s) => s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id)
+    .filter((s) => {
+      const { enemies } = props.game
+      if (Object.values(enemies).find((e) => s.otherSide?.contents === e.id)) {
+        return false
+      }
+      return s.placement.tag === 'AtLocation' && s.placement.contents === props.location.id
+    })
     .map((s) => s.id)
 })
 

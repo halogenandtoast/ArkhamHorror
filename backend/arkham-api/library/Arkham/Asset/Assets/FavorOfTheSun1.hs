@@ -7,7 +7,6 @@ import Arkham.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Window (mkWhen)
 import Arkham.Window qualified as Window
 
 newtype FavorOfTheSun1 = FavorOfTheSun1 AssetAttrs
@@ -40,7 +39,7 @@ instance RunMessage FavorOfTheSun1 where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (ChaosTokenTarget token) -> do
       cancelTokenDraw
       push $ SetChaosTokenAside token
-      checkWindows [mkWhen (Window.RevealChaosToken iid token)]
+      checkWhen $ Window.RevealChaosToken iid token
       withSkillTest \sid ->
         push $ RequestedChaosTokens (SkillTestSource sid) (Just iid) [token]
       gainResources iid (attrs.ability 1) 1

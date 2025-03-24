@@ -19,13 +19,11 @@ instance RunMessage Enraptured where
     PassedSkillTest _ (Just Action.Investigate) _ (isTarget attrs -> True) _ _ -> do
       chargeAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Charge
       secretAssets <- select $ assetControlledBy attrs.owner <> AssetCanHaveUses Uses.Secret
-      let allAssets = nub $ chargeAssets <> secretAssets
-      unless (null chargeAssets && null secretAssets) do
-        chooseTargetM attrs.owner allAssets \aid -> do
-          chooseOrRunOneM attrs.owner do
-            when (aid `elem` chargeAssets) do
-              labeled "Charge" $ addUses attrs aid Uses.Charge 1
-            when (aid `elem` secretAssets) do
-              labeled "Secret" $ addUses attrs aid Uses.Secret 1
+      chooseTargetM attrs.owner (nub $ chargeAssets <> secretAssets) \aid -> do
+        chooseOrRunOneM attrs.owner do
+          when (aid `elem` chargeAssets) do
+            labeled "Charge" $ addUses attrs aid Uses.Charge 1
+          when (aid `elem` secretAssets) do
+            labeled "Secret" $ addUses attrs aid Uses.Secret 1
       pure s
     _ -> Enraptured <$> liftRunMessage msg attrs

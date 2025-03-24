@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.ServantOfBrassDaemonaicVassal (
-  servantOfBrassDaemonaicVassal,
-  ServantOfBrassDaemonaicVassal (..),
-)
-where
+module Arkham.Asset.Assets.ServantOfBrassDaemonaicVassal (servantOfBrassDaemonaicVassal) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -20,10 +16,10 @@ servantOfBrassDaemonaicVassal = assetWith ServantOfBrassDaemonaicVassal Cards.se
 
 instance HasAbilities ServantOfBrassDaemonaicVassal where
   getAbilities (ServantOfBrassDaemonaicVassal x) =
-    [ controlledAbility x 1 (DuringSkillTest SkillTestAtYourLocation)
+    [ controlled x 1 (DuringSkillTest SkillTestAtYourLocation)
         $ freeReaction
         $ RevealChaosToken #when Anyone #curse
-    , restrictedAbility x 2 ControlsThis $ forced $ AssetLeavesPlay #when (be x)
+    , restricted x 2 ControlsThis $ forced $ AssetLeavesPlay #when (be x)
     ]
 
 instance RunMessage ServantOfBrassDaemonaicVassal where

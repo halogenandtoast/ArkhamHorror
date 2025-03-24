@@ -1,8 +1,7 @@
-module Arkham.Event.Events.UncannyGrowth (uncannyGrowth, UncannyGrowth (..)) where
+module Arkham.Event.Events.UncannyGrowth (uncannyGrowth) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Investigate
 import Arkham.Matcher
 import Arkham.Token
 
@@ -17,14 +16,13 @@ instance RunMessage UncannyGrowth where
   runMessage msg e@(UncannyGrowth attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
-      pushM $ mkInvestigate sid iid attrs
+      investigate sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       afterSkillTest do
         when (n > 0) do
           mMyconid <- selectOne $ assetControlledBy iid <> AssetWithTitle "Ravenous Myconid"
-          for_ mMyconid \myconid -> do
-            placeTokens attrs myconid Growth n
+          for_ mMyconid \myconid -> placeTokens attrs myconid Growth n
         placeInBonded iid attrs
       pure e
     FailedThisSkillTest iid (isSource attrs -> True) -> do

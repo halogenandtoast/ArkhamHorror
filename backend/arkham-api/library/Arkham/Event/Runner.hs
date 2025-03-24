@@ -174,18 +174,6 @@ runEventMessage msg a@EventAttrs {..} = case msg of
     if LeaveCardWhereItIs `elem` mods
       then push $ RemoveEvent $ toId a
       else case eventPlacement of
-        Unplaced -> case afterPlay of
-          PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
-          DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]
-          ExileThis -> pushAll [after, Exile (toTarget a)]
-          RemoveThisFromGame -> push (RemoveEvent $ toId a)
-          AbsoluteRemoveThisFromGame -> push (RemoveEvent $ toId a)
-          ShuffleThisBackIntoDeck -> push (ShuffleIntoDeck (Deck.InvestigatorDeck eventController) (toTarget a))
-          ReturnThisToHand -> push (ReturnToHand eventController (toTarget a))
-          DevourThis iid' -> do
-            c <- field EventCard a.id
-            push $ RemovedFromPlay (toSource a)
-            push $ Devoured iid' c
         Limbo -> case afterPlay of
           PlaceThisBeneath target -> pushAll [after, PlaceUnderneath target [toCard a]]
           DiscardThis -> pushAll [after, toDiscardBy eventController GameSource a]

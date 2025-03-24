@@ -224,7 +224,9 @@ revealBy
      , IdOf location ~ LocationId
      , ReverseQueue m
      )
-  => investigator -> location -> m ()
+  => investigator
+  -> location
+  -> m ()
 revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
 
 story :: ReverseQueue m => FlavorText -> m ()
@@ -460,6 +462,18 @@ addCampaignCardToDeckChoice choices shouldShuffleIn card = do
   card' <- fetchCard card
   push $ Msg.addCampaignCardToDeckChoice lead choices shouldShuffleIn card'
 
+addCampaignCardToDeckChoiceWith
+  :: (FetchCard card, ReverseQueue m)
+  => [InvestigatorId]
+  -> ShuffleIn
+  -> card
+  -> (InvestigatorId -> [Message])
+  -> m ()
+addCampaignCardToDeckChoiceWith choices shouldShuffleIn card f = do
+  lead <- getLeadPlayer
+  card' <- fetchCard card
+  push $ Msg.addCampaignCardToDeckChoiceWith lead choices shouldShuffleIn card' f
+
 forceAddCampaignCardToDeckChoice
   :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()
 forceAddCampaignCardToDeckChoice choices shouldShuffleIn card = do
@@ -499,12 +513,16 @@ engageEnemy
      , IdOf enemy ~ EnemyId
      , ReverseQueue m
      )
-  => investigator -> enemy -> m ()
+  => investigator
+  -> enemy
+  -> m ()
 engageEnemy investigator enemy = push $ EngageEnemy (asId investigator) (asId enemy) Nothing False
 
 createEnemyAt_
   :: (ReverseQueue m, FetchCard card, AsId location, IdOf location ~ LocationId)
-  => card -> location -> m ()
+  => card
+  -> location
+  -> m ()
 createEnemyAt_ c location = do
   card <- fetchCard c
   push =<< Msg.createEnemyAt_ card (asId location) Nothing
@@ -635,7 +653,9 @@ removeCampaignCard (toCardDef -> def) = do
 
 removeCampaignCardFromDeck
   :: (HasCardDef a, ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator -> a -> m ()
+  => investigator
+  -> a
+  -> m ()
 removeCampaignCardFromDeck (asId -> iid) (toCardDef -> def) = do
   push $ RemoveCampaignCard def
   push $ RemoveCampaignCardFromDeck iid def
@@ -649,11 +669,18 @@ removeClues
 removeClues source target n = push $ RemoveClues (toSource source) (toTarget target) n
 
 spendClues
-  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> Int -> m ()
+  :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> Int
+  -> m ()
 spendClues investigator n = push $ InvestigatorSpendClues (asId investigator) n
 
 gainClues
-  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> source -> Int -> m ()
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> m ()
 gainClues investigator source n = push $ GainClues (asId investigator) (toSource source) n
 
 placeDoom
@@ -1434,7 +1461,11 @@ drawEncounterCards i source n = push $ Msg.drawEncounterCards i source n
 
 drawEncounterCardsEdit
   :: (ReverseQueue m, Sourceable source)
-  => InvestigatorId -> source -> Int -> (CardDraw Message -> CardDraw Message) -> m ()
+  => InvestigatorId
+  -> source
+  -> Int
+  -> (CardDraw Message -> CardDraw Message)
+  -> m ()
 drawEncounterCardsEdit iid source n f = when (n > 0) do
   push $ Msg.drawEncounterCardsWith iid source n f
 
@@ -1865,7 +1896,9 @@ placeUnderneath
      , MonoFoldable cards
      , IsCard card
      )
-  => target -> cards -> m ()
+  => target
+  -> cards
+  -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard (toList cards)
 
 gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
@@ -2114,7 +2147,9 @@ automaticallyEvadeEnemy
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
      )
-  => investigator -> enemy -> m ()
+  => investigator
+  -> enemy
+  -> m ()
 automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId investigator) (asId enemy)
 
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
@@ -2217,7 +2252,9 @@ enemyEngageInvestigator
      , AsId investigator
      , IdOf investigator ~ InvestigatorId
      )
-  => enemy -> investigator -> m ()
+  => enemy
+  -> investigator
+  -> m ()
 enemyEngageInvestigator enemy investigator = push $ EnemyEngageInvestigator (asId enemy) (asId investigator)
 
 advancedWithOther
@@ -2263,7 +2300,9 @@ spendUses source target tType n = push $ SpendUses (toSource source) (toTarget t
 
 spendResources
   :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator -> Int -> m ()
+  => investigator
+  -> Int
+  -> m ()
 spendResources investigator n = push $ SpendResources (asId investigator) n
 
 discardCard
@@ -2452,7 +2491,7 @@ resolveChaosTokens iid source tokens = do
     $ map UnsealChaosToken tokens
     <> map ObtainChaosToken tokens
     <> [ ReplaceCurrentDraw (toSource source) iid
-           $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
+          $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
@@ -2493,7 +2532,8 @@ withTimings w body = do
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId
 
-cancelMovement :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
+cancelMovement
+  :: (ReverseQueue m, Sourceable source, Targetable investigator) => source -> investigator -> m ()
 cancelMovement source investigator =
   -- Msg.getSkillTestTarget >>= \case
   --   Just (BatchTarget batchId) -> cancelBatch batchId
@@ -2568,7 +2608,10 @@ shuffleBackIntoEncounterDeck target = push $ ShuffleBackIntoEncounterDeck (toTar
 
 setActions
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, Sourceable source, ReverseQueue m)
-  => investigator -> source -> Int -> m ()
+  => investigator
+  -> source
+  -> Int
+  -> m ()
 setActions investigator source n = push $ SetActions (asId investigator) (toSource source) n
 
 commitCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
@@ -2576,7 +2619,9 @@ commitCard iid card = push $ SkillTestCommitCard iid (toCard card)
 
 updateHistory
   :: (ReverseQueue m, AsId investigator, IdOf investigator ~ InvestigatorId)
-  => investigator -> HistoryItem -> m ()
+  => investigator
+  -> HistoryItem
+  -> m ()
 updateHistory investigator history = push $ UpdateHistory (asId investigator) history
 
 setGlobal :: (ReverseQueue m, Targetable target, ToJSON a) => target -> Aeson.Key -> a -> m ()

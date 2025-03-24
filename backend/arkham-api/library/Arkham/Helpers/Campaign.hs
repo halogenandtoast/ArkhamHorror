@@ -94,9 +94,15 @@ matchingCardsAlreadyInDeck matcher = do
 addCampaignCardToDeckChoice
   :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> Message
 addCampaignCardToDeckChoice leadPlayer investigators shouldShuffleIn card =
+  addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card (const [])
+
+addCampaignCardToDeckChoiceWith
+  :: PlayerId -> [InvestigatorId] -> ShuffleIn -> Card -> (InvestigatorId -> [Message]) -> Message
+addCampaignCardToDeckChoiceWith leadPlayer investigators shouldShuffleIn card f =
   questionLabelWithCard ("Add " <> display card.name <> " to a deck") card.cardCode leadPlayer
     $ ChooseOne
-    $ [ PortraitLabel investigator [AddCampaignCardToDeck investigator shouldShuffleIn card]
+    $ [ PortraitLabel investigator $ AddCampaignCardToDeck investigator shouldShuffleIn card
+        : f investigator
       | investigator <- investigators
       ]
     <> [Label ("Do not add " <> display card.name <> " to any deck") []]

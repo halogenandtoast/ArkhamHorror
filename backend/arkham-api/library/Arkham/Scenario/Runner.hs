@@ -573,24 +573,27 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory (StoryTarget eid) -> do
     card <- field StoryCard eid
-    pure $ a & (victoryDisplayL %~ (card :))
+    pure $ a & (victoryDisplayL %~ nub . (card :))
+  AddToVictory (AssetTarget tid) -> do
+    card <- field AssetCard tid
+    pure $ a & (victoryDisplayL %~ nub . (card :))
   AddToVictory (TreacheryTarget tid) -> do
     card <- field TreacheryCard tid
-    pure $ a & (victoryDisplayL %~ (card :))
+    pure $ a & (victoryDisplayL %~ nub . (card :))
   AddToVictory (ActTarget aid) -> do
     flipped <- field ActFlipped aid
     card <- field ActCard aid
     let card' = if flipped then flipCard card else card
-    pure $ a & (victoryDisplayL %~ (card' :))
+    pure $ a & (victoryDisplayL %~ nub . (card' :))
   AddToVictory (AgendaTarget aid) -> do
     card <- field AgendaCard aid
-    pure $ a & (victoryDisplayL %~ (card :))
+    pure $ a & (victoryDisplayL %~ nub . (card :))
   RemoveEnemy eid -> do
     placement <- field EnemyPlacement eid
     case placement of
       OutOfPlay Zone.VictoryDisplayZone -> do
         card <- field EnemyCard eid
-        pure $ a & (victoryDisplayL %~ (card :))
+        pure $ a & (victoryDisplayL %~ nub . (card :))
       _ -> pure a
   AddToVictory (LocationTarget lid) -> do
     card <- field LocationCard lid

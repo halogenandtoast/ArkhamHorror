@@ -22,7 +22,7 @@ import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (Field (..))
-import Arkham.Message (Message (DrawCards, SetPartnerStatus), ShuffleIn(..))
+import Arkham.Message (Message (DrawCards, SetPartnerStatus), ShuffleIn (..))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -61,6 +61,9 @@ hasSupply supply = inRecordSet (toJSON supply) SuppliesRecovered
 
 recoverSupply :: ReverseQueue m => Supply -> m ()
 recoverSupply supply = recordSetInsert SuppliesRecovered [toJSON supply]
+
+toSupply :: HasCardCode a => a -> Supply
+toSupply (toCardCode -> cardCode) = fromMaybe (error "missingSupply") $ find ((== cardCode) . toCardCode) [GreenSoapstone ..]
 
 -- ** Tekeli-li Helpers ** --
 

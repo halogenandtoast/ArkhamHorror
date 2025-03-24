@@ -10,27 +10,32 @@ import Arkham.Card
 import Arkham.Direction
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.Field
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
-import Arkham.Helpers.Log (getSomeRecordSetJSON, whenHasRecord)
-import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
+import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement qualified as P
 import Arkham.Modifier
+import Arkham.Name (toTitle)
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
 import Arkham.Trait (Trait (Expedition))
 import Arkham.Trait qualified as Trait
+import Arkham.Xp
 
 newtype ToTheForbiddenPeaks = ToTheForbiddenPeaks ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -212,5 +217,37 @@ instance RunMessage ToTheForbiddenPeaks where
       case token.face of
         ElderThing -> whenM (eid <=~> enemyEngagedWith iid) $ initiateEnemyAttack eid ElderThing iid
         _ -> pure ()
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          push R2
+        Resolution 1 -> do
+          base <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution1"
+          record TheTeamClimbedToTheSummit
+          expeditionAssets <- select $ VictoryDisplayCardMatch $ basic $ withTrait Expedition <> #asset
+          investigators <- allInvestigators
+          for_ expeditionAssets \card -> do
+            addCampaignCardToDeckChoiceWith investigators DoNotShuffleIn card
+              $ \iid -> [ReportXp $ XpBreakdown [InvestigatorGainXp iid $ XpDetail XpBonus (toTitle card) 1]]
+
+          let expeditionAssetCardCodes = map toCardCode expeditionAssets
+          crossOutRecordSetEntries SuppliesRecovered
+            $ map toJSON
+            $ filter ((`notElem` expeditionAssetCardCodes) . toCardCode) [GreenSoapstone ..]
+          endOfScenario
+        Resolution 2 -> do
+          base <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution2"
+          record TheTeamFoundAnotherWayThroughTheMountains
+          crossOutRecordSetEntries SuppliesRecovered $ map toJSON [GreenSoapstone ..]
+          endOfScenario
+        _ -> throwIO $ UnknownResolution resolution
       pure s
     _ -> ToTheForbiddenPeaks <$> liftRunMessage msg attrs

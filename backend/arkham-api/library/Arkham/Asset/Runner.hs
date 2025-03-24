@@ -610,7 +610,7 @@ instance RunMessage AssetAttrs where
           _ -> Nothing
         controllerF = case mController of
           Just iid | entersPlay -> controllerL ?~ iid
-          _ -> id
+          _ -> if assetIsStory a then controllerL .~ Nothing else id
       -- we should update control here if need be
       for_ placement.attachedTo $ pushM . checkAfter . Window.AttachCard a.controller (toCard a)
       checkEntersThreatArea a placement

@@ -23,7 +23,7 @@ pattern FatalMirage <- ScenarioStep "08549"
     FatalMirage = ScenarioStep "08549"
 
 pattern ToTheForbiddenPeaks :: CampaignStep
-pattern ToTheForbiddenPeaks <- ScenarioStep "08549"
+pattern ToTheForbiddenPeaks <- ScenarioStep "08596"
   where
     ToTheForbiddenPeaks = ScenarioStep "08596"
 

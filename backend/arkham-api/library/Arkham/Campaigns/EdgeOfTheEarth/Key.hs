@@ -40,5 +40,7 @@ data EdgeOfTheEarthKey
   | MemoriesDiscovered
   | TheTeamClimbedToTheSummit
   | TheTeamFoundAnotherWayThroughTheMountains
+  | DrKenslerIsOnTheVergeOfUnderstanding
+  | TheInvestigatorsScoutedTheCityOutskirts
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

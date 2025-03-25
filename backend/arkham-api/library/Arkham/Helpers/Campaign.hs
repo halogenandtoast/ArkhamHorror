@@ -23,14 +23,21 @@ completedScenario :: HasGame m => ScenarioId -> m Bool
 completedScenario cCode = elem cCode <$> getCompletedScenarios
 
 getCompletedScenarios :: HasGame m => m (Set ScenarioId)
-getCompletedScenarios = do
-  mcampaignId <- selectOne TheCampaign
-  case mcampaignId of
+getCompletedScenarios = setFromList <$> getCompletedScenariosList
+
+getCompletedSteps :: HasGame m => m [CampaignStep]
+getCompletedSteps =
+  selectOne TheCampaign >>= \case
+    Nothing -> pure mempty
+    Just campaignId -> field CampaignCompletedSteps campaignId
+
+getCompletedScenariosList :: HasGame m => m [ScenarioId]
+getCompletedScenariosList = do
+  selectOne TheCampaign >>= \case
     Nothing -> pure mempty
     Just campaignId -> do
       completedSteps <- field CampaignCompletedSteps campaignId
       pure
-        . setFromList
         $ flip mapMaybe completedSteps
         $ \case
           ScenarioStep scenarioId -> Just scenarioId

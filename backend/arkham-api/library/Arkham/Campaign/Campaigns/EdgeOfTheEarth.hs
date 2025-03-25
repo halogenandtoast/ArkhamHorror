@@ -13,6 +13,7 @@ import Arkham.ChaosToken
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Event.Cards qualified as Events
 import Arkham.FlavorText
+import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Helpers.Text
@@ -43,7 +44,7 @@ edgeOfTheEarth difficulty =
 {- FOURMOLU_ENABLE -}
 
 instance IsCampaign EdgeOfTheEarth where
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (campaignStep (toAttrs a)) of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)
     IceAndDeathPart2 -> Just (UpgradeDeckStep $ CheckpointStep 2)
@@ -55,6 +56,7 @@ instance IsCampaign EdgeOfTheEarth where
         | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) ->
             Just (UpgradeDeckStep CityOfTheElderThings)
         | otherwise -> Just (UpgradeDeckStep ToTheForbiddenPeaks)
+    ToTheForbiddenPeaks -> Just (InterludeStep 2 Nothing)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -414,8 +416,313 @@ instance RunMessage EdgeOfTheEarth where
                   doStep (n - 1) msg'
 
       pure c
-    CampaignStep (InterludeStep 2 _) -> scope "interlude1" do
-      story $ i18nWithTitle "restfulNight2"
+    CampaignStep (InterludeStep 2 _) -> scope "interlude2" do
+      story $ i18nWithTitle "endlessNight1"
+      foundAnotherWayThroughTheMountains <- getHasRecord TheTeamFoundAnotherWayThroughTheMountains
+      doStep (if foundAnotherWayThroughTheMountains then 4 else 3) msg
+      push $ CampaignStep $ InterludeStepPart 2 Nothing 2
+      pure c
+    DoStep n msg'@(CampaignStep (InterludeStep 2 _)) | n > 0 -> scope "interlude2" do
+      let choices :: [CardCode] =
+            toResult
+              $ Map.findWithDefault
+                (toJSON $ map toCardCode $ toList expeditionTeam)
+                "interlude2"
+                (campaignStore attrs)
+      when (notNull choices) do
+        lead <- getLead
+        remainingPartners <- map (.cardCode) <$> getRemainingPartners
+        let choiceMade choice = push $ SetGlobal CampaignTarget "interlude2" (toJSON $ filter (/= choice) choices)
+        chooseOneM lead do
+          questionLabeled $ "You can still check " <> tshow n <> " team members"
+          let dyer = Assets.professorWilliamDyerProfessorOfGeology.cardCode
+          when (dyer `elem` choices) do
+            labeled "William Dyer" do
+              choiceMade dyer
+              let alive = dyer `elem` remainingPartners
+              owned <- isJust <$> getOwner Events.dyersSketches
+              blueStory
+                $ compose
+                  [ validateEntry alive "williamDyerIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "williamDyerIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    iids <- select $ DeckWith $ HasCard $ CardFromEncounterSet Tekelili
+                    if null iids
+                      then doStep n msg'
+                      else do
+                        chooseOneM lead $ for_ iids \iid -> do
+                          questionLabeled
+                            "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
+                          portraitLabeled iid do
+                            cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
+                            focusCards cards do
+                              chooseUpToNM iid 5 "Do not remove anymore" do
+                                targets cards $ removeCardFromDeckForCampaign iid
+
+                        doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Events.dyersSketches
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let danforth = Assets.danforthBrilliantStudent.cardCode
+          when (danforth `elem` choices) do
+            labeled "Danforth" do
+              choiceMade danforth
+              let alive = danforth `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.collectedWorksOfPoe
+              blueStory
+                $ compose
+                  [ validateEntry alive "danforthIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "danforthIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    iids <- getInvestigators
+                    chooseOneM lead $ for_ iids \iid -> do
+                      questionLabeled
+                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with two additional cards drawn in their opening hand."
+                      portraitLabeled iid do
+                        scenarioSetupModifier "08596" CampaignSource iid (StartingHand 2)
+                    doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.collectedWorksOfPoe
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let kensler = Assets.drAmyKenslerProfessorOfBiology.cardCode
+          when (kensler `elem` choices) do
+            labeled "Dr. Amy Kensler" do
+              choiceMade kensler
+              let alive = kensler `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.kenslersLog
+              sharingResearch <- getHasRecord DrKenslerIsSharingHerResearchWithYou
+              blueStory
+                $ compose
+                  [ validateEntry (alive && sharingResearch) "kenslerIsAliveAndSharingResearch"
+                  , hr
+                  , validateEntry (alive && not sharingResearch) "kenslerIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "kenslerIsCrossedOut"
+                  ]
+              if
+                | alive && sharingResearch -> do
+                    record DrKenslerIsOnTheVergeOfUnderstanding
+                    doStep (n - 1) msg'
+                | not alive && not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.kenslersLog
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let sinha = Assets.drMalaSinhaDaringPhysician.cardCode
+          when (sinha `elem` choices) do
+            labeled "Dr. Mala Sinha" do
+              choiceMade sinha
+              let alive = sinha `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.sinhasMedicalKit
+              blueStory
+                $ compose
+                  [ validateEntry alive "sinhaIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "sinhaIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    injured <- select InvestigatorWithPhysicalTrauma
+                    damagedPartners <- filter ((> 0) . (.damage)) <$> getRemainingPartners
+                    if null injured && null damagedPartners
+                      then doStep n msg'
+                      else do
+                        chooseOneM lead do
+                          labeled "Do not perform healing" nothing
+                          for_ injured \iid ->
+                            portraitLabeled iid $ push $ HealTrauma iid 1 0
+                          for_ damagedPartners \partner -> do
+                            cardLabeled partner $ push $ HealDamage (CardCodeTarget partner.cardCode) CampaignSource 1
+                        doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.sinhasMedicalKit
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let cookie = Assets.jamesCookieFredericksDubiousChoice.cardCode
+          when (cookie `elem` choices) do
+            labeled "James \"Cookie\" Fredericks" do
+              choiceMade cookie
+              let alive = cookie `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.cookiesCustom32
+              blueStory
+                $ compose
+                  [ validateEntry alive "cookieIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "cookieIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    iids <- getInvestigators
+                    chooseOneM lead $ for_ iids \iid -> do
+                      questionLabeled "Any one investigator earns 1 bonus experience."
+                      portraitLabeled iid do
+                        interludeXp iid $ toBonus "cookiesAdvice" 1
+                    doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.cookiesCustom32
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let ellsworth = Assets.roaldEllsworthIntrepidExplorer.cardCode
+
+          let claypool = Assets.averyClaypoolAntarcticGuide.cardCode
+          let claypoolAlive = claypool `elem` remainingPartners
+          when (claypool `elem` choices) do
+            labeled "Avery Claypool" do
+              choiceMade claypool
+              owned <- isJust <$> getOwner Assets.claypoolsFurs
+              blueStory
+                $ compose
+                  [ validateEntry claypoolAlive "claypoolIsAlive"
+                  , hr
+                  , validateEntry (not claypoolAlive) "claypoolIsCrossedOut"
+                  ]
+              if
+                | claypoolAlive ->
+                    if #frost `elem` campaignChaosBag attrs
+                      then do
+                        push $ RemoveChaosToken #frost
+                        doStep (n - 1) msg'
+                      else doStep n msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.claypoolsFurs
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          when (ellsworth `elem` choices) do
+            labeled "Roald Ellsworth" do
+              choiceMade ellsworth
+              let alive = ellsworth `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.ellsworthsBoots
+              blueStory
+                $ compose
+                  [ validateEntry alive "ellsworthIsAlive"
+                  , validateEntry (alive && claypoolAlive) "ellsworthIsAliveClaypool"
+                  , hr
+                  , validateEntry (not alive && not owned) "ellsworthIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    record TheInvestigatorsScoutedTheCityOutskirts
+                    doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.ellsworthsBoots
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let takada = Assets.takadaHirokoAeroplaneMechanic.cardCode
+          when (takada `elem` choices) do
+            labeled "Takada Hiroko" do
+              choiceMade takada
+              let alive = takada `elem` remainingPartners
+              owned <- isJust <$> getOwner Events.takadasCache
+              blueStory
+                $ compose
+                  [ validateEntry alive "takadaIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "takadaIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    iids <- getInvestigators
+                    chooseOneM lead $ for_ iids \iid -> do
+                      questionLabeled
+                        "Any one investigator may begin _Scenario III: City of the Elder Things_ with 3 additional resources in their resource pool."
+                      portraitLabeled iid do
+                        scenarioSetupModifier "08596" CampaignSource iid (StartingResources 3)
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Events.takadasCache
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+
+          let ashevak = Assets.eliyahAshevakDogHandler.cardCode
+          when (ashevak `elem` choices) do
+            labeled "Eliyah Ashevak" do
+              choiceMade ashevak
+              let alive = ashevak `elem` remainingPartners
+              owned <- isJust <$> getOwner Assets.anyuFaithfulCompanion
+              blueStory
+                $ compose
+                  [ validateEntry alive "ashevakIsAlive"
+                  , hr
+                  , validateEntry (not alive && not owned) "ashevakIsCrossedOut"
+                  ]
+              if
+                | alive -> do
+                    injured <- select InvestigatorWithMentalTrauma
+                    damagedPartners <- filter ((> 0) . (.horror)) <$> getRemainingPartners
+                    if null injured && null damagedPartners
+                      then doStep n msg'
+                      else do
+                        chooseOneM lead do
+                          labeled "Do not perform healing" nothing
+                          for_ injured \iid -> portraitLabeled iid $ push $ HealTrauma iid 0 1
+                          for_ damagedPartners \partner -> do
+                            cardLabeled partner $ push $ HealHorror (CardCodeTarget $ partner.cardCode) CampaignSource 1
+                        doStep (n - 1) msg'
+                | not owned -> do
+                    iids <- getInvestigators
+                    addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.anyuFaithfulCompanion
+                    doStep (n - 1) msg'
+                | otherwise -> doStep n msg'
+      pure c
+    CampaignStep (InterludeStepPart 2 _ 2) -> scope "interlude2" do
+      let shouldEndlessNight3 = FatalMirage `elem` campaignCompletedSteps attrs
+      eliminated <- getPartnersWithStatus (== Eliminated)
+      let shouldEndlessNight4 = not shouldEndlessNight3 && length eliminated >= 3
+      story
+        $ withVars
+          [ "endlessNight3Status" .= String (if shouldEndlessNight3 then "valid" else "invalid")
+          , "endlessNight4Status" .= String (if shouldEndlessNight4 then "valid" else "invalid")
+          , "cityOfTheElderThingsStatus"
+              .= String (if not (shouldEndlessNight3 || shouldEndlessNight4) then "valid" else "invalid")
+          ]
+        $ i18nWithTitle "endlessNight2"
+      if
+        | shouldEndlessNight3 -> push $ CampaignStep (InterludeStepPart 2 Nothing 3)
+        | shouldEndlessNight4 -> push $ CampaignStep (InterludeStepPart 2 Nothing 4)
+        | otherwise -> push $ NextCampaignStep $ Just CityOfTheElderThings
+      pure c
+    CampaignStep (InterludeStepPart 2 _ 3) -> scope "interlude2" do
+      storyWithChooseOneM (i18nWithTitle "endlessNight3") do
+        labeled "Open the door and venture once more into the mirage."
+          $ push
+          $ NextCampaignStep
+          $ Just FatalMirage
+        labeled "Ignore the door and allow it to vanish"
+          $ push
+          $ NextCampaignStep
+          $ Just CityOfTheElderThings
+      pure c
+    CampaignStep (InterludeStepPart 2 _ 4) -> scope "interlude2" do
+      storyWithChooseOneM (i18nWithTitle "endlessNight4") do
+        labeled "Open the door and venture into the mirage."
+          $ push
+          $ NextCampaignStep
+          $ Just FatalMirage
+        labeled "Ignore the door and allow it to vanish"
+          $ push
+          $ NextCampaignStep
+          $ Just CityOfTheElderThings
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

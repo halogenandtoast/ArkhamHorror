@@ -3,11 +3,11 @@ module Arkham.Scenario.Scenarios.FatalMirage (fatalMirage) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Types (Field (..))
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps (
   pattern CityOfTheElderThings,
   pattern ToTheForbiddenPeaks,
  )
+import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps qualified as Step
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
@@ -66,34 +66,39 @@ instance HasChaosTokenValue FatalMirage where
 instance RunMessage FatalMirage where
   runMessage msg s@(FatalMirage attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
-      killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
-      when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"
+      completed <- elem Step.FatalMirage <$> getCompletedSteps
+      if not completed
+        then do
+          story $ i18nWithTitle "intro1"
+          killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
+          when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"
 
-      when (recorded Assets.roaldEllsworthIntrepidExplorer.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "ellsworthWasKilledInThePlaneCrash"
+          when (recorded Assets.roaldEllsworthIntrepidExplorer.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "ellsworthWasKilledInThePlaneCrash"
 
-      when (recorded Assets.eliyahAshevakDogHandler.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "ashevakWasKilledInThePlaneCrash"
+          when (recorded Assets.eliyahAshevakDogHandler.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "ashevakWasKilledInThePlaneCrash"
 
-      when (recorded Assets.danforthBrilliantStudent.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "danforthWasKilledInThePlaneCrash"
+          when (recorded Assets.danforthBrilliantStudent.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "danforthWasKilledInThePlaneCrash"
 
-      when (recorded Assets.jamesCookieFredericksDubiousChoice.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "cookieWasKilledInThePlaneCrash"
+          when (recorded Assets.jamesCookieFredericksDubiousChoice.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "cookieWasKilledInThePlaneCrash"
 
-      when (recorded Assets.averyClaypoolAntarcticGuide.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "claypoolWasKilledInThePlaneCrash"
+          when (recorded Assets.averyClaypoolAntarcticGuide.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "claypoolWasKilledInThePlaneCrash"
 
-      when (recorded Assets.takadaHirokoAeroplaneMechanic.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "takadaWasKilledInThePlaneCrash"
+          when (recorded Assets.takadaHirokoAeroplaneMechanic.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "takadaWasKilledInThePlaneCrash"
 
-      when (recorded Assets.drMalaSinhaDaringPhysician.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "sinhaWasKilledInThePlaneCrash"
+          when (recorded Assets.drMalaSinhaDaringPhysician.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "sinhaWasKilledInThePlaneCrash"
 
-      when (recorded Assets.drAmyKenslerProfessorOfBiology.cardCode `elem` killedInThePlaneCrash) do
-        blueStory $ i18nEntry "kenslerWasKilledInThePlaneCrash"
+          when (recorded Assets.drAmyKenslerProfessorOfBiology.cardCode `elem` killedInThePlaneCrash) do
+            blueStory $ i18nEntry "kenslerWasKilledInThePlaneCrash"
+        else do
+          story $ i18nWithTitle "intro2"
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
@@ -126,7 +131,7 @@ instance RunMessage FatalMirage where
       gather Set.Tekelili
       gather Set.ChillingCold
 
-      completedSteps <- campaignField CampaignCompletedSteps
+      completedSteps <- getCompletedSteps
 
       if
         | CityOfTheElderThings `elem` completedSteps -> do

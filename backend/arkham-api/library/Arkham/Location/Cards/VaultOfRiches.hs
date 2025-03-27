@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

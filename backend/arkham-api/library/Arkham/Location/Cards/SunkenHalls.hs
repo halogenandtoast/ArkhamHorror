@@ -5,7 +5,6 @@ import Arkham.Helpers.Window
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.FloodLevel
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

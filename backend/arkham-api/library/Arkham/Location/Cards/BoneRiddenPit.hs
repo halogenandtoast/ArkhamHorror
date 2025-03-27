@@ -6,7 +6,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ThePitOfDespair.Helpers

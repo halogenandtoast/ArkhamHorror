@@ -3,7 +3,6 @@ module Arkham.Location.Cards.MarshRefineryInTooDeep (marshRefineryInTooDeep) whe
 import Arkham.Ability
 import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -8,7 +8,7 @@ newtype AncientPlanetarium = AncientPlanetarium LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientPlanetarium :: LocationCard AncientPlanetarium
-ancientPlanetarium = location AncientPlanetarium Cards.ancientPlanetarium 2 (PerPlayer 1)
+ancientPlanetarium = locationWith AncientPlanetarium Cards.ancientPlanetarium 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities AncientPlanetarium where
   getAbilities (AncientPlanetarium attrs) =

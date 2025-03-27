@@ -2,7 +2,7 @@ module Arkham.Location.Cards.RailroadStation (railroadStation, RailroadStation (
 
 import Arkham.Ability
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent, resignAction)
+import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

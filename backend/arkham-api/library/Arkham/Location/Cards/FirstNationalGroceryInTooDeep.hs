@@ -8,7 +8,6 @@ import Arkham.Ability
 import Arkham.Helpers.Investigator (getSkillValue)
 import Arkham.Id
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

@@ -8,7 +8,7 @@ newtype CyclopeanSpires = CyclopeanSpires LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cyclopeanSpires :: LocationCard CyclopeanSpires
-cyclopeanSpires = location CyclopeanSpires Cards.cyclopeanSpires 3 (PerPlayer 1)
+cyclopeanSpires = locationWith CyclopeanSpires Cards.cyclopeanSpires 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities CyclopeanSpires where
   getAbilities (CyclopeanSpires attrs) =

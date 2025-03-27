@@ -8,7 +8,8 @@ newtype TempleOfTheElderThings = TempleOfTheElderThings LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 templeOfTheElderThings :: LocationCard TempleOfTheElderThings
-templeOfTheElderThings = location TempleOfTheElderThings Cards.templeOfTheElderThings 4 (PerPlayer 1)
+templeOfTheElderThings =
+  locationWith TempleOfTheElderThings Cards.templeOfTheElderThings 4 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities TempleOfTheElderThings where
   getAbilities (TempleOfTheElderThings attrs) =

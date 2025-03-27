@@ -8,7 +8,7 @@ newtype LabyrinthineChamber = LabyrinthineChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 labyrinthineChamber :: LocationCard LabyrinthineChamber
-labyrinthineChamber = location LabyrinthineChamber Cards.labyrinthineChamber 3 (PerPlayer 2)
+labyrinthineChamber = locationWith LabyrinthineChamber Cards.labyrinthineChamber 3 (PerPlayer 2) connectsToAdjacent
 
 instance HasAbilities LabyrinthineChamber where
   getAbilities (LabyrinthineChamber attrs) =

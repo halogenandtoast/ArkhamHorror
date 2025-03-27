@@ -8,7 +8,7 @@ newtype RooflessRampart = RooflessRampart LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rooflessRampart :: LocationCard RooflessRampart
-rooflessRampart = location RooflessRampart Cards.rooflessRampart 2 (PerPlayer 1)
+rooflessRampart = locationWith RooflessRampart Cards.rooflessRampart 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities RooflessRampart where
   getAbilities (RooflessRampart attrs) =

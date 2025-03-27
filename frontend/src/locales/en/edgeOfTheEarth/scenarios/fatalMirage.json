@@ -34,5 +34,19 @@
   "claypoolWasKilledInThePlaneCrash": "<p>_If Avery Claypool was killed in the plane crash:_</p><p>Claypool is dead. There is no way that can be him. And yet…</p><p>You watch as he studies a map of Antarctica, the regions inside its borders only partially documented. “It would have to be here,” he says, pointing to a spot inside a ring sketched hastily in pencil. “Inside these mountain ranges. But…” he falters, peering over his shoulder at someone you cannot see. “That cannot be the case, can it?”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
   "takadaWasKilledInThePlaneCrash": "<p>_If Takada Hiroko was killed in the plane crash:_</p><p>Takada is dead. There is no way that can be her. And yet…</p><p>Despite her youth, you recognize her. She waves as an aeroplane takes off from a rainy runway. Somebody’s hand grips her shoulder encouragingly. “He’ll be back soon,” a voice tells her. But Takada looks unconvinced.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
   "sinhaWasKilledInThePlaneCrash": "<p>_If Dr. Mala Sinha was killed in the plane crash:_</p><p>Dr. Sinha is dead. There is no way that can be her. And yet…</p><p>The physician examines what you can only assume to be a corpse, the body limp and lifeless. “Time of death: 14:23. Record it,” she says, her voice steady and calm. But within the misty reflection, you spot her lip quiver ever so slightly as her task takes its toll on her.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "kenslerWasKilledInThePlaneCrash": "<p>_If Dr. Amy Kensler was killed in the plane crash:_</p><p>Dr. Kensler is dead. There is no way that can be her. And yet…</p><p>The professor writes in a small, leatherbound journal, her office lit dimly by candlelight. You wonder what kind of anatomical diagram she might be sketching, but before you can catch a glimpse, she rips the page out, crumples it, and throws it in the garbage with a sigh.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>"
+  "kenslerWasKilledInThePlaneCrash": "<p>_If Dr. Amy Kensler was killed in the plane crash:_</p><p>Dr. Kensler is dead. There is no way that can be her. And yet…</p><p>The professor writes in a small, leatherbound journal, her office lit dimly by candlelight. You wonder what kind of anatomical diagram she might be sketching, but before you can catch a glimpse, she rips the page out, crumples it, and throws it in the garbage with a sigh.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
+  "tokens": {
+    "easyStandard": {
+      "skull": "–X. X is the number of story cards in the victory display.",
+      "cultist": "–2. If you fail, place 1 of your clues on your location.",
+      "tablet": "–3. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it.",
+      "elderthing": "–4. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+    },
+    "hardExpert": {
+      "skull": "–X. X is the current agenda number plus the number of story cards in the victory display.",
+      "cultist": "–2. If you do not succeed by at least 2, place 1 of your clues on your location.",
+      "tablet": "–4. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it. (If you fail by 2 or more, do both instead.)",
+      "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+    }
+  }
 }

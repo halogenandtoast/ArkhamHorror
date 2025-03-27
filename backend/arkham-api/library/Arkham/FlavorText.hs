@@ -9,6 +9,7 @@ module Arkham.FlavorText (
   li,
   compose,
   hr,
+  p,
 )
 where
 
@@ -27,6 +28,9 @@ type UlItems = Writer [ListItemEntry] ()
 
 ul :: UlItems -> FlavorTextEntry
 ul = ListEntry . execWriter
+
+p :: HasI18n => Scope -> FlavorTextEntry
+p = i18nEntry
 
 compose :: [FlavorTextEntry] -> FlavorTextEntry
 compose = CompositeEntry

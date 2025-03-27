@@ -88,7 +88,12 @@ mayAdvance source = do
     labeled "Keep playing" nothing
 
 handleMemory
-  :: (ReverseQueue m, Sourceable source) => source -> CardDef -> CardDef -> CardDef -> m ()
+  :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ StoryId)
+  => source
+  -> CardDef
+  -> CardDef
+  -> CardDef
+  -> m ()
 handleMemory source partner location memory = do
   getPartnerStatus partner >>= \case
     Eliminated -> do
@@ -97,7 +102,8 @@ handleMemory source partner location memory = do
         moveTo_ source investigator (locationIs Locations.prisonOfMemories)
       selectEach (oneOf [UnengagedEnemy, MassiveEnemy] <> enemyAt loc) \enemy ->
         moveTo_ source enemy (locationIs Locations.prisonOfMemories)
-      addToVictory loc
+      addToVictory (asId source)
+      removeLocation loc
       mayAdvance source
     _ -> getSetAsideCard memory >>= (`createEnemy_` location)
 

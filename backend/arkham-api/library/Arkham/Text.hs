@@ -14,7 +14,13 @@ newtype Tooltip = Tooltip Text
   deriving stock Data
   deriving newtype (Show, Eq, ToJSON, FromJSON, Ord)
 
-data FlavorTextModifier = BlueEntry | RightAligned | PlainText | InvalidEntry | ValidEntry
+data FlavorTextModifier
+  = BlueEntry
+  | RightAligned
+  | PlainText
+  | InvalidEntry
+  | ValidEntry
+  | ResolutionEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -53,6 +59,9 @@ data FlavorText = FlavorText
 addFlavorEntry :: FlavorTextEntry -> FlavorText -> FlavorText
 addFlavorEntry entry' (FlavorText title entries) =
   FlavorText title (entries <> [entry'])
+
+setFlavorTitle :: Text -> FlavorText -> FlavorText
+setFlavorTitle title (FlavorText _ entries) = FlavorText (Just title) entries
 
 instance Semigroup FlavorText where
   FlavorText mTitle1 body1 <> FlavorText mTitle2 body2 = FlavorText (mTitle1 <|> mTitle2) (body1 <> body2)

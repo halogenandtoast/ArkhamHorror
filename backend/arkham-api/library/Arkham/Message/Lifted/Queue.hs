@@ -16,3 +16,6 @@ instance (CardGen m, MonadIO m, HasGame m) => ReverseQueue (QueueT Message m) wh
 
 instance ReverseQueue m => ReverseQueue (StateT s m) where
   filterInbox f = lift $ filterInbox f
+
+instance (HasGame (ReaderT g m), ReverseQueue m) => ReverseQueue (ReaderT g m) where
+  filterInbox f = lift $ filterInbox f

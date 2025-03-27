@@ -19,6 +19,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
 function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'
+    case 'ResolutionEntry': return 'resolution'
     case 'RightAligned': return 'right'
     case 'PlainText': return 'basic'
     case 'InvalidEntry': return 'invalid'

@@ -411,59 +411,59 @@ standingStones :: CardDef
 standingStones = doubleSided "08565" $ story "08565b" "Standing Stones" FatalMirage
 
 airfield :: CardDef
-airfield = doubleSided "08566" $ story "08566b" "Airfield" FatalMirage
+airfield = victory 2 $ doubleSided "08566" $ story "08566b" "Airfield" FatalMirage
 
 alaskanWilds :: CardDef
-alaskanWilds = doubleSided "08567" $ story "08567b" "Alaskan Wilds" FatalMirage
+alaskanWilds = victory 2 $ doubleSided "08567" $ story "08567b" "Alaskan Wilds" FatalMirage
 
 clutteredDormitory :: CardDef
-clutteredDormitory = doubleSided "08568" $ story "08568b" "Cluttered Dormitory" FatalMirage
+clutteredDormitory = victory 2 $ doubleSided "08568" $ story "08568b" "Cluttered Dormitory" FatalMirage
 
 dyersClassroom :: CardDef
-dyersClassroom = doubleSided "08569" $ story "08569b" "Dyer's Classroom" FatalMirage
+dyersClassroom = victory 2 $ doubleSided "08569" $ story "08569b" "Dyer's Classroom" FatalMirage
 
 infirmary :: CardDef
-infirmary = doubleSided "08570" $ story "08570b" "Infirmary" FatalMirage
+infirmary = victory 2 $ doubleSided "08570" $ story "08570b" "Infirmary" FatalMirage
 
 drKenslersOffice :: CardDef
-drKenslersOffice = doubleSided "08571" $ story "08571b" "Dr. Kensler's Office" FatalMirage
+drKenslersOffice = victory 2 $ doubleSided "08571" $ story "08571b" "Dr. Kensler's Office" FatalMirage
 
 moaiStatues :: CardDef
-moaiStatues = doubleSided "08572" $ story "08572b" "Mo'ai Statues" FatalMirage
+moaiStatues = victory 2 $ doubleSided "08572" $ story "08572b" "Mo'ai Statues" FatalMirage
 
 ottomanFront :: CardDef
-ottomanFront = doubleSided "08573" $ story "08573b" "Ottoman Front" FatalMirage
+ottomanFront = victory 2 $ doubleSided "08573" $ story "08573b" "Ottoman Front" FatalMirage
 
 theBlackStone :: CardDef
-theBlackStone = doubleSided "08574" $ story "08574b" "The Black Stone" FatalMirage
+theBlackStone = victory 2 $ doubleSided "08574" $ story "08574b" "The Black Stone" FatalMirage
 
 memoryOfAHuntGoneAwry :: CardDef
 memoryOfAHuntGoneAwry =
-  doubleSided "08575" $ story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
+  victory 1 $ doubleSided "08575" $ story "08575b" "Memory of a Hunt Gone Awry" FatalMirage
 
 memoryOfALostPatient :: CardDef
-memoryOfALostPatient = doubleSided "08576" $ story "08576b" "Memory of a Lost Patient" FatalMirage
+memoryOfALostPatient = victory 1 $ doubleSided "08576" $ story "08576b" "Memory of a Lost Patient" FatalMirage
 
 memoryOfAMissingFather :: CardDef
-memoryOfAMissingFather = doubleSided "08577" $ story "08577b" "Memory of a Missing Father" FatalMirage
+memoryOfAMissingFather = victory 1 $ doubleSided "08577" $ story "08577b" "Memory of a Missing Father" FatalMirage
 
 memoryOfARavagedCountry :: CardDef
-memoryOfARavagedCountry = doubleSided "08578" $ story "08578b" "Memory of a Ravaged Country" FatalMirage
+memoryOfARavagedCountry = victory 1 $ doubleSided "08578" $ story "08578b" "Memory of a Ravaged Country" FatalMirage
 
 memoryOfARegretfulVoyage :: CardDef
-memoryOfARegretfulVoyage = doubleSided "08579" $ story "08579b" "Memory of a Regretful Voyage" FatalMirage
+memoryOfARegretfulVoyage = victory 1 $ doubleSided "08579" $ story "08579b" "Memory of a Regretful Voyage" FatalMirage
 
 memoryOfAnUnspeakableEvil :: CardDef
-memoryOfAnUnspeakableEvil = doubleSided "08580" $ story "08580b" "Memory of an Unspeakable Evil" FatalMirage
+memoryOfAnUnspeakableEvil = victory 1 $ doubleSided "08580" $ story "08580b" "Memory of an Unspeakable Evil" FatalMirage
 
 memoryOfATerribleDiscovery :: CardDef
-memoryOfATerribleDiscovery = doubleSided "08581" $ story "08581b" "Memory of a Terrible Discovery" FatalMirage
+memoryOfATerribleDiscovery = victory 1 $ doubleSided "08581" $ story "08581b" "Memory of a Terrible Discovery" FatalMirage
 
 memoryOfAnAlienTranslation :: CardDef
-memoryOfAnAlienTranslation = doubleSided "08582" $ story "08582b" "Memory of an Alien Transformation" FatalMirage
+memoryOfAnAlienTranslation = victory 1 $ doubleSided "08582" $ story "08582b" "Memory of an Alien Transformation" FatalMirage
 
 memoryOfAnUnrequitedLove :: CardDef
-memoryOfAnUnrequitedLove = doubleSided "08583" $ story "08583b" "Memory of an Unrequited Love" FatalMirage
+memoryOfAnUnrequitedLove = victory 1 $ doubleSided "08583" $ story "08583b" "Memory of an Unrequited Love" FatalMirage
 
 realityAcid :: CardDef
 realityAcid =

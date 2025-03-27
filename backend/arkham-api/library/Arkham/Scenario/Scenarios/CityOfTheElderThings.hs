@@ -1,11 +1,14 @@
 module Arkham.Scenario.Scenarios.CityOfTheElderThings (cityOfTheElderThings) where
 
+import Data.Map.Strict qualified as Map
 import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card.CardDef
+import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.EncounterSet qualified as Set
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
@@ -181,6 +184,7 @@ instance RunMessage CityOfTheElderThings where
       gather Set.LockedDoors
       gatherAndSetAside Set.Shoggoths
       setActDeck [Acts.sprawlingCityV1, Acts.pursuitOfTheUnknownV1]
+      setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
       {- FOURMOLU_DISABLE -}
@@ -194,7 +198,12 @@ instance RunMessage CityOfTheElderThings where
           ]
       {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      for_ (zip positions locations) (uncurry placeInGrid_)
+      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
+        (pos,) <$> placeInGrid pos loc
+      lead <- getLead
+      chooseTargetM lead (mapMaybe (`Map.lookup` locationMap) [Pos 0 2, Pos 1 2, Pos 2 0, Pos 2 (-1), Pos 0 (-2), Pos (-1) (-2), Pos (-2) 0, Pos (-2) 1]) \lid -> do
+        reveal lid
+        moveAllTo attrs lid
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
@@ -205,6 +214,7 @@ instance RunMessage CityOfTheElderThings where
       gather Set.ChillingCold
       gatherAndSetAside Set.CreaturesInTheIce
       setActDeck [Acts.sprawlingCityV2, Acts.pursuitOfTheUnknownV2]
+      setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
       {- FOURMOLU_DISABLE -}
@@ -217,7 +227,9 @@ instance RunMessage CityOfTheElderThings where
           ]
       {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      for_ (zip positions locations) (uncurry placeInGrid_)
+      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
+        (pos,) <$> placeInGrid pos loc
+      for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.CreaturesInTheIce
@@ -228,6 +240,7 @@ instance RunMessage CityOfTheElderThings where
       gather Set.LockedDoors
       gatherAndSetAside Set.Shoggoths
       setActDeck [Acts.sprawlingCityV3, Acts.pursuitOfTheUnknownV3]
+      setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
       {- FOURMOLU_DISABLE -}
@@ -241,5 +254,7 @@ instance RunMessage CityOfTheElderThings where
           ]
       {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      for_ (zip positions locations) (uncurry placeInGrid_)
+      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
+        (pos,) <$> placeInGrid pos loc
+      for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

@@ -202,7 +202,7 @@ instance RunMessage ToTheForbiddenPeaks where
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         Cultist | isEasyStandard attrs -> void $ runMaybeT do
-          guard (isHardExpert attrs)
+          guard $ isHardExpert attrs
           loc <- MaybeT $ getMaybeLocation iid
           Pos _ y <- MaybeT $ field LocationPosition loc
           loc' <- MaybeT $ selectOne (LocationInRow (y - 1))

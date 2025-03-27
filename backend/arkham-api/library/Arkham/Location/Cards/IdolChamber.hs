@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.ThePitOfDespair.Helpers

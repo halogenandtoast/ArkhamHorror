@@ -5,7 +5,6 @@ module Arkham.Location.Cards.FishStreetBridgeInTooDeep (
 where
 
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Helpers.Scenario
 import Arkham.Ability

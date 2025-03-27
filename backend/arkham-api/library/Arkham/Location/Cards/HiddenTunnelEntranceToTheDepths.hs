@@ -14,7 +14,7 @@ hiddenTunnelEntranceToTheDepths =
     Cards.hiddenTunnelEntranceToTheDepths
     0
     (PerPlayer 2)
-    (shroudL .~ Nothing)
+    ((shroudL .~ Nothing) . connectsToAdjacent)
 
 instance HasAbilities HiddenTunnelEntranceToTheDepths where
   getAbilities (HiddenTunnelEntranceToTheDepths attrs) =

@@ -7,7 +7,6 @@ where
 import Arkham.Ability
 import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenarios.InTooDeep.Helpers

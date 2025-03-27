@@ -8,7 +8,7 @@ newtype StoneBridge = StoneBridge LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stoneBridge :: LocationCard StoneBridge
-stoneBridge = location StoneBridge Cards.stoneBridge 3 (PerPlayer 1)
+stoneBridge = locationWith StoneBridge Cards.stoneBridge 3 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities StoneBridge where
   getAbilities (StoneBridge attrs) =

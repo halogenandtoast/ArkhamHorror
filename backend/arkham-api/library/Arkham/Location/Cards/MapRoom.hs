@@ -8,7 +8,7 @@ newtype MapRoom = MapRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mapRoom :: LocationCard MapRoom
-mapRoom = location MapRoom Cards.mapRoom 2 (PerPlayer 1)
+mapRoom = locationWith MapRoom Cards.mapRoom 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities MapRoom where
   getAbilities (MapRoom attrs) =

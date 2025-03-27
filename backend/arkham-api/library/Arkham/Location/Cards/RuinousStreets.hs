@@ -8,7 +8,7 @@ newtype RuinousStreets = RuinousStreets LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ruinousStreets :: LocationCard RuinousStreets
-ruinousStreets = location RuinousStreets Cards.ruinousStreets 4 (PerPlayer 1)
+ruinousStreets = locationWith RuinousStreets Cards.ruinousStreets 4 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities RuinousStreets where
   getAbilities (RuinousStreets attrs) =

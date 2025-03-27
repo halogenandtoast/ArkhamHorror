@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.DesolateCoastline (desolateCoastline) where
 
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Helpers (connectsToAdjacent)
 import Arkham.Location.Import.Lifted
 
 newtype DesolateCoastline = DesolateCoastline LocationAttrs

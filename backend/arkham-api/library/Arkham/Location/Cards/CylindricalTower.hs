@@ -8,7 +8,7 @@ newtype CylindricalTower = CylindricalTower LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cylindricalTower :: LocationCard CylindricalTower
-cylindricalTower = location CylindricalTower Cards.cylindricalTower 2 (PerPlayer 1)
+cylindricalTower = locationWith CylindricalTower Cards.cylindricalTower 2 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities CylindricalTower where
   getAbilities (CylindricalTower attrs) =

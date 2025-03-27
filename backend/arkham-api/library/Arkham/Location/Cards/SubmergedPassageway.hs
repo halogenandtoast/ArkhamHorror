@@ -8,7 +8,7 @@ newtype SubmergedPassageway = SubmergedPassageway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 submergedPassageway :: LocationCard SubmergedPassageway
-submergedPassageway = location SubmergedPassageway Cards.submergedPassageway 5 (PerPlayer 1)
+submergedPassageway = locationWith SubmergedPassageway Cards.submergedPassageway 5 (PerPlayer 1) connectsToAdjacent
 
 instance HasAbilities SubmergedPassageway where
   getAbilities (SubmergedPassageway attrs) =

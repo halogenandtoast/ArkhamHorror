@@ -49,6 +49,7 @@ allAgendaCards =
       , deadOfNight
       , deathsApproach
       , decrepitDecay
+      , doomFromBelow
       , drawnIn
       , empireOfTheDead
       , empireOfTheUndead
@@ -89,6 +90,7 @@ allAgendaCards =
       , letTheStormRageTheVortexAbove
       , lockedInside
       , lostMemories
+      , lurkingHorrors
       , madnessAndDeath
       , madnessCoils
       , madnessDies
@@ -718,6 +720,12 @@ forbiddenPeaks = agenda "08597" "Forbidden Peaks" 1 ToTheForbiddenPeaks
 
 terrorDescends :: CardDef
 terrorDescends = agenda "08598" "Terror Descends" 2 ToTheForbiddenPeaks
+
+lurkingHorrors :: CardDef
+lurkingHorrors = agenda "08622" "Lurking Horrors" 1 CityOfTheElderThings
+
+doomFromBelow :: CardDef
+doomFromBelow = agenda "08623" "Doom From Below" 2 CityOfTheElderThings
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

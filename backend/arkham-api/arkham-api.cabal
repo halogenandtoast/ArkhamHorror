@@ -299,6 +299,7 @@ library
       Arkham.Agenda.Cards.DeadOfNight
       Arkham.Agenda.Cards.DeathsApproach
       Arkham.Agenda.Cards.DecrepitDecay
+      Arkham.Agenda.Cards.DoomFromBelow
       Arkham.Agenda.Cards.DrawnIn
       Arkham.Agenda.Cards.EmpireOfTheDead
       Arkham.Agenda.Cards.EmpireOfTheUndead
@@ -339,6 +340,7 @@ library
       Arkham.Agenda.Cards.LetTheStormRageTheVortexAbove
       Arkham.Agenda.Cards.LockedInside
       Arkham.Agenda.Cards.LostMemories
+      Arkham.Agenda.Cards.LurkingHorrors
       Arkham.Agenda.Cards.MadnessAndDeath
       Arkham.Agenda.Cards.MadnessCoils
       Arkham.Agenda.Cards.MadnessDies

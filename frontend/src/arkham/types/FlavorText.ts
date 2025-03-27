@@ -14,6 +14,7 @@ export type FlavorTextEntry
   | { tag: 'ValidEntry', text: string }
   | { tag: 'ModifyEntry', modifiers: FlavorTextModifier[], entry: FlavorTextEntry }
   | { tag: 'CompositeEntry', entries: FlavorTextEntry[] }
+  | { tag: 'ColumnEntry', entries: FlavorTextEntry[] }
   | { tag: 'ListEntry', list: ListItemEntry[] }
   | { tag: 'EntrySplit' }
 
@@ -47,6 +48,7 @@ export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = Json
   JsonDecoder.object({ tag: JsonDecoder.isExactly('ValidEntry'), text: JsonDecoder.string }, 'ValidEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.isExactly('ColumnEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('ListEntry'), list: JsonDecoder.array(listItemEntryDecoder, 'ListItemEntry[]') }, 'ListEntry'),
   JsonDecoder.object({ tag: JsonDecoder.isExactly('EntrySplit')}, 'EntrySplit'),
 ], 'FlavorTextEntry');

@@ -32,6 +32,7 @@ import Arkham.Location.Runner as X (
   pushAll,
   revealedConnectedMatchersL,
   setMeta,
+  shroudL,
   symbolLabel,
   veiled,
   veiled1,

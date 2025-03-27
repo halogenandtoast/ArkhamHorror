@@ -151,6 +151,9 @@ library
       Arkham.Act.Cards.PedalToTheMetal
       Arkham.Act.Cards.PlanningTheEscape
       Arkham.Act.Cards.PursuingShadows
+      Arkham.Act.Cards.PursuitOfTheUnknownV1
+      Arkham.Act.Cards.PursuitOfTheUnknownV2
+      Arkham.Act.Cards.PursuitOfTheUnknownV3
       Arkham.Act.Cards.RaceForAnswers
       Arkham.Act.Cards.RecoverTheRelic
       Arkham.Act.Cards.ReefOfMysteries
@@ -177,6 +180,9 @@ library
       Arkham.Act.Cards.ShadowOfThePastV2
       Arkham.Act.Cards.ShadowOfThePastV3
       Arkham.Act.Cards.SkinGame
+      Arkham.Act.Cards.SprawlingCityV1
+      Arkham.Act.Cards.SprawlingCityV2
+      Arkham.Act.Cards.SprawlingCityV3
       Arkham.Act.Cards.StalkedByShadows
       Arkham.Act.Cards.StoppingTheRitual
       Arkham.Act.Cards.StrangeOccurences
@@ -2556,6 +2562,7 @@ library
       Arkham.Location.Cards.AlchemyLabs
       Arkham.Location.Cards.AltarToDagon
       Arkham.Location.Cards.AncientHall
+      Arkham.Location.Cards.AncientPlanetarium
       Arkham.Location.Cards.AnotherDimension
       Arkham.Location.Cards.APocketInTime
       Arkham.Location.Cards.ArkhamPoliceStation
@@ -2688,6 +2695,8 @@ library
       Arkham.Location.Cards.CursedShores
       Arkham.Location.Cards.CyclopeanRuins_176a
       Arkham.Location.Cards.CyclopeanRuins_176b
+      Arkham.Location.Cards.CyclopeanSpires
+      Arkham.Location.Cards.CylindricalTower
       Arkham.Location.Cards.DancersMist
       Arkham.Location.Cards.DarkAbyss
       Arkham.Location.Cards.DarkenedHall
@@ -2845,6 +2854,7 @@ library
       Arkham.Location.Cards.HereticsGravesSpectral_172
       Arkham.Location.Cards.HiddenCove
       Arkham.Location.Cards.HiddenLibrary
+      Arkham.Location.Cards.HiddenTunnelEntranceToTheDepths
       Arkham.Location.Cards.HideousPalace
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_133
       Arkham.Location.Cards.HistoricalSocietyHistoricalLibrary_136
@@ -2887,6 +2897,7 @@ library
       Arkham.Location.Cards.KnightsHall
       Arkham.Location.Cards.LaBellaLuna
       Arkham.Location.Cards.LaboratoryOfTheGreatRace
+      Arkham.Location.Cards.LabyrinthineChamber
       Arkham.Location.Cards.LabyrinthOfBones
       Arkham.Location.Cards.LairOfDagon
       Arkham.Location.Cards.LairOfDagonIntoTheMaelstrom
@@ -2916,6 +2927,7 @@ library
       Arkham.Location.Cards.LostMemories
       Arkham.Location.Cards.Lounge
       Arkham.Location.Cards.MainPath
+      Arkham.Location.Cards.MapRoom
       Arkham.Location.Cards.MarshRefinery
       Arkham.Location.Cards.MarshRefineryInTooDeep
       Arkham.Location.Cards.MasterBedroom
@@ -3025,10 +3037,12 @@ library
       Arkham.Location.Cards.RiverviewTheatre
       Arkham.Location.Cards.RockyCrags
       Arkham.Location.Cards.RockyLedge
+      Arkham.Location.Cards.RooflessRampart
       Arkham.Location.Cards.Room212
       Arkham.Location.Cards.Room225
       Arkham.Location.Cards.Room245
       Arkham.Location.Cards.RopeBridge
+      Arkham.Location.Cards.RuinousStreets
       Arkham.Location.Cards.RuinsOfCarcosaAMomentsRest
       Arkham.Location.Cards.RuinsOfCarcosaInhabitantOfCarcosa
       Arkham.Location.Cards.RuinsOfCarcosaTheCoffin
@@ -3092,11 +3106,13 @@ library
       Arkham.Location.Cards.StMarysHospital
       Arkham.Location.Cards.StoneAltar
       Arkham.Location.Cards.StoneArchways
+      Arkham.Location.Cards.StoneBridge
       Arkham.Location.Cards.StrangeGeometry
       Arkham.Location.Cards.StreetsOfVenice
       Arkham.Location.Cards.StudentUnion
       Arkham.Location.Cards.Study
       Arkham.Location.Cards.StudyAberrantGateway
+      Arkham.Location.Cards.SubmergedPassageway
       Arkham.Location.Cards.SubmergedTemple
       Arkham.Location.Cards.SuiteBalcony
       Arkham.Location.Cards.SunkenArchives
@@ -3107,6 +3123,7 @@ library
       Arkham.Location.Cards.SyzygyChamber
       Arkham.Location.Cards.TearThroughSpace
       Arkham.Location.Cards.TearThroughTime
+      Arkham.Location.Cards.TempleOfTheElderThings
       Arkham.Location.Cards.TempleOfTheFang
       Arkham.Location.Cards.TempleOfTheMoonLizard
       Arkham.Location.Cards.TempleOfTheUnion_177a
@@ -3306,6 +3323,7 @@ library
       Arkham.Scenario.Scenarios.BlackStarsRise
       Arkham.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
+      Arkham.Scenario.Scenarios.CityOfTheElderThings
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Scenario.Scenarios.CurtainCall
       Arkham.Scenario.Scenarios.DarkSideOfTheMoon
@@ -3378,6 +3396,7 @@ library
       Arkham.Scenarios.BloodOnTheAltar.Story
       Arkham.Scenarios.CarnevaleOfHorrors.FlavorText
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
+      Arkham.Scenarios.CityOfTheElderThings.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.FlavorText
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
       Arkham.Scenarios.CurtainCall.Helpers
@@ -3872,6 +3891,7 @@ library
       Arkham.Treachery.Cards.FracturedConsciousness
       Arkham.Treachery.Cards.Frenzied
       Arkham.Treachery.Cards.FromTheDepths
+      Arkham.Treachery.Cards.Frostbitten
       Arkham.Treachery.Cards.FrozenInFear
       Arkham.Treachery.Cards.FrozenInFearAPhantomOfTruth
       Arkham.Treachery.Cards.FulfillTheOaths
@@ -3981,6 +4001,7 @@ library
       Arkham.Treachery.Cards.PoisonousSpores
       Arkham.Treachery.Cards.PolarMirage
       Arkham.Treachery.Cards.PolarVortex
+      Arkham.Treachery.Cards.Possessed
       Arkham.Treachery.Cards.PossessionMurderous
       Arkham.Treachery.Cards.PossessionTorturous
       Arkham.Treachery.Cards.PossessionTraitorous

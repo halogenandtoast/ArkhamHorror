@@ -39,6 +39,9 @@ data FlavorTextEntry
   | CompositeEntry
       { entries :: [FlavorTextEntry]
       }
+  | ColumnEntry
+      { entries :: [FlavorTextEntry]
+      }
   | ListEntry {list :: [ListItemEntry]}
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
@@ -80,6 +83,9 @@ i18nWithTitle t = FlavorText (Just $ toI18n $ t <> ".title") [i18nEntry $ t <> "
 
 toI18n :: HasI18n => Text -> Text
 toI18n = ("$" <>) . ikey
+
+toFlavor :: FlavorTextEntry -> FlavorText
+toFlavor = FlavorText Nothing . pure
 
 instance IsString FlavorText where
   fromString s = FlavorText Nothing [fromString s]

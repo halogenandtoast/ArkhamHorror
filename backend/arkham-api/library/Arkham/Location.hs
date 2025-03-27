@@ -749,6 +749,18 @@ allLocations =
     , SomeLocationCard snowCoveredCrag
     , SomeLocationCard windsweptPath
     , SomeLocationCard theSummit
+    , --- City of the Elder Things [eote]
+      SomeLocationCard hiddenTunnelEntranceToTheDepths
+    , SomeLocationCard ancientPlanetarium
+    , SomeLocationCard stoneBridge
+    , SomeLocationCard cylindricalTower
+    , SomeLocationCard labyrinthineChamber
+    , SomeLocationCard mapRoom
+    , SomeLocationCard rooflessRampart
+    , SomeLocationCard ruinousStreets
+    , SomeLocationCard cyclopeanSpires
+    , SomeLocationCard submergedPassageway
+    , SomeLocationCard templeOfTheElderThings
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

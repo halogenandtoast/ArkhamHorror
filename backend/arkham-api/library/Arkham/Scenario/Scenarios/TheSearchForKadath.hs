@@ -27,7 +27,6 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.TheSearchForKadath.FlavorText
 import Arkham.Scenarios.TheSearchForKadath.Helpers
 import Arkham.Strategy
@@ -244,8 +243,8 @@ instance RunMessage TheSearchForKadath where
           [c] -> [PlaceEnemy t $ AtLocation c | t <- tenebrousNightgaunts]
           _ ->
             [ Ask lead
-                $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
-                $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
+              $ QuestionLabel "Place Tenebrous Nightgaunt in city location" Nothing
+              $ ChooseOne [targetLabel c [PlaceEnemy t $ AtLocation c] | c <- cities]
             | t <- tenebrousNightgaunts
             ]
 

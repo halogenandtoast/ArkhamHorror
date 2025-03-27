@@ -23,7 +23,7 @@ import Arkham.PlayerCard
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (hasEncounterDeckL, metaL)
+import Arkham.Scenario.Types (hasEncounterDeckL)
 import Arkham.Scenarios.BeyondTheGatesOfSleep.FlavorText
 import Arkham.Strategy
 import Arkham.Trait (

@@ -276,6 +276,7 @@ allEncounterTreacheryCards =
       , fogOverInnsmouth
       , forcedIntoHiding
       , fracturedConsciousness
+      , frostbitten
       , fromTheDepths
       , frozenInFear
       , frozenInFearAPhantomOfTruth
@@ -359,6 +360,7 @@ allEncounterTreacheryCards =
       , poisonousSpores
       , polarMirage
       , polarVortex
+      , possessed
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous
@@ -2498,6 +2500,18 @@ hypothermia :: CardDef
 hypothermia =
   (treachery "08613" "Hypothermia" ToTheForbiddenPeaks 3)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+frostbitten :: CardDef
+frostbitten =
+  (treachery "08646" "Frostbitten" CityOfTheElderThings 4)
+    { cdCardTraits = setFromList [Injury]
+    }
+
+possessed :: CardDef
+possessed =
+  (treachery "08647" "Possessed" CityOfTheElderThings 4)
+    { cdCardTraits = setFromList [Madness]
     }
 
 theMadnessWithin :: CardDef

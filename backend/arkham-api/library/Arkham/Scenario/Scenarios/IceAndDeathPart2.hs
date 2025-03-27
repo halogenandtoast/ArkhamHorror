@@ -221,12 +221,12 @@ instance RunMessage IceAndDeathPart2 where
       setAgendaDeck [Agendas.aHarshWindBlows, Agendas.theChillOfNight, Agendas.madnessAndDeath]
       setActDeck [Acts.theLostExpedition]
 
-      mia <- mapMaybe (\p -> lookup p.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
+      mia <- mapMaybe (\x -> lookup x.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
       setAside $ mia <> stories
 
       addTekeliliDeck
     DoStep 2 Setup -> do
-      mia <- mapMaybe (\p -> lookup p.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
+      mia <- mapMaybe (\x -> lookup x.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
       (cards, removals) <- bimapM shuffle pure . splitAt 9 . (mia <>) =<< shuffle stories
       locations <- select $ LocationWithTrait Uncharted
 

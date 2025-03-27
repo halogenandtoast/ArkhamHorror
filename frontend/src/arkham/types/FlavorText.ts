@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type FlavorTextModifier = 'BlueEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit'
+export type FlavorTextModifier = 'BlueEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry'
 
 export interface ListItemEntry {
   entry: FlavorTextEntry;
@@ -25,6 +25,7 @@ export type FlavorText = {
 
 export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.isExactly('BlueEntry'),
+  JsonDecoder.isExactly('ResolutionEntry'),
   JsonDecoder.isExactly('RightAligned'),
   JsonDecoder.isExactly('PlainText'),
   JsonDecoder.isExactly('InvalidEntry'),

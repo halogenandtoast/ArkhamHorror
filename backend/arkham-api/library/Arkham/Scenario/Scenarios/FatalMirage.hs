@@ -13,12 +13,14 @@ import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
+import Arkham.Game.Base
+import {-# SOURCE #-} Arkham.Game.Utils
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Text
-import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
@@ -30,6 +32,7 @@ import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Scenario (..), victoryDisplayL)
 import Arkham.Scenarios.FatalMirage.Helpers
 import Arkham.Trait (Trait (Eidolon, Otherworld, Resolute))
 
@@ -207,7 +210,29 @@ instance RunMessage FatalMirage where
     ScenarioResolution resolution -> scope "resolutions" do
       case resolution of
         NoResolution -> story $ i18nWithTitle "noResolution"
-        Resolution 1 -> story $ i18nWithTitle "resolution1"
+        Resolution 1 -> scope "resolution1" do
+          completed <- getCompletedSteps
+          let step3 = CityOfTheElderThings `elem` completed
+          let step2 = not step3 && ToTheForbiddenPeaks `elem` completed
+          let step1 = not step3 && not step2
+          story
+            $ setFlavorTitle "Resolution 1"
+            $ flavorText
+            $ modifyEntry ResolutionEntry
+            $ compose
+              [ p "body"
+              , ul do
+                  li "isThereADifference"
+                  li "victory"
+                  li.nested "memoriesDiscovered" do
+                    li "crossOutMemoriesDiscovered"
+                  li "nonStoryVictory"
+                  li "partnerDamage"
+                  li.nested "proceed" do
+                    li.validate step1 "proceedToTheForbiddenPeaks"
+                    li.validate step2 "proceedToCityOfTheElderThings"
+                    li.validate step3 "proceedToTheHeartOfMadness"
+              ]
         _ -> error "Unknown resolution"
       memoriesInVictory <- select (VictoryDisplayCardMatch #story)
       previouslyBanished <- getRecordSet MemoriesBanished
@@ -230,11 +255,17 @@ instance RunMessage FatalMirage where
         <> [Locations.moaiStatues.cardCode | Enemies.memoryOfAnAlienTranslation `elem` newMemories]
         <> [Locations.drKenslersOffice.cardCode | Enemies.memoryOfAnUnrequitedLove `elem` newMemories]
 
-      let memoryXp = getSum $ foldMap (foldMap Sum . cdVictoryPoints) newMemories
-      allGainXpWithBonus attrs $ toBonus "memoriesBanished" memoryXp
-      -- Cross off each location recorded under “Memories
-      -- Discovered” for which the corresponding story card is
-      -- also recorded under “Memories Banished.”
+      withAlteredGame
+        ( modeL
+            %~ setScenario
+              ( Scenario
+                  $ FatalMirage
+                  $ attrs
+                  & victoryDisplayL
+                  %~ filter ((`notElem` previouslyBanished) . recorded . toCardCode)
+              )
+        )
+        (allGainXp attrs)
       endOfScenario
       pure s
     _ -> FatalMirage <$> liftRunMessage msg attrs

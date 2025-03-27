@@ -12,11 +12,11 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.Field
+import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..))
@@ -82,6 +82,7 @@ instance RunMessage ToTheForbiddenPeaks where
       woodenSledgeRecovered <- hasSupply WoodenSledge
       blueStory
         $ validateEntry (eliyahIsAlive && woodenSledgeRecovered) "eliyah.alive"
+        <> hr
         <> validateEntry (not $ eliyahIsAlive && woodenSledgeRecovered) "eliyah.otherwise"
 
       unless (eliyahIsAlive && woodenSledgeRecovered) do
@@ -90,6 +91,7 @@ instance RunMessage ToTheForbiddenPeaks where
       claypoolIsAlive <- getPartnerIsAlive Assets.averyClaypoolAntarcticGuide
       blueStory
         $ validateEntry claypoolIsAlive "claypool.alive"
+        <> hr
         <> validateEntry (not claypoolIsAlive) "claypool.otherwise"
 
       lead <- getLead
@@ -103,6 +105,7 @@ instance RunMessage ToTheForbiddenPeaks where
       takadaIsAlive <- getPartnerIsAlive Assets.takadaHirokoAeroplaneMechanic
       blueStory
         $ validateEntry takadaIsAlive "takada.alive"
+        <> hr
         <> validateEntry (not takadaIsAlive) "takada.otherwise"
 
       unless takadaIsAlive do
@@ -114,6 +117,7 @@ instance RunMessage ToTheForbiddenPeaks where
       scoutedTheMountainPass <- getHasRecord TheInvestigatorsScoutedTheMountainPass
       blueStory
         $ validateEntry scoutedTheMountainPass "theMountainPass.scouted"
+        <> hr
         <> validateEntry (not scoutedTheMountainPass) "theMountainPass.otherwise"
 
       story $ i18nWithTitle "intro2"

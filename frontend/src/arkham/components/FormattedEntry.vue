@@ -10,6 +10,7 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'I18nEntry': return {}
     case 'ModifyEntry': return entry.modifiers.map((m) => { return { [modifierToStyle(m)]: true }})
     case 'CompositeEntry': return {}
+    case 'ColumnEntry': return {}
     case 'ListEntry': return {}
     case 'EntrySplit': return {}
     default: return {}
@@ -39,6 +40,7 @@ function formatEntry(t, entry: FlavorTextEntry): any {
      case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
      case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
      case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
+     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
      case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
      case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
@@ -57,6 +59,21 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .composite { display: contents; }
+.columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    > * {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      padding: 10px 20px;
+    }
+    > * + * {
+      border-left: solid 1px black;
+    }
+}
 
 .blue, :deep(.blue), p.blue, :deep(p.blue) {
   border: 3px solid #3a4a69;
@@ -143,6 +160,14 @@ p, :deep(p) {
   }
 }
 
+h3, :deep(h3) {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  justify-self: center;
+}
+
 .valid, :deep(.valid) {
   &:not(li) {
     display: inline-flex;
@@ -170,6 +195,7 @@ ul, :deep(ul) {
   li {
     padding-left: 10px;
     margin-left: 10px;
+    margin-bottom: 5px;
 
     ul {
       margin-block: 10px;

@@ -27,7 +27,7 @@ export type Location = {
   id: string;
   cardId: string;
   tokens: Tokens;
-  shroud: number;
+  shroud: number | null;
   revealed: boolean;
   investigators: string[];
   enemies: string[];
@@ -51,7 +51,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     id: JsonDecoder.string,
     cardId: JsonDecoder.string,
     tokens: tokensDecoder,
-    shroud: JsonDecoder.number,
+    shroud: JsonDecoder.nullable(JsonDecoder.number),
     revealed: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),

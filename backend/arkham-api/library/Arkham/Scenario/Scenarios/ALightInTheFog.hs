@@ -31,7 +31,6 @@ import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (metaL)
 import Arkham.Scenarios.ALightInTheFog.Helpers
 import Arkham.SortedPair
 import Arkham.Story.Cards qualified as Stories

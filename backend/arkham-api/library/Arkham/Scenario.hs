@@ -275,12 +275,12 @@ instance RunMessage Scenario where
       investigators <- filterM (`affectedByTarot` card) =<< getInvestigators
       pushAll
         [ search
-            iid
-            source
-            iid
-            [fromDeck]
-            (#asset <> #ally)
-            (if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1)
+          iid
+          source
+          iid
+          [fromDeck]
+          (#asset <> #ally)
+          (if facing == Upright then DrawFound iid 1 else RemoveFoundFromGame iid 1)
         | iid <- investigators
         ]
       pure x
@@ -336,10 +336,10 @@ instance RunMessage Scenario where
         Upright -> do
           pushAll
             [ chooseOne
-                player
-                [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
-                | slotType <- allSlotTypes
-                ]
+              player
+              [ Label ("Add " <> slotName slotType <> " Slot") [AddSlot investigator slotType (Slot source [])]
+              | slotType <- allSlotTypes
+              ]
             | (investigator, player) <- investigatorPlayers
             ]
         Reversed -> do
@@ -359,12 +359,12 @@ instance RunMessage Scenario where
         Upright ->
           pushAll
             [ search
-                iid
-                source
-                iid
-                [fromDeck]
-                (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
-                (RemoveFoundFromGame iid 1)
+              iid
+              source
+              iid
+              [fromDeck]
+              (Matcher.basic $ Matcher.CardWithSubType BasicWeakness)
+              (RemoveFoundFromGame iid 1)
             | iid <- investigators
             ]
         Reversed ->
@@ -463,9 +463,9 @@ instance RunMessage Scenario where
 
           pushAll
             $ [ chooseOne player
-                  $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
-                  <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
-                  <> [Label "Do not remove trauma" []]
+                $ [Label "Remove a physical trauma" [HealTrauma iid 1 0] | hasPhysical]
+                <> [Label "Remove a mental trauma" [HealTrauma iid 0 1] | hasMental]
+                <> [Label "Do not remove trauma" []]
               | (iid, player, hasPhysical, hasMental) <- investigatorsWhoCanHealTrauma
               ]
         Reversed -> do
@@ -474,10 +474,10 @@ instance RunMessage Scenario where
           defeatedInvestigatorPlayers <- traverse (traverseToSnd getPlayer) defeatedInvestigators
           pushAll
             $ [ chooseOne
-                  player
-                  [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
-                  , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
-                  ]
+                player
+                [ Label "Suffer physical trauma" [SufferTrauma iid 1 0]
+                , Label "Suffer mental trauma" [SufferTrauma iid 0 1]
+                ]
               | (iid, player) <- defeatedInvestigatorPlayers
               ]
       pure x
@@ -629,6 +629,7 @@ allScenarios =
     , ("08501c", SomeScenario iceAndDeathPart3)
     , ("08549", SomeScenario fatalMirage)
     , ("08596", SomeScenario toTheForbiddenPeaks)
+    , ("08621", SomeScenario cityOfTheElderThings)
     , ("50011", SomeScenario returnToTheGathering)
     , ("50025", SomeScenario returnToTheMidnightMasks)
     , ("50032", SomeScenario returnToTheDevourerBelow)
@@ -698,6 +699,7 @@ scenarioEncounterSets =
     , ("08501c", EncounterSet.IceAndDeath)
     , ("08549", EncounterSet.FatalMirage)
     , ("08596", EncounterSet.ToTheForbiddenPeaks)
+    , ("08621", EncounterSet.CityOfTheElderThings)
     , ("50011", EncounterSet.ReturnToTheGathering)
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)

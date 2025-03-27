@@ -1,4 +1,3 @@
-{-# LANGUAGE ImplicitParams #-}
 {-# LANGUAGE ImpredicativeTypes #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
@@ -10,6 +9,7 @@ module Arkham.FlavorText (
   compose,
   hr,
   p,
+  cols,
 )
 where
 
@@ -34,6 +34,9 @@ p = i18nEntry
 
 compose :: [FlavorTextEntry] -> FlavorTextEntry
 compose = CompositeEntry
+
+cols :: [FlavorTextEntry] -> FlavorTextEntry
+cols = ColumnEntry
 
 hr :: FlavorTextEntry
 hr = EntrySplit

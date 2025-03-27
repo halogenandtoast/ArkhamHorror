@@ -516,6 +516,9 @@ allTreacheries =
     , SomeTreacheryCard avalanche
     , SomeTreacheryCard hangingOnTheEdge
     , SomeTreacheryCard hypothermia
+    , --- City of the Elder Things [eote]
+      SomeTreacheryCard frostbitten
+    , SomeTreacheryCard possessed
     , --- Agents of the Unknown [eote]
       SomeTreacheryCard theMadnessWithin
     , --- Creatures in the Ice [eote]

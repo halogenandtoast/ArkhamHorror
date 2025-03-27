@@ -41,6 +41,28 @@ locationWithUnrevealed cardCode unrevealedName unrevealedTraits unrevealedLocati
     , cdLevel = Nothing
     }
 
+locationWithUnrevealed_
+  :: CardCode
+  -> Name
+  -> [Trait]
+  -> Name
+  -> [Trait]
+  -> EncounterSet
+  -> CardDef
+locationWithUnrevealed_ cardCode unrevealedName unrevealedTraits name traits encounterSet =
+  ( location
+      cardCode
+      unrevealedName
+      unrevealedTraits
+      NoSymbol
+      []
+      encounterSet
+  )
+    { cdRevealedName = Just name
+    , cdRevealedCardTraits = setFromList traits
+    , cdLevel = Nothing
+    }
+
 location
   :: CardCode
   -> Name
@@ -86,6 +108,7 @@ allLocationCards =
       , alchemyLabs
       , altarToDagon
       , ancientHall
+      , ancientPlanetarium
       , anotherDimension
       , arkhamPoliceStation
       , arkhamWoodsCliffside
@@ -215,6 +238,8 @@ allLocationCards =
       , cursedShores
       , cyclopeanRuins_176a
       , cyclopeanRuins_176b
+      , cyclopeanSpires
+      , cylindricalTower
       , dancersMist
       , darkAbyss
       , darkHollow
@@ -371,6 +396,7 @@ allLocationCards =
       , hereticsGraves_172
       , hiddenCove
       , hiddenLibrary
+      , hiddenTunnelEntranceToTheDepths
       , hideousPalace
       , historicalSocietyHistoricalLibrary_133
       , historicalSocietyHistoricalLibrary_136
@@ -414,6 +440,7 @@ allLocationCards =
       , laBellaLuna
       , laboratoryOfTheGreatRace
       , labyrinthOfBones
+      , labyrinthineChamber
       , lairOfDagon
       , lairOfDagonIntoTheMaelstrom
       , lairOfHydra
@@ -442,6 +469,7 @@ allLocationCards =
       , lostMemories
       , lounge
       , mainPath
+      , mapRoom
       , marshRefinery
       , marshRefineryInTooDeep
       , masterBedroom
@@ -551,6 +579,7 @@ allLocationCards =
       , riverviewTheatre
       , rockyCrags
       , rockyLedge
+      , rooflessRampart
       , room212
       , room225
       , room245
@@ -561,6 +590,7 @@ allLocationCards =
       , ruinsOfEztli
       , ruinsOfIb
       , ruinsOfNewYork
+      , ruinousStreets
       , sacredWoods_184
       , sacredWoods_185
       , salemGaol1692
@@ -618,11 +648,13 @@ allLocationCards =
       , stepsOfYoth
       , stoneAltar
       , stoneArchways
+      , stoneBridge
       , strangeGeometry
       , streetsOfVenice
       , studentUnion
       , study
       , studyAberrantGateway
+      , submergedPassageway
       , submergedTemple
       , suiteBalcony
       , sunkenArchives
@@ -633,6 +665,7 @@ allLocationCards =
       , syzygyChamber
       , tearThroughSpace
       , tearThroughTime
+      , templeOfTheElderThings
       , templeOfTheFang
       , templeOfTheMoonLizard
       , templeOfTheUnion_177a
@@ -7715,6 +7748,123 @@ theSummit =
       mempty
       NoSymbol
       []
+      ToTheForbiddenPeaks
+
+hiddenTunnelEntranceToTheDepths :: CardDef
+hiddenTunnelEntranceToTheDepths =
+  victory 1
+    $ location
+      "08630"
+      ("Hidden Tunnel" <:> "Entrance to the Depths")
+      [City]
+      NoSymbol
+      []
+      CityOfTheElderThings
+
+ancientPlanetarium :: CardDef
+ancientPlanetarium =
+  locationWithUnrevealed_
+    "08631"
+    "City Landscape"
+    [City]
+    "Ancient Planetarium"
+    [City]
+    ToTheForbiddenPeaks
+
+stoneBridge :: CardDef
+stoneBridge =
+  quantity 3
+    $ locationWithUnrevealed_
+      "08632"
+      "City Landscape"
+      [City]
+      "Stone Bridge"
+      [City]
+      ToTheForbiddenPeaks
+
+cylindricalTower :: CardDef
+cylindricalTower =
+  locationWithUnrevealed_
+    "08633"
+    "City Landscape"
+    [City]
+    "Cylindrical Tower"
+    [City]
+    ToTheForbiddenPeaks
+
+labyrinthineChamber :: CardDef
+labyrinthineChamber =
+  quantity 2
+    $ victory 1
+    $ locationWithUnrevealed_
+      "08634"
+      "City Landscape"
+      [City]
+      "Labyrinthine Chamber"
+      [City]
+      ToTheForbiddenPeaks
+
+mapRoom :: CardDef
+mapRoom =
+  locationWithUnrevealed_
+    "08635"
+    "City Landscape"
+    [City]
+    "Map Room"
+    [City]
+    ToTheForbiddenPeaks
+
+rooflessRampart :: CardDef
+rooflessRampart =
+  locationWithUnrevealed_
+    "08636"
+    "City Landscape"
+    [City]
+    "Roofless Rampart"
+    [City]
+    ToTheForbiddenPeaks
+
+ruinousStreets :: CardDef
+ruinousStreets =
+  quantity 2
+    $ locationWithUnrevealed_
+      "08637"
+      "City Landscape"
+      [City]
+      "Ruinous Streets"
+      [City]
+      ToTheForbiddenPeaks
+
+cyclopeanSpires :: CardDef
+cyclopeanSpires =
+  locationWithUnrevealed_
+    "08638"
+    "City Landscape"
+    [City]
+    "Cyclopean Spires"
+    [City]
+    ToTheForbiddenPeaks
+
+submergedPassageway :: CardDef
+submergedPassageway =
+  quantity 2
+    $ locationWithUnrevealed_
+      "08639"
+      "City Landscape"
+      [City]
+      "Submerged Passageway"
+      [City]
+      ToTheForbiddenPeaks
+
+templeOfTheElderThings :: CardDef
+templeOfTheElderThings =
+  quantity 2
+    $ locationWithUnrevealed_
+      "08640"
+      "City Landscape"
+      [City]
+      "Temple of the Elder Things"
+      [City]
       ToTheForbiddenPeaks
 
 studyAberrantGateway :: CardDef

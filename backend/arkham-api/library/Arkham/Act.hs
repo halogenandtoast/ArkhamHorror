@@ -306,6 +306,13 @@ allActs =
     , SomeActCard shadowOfThePastV3
     , --- To the Forbidden Peaks [eote]
       SomeActCard ascendTheMountain
+    , --- City of the Elder Things [eote]
+      SomeActCard sprawlingCityV1
+    , SomeActCard sprawlingCityV2
+    , SomeActCard sprawlingCityV3
+    , SomeActCard pursuitOfTheUnknownV1
+    , SomeActCard pursuitOfTheUnknownV2
+    , SomeActCard pursuitOfTheUnknownV3
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

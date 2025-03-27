@@ -25,7 +25,6 @@ import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.Scenario.Types (metaL)
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.InTooDeep.Helpers hiding (setBarriers)
 import Arkham.Scenarios.InTooDeep.Helpers qualified as Helpers

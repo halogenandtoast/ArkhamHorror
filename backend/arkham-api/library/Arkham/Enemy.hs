@@ -448,6 +448,10 @@ allEnemies =
     , -- To the Forbidden Peaks [eote]
       SomeEnemyCard terrorOfTheStarsGuardianOfForbiddenPeaks
     , SomeEnemyCard constrictingElderThing
+    , -- City of the Elder Things [eote]
+      SomeEnemyCard terrorOfTheStarsBaneOfTheElderThings
+    , SomeEnemyCard benignElderThing
+    , SomeEnemyCard reawakenedElderThing
     , -- Agents of the Unknown [eote]
       SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]

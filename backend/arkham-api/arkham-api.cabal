@@ -1576,6 +1576,7 @@ library
       Arkham.Enemy.Cards.Basilisk
       Arkham.Enemy.Cards.BeastOfAldebaran
       Arkham.Enemy.Cards.BeingsOfIb
+      Arkham.Enemy.Cards.BenignElderThing
       Arkham.Enemy.Cards.BiancaDieKatz
       Arkham.Enemy.Cards.BillyCooper
       Arkham.Enemy.Cards.BoaConstrictor
@@ -1780,6 +1781,7 @@ library
       Arkham.Enemy.Cards.RavagerFromTheDeep
       Arkham.Enemy.Cards.RavenousGhoul
       Arkham.Enemy.Cards.ReanimatedDead
+      Arkham.Enemy.Cards.ReawakenedElderThing
       Arkham.Enemy.Cards.RelentlessDarkYoung
       Arkham.Enemy.Cards.RiftSeeker
       Arkham.Enemy.Cards.RoachSwarm
@@ -1827,6 +1829,7 @@ library
       Arkham.Enemy.Cards.TakadaHirokoAeroplaneMechanic
       Arkham.Enemy.Cards.TemporalDevourer
       Arkham.Enemy.Cards.TenebrousNightgaunt
+      Arkham.Enemy.Cards.TerrorOfTheStarsBaneOfTheElderThings
       Arkham.Enemy.Cards.TerrorOfTheStarsBringerOfIceAndDeath
       Arkham.Enemy.Cards.TerrorOfTheStarsGuardianOfForbiddenPeaks
       Arkham.Enemy.Cards.TheAmalgam

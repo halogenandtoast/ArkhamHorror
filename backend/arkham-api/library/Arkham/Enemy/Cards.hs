@@ -115,6 +115,7 @@ allEncounterEnemyCards =
       , basilisk
       , beastOfAldebaran
       , beingsOfIb
+      , benignElderThing
       , billyCooper
       , boaConstrictor
       , bogGator
@@ -308,6 +309,7 @@ allEncounterEnemyCards =
       , pursuingMotorcar
       , ravagerFromTheDeep
       , ravenousGhoul
+      , reawakenedElderThing
       , relentlessDarkYoung
       , riftSeeker
       , roachSwarm
@@ -349,6 +351,7 @@ allEncounterEnemyCards =
       , takadaHirokoAeroplaneMechanic
       , temporalDevourer
       , tenebrousNightgaunt
+      , terrorOfTheStarsBaneOfTheElderThings
       , terrorOfTheStarsBringerOfIceAndDeath
       , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
@@ -2574,6 +2577,29 @@ terrorOfTheStarsGuardianOfForbiddenPeaks =
 constrictingElderThing :: CardDef
 constrictingElderThing =
   (enemy "08609" "Constricting Elder Thing" ToTheForbiddenPeaks 3)
+    { cdCardTraits = setFromList [Monster, ElderThing]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+terrorOfTheStarsBaneOfTheElderThings :: CardDef
+terrorOfTheStarsBaneOfTheElderThings =
+  (enemy "08641" ("Terror of the Stars" <:> "Bane of the Elder Things") CityOfTheElderThings 1)
+    { cdCardTraits = setFromList [Monster, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    , cdUnique = True
+    }
+
+benignElderThing :: CardDef
+benignElderThing =
+  (enemy "08642" "Benign Elder Thing" CityOfTheElderThings 3)
+    { cdCardTraits = setFromList [Monster, ElderThing]
+    }
+
+reawakenedElderThing :: CardDef
+reawakenedElderThing =
+  ( enemy "08643" "Reawakened48;46;178;1656;284848;46;178;1656;2848 Elder Thing" CityOfTheElderThings 3
+  )
     { cdCardTraits = setFromList [Monster, ElderThing]
     , cdKeywords = setFromList [Keyword.Hunter]
     }

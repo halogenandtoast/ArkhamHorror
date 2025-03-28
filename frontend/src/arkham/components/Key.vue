@@ -3,17 +3,15 @@
 import {computed, ref} from 'vue'
 import {imgsrc} from '@/arkham/helpers'
 import { type ArkhamKey } from '@/arkham/types/Key'
+import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 
 const props = defineProps<{
   name: ArkhamKey
 }>()
 
 const keyToImage = (k: ArkhamKey): string => {
-  switch (k) {
-    case "SkullKey": return imgsrc("ct_skull.png")
-    case "CultistKey": return imgsrc("ct_cultist.png")
-    case "TabletKey": return imgsrc("ct_tablet.png")
-    case "ElderThingKey": return imgsrc("ct_elderthing.png")
+  switch (k.tag) {
+    case "TokenKey": return chaosTokenImage(k.contents.face)
     case "BlueKey": return imgsrc("keys/blue-key.jpg")
     case "GreenKey": return imgsrc("keys/green-key.jpg")
     case "RedKey": return imgsrc("keys/red-key.jpg")

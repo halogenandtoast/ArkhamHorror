@@ -5,7 +5,6 @@ import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheCircleUndone.Key
-import Arkham.Key
 import Arkham.Matcher
 
 newtype TheFourKeys = TheFourKeys ActAttrs
@@ -20,19 +19,18 @@ theFourKeys = act (3, A) TheFourKeys Cards.theFourKeys Nothing
 instance HasAbilities TheFourKeys where
   getAbilities (TheFourKeys attrs) =
     [ restricted
-        attrs
-        1
-        ( fold
-            $ exists (HasMatchingAsset $ assetIs Assets.puzzleBox)
-            : [ exists
-                  ( at_ (LocationWithInvestigator (HasMatchingAsset $ assetIs Assets.puzzleBox))
-                      <> InvestigatorWithKey k
-                  )
-              | k <- [SkullKey, CultistKey, TabletKey, ElderThingKey]
-              ]
-        )
-        $ Objective
-        $ forced AnyWindow
+      attrs
+      1
+      ( fold
+          $ exists (HasMatchingAsset $ assetIs Assets.puzzleBox)
+          : [ exists
+              $ at_ (LocationWithInvestigator (HasMatchingAsset $ assetIs Assets.puzzleBox))
+              <> InvestigatorWithTokenKey k
+            | k <- [#skull, #cultist, #tablet, #elderthing]
+            ]
+      )
+      $ Objective
+      $ forced AnyWindow
     | onSide A attrs
     ]
 

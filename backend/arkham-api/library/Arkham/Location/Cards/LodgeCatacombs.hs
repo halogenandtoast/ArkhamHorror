@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
-import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -20,7 +19,7 @@ instance HasModifiersFor LodgeCatacombs where
   getModifiersFor (LodgeCatacombs a) = whenUnrevealed a do
     modifySelect
       a
-      (not_ $ mapOneOf InvestigatorWithKey [ElderThingKey, SkullKey, CultistKey, TabletKey])
+      (not_ $ mapOneOf InvestigatorWithTokenKey [#elderthing, #skull, #cultist, #tablet])
       [CannotEnter a.id]
 
 instance HasAbilities LodgeCatacombs where

@@ -6,6 +6,7 @@ module Arkham.Matcher.Investigator where
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types
 import Arkham.ClassSymbol
 import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Damage
@@ -149,6 +150,7 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
+  | InvestigatorWithTokenKey ChaosTokenFace
   | InvestigatorWithAnyKey
   | InvestigatorWithBondedCard CardMatcher
   | InvestigatorIfThen InvestigatorMatcher InvestigatorMatcher InvestigatorMatcher

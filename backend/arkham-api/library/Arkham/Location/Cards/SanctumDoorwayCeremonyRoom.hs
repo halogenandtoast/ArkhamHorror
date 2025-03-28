@@ -7,7 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.GameValue
-import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Runner
 import Arkham.Matcher
@@ -37,7 +36,7 @@ instance RunMessage SanctumDoorwayCeremonyRoom where
   runMessage msg l@(SanctumDoorwayCeremonyRoom attrs) = case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
       cancelEffect <-
-        selectAny $ investigatorAt (toId attrs) <> InvestigatorWithKey SkullKey
+        selectAny $ investigatorAt (toId attrs) <> InvestigatorWithTokenKey #skull
       unless cancelEffect $ do
         investigators <- select $ investigatorAt $ toId attrs
         assets <- select $ assetAt (toId attrs) <> AssetWithSanity

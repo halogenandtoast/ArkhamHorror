@@ -112,6 +112,7 @@ import Arkham.Investigator.Types (
   investigatorSanityDamage,
  )
 import Arkham.Investigator.Types qualified as Investigator
+import Arkham.Key (ArkhamKey (..))
 import Arkham.Keyword (_Swarming)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location
@@ -977,9 +978,12 @@ getInvestigatorsMatching matcher = do
             <$> andM [pure $ #resource `elem` allowed, canDo iid #resource, getCanAfford (toAttrs a) [#resource]]
             <*> andM [pure $ #draw `elem` allowed, canDo iid #draw, getCanAfford (toAttrs a) [#draw]]
         playOk <- andM [pure $ #play `elem` allowed, canDo iid #play]
-        playableCards <- if playOk
-          then filterCards (not_ FastCard) <$> getPlayableCards (toAttrs a) iid (UnpaidCost NoAction) (Window.defaultWindows iid)
-          else pure []
+        playableCards <-
+          if playOk
+            then
+              filterCards (not_ FastCard)
+                <$> getPlayableCards (toAttrs a) iid (UnpaidCost NoAction) (Window.defaultWindows iid)
+            else pure []
 
         pure $ notNull actions || notNull playableCards || resourceOk || drawOk
     InvestigatorMatches xs -> foldM go as xs
@@ -1083,6 +1087,10 @@ getInvestigatorsMatching matcher = do
       (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    InvestigatorWithTokenKey face -> flip filterM as $ \i ->
+      pure $ flip any (investigatorKeys (toAttrs i)) \case
+        TokenKey k -> k.face == face
+        _ -> False
     InvestigatorWithAnyKey -> flip filterM as $ \i ->
       pure $ notNull $ investigatorKeys (toAttrs i)
     DistanceFromRoundStart valueMatcher -> flip filterM as $ \i -> do
@@ -1691,7 +1699,8 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just v ->
           filterM
-            (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v)))
+            ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
+            )
             ls
     LocationWithMostInvestigators locationMatcher -> do
       matches' <- go ls locationMatcher
@@ -3086,7 +3095,7 @@ enemyMatcherFilter es matcher' = case matcher' of
           window = mkWindow #when Window.NonFast
           overrideFunc = case nonEmpty overrides of
             Nothing -> id
-            Just os-> overrideAbilityCriteria $ combineOverrides os
+            Just os -> overrideAbilityCriteria $ combineOverrides os
         excluded <- elem (toId enemy) <$> select (oneOf $ EnemyWithModifier CannotBeAttacked : enemyFilters)
         sourceIsExcluded <- flip anyM enemyModifiers \case
           CanOnlyBeAttackedByAbilityOn cardCodes -> case source.asset of
@@ -3755,24 +3764,28 @@ instance Projection Investigator where
       InvestigatorCombat -> skillValueFor #combat Nothing attrs.id
       InvestigatorAgility -> skillValueFor #agility Nothing attrs.id
       InvestigatorBaseWillpower -> case investigatorForm of
-        TransfiguredForm inner -> pure $
-          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
-          in (toAttrs iinvestigator).willpower
+        TransfiguredForm inner ->
+          pure
+            $ let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+               in (toAttrs iinvestigator).willpower
         _ -> pure investigatorWillpower
       InvestigatorBaseIntellect -> case investigatorForm of
-        TransfiguredForm inner -> pure $
-          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
-          in (toAttrs iinvestigator).intellect
+        TransfiguredForm inner ->
+          pure
+            $ let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+               in (toAttrs iinvestigator).intellect
         _ -> pure investigatorIntellect
       InvestigatorBaseCombat -> case investigatorForm of
-        TransfiguredForm inner -> pure $
-          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
-          in (toAttrs iinvestigator).combat
+        TransfiguredForm inner ->
+          pure
+            $ let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+               in (toAttrs iinvestigator).combat
         _ -> pure investigatorCombat
       InvestigatorBaseAgility -> case investigatorForm of
-        TransfiguredForm inner -> pure $
-          let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
-          in (toAttrs iinvestigator).agility
+        TransfiguredForm inner ->
+          pure
+            $ let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+               in (toAttrs iinvestigator).agility
         _ -> pure investigatorAgility
       InvestigatorHorror -> pure $ investigatorSanityDamage attrs
       InvestigatorDamage -> pure $ investigatorHealthDamage attrs
@@ -4176,7 +4189,7 @@ instance Query ExtendedCardMatcher where
         mTurnInvestigator <- selectOne TurnInvestigator
         active <- selectJust ActiveInvestigator
         let iid = fromMaybe active mTurnInvestigator
-        windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
+        windows' <- maybe (Window.defaultWindows iid) concat . gameWindowStack <$> getGame
         go cs matcher'
           >>= filterM
             (getIsPlayableWithResources active GameSource 1000 (Cost.UnpaidCost actionStatus) windows')
@@ -4184,7 +4197,7 @@ instance Query ExtendedCardMatcher where
         mTurnInvestigator <- selectOne TurnInvestigator
         active <- selectJust ActiveInvestigator
         let iid = fromMaybe active mTurnInvestigator
-        windows' <- maybe (Window.defaultWindows iid) concat  . gameWindowStack <$> getGame
+        windows' <- maybe (Window.defaultWindows iid) concat . gameWindowStack <$> getGame
         go cs matcher' >>= filterM (getIsPlayable active GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator
@@ -4255,7 +4268,8 @@ instance Query ExtendedCardMatcher where
         skillIcons <- getSkillTestMatchingSkillIcons
         pure
           $ filter
-            (\c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c)))
+            ( \c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c))
+            )
             cs
       CardWithCopyInHand who -> do
         flip filterM cs \c -> do
@@ -4427,7 +4441,8 @@ markDistancesWithInclusion checkBarriers initialLocation target canInclude extra
     locationIds <- filterM target (keys map')
     pure
       $ foldr
-        (\locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap)
+        ( \locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap
+        )
         mempty
         locationIds
   getDistance'' map' lid = length $ unwindPath map' [lid]

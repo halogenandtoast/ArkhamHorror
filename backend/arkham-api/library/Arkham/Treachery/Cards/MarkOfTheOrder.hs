@@ -7,7 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.Key
 import Arkham.Matcher
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Runner
@@ -22,10 +21,10 @@ markOfTheOrder = treachery MarkOfTheOrder Cards.markOfTheOrder
 instance RunMessage MarkOfTheOrder where
   runMessage msg t@(MarkOfTheOrder attrs) = case msg of
     Revelation _ (isSource attrs -> True) -> do
-      skullInvestigator <- selectOne $ InvestigatorWithKey SkullKey
-      cultistInvestigator <- selectOne $ InvestigatorWithKey CultistKey
-      tabletInvestigator <- selectOne $ InvestigatorWithKey TabletKey
-      elderThingInvestigator <- selectOne $ InvestigatorWithKey ElderThingKey
+      skullInvestigator <- selectOne $ InvestigatorWithTokenKey #skull
+      cultistInvestigator <- selectOne $ InvestigatorWithTokenKey #cultist
+      tabletInvestigator <- selectOne $ InvestigatorWithTokenKey #tablet
+      elderThingInvestigator <- selectOne $ InvestigatorWithTokenKey #elderthing
 
       for_ elderThingInvestigator $ \i ->
         push $ LoseResources i (toSource attrs) 3

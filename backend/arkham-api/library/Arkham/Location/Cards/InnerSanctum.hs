@@ -3,7 +3,6 @@ module Arkham.Location.Cards.InnerSanctum (innerSanctum) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -18,7 +17,7 @@ innerSanctum = location InnerSanctum Cards.innerSanctum 4 (PerPlayer 1)
 
 instance HasModifiersFor InnerSanctum where
   getModifiersFor (InnerSanctum attrs) = whenUnrevealed attrs do
-    modifySelect attrs (not_ $ InvestigatorWithKey CultistKey) [CannotEnter (toId attrs)]
+    modifySelect attrs (not_ $ InvestigatorWithTokenKey #cultist) [CannotEnter (toId attrs)]
 
 instance HasAbilities InnerSanctum where
   getAbilities (InnerSanctum attrs) =

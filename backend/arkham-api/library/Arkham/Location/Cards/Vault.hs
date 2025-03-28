@@ -3,7 +3,6 @@ module Arkham.Location.Cards.Vault (vault) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Key
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -18,7 +17,7 @@ vault = location Vault Cards.vault 4 (PerPlayer 1)
 
 instance HasModifiersFor Vault where
   getModifiersFor (Vault attrs) = whenUnrevealed attrs do
-    modifySelect attrs (not_ $ InvestigatorWithKey ElderThingKey) [CannotEnter (toId attrs)]
+    modifySelect attrs (not_ $ InvestigatorWithTokenKey #elderthing) [CannotEnter (toId attrs)]
 
 instance HasAbilities Vault where
   getAbilities (Vault a) =

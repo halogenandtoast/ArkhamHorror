@@ -8,6 +8,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card.CardDef
+import Arkham.Key
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.EncounterSet qualified as Set
 import Arkham.FlavorText
@@ -61,6 +62,42 @@ cityLandscapes = [ Locations.ancientPlanetarium
         , Locations.templeOfTheElderThings
         , Locations.templeOfTheElderThings
         ]
+
+allKeys :: MonadRandom m => m [ArkhamKey]
+allKeys = do
+  skull1 <- toKey <$> createChaosToken #skull
+  skull2 <- toKey <$> createChaosToken #skull
+  cultist1 <- toKey <$> createChaosToken #cultist
+  cultist2 <- toKey <$> createChaosToken #cultist
+  tablet1 <- toKey <$> createChaosToken #tablet
+  tablet2 <- toKey <$> createChaosToken #tablet
+  elderThing1 <- toKey <$> createChaosToken #elderthing
+  elderThing2 <- toKey <$> createChaosToken #elderthing
+  zero1 <- toKey <$> createChaosToken #"0"
+  zero2 <- toKey <$> createChaosToken #"0"
+  minusOne1 <- toKey <$> createChaosToken #"-1"
+  minusOne2 <- toKey <$> createChaosToken #"-1"
+  minusTwo1 <- toKey <$> createChaosToken #"-2"
+  minusTwo2 <- toKey <$> createChaosToken #"-2"
+  minusThree1 <- toKey <$> createChaosToken #"-3"
+  minusThree2 <- toKey <$> createChaosToken #"-3"
+  shuffleM [ skull1
+       , skull2
+       , cultist1
+       , cultist2
+       , tablet1
+       , tablet2
+       , elderThing1
+       , elderThing2
+       , zero1
+       , zero2
+       , minusOne1
+       , minusOne2
+       , minusTwo1
+       , minusTwo2
+       , minusThree1
+       , minusThree2
+       ]
 
 instance RunMessage CityOfTheElderThings where
   runMessage msg s@(CityOfTheElderThings attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -204,6 +241,8 @@ instance RunMessage CityOfTheElderThings where
       chooseTargetM lead (mapMaybe (`Map.lookup` locationMap) [Pos 0 2, Pos 1 2, Pos 2 0, Pos 2 (-1), Pos 0 (-2), Pos (-1) (-2), Pos (-2) 0, Pos (-2) 1]) \lid -> do
         reveal lid
         moveAllTo attrs lid
+      tokens <- allKeys
+      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
@@ -230,6 +269,8 @@ instance RunMessage CityOfTheElderThings where
       locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
         (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
+      tokens <- allKeys
+      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.CreaturesInTheIce
@@ -257,4 +298,6 @@ instance RunMessage CityOfTheElderThings where
       locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
         (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
+      tokens <- allKeys
+      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

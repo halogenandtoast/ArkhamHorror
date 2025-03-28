@@ -173,7 +173,12 @@ instance RunMessage ForTheGreaterGood where
         , Enemies.nathanWickMasterOfInitiation
         ]
 
-      setAsideKeys [SkullKey, CultistKey, TabletKey, ElderThingKey]
+      skullKey <- toKey <$> createChaosToken #skull
+      cultistKey <- toKey <$> createChaosToken #cultist
+      tabletKey <- toKey <$> createChaosToken #tablet
+      elderThingKey <- toKey <$> createChaosToken #elderthing
+
+      setAsideKeys [skullKey, cultistKey, tabletKey, elderThingKey]
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
       pure s
@@ -206,10 +211,10 @@ instance RunMessage ForTheGreaterGood where
               chooseOrRunOne
                 iid
                 [ targetLabel
-                    cultist
-                    [ RemoveAllDoom (toSource attrs) (toTarget cultist)
-                    , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
-                    ]
+                  cultist
+                  [ RemoveAllDoom (toSource attrs) (toTarget cultist)
+                  , PlaceTokens (ChaosTokenEffectSource ElderThing) (toTarget agenda) Doom maxDoom
+                  ]
                 | cultist <- maxDoomCultists
                 ]
             else drawAnotherChaosToken iid

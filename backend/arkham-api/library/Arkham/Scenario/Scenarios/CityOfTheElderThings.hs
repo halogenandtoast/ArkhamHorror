@@ -4,6 +4,7 @@ import Data.Map.Strict qualified as Map
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
@@ -242,7 +243,16 @@ instance RunMessage CityOfTheElderThings where
         reveal lid
         moveAllTo attrs lid
       tokens <- allKeys
-      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      addChaosToken #elderthing
+      removeEvery [Enemies.benignElderThing, Treacheries.frostbitten, Treacheries.possessed]
+      setAside [Enemies.terrorOfTheStarsBaneOfTheElderThings]
+
+      case attrs.difficulty of
+        Expert -> placeDoomOnAgenda 2
+        Hard -> placeDoomOnAgenda 1
+        _ -> pure ()
+      addTekeliliDeck
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
@@ -270,7 +280,15 @@ instance RunMessage CityOfTheElderThings where
         (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
       tokens <- allKeys
-      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      addChaosToken #elderthing
+      removeEvery [Enemies.terrorOfTheStarsBaneOfTheElderThings, Enemies.benignElderThing, Treacheries.frostbitten, Treacheries.possessed]
+
+      case attrs.difficulty of
+        Expert -> placeDoomOnAgenda 2
+        Hard -> placeDoomOnAgenda 1
+        _ -> pure ()
+      addTekeliliDeck
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.CreaturesInTheIce
@@ -299,5 +317,12 @@ instance RunMessage CityOfTheElderThings where
         (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
       tokens <- allKeys
-      lift $ for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
+      removeEvery [Enemies.terrorOfTheStarsBaneOfTheElderThings, Enemies.reawakenedElderThing, Treacheries.frostbitten, Treacheries.possessed]
+
+      case attrs.difficulty of
+        Expert -> placeDoomOnAgenda 2
+        Hard -> placeDoomOnAgenda 1
+        _ -> pure ()
+      addTekeliliDeck
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

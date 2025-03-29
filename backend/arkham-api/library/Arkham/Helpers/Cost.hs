@@ -30,6 +30,7 @@ import Arkham.Helpers.Target
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
 import Arkham.Prelude
@@ -72,6 +73,12 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     n <- getGameValue x
     selectAny $ matcher <> Matcher.EnemyWithDamage (Matcher.atLeast n)
   SpendKeyCost k -> fieldMap InvestigatorKeys (elem k) iid
+  SpendTokenKeyCost n face -> do
+    (>= n)
+      . count ((== face) . (.face))
+      . mapMaybe (preview _TokenKey)
+      . toList
+      <$> field InvestigatorKeys iid
   PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
   GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
   CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c
@@ -107,8 +114,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                 <> Matcher.InvestigatorAt Matcher.Anywhere
-                 <> Matcher.InvestigatorWithAnyClues
+                <> Matcher.InvestigatorAt Matcher.Anywhere
+                <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -120,8 +127,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                 <> Matcher.InvestigatorAt Matcher.Anywhere
-                 <> Matcher.InvestigatorWithAnyClues
+                <> Matcher.InvestigatorAt Matcher.Anywhere
+                <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -462,7 +469,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   SupplyCost locationMatcher supply ->
     iid
       <=~> ( Matcher.InvestigatorWithSupply supply
-               <> Matcher.InvestigatorAt locationMatcher
+              <> Matcher.InvestigatorAt locationMatcher
            )
   ResolveEachHauntedAbility _ -> pure True
 

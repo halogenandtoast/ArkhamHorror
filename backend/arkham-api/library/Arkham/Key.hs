@@ -41,46 +41,49 @@ keyName = \case
   WhiteKey -> "White"
   UnrevealedKey _ -> "Unrevealed"
 
-[d|
-  instance FromJSON ArkhamKey where
-    parseJSON o = flip (withObject "ArkhamKey") o \v -> do
-      tag :: Text <- v .: "tag"
-      case tag of
-        "SkullKey" ->
-          pure
-            $ TokenKey
-            $ ChaosToken
-              { chaosTokenId = coerce $ fromWords64 6128981282234515924 12039885860129472512
-              , chaosTokenFace = #skull
-              , chaosTokenRevealedBy = Nothing
-              , chaosTokenCancelled = False
-              }
-        "CultistKey" ->
-          pure
-            $ TokenKey
-            $ ChaosToken
-              { chaosTokenId = coerce $ fromWords64 9237114041627526267 13667317789959208286
-              , chaosTokenFace = #cultist
-              , chaosTokenRevealedBy = Nothing
-              , chaosTokenCancelled = False
-              }
-        "TabletKey" ->
-          pure
-            $ TokenKey
-            $ ChaosToken
-              { chaosTokenId = coerce $ fromWords64 17367115229369288362 9986755224281741872
-              , chaosTokenFace = #tablet
-              , chaosTokenRevealedBy = Nothing
-              , chaosTokenCancelled = False
-              }
-        "ElderThingKey" ->
-          pure
-            $ TokenKey
-            $ ChaosToken
-              { chaosTokenId = coerce $ fromWords64 17260509442849393188 12601461981560257361
-              , chaosTokenFace = #elderthing
-              , chaosTokenRevealedBy = Nothing
-              , chaosTokenCancelled = False
-              }
-        _ -> $(mkParseJSON defaultOptions ''ArkhamKey) o
-  |]
+mconcat
+  [ makePrisms ''ArkhamKey
+  , [d|
+      instance FromJSON ArkhamKey where
+        parseJSON o = flip (withObject "ArkhamKey") o \v -> do
+          tag :: Text <- v .: "tag"
+          case tag of
+            "SkullKey" ->
+              pure
+                $ TokenKey
+                $ ChaosToken
+                  { chaosTokenId = coerce $ fromWords64 6128981282234515924 12039885860129472512
+                  , chaosTokenFace = #skull
+                  , chaosTokenRevealedBy = Nothing
+                  , chaosTokenCancelled = False
+                  }
+            "CultistKey" ->
+              pure
+                $ TokenKey
+                $ ChaosToken
+                  { chaosTokenId = coerce $ fromWords64 9237114041627526267 13667317789959208286
+                  , chaosTokenFace = #cultist
+                  , chaosTokenRevealedBy = Nothing
+                  , chaosTokenCancelled = False
+                  }
+            "TabletKey" ->
+              pure
+                $ TokenKey
+                $ ChaosToken
+                  { chaosTokenId = coerce $ fromWords64 17367115229369288362 9986755224281741872
+                  , chaosTokenFace = #tablet
+                  , chaosTokenRevealedBy = Nothing
+                  , chaosTokenCancelled = False
+                  }
+            "ElderThingKey" ->
+              pure
+                $ TokenKey
+                $ ChaosToken
+                  { chaosTokenId = coerce $ fromWords64 17260509442849393188 12601461981560257361
+                  , chaosTokenFace = #elderthing
+                  , chaosTokenRevealedBy = Nothing
+                  , chaosTokenCancelled = False
+                  }
+            _ -> $(mkParseJSON defaultOptions ''ArkhamKey) o
+      |]
+  ]

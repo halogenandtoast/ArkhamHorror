@@ -15,7 +15,7 @@ import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
-import Arkham.ChaosToken.Types (ChaosToken)
+import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
 import Arkham.Classes.Entity
 import {-# SOURCE #-} Arkham.Cost.FieldCost
 import Arkham.Customization
@@ -129,6 +129,7 @@ data Cost
   | OrCost [Cost]
   | PlaceKeyCost Target ArkhamKey
   | SpendKeyCost ArkhamKey
+  | SpendTokenKeyCost Int ChaosTokenFace
   | GroupSpendKeyCost ArkhamKey LocationMatcher
   | DamageCost Source Target Int
   | DirectDamageCost Source InvestigatorMatcher Int
@@ -239,6 +240,7 @@ displayCostType = \case
   ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> "Shuffle top " <> tshow n <> " cards of the " <> toDisplay deckKey <> " deck into your deck"
   RemoveEnemyDamageCost _n _k -> "Remove damage from enemy"
   SpendKeyCost k -> "Spend " <> keyName k <> " Key"
+  SpendTokenKeyCost n tkn -> "Spend " <> tshow n <> " " <> tshow tkn <> " " <> pluralize n "Key"
   PlaceKeyCost _ k -> "Place " <> keyName k <> " Key"
   GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
@@ -612,4 +614,3 @@ instance HasField "resources" (Maybe Payment) Int where
 
 instance HasField "investigatorDamage" Payment Int where
   getField = totalInvestigatorDamagePayment
-

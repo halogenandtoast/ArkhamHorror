@@ -149,6 +149,8 @@ data LocationMatcher
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
   | LocationInRow Int
+  | LocationInRowOf LocationMatcher
+  | LocationInColumnOf LocationMatcher
   | LocationInPosition Pos
   | LocationWhenCriteria Criterion
   | -- | Must be replaced

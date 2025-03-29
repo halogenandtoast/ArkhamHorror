@@ -129,6 +129,8 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
+    Matcher.LocationInRowOf {} -> locationId <=~> matcher
+    Matcher.LocationInColumnOf {} -> locationId <=~> matcher
     Matcher.ConnectedToSetAsideLocation {} -> locationId <=~> matcher
     Matcher.UnbarricadedConnectedFrom {} -> locationId <=~> matcher
     Matcher.LocationWithCardsUnderneath {} -> locationId <=~> matcher

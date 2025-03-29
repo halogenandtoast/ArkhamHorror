@@ -55,6 +55,7 @@ import Arkham.Helpers.Window
 import Arkham.Id
 import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (
   AssetCard,
@@ -203,6 +204,14 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     SpendKeyCost key -> do
       push $ PlaceKey ScenarioTarget key
+      pure c
+    SpendTokenKeyCost n face -> do
+      ks <-
+        take n
+          . filter (maybe False ((== face) . (.face)) . preview _TokenKey)
+          . toList
+          <$> field InvestigatorKeys iid
+      for_ ks (push . PlaceKey ScenarioTarget)
       pure c
     PlaceKeyCost target key -> do
       push $ PlaceKey target key
@@ -659,8 +668,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           canParallelRex <-
             iid
               <=~> ( InvestigatorIs "90078"
-                       <> InvestigatorAt Anywhere
-                       <> InvestigatorWithAnyClues
+                      <> InvestigatorAt Anywhere
+                      <> InvestigatorWithAnyClues
                    )
           if canParallelRex
             then do
@@ -832,8 +841,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                       $ reduceResourceCost nested
                   ]
                 : [ Label
-                      ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
-                      [PayCost acId iid skipAdditionalCosts nested]
+                    ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
+                    [PayCost acId iid skipAdditionalCosts nested]
                   | canAffordNested
                   ]
             else push $ PayCost acId iid skipAdditionalCosts nested
@@ -1026,8 +1035,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           x
           [ targetLabel
-              card
-              [pay (DiscardCardCost $ PlayerCard card)]
+            card
+            [pay (DiscardCardCost $ PlayerCard card)]
           | card <- cards
           ]
       pure c
@@ -1203,16 +1212,16 @@ instance RunMessage ActiveCost where
             <> mEffect
             <> [ wouldPayWindowMsg
                , Would
-                   batchId
-                   $ [PayCosts acId]
-                   <> [ CheckAttackOfOpportunity iid False
-                      | not modifiersPreventAttackOfOpportunity
-                          && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                          && isNothing cardDef.fastWindow
-                          && all (`notElem` nonAttackOfOpportunityActions) actions
-                          && (totalActionCost c.costs > 0)
-                      ]
-                   <> [PayCostFinished acId]
+                  batchId
+                  $ [PayCosts acId]
+                  <> [ CheckAttackOfOpportunity iid False
+                     | not modifiersPreventAttackOfOpportunity
+                        && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                        && isNothing cardDef.fastWindow
+                        && all (`notElem` nonAttackOfOpportunityActions) actions
+                        && (totalActionCost c.costs > 0)
+                     ]
+                  <> [PayCostFinished acId]
                ]
           pure c
         ForAbility a@Ability {..} -> do

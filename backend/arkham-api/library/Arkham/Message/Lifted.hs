@@ -31,6 +31,7 @@ import Arkham.Discover qualified as Msg
 import Arkham.Draw.Types
 import Arkham.Effect.Types (EffectBuilder (effectBuilderEffectId), Field (..))
 import Arkham.EffectMetadata (EffectMetadata)
+import Arkham.EncounterSet
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Helpers qualified as Msg
 import Arkham.Enemy.Types (Field (..))
@@ -789,6 +790,11 @@ advanceActDeck attrs = push $ AdvanceActDeck (actDeckId attrs) (toSource attrs)
 
 advanceToAct :: ReverseQueue m => ActAttrs -> CardDef -> Act.ActSide -> m ()
 advanceToAct attrs nextAct actSide = push $ AdvanceToAct (actDeckId attrs) nextAct actSide (toSource attrs)
+
+shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
+shuffleSetAsideEncounterSet eset = do
+  cards <- getSetAsideCardsMatching (fromSets [eset])
+  push $ ShuffleCardsIntoDeck Deck.EncounterDeck cards
 
 shuffleEncounterDiscardBackIn :: ReverseQueue m => m ()
 shuffleEncounterDiscardBackIn = push ShuffleEncounterDiscardBackIn

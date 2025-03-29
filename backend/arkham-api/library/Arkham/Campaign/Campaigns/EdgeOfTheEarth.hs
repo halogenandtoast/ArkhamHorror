@@ -44,7 +44,7 @@ edgeOfTheEarth difficulty =
 {- FOURMOLU_ENABLE -}
 
 instance IsCampaign EdgeOfTheEarth where
-  nextStep a = case (campaignStep (toAttrs a)) of
+  nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> Just IceAndDeathPart1
     IceAndDeathPart1 -> Just (UpgradeDeckStep $ CheckpointStep 1)
     IceAndDeathPart2 -> Just (UpgradeDeckStep $ CheckpointStep 2)

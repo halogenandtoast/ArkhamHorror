@@ -77,6 +77,10 @@ data ScenarioLogKey
     UnlockedTheEntranceToTheCaves
   | UnlockedTheThirdFloor
   | UnlockedTheFinalDepths
+  | -- | City of the ElderThings
+    TheTeamStudiedTheHistoryOfTheElderThings
+  | TheTeamDiscernedTheOriginOfTheShoggoths
+  | TheTeamDiscoveredAHiddenPower
   | -- | Murder at the Excelsior Hotel
     CleanedUpTheBlood
   | HidTheBody

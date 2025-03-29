@@ -1,28 +1,33 @@
 module Arkham.Scenario.Scenarios.CityOfTheElderThings (cityOfTheElderThings) where
 
-import Data.Map.Strict qualified as Map
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card.CardDef
-import Arkham.Key
-import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Query
+import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Text
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
+import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CityOfTheElderThings.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
+import Data.Map.Strict qualified as Map
 
 newtype CityOfTheElderThings = CityOfTheElderThings ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -39,30 +44,37 @@ cityOfTheElderThings difficulty =
 
 instance HasChaosTokenValue CityOfTheElderThings where
   getChaosTokenValue iid tokenFace (CityOfTheElderThings attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull ->
+      pure
+        $ ChaosTokenValue ElderSign
+        $ CalculatedModifier
+        $ if isEasyStandard attrs
+          then InvestigatorKeyCountCalculation (InvestigatorWithId iid)
+          else SumCalculation [Fixed 2, InvestigatorKeyCountCalculation (InvestigatorWithId iid)]
+    Cultist -> pure $ ChaosTokenValue Cultist (NegativeModifier 2)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 3 4
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 5
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 cityLandscapes :: [CardDef]
-cityLandscapes = [ Locations.ancientPlanetarium
-        , Locations.stoneBridge
-        , Locations.stoneBridge
-        , Locations.stoneBridge
-        , Locations.cylindricalTower
-        , Locations.labyrinthineChamber
-        , Locations.labyrinthineChamber
-        , Locations.mapRoom
-        , Locations.rooflessRampart
-        , Locations.ruinousStreets
-        , Locations.ruinousStreets
-        , Locations.cyclopeanSpires
-        , Locations.submergedPassageway
-        , Locations.submergedPassageway
-        , Locations.templeOfTheElderThings
-        , Locations.templeOfTheElderThings
-        ]
+cityLandscapes =
+  [ Locations.ancientPlanetarium
+  , Locations.stoneBridge
+  , Locations.stoneBridge
+  , Locations.stoneBridge
+  , Locations.cylindricalTower
+  , Locations.labyrinthineChamber
+  , Locations.labyrinthineChamber
+  , Locations.mapRoom
+  , Locations.rooflessRampart
+  , Locations.ruinousStreets
+  , Locations.ruinousStreets
+  , Locations.cyclopeanSpires
+  , Locations.submergedPassageway
+  , Locations.submergedPassageway
+  , Locations.templeOfTheElderThings
+  , Locations.templeOfTheElderThings
+  ]
 
 allKeys :: MonadRandom m => m [ArkhamKey]
 allKeys = do
@@ -82,23 +94,24 @@ allKeys = do
   minusTwo2 <- toKey <$> createChaosToken #"-2"
   minusThree1 <- toKey <$> createChaosToken #"-3"
   minusThree2 <- toKey <$> createChaosToken #"-3"
-  shuffleM [ skull1
-       , skull2
-       , cultist1
-       , cultist2
-       , tablet1
-       , tablet2
-       , elderThing1
-       , elderThing2
-       , zero1
-       , zero2
-       , minusOne1
-       , minusOne2
-       , minusTwo1
-       , minusTwo2
-       , minusThree1
-       , minusThree2
-       ]
+  shuffleM
+    [ skull1
+    , skull2
+    , cultist1
+    , cultist2
+    , tablet1
+    , tablet2
+    , elderThing1
+    , elderThing2
+    , zero1
+    , zero2
+    , minusOne1
+    , minusOne2
+    , minusTwo1
+    , minusTwo2
+    , minusThree1
+    , minusThree2
+    ]
 
 instance RunMessage CityOfTheElderThings where
   runMessage msg s@(CityOfTheElderThings attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -225,23 +238,20 @@ instance RunMessage CityOfTheElderThings where
       setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
-      {- FOURMOLU_DISABLE -}
-      let
-        positions =
-          [ Pos (-1) (-2), Pos 0 (-2)  -- top row
-          , Pos (-1) (-1), Pos 0 (-1), Pos 1 (-1), Pos 2 (-1)  -- second row
-          , Pos (-2) 0, Pos (-1) 0, Pos 1 0, Pos 2 0 -- middle
-          , Pos (-2) 1, Pos (-1) 1, Pos 0 1, Pos 1 1 -- fourth row
-          , Pos 0 2, Pos 1 2  -- bottom row
-          ]
-      {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
-        (pos,) <$> placeInGrid pos loc
+      locationMap <-
+        Map.fromList <$> for (zip setup1Positions locations) \(pos, loc) ->
+          (pos,) <$> placeInGrid pos loc
       lead <- getLead
-      chooseTargetM lead (mapMaybe (`Map.lookup` locationMap) [Pos 0 2, Pos 1 2, Pos 2 0, Pos 2 (-1), Pos 0 (-2), Pos (-1) (-2), Pos (-2) 0, Pos (-2) 1]) \lid -> do
-        reveal lid
-        moveAllTo attrs lid
+      chooseTargetM
+        lead
+        ( mapMaybe
+            (`Map.lookup` locationMap)
+            [Pos 0 2, Pos 1 2, Pos 2 0, Pos 2 (-1), Pos 0 (-2), Pos (-1) (-2), Pos (-2) 0, Pos (-2) 1]
+        )
+        \lid -> do
+          reveal lid
+          moveAllTo attrs lid
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
@@ -266,23 +276,20 @@ instance RunMessage CityOfTheElderThings where
       setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
-      {- FOURMOLU_DISABLE -}
-      let
-        positions =
-          [ Pos (-1) (-1), Pos 0 (-1), Pos 1 (-1)
-          , Pos (-2) (-2), Pos (-1) (-2), Pos 0 (-2), Pos 1 (-2), Pos 2 (-2)
-          , Pos (-3) (-3), Pos (-2) (-3), Pos 2 (-3), Pos 3 (-3)
-          , Pos (-4) (-4), Pos (-3) (-4), Pos 3 (-4), Pos 4 (-4)
-          ]
-      {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
-        (pos,) <$> placeInGrid pos loc
+      locationMap <-
+        Map.fromList <$> for (zip setup2Positions locations) \(pos, loc) ->
+          (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
-      removeEvery [Enemies.terrorOfTheStarsBaneOfTheElderThings, Enemies.benignElderThing, Treacheries.frostbitten, Treacheries.possessed]
+      removeEvery
+        [ Enemies.terrorOfTheStarsBaneOfTheElderThings
+        , Enemies.benignElderThing
+        , Treacheries.frostbitten
+        , Treacheries.possessed
+        ]
 
       case attrs.difficulty of
         Expert -> placeDoomOnAgenda 2
@@ -302,27 +309,54 @@ instance RunMessage CityOfTheElderThings where
       setAgendaDeck [Agendas.lurkingHorrors, Agendas.doomFromBelow]
       setUsesGrid
       placeInGrid_ (Pos 0 0) Locations.hiddenTunnelEntranceToTheDepths
-      {- FOURMOLU_DISABLE -}
-      let
-        positions =
-          [ Pos (-7) 4, Pos (-6) 4
-          , Pos (-7) 3, Pos (-6) 3, Pos (-5) 3, Pos (-4) 3
-          , Pos (-5) 2, Pos (-4) 2, Pos (-3) 2, Pos (-2) 2
-          , Pos (-4) 1, Pos (-3) 1, Pos (-2) 1, Pos (-1) 1
-          , Pos (-2) 0, Pos (-1) 0
-          ]
-      {- FOURMOLU_ENABLE -}
       locations <- shuffleM cityLandscapes
-      locationMap <- Map.fromList <$> for (zip positions locations) \(pos, loc) ->
-        (pos,) <$> placeInGrid pos loc
+      locationMap <-
+        Map.fromList <$> for (zip setup3Positions locations) \(pos, loc) ->
+          (pos,) <$> placeInGrid pos loc
       for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
-      removeEvery [Enemies.terrorOfTheStarsBaneOfTheElderThings, Enemies.reawakenedElderThing, Treacheries.frostbitten, Treacheries.possessed]
+      removeEvery
+        [ Enemies.terrorOfTheStarsBaneOfTheElderThings
+        , Enemies.reawakenedElderThing
+        , Treacheries.frostbitten
+        , Treacheries.possessed
+        ]
 
       case attrs.difficulty of
         Expert -> placeDoomOnAgenda 2
         Hard -> placeDoomOnAgenda 1
         _ -> pure ()
       addTekeliliDeck
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isEasyStandard attrs -> do
+          ks <- field InvestigatorKeys iid
+          unless (null ks) do
+            withLocationOf iid \lid -> do
+              chooseOrRunOneM iid do
+                for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+        ElderThing -> do
+          xs <- select $ enemyEngagedWith iid
+          if null xs
+            then do
+              ys <- select $ NearestEnemyTo iid AnyEnemy
+              chooseTargetM iid ys \y -> moveTowardsMatching ElderThing y (locationWithInvestigator iid)
+            else chooseTargetM iid xs \x -> initiateEnemyAttack x ElderThing iid
+          pure ()
+        _ -> pure ()
+      pure s
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      ks <- field InvestigatorKeys iid
+      unless (null ks) do
+        withLocationOf iid \lid -> do
+          chooseOrRunOneM iid do
+            for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      tokens <- map (.face) <$> getSkillTestRevealedChaosTokens
+      when (#frost `elem` tokens) do
+        when (isHardExpert attrs) $ assignDamage iid Tablet 1
+        failSkillTest
+      pure s
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

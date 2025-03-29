@@ -338,11 +338,14 @@ allEncounterTreacheryCards =
       , meddlesomeFamiliar
       , memoryOfOblivion
       , mesmerize
+      , miasmaticTorment
       , morbidAwareness
       , myriadForms
       , mysteriesOfTheLodge
       , mysteriousChanting
+      , nebulousMiasma
       , nightTerrors
+      , nightmarishVapors
       , noTurningBack
       , nobodysHome
       , noxiousFumes

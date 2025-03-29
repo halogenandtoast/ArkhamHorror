@@ -118,7 +118,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
-import Arkham.Location.Grid (positionRow)
+import Arkham.Location.Grid (positionColumn, positionRow)
 import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
@@ -2209,6 +2209,13 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`elem` rear) . toId) ls
     LocationInRow n -> do
       pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
+    LocationInRowOf inner -> do
+      xs <- catMaybes <$> selectMapM (fmap (fmap positionRow . attr locationPosition) . getLocation) inner
+      pure $ filter (maybe False ((`elem` xs) . positionRow) . attr locationPosition) ls
+    LocationInColumnOf inner -> do
+      xs <-
+        catMaybes <$> selectMapM (fmap (fmap positionColumn . attr locationPosition) . getLocation) inner
+      pure $ filter (maybe False ((`elem` xs) . positionColumn) . attr locationPosition) ls
     LocationInPosition pos -> do
       pure $ filter ((== Just pos) . attr locationPosition) ls
     LocationWithVictory -> filterM (getHasVictoryPoints . toId) ls

@@ -49,6 +49,9 @@ expeditionTeam =
        , Assets.eliyahAshevakDogHandler
        ]
 
+instance HasCardDef Partner where
+  toCardDef = fromMaybe (error "missing") . lookupCardDef
+
 getPartnersWithStatus :: HasGame m => (PartnerStatus -> Bool) -> m [Partner]
 getPartnersWithStatus f = do
   partners <- view partnersL <$> getCampaignLog

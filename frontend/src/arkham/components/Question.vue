@@ -106,6 +106,8 @@ const paymentAmountsChoices = computed(() => {
   return []
 })
 
+const readCards = computed(() => question.value?.readCards || [])
+
 const chooseAmountsChoices = computed<AmountChoice[]>(() => {
   if (question.value?.tag === QuestionType.CHOOSE_AMOUNTS) {
     return question.value.amountChoices
@@ -383,7 +385,15 @@ const cardPiles = computed(() => {
   </div>
 
   <div class="intro-text" v-if="question && question.tag === QuestionType.READ">
-    <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+    <div v-if="readCards.length > 0" class="story-with-card">
+      <img :src="imgsrc(`cards/${cardCode.replace('c', '')}.avif`)" v-for="cardCode in readCards" class="card no-overlay" />
+      <div>
+        <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+      </div>
+    </div>
+    <template v-else>
+      <FormattedEntry v-for="(paragraph, index) in question.flavorText.body" :key="index" :entry="paragraph" />
+    </template>
   </div>
 
 
@@ -1057,5 +1067,17 @@ h2 {
 .question-image {
   display: flex;
   justify-content: center;
+}
+
+.card {
+  flex-basis: 30%;
+  flex-shrink: 0;
+  height: fit-content;
+  border-radius: 15px;
+}
+
+.story-with-card {
+  display: flex;
+  gap: 10px;
 }
 </style>

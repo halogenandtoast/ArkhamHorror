@@ -260,6 +260,10 @@ onMounted(() => {
     height: 100%;
     overflow: auto;
     border-radius: 0 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px;
   }
 }
 </style>

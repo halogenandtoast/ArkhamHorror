@@ -627,7 +627,6 @@ section {
   text-align: justify;
   background: linear-gradient(#DFDAD8, #c9c4c2);
   padding: 10px;
-  margin: 10px;
   border-radius: 5px;
   font-size: 1.1em;
   -moz-osx-font-smoothing: grayscale;
@@ -765,8 +764,6 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-inline: 10px;
-  margin-block: 10px;
   flex-wrap: wrap;
 }
 

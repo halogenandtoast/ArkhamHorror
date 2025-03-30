@@ -42,5 +42,6 @@ data EdgeOfTheEarthKey
   | TheTeamFoundAnotherWayThroughTheMountains
   | DrKenslerIsOnTheVergeOfUnderstanding
   | TheInvestigatorsScoutedTheCityOutskirts
+  | TheTeamPhotographedTheAstronomicalCharts
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

@@ -32,7 +32,7 @@ instance RunMessage VantagePoint where
   runMessage msg e@(VantagePoint attrs) = case msg of
     InvestigatorPlayEvent iid eid _ (vantagePointLocation -> lid) _ | eid == toId attrs -> do
       otherLocationsWithClues <-
-        select $ LocationWithAnyClues <> NotLocation (LocationWithId lid)
+        select $ CanMoveCluesFromLocation <> NotLocation (LocationWithId lid)
       player <- getPlayer iid
       enabled <- createCardEffect Cards.vantagePoint Nothing attrs lid
       pushAll

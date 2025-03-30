@@ -280,6 +280,12 @@ pattern AccessibleLocation <- LocationMatchAll [AccessibleFrom YourLocation, Can
   where
     AccessibleLocation = LocationMatchAll [AccessibleFrom YourLocation, CanEnterLocation You]
 
+pattern CanMoveCluesFromLocation :: LocationMatcher
+pattern CanMoveCluesFromLocation <-
+  LocationMatchAll [LocationWithoutModifier CannotMoveCluesFromHere, LocationWithAnyClues]
+  where
+    CanMoveCluesFromLocation = LocationMatchAll [LocationWithoutModifier CannotMoveCluesFromHere, LocationWithAnyClues]
+
 pattern ConnectedLocation :: LocationMatcher
 pattern ConnectedLocation <- ConnectedFrom YourLocation
   where

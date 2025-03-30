@@ -159,6 +159,7 @@ data ModifierType
   | CannotDealDamage
   | CannotDiscoverClues
   | CannotDiscoverCluesAt LocationMatcher
+  | CannotMoveCluesFromHere
   | CannotDiscoverCluesExceptAsResultOfInvestigation LocationMatcher
   | CannotDisengageEnemies
   | CannotDrawCards

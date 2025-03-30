@@ -131,6 +131,7 @@ locationMatches investigatorId source window locationId matcher' = do
     -- normal cases
     Matcher.LocationInRowOf {} -> locationId <=~> matcher
     Matcher.LocationInColumnOf {} -> locationId <=~> matcher
+    Matcher.CanMoveCluesFromLocation {} -> locationId <=~> matcher
     Matcher.ConnectedToSetAsideLocation {} -> locationId <=~> matcher
     Matcher.UnbarricadedConnectedFrom {} -> locationId <=~> matcher
     Matcher.LocationWithCardsUnderneath {} -> locationId <=~> matcher

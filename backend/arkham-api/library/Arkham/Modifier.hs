@@ -235,6 +235,7 @@ data ModifierType
   | DoubleBaseSkillValue
   | DoubleDifficulty
   | DoubleNegativeModifiersOnChaosTokens
+  | DoubleModifiersOnChaosTokens
   | DoubleSkillIcons
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target

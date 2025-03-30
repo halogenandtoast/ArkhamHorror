@@ -29,6 +29,11 @@ pattern DoubleNegativeModifier n <- CalculatedModifier (Negated (MultiplyCalcula
   where
     DoubleNegativeModifier n = CalculatedModifier (Negated (MultiplyCalculation (Fixed 2) (Fixed n)))
 
+pattern DoubleModifier :: GameCalculation -> ChaosTokenModifier
+pattern DoubleModifier inner <- CalculatedModifier (MultiplyCalculation (Fixed 2) inner)
+  where
+    DoubleModifier inner = CalculatedModifier (MultiplyCalculation (Fixed 2) inner)
+
 chaosTokenValue :: HasGame m => ChaosTokenValue -> m (Maybe Int)
 chaosTokenValue (ChaosTokenValue _ modifier) = chaosTokenModifierToInt modifier
 

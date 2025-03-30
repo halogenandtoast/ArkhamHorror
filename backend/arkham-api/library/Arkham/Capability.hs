@@ -59,6 +59,7 @@ instance Capable InvestigatorMatcher where
             , any =
                 \source ->
                   AnyInvestigator [HealableInvestigator source kind Anyone | kind <- [#horror, #damage]]
+            , trauma = AnyInvestigator [InvestigatorWithPhysicalTrauma, InvestigatorWithMentalTrauma]
             }
       }
 
@@ -145,6 +146,7 @@ data HealCapabilities a = HealCapabilities
   { damage :: Source -> a
   , horror :: Source -> a
   , any :: Source -> a
+  , trauma :: a
   }
   deriving stock Functor
 

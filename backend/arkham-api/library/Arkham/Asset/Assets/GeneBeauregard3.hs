@@ -25,8 +25,8 @@ instance HasAbilities GeneBeauregard3 where
         1
         ( DuringTurn You
             <> AnyCriterion
-              [ exists (YourLocation <> LocationWithAnyClues) <> exists ConnectedLocation
-              , exists (ConnectedLocation <> LocationWithAnyClues)
+              [ exists (YourLocation <> CanMoveCluesFromLocation) <> exists ConnectedLocation
+              , exists (ConnectedLocation <> CanMoveCluesFromLocation)
               , exists (NonEliteEnemy <> EnemyAt YourLocation <> EnemyCanEnter ConnectedLocation)
               , exists (NonEliteEnemy <> EnemyAt ConnectedLocation <> EnemyCanEnter YourLocation)
               ]
@@ -88,8 +88,8 @@ instance RunMessage GeneBeauregard3 where
         $ chooseOrRunOne
           player
           [ targetLabel
-              enemy
-              [chooseOrRunOne player [targetLabel location [EnemyMove enemy location]] | location <- connected]
+            enemy
+            [chooseOrRunOne player [targetLabel location [EnemyMove enemy location]] | location <- connected]
           | enemy <- enemies
           ]
 

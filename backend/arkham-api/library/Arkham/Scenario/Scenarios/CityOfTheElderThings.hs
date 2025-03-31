@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Calculation
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
@@ -116,6 +117,14 @@ allKeys = do
 instance RunMessage CityOfTheElderThings where
   runMessage msg s@(CityOfTheElderThings attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
+      doStep 0 msg
+      isStandalone <- getIsStandalone
+      if isStandalone
+        then do
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          pure $ CityOfTheElderThings $ foldl' (flip addPartner) attrs expeditionTeam
+        else pure s
+    DoStep 0 PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       sinhaIsAlive <- getPartnerIsAlive Assets.drMalaSinhaDaringPhysician
       blueStory
@@ -199,13 +208,13 @@ instance RunMessage CityOfTheElderThings where
       when tied do
         lead <- getLead
         chooseOneM lead do
-          labeled "Proceed to _Setup (v. I)_" $ doStep 1 msg
-          labeled "Proceed to _Setup (v. II)_" $ doStep 2 msg
-          labeled "Proceed to _Setup (v. III)_" $ doStep 3 msg
+          labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
+          labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
+          labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
 
-      when group1 $ doStep 1 msg
-      when group2 $ doStep 2 msg
-      when group3 $ doStep 3 msg
+      when group1 $ doStep 1 PreScenarioSetup
+      when group2 $ doStep 2 PreScenarioSetup
+      when group3 $ doStep 3 PreScenarioSetup
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s

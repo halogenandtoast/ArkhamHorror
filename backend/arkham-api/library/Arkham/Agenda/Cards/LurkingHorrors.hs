@@ -44,7 +44,13 @@ instance HasAbilities LurkingHorrors where
         $ restricted
           attrs
           1
-          (DuringTurn You <> exists (CanEnterLocation You))
+          ( DuringTurn You
+              <> exists
+                ( CanEnterLocation You
+                    <> oneOf
+                      [LocationInRowOf (LocationWithInvestigator You), LocationInColumnOf (LocationWithInvestigator You)]
+                )
+          )
         $ FastAbility (ClueCost $ Static 3)
     ]
 

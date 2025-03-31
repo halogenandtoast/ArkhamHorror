@@ -1009,6 +1009,10 @@ h2 {
     border: 1px solid var(--select);
     border-radius: 5px;
   }
+
+  .card {
+    max-width: 200px;
+  }
 }
 
 .portraits {

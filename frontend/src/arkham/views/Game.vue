@@ -295,6 +295,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === ' ') {
     const skipTriggers = choices.value.findIndex((c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON)
     if (skipTriggers !== -1) choose(skipTriggers)
+    if (choices.value.length == 1) choose(0)
     return
   }
 
@@ -530,7 +531,7 @@ onUnmounted(() => {
       </div>
     </dialog>
     <div v-if="processing" class="processing">
-      <LottieAnimation 
+      <LottieAnimation
         :animation-data="processingJSON"
         :auto-play="true"
         :loop="true"
@@ -574,7 +575,7 @@ onUnmounted(() => {
         </header>
       </template>
      <form @submit.prevent="fileBug" class="column bug-form box">
-       <p>{{ $t('gameBar.fileBugPart1') }}</p> 
+       <p>{{ $t('gameBar.fileBugPart1') }}</p>
        <p class="info">{{ $t('gameBar.fileBugPart2') }}</p>
        <p class="warning">{{ $t('gameBar.fileBugPart3') }}</p>
        <input required type="text" v-model="bugTitle" v-bind:placeholder="$t('gameBar.bugTitleholder')" />
@@ -1400,7 +1401,7 @@ button:hover .shortcut {
   border: 4px solid;
   box-sizing: border-box;
   border-radius: 50%;
-  background: 
+  background:
     radial-gradient(circle 5px, currentColor 95%,#0000),
     linear-gradient(currentColor 50%,#0000 0) 50%/4px 60% no-repeat;
   animation: l1 30s infinite linear;

@@ -44,5 +44,7 @@ data EdgeOfTheEarthKey
   | TheInvestigatorsScoutedTheCityOutskirts
   | TheTeamPhotographedTheAstronomicalCharts
   | TheTeamStudiedTheMuralCarvings
+  | TheTeamReadTheMap
+  | TheTeamDiscoveredAnAncientVault
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

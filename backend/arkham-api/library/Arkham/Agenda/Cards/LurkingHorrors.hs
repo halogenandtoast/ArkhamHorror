@@ -43,7 +43,7 @@ instance HasAbilities LurkingHorrors where
         $ playerLimit PerRound
         $ restricted
           attrs
-          1
+          2
           ( DuringTurn You
               <> exists
                 ( CanEnterLocation You

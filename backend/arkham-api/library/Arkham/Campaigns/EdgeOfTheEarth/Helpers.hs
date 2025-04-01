@@ -9,8 +9,10 @@ import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Capability
 import Arkham.Card
+import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
+import Arkham.Difficulty
 import Arkham.Draw.Types
 import Arkham.EncounterSet (EncounterSet (Tekelili))
 import {-# SOURCE #-} Arkham.Game ()
@@ -112,3 +114,12 @@ setPartnerStatus a = push . SetPartnerStatus (toPartnerCode a)
 
 eliminatePartner :: (HasCallStack, HasCardCode a, ReverseQueue m) => a -> m ()
 eliminatePartner = (`setPartnerStatus` Eliminated)
+
+{- FOURMOLU_DISABLE -}
+chaosBagContents :: Difficulty -> [ChaosTokenFace]
+chaosBagContents = \case
+  Easy -> [#"+1", #"+1", #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
+  Standard -> [#"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4", #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
+  Hard -> [#"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4", #"-4", #"-5", #frost, #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
+  Expert -> [#"0", #"-1", #"-2", #"-2", #"-3", #"-4", #"-4", #"-5", #"-7", #frost, #frost, #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
+{- FOURMOLU_ENABLE -}

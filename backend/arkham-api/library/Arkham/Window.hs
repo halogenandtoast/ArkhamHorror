@@ -16,6 +16,7 @@ import Arkham.DamageEffect (DamageEffect)
 import Arkham.Deck
 import Arkham.DefeatedBy
 import Arkham.Id
+import Arkham.Key
 import Arkham.Location.FloodLevel
 import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
@@ -246,6 +247,7 @@ data WindowType
   | WouldPlaceDoom Source Target Int
   | WouldPlaceClueOnLocation InvestigatorId LocationId Source Int
   | TakeControlOfClues InvestigatorId Source Int
+  | TakeControlOfKey InvestigatorId ArkhamKey
   | WouldAddChaosTokensToChaosBag (Maybe InvestigatorId) [ChaosTokenFace]
   | DeckWouldRunOutOfCards InvestigatorId
   | DeckRanOutOfCards InvestigatorId

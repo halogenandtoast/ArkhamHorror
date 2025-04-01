@@ -195,6 +195,8 @@ data ModifierType
   | CannotRevealCards
   | CannotSpawnIn LocationMatcher
   | CannotSpendClues
+  | CannotSpendKeys
+  | CannotTakeKeys
   | CannotTakeAction ActionTarget
   | CannotTakeControlOfClues
   | CannotTriggerAbilityMatching AbilityMatcher

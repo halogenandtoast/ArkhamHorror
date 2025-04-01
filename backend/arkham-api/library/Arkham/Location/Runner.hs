@@ -262,8 +262,8 @@ instance RunMessage LocationAttrs where
                 $ chooseOne
                   player
                   [ targetLabel
-                      lid'
-                      [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+                    lid'
+                    [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
                   | lid' <- availableLocationIds
                   ]
       pure a
@@ -462,7 +462,8 @@ instance RunMessage LocationAttrs where
       pure a
     UseCardAbility iid source n _ _ | isSource a source && n >= 500 && n <= 520 -> do
       let k = fromJustNote "missing key" $ setToList locationKeys !!? (n - 500)
-      push $ PlaceKey (InvestigatorTarget iid) k
+      before <- checkWhen $ Window.TakeControlOfKey iid k
+      pushAll [before, PlaceKey (InvestigatorTarget iid) k]
       pure a
     RemoveAllCopiesOfEncounterCardFromGame cardMatcher | toCard a `cardMatch` cardMatcher -> do
       push $ RemoveLocation (toId a)
@@ -537,10 +538,13 @@ instance HasAbilities LocationAttrs where
         $ ActionAbility [#move] moveCost
     ]
       <> [ withI18n
-             $ withVar "key" (String $ keyName k)
-             $ withI18nTooltip "takeControlOfKey"
-             $ restrictedAbility l (500 + idx) (onLocation l)
-             $ FastAbility Free
+          $ withVar "key" (String $ keyName k)
+          $ withI18nTooltip "takeControlOfKey"
+          $ restrictedAbility
+            l
+            (500 + idx)
+            (onLocation l <> youExist (not_ $ InvestigatorWithModifier CannotTakeKeys))
+          $ FastAbility Free
          | l.revealed
          , l.clues == 0
          , (idx, k) <- withIndex l.keys

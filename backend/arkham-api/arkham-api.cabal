@@ -3272,6 +3272,7 @@ library
       Arkham.Matcher.Event
       Arkham.Matcher.History
       Arkham.Matcher.Investigator
+      Arkham.Matcher.Key
       Arkham.Matcher.Location
       Arkham.Matcher.Patterns
       Arkham.Matcher.Phase

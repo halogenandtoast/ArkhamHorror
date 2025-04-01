@@ -72,13 +72,20 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   RemoveEnemyDamageCost x matcher -> do
     n <- getGameValue x
     selectAny $ matcher <> Matcher.EnemyWithDamage (Matcher.atLeast n)
-  SpendKeyCost k -> fieldMap InvestigatorKeys (elem k) iid
+  SpendKeyCost k ->
+    andM
+      [ withoutModifier iid CannotSpendKeys
+      , fieldMap InvestigatorKeys (elem k) iid
+      ]
   SpendTokenKeyCost n face -> do
-    (>= n)
-      . count ((== face) . (.face))
-      . mapMaybe (preview _TokenKey)
-      . toList
-      <$> field InvestigatorKeys iid
+    andM
+      [ withoutModifier iid CannotSpendKeys
+      , (>= n)
+          . count ((== face) . (.face))
+          . mapMaybe (preview _TokenKey)
+          . toList
+          <$> field InvestigatorKeys iid
+      ]
   PlaceKeyCost _ k -> fieldMap InvestigatorKeys (elem k) iid
   GroupSpendKeyCost k lm -> selectAny (Matcher.InvestigatorAt lm <> Matcher.InvestigatorWithKey k)
   CostToEnterUnrevealed c -> getCanAffordCost_ iid source actions windows' canModify c

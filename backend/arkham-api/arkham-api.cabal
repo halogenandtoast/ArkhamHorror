@@ -3365,6 +3365,7 @@ library
       Arkham.Scenario.Scenarios.TheDoomOfEztli
       Arkham.Scenario.Scenarios.TheEssexCountyExpress
       Arkham.Scenario.Scenarios.TheGathering
+      Arkham.Scenario.Scenarios.TheHeartOfMadness
       Arkham.Scenario.Scenarios.TheHouseAlwaysWins
       Arkham.Scenario.Scenarios.TheLairOfDagon
       Arkham.Scenario.Scenarios.TheLastKing
@@ -3445,6 +3446,7 @@ library
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Story
       Arkham.Scenarios.TheGathering.Helpers
+      Arkham.Scenarios.TheHeartOfMadness.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLairOfDagon.Helpers

@@ -19,10 +19,10 @@ instance RunMessage CrumblingRuins where
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       ks <-
-        concatMap (map (.face) . mapMaybe (preview _TokenKey) . toList)
+        concatMap (mapMaybe (fmap (.face) . preview _TokenKey) . toList)
           <$> selectField LocationKeys (locationWithInvestigator iid)
       iks <-
-        concatMap (map (.face) . mapMaybe (preview _TokenKey) . toList)
+        concatMap (mapMaybe (fmap (.face) . preview _TokenKey) . toList)
           <$> selectField InvestigatorKeys (colocatedWith iid)
       onRevealChaosTokenEffect sid (mapOneOf ChaosTokenFaceIs (nub $ ks <> iks)) attrs attrs failSkillTest
       revelationSkillTest sid iid attrs #agility (Fixed 3)

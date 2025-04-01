@@ -230,6 +230,7 @@ allEncounterTreacheryCards =
       , creepingDarkness
       , creepingPoison
       , cruelInterrogations
+      , crumblingRuins
       , cryptChill
       , curseOfYig
       , cursedLuck
@@ -2511,6 +2512,12 @@ dawningOfTheTruth :: CardDef
 dawningOfTheTruth =
   (treachery "08644" "Dawning of the Truth" CityOfTheElderThings 3)
     { cdCardTraits = setFromList [Terror]
+    }
+
+crumblingRuins :: CardDef
+crumblingRuins =
+  (treachery "08645" "Crumbling Ruins" CityOfTheElderThings 3)
+    { cdCardTraits = setFromList [Hazard]
     }
 
 frostbitten :: CardDef

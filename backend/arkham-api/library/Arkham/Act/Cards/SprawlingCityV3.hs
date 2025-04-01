@@ -50,4 +50,7 @@ instance RunMessage SprawlingCityV3 where
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       remember TheTeamDiscoveredAHiddenPower
       pure a
+    UseThisAbility _iid (isSource attrs -> True) 3 -> do
+      advancedWithOther attrs
+      pure a
     _ -> SprawlingCityV3 <$> liftRunMessage msg attrs

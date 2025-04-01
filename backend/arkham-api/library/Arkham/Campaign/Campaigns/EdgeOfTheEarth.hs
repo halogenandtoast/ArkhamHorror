@@ -33,15 +33,12 @@ newtype EdgeOfTheEarth = EdgeOfTheEarth CampaignAttrs
 
 edgeOfTheEarth :: Difficulty -> EdgeOfTheEarth
 edgeOfTheEarth difficulty =
-  campaign EdgeOfTheEarth (CampaignId "08") "Edge of the Earth" difficulty chaosBagContents
- where
-{- FOURMOLU_DISABLE -}
-  chaosBagContents = case difficulty of
-    Easy -> [#"+1", #"+1", #"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
-    Standard -> [#"+1", #"0", #"0", #"-1", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4", #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
-    Hard -> [#"0", #"0", #"-1", #"-1", #"-2", #"-2", #"-3", #"-4", #"-4", #"-5", #frost, #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
-    Expert -> [#"0", #"-1", #"-2", #"-2", #"-3", #"-4", #"-4", #"-5", #"-7", #frost, #frost, #frost, Skull, Skull, Cultist, Tablet, AutoFail, ElderSign]
-{- FOURMOLU_ENABLE -}
+  campaign
+    EdgeOfTheEarth
+    (CampaignId "08")
+    "Edge of the Earth"
+    difficulty
+    (chaosBagContents difficulty)
 
 instance IsCampaign EdgeOfTheEarth where
   nextStep a = case campaignStep (toAttrs a) of

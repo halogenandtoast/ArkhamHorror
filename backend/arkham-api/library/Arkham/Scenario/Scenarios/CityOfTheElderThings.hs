@@ -116,14 +116,24 @@ allKeys = do
 
 instance RunMessage CityOfTheElderThings where
   runMessage msg s@(CityOfTheElderThings attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens (chaosBagContents attrs.difficulty)
+      pure s
     PreScenarioSetup -> do
-      doStep 0 msg
       isStandalone <- getIsStandalone
       if isStandalone
         then do
+          lead <- getLead
+          chooseOneM lead do
+            labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
+            labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
+            labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
+          eachInvestigator (`forInvestigator` PreScenarioSetup)
           let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
           pure $ CityOfTheElderThings $ foldl' (flip addPartner) attrs expeditionTeam
-        else pure s
+        else do
+          doStep 0 msg
+          pure s
     DoStep 0 PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       sinhaIsAlive <- getPartnerIsAlive Assets.drMalaSinhaDaringPhysician

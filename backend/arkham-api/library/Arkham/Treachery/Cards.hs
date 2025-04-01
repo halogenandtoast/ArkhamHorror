@@ -205,6 +205,7 @@ allEncounterTreacheryCards =
       , betweenWorlds
       , beyondTheVeil
       , blackStarsRise
+      , blasphemousVisions
       , blindsense
       , bloodOnYourHands
       , brokenRails

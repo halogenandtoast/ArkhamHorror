@@ -246,7 +246,7 @@ instance RunMessage CityOfTheElderThings where
       pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg
-      pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON 0
+      pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (0 :: Int)
     DoStep 1 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.ElderThings

@@ -494,6 +494,7 @@ allEncounterTreacheryCards =
       , worthHisSalt
       , wracked
       , wrackedByTime
+      , wukWukWuk
       , yithianPresence
       , zeroVisibility
       , zoogBurrow
@@ -2615,6 +2616,12 @@ miasmaticTorment =
 nebulousMiasma :: CardDef
 nebulousMiasma =
   (treachery "08707" "Nebulous Miasma" Miasma 2)
+    { cdCardTraits = setFromList [Curse, Hazard]
+    }
+
+wukWukWuk :: CardDef
+wukWukWuk =
+  (treachery "08709" "Wuk! Wuk! Wuk!" Miasma 2)
     { cdCardTraits = setFromList [Curse, Hazard]
     }
 

@@ -1640,6 +1640,7 @@ library
       Arkham.Enemy.Cards.FangOfYig
       Arkham.Enemy.Cards.FleshEater
       Arkham.Enemy.Cards.FlyingPolyp
+      Arkham.Enemy.Cards.ForgottenShoggoth
       Arkham.Enemy.Cards.FormlessSpawn
       Arkham.Enemy.Cards.FrenziedExplorer
       Arkham.Enemy.Cards.FurtiveZoog
@@ -1647,6 +1648,7 @@ library
       Arkham.Enemy.Cards.GhoulFromTheDepths
       Arkham.Enemy.Cards.GhoulMinion
       Arkham.Enemy.Cards.GhoulPriest
+      Arkham.Enemy.Cards.GiantAlbinoPenguin
       Arkham.Enemy.Cards.GlacialPhantasm
       Arkham.Enemy.Cards.GoatSpawn
       Arkham.Enemy.Cards.GrapplingHorror
@@ -1778,6 +1780,7 @@ library
       Arkham.Enemy.Cards.PrimordialEvil
       Arkham.Enemy.Cards.ProfessorWilliamDyerProfessorOfGeology
       Arkham.Enemy.Cards.PursuingMotorcar
+      Arkham.Enemy.Cards.RampagingShoggoth
       Arkham.Enemy.Cards.RavagerFromTheDeep
       Arkham.Enemy.Cards.RavenousGhoul
       Arkham.Enemy.Cards.ReanimatedDead
@@ -4180,6 +4183,7 @@ library
       Arkham.Treachery.Cards.Wracked
       Arkham.Treachery.Cards.WrackedByNightmares
       Arkham.Treachery.Cards.WrackedByTime
+      Arkham.Treachery.Cards.WukWukWuk
       Arkham.Treachery.Cards.Yaztaroth
       Arkham.Treachery.Cards.YithianPresence
       Arkham.Treachery.Cards.ZeroVisibility

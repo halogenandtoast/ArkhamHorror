@@ -463,6 +463,11 @@ allEnemies =
     , -- Left Behind [eote]
       SomeEnemyCard lostResearcher
     , SomeEnemyCard frenziedExplorer
+    , -- Penguins [eote]
+      SomeEnemyCard giantAlbinoPenguin
+    , -- Shoggoths [eote]
+      SomeEnemyCard forgottenShoggoth
+    , SomeEnemyCard rampagingShoggoth
     , -- The Scarlet Keys
       -- signature
       SomeEnemyCard agentFletcher

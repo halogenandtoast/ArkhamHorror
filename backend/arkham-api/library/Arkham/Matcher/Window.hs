@@ -20,6 +20,7 @@ import Arkham.Matcher.Damage
 import Arkham.Matcher.Enemy
 import Arkham.Matcher.Event
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Phase
 import Arkham.Matcher.SkillTest
@@ -220,6 +221,7 @@ data WindowMatcher
   | WindowWhen Criterion WindowMatcher
   | ScenarioEvent Timing Text
   | TakeControlOfClues Timing Who SourceMatcher
+  | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 data ExploreMatcher = SuccessfulExplore LocationMatcher | FailedExplore CardMatcher

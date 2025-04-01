@@ -556,6 +556,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
   let guardTiming t body = if timing' == t then body wType else noMatch
   let mtchr = Matcher.replaceYouMatcher iid umtchr
   case mtchr of
+    Matcher.TakeControlOfKey timing whoMatcher _keyMatcher -> guardTiming timing \case
+      Window.TakeControlOfKey who _ -> matchWho iid who whoMatcher
+      _ -> noMatch
     Matcher.TakeControlOfClues timing whoMatcher sourceMatcher -> guardTiming timing \case
       Window.TakeControlOfClues who source' _ -> do
         andM
@@ -1283,8 +1286,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
     Matcher.PerformedDifferentTypesOfActionsInARow timing whoMatcher n actionMatcher -> guardTiming timing $ \case
-      Window.PerformedDifferentTypesOfActionsInARow iid' m actions | m >= n ->
-        andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
+      Window.PerformedDifferentTypesOfActionsInARow iid' m actions
+        | m >= n ->
+            andM [matchWho iid iid' whoMatcher, anyM (\a -> actionMatches iid a actionMatcher) actions]
       _ -> noMatch
     Matcher.WouldHaveSkillTestResult timing whoMatcher _ skillTestResultMatcher -> do
       -- The #when is questionable, but "Would" based timing really is

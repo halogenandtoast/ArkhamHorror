@@ -37,12 +37,19 @@ const portraitLabelImage = (investigatorId: string) => {
 }
 
 const portraitChoices = computed(() => {
-  if (!question.value || question.value.tag !== 'QuestionLabel') {
+  console.log(question.value)
+  if (!question.value) return
+
+  if (!['QuestionLabel', 'ChooseOne'].includes(question.value.tag)) {
     return []
   }
 
-  if (question.value.question.tag !== 'ChooseOne') {
+  if (question.value.tag !== 'ChooseOne' && question.value.question.tag !== 'ChooseOne') {
     return []
+  }
+
+  if (question.value.tag === 'ChooseOne') {
+    return question.value.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
   }
 
   return question.value.question.choices.flatMap<[PortraitLabel, number]>((c, idx) => c.tag === MessageType.PORTRAIT_LABEL ? [[c, idx]] : [])
@@ -142,6 +149,15 @@ const choose = (idx: number) => emit('choose', idx)
           <button @click="choose(index)">{{choice.label}}</button>
         </div>
       </template>
+      <div class="portrait-choices" v-if="portraitChoices.length > 0">
+        <template v-for="[choice, index] in portraitChoices" :key="index">
+          <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
+            <a href='#' @click.prevent="choose(index)">
+              <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
+            </a>
+          </template>
+        </template>
+      </div>
     </div>
   </template>
 

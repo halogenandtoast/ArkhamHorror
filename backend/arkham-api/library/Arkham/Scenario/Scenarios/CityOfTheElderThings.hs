@@ -392,12 +392,14 @@ instance RunMessage CityOfTheElderThings where
             $ withVars ["xp" .= base]
             $ i18nWithTitle "resolution1"
           record TheTeamFoundTheHiddenTunnel
+          endOfScenario
         Resolution 2 -> do
           base <- allGainXp' attrs
           story
             $ withVars ["xp" .= base]
             $ i18nWithTitle "resolution2"
           record TheTeamWasGuidedToTheHiddenTunnel
+          endOfScenario
         _ -> throwIO $ UnknownResolution resolution
       pure s
     PlaceKey ScenarioTarget _ -> do

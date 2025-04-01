@@ -518,6 +518,7 @@ allTreacheries =
     , SomeTreacheryCard hypothermia
     , --- City of the Elder Things [eote]
       SomeTreacheryCard dawningOfTheTruth
+    , SomeTreacheryCard crumblingRuins
     , SomeTreacheryCard frostbitten
     , SomeTreacheryCard possessed
     , --- Agents of the Unknown [eote]

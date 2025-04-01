@@ -237,6 +237,7 @@ allEncounterTreacheryCards =
       , daemonicPiping
       , danceOfTheYellowKing
       , darkAurora
+      , dawningOfTheTruth
       , deadlyFate
       , deathApproaches
       , deceptiveMemories
@@ -2504,6 +2505,12 @@ hypothermia :: CardDef
 hypothermia =
   (treachery "08613" "Hypothermia" ToTheForbiddenPeaks 3)
     { cdCardTraits = setFromList [Hazard]
+    }
+
+dawningOfTheTruth :: CardDef
+dawningOfTheTruth =
+  (treachery "08644" "Dawning of the Truth" CityOfTheElderThings 3)
+    { cdCardTraits = setFromList [Terror]
     }
 
 frostbitten :: CardDef

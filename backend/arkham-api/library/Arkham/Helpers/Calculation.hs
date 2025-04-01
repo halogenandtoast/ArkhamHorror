@@ -61,6 +61,7 @@ calculate = go
     InvestigatorsFieldCalculation matcher fld -> getSum <$> selectAgg Sum fld matcher
     InvestigatorHandLengthCalculation iid -> fieldMap InvestigatorHand length iid
     InvestigatorKeyCountCalculation matcher -> length <$> selectAgg id InvestigatorKeys matcher
+    LocationKeyCountCalculation matcher -> length <$> selectAgg id LocationKeys matcher
     EnemyMaybeFieldCalculation eid fld -> fromMaybe 0 . join <$> fieldMay fld eid
     SumEnemyMaybeFieldCalculation matcher fld -> do
       enemies <- select matcher

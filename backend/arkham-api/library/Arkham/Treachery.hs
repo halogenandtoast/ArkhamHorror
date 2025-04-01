@@ -517,7 +517,8 @@ allTreacheries =
     , SomeTreacheryCard hangingOnTheEdge
     , SomeTreacheryCard hypothermia
     , --- City of the Elder Things [eote]
-      SomeTreacheryCard frostbitten
+      SomeTreacheryCard dawningOfTheTruth
+    , SomeTreacheryCard frostbitten
     , SomeTreacheryCard possessed
     , --- Agents of the Unknown [eote]
       SomeTreacheryCard theMadnessWithin

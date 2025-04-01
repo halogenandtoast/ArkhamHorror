@@ -49,6 +49,6 @@ data EdgeOfTheEarthKey
   | TheTeamFoundTheHiddenTunnel
   | TheTeamWasGuidedToTheHiddenTunnel
   | DrKenslerUnderstandsTheTrueNatureOfTheMiasma
-  | TheInvestigatorsScoutedTheForkedPassed
+  | TheInvestigatorsScoutedTheForkedPass
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

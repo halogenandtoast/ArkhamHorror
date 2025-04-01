@@ -925,7 +925,7 @@ instance RunMessage EdgeOfTheEarth where
                   ]
               if
                 | alive -> do
-                    record TheInvestigatorsScoutedTheForkedPassed
+                    record TheInvestigatorsScoutedTheForkedPass
                     doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators

@@ -54,6 +54,7 @@ data GameCalculation
   | InvestigatorFieldCalculation InvestigatorId (Field Investigator Int)
   | InvestigatorsFieldCalculation InvestigatorMatcher (Field Investigator Int)
   | InvestigatorKeyCountCalculation InvestigatorMatcher
+  | LocationKeyCountCalculation LocationMatcher
   | InvestigatorHandLengthCalculation InvestigatorId
   | EnemyMaybeFieldCalculation EnemyId (Field Enemy (Maybe Int))
   | SumEnemyMaybeFieldCalculation EnemyMatcher (Field Enemy (Maybe Int))

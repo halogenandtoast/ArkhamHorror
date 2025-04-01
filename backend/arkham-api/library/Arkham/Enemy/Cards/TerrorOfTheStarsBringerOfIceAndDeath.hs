@@ -25,14 +25,11 @@ terrorOfTheStarsBringerOfIceAndDeath =
 instance HasModifiersFor TerrorOfTheStarsBringerOfIceAndDeath where
   getModifiersFor (TerrorOfTheStarsBringerOfIceAndDeath a) = do
     healthModifier <- perPlayer 3
-    self <- modifySelf a [HealthModifier healthModifier]
-    investigators <-
-      if a.ready
-        then modifySelectMapM a Anyone \iid -> do
-          sameLocation <- onSameLocation iid a.placement
-          pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotTakeAction #resign | sameLocation]
-        else pure mempty
-    pure $ self <> investigators
+    modifySelf a [HealthModifier healthModifier]
+    when a.ready do
+      modifySelectMapM a Anyone \iid -> do
+        sameLocation <- onSameLocation iid a.placement
+        pure $ CannotDiscoverCluesAt (locationWithEnemy a) : [CannotTakeAction #resign | sameLocation]
 
 instance RunMessage TerrorOfTheStarsBringerOfIceAndDeath where
   runMessage msg (TerrorOfTheStarsBringerOfIceAndDeath attrs) = runQueueT $ case msg of

@@ -11,6 +11,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card.CardDef
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Investigator (withLocationOf)
@@ -23,8 +24,10 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.CityOfTheElderThings.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -243,7 +246,7 @@ instance RunMessage CityOfTheElderThings where
       pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg
-      pure s
+      pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON 0
     DoStep 1 Setup -> runScenarioSetup CityOfTheElderThings attrs do
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
@@ -378,4 +381,26 @@ instance RunMessage CityOfTheElderThings where
         when (isHardExpert attrs) $ assignDamage iid Tablet 1
         failSkillTest
       pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          push R2
+        Resolution 1 -> do
+          base <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution1"
+          record TheTeamFoundTheHiddenTunnel
+        Resolution 2 -> do
+          base <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution2"
+          record TheTeamWasGuidedToTheHiddenTunnel
+        _ -> throwIO $ UnknownResolution resolution
+      pure s
+    PlaceKey ScenarioTarget _ -> do
+      let n = toResultDefault @Int 0 attrs.meta
+      pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (n + 1)
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

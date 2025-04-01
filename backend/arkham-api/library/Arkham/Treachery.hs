@@ -543,6 +543,8 @@ allTreacheries =
     , --- Miasma [eote]
       SomeTreacheryCard miasmaticTorment
     , SomeTreacheryCard nebulousMiasma
+    , --- Penguins [eote]
+      SomeTreacheryCard wukWukWuk
     , --- Silence and Mystery [eote]
       SomeTreacheryCard polarMirage
     , SomeTreacheryCard darkAurora

@@ -21,9 +21,8 @@ theMaskedHunter =
 instance HasModifiersFor TheMaskedHunter where
   getModifiersFor (TheMaskedHunter a) = do
     healthModifier <- perPlayer 2
-    self <- modifySelf a [HealthModifier healthModifier]
-    investigators <- modifySelect a (investigatorEngagedWith a) [CannotDiscoverClues, CannotSpendClues]
-    pure $ self <> investigators
+    modifySelf a [HealthModifier healthModifier]
+    modifySelect a (investigatorEngagedWith a) [CannotDiscoverClues, CannotSpendClues]
 
 instance RunMessage TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs) = TheMaskedHunter <$> runMessage msg attrs

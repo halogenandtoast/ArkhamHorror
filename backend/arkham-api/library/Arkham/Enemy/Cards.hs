@@ -176,6 +176,7 @@ allEncounterEnemyCards =
       , fanatic
       , fangOfYig
       , fleshEater
+      , forgottenShoggoth
       , formlessSpawn
       , frenziedExplorer
       , furtiveZoog
@@ -183,6 +184,7 @@ allEncounterEnemyCards =
       , ghoulFromTheDepths
       , ghoulMinion
       , ghoulPriest
+      , giantAlbinoPenguin
       , glacialPhantasm
       , goatSpawn
       , grapplingHorror
@@ -307,6 +309,7 @@ allEncounterEnemyCards =
       , primordialEvil
       , professorWilliamDyerProfessorOfGeology
       , pursuingMotorcar
+      , rampagingShoggoth
       , ravagerFromTheDeep
       , ravenousGhoul
       , reawakenedElderThing
@@ -2648,6 +2651,28 @@ frenziedExplorer :: CardDef
 frenziedExplorer =
   (enemy "08701" "Frenzied Explorer" LeftBehind 2)
     { cdCardTraits = setFromList [Humanoid, Possessed]
+    }
+
+giantAlbinoPenguin :: CardDef
+giantAlbinoPenguin =
+  (enemy "08708" "Giant Albino Penguin" Penguins 2)
+    { cdCardTraits = setFromList [Creature]
+    , cdKeywords = setFromList [Keyword.Aloof]
+    }
+
+forgottenShoggoth :: CardDef
+forgottenShoggoth =
+  (enemy "08710" "Forgotten Shoggoth" Shoggoths 2)
+    { cdCardTraits = setFromList [Monster, Shoggoth]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+rampagingShoggoth :: CardDef
+rampagingShoggoth =
+  (enemy "08711" "Rampaging Shoggoth" Shoggoths 1)
+    { cdCardTraits = setFromList [Monster, Shoggoth, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    , cdVictoryPoints = Just 1
     }
 
 agentFletcher :: CardDef

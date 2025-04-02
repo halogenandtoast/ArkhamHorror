@@ -62,6 +62,7 @@ allActCards =
       , descentIntoDark
       , discoveringTheTruth
       , disruptingTheRitual
+      , dormancy
       , enteringTheDreamlands
       , enteringTheUnderworldV1
       , enteringTheUnderworldV2
@@ -185,6 +186,7 @@ allActCards =
       , theFirstOath
       , theFourKeys
       , theGateOpens
+      , theGreatSeal
       , theGuardedRuins
       , theGuardiansInquiry
       , theIsleOfOriab
@@ -868,6 +870,12 @@ pursuitOfTheUnknownV2 = act "08628" "Pursuit of the Unknown (v. II)" 2 CityOfThe
 
 pursuitOfTheUnknownV3 :: CardDef
 pursuitOfTheUnknownV3 = act "08629" "Pursuit of the Unknown (v. III)" 2 CityOfTheElderThings
+
+dormancy :: CardDef
+dormancy = act "08662" "Dormancy" 1 TheGreatSeal
+
+theGreatSeal :: CardDef
+theGreatSeal = act "08663" "The Great Seal" 2 TheGreatSeal
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering

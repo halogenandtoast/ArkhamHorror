@@ -368,6 +368,10 @@ instance RunMessage LocationAttrs where
       pure $ a & keysL %~ insertSet k
     PlaceKey (isTarget a -> False) k -> do
       pure $ a & keysL %~ deleteSet k
+    PlaceSeal (isTarget a -> True) k -> do
+      pure $ a & sealsL %~ insertSet k
+    PlaceSeal (isTarget a -> False) k -> do
+      pure $ a & sealsL %~ deleteSet k
     IncreaseFloodLevel lid | lid == locationId -> do
       mods <- getModifiers a
       let

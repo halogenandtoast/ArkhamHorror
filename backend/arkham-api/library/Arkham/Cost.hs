@@ -111,6 +111,7 @@ data Cost
   | ClueCost GameValue
   | ClueCostX
   | GroupClueCostX
+  | GroupResourceCost GameValue LocationMatcher
   | GroupClueCost GameValue LocationMatcher
   | GroupClueCostRange (Int, Int) LocationMatcher
   | PlaceClueOnLocationCost Int
@@ -337,6 +338,20 @@ displayCostType = \case
         <> ", or "
         <> tshow d
         <> " Clues for 1, 2, 3, or 4 players"
+  GroupResourceCost gv _ -> case gv of
+    Static n -> pluralize n "Resource" <> " as a Group"
+    PerPlayer n -> pluralize n "Resource" <> " per Player as a Group"
+    StaticWithPerPlayer n m ->
+      tshow n <> " + " <> tshow m <> " Resources per Player"
+    ByPlayerCount a b c d ->
+      tshow a
+        <> ", "
+        <> tshow b
+        <> ", "
+        <> tshow c
+        <> ", or "
+        <> tshow d
+        <> " Resources for 1, 2, 3, or 4 players"
   GroupClueCostRange (sVal, eVal) _ ->
     tshow sVal <> "-" <> pluralize eVal "Clue" <> " as a Group"
   PlaceClueOnLocationCost n ->

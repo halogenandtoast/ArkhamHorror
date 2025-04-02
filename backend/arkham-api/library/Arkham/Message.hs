@@ -19,6 +19,7 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Card.Settings
@@ -579,6 +580,8 @@ data Message
   | PlaceTreachery TreacheryId Placement
   | PlaceSkill SkillId Placement
   | PlaceKey Target ArkhamKey
+  | PlaceSeal Target Seal
+  | ActivateSeal SealKind
   | CreateStoryAssetAtLocationMatching Card LocationMatcher
   | CreateChaosTokenValueEffect SkillTestId Int Source Target
   | CreateWeaknessInThreatArea Card InvestigatorId
@@ -784,17 +787,19 @@ data Message
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages
     Move Movement
-  | -- | When bool is True, This triggers the windows for PerformAction, as
-    --     well as BeginAction and Finish action brackets.
-    --     When bool is false it only triggers the after move action window, but
-    --     also the (When, After) messages
-    --     Eventually calls the Move message with a movement it built
+  | {- | When bool is True, This triggers the windows for PerformAction, as
+    well as BeginAction and Finish action brackets.
+    When bool is false it only triggers the after move action window, but
+    also the (When, After) messages
+    Eventually calls the Move message with a movement it built
+    -}
     MoveAction InvestigatorId LocationId Cost Bool
   | -- | Only calls MoveTo for all investigators
     MoveAllTo Source LocationId
-  | -- | Pretty useless, simply triggers Will/After variants that just push
-    --     windows, possibly we could inline this, the only benefit seems to be the
-    --     ability to cancel the batch easily
+  | {- | Pretty useless, simply triggers Will/After variants that just push
+    windows, possibly we could inline this, the only benefit seems to be the
+    ability to cancel the batch easily
+    -}
     MoveFrom Source InvestigatorId LocationId
   | -- | Actual movement, will add MovedBy, MovedBut, and after Entering windows
     MoveTo Movement

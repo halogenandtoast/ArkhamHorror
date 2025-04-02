@@ -15,6 +15,7 @@ import type { Modifier } from '@/arkham/types/Modifier'
 import Token from '@/arkham/components/Token.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Key from '@/arkham/components/Key.vue';
+import Seal from '@/arkham/components/Seal.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composeable/menu';
 import { useI18n } from 'vue-i18n';
@@ -256,6 +257,7 @@ function isActiveEffectAction(action: { tag?: "EffectAction"; contents: any }) {
 }
 
 const keys = computed(() => props.investigator.keys)
+const seals = computed(() => props.investigator.seals)
 
 const willpower = computed(() => calculateSkill(props.investigator.willpower, "SkillWillpower", modifiers.value ?? []))
 const intellect = computed(() => calculateSkill(props.investigator.intellect, "SkillIntellect", modifiers.value ?? []))
@@ -385,6 +387,9 @@ function onDrop(event: DragEvent) {
     <div class="resources">
       <div class="keys" v-if="keys.length > 0">
         <Key v-for="key in keys" :key="key" :name="key" />
+      </div>
+      <div class="seals" v-if="seals.length > 0">
+        <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
       </div>
       <template v-if="debug.active">
         <button

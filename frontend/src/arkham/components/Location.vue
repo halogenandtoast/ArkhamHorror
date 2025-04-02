@@ -7,6 +7,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
+import Seal from '@/arkham/components/Seal.vue';
 import Locus from '@/arkham/components/Locus.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
@@ -191,6 +192,7 @@ const explosion = computed(() => {
 
 
 const keys = computed(() => props.location.keys)
+const seals = computed(() => props.location.seals)
 
 const clues = computed(() => props.location.tokens[TokenType.Clue])
 const doom = computed(() => props.location.tokens[TokenType.Doom])
@@ -289,6 +291,7 @@ function onDrop(event: DragEvent) {
 
           <div class="pool">
             <Key v-for="key in keys" :key="key" :name="key" />
+            <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />
             <PoolItem v-if="horror && horror > 0" type="horror" :amount="horror" />
             <PoolItem v-if="damage && damage > 0" type="health" :amount="damage" />

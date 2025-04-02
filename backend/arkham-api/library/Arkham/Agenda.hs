@@ -273,6 +273,10 @@ allAgendas =
     , --- City of the Elder Things [eote]
       SomeAgendaCard lurkingHorrors
     , SomeAgendaCard doomFromBelow
+    , --- The Great Seal [eote]
+      SomeAgendaCard theBeatingHeart
+    , SomeAgendaCard theMiasmaBeckons
+    , SomeAgendaCard callOfMadness
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

@@ -5,6 +5,7 @@ import { Name, nameDecoder } from '@/arkham/types/Name';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import {
@@ -160,6 +161,7 @@ export type Investigator = {
   xp: number;
   supplies: string[];
   keys: ArkhamKey[];
+  seals: Seal[];
   hunchDeck?: CardContents[];
   revealedHunchCard?: string | null;
   devoured?: Card[]
@@ -262,6 +264,7 @@ export const investigatorDecoder = JsonDecoder.object<Investigator>({
   xp: JsonDecoder.number,
   supplies: JsonDecoder.array<string>(JsonDecoder.string, 'supplies'),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  seals: JsonDecoder.array<ArkhamKey>(sealDecoder, 'Seal[]'),
   deckSize: JsonDecoder.optional(JsonDecoder.number),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),

@@ -4,6 +4,7 @@
 module Arkham.Matcher.Investigator where
 
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card.CardCode
 import Arkham.ChaosToken.Types
@@ -150,6 +151,9 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
+  | InvestigatorWithSeal SealKind
+  | InvestigatorWithDormantSeal SealKind
+  | InvestigatorWithActiveSeal SealKind
   | InvestigatorWithTokenKey ChaosTokenFace
   | InvestigatorWithAnyKey
   | InvestigatorWithBondedCard CardMatcher

@@ -322,6 +322,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     iids <- select $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids
     pure $ totalSpendableClues >= cost
+  GroupResourceCost n locationMatcher -> do
+    cost <- getPlayerCountValue n
+    iids <- select $ Matcher.InvestigatorAt locationMatcher
+    totalSpendableClues <- sum <$> traverse getSpendableResources iids
+    pure $ totalSpendableClues >= cost
   GroupClueCostRange (cost, _) locationMatcher -> do
     iids <- select $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids

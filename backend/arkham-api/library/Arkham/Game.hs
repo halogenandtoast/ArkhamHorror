@@ -1087,6 +1087,16 @@ getInvestigatorsMatching matcher = do
       (> 0) . sum . toList <$> getHistoryField historyProjection (toId i) HistoryCluesDiscovered
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
+    InvestigatorWithSeal kind -> flip filterM as $ \i ->
+      pure $ kind `elem` map (.kind) (toList $ investigatorSeals (toAttrs i))
+    InvestigatorWithActiveSeal kind -> flip filterM as $ \i ->
+      case find ((== kind) . (.kind)) (toList $ investigatorSeals (toAttrs i)) of
+        Nothing -> pure False
+        Just s -> pure s.active
+    InvestigatorWithDormantSeal kind -> flip filterM as $ \i ->
+      case find ((== kind) . (.kind)) (toList $ investigatorSeals (toAttrs i)) of
+        Nothing -> pure False
+        Just s -> pure $ not s.active
     InvestigatorWithTokenKey face -> flip filterM as $ \i ->
       pure $ flip any (investigatorKeys (toAttrs i)) \case
         TokenKey k -> k.face == face
@@ -1699,8 +1709,7 @@ getLocationsMatching lmatcher = do
         Nothing -> pure []
         Just v ->
           filterM
-            ( field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v))
-            )
+            (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` LessThanOrEqualTo (Static v)))
             ls
     LocationWithMostInvestigators locationMatcher -> do
       matches' <- go ls locationMatcher
@@ -3730,6 +3739,7 @@ instance Projection Investigator where
       InvestigatorMeta -> pure investigatorMeta
       InvestigatorCardCode -> pure investigatorCardCode
       InvestigatorKeys -> pure investigatorKeys
+      InvestigatorSeals -> pure investigatorSeals
       InvestigatorPlayerId -> pure investigatorPlayerId
       InvestigatorName -> pure investigatorName
       InvestigatorSettings -> pure investigatorSettings
@@ -4275,8 +4285,7 @@ instance Query ExtendedCardMatcher where
         skillIcons <- getSkillTestMatchingSkillIcons
         pure
           $ filter
-            ( \c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c))
-            )
+            (\c -> any (`member` skillIcons) c.skills || (null c.skills && cdCanCommitWhenNoIcons (toCardDef c)))
             cs
       CardWithCopyInHand who -> do
         flip filterM cs \c -> do
@@ -4448,8 +4457,7 @@ markDistancesWithInclusion checkBarriers initialLocation target canInclude extra
     locationIds <- filterM target (keys map')
     pure
       $ foldr
-        ( \locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap
-        )
+        (\locationId distanceMap -> insertWith (<>) (getDistance'' map' locationId) [locationId] distanceMap)
         mempty
         locationIds
   getDistance'' map' lid = length $ unwindPath map' [lid]

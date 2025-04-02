@@ -12,6 +12,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Location.Brazier
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Location.BreachStatus
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -45,6 +46,7 @@ data LocationAttrs = LocationAttrs
   , locationInvestigateSkill :: SkillType
   , locationInFrontOf :: Maybe InvestigatorId
   , locationKeys :: Set ArkhamKey
+  , locationSeals :: Set Seal
   , locationFloodLevel :: Maybe FloodLevel
   , locationBrazier :: Maybe Brazier
   , locationBreaches :: Maybe BreachStatus
@@ -122,6 +124,9 @@ instance HasField "clues" LocationAttrs Int where
 instance HasField "keys" LocationAttrs (Set ArkhamKey) where
   getField = locationKeys
 
+instance HasField "seals" LocationAttrs (Set Seal) where
+  getField = locationSeals
+
 makeLensesWith suffixedFields ''LocationAttrs
 
 setMeta :: ToJSON a => a -> LocationAttrs -> LocationAttrs
@@ -159,6 +164,7 @@ instance FromJSON LocationAttrs where
     locationInvestigateSkill <- o .: "investigateSkill"
     locationInFrontOf <- o .:? "inFrontOf"
     locationKeys <- o .: "keys"
+    locationSeals <- o .:? "seals" .!= mempty
     locationFloodLevel <- o .:? "floodLevel"
     locationBrazier <- o .:? "brazier"
     locationBreaches <- o .:? "breaches"

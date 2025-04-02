@@ -377,6 +377,7 @@ investigator f cardDef Stats {..} =
                 , investigatorHorrorHealed = 0
                 , investigatorSupplies = []
                 , investigatorKeys = mempty
+                , investigatorSeals = mempty
                 , investigatorAssignedHealthDamage = 0
                 , investigatorAssignedHealthHeal = mempty
                 , investigatorAssignedSanityDamage = 0

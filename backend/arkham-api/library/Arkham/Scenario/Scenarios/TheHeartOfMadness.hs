@@ -1,6 +1,8 @@
 module Arkham.Scenario.Scenarios.TheHeartOfMadness (theHeartOfMadness) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Act.Cards qualified as Acts
+import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
@@ -133,6 +135,9 @@ instance RunMessage TheHeartOfMadness where
       theGateOfYquaa <- place Locations.theGateOfYquaa
       reveal theGateOfYquaa
       moveAllTo attrs theGateOfYquaa
+
+      setAgendaDeck [Agendas.theBeatingHeart, Agendas.theMiasmaBeckons, Agendas.callOfMadness]
+      setActDeck [Acts.dormancy, Acts.theGreatSeal]
 
       placeGroup
         "facility"

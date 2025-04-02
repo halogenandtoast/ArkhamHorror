@@ -310,6 +310,7 @@ locationWith f def shroud' revealClues g =
             , locationMeta = Null
             , locationGlobalMeta = mempty
             , locationKeys = mempty
+            , locationSeals = mempty
             , locationBrazier = Nothing
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing

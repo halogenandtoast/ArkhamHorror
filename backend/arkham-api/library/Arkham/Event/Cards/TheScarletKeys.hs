@@ -422,6 +422,7 @@ makeshiftTrap =
     , cdUses = Uses.Uses Uses.Time (Fixed 2)
     , cdCardInHandEffects = True
     , cdKeywords = setFromList [Keyword.Customizable]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     , cdCustomizations =
         mapFromList
           [ (ImprovedTimer, 1)

@@ -811,7 +811,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PlaceKey (isTarget a -> True) k -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> False) k -> pure $ a & keysL %~ deleteSet k
   PlaceSeal (isTarget a -> True) k -> pure $ a & sealsL %~ insertSet k
-  PlaceSeal (isTarget a -> False) k -> pure $ a & sealsL %~ deleteSet k
+  PlaceSeal (isTarget a -> False) k -> pure $ a & sealsL %~ Set.filter ((/= k.kind) . (.kind))
   ActivateSeal k -> pure $ a & sealsL %~ Set.map (\s -> if s.kind == k then s {sealActive = True} else s)
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
     handSize <- getHandSize a

@@ -260,6 +260,11 @@ pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
 
 -- ** Location Patterns **
 
+pattern LocationCanHaveAttachments :: LocationMatcher
+pattern LocationCanHaveAttachments <- LocationWithoutModifier CannotHaveAttachments
+  where
+    LocationCanHaveAttachments = LocationWithoutModifier CannotHaveAttachments
+
 pattern FarthestLocationFromYou :: LocationMatcher -> LocationMatcher
 pattern FarthestLocationFromYou matcher <- FarthestLocationFromInvestigator You matcher
   where

@@ -222,6 +222,7 @@ lure1 =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Trick
     , cdLevel = Just 1
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 preparedForTheWorst :: CardDef

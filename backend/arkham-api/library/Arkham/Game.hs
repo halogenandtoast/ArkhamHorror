@@ -2170,6 +2170,8 @@ getLocationsMatching lmatcher = do
       pure $ filter ((`member` matches') . toId) ls
     BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
     LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
+    LocationWithAnyActiveSeal -> pure $ filter (any (\s -> s.active) . toList . attr locationSeals) ls
+    LocationWithActiveSeal k -> pure $ filter (any (\s -> s.active && s.kind == k) . toList . attr locationSeals) ls
     LocationWithDefeatedEnemyThisRound -> do
       iids <- allInvestigators
       enemiesDefeated <- historyEnemiesDefeated <$> foldMapM (getHistory RoundHistory) iids
@@ -3377,6 +3379,7 @@ instance Projection Location where
       LocationLabel -> pure locationLabel
       LocationTokens -> pure locationTokens
       LocationKeys -> pure locationKeys
+      LocationSeals -> pure locationSeals
       LocationClues -> pure $ locationClues attrs
       LocationRevealClues -> pure locationRevealClues
       LocationResources -> pure $ locationResources attrs

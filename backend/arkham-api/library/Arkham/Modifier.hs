@@ -173,6 +173,7 @@ data ModifierType
   | CannotGainResources
   | CannotGainResourcesFromPlayerCardEffects
   | CannotGainXP
+  | CannotHaveAttachments
   | CannotHealDamage
   | CannotHealHorror
   | CannotHealHorrorOnOtherCards Target

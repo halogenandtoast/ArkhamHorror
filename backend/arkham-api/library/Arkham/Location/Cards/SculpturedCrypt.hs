@@ -27,7 +27,7 @@ instance HasAbilities SculpturedCrypt where
 instance RunMessage SculpturedCrypt where
   runMessage msg l@(SculpturedCrypt attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ PlaceSeal (toTarget attrs) (Seal SealE False)
+      placeSeal attrs (Seal SealE False Nothing)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

@@ -36,6 +36,7 @@ instance RunMessage MapTheArea where
       pure e
     Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do
       whenNone (EventAt (LocationWithId lid) <> eventIs Cards.mapTheArea) do
-        place attrs.id (AttachedToLocation lid)
+        whenM (lid <=~> LocationCanHaveAttachments) do
+          place attrs.id (AttachedToLocation lid)
       pure e
     _ -> MapTheArea <$> liftRunMessage msg attrs

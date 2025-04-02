@@ -1043,6 +1043,36 @@ payCost msg c iid skipAdditionalCosts cost = do
                 $ Ask lead
                 $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalResources) paymentOptions
       pure c
+    GroupDiscardCost x extendedCardMatcher locationMatcher -> do
+      totalCards <- getPlayerCountValue x
+      iids <- select $ InvestigatorAt locationMatcher <> HandWith (HasCard DiscardableCard)
+      iidsWithCards <- forMaybeM iids \iid' -> do
+        cards <- select $ inHandOf NotForPlay iid' <> basic DiscardableCard <> extendedCardMatcher
+        if not (null cards)
+          then do
+            name <- fieldMap InvestigatorName toTitle iid'
+            pure $ Just (iid', name, length cards)
+          else pure Nothing
+      case iidsWithCards of
+        [(iid', _, _)] -> push (PayCost acId iid' True (HandDiscardCost totalCards extendedCardMatcher))
+        xs -> do
+          if sum (map (\(_, _, x') -> x') xs) == totalCards
+            then do
+              for_ xs \(iid', _, cCount) -> push (PayCost acId iid' True (HandDiscardCost cCount extendedCardMatcher))
+            else do
+              rs <- getRandoms
+              let
+                paymentOptions =
+                  map
+                    ( \(choiceId, (iid', name, cards)) ->
+                        PaymentAmountChoice choiceId iid' 0 cards name $ PayCost acId iid' True (HandDiscardCost 1 extendedCardMatcher)
+                    )
+                    (zip rs iidsWithCards)
+              lead <- getLeadPlayer
+              push
+                $ Ask lead
+                $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalCards) paymentOptions
+      pure c
     HandDiscardCost x extendedCardMatcher -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       let

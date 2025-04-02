@@ -27,7 +27,7 @@ instance HasAbilities UndercityAltar where
 instance RunMessage UndercityAltar where
   runMessage msg l@(UndercityAltar attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ PlaceSeal (toTarget attrs) (Seal SealC False)
+      placeSeal attrs (Seal SealC False Nothing)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

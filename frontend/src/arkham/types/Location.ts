@@ -3,6 +3,7 @@ import { Card, cardDecoder } from '@/arkham/types/Card';
 import { BreachStatus, breachStatusDecoder } from '@/arkham/types/Breach';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
+import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 
 export type Brazier = 'Lit' | 'Unlit';
@@ -42,6 +43,7 @@ export type Location = {
   breaches: BreachStatus | null;
   floodLevel: FloodLevel | null;
   keys: ArkhamKey[];
+  seals: Seal[];
 }
 
 export const locationDecoder = JsonDecoder.object<Location>(
@@ -66,6 +68,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     breaches: JsonDecoder.nullable(breachStatusDecoder),
     floodLevel: JsonDecoder.nullable(floodLevelDecoder),
     keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+    seals: JsonDecoder.array<Seal>(sealDecoder, 'Seal[]'),
   },
   'Location',
 );

@@ -313,6 +313,9 @@ allActs =
     , SomeActCard pursuitOfTheUnknownV1
     , SomeActCard pursuitOfTheUnknownV2
     , SomeActCard pursuitOfTheUnknownV3
+    , --- The Great Seal [eote]
+      SomeActCard dormancy
+    , SomeActCard theGreatSeal
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -8,7 +8,7 @@ newtype TheGateOfYquaa = TheGateOfYquaa LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGateOfYquaa :: LocationCard TheGateOfYquaa
-theGateOfYquaa = location TheGateOfYquaa Cards.theGateOfYquaa 0 (Static 0)
+theGateOfYquaa = location TheGateOfYquaa Cards.theGateOfYquaa 1 (PerPlayer 1)
 
 instance HasAbilities TheGateOfYquaa where
   getAbilities (TheGateOfYquaa attrs) =

@@ -37,6 +37,7 @@ allAgendaCards =
       , besetByMonsters
       , bidingItsTime
       , breakingThrough
+      , callOfMadness
       , callingForthTheOldOnes
       , celestialAlignment
       , chaosAtTheCarnevale
@@ -132,6 +133,7 @@ allAgendaCards =
       , theArkhamWoods
       , theBarrierIsThin
       , theBeastUnleashed
+      , theBeatingHeart
       , theBoundaryBroken
       , theBridgeOfWebs
       , theChariotVII
@@ -164,6 +166,7 @@ allAgendaCards =
       , theLonelyCaverns
       , theLoversVI
       , theMawWidens
+      , theMiasmaBeckons
       , theMurder
       , theNightHowls
       , theOldOnesHunger
@@ -726,6 +729,15 @@ lurkingHorrors = agenda "08622" "Lurking Horrors" 1 CityOfTheElderThings
 
 doomFromBelow :: CardDef
 doomFromBelow = agenda "08623" "Doom From Below" 2 CityOfTheElderThings
+
+theBeatingHeart :: CardDef
+theBeatingHeart = agenda "08659" "The Beating Heart" 1 TheGreatSeal
+
+theMiasmaBeckons :: CardDef
+theMiasmaBeckons = agenda "08660" "The Miasma Beckons" 2 TheGreatSeal
+
+callOfMadness :: CardDef
+callOfMadness = agenda "08661" "Call of Madness" 3 TheGreatSeal
 
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =

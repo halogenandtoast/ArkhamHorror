@@ -35,6 +35,7 @@ import Arkham.Action.Additional
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.CampaignLog
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Card.PlayerCard
@@ -152,6 +153,7 @@ import Data.Data.Lens (biplate)
 import Data.List qualified as List
 import Data.Map.Strict qualified as Map
 import Data.Monoid
+import Data.Set qualified as Set
 import Data.UUID (nil)
 
 instance RunMessage Investigator where
@@ -808,6 +810,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   PlaceKey (isTarget a -> True) (UnrevealedKey k) -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> True) k -> pure $ a & keysL %~ insertSet k
   PlaceKey (isTarget a -> False) k -> pure $ a & keysL %~ deleteSet k
+  PlaceSeal (isTarget a -> True) k -> pure $ a & sealsL %~ insertSet k
+  PlaceSeal (isTarget a -> False) k -> pure $ a & sealsL %~ deleteSet k
+  ActivateSeal k -> pure $ a & sealsL %~ Set.map (\s -> if s.kind == k then s {sealActive = True} else s)
   AllCheckHandSize | not (a ^. defeatedL || a ^. resignedL) -> do
     handSize <- getHandSize a
     inHandCount <- getInHandCount a

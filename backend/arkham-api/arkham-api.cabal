@@ -86,6 +86,7 @@ library
       Arkham.Act.Cards.DescentIntoDark
       Arkham.Act.Cards.DiscoveringTheTruth
       Arkham.Act.Cards.DisruptingTheRitual
+      Arkham.Act.Cards.Dormancy
       Arkham.Act.Cards.EnteringTheDreamlands
       Arkham.Act.Cards.EnteringTheUnderworldV1
       Arkham.Act.Cards.EnteringTheUnderworldV2
@@ -209,6 +210,7 @@ library
       Arkham.Act.Cards.TheFirstOath
       Arkham.Act.Cards.TheFourKeys
       Arkham.Act.Cards.TheGateOpens
+      Arkham.Act.Cards.TheGreatSeal
       Arkham.Act.Cards.TheGuardedRuins
       Arkham.Act.Cards.TheGuardiansInquiry
       Arkham.Act.Cards.TheIsleOfOriab
@@ -288,6 +290,7 @@ library
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
       Arkham.Agenda.Cards.CallingForthTheOldOnes
+      Arkham.Agenda.Cards.CallOfMadness
       Arkham.Agenda.Cards.CelestialAlignment
       Arkham.Agenda.Cards.ChaosAtTheCarnevale
       Arkham.Agenda.Cards.ChaosIncarnate
@@ -382,6 +385,7 @@ library
       Arkham.Agenda.Cards.TheArkhamWoods
       Arkham.Agenda.Cards.TheBarrierIsThin
       Arkham.Agenda.Cards.TheBeastUnleashed
+      Arkham.Agenda.Cards.TheBeatingHeart
       Arkham.Agenda.Cards.TheBoundaryBroken
       Arkham.Agenda.Cards.TheBridgeOfWebs
       Arkham.Agenda.Cards.TheChariotVII
@@ -414,6 +418,7 @@ library
       Arkham.Agenda.Cards.TheLonelyCaverns
       Arkham.Agenda.Cards.TheLoversVI
       Arkham.Agenda.Cards.TheMawWidens
+      Arkham.Agenda.Cards.TheMiasmaBeckons
       Arkham.Agenda.Cards.TheMurder
       Arkham.Agenda.Cards.TheNightHowls
       Arkham.Agenda.Cards.TheOldOnesHunger
@@ -1418,6 +1423,7 @@ library
       Arkham.Campaigns.EdgeOfTheEarth.Helpers
       Arkham.Campaigns.EdgeOfTheEarth.Key
       Arkham.Campaigns.EdgeOfTheEarth.Partner
+      Arkham.Campaigns.EdgeOfTheEarth.Seal
       Arkham.Campaigns.EdgeOfTheEarth.Supplies
       Arkham.Campaigns.NightOfTheZealot.CampaignSteps
       Arkham.Campaigns.NightOfTheZealot.ChaosBag

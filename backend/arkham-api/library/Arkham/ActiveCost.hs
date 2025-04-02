@@ -1013,6 +1013,36 @@ payCost msg c iid skipAdditionalCosts cost = do
       pure c
     -- push (SpendClues totalClues iids)
     -- withPayment $ CluePayment totalClues
+    GroupResourceCost x locationMatcher -> do
+      totalResources <- getPlayerCountValue x
+      iids <- select $ InvestigatorAt locationMatcher <> InvestigatorWithAnyResources
+      iidsWithResources <- forMaybeM iids \iid' -> do
+        resources <- getSpendableResources iid'
+        if resources > 0
+          then do
+            name <- fieldMap InvestigatorName toTitle iid'
+            pure $ Just (iid', name, resources)
+          else pure Nothing
+      case iidsWithResources of
+        [(iid', _, _)] -> push (PayCost acId iid' True (ResourceCost totalResources))
+        xs -> do
+          if sum (map (\(_, _, x') -> x') xs) == totalResources
+            then do
+              for_ xs \(iid', _, rCount) -> push (PayCost acId iid' True (ResourceCost rCount))
+            else do
+              rs <- getRandoms
+              let
+                paymentOptions =
+                  map
+                    ( \(choiceId, (iid', name, resources)) ->
+                        PaymentAmountChoice choiceId iid' 0 resources name $ PayCost acId iid' True (ResourceCost 1)
+                    )
+                    (zip rs iidsWithResources)
+              lead <- getLeadPlayer
+              push
+                $ Ask lead
+                $ ChoosePaymentAmounts (displayCostType cost) (Just $ TotalAmountTarget totalResources) paymentOptions
+      pure c
     HandDiscardCost x extendedCardMatcher -> do
       handCards <- fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard)) iid
       let

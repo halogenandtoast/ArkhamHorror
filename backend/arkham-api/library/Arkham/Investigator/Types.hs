@@ -8,6 +8,7 @@ module Arkham.Investigator.Types where
 import Arkham.Prelude
 
 import Arkham.Ability
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Action hiding (Resource)
 import Arkham.Action.Additional
 import Arkham.CampaignLog
@@ -150,6 +151,7 @@ data instance Field Investigator :: Type -> Type where
   InvestigatorXp :: Field Investigator Int
   InvestigatorCardCode :: Field Investigator CardCode
   InvestigatorKeys :: Field Investigator (Set ArkhamKey)
+  InvestigatorSeals :: Field Investigator (Set Seal)
   InvestigatorPlayerId :: Field Investigator PlayerId
   InvestigatorBondedCards :: Field Investigator [Card]
   InvestigatorDrawing :: Field Investigator (Maybe (CardDraw Message))
@@ -231,6 +233,7 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorXp" -> pure $ SomeField InvestigatorXp
     "InvestigatorCardCode" -> pure $ SomeField InvestigatorCardCode
     "InvestigatorKeys" -> pure $ SomeField InvestigatorKeys
+    "InvestigatorSeals" -> pure $ SomeField InvestigatorSeals
     "InvestigatorPlayerId" -> pure $ SomeField InvestigatorPlayerId
     "InvestigatorBondedCards" -> pure $ SomeField InvestigatorBondedCards
     "InvestigatorDrawing" -> pure $ SomeField InvestigatorDrawing
@@ -307,6 +310,8 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorForm :: InvestigatorForm
   , -- keys
     investigatorKeys :: Set ArkhamKey
+  , -- seals
+    investigatorSeals :: Set Seal
   , -- monterey jack
     investigatorBeganRoundAt :: Maybe LocationId
   , -- investigator specific logs
@@ -626,6 +631,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorIsYithian <- o .:? "isYithian" .!= False
     investigatorForm <- o .:? "form" .!= if investigatorIsYithian then YithianForm else RegularForm
     investigatorKeys <- o .: "keys"
+    investigatorSeals <- o .:? "seals" .!= mempty
     investigatorBeganRoundAt <- o .:? "beganRoundAt"
     investigatorLog <- o .: "log"
     investigatorDiscarding <- o .:? "discarding"

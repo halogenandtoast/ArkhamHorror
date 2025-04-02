@@ -264,6 +264,9 @@ onMounted(() => {
     flex-direction: column;
     gap: 10px;
     margin: 10px;
+    &:has(> .skill-test) {
+      margin: 0px;
+    }
   }
 }
 </style>

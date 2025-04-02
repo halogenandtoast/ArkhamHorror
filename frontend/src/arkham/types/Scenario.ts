@@ -239,6 +239,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c08501c": return "edgeOfTheEarth.iceAndDeath"
     case "c08549": return "edgeOfTheEarth.fatalMirage"
     case "c08596": return "edgeOfTheEarth.toTheForbiddenPeaks"
+    case "c08621": return "edgeOfTheEarth.cityOfTheElderThings"
+    case "c08648": return "edgeOfTheEarth.theHeartOfMadness"
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"

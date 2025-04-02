@@ -1,0 +1,16 @@
+{
+  "tokens": {
+    "easyStandard": {
+      "skull": "–1 (–3 instead if there is an _Ancient One_ enemy at your location).",
+      "cultist": "–1. If there is a seal at your location, or if your location is a Mist-Pylon, treat this token as a {frost} token, instead.",
+      "tablet": "–3. If you fail, draw the top card of the Tekeli-li deck.",
+      "elderthing": "–4. If you fail by 3 or more, place 1 doom on the current agenda. This can cause the current agenda to advance."
+    },
+    "hardExpert": {
+      "skull": "–2 (–4 instead if there is an _Ancient One_ enemy at your location).",
+      "cultist": "–1. If there is a seal at your location, or if your location is a Mist-Pylon, treat this token as a {frost} token in addition to its modifier.",
+      "tablet": "–3. Draw the top card of the Tekeli-li deck.",
+      "elderthing": "–5. If you fail by 3 or more, place 1 doom on the current agenda. This can cause the current agenda to advance."
+    }
+  }
+}

@@ -1,9 +1,9 @@
 module Arkham.Location.Cards.ForsakenTemple (forsakenTemple) where
 
+import Arkham.Ability
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Ability
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -31,10 +31,12 @@ instance RunMessage ForsakenTemple where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetAmount <- perPlayer 1
       iids <- select $ investigatorAt attrs
+      sameSpoke <- getLocationsOnSameSpoke attrs.label UnrevealedLocation
       chooseOneM iid do
         labeled "Spend 1 {perPlayer} clues as a group to activate the seal" do
           push $ SpendClues targetAmount iids
           activateSeal SealC
+          chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
         labeled "Do not spend clues" nothing
 
       pure l

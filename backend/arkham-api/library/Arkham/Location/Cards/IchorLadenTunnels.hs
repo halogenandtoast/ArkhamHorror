@@ -27,7 +27,7 @@ instance HasAbilities IchorLadenTunnels where
 instance RunMessage IchorLadenTunnels where
   runMessage msg l@(IchorLadenTunnels attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ PlaceSeal (toTarget attrs) (Seal SealB False)
+      push $ PlaceSeal (toTarget attrs) (Seal SealB False Nothing)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

@@ -27,7 +27,7 @@ instance HasAbilities TheSkeletonKey2 where
    where
     additionalCriteria = case a.placement of
       AttachedToLocation _ -> OnSameLocation
-      other -> if isInPlayArea other then (youExist $ at_ Anywhere) else Never
+      other -> if isInPlayArea other then exists (YourLocation <> LocationCanHaveAttachments) else Never
 
 instance RunMessage TheSkeletonKey2 where
   runMessage msg a@(TheSkeletonKey2 attrs) = runQueueT $ case msg of

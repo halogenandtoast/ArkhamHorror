@@ -422,6 +422,7 @@ lure2 =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = singleton Trick
     , cdLevel = Just 2
+    , cdCriteria = Just $ exists $ orConnected YourLocation <> LocationCanHaveAttachments
     }
 
 eucatastrophe3 :: CardDef

@@ -28,7 +28,7 @@ instance HasAbilities GlacialGrotto where
 instance RunMessage GlacialGrotto where
   runMessage msg l@(GlacialGrotto attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      placeSeal attrs (Seal SealD False)
+      placeSeal attrs (Seal SealD False Nothing)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

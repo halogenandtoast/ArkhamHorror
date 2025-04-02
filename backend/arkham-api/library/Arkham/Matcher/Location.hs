@@ -3,6 +3,7 @@
 
 module Arkham.Matcher.Location where
 
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Criteria
@@ -53,6 +54,8 @@ data LocationMatcher
   | LocationWithAdjacentBarrier
   | LocationWithAnyKeys
   | LocationWithKey ArkhamKey
+  | LocationWithAnyActiveSeal
+  | LocationWithActiveSeal SealKind
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher
   | LocationWithDamage ValueMatcher

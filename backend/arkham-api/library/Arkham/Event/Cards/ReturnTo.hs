@@ -19,6 +19,7 @@ barricade3 =
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdLevel = Just 3
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 hotStreak2 :: CardDef

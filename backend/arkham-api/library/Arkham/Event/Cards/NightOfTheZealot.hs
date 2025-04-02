@@ -96,6 +96,7 @@ barricade =
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdAlternateCardCodes = ["01538"]
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 crypticResearch4 :: CardDef

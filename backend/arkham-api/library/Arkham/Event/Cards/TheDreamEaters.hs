@@ -66,7 +66,7 @@ openGate =
     , cdCardTraits = singleton Spell
     , cdCriteria =
         Just
-          $ exists (You <> InvestigatorAt Anywhere)
+          $ exists (YourLocation <> LocationCanHaveAttachments)
           <> Criteria.EventCount (lessThan 3) (eventIs openGate)
     , cdFastWindow = Just $ DuringTurn You
     , cdKeywords = singleton Keyword.Myriad

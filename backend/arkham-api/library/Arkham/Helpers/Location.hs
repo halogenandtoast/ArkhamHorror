@@ -129,92 +129,6 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.LocationWithTreachery treacheryMatcher -> do selectAny $ Matcher.treacheryAt locationId <> treacheryMatcher
 
     -- normal cases
-    Matcher.LocationInRowOf {} -> locationId <=~> matcher
-    Matcher.LocationInColumnOf {} -> locationId <=~> matcher
-    Matcher.CanMoveCluesFromLocation {} -> locationId <=~> matcher
-    Matcher.ConnectedToSetAsideLocation {} -> locationId <=~> matcher
-    Matcher.UnbarricadedConnectedFrom {} -> locationId <=~> matcher
-    Matcher.LocationWithCardsUnderneath {} -> locationId <=~> matcher
-    Matcher.FloodedLocation {} -> locationId <=~> matcher
-    Matcher.FullyFloodedLocation {} -> locationId <=~> matcher
-    Matcher.PartiallyFloodedLocation {} -> locationId <=~> matcher
-    Matcher.CanHaveFloodLevelIncreased {} -> locationId <=~> matcher
-    Matcher.LocationFartherFrom {} -> locationId <=~> matcher
-    Matcher.LocationFartherFromMatching {} -> locationId <=~> matcher
-    Matcher.LocationBetween {} -> locationId <=~> matcher
-    Matcher.LocationWithDistanceFromAtLeast {} -> locationId <=~> matcher
-    Matcher.LocationWithAccessiblePath {} -> locationId <=~> matcher
-    Matcher.CanMoveCloserToLocation {} -> locationId <=~> matcher
-    Matcher.LocationWithDistanceFromAtMost {} -> locationId <=~> matcher
-    Matcher.LocationWhenCriteria {} -> locationId <=~> matcher
-    Matcher.LocationBeingDiscovered {} -> locationId <=~> matcher
-    Matcher.CanMoveToLocation {} -> locationId <=~> matcher
-    Matcher.CanEnterLocation _ -> locationId <=~> matcher
-    Matcher.IncludeEmptySpace _ -> locationId <=~> matcher
-    Matcher.LocationCanBeEnteredBy {} -> locationId <=~> matcher
-    Matcher.LocationWithAdjacentBarrier -> locationId <=~> matcher
-    Matcher.MostBreaches _ -> locationId <=~> matcher
-    Matcher.LocationWithVictory -> locationId <=~> matcher
-    Matcher.FewestBreaches {} -> locationId <=~> matcher
-    Matcher.RearmostLocation {} -> locationId <=~> matcher
-    Matcher.LocationInRow {} -> locationId <=~> matcher
-    Matcher.LocationInPosition {} -> locationId <=~> matcher
-    Matcher.LocationWithBreaches _ -> locationId <=~> matcher
-    Matcher.LocationWithBrazier _ -> locationId <=~> matcher
-    Matcher.LocationWithIncursion -> locationId <=~> matcher
-    Matcher.LocationWithDefeatedEnemyThisRound -> locationId <=~> matcher
-    Matcher.LocationWithDiscoverableCluesBy _ -> locationId <=~> matcher
-    Matcher.LocationWithoutModifier _ -> locationId <=~> matcher
-    Matcher.LocationWithModifier _ -> locationId <=~> matcher
-    Matcher.IsIchtacasDestination -> locationId <=~> matcher
-    Matcher.HauntedLocation -> locationId <=~> matcher
-    Matcher.LocationWithToken _ -> locationId <=~> matcher
-    Matcher.SingleSidedLocation -> locationId <=~> matcher
-    Matcher.LocationWithLowerPrintedShroudThan _ -> locationId <=~> matcher
-    Matcher.LocationNotInPlay -> locationId <=~> matcher
-    Matcher.LocationWithLabel _ -> locationId <=~> matcher
-    Matcher.LocationWithTitle _ -> locationId <=~> matcher
-    Matcher.LocationWithFullTitle _ _ -> locationId <=~> matcher
-    Matcher.LocationWithSymbol _ -> locationId <=~> matcher
-    Matcher.LocationWithUnrevealedTitle _ -> locationId <=~> matcher
-    Matcher.LocationWithId _ -> locationId <=~> matcher
-    Matcher.LocationIs _ -> locationId <=~> matcher
-    Matcher.Anywhere -> locationId <=~> matcher
-    Matcher.Nowhere -> locationId <=~> matcher
-    Matcher.LocationCanBeFlipped -> locationId <=~> matcher
-    Matcher.BlockedLocation -> locationId <=~> matcher
-    Matcher.EmptyLocation -> locationId <=~> matcher
-    Matcher.LocationWithCardId _ -> locationId <=~> matcher
-    Matcher.LocationWithoutInvestigators -> locationId <=~> matcher
-    Matcher.LocationWithoutEnemies -> locationId <=~> matcher
-    Matcher.AccessibleLocation -> locationId <=~> matcher
-    Matcher.AccessibleFrom _ -> locationId <=~> matcher
-    Matcher.AccessibleTo _ -> locationId <=~> matcher
-    Matcher.ConnectedFrom _ -> locationId <=~> matcher
-    Matcher.ConnectedTo _ -> locationId <=~> matcher
-    Matcher.ConnectedLocation -> locationId <=~> matcher
-    Matcher.RevealedLocation -> locationId <=~> matcher
-    Matcher.UnrevealedLocation -> locationId <=~> matcher
-    Matcher.FarthestLocationFromInvestigator _ _ -> locationId <=~> matcher
-    Matcher.FarthestLocationFromLocation _ _ -> locationId <=~> matcher
-    Matcher.NearestLocationToLocation _ _ -> locationId <=~> matcher
-    Matcher.FarthestLocationFromAll _ -> locationId <=~> matcher
-    Matcher.NearestLocationToYou _ -> locationId <=~> matcher
-    Matcher.NearestLocationTo _ _ -> locationId <=~> matcher
-    Matcher.LocationWithTrait _ -> locationId <=~> matcher
-    Matcher.LocationWithoutTrait _ -> locationId <=~> matcher
-    Matcher.LocationInDirection _ _ -> locationId <=~> matcher
-    Matcher.ClosestPathLocation _ _ -> locationId <=~> matcher
-    Matcher.ClosestUnbarricadedPathLocation _ _ -> locationId <=~> matcher
-    Matcher.LocationWithoutClues -> locationId <=~> matcher
-    Matcher.LocationHigherThan _ -> locationId <=~> matcher
-    Matcher.HighestRow _ -> locationId <=~> matcher
-    Matcher.HighestShroud _ -> locationId <=~> matcher
-    Matcher.LocationWithDamage {} -> locationId <=~> matcher
-    Matcher.LocationWithDistanceFrom {} -> locationId <=~> matcher
-    Matcher.LocationWithAnyKeys -> locationId <=~> matcher
-    Matcher.LocationWithKey _ -> locationId <=~> matcher
-    Matcher.LocationWithMostInvestigators _ -> locationId <=~> matcher
     Matcher.LocationWithClues valueMatcher ->
       (`gameValueMatches` valueMatcher) =<< field LocationClues locationId
     Matcher.LocationWithDoom valueMatcher ->
@@ -225,9 +139,6 @@ locationMatches investigatorId source window locationId matcher' = do
       field LocationShroud locationId >>= \case
         Nothing -> pure False
         Just shroud -> gameValueMatches shroud valueMatcher
-    Matcher.LocationWithAttachedEvent {} -> locationId <=~> matcher
-    Matcher.LocationWithAttachment {} -> locationId <=~> matcher
-    Matcher.LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField {} -> locationId <=~> matcher
     Matcher.LocationWithMostClues locationMatcher ->
       elem locationId
         <$> select (Matcher.LocationWithMostClues locationMatcher)
@@ -272,8 +183,8 @@ locationMatches investigatorId source window locationId matcher' = do
     Matcher.InvestigatableLocation -> do
       modifiers <- getModifiers (LocationTarget locationId)
       pure $ CannotInvestigate `notElem` modifiers
-    Matcher.LocationIsInFrontOf _ -> locationId <=~> matcher
     Matcher.ThatLocation -> error "That Location needs to be replaced"
+    _ -> locationId <=~> matcher
 
 getCanMoveTo :: (Sourceable source, HasGame m) => InvestigatorId -> source -> LocationId -> m Bool
 getCanMoveTo iid source lid = elem lid <$> getCanMoveToLocations iid source

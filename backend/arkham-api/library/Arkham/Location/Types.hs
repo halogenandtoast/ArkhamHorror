@@ -11,6 +11,7 @@ import Arkham.Prelude
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Calculation
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Classes.HasAbilities
@@ -102,6 +103,7 @@ data instance Field Location :: Type -> Type where
   LocationPosition :: Field Location (Maybe Pos)
   LocationCostToEnterUnrevealed :: Field Location Cost
   LocationKeys :: Field Location (Set ArkhamKey)
+  LocationSeals :: Field Location (Set Seal)
   LocationInvestigateDifficulty :: Field Location GameCalculation
 
 deriving stock instance Show (Field Location typ)
@@ -111,6 +113,7 @@ fieldLens :: Field Location typ -> Lens' LocationAttrs typ
 fieldLens = \case
   LocationTokens -> tokensL
   LocationKeys -> keysL
+  LocationSeals -> sealsL
   LocationClues -> tokensL . at Clue . non 0
   LocationRevealClues -> revealCluesL
   LocationResources -> tokensL . at Resource . non 0
@@ -201,6 +204,7 @@ instance FromJSON (SomeField Location) where
     "LocationShroud" -> pure $ SomeField LocationShroud
     "LocationTokens" -> pure $ SomeField LocationTokens
     "LocationKeys" -> pure $ SomeField LocationKeys
+    "LocationSeals" -> pure $ SomeField LocationSeals
     "LocationTraits" -> pure $ SomeField LocationTraits
     "LocationUnrevealedName" -> pure $ SomeField LocationUnrevealedName
     "LocationVengeance" -> pure $ SomeField LocationVengeance

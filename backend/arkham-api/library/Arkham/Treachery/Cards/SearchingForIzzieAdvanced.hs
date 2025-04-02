@@ -31,7 +31,7 @@ instance HasAbilities SearchingForIzzieAdvanced where
 instance RunMessage SearchingForIzzieAdvanced where
   runMessage msg t@(SearchingForIzzieAdvanced attrs) = case msg of
     Revelation iid (isSource attrs -> True) -> do
-      targets <- selectTargets $ FarthestLocationFromInvestigator (InvestigatorWithId iid) Anywhere
+      targets <- selectTargets $ FarthestLocationFromInvestigator (InvestigatorWithId iid) LocationCanHaveAttachments
       player <- getPlayer iid
       pushIfAny targets $ chooseOrRunOne player $ targetLabels targets (only . attachTreachery attrs)
       pure t

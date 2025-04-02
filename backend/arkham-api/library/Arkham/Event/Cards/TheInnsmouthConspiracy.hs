@@ -174,7 +174,7 @@ underSurveillance1 =
   (event "07157" "Under Surveillance" 3 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic, Trap]
-    , cdCriteria = Just $ Criteria.Negate $ exists $ "Under Surveillance" <> AssetAt YourLocation
+    , cdCriteria = Just $ Criteria.Negate (exists $ "Under Surveillance" <> AssetAt YourLocation) <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 1
     }
 
@@ -303,7 +303,7 @@ shrineOfTheMoirai3 =
   (event "07310" "Shrine of the Moirai" 1 Survivor)
     { cdSkills = [#willpower, #intellect, #agility]
     , cdCardTraits = setFromList [Fortune, Blessed, Cursed]
-    , cdCriteria = Just $ exists (LocationWithInvestigator You)
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     , cdLevel = Just 3
     , cdUnique = True
     , cdUses = Uses.Uses Uses.Offering (Fixed 3)

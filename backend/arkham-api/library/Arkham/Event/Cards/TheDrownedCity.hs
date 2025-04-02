@@ -138,7 +138,12 @@ doppelganger1 =
     , cdCardTraits = setFromList [Spell, Trick]
     , cdFastWindow = Just $ DuringTurn You
     , cdKeywords = setFromList [Keyword.Myriad]
-    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11058")
+    , cdCriteria =
+        Just
+          $ exists
+          $ YourLocation
+          <> not_ (LocationWithAttachedEvent $ EventIs "11058")
+          <> LocationCanHaveAttachments
     , cdLevel = Just 1
     }
 
@@ -177,7 +182,7 @@ spiritualEcho2 =
   (event "11075" "Spiritual Echo" 1 Mystic)
     { cdSkills = [#willpower, #combat]
     , cdCardTraits = setFromList [Ritual]
-    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11075")
+    , cdCriteria = Just $ exists $ YourLocation <> not_ (LocationWithAttachedEvent $ EventIs "11075") <> LocationCanHaveAttachments
     , cdLevel = Just 2
     }
 

@@ -28,7 +28,7 @@ instance HasAbilities LimestoneCaverns where
 instance RunMessage LimestoneCaverns where
   runMessage msg l@(LimestoneCaverns attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      placeSeal attrs (Seal SealA False)
+      placeSeal attrs (Seal SealA False Nothing)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       for_ (nonEmpty $ toList attrs.seals) \(k :| _) -> do

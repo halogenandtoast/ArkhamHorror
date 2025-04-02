@@ -4,6 +4,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Token
 
@@ -29,7 +30,8 @@ instance RunMessage BreachTheDoor where
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
       withLocationOf iid \lid -> do
-        push $ PlaceEvent attrs.id (AttachedToLocation lid)
-        placeTokens attrs attrs Lead n
+        whenM (lid <=~> LocationCanHaveAttachments) do
+          push $ PlaceEvent attrs.id (AttachedToLocation lid)
+          placeTokens attrs attrs Lead n
       pure e
     _ -> BreachTheDoor <$> liftRunMessage msg attrs

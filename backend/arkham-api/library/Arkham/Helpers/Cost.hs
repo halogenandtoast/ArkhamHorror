@@ -327,6 +327,10 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     iids <- select $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- sum <$> traverse getSpendableResources iids
     pure $ totalSpendableClues >= cost
+  GroupDiscardCost n extendedCardMatcher locationMatcher -> do
+    cost <- getPlayerCountValue n
+    cards <- selectCount $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt locationMatcher) <> extendedCardMatcher <> Matcher.basic Matcher.DiscardableCard
+    pure $ cards >= cost
   GroupClueCostRange (cost, _) locationMatcher -> do
     iids <- select $ Matcher.InvestigatorAt locationMatcher
     totalSpendableClues <- getSpendableClueCount iids

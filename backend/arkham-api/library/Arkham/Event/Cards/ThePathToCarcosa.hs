@@ -112,6 +112,7 @@ hidingSpot =
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdFastWindow = Just FastPlayerWindow
+    , cdCriteria = Just $ exists LocationCanHaveAttachments
     }
 
 heroicRescue :: CardDef
@@ -146,6 +147,7 @@ ambush1 =
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = singleton Tactic
     , cdLevel = Just 1
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 forewarned1 :: CardDef
@@ -283,7 +285,7 @@ snareTrap2 =
   (event "03199" "Snare Trap" 2 Survivor)
     { cdSkills = [#willpower, #agility]
     , cdCardTraits = setFromList [Trap, Improvised]
-    , cdCriteria = Just $ Criteria.Negate $ exists $ "Snare Trap" <> AssetAt YourLocation
+    , cdCriteria = Just $ Criteria.Negate (exists $ "Snare Trap" <> AssetAt YourLocation) <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 2
     }
 
@@ -305,6 +307,7 @@ shortcut2 =
     , cdCardTraits = setFromList [Insight, Tactic]
     , cdFastWindow = Just $ DuringTurn You
     , cdLevel = Just 2
+    , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     }
 
 waylay :: CardDef

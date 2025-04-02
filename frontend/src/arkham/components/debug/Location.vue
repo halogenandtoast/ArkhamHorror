@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 
+import { useMenu } from '@/composeable/menu';
 import Draggable from '@/components/Draggable.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { computed } from 'vue';
@@ -17,6 +18,15 @@ type Props = {
 
 const emit = defineEmits<{ close: [] }>()
 const props = defineProps<Props>()
+const { addEntry } = useMenu()
+
+addEntry({
+  id: `close-debug-${props.location.id}`,
+  content: "",
+  shortcut: "Escape",
+  action: () => emit('close')
+})
+
 
 const debug = useDebug()
 const id = computed(() => props.location.id)

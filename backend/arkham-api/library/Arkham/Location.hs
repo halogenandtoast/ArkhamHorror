@@ -761,6 +761,21 @@ allLocations =
     , SomeLocationCard cyclopeanSpires
     , SomeLocationCard submergedPassageway
     , SomeLocationCard templeOfTheElderThings
+    , --- The Heart of Madness [eote]
+      SomeLocationCard theGateOfYquaa
+    , SomeLocationCard geothermalVent
+    , SomeLocationCard forsakenTemple
+    , SomeLocationCard libraryOfKos
+    , SomeLocationCard protoplasmicPool
+    , SomeLocationCard hallOfTheSunlessSea
+    , SomeLocationCard subnauticalSprawl
+    , SomeLocationCard vaultedCorridor
+    , --- The Great Seal [eote]
+      SomeLocationCard glacialGrotto
+    , SomeLocationCard sculpturedCrypt
+    , SomeLocationCard undercityAltar
+    , SomeLocationCard ichorLadenTunnels
+    , SomeLocationCard limestoneCaverns
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

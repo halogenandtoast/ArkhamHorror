@@ -86,6 +86,14 @@ location cardCode name traits locationSymbol connectedLocationSymbols encounterS
     , cdLevel = Nothing
     }
 
+location_
+  :: CardCode
+  -> Name
+  -> [Trait]
+  -> EncounterSet
+  -> CardDef
+location_ cardCode name traits encounterSet = location cardCode name traits NoSymbol mempty encounterSet
+
 allLocationCards :: Map CardCode CardDef
 allLocationCards =
   mapFromList
@@ -337,6 +345,7 @@ allLocationCards =
       , forkInTheRoad_a
       , forkInTheRoad_b
       , forkedPath
+      , forsakenTemple
       , forsakenTowerOfEternalFlame
       , forsakenTowerOfIllusionAndMyth
       , forsakenTowerOfInfiniteTruth
@@ -360,8 +369,10 @@ allLocationCards =
       , gardensOfLuxembourg
       , gareDOrsay
       , gatewayToYhanthlei
+      , geothermalVent
       , gilmanHouse
       , gilmanHouseInTooDeep
+      , glacialGrotto
       , gondola
       , grandChamber
       , grandEntryway
@@ -378,6 +389,7 @@ allLocationCards =
       , hallOfRebirth
       , hallOfSilence
       , hallOfTheDeep
+      , hallOfTheSunlessSea
       , hallsOfPnakotusEasternCorridors
       , hallsOfPnakotusNorthernCorridors
       , hallsOfPnakotusWesternCorridors
@@ -414,6 +426,7 @@ allLocationCards =
       , houseInTheReeds_211
       , humanitiesBuilding
       , icebreakerLanding
+      , ichorLadenTunnels
       , icyWastes
       , idolChamber
       , ilekVad
@@ -451,10 +464,12 @@ allLocationCards =
       , leMarais217
       , leMarais218
       , library
+      , libraryOfKos
       , lightSideOfTheMoon
       , lighthouseKeepersCottage
       , lighthouseStairwell
       , lightingBox
+      , limestoneCaverns
       , livingRoom
       , lobby
       , lobbyMembersOnly
@@ -558,6 +573,7 @@ allLocationCards =
       , prismaticCascade
       , prisonOfMemories
       , privateRoom
+      , protoplasmicPool
       , pumpRoom
       , quietHalls_131
       , quietHalls_135
@@ -604,6 +620,7 @@ allLocationCards =
       , schoolhouse_212
       , schoolhouse_213
       , scienceBuilding
+      , sculpturedCrypt
       , seaOfBones
       , seaOfPitch_262
       , seaOfPitch_263
@@ -656,6 +673,7 @@ allLocationCards =
       , studyAberrantGateway
       , submergedPassageway
       , submergedTemple
+      , subnauticalSprawl
       , suiteBalcony
       , sunkenArchives
       , sunkenGrottoFinalDepths
@@ -689,6 +707,7 @@ allLocationCards =
       , theGallowsSpectral_170
       , theGallows_169
       , theGallows_170
+      , theGateOfYquaa
       , theGateToHell
       , theGeistTrap
       , theGreatWebCosmicWeb
@@ -726,6 +745,7 @@ allLocationCards =
       , twilightAbyss
       , twistedUnderbrush
       , ulthar
+      , undercityAltar
       , undergroundRiver
       , undergroundRuins
       , underseaCorridors
@@ -749,6 +769,7 @@ allLocationCards =
       , valusia
       , vastPassages
       , vault
+      , vaultedCorridor
       , vaultOfRiches
       , vaultsOfZin
       , velmasDiner
@@ -7866,6 +7887,134 @@ templeOfTheElderThings =
       "Temple of the Elder Things"
       [City]
       ToTheForbiddenPeaks
+
+theGateOfYquaa :: CardDef
+theGateOfYquaa =
+  location_
+    "08649"
+    ("The Gate of Y'quaa" <:> "Primordial Seal")
+    [Ruins]
+    TheHeartOfMadness
+
+geothermalVent :: CardDef
+geothermalVent =
+  locationWithUnrevealed_
+    "08650"
+    "Ancient Facility"
+    [Ruins]
+    "Geothermal Vent"
+    [Ruins]
+    TheHeartOfMadness
+
+forsakenTemple :: CardDef
+forsakenTemple =
+  locationWithUnrevealed_
+    "08651"
+    "Ancient Facility"
+    [Ruins]
+    "Forsaken Temple"
+    [Ruins]
+    TheHeartOfMadness
+
+libraryOfKos :: CardDef
+libraryOfKos =
+  locationWithUnrevealed_
+    "08652"
+    "Ancient Facility"
+    [Ruins]
+    "Library of Kós"
+    [Ruins]
+    TheHeartOfMadness
+
+protoplasmicPool :: CardDef
+protoplasmicPool =
+  locationWithUnrevealed_
+    "08653"
+    "Ancient Facility"
+    [Ruins]
+    "Protoplasmic Pool"
+    [Ruins]
+    TheHeartOfMadness
+
+hallOfTheSunlessSea :: CardDef
+hallOfTheSunlessSea =
+  locationWithUnrevealed_
+    "08654"
+    "Ancient Facility"
+    [Ruins]
+    "Hall of the Sunless Sea"
+    [Ruins]
+    TheHeartOfMadness
+
+subnauticalSprawl :: CardDef
+subnauticalSprawl =
+  locationWithUnrevealed_
+    "08655"
+    "Ancient Facility"
+    [Ruins]
+    "Subnautical Sprawl"
+    [Ruins]
+    TheHeartOfMadness
+
+vaultedCorridor :: CardDef
+vaultedCorridor =
+  locationWithUnrevealed_
+    "08656"
+    "Ancient Facility"
+    [Ruins]
+    "Vaulted Corridor"
+    [Ruins]
+    TheHeartOfMadness
+
+glacialGrotto :: CardDef
+glacialGrotto =
+  locationWithUnrevealed_
+    "08664"
+    "Ancient Facility"
+    [Ruins]
+    "Glacial Grotto"
+    [Ruins]
+    TheGreatSeal
+
+sculpturedCrypt :: CardDef
+sculpturedCrypt =
+  locationWithUnrevealed_
+    "08665"
+    "Ancient Facility"
+    [Ruins]
+    "Sculptured Crypt"
+    [Ruins]
+    TheGreatSeal
+
+undercityAltar :: CardDef
+undercityAltar =
+  locationWithUnrevealed_
+    "08666"
+    "Ancient Facility"
+    [Ruins]
+    "Undercity Altar"
+    [Ruins]
+    TheGreatSeal
+
+ichorLadenTunnels :: CardDef
+ichorLadenTunnels =
+  locationWithUnrevealed_
+    "08667"
+    "Ancient Facility"
+    [Ruins]
+    "Ichor-Laden Tunnels"
+    [Ruins]
+    TheGreatSeal
+
+limestoneCaverns :: CardDef
+limestoneCaverns =
+  locationWithUnrevealed_
+    "08668"
+    "Ancient Facility"
+    [Ruins]
+    "Limestone Caverns"
+    [Ruins]
+    TheGreatSeal
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

@@ -2803,6 +2803,7 @@ library
       Arkham.Location.Cards.ForkedPath
       Arkham.Location.Cards.ForkInTheRoad_a
       Arkham.Location.Cards.ForkInTheRoad_b
+      Arkham.Location.Cards.ForsakenTemple
       Arkham.Location.Cards.ForsakenTowerOfEternalFlame
       Arkham.Location.Cards.ForsakenTowerOfIllusionAndMyth
       Arkham.Location.Cards.ForsakenTowerOfInfiniteTruth
@@ -2826,8 +2827,10 @@ library
       Arkham.Location.Cards.GardensOfLuxembourg
       Arkham.Location.Cards.GareDOrsay
       Arkham.Location.Cards.GatewayToYhanthlei
+      Arkham.Location.Cards.GeothermalVent
       Arkham.Location.Cards.GilmanHouse
       Arkham.Location.Cards.GilmanHouseInTooDeep
+      Arkham.Location.Cards.GlacialGrotto
       Arkham.Location.Cards.Gondola
       Arkham.Location.Cards.GrandChamber
       Arkham.Location.Cards.GrandEntryway
@@ -2844,6 +2847,7 @@ library
       Arkham.Location.Cards.HallOfRebirth
       Arkham.Location.Cards.HallOfSilence
       Arkham.Location.Cards.HallOfTheDeep
+      Arkham.Location.Cards.HallOfTheSunlessSea
       Arkham.Location.Cards.HallsOfPnakotusEasternCorridors
       Arkham.Location.Cards.HallsOfPnakotusNorthernCorridors
       Arkham.Location.Cards.HallsOfPnakotusWesternCorridors
@@ -2880,6 +2884,7 @@ library
       Arkham.Location.Cards.HouseInTheReeds_211
       Arkham.Location.Cards.HumanitiesBuilding
       Arkham.Location.Cards.IcebreakerLanding
+      Arkham.Location.Cards.IchorLadenTunnels
       Arkham.Location.Cards.IcyWastes
       Arkham.Location.Cards.IdolChamber
       Arkham.Location.Cards.IlekVad
@@ -2917,10 +2922,12 @@ library
       Arkham.Location.Cards.LeMarais217
       Arkham.Location.Cards.LeMarais218
       Arkham.Location.Cards.Library
+      Arkham.Location.Cards.LibraryOfKos
       Arkham.Location.Cards.LighthouseKeepersCottage
       Arkham.Location.Cards.LighthouseStairwell
       Arkham.Location.Cards.LightingBox
       Arkham.Location.Cards.LightSideOfTheMoon
+      Arkham.Location.Cards.LimestoneCaverns
       Arkham.Location.Cards.LivingRoom
       Arkham.Location.Cards.Lobby
       Arkham.Location.Cards.LobbyMembersOnly
@@ -3024,6 +3031,7 @@ library
       Arkham.Location.Cards.PrismaticCascade
       Arkham.Location.Cards.PrisonOfMemories
       Arkham.Location.Cards.PrivateRoom
+      Arkham.Location.Cards.ProtoplasmicPool
       Arkham.Location.Cards.PumpRoom
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
@@ -3070,6 +3078,7 @@ library
       Arkham.Location.Cards.Schoolhouse_212
       Arkham.Location.Cards.Schoolhouse_213
       Arkham.Location.Cards.ScienceBuilding
+      Arkham.Location.Cards.SculpturedCrypt
       Arkham.Location.Cards.SealedExit
       Arkham.Location.Cards.SeaOfBones
       Arkham.Location.Cards.SeaOfPitch_262
@@ -3122,6 +3131,7 @@ library
       Arkham.Location.Cards.StudyAberrantGateway
       Arkham.Location.Cards.SubmergedPassageway
       Arkham.Location.Cards.SubmergedTemple
+      Arkham.Location.Cards.SubnauticalSprawl
       Arkham.Location.Cards.SuiteBalcony
       Arkham.Location.Cards.SunkenArchives
       Arkham.Location.Cards.SunkenGrottoFinalDepths
@@ -3156,6 +3166,7 @@ library
       Arkham.Location.Cards.TheGallows_170
       Arkham.Location.Cards.TheGallowsSpectral_169
       Arkham.Location.Cards.TheGallowsSpectral_170
+      Arkham.Location.Cards.TheGateOfYquaa
       Arkham.Location.Cards.TheGateToHell
       Arkham.Location.Cards.TheGeistTrap
       Arkham.Location.Cards.TheGreatWebCosmicWeb
@@ -3192,6 +3203,7 @@ library
       Arkham.Location.Cards.TwilightAbyss
       Arkham.Location.Cards.TwistedUnderbrush
       Arkham.Location.Cards.Ulthar
+      Arkham.Location.Cards.UndercityAltar
       Arkham.Location.Cards.UndergroundRiver
       Arkham.Location.Cards.UndergroundRuins
       Arkham.Location.Cards.UnderseaCorridors
@@ -3215,6 +3227,7 @@ library
       Arkham.Location.Cards.Valusia
       Arkham.Location.Cards.VastPassages
       Arkham.Location.Cards.Vault
+      Arkham.Location.Cards.VaultedCorridor
       Arkham.Location.Cards.VaultOfRiches
       Arkham.Location.Cards.VaultsOfZin
       Arkham.Location.Cards.VelmasDiner

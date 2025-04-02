@@ -28,11 +28,11 @@ instance HasAbilities GlacialGrotto where
 instance RunMessage GlacialGrotto where
   runMessage msg l@(GlacialGrotto attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      push $ PlaceSeal (toTarget attrs) (Seal SealD False)
+      placeSeal attrs (Seal SealD False)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 2) attrs #combat (Fixed 2)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       for_ (nonEmpty $ toList attrs.seals) \(k :| _) -> do

@@ -26,7 +26,10 @@ lookupLocation cCode = case lookup cCode allLocations of
 instance RunMessage Location where
   runMessage (Reset target) x | isTarget (toAttrs x) target = do
     let a = toAttrs x
-    pure $ lookupLocation (toCardCode a) a.id (toCardId a)
+    pure
+      $ overAttrs
+        (\y -> y {locationLabel = locationLabel a})
+        (lookupLocation (toCardCode a) a.id (toCardId a))
   runMessage msg x@(Location l) = do
     modifiers' <- getModifiers (toTarget x)
     let msg' = if Blank `elem` modifiers' then Blanked msg else msg

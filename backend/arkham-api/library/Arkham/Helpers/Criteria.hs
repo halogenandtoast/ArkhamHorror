@@ -81,6 +81,7 @@ import Control.Monad.Reader (local)
 import Control.Monad.Writer.Strict (execWriterT)
 import Data.Data.Lens (biplate)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
+import Data.Map qualified as Map
 import Data.Set qualified as Set
 import Data.Typeable
 
@@ -152,6 +153,15 @@ passesCriteria iid mcard source' requestor windows' = \case
     mtabooList <- field InvestigatorTaboo iid
     passesCriteria iid mcard source' requestor windows'
       $ if maybe False (>= tabooList) mtabooList then cIf else cElse
+  Criteria.ElectrostaticDetonation -> do
+    iids <- select Matcher.UneliminatedInvestigator
+    groupings <- for iids \iid' -> do
+      mlid <- field InvestigatorLocation iid'
+      seals <- filter (\s -> s.active) . toList <$> field InvestigatorSeals iid'
+      pure (iid', mlid,seals)
+
+    let sealMap = foldl' (\acc (_,mlid,seals) -> maybe acc (\k -> Map.insertWith (<>) k seals acc) mlid) mempty groupings
+    pure $ any ((> 1) . length) $ Map.elems sealMap
   Criteria.IfYouOweBiancaDieKatz -> do
     let
       isValid = \case

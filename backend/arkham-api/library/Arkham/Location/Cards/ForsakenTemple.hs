@@ -26,7 +26,7 @@ instance RunMessage ForsakenTemple where
   runMessage msg l@(ForsakenTemple attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #combat (Fixed 3)
+      beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       targetAmount <- perPlayer 1
@@ -34,7 +34,7 @@ instance RunMessage ForsakenTemple where
       chooseOneM iid do
         labeled "Spend 1 {perPlayer} clues as a group to activate the seal" do
           push $ SpendClues targetAmount iids
-          activateSeal SealD
+          activateSeal SealC
         labeled "Do not spend clues" nothing
 
       pure l

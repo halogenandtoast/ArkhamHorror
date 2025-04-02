@@ -9,13 +9,7 @@ data Seal = Seal
   , sealActive :: Bool
   }
   deriving stock (Show, Ord, Generic, Data)
-  deriving anyclass ToJSON
-
-instance FromJSON Seal where
-  parseJSON = withObject "Seal" \o -> do
-    sealKind <- o .: "sealKind"
-    sealActive <- o .: "sealActive" <|> o .: "sealRevealed"
-    pure Seal {..}
+  deriving anyclass (ToJSON, FromJSON)
 
 instance HasField "kind" Seal SealKind where
   getField = sealKind

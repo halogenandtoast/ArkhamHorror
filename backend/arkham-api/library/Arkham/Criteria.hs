@@ -272,6 +272,7 @@ data Criterion
   | ChosenCustomizationCardIsInPlay
   | HasCustomization Customization
   | IfYouOweBiancaDieKatz
+  | ElectrostaticDetonation
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

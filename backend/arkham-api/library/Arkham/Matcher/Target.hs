@@ -13,6 +13,7 @@ import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
 import Data.Aeson.TH
+import GHC.OverloadedLabels
 
 data TargetMatcher
   = TargetIs Target
@@ -31,6 +32,9 @@ data TargetMatcher
   | TargetWithTrait Trait
   | TargetControlledBy InvestigatorMatcher
   deriving stock (Show, Eq, Ord, Data)
+
+instance IsLabel "any" TargetMatcher where
+  fromLabel = AnyTarget
 
 instance Not TargetMatcher where
   not_ = NotTarget

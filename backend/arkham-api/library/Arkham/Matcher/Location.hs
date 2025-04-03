@@ -55,6 +55,7 @@ data LocationMatcher
   | LocationWithAnyKeys
   | LocationWithKey ArkhamKey
   | LocationWithAnyActiveSeal
+  | LocationWithAnySeal
   | LocationWithActiveSeal SealKind
   | LocationWithoutClues
   | LocationWithDoom ValueMatcher

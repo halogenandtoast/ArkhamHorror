@@ -452,6 +452,8 @@ allEnemies =
       SomeEnemyCard terrorOfTheStarsBaneOfTheElderThings
     , SomeEnemyCard benignElderThing
     , SomeEnemyCard reawakenedElderThing
+    , -- The Great Seal [eote]
+      SomeEnemyCard protoplasmicMass
     , -- Agents of the Unknown [eote]
       SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]

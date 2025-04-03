@@ -26,4 +26,7 @@ instance RunMessage TheGreatSeal where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R1
       pure a
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
+      pure a
     _ -> TheGreatSeal <$> liftRunMessage msg attrs

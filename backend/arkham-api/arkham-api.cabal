@@ -1785,6 +1785,7 @@ library
       Arkham.Enemy.Cards.PriestOfDagon
       Arkham.Enemy.Cards.PrimordialEvil
       Arkham.Enemy.Cards.ProfessorWilliamDyerProfessorOfGeology
+      Arkham.Enemy.Cards.ProtoplasmicMass
       Arkham.Enemy.Cards.PursuingMotorcar
       Arkham.Enemy.Cards.RampagingShoggoth
       Arkham.Enemy.Cards.RavagerFromTheDeep
@@ -3896,6 +3897,7 @@ library
       Arkham.Treachery.Cards.DrivenToMadness
       Arkham.Treachery.Cards.EagerForDeath
       Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion
+      Arkham.Treachery.Cards.ElectrostaticDischarge
       Arkham.Treachery.Cards.EncephalonSignal
       Arkham.Treachery.Cards.EndlessDescent
       Arkham.Treachery.Cards.EndlessWeaving
@@ -4037,6 +4039,7 @@ library
       Arkham.Treachery.Cards.PossessionMurderous
       Arkham.Treachery.Cards.PossessionTorturous
       Arkham.Treachery.Cards.PossessionTraitorous
+      Arkham.Treachery.Cards.PrimevalTerror
       Arkham.Treachery.Cards.PrimordialGateway
       Arkham.Treachery.Cards.PrismaticPhenomenon
       Arkham.Treachery.Cards.ProphecyOfTheEnd
@@ -4063,6 +4066,7 @@ library
       Arkham.Treachery.Cards.RisingTides
       Arkham.Treachery.Cards.RitesHowled
       Arkham.Treachery.Cards.RookieMistake
+      Arkham.Treachery.Cards.RootsOfTheEarth
       Arkham.Treachery.Cards.RottingRemains
       Arkham.Treachery.Cards.RottingRemainsBloodOnTheAltar
       Arkham.Treachery.Cards.RuinAndDestruction

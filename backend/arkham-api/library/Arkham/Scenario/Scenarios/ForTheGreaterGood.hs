@@ -93,7 +93,7 @@ instance RunMessage ForTheGreaterGood where
       pure s
     DoStep 2 PreScenarioSetup -> do
       showSidebar <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
-      let convert = if showSidebar then addFlavorEntry decievingTheLodge else id
+      let convert = if showSidebar then (`addFlavorEntry` decievingTheLodge) else id
       story $ convert intro2
       pure s
     DoStep 3 PreScenarioSetup -> do

@@ -51,7 +51,7 @@ instance HasChaosTokenValue TheHeartOfMadnessPart1 where
   getChaosTokenValue = getChaosTokenValueFromScenario
 
 instance RunMessage TheHeartOfMadnessPart1 where
-  runMessage msg s@(TheHeartOfMadnessPart1 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(TheHeartOfMadnessPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
       story $ i18nWithTitle "intro"
       kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology

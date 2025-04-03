@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2003,6 +2003,21 @@ getLocationsMatching lmatcher = do
             matchingLocationIds <- map toId <$> getLocationsMatching matcher
             getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
       pure $ filter ((`elem` matches') . toId) ls
+    NearestLocationToAny matcher -> do
+      iids <- getInvestigators
+      candidates <- map toId <$> getLocationsMatching matcher
+      distances <- catMaybes <$> for iids \iid -> do
+        mstart <- getMaybeLocation iid
+        case mstart of
+          Nothing -> pure Nothing
+          Just start -> Just . distanceSingletons
+              <$> evalStateT
+                (markDistances start (pure . (`elem` candidates)) mempty)
+                (LPState (pure start) (singleton start) mempty)
+      let
+        overallDistances = distanceAggregates $ foldr (unionWith min) mempty (traceShowId distances)
+        resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
+      pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationTo iid matcher -> do
       mStart <- field InvestigatorLocation iid
       case mStart of
@@ -4406,7 +4421,7 @@ markDistances
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
   -> StateT LPState m (Map Int [LocationId])
-markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap
+markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target target extraConnectionsMap
 
 markBarricadedDistances
   :: HasGame m

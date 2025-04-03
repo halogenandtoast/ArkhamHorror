@@ -54,7 +54,7 @@ isSaved x = getPartnerIsAlive savingPartner
 
 instance RunMessage TheBeatingHeart where
   runMessage msg a@(TheBeatingHeart attrs) = runQueueT $ case msg of
-    AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n $ scope "interlude" do
+    AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n 1 $ scope "interlude" do
       partners <- getPartnersWithStatus (== Safe)
       case nonEmpty partners of
         Nothing -> story $ i18n "instructions"

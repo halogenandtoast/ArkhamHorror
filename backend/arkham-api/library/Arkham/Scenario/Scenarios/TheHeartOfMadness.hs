@@ -1,21 +1,27 @@
 module Arkham.Scenario.Scenarios.TheHeartOfMadness (theHeartOfMadness) where
 
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.EncounterSet qualified as Set
+import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Modifiers (modifySelect, ModifierType(..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Text
+import Arkham.Helpers.Xp
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
+import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo)
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Trait (Trait (Ancient))
@@ -224,5 +230,40 @@ instance RunMessage TheHeartOfMadness where
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       drawTekelili iid Tablet 1
+      pure s
+    ScenarioResolution {} -> do
+      doStep (toResult @Int attrs.meta) msg
+      pure s
+    DoStep 1 (ScenarioResolution resolution) -> do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          push R2
+        Resolution 1 -> do
+          locationSeals <-
+            count (.active) . concatMap toList <$> selectField LocationSeals LocationWithAnyActiveSeal
+          investigatorSeals <-
+            count (.active) . concatMap toList <$> selectField InvestigatorSeals InvestigatorWithAnyActiveSeal
+          base <- allGainXpWithBonus' attrs $ toBonus "bonus" (locationSeals + investigatorSeals)
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution1"
+          endOfScenario
+        Resolution 2 -> do
+          locationSeals <-
+            count (.active) . concatMap toList <$> selectField LocationSeals LocationWithAnyActiveSeal
+          investigatorSeals <-
+            count (.active) . concatMap toList <$> selectField InvestigatorSeals InvestigatorWithAnyActiveSeal
+          base <- allGainXpWithBonus' attrs $ toBonus "bonus" (locationSeals + investigatorSeals)
+          story
+            $ withVars ["xp" .= base]
+            $ i18nWithTitle "resolution2"
+          endOfScenario
+        Resolution 3 -> do
+          story $ i18nWithTitle "resolution3"
+          record TheSealWasUsedImproperly
+          eachInvestigator (kill attrs)
+          gameOver
+        _ -> throwIO $ UnknownResolution resolution
       pure s
     _ -> TheHeartOfMadness <$> liftRunMessage msg attrs

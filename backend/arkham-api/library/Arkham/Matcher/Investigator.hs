@@ -151,6 +151,8 @@ data InvestigatorMatcher
   | InvestigatorWithMostCardsInPlayArea
   | InvestigatorWithClass ClassSymbol
   | InvestigatorWithKey ArkhamKey
+  | InvestigatorWithAnySeal
+  | InvestigatorWithAnyActiveSeal
   | InvestigatorWithSeal SealKind
   | InvestigatorWithDormantSeal SealKind
   | InvestigatorWithActiveSeal SealKind

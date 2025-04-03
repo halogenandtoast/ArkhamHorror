@@ -1088,13 +1088,17 @@ getInvestigatorsMatching matcher = do
     InvestigatorWithKey key -> flip filterM as $ \i ->
       pure $ key `elem` investigatorKeys (toAttrs i)
     InvestigatorWithSeal kind -> flip filterM as $ \i ->
-      pure $ kind `elem` map (.kind) (toList $ investigatorSeals (toAttrs i))
+      pure $ kind `elem` map (.kind) (toList $ attrs investigatorSeals i)
+    InvestigatorWithAnySeal -> flip filterM as $ \i ->
+      pure $ notNull $ investigatorSeals (toAttrs i)
+    InvestigatorWithAnyActiveSeal -> flip filterM as $ \i ->
+      any (.active) (toList $ attr investigatorSeals i)
     InvestigatorWithActiveSeal kind -> flip filterM as $ \i ->
-      case find ((== kind) . (.kind)) (toList $ investigatorSeals (toAttrs i)) of
+      case find ((== kind) . (.kind)) (toList $ attr investigatorSeals i) of
         Nothing -> pure False
         Just s -> pure s.active
     InvestigatorWithDormantSeal kind -> flip filterM as $ \i ->
-      case find ((== kind) . (.kind)) (toList $ investigatorSeals (toAttrs i)) of
+      case find ((== kind) . (.kind)) (toList $ attr investigatorSeals i) of
         Nothing -> pure False
         Just s -> pure $ not s.active
     InvestigatorWithTokenKey face -> flip filterM as $ \i ->
@@ -2171,6 +2175,7 @@ getLocationsMatching lmatcher = do
     BlockedLocation -> flip filterM ls $ \l -> l `hasModifier` Blocked
     LocationWithoutClues -> pure $ filter (attr locationWithoutClues) ls
     LocationWithAnyActiveSeal -> pure $ filter (any (\s -> s.active) . toList . attr locationSeals) ls
+    LocationWithAnySeal -> pure $ any (notNull . attr locationSeals) ls
     LocationWithActiveSeal k -> pure $ filter (any (\s -> s.active && s.kind == k) . toList . attr locationSeals) ls
     LocationWithDefeatedEnemyThisRound -> do
       iids <- allInvestigators

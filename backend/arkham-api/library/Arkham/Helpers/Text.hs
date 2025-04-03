@@ -6,6 +6,9 @@ import Arkham.Text as X
 
 import Arkham.I18n
 
+validatedEntry :: HasI18n => Scope -> FlavorTextEntry
+validatedEntry = modifyEntry ValidEntry . i18nEntry
+
 validateEntry :: HasI18n => Bool -> Scope -> FlavorTextEntry
 validateEntry cond = modifyEntry (if cond then ValidEntry else InvalidEntry) . i18nEntry
 

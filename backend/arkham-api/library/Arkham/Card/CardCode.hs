@@ -60,6 +60,9 @@ instance ToJSONKey CardCode where
 instance FromJSONKey CardCode where
   fromJSONKey = CardCode . T.dropWhile (== 'c') <$> fromJSONKey
 
+isCardCode :: (HasCardCode a, HasCardCode b) => a -> b -> Bool
+isCardCode a b = toCardCode a == toCardCode b
+
 exactCardCode :: HasCardCode a => a -> CardCodeExact
 exactCardCode = CardCodeExact . toCardCode
 

@@ -308,6 +308,7 @@ allEncounterEnemyCards =
       , priestessOfTheCoven
       , primordialEvil
       , professorWilliamDyerProfessorOfGeology
+      , protoplasmicMass
       , pursuingMotorcar
       , rampagingShoggoth
       , ravagerFromTheDeep
@@ -2604,6 +2605,13 @@ reawakenedElderThing =
   ( enemy "08643" "Reawakened48;46;178;1656;284848;46;178;1656;2848 Elder Thing" CityOfTheElderThings 3
   )
     { cdCardTraits = setFromList [Monster, ElderThing]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+protoplasmicMass :: CardDef
+protoplasmicMass =
+  (enemy "08669" "Protoplasmic Mass" TheGreatSeal 2)
+    { cdCardTraits = setFromList [Monster, Shoggoth]
     , cdKeywords = setFromList [Keyword.Hunter]
     }
 

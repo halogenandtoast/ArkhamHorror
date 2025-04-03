@@ -4,11 +4,12 @@ import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.EdgeOfTheEarth.Partner
+import Arkham.CampaignLog
+import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Card.CardDef
 import Arkham.Helpers.Text
 import Arkham.I18n
-import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Matcher hiding (AssetDefeated, DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.CityOfTheElderThings.Helpers
@@ -71,20 +72,19 @@ instance RunMessage LurkingHorrors where
       chooseTargetM iid ls $ moveTo (attrs.ability 1) iid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n $ scope "interlude" do
-      mx <- maybe (pure Nothing) (fmap Just . sample) . nonEmpty =<< getRemainingPartners
-      case mx of
+      partners <- getPartnersWithStatus (== Safe)
+      case nonEmpty partners of
         Nothing -> story $ i18n "instructions"
-        Just x -> do
+        Just ps -> do
+          x <- sample ps
           story $ i18n "instructions" <> i18n "part1"
           storyWithCard (toCardDef x)
-            $ blueFlavor
-              ( validateEntry
-                  ( x.cardCode
-                      `elem` [Assets.danforthBrilliantStudent.cardCode, Assets.danforthBrilliantStudentResolute.cardCode]
-                  )
-                  "danforth"
-              )
+            $ blueFlavor (validateEntry (x.cardCode == Assets.danforthBrilliantStudent.cardCode) "danforth")
             <> i18n "part2"
+          setPartnerStatus x Eliminated
+          selectForMaybeM
+            (assetIs x.cardCode)
+            (push . AssetDefeated (toSource attrs))
 
       advanceAgendaDeck attrs
       pure a

@@ -370,6 +370,7 @@ allEncounterTreacheryCards =
       , possessionMurderous
       , possessionTorturous
       , possessionTraitorous
+      , primevalTerror
       , primordialGateway
       , prismaticPhenomenon
       , prophecyOfTheEnd
@@ -390,6 +391,7 @@ allEncounterTreacheryCards =
       , riseOfTheElderThings
       , risingTides
       , ritesHowled
+      , rootsOfTheEarth
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
@@ -2531,6 +2533,25 @@ possessed :: CardDef
 possessed =
   (treachery "08647" "Possessed" CityOfTheElderThings 4)
     { cdCardTraits = setFromList [Madness]
+    }
+
+primevalTerror :: CardDef
+primevalTerror =
+  (treachery "08657" "Primeval Terror" TheHeartOfMadness 3)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+rootsOfTheEarth :: CardDef
+rootsOfTheEarth =
+  (treachery "08658" "Roots of the Earth" TheHeartOfMadness 3)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+electrostaticDischarge :: CardDef
+electrostaticDischarge =
+  (treachery "08670" "Electrostatic Discarge" TheGreatSeal 2)
+    { cdCardTraits = setFromList [Hazard]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 theMadnessWithin :: CardDef

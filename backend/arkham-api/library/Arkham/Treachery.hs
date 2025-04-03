@@ -521,6 +521,9 @@ allTreacheries =
     , SomeTreacheryCard crumblingRuins
     , SomeTreacheryCard frostbitten
     , SomeTreacheryCard possessed
+    , --- The Heart of Madness [eote]
+      SomeTreacheryCard primevalTerror
+    , SomeTreacheryCard rootsOfTheEarth
     , --- Agents of the Unknown [eote]
       SomeTreacheryCard theMadnessWithin
     , --- Creatures in the Ice [eote]

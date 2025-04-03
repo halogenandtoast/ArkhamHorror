@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2015,7 +2015,7 @@ getLocationsMatching lmatcher = do
                 (markDistances start (pure . (`elem` candidates)) mempty)
                 (LPState (pure start) (singleton start) mempty)
       let
-        overallDistances = distanceAggregates $ foldr (unionWith min) mempty (traceShowId distances)
+        overallDistances = distanceAggregates $ foldr (unionWith min) mempty distances
         resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
       pure $ filter ((`elem` resultIds) . toId) ls
     NearestLocationTo iid matcher -> do

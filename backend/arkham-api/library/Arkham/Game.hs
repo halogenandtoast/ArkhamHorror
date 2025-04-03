@@ -194,7 +194,7 @@ import Arkham.Window qualified as Window
 import Control.Lens (each, over, set)
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (state)
-import Control.Monad.Writer.Strict (execWriterT)
+import Control.Monad.Writer.Strict (execWriterT, tell)
 import Data.Aeson (Result (..))
 import Data.Aeson.Diff qualified as Diff
 import Data.Aeson.Key qualified as Key
@@ -203,6 +203,7 @@ import Data.Aeson.Types (emptyArray, parse, parseMaybe)
 import Data.List qualified as List
 import Data.List.Extra (groupOn)
 import Data.Map.Monoidal.Strict (getMonoidalMap)
+import Data.Map.Monoidal.Strict qualified as MonoidalMap
 import Data.Map.Strict qualified as Map
 import Data.Monoid (First (..))
 import Data.Sequence ((|>), pattern Empty, pattern (:<|), pattern (:|>))
@@ -2006,14 +2007,14 @@ getLocationsMatching lmatcher = do
     NearestLocationToAny matcher -> do
       iids <- getInvestigators
       candidates <- map toId <$> getLocationsMatching matcher
-      distances <- catMaybes <$> for iids \iid -> do
-        mstart <- getMaybeLocation iid
-        case mstart of
-          Nothing -> pure Nothing
-          Just start -> Just . distanceSingletons
-              <$> evalStateT
-                (markDistances start (pure . (`elem` candidates)) mempty)
-                (LPState (pure start) (singleton start) mempty)
+      distances <- for iids \iid -> do
+        distanceSingletons . getMonoidalMap <$> execWriterT do
+          mloc <- getMaybeLocation iid
+          for_ mloc \start -> do
+            for_ candidates \candidate -> do
+              mDistance <- getDistance start candidate
+              for_ mDistance \(Distance distance) -> do
+                tell $ MonoidalMap.singleton distance [candidate]
       let
         overallDistances = distanceAggregates $ foldr (unionWith min) mempty distances
         resultIds = maybe [] coerce . headMay . map snd . sortOn fst . mapToList $ overallDistances
@@ -4412,7 +4413,7 @@ getLongestPath
   :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]
 getLongestPath !initialLocation !target = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistances initialLocation target mempty) state'
+  !result <- evalStateT (markDistancesWithInclusion False initialLocation target (const (pure True)) mempty) state'
   pure $ fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ result
 
 markDistances
@@ -4801,7 +4802,7 @@ instance HasDistance Game where
   getDistance' _ start fin | start == fin = pure $ Just 0
   getDistance' _ start fin = do
     let !state' = LPState (pure start) (singleton start) mempty
-    result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
+    result <- evalStateT (markDistancesWithInclusion False start (pure . (== fin)) (const (pure True)) mempty) state'
     pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game

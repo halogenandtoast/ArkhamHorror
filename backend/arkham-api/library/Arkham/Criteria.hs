@@ -198,6 +198,7 @@ data Criterion
   | InvestigatorsHaveSpendableClues ValueMatcher
   | LocationExists LocationMatcher
   | AssetCount Int AssetMatcher
+  | EnemyCount Int EnemyMatcher
   | EventCount ValueMatcher EventMatcher
   | LocationCount Int LocationMatcher
   | ExtendedCardCount Int ExtendedCardMatcher

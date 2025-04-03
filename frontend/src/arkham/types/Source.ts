@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json'
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard'
+import { v2Optional } from '@/arkham/parser'
 
 export type ProxySource = {
   sourceTag: "ProxySource"
@@ -43,7 +44,7 @@ export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.
       [ JsonDecoder.
           tuple([sourceDecoder, JsonDecoder.number()], 'proxySource').
           flatMap(([source,]) => "contents" in source ? JsonDecoder.succeed() : JsonDecoder.fail("missing contents"))
-      , JsonDecoder.optional(JsonDecoder.string())
+      , v2Optional(JsonDecoder.string())
       ], 'OtherSource.contents'))
   },
   'OtherSource'

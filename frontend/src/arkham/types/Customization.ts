@@ -6,7 +6,7 @@ type CustomizationOption =
   | {tag: "ChosenTrait", contents: string}
   | {tag: "ChosenIndex", contents: number}
 
-export type Customization =  [number, CustomizationOption[]];
+export type Customization = [number, [number, CustomizationOption[]]];
 
 const customizationOptionDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<CustomizationOption>(
@@ -29,5 +29,8 @@ const customizationOptionDecoder = JsonDecoder.oneOf([
 
 export const customizationsDecoder =
     JsonDecoder.array<Customization>(
-      JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.array<CustomizationOption>(customizationOptionDecoder, 'CustomizationOption[]')], 'number, other')
-    , 'Customization[]')
+      JsonDecoder.tuple(
+        [ JsonDecoder.number()
+        , JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.array<CustomizationOption>(customizationOptionDecoder, 'CustomizationOption[]')], 'number, other')
+        ], 'Customization'
+    ), 'Customization[]')

@@ -1,6 +1,7 @@
 import * as JsonDecoder from 'ts.data.json';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { imgsrc } from '@/arkham/helpers';
+import { v2Optional } from '@/arkham/parser';
 
 export type ChaosToken = {
   face: TokenFace;
@@ -35,7 +36,7 @@ export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
 export const chaosTokenDecoder = JsonDecoder.object({
   chaosTokenId: JsonDecoder.string(),
   chaosTokenFace: tokenFaceDecoder,
-  modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+  modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
 }, 'ChaosToken').map(({chaosTokenId, chaosTokenFace, modifiers}) => ({ id: chaosTokenId, face: chaosTokenFace, modifiers }));
 
 export function chaosTokenImage(face: TokenFace): string {

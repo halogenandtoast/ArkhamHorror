@@ -1,6 +1,7 @@
 import * as JsonDecoder from 'ts.data.json';
 import { sourceDecoder, Source } from '@/arkham/types/Source';
 import { cardDecoder, Card } from '@/arkham/types/Card';
+import { v2Optional } from '@/arkham/parser';
 
 type CardType = "SkillType"
 
@@ -215,7 +216,7 @@ export type OtherModifier = {
 export type Modifier = {
   type: ModifierType;
   source: Source;
-  card: Card | null;
+  card?: Card;
 }
 
 const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
@@ -341,5 +342,5 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
 export const modifierDecoder = JsonDecoder.object<Modifier>({
   type: modifierTypeDecoder,
   source: sourceDecoder,
-  card: JsonDecoder.nullable(cardDecoder)
+  card: v2Optional(cardDecoder)
 }, 'Modifier')

@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { v2Optional } from '@/arkham/parser';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
@@ -98,14 +99,14 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     // result: skillTestResultDecoder,
     committedCards: JsonDecoder.dictionary(JsonDecoder.array(cardDecoder, 'Card[]'), 'Record<string, Card[]>').map((record) => Object.values(record).flat()),
     source: sourceDecoder,
-    targetCard: JsonDecoder.optional(JsonDecoder.string()),
-    sourceCard: JsonDecoder.optional(JsonDecoder.string()),
+    targetCard: v2Optional(JsonDecoder.string()),
+    sourceCard: v2Optional(JsonDecoder.string()),
     modifiedSkillValue: JsonDecoder.number(),
     skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
     step: JsonDecoder.fallback("DetermineSkillOfTestStep", skillTestStepDecoder),
     baseValue: baseValueDecoder,
     result: JsonDecoder.nullable(JsonDecoder.object({ tag: JsonDecoder.string() }, 'SkillTestResult')),
-    modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
+    modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
   },
   'SkillTest',
 );

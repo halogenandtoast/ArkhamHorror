@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
 export type ChaosBagStepState = Resolved | Decided | Undecided | Deciding
@@ -9,7 +9,7 @@ export type Resolved = {
 }
 
 export const resolvedDecoder = JsonDecoder.object<Resolved>({
-  tag: JsonDecoder.isExactly("Resolved"),
+  tag: JsonDecoder.literal("Resolved"),
   tokens: JsonDecoder.array(chaosTokenDecoder, "Token[]")
 }, 'Resolved')
 
@@ -19,7 +19,7 @@ export type Decided = {
 }
 
 export const decidedDecoder = JsonDecoder.object<Decided>({
-  tag: JsonDecoder.isExactly("Decided"),
+  tag: JsonDecoder.literal("Decided"),
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Decided')
 
@@ -29,7 +29,7 @@ export type Undecided = {
 }
 
 export const undecidedDecoder = JsonDecoder.object<Undecided>({
-  tag: JsonDecoder.isExactly("Undecided"),
+  tag: JsonDecoder.literal("Undecided"),
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Undecided')
 
@@ -39,7 +39,7 @@ export type Deciding = {
 }
 
 export const decidingDecoder = JsonDecoder.object<Deciding>({
-  tag: JsonDecoder.isExactly("Deciding"),
+  tag: JsonDecoder.literal("Deciding"),
   step: JsonDecoder.lazy(() => chaosBagStepDecoder)
 }, 'Deciding')
 
@@ -59,13 +59,13 @@ export type Draw = {
 }
 
 export const drawDecoder = JsonDecoder.object<Draw>({
-  tag: JsonDecoder.isExactly("Draw")
+  tag: JsonDecoder.literal("Draw")
 }, 'Draw')
 
 export const tokenStrategyDecoder = JsonDecoder.oneOf<TokenStrategy>([
-  JsonDecoder.isExactly("IgnoreChoice"),
-  JsonDecoder.isExactly("CancelChoice"),
-  JsonDecoder.isExactly("ResolveChoice"),
+  JsonDecoder.literal("IgnoreChoice"),
+  JsonDecoder.literal("CancelChoice"),
+  JsonDecoder.literal("ResolveChoice"),
 ], 'TokenStrategy')
 
 export type Choose = {
@@ -77,9 +77,9 @@ export type Choose = {
 }
 
 export const chooseDecoder = JsonDecoder.object<Choose>({
-  tag: JsonDecoder.isExactly("Choose"),
+  tag: JsonDecoder.literal("Choose"),
   tokenStrategy: tokenStrategyDecoder,
-  amount: JsonDecoder.number,
+  amount: JsonDecoder.number(),
   steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'Choose')
@@ -94,9 +94,9 @@ export type ChooseMatch = {
 }
 
 export const chooseMatchDecoder = JsonDecoder.object<ChooseMatch>({
-  tag: JsonDecoder.isExactly("ChooseMatch"),
+  tag: JsonDecoder.literal("ChooseMatch"),
   tokenStrategy: tokenStrategyDecoder,
-  amount: JsonDecoder.number,
+  amount: JsonDecoder.number(),
   steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'ChooseMatch')
@@ -109,7 +109,7 @@ export type ChooseMatchChoice = {
 }
 
 export const chooseMatchChoiceDecoder = JsonDecoder.object<ChooseMatchChoice>({
-  tag: JsonDecoder.isExactly("ChooseMatchChoice"),
+  tag: JsonDecoder.literal("ChooseMatchChoice"),
   steps: JsonDecoder.array(chaosBagStepStateDecoder, 'ChaosBagStepState[]'),
   tokenGroups: JsonDecoder.array(JsonDecoder.array(chaosTokenDecoder, 'Token[]'), 'Token[][]'),
 }, 'ChooseMatch')

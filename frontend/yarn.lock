@@ -2520,10 +2520,10 @@ ts-api-utils@^2.0.1:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.0.1.tgz"
   integrity sha512-dnlgjFSVetynI8nzgJ+qF62efpglpWRk8isUEWZGWlJYySCTD6aKvbUDu+zbPeDakk3bg5H4XpitHukgfL1m9w==
 
-ts.data.json@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/ts.data.json/-/ts.data.json-2.2.0.tgz"
-  integrity sha512-o3KFLCUw5v2Z7URDnGpk9iWlE9vdRv7hi2ZddEQLDdID3ufATKCB9HDJLBAs24JW3YODeVPHE/DJARIry+OZpQ==
+ts.data.json@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/ts.data.json/-/ts.data.json-3.0.0.tgz"
+  integrity sha512-bgWVRyJHI0ZBYAfpYCNJLY/EUuWZluIidslxukEGDBgT78gh3a+kegq8swCdzJqjDfiKXmxX6i8s/njH5c4JOw==
 
 tslib@^2.6.2:
   version "2.8.1"

@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
@@ -26,10 +26,10 @@ type GameState = { tag: 'IsPending' } | { tag: 'IsActive' } | { tag: 'IsOver' } 
 
 export const gameStateDecoder = JsonDecoder.oneOf<GameState>(
   [
-    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsPending') }, 'IsPending'),
-    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsActive') }, 'IsActive'),
-    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsOver') }, 'IsOver'),
-    JsonDecoder.object({ tag: JsonDecoder.isExactly('IsChooseDecks'), contents: JsonDecoder.array(JsonDecoder.string, 'string[]') }, 'IsChooseDecks'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('IsPending') }, 'IsPending'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('IsActive') }, 'IsActive'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('IsOver') }, 'IsOver'),
+    JsonDecoder.object({ tag: JsonDecoder.literal('IsChooseDecks'), contents: JsonDecoder.array(JsonDecoder.string(), 'string[]') }, 'IsChooseDecks'),
   ],
   'GameState'
 );
@@ -49,8 +49,8 @@ export type MultiplayerVariant = 'WithFriends' | 'Solo'
 
 const multiplayerVariantDecoder = JsonDecoder.oneOf<MultiplayerVariant>(
   [
-    JsonDecoder.isExactly('WithFriends'),
-    JsonDecoder.isExactly('Solo'),
+    JsonDecoder.literal('WithFriends'),
+    JsonDecoder.literal('Solo'),
   ],
   'MultiplayerVariant'
 );
@@ -165,11 +165,11 @@ export const modeDecoder = JsonDecoder.object<Mode>(
 
 export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
   {
-    id: JsonDecoder.string,
+    id: JsonDecoder.string(),
     scenario: JsonDecoder.nullable(scenarioDetailsDecoder),
     campaign: JsonDecoder.nullable(campaignDetailsDecoder),
     gameState: gameStateDecoder,
-    name: JsonDecoder.string,
+    name: JsonDecoder.string(),
     investigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     otherInvestigators: JsonDecoder.array(investigatorDetailsDecoder, 'InvestigatorDetails[]'),
     multiplayerVariant: multiplayerVariantDecoder,
@@ -180,18 +180,18 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
 export const gameDetailsEntryDecoder = JsonDecoder.oneOf<GameDetailsEntry>(
   [
     gameDetailsDecoder.map(details => ({ ...details, tag: 'game' })),
-    JsonDecoder.object({ error: JsonDecoder.string }, 'Error').map(error => ({ ...error, tag: 'error' }))
+    JsonDecoder.object({ error: JsonDecoder.string() }, 'Error').map(error => ({ ...error, tag: 'error' }))
   ],
   'GameDetailsEntry'
 );
 
-export const gameDecoder = JsonDecoder.object<Game>(
+export const gameDecoder = JsonDecoder.object(
   {
-    id: JsonDecoder.string,
-    name: JsonDecoder.string,
-    log: JsonDecoder.array(JsonDecoder.string, 'LogEntry[]'),
+    id: JsonDecoder.string(),
+    name: JsonDecoder.string(),
+    log: JsonDecoder.array(JsonDecoder.string(), 'LogEntry[]'),
 
-    activeInvestigatorId: JsonDecoder.string,
+    activeInvestigatorId: JsonDecoder.string(),
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
@@ -201,16 +201,15 @@ export const gameDecoder = JsonDecoder.object<Game>(
     gameState: gameStateDecoder,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     otherInvestigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
-    leadInvestigatorId: JsonDecoder.string,
-    activePlayerId: JsonDecoder.string,
+    leadInvestigatorId: JsonDecoder.string(),
+    activePlayerId: JsonDecoder.string(),
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
     phaseStep: JsonDecoder.nullable(phaseStepDecoder),
-    playerOrder: JsonDecoder.array(JsonDecoder.string, 'PlayerOrder[]'),
-    playerCount: JsonDecoder.number,
+    playerOrder: JsonDecoder.array(JsonDecoder.string(), 'PlayerOrder[]'),
+    playerCount: JsonDecoder.number(),
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
-    scenario: modeDecoder.map(mode => mode.That || null),
-    campaign: modeDecoder.map(mode => mode.This || null),
+    mode: modeDecoder,
     skills: JsonDecoder.dictionary<Skill>(skillDecoder, 'Dict<UUID, Skill>'),
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     skillTestResults: JsonDecoder.nullable(skillTestResultsDecoder),
@@ -222,13 +221,9 @@ export const gameDecoder = JsonDecoder.object<Game>(
     skillTestChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
     removedFromPlay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
-    encounterDeckSize: JsonDecoder.number,
+    encounterDeckSize: JsonDecoder.number(),
     cards: JsonDecoder.dictionary<Card>(cardDecoder, 'Dict<string, Card>'),
     modifiers: JsonDecoder.array(JsonDecoder.tuple([targetDecoder, JsonDecoder.array(modifierDecoder, 'Modifier[]')], 'Target, Modifier[]'), 'Modifier[]')
   },
   'Game',
-  {
-    scenario: 'mode',
-    campaign: 'mode'
-  }
-);
+).map(({mode, ...game}) => ({ scenario: mode.That, campaign: mode.This, ...game }))

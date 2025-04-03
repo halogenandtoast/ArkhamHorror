@@ -28,7 +28,7 @@
     "mitt": "^3.0.1",
     "nodejs": "^0.0.0",
     "pinia": "^2.3.1",
-    "ts.data.json": "^2.2.0",
+    "ts.data.json": "^3.0.0",
     "v-jsoneditor": "^1.4.5",
     "vue": "^3.5.13",
     "vue-final-modal": "^4.5.5",

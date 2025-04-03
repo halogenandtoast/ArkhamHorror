@@ -1,13 +1,13 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Phase = 'CampaignPhase' | 'InvestigationPhase' | 'EnemyPhase' | 'UpkeepPhase' | 'MythosPhase';
 
 export const phaseDecoder = JsonDecoder.oneOf<Phase>([
-  JsonDecoder.isExactly('CampaignPhase'),
-  JsonDecoder.isExactly('InvestigationPhase'),
-  JsonDecoder.isExactly('EnemyPhase'),
-  JsonDecoder.isExactly('UpkeepPhase'),
-  JsonDecoder.isExactly('MythosPhase'),
+  JsonDecoder.literal('CampaignPhase'),
+  JsonDecoder.literal('InvestigationPhase'),
+  JsonDecoder.literal('EnemyPhase'),
+  JsonDecoder.literal('UpkeepPhase'),
+  JsonDecoder.literal('MythosPhase'),
 ], 'Phase');
 
 export type MythosPhaseStep
@@ -47,46 +47,46 @@ export type UpkeepPhaseStep
 export type PhaseStep = { tag: "MythosPhaseStep", contents: MythosPhaseStep }  | { tag: "InvestigationPhaseStep", contents: InvestigationPhaseStep }  | { tag: "EnemyPhaseStep", contents: EnemyPhaseStep }  | { tag: "UpkeepPhaseStep", contents: UpkeepPhaseStep }
 
 const mythosPhaseStepDecoder = JsonDecoder.oneOf<MythosPhaseStep>([
-  JsonDecoder.isExactly('MythosPhaseBeginsStep'),
-  JsonDecoder.isExactly('PlaceDoomOnAgendaStep'),
-  JsonDecoder.isExactly('CheckDoomThresholdStep'),
-  JsonDecoder.isExactly('EachInvestigatorDrawsEncounterCardStep'),
-  JsonDecoder.isExactly('MythosPhaseWindow'),
-  JsonDecoder.isExactly('MythosPhaseEndsStep'),
+  JsonDecoder.literal('MythosPhaseBeginsStep'),
+  JsonDecoder.literal('PlaceDoomOnAgendaStep'),
+  JsonDecoder.literal('CheckDoomThresholdStep'),
+  JsonDecoder.literal('EachInvestigatorDrawsEncounterCardStep'),
+  JsonDecoder.literal('MythosPhaseWindow'),
+  JsonDecoder.literal('MythosPhaseEndsStep'),
 ], 'MythosPhaseStep');
 
 const investigationPhaseStepDecoder = JsonDecoder.oneOf<InvestigationPhaseStep>([
-  JsonDecoder.isExactly('InvestigationPhaseBeginsStep'),
-  JsonDecoder.isExactly('InvestigationPhaseBeginsWindow'),
-  JsonDecoder.isExactly('NextInvestigatorsTurnBeginsStep'),
-  JsonDecoder.isExactly('NextInvestigatorsTurnBeginsWindow'),
-  JsonDecoder.isExactly('InvestigatorTakesActionStep'),
-  JsonDecoder.isExactly('InvestigatorsTurnEndsStep'),
-  JsonDecoder.isExactly('InvestigationPhaseEndsStep'),
+  JsonDecoder.literal('InvestigationPhaseBeginsStep'),
+  JsonDecoder.literal('InvestigationPhaseBeginsWindow'),
+  JsonDecoder.literal('NextInvestigatorsTurnBeginsStep'),
+  JsonDecoder.literal('NextInvestigatorsTurnBeginsWindow'),
+  JsonDecoder.literal('InvestigatorTakesActionStep'),
+  JsonDecoder.literal('InvestigatorsTurnEndsStep'),
+  JsonDecoder.literal('InvestigationPhaseEndsStep'),
 ], 'InvestigationPhaseStep');
 
 const enemyPhaseStepDecoder = JsonDecoder.oneOf<EnemyPhaseStep>([
-  JsonDecoder.isExactly('EnemyPhaseBeginsStep'),
-  JsonDecoder.isExactly('HunterEnemiesMoveStep'),
-  JsonDecoder.isExactly('ResolveAttacksWindow'),
-  JsonDecoder.isExactly('ResolveAttacksStep'),
-  JsonDecoder.isExactly('AfterResolveAttacksWindow'),
-  JsonDecoder.isExactly('EnemyPhaseEndsStep'),
+  JsonDecoder.literal('EnemyPhaseBeginsStep'),
+  JsonDecoder.literal('HunterEnemiesMoveStep'),
+  JsonDecoder.literal('ResolveAttacksWindow'),
+  JsonDecoder.literal('ResolveAttacksStep'),
+  JsonDecoder.literal('AfterResolveAttacksWindow'),
+  JsonDecoder.literal('EnemyPhaseEndsStep'),
 ], 'EnemyPhaseStep');
 
 const upkeepPhaseStepDecoder = JsonDecoder.oneOf<UpkeepPhaseStep>([
-  JsonDecoder.isExactly('UpkeepPhaseBeginsStep'),
-  JsonDecoder.isExactly('UpkeepPhaseBeginsWindow'),
-  JsonDecoder.isExactly('ResetActionsStep'),
-  JsonDecoder.isExactly('ReadyExhaustedStep'),
-  JsonDecoder.isExactly('DrawCardAndGainResourceStep'),
-  JsonDecoder.isExactly('CheckHandSizeStep'),
-  JsonDecoder.isExactly('UpkeepPhaseEndsStep'),
+  JsonDecoder.literal('UpkeepPhaseBeginsStep'),
+  JsonDecoder.literal('UpkeepPhaseBeginsWindow'),
+  JsonDecoder.literal('ResetActionsStep'),
+  JsonDecoder.literal('ReadyExhaustedStep'),
+  JsonDecoder.literal('DrawCardAndGainResourceStep'),
+  JsonDecoder.literal('CheckHandSizeStep'),
+  JsonDecoder.literal('UpkeepPhaseEndsStep'),
 ], 'UpkeepPhaseStep');
 
 export const phaseStepDecoder = JsonDecoder.oneOf<PhaseStep>([
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('MythosPhaseStep'), contents: mythosPhaseStepDecoder }, 'MythosPhaseStep'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('InvestigationPhaseStep'), contents: investigationPhaseStepDecoder }, 'InvestigationPhaseStep'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('EnemyPhaseStep'), contents: enemyPhaseStepDecoder }, 'EnemyPhaseStep'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('UpkeepPhaseStep'), contents: upkeepPhaseStepDecoder }, 'UpkeepPhaseStep'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('MythosPhaseStep'), contents: mythosPhaseStepDecoder }, 'MythosPhaseStep'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('InvestigationPhaseStep'), contents: investigationPhaseStepDecoder }, 'InvestigationPhaseStep'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('EnemyPhaseStep'), contents: enemyPhaseStepDecoder }, 'EnemyPhaseStep'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('UpkeepPhaseStep'), contents: upkeepPhaseStepDecoder }, 'UpkeepPhaseStep'),
 ], 'PhaseStep');

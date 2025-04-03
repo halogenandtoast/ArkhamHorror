@@ -5,7 +5,7 @@ import processingJSON from "@/assets/processing.json"
 import { onMounted, reactive, ref, computed, provide, onUnmounted, watch } from 'vue'
 import GameDetails from '@/arkham/components/GameDetails.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { EyeIcon, ArrowsRightLeftIcon, BugAntIcon, ExclamationTriangleIcon, BackwardIcon, DocumentTextIcon, BeakerIcon, BoltIcon, DocumentArrowDownIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/20/solid'
 import { useWebSocket, useClipboard } from '@vueuse/core'
 import { useUserStore } from '@/stores/user'
@@ -197,7 +197,7 @@ const handleResult = (result: ServerResult) => {
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
-        JsonDecoder.array(tarotCardDecoder, 'tarotCards').decodeToPromise(result.contents).then((r) => {
+        JsonDecoder.array(tarotCardDecoder, 'tarotCards').decodePromise(result.contents).then((r) => {
           uiLock.value = true
           tarotCards.value = r
         })
@@ -208,7 +208,7 @@ const handleResult = (result: ServerResult) => {
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
-        gameCardDecoder.decodeToPromise(result).then((r) => {
+        gameCardDecoder.decodePromise(result).then((r) => {
           uiLock.value = true
           gameCard.value = r
         })
@@ -219,7 +219,7 @@ const handleResult = (result: ServerResult) => {
       if (uiLock.value) {
         resultQueue.value.push(result)
       } else {
-        gameCardOnlyDecoder.decodeToPromise(result).then((r) => {
+        gameCardOnlyDecoder.decodePromise(result).then((r) => {
           if (solo.value === true || r.player == playerId.value) {
             uiLock.value = true
             gameCard.value = r
@@ -232,7 +232,7 @@ const handleResult = (result: ServerResult) => {
         resultQueue.value.push(result)
         game.value = {...game.value, question: {}} as Arkham.Game
       } else {
-        Arkham.gameDecoder.decodeToPromise(result.contents)
+        Arkham.gameDecoder.decodePromise(result.contents)
           .then((updatedGame) => {
             loadAllImages(updatedGame).then(() => {
               game.value = updatedGame

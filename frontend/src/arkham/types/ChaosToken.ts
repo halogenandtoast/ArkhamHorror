@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { imgsrc } from '@/arkham/helpers';
 
@@ -11,32 +11,32 @@ export type ChaosToken = {
 export type TokenFace = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign' | 'CurseToken' | 'BlessToken' | 'FrostToken'
 
 export const tokenFaceDecoder = JsonDecoder.oneOf<TokenFace>([
-  JsonDecoder.isExactly('PlusOne'),
-  JsonDecoder.isExactly('Zero'),
-  JsonDecoder.isExactly('MinusOne'),
-  JsonDecoder.isExactly('MinusTwo'),
-  JsonDecoder.isExactly('MinusThree'),
-  JsonDecoder.isExactly('MinusFour'),
-  JsonDecoder.isExactly('MinusFive'),
-  JsonDecoder.isExactly('MinusSix'),
-  JsonDecoder.isExactly('MinusSeven'),
-  JsonDecoder.isExactly('MinusEight'),
-  JsonDecoder.isExactly('Skull'),
-  JsonDecoder.isExactly('Cultist'),
-  JsonDecoder.isExactly('Tablet'),
-  JsonDecoder.isExactly('ElderThing'),
-  JsonDecoder.isExactly('AutoFail'),
-  JsonDecoder.isExactly('ElderSign'),
-  JsonDecoder.isExactly('CurseToken'),
-  JsonDecoder.isExactly('BlessToken'),
-  JsonDecoder.isExactly('FrostToken'),
+  JsonDecoder.literal('PlusOne'),
+  JsonDecoder.literal('Zero'),
+  JsonDecoder.literal('MinusOne'),
+  JsonDecoder.literal('MinusTwo'),
+  JsonDecoder.literal('MinusThree'),
+  JsonDecoder.literal('MinusFour'),
+  JsonDecoder.literal('MinusFive'),
+  JsonDecoder.literal('MinusSix'),
+  JsonDecoder.literal('MinusSeven'),
+  JsonDecoder.literal('MinusEight'),
+  JsonDecoder.literal('Skull'),
+  JsonDecoder.literal('Cultist'),
+  JsonDecoder.literal('Tablet'),
+  JsonDecoder.literal('ElderThing'),
+  JsonDecoder.literal('AutoFail'),
+  JsonDecoder.literal('ElderSign'),
+  JsonDecoder.literal('CurseToken'),
+  JsonDecoder.literal('BlessToken'),
+  JsonDecoder.literal('FrostToken'),
 ], 'TokenFace');
 
-export const chaosTokenDecoder = JsonDecoder.object<ChaosToken>({
-  id: JsonDecoder.string,
-  face: tokenFaceDecoder,
+export const chaosTokenDecoder = JsonDecoder.object({
+  chaosTokenId: JsonDecoder.string(),
+  chaosTokenFace: tokenFaceDecoder,
   modifiers: JsonDecoder.optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
-}, 'ChaosToken', { id: 'chaosTokenId', face: 'chaosTokenFace' });
+}, 'ChaosToken').map(({chaosTokenId, chaosTokenFace, modifiers}) => ({ id: chaosTokenId, face: chaosTokenFace, modifiers }));
 
 export function chaosTokenImage(face: TokenFace): string {
   switch (face) {

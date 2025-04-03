@@ -1,5 +1,6 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { investigatorClass } from '@/arkham/helpers';
+import { v2Optional } from '@/arkham/parser';
 
 export function deckInvestigator(deck: Deck) {
   if (deck.list.meta) {
@@ -38,19 +39,19 @@ export type Deck = {
 
 export const deckListDecoder = JsonDecoder.object<DeckList>(
   {
-    investigator_code: JsonDecoder.string,
-    slots: JsonDecoder.dictionary<number>(JsonDecoder.number, 'Dict<cardcode, number'),
-    meta: JsonDecoder.optional(JsonDecoder.string),
-    taboo_id: JsonDecoder.optional(JsonDecoder.number),
+    investigator_code: JsonDecoder.string(),
+    slots: JsonDecoder.dictionary<number>(JsonDecoder.number(), 'Dict<cardcode, number'),
+    meta: v2Optional(JsonDecoder.string()),
+    taboo_id: v2Optional(JsonDecoder.number()),
   },
   'DeckList',
 );
 
 export const deckDecoder = JsonDecoder.object<Deck>(
   {
-    id: JsonDecoder.string,
-    name: JsonDecoder.string,
-    url: JsonDecoder.nullable(JsonDecoder.string),
+    id: JsonDecoder.string(),
+    name: JsonDecoder.string(),
+    url: JsonDecoder.nullable(JsonDecoder.string()),
     list: deckListDecoder,
   },
   'Deck',

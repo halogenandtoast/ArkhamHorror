@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
 
 export type XpSource = 'XpFromVictoryDisplay' | 'XpBonus' | 'XpFromCardEffect'
@@ -18,9 +18,9 @@ export type XpBreakdown = [CampaignStep, XpEntry[]][];
 
 export const xpSourceDecoder = JsonDecoder.oneOf<XpSource>(
   [
-    JsonDecoder.isExactly('XpFromVictoryDisplay'),
-    JsonDecoder.isExactly('XpBonus'),
-    JsonDecoder.isExactly('XpFromCardEffect'),
+    JsonDecoder.literal('XpFromVictoryDisplay'),
+    JsonDecoder.literal('XpBonus'),
+    JsonDecoder.literal('XpFromCardEffect'),
   ],
   'XpSource'
 );
@@ -28,8 +28,8 @@ export const xpSourceDecoder = JsonDecoder.oneOf<XpSource>(
 export const xpDetailDecoder = JsonDecoder.object<XpDetail>(
   {
     source: xpSourceDecoder,
-    sourceName: JsonDecoder.string,
-    amount: JsonDecoder.number
+    sourceName: JsonDecoder.string(),
+    amount: JsonDecoder.number()
   },
   'XpDetail',
 );
@@ -38,23 +38,23 @@ export const xpEntryDecoder = JsonDecoder.oneOf<XpEntry>(
   [
     JsonDecoder.object<XpEntry>(
       {
-        tag: JsonDecoder.isExactly('AllGainXp'),
+        tag: JsonDecoder.literal('AllGainXp'),
         details: xpDetailDecoder
       },
       'AllGainXp'
     ),
     JsonDecoder.object<XpEntry>(
       {
-        tag: JsonDecoder.isExactly('InvestigatorGainXp'),
-        investigator: JsonDecoder.string,
+        tag: JsonDecoder.literal('InvestigatorGainXp'),
+        investigator: JsonDecoder.string(),
         details: xpDetailDecoder
       },
       'InvestigatorGainXp'
     ),
     JsonDecoder.object<XpEntry>(
       {
-        tag: JsonDecoder.isExactly('InvestigatorLoseXp'),
-        investigator: JsonDecoder.string,
+        tag: JsonDecoder.literal('InvestigatorLoseXp'),
+        investigator: JsonDecoder.string(),
         details: xpDetailDecoder
       },
       'InvestigatorLoseXp'

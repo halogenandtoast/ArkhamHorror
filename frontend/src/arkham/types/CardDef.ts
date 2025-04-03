@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Name, nameDecoder } from '@/arkham/types/Name';
 
 type CardCost = { contents: number, tag: "StaticCost" } | { tag: "DynamicCost" } | { tag: "DiscardAmountCost" }
@@ -19,26 +19,26 @@ export type CardDef = {
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
-  JsonDecoder.object({ contents: JsonDecoder.number, tag: JsonDecoder.isExactly("StaticCost") }, 'StaticCost'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("DynamicCost") }, 'DynamicCost'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("MaxDynamicCost") }, 'MaxDynamicCost').map(() => ({ tag: "DynamicCost"})),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("DiscardAmountCost") }, 'DiscardAmountCost')
+  JsonDecoder.object({ contents: JsonDecoder.number(), tag: JsonDecoder.literal("StaticCost") }, 'StaticCost'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("DynamicCost") }, 'DynamicCost'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("MaxDynamicCost") }, 'MaxDynamicCost').map(() => ({ tag: "DynamicCost"})),
+  JsonDecoder.object({ tag: JsonDecoder.literal("DiscardAmountCost") }, 'DiscardAmountCost')
 ], 'CardCost')
 
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
-  JsonDecoder.object({ contents: JsonDecoder.string, tag: JsonDecoder.isExactly("SkillIcon") }, 'SkillIcon'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildIcon") }, 'WildIcon'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly("WildMinusIcon") }, 'WildMinusIcon')
+  JsonDecoder.object({ contents: JsonDecoder.string(), tag: JsonDecoder.literal("SkillIcon") }, 'SkillIcon'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("WildIcon") }, 'WildIcon'),
+  JsonDecoder.object({ tag: JsonDecoder.literal("WildMinusIcon") }, 'WildMinusIcon')
 ], 'SkillIcon')
 
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
-    art: JsonDecoder.string,
-    level: JsonDecoder.nullable(JsonDecoder.number),
-    cardType: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
-    classSymbols: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),
-    cardTraits: JsonDecoder.array<string>(JsonDecoder.string, 'string[]'),
+    art: JsonDecoder.string(),
+    level: JsonDecoder.nullable(JsonDecoder.number()),
+    cardType: JsonDecoder.string(),
+    cardCode: JsonDecoder.string(),
+    classSymbols: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
+    cardTraits: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
     skills: JsonDecoder.array<SkillIcon>(skillIconDecoder, 'SkillIcon[]'),
     name: nameDecoder,
     cost: JsonDecoder.nullable(cardCostDecoder),

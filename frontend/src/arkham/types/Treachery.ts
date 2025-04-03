@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
@@ -16,13 +16,13 @@ export type Treachery = {
 }
 
 export const treacheryDecoder = JsonDecoder.object<Treachery>({
-  id: JsonDecoder.string,
-  cardId: JsonDecoder.string,
-  cardCode: JsonDecoder.string,
-  drawnBy: JsonDecoder.string,
+  id: JsonDecoder.string(),
+  cardId: JsonDecoder.string(),
+  cardCode: JsonDecoder.string(),
+  drawnBy: JsonDecoder.string(),
   tokens: tokensDecoder,
   placement: placementDecoder,
-  peril: JsonDecoder.boolean,
+  peril: JsonDecoder.boolean(),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-  exhausted: JsonDecoder.boolean,
+  exhausted: JsonDecoder.boolean(),
 }, 'Treachery');

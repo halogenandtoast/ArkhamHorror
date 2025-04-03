@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Costs = {
   tag: "Costs"
@@ -17,13 +17,13 @@ export type OtherCost = {
 export type Cost = Costs | ActionCost | OtherCost
 
 export const costsDecoder: JsonDecoder.Decoder<Costs> = JsonDecoder.object<Costs>({
-  tag: JsonDecoder.isExactly("Costs"),
+  tag: JsonDecoder.literal("Costs"),
   contents: JsonDecoder.lazy<Cost[]>(() => JsonDecoder.array<Cost>(costDecoder, 'Costs[]')),
 }, 'Costs')
 
 export const actionCostDecoder = JsonDecoder.object<ActionCost>({
-  tag: JsonDecoder.isExactly("ActionCost"),
-  contents: JsonDecoder.number,
+  tag: JsonDecoder.literal("ActionCost"),
+  contents: JsonDecoder.number(),
 }, 'ActionCost')
 
 export const costDecoder = JsonDecoder.oneOf<Cost>([

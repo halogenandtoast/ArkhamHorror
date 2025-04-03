@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Name = {
   title: string;
@@ -7,8 +7,8 @@ export type Name = {
 
 export const nameDecoder = JsonDecoder.object<Name>(
   {
-    title: JsonDecoder.string,
-    subtitle: JsonDecoder.nullable(JsonDecoder.string),
+    title: JsonDecoder.string(),
+    subtitle: JsonDecoder.nullable(JsonDecoder.string()),
   },
   'Name'
 );

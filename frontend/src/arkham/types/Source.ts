@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json'
+import * as JsonDecoder from 'ts.data.json'
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard'
 
 export type ProxySource = {
@@ -23,14 +23,14 @@ export type TarotSource = {
 export type Source = ProxySource | TarotSource | OtherSource
 
 export const proxySourceDecoder: JsonDecoder.Decoder<ProxySource> = JsonDecoder.object<ProxySource>({
-  tag: JsonDecoder.isExactly("ProxySource"),
+  tag: JsonDecoder.literal("ProxySource"),
   sourceTag: JsonDecoder.constant("ProxySource"),
   source: JsonDecoder.lazy<Source>(() => sourceDecoder),
   originalSource: JsonDecoder.lazy<Source>(() => sourceDecoder),
 }, 'ProxySource')
 
 export const tarotSourceDecoder: JsonDecoder.Decoder<TarotSource> = JsonDecoder.object<TarotSource>({
-  tag: JsonDecoder.isExactly("TarotSource"),
+  tag: JsonDecoder.literal("TarotSource"),
   sourceTag: JsonDecoder.constant("TarotSource"),
   contents: tarotCardDecoder
 }, 'TarotSource')
@@ -38,12 +38,12 @@ export const tarotSourceDecoder: JsonDecoder.Decoder<TarotSource> = JsonDecoder.
 export const otherSourceDecoder: JsonDecoder.Decoder<OtherSource> = JsonDecoder.object<OtherSource>(
   {
     sourceTag: JsonDecoder.constant("OtherSource"),
-    tag: JsonDecoder.string,
+    tag: JsonDecoder.string(),
     contents: JsonDecoder.lazy<string>(() => JsonDecoder.oneOf(
       [ JsonDecoder.
-          tuple([sourceDecoder, JsonDecoder.number], 'proxySource').
-          chain(([source,]) => "contents" in source ? JsonDecoder.succeed : JsonDecoder.fail("missing contents"))
-      , JsonDecoder.optional(JsonDecoder.string)
+          tuple([sourceDecoder, JsonDecoder.number()], 'proxySource').
+          flatMap(([source,]) => "contents" in source ? JsonDecoder.succeed() : JsonDecoder.fail("missing contents"))
+      , JsonDecoder.optional(JsonDecoder.string())
       ], 'OtherSource.contents'))
   },
   'OtherSource'

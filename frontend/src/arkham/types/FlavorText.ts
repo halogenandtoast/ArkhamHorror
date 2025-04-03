@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type FlavorTextModifier = 'BlueEntry' | 'RightAligned' | 'PlainText' | 'InvalidEntry' | 'ValidEntry' | 'EntrySplit' | 'ResolutionEntry'
 
@@ -25,12 +25,12 @@ export type FlavorText = {
 
 
 export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
-  JsonDecoder.isExactly('BlueEntry'),
-  JsonDecoder.isExactly('ResolutionEntry'),
-  JsonDecoder.isExactly('RightAligned'),
-  JsonDecoder.isExactly('PlainText'),
-  JsonDecoder.isExactly('InvalidEntry'),
-  JsonDecoder.isExactly('ValidEntry'),
+  JsonDecoder.literal('BlueEntry'),
+  JsonDecoder.literal('ResolutionEntry'),
+  JsonDecoder.literal('RightAligned'),
+  JsonDecoder.literal('PlainText'),
+  JsonDecoder.literal('InvalidEntry'),
+  JsonDecoder.literal('ValidEntry'),
 ], 'FlavorTextModifier');
 
 export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDecoder.object<ListItemEntry>(
@@ -42,21 +42,21 @@ export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDeco
 );
 
 export const flavorTextEntryDecoder: JsonDecoder.Decoder<FlavorTextEntry> = JsonDecoder.oneOf<FlavorTextEntry>([
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('BasicEntry'), text: JsonDecoder.string }, 'BasicEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('I18nEntry'), key: JsonDecoder.string, variables: JsonDecoder.succeed}, 'I18nEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('InvalidEntry'), text: JsonDecoder.string }, 'InvalidEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ValidEntry'), text: JsonDecoder.string }, 'ValidEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ColumnEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('ListEntry'), list: JsonDecoder.array(listItemEntryDecoder, 'ListItemEntry[]') }, 'ListEntry'),
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('EntrySplit')}, 'EntrySplit'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('BasicEntry'), text: JsonDecoder.string() }, 'BasicEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('I18nEntry'), key: JsonDecoder.string(), variables: JsonDecoder.succeed()}, 'I18nEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('InvalidEntry'), text: JsonDecoder.string() }, 'InvalidEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ValidEntry'), text: JsonDecoder.string() }, 'ValidEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ModifyEntry'), modifiers: JsonDecoder.array(flavorTextModifierDecoder, 'FlavorTextModifier[]'), entry: JsonDecoder.lazy(() => flavorTextEntryDecoder) }, 'ModifyEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('CompositeEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ColumnEntry'), entries: JsonDecoder.lazy(() => JsonDecoder.array(flavorTextEntryDecoder, 'FlavorTextEntry[]')) }, 'CompositeEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('ListEntry'), list: JsonDecoder.array(listItemEntryDecoder, 'ListItemEntry[]') }, 'ListEntry'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('EntrySplit')}, 'EntrySplit'),
 ], 'FlavorTextEntry');
 
 
 export const flavorTextDecoder: JsonDecoder.Decoder<FlavorText> = JsonDecoder.object<FlavorText>(
   {
-    title: JsonDecoder.nullable(JsonDecoder.string),
+    title: JsonDecoder.nullable(JsonDecoder.string()),
     body: JsonDecoder.array(flavorTextEntryDecoder, 'string[]')
   },
   'FlavorText',

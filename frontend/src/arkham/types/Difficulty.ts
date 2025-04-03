@@ -1,10 +1,10 @@
-import { JsonDecoder } from "ts.data.json";
+import * as JsonDecoder from "ts.data.json";
 
 export type Difficulty = 'Easy' | 'Standard' | 'Hard' | 'Expert';
 
 export const difficultyDecoder = JsonDecoder.oneOf<Difficulty>([
-    JsonDecoder.isExactly('Easy'),
-    JsonDecoder.isExactly('Standard'),
-    JsonDecoder.isExactly('Hard'),
-    JsonDecoder.isExactly('Expert')
+    JsonDecoder.literal('Easy'),
+    JsonDecoder.literal('Standard'),
+    JsonDecoder.literal('Hard'),
+    JsonDecoder.literal('Expert')
 ], 'Difficulty');

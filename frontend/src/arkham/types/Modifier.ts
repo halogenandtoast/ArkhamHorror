@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { sourceDecoder, Source } from '@/arkham/types/Source';
 import { cardDecoder, Card } from '@/arkham/types/Card';
 
@@ -11,32 +11,32 @@ type CardMatcher
   | { tag: 'CardWithOddSkillIcons' }
 
 const cardTypeDecoder = JsonDecoder.oneOf<CardType>([
-  JsonDecoder.isExactly('SkillType')
+  JsonDecoder.literal('SkillType')
 ], 'CardType')
 
 const cardMatcherDecoder = JsonDecoder.oneOf<CardMatcher>([
   JsonDecoder.object<CardMatcher>(
     {
-      tag: JsonDecoder.isExactly('CardWithType'),
+      tag: JsonDecoder.literal('CardWithType'),
       contents: cardTypeDecoder
     },
     'CardWithType'
   ),
   JsonDecoder.object<CardMatcher>(
     {
-      tag: JsonDecoder.isExactly('AnyCard')
+      tag: JsonDecoder.literal('AnyCard')
     },
     'AnyCard'
   ),
   JsonDecoder.object<CardMatcher>(
     {
-      tag: JsonDecoder.isExactly('CardWithOddNumberOfWordsInTitle')
+      tag: JsonDecoder.literal('CardWithOddNumberOfWordsInTitle')
     },
     'CardWithOddNumberOfWordsInTitle'
   ),
   JsonDecoder.object<CardMatcher>(
     {
-      tag: JsonDecoder.isExactly('CardWithOddSkillIcons')
+      tag: JsonDecoder.literal('CardWithOddSkillIcons')
     },
     'CardWithOddSkillIcons'
   )
@@ -215,132 +215,131 @@ export type OtherModifier = {
 export type Modifier = {
   type: ModifierType;
   source: Source;
-  card?: Card;
+  card: Card | null;
 }
 
 const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
   JsonDecoder.object<BaseSkillOf>(
     {
-      tag: JsonDecoder.isExactly('BaseSkillOf'),
-      skillType: JsonDecoder.string,
-      value: JsonDecoder.number
+      tag: JsonDecoder.literal('BaseSkillOf'),
+      skillType: JsonDecoder.string(),
+      value: JsonDecoder.number()
     }, 'BaseSkillOf'),
   JsonDecoder.object<BaseSkill>(
     {
-      tag: JsonDecoder.isExactly('BaseSkill'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('BaseSkill'),
+      contents: JsonDecoder.number()
     }, 'BaseSkill'),
   JsonDecoder.object<Difficulty>(
     {
-      tag: JsonDecoder.isExactly('Difficulty'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('Difficulty'),
+      contents: JsonDecoder.number()
     }, 'Difficulty'),
   JsonDecoder.object<ScenarioModifier>(
     {
-      tag: JsonDecoder.isExactly('ScenarioModifier'),
-      contents: JsonDecoder.string
+      tag: JsonDecoder.literal('ScenarioModifier'),
+      contents: JsonDecoder.string()
     }, 'ScenarioModifier'),
   JsonDecoder.object<DiscoveredClues>(
     {
-      tag: JsonDecoder.isExactly('DiscoveredClues'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('DiscoveredClues'),
+      contents: JsonDecoder.number()
     }, 'DiscoveredClues'),
   JsonDecoder.object<SkillTestResultValueModifier>(
     {
-      tag: JsonDecoder.isExactly('SkillTestResultValueModifier'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('SkillTestResultValueModifier'),
+      contents: JsonDecoder.number()
     }, 'SkillTestResultValueModifier'),
   JsonDecoder.object<CancelEffects>(
     {
-      tag: JsonDecoder.isExactly('CancelEffects')
+      tag: JsonDecoder.literal('CancelEffects')
     }, 'CancelEffects'),
   JsonDecoder.object<RevealAnotherChaosToken>(
     {
-      tag: JsonDecoder.isExactly('RevealAnotherChaosToken')
+      tag: JsonDecoder.literal('RevealAnotherChaosToken')
     }, 'RevealAnotherChaosToken'),
   JsonDecoder.object<DoubleSuccess>(
     {
-      tag: JsonDecoder.isExactly('DoubleSuccess')
+      tag: JsonDecoder.literal('DoubleSuccess')
     }, 'DoubleSuccess'),
   JsonDecoder.object<DoubleDifficulty>(
     {
-      tag: JsonDecoder.isExactly('DoubleDifficulty')
+      tag: JsonDecoder.literal('DoubleDifficulty')
     }, 'DoubleDifficulty'),
   JsonDecoder.object<CannotPerformSkillTest>(
     {
-      tag: JsonDecoder.isExactly('CannotPerformSkillTest')
+      tag: JsonDecoder.literal('CannotPerformSkillTest')
     }, 'CannotPerformSkillTest'),
   JsonDecoder.object<DamageDealt>(
     {
-      tag: JsonDecoder.isExactly('DamageDealt'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('DamageDealt'),
+      contents: JsonDecoder.number()
     }, 'DamageDealt'),
   JsonDecoder.object<AddSkillValue>(
     {
-      tag: JsonDecoder.isExactly('AddSkillValue'),
-      contents: JsonDecoder.string
+      tag: JsonDecoder.literal('AddSkillValue'),
+      contents: JsonDecoder.string()
     }, 'AddSkillValue'),
   JsonDecoder.object<UseEncounterDeck>(
     {
-      tag: JsonDecoder.isExactly('UseEncounterDeck'),
-      contents: JsonDecoder.string
+      tag: JsonDecoder.literal('UseEncounterDeck'),
+      contents: JsonDecoder.string()
     }, 'UseEncounterDeck'),
   JsonDecoder.object<CannotEnter>(
     {
-      tag: JsonDecoder.isExactly('CannotEnter'),
-      contents: JsonDecoder.string
+      tag: JsonDecoder.literal('CannotEnter'),
+      contents: JsonDecoder.string()
     }, 'CannotEnter'),
   JsonDecoder.object<CannotCommitCards>(
     {
-      tag: JsonDecoder.isExactly('CannotCommitCards'),
-      contents: JsonDecoder.succeed
+      tag: JsonDecoder.literal('CannotCommitCards'),
+      contents: JsonDecoder.succeed()
     }, 'CannotCommitCards'),
   JsonDecoder.object<SkillModifier>(
     {
-      tag: JsonDecoder.isExactly('SkillModifier'),
-      skillType: JsonDecoder.string,
-      value: JsonDecoder.number
+      tag: JsonDecoder.literal('SkillModifier'),
+      skillType: JsonDecoder.string(),
+      value: JsonDecoder.number()
     }, 'SkillModifier'),
   JsonDecoder.object<AnySkillValue>(
     {
-      tag: JsonDecoder.isExactly('AnySkillValue'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('AnySkillValue'),
+      contents: JsonDecoder.number()
     }, 'AnySkillValue'),
   JsonDecoder.object<GainVictory>(
     {
-      tag: JsonDecoder.isExactly('GainVictory'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('GainVictory'),
+      contents: JsonDecoder.number()
     }, 'GainVictory'),
   JsonDecoder.object<ActionCostSetToModifier>(
     {
-      tag: JsonDecoder.isExactly('ActionCostSetToModifier'),
-      contents: JsonDecoder.number
+      tag: JsonDecoder.literal('ActionCostSetToModifier'),
+      contents: JsonDecoder.number()
     }, 'ActionCostSetToModifier'),
   JsonDecoder.object<AddKeyword>(
     {
-      tag: JsonDecoder.isExactly('AddKeyword'),
-      contents: JsonDecoder.object({ tag: JsonDecoder.string }, "Keyword").map(s => s.tag)
+      tag: JsonDecoder.literal('AddKeyword'),
+      contents: JsonDecoder.object({ tag: JsonDecoder.string() }, "Keyword").map(s => s.tag)
     }, 'AddKeyword'),
   JsonDecoder.object<ActionSkillModifier>(
     {
-      tag: JsonDecoder.isExactly('ActionSkillModifier'),
-      action: JsonDecoder.string,
-      skillType: JsonDecoder.string,
-      value: JsonDecoder.number
+      tag: JsonDecoder.literal('ActionSkillModifier'),
+      action: JsonDecoder.string(),
+      skillType: JsonDecoder.string(),
+      value: JsonDecoder.number()
     }, 'ActionSkillModifier'),
   JsonDecoder.object<DoNotDrawConnection>(
     {
-      tag: JsonDecoder.isExactly('DoNotDrawConnection'),
-      contents: JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.string], 'DoNotDrawConnection')
+      tag: JsonDecoder.literal('DoNotDrawConnection'),
+      contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.string()], 'DoNotDrawConnection')
     }, 'DoNotDrawConnection'),
-  JsonDecoder.object<OtherModifier>({
-    tag: JsonDecoder.constant('OtherModifier'),
-    contents: JsonDecoder.string
-  }, 'OtherModifier', { contents: 'tag'}),
+  JsonDecoder.object({
+    tag: JsonDecoder.string()
+  }, 'OtherModifier').map(({tag}) => ({ tag: 'OtherModifier', contents: tag})),
 ], 'ModifierType');
 
 export const modifierDecoder = JsonDecoder.object<Modifier>({
   type: modifierTypeDecoder,
   source: sourceDecoder,
-  card: JsonDecoder.optional(cardDecoder)
+  card: JsonDecoder.nullable(cardDecoder)
 }, 'Modifier')

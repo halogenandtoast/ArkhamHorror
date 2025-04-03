@@ -78,6 +78,7 @@ library
       Arkham.Act.Cards.CityOfTheDeepV2
       Arkham.Act.Cards.CityOfTheDeepV3
       Arkham.Act.Cards.CloseTheRift
+      Arkham.Act.Cards.CollapseThePylons
       Arkham.Act.Cards.ContainingTheOutbreak
       Arkham.Act.Cards.CrossingTheThreshold
       Arkham.Act.Cards.CurtainCall
@@ -207,6 +208,7 @@ library
       Arkham.Act.Cards.TheEndlessStairs
       Arkham.Act.Cards.TheEscape
       Arkham.Act.Cards.TheFinalDescent
+      Arkham.Act.Cards.TheFinalMirage
       Arkham.Act.Cards.TheFirstOath
       Arkham.Act.Cards.TheFourKeys
       Arkham.Act.Cards.TheGateOpens
@@ -381,6 +383,7 @@ library
       Arkham.Agenda.Cards.TemperanceXIV
       Arkham.Agenda.Cards.TerrorAtFalconPoint
       Arkham.Agenda.Cards.TerrorDescends
+      Arkham.Agenda.Cards.ThatWhichHasNoName
       Arkham.Agenda.Cards.TheAlarmIsRaised
       Arkham.Agenda.Cards.TheArkhamWoods
       Arkham.Agenda.Cards.TheBarrierIsThin
@@ -427,6 +430,7 @@ library
       Arkham.Agenda.Cards.TheRitualBegins
       Arkham.Agenda.Cards.TheRitualBeginsBlackStarsRise
       Arkham.Agenda.Cards.TheRougarouFeeds
+      Arkham.Agenda.Cards.TheSealWeakens
       Arkham.Agenda.Cards.TheSecondNight
       Arkham.Agenda.Cards.TheShadowOfTheEclipse
       Arkham.Agenda.Cards.TheShapeOfChaos
@@ -1847,6 +1851,7 @@ library
       Arkham.Enemy.Cards.TheExperiment
       Arkham.Enemy.Cards.TheManInThePallidMask
       Arkham.Enemy.Cards.TheMaskedHunter
+      Arkham.Enemy.Cards.TheNamelessMadness
       Arkham.Enemy.Cards.TheOrganistDrapedInMystery
       Arkham.Enemy.Cards.TheOrganistHopelessIDefiedHim
       Arkham.Enemy.Cards.TheRougarou
@@ -1863,6 +1868,7 @@ library
       Arkham.Enemy.Cards.TonysQuarry
       Arkham.Enemy.Cards.Umordhoth
       Arkham.Enemy.Cards.UnboundBeast
+      Arkham.Enemy.Cards.UnsealedPhantasm
       Arkham.Enemy.Cards.ValentinoRivas
       Arkham.Enemy.Cards.VengefulHound
       Arkham.Enemy.Cards.VengefulShade
@@ -2962,6 +2968,11 @@ library
       Arkham.Location.Cards.MiskatonicRiver
       Arkham.Location.Cards.MiskatonicUniversity
       Arkham.Location.Cards.MiskatonicUniversityMiskatonicMuseum
+      Arkham.Location.Cards.MistPylon_174
+      Arkham.Location.Cards.MistPylon_175
+      Arkham.Location.Cards.MistPylon_176
+      Arkham.Location.Cards.MistPylon_177
+      Arkham.Location.Cards.MistPylon_178
       Arkham.Location.Cards.MoaiStatues
       Arkham.Location.Cards.MoldyHalls
       Arkham.Location.Cards.MoldyHallsEarlierTonight
@@ -3197,6 +3208,10 @@ library
       Arkham.Location.Cards.TightTurn_b
       Arkham.Location.Cards.TightTurn_c
       Arkham.Location.Cards.TimeWrackedWoods
+      Arkham.Location.Cards.TitanicRamp_182
+      Arkham.Location.Cards.TitanicRamp_183
+      Arkham.Location.Cards.TitanicRamp_184
+      Arkham.Location.Cards.TitanicRamp_185
       Arkham.Location.Cards.TombOfShadows
       Arkham.Location.Cards.TowerOfKoth
       Arkham.Location.Cards.TowersOfPnakotus
@@ -3385,7 +3400,8 @@ library
       Arkham.Scenario.Scenarios.TheDoomOfEztli
       Arkham.Scenario.Scenarios.TheEssexCountyExpress
       Arkham.Scenario.Scenarios.TheGathering
-      Arkham.Scenario.Scenarios.TheHeartOfMadness
+      Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1
+      Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2
       Arkham.Scenario.Scenarios.TheHouseAlwaysWins
       Arkham.Scenario.Scenarios.TheLairOfDagon
       Arkham.Scenario.Scenarios.TheLastKing

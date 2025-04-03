@@ -275,6 +275,12 @@ placeGroup groupName defs = do
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
   placeRandomLocationGroupCards groupName defs
 
+placeGroupExact :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()
+placeGroupExact groupName defs = do
+  attrsL . encounterDeckL %= flip removeEachFromDeck defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  placeLabeledLocations_ groupName =<< genCards defs
+
 placeGroupCapture :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m [LocationId]
 placeGroupCapture groupName defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck defs

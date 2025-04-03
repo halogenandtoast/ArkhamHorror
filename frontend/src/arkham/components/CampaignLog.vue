@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
 import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log';
+import {imgsrc} from '@/arkham/helpers'
 import { computed, ref, onMounted, watch } from 'vue'
 import { fetchCard } from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef'
@@ -10,6 +11,7 @@ import Supplies from '@/arkham/components/Supplies.vue';
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue';
 import { toCapitalizedWords } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
+import { Seal } from '@/arkham/types/Seal';
 
 export interface Props {
   game: Arkham.Game
@@ -73,7 +75,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'SuppliesRecovered'];
+  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'SuppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -123,7 +125,6 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     return t(`theInnsmouthConspiracy.possibleSuspects.${suspect}`, suspect)
   }
 
-  console.log(key)
   if (key === 'theInnsmouthConspiracy.key.possibleHideouts') {
     const contents = value.contents || value.recordVal?.contents
     const hideout = contents.charAt(0).toLowerCase() + contents.slice(1)
@@ -136,8 +137,25 @@ const displayRecordValue = (key: string, value: SomeRecordable): string => {
     return t(`edgeOfTheEarth.suppliesRecovered.${supply}`, supply)
   }
 
+  if (isSeal(key)) return ""
+
   const code = value.contents || value.recordVal?.contents
   return cardCodeToTitle(code)
+}
+
+const isSeal = (key: string): boolean => {
+  return ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
+}
+
+const sealImage = (seal: Seal): string => {
+  const revealed = seal.sealActive ? "active" : "dormant"
+  switch (seal.sealKind) {
+    case "SealA": return imgsrc(`seals/seal-a-${revealed}.png`)
+    case "SealB": return imgsrc(`seals/seal-b-${revealed}.png`)
+    case "SealC": return imgsrc(`seals/seal-c-${revealed}.png`)
+    case "SealD": return imgsrc(`seals/seal-d-${revealed}.png`)
+    case "SealE": return imgsrc(`seals/seal-e-${revealed}.png`)
+  }
 }
 
 const cardCodeToTitle = (cardCode: string): string => {
@@ -165,6 +183,11 @@ const fullName = (name: Name): string => {
   }
 
   return name.title
+}
+
+const setClass = (key: string): string => {
+  // split on '.' and take the last part
+  return key.split('.').pop() || ''
 }
 
 const emptyLog = computed(() => {
@@ -225,8 +248,9 @@ const emptyLog = computed(() => {
         </div>
         <ul>
           <li v-for="[setKey, setValues] in Object.entries(recordedSets)" :key="setKey">{{t(setKey)}}
-            <ul>
-              <li v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut', 'circled': setValue.circled }">{{displayRecordValue(setKey, setValue)}}</li>
+            <ul :class="setClass(setKey)">
+              <li v-if="isSeal(setKey)" v-for="setValue in setValues"><img :src="sealImage(setValue.contents)" class="seal"/></li>
+              <li v-else v-for="setValue in setValues" :key="setValue" :class="{ 'crossed-out': setValue.tag === 'CrossedOut', 'circled': setValue.circled }">{{displayRecordValue(setKey, setValue)}}</li>
             </ul>
           </li>
         </ul>
@@ -405,6 +429,16 @@ tr td:not(:first-child) {
   background: rgba(0, 0, 0, 0.5);
   padding-inline: 5px;
   border-radius: 2px;
+}
+
+.seal {
+  max-width: 45px;
+}
+
+.sealsPlaced, .sealsRecovered {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 </style>

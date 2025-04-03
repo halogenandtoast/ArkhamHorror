@@ -316,6 +316,9 @@ allActs =
     , --- The Great Seal [eote]
       SomeActCard dormancy
     , SomeActCard theGreatSeal
+    , --- Stirring in the Deep [eote]
+      SomeActCard collapseThePylons
+    , SomeActCard theFinalMirage
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway

@@ -51,5 +51,7 @@ data EdgeOfTheEarthKey
   | DrKenslerUnderstandsTheTrueNatureOfTheMiasma
   | TheInvestigatorsScoutedTheForkedPass
   | TheSealWasUsedImproperly
+  | SealsPlaced
+  | SealsRecovered
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

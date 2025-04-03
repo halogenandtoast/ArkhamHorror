@@ -49,12 +49,13 @@ instance IsCampaign EdgeOfTheEarth where
     FatalMirage ->
       if
         | CityOfTheElderThings `elem` campaignCompletedSteps (toAttrs a) ->
-            Just (UpgradeDeckStep TheHeartOfMadness)
+            Just (UpgradeDeckStep TheHeartOfMadnessPart1)
         | ToTheForbiddenPeaks `elem` campaignCompletedSteps (toAttrs a) ->
             Just (UpgradeDeckStep CityOfTheElderThings)
         | otherwise -> Just (UpgradeDeckStep ToTheForbiddenPeaks)
     ToTheForbiddenPeaks -> Just (InterludeStep 2 Nothing)
     CityOfTheElderThings -> Just (InterludeStep 3 Nothing)
+    TheHeartOfMadnessPart1 -> Just (UpgradeDeckStep $ CheckpointStep 3)
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -1009,7 +1010,7 @@ instance RunMessage EdgeOfTheEarth where
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just TheHeartOfMadness
+          $ Just TheHeartOfMadnessPart1
       pure c
     CampaignStep (InterludeStepPart 3 _ 4) -> scope "interlude3" do
       storyWithChooseOneM (i18nWithTitle "finalNight4") do
@@ -1020,7 +1021,11 @@ instance RunMessage EdgeOfTheEarth where
         labeled "Ignore the door and allow it to vanish"
           $ push
           $ NextCampaignStep
-          $ Just TheHeartOfMadness
+          $ Just TheHeartOfMadnessPart1
+      pure c
+    CampaignStep (CheckpointStep 3) -> scope "checkpoint3" do
+      story $ i18nWithTitle "theOtherSide1"
+      story $ i18nWithTitle "theOtherSide2"
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

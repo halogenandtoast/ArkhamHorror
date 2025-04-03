@@ -181,7 +181,12 @@
   },
   "key": {
     "theInvestigatorsConvincedDyerToAllowTheExpedition": "The investigators convinced Dyer to allow the expedition",
+    "theInvestigatorsDidNotBelieveDyersReport": "The investigators did not believe Dyer's report",
+    "drKenslerIsSharingHerResearchWithYou": "Dr. Kensler is sharing her research with you",
+    "drKenslerIsOnTheVergeOfUnderstanding": "Dr. Kensler is on the verge of understanding",
+    "drKenslerUnderstandsTheTrueNatureOfTheMiasma": "Dr. Kensler understands the true nature of the miasma",
     "wasKilledInThePlaneCrash": "Was killed in the plane crash",
+    "theTeamFoundTheHiddenTunnel": "The team found the hidden tunnel",
     "suppliesRecovered": "Supplies recovered",
     "locationsRevealed": "Locations Revealed",
 
@@ -201,6 +206,8 @@
     "theTeamFledToTheMountains": "The team fled to the mountains",
     "theTeamClimbedToTheSummit": "The team climbed to the summit",
     "memoriesDiscovered": "Memories Discovered",
-    "memoriesBanished": "Memories Banished"
+    "memoriesBanished": "Memories Banished",
+    "sealsRecovered": "Seals Recovered",
+    "sealsPlaced": "Seals Placed"
   }
 }

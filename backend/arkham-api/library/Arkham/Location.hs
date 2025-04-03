@@ -789,6 +789,7 @@ allLocations =
     , SomeLocationCard titanicRamp_183
     , SomeLocationCard titanicRamp_184
     , SomeLocationCard titanicRamp_185
+    , SomeLocationCard hiddenTunnelAWayOut
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

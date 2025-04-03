@@ -408,6 +408,7 @@ allLocationCards =
       , hereticsGraves_172
       , hiddenCove
       , hiddenLibrary
+      , hiddenTunnelAWayOut
       , hiddenTunnelEntranceToTheDepths
       , hideousPalace
       , historicalSocietyHistoricalLibrary_133
@@ -8112,6 +8113,14 @@ titanicRamp_185 =
     "Titanic Ramp"
     [Ruins]
     "Titanic Ramp"
+    [Ruins]
+    StirringInTheDeep
+
+hiddenTunnelAWayOut :: CardDef
+hiddenTunnelAWayOut =
+  location_
+    "08686"
+    ("Hidden Tunnel" <:> "A Way Out")
     [Ruins]
     StirringInTheDeep
 

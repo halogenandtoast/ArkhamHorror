@@ -93,6 +93,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
            , Locations.titanicRamp_183
            , Locations.titanicRamp_184
            , Locations.titanicRamp_185
+           , Locations.hiddenTunnelAWayOut
            ]
       addTekeliliDeck
     DoStep 1 Setup -> do

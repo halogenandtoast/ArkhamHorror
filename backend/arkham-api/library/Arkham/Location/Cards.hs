@@ -497,6 +497,11 @@ allLocationCards =
       , miskatonicRiver
       , miskatonicUniversity
       , miskatonicUniversityMiskatonicMuseum
+      , mistPylon_174
+      , mistPylon_175
+      , mistPylon_176
+      , mistPylon_177
+      , mistPylon_178
       , moaiStatues
       , moldyHalls
       , moldyHallsEarlierTonight
@@ -732,6 +737,10 @@ allLocationCards =
       , tightTurn_b
       , tightTurn_c
       , timeWrackedWoods
+      , titanicRamp_182
+      , titanicRamp_183
+      , titanicRamp_184
+      , titanicRamp_185
       , tombOfShadows
       , towerOfKoth
       , towersOfPnakotus
@@ -8015,6 +8024,96 @@ limestoneCaverns =
     "Limestone Caverns"
     [Ruins]
     TheGreatSeal
+
+mistPylon_174 :: CardDef
+mistPylon_174 =
+  locationWithUnrevealed_
+    "08674"
+    "Mist Pylon"
+    [Ruins]
+    "Myst Pylon"
+    [Ruins]
+    StirringInTheDeep
+
+mistPylon_175 :: CardDef
+mistPylon_175 =
+  locationWithUnrevealed_
+    "08675"
+    "Mist Pylon"
+    [Ruins]
+    "Myst Pylon"
+    [Ruins]
+    StirringInTheDeep
+
+mistPylon_176 :: CardDef
+mistPylon_176 =
+  locationWithUnrevealed_
+    "08676"
+    "Mist Pylon"
+    [Ruins]
+    "Myst Pylon"
+    [Ruins]
+    StirringInTheDeep
+
+mistPylon_177 :: CardDef
+mistPylon_177 =
+  locationWithUnrevealed_
+    "08677"
+    "Mist Pylon"
+    [Ruins]
+    "Myst Pylon"
+    [Ruins]
+    StirringInTheDeep
+
+mistPylon_178 :: CardDef
+mistPylon_178 =
+  locationWithUnrevealed_
+    "08678"
+    "Mist Pylon"
+    [Ruins]
+    "Myst Pylon"
+    [Ruins]
+    StirringInTheDeep
+
+titanicRamp_182 :: CardDef
+titanicRamp_182 =
+  locationWithUnrevealed_
+    "08682"
+    "Titanic Ramp"
+    [Ruins]
+    "Titanic Ramp"
+    [Ruins]
+    StirringInTheDeep
+
+titanicRamp_183 :: CardDef
+titanicRamp_183 =
+  locationWithUnrevealed_
+    "08683"
+    "Titanic Ramp"
+    [Ruins]
+    "Titanic Ramp"
+    [Ruins]
+    StirringInTheDeep
+
+titanicRamp_184 :: CardDef
+titanicRamp_184 =
+  locationWithUnrevealed_
+    "08684"
+    "Titanic Ramp"
+    [Ruins]
+    "Titanic Ramp"
+    [Ruins]
+    StirringInTheDeep
+
+titanicRamp_185 :: CardDef
+titanicRamp_185 =
+  locationWithUnrevealed_
+    "08685"
+    "Titanic Ramp"
+    [Ruins]
+    "Titanic Ramp"
+    [Ruins]
+    StirringInTheDeep
 
 studyAberrantGateway :: CardDef
 studyAberrantGateway =

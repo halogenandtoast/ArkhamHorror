@@ -32,7 +32,12 @@ pattern CityOfTheElderThings <- ScenarioStep "08621"
   where
     CityOfTheElderThings = ScenarioStep "08621"
 
-pattern TheHeartOfMadness :: CampaignStep
-pattern TheHeartOfMadness <- ScenarioStep "08648"
+pattern TheHeartOfMadnessPart1 :: CampaignStep
+pattern TheHeartOfMadnessPart1 <- ScenarioStep "08648a"
   where
-    TheHeartOfMadness = ScenarioStep "08648"
+    TheHeartOfMadnessPart1 = ScenarioStep "08648a"
+
+pattern TheHeartOfMadnessPart2 :: CampaignStep
+pattern TheHeartOfMadnessPart2 <- ScenarioStep "08648b"
+  where
+    TheHeartOfMadnessPart2 = ScenarioStep "08648b"

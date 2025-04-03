@@ -277,6 +277,9 @@ allAgendas =
       SomeAgendaCard theBeatingHeart
     , SomeAgendaCard theMiasmaBeckons
     , SomeAgendaCard callOfMadness
+    , --- Stirring in the Deep [eote]
+      SomeAgendaCard theSealWeakens
+    , SomeAgendaCard thatWhichHasNoName
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey

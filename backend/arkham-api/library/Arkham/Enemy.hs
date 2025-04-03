@@ -454,6 +454,9 @@ allEnemies =
     , SomeEnemyCard reawakenedElderThing
     , -- The Great Seal [eote]
       SomeEnemyCard protoplasmicMass
+    , -- Stirring in the Deep [eote]
+      SomeEnemyCard theNamelessMadness
+    , SomeEnemyCard unsealedPhantasm
     , -- Agents of the Unknown [eote]
       SomeEnemyCard primordialEvil
     , -- Creatures in the Ice [eote]

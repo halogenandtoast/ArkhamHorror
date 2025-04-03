@@ -779,6 +779,16 @@ allLocations =
     , SomeLocationCard undercityAltar
     , SomeLocationCard ichorLadenTunnels
     , SomeLocationCard limestoneCaverns
+    , --- Stirring in the Deep [eote]
+      SomeLocationCard mistPylon_174
+    , SomeLocationCard mistPylon_175
+    , SomeLocationCard mistPylon_176
+    , SomeLocationCard mistPylon_177
+    , SomeLocationCard mistPylon_178
+    , SomeLocationCard titanicRamp_182
+    , SomeLocationCard titanicRamp_183
+    , SomeLocationCard titanicRamp_184
+    , SomeLocationCard titanicRamp_185
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeLocationCard studyAberrantGateway

@@ -362,6 +362,7 @@ allEncounterEnemyCards =
       , theCrawlingMist
       , theExperiment
       , theMaskedHunter
+      , theNamelessMadness
       , theOrganistDrapedInMystery
       , theOrganistHopelessIDefiedHim
       , theSpectralWatcher
@@ -374,6 +375,7 @@ allEncounterEnemyCards =
       , thrall
       , tidalTerror
       , umordhoth
+      , unsealedPhantasm
       , valentinoRivas
       , vengefulSpecter
       , vengefulWitch
@@ -2613,6 +2615,20 @@ protoplasmicMass =
   (enemy "08669" "Protoplasmic Mass" TheGreatSeal 2)
     { cdCardTraits = setFromList [Monster, Shoggoth]
     , cdKeywords = setFromList [Keyword.Hunter]
+    }
+
+theNamelessMadness :: CardDef
+theNamelessMadness =
+  (enemy "08679" "The Nameless Madness" StirringInTheDeep 15)
+    { cdCardTraits = setFromList [AncientOne, Eidolon, Elite]
+    , cdKeywords = setFromList [Keyword.Alert, Keyword.Massive, Keyword.Retaliate]
+    }
+
+unsealedPhantasm :: CardDef
+unsealedPhantasm =
+  (enemy "08680" "Unsealed Phantasm" StirringInTheDeep 2)
+    { cdCardTraits = setFromList [Monster, Eidolon, Shoggoth]
+    , cdVictoryPoints = Just 1
     }
 
 primordialEvil :: CardDef

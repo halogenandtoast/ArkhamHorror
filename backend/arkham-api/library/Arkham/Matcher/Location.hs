@@ -112,6 +112,7 @@ data LocationMatcher
   | FarthestLocationFromAll LocationMatcher
   | NearestLocationToYou LocationMatcher
   | NearestLocationTo InvestigatorId LocationMatcher
+  | NearestLocationToAny LocationMatcher
   | LocationWithTrait Trait
   | LocationWithoutTrait Trait
   | LocationInDirection Direction LocationMatcher

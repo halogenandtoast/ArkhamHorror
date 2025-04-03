@@ -2,14 +2,19 @@ module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2 (theHeartOfMadnessPart2)
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
-import Arkham.Card.CardDef
+import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.FlavorText
+import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
@@ -62,9 +67,53 @@ randomizeLocations = go =<< shuffleM (base <> pylons)
     ]
 
 instance RunMessage TheHeartOfMadnessPart2 where
-  runMessage msg s@(TheHeartOfMadnessPart2 attrs) = runQueueT $ scenarioI18n $ case msg of
+  runMessage msg s@(TheHeartOfMadnessPart2 attrs) = runQueueT $ scenarioI18n 2 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
+      understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
+      story $ i18nWithTitle "intro1.main" `addFlavorEntry` ul do
+        li.nested "intro1.check" do
+          li.validate (kenslerAlive && understandsTheTrueNature) "intro1.intro2"
+          li.validate (not $ kenslerAlive && understandsTheTrueNature) "intro1.intro3"
+
+      if kenslerAlive && understandsTheTrueNature
+        then doStep 2 msg
+        else doStep 3 msg
+
+      eachInvestigator (`forInvestigator` PreScenarioSetup)
+      pure s
+    DoStep 2 PreScenarioSetup -> do
+      story $ i18nWithTitle "intro2"
+      record DrKenslerHasAPlan
+      pure s
+    DoStep 3 PreScenarioSetup -> do
+      story $ i18nWithTitle "intro3"
+      record TheTruthOfTheMirageEludesYou
+      pure s
+    ForInvestigator iid PreScenarioSetup -> do
+      cannotTakeKensler <- getHasRecord DrKenslerHasAPlan
+      let
+        filterPartners =
+          if cannotTakeKensler
+            then
+              filter
+                ( ( `notElem`
+                      [ Assets.drAmyKenslerProfessorOfBiology.cardCode
+                      , Assets.drAmyKenslerProfessorOfBiologyResolute.cardCode
+                      ]
+                  )
+                    . toCardCode
+                )
+            else id
+      partners <- filterPartners <$> getRemainingPartners
+      unless (null partners) do
+        chooseOneM iid do
+          questionLabeled "Choose a partner for this scenario"
+          labeled "Do not take a partner" nothing
+          for_ partners \partner -> do
+            inPlay <- selectAny $ assetIs partner.cardCode
+            unless inPlay do
+              cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart2 attrs do
       gather Set.TheHeartOfMadness

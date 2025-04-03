@@ -8032,7 +8032,7 @@ mistPylon_174 =
     "08674"
     "Mist Pylon"
     [Ruins]
-    "Myst Pylon"
+    "Mist Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8042,7 +8042,7 @@ mistPylon_175 =
     "08675"
     "Mist Pylon"
     [Ruins]
-    "Myst Pylon"
+    "Mist Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8052,7 +8052,7 @@ mistPylon_176 =
     "08676"
     "Mist Pylon"
     [Ruins]
-    "Myst Pylon"
+    "Mist Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8062,7 +8062,7 @@ mistPylon_177 =
     "08677"
     "Mist Pylon"
     [Ruins]
-    "Myst Pylon"
+    "Mist Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8072,7 +8072,7 @@ mistPylon_178 =
     "08678"
     "Mist Pylon"
     [Ruins]
-    "Myst Pylon"
+    "Mist Pylon"
     [Ruins]
     StirringInTheDeep
 

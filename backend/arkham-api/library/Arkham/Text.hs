@@ -59,8 +59,8 @@ data FlavorText = FlavorText
   }
   deriving stock (Show, Eq, Ord, Data)
 
-addFlavorEntry :: FlavorTextEntry -> FlavorText -> FlavorText
-addFlavorEntry entry' (FlavorText title entries) =
+addFlavorEntry :: FlavorText -> FlavorTextEntry -> FlavorText
+addFlavorEntry (FlavorText title entries) entry' =
   FlavorText title (entries <> [entry'])
 
 setFlavorTitle :: Text -> FlavorText -> FlavorText

@@ -21,8 +21,8 @@ import Arkham.Scenario.Types
 import Arkham.Target
 import Arkham.Trait (Trait (Ancient))
 
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "toTheForbiddenPeaks" a
+scenarioI18n :: Int -> (HasI18n => a) -> a
+scenarioI18n n a = campaignI18n $ scope ("theHeartOfMadness.part" <> tshow n) a
 
 sealAtLocationOf :: Applicative m => InvestigatorId -> m Bool
 sealAtLocationOf _iid = pure False

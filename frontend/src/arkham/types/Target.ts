@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json'
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
+import { v2Optional } from '@/arkham/parser'
 
 type TargetContents = string | { face: string, id: string } | { ability: Ability }
 
@@ -11,7 +12,7 @@ export type Target = {
 export const targetDecoder = JsonDecoder.object<Target>(
   {
     tag: JsonDecoder.string(),
-    contents: JsonDecoder.optional(
+    contents: v2Optional(
       JsonDecoder.oneOf<TargetContents>(
         [ JsonDecoder.string(),
           JsonDecoder.object({ chaosTokenFace: JsonDecoder.string(), chaosTokenId: JsonDecoder.string() }, 'Token').

@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { v2Optional } from '@/arkham/parser';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
@@ -157,8 +158,8 @@ type Mode = {
 
 export const modeDecoder = JsonDecoder.object<Mode>(
   {
-    This: JsonDecoder.optional(campaignDecoder),
-    That: JsonDecoder.optional(scenarioDecoder)
+    This: v2Optional(campaignDecoder),
+    That: v2Optional(scenarioDecoder)
   },
   'Mode'
 );

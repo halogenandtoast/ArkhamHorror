@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { v2Optional } from '@/arkham/parser';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { XpBreakdown, xpBreakdownDecoder} from '@/arkham/types/Xp';
@@ -23,7 +24,7 @@ export type Campaign = {
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
   id: JsonDecoder.string(),
   difficulty: difficultyDecoder,
-  currentCampaignMode: JsonDecoder.optional(JsonDecoder.string()),
+  currentCampaignMode: v2Optional(JsonDecoder.string()),
 }, 'CampaignDetails');
 
 export const campaignDecoder = JsonDecoder.object<Campaign>({

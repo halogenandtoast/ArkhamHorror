@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { v2Optional } from '@/arkham/parser';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { ChaosToken, TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
@@ -26,8 +27,8 @@ export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
 }, 'InfestationToken');
 
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
-  infestationSetAside: JsonDecoder.optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
-  crossedOff: JsonDecoder.optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
+  infestationSetAside: v2Optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
+  crossedOff: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
 }, 'StoryMeta');
 
 export type Story = {
@@ -45,5 +46,5 @@ export const storyDecoder = JsonDecoder.object<Story>({
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
   flipped: JsonDecoder.boolean(),
-  meta: JsonDecoder.optional(storyMetaDecoder)
+  meta: v2Optional(storyMetaDecoder)
 }, 'Story');

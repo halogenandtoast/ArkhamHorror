@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Agenda = {
   doom: number;
@@ -10,10 +10,10 @@ export type Agenda = {
 }
 
 export const agendaDecoder = JsonDecoder.object<Agenda>({
-  doom: JsonDecoder.number,
+  doom: JsonDecoder.number(),
   // doomThreshold: gameValueDecoder,
-  id: JsonDecoder.string,
-  deckId: JsonDecoder.number,
-  treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-  flipped: JsonDecoder.boolean,
+  id: JsonDecoder.string(),
+  deckId: JsonDecoder.number(),
+  treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
+  flipped: JsonDecoder.boolean(),
 }, 'Agenda');

@@ -1,7 +1,8 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
-import { customizationsDecoder } from '@/arkham/types/Customization';
+import { Customization, customizationsDecoder } from '@/arkham/types/Customization';
+import { v2Optional } from '@/arkham/parser';
 import {
   Card,
   cardDecoder,
@@ -16,19 +17,19 @@ export type Event = {
   sealedChaosTokens: ChaosToken[];
   cardsUnderneath: Card[];
   tokens: Tokens;
-  customizations: [number, number][];
+  customizations: Customization[];
   mutated?: string;
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
-  id: JsonDecoder.string,
-  cardCode: JsonDecoder.string,
-  cardId: JsonDecoder.string,
-  doom: JsonDecoder.number,
-  exhausted: JsonDecoder.boolean,
+  id: JsonDecoder.string(),
+  cardCode: JsonDecoder.string(),
+  cardId: JsonDecoder.string(),
+  doom: JsonDecoder.number(),
+  exhausted: JsonDecoder.boolean(),
   sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'CardUnderneath'),
   tokens: tokensDecoder,
   customizations: customizationsDecoder,
-  mutated: JsonDecoder.optional(JsonDecoder.string),
+  mutated: v2Optional(JsonDecoder.string()),
 }, 'Event');

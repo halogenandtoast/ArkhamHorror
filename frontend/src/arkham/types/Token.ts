@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Token
   = 'Aether'
@@ -68,37 +68,37 @@ export const TokenType = {
 } as const;
 
 export const tokenDecoder: JsonDecoder.Decoder<Token> = JsonDecoder.oneOf<Token>([
-  JsonDecoder.isExactly('Aether'),
-  JsonDecoder.isExactly('AlarmLevel'),
-  JsonDecoder.isExactly('Ammo'),
-  JsonDecoder.isExactly('Bounty'),
-  JsonDecoder.isExactly('Charge'),
-  JsonDecoder.isExactly('Clue'),
-  JsonDecoder.isExactly('Corruption'),
-  JsonDecoder.isExactly('Damage'),
-  JsonDecoder.isExactly('Depth'),
-  JsonDecoder.isExactly('Doom'),
-  JsonDecoder.isExactly('Durability'),
-  JsonDecoder.isExactly('Evidence'),
-  JsonDecoder.isExactly('Growth'),
-  JsonDecoder.isExactly('Horror'),
-  JsonDecoder.isExactly('Inspiration'),
-  JsonDecoder.isExactly('Key'),
-  JsonDecoder.isExactly('Lead'),
-  JsonDecoder.isExactly('Leyline'),
-  JsonDecoder.isExactly('Lock'),
-  JsonDecoder.isExactly('LostSoul'),
-  JsonDecoder.isExactly('Offering'),
-  JsonDecoder.isExactly('Resource'),
-  JsonDecoder.isExactly('Secret'),
-  JsonDecoder.isExactly('Shell'),
-  JsonDecoder.isExactly('Supply'),
-  JsonDecoder.isExactly('Suspicion'),
-  JsonDecoder.isExactly('Ticket'),
-  JsonDecoder.isExactly('Time'),
-  JsonDecoder.isExactly('Try'),
-  JsonDecoder.isExactly('Whistle'),
-  JsonDecoder.isExactly('Wish'),
+  JsonDecoder.literal('Aether'),
+  JsonDecoder.literal('AlarmLevel'),
+  JsonDecoder.literal('Ammo'),
+  JsonDecoder.literal('Bounty'),
+  JsonDecoder.literal('Charge'),
+  JsonDecoder.literal('Clue'),
+  JsonDecoder.literal('Corruption'),
+  JsonDecoder.literal('Damage'),
+  JsonDecoder.literal('Depth'),
+  JsonDecoder.literal('Doom'),
+  JsonDecoder.literal('Durability'),
+  JsonDecoder.literal('Evidence'),
+  JsonDecoder.literal('Growth'),
+  JsonDecoder.literal('Horror'),
+  JsonDecoder.literal('Inspiration'),
+  JsonDecoder.literal('Key'),
+  JsonDecoder.literal('Lead'),
+  JsonDecoder.literal('Leyline'),
+  JsonDecoder.literal('Lock'),
+  JsonDecoder.literal('LostSoul'),
+  JsonDecoder.literal('Offering'),
+  JsonDecoder.literal('Resource'),
+  JsonDecoder.literal('Secret'),
+  JsonDecoder.literal('Shell'),
+  JsonDecoder.literal('Supply'),
+  JsonDecoder.literal('Suspicion'),
+  JsonDecoder.literal('Ticket'),
+  JsonDecoder.literal('Time'),
+  JsonDecoder.literal('Try'),
+  JsonDecoder.literal('Whistle'),
+  JsonDecoder.literal('Wish'),
 ], 'Token');
 
 export type Tokens = Partial<Record<Token, number>>;
@@ -109,6 +109,6 @@ export function isUse(t: Token): boolean {
 
 export const tokensDecoder =
   JsonDecoder.array<[Token, number]>(
-    JsonDecoder.tuple([tokenDecoder, JsonDecoder.number], 'Token[]'),
+    JsonDecoder.tuple([tokenDecoder, JsonDecoder.number()], 'Token[]'),
     'Token[]'
   ).map<{ [key in Token]?: number}>(pairs => pairs.reduce((acc, v) => ({ ...acc, [v[0]]: v[1] }), {}))

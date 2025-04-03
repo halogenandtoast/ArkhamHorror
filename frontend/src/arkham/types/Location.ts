@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
 import { BreachStatus, breachStatusDecoder } from '@/arkham/types/Breach';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
@@ -9,17 +9,17 @@ import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 export type Brazier = 'Lit' | 'Unlit';
 
 export const brazierDecoder: JsonDecoder.Decoder<Brazier> = JsonDecoder.oneOf<Brazier>([
-  JsonDecoder.isExactly('Lit'),
-  JsonDecoder.isExactly('Unlit'),
+  JsonDecoder.literal('Lit'),
+  JsonDecoder.literal('Unlit'),
 ], 'Brazier');
 
 
 export type FloodLevel = "Unflooded" | "PartiallyFlooded" | "FullyFlooded"
 
 export const floodLevelDecoder: JsonDecoder.Decoder<FloodLevel> = JsonDecoder.oneOf<FloodLevel>([
-  JsonDecoder.isExactly('Unflooded'),
-  JsonDecoder.isExactly('PartiallyFlooded'),
-  JsonDecoder.isExactly('FullyFlooded'),
+  JsonDecoder.literal('Unflooded'),
+  JsonDecoder.literal('PartiallyFlooded'),
+  JsonDecoder.literal('FullyFlooded'),
 ], 'FloodLevel');
 
 export type Location = {
@@ -48,22 +48,22 @@ export type Location = {
 
 export const locationDecoder = JsonDecoder.object<Location>(
   {
-    cardCode: JsonDecoder.string,
-    label: JsonDecoder.string,
-    id: JsonDecoder.string,
-    cardId: JsonDecoder.string,
+    cardCode: JsonDecoder.string(),
+    label: JsonDecoder.string(),
+    id: JsonDecoder.string(),
+    cardId: JsonDecoder.string(),
     tokens: tokensDecoder,
-    shroud: JsonDecoder.nullable(JsonDecoder.number),
-    revealed: JsonDecoder.boolean,
-    investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
-    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
-    treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
-    assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
-    events: JsonDecoder.array<string>(JsonDecoder.string, 'EventId[]'),
+    shroud: JsonDecoder.nullable(JsonDecoder.number()),
+    revealed: JsonDecoder.boolean(),
+    investigators: JsonDecoder.array<string>(JsonDecoder.string(), 'InvestigatorId[]'),
+    enemies: JsonDecoder.array<string>(JsonDecoder.string(), 'EnemyId[]'),
+    treacheries: JsonDecoder.array<string>(JsonDecoder.string(), 'TreacheryId[]'),
+    assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),
+    events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
-    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
-    inFrontOf: JsonDecoder.nullable(JsonDecoder.string),
+    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),
+    inFrontOf: JsonDecoder.nullable(JsonDecoder.string()),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),
     floodLevel: JsonDecoder.nullable(floodLevelDecoder),

@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 type CustomizationOption =
   {tag: "ChosenCard", contents: string}
@@ -10,27 +10,24 @@ export type Customization =  [number, CustomizationOption[]];
 
 const customizationOptionDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<CustomizationOption>(
-    { tag: JsonDecoder.isExactly('ChosenCard')
-    , contents: JsonDecoder.string
+    { tag: JsonDecoder.literal('ChosenCard')
+    , contents: JsonDecoder.string()
     }, 'ChosenCard')
   , JsonDecoder.object<CustomizationOption>(
-    { tag: JsonDecoder.isExactly('ChosenSkill')
-    , contents: JsonDecoder.string
+    { tag: JsonDecoder.literal('ChosenSkill')
+    , contents: JsonDecoder.string()
     }, 'ChosenSkill')
   , JsonDecoder.object<CustomizationOption>(
-    { tag: JsonDecoder.isExactly('ChosenTrait')
-    , contents: JsonDecoder.string
+    { tag: JsonDecoder.literal('ChosenTrait')
+    , contents: JsonDecoder.string()
     }, 'ChosenTrait')
   , JsonDecoder.object<CustomizationOption>(
-    { tag: JsonDecoder.isExactly('ChosenIndex')
-    , contents: JsonDecoder.number
+    { tag: JsonDecoder.literal('ChosenIndex')
+    , contents: JsonDecoder.number()
     }, 'ChosenIndex')
 ], 'CustomizationOption');
 
 export const customizationsDecoder =
-    JsonDecoder.array<Customization[]>(
-      JsonDecoder.tuple<Customization>(
-        [ JsonDecoder.number
-        , JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.array<CustomizationOption>(customizationOptionDecoder, 'CustomizationOption[]')], 'number, other')
-        ], 'Customization'
-    ), 'Customization[]')
+    JsonDecoder.array<Customization>(
+      JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.array<CustomizationOption>(customizationOptionDecoder, 'CustomizationOption[]')], 'number, other')
+    , 'Customization[]')

@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 type PartnerStatus = 'Eliminated' | 'Resolute' | 'Mia' | 'Safe' | 'Victim' | 'CannotTake' | 'TheEntity'
 
@@ -14,8 +14,8 @@ export interface SomeRecordable {
 }
 
 const someRecordableDecoder = JsonDecoder.object<SomeRecordable>({
-  recordType: JsonDecoder.string,
-  recordVal: JsonDecoder.succeed
+  recordType: JsonDecoder.string(),
+  recordVal: JsonDecoder.succeed()
 }, 'SomeRecordable')
 
 export type LogKey = 
@@ -29,28 +29,28 @@ export type LogContents = {
 }
 
 export const partnerStatusDecoder = JsonDecoder.oneOf<PartnerStatus>([
-  JsonDecoder.isExactly('Eliminated'),
-  JsonDecoder.isExactly('Resolute'),
-  JsonDecoder.isExactly('Mia'),
-  JsonDecoder.isExactly('Safe'),
-  JsonDecoder.isExactly('Victim'),
-  JsonDecoder.isExactly('CannotTake'),
-  JsonDecoder.isExactly('TheEntity'),
+  JsonDecoder.literal('Eliminated'),
+  JsonDecoder.literal('Resolute'),
+  JsonDecoder.literal('Mia'),
+  JsonDecoder.literal('Safe'),
+  JsonDecoder.literal('Victim'),
+  JsonDecoder.literal('CannotTake'),
+  JsonDecoder.literal('TheEntity'),
 ], 'PartnerStatus');
 
 export const partnerDecoder = JsonDecoder.object<Partner>({
-  damage: JsonDecoder.number,
-  horror: JsonDecoder.number,
+  damage: JsonDecoder.number(),
+  horror: JsonDecoder.number(),
   status: partnerStatusDecoder,
 }, 'Partner');
 
 export const logKeyDecoder = JsonDecoder.oneOf<LogKey>([
   JsonDecoder.object<LogKey>({
-    tag: JsonDecoder.string,
-    contents: JsonDecoder.string.map((str) => str.replace(/'/g, '')),
+    tag: JsonDecoder.string(),
+    contents: JsonDecoder.string().map((str) => str.replace(/'/g, '')),
   }, 'LogKey'),
   JsonDecoder.object<LogKey>({
-    tag: JsonDecoder.string,
+    tag: JsonDecoder.string(),
   }, 'LogKey'),
 ], 'LogKey');
 
@@ -61,7 +61,7 @@ export const logContentsDecoder = JsonDecoder.object<LogContents>({
       return {[formatKey(k)]: v, ...acc}
     }, {})
   }),
-  recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number], '[LogKey, number]'), '[LogKey, number][]'),
+  recordedCounts: JsonDecoder.array<[LogKey, number]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.number()], '[LogKey, number]'), '[LogKey, number][]'),
   partners: JsonDecoder.dictionary<Partner>(partnerDecoder, 'Partners'),
 }, 'LogContents');
 

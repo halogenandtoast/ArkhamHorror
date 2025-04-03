@@ -5,7 +5,7 @@ import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { StandaloneSetting } from '@/arkham/types/StandaloneSetting';
 import { CampaignLogSettings } from '@/arkham/types/CampaignSettings'
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 interface FetchData {
   playerId: string
@@ -21,7 +21,7 @@ interface FetchReplay {
 export const fetchJoinGame = (gameId: string): Promise<Game> => api
   .get(`arkham/games/${gameId}/join`)
   .then((resp) => {
-    return gameDecoder.decodeToPromise(resp.data)
+    return gameDecoder.decodePromise(resp.data)
   });
 
 export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> => api
@@ -29,7 +29,7 @@ export const fetchGame = (gameId: string, spectate = false): Promise<FetchData> 
   .then((resp) => {
     const { playerId, game, multiplayerMode } = resp.data;
     return gameDecoder
-      .decodeToPromise(game)
+      .decodePromise(game)
       .then((gameData) => Promise.resolve({ playerId, game: gameData, multiplayerMode }));
   });
 
@@ -38,7 +38,7 @@ export const fetchGameReplay = (gameId: string, step: number): Promise<FetchRepl
   .then((resp) => {
     const { totalSteps, game } = resp.data;
     return gameDecoder
-      .decodeToPromise(game)
+      .decodePromise(game)
       .then((gameData) => Promise.resolve({ game: gameData, totalSteps }));
   });
 
@@ -50,33 +50,33 @@ export const fetchGames = (): Promise<GameDetailsEntry[]> => api
         console.log(failed)
       }
 
-      return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodeToPromise(resp.data.filter((g: any) => g.error === undefined))
+      return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(resp.data.filter((g: any) => g.error === undefined))
   });
 
 export const fetchDecks = (): Promise<Deck[]> => api
   .get('arkham/decks')
-  .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodeToPromise(resp.data));
+  .then((resp) => JsonDecoder.array(deckDecoder, 'ArkhamDeck[]').decodePromise(resp.data));
 
 export const fetchDeck = (deckId: string): Promise<Deck> => api
   .get(`arkham/decks/${deckId}`)
-  .then((resp) => deckDecoder.decodeToPromise(resp.data));
+  .then((resp) => deckDecoder.decodePromise(resp.data));
 
 export const fetchCards = (includeEncounter = false): Promise<CardDef[]> => {
   const query = includeEncounter ? "?includeEncounter" : ""
   return api
   .get(`arkham/cards${query}`)
-  .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodeToPromise(resp.data));
+  .then((resp) => JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(resp.data));
 }
 
 export const fetchCard = (cardCode: string): Promise<CardDef> => {
   return api
   .get(`arkham/card/${cardCode}`)
-  .then((resp) => cardDefDecoder.decodeToPromise(resp.data));
+  .then((resp) => cardDefDecoder.decodePromise(resp.data));
 }
 
 export const fetchInvestigators = (): Promise<string[]> => api
   .get('arkham/investigators')
-  .then((resp) => JsonDecoder.array(JsonDecoder.string, 'string[]').decodeToPromise(resp.data));
+  .then((resp) => JsonDecoder.array(JsonDecoder.string, 'string[]').decodePromise(resp.data));
 
 export const newDeck = (
   deckId: string,
@@ -90,7 +90,7 @@ export const newDeck = (
     deckUrl,
     deckList,
   })
-  .then((resp) => deckDecoder.decodeToPromise(resp.data))
+  .then((resp) => deckDecoder.decodePromise(resp.data))
 
 export const validateDeck = (
   deckList: any
@@ -102,7 +102,7 @@ export const deleteDeck = (deckId: string): Promise<void> => api
 
 export const syncDeck = (deckId: string): Promise<Deck> => api
   .post(`arkham/decks/${deckId}/sync`)
-  .then((resp) => deckDecoder.decodeToPromise(resp.data));
+  .then((resp) => deckDecoder.decodePromise(resp.data));
 
 export const fileBug = (gameId: string): Promise<void> => api
   .post(`arkham/games/${gameId}/file-bug`)
@@ -162,11 +162,11 @@ export const newGame = (
     multiplayerVariant,
     includeTarotReadings,
   })
-  .then((resp) => gameDecoder.decodeToPromise(resp.data));
+  .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const joinGame = (gameId: string): Promise<Game> => api
   .put(`arkham/games/${gameId}/join`)
-  .then((resp) => gameDecoder.decodeToPromise(resp.data));
+  .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const undoChoice = (gameId: string): Promise<void> => api
   .put(`arkham/games/${gameId}/undo`)
@@ -176,4 +176,4 @@ export const undoScenarioChoice = (gameId: string): Promise<void> => api
 
 export const debugGame = (formData: FormData): Promise<Game> => api
   .post("arkham/games/import", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-  .then((resp) => gameDecoder.decodeToPromise(resp.data))
+  .then((resp) => gameDecoder.decodePromise(resp.data))

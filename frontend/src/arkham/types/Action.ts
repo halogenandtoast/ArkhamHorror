@@ -1,19 +1,19 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore' | 'Circle'
 
 export const actionDecoder = JsonDecoder.oneOf<Action>([
-  JsonDecoder.isExactly('Ability'),
-  JsonDecoder.isExactly('Draw'),
-  JsonDecoder.isExactly('Engage'),
-  JsonDecoder.isExactly('Evade'),
-  JsonDecoder.isExactly('Fight'),
-  JsonDecoder.isExactly('Investigate'),
-  JsonDecoder.isExactly('Move'),
-  JsonDecoder.isExactly('Parley'),
-  JsonDecoder.isExactly('Play'),
-  JsonDecoder.isExactly('Resign'),
-  JsonDecoder.isExactly('Resource'),
-  JsonDecoder.isExactly('Explore'),
-  JsonDecoder.isExactly('Circle')
+  JsonDecoder.literal('Ability'),
+  JsonDecoder.literal('Draw'),
+  JsonDecoder.literal('Engage'),
+  JsonDecoder.literal('Evade'),
+  JsonDecoder.literal('Fight'),
+  JsonDecoder.literal('Investigate'),
+  JsonDecoder.literal('Move'),
+  JsonDecoder.literal('Parley'),
+  JsonDecoder.literal('Play'),
+  JsonDecoder.literal('Resign'),
+  JsonDecoder.literal('Resource'),
+  JsonDecoder.literal('Explore'),
+  JsonDecoder.literal('Circle')
 ], 'Action')

@@ -1,10 +1,10 @@
-import { JsonDecoder } from "ts.data.json";
+import * as JsonDecoder from "ts.data.json";
 
 export type TarotScope = { tag: 'GlobalTarot' } | { tag: 'InvestigatorTarot', contents: string };
 
 export const tarotScopeDecoder = JsonDecoder.oneOf<TarotScope>([
-  JsonDecoder.object({ tag: JsonDecoder.isExactly('GlobalTarot') }, 'GlobalTarot'),
-  JsonDecoder.object<TarotScope>({ tag: JsonDecoder.isExactly('InvestigatorTarot'), contents: JsonDecoder.string }, 'InvestigatorTarot'),
+  JsonDecoder.object({ tag: JsonDecoder.literal('GlobalTarot') }, 'GlobalTarot'),
+  JsonDecoder.object<TarotScope>({ tag: JsonDecoder.literal('InvestigatorTarot'), contents: JsonDecoder.string() }, 'InvestigatorTarot'),
 ], 'TarotScope');
 
 export type TarotCardFacing = 'Upright' | 'Reversed';
@@ -33,34 +33,34 @@ export type TarotCardArcana
   | 'TheWorldXXI'
 
 export const tarotCardArcanaDecoder = JsonDecoder.oneOf<TarotCardArcana>([
-  JsonDecoder.isExactly('TheFool0'),
-  JsonDecoder.isExactly('TheMagicianI'),
-  JsonDecoder.isExactly('TheHighPriestessII'),
-  JsonDecoder.isExactly('TheEmpressIII'),
-  JsonDecoder.isExactly('TheEmperorIV'),
-  JsonDecoder.isExactly('TheHierophantV'),
-  JsonDecoder.isExactly('TheLoversVI'),
-  JsonDecoder.isExactly('TheChariotVII'),
-  JsonDecoder.isExactly('StrengthVIII'),
-  JsonDecoder.isExactly('TheHermitIX'),
-  JsonDecoder.isExactly('WheelOfFortuneX'),
-  JsonDecoder.isExactly('JusticeXI'),
-  JsonDecoder.isExactly('TheHangedManXII'),
-  JsonDecoder.isExactly('DeathXIII'),
-  JsonDecoder.isExactly('TemperanceXIV'),
-  JsonDecoder.isExactly('TheDevilXV'),
-  JsonDecoder.isExactly('TheTowerXVI'),
-  JsonDecoder.isExactly('TheMoonXVIII'),
-  JsonDecoder.isExactly('TheStarXVII'),
-  JsonDecoder.isExactly('TheSunXIX'),
-  JsonDecoder.isExactly('JudgementXX'),
-  JsonDecoder.isExactly('TheWorldXXI'),
+  JsonDecoder.literal('TheFool0'),
+  JsonDecoder.literal('TheMagicianI'),
+  JsonDecoder.literal('TheHighPriestessII'),
+  JsonDecoder.literal('TheEmpressIII'),
+  JsonDecoder.literal('TheEmperorIV'),
+  JsonDecoder.literal('TheHierophantV'),
+  JsonDecoder.literal('TheLoversVI'),
+  JsonDecoder.literal('TheChariotVII'),
+  JsonDecoder.literal('StrengthVIII'),
+  JsonDecoder.literal('TheHermitIX'),
+  JsonDecoder.literal('WheelOfFortuneX'),
+  JsonDecoder.literal('JusticeXI'),
+  JsonDecoder.literal('TheHangedManXII'),
+  JsonDecoder.literal('DeathXIII'),
+  JsonDecoder.literal('TemperanceXIV'),
+  JsonDecoder.literal('TheDevilXV'),
+  JsonDecoder.literal('TheTowerXVI'),
+  JsonDecoder.literal('TheMoonXVIII'),
+  JsonDecoder.literal('TheStarXVII'),
+  JsonDecoder.literal('TheSunXIX'),
+  JsonDecoder.literal('JudgementXX'),
+  JsonDecoder.literal('TheWorldXXI'),
 ], 'TarotCardArcana')
 
 
 export const tarotCardFacingDecoder = JsonDecoder.oneOf<TarotCardFacing>([
-  JsonDecoder.isExactly('Upright'),
-  JsonDecoder.isExactly('Reversed'),
+  JsonDecoder.literal('Upright'),
+  JsonDecoder.literal('Reversed'),
 ], 'TarotCardFacing')
 
 export type TarotCard = {

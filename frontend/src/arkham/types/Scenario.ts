@@ -1,5 +1,6 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
+import { v2Optional } from '@/arkham/parser';
 import {
   Card,
   cardDecoder,
@@ -7,9 +8,8 @@ import {
   cardContentsDecoder,
 } from '@/arkham/types/Card';
 import { ChaosBag, chaosBagDecoder } from '@/arkham/types/ChaosBag';
-import { logContentsDecoder } from '@/arkham/types/Log';
+import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
-import type { LogContents } from '@/arkham/types/Campaign';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
@@ -22,8 +22,8 @@ export type ScenarioName = {
 
 export const scenarioNameDecoder = JsonDecoder.object<ScenarioName>(
   {
-    title: JsonDecoder.string,
-    subtitle: JsonDecoder.nullable(JsonDecoder.string),
+    title: JsonDecoder.string(),
+    subtitle: JsonDecoder.nullable(JsonDecoder.string()),
   },
   'ScenarioName'
 );
@@ -71,13 +71,14 @@ export type Scenario = {
   log: Remembered[];
 }
 
-export const scenarioDeckDecoder = JsonDecoder.object<ScenarioDeck>({
-  tag: JsonDecoder.string,
-  deckSize: JsonDecoder.array<Card>(cardDecoder, 'Card[]').map(cards => cards.length),
-}, 'ScenarioDeck', { deckSize: 'contents' });
+export const scenarioDeckDecoder = JsonDecoder.object({
+  tag: JsonDecoder.string(),
+  contents: JsonDecoder.array<Card>(cardDecoder, 'Card[]').map(cards => cards.length)
+}, 'ScenarioDeck').map(({tag, contents}) => ({ tag, deckSize: contents }))
+
 
 export const scenarioDetailsDecoder = JsonDecoder.object<ScenarioDetails>({
-  id: JsonDecoder.string,
+  id: JsonDecoder.string(),
   difficulty: difficultyDecoder,
   name: scenarioNameDecoder,
 }, 'ScenarioDetails');
@@ -90,39 +91,36 @@ export type Remembered=
 const rememberedDecoder = JsonDecoder.oneOf([
   JsonDecoder.object<Remembered>(
     {
-      tag: JsonDecoder.isExactly('YouOweBiancaResources'),
+      tag: JsonDecoder.literal('YouOweBiancaResources'),
       contents: JsonDecoder.tuple(
-        [JsonDecoder.succeed, JsonDecoder.number],
+        [JsonDecoder.succeed(), JsonDecoder.number()],
         'YouOweBiancaResources'
       ).map<number>((res: [any, number]) => res[1])
     },
     'Remembered'
   ),
-  JsonDecoder.object<Remembered>(
+  JsonDecoder.object(
     {
-      tag: JsonDecoder.constant('RememberNamed'),
-      actualTag: JsonDecoder.string,
-      name: JsonDecoder.object({ getLabel: nameDecoder, unLabel: JsonDecoder.string }, 'labeled').map(res => res.getLabel)
+      tag: JsonDecoder.string(),
+      contents: JsonDecoder.object({ getLabel: nameDecoder, unLabel: JsonDecoder.string() }, 'labeled').map(res => res.getLabel)
     },
-    'Remembered'
-    , { actualTag: 'tag', name: 'contents' }
-  ),
-  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string }, 'Remembered')
+    'Remembered').map(({tag, contents}) => ({ tag: "RememberedName", actualTag: tag, name: contents })),
+  JsonDecoder.object<Remembered>( { tag: JsonDecoder.string() }, 'Remembered')
 ], 'Remembered');
 
 
 
 export const scenarioDecoder = JsonDecoder.object<Scenario>({
   name: scenarioNameDecoder,
-  id: JsonDecoder.string,
-  meta: JsonDecoder.succeed,
-  reference: JsonDecoder.string,
+  id: JsonDecoder.string(),
+  meta: JsonDecoder.succeed(),
+  reference: JsonDecoder.string(),
   log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
   difficulty: difficultyDecoder,
-  locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
-  usesGrid: JsonDecoder.boolean,
-  decksLayout: JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]'),
-  decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
+  locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]')),
+  usesGrid: JsonDecoder.boolean(),
+  decksLayout: JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]'),
+  decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),
   cardsUnderScenarioReference: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderAgendaDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathAgendaCards'),
   cardsUnderActDeck: JsonDecoder.array<Card>(cardDecoder, 'UnderneathActCards'),
@@ -135,10 +133,10 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   encounterDeck: JsonDecoder.array<CardContents>(cardContentsDecoder, 'CardContents[]'),
-  xpBreakdown: JsonDecoder.optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
+  xpBreakdown: v2Optional(JsonDecoder.array<XpEntry>(xpEntryDecoder, 'XpEntry[]')),
   standaloneCampaignLog: logContentsDecoder,
   tokens: tokensDecoder,
-  hasEncounterDeck: JsonDecoder.boolean,
+  hasEncounterDeck: JsonDecoder.boolean(),
   // tarotCards: JsonDecoder.array<TarotCard>(tarotCardDecoder, 'TarotCard[]'),
   tarotCards: JsonDecoder.
     array(
@@ -148,11 +146,11 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   counts:
     JsonDecoder.array<[string, number]>(
       JsonDecoder.oneOf([
-        JsonDecoder.tuple([JsonDecoder.string, JsonDecoder.number], '[string, number]'),
+        JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], '[string, number]'),
         JsonDecoder.tuple([JsonDecoder.object(
-            { tag: JsonDecoder.string }
+            { tag: JsonDecoder.string() }
             , 'count with arg'
-        ), JsonDecoder.number], '[string, number]').map(([a, b]) => [a.tag, b]),
+        ), JsonDecoder.number()], '[string, number]').map(([a, b]) => [a.tag, b]),
       ], 'counts'),
       '[string, number][]'
     ).
@@ -164,7 +162,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
     }),
   encounterDecks: JsonDecoder.array<[string, [CardContents[], CardContents[]]]>(
     JsonDecoder.tuple([
-      JsonDecoder.string,
+      JsonDecoder.string(),
       JsonDecoder.tuple([
         JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
         JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]')

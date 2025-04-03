@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { ChaosToken, TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
@@ -22,12 +22,12 @@ type StoryMeta = {
 
 export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
   infestationTokenFace: tokenFaceDecoder,
-  infestationTokenId: JsonDecoder.string
+  infestationTokenId: JsonDecoder.string()
 }, 'InfestationToken');
 
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
   infestationSetAside: JsonDecoder.optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
-  crossedOff: JsonDecoder.optional(JsonDecoder.array<string>(JsonDecoder.string, 'string[]'))
+  crossedOff: JsonDecoder.optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
 }, 'StoryMeta');
 
 export type Story = {
@@ -40,10 +40,10 @@ export type Story = {
 }
 
 export const storyDecoder = JsonDecoder.object<Story>({
-  id: JsonDecoder.string,
-  cardId: JsonDecoder.string,
+  id: JsonDecoder.string(),
+  cardId: JsonDecoder.string(),
   placement: placementDecoder,
   otherSide: JsonDecoder.nullable(targetDecoder),
-  flipped: JsonDecoder.boolean,
+  flipped: JsonDecoder.boolean(),
   meta: JsonDecoder.optional(storyMetaDecoder)
 }, 'Story');

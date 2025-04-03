@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
 export type ArkhamKey
@@ -13,13 +13,13 @@ export type ArkhamKey
   | { tag: "UnrevealedKey" }
 
 export const arkhamKeyDecoder = JsonDecoder.oneOf<ArkhamKey>([
-  JsonDecoder.object({tag: JsonDecoder.isExactly("TokenKey"), contents: chaosTokenDecoder }, 'tokenKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("BlueKey") }, 'BlueKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("GreenKey") }, 'GreenKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("RedKey") }, 'RedKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("YellowKey") }, 'YellowKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("PurpleKey") }, 'PurpleKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("BlackKey") }, 'BlackKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("WhiteKey") }, 'WhiteKey'),
-  JsonDecoder.object({tag: JsonDecoder.isExactly("UnrevealedKey") }, 'UnrevealedKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("TokenKey"), contents: chaosTokenDecoder }, 'tokenKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("BlueKey") }, 'BlueKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("GreenKey") }, 'GreenKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("RedKey") }, 'RedKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("YellowKey") }, 'YellowKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("PurpleKey") }, 'PurpleKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("BlackKey") }, 'BlackKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("WhiteKey") }, 'WhiteKey'),
+  JsonDecoder.object({tag: JsonDecoder.literal("UnrevealedKey") }, 'UnrevealedKey'),
 ], 'ArkhamKey');

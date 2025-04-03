@@ -1,6 +1,7 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Tokens } from '@/arkham/types/Token';
 import { customizationsDecoder, Customization } from '@/arkham/types/Customization';
+import { v2Optional } from '@/arkham/parser';
 
 export type Card = PlayerCard | EncounterCard | VengeanceCard;
 
@@ -67,7 +68,7 @@ export type CardContents = {
   tokens: Tokens
   art?: string
   customizations?: Customization[]
-  mutated?: string
+  mutated?: string 
 }
 
 export type VengeanceCard = {
@@ -88,20 +89,20 @@ export type EncounterCard = {
 export const cardContentsDecoder = JsonDecoder.object<CardContents>(
   {
     tag: JsonDecoder.constant('CardContents'),
-    id: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
-    isFlipped: JsonDecoder.optional(JsonDecoder.boolean),
+    id: JsonDecoder.string(),
+    cardCode: JsonDecoder.string(),
+    isFlipped: v2Optional(JsonDecoder.boolean()),
     tokens: JsonDecoder.constant({}),
-    art: JsonDecoder.optional(JsonDecoder.string),
-    customizations: JsonDecoder.optional(customizationsDecoder),
-    mutated: JsonDecoder.optional(JsonDecoder.string),
+    art: v2Optional(JsonDecoder.string()),
+    customizations: v2Optional(customizationsDecoder),
+    mutated: v2Optional(JsonDecoder.string()),
   },
   'CardContents',
 );
 
 export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
   {
-    tag: JsonDecoder.isExactly('PlayerCard'),
+    tag: JsonDecoder.literal('PlayerCard'),
     contents: cardContentsDecoder,
   },
   'PlayerCard',
@@ -109,7 +110,7 @@ export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
 
 export const encounterCardDecoder = JsonDecoder.object<EncounterCard>(
   {
-    tag: JsonDecoder.isExactly('EncounterCard'),
+    tag: JsonDecoder.literal('EncounterCard'),
     contents: cardContentsDecoder,
   },
   'EncounterCard',
@@ -117,7 +118,7 @@ export const encounterCardDecoder = JsonDecoder.object<EncounterCard>(
 
 export const vengeanceCardDecoder = JsonDecoder.object<VengeanceCard>(
   {
-    tag: JsonDecoder.isExactly('VengeanceCard'),
+    tag: JsonDecoder.literal('VengeanceCard'),
     contents: JsonDecoder.oneOf<PlayerCard | EncounterCard>([playerCardDecoder, encounterCardDecoder], 'VengeanceCardContents')
   },
   'EncounterCard',

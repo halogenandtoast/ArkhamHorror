@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Ability, abilityDecoder } from '@/arkham/types/Ability';
 import { chaosBagStepDecoder, ChaosBagStep } from '@/arkham/types/ChaosBag';
 import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
@@ -93,11 +93,11 @@ export type Component = InvestigatorComponent | InvestigatorDeckComponent | Asse
 export type TokenType = 'ResourceToken' | 'ClueToken' | 'DamageToken' | 'HorrorToken' | 'DoomToken';
 
 export const tokenTypeDecoder = JsonDecoder.oneOf<TokenType>(
-  [ JsonDecoder.isExactly('ResourceToken')
-  , JsonDecoder.isExactly('ClueToken')
-  , JsonDecoder.isExactly('DamageToken')
-  , JsonDecoder.isExactly('HorrorToken')
-  , JsonDecoder.isExactly('DoomToken')
+  [ JsonDecoder.literal('ResourceToken')
+  , JsonDecoder.literal('ClueToken')
+  , JsonDecoder.literal('DamageToken')
+  , JsonDecoder.literal('HorrorToken')
+  , JsonDecoder.literal('DoomToken')
   ], 'TokenType');
 
 export type InvestigatorComponent = {
@@ -119,22 +119,22 @@ export type InvestigatorDeckComponent = {
 
 export const investigatorComponentDecoder = JsonDecoder.object<InvestigatorComponent>(
   {
-    tag: JsonDecoder.isExactly("InvestigatorComponent"),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal("InvestigatorComponent"),
+    investigatorId: JsonDecoder.string(),
     tokenType: tokenTypeDecoder,
   }, 'InvestigatorComponent');
 
 export const assetComponentDecoder = JsonDecoder.object<AssetComponent>(
   {
-    tag: JsonDecoder.isExactly("AssetComponent"),
-    assetId: JsonDecoder.string,
+    tag: JsonDecoder.literal("AssetComponent"),
+    assetId: JsonDecoder.string(),
     tokenType: tokenTypeDecoder,
   }, 'InvestigatorComponent');
 
 export const investigatorDeckComponentDecoder = JsonDecoder.object<InvestigatorDeckComponent>(
   {
-    tag: JsonDecoder.isExactly("InvestigatorDeckComponent"),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal("InvestigatorDeckComponent"),
+    investigatorId: JsonDecoder.string(),
   }, 'InvestigatorDeckComponent');
 
 
@@ -157,8 +157,8 @@ export type FightLabel = {
 
 export const fightLabelDecoder = JsonDecoder.object<FightLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.FIGHT_LABEL),
-    enemyId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.FIGHT_LABEL),
+    enemyId: JsonDecoder.string(),
   }, 'FightLabel')
 
 export type EvadeLabel = {
@@ -168,8 +168,8 @@ export type EvadeLabel = {
 
 export const evadeLabelDecoder = JsonDecoder.object<EvadeLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.EVADE_LABEL),
-    enemyId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.EVADE_LABEL),
+    enemyId: JsonDecoder.string(),
   }, 'EvadeLabel')
 
 export type EngageLabel = {
@@ -179,8 +179,8 @@ export type EngageLabel = {
 
 export const engageLabelDecoder = JsonDecoder.object<EngageLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.ENGAGE_LABEL),
-    enemyId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.ENGAGE_LABEL),
+    enemyId: JsonDecoder.string(),
   }, 'EngageLabel')
 
 export type GridLabel = {
@@ -190,8 +190,8 @@ export type GridLabel = {
 
 export const gridLabelDecoder = JsonDecoder.object<GridLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.GRID_LABEL),
-    gridLabel: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.GRID_LABEL),
+    gridLabel: JsonDecoder.string(),
   }, 'GridLabel')
 
 export type TarotLabel = {
@@ -201,7 +201,7 @@ export type TarotLabel = {
 
 export const tarotLabelDecoder = JsonDecoder.object<TarotLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.TAROT_LABEL),
+    tag: JsonDecoder.literal(MessageType.TAROT_LABEL),
     tarotCard: tarotCardDecoder,
   }, 'TarotLabel')
 
@@ -212,8 +212,8 @@ export type CardLabel = {
 
 export const cardLabelDecoder = JsonDecoder.object<CardLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.CARD_LABEL),
-    cardCode: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.CARD_LABEL),
+    cardCode: JsonDecoder.string(),
   }, 'CardLabel')
 
 export type PortraitLabel = {
@@ -223,8 +223,8 @@ export type PortraitLabel = {
 
 export const portraitLabelDecoder = JsonDecoder.object<PortraitLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.PORTRAIT_LABEL),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.PORTRAIT_LABEL),
+    investigatorId: JsonDecoder.string(),
   }, 'PortraitLabel')
 
 export type AbilityLabel = {
@@ -235,8 +235,8 @@ export type AbilityLabel = {
 
 export const abilityLabelDecoder = JsonDecoder.object<AbilityLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.ABILITY_LABEL),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.ABILITY_LABEL),
+    investigatorId: JsonDecoder.string(),
     ability: abilityDecoder,
   }, 'Ability')
 
@@ -247,8 +247,8 @@ export type StartSkillTestButton = {
 
 export const startSkillTestButtonDecoder = JsonDecoder.object<StartSkillTestButton>(
   {
-    tag: JsonDecoder.isExactly(MessageType.START_SKILL_TEST_BUTTON),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.START_SKILL_TEST_BUTTON),
+    investigatorId: JsonDecoder.string(),
   }, 'StartSkillTestButton')
 
 export type SkillTestApplyResultsButton = {
@@ -257,77 +257,77 @@ export type SkillTestApplyResultsButton = {
 
 export const skillTestApplyResultsButtonDecoder = JsonDecoder.object<SkillTestApplyResultsButton>(
   {
-    tag: JsonDecoder.isExactly(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
+    tag: JsonDecoder.literal(MessageType.SKILL_TEST_APPLY_RESULTS_BUTTON),
   }, 'SkillTestApplyResultsButton')
 
 export type Message = Label | TooltipLabel | TargetLabel | SkillLabel | SkillLabelWithLabel | CardLabel | PortraitLabel | ComponentLabel | AbilityLabel | EndTurnButton | StartSkillTestButton | SkillTestApplyResultsButton | FightLabel | EvadeLabel | EngageLabel | GridLabel | TarotLabel | Done | ChaosTokenGroupChoice | EffectActionButton | SkipTriggersButton | CardPile;
 
 export const skipTriggersDecoder = JsonDecoder.object<SkipTriggersButton>(
   {
-    tag: JsonDecoder.isExactly(MessageType.SKIP_TRIGGERS_BUTTON),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.SKIP_TRIGGERS_BUTTON),
+    investigatorId: JsonDecoder.string(),
   }, 'SkipTriggersButton')
 
 export const doneDecoder = JsonDecoder.object<Done>(
   {
-    tag: JsonDecoder.isExactly(MessageType.DONE),
-    label: JsonDecoder.string
+    tag: JsonDecoder.literal(MessageType.DONE),
+    label: JsonDecoder.string()
   }, 'Done')
 
 export const labelDecoder = JsonDecoder.object<Label>(
   {
-    tag: JsonDecoder.isExactly(MessageType.LABEL),
-    label: JsonDecoder.string
+    tag: JsonDecoder.literal(MessageType.LABEL),
+    label: JsonDecoder.string()
   }, 'Label')
 
 export const pileCardDecoder = JsonDecoder.object<PileCard>(
   {
-    cardId: JsonDecoder.string,
-    cardOwner: JsonDecoder.nullable(JsonDecoder.string)
+    cardId: JsonDecoder.string(),
+    cardOwner: JsonDecoder.nullable(JsonDecoder.string())
   }, 'pileCardDecoder')
 
 export const cardPileDecoder = JsonDecoder.object<CardPile>(
   {
-    tag: JsonDecoder.isExactly(MessageType.CARD_PILE),
+    tag: JsonDecoder.literal(MessageType.CARD_PILE),
     pile: JsonDecoder.array<PileCard>(pileCardDecoder, "CardId[]")
   }, 'cardPileDecoder')
 
 export const tooltipLabelDecoder = JsonDecoder.object<TooltipLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.TOOLTIP_LABEL),
-    label: JsonDecoder.string,
-    tooltip: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.TOOLTIP_LABEL),
+    label: JsonDecoder.string(),
+    tooltip: JsonDecoder.string(),
   }, 'TooltipLabel')
 
 export const skillLabelDecoder = JsonDecoder.object<SkillLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.SKILL_LABEL),
+    tag: JsonDecoder.literal(MessageType.SKILL_LABEL),
     skillType: skillTypeDecoder
   }, 'SkillLabel')
 
 export const skillLabelWithLabelDecoder = JsonDecoder.object<SkillLabelWithLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.SKILL_LABEL_WITH_LABEL),
-    label: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.SKILL_LABEL_WITH_LABEL),
+    label: JsonDecoder.string(),
     skillType: skillTypeDecoder
   }, 'SkillLabelWithLabel')
 
 export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.TARGET_LABEL),
+    tag: JsonDecoder.literal(MessageType.TARGET_LABEL),
     target: targetDecoder
   }, 'TargetLabel')
 
 export const componentLabelDecoder = JsonDecoder.object<ComponentLabel>(
   {
-    tag: JsonDecoder.isExactly(MessageType.COMPONENT_LABEL),
+    tag: JsonDecoder.literal(MessageType.COMPONENT_LABEL),
     component: componentDecoder
   }, 'ComponentLabel')
 
 export const endTurnButtonDecoder = JsonDecoder.object<EndTurnButton>(
   {
-    tag: JsonDecoder.isExactly(MessageType.END_TURN_BUTTON),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.END_TURN_BUTTON),
+    investigatorId: JsonDecoder.string(),
   }, 'EndTurnButton')
 
 export type ChaosTokenGroupChoice = {
@@ -338,8 +338,8 @@ export type ChaosTokenGroupChoice = {
 
 export const chaosTokenGroupChoiceDecoder = JsonDecoder.object<ChaosTokenGroupChoice>(
   {
-    tag: JsonDecoder.isExactly(MessageType.TOKEN_GROUP_CHOICE),
-    investigatorId: JsonDecoder.string,
+    tag: JsonDecoder.literal(MessageType.TOKEN_GROUP_CHOICE),
+    investigatorId: JsonDecoder.string(),
     step: chaosBagStepDecoder
   }, 'ChaosTokenGroupChoice')
 
@@ -351,9 +351,9 @@ export type EffectActionButton = {
 
 export const effectActionButtonDecoder = JsonDecoder.object<EffectActionButton>(
   {
-    tag: JsonDecoder.isExactly(MessageType.EFFECT_ACTION_BUTTON),
-    effectId: JsonDecoder.string,
-    tooltip: JsonDecoder.string
+    tag: JsonDecoder.literal(MessageType.EFFECT_ACTION_BUTTON),
+    effectId: JsonDecoder.string(),
+    tooltip: JsonDecoder.string()
   }, 'EffectActionButton')
 
 export const messageDecoder = JsonDecoder.oneOf<Message>(
@@ -380,7 +380,7 @@ export const messageDecoder = JsonDecoder.oneOf<Message>(
     chaosTokenGroupChoiceDecoder,
     effectActionButtonDecoder,
     skipTriggersDecoder,
-    JsonDecoder.succeed.chain((f) => {
+    JsonDecoder.succeed().flatMap((f) => {
       return JsonDecoder.fail(f)
     })
   ],

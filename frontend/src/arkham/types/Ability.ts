@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 import { Cost, costDecoder } from '@/arkham/types/Cost';
 import { Action, actionDecoder } from '@/arkham/types/Action';
@@ -10,7 +10,7 @@ export type ServitorAbility = {
 }
 
 export const servitorAbilityDecoder = JsonDecoder.object<ServitorAbility>({
-  tag: JsonDecoder.isExactly("ServitorAbility"),
+  tag: JsonDecoder.literal("ServitorAbility"),
   action: actionDecoder
 }, 'ServitorAbility')
 
@@ -20,7 +20,7 @@ export type FastAbility = {
 }
 
 export const fastAbilityDecoder = JsonDecoder.object<FastAbility>({
-  tag: JsonDecoder.isExactly("FastAbility'").map(() => "FastAbility"),
+  tag: JsonDecoder.literal("FastAbility'").map(() => "FastAbility"),
   cost: costDecoder
 }, 'FastAbility')
 
@@ -31,7 +31,7 @@ export type ReactionAbility = {
 }
 
 export const reactionAbilityDecoder = JsonDecoder.object<ReactionAbility>({
-  tag: JsonDecoder.isExactly("ReactionAbility"),
+  tag: JsonDecoder.literal("ReactionAbility"),
   cost: costDecoder
 }, 'ReactionAbility')
 
@@ -43,8 +43,8 @@ export type CustomizationReaction = {
 }
 
 export const customizationReactionDecoder = JsonDecoder.object<CustomizationReaction>({
-  tag: JsonDecoder.isExactly("CustomizationReaction"),
-  label: JsonDecoder.string,
+  tag: JsonDecoder.literal("CustomizationReaction"),
+  label: JsonDecoder.string(),
   cost: costDecoder
 }, 'CustomizationReaction')
 
@@ -56,8 +56,8 @@ export type ConstantReaction = {
 }
 
 export const constantReactionDecoder = JsonDecoder.object<ConstantReaction>({
-  tag: JsonDecoder.isExactly("ConstantReaction"),
-  label: JsonDecoder.string,
+  tag: JsonDecoder.literal("ConstantReaction"),
+  label: JsonDecoder.string(),
   cost: costDecoder
 }, 'ConstantReaction')
 
@@ -68,7 +68,7 @@ export type ActionAbility = {
 }
 
 export const actionAbilityDecoder = JsonDecoder.object<ActionAbility>({
-  tag: JsonDecoder.isExactly("ActionAbility"),
+  tag: JsonDecoder.literal("ActionAbility"),
   actions: JsonDecoder.array(actionDecoder, 'Action[]'),
   cost: costDecoder,
 }, 'ActionAbility')
@@ -81,7 +81,7 @@ export type ActionAbilityWithSkill = {
 }
 
 export const actionAbilityWithSkillDecoder = JsonDecoder.object<ActionAbilityWithSkill>({
-  tag: JsonDecoder.isExactly("ActionAbilityWithSkill"),
+  tag: JsonDecoder.literal("ActionAbilityWithSkill"),
   actions: JsonDecoder.array(actionDecoder, 'Actions[]'),
   skillType: skillTypeDecoder,
   cost: costDecoder
@@ -95,7 +95,7 @@ export type ActionAbilityWithBefore = {
 }
 
 export const actionAbilityWithBeforeDecoder = JsonDecoder.object<ActionAbilityWithBefore>({
-  tag: JsonDecoder.isExactly("ActionAbilityWithBefore"),
+  tag: JsonDecoder.literal("ActionAbilityWithBefore"),
   actions: JsonDecoder.array(actionDecoder, 'Action[]'),
   actionBefore: actionDecoder,
   cost: costDecoder
@@ -106,7 +106,7 @@ export type SilentForcedAbility = {
 }
 
 export const silentForcedAbilityDecoder = JsonDecoder.object<SilentForcedAbility>({
-  tag: JsonDecoder.isExactly("SilentForcedAbility"),
+  tag: JsonDecoder.literal("SilentForcedAbility"),
 }, 'SilentForcedAbility')
 
 export type ForcedAbility = {
@@ -114,7 +114,7 @@ export type ForcedAbility = {
 }
 
 export const forcedAbilityDecoder = JsonDecoder.object<ForcedAbility>({
-  tag: JsonDecoder.isExactly("ForcedAbility"),
+  tag: JsonDecoder.literal("ForcedAbility"),
 }, 'ForcedAbility')
 
 export type ForcedAbilityWithCost = {
@@ -123,7 +123,7 @@ export type ForcedAbilityWithCost = {
 }
 
 export const forcedAbilityWithCostDecoder = JsonDecoder.object<ForcedAbilityWithCost>({
-  tag: JsonDecoder.isExactly("ForcedAbilityWithCost"),
+  tag: JsonDecoder.literal("ForcedAbilityWithCost"),
   cost: costDecoder
 }, 'ForcedAbilityWithCost')
 
@@ -133,7 +133,7 @@ export type AbilityEffect = {
 }
 
 export const abilityEffectDecoder = JsonDecoder.object<AbilityEffect>({
-  tag: JsonDecoder.isExactly("AbilityEffect"),
+  tag: JsonDecoder.literal("AbilityEffect"),
   cost: costDecoder
 }, 'AbilityEffect')
 
@@ -143,7 +143,7 @@ export type DelayedAbility = {
 }
 
 export const delayedAbilityDecoder = JsonDecoder.object<DelayedAbility>({
-  tag: JsonDecoder.isExactly("DelayedAbility"),
+  tag: JsonDecoder.literal("DelayedAbility"),
   abilityType: JsonDecoder.lazy<AbilityType>(() => abilityTypeDecoder)
 }, 'DelayedAbility')
 
@@ -153,7 +153,7 @@ export type Objective = {
 }
 
 export const objectiveDecoder = JsonDecoder.object<Objective>({
-  tag: JsonDecoder.isExactly("Objective"),
+  tag: JsonDecoder.literal("Objective"),
   abilityType: JsonDecoder.lazy<AbilityType>(() => abilityTypeDecoder)
 }, 'Objective')
 
@@ -162,7 +162,7 @@ export type Haunted = {
 }
 
 export const hauntedDecoder = JsonDecoder.object<Haunted>({
-  tag: JsonDecoder.isExactly("Haunted"),
+  tag: JsonDecoder.literal("Haunted"),
 }, 'Haunted')
 
 
@@ -174,7 +174,7 @@ export type ForcedWhen = {
 }
 
 export const forcedWhenDecoder = JsonDecoder.object<ForcedWhen>({
-  tag: JsonDecoder.isExactly("ForcedWhen"),
+  tag: JsonDecoder.literal("ForcedWhen"),
   abilityType: JsonDecoder.lazy(() => abilityTypeDecoder)
 }, 'Haunted')
 
@@ -210,7 +210,7 @@ export const abilityDecoder = JsonDecoder.object(
   {
     type: abilityTypeDecoder,
     source: sourceDecoder,
-    tooltip: JsonDecoder.nullable(JsonDecoder.string),
-    displayAsAction: JsonDecoder.boolean,
-    index: JsonDecoder.number
+    tooltip: JsonDecoder.nullable(JsonDecoder.string()),
+    displayAsAction: JsonDecoder.boolean(),
+    index: JsonDecoder.number()
   }, 'Ability')

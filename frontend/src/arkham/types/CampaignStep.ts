@@ -1,4 +1,4 @@
-import { JsonDecoder } from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json';
 
 export type CampaignStep = PrologueStep | ScenarioStep | InterludeStep | UpgradeDeckStep | EpilogueStep | ResupplyPoint | CheckpointStep
 
@@ -16,21 +16,21 @@ export type EpilogueStep = {
 
 export const prologueStepDecoder = JsonDecoder.object<PrologueStep>(
   {
-    tag: JsonDecoder.isExactly('PrologueStep'),
+    tag: JsonDecoder.literal('PrologueStep'),
   },
   'PrologueStep',
 );
 
 export const resupplyPointStepDecoder = JsonDecoder.object<ResupplyPoint>(
   {
-    tag: JsonDecoder.isExactly('ResupplyPoint'),
+    tag: JsonDecoder.literal('ResupplyPoint'),
   },
   'ResupplyPoint',
 );
 
 export const epilogueStepDecoder = JsonDecoder.object<EpilogueStep>(
   {
-    tag: JsonDecoder.isExactly('EpilogueStep'),
+    tag: JsonDecoder.literal('EpilogueStep'),
   },
   'EpilogueStep',
 );
@@ -42,8 +42,8 @@ export type ScenarioStep = {
 
 export const scenarioStepDecoder = JsonDecoder.object<ScenarioStep>(
   {
-    tag: JsonDecoder.isExactly('ScenarioStep'),
-    contents: JsonDecoder.string
+    tag: JsonDecoder.literal('ScenarioStep'),
+    contents: JsonDecoder.string()
   },
   'ScenarioStep',
 );
@@ -55,8 +55,8 @@ export type InterludeStep = {
 
 export const interludeStepDecoder = JsonDecoder.object<InterludeStep>(
   {
-    tag: JsonDecoder.isExactly('InterludeStep'),
-    contents: JsonDecoder.tuple([JsonDecoder.number, JsonDecoder.succeed]).map(([contents]) => contents),
+    tag: JsonDecoder.literal('InterludeStep'),
+    contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.succeed()], 'contents').map(([contents]) => contents),
   },
   'InterludeStep',
 );
@@ -68,8 +68,8 @@ export type CheckpointStep = {
 
 export const checkpointStepDecoder = JsonDecoder.object<CheckpointStep>(
   {
-    tag: JsonDecoder.isExactly('CheckpointStep'),
-    contents: JsonDecoder.number
+    tag: JsonDecoder.literal('CheckpointStep'),
+    contents: JsonDecoder.number()
   },
   'CheckpointStep',
 );
@@ -80,7 +80,7 @@ export type UpgradeDeckStep = {
 
 export const upgradeStepDecoder = JsonDecoder.object<UpgradeDeckStep>(
   {
-    tag: JsonDecoder.isExactly('UpgradeDeckStep'),
+    tag: JsonDecoder.literal('UpgradeDeckStep'),
   },
   'UpgradeDeckStep',
 );

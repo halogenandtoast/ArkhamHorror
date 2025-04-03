@@ -45,7 +45,7 @@ const remembered = computed(() => {
 const otherLog = ref<LogContents | null>(null)
 
 if (props.game.campaign?.meta?.otherCampaignAttrs?.log) {
-  logContentsDecoder.decodeToPromise(props.game.campaign?.meta?.otherCampaignAttrs?.log).then(res => otherLog.value = res)
+  logContentsDecoder.decodePromise(props.game.campaign?.meta?.otherCampaignAttrs?.log).then(res => otherLog.value = res)
 }
 
 const breakdowns =

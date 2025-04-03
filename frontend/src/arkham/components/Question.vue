@@ -8,7 +8,7 @@ import { AmountChoice, QuestionType } from '@/arkham/types/Question';
 import Card from '@/arkham/components/Card.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
-import { cardImage } from '@/arkham/types/Card';
+import { cardImage, toCardContents } from '@/arkham/types/Card';
 import DropDown from '@/components/DropDown.vue';
 import Token from '@/arkham/components/Token.vue';
 import type { Game } from '@/arkham/types/Game';
@@ -53,11 +53,16 @@ const searchedCards = computed(() => {
 })
 
 const focusedCards = computed(() => {
-  if (searchedCards.value.length > 0) {
+  const {focusedCards} = props.game
+  const searchedCardIds = searchedCards.value.map(([, cards]) => {
+    return cards.map((card) => toCardContents(card).id)
+  }).flat()
+
+  if (focusedCards.every((c) => searchedCardIds.includes(toCardContents(c).id))) {
     return []
   }
 
-  return props.game.focusedCards
+  return focusedCards
 })
 
 

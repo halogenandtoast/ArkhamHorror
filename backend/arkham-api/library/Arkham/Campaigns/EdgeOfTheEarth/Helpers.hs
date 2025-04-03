@@ -104,6 +104,7 @@ resolveTekelili iid tekelili = do
     | ShuffleIntoAnyDeckInsteadOfDiscard `elem` mods -> do
         investigators <- getInvestigators
         chooseTargetM iid investigators \iid' -> shuffleIntoDeck iid' (asId tekelili)
+    | LeaveCardWhereItIs `elem` mods -> pure ()
     | otherwise -> putOnBottomOfDeck iid TekeliliDeck (asId tekelili)
 
 drawTekelili :: (Sourceable source, ReverseQueue m) => InvestigatorId -> source -> Int -> m ()

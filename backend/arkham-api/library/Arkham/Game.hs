@@ -552,7 +552,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
                 )
                 g
             )
-      , "focusedCards" .= toJSON gameFocusedCards
+      , "focusedCards" .= toJSON (fromMaybe [] $ headMay gameFocusedCards)
       , "focusedTarotCards" .= toJSON gameFocusedTarotCards
       , "foundCards" .= toJSON gameFoundCards
       , "focusedChaosTokens" .= toJSON (runReader (traverse withModifiers gameFocusedChaosTokens) g)

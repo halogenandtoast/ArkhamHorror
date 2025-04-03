@@ -696,8 +696,8 @@ runGameMessage msg g = case msg of
             . effectsL
             %~ insertEntity (overAttrs (\a -> a {effectFinished = True}) effect)
         )
-  FocusCards cards -> pure $ g & focusedCardsL .~ cards
-  UnfocusCards -> pure $ g & focusedCardsL .~ mempty
+  FocusCards cards -> pure $ g & focusedCardsL %~ (cards :)
+  UnfocusCards -> pure $ g & focusedCardsL %~ drop 1
   ClearFound FromDeck -> do
     pure $ g & foundCardsL %~ Map.filterWithKey (\k _ -> not (zoneIsFromDeck k))
   ClearFound zone -> pure $ g & foundCardsL . at zone ?~ mempty
@@ -709,7 +709,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & focusedCardsL
-      %~ filter (/= c)
+      %~ map (filter (/= c))
       & foundCardsL
       . each
       %~ filter (/= c)
@@ -721,14 +721,14 @@ runGameMessage msg g = case msg of
     let skillsF = maybe id deleteMap mSkillId
     pure
       $ g
-      & (focusedCardsL %~ filter (/= c))
+      & (focusedCardsL %~ map (filter (/= c)))
       & (foundCardsL . each %~ filter (/= c))
       & (entitiesL . skillsL %~ skillsF)
   ShuffleCardsIntoDeck _ cards ->
     pure
       $ g
       & focusedCardsL
-      %~ filter (`notElem` cards)
+      %~ map (filter (`notElem` cards))
       & foundCardsL
       . each
       %~ filter (`notElem` cards)
@@ -788,8 +788,8 @@ runGameMessage msg g = case msg of
         let
           card =
             fromJustNote "missing card"
-              $ find ((== cardId) . toCardId) (g ^. focusedCardsL)
-          focusedCards = filter ((/= cardId) . toCardId) (g ^. focusedCardsL)
+              $ find ((== cardId) . toCardId) (fromMaybe [] . headMay $ g ^. focusedCardsL)
+          focusedCards = map (filter ((/= cardId) . toCardId)) (g ^. focusedCardsL)
         push $ PutCardOnTopOfDeck iid Deck.EncounterDeck card
         pure $ g & (focusedCardsL .~ focusedCards)
       else do
@@ -1242,7 +1242,7 @@ runGameMessage msg g = case msg of
   AddToEncounterDiscard card -> do
     pure
       $ g
-      & (focusedCardsL %~ filter (/= EncounterCard card))
+      & (focusedCardsL %~ map (filter (/= EncounterCard card)))
       . (foundCardsL . each %~ filter (/= EncounterCard card))
   ReturnToHand iid (SkillTarget skillId) -> do
     card <- field SkillCard skillId
@@ -1809,7 +1809,7 @@ runGameMessage msg g = case msg of
       card =
         fromJustNote "must exist"
           $ find ((== cardId) . toCardId)
-          $ (g ^. focusedCardsL)
+          $ (fromMaybe [] $ headMay $ g ^. focusedCardsL)
           <> ( concat
                 . Map.elems
                 . view Investigator.foundCardsL
@@ -1821,7 +1821,7 @@ runGameMessage msg g = case msg of
           [ RemoveCardFromSearch (toId investigator') cardId
           , AddToDiscard (toId investigator') pc
           ]
-        pure $ g & focusedCardsL %~ filter (/= card)
+        pure $ g & focusedCardsL %~ map (filter (/= card))
       _ -> error "should not be an option for other cards"
   Discard _ _ (ActTarget aid) ->
     pure $ g & entitiesL . actsL %~ Map.filterWithKey (\k _ -> k /= aid)
@@ -2279,7 +2279,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . storiesL . at storyId ?~ story'
   ResolveStory _ _ sid -> do
     card <- field StoryCard sid
-    pure $ g & focusedCardsL %~ filter (/= card)
+    pure $ g & focusedCardsL %~ map (filter (/= card))
   RemoveStory storyId -> do
     pure $ g & entitiesL . storiesL %~ deleteMap storyId
   CreateSkill skillId card investigatorId placement -> do
@@ -2688,7 +2688,7 @@ runGameMessage msg g = case msg of
                     [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
                 , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
                 ]
-            pure $ g & focusedCardsL .~ [toCard card]
+            pure $ g & focusedCardsL %~ ([toCard card] :)
           else do
             pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
             pure g
@@ -2702,7 +2702,7 @@ runGameMessage msg g = case msg of
       g' =
         g
           & (resolvingCardL ?~ toCard card)
-          & (focusedCardsL %~ deleteCard)
+          & (focusedCardsL %~ map deleteCard)
           & (foundCardsL %~ Map.map deleteCard)
 
     afterDraw <- checkWindows [mkAfter (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
@@ -2766,7 +2766,7 @@ runGameMessage msg g = case msg of
       g' =
         g
           & (resolvingCardL ?~ toCard card)
-          & (focusedCardsL %~ deleteCard)
+          & (focusedCardsL %~ map deleteCard)
           & (foundCardsL %~ Map.map deleteCard)
     modifiers' <- getModifiers card
     let ignoreRevelation = IgnoreRevelation `elem` modifiers'

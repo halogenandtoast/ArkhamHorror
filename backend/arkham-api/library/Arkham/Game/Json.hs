@@ -48,7 +48,7 @@ instance FromJSON Game where
     gamePhase <- o .: "gamePhase"
     gamePhaseStep <- o .: "gamePhaseStep"
     gameSkillTest <- o .: "gameSkillTest"
-    gameFocusedCards <- o .: "gameFocusedCards"
+    gameFocusedCards <- o .: "gameFocusedCards" <|> (pure <$> o .: "gameFocusedCards")
     gameFocusedTarotCards <- o .: "gameFocusedTarotCards"
     gameFoundCards <- o .: "gameFoundCards"
     gameFocusedChaosTokens <- o .: "gameFocusedChaosTokens"

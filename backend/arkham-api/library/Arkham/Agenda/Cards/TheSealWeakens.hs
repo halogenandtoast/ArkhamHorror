@@ -7,6 +7,8 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
+import Arkham.Modifier
+import Arkham.Strategy
 import Arkham.Message.Lifted.Choose
 
 newtype TheSealWeakens = TheSealWeakens AgendaAttrs
@@ -23,8 +25,22 @@ instance RunMessage TheSealWeakens where
       lead <- getLead
       chooseTargetM lead xs $ createSetAsideEnemy_ Enemies.theNamelessMadness
       whenHasRecord TheTruthOfTheMirageEludesYou do
-        pure ()
+        eachInvestigator (`forInvestigator` msg)
 
       advanceAgendaDeck attrs
+      pure a
+    ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
+      search iid attrs iid [fromDeck] (basic "Tekeli-li") (defer attrs IsNotDraw)
+      pure a
+    SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
+      for_ cards obtainCard 
+      focusCards cards do
+        chooseOneAtATimeM iid do
+          targets cards \c -> do
+            cardResolutionModifier c attrs c LeaveCardWhereItIs
+            drawCard iid c
+
+      shuffleCardsIntoDeck iid cards
+
       pure a
     _ -> TheSealWeakens <$> liftRunMessage msg attrs

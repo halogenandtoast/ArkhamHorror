@@ -66,7 +66,7 @@ data Game = Game
     gamePhase :: Phase
   , gamePhaseStep :: Maybe PhaseStep
   , gameSkillTest :: Maybe SkillTest
-  , gameFocusedCards :: [Card]
+  , gameFocusedCards :: [[Card]]
   , gameFocusedTarotCards :: [TarotCard]
   , gameFoundCards :: Map Zone [Card]
   , gameFocusedChaosTokens :: [ChaosToken]

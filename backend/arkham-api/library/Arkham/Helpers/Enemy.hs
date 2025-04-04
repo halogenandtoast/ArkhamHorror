@@ -42,8 +42,8 @@ spawned EnemyAttrs {enemyPlacement} = enemyPlacement /= Unplaced
 emptyLocationMap :: Map LocationId [LocationId]
 emptyLocationMap = mempty
 
-isActionTarget :: EnemyAttrs -> Target -> Bool
-isActionTarget attrs = isTarget attrs . toProxyTarget
+isActionTarget :: Targetable a => a -> Target -> Bool
+isActionTarget a = isTarget a . toProxyTarget
 
 spawnAt
   :: (HasGame m, HasQueue Message m, MonadRandom m) => EnemyId -> Maybe InvestigatorId -> SpawnAt -> m ()
@@ -94,9 +94,9 @@ noSpawn attrs miid = do
     : [ Surge iid (toSource attrs) | enemySurgeIfUnableToSpawn attrs, iid <- toList miid
       ]
 
-getModifiedDamageAmount :: HasGame m => EnemyAttrs -> DamageAssignment -> m Int
-getModifiedDamageAmount EnemyAttrs {..} damageAssignment = do
-  modifiers' <- getModifiers (EnemyTarget enemyId)
+getModifiedDamageAmount :: (HasGame m, Targetable target) => target -> DamageAssignment -> m Int
+getModifiedDamageAmount target damageAssignment = do
+  modifiers' <- getModifiers target
   updatedAmount <- foldrM applyModifier amount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where

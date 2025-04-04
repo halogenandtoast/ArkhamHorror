@@ -111,6 +111,7 @@ data Cost
   | ClueCost GameValue
   | ClueCostX
   | GroupClueCostX
+  | DiscoveredCluesCost
   | GroupResourceCost GameValue LocationMatcher
   | GroupDiscardCost GameValue ExtendedCardMatcher LocationMatcher
   | GroupClueCost GameValue LocationMatcher
@@ -247,6 +248,7 @@ displayCostType = \case
   GroupSpendKeyCost k _ -> "Spend " <> keyName k <> " Key"
   CostToEnterUnrevealed c -> "As an additional cost for you to enter, pay " <> displayCostType c
   GroupClueCostX -> "X {perPlayer} clues as a group"
+  DiscoveredCluesCost -> "Spend discovered clues"
   ChooseEnemyCost _ -> "Choose an enemy"
   ChooseExtendedCardCost _ -> "Choose a card that matches"
   ChosenEnemyCost _ -> "Choose an enemy"

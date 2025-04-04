@@ -60,6 +60,7 @@ isAt iid (toId -> lid) = fieldMap InvestigatorLocation (elem lid) iid
 placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
+  ActuallyLocation lid -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
   InPlayArea iid -> field InvestigatorLocation iid
   InThreatArea iid -> field InvestigatorLocation iid

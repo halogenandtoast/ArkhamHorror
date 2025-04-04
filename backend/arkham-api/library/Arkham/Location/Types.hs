@@ -340,6 +340,9 @@ data Location = forall a. IsLocation a => Location a
 instance HasField "id" Location LocationId where
   getField (Location a) = attr locationId a
 
+instance HasField "cardId" Location CardId where
+  getField (Location a) = (toAttrs a).cardId
+
 instance Data Location where
   gunfold _ _ _ = error "gunfold(Location)"
   toConstr _ = error "toConstr(Location)"

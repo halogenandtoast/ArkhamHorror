@@ -274,6 +274,7 @@ data Criterion
   | HasCustomization Customization
   | IfYouOweBiancaDieKatz
   | ElectrostaticDetonation
+  | BearerNotEliminated
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

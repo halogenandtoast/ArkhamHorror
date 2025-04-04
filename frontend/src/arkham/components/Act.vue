@@ -9,6 +9,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
+import { keyToId } from '@/arkham/types/Key'
 import { imgsrc } from '@/arkham/helpers'
 import * as Arkham from '@/arkham/types/Act'
 
@@ -177,7 +178,7 @@ const breaches = computed(() => {
         :amount="act.clues"
       />
       <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
-      <Key v-for="key in keys" :key="key" :name="key" />
+      <Key v-for="key in keys" :key="keyToId(key)" :name="key" />
     </div>
   </div>
 </template>

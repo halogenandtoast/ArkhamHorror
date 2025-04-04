@@ -165,6 +165,14 @@ discoveredClues :: HasCallStack => [Window] -> Int
 discoveredClues =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.DiscoverClues _ _ _ n) -> Just n
+    (windowType -> Window.WouldDiscoverClues _ _ _ n) -> Just n
+    _ -> Nothing
+
+discoveredCluesAt :: HasCallStack => [Window] -> (LocationId, Int)
+discoveredCluesAt =
+  fromMaybe (error "missing discovery") . asum . map \case
+    (windowType -> Window.DiscoverClues _ lid _ n) -> Just (lid, n)
+    (windowType -> Window.WouldDiscoverClues _ lid _ n) -> Just (lid, n)
     _ -> Nothing
 
 discoveredLocation :: HasCallStack => [Window] -> LocationId

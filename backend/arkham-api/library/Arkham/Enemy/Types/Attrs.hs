@@ -4,9 +4,9 @@ module Arkham.Enemy.Types.Attrs where
 
 import Arkham.Attack.Types
 import Arkham.Card
+import Arkham.Calculation
 import Arkham.ChaosToken.Types
 import Arkham.DamageEffect
-import Arkham.GameValue
 import Arkham.Id
 import Arkham.Json
 import Arkham.Key
@@ -31,9 +31,9 @@ data EnemyAttrs = EnemyAttrs
   , enemyCardCode :: CardCode
   , enemyOriginalCardCode :: CardCode
   , enemyPlacement :: Placement
-  , enemyFight :: Maybe Int
-  , enemyHealth :: Maybe GameValue
-  , enemyEvade :: Maybe Int
+  , enemyFight :: Maybe GameCalculation
+  , enemyHealth :: Maybe GameCalculation
+  , enemyEvade :: Maybe GameCalculation
   , enemyAssignedDamage :: Map Source DamageAssignment
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
@@ -126,9 +126,9 @@ instance FromJSON EnemyAttrs where
     enemyCardCode <- v .: "cardCode"
     enemyOriginalCardCode <- v .: "originalCardCode"
     enemyPlacement <- v .: "placement"
-    enemyFight <- v .:? "fight"
-    enemyHealth <- v .:? "health"
-    enemyEvade <- v .:? "evade"
+    enemyFight <- v .:? "fight" <|> (Just . Fixed <$> v .: "fight")
+    enemyHealth <- v .:? "health" <|> (Just . GameValueCalculation <$> v .: "health")
+    enemyEvade <- v .:? "evade" <|> (Just . Fixed <$> v .: "evade")
     enemyAssignedDamage <- v .: "assignedDamage"
     enemyHealthDamage <- v .: "healthDamage"
     enemySanityDamage <- v .: "sanityDamage"
@@ -154,4 +154,4 @@ instance FromJSON EnemyAttrs where
     enemyAttacking <- v .:? "attacking"
     enemyDelayEngagement <- v .:? "delayEngagement" .!= False
     enemyCardsUnderneath <- v .:? "cardsUnderneath" .!= []
-    return EnemyAttrs {..}
+    pure EnemyAttrs {..}

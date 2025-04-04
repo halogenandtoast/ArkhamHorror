@@ -1,11 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Scenario.Runner (
-  runScenarioAttrs,
-  module X,
-) where
-
-import Arkham.Prelude
+module Arkham.Scenario.Runner (runScenarioAttrs, module X) where
 
 import Arkham.Helpers.Message as X hiding (EnemyDamage, InvestigatorDamage)
 import Arkham.Scenario.Types as X
@@ -42,9 +37,9 @@ import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
 import Arkham.Helpers.Deck
-import Arkham.Helpers.GameValue
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -61,6 +56,7 @@ import Arkham.Message.Lifted (fetchCard)
 import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Search
@@ -1136,14 +1132,14 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     let
       matches =
         [ targetLabel
-          (toCardId card)
-          [FoundAndDrewEncounterCard iid FromDiscard card]
+            (toCardId card)
+            [FoundAndDrewEncounterCard iid FromDiscard card]
         | includeDiscard == IncludeDiscard
         , card <- matchingDiscards
         ]
           <> [ targetLabel
-              (toCardId card)
-              [FoundAndDrewEncounterCard iid FromEncounterDeck card]
+                 (toCardId card)
+                 [FoundAndDrewEncounterCard iid FromEncounterDeck card]
              | card <- matchingDeckCards
              ]
 
@@ -1397,7 +1393,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & tarotCardsL . each %~ map rotate
   After (EnemyDefeated eid _ _ _) -> do
     eattrs <- getAttrs @Enemy eid
-    printedHealth <- maybe (pure 0) getPlayerCountValue (enemyHealth eattrs)
+    printedHealth <- calculatePrinted (enemyHealth eattrs)
     enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
     pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
   SetAsideCards cards -> do

@@ -11,6 +11,7 @@ import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Skill.Types
 import Arkham.Treachery.Types
+import Arkham.Zone
 
 class IsPlacement a where
   toPlacement :: a -> Placement
@@ -20,6 +21,9 @@ class Placeable a where
 
 instance IsPlacement Placement where
   toPlacement = id
+
+instance IsPlacement OutOfPlayZone where
+  toPlacement = OutOfPlay
 
 instance IsPlacement LocationId where
   toPlacement = AtLocation

@@ -6,6 +6,7 @@ import Arkham.Asset.Uses
 import Arkham.Card.CardCode
 import Arkham.Card.Id
 import Arkham.ClassSymbol
+import Arkham.Customization
 import Arkham.Damage
 import Arkham.Id
 import Arkham.Keyword (Keyword (..))
@@ -63,6 +64,7 @@ data AssetMatcher
   | AssetReady
   | AssetExhausted
   | AssetCanLeavePlayByNormalMeans
+  | AssetWithCustomization Customization
   | AssetWithModifier ModifierType
   | AssetWithoutModifier ModifierType
   | AssetNotAtUseLimit

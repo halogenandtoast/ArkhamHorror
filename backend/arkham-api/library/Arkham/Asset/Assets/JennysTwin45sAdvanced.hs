@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.GameValue
+import Arkham.Helpers.Calculation
 import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Modifier
@@ -41,7 +41,7 @@ instance RunMessage JennysTwin45sAdvanced where
       chooseFightEnemy sid iid source
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (defeatedEnemy -> eid) _ -> do
-      n <- maybe (pure 0) getGameValue =<< field EnemyHealthActual eid
-      gainResourcesIfCan iid (attrs.ability 2) n
+      n <- fieldMapM EnemyHealthActual calculatePrinted eid
+      gainResources iid (attrs.ability 2) n
       pure a
     _ -> JennysTwin45sAdvanced <$> liftRunMessage msg attrs

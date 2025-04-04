@@ -77,6 +77,7 @@ data ModifierType
   | AnySkillValue Int
   | AnySkillValueCalculated GameCalculation
   | AsIfAt LocationId
+  | CanBeAttackedAsIfEnemy
   | AsIfEnemyFight Int
   | AsIfEngagedWith EnemyId
   | AsIfInHand Card

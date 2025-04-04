@@ -60,6 +60,7 @@ import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types
+import Arkham.Calculation
 import Arkham.Classes.HasGame
 import Arkham.Debug
 import Arkham.Difficulty
@@ -294,7 +295,7 @@ class TestHasFight a where
 instance TestHasFight Enemy where
   setFight fight action = do
     this <- action
-    updateThis this $ \attrs -> attrs {enemyFight = Just fight}
+    updateThis this $ \attrs -> attrs {enemyFight = Just (Fixed fight)}
 
 class TestHasHealth a where
   setHealth :: Int -> TestAppT a -> TestAppT a
@@ -302,7 +303,7 @@ class TestHasHealth a where
 instance TestHasHealth Enemy where
   setHealth health action = do
     this <- action
-    updateThis this $ \attrs -> attrs {enemyHealth = Just (Static health)}
+    updateThis this $ \attrs -> attrs {enemyHealth = Just (Fixed health)}
 
 class UpdateField (s :: Symbol) a b | s a -> b where
   updateField :: b -> a -> TestAppT a
@@ -378,13 +379,13 @@ instance UpdateField "resources" Investigator Int where
     pure . overAttrs (Arkham.Investigator.Types.tokensL %~ setTokens Resource resources)
 
 instance UpdateField "fight" Enemy Int where
-  updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = Just fight})
+  updateField fight = pure . overAttrs (\attrs -> attrs {enemyFight = Just (Fixed fight)})
 
 instance UpdateField "evade" Enemy Int where
-  updateField evade = pure . overAttrs (\attrs -> attrs {enemyEvade = Just evade})
+  updateField evade = pure . overAttrs (\attrs -> attrs {enemyEvade = Just (Fixed evade)})
 
 instance UpdateField "health" Enemy Int where
-  updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Just (Static health)})
+  updateField health = pure . overAttrs (\attrs -> attrs {enemyHealth = Just (Fixed health)})
 
 instance UpdateField "healthDamage" Enemy Int where
   updateField damage = pure . overAttrs (\attrs -> attrs {enemyHealthDamage = damage})

@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.JennysTwin45sSpec (spec) where
 import Arkham.ActiveCost
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Types (Field (..))
+import Arkham.Calculation
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Matcher (AbilityMatcher (..), assetIs)
@@ -35,7 +36,7 @@ spec = describe "Jenny's Twin .45s" $ do
         , investigatorHand = [PlayerCard jennysTwin45s]
         , investigatorCombat = 3
         }
-    enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 5))
+    enemy <- testEnemyWith ((Enemy.healthL ?~ Fixed 3) . (Enemy.fightL ?~ Fixed 5))
     location <- testLocationWith id
     pushAndRunAll [SetChaosTokens [Zero], playAssetCard jennysTwin45s investigator]
     activeCost <- getActiveCost

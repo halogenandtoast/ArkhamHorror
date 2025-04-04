@@ -3,8 +3,8 @@
 module Arkham.History (module Arkham.History, module Arkham.History.Types) where
 
 import Arkham.Prelude
-
 import Arkham.Card
+import Arkham.Classes.Entity
 import Arkham.Enemy.Types.Attrs
 import Arkham.History.Types
 import Arkham.Id
@@ -23,6 +23,13 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+instance Entity DefeatedEnemyAttrs where
+  type EntityId DefeatedEnemyAttrs = EnemyId
+  type EntityAttrs DefeatedEnemyAttrs = EnemyAttrs
+  toId = enemyId . defeatedEnemyAttrs
+  toAttrs = defeatedEnemyAttrs
+  overAttrs f a = a {defeatedEnemyAttrs = f (defeatedEnemyAttrs a)}
 
 data History = History
   { historyTreacheriesDrawn :: [CardCode]

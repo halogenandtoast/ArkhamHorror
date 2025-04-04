@@ -438,7 +438,7 @@ sufferMentalTrauma = Msg.sufferMentalTrauma you
 insteadOfDiscoveringClues :: (?you :: InvestigatorId) => ScriptT a () -> ScriptT a ()
 insteadOfDiscoveringClues body = do
   Script $ lift $ lift $ lift $ lift $ popMessageMatching_ \case
-    Do (Arkham.Message.DiscoverClues iid' _) -> you == iid'
+    DoStep 1 (Arkham.Message.DiscoverClues iid' _) -> you == iid'
     _ -> False
   body
 

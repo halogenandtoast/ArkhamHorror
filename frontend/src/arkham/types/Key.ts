@@ -1,6 +1,14 @@
 import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 
+export function keyToId(key: ArkhamKey): string {
+  if (key.tag === "TokenKey") {
+    return key.contents.id
+  }
+
+  return key.tag
+}
+
 export type ArkhamKey
   = { tag: "TokenKey", contents: ChaosToken }
   | { tag: "BlueKey" }

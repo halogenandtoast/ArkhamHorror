@@ -44,6 +44,7 @@ import Arkham.Classes.HasGame
 import Arkham.CommitRestriction
 import Arkham.Constants
 import Arkham.Cost qualified as Cost
+import Arkham.Customization
 import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.Deck qualified as Deck
@@ -121,6 +122,7 @@ import Arkham.Matcher (
   enemyEngagedWith,
   locationWithInvestigator,
   oneOf,
+  orConnected,
   treacheryInThreatAreaOf,
   pattern AnyInPlayEnemy,
   pattern AssetWithAnyClues,
@@ -1034,6 +1036,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         $ asIfTurn investigatorId
         $ select
         $ foldr applyMatcherModifiers (canFightMatcher <> enemyMatcher <> mustChooseMatchers) modifiers
+
+    canMoveToConnected <- case source.asset of
+      Just aid -> aid <=~> AssetWithCustomization InscriptionOfTheHunt
+      _ -> pure False
+    locationIds <-
+      withAlteredGame withoutCanModifiers
+        $ asIfTurn investigatorId
+        $ select
+        $ LocationWithModifier CanBeAttackedAsIfEnemy
+        <> if canMoveToConnected
+          then orConnected (locationWithInvestigator investigatorId)
+          else locationWithInvestigator investigatorId
     player <- getPlayer investigatorId
     push
       $ chooseOne
@@ -1044,7 +1058,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             : [ FightEnemy eid choose
               | not choose.onlyChoose
               ]
-        | eid <- enemyIds
+        | eid <- enemyIds <> map coerce locationIds
         ]
     pure a
   EngageEnemy iid eid _ True | iid == investigatorId -> do
@@ -1984,10 +1998,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       then do
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
-        checkWindowMsg <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source discoveredClues)]
         pushAll
-          [ checkWindowMsg
-          , Do
+          [ Do
               $ DiscoverClues iid
               $ d
                 { discoverCount = discoveredClues
@@ -2020,7 +2032,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         let clueCount = min locationClues d.count
         locationWindows <-
           checkWindows
-            $ mkAfter (Window.DiscoverClues iid lid d.source clueCount)
+            $ mkWhen (Window.DiscoverClues iid lid d.source clueCount)
+            : mkAfter (Window.DiscoverClues iid lid d.source clueCount)
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll

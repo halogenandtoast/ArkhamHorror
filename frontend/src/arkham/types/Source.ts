@@ -2,6 +2,22 @@ import * as JsonDecoder from 'ts.data.json'
 import { TarotCard, tarotCardDecoder } from '@/arkham/types/TarotCard'
 import { v2Optional } from '@/arkham/parser'
 
+export function sameSource (a: Source | undefined, b: Source | undefined): boolean {
+  if (a === undefined || b === undefined) return false
+  return sourceKey(a) === sourceKey(b)
+}
+
+export function sourceKey (source: Source): string | undefined {
+  switch (source.sourceTag) {
+    case "ProxySource":
+      return sourceKey(source.source)
+    case "TarotSource":
+      return source.contents.arcana
+    case "OtherSource":
+      return source.contents
+  }
+}
+
 export type ProxySource = {
   sourceTag: "ProxySource"
   tag: "ProxySource"

@@ -102,8 +102,11 @@ instance RunMessage RunicAxe where
     ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) eid -> do
       when (attrs.use Charge > 0) do
         needsHunt <-
-          not
-            <$> (eid <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> enemyEngagedWith iid, not_ AloofEnemy]))
+          andM
+            [ not
+                <$> (eid <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> enemyEngagedWith iid, not_ AloofEnemy]))
+            , not <$> (coerce eid <=~> locationWithInvestigator iid)
+            ]
         let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
           then
@@ -138,16 +141,20 @@ instance RunMessage RunicAxe where
         Elders -> pure ()
         Hunt -> do
           mLoc <- field InvestigatorLocation iid
-          field EnemyLocation eid >>= traverse_ \loc -> do
-            if Just loc /= mLoc
-              then push $ Move $ move (attrs.ability 1) iid loc
-              else do
-                engaged <- eid <=~> enemyEngagedWith iid
-                if engaged
-                  then do
-                    accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
-                    chooseOne iid $ targetLabels accessibleLocations (only . Move . move (attrs.ability 1) iid)
-                  else push $ EngageEnemy iid eid Nothing False
+          isLocation <- coerce eid <=~> Anywhere
+          if isLocation
+            then push $ Move $ move (attrs.ability 1) iid (coerce eid)
+            else
+              field EnemyLocation eid >>= traverse_ \loc -> do
+                if Just loc /= mLoc
+                  then push $ Move $ move (attrs.ability 1) iid loc
+                  else do
+                    engaged <- eid <=~> enemyEngagedWith iid
+                    if engaged
+                      then do
+                        accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
+                        chooseOne iid $ targetLabels accessibleLocations (only . Move . move (attrs.ability 1) iid)
+                      else push $ EngageEnemy iid eid Nothing False
         Fury -> pure ()
       RunicAxe . (`with` Metadata (inscription : inscriptions meta)) <$> liftRunMessage msg attrs
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do

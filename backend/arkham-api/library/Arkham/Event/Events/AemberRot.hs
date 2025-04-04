@@ -1,12 +1,11 @@
-module Arkham.Event.Events.AemberRot (aemberRot, AemberRot (..)) where
+module Arkham.Event.Events.AemberRot (aemberRot) where
 
 import Arkham.Ability
 import Arkham.Capability
-import Arkham.Card
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (EnemyDefeated)
-import Arkham.Helpers.GameValue
+import Arkham.Helpers.Calculation
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -19,24 +18,22 @@ aemberRot = event AemberRot Cards.aemberRot
 
 instance HasAbilities AemberRot where
   getAbilities (AemberRot a) =
-    [ restrictedAbility a 1 (ControlsThis <> can.gain.resources You)
+    [ restricted a 1 (ControlsThis <> can.gain.resources You)
         $ forced
         $ EnemyDefeated #when Anyone ByAny
         $ EnemyWithAttachedEvent (be a)
         <> EnemyWithHealth
-    , restrictedAbility a 2 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
+    , restricted a 2 ControlsThis $ forced $ EnemyLeavesPlay #when $ EnemyWithAttachedEvent (be a)
     ]
 
 instance RunMessage AemberRot where
   runMessage msg e@(AemberRot attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attachedTo \case
-        EnemyTarget eid -> do
-          field EnemyHealthActual eid >>= traverse_ \health -> do
-            gainResourcesIfCan iid (attrs.ability 1) . min 5 =<< getPlayerCountValue health
-        _ -> pure ()
+      for_ attrs.attachedTo.enemy \eid -> do
+        field EnemyHealthActual eid >>= traverse_ \health -> do
+          gainResources iid (attrs.ability 1) . min 5 =<< calculate health
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ PlaceInBonded iid (toCard attrs)
+      placeInBonded iid attrs
       pure e
     _ -> AemberRot <$> liftRunMessage msg attrs

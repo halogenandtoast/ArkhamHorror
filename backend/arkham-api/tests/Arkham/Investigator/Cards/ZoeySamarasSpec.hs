@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.ZoeySamarasSpec (spec) where
 
 import TestImport.New hiding (EnemyDamage)
 
+import Arkham.Calculation
 import Arkham.Classes.HasChaosTokenValue
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.Game ()
@@ -15,7 +16,7 @@ spec = do
       chaosTokenValue token `shouldReturn` Just 1
 
     it "elder sign token gives +1 and does +1 damage for attacks" . gameTestWith Investigators.zoeySamaras $ \zoeySamaras -> do
-      enemy <- testEnemyWith ((Enemy.healthL ?~ Static 3) . (Enemy.fightL ?~ 5))
+      enemy <- testEnemyWith ((Enemy.healthL ?~ Fixed 3) . (Enemy.fightL ?~ Fixed 5))
       location <- testLocationWith id
       setChaosTokens [ElderSign]
       enemy `spawnAt` location

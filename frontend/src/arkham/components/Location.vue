@@ -5,7 +5,7 @@ import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
 import DebugLocation from '@/arkham/components/debug/Location.vue';
-import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
+import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message';
 import Key from '@/arkham/components/Key.vue';
 import Seal from '@/arkham/components/Seal.vue';
 import Locus from '@/arkham/components/Locus.vue';
@@ -56,13 +56,8 @@ const locus = computed(() => {
 })
 
 function isCardAction(c: Message): boolean {
-  if (c.tag === "TargetLabel") {
-     return c.target.contents === id.value
-  }
-
-  if (c.tag === "GridLabel") {
-     return c.gridLabel === props.location.label
-  }
+  if (c.tag === "TargetLabel") return c.target.contents === id.value
+  if (c.tag === "GridLabel") return c.gridLabel === props.location.label
 
   // we also allow the move action to cause card interaction
   if (c.tag == "AbilityLabel" && "contents" in c.ability.source) {
@@ -96,6 +91,10 @@ async function chooseAbility(ability: number) {
 }
 
 function isAbility(v: Message): v is AbilityLabel {
+  if (v.tag === MessageType.FIGHT_LABEL && v.enemyId === id.value) {
+    return true
+  }
+
   if (v.tag !== 'AbilityLabel') {
     return false
   }

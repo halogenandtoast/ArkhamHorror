@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Game } from '@/arkham/types/Game';
 import { OnClickOutside } from '@vueuse/components'
-import { ref, watch, computed, onMounted, nextTick } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { AbilityMessage } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
@@ -17,9 +17,16 @@ const emits = defineEmits<{
   (e: 'choose', index: number): void;
 }>();
 
+interface Position {
+  bottom?: string;
+  top?: string;
+  left?: string;
+  right?: string;
+}
+
 const abilitiesRef = ref<HTMLElement | null>(null);
 const showAbilities = defineModel()
-const abilitiesPosition = ref({ bottom: '0px', top: '0px', left: '0px' });
+const abilitiesPosition = ref<Position>({ bottom: '0px', top: '0px', left: '0px' });
 const positionClass = computed(() => props.position || 'top');
 
 function calculatePosition() {

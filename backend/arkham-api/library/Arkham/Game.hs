@@ -63,6 +63,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Criteria
+import Arkham.Helpers.Customization (hasCustomization)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators)
 import Arkham.Helpers.Game
@@ -2302,6 +2303,8 @@ getAssetsMatching matcher = do
     AnyAsset -> pure as
     AssetWithTitle title ->
       pure $ filter (`hasTitle` title) as
+    AssetWithCustomization c -> do
+      pure $ filter ((`hasCustomization` c) . toAttrs) as
     AssetWithFullTitle title subtitle ->
       pure $ filter ((== (title <:> subtitle)) . toName) as
     AssetWithSubtitle subtitle ->
@@ -3654,10 +3657,11 @@ getEnemyField f e = do
         applyPreModifier (Helpers.EnemyEvadeWithMin m (Min minVal)) n = max (min n minVal) (n + m)
         applyPreModifier _ n = n
       case enemyEvade of
-        Just x -> do
-          modifiers' <- getModifiers (EnemyTarget enemyId)
-          pure . Just $ foldr applyModifier (foldr applyPreModifier x modifiers') modifiers'
         Nothing -> pure Nothing
+        Just x -> do
+          n <- calculate x
+          modifiers' <- getModifiers (EnemyTarget enemyId)
+          pure . Just $ foldr applyModifier (foldr applyPreModifier n modifiers') modifiers'
     EnemyFight -> do
       iid <- toId <$> getActiveInvestigator
       let
@@ -3678,7 +3682,8 @@ getEnemyField f e = do
       case mFieldValue of
         Nothing -> pure Nothing
         Just fieldValue -> do
-          let initialFight = foldr applyModifier (foldr applyPreModifier fieldValue modifiers') modifiers'
+          n <- calculate fieldValue
+          let initialFight = foldr applyModifier (foldr applyPreModifier n modifiers') modifiers'
           pure $ Just $ foldr applyAfterModifier initialFight modifiers'
     EnemyClues -> pure $ enemyClues attrs
     EnemyDamage -> pure $ enemyDamage attrs
@@ -3693,6 +3698,8 @@ getEnemyField f e = do
       totalHealth <- fieldJust EnemyHealth (toId e)
       pure (totalHealth - enemyDamage attrs)
     EnemyHealthActual -> pure enemyHealth
+    EnemyFightActual -> pure enemyFight
+    EnemyEvadeActual -> pure enemyEvade
     EnemyHealth -> case enemyHealth of
       Nothing -> pure Nothing
       Just health -> do
@@ -3702,7 +3709,7 @@ getEnemyField f e = do
           applyPreModifier (Helpers.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
           applyPreModifier _ n = n
         modifiers' <- getModifiers (EnemyTarget enemyId)
-        value <- getPlayerCountValue health
+        value <- calculate health
         pure $ Just $ foldr applyModifier (foldr applyPreModifier value modifiers') modifiers'
     EnemyHealthDamage -> do
       let

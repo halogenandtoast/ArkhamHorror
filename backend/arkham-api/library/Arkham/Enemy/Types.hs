@@ -2,16 +2,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.Enemy.Types (
-  module Arkham.Enemy.Types,
-  module X,
-  Field (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Enemy.Types (module Arkham.Enemy.Types, module X, Field (..)) where
 
 import Arkham.Ability
 import Arkham.Attack.Types
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Classes.Entity
@@ -29,6 +24,7 @@ import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Placement
+import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Strategy
@@ -66,7 +62,9 @@ data instance Field Enemy :: Type -> Type where
   EnemyClues :: Field Enemy Int
   EnemyDamage :: Field Enemy Int
   EnemyHealth :: Field Enemy (Maybe Int)
-  EnemyHealthActual :: Field Enemy (Maybe GameValue)
+  EnemyHealthActual :: Field Enemy (Maybe GameCalculation)
+  EnemyEvadeActual :: Field Enemy (Maybe GameCalculation)
+  EnemyFightActual :: Field Enemy (Maybe GameCalculation)
   EnemyRemainingHealth :: Field Enemy (Maybe Int)
   EnemyForcedRemainingHealth :: Field Enemy Int
   EnemyHealthDamage :: Field Enemy Int
@@ -165,7 +163,7 @@ enemy
 enemy f cardDef stats damageStats = enemyWith f cardDef stats damageStats id
 
 preyIsBearer :: EnemyAttrs -> EnemyAttrs
-preyIsBearer a = a { enemyPrey = BearerOf (toId a) }
+preyIsBearer a = a {enemyPrey = BearerOf (toId a)}
 
 enemyWith
   :: (EnemyAttrs -> a)
@@ -186,9 +184,9 @@ enemyWith f cardDef (fight, health, evade) (healthDamage, sanityDamage) g =
             , enemyCardCode = toCardCode cardDef
             , enemyOriginalCardCode = toCardCode cardDef
             , enemyPlacement = Unplaced
-            , enemyFight = Just fight
-            , enemyHealth = Just health
-            , enemyEvade = Just evade
+            , enemyFight = Just $ Fixed fight
+            , enemyHealth = Just $ GameValueCalculation health
+            , enemyEvade = Just $ Fixed evade
             , enemyAssignedDamage = mempty
             , enemyHealthDamage = healthDamage
             , enemySanityDamage = sanityDamage
@@ -405,13 +403,15 @@ fieldLens :: Field Enemy typ -> Lens' EnemyAttrs typ
 fieldLens = \case
   EnemyEngagedInvestigators -> virtual
   EnemyDoom -> tokensL . at Doom . non 0
-  Arkham.Enemy.Types.EnemyEvade -> evadeL
-  Arkham.Enemy.Types.EnemyFight -> fightL
   EnemyTokens -> tokensL
   EnemyClues -> tokensL . at Clue . non 0
   EnemyDamage -> tokensL . at #damage . non 0
   EnemyHealthActual -> healthL
+  EnemyFightActual -> fightL
+  EnemyEvadeActual -> evadeL
   EnemyHealth -> virtual
+  Arkham.Enemy.Types.EnemyEvade -> virtual
+  Arkham.Enemy.Types.EnemyFight -> virtual
   EnemyRemainingHealth -> virtual
   EnemyForcedRemainingHealth -> virtual
   EnemyHealthDamage -> healthDamageL

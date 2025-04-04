@@ -9,7 +9,7 @@ import Arkham.Enemy
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Field
-import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Helpers.Calculation
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
@@ -28,10 +28,7 @@ truthAndLies = act (4, A) TruthAndLies Cards.truthAndLies Nothing
 instance HasAbilities TruthAndLies where
   getAbilities (TruthAndLies attrs) =
     [ mkAbility attrs 1 $ actionAbilityWithCost (ClueCost $ Static 1)
-    , restrictedAbility
-        attrs
-        2
-        (InVictoryDisplay (CardWithTitle "Nyarlathotep") (EqualTo $ StaticWithPerPlayer 1 1))
+    , restricted attrs 2 (InVictoryDisplay "Nyarlathotep" (EqualTo $ StaticWithPerPlayer 1 1))
         $ Objective
         $ forced AnyWindow
     ]
@@ -48,25 +45,24 @@ instance RunMessage TruthAndLies where
             eid <- getRandom
             pure (card, toAttrs $ lookupEnemy (toCardCode card) eid (toCardId card))
 
-          pc <- getPlayerCount
-
           let
-            fight = getMax0 $ foldMap (Max0 . fromMaybe 0 . enemyFight . snd) nyarlathoteps
-            evade = getMax0 $ foldMap (Max0 . fromMaybe 0 . enemyEvade . snd) nyarlathoteps
-            health = getSum $ foldMap (Sum . maybe 0 (`fromGameValue` pc) . enemyHealth . snd) nyarlathoteps
             damage = getSum $ foldMap (Sum . enemyHealthDamage . snd) nyarlathoteps
             horror = getSum $ foldMap (Sum . enemySanityDamage . snd) nyarlathoteps
             victory = getSum $ foldMap (Sum . fromMaybe 0 . cdVictoryPoints . toCardDef . fst) nyarlathoteps
             keywords = foldMap (cdKeywords . toCardDef . fst) nyarlathoteps
+
+          fight <- getMax0 <$> foldMapM (fmap Max0 . calculatePrinted . enemyFight . snd) nyarlathoteps
+          evade <- getMax0 <$> foldMapM (fmap Max0 . calculatePrinted . enemyEvade . snd) nyarlathoteps
+          health <- sumM (calculatePrinted . enemyHealth . snd) nyarlathoteps
 
           theGreatHall <- selectJust $ locationIs Locations.theOnyxCastle
 
           trueShape <- genCard Enemies.nyarlathotepTrueShape >>= (\e -> createEnemyWith e Unplaced id)
 
           pushAll
-            [ UpdateEnemy trueShape (EnemyFight ?=. fight)
-            , UpdateEnemy trueShape (EnemyEvade ?=. evade)
-            , UpdateEnemy trueShape (EnemyHealthActual ?=. Static health)
+            [ UpdateEnemy trueShape (EnemyFightActual ?=. Fixed fight)
+            , UpdateEnemy trueShape (EnemyEvadeActual ?=. Fixed evade)
+            , UpdateEnemy trueShape (EnemyHealthActual ?=. Fixed health)
             , UpdateEnemy trueShape (EnemyHealthDamage =. damage)
             , UpdateEnemy trueShape (EnemySanityDamage =. horror)
             ]

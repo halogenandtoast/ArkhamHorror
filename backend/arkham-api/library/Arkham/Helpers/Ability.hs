@@ -6,6 +6,7 @@ import Arkham.Action qualified as Action
 import Arkham.Asset.Types (Field (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Customization
 import Arkham.Game.Settings
 import {-# SOURCE #-} Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getCanAffordCost)
@@ -111,6 +112,7 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
 canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
 canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
   Action.Fight -> case abilitySource of
+    LocationSource _lid -> pure True
     EnemySource eid -> do
       modifiers' <- getModifiers iid
       let valid = maybe True (== eid) $ listToMaybe [x | MustFight x <- modifiers']
@@ -134,9 +136,17 @@ canDoAction iid ab@Ability {abilitySource, abilityIndex} = \case
           CanModify (EnemyFightActionCriteria override) -> Just override
           _ -> Nothing
         overrides = mapMaybe isOverride modifiers
-      selectAny $ case nonEmpty overrides of
+      enemies <- selectAny $ case nonEmpty overrides of
         Nothing -> Matcher.CanFightEnemy $ AbilitySource abilitySource abilityIndex
         Just os -> Matcher.CanFightEnemyWithOverride $ combineOverrides os
+      canMoveToConnected <- case ab.source.asset of
+        Just aid -> aid <=~> Matcher.AssetWithCustomization InscriptionOfTheHunt
+        _ -> pure False
+      locations <-
+        selectAny
+          $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
+          <> if canMoveToConnected then Matcher.orConnected (Matcher.locationWithInvestigator iid) else Matcher.locationWithInvestigator iid
+      pure $ enemies || locations
   Action.Evade -> case abilitySource of
     EnemySource _ -> pure True
     _ -> do
@@ -448,4 +458,3 @@ isForcedAbilityType iid source = \case
   Cosmos {} -> pure True -- Maybe? we wanted this to basically never be valid but still take forced precedence
   ForcedWhen c _ -> passesCriteria iid Nothing source source [] c
   ConstantAbility {} -> pure False
-

@@ -686,6 +686,7 @@ passesCriteria iid mcard source' requestor windows' = \case
     (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.AssetCount n matcher -> do
     (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
+  Criteria.BearerNotEliminated -> pure False
   Criteria.EnemyCount n matcher -> do
     (== n) <$> selectCount (Matcher.replaceYouMatcher iid matcher)
   Criteria.EventCount valueMatcher matcher -> do

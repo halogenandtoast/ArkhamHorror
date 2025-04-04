@@ -1,20 +1,18 @@
-module Arkham.Event.Events.BaitAndSwitchSpec (
-  spec,
-) where
+module Arkham.Event.Events.BaitAndSwitchSpec (spec) where
 
-import TestImport.Lifted
-
+import Arkham.Calculation
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Enemy.Types qualified as EnemyAttrs
 import Arkham.Event.Cards qualified as Events
 import Arkham.Projection
+import TestImport.Lifted
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ gameTest $ \investigator -> do
     updateInvestigator investigator
       $ \attrs -> attrs {investigatorAgility = 3}
-    enemy <- testEnemyWith (EnemyAttrs.evadeL ?~ 3)
+    enemy <- testEnemyWith (EnemyAttrs.evadeL ?~ Fixed 3)
     (location1, location2) <- testConnectedLocations id id
     pushAndRunAll
       [ placedLocation location1

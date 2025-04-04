@@ -309,6 +309,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     spendableClues <- getSpendableClueCount =<< select Matcher.UneliminatedInvestigator
     n <- perPlayer 1
     pure $ spendableClues >= n
+  DiscoveredCluesCost -> pure True
   PlaceClueOnLocationCost n -> do
     canParallelRex <- iid <=~> Matcher.InvestigatorIs "90078"
     z <-

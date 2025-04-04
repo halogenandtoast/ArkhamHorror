@@ -76,7 +76,7 @@ export const fetchCard = (cardCode: string): Promise<CardDef> => {
 
 export const fetchInvestigators = (): Promise<string[]> => api
   .get('arkham/investigators')
-  .then((resp) => JsonDecoder.array(JsonDecoder.string, 'string[]').decodePromise(resp.data));
+  .then((resp) => JsonDecoder.array(JsonDecoder.string(), 'string[]').decodePromise(resp.data));
 
 export const newDeck = (
   deckId: string,

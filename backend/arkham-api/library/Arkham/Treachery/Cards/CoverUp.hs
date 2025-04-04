@@ -17,7 +17,7 @@ coverUp = treacheryWith CoverUp Cards.coverUp (tokensL %~ setTokens Clue 3)
 instance HasAbilities CoverUp where
   getAbilities (CoverUp a) = mapFold a.owner \iid ->
     [ restricted a 1 (OnSameLocation <> CluesOnThis (atLeast 1))
-        $ freeReaction (DiscoverClues #when You YourLocation $ atLeast 1)
+        $ freeReaction (WouldDiscoverClues #when You YourLocation $ atLeast 1)
     , restricted a 2 (CluesOnThis $ atLeast 1) $ forcedOnElimination iid
     ]
 

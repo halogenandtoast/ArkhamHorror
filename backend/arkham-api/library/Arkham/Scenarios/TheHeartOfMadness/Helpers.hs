@@ -120,9 +120,10 @@ connectAllLocations = do
   connectLocations "facility12" "facility14"
   connectLocations "facility13" "facility15"
   connectLocations "facility14" "facility15"
- where
-  connectLocations a b = do
-    l1 <- selectJust $ LocationWithLabel a
-    l2 <- selectJust $ LocationWithLabel b
-    push $ AddDirectConnection l1 l2
-    push $ AddDirectConnection l2 l1
+
+connectLocations :: ReverseQueue m => Label -> Label -> m ()
+connectLocations a b = do
+  l1 <- selectJust $ LocationWithLabel a
+  l2 <- selectJust $ LocationWithLabel b
+  push $ AddDirectConnection l1 l2
+  push $ AddDirectConnection l2 l1

@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
+import { Calculation, calculationDecoder } from '@/arkham/types/Calculation';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
@@ -23,11 +24,11 @@ export type Enemy = {
   placement: Placement;
   keys: ArkhamKey[];
   modifiers: Modifier[];
-  fight: number | null;
-  evade: number | null;
+  fight: Calculation | null;
+  evade: Calculation | null;
   healthDamage: number;
   sanityDamage: number;
-  health: GameValue | null;
+  health: Calculation | null;
   meta: any;
   flipped: boolean;
   cardsUnderneath: Card[];
@@ -46,11 +47,11 @@ export const enemyDecoder = JsonDecoder.object<Enemy>({
   id: JsonDecoder.string(),
   cardId: JsonDecoder.string(),
   cardCode: JsonDecoder.string(),
-  fight: JsonDecoder.nullable(JsonDecoder.number()),
-  evade: JsonDecoder.nullable(JsonDecoder.number()),
+  fight: JsonDecoder.nullable(calculationDecoder),
+  evade: JsonDecoder.nullable(calculationDecoder),
   healthDamage: JsonDecoder.number(),
   sanityDamage: JsonDecoder.number(),
-  health: JsonDecoder.fallback(null, gameValueDecoder),
+  health: JsonDecoder.fallback(null, calculationDecoder),
   tokens: tokensDecoder,
   assignedDamage: JsonDecoder.array<[boolean, number]>(
     JsonDecoder.tuple(

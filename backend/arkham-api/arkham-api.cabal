@@ -3484,6 +3484,7 @@ library
       Arkham.Scenarios.TheEssexCountyExpress.Story
       Arkham.Scenarios.TheGathering.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Helpers
+      Arkham.Scenarios.TheHeartOfMadness.Pylon
       Arkham.Scenarios.TheHouseAlwaysWins.Helpers
       Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLairOfDagon.Helpers

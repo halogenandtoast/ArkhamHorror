@@ -29,6 +29,11 @@ import Arkham.ScenarioLogKey
 import Arkham.Target
 import Arkham.Token
 
+calculatePrinted :: HasGame m => Maybe GameCalculation -> m Int
+calculatePrinted = \case
+  Nothing -> pure 0
+  Just calculation -> calculate calculation
+
 calculate :: (HasCallStack, HasGame m) => GameCalculation -> m Int
 calculate = go
  where
@@ -67,13 +72,14 @@ calculate = go
       enemies <- select matcher
       getSum <$> foldMapM (fmap (Sum . fromMaybe 0 . join) . fieldMay fld) enemies
     VictoryDisplayCountCalculation mtchr -> selectCount $ VictoryDisplayCardMatch mtchr
-    EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") getGameValue =<< field fld eid
+    EnemyMaybeGameValueFieldCalculation eid fld -> maybe (error "missing maybe field") calculate =<< field fld eid
     EnemyFieldCalculation eid fld -> fromMaybe 0 <$> fieldMay fld eid
     EnemyTargetFieldCalculation fld ->
       getSkillTestTarget >>= \case
         Just (EnemyTarget eid) -> field fld eid
         _ -> pure 0
     LocationFieldCalculation lid fld -> field fld lid
+    LocationGameValueFieldCalculation lid fld -> maybe (pure 0) getGameValue =<< fieldMay fld lid
     LocationMaybeFieldCalculation lid fld -> fromMaybe 0 . join <$> fieldMay fld lid
     -- In the boundary beyond if you pass a skill test it could trigger the act
     -- to advance, during that advancement it will cause the location to be

@@ -451,17 +451,13 @@ runGameMessage msg g = case msg of
 
     pushAll
       $ LoadTarotDeck
+      : SetChaosTokensForScenario
       : PreScenarioSetup
       : HandleKilledOrInsaneInvestigators
       : [StandaloneSetup | standalone]
         <> [ChooseLeadInvestigator]
         <> [PerformTarotReading | gamePerformTarotReadings g]
-        <> [ SetupInvestigators
-           , SetChaosTokensForScenario -- (chaosBagOf campaign')
-           , InvestigatorsMulligan
-           , Setup
-           , EndSetup
-           ]
+        <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
     pure
       $ g
       & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))
@@ -1422,8 +1418,7 @@ runGameMessage msg g = case msg of
               let revelation = Revelation iid (TreacherySource tid)
               pushAll
                 $ CardEnteredPlay iid card
-                : ( guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)]
-                  )
+                : (guard (not ignoreRevelation) *> [When revelation, revelation, MoveWithSkillTest (After revelation)])
                   <> [UnsetActiveCard]
               pure
                 $ g
@@ -1811,9 +1806,9 @@ runGameMessage msg g = case msg of
           $ find ((== cardId) . toCardId)
           $ (fromMaybe [] $ headMay $ g ^. focusedCardsL)
           <> ( concat
-                . Map.elems
-                . view Investigator.foundCardsL
-                $ toAttrs investigator'
+                 . Map.elems
+                 . view Investigator.foundCardsL
+                 $ toAttrs investigator'
              )
     case card of
       PlayerCard pc -> do
@@ -1958,12 +1953,12 @@ runGameMessage msg g = case msg of
       $ questionLabel "Choose next in turn order" player
       $ ChooseOne
         [ PortraitLabel
-          iid
-          [ ChoosePlayerOrder
-              iid
-              (filter (/= iid) investigatorIds)
-              (orderedInvestigatorIds <> [iid])
-          ]
+            iid
+            [ ChoosePlayerOrder
+                iid
+                (filter (/= iid) investigatorIds)
+                (orderedInvestigatorIds <> [iid])
+            ]
         | iid <- investigatorIds
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
@@ -2137,8 +2132,8 @@ runGameMessage msg g = case msg of
            ]
         <> [ phaseStep MythosPhaseWindow [fastWindow]
            , phaseStep
-              MythosPhaseEndsStep
-              [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
+               MythosPhaseEndsStep
+               [EndMythos, ChoosePlayerOrder (gameLeadInvestigatorId g) [] playerOrder]
            ]
     pure $ g & phaseL .~ MythosPhase & phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep
   Msg.PhaseStep step msgs -> do
@@ -2471,10 +2466,10 @@ runGameMessage msg g = case msg of
             pushAll
               $ windows [Window.EnemyAttemptsToSpawnAt enemyId locationMatcher]
               <> [ chooseOrRunOne
-                    player
-                    [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
-                    | lid <- lids
-                    ]
+                     player
+                     [ targetLabel lid [CreateEnemy $ enemyCreation {enemyCreationMethod = SpawnAtLocation lid}]
+                     | lid <- lids
+                     ]
                  ]
       SpawnWithPlacement placement -> do
         mLocation <- getPlacementLocation placement
@@ -3011,12 +3006,9 @@ preloadEntities g = do
     investigators = view (entitiesL . investigatorsL) g
     setPlacement :: forall a. Typeable a => Placement -> a -> a
     setPlacement p a
-      | Just Refl <- eqT @a @Asset =
-          overAttrs (\attrs -> attrs {assetPlacement = p}) a
-      | Just Refl <- eqT @a @Skill =
-          overAttrs (\attrs -> attrs {skillPlacement = p}) a
-      | Just Refl <- eqT @a @Event =
-          overAttrs (\attrs -> attrs {eventPlacement = p}) a
+      | Just Refl <- eqT @a @Asset = overAttrs (\attrs -> attrs {assetPlacement = p}) a
+      | Just Refl <- eqT @a @Skill = overAttrs (\attrs -> attrs {skillPlacement = p}) a
+      | Just Refl <- eqT @a @Event = overAttrs (\attrs -> attrs {eventPlacement = p}) a
       | otherwise = a
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
@@ -3064,6 +3056,7 @@ preloadEntities g = do
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   discardEntities <- foldM preloadDiscardEntities mempty investigators
+
   pure
     $ g
       { gameInHandEntities = handEntities

@@ -82,6 +82,9 @@ locationDamage = countTokens Damage . locationTokens
 locationResources :: LocationAttrs -> Int
 locationResources = countTokens Resource . locationTokens
 
+instance HasField "cardId" LocationAttrs CardId where
+  getField = locationCardId
+
 instance HasField "tokens" LocationAttrs Tokens where
   getField = locationTokens
 

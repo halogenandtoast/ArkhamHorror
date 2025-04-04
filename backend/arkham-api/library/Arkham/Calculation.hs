@@ -58,10 +58,11 @@ data GameCalculation
   | InvestigatorHandLengthCalculation InvestigatorId
   | EnemyMaybeFieldCalculation EnemyId (Field Enemy (Maybe Int))
   | SumEnemyMaybeFieldCalculation EnemyMatcher (Field Enemy (Maybe Int))
-  | EnemyMaybeGameValueFieldCalculation EnemyId (Field Enemy (Maybe GameValue))
+  | EnemyMaybeGameValueFieldCalculation EnemyId (Field Enemy (Maybe GameCalculation))
   | EnemyFieldCalculation EnemyId (Field Enemy Int)
   | VictoryDisplayCountCalculation ExtendedCardMatcher
   | LocationFieldCalculation LocationId (Field Location Int)
+  | LocationGameValueFieldCalculation LocationId (Field Location GameValue)
   | LocationMaybeFieldCalculation LocationId (Field Location (Maybe Int))
   | InvestigatorLocationFieldCalculation InvestigatorId (Field Location Int)
   | InvestigatorLocationMaybeFieldCalculation InvestigatorId (Field Location (Maybe Int))

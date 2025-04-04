@@ -25,16 +25,16 @@ getTokenPool :: HasGame m => m [ChaosToken]
 getTokenPool = scenarioFieldMap ScenarioChaosBag chaosBagTokenPool
 
 getRemainingFrostTokens :: HasGame m => m Int
-getRemainingFrostTokens = selectCount $ InTokenPool $ ChaosTokenFaceIs FrostToken
+getRemainingFrostTokens = selectCount $ InTokenPool #frost
 
 hasRemainingFrostTokens :: HasGame m => m Bool
 hasRemainingFrostTokens = (> 0) <$> getRemainingFrostTokens
 
 getRemainingCurseTokens :: HasGame m => m Int
-getRemainingCurseTokens = selectCount $ InTokenPool $ ChaosTokenFaceIs CurseToken
+getRemainingCurseTokens = selectCount $ InTokenPool #curse
 
 getRemainingBlessTokens :: HasGame m => m Int
-getRemainingBlessTokens = selectCount $ InTokenPool $ ChaosTokenFaceIs BlessToken
+getRemainingBlessTokens = selectCount $ InTokenPool #bless
 
 getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =

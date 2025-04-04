@@ -1,15 +1,13 @@
-module Arkham.Asset.Assets.FireAxeSpec (
-  spec,
-) where
-
-import TestImport hiding (EnemyDamage)
+module Arkham.Asset.Assets.FireAxeSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
+import Arkham.Calculation
 import Arkham.Enemy.Types (EnemyAttrs (..), Field (..))
 import Arkham.Matcher (assetIs)
 import Arkham.Projection
 import Arkham.Token
+import TestImport hiding (EnemyDamage)
 
 spec :: Spec
 spec = describe "Fire Axe" $ do
@@ -21,7 +19,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
+        $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -41,7 +39,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
+        $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location
@@ -74,7 +72,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
+        $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
 
       pushAndRun $ SetChaosTokens [Zero]
@@ -106,7 +104,7 @@ spec = describe "Fire Axe" $ do
       putCardIntoPlay investigator Assets.fireAxe
       fireAxe <- selectJust $ assetIs Assets.fireAxe
       enemy <- testEnemyWith
-        $ \attrs -> attrs {enemyHealth = Just (Static 3), enemyFight = Just 3}
+        $ \attrs -> attrs {enemyHealth = Just (Fixed 3), enemyFight = Just (Fixed 3)}
       location <- testLocationWith id
       pushAndRun $ SetChaosTokens [Zero]
       pushAndRun $ spawnAt enemy location

@@ -2,20 +2,21 @@
 import { computed, ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
-import { TokenType } from '@/arkham/types/Token';
-import { imgsrc } from '@/arkham/helpers';
+import { keyToId } from '@/arkham/types/Key'
+import { TokenType } from '@/arkham/types/Token'
+import { imgsrc } from '@/arkham/helpers'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
-import DebugEnemy from '@/arkham/components/debug/Enemy.vue';
+import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import Key from '@/arkham/components/Key.vue';
-import Treachery from '@/arkham/components/Treachery.vue';
-import Asset from '@/arkham/components/Asset.vue';
-import Event from '@/arkham/components/Event.vue';
-import Skill from '@/arkham/components/Skill.vue';
-import Token from '@/arkham/components/Token.vue';
-import Story from '@/arkham/components/Story.vue';
+import Key from '@/arkham/components/Key.vue'
+import Treachery from '@/arkham/components/Treachery.vue'
+import Asset from '@/arkham/components/Asset.vue'
+import Event from '@/arkham/components/Event.vue'
+import Skill from '@/arkham/components/Skill.vue'
+import Token from '@/arkham/components/Token.vue'
+import Story from '@/arkham/components/Story.vue'
 import * as Arkham from '@/arkham/types/Enemy'
 
 const props = withDefaults(defineProps<{
@@ -138,7 +139,15 @@ const omnipotent = computed(() => {
 })
 
 const health = computed(() => {
-  return props.enemy.health?.tag == "Static" ? props.enemy.health.contents : null
+  return props.enemy.health?.tag == "Fixed" ? props.enemy.health.contents : null
+})
+
+const evade = computed(() => {
+  return props.enemy.evade?.tag == "Fixed" ? props.enemy.evade.contents : null
+})
+
+const fight = computed(() => {
+  return props.enemy.fight?.tag == "Fixed" ? props.enemy.fight.contents : null
 })
 
 const gainedVictory = computed(() => {
@@ -202,8 +211,8 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
               class="card enemy"
               :class="{ dragging, 'enemy--can-interact': canInteract, attached }"
               :data-id="id"
-              :data-fight="enemy.fight"
-              :data-evade="enemy.evade"
+              :data-fight="fight"
+              :data-evade="evade"
               :data-health="health"
               :data-damage="enemy.healthDamage"
               :data-horror="enemy.sanityDamage"
@@ -227,7 +236,7 @@ function startDrag(event: DragEvent, enemy: Arkham.Enemy) {
 
           <div class="pool">
             <div class="keys" v-if="keys.length > 0">
-              <Key v-for="key in keys" :key="key" :name="key" />
+              <Key v-for="key in keys" :key="keyToId(key)" :name="key" />
             </div>
             <PoolItem v-if="!omnipotent && !attached" type="health" :amount="enemyDamage" />
             <PoolItem v-if="doom && doom > 0" type="doom" :amount="doom" />

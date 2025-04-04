@@ -164,7 +164,6 @@ import Arkham.Location.Locations (
  )
 import Arkham.Skill.Skills (
   copycat3Effect,
-  deduction2Effect,
   defiance2Effect,
   defianceEffect,
   fey1Effect,
@@ -421,7 +420,7 @@ allEffects =
     , ("02100", SomeEffect pushedIntoTheBeyondEffect)
     , ("02112", SomeEffect $ noop "02112")
     , ("02114", SomeEffect fireExtinguisher1Effect)
-    , ("02150", SomeEffect deduction2Effect)
+    , ("02150", SomeEffect $ noop "02150")
     , ("02190", SomeEffect defianceEffect)
     , ("02228", SomeEffect exposeWeakness1Effect)
     , ("02230", SomeEffect luckyDice2Effect)

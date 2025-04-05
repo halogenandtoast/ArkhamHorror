@@ -51,6 +51,7 @@ huntersMark1 =
     , cdCardTraits = setFromList [Spell]
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> not_ (EnemyWithAttachedEvent $ EventIs "11026")
     , cdFastWindow = Just $ DuringTurn You
+    , cdLevel = Just 1
     }
 
 quickShot3 :: CardDef
@@ -158,6 +159,7 @@ youveHadWorse4 =
             #when
             (SourceIsCancelable AnySource)
             (affectsOthers $ at_ (orConnected YourLocation) <> InvestigatorWithResources (atLeast 1))
+    , cdLevel = Just 4
     }
 
 spectralShield :: CardDef
@@ -234,6 +236,7 @@ aGlimmerOfHope2 =
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just Criteria.InYourDiscard
     , cdPlayableFromDiscard = True
+    , cdLevel = Just 2
     }
 
 goodWeather2 :: CardDef
@@ -244,6 +247,7 @@ goodWeather2 =
     , cdKeywords = singleton Keyword.Myriad
     , cdFastWindow = Just $ PhaseBegins #after #investigation
     , cdLimits = [LimitInPlay 1]
+    , cdLevel = Just 2
     }
 
 improvisedWeapon2 :: CardDef

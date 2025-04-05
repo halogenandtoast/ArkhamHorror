@@ -16,7 +16,7 @@ newtype TheMoonRoom = TheMoonRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theMoonRoom :: LocationCard TheMoonRoom
-theMoonRoom = location TheMoonRoom Cards.theMoonRoom 0 (Static 0)
+theMoonRoom = location TheMoonRoom Cards.theMoonRoom 3 (Static 0)
 
 instance HasAbilities TheMoonRoom where
   getAbilities (TheMoonRoom a) =

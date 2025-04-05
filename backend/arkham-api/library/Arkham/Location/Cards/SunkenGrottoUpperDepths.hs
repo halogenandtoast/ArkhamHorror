@@ -19,7 +19,7 @@ newtype SunkenGrottoUpperDepths = SunkenGrottoUpperDepths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenGrottoUpperDepths :: LocationCard SunkenGrottoUpperDepths
-sunkenGrottoUpperDepths = location SunkenGrottoUpperDepths Cards.sunkenGrottoUpperDepths 0 (Static 0)
+sunkenGrottoUpperDepths = location SunkenGrottoUpperDepths Cards.sunkenGrottoUpperDepths 2 (Static 0)
 
 instance HasModifiersFor SunkenGrottoUpperDepths where
   getModifiersFor (SunkenGrottoUpperDepths attrs) = whenUnrevealed attrs do

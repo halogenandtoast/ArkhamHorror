@@ -8,6 +8,7 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet (EncounterSet (Tekelili))
@@ -1095,4 +1096,53 @@ instance RunMessage EdgeOfTheEarth where
             $ attrs
             & (logL . partnersL . ix cCode %~ (horrorL %~ max 0 . subtract n))
         else pure c
+    CampaignStep TheHeartOfMadnessPart1 -> scope "theHeartOfMadness.part1" do
+      story $ i18nWithTitle "intro"
+      kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
+      blueStory
+        $ validateEntry kenslerIsAlive "kensler.alive"
+        <> hr
+        <> validateEntry (not kenslerIsAlive) "kensler.otherwise"
+
+      unless kenslerIsAlive do
+        eachInvestigator (`sufferPhysicalTrauma` 1)
+
+      scoutedTheForkedPass <- getHasRecord TheInvestigatorsScoutedTheForkedPass
+      blueStory
+        $ validateEntry scoutedTheForkedPass "scoutedTheForkedPass.yes"
+        <> hr
+        <> validateEntry (not scoutedTheForkedPass) "scoutedTheForkedPass.no"
+
+      danforthIsAlive <- getPartnerIsAlive Assets.danforthBrilliantStudent
+      story
+        $ i18n "hoursPass"
+        <> blueFlavor
+          ( validateEntry danforthIsAlive "danforth.alive"
+              <> hr
+              <> validateEntry (not danforthIsAlive) "danforth.otherwise"
+          )
+
+      unless danforthIsAlive do
+        eachInvestigator (`sufferMentalTrauma` 1)
+
+      miasmicCrystalRecovered <- hasSupply MiasmicCrystal
+      blueStory
+        $ validateEntry miasmicCrystalRecovered "miasmicCrystal.recovered"
+        <> hr
+        <> validateEntry (not miasmicCrystalRecovered) "miasmicCrystal.unrecovered"
+
+      unless miasmicCrystalRecovered do
+        when (count (== #frost) (campaignChaosBag attrs) < 8) $ addChaosToken #frost
+
+      storyWithChooseOneM (i18nWithTitle "proceed") do
+        labeled
+          "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
+          $ pushAll [ResetInvestigators, ResetGame, StartScenario "08648a"]
+        labeled
+          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
+          $ push
+          $ NextCampaignStep
+          $ Just TheHeartOfMadnessPart2
+
+      pure c
     _ -> lift $ defaultCampaignRunner msg c

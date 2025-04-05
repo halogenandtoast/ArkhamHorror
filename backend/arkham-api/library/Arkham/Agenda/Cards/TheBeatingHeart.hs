@@ -55,23 +55,21 @@ isSaved x = getPartnerIsAlive savingPartner
 instance RunMessage TheBeatingHeart where
   runMessage msg a@(TheBeatingHeart attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n 1 $ scope "interlude" do
+      story $ i18nWithTitle "instructions"
       partners <- getPartnersWithStatus (== Safe)
-      case nonEmpty partners of
-        Nothing -> story $ i18n "instructions"
-        Just ps -> do
-          x <- sample ps
-          story $ i18n "instructions" <> i18n "part1"
-          scope (partnerScope x) do
-            saved <- isSaved x
-            storyWithCard (toCardDef x)
-              $ blueFlavor
-              $ validatedEntry "victim"
-              <> validateEntry saved "saved"
-              <> validateEntry (not saved) "otherwise"
+      for_ (nonEmpty partners) \ps -> do
+        x <- sample ps
+        scope (partnerScope x) do
+          saved <- isSaved x
+          storyWithCard (toCardDef x)
+            $ blueFlavor
+            $ validatedEntry "victim"
+            <> validateEntry saved "saved"
+            <> validateEntry (not saved) "otherwise"
 
-            unless saved do
-              setPartnerStatus x Eliminated
-              selectForMaybeM (assetIs x.cardCode) (push . AssetDefeated (toSource attrs))
+          unless saved do
+            setPartnerStatus x Eliminated
+            selectForMaybeM (assetIs x.cardCode) (push . AssetDefeated (toSource attrs))
       advanceAgendaDeck attrs
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

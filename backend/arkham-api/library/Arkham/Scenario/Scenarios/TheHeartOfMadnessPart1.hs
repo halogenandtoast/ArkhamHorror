@@ -2,24 +2,18 @@ module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1 (theHeartOfMadnessPart1)
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
-import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps (pattern TheHeartOfMadnessPart2)
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
-import Arkham.Campaigns.EdgeOfTheEarth.Supplies
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
-import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.SkillTest
-import Arkham.Helpers.Text
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo)
 import Arkham.Projection
@@ -53,51 +47,7 @@ instance HasChaosTokenValue TheHeartOfMadnessPart1 where
 instance RunMessage TheHeartOfMadnessPart1 where
   runMessage msg s@(TheHeartOfMadnessPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
-      kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
-      blueStory
-        $ validateEntry kenslerIsAlive "kensler.alive"
-        <> hr
-        <> validateEntry (not kenslerIsAlive) "kensler.otherwise"
-
-      unless kenslerIsAlive do
-        eachInvestigator (`sufferPhysicalTrauma` 1)
-
-      scoutedTheForkedPass <- getHasRecord TheInvestigatorsScoutedTheForkedPass
-      blueStory
-        $ validateEntry scoutedTheForkedPass "scoutedTheForkedPass.yes"
-        <> hr
-        <> validateEntry (not scoutedTheForkedPass) "scoutedTheForkedPass.no"
-
-      danforthIsAlive <- getPartnerIsAlive Assets.danforthBrilliantStudent
-      story
-        $ i18n "hoursPass"
-        <> blueFlavor
-          ( validateEntry danforthIsAlive "danforth.alive"
-              <> hr
-              <> validateEntry (not danforthIsAlive) "danforth.otherwise"
-          )
-
-      unless danforthIsAlive do
-        eachInvestigator (`sufferMentalTrauma` 1)
-
-      miasmicCrystalRecovered <- hasSupply MiasmicCrystal
-      blueStory
-        $ validateEntry miasmicCrystalRecovered "miasmicCrystal.recovered"
-        <> hr
-        <> validateEntry (not miasmicCrystalRecovered) "miasmicCrystal.unrecovered"
-
-      unless miasmicCrystalRecovered do
-        whenM hasRemainingFrostTokens $ addChaosToken #frost
-
-      storyWithChooseOneM (i18nWithTitle "proceed") do
-        labeled
-          "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
-          nothing
-        labeled
-          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
-          $ endOfScenarioThen TheHeartOfMadnessPart2
-
+      story $ i18nWithTitle "part1Intro"
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
       gather Set.TheHeartOfMadness

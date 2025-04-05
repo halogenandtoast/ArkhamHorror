@@ -9,9 +9,11 @@ import Arkham.Helpers.Window (discoveredCluesAt)
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
 import Arkham.Placement
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
 
 newtype CollapseThePylons = CollapseThePylons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -24,7 +26,10 @@ instance HasAbilities CollapseThePylons where
   getAbilities (CollapseThePylons x) =
     extend
       x
-      [ mkAbility x 1 $ triggered (DiscoverClues #when You "Mist Pylon" (atLeast 1)) DiscoveredCluesCost
+      [ mkAbility x 1
+          $ triggered
+            (DiscoverClues #when You ("Mist-Pylon" <> LocationWithoutModifier CannotBeDamaged) (atLeast 1))
+            DiscoveredCluesCost
       , restricted x 2 (LocationCount 5 (LocationWithModifier $ ScenarioModifier "collapsed"))
           $ Objective
           $ forced
@@ -34,7 +39,7 @@ instance HasAbilities CollapseThePylons where
 instance RunMessage CollapseThePylons where
   runMessage msg a@(CollapseThePylons attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (discoveredCluesAt -> (lid, n)) _ -> do
-      placeTokens (attrs.ability 1) lid #damage n
+      nonAttackEnemyDamage (attrs.ability 1) n (coerce @_ @EnemyId lid)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs
@@ -58,6 +63,20 @@ instance RunMessage CollapseThePylons where
       theFinalMirage <- getSetAsideCard Cards.theFinalMirage
       push $ SetCurrentActDeck 1 [theFinalMirage]
       push $ SetCurrentAgendaDeck 1 []
+      gameModifier attrs (ActTarget $ ActId Cards.theFinalMirage.cardCode) (ScenarioModifier "collapsed")
       toDiscard GameSource attrs
+      pure a
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      selectEach (enemyIs Enemies.theNamelessMadness) (`place` Unplaced)
+      pure a
+    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      connectLocations "theGateOfYquaa" "titanicRamp1"
+      connectLocations "titanicRamp1" "titanicRamp2"
+      connectLocations "titanicRamp2" "titanicRamp3"
+      connectLocations "titanicRamp3" "titanicRamp4"
+      connectLocations "titanicRamp4" "hiddenTunnel"
+      firstRamp <- selectJust $ LocationWithLabel "titanicRamp1"
+      eachInvestigator (\iid -> moveTo attrs iid firstRamp)
+      selectEach (enemyIs Enemies.theNamelessMadness) (`enemyMoveTo` firstRamp)
       pure a
     _ -> CollapseThePylons <$> liftRunMessage msg attrs

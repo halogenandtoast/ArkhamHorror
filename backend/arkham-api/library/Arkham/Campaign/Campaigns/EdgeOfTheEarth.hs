@@ -212,9 +212,8 @@ instance RunMessage EdgeOfTheEarth where
                           "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                         portraitLabeled iid do
                           cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                          focusCards cards do
-                            chooseUpToNM iid 5 "Do not remove anymore" do
-                              targets cards $ removeCardFromDeckForCampaign iid
+                          chooseUpToNM iid 5 "Do not remove anymore" do
+                            for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                       doStep (n - 1) msg'
                 else do
@@ -457,9 +456,8 @@ instance RunMessage EdgeOfTheEarth where
                             "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            focusCards cards do
-                              chooseUpToNM iid 5 "Do not remove anymore" do
-                                targets cards $ removeCardFromDeckForCampaign iid
+                            chooseUpToNM iid 5 "Do not remove anymore" do
+                              for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'
                 | not owned -> do
@@ -765,9 +763,8 @@ instance RunMessage EdgeOfTheEarth where
                             "Any one investigator may choose and remove up to five Tekeli-li! weaknesses from their deck (*shuffling them with the remainder of the Tekeli-li encounter set*)."
                           portraitLabeled iid do
                             cards <- select $ inDeckOf iid <> basic (CardFromEncounterSet Tekelili)
-                            focusCards cards do
-                              chooseUpToNM iid 5 "Do not remove anymore" do
-                                targets cards $ removeCardFromDeckForCampaign iid
+                            chooseUpToNM iid 5 "Do not remove anymore" do
+                              for_ cards \card -> cardLabeled card $ removeCardFromDeckForCampaign iid card
 
                         doStep (n - 1) msg'
                 | not owned -> do
@@ -1025,7 +1022,8 @@ instance RunMessage EdgeOfTheEarth where
       pure c
     CampaignStep (CheckpointStep 3) -> scope "checkpoint3" do
       story $ i18nWithTitle "theOtherSide1"
-      story $ i18nWithTitle "theOtherSide2"
+      story $ i18nWithTitle "theOtherSide3"
+      push $ NextCampaignStep $ Just TheHeartOfMadnessPart2
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

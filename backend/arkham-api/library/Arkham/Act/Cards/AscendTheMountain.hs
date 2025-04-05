@@ -23,9 +23,7 @@ instance HasAbilities AscendTheMountain where
           1
           (exists $ at_ YourLocation <> withTrait Expedition <> not_ (AssetControlledBy You))
           actionAbility
-      , restricted x 2 AllUndefeatedInvestigatorsResigned
-          $ Objective
-          $ forced AnyWindow
+      , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
       ]
 
 instance RunMessage AscendTheMountain where
@@ -34,7 +32,7 @@ instance RunMessage AscendTheMountain where
       push R1
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assets <- select $ AssetAt (locationWithInvestigator iid) <> withTrait Expedition
+      assets <- select $ at_ (locationWithInvestigator iid) <> withTrait Expedition <> not_ (assetControlledBy iid)
       chooseTargetM iid assets $ takeControlOfAsset iid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

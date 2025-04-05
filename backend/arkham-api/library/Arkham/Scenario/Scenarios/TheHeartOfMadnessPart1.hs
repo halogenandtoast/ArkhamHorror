@@ -92,10 +92,10 @@ instance RunMessage TheHeartOfMadnessPart1 where
 
       storyWithChooseOneM (i18nWithTitle "proceed") do
         labeled
-          "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to The Heart of MadnessPart1, Part 1."
+          "Stay here and study the great door to learn more. You will play both parts of the scenario. Proceed to _The Heart of Madness, Part 1._"
           nothing
         labeled
-          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to The Heart of MadnessPart1, Part 2."
+          "There is no time to waste. Pass through the gate! You will skip the first part of the scenario. Skip directly to _The Heart of Madness, Part 2_."
           $ endOfScenarioThen TheHeartOfMadnessPart2
 
       pure s
@@ -156,7 +156,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       drawTekelili iid Tablet 1
       pure s
-    ScenarioResolution resolution -> do
+    ScenarioResolution resolution -> scope "resolutions" do
       case resolution of
         NoResolution -> do
           story $ i18nWithTitle "noResolution"

@@ -1,7 +1,8 @@
 module Arkham.Campaigns.EdgeOfTheEarth.Seal where
 
-import Arkham.Prelude
+import Arkham.Classes.GameLogger
 import Arkham.Id
+import Arkham.Prelude
 import Data.Function (on)
 import GHC.Records
 
@@ -11,7 +12,7 @@ data Seal = Seal
   , sealPlacedBy :: Maybe InvestigatorId
   }
   deriving stock (Show, Ord, Generic, Data)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 instance FromJSON Seal where
   parseJSON = withObject "Seal" \o -> do
@@ -29,6 +30,17 @@ instance HasField "active" Seal Bool where
 data SealKind = SealA | SealB | SealC | SealD | SealE
   deriving stock (Show, Eq, Ord, Bounded, Enum, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
+
+instance ToGameLoggerFormat Seal where
+  format c = format c.kind
+
+instance ToGameLoggerFormat SealKind where
+  format = \case
+    SealA -> "{sealA}"
+    SealB -> "{sealB}"
+    SealC -> "{sealC}"
+    SealD -> "{sealD}"
+    SealE -> "{sealE}"
 
 instance Eq Seal where
   (==) = (==) `on` sealKind

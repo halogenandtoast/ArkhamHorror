@@ -141,6 +141,7 @@ body {
 
 .neutral-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamSlim";
     content: "\0046";
   }
@@ -148,6 +149,7 @@ body {
 
 .guardian-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0051";
   }
@@ -155,6 +157,7 @@ body {
 
 .seeker-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0045";
   }
@@ -162,6 +165,7 @@ body {
 
 .rogue-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0054";
   }
@@ -169,6 +173,7 @@ body {
 
 .mystic-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0057";
   }
@@ -176,6 +181,7 @@ body {
 
 .survivor-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0052";
   }
@@ -183,6 +189,7 @@ body {
 
 .elder-sign {
   &:before {
+    text-transform: none;
     font-weight: normal;
     font-size: 1.3em;
     font-family: "Arkham";
@@ -192,6 +199,7 @@ body {
 
 .auto-fail {
   &:before {
+    text-transform: none;
     font-weight: normal;
     font-size: 1.3em;
     font-family: "Arkham";
@@ -201,6 +209,7 @@ body {
 
 .action-icon {
   &:before {
+    text-transform: none;
     font-family: "arkham";
     content: "\0049";
     margin-right: 5px;
@@ -209,6 +218,7 @@ body {
 
 .willpower-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0041";
     color: inherit;
@@ -217,6 +227,7 @@ body {
 
 .intellect-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0046";
   }
@@ -224,6 +235,7 @@ body {
 
 .combat-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0044";
   }
@@ -231,6 +243,7 @@ body {
 
 .agility-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0053";
   }
@@ -238,6 +251,7 @@ body {
 
 .skull-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e910";
   }
@@ -245,6 +259,7 @@ body {
 
 .cultist-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e911";
   }
@@ -252,6 +267,7 @@ body {
 
 .tablet-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e912";
   }
@@ -259,6 +275,7 @@ body {
 
 .elder-thing-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e913";
   }
@@ -266,6 +283,7 @@ body {
 
 .curse-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e929";
   }
@@ -273,6 +291,7 @@ body {
 
 .bless-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\e92a";
   }
@@ -280,13 +299,55 @@ body {
 
 .frost-icon {
   &:before {
+    text-transform: none;
     font-family: "ArkhamSlim";
     content: "\0062";
   }
 }
 
+.seal-a-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0067";
+  }
+}
+
+.seal-b-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0066";
+  }
+}
+
+.seal-c-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0065";
+  }
+}
+
+.seal-d-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0063";
+  }
+}
+
+.seal-e-icon {
+  &:before {
+    text-transform: none;
+    font-family: "ArkhamSlim";
+    content: "\0064";
+  }
+}
+
 .wild-icon {
   &:before {
+    text-transform: none;
     font-family: "Arkham";
     content: "\0047";
   }
@@ -294,6 +355,7 @@ body {
 
 .fast-icon {
   &:before {
+    text-transform: none;
     font-family: "arkham";
     content: "\0075";
     margin-right: 5px;
@@ -302,6 +364,7 @@ body {
 
 .reaction-icon {
   &:before {
+    text-transform: none;
     font-family: "arkham";
     content: "\0079";
     margin-right: 5px;
@@ -310,6 +373,7 @@ body {
 
 .per-player{
   &:before {
+    text-transform: none;
     font-family: "ArkhamIcons";
     content: "\E915";
   }

@@ -4,56 +4,61 @@ import Arkham.Prelude
 
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
 data EdgeOfTheEarthKey
-  = TheInvestigatorsConvincedDyerToAllowTheExpedition
-  | TheInvestigatorsDidNotBelieveDyersReport
-  | WasKilledInThePlaneCrash
-  | SuppliesRecovered
-  | Camp_CrashSite
-  | Camp_FrozenShores
-  | Camp_TreacherousPath
-  | Camp_PrecariousIceSheet
+  = Camp_BarrierCamp
   | Camp_BroadSnowdrifts
+  | Camp_CrashSite
+  | Camp_CrystallineCavern
+  | Camp_FrigidCave
+  | Camp_FrozenShores
+  | Camp_IcebreakerLanding
   | Camp_IcyWastes
+  | Camp_PrecariousIceSheet
+  | Camp_RemnantsOfLakesCamp
   | Camp_RockyCrags
   | Camp_SnowGraves
-  | Camp_IcebreakerLanding
-  | Camp_FrigidCave
-  | Camp_BarrierCamp
-  | Camp_RemnantsOfLakesCamp
-  | Camp_CrystallineCavern
-  | TheTeamBarelyEscapedTheIceShelf
-  | TheTeamDefeatedTheHuntingCreatures
-  | TheTeamFledToTheMountains
-  | LocationsRevealed
-  | DrKenslerIsSharingHerResearchWithYou
-  | TheInvestigatorsScoutedTheMountainPass
-  | EliyahHasConfrontedHisDemons
-  | DrSinhaHasConfrontedHerDemons
-  | TakadaHasConfrontedHerDemons
-  | CookieHasConfrontedHisDemons
-  | DyerHasConfrontedHisDemons
-  | DanforthHasConfrontedHisDemons
+  | Camp_TreacherousPath
   | ClaypoolHasConfrontedHisDemons
-  | EllsworthHasConfrontedHisDemons
+  | CookieHasConfrontedHisDemons
+  | DanforthHasConfrontedHisDemons
+  | DrKenslerHasAPlan
   | DrKenslerHasConfrontedHerDemons
+  | DrKenslerIsOnTheVergeOfUnderstanding
+  | DrKenslerIsSharingHerResearchWithYou
+  | DrKenslerUnderstandsTheTrueNatureOfTheMiasma
+  | DrSinhaHasConfrontedHerDemons
+  | DyerHasConfrontedHisDemons
+  | EliyahHasConfrontedHisDemons
+  | EllsworthHasConfrontedHisDemons
+  | LocationsRevealed
   | MemoriesBanished
   | MemoriesDiscovered
-  | TheTeamClimbedToTheSummit
-  | TheTeamFoundAnotherWayThroughTheMountains
-  | DrKenslerIsOnTheVergeOfUnderstanding
-  | TheInvestigatorsScoutedTheCityOutskirts
-  | TheTeamPhotographedTheAstronomicalCharts
-  | TheTeamStudiedTheMuralCarvings
-  | TheTeamReadTheMap
-  | TheTeamDiscoveredAnAncientVault
-  | TheTeamFoundTheHiddenTunnel
-  | TheTeamWasGuidedToTheHiddenTunnel
-  | DrKenslerUnderstandsTheTrueNatureOfTheMiasma
-  | TheInvestigatorsScoutedTheForkedPass
-  | TheSealWasUsedImproperly
   | SealsPlaced
   | SealsRecovered
+  | SuppliesRecovered
+  | TakadaHasConfrontedHerDemons
+  | TheFacilityWasDestroyed
+  | TheInvestigatorsConvincedDyerToAllowTheExpedition
+  | TheInvestigatorsDidNotBelieveDyersReport
+  | TheInvestigatorsScoutedTheCityOutskirts
+  | TheInvestigatorsScoutedTheForkedPass
+  | TheInvestigatorsScoutedTheMountainPass
+  | TheNamelessMadnessEscaped
+  | TheNamelessMadnessIsContainedSafelyWithinItsHostForNow
+  | TheSealWasUsedImproperly
+  | TheSurvivorsOfTheExpeditionWere
+  | TheTeamBarelyEscapedTheIceShelf
+  | TheTeamClimbedToTheSummit
+  | TheTeamDefeatedTheHuntingCreatures
+  | TheTeamDiscoveredAnAncientVault
+  | TheTeamEscapedTheFacility
+  | TheTeamFledToTheMountains
+  | TheTeamFoundAnotherWayThroughTheMountains
+  | TheTeamFoundTheHiddenTunnel
+  | TheTeamPhotographedTheAstronomicalCharts
+  | TheTeamReadTheMap
+  | TheTeamStudiedTheMuralCarvings
+  | TheTeamWasGuidedToTheHiddenTunnel
   | TheTruthOfTheMirageEludesYou
-  | DrKenslerHasAPlan
+  | WasKilledInThePlaneCrash
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

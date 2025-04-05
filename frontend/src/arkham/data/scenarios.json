@@ -370,5 +370,15 @@
       "id": "08621",
       "name": "City of the Elder Things",
       "campaign": "08"
+  },
+  {
+      "id": "08648a",
+      "name": "The Heart of Madness, Part I",
+      "campaign": "08"
+  },
+  {
+      "id": "08648b",
+      "name": "The Heart of Madness, Part II",
+      "campaign": "08"
   }
 ]

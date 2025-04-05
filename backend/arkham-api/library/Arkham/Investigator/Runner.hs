@@ -129,6 +129,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard)
+import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
@@ -2290,10 +2291,30 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
       & (discardL %~ filter ((/= card) . PlayerCard))
       & (handL %~ filter (/= card))
-  Msg.InvestigatorDamage iid _ damage horror | iid == investigatorId -> do
+  Msg.InvestigatorDamage iid source damage horror | iid == investigatorId -> do
     mods <- getModifiers a
     let n = sum [x | DamageTaken x <- mods]
-    pure $ a & assignedHealthDamageL +~ max 0 (damage + n) & assignedSanityDamageL +~ horror
+    let damage' = damage + n
+    if CancelOneDamageOrHorror `elem` mods
+      then
+        if
+          | horror == 0 && damage' > 0 ->
+              push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage' - 1) horror
+          | damage' == 0 && horror > 0 ->
+              push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' (horror - 1)
+          | otherwise -> Choose.chooseOneM iid do
+              Choose.labeled "Cancel 1 damage"
+                $ push
+                $ DoStep 1
+                $ Msg.InvestigatorDamage iid source (damage' - 1) horror
+              Choose.labeled "Cancel 1 horror"
+                $ push
+                $ DoStep 1
+                $ Msg.InvestigatorDamage iid source damage' (horror - 1)
+      else push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage + n) horror
+    pure a
+  DoStep 1 (Msg.InvestigatorDamage iid _ damage horror) | iid == investigatorId -> do
+    pure $ a & assignedHealthDamageL +~ max 0 damage & assignedSanityDamageL +~ max 0 horror
   DrivenInsane iid | iid == investigatorId -> do
     pure $ a & mentalTraumaL .~ investigatorSanity & drivenInsaneL .~ True
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> do

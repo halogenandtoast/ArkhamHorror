@@ -4401,7 +4401,7 @@ getShortestPath
   -> m [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistances initialLocation target extraConnectionsMap) state'
+  !result <- evalStateT (markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap) state'
   pure $ fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState

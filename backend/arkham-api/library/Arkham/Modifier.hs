@@ -392,6 +392,7 @@ data ModifierType
   | TopCardOfEncounterDeckIsRevealed
   | TraitRestrictedModifier Trait ModifierType
   | TreatAllDamageAsDirect
+  | CancelOneDamageOrHorror
   | TreatRevealedChaosTokenAs ChaosTokenFace
   | UpgradeTargetIfAble Target
   | UpkeepResources Int

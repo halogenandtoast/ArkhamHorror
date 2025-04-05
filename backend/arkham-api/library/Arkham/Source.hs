@@ -177,6 +177,9 @@ instance Sourceable InvestigatorId where
 instance Sourceable LocationId where
   toSource = LocationSource
 
+instance Sourceable ActId where
+  toSource = ActSource
+
 instance Sourceable AssetId where
   toSource = AssetSource
 

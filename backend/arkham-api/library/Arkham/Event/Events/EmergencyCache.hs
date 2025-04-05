@@ -1,7 +1,8 @@
 module Arkham.Event.Events.EmergencyCache (emergencyCache) where
 
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Import.Lifted
+import Arkham.Event.Import.Lifted hiding (gainResources)
+import Arkham.Script
 
 newtype EmergencyCache = EmergencyCache EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -11,8 +12,4 @@ emergencyCache :: EventCard EmergencyCache
 emergencyCache = event EmergencyCache Cards.emergencyCache
 
 instance RunMessage EmergencyCache where
-  runMessage msg e@(EmergencyCache attrs) = runQueueT $ case msg of
-    PlayThisEvent iid (is attrs -> True) -> do
-      gainResources iid attrs 3
-      pure e
-    _ -> EmergencyCache <$> liftRunMessage msg attrs
+  runMessage = script $ onPlay $ gainResources you 3

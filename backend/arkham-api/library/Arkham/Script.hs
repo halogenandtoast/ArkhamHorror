@@ -375,11 +375,11 @@ instance WithClues LocationMatcher where
 
 passedWithElderSign
   :: (?this :: a, Entity a, Is attrs InvestigatorId, attrs ~ EntityAttrs a)
-  => ((?this :: a, ?you :: InvestigatorId) => ScriptT a ()) -> ScriptT a ()
+  => ((?this :: a, ?source :: Source, ?you :: InvestigatorId) => ScriptT a ()) -> ScriptT a ()
 passedWithElderSign body = onMessage matchHandler \case
   PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _
     | is (toAttrs this) iid ->
-        let ?you = iid in body
+        let ?you = iid; ?source = toSource ElderSign in body
   _ -> pure ()
  where
   matchHandler (PassedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> ElderSign)) _ _) = is (toAttrs this) iid
@@ -468,6 +468,16 @@ removeDiscardFromGame = push $ RemoveDiscardFromGame ?you
 
 directHorror :: (?this :: a, Sourceable a) => InvestigatorId -> Int -> ScriptT a ()
 directHorror iid n = Msg.directHorror iid (toSource ?this) n
+
+gainResources
+  :: (?source :: Source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> Int -> ScriptT a ()
+gainResources investigator n = Msg.gainResources investigator ?source n
+
+gainActions
+  :: (?source :: Source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> Int -> ScriptT a ()
+gainActions investigator n = Msg.gainActions investigator ?source n
 
 healDamage
   :: (?source :: Source, Targetable target) => target -> Int -> ScriptT a ()

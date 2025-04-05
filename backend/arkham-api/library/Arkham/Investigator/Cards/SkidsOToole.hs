@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.SkidsOToole (skidsOToole) where
 import Arkham.Ability hiding (you)
 import Arkham.Script
 import Arkham.Investigator.Cards qualified as Cards
-import Arkham.Investigator.Import.Lifted
+import Arkham.Investigator.Import.Lifted hiding (gainResources, gainActions)
 import Arkham.Matcher hiding (DuringTurn)
 
 newtype SkidsOToole = SkidsOToole InvestigatorAttrs
@@ -27,5 +27,5 @@ instance HasChaosTokenValue SkidsOToole where
 
 instance RunMessage SkidsOToole where
   runMessage = script do
-    onAbility 1 $ gainActions you ability 1
-    passedWithElderSign $ gainResources you ElderSign 2
+    onAbility 1 $ gainActions you 1
+    passedWithElderSign $ gainResources you 2

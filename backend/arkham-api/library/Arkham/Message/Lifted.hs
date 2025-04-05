@@ -1907,8 +1907,8 @@ placeUnderneath
   -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard (toList cards)
 
-gainActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
-gainActions iid (toSource -> source) n = push $ Msg.GainActions iid source n
+gainActions :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> source -> Int -> m ()
+gainActions (asId -> iid) (toSource -> source) n = push $ Msg.GainActions iid source n
 
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 takeActionAsIfTurn iid (toSource -> source) = do

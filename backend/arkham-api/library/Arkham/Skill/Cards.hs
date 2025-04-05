@@ -963,7 +963,7 @@ watchThis3 =
 enraptured2 :: CardDef
 enraptured2 =
   (skill "11077" "Enraptured" [#intellect, #wild] Mystic)
-    { cdCardTraits = singleton Practiced
+    { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 2
     , cdCommitRestrictions = [MaxOnePerTest]
     }

@@ -8030,9 +8030,9 @@ mistPylon_174 :: CardDef
 mistPylon_174 =
   locationWithUnrevealed_
     "08674"
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8040,9 +8040,9 @@ mistPylon_175 :: CardDef
 mistPylon_175 =
   locationWithUnrevealed_
     "08675"
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8050,9 +8050,9 @@ mistPylon_176 :: CardDef
 mistPylon_176 =
   locationWithUnrevealed_
     "08676"
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8060,9 +8060,9 @@ mistPylon_177 :: CardDef
 mistPylon_177 =
   locationWithUnrevealed_
     "08677"
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
     StirringInTheDeep
 
@@ -8070,9 +8070,9 @@ mistPylon_178 :: CardDef
 mistPylon_178 =
   locationWithUnrevealed_
     "08678"
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
-    "Mist Pylon"
+    "Mist-Pylon"
     [Ruins]
     StirringInTheDeep
 

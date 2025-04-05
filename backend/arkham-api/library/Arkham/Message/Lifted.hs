@@ -2158,6 +2158,9 @@ automaticallyEvadeEnemy
   -> m ()
 automaticallyEvadeEnemy investigator enemy = push $ Msg.EnemyEvaded (asId investigator) (asId enemy)
 
+exhaustEnemy :: (ReverseQueue m, Targetable target) => target -> m ()
+exhaustEnemy = push . Exhaust . toTarget
+
 placeInBonded :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
 placeInBonded iid = push . PlaceInBonded iid . toCard
 

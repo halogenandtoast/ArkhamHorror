@@ -333,6 +333,7 @@ handleAnswer Game {..} playerId = \case
       case (mm, msgs') of
         (Just m', []) -> [uiToRun m']
         (Just m'@(Done _), _) -> [uiToRun m']
+        (Just m', [Done _]) -> [uiToRun m']
         (Just m', msgs'') ->
           if n - 1 == 0
             then [uiToRun m']

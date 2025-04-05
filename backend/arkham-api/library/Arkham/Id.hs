@@ -36,6 +36,10 @@ newtype ActId = ActId {unActId :: CardCode}
   deriving stock Data
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)
 
+instance AsId ActId where
+  type IdOf ActId = ActId
+  asId = id
+
 newtype AgendaId = AgendaId {unAgendaId :: CardCode}
   deriving stock Data
   deriving newtype (Eq, Ord, Show, ToJSON, FromJSON, IsString, ToJSONKey, FromJSONKey, HasCardCode)

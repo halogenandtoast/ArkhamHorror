@@ -21,7 +21,7 @@ theSealWeakens = agenda (1, A) TheSealWeakens Cards.theSealWeakens (Static 3)
 instance RunMessage TheSealWeakens where
   runMessage msg a@(TheSealWeakens attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      xs <- select $ NearestLocationToAny "Mist Pylon"
+      xs <- select $ NearestLocationToAny "Mist-Pylon"
       lead <- getLead
       chooseTargetM lead xs $ createSetAsideEnemy_ Enemies.theNamelessMadness
       whenHasRecord TheTruthOfTheMirageEludesYou do

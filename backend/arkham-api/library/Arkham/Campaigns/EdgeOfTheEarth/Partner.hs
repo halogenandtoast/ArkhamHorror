@@ -8,6 +8,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Prelude
+import Data.Function (on)
 import GHC.Records
 
 -- ** Partner Types ** --
@@ -18,6 +19,9 @@ data Partner = Partner
   , partnerHorror :: Int
   , partnerStatus :: PartnerStatus
   }
+
+instance Eq Partner where
+  (==) = (==) `on` partnerCardCode
 
 instance HasField "status" Partner PartnerStatus where
   getField = partnerStatus
@@ -102,7 +106,8 @@ getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])
 getPartner :: (HasGame m, HasCardCode a) => a -> m Partner
 getPartner (toCardCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
-  pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners >>= \partner ->
+  pure $ fromJustNote "Not a valid partner" do
+    partner <- lookup cardCode partners <|> lookup (toResolute cardCode) partners
     pure
       $ Partner
         { partnerCardCode = if partner.status == Resolute then toResolute cardCode else cardCode

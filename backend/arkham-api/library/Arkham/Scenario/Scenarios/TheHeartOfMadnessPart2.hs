@@ -3,19 +3,23 @@ module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2 (theHeartOfMadnessPart2)
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Exception
 import Arkham.FlavorText
-import Arkham.Helpers.Log
+import Arkham.Helpers.Log ()
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
@@ -144,6 +148,16 @@ instance RunMessage TheHeartOfMadnessPart2 where
            , Locations.titanicRamp_185
            , Locations.hiddenTunnelAWayOut
            ]
+
+      seals <- foldMapM getSomeRecordSetJSON [SealsPlaced, SealsRecovered]
+      lead <- getLead
+      investigators <- allInvestigators
+
+      for_ seals \seal -> do
+        chooseOrRunOneM lead do
+          questionLabeled $ "Choose Investigator to take the " <> format seal <> " seal"
+          targets investigators (`placeSeal` seal)
+
       addTekeliliDeck
     DoStep 1 Setup -> do
       connectAllLocations
@@ -155,5 +169,52 @@ instance RunMessage TheHeartOfMadnessPart2 where
 
       chooseTargetM lead ls (\l -> reveal l >> moveAllTo attrs l)
 
+      pure s
+    ScenarioResolution resolution -> scope "resolutions" do
+      case resolution of
+        NoResolution -> do
+          story $ i18nWithTitle "noResolution"
+          record TheNamelessMadnessEscaped
+          partners <- getRemainingPartners
+          for_ partners (`setPartnerStatus` Eliminated)
+          eachInvestigator drivenInsane
+          gameOver
+        Resolution 1 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus.resolution1" 10
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution1"
+          record TheNamelessMadnessIsContainedSafelyWithinItsHostForNow
+          kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology
+          setPartnerStatus kensler TheEntity
+          partners <- filter (/= kensler) <$> getRemainingPartners
+          investigators <- allInvestigators
+          recordSetInsert TheSurvivorsOfTheExpeditionWere
+            $ map toCardCode partners
+            <> map toCardCode investigators
+          endOfScenario
+        Resolution 2 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus.resolution2" 10
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution2"
+          record TheFacilityWasDestroyed
+          partners <- getRemainingPartners
+          investigators <- allInvestigators
+          recordSetInsert TheSurvivorsOfTheExpeditionWere
+            $ map toCardCode partners
+            <> map toCardCode investigators
+          eachInvestigator (`sufferPhysicalTrauma` 1)
+          eachInvestigator (`sufferMentalTrauma` 1)
+          endOfScenario
+        Resolution 3 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus.resolution3" 5
+          story $ withVars ["xp" .= xp] $ i18nWithTitle "resolution3"
+          record TheTeamEscapedTheFacility
+          partners <- getRemainingPartners
+          investigators <- allInvestigators
+          recordSetInsert TheSurvivorsOfTheExpeditionWere
+            $ map toCardCode partners
+            <> map toCardCode investigators
+          eachInvestigator (`sufferPhysicalTrauma` 2)
+          eachInvestigator (`sufferMentalTrauma` 2)
+          endOfScenario
+        _ -> throwIO $ UnknownResolution resolution
       pure s
     _ -> TheHeartOfMadnessPart2 <$> liftRunMessage msg attrs

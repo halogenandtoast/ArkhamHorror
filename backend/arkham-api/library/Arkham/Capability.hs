@@ -38,7 +38,7 @@ instance Capable InvestigatorMatcher where
                   <> InvestigatorWithoutModifier CannotGainResourcesFromPlayerCardEffects
             , xp = InvestigatorCanGainXp
             }
-      , spend = SpendCapabilities {resources = InvestigatorWithSpendableResources (GreaterThan $ Static 0)}
+      , spend = SpendCapabilities {resources = InvestigatorWithSpendableResources (GreaterThan $ Static 0), clues = InvestigatorWithClues (atLeast 1) <> InvestigatorWithoutModifier CannotSpendClues}
       , have =
           HaveCapabilities
             { cards =
@@ -158,6 +158,7 @@ data GainCapabilities a = GainCapabilities
 
 data SpendCapabilities a = SpendCapabilities
   { resources :: a
+  , clues :: a
   }
   deriving stock Functor
 

@@ -75,7 +75,7 @@ const loadedCards = ref<CardDef[]>([]);
 
 // Function to load missing cards
 async function loadMissingCards() {
-  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'SuppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
+  const nonCardKeys = ['theCircleUndone.key.mementosDiscovered', 'MemoriesRecovered', 'PossibleSuspects', 'PossibleHideouts', 'edgeOfTheEarth.key.suppliesRecovered', 'edgeOfTheEarth.key.sealsPlaced', 'edgeOfTheEarth.key.sealsRecovered'];
   const missingCardCodes = new Set();
   for (const [key, setValue] of Object.entries(recordedSets.value)) {
     if (nonCardKeys.includes(key)) continue;
@@ -270,7 +270,8 @@ const emptyLog = computed(() => {
               </thead>
               <tbody>
                 <tr v-for="[cCode, partner] in Object.entries(partners)" :key="cCode" class="partner" :class="{ [partner.status]: true }">
-                  <td class="partner-name"><span class="name">{{cardCodeToTitle(cCode)}}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span></td>
+                  <td v-if="partner.status === 'TheEntity'" class="partner-name"><span class="name"><s>{{cardCodeToTitle(cCode)}}</s></span><span class='name'>The Entity</span></td>
+                  <td v-else class="partner-name"><span class="name">{{cardCodeToTitle(cCode)}}</span><span class="status-mia" v-if="partner.status === 'Mia'">MIA</span></td>
                   <td>{{partner.damage}}</td>
                   <td>{{partner.horror}}</td>
                 </tr>

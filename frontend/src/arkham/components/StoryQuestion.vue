@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType } from '@/arkham/types/Question';
 import { Done, CardLabel, Label, MessageType, PortraitLabel, TooltipLabel } from '@/arkham/types/Message';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, formatContent } from '@/arkham/helpers';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
 import PickSupplies from '@/arkham/components/PickSupplies.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
@@ -37,7 +37,6 @@ const portraitLabelImage = (investigatorId: string) => {
 }
 
 const portraitChoices = computed(() => {
-  console.log(question.value)
   if (!question.value) return
 
   if (!['QuestionLabel', 'ChooseOne'].includes(question.value.tag)) {
@@ -56,21 +55,31 @@ const portraitChoices = computed(() => {
 })
 
 const labelChoices = computed(() => {
-  if (!question.value || question.value.tag !== 'QuestionLabel') {
-    return []
-  }
+  if (!question.value) return
 
-  if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
-    return []
-  }
-
-  return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
-    if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
-      return [[c, idx]]
-    } else {
+  if (question.value.tag === 'QuestionLabel') {
+    if (!['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.question.tag)) {
       return []
     }
-  })
+
+    return question.value.question.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
+      if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
+        return [[c, idx]]
+      } else {
+        return []
+      }
+    })
+  }
+
+  if (['ChooseOne', 'ChooseUpToN', 'ChooseN'].includes(question.value.tag)) {
+    return question.value.choices.flatMap<[Label | TooltipLabel | CardLabel | Done, number]>((c, idx) => {
+      if (c.tag === MessageType.LABEL || c.tag === MessageType.TOOLTIP_LABEL || c.tag === MessageType.CARD_LABEL || c.tag === MessageType.DONE) {
+        return [[c, idx]]
+      } else {
+        return []
+      }
+    })
+  }
 })
 
 const questionImage = computed(() => {
@@ -100,7 +109,7 @@ const choose = (idx: number) => emit('choose', idx)
   </template>
   <div class="question-label" v-else-if="question && question.tag === 'QuestionLabel'">
     <img :src="questionImage" v-if="questionImage" class="card" />
-    <p>{{question.label}}</p>
+    <p v-html="formatContent(question.label)"></p>
 
     <div class="portrait-choices" v-if="portraitChoices.length > 0">
       <template v-for="[choice, index] in portraitChoices" :key="index">
@@ -141,6 +150,15 @@ const choose = (idx: number) => emit('choose', idx)
   </div>
   <template v-else-if="choices.length > 0">
     <div class="choices box">
+      <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
+        <template v-for="[choice, index] in labelChoices" :key="index">
+          <template v-if="choice.tag === MessageType.CARD_LABEL">
+            <a href='#' @click.prevent="choose(index)">
+              <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+            </a>
+          </template>
+        </template>
+      </div>
       <template v-for="(choice, index) in choices" :key="index">
         <div v-if="choice.tag === 'Done'">
           <button @click="choose(index)">{{choice.label}}</button>

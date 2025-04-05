@@ -1,9 +1,10 @@
 module Arkham.Scenarios.TheHeartOfMadness.Pylon where
 
+import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Calculation
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Classes.Entity
-import Arkham.Classes.HasQueue
 import Arkham.Classes.RunMessage.Internal
 import Arkham.Constants
 import Arkham.DamageEffect
@@ -14,22 +15,37 @@ import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.History
 import Arkham.Id
-import Arkham.Location.Runner ()
-import Arkham.Location.Types
-import Arkham.Message
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Import.Lifted hiding (choose)
+import Arkham.Location.Types (Field(..))
+import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted hiding (choose)
-import Arkham.Prelude
-import Arkham.Source
-import Arkham.Target
+import Arkham.Projection
+import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Token
 import Arkham.Window qualified as Window
 
-pylonRunner :: (IsLocation b, Sourceable b, Targetable b) => Runner b
-pylonRunner msg pylon = runQueueT $ case msg of
+pylonAbilities
+  :: (Entity pylon, EntityAttrs pylon ~ LocationAttrs) => SealKind -> pylon -> [Ability]
+pylonAbilities skind pylon =
+  let a = toAttrs pylon
+   in extendRevealed
+        a
+        [ basicAbility $ restricted a AbilityAttack Here $ ActionAbility [#fight] (ActionCost 1)
+        , restricted a 1 (Here <> youExist (InvestigatorWithActiveSeal skind)) $ FastAbility Free
+        ]
+
+pylonRunner :: (IsLocation b, Sourceable b, Targetable b) => SealKind -> Runner b
+pylonRunner skind msg pylon = runQueueT $ case msg of
+  UseThisAbility iid (isSource pylon -> True) 1 -> do
+    mseal <- find (\s -> s.kind == skind) . toList <$> field InvestigatorSeals iid
+    for_ mseal (placeSeal (toAttrs pylon))
+    pure pylon
   UseCardAbility iid (isSource pylon -> True) AbilityAttack _ _ -> do
     sid <- getRandom
-    push $ FightEnemy (coerce (toAttrs pylon).id) $ mkChooseFightPure sid iid ((toAttrs pylon).ability AbilityAttack)
+    push
+      $ FightEnemy (coerce (toAttrs pylon).id)
+      $ mkChooseFightPure sid iid ((toAttrs pylon).ability AbilityAttack)
     pure pylon
   AttackEnemy eid choose | coerce eid == (toAttrs pylon).id -> do
     let iid = choose.investigator
@@ -57,17 +73,23 @@ pylonRunner msg pylon = runQueueT $ case msg of
       push $ Successful (Action.Fight, toTarget pylon) iid source target' n
     pure pylon
   Msg.EnemyDamage eid damageAssignment | coerce eid == (toAttrs pylon).id -> do
-    let
-      source = damageAssignmentSource damageAssignment
-      damageEffect = damageAssignmentDamageEffect damageAssignment
-      damageAmount = damageAssignmentAmount damageAssignment
-    checkWhen $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
-    checkAfter $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
-    checkWhen $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
-    push $ EnemyDamaged eid damageAssignment
-    checkAfter $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
+    mods <- getModifiers pylon
+    unless (CannotBeDamaged `elem` mods) do
+      let
+        source = damageAssignmentSource damageAssignment
+        damageEffect = damageAssignmentDamageEffect damageAssignment
+        damageAmount = damageAssignmentAmount damageAssignment
+      checkWhen $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
+      checkAfter $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
+      checkWhen $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
+      push $ EnemyDamaged eid damageAssignment
+      checkAfter $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
     pure pylon
   EnemyDamaged eid damageAssignment | coerce eid == (toAttrs pylon).id -> do
-    amount' <- getModifiedDamageAmount pylon damageAssignment
-    pure $ overAttrs (tokensL %~ addTokens #damage amount') pylon
+    mods <- getModifiers pylon
+    if CannotBeDamaged `elem` mods
+      then pure pylon
+      else do
+        amount' <- getModifiedDamageAmount pylon damageAssignment
+        pure $ overAttrs (tokensL %~ addTokens #damage amount') pylon
   _ -> overAttrsM (liftRunMessage msg) pylon

@@ -9,7 +9,7 @@ newtype EyeOfGhatanothoaArtifactOfTheDarkGod2 = EyeOfGhatanothoaArtifactOfTheDar
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eyeOfGhatanothoaArtifactOfTheDarkGod2 :: AssetCard EyeOfGhatanothoaArtifactOfTheDarkGod2
-eyeOfGhatanothoaArtifactOfTheDarkGod2 = asset EyeOfGhatanothoaArtifactOfTheDarkGod2 Cards.eyeOfGhatanothoaArtifactOfTheDarkGod2
+eyeOfGhatanothoaArtifactOfTheDarkGod2 = assetWith EyeOfGhatanothoaArtifactOfTheDarkGod2 Cards.eyeOfGhatanothoaArtifactOfTheDarkGod2 (healthL ?~ 2)
 
 instance HasModifiersFor EyeOfGhatanothoaArtifactOfTheDarkGod2 where
   getModifiersFor (EyeOfGhatanothoaArtifactOfTheDarkGod2 a) = do

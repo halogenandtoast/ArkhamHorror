@@ -11,7 +11,7 @@ newtype ElinaHarperKnowsTooMuch = ElinaHarperKnowsTooMuch AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 elinaHarperKnowsTooMuch :: AssetCard ElinaHarperKnowsTooMuch
-elinaHarperKnowsTooMuch = asset ElinaHarperKnowsTooMuch Cards.elinaHarperKnowsTooMuch
+elinaHarperKnowsTooMuch = ally ElinaHarperKnowsTooMuch Cards.elinaHarperKnowsTooMuch (3, 2)
 
 instance HasModifiersFor ElinaHarperKnowsTooMuch where
   getModifiersFor (ElinaHarperKnowsTooMuch a) = case a.controller of

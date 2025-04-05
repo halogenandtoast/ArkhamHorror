@@ -11,7 +11,7 @@ newtype DivingSuit = DivingSuit AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 divingSuit :: AssetCard DivingSuit
-divingSuit = asset DivingSuit Cards.divingSuit
+divingSuit = assetWith DivingSuit Cards.divingSuit (healthL ?~ 3)
 
 instance HasModifiersFor DivingSuit where
   getModifiersFor (DivingSuit a) = modifySelf a [NonDirectDamageMustBeAssignToThisN 1]

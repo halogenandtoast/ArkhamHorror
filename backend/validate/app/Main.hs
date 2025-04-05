@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-defaulted-exception-context #-}
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE TupleSections #-}
 
@@ -8,6 +9,7 @@ import ClassyPrelude hiding (throwIO)
 import Arkham.Asset
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (SomeAssetCard (..), assetHealth, assetSanity)
+import Arkham.Calculation
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity
@@ -83,25 +85,25 @@ data CardJson = CardJson
   , pack_code :: String
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 data UnknownCard = UnknownCard CardCode [(String, SrcLoc)]
-  deriving stock (Show)
+  deriving stock Show
 
 unknownCard :: HasCallStack => CardCode -> UnknownCard
 unknownCard code = UnknownCard code (getCallStack callStack)
 
 data MissingImplementation = MissingImplementation CardCode Name
-  deriving stock (Show)
+  deriving stock Show
 
 data NameMismatch = NameMismatch CardCode Name Name
-  deriving stock (Show)
+  deriving stock Show
 
 data QuantityMismatch = QuantityMismatch CardCode Name Int (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data UniqueMismatch = UniqueMismatch CardCode Name
-  deriving stock (Show)
+  deriving stock Show
 
 data CardCostMismatch
   = CardCostMismatch
@@ -109,21 +111,21 @@ data CardCostMismatch
       Name
       (Maybe Int)
       (Maybe CardCost)
-  deriving stock (Show)
+  deriving stock Show
 
 data VictoryMismatch = VictoryMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data XpMismatch = XpMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data EnemyStatsMismatch
   = EnemyStatsMismatch
       CardCode
       Name
-      (Maybe Int, Maybe GameValue, Maybe Int)
-      (Maybe Int, Maybe GameValue, Maybe Int)
-  deriving stock (Show)
+      (Maybe GameCalculation, Maybe GameCalculation, Maybe GameCalculation)
+      (Maybe GameCalculation, Maybe GameCalculation, Maybe GameCalculation)
+  deriving stock Show
 
 data AssetStatsMismatch
   = AssetStatsMismatch
@@ -131,7 +133,7 @@ data AssetStatsMismatch
       Name
       (Maybe Int, Maybe Int)
       (Maybe Int, Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data EnemyDamageMismatch
   = EnemyDamageMismatch
@@ -139,13 +141,13 @@ data EnemyDamageMismatch
       Name
       (Int, Int)
       (Int, Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data ClassMismatch = ClassMismatch CardCode Name [String] (Set ClassSymbol)
-  deriving stock (Show)
+  deriving stock Show
 
 data SkillsMismatch = SkillsMismatch CardCode Name [SkillIcon] [SkillIcon]
-  deriving stock (Show)
+  deriving stock Show
 
 data TraitsMismatch
   = TraitsMismatch
@@ -153,13 +155,13 @@ data TraitsMismatch
       Name
       (Set Trait)
       (Set Trait)
-  deriving stock (Show)
+  deriving stock Show
 
 data ShroudMismatch = ShroudMismatch CardCode Name (Maybe Int) (Maybe Int)
-  deriving stock (Show)
+  deriving stock Show
 
 data ClueMismatch = ClueMismatch CardCode Name Int Int
-  deriving stock (Show)
+  deriving stock Show
 
 instance Exception UnknownCard
 instance Exception MissingImplementation
@@ -259,6 +261,7 @@ normalizeCardCode (CardCode c) =
     | c `elem` maskedCarnevaleGoers -> "82017b"
     | c `elem` cardsThatShouldNotHaveSuffix ->
         CardCode $ take (length c - 1) c
+    | "03325a" -> "03325b"
     | otherwise -> CardCode c
  where
   -- Masked Carnevale-Goer is treated as 1 card on adb
@@ -310,8 +313,12 @@ normalizeClassSymbol (Just Mythos) = Nothing
 normalizeClassSymbol c = c
 
 normalizeEnemyStats
-  :: CardCode -> (Maybe Int, Maybe GameValue, Maybe Int) -> (Maybe Int, Maybe GameValue, Maybe Int)
-normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (Static 3), evade) -- ADB incorrectly has this as 2 health
+  :: CardCode
+  -> (Maybe GameCalculation, Maybe GameCalculation, Maybe GameCalculation)
+  -> (Maybe GameCalculation, Maybe GameCalculation, Maybe GameCalculation)
+normalizeEnemyStats "05085" (fight, _, evade) = (fight, Just (GameValueCalculation $ Static 3), evade) -- ADB incorrectly has this as 2 health
+normalizeEnemyStats "08609" (fight, _, evade) = (fight, Just (GameValueCalculation $ Static 1), evade) -- We leave the health as 1 since it is the min
+normalizeEnemyStats "08679" _ = (Just (GameValueCalculation (PerPlayer 1)), Just (GameValueCalculation $ Static 3), Just (GameValueCalculation (PerPlayer 1))) -- ADB says fight and evade are 1
 normalizeEnemyStats _ stats = stats
 
 normalizeEnemyDamage :: CardCode -> (Int, Int) -> (Int, Int)
@@ -356,13 +363,13 @@ getValidationResults cards = runValidateT $ do
             for_ (cdRevealedName card) $ \revealedName ->
               when (Name (normalizeName code name) (normalizeSubname code subname) /= revealedName) do
                 unless (ignoreCardCode ccode) do
-                  invariant $
-                    NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) revealedName
+                  invariant
+                    $ NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) revealedName
           else do
             when (Name (normalizeName code name) (normalizeSubname code subname) /= cdName card) do
               unless (ignoreCardCode ccode) do
-                invariant $
-                  NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) (cdName card)
+                invariant
+                  $ NameMismatch code (Name (normalizeName code name) (normalizeSubname code subname)) (cdName card)
 
         -- Masked Carnevale-Goer is split up differently so we say the quantity is 1
         -- ideally we'd add them all up
@@ -387,8 +394,7 @@ getValidationResults cards = runValidateT $ do
           (invariant $ UniqueMismatch code (cdName card))
         when
           (xp /= cdLevel card)
-          ( invariant $ XpMismatch code (cdName card) xp (cdLevel card)
-          )
+          (invariant $ XpMismatch code (cdName card) xp (cdLevel card))
         when
           (normalizeCost code cost /= cdCost card)
           (invariant $ CardCostMismatch code (cdName card) cost (cdCost card))
@@ -406,8 +412,8 @@ getValidationResults cards = runValidateT $ do
               && type_code /= "story"
           )
           $ do
-            invariant $
-              ClassMismatch
+            invariant
+              $ ClassMismatch
                 code
                 (cdName card)
                 (faction_name : catMaybes [faction2_name, faction3_name])
@@ -417,8 +423,8 @@ getValidationResults cards = runValidateT $ do
               /= sort (replaceWildMinus $ cdSkills card)
               && cdCardType card /= InvestigatorType
           )
-          ( invariant $
-              SkillsMismatch
+          ( invariant
+              $ SkillsMismatch
                 code
                 (cdName card)
                 (getSkills cardJson)
@@ -432,8 +438,8 @@ getValidationResults cards = runValidateT $ do
           )
           ( unless
               (ignoreCardCode ccode)
-              ( invariant $
-                  TraitsMismatch
+              ( invariant
+                  $ TraitsMismatch
                     code
                     (cdName card)
                     (getTraits cardJson)
@@ -442,8 +448,8 @@ getValidationResults cards = runValidateT $ do
           )
         when
           (victory /= cdVictoryPoints card)
-          ( invariant $
-              VictoryMismatch
+          ( invariant
+              $ VictoryMismatch
                 code
                 (cdName card)
                 victory
@@ -451,8 +457,8 @@ getValidationResults cards = runValidateT $ do
           )
 
   -- validate enemies
-  for_ (mapToList allEnemies) $
-    \(ccode', SomeEnemyCard builder) -> do
+  for_ (mapToList allEnemies)
+    $ \(ccode', SomeEnemyCard builder) -> do
       let ccode = normalizeCardCode ccode'
       attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
       case lookup ccode cards of
@@ -460,52 +466,54 @@ getValidationResults cards = runValidateT $ do
         Just CardJson {..} -> do
           let
             cardStats =
-              normalizeEnemyStats ccode $
-                ( max 0 <$> enemy_fight
-                , toGameVal (fromMaybe False health_per_investigator) <$> health
-                , max 0 <$> enemy_evade
+              normalizeEnemyStats
+                ccode
+                ( Fixed . max 0 <$> enemy_fight
+                , GameValueCalculation . toGameVal (fromMaybe False health_per_investigator) <$> health
+                , Fixed . max 0 <$> enemy_evade
                 )
             enemyStats = (enemyFight attrs, enemyHealth attrs, enemyEvade attrs)
             cardDamage =
-              normalizeEnemyDamage ccode $
+              normalizeEnemyDamage
+                ccode
                 ( max 0 $ fromMaybe 0 enemy_damage
                 , max 0 $ fromMaybe 0 enemy_horror
                 )
             enemyDamage = (enemyHealthDamage attrs, enemySanityDamage attrs)
 
-          invariantWhen (cardStats /= enemyStats) $
-            EnemyStatsMismatch ccode (cdName $ toCardDef attrs) cardStats enemyStats
+          invariantWhen (cardStats /= enemyStats)
+            $ EnemyStatsMismatch ccode (cdName $ toCardDef attrs) cardStats enemyStats
 
-          invariantWhen (cardDamage /= enemyDamage) $
-            EnemyDamageMismatch ccode (cdName $ toCardDef attrs) cardDamage enemyDamage
+          invariantWhen (cardDamage /= enemyDamage)
+            $ EnemyDamageMismatch ccode (cdName $ toCardDef attrs) cardDamage enemyDamage
 
-  for_ (Enemies.allPlayerEnemyCards <> Enemies.allEncounterEnemyCards) $
-    \def -> do
+  for_ (Enemies.allPlayerEnemyCards <> Enemies.allEncounterEnemyCards)
+    $ \def -> do
       let mfunc = lookup (toCardCode def) allEnemies
       when
         (isNothing mfunc)
         (invariant $ MissingImplementation (toCardCode def) (cdName def))
 
   -- validate locations
-  for_ (mapToList allLocations) $
-    \(ccode, SomeLocationCard builder) -> do
+  for_ (mapToList allLocations)
+    $ \(ccode, SomeLocationCard builder) -> do
       attrs <- toAttrs . cbCardBuilder builder nullCardId <$> lift getRandom
       case lookup ccode cards of
         Nothing -> unless (ignoreCardCode ccode) (invariant $ unknownCard ccode)
         Just CardJson {..} -> do
           when
             ((max 0 <$> shroud) /= locationShroud attrs)
-            ( invariant $
-                ShroudMismatch
+            ( invariant
+                $ ShroudMismatch
                   code
                   (cdName $ toCardDef attrs)
-                  (max 0 <$> shroud)
+                  (max 0 <$> normalizeShroud ccode shroud)
                   (locationShroud attrs)
             )
           when
             (fromMaybe 0 clues /= fromGameValue (locationRevealClues attrs) 1)
-            ( invariant $
-                ClueMismatch
+            ( invariant
+                $ ClueMismatch
                   code
                   (cdName $ toCardDef attrs)
                   (fromMaybe 0 clues)
@@ -513,8 +521,8 @@ getValidationResults cards = runValidateT $ do
             )
 
   -- validate assets
-  for_ (mapToList allAssets) $
-    \(ccode', SomeAssetCard builder) -> do
+  for_ (mapToList allAssets)
+    $ \(ccode', SomeAssetCard builder) -> do
       attrs <-
         toAttrs . cbCardBuilder builder nullCardId <$> ((,Just "01001") <$> lift getRandom)
       let ccode = normalizeCardCode ccode'
@@ -530,8 +538,8 @@ getValidationResults cards = runValidateT $ do
             assetStats = (assetHealth attrs, assetSanity attrs)
           when
             (cardStats /= assetStats)
-            ( invariant $
-                AssetStatsMismatch
+            ( invariant
+                $ AssetStatsMismatch
                   code
                   (cdName $ toCardDef attrs)
                   cardStats
@@ -572,6 +580,10 @@ normalizeImageCardCode :: CardCode -> Text
 -- normalizeImageCardCode "02214" = "02214b"
 normalizeImageCardCode other = unCardCode other
 
+normalizeShroud :: CardCode -> Maybe Int -> Maybe Int
+normalizeShroud "08666" _ = Just 3
+normalizeShroud _  mshroud = mshroud
+
 replaceWildMinus :: [SkillIcon] -> [SkillIcon]
 replaceWildMinus = map $ \case
   WildMinusIcon -> WildIcon
@@ -610,8 +622,8 @@ runMissingImages = do
               </> "cards"
               </> filename
         exists <- doesFileExist filepath
-        pure $
-          if exists || ccode == "01000"
+        pure
+          $ if exists || ccode == "01000"
             then Nothing
             else Just (unCardCode ccode)
   traverse_ putStrLn (sort missing)

@@ -20,11 +20,12 @@ newtype DagonAwakenedAndEnragedIntoTheMaelstrom = DagonAwakenedAndEnragedIntoThe
 
 dagonAwakenedAndEnragedIntoTheMaelstrom :: EnemyCard DagonAwakenedAndEnragedIntoTheMaelstrom
 dagonAwakenedAndEnragedIntoTheMaelstrom =
-  enemy
+  enemyWith
     DagonAwakenedAndEnragedIntoTheMaelstrom
     Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
     (7, Static 1, 4)
     (1, 2)
+    (healthL .~ Nothing)
 
 instance HasModifiersFor DagonAwakenedAndEnragedIntoTheMaelstrom where
   getModifiersFor (DagonAwakenedAndEnragedIntoTheMaelstrom a) = do

@@ -15,7 +15,7 @@ newtype IchorLadenTunnels = IchorLadenTunnels LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ichorLadenTunnels :: LocationCard IchorLadenTunnels
-ichorLadenTunnels = location IchorLadenTunnels Cards.ichorLadenTunnels 0 (Static 0)
+ichorLadenTunnels = location IchorLadenTunnels Cards.ichorLadenTunnels 3 (Static 0)
 
 instance HasAbilities IchorLadenTunnels where
   getAbilities (IchorLadenTunnels a) =

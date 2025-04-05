@@ -261,7 +261,7 @@ hiddenPocket =
 
 hitAndRun :: CardDef
 hitAndRun =
-  (event "09066" "Sleight of Hand" 1 Rogue)
+  (event "09066" "Hit and Run" 1 Rogue)
     { cdSkills = [#combat, #agility]
     , cdCardTraits = setFromList [Tactic, Trick]
     , cdFastWindow = Just $ DuringTurn You
@@ -289,7 +289,7 @@ illTakeThat =
 
 kickingTheHornetsNest :: CardDef
 kickingTheHornetsNest =
-  (event "09068" "Kicking the Hornets Nest" 0 Rogue)
+  (event "09068" "Kicking the Hornet's Nest" 0 Rogue)
     { cdSkills = [#intellect, #combat]
     , cdCardTraits = setFromList [Gambit, Tactic]
     , cdCriteria = can.target.encounterDeck

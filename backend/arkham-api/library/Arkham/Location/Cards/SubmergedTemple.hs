@@ -16,7 +16,7 @@ newtype SubmergedTemple = SubmergedTemple LocationAttrs
 
 submergedTemple :: LocationCard SubmergedTemple
 submergedTemple =
-  locationWith SubmergedTemple Cards.submergedTemple 0 (PerPlayer 1)
+  locationWith SubmergedTemple Cards.submergedTemple 5 (PerPlayer 1)
     $ connectsToAdjacent
     . (floodLevelL ?~ FullyFlooded)
 

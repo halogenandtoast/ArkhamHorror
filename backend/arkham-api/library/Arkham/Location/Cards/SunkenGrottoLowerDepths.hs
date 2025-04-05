@@ -17,7 +17,7 @@ newtype SunkenGrottoLowerDepths = SunkenGrottoLowerDepths LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenGrottoLowerDepths :: LocationCard SunkenGrottoLowerDepths
-sunkenGrottoLowerDepths = location SunkenGrottoLowerDepths Cards.sunkenGrottoLowerDepths 0 (Static 0)
+sunkenGrottoLowerDepths = location SunkenGrottoLowerDepths Cards.sunkenGrottoLowerDepths 3 (Static 0)
 
 instance HasAbilities SunkenGrottoLowerDepths where
   getAbilities (SunkenGrottoLowerDepths a) =

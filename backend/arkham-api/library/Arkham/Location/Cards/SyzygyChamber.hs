@@ -16,7 +16,7 @@ newtype SyzygyChamber = SyzygyChamber LocationAttrs
 
 syzygyChamber :: LocationCard SyzygyChamber
 syzygyChamber =
-  locationWith SyzygyChamber Cards.syzygyChamber 0 (PerPlayer 1)
+  locationWith SyzygyChamber Cards.syzygyChamber 4 (PerPlayer 1)
     $ connectsToAdjacent
     . (floodLevelL ?~ FullyFlooded)
 

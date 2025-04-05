@@ -17,7 +17,7 @@ newtype OnyxGuardians = OnyxGuardians LocationAttrs
 
 onyxGuardians :: LocationCard OnyxGuardians
 onyxGuardians =
-  locationWith OnyxGuardians Cards.onyxGuardians 0 (PerPlayer 1)
+  locationWith OnyxGuardians Cards.onyxGuardians 2 (PerPlayer 1)
     $ connectsToAdjacent
     . (floodLevelL ?~ FullyFlooded)
 

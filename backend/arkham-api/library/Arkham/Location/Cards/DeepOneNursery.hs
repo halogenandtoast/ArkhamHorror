@@ -14,7 +14,7 @@ newtype DeepOneNursery = DeepOneNursery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 deepOneNursery :: LocationCard DeepOneNursery
-deepOneNursery = location DeepOneNursery Cards.deepOneNursery 0 (Static 0)
+deepOneNursery = location DeepOneNursery Cards.deepOneNursery 2 (Static 0)
 
 instance HasAbilities DeepOneNursery where
   getAbilities (DeepOneNursery a) =

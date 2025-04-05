@@ -12,7 +12,7 @@ newtype PumpRoom = PumpRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 pumpRoom :: LocationCard PumpRoom
-pumpRoom = location PumpRoom Cards.pumpRoom 0 (Static 0)
+pumpRoom = location PumpRoom Cards.pumpRoom 3 (Static 0)
 
 instance HasAbilities PumpRoom where
   getAbilities (PumpRoom attrs) =

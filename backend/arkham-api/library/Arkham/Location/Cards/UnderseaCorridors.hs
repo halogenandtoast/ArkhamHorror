@@ -16,7 +16,7 @@ newtype UnderseaCorridors = UnderseaCorridors LocationAttrs
 
 underseaCorridors :: LocationCard UnderseaCorridors
 underseaCorridors =
-  locationWith UnderseaCorridors Cards.underseaCorridors 0 (Static 0)
+  locationWith UnderseaCorridors Cards.underseaCorridors 6 (Static 0)
     $ connectsToAdjacent
     . (floodLevelL ?~ PartiallyFlooded)
 

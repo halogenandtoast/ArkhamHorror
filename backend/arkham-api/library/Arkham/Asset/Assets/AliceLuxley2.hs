@@ -14,7 +14,7 @@ newtype AliceLuxley2 = AliceLuxley2 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aliceLuxley2 :: AssetCard AliceLuxley2
-aliceLuxley2 = ally AliceLuxley2 Cards.aliceLuxley2 (2, 2)
+aliceLuxley2 = ally AliceLuxley2 Cards.aliceLuxley2 (2, 3)
 
 instance HasModifiersFor AliceLuxley2 where
   getModifiersFor (AliceLuxley2 a) = do

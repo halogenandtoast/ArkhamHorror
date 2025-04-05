@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.HeaddressOfYhaNthlei (
-  headdressOfYhaNthlei,
-  HeaddressOfYhaNthlei (..),
-)
-where
+module Arkham.Asset.Assets.HeaddressOfYhaNthlei (headdressOfYhaNthlei) where
 
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
@@ -16,7 +12,7 @@ newtype HeaddressOfYhaNthlei = HeaddressOfYhaNthlei AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 headdressOfYhaNthlei :: AssetCard HeaddressOfYhaNthlei
-headdressOfYhaNthlei = asset HeaddressOfYhaNthlei Cards.headdressOfYhaNthlei
+headdressOfYhaNthlei = assetWith HeaddressOfYhaNthlei Cards.headdressOfYhaNthlei ((healthL ?~ 1) . (sanityL ?~ 1))
 
 instance HasModifiersFor HeaddressOfYhaNthlei where
   getModifiersFor (HeaddressOfYhaNthlei a) = case a.controller of

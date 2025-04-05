@@ -261,7 +261,7 @@ normalizeCardCode (CardCode c) =
     | c `elem` maskedCarnevaleGoers -> "82017b"
     | c `elem` cardsThatShouldNotHaveSuffix ->
         CardCode $ take (length c - 1) c
-    | "03325a" -> "03325b"
+    | c == "03325a" -> "03325b"
     | otherwise -> CardCode c
  where
   -- Masked Carnevale-Goer is treated as 1 card on adb

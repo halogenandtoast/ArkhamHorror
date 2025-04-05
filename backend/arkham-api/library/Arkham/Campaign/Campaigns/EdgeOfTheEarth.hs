@@ -56,6 +56,7 @@ instance IsCampaign EdgeOfTheEarth where
     ToTheForbiddenPeaks -> Just (InterludeStep 2 Nothing)
     CityOfTheElderThings -> Just (InterludeStep 3 Nothing)
     TheHeartOfMadnessPart1 -> Just (UpgradeDeckStep $ CheckpointStep 3)
+    TheHeartOfMadnessPart2 -> Just EpilogueStep
     EpilogueStep -> Nothing
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
@@ -286,7 +287,7 @@ instance RunMessage EdgeOfTheEarth where
                         for_ injured \iid ->
                           portraitLabeled iid $ push $ HealTrauma iid 1 0
                         for_ damagedPartners \partner -> do
-                          cardLabeled partner $ push $ HealDamage (CardCodeTarget $ partner.cardCode) CampaignSource 1
+                          cardLabeled partner $ push $ HealDamage (CardCodeTarget partner.cardCode) CampaignSource 1
                       doStep (n - 1) msg'
                 else do
                   iids <- getInvestigators
@@ -406,7 +407,7 @@ instance RunMessage EdgeOfTheEarth where
                         for_ injured \iid ->
                           portraitLabeled iid $ push $ HealTrauma iid 0 1
                         for_ damagedPartners \partner -> do
-                          cardLabeled partner $ push $ HealHorror (CardCodeTarget $ partner.cardCode) CampaignSource 1
+                          cardLabeled partner $ push $ HealHorror (CardCodeTarget partner.cardCode) CampaignSource 1
                       doStep (n - 1) msg'
                 else do
                   iids <- getInvestigators
@@ -674,7 +675,7 @@ instance RunMessage EdgeOfTheEarth where
                           labeled "Do not perform healing" nothing
                           for_ injured \iid -> portraitLabeled iid $ push $ HealTrauma iid 0 1
                           for_ damagedPartners \partner -> do
-                            cardLabeled partner $ push $ HealHorror (CardCodeTarget $ partner.cardCode) CampaignSource 1
+                            cardLabeled partner $ push $ HealHorror (CardCodeTarget partner.cardCode) CampaignSource 1
                         doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -980,7 +981,7 @@ instance RunMessage EdgeOfTheEarth where
                           labeled "Do not perform healing" nothing
                           for_ injured \iid -> portraitLabeled iid $ push $ HealTrauma iid 0 1
                           for_ damagedPartners \partner -> do
-                            cardLabeled partner $ push $ HealHorror (CardCodeTarget $ partner.cardCode) CampaignSource 1
+                            cardLabeled partner $ push $ HealHorror (CardCodeTarget partner.cardCode) CampaignSource 1
                         doStep (n - 1) msg'
                 | not owned -> do
                     iids <- getInvestigators
@@ -1024,6 +1025,42 @@ instance RunMessage EdgeOfTheEarth where
       story $ i18nWithTitle "theOtherSide1"
       story $ i18nWithTitle "theOtherSide3"
       push $ NextCampaignStep $ Just TheHeartOfMadnessPart2
+      pure c
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      story $ i18nWithTitle "epilogue"
+      ellsworthIsAlive <- getPartnerIsAlive Assets.roaldEllsworthIntrepidExplorer
+      claypoolIsAlive <- getPartnerIsAlive Assets.averyClaypoolAntarcticGuide
+      when (ellsworthIsAlive && claypoolIsAlive) $ story $ i18n "ellsworthAndClaypool"
+
+      kenslerIsAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
+      sinhaIsAlive <- getPartnerIsAlive Assets.drMalaSinhaDaringPhysician
+      when (kenslerIsAlive && sinhaIsAlive) $ story $ i18n "kenslerAndSinha"
+
+      dyerIsAlive <- getPartnerIsAlive Assets.professorWilliamDyerProfessorOfGeology
+      danforthIsAlive <- getPartnerIsAlive Assets.danforthBrilliantStudent
+      when (dyerIsAlive && danforthIsAlive) $ story $ i18n "dyerAndDanforth"
+
+      takadaIsAlive <- getPartnerIsAlive Assets.takadaHirokoAeroplaneMechanic
+      cookieIsAlive <- getPartnerIsAlive Assets.jamesCookieFredericksDubiousChoice
+      when (cookieIsAlive && takadaIsAlive) $ story $ i18n "takadaAndCookie"
+
+      ashevakIsAlive <- getPartnerIsAlive Assets.eliyahAshevakDogHandler
+      when
+        ( not
+            ( ellsworthIsAlive
+                || claypoolIsAlive
+                || kenslerIsAlive
+                || sinhaIsAlive
+                || dyerIsAlive
+                || danforthIsAlive
+                || cookieIsAlive
+                || takadaIsAlive
+            )
+            && ashevakIsAlive
+        )
+        do
+          story $ i18n "ashevak"
+
       pure c
     SetPartnerStatus cCode status -> do
       pure $ EdgeOfTheEarth $ attrs & logL . partnersL . ix cCode . statusL .~ status

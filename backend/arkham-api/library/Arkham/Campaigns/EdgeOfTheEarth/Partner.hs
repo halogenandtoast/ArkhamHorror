@@ -122,7 +122,7 @@ getPartnerIsAlive x = (`elem` [Safe, Resolute]) <$> getPartnerStatus x
 getPartnerStatus :: (HasGame m, HasCardCode a) => a -> m PartnerStatus
 getPartnerStatus (toPartnerCode -> cardCode) = do
   partners <- view partnersL <$> getCampaignLog
-  pure $ fromJustNote "Not a valid partner" $ lookup cardCode partners <&> \partner -> partner.status
+  pure $ fromJustNote "Not a valid partner" $ (lookup cardCode partners <|> lookup (toResolute cardCode) partners) <&> \partner -> partner.status
 
 toPartnerCode :: (HasCallStack, HasCardCode a) => a -> CardCode
 toPartnerCode a = case toCardCode a of

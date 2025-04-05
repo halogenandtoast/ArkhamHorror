@@ -865,6 +865,7 @@ mesmericInfluence1 :: CardDef
 mesmericInfluence1 =
   (skill "10096" "Mesmeric Influence" [#willpower, #wild] Mystic)
     { cdCardTraits = setFromList [Practiced]
+    , cdLevel = Just 1
     }
 
 longShot :: CardDef
@@ -956,6 +957,7 @@ watchThis3 =
   (skill "11061" "\"Watch this!\"" [#wild, #wild, #wild] Rogue)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyYourTest]
+    , cdLevel = Just 3
     }
 
 enraptured2 :: CardDef
@@ -1000,6 +1002,7 @@ dreamsOfTheClay1 =
     { cdCardTraits = setFromList [Innate, Augury]
     , cdCommitRestrictions = [ OnlySkillTestSource (SourceIsTreacheryEffect AnyTreachery) ]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Clairvoyant, Dreamer, Performer]]
+    , cdLevel = Just 1
     }
 
 inquisitive1 :: CardDef
@@ -1007,6 +1010,7 @@ inquisitive1 =
   (skill "11101" "Inquisitive" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Assistant, Miskatonic, Scholar]]
+    , cdLevel = Just 1
     }
 
 doubleDown2 :: CardDef
@@ -1015,6 +1019,7 @@ doubleDown2 =
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Criminal, Entrepreneur, Socialite]]
+    , cdLevel = Just 2
     }
 
 memoriesOfAnotherLife5 :: CardDef
@@ -1022,6 +1027,7 @@ memoriesOfAnotherLife5 =
   (skill "11125" "Memories of Another Life" [#wild, #wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Believer, Dreamer, Sorcerer]]
+    , cdLevel = Just 5
     }
 
 riseToTheOccasion3 :: CardDef

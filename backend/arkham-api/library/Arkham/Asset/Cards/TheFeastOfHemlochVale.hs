@@ -539,6 +539,7 @@ brokenDiademCrownOfDyingLight5 =
     , cdLevel = Just 5
     , cdUnique = True
     , cdBondedWith = [(1, "10134")]
+    , cdSkills = [#wild]
     }
 
 twilightDiademCrownOfDyingLight :: CardDef

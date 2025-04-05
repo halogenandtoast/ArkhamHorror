@@ -66,7 +66,7 @@ remingtonModel1858 =
 aliceLuxley2 :: CardDef
 aliceLuxley2 =
   (asset "11027" ("Alice Luxley" <:> "Fearless Flatfoot") 4 Guardian)
-    { cdSkills = [#intellect]
+    { cdSkills = [#intellect, #intellect]
     , cdCardTraits = setFromList [Ally, Detective, Police]
     , cdSlots = [#ally]
     , cdUnique = True

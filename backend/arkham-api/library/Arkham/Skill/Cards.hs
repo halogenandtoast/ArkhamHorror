@@ -927,7 +927,7 @@ hardboiled =
 inspiringPresence2 :: CardDef
 inspiringPresence2 =
   (skill "11029" "Inspiring Presence" [#willpower, #intellect, #combat, #wild] Guardian)
-    { cdCardTraits = singleton Innate
+    { cdCardTraits = setFromList [Developed, Innate]
     , cdLevel = Just 2
     }
 

@@ -7,7 +7,8 @@ import Arkham.Prelude
 import Data.Aeson.TH
 
 data CampaignOption
-  = -- | Night of the Zealot
+  = PerformIntro
+  | -- | Night of the Zealot
     AddLitaChantler
   | -- | The Dunwich Legacy
     Cheated
@@ -34,6 +35,7 @@ data CampaignOption
   | AddMineralSpecimen
   | AddSmallRadio
   | AddSpareParts
+  | IncludePartners
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

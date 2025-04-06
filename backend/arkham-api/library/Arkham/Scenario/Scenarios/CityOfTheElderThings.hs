@@ -9,7 +9,7 @@ import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
-import Arkham.Card.CardDef
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
@@ -24,9 +24,11 @@ import Arkham.Key
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveAllTo, moveTowardsMatching)
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -39,13 +41,7 @@ newtype CityOfTheElderThings = CityOfTheElderThings ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfTheElderThings :: Difficulty -> CityOfTheElderThings
-cityOfTheElderThings difficulty =
-  scenario
-    CityOfTheElderThings
-    "08621"
-    "City of the Elder Things"
-    difficulty
-    []
+cityOfTheElderThings difficulty = scenario CityOfTheElderThings "08621" "City of the Elder Things" difficulty []
 
 instance HasChaosTokenValue CityOfTheElderThings where
   getChaosTokenValue iid tokenFace (CityOfTheElderThings attrs) = case tokenFace of
@@ -121,20 +117,26 @@ allKeys = do
 instance RunMessage CityOfTheElderThings where
   runMessage msg s@(CityOfTheElderThings attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
-      setChaosTokens (chaosBagContents attrs.difficulty)
+      setChaosTokens (#elderthing : chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
       isStandalone <- getIsStandalone
       if isStandalone
         then do
-          lead <- getLead
-          chooseOneM lead do
-            labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
-            labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
-            labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
-          eachInvestigator (`forInvestigator` PreScenarioSetup)
-          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
-          pure $ CityOfTheElderThings $ foldl' (flip addPartner) attrs expeditionTeam
+          if attrs.hasOption PerformIntro
+            then doStep 0 msg
+            else do
+              lead <- getLead
+              chooseOneM lead do
+                labeled "Proceed to _Setup (v. I)_" $ doStep 1 PreScenarioSetup
+                labeled "Proceed to _Setup (v. II)_" $ doStep 2 PreScenarioSetup
+                labeled "Proceed to _Setup (v. III)_" $ doStep 3 PreScenarioSetup
+          if attrs.hasOption IncludePartners
+            then do
+              eachInvestigator (`forInvestigator` PreScenarioSetup)
+              let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+              pure $ CityOfTheElderThings $ foldl' (flip addPartner) attrs expeditionTeam
+            else pure s
         else do
           doStep 0 msg
           pure s
@@ -244,6 +246,14 @@ instance RunMessage CityOfTheElderThings where
             inPlay <- selectAny $ assetIs partner.cardCode
             unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
+      for_ (lookupCardDef cardCode) \def -> do
+        card <- genCard def
+        assetId <- createAssetAt card (InPlayArea iid)
+        partner <- getPartner cardCode
+        pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
+        pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg
@@ -417,6 +427,8 @@ instance RunMessage CityOfTheElderThings where
           AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
           AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
           AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
+          PerformIntro -> pure ()
+          IncludePartners -> pure ()
           _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

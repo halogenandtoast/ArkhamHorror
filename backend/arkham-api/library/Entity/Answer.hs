@@ -76,6 +76,7 @@ data StandaloneSetting
   | ChooseNum CampaignLogKey Int
   | NoChooseRecord
   | StandaloneSetPartnerStatus Int Int PartnerStatus CardCode
+  | SettingsGroup [StandaloneSetting]
   deriving stock Show
 
 data SetRecordedEntry
@@ -95,6 +96,7 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
   applySetting cl (SetOption _ False) = cl
   applySetting cl (StandaloneSetPartnerStatus dmg hrr status cCode) = setCampaignLogPartnerStatus dmg hrr status cCode cl
+  applySetting c1 (SettingsGroup xs) = foldl' applySetting c1 xs
   applySetting cl (SetRecorded k rt vs) = case rt of
     (SomeRecordableType RecordableCardCode) ->
       let entries = mapMaybe (toEntry @CardCode) vs
@@ -136,6 +138,7 @@ instance FromJSON StandaloneSetting where
         pure $ SetRecorded k rt v
       "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
       "ChooseNum" -> ChooseNum <$> o .: "key" <*> o .: "content"
+      "Group" -> SettingsGroup <$> o .: "content"
       "SetPartnerKilled" -> StandaloneSetPartnerStatus 0 0 Eliminated <$> o .: "content"
       "SetPartnerDetails" -> do
         details :: PartnerDetailsResponse <- o .: "content"

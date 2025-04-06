@@ -342,9 +342,7 @@ defaultCampaignRunner msg a = case msg of
       $ updateAttrs a
       $ \attrs ->
         attrs & (stepL %~ maybe id const mstep) & (completedStepsL %~ completeStep (campaignStep attrs))
-  SetCampaignLog newLog -> do
-    pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
-    pure $ updateAttrs a $ logL .~ newLog
+  SetCampaignLog newLog -> pure $ updateAttrs a $ logL .~ newLog
   SpendXP iid n -> do
     runMessage
       (ReportXp $ XpBreakdown [InvestigatorLoseXp iid $ XpDetail XpFromCardEffect "Spent Xp" n])

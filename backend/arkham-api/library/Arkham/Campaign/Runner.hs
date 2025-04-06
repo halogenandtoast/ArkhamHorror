@@ -179,7 +179,11 @@ defaultCampaignRunner msg a = case msg of
     -- We remove the random weakness if the upgrade deck still has it listed
     -- since this will have been added at the beginning of the campaign
     let deck' = Deck $ filter ((/= "01000") . toCardCode) $ unDeck deck
-    pushAll $ purchaseTrauma <> toList mEldritchBrand <> [DoStep 1 (UpgradeDeck iid mUrl oldDeck)] <> initXp
+    pushAll
+      $ purchaseTrauma
+      <> toList mEldritchBrand
+      <> [DoStep 1 (UpgradeDeck iid mUrl oldDeck)]
+      <> initXp
     pure $ updateAttrs a $ decksL %~ insertMap iid deck'
   DoStep 1 (UpgradeDeck iid _ oldDeck) -> do
     -- we have lost the old deck data, so we swap in the message
@@ -327,7 +331,10 @@ defaultCampaignRunner msg a = case msg of
       $ decksL
       %~ adjustMap (withDeck (pc {pcOwner = Just iid} :)) iid
   RemoveCardFromDeckForCampaign iid cardId ->
-    pure $ updateAttrs a $ decksL %~ adjustMap (withDeck (filter ((/= cardId) . toCardId))) iid
+    pure
+      $ updateAttrs a
+      $ (decksL %~ adjustMap (withDeck (filter ((/= cardId) . toCardId))) iid)
+      . (storyCardsL %~ Map.map (filter ((/= cardId) . toCardId)))
   NextCampaignStep mOverrideStep -> do
     let mstep = mOverrideStep <|> nextStep a
     push $ maybe GameOver CampaignStep mstep

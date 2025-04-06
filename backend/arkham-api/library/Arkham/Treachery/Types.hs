@@ -99,6 +99,9 @@ instance AsId TreacheryAttrs where
 instance HasField "id" TreacheryAttrs TreacheryId where
   getField = treacheryId
 
+instance HasField "card" TreacheryAttrs Card where
+  getField = toCard
+
 instance HasField "exhausted" TreacheryAttrs Bool where
   getField = treacheryExhausted
 

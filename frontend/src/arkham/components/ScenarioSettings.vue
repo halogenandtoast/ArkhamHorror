@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import { formatKey } from '@/arkham/types/Log';
+import { useI18n } from 'vue-i18n';
 import { watch, ref, computed } from 'vue'
-import scenarioJSON from '@/arkham/data/scenarios.json'
+import scenarioJSON from '@/arkham/data/scenarios'
 import {toCapitalizedWords} from '@/arkham/helpers'
 import {updateStandaloneSettings} from '@/arkham/api'
 import { Game } from '../types/Game'
-import { Scenario } from '../types/Scenario'
+import { Scenario, scenarioToKeyI18n } from '../types/Scenario'
 import { StandaloneSetting, RecordedContent, SettingCondition } from '../types/StandaloneSetting'
 
 const props = defineProps<{
@@ -13,6 +15,7 @@ const props = defineProps<{
   playerId: string
 }>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
+const { t } = useI18n()
 
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
@@ -69,7 +72,17 @@ const inactive = (cond: SettingCondition): boolean => {
     return inactive(cond.content)
   }
 
-  throw new Error(`Unknown condition type ${cond}`)
+  if (cond.type === 'option') {
+    const k = standaloneSettings.value.find((s) => s.key === cond.key)
+    if (!k) return false
+    if (k.type === 'ToggleOption') {
+      return !k.content
+    }
+
+    return false
+  }
+
+  throw new Error(`Unknown condition type ${JSON.stringify(cond)}`)
 }
 
 const optionActive = (entry: RecordedContent) => {
@@ -91,6 +104,11 @@ const activeSettings = computed(() => {
     return true
   })
 })
+
+const displayKey = (key: string) => {
+  const prefix = scenarioToKeyI18n(props.scenario)
+  return t(formatKey({tag: prefix, contents: key}))
+}
 </script>
 
 <template>
@@ -126,18 +144,21 @@ const activeSettings = computed(() => {
         <input type="checkbox" v-model="setting.content" :id="setting.key"/>
         <label :for="setting.key"> {{toCapitalizedWords(setting.key)}}</label>
       </div>
-      <div v-else-if="setting.type === 'PickKey'" class="options">
-        <template v-for="key in setting.keys" :key="`${setting.key}${key}`">
-          <input
-            type="radio"
-            v-model="setting.content"
-            :value="key"
-            :name="setting.key"
-            :id="`${setting.key}${key}`"
-            :checked="key === setting.content"
-          />
-          <label :for="`${setting.key}${key}`"> {{toCapitalizedWords(key)}}</label>
-        </template>
+      <div v-else-if="setting.type === 'PickKey'">
+        <h3 v-if="setting.content">{{toCapitalizedWords(setting.key)}}</h3>
+        <div class="options">
+          <template v-for="key in setting.keys" :key="`${setting.key}${key}`">
+            <input
+              type="radio"
+              v-model="setting.content"
+              :value="key"
+              :name="setting.key"
+              :id="`${setting.key}${key}`"
+              :checked="key === setting.content"
+            />
+            <label :for="`${setting.key}${key}`">{{displayKey(key)}}</label>
+          </template>
+        </div>
       </div>
       <div v-else-if="setting.type === 'ToggleCrossedOut'">
         {{toCapitalizedWords(setting.key)}}
@@ -172,6 +193,24 @@ const activeSettings = computed(() => {
           </template>
         </div>
       </div>
+      <div v-else-if="setting.type === 'SetPartnerKilled'" class="options">
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08720"
+          :id="`${setting.key}-kensler`"
+          :checked="setting.content === 'kensler'"
+        />
+        <label :for="`${setting.key}-kensler`">Dr. Amy Kensler</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08715"
+          :id="`${setting.key}-danforth`"
+          :checked="setting.content === 'danforth'"
+        />
+        <label :for="`${setting.key}-danforth`">Danforth</label>
+      </div>
     </div>
     <button @click="submit">Begin</button>
   </div>
@@ -189,7 +228,10 @@ const activeSettings = computed(() => {
   border-radius: 5px;
   font-size: 1.5em;
   color: #B6B6B6;
-  box-shadow: 1px 1px 6px rgba(15,17,23,0.45)
+  box-shadow: 1px 1px 6px rgba(15,17,23,0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 h2 {
@@ -197,6 +239,7 @@ h2 {
   margin: 0;
   text-transform: uppercase;
   font-family: Teutonic;
+  font-size: 1.5em;
 }
 
 button {
@@ -210,14 +253,12 @@ button {
 
 .options {
   display: flex;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
   label {
     flex: 1;
+    min-width: fit-content;
     text-align: center;
-    margin-left: 10px;
-    &:nth-of-type(1) {
-      margin-left: 0;
-    }
   }
 }
 

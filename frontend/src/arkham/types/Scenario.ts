@@ -177,6 +177,11 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
 
 }, 'Scenario');
 
+export function scenarioToKeyI18n(scenario: Scenario): string {
+  const full = scenarioToI18n(scenario);
+  return full.split('.')[0] || "base"
+}
+
 export function scenarioToI18n(scenario: Scenario): string {
   switch (scenario.id) {
     case "c01104": return "nightOfTheZealot.theGathering"

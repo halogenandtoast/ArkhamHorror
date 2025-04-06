@@ -67,3 +67,8 @@ export type StandaloneSetting
       content: number,
       ifRecorded?: SettingCondition[]
     }
+  | {
+      type: "SetPartnerKilled",
+      content: string | null,
+      ifRecorded?: SettingCondition[]
+    }

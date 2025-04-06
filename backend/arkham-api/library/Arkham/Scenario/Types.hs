@@ -8,6 +8,7 @@ module Arkham.Scenario.Types (
 
 import Arkham.Prelude
 
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.ChaosBag.Base
@@ -145,6 +146,12 @@ instance AsId ScenarioAttrs where
 
 instance HasField "id" ScenarioAttrs ScenarioId where
   getField = scenarioId
+
+instance HasField "standaloneCampaignLog" ScenarioAttrs CampaignLog where
+  getField = scenarioStandaloneCampaignLog
+
+instance HasField "hasOption" ScenarioAttrs (CampaignOption -> Bool) where
+  getField s k = k `member` s.standaloneCampaignLog.options
 
 instance HasField "discard" ScenarioAttrs [EncounterCard] where
   getField = scenarioDiscard

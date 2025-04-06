@@ -2,12 +2,15 @@ module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1 (theHeartOfMadnessPart1)
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
@@ -47,7 +50,12 @@ instance HasChaosTokenValue TheHeartOfMadnessPart1 where
 instance RunMessage TheHeartOfMadnessPart1 where
   runMessage msg s@(TheHeartOfMadnessPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "part1Intro"
+      isStandalone <- getIsStandalone
+      when (not isStandalone || attrs.hasOption PerformIntro) do
+        story $ i18nWithTitle "part1Intro"
+      pure s
+    StandaloneSetup -> do
+      setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
       gather Set.TheHeartOfMadness
@@ -149,5 +157,20 @@ instance RunMessage TheHeartOfMadnessPart1 where
           eachInvestigator (kill attrs)
           gameOver
         _ -> throwIO $ UnknownResolution resolution
+      pure s
+    HandleOption option -> do
+      investigators <- allInvestigators
+      whenM getIsStandalone $ do
+        case option of
+          AddGreenSoapstone -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.greenSoapstoneJinxedIdol
+          AddWoodenSledge -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.woodenSledge
+          AddDynamite -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.dynamite
+          AddMiasmicCrystal -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.miasmicCrystalStrangeEvidence
+          AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
+          AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
+          AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
+          PerformIntro -> pure ()
+          IncludePartners -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheHeartOfMadnessPart1 <$> liftRunMessage msg attrs

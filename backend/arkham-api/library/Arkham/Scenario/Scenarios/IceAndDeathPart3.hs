@@ -2,6 +2,8 @@ module Arkham.Scenario.Scenarios.IceAndDeathPart3 (iceAndDeathPart3) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
+import Arkham.Campaign.Option
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Capability
@@ -27,6 +29,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Eidolon))
+import Data.Map.Strict qualified as Map
 
 newtype IceAndDeathPart3 = IceAndDeathPart3 ScenarioAttrs
   deriving anyclass IsScenario
@@ -61,12 +64,26 @@ instance HasChaosTokenValue IceAndDeathPart3 where
 instance RunMessage IceAndDeathPart3 where
   runMessage msg s@(IceAndDeathPart3 attrs) = runQueueT $ scenarioI18n 3 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
-      whenM hasRemainingFrostTokens $ addChaosToken #frost
-      sv <- fromMaybe 0 <$> getCurrentShelterValue
-      story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
-      eachInvestigator (`forInvestigator` PreScenarioSetup)
+      -- We might not have a camp yet if we're playing a standalone
+      mCamp <- getCamp
+      when (isNothing mCamp) do
+        for_ (nonEmpty $ Map.elems camps) (sample >=> record)
+      doStep 0 msg
       pure s
+    DoStep 0 PreScenarioSetup -> do
+      isStandalone <- getIsStandalone
+      when (not isStandalone || attrs.hasOption PerformIntro) do
+        story $ i18nWithTitle "intro"
+        whenM hasRemainingFrostTokens $ addChaosToken #frost
+        sv <- fromMaybe 0 <$> getCurrentShelterValue
+        story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
+        eachInvestigator (`forInvestigator` PreScenarioSetup)
+      if attrs.hasOption IncludePartners
+        then do
+          eachInvestigator (`forInvestigator` PreScenarioSetup)
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          pure $ IceAndDeathPart3 $ foldl' (flip addPartner) attrs expeditionTeam
+        else pure s
     ForInvestigator iid PreScenarioSetup -> do
       getCurrentShelterValue >>= traverse_ \sv -> do
         setupModifier ScenarioSource iid (BaseStartingResources sv)
@@ -87,6 +104,10 @@ instance RunMessage IceAndDeathPart3 where
         partner <- getPartner cardCode
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+      pure s
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      eachInvestigator \iid -> gameModifier ScenarioSource iid (CannotTakeAction $ IsAction #resign)
       pure s
     Setup -> runScenarioSetup IceAndDeathPart3 attrs do
       gather Set.IceAndDeath
@@ -237,5 +258,13 @@ instance RunMessage IceAndDeathPart3 where
           record TheTeamFledToTheMountains
           endOfScenario
         _ -> error "Unknown resolution"
+      pure s
+    HandleOption option -> do
+      whenM getIsStandalone do
+        case option of
+          ManuallyPickCamp -> pure ()
+          PerformIntro -> pure ()
+          IncludePartners -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> IceAndDeathPart3 <$> liftRunMessage msg attrs

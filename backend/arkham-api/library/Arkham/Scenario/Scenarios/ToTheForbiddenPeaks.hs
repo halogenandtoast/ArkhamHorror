@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.ToTheForbiddenPeaks (toTheForbiddenPeaks) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
@@ -78,18 +79,13 @@ instance RunMessage ToTheForbiddenPeaks where
   runMessage msg s@(ToTheForbiddenPeaks attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       isStandalone <- getIsStandalone
-      doStep 0 msg
-      if isStandalone
+      when (not isStandalone || attrs.hasOption PerformIntro) (doStep 0 msg)
+      if attrs.hasOption IncludePartners
         then do
-          let addPartner partner =
-                standaloneCampaignLogL
-                  . partnersL
-                  . at partner.cardCode
-                  %~ Just
-                  . fromMaybe (CampaignLogPartner 0 0 Safe)
+          eachInvestigator (`forInvestigator` PreScenarioSetup)
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
           pure $ ToTheForbiddenPeaks $ foldl' (flip addPartner) attrs expeditionTeam
-        else do
-          pure s
+        else pure s
     DoStep 0 PreScenarioSetup -> do
       story $ i18nWithTitle "intro1"
 
@@ -271,5 +267,12 @@ instance RunMessage ToTheForbiddenPeaks where
           crossOutRecordSetEntries SuppliesRecovered $ map toJSON [GreenSoapstone ..]
           endOfScenario
         _ -> throwIO $ UnknownResolution resolution
+      pure s
+    HandleOption option -> do
+      whenM getIsStandalone do
+        case option of
+          PerformIntro -> pure ()
+          IncludePartners -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> ToTheForbiddenPeaks <$> liftRunMessage msg attrs

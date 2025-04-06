@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2 (theHeartOfMadnessPart2)
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
@@ -72,6 +73,25 @@ randomizeLocations = go =<< shuffleM (base <> pylons)
 
 instance RunMessage TheHeartOfMadnessPart2 where
   runMessage msg s@(TheHeartOfMadnessPart2 attrs) = runQueueT $ scenarioI18n 2 $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
+      lead <- getLead
+      chooseOneM lead do
+        questionLabeled "The investigators may choose how many seals they have:"
+        labeled "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”" (doStep 1 msg)
+        labeled "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used." (doStep 2 msg)
+        labeled "For a harder experience, one random seal is “Placed,” and the other four are not used." (doStep 3 msg)
+        labeled "For a nightmarish experience, no seals are used." nothing
+      pure s
+    DoStep n StandaloneSetup -> do
+      (placed, recovered) <- case n of
+        1 -> splitAt 3 <$> shuffleM [minBound..]
+        2 -> splitAt 2 . take 3 <$> shuffleM [minBound..]
+        3 -> (, []) . take 1 <$> shuffleM [minBound..]
+        _ -> pure ([], [])
+      unless (null placed) $ recordSetInsert SealsPlaced (map toJSON placed)
+      unless (null recovered) $ recordSetInsert SealsRecovered (map toJSON recovered)
+      pure s
     PreScenarioSetup -> do
       kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
       understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
@@ -216,5 +236,20 @@ instance RunMessage TheHeartOfMadnessPart2 where
           eachInvestigator (`sufferMentalTrauma` 2)
           endOfScenario
         _ -> throwIO $ UnknownResolution resolution
+      pure s
+    HandleOption option -> do
+      investigators <- allInvestigators
+      whenM getIsStandalone $ do
+        case option of
+          AddGreenSoapstone -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.greenSoapstoneJinxedIdol
+          AddWoodenSledge -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.woodenSledge
+          AddDynamite -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.dynamite
+          AddMiasmicCrystal -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.miasmicCrystalStrangeEvidence
+          AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
+          AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
+          AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
+          PerformIntro -> pure ()
+          IncludePartners -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> TheHeartOfMadnessPart2 <$> liftRunMessage msg attrs

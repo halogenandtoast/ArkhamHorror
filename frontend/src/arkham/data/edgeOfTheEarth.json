@@ -1,0 +1,71 @@
+[
+  {
+      "id": "08501a",
+      "name": "Ice and Death, Part I",
+      "campaign": "08"
+  },
+  {
+      "id": "08501b",
+      "name": "Ice and Death, Part II",
+      "campaign": "08",
+      "settings": [
+        { "type": "ToggleOption", "key": "ManuallyPickCamp", "content": false },
+        { "type": "PickKey",
+          "ifRecorded": [{ "type": "option", "key": "ManuallyPickCamp" }],
+          "content": "Camp Location",
+          "key": "Camp",
+          "keys": [
+            "Camp_CrystallineCavern",
+            "Camp_BarrierCamp",
+            "Camp_RemnantsOfLakesCamp",
+            "Camp_FrigidCave",
+            "Camp_IcebreakerLanding",
+            "Camp_SnowGraves",
+            "Camp_BroadSnowdrifts",
+            "Camp_IcyWastes",
+            "Camp_RockyCrags",
+            "Camp_FrozenShores",
+            "Camp_PrecariousIceSheet",
+            "Camp_TreacherousPath",
+            "Camp_CrashSite"
+          ]
+        },
+        { "type": "ToggleOption", "key": "ManuallyPickKilledInPlaneCrash", "content": false },
+        { "type": "SetPartnerKilled",
+          "key": "KilledInPlaneCrash",
+          "ifRecorded": [{ "type": "option", "key": "ManuallyPickKilledInPlaneCrash" }],
+          "content": null
+        }
+      ]
+  },
+  {
+      "id": "08501c",
+      "name": "Ice and Death, Part III",
+      "campaign": "08"
+  },
+  {
+      "id": "08549",
+      "name": "Fatal Mirage",
+      "campaign": "08"
+  },
+  {
+      "id": "08596",
+      "name": "To the Forbidden Peaks",
+      "campaign": "08"
+  },
+  {
+      "id": "08621",
+      "name": "City of the Elder Things",
+      "campaign": "08"
+  },
+  {
+      "id": "08648a",
+      "name": "The Heart of Madness, Part I",
+      "campaign": "08"
+  },
+  {
+      "id": "08648b",
+      "name": "The Heart of Madness, Part II",
+      "campaign": "08"
+  }
+]

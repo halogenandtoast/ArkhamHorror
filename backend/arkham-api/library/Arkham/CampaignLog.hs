@@ -40,6 +40,9 @@ data CampaignLog = CampaignLog
   }
   deriving stock (Show, Generic, Eq, Data)
 
+instance HasField "options" CampaignLog (Set CampaignOption) where
+  getField = campaignLogOptions
+
 instance HasField "recorded" CampaignLog (Set CampaignLogKey) where
   getField = campaignLogRecorded
 
@@ -116,3 +119,6 @@ setCampaignLogRecordedCount key n = recordedCountsL %~ insertMap key n
 
 setCampaignLogOption :: CampaignOption -> CampaignLog -> CampaignLog
 setCampaignLogOption key = optionsL %~ insertSet key
+
+setCampaignLogPartnerStatus :: PartnerStatus -> CardCode -> CampaignLog -> CampaignLog
+setCampaignLogPartnerStatus status cCode = partnersL . at cCode ?~ CampaignLogPartner 0 0 status

@@ -130,6 +130,9 @@ instance RunMessage IceAndDeathPart1 where
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      pure s
     Setup -> runScenarioSetup IceAndDeathPart1 attrs do
       scope "setup" $ story $ flavorText $ ul do
         li "gatherSets"

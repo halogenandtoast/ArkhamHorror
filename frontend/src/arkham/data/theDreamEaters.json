@@ -1,0 +1,52 @@
+[
+  {
+    "id": "06039",
+    "name": "Beyond the Gates of Sleep",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06063",
+    "name": "Waking Nightmare",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06119",
+    "name": "The Search for Kadath",
+    "campaign": "06",
+    "settings": [
+      { "key": "TheInvestigatorsParleyedWithTheZoogs", "type": "ToggleKey", "content": false }
+    ]
+  },
+  {
+    "id": "06168",
+    "name": "A Thousand Shapes of Horror",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06206",
+    "name": "Dark Side of the Moon",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06247",
+    "name": "Point of No Return",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06286",
+    "name": "Where the Gods Dwell",
+    "campaign": "06",
+    "settings": []
+  },
+  {
+    "id": "06333",
+    "name": "Weaver of the Cosmos",
+    "campaign": "06",
+    "settings": []
+  }
+]

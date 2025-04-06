@@ -1,0 +1,140 @@
+[
+  { "id": "05043", "name": "Disappearance at the Twilight Estate", "campaign": "05" },
+  { "id": "05050", "name": "The Witching Hour", "campaign": "05" },
+  { "id": "05065", "name": "At Death's Doorstep", "campaign": "05" },
+  { "id": "05120", "name": "The Secret Name", "campaign": "05" },
+  { "id": "05161", "name": "The Wages of Sin", "campaign": "05" },
+  { "id": "05197", "name": "For the Greater Good", "campaign": "05" },
+  {
+    "id": "05238",
+    "name": "Union and Disillusion",
+    "campaign": "05",
+    "settings": [
+      { "key": "MissingPersons", "recordable": "RecordableCardCode", "type": "ToggleCrossedOut", "content": [
+        { "label": "Gaveriella Mizrah", "key": "05046", "content": true },
+        { "label": "Jerome Davids", "key": "05047", "content": true },
+        { "label": "Valentino Rivas", "key": "05048", "content": true },
+        { "label": "Penny White", "key": "05049", "content": true }
+      ] },
+      {
+        "type": "ChooseRecord",
+        "recordable": "RecordableCardCode",
+        "label": "Gavriella Mizrah",
+        "key": "05046",
+        "selected": null,
+        "content": [
+          {"key": "WasTakenByTheWatcher"},
+          {"key": "WasClaimedBySpecters"},
+          {"key": "DisappearedIntoTheMist"},
+          {"key": "WasPulledIntoTheSpectralRealm"}
+        ],
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05046" }
+        ]
+      },
+      {
+        "key": "TheInvestigatorsAreOnGavriella'sTrail",
+        "type": "ToggleKey",
+        "content": false,
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05046" }
+        ]
+      },
+      {
+        "type": "ChooseRecord",
+        "recordable": "RecordableCardCode",
+        "label": "Jerome Davids",
+        "key": "05047",
+        "selected": null,
+        "content": [
+          {"key": "WasTakenByTheWatcher"},
+          {"key": "WasClaimedBySpecters"},
+          {"key": "DisappearedIntoTheMist"},
+          {"key": "WasPulledIntoTheSpectralRealm"}
+        ],
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05047" }
+        ]
+      },
+      {
+        "key": "TheInvestigatorsAreOnJerome'sTrail",
+        "type": "ToggleKey",
+        "content": false,
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05047" }
+        ]
+      },
+      {
+        "type": "ChooseRecord",
+        "recordable": "RecordableCardCode",
+        "label": "Valentino Rivas",
+        "key": "05048",
+        "selected": null,
+        "content": [
+          {"key": "WasTakenByTheWatcher"},
+          {"key": "WasClaimedBySpecters"},
+          {"key": "DisappearedIntoTheMist"},
+          {"key": "WasPulledIntoTheSpectralRealm"}
+        ],
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05048" }
+        ]
+      },
+      {
+        "key": "TheInvestigatorsAreOnValentino'sTrail",
+        "type": "ToggleKey",
+        "content": false,
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05048" }
+        ]
+      },
+      {
+        "type": "ChooseRecord",
+        "recordable": "RecordableCardCode",
+        "label": "Penny White",
+        "key": "05049",
+        "selected": null,
+        "content": [
+          {"key": "WasTakenByTheWatcher"},
+          {"key": "WasClaimedBySpecters"},
+          {"key": "DisappearedIntoTheMist"},
+          {"key": "WasPulledIntoTheSpectralRealm"}
+        ],
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05049" }
+        ]
+      },
+      { "key": "TheInvestigatorsWereInductedIntoTheInnerCircle", "type": "ToggleKey", "content": false },
+      { "key": "TheInvestigatorsAreDeceivingTheLodge", "type": "ToggleKey", "content": false },
+      { "key": "JosefIsAliveAndWell", "type": "ToggleKey", "content": true },
+      { "key": "TheWitches'SpellWasCast", "type": "ToggleKey", "content": false },
+      {
+        "key": "TheInvestigatorsAreOnPenny'sTrail",
+        "type": "ToggleKey",
+        "content": false,
+        "ifRecorded": [
+          {"type": "inSet", "key": "MissingPersons", "content": "05049" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "05284",
+    "name": "In the Clutches of Chaos",
+    "campaign": "05",
+    "settings": []
+  },
+  {
+    "id": "05325",
+    "name": "Before the Black Throne",
+    "campaign": "05",
+    "settings": [
+        {
+          "key": "ThePathWindsBeforeYou",
+          "type": "ChooseNum",
+          "max": 6,
+          "content": 0
+        }
+    ]
+  }
+]

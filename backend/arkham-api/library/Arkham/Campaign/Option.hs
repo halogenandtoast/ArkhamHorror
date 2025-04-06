@@ -24,6 +24,9 @@ data CampaignOption
   | TakePuzzleBox
   | ProceedToInterlude3
   | DebugOption
+  | -- | The Edge of the Earth
+    ManuallyPickCamp
+  | ManuallyPickKilledInPlaneCrash
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

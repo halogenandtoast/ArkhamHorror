@@ -19,6 +19,7 @@ import Arkham.GameValue
 import Arkham.Helpers
 import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.ChaosBag
+import {-# SOURCE #-} Arkham.Helpers.Criteria
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
 import Arkham.Id
@@ -145,12 +146,15 @@ damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
 damageValueFor baseValue iid damageFor = do
   modifiers <- getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
-  pure $ foldr applyModifier baseValue' modifiers
+  foldrM applyModifier baseValue' modifiers
  where
-  applyModifier (DamageDealt m) n = max 0 (n + m)
-  applyModifier (DamageDealtToInvestigator m) n | damageFor == DamageForInvestigator = max 0 (n + m)
-  applyModifier NoDamageDealt _ = 0
-  applyModifier _ n = n
+  applyModifier (DamageDealt m) n = pure $ max 0 (n + m)
+  applyModifier (CriteriaModifier c (DamageDealt m)) n = do
+    passes <- passesCriteria iid Nothing GameSource GameSource [] c
+    pure $ max 0 (n + if passes then m else 0)
+  applyModifier (DamageDealtToInvestigator m) n | damageFor == DamageForInvestigator = pure $ max 0 (n + m)
+  applyModifier NoDamageDealt _ = pure 0
+  applyModifier _ n = pure n
 
 getHandSize :: HasGame m => InvestigatorAttrs -> m Int
 getHandSize attrs = do

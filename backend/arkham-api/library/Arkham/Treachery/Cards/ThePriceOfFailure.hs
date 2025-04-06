@@ -15,16 +15,13 @@ thePriceOfFailure = treachery ThePriceOfFailure Cards.thePriceOfFailure
 instance RunMessage ThePriceOfFailure where
   runMessage msg t@(ThePriceOfFailure attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      case toCard attrs of
-        VengeanceCard _ -> error "not a vengeance card"
-        EncounterCard _ -> error "not an encounter card"
-        PlayerCard pc -> do
-          assignDamageAndHorror iid attrs 2 2
-          placeDoomOnAgendaAndCheckAdvance 1
-          removeCardFromDeckForCampaign iid pc
-          darkPact <- genPlayerCard Events.darkPact
-          addCampaignCardToDeck iid DoNotShuffleIn darkPact 
-          addToDiscard iid (only darkPact)
-          removeTreachery attrs
-          pure t
+      for_ (preview _PlayerCard attrs.card) \pc -> do
+        assignDamageAndHorror iid attrs 2 2
+        placeDoomOnAgendaAndCheckAdvance 1
+        removeCardFromDeckForCampaign iid pc
+        darkPact <- genPlayerCard Events.darkPact
+        addCampaignCardToDeck iid DoNotShuffleIn darkPact
+        addToDiscard iid (only darkPact)
+        removeTreachery attrs
+      pure t
     _ -> ThePriceOfFailure <$> liftRunMessage msg attrs

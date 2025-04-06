@@ -10,7 +10,7 @@ import { imgsrc } from '@/arkham/helpers'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 
 import campaignJSON from '@/arkham/data/campaigns.json'
-import scenarioJSON from '@/arkham/data/scenarios.json'
+import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories.json'
 
 const store = useUserStore()

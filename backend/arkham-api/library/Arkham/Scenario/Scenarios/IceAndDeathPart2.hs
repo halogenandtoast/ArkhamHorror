@@ -3,7 +3,8 @@ module Arkham.Scenario.Scenarios.IceAndDeathPart2 (iceAndDeathPart2) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.CampaignLog
+import Arkham.Campaign.Option
+import Arkham.CampaignLog hiding (optionsL)
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Capability
@@ -89,41 +90,57 @@ stories =
 instance RunMessage IceAndDeathPart2 where
   runMessage msg s@(IceAndDeathPart2 attrs) = runQueueT $ scenarioI18n 2 $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
-      whenM hasRemainingFrostTokens $ addChaosToken #frost
+      isStandalone <- getIsStandalone
+      if isStandalone
+        then do
+          if attrs.hasOption ManuallyPickKilledInPlaneCrash
+            then do
+              let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode %~ maybe (Just $ CampaignLogPartner 0 0 Mia) Just
+              pure
+                $ IceAndDeathPart2
+                $ foldl' (flip addPartner) attrs expeditionTeam
+            else do
+              (killed, mia) <- sampleWithRest expeditionTeam
+              let addPartner partner status = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 status
+              pure
+                $ IceAndDeathPart2
+                $ foldl' (flip (uncurry addPartner)) attrs ((killed, Eliminated) :| map (,Mia) mia)
+        else do
+          story $ i18nWithTitle "intro"
+          whenM hasRemainingFrostTokens $ addChaosToken #frost
 
-      kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology
-      unless (kensler.status `elem` [Eliminated, Mia]) do
-        sinha <- getPartner Assets.drMalaSinhaDaringPhysician
-        blueStory
-          $ i18nEntry "kenslerAliveAndNotMissing"
-          <> validateEntry (sinha.status == Mia) "sinhaMissing"
+          kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology
+          unless (kensler.status `elem` [Eliminated, Mia]) do
+            sinha <- getPartner Assets.drMalaSinhaDaringPhysician
+            blueStory
+              $ i18nEntry "kenslerAliveAndNotMissing"
+              <> validateEntry (sinha.status == Mia) "sinhaMissing"
 
-      dyer <- getPartner Assets.professorWilliamDyerProfessorOfGeology
-      unless (dyer.status `elem` [Eliminated, Mia]) do
-        danforth <- getPartner Assets.danforthBrilliantStudent
-        blueStory
-          $ i18nEntry "dyerAliveAndNotMissing"
-          <> validateEntry (danforth.status == Mia) "danforthMissing"
+          dyer <- getPartner Assets.professorWilliamDyerProfessorOfGeology
+          unless (dyer.status `elem` [Eliminated, Mia]) do
+            danforth <- getPartner Assets.danforthBrilliantStudent
+            blueStory
+              $ i18nEntry "dyerAliveAndNotMissing"
+              <> validateEntry (danforth.status == Mia) "danforthMissing"
 
-      claypool <- getPartner Assets.averyClaypoolAntarcticGuide
-      unless (claypool.status `elem` [Eliminated, Mia]) do
-        ellsworth <- getPartner Assets.roaldEllsworthIntrepidExplorer
-        blueStory
-          $ i18nEntry "claypoolAliveAndNotMissing"
-          <> validateEntry (ellsworth.status == Mia) "ellsworthMissing"
+          claypool <- getPartner Assets.averyClaypoolAntarcticGuide
+          unless (claypool.status `elem` [Eliminated, Mia]) do
+            ellsworth <- getPartner Assets.roaldEllsworthIntrepidExplorer
+            blueStory
+              $ i18nEntry "claypoolAliveAndNotMissing"
+              <> validateEntry (ellsworth.status == Mia) "ellsworthMissing"
 
-      fredericks <- getPartner Assets.jamesCookieFredericksDubiousChoice
-      unless (fredericks.status `elem` [Eliminated, Mia]) do
-        takada <- getPartner Assets.takadaHirokoAeroplaneMechanic
-        blueStory
-          $ i18nEntry "fredericksAliveAndNotMissing"
-          <> validateEntry (takada.status == Mia) "takadaMissing"
+          fredericks <- getPartner Assets.jamesCookieFredericksDubiousChoice
+          unless (fredericks.status `elem` [Eliminated, Mia]) do
+            takada <- getPartner Assets.takadaHirokoAeroplaneMechanic
+            blueStory
+              $ i18nEntry "fredericksAliveAndNotMissing"
+              <> validateEntry (takada.status == Mia) "takadaMissing"
 
-      sv <- fromMaybe 0 <$> getCurrentShelterValue
-      story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
-      eachInvestigator (`forInvestigator` PreScenarioSetup)
-      pure s
+          sv <- fromMaybe 0 <$> getCurrentShelterValue
+          story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
+          eachInvestigator (`forInvestigator` PreScenarioSetup)
+          pure s
     ForInvestigator iid PreScenarioSetup -> do
       getCurrentShelterValue >>= traverse_ \sv -> do
         setupModifier ScenarioSource iid (BaseStartingResources sv)
@@ -160,7 +177,7 @@ instance RunMessage IceAndDeathPart2 where
             labeled "Do not take a partner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode
-            when (not inPlay) do
+            unless inPlay do
               cardLabeled partner.cardCode $ handleTarget iid ScenarioSource (CardCodeTarget partner.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
@@ -181,6 +198,13 @@ instance RunMessage IceAndDeathPart2 where
         partner <- getPartner cardCode
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+      pure s
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      mCamp <- getCamp
+      when (isNothing mCamp) do
+        for_ (nonEmpty $ Map.elems camps) (sample >=> record)
+
       pure s
     Setup -> runScenarioSetup IceAndDeathPart2 attrs do
       scope "setup" $ story $ flavorText $ ul do
@@ -276,5 +300,12 @@ instance RunMessage IceAndDeathPart2 where
           recordSetInsert LocationsRevealed locations
           endOfScenario
         _ -> error "Unknown resolution"
+      pure s
+    HandleOption option -> do
+      whenM getIsStandalone do
+        case option of
+          ManuallyPickCamp -> pure ()
+          ManuallyPickKilledInPlaneCrash -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> IceAndDeathPart2 <$> liftRunMessage msg attrs

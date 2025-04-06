@@ -3,7 +3,7 @@
 import { replaceIcons } from '@/arkham/helpers';
 import { handleI18n } from '@/arkham/i18n';
 import { computed } from 'vue'
-import scenarios from '@/arkham/data/scenarios.json'
+import scenarios from '@/arkham/data/scenarios'
 import { XpEntry } from '@/arkham/types/Xp'
 import { CampaignStep } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'

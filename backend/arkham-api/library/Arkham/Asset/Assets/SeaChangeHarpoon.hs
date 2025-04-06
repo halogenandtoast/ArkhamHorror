@@ -2,58 +2,40 @@ module Arkham.Asset.Assets.SeaChangeHarpoon (seaChangeHarpoon) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Card
-import Arkham.Fight
-import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types (Field (..))
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Projection
+import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 
 newtype SeaChangeHarpoon = SeaChangeHarpoon AssetAttrs
-  deriving anyclass IsAsset
+  deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 seaChangeHarpoon :: AssetCard SeaChangeHarpoon
 seaChangeHarpoon = asset SeaChangeHarpoon Cards.seaChangeHarpoon
 
 instance HasAbilities SeaChangeHarpoon where
-  getAbilities (SeaChangeHarpoon attrs) = [restrictedAbility attrs 1 ControlsThis fightAction_]
-
-instance HasModifiersFor SeaChangeHarpoon where
-  getModifiersFor (SeaChangeHarpoon attrs) = case attrs.controller of
-    Nothing -> pure mempty
-    Just iid -> maybeModified_ attrs iid do
-      guardM $ isAbilitySource attrs 1 <$> MaybeT getSkillTestSource
-      guardM $ (== iid) <$> MaybeT getSkillTestInvestigator
-      skillCount <-
-        lift $ fieldMap InvestigatorCommittedCards (count (`cardMatch` CardWithType SkillType)) iid
-      guard (skillCount > 0)
-      pure [DamageDealt 1]
+  getAbilities (SeaChangeHarpoon attrs) = [restricted attrs 1 ControlsThis fightAction_]
 
 instance RunMessage SeaChangeHarpoon where
-  runMessage msg a@(SeaChangeHarpoon attrs) = case msg of
+  runMessage msg a@(SeaChangeHarpoon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
       sid <- getRandom
-      chooseFight <- toMessage <$> mkChooseFight sid iid source
-      enabled <- skillTestModifier sid source iid (SkillModifier #combat 1)
-      pushAll [enabled, chooseFight]
+      skillTestModifiers
+        sid
+        (attrs.ability 1)
+        iid
+        [SkillModifier #combat 1, CriteriaModifier (exists $ CardIsCommittedBy (InvestigatorWithId iid) <> #skill) (DamageDealt 1)]
+      chooseFightEnemy sid iid (attrs.ability 1)
       pure a
-    SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do
-      miid <- getSkillTestInvestigator
-      when (Just iid == miid) do
-        player <- getPlayer iid
-        skills <- select $ skillControlledBy iid
-        push
-          $ chooseOne
-            player
-            [ Label
-                "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"
-                $ ReturnToHand iid (toTarget attrs)
-                : [ReturnToHand iid (toTarget skill) | skill <- skills]
-            , Label "Do nothing" []
-            ]
+    SkillTestEnds sid iid (isAbilitySource attrs 1 -> True) -> do
+      skills <- select $ skillControlledBy iid
+      chooseOneM iid do
+        labeled
+          "Return Sea Change Harpoon to your hand to return all of your committed skill cards to your hand instead of discarding them"
+          do
+            returnToHand iid attrs
+            for_ skills \s -> skillTestModifier sid (attrs.ability 1) s ReturnToHandAfterTest
+        labeled "Do nothing" nothing
       pure a
-    _ -> SeaChangeHarpoon <$> runMessage msg attrs
+    _ -> SeaChangeHarpoon <$> liftRunMessage msg attrs

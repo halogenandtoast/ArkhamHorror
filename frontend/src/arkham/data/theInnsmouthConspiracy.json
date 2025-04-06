@@ -1,0 +1,97 @@
+[
+  { "id": "07041", "name": "The Pit of Despair", "campaign": "07", "settings": [] },
+  {
+      "id": "07056",
+      "name": "The Vanishing of Elina Harper",
+      "campaign": "07",
+      "settings": [
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A Decision to Stick Together", "key": "ADecisionToStickTogether", "content": false }
+          ]
+        }
+      ]
+  },
+  {
+    "id": "07123",
+    "name": "In Too Deep",
+    "campaign": "07",
+    "settings": [
+      { "key": "OutForBlood", "recordable": "RecordableCardCode", "type": "ToggleRecords", "content": [
+        { "label": "Brian Burnham", "key": "07078", "content": false },
+        { "label": "Othera Gilman", "key": "07081", "content": false },
+        { "label": "Joyce Little", "key": "07080", "content": false },
+        { "label": "Barnabas Marsh", "key": "07079", "content": false },
+        { "label": "Zadok Allen", "key": "07077", "content": false },
+        { "label": "Robert Friendly", "key": "07076", "content": false }
+      ] }
+    ]
+  },
+  {
+      "id": "07163",
+      "name": "Devil Reef",
+      "campaign": "07",
+      "settings": [
+        { "key": "MissionStatus", "keys": ["TheMissionFailed", "TheMissionWasSuccessful"], "type": "PickKey", "content": "TheMissionFailed" },
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A battle with a horrifying devil", "key": "ABattleWithAHorrifyingDevil", "content": false }
+          ]
+        }
+
+      ]
+  },
+  {
+      "id": "07198",
+      "name": "Horror in High Gear",
+      "campaign": "07",
+      "settings": [
+        { "key": "TerrorOfDevilReefStatus", "keys": ["TheTerrorOfDevilReefIsStillAlive", "TheTerrorOfDevilReefIsDead"], "type": "PickKey", "content": "TheTerrorOfDevilReefIsStillAlive" }
+      ]
+  },
+  {
+      "id": "07231",
+      "name": "A Light in the Fog",
+      "campaign": "07",
+      "settings": [
+        { "key": "ReachingFalconPoint", "keys": ["TheInvestigatorsReachedFalconPointBeforeSunrise", "TheInvestigatorsReachedFalconPointAfterSunrise"], "type": "PickKey", "content": "TheInvestigatorsReachedFalconPointBeforeSunrise" },
+        { "key": "TheIdolWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheMantleWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheHeaddressWasBroughtToTheLighthouse", "type": "ToggleKey", "content": false },
+        { "key": "TheTideHasGrownStronger", "type": "ToggleKey", "content": false }
+      ]
+  },
+  {
+      "id": "07274",
+      "name": "A Lair of Dagon",
+      "campaign": "07",
+      "settings": [
+        { "key": "TheMissionFailed", "type": "ToggleKey", "content": true },
+        { "key": "MemoriesRecovered",
+          "recordable": "RecordableMemory",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "A decision to stick together", "key": "ADecisionToStickTogether", "content": false },
+            { "label": "An encounter with a secret cult", "key": "AnEncounterWithASecretCult", "content": false },
+            { "label": "A jailbreak", "key": "AJailbreak", "content": false }
+          ]
+        }
+      ]
+  },
+  {
+      "id": "07311",
+      "name": "Into the Maelstrom",
+      "campaign": "07",
+      "settings": [
+        { "key": "TheInvestigatorsPossessTheKeyToYhaNthlei", "type": "ToggleKey", "content": true },
+        { "key": "TheInvestigatorsPossessAMapOfYhaNthlei", "type": "ToggleKey", "content": true },
+        { "key": "TheGuardianOfYhanthleiIsDispatched", "type": "ToggleKey", "content": true },
+        { "key": "TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper", "type": "ToggleKey", "content": true },
+        { "key": "TheOrdersRitualWasDisrupted", "type": "ToggleKey", "content": false }
+      ]
+  }
+]

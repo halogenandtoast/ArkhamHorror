@@ -1,4 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Entity.Answer where
 
@@ -65,6 +66,7 @@ data StandaloneSetting
   | SetOption CampaignOption Bool
   | ChooseNum CampaignLogKey Int
   | NoChooseRecord
+  | StandaloneSetPartnerStatus PartnerStatus CardCode
   deriving stock Show
 
 data SetRecordedEntry
@@ -83,6 +85,7 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
   applySetting cl (SetOption _ False) = cl
+  applySetting cl (StandaloneSetPartnerStatus status cCode) = traceShowId $ setCampaignLogPartnerStatus status cCode cl
   applySetting cl (SetRecorded k rt vs) = case rt of
     (SomeRecordableType RecordableCardCode) ->
       let entries = mapMaybe (toEntry @CardCode) vs
@@ -124,6 +127,7 @@ instance FromJSON StandaloneSetting where
         pure $ SetRecorded k rt v
       "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
       "ChooseNum" -> ChooseNum <$> o .: "key" <*> o .: "content"
+      "SetPartnerKilled" -> StandaloneSetPartnerStatus Eliminated <$> o .: "content"
       _ -> fail $ "No such standalone setting " <> t
 
 instance FromJSON SetRecordedEntry where

@@ -81,7 +81,12 @@ instance RunMessage ToTheForbiddenPeaks where
       doStep 0 msg
       if isStandalone
         then do
-          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          let addPartner partner =
+                standaloneCampaignLogL
+                  . partnersL
+                  . at partner.cardCode
+                  %~ Just
+                  . fromMaybe (CampaignLogPartner 0 0 Safe)
           pure $ ToTheForbiddenPeaks $ foldl' (flip addPartner) attrs expeditionTeam
         else do
           pure s

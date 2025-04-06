@@ -1,6 +1,8 @@
 export type CrossOutContent = { label: string, key: string, content: boolean }
 export type RecordedContent = { label: string, key: string, content: boolean, ifRecorded?: SettingCondition[] }
 export type RecordableType = 'RecordableCardCode' | 'RecordableMemento'
+export type PartnerStatus = 'Eliminated' | 'Resolute' | 'Mia' | 'Safe' | 'Victim' | 'CannotTake' | 'TheEntity'
+export type PartnerDetails = { damage: number, horror: number, status: PartnerStatus }
 type Predicate =
   { type: "lte", value: number } |
   { type: "gte", value: number }
@@ -69,6 +71,15 @@ export type StandaloneSetting
     }
   | {
       type: "SetPartnerKilled",
+      ket: string,
       content: string | null,
+      ifRecorded?: SettingCondition[]
+    }
+  | {
+      type: "SetPartnerDetails",
+      ket: string,
+      maxDamage: number,
+      maxHorror: number,
+      content: PartnerDetails,
       ifRecorded?: SettingCondition[]
     }

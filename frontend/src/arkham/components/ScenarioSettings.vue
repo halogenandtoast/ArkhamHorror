@@ -112,7 +112,7 @@ const displayKey = (key: string) => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container scroll-container">
     <h2>Standalone Settings</h2>
     <div v-if="activeSettings.length == 0">
       <p>There are currently no standalone settings available for this scenario.</p>
@@ -178,7 +178,7 @@ const displayKey = (key: string) => {
           </template>
         </div>
       </div>
-      <div v-else-if="setting.type === 'ToggleRecords'">
+      <div v-else-if="setting.type === 'ToggleRecords'" class="records">
         {{toCapitalizedWords(setting.key)}}
         <div class="options">
           <template v-for="option in setting.content" :key="option.key">
@@ -257,6 +257,20 @@ const displayKey = (key: string) => {
           :id="`${setting.key}-ashevak`"
         />
         <label :for="`${setting.key}-ashevak`">Eliyah Ashevak</label>
+      </div>
+      <div v-else-if="setting.type === 'SetPartnerDetails'" class="partner">
+        <h3 class="partner-name">{{setting.key}}</h3>
+        <div class="options">
+          <label :for="`${setting.key}-damage`">Damage:</label>
+          <input type="number" v-model="setting.content.damage" :id="`${setting.key}-damage`" :min="0" :max="setting.maxDamage" />
+          <label :for="`${setting.key}-horror`">Horror:</label>
+          <input type="number" v-model="setting.content.horror" :id="`${setting.key}-horror`" :min="0" :max="setting.maxHorror" />
+          <select v-model="setting.content.status" :id="`${setting.key}-status`">
+            <option value="Safe">Safe</option>
+            <option value="Resolute">Resolute</option>
+            <option value="Eliminated">Eliminated</option>
+          </select>
+        </div>
       </div>
     </div>
     <button @click="submit">Begin</button>
@@ -366,5 +380,37 @@ input[type=checkbox]:checked + label {
 
 .invert[type=checkbox]:checked + label {
   background-color: hsl(80, 15%, 39%);
+}
+
+.partner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 10px;
+  border-radius: 5px;
+  .options {
+    justify-content: flex-start;
+    label {
+      text-align: left;
+      flex: 0;
+    }
+    input {
+      width: 100px;
+    }
+  }
+}
+
+.partner-name {
+  text-align: right;
+}
+
+.records {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

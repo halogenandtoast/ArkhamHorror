@@ -120,5 +120,5 @@ setCampaignLogRecordedCount key n = recordedCountsL %~ insertMap key n
 setCampaignLogOption :: CampaignOption -> CampaignLog -> CampaignLog
 setCampaignLogOption key = optionsL %~ insertSet key
 
-setCampaignLogPartnerStatus :: PartnerStatus -> CardCode -> CampaignLog -> CampaignLog
-setCampaignLogPartnerStatus status cCode = partnersL . at cCode ?~ CampaignLogPartner 0 0 status
+setCampaignLogPartnerStatus :: Int -> Int -> PartnerStatus -> CardCode -> CampaignLog -> CampaignLog
+setCampaignLogPartnerStatus dmg hrr status cCode = partnersL . at cCode ?~ CampaignLogPartner dmg hrr status

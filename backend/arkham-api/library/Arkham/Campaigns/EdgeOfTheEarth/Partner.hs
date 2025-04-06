@@ -98,7 +98,7 @@ toResolute = \case
   c
     | c == Assets.takadaHirokoAeroplaneMechanic.cardCode ->
         Assets.takadaHirokoAeroplaneMechanicResolute.cardCode
-  _ -> error "can not make resolute"
+  c -> c
 
 getRemainingPartners :: HasGame m => m [Partner]
 getRemainingPartners = getPartnersWithStatus (`elem` [Safe, Resolute])

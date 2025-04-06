@@ -10,6 +10,7 @@ import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
+import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Cost
@@ -51,6 +52,14 @@ newtype AmountsResponse = AmountsResponse
   {arAmounts :: Map UUID Int}
   deriving stock (Show, Generic)
 
+data PartnerDetailsResponse = PartnerDetailsResponse
+  { damage :: Int
+  , horror :: Int
+  , status :: PartnerStatus
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass FromJSON
+
 instance FromJSON QuestionResponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
 
@@ -66,7 +75,7 @@ data StandaloneSetting
   | SetOption CampaignOption Bool
   | ChooseNum CampaignLogKey Int
   | NoChooseRecord
-  | StandaloneSetPartnerStatus PartnerStatus CardCode
+  | StandaloneSetPartnerStatus Int Int PartnerStatus CardCode
   deriving stock Show
 
 data SetRecordedEntry
@@ -85,7 +94,7 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
   applySetting cl (SetOption _ False) = cl
-  applySetting cl (StandaloneSetPartnerStatus status cCode) = traceShowId $ setCampaignLogPartnerStatus status cCode cl
+  applySetting cl (StandaloneSetPartnerStatus dmg hrr status cCode) = setCampaignLogPartnerStatus dmg hrr status cCode cl
   applySetting cl (SetRecorded k rt vs) = case rt of
     (SomeRecordableType RecordableCardCode) ->
       let entries = mapMaybe (toEntry @CardCode) vs
@@ -127,7 +136,13 @@ instance FromJSON StandaloneSetting where
         pure $ SetRecorded k rt v
       "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
       "ChooseNum" -> ChooseNum <$> o .: "key" <*> o .: "content"
-      "SetPartnerKilled" -> StandaloneSetPartnerStatus Eliminated <$> o .: "content"
+      "SetPartnerKilled" -> StandaloneSetPartnerStatus 0 0 Eliminated <$> o .: "content"
+      "SetPartnerDetails" -> do
+        details :: PartnerDetailsResponse <- o .: "content"
+        cCode <- o .: "value"
+        pure
+          $ StandaloneSetPartnerStatus details.damage details.horror details.status
+          $ if details.status == Resolute then toResolute cCode else cCode
       _ -> fail $ "No such standalone setting " <> t
 
 instance FromJSON SetRecordedEntry where

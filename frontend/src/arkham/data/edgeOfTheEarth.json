@@ -41,7 +41,30 @@
   {
       "id": "08501c",
       "name": "Ice and Death, Part III",
-      "campaign": "08"
+      "campaign": "08",
+      "settings": [
+        { "type": "ToggleOption", "key": "ManuallyPickCamp", "content": false },
+        { "type": "PickKey",
+          "ifRecorded": [{ "type": "option", "key": "ManuallyPickCamp" }],
+          "content": "Camp Location",
+          "key": "Camp",
+          "keys": [
+            "Camp_CrystallineCavern",
+            "Camp_BarrierCamp",
+            "Camp_RemnantsOfLakesCamp",
+            "Camp_FrigidCave",
+            "Camp_IcebreakerLanding",
+            "Camp_SnowGraves",
+            "Camp_BroadSnowdrifts",
+            "Camp_IcyWastes",
+            "Camp_RockyCrags",
+            "Camp_FrozenShores",
+            "Camp_PrecariousIceSheet",
+            "Camp_TreacherousPath",
+            "Camp_CrashSite"
+          ]
+        }
+      ]
   },
   {
       "id": "08549",
@@ -51,7 +74,23 @@
   {
       "id": "08596",
       "name": "To the Forbidden Peaks",
-      "campaign": "08"
+      "campaign": "08",
+      "settings": [
+        { "key": "SuppliesRecovered",
+          "recordable": "RecordableGeneric",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "Green Soapstone", "key": "GreenSoapstone", "content": false },
+            { "label": "Wooden Sledge", "key": "WoodenSledge", "content": false },
+            { "label": "Dynamite", "key": "Dynamite", "content": false },
+            { "label": "Miasmic Crystal", "key": "MiasmicCrystal", "content": false },
+            { "label": "Mineral Specimen", "key": "MineralSpecimen", "content": false },
+            { "label": "Small Radio", "key": "SmallRadio", "content": false },
+            { "label": "Spare Parts", "key": "SpareParts", "content": false }
+          ]
+        },
+        { "key": "TheInvestigatorsScoutedTheMountainPass", "type": "ToggleKey", "content": false }
+      ]
   },
   {
       "id": "08621",

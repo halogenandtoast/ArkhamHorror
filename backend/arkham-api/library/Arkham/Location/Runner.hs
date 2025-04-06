@@ -104,7 +104,12 @@ getModifiedRevealClueCountWithMods :: HasGame m => [ModifierType] -> LocationAtt
 getModifiedRevealClueCountWithMods mods attrs =
   if CannotPlaceClues `elem` mods
     then pure 0
-    else getPlayerCountValue (locationRevealClues attrs)
+    else do
+      base <- getPlayerCountValue (locationRevealClues attrs)
+      pure $ foldl' applyModifier base mods
+ where
+  applyModifier base ReduceStartingCluesByHalf = (base + 1) `div` 2
+  applyModifier base _ = base
 
 instance RunMessage LocationAttrs where
   runMessage msg a@LocationAttrs {..} = case msg of

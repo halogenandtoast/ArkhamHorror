@@ -61,7 +61,9 @@ const inactive = (cond: SettingCondition): boolean => {
     }
 
     if (setting.type === "ToggleRecords") {
-      return setting.key == content
+      return !setting.content.some((c) => {
+        return c.content && c.key == content
+      })
     }
 
 

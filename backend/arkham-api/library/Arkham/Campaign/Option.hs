@@ -27,6 +27,13 @@ data CampaignOption
   | -- | The Edge of the Earth
     ManuallyPickCamp
   | ManuallyPickKilledInPlaneCrash
+  | AddGreenSoapstone
+  | AddWoodenSledge
+  | AddDynamite
+  | AddMiasmicCrystal
+  | AddMineralSpecimen
+  | AddSmallRadio
+  | AddSpareParts
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

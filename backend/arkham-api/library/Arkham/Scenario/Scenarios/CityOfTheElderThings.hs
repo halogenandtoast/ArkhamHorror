@@ -4,6 +4,7 @@ import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Calculation
+import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
@@ -405,4 +406,17 @@ instance RunMessage CityOfTheElderThings where
     PlaceKey ScenarioTarget _ -> do
       let n = toResultDefault @Int 0 attrs.meta
       pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (n + 1)
+    HandleOption option -> do
+      investigators <- allInvestigators
+      whenM getIsStandalone $ do
+        case option of
+          AddGreenSoapstone -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.greenSoapstoneJinxedIdol
+          AddWoodenSledge -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.woodenSledge
+          AddDynamite -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.dynamite
+          AddMiasmicCrystal -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.miasmicCrystalStrangeEvidence
+          AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
+          AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
+          AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
+          _ -> error $ "Unhandled option: " <> show option
+      pure s
     _ -> CityOfTheElderThings <$> liftRunMessage msg attrs

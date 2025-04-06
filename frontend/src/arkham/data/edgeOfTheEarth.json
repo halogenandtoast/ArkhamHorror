@@ -104,7 +104,53 @@
   {
       "id": "08621",
       "name": "City of the Elder Things",
-      "campaign": "08"
+      "campaign": "08",
+      "settings": [
+        { "key": "SuppliesRecovered",
+          "recordable": "RecordableGeneric",
+          "type": "ToggleRecords",
+          "content": [
+            { "label": "Green Soapstone", "key": "GreenSoapstone", "content": false },
+            { "label": "Wooden Sledge", "key": "WoodenSledge", "content": false },
+            { "label": "Dynamite", "key": "Dynamite", "content": false },
+            { "label": "Miasmic Crystal", "key": "MiasmicCrystal", "content": false },
+            { "label": "Mineral Specimen", "key": "MineralSpecimen", "content": false },
+            { "label": "Small Radio", "key": "SmallRadio", "content": false },
+            { "label": "Spare Parts", "key": "SpareParts", "content": false }
+          ]
+        },
+        { "key": "AddGreenSoapstone", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "GreenSoapstone" }
+        ] },
+        { "key": "AddWoodenSledge", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "WoodenSledge" }
+        ] },
+        { "key": "AddDynamite", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "Dynamite" }
+        ] },
+        { "key": "AddMiasmicCrystal", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "MiasmicCrystal" }
+        ] },
+        { "key": "AddMineralSpecimen", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "MineralSpecimen" }
+        ] },
+        { "key": "AddSmallRadio", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "SmallRadio" }
+        ] },
+        { "key": "AddSpareParts", "type": "ToggleOption", "content": false, "ifRecorded": [
+            { "type": "inSet", "key": "SuppliesRecovered", "recordable": "RecordableGeneric", "content": "SpareParts" }
+        ] },
+        { "key": "TheInvestigatorsScoutedTheCityOutskirts", "type": "ToggleKey", "content": false },
+        { "type": "SetPartnerDetails", "key": "Dr. Amy Kensler", "value": "08720", "maxDamage": 1, "maxHorror": 3, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Prof. William Dyer", "value": "08714", "maxDamage": 0, "maxHorror": 4, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Danforth", "value": "08715", "maxDamage": 1, "maxHorror": 3, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Roald Ellsworth", "value": "08721", "maxDamage": 3, "maxHorror": 1, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Takada Hiroko", "value": "08722", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Avery Claypool", "value": "08718", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Dr. Mala Sinha", "value": "08717", "maxDamage": 3, "maxHorror": 1, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "James \"Cookie\" Fredericks", "value": "08719", "maxDamage": 4, "maxHorror": 0, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
+        { "type": "SetPartnerDetails", "key": "Eliyah Ashevak", "value": "08716", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } }
+      ]
   },
   {
       "id": "08648a",

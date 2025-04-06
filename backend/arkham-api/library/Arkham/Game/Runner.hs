@@ -16,6 +16,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Asset, AssetAttrs (..), Field (..), assetIsStory)
 import Arkham.Attack
 import Arkham.Campaign.Types hiding (campaign, modifiersL)
+import Arkham.CampaignLog
 import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Card.Settings
@@ -450,14 +451,12 @@ runGameMessage msg g = case msg of
     clearCardCache
 
     pushAll
-      $ LoadTarotDeck
-      : SetChaosTokensForScenario
-      : PreScenarioSetup
-      : HandleKilledOrInsaneInvestigators
-      : [StandaloneSetup | standalone]
-        <> [ChooseLeadInvestigator]
-        <> [PerformTarotReading | gamePerformTarotReadings g]
-        <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
+      $ [HandleOption option | standalone, option <- maybe [] (toList . campaignLogOptions) mCampaignLog]
+      <> [LoadTarotDeck, SetChaosTokensForScenario, PreScenarioSetup, HandleKilledOrInsaneInvestigators]
+      <> [StandaloneSetup | standalone]
+      <> [ChooseLeadInvestigator]
+      <> [PerformTarotReading | gamePerformTarotReadings g]
+      <> [SetupInvestigators, InvestigatorsMulligan, Setup, EndSetup]
     pure
       $ g
       & (modeL %~ setScenario (setPlayerDecks $ setCampaignLog $ lookupScenario sid difficulty))

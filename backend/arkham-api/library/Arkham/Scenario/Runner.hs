@@ -1219,11 +1219,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (decksL . each %~ filter (not . (`cardMatch` cardMatcher)))
   SetCampaignLog newLog -> do
     isStandalone <- getIsStandalone
-    if isStandalone
-      then do
-        pushAll $ map HandleOption (toList $ campaignLogOptions newLog)
-        pure $ a & standaloneCampaignLogL .~ newLog
-      else pure a
+    pure $ if isStandalone
+      then a & standaloneCampaignLogL .~ newLog
+      else a
   Record key -> do
     isStandalone <- getIsStandalone
     pure

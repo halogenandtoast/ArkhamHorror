@@ -3,6 +3,7 @@ module Arkham.Scenario.Scenarios.ToTheForbiddenPeaks (toTheForbiddenPeaks) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
 import Arkham.Campaigns.EdgeOfTheEarth.Supplies
@@ -76,6 +77,15 @@ instance HasChaosTokenValue ToTheForbiddenPeaks where
 instance RunMessage ToTheForbiddenPeaks where
   runMessage msg s@(ToTheForbiddenPeaks attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
+      isStandalone <- getIsStandalone
+      doStep 0 msg
+      if isStandalone
+        then do
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          pure $ ToTheForbiddenPeaks $ foldl' (flip addPartner) attrs expeditionTeam
+        else do
+          pure s
+    DoStep 0 PreScenarioSetup -> do
       story $ i18nWithTitle "intro1"
 
       eliyahIsAlive <- getPartnerIsAlive Assets.eliyahAshevakDogHandler
@@ -141,6 +151,9 @@ instance RunMessage ToTheForbiddenPeaks where
         partner <- getPartner cardCode
         pushWhen (partner.damage > 0) $ Msg.PlaceDamage CampaignSource (toTarget assetId) partner.damage
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
+      pure s
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup ToTheForbiddenPeaks attrs do
       gather Set.ToTheForbiddenPeaks

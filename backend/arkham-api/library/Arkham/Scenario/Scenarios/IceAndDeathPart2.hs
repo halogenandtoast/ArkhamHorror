@@ -95,10 +95,13 @@ instance RunMessage IceAndDeathPart2 where
         then do
           if attrs.hasOption ManuallyPickKilledInPlaneCrash
             then do
-              let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode %~ maybe (Just $ CampaignLogPartner 0 0 Mia) Just
-              pure
-                $ IceAndDeathPart2
-                $ foldl' (flip addPartner) attrs expeditionTeam
+              let addPartner partner =
+                    standaloneCampaignLogL
+                      . partnersL
+                      . at partner.cardCode
+                      %~ Just
+                      . fromMaybe (CampaignLogPartner 0 0 Mia)
+              pure $ IceAndDeathPart2 $ foldl' (flip addPartner) attrs expeditionTeam
             else do
               (killed, mia) <- sampleWithRest expeditionTeam
               let addPartner partner status = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 status

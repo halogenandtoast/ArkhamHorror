@@ -199,17 +199,64 @@ const displayKey = (key: string) => {
           v-model="setting.content"
           value="08720"
           :id="`${setting.key}-kensler`"
-          :checked="setting.content === 'kensler'"
         />
         <label :for="`${setting.key}-kensler`">Dr. Amy Kensler</label>
         <input
           type="radio"
           v-model="setting.content"
+          value="08714"
+          :id="`${setting.key}-dyer`"
+        />
+        <label :for="`${setting.key}-dyer`">Prof. William Dyer</label>
+        <input
+          type="radio"
+          v-model="setting.content"
           value="08715"
           :id="`${setting.key}-danforth`"
-          :checked="setting.content === 'danforth'"
         />
         <label :for="`${setting.key}-danforth`">Danforth</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08721"
+          :id="`${setting.key}-ellsworth`"
+        />
+        <label :for="`${setting.key}-ellsworth`">Roald Ellsworth</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08722"
+          :id="`${setting.key}-takada`"
+        />
+        <label :for="`${setting.key}-takada`">Takada Hiroko</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08718"
+          :id="`${setting.key}-claypool`"
+        />
+        <label :for="`${setting.key}-claypool`">Avery Claypool</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08717"
+          :id="`${setting.key}-sinha`"
+        />
+        <label :for="`${setting.key}-sinha`">Dr. Mala Sinha</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08719"
+          :id="`${setting.key}-cookie`"
+        />
+        <label :for="`${setting.key}-cookie`">James "Cookie" Fredericks</label>
+        <input
+          type="radio"
+          v-model="setting.content"
+          value="08716"
+          :id="`${setting.key}-ashevak`"
+        />
+        <label :for="`${setting.key}-ashevak`">Eliyah Ashevak</label>
       </div>
     </div>
     <button @click="submit">Begin</button>

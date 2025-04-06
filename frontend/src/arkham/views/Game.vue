@@ -756,6 +756,9 @@ onUnmounted(() => {
   height: calc(100vh - 80px);
   display: flex;
   flex: 1;
+  &:has(.scroll-container) {
+    overflow: auto;
+  }
 }
 
 .socketWarning  {

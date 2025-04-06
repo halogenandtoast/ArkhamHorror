@@ -382,7 +382,7 @@ const submit = () => updateCampaignSettings(props.game.id, campaignLog.value)
 </script>
 
 <template>
-  <div class="container">
+  <div class="container scroll-container">
     <h2 class="title">Campaign Settings</h2>
     <CampaignScenarioSetting
       v-for="setting in activeSettings"

@@ -15,7 +15,8 @@ export type SettingCondition =
   { type: "and", content: SettingCondition[] } |
   { type: "or", content: SettingCondition[] } |
   { type: "not", content: SettingCondition } |
-  { type: "nor", content: SettingCondition[] }
+  { type: "nor", content: SettingCondition[] } |
+  { type: "survivedPlaneCrash", key: string }
 export type Recordable = { key: string, content: string, ifRecorded?: SettingCondition[]}
 
 export type StandaloneSetting

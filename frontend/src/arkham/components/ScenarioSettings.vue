@@ -14,6 +14,29 @@ const props = defineProps<{
 }>()
 const standaloneSettings = ref<StandaloneSetting[]>([])
 
+const flattenedSettings = computed(() => {
+  const flattenSettings = (settings: StandaloneSetting[]): StandaloneSetting[] => {
+    return settings.reduce((acc: StandaloneSetting[], setting) => {
+      if (setting.type === 'Group') {
+        return acc.concat(flattenSettings(setting.content))
+      }
+      const {ifRecorded} = setting
+      if (ifRecorded) {
+        if(!ifRecorded.some((cond) => inactive(cond))) acc.push(setting)
+      } else {
+        acc.push(setting)
+      }
+      return acc
+    }, [])
+  }
+
+  return flattenSettings(standaloneSettings.value)
+})
+
+const findSetting = (key: string) => {
+  return (flattenedSettings.value || []).find((s) => s.key === key)
+}
+
 // computed standaloneSettings is a bit of a hack, because nested values change by value
 // when we change standaloneSettings they are "cached" so to avoid this we deep copy the
 // standaloneSettings in order to never alter its original value.
@@ -86,6 +109,12 @@ const inactive = (cond: SettingCondition): boolean => {
     }
 
     return false
+  }
+
+  if (cond.type === 'survivedPlaneCrash') {
+    const k = findSetting("KilledInPlaneCrash")
+    if (!k) return false
+    return k.content === cond.key
   }
 
   throw new Error(`Unknown condition type ${JSON.stringify(cond)}`)

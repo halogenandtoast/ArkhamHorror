@@ -3,6 +3,8 @@ module Arkham.Scenario.Scenarios.FatalMirage (fatalMirage) where
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaign.Option
+import Arkham.CampaignLog hiding (Resolute)
 import Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps (
   pattern CityOfTheElderThings,
   pattern ToTheForbiddenPeaks,
@@ -20,6 +22,7 @@ import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
+import Arkham.Helpers.Query
 import Arkham.Helpers.Text
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -68,40 +71,58 @@ instance HasChaosTokenValue FatalMirage where
 
 instance RunMessage FatalMirage where
   runMessage msg s@(FatalMirage attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      setChaosTokens $ chaosBagContents attrs.difficulty
+      lead <- getLead
+      chooseOneM lead do
+        questionLabeled
+          "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
+        cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
+        cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
+        cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
+      pure s
+    DoStep n StandaloneSetup -> do
+      pure $ case n of
+        1 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart1) s
+        2 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart2) s
+        3 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart3) s
+        _ -> s
     PreScenarioSetup -> do
-      completed <- elem Step.FatalMirage <$> getCompletedSteps
-      if not completed
-        then do
-          story $ i18nWithTitle "intro1"
-          killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
-          when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"
+      isStandalone <- getIsStandalone
+      when (not isStandalone || attrs.hasOption PerformIntro) do
+        completed <- elem Step.FatalMirage <$> getCompletedSteps
+        if not completed && not (attrs.hasOption FatalMiragePart2) && not (attrs.hasOption FatalMiragePart3)
+          then do
+            story $ i18nWithTitle "intro1"
+            killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
+            when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"
 
-          when (recorded Assets.roaldEllsworthIntrepidExplorer.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "ellsworthWasKilledInThePlaneCrash"
+            when (recorded Assets.roaldEllsworthIntrepidExplorer.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "ellsworthWasKilledInThePlaneCrash"
 
-          when (recorded Assets.eliyahAshevakDogHandler.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "ashevakWasKilledInThePlaneCrash"
+            when (recorded Assets.eliyahAshevakDogHandler.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "ashevakWasKilledInThePlaneCrash"
 
-          when (recorded Assets.danforthBrilliantStudent.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "danforthWasKilledInThePlaneCrash"
+            when (recorded Assets.danforthBrilliantStudent.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "danforthWasKilledInThePlaneCrash"
 
-          when (recorded Assets.jamesCookieFredericksDubiousChoice.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "cookieWasKilledInThePlaneCrash"
+            when (recorded Assets.jamesCookieFredericksDubiousChoice.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "cookieWasKilledInThePlaneCrash"
 
-          when (recorded Assets.averyClaypoolAntarcticGuide.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "claypoolWasKilledInThePlaneCrash"
+            when (recorded Assets.averyClaypoolAntarcticGuide.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "claypoolWasKilledInThePlaneCrash"
 
-          when (recorded Assets.takadaHirokoAeroplaneMechanic.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "takadaWasKilledInThePlaneCrash"
+            when (recorded Assets.takadaHirokoAeroplaneMechanic.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "takadaWasKilledInThePlaneCrash"
 
-          when (recorded Assets.drMalaSinhaDaringPhysician.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "sinhaWasKilledInThePlaneCrash"
+            when (recorded Assets.drMalaSinhaDaringPhysician.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "sinhaWasKilledInThePlaneCrash"
 
-          when (recorded Assets.drAmyKenslerProfessorOfBiology.cardCode `elem` killedInThePlaneCrash) do
-            blueStory $ i18nEntry "kenslerWasKilledInThePlaneCrash"
-        else do
-          story $ i18nWithTitle "intro2"
+            when (recorded Assets.drAmyKenslerProfessorOfBiology.cardCode `elem` killedInThePlaneCrash) do
+              blueStory $ i18nEntry "kenslerWasKilledInThePlaneCrash"
+          else do
+            story $ i18nWithTitle "intro2"
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
@@ -137,10 +158,10 @@ instance RunMessage FatalMirage where
       completedSteps <- getCompletedSteps
 
       if
-        | CityOfTheElderThings `elem` completedSteps -> do
+        | CityOfTheElderThings `elem` completedSteps || attrs.hasOption FatalMiragePart3 -> do
             setAgendaDeck [Agendas.etherealTangleV3]
             setActDeck [Acts.shadowOfThePastV3]
-        | ToTheForbiddenPeaks `elem` completedSteps -> do
+        | ToTheForbiddenPeaks `elem` completedSteps || attrs.hasOption FatalMiragePart2 -> do
             setAgendaDeck [Agendas.etherealTangleV2]
             setActDeck [Acts.shadowOfThePastV2]
         | otherwise -> do
@@ -267,5 +288,11 @@ instance RunMessage FatalMirage where
         )
         (allGainXp attrs)
       endOfScenario
+      pure s
+    HandleOption option -> do
+      whenM getIsStandalone $ do
+        case option of
+          PerformIntro -> pure ()
+          _ -> error $ "Unhandled option: " <> show option
       pure s
     _ -> FatalMirage <$> liftRunMessage msg attrs

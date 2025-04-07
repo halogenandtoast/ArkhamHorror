@@ -36,6 +36,9 @@ data CampaignOption
   | AddSmallRadio
   | AddSpareParts
   | IncludePartners
+  | FatalMiragePart1
+  | FatalMiragePart2
+  | FatalMiragePart3
   deriving stock (Eq, Show, Ord, Data)
 
 $(deriveJSON defaultOptions ''CampaignOption)

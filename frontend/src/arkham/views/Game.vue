@@ -136,7 +136,7 @@ await fetchGame(props.gameId, props.spectate).then(async ({ game: newGame, playe
 // Local Decoders
 const gameCardDecoder = JsonDecoder.object<GameCard>(
   {
-    title: JsonDecoder.string,
+    title: JsonDecoder.string(),
     card: cardDecoder
   },
   'GameCard'
@@ -144,8 +144,8 @@ const gameCardDecoder = JsonDecoder.object<GameCard>(
 
 const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
   {
-    player: JsonDecoder.string,
-    title: JsonDecoder.string,
+    player: JsonDecoder.string(),
+    title: JsonDecoder.string(),
     card: cardDecoder
   },
   'GameCard'

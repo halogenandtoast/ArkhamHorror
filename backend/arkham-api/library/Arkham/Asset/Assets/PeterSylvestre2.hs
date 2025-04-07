@@ -2,11 +2,9 @@ module Arkham.Asset.Assets.PeterSylvestre2 (peterSylvestre2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Damage
+import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype PeterSylvestre2 = PeterSylvestre2 AssetAttrs
   deriving anyclass IsAsset
@@ -20,16 +18,14 @@ instance HasModifiersFor PeterSylvestre2 where
 
 instance HasAbilities PeterSylvestre2 where
   getAbilities (PeterSylvestre2 x) =
-    [ controlled
-        x
-        1
-        (exists (HealableAsset (toSource x) HorrorType $ AssetWithId (toId x)))
-        (ReactionAbility (TurnEnds #after You) Free)
+    [ controlled x 1 (exists (HealableAsset (x.ability 1) #horror $ be x))
+        $ freeReaction
+        $ TurnEnds #after You
     ]
 
 instance RunMessage PeterSylvestre2 where
-  runMessage msg a@(PeterSylvestre2 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      push $ HealHorror (toTarget attrs) (toSource attrs) 1
+  runMessage msg a@(PeterSylvestre2 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      healHorror attrs (attrs.ability 1) 1
       pure a
-    _ -> PeterSylvestre2 <$> runMessage msg attrs
+    _ -> PeterSylvestre2 <$> liftRunMessage msg attrs

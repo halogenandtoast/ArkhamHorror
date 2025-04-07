@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.PeterSylvestre (PeterSylvestre (..), peterSylvestre) where
+module Arkham.Asset.Assets.PeterSylvestre (peterSylvestre) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -18,7 +18,7 @@ instance HasModifiersFor PeterSylvestre where
 
 instance HasAbilities PeterSylvestre where
   getAbilities (PeterSylvestre x) =
-    [ controlledAbility x 1 (exists $ HealableAsset (x.ability 1) #horror $ be x)
+    [ controlled x 1 (exists $ HealableAsset (x.ability 1) #horror $ be x)
         $ freeReaction
         $ TurnEnds #after You
     ]
@@ -26,6 +26,6 @@ instance HasAbilities PeterSylvestre where
 instance RunMessage PeterSylvestre where
   runMessage msg a@(PeterSylvestre attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ HealHorror (toTarget attrs) (attrs.ability 1) 1
+      healHorror attrs (attrs.ability 1) 1
       pure a
     _ -> PeterSylvestre <$> liftRunMessage msg attrs

@@ -1067,8 +1067,8 @@ getInvestigatorsMatching matcher = do
       let
         healGuardMatcher =
           case damageType of
-            HorrorType -> InvestigatorWithAnyHorror
-            DamageType -> InvestigatorWithAnyDamage
+            HorrorType -> InvestigatorWithAnyHorror <> InvestigatorWithoutModifier CannotHaveHorrorHealed
+            DamageType -> InvestigatorWithAnyDamage <> InvestigatorWithoutModifier CannotHaveDamageHealed
       let healGuard = if canHealAtFull then id else (<> healGuardMatcher)
       case damageType of
         DamageType -> do
@@ -2557,7 +2557,7 @@ getAssetsMatching matcher = do
         $ fieldMapM AssetCardsUnderneath (`cardListMatches` cardListMatcher)
         . toId
     HealableAsset _source damageType matcher' -> case damageType of
-      DamageType -> filterMatcher as (matcher' <> AssetWithDamage)
+      DamageType -> filterMatcher as (matcher' <> AssetWithDamage <> AssetWithoutModifier CannotHaveDamageHealed)
       HorrorType -> do
         let
           isCannotHealHorrorOnOtherCardsModifiers = \case
@@ -2571,9 +2571,9 @@ getAssetsMatching matcher = do
               AssetTarget aid ->
                 filterMatcher
                   as
-                  (matcher' <> AssetWithHorror <> AssetWithId aid)
+                  (matcher' <> AssetWithHorror <> AssetWithId aid <> AssetWithoutModifier CannotHaveHorrorHealed)
               _ -> pure []
-            _ -> filterMatcher as (matcher' <> AssetWithHorror)
+            _ -> filterMatcher as (matcher' <> AssetWithHorror <> AssetWithoutModifier CannotHaveHorrorHealed)
 
 getActiveInvestigatorModifiers :: HasGame m => m [ModifierType]
 getActiveInvestigatorModifiers = getModifiers . toTarget =<< getActiveInvestigator
@@ -4401,7 +4401,10 @@ getShortestPath
   -> m [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap) state'
+  !result <-
+    evalStateT
+      (markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap)
+      state'
   pure $ fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
@@ -4420,7 +4423,10 @@ getLongestPath
   :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]
 getLongestPath !initialLocation !target = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <- evalStateT (markDistancesWithInclusion False initialLocation target (const (pure True)) mempty) state'
+  !result <-
+    evalStateT
+      (markDistancesWithInclusion False initialLocation target (const (pure True)) mempty)
+      state'
   pure $ fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ result
 
 markDistances
@@ -4809,7 +4815,10 @@ instance HasDistance Game where
   getDistance' _ start fin | start == fin = pure $ Just 0
   getDistance' _ start fin = do
     let !state' = LPState (pure start) (singleton start) mempty
-    result <- evalStateT (markDistancesWithInclusion False start (pure . (== fin)) (const (pure True)) mempty) state'
+    result <-
+      evalStateT
+        (markDistancesWithInclusion False start (pure . (== fin)) (const (pure True)) mempty)
+        state'
     pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game

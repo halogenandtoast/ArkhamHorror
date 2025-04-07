@@ -143,7 +143,8 @@ instance RunMessage LostInTimeAndSpace where
         Tablet -> do
           mYogSothothId <- selectOne (EnemyWithTitle "Yog-Sothoth")
           for_ mYogSothothId $ \eid -> initiateEnemyAttack eid attrs iid
-        ElderThing -> withLocationOf iid (toDiscardBy iid ElderThing)
+        ElderThing -> withLocationOf iid \lid -> do
+          whenM (lid <=~> LocationWithTrait Extradimensional) $ toDiscardBy iid ElderThing lid
         _ -> pure ()
       pure s
     ResolveChaosToken _ Cultist iid -> do

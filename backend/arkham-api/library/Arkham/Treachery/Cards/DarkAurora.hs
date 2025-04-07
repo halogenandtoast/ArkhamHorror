@@ -16,7 +16,7 @@ instance RunMessage DarkAurora where
       sid <- getRandom
       onRevealChaosTokenEffect sid #frost attrs iid do
         assignHorror iid attrs 1
-      revelationSkillTest sid iid attrs #agility (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 2

@@ -1,15 +1,11 @@
-module Arkham.Asset.Assets.VirgilGrayTrulyInspired (
-  virgilGrayTrulyInspired,
-  VirgilGrayTrulyInspired (..),
-)
-where
+module Arkham.Asset.Assets.VirgilGrayTrulyInspired (virgilGrayTrulyInspired) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Message.Lifted.Choose
 
 newtype VirgilGrayTrulyInspired = VirgilGrayTrulyInspired AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,48 +16,30 @@ virgilGrayTrulyInspired = allyWith VirgilGrayTrulyInspired Cards.virgilGrayTruly
 
 instance HasAbilities VirgilGrayTrulyInspired where
   getAbilities (VirgilGrayTrulyInspired x) =
-    [ controlledAbility
-        x
-        1
-        ( oneOf
-            [ youExist can.gain.resources
-            , youExist can.draw.cards
-            , exists $ HealableAsset (x.ability 1) #horror (be x)
-            ]
-        )
-        $ freeReaction
-        $ PlacedToken #after AnySource AnyTarget AlarmLevel
+    [ groupLimit PerWindow $ controlled x 1 criteria $ freeReaction $ IncreasedAlarmLevel #after You
     , mkAbility x 2 $ forced $ AssetLeavesPlay #when (be x)
     ]
+   where
+    criteria =
+      oneOf
+        [ youExist $ oneOf [can.gain.resources, can.draw.cards]
+        , exists $ HealableAsset (x.ability 1) #horror (be x)
+        ]
 
 instance RunMessage VirgilGrayTrulyInspired where
-  runMessage msg a@(VirgilGrayTrulyInspired attrs) = case msg of
+  runMessage msg a@(VirgilGrayTrulyInspired attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      mDrawCards <- drawCardsIfCan iid (attrs.ability 1) 1
-      mGainResources <- gainResourcesIfCan iid (attrs.ability 1) 1
-      healable <- selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)
       others <- select $ not_ (InvestigatorWithId iid)
-      player <- getPlayer iid
-      push
-        $ chooseOne
-          player
-        $ [ Label "Draw 1 card" [drawing]
-          | drawing <- maybeToList mDrawCards
-          ]
-        <> [ Label "Gain 1 resource" [gainResources]
-           | gainResources <- maybeToList mGainResources
-           ]
-        <> [ Label "Heal 1 horror from Virgil Gray" [HealHorror (toTarget attrs) (attrs.ability 1) 1]
-           | healable
-           ]
-      pushWhen (notNull others)
-        $ chooseOrRunOne
-          player
-          [ targetLabel other [TakeControlOfAsset other attrs.id]
-          | other <- others
-          ]
+      chooseOneM iid do
+        whenM (can.draw.cards iid) do
+          labeled "Draw 1 card" $ drawCards iid (attrs.ability 1) 1
+        whenM (can.gain.resources iid) do
+          labeled "Gain 1 resource" $ gainResources iid (attrs.ability 1) 1
+        whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
+          labeled "Heal 1 horror from Virgil Gray" $ healHorror attrs (attrs.ability 1) 1
+      when (notNull others) $ chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ RemoveFromGame $ toTarget attrs
+      removeFromGame attrs
       pure a
-    _ -> VirgilGrayTrulyInspired <$> runMessage msg attrs
+    _ -> VirgilGrayTrulyInspired <$> liftRunMessage msg attrs

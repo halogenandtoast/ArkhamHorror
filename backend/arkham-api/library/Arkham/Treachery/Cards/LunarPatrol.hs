@@ -36,6 +36,6 @@ instance RunMessage LunarPatrol where
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      raiseAlarmLevel attrs iid
+      raiseAlarmLevel attrs [iid]
       pure t
     _ -> LunarPatrol <$> liftRunMessage msg attrs

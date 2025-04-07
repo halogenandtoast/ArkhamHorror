@@ -1,7 +1,8 @@
-module Arkham.Agenda.Cards.SilentStirring (SilentStirring (..), silentStirring) where
+module Arkham.Agenda.Cards.SilentStirring (silentStirring) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Helpers.Query
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype SilentStirring = SilentStirring AgendaAttrs
@@ -12,11 +13,10 @@ silentStirring :: AgendaCard SilentStirring
 silentStirring = agenda (1, A) SilentStirring Cards.silentStirring (Static 5)
 
 instance RunMessage SilentStirring where
-  runMessage msg a@(SilentStirring attrs) = runQueueT do
-    case msg of
-      AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
-        shuffleEncounterDiscardBackIn
-        eachInvestigator (raiseAlarmLevel attrs)
-        advanceAgendaDeck attrs
-        pure a
-      _ -> SilentStirring <$> liftRunMessage msg attrs
+  runMessage msg a@(SilentStirring attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      raiseAlarmLevel attrs =<< allInvestigators
+      advanceAgendaDeck attrs
+      pure a
+    _ -> SilentStirring <$> liftRunMessage msg attrs

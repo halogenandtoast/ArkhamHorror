@@ -2,11 +2,11 @@ module Arkham.Asset.Assets.AncientCovenant2 (ancientCovenant2) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Helpers.Modifiers
+import Arkham.Asset.Import.Lifted
+import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Taboo
 
 newtype AncientCovenant2 = AncientCovenant2 AssetAttrs
@@ -22,16 +22,15 @@ instance HasAbilities AncientCovenant2 where
         $ triggered
           ( ResolvesChaosToken
               #when
-              (if tabooed TabooList21 x then You else affectsOthers (InvestigatorAt YourLocation))
+              (if tabooed TabooList21 x then You else affectsOthers (at_ YourLocation))
               #bless
           )
           (exhaust x)
     ]
 
 instance RunMessage AncientCovenant2 where
-  runMessage msg a@(AncientCovenant2 attrs) = case msg of
+  runMessage msg a@(AncientCovenant2 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getChaosToken -> token) _ -> do
-      withSkillTest \sid ->
-        pushM $ skillTestModifier sid iid (ChaosTokenTarget token) DoNotRevealAnotherChaosToken
+      withSkillTest \sid -> skillTestModifier sid iid (ChaosTokenTarget token) DoNotRevealAnotherChaosToken
       pure a
-    _ -> AncientCovenant2 <$> runMessage msg attrs
+    _ -> AncientCovenant2 <$> liftRunMessage msg attrs

@@ -29,7 +29,7 @@ instance RunMessage DrAmyKenslerProfessorOfBiology where
   runMessage msg a@(DrAmyKenslerProfessorOfBiology attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 6)
+      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #intellect 5)
       investigate sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do

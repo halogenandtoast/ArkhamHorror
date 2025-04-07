@@ -30,7 +30,7 @@ instance RunMessage DisruptivePoltergeist where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      assignHorror iid (attrs.ability 1) 1
+      assignDamage iid (attrs.ability 1) 1
       shuffleIntoDeck iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

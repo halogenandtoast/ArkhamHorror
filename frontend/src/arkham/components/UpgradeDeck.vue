@@ -303,7 +303,7 @@ const tabooList = function (investigator: Investigator) {
                   <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
                 </template>
                 <template v-else>
-                  <template v-if="investigatorId == originalInvestigatorId">
+                  <template v-if="investigatorId == originalInvestigatorId && deckUrl">
                     <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
                     <div class="buttons">
                       <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>

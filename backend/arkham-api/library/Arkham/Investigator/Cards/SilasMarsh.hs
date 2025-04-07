@@ -42,19 +42,17 @@ instance RunMessage SilasMarsh where
       skills <- select $ skillControlledBy iid
       chooseOrRunOneM iid $ targets skills $ returnToHand iid
       pure i
-    ElderSignEffect iid | attrs `is` iid -> do
+    ElderSignEffect (is attrs -> True) -> do
       skills <-
-        filterM (getIsCommittable iid)
+        filterM (getIsCommittable attrs.id)
           . filter (`cardMatch` CardWithType SkillType)
-          =<< fieldMap InvestigatorDiscard (map toCard) iid
+          =<< fieldMap InvestigatorDiscard (map toCard) attrs.id
 
-      when (notNull skills) do
-        withSkillTest \sid -> do
-          focusCards skills do
-            chooseOneM iid do
-              labeled "Do not commit skills" nothing
-              targets skills \card -> do
-                push $ CommitCard iid card
-                skillTestModifier sid ElderSign card ReturnToHandAfterTest
+      focusCards skills do
+        chooseOneM attrs.id do
+          labeled "Do not commit skills" nothing
+          targets skills \card -> do
+            commitCard attrs.id card
+            withSkillTest \sid -> skillTestModifier sid ElderSign card ReturnToHandAfterTest
       pure i
     _ -> SilasMarsh <$> liftRunMessage msg attrs

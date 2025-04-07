@@ -146,6 +146,9 @@ labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
+skip :: ReverseQueue m => Text -> ChooseT m ()
+skip = (`labeled` nothing)
+
 gridLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 gridLabeled label action = unterminated do
   msgs <- lift $ evalQueueT action

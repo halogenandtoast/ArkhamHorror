@@ -25,7 +25,7 @@ instance RunMessage SeaChangeHarpoon where
         sid
         (attrs.ability 1)
         iid
-        [SkillModifier #combat 1, CriteriaModifier (exists $ CardIsCommittedBy (InvestigatorWithId iid) <> #skill) (DamageDealt 1)]
+        [SkillModifier #combat 1, OnCommitCardModifier iid #skill (DamageDealt 1)]
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     SkillTestEnds sid iid (isAbilitySource attrs 1 -> True) -> do
@@ -36,6 +36,6 @@ instance RunMessage SeaChangeHarpoon where
           do
             returnToHand iid attrs
             for_ skills \s -> skillTestModifier sid (attrs.ability 1) s ReturnToHandAfterTest
-        labeled "Do nothing" nothing
+        skip "Do nothing"
       pure a
     _ -> SeaChangeHarpoon <$> liftRunMessage msg attrs

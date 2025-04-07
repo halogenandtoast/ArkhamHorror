@@ -15,7 +15,8 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Card
-import Arkham.Classes.Query (selectOne)
+import Arkham.Modifier
+import Arkham.Classes.Query (selectOne, (<=~>))
 import Arkham.Classes.RunMessage
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Matcher.Scenario
@@ -100,4 +101,16 @@ instance RunMessage EffectAttrs where
             else pure a
     UpdateEffectMeta eid meta | eid == effectId -> do
       pure $ a {effectMetadata = Just meta}
+    CommitCard iid card -> do
+      case a.metadata of
+        (Just (EffectModifiers modifiers)) -> do
+          let
+            updateModifier = \case
+              x@(modifierType -> OnCommitCardModifier iid' matcher m) | iid == iid' -> do
+                ok <- card <=~> matcher
+                pure $ if ok then x { modifierType = m } else x
+              other -> pure other
+          modifiers' <- traverse updateModifier modifiers
+          pure $ a {effectMetadata = Just $ EffectModifiers modifiers'}
+        _ -> pure a
     _ -> pure a

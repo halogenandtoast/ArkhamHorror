@@ -1,9 +1,19 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import {imgsrc} from '@/arkham/helpers';
 
 const model = defineModel()
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
+const error = ref<string | null>(null)
+
+//const isArkhamDB = computed(() => {
+//  return deck.value && deck.value.match(/https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/)
+//})
+
+const isArkhamBuild = computed(() => {
+  return deck.value && deck.value.match(/https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/)
+})
 
 function loadDeck() {
   if (!deck.value) return
@@ -21,8 +31,15 @@ function loadDeck() {
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
     deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
     fetch(deckUrl.value)
-      .then((response) => response.json(), () => model.value = null)
-      .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
+      .then(async (response) => {
+        if (response.ok) {
+          const data = await response.json()
+          model.value = {...data, url: deckUrl.value}
+        } else {
+          model.value = null
+          error.value = "Could not find deck, please make sure you have created a public share."
+        }
+      }, () => model.value = null)
   } else {
     return
   }
@@ -30,6 +47,7 @@ function loadDeck() {
 }
 
 function pasteDeck(evt: ClipboardEvent) {
+  error.value = null
   if (evt.clipboardData) {
     deck.value = evt.clipboardData.getData('text')
     loadDeck()
@@ -45,6 +63,10 @@ function pasteDeck(evt: ClipboardEvent) {
     @paste.prevent="pasteDeck($event)"
     v-bind:placeholder="$t('create.deckUrlPlaceholder')"
   />
+  <div class="error" v-if="error && isArkhamBuild">
+    <p>{{ error }}</p>
+     <img :src="imgsrc('ui/arkham-build-public-share.jpg')" />
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -55,5 +77,22 @@ input {
   background: #F2F2F2;
   width: 100%;
   margin-bottom: 10px;
+}
+
+.error {
+  background-color: var(--survivor-extra-dark);
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-transform: uppercase;
+  img {
+    flex: 0;
+    max-width: fit-content;
+    border-radius: 5px;
+  }
 }
 </style>

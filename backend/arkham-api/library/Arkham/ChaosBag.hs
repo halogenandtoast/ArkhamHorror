@@ -671,7 +671,9 @@ instance RunMessage ChaosBag where
 
       pure
         $ c
-        & (chaosTokensL <>~ map (\token -> token {chaosTokenRevealedBy = Nothing}) tokensToReturn)
+        & ( chaosTokensL
+              <>~ map (\token -> token {chaosTokenRevealedBy = Nothing, chaosTokenCancelled = False}) tokensToReturn
+          )
         & (setAsideChaosTokensL .~ mempty)
         & (revealedChaosTokensL .~ mempty)
         & (totalRevealedChaosTokensL .~ mempty)
@@ -789,7 +791,7 @@ instance RunMessage ChaosBag where
       Just choice' -> case choice' of
         Resolved tokens -> do
           tokens' <- for tokens \token -> do
-            cancelTokenIfShould $ token {chaosTokenRevealedBy = miid}
+            cancelTokenIfShould $ token {chaosTokenRevealedBy = miid, chaosTokenCancelled = False}
           -- let tokens' = filter (not . chaosTokenCancelled) tokens''
 
           -- If we are dealing with the skill test, then the after window will be managed by it
@@ -885,7 +887,11 @@ instance RunMessage ChaosBag where
     ReturnChaosTokens tokens' ->
       pure
         $ c
-        & (chaosTokensL %~ (<> tokens') . filter (`notElem` tokens'))
+        & ( chaosTokensL
+              %~ map (\t -> t {chaosTokenCancelled = False})
+              . (<> tokens')
+              . filter (`notElem` tokens')
+          )
         & (setAsideChaosTokensL %~ (\\ tokens'))
         & (choiceL .~ Nothing)
         & (tokenPoolL %~ (\\ tokens'))
@@ -918,7 +924,7 @@ instance RunMessage ChaosBag where
     UnsealChaosToken token -> do
       pure
         $ c
-        & (chaosTokensL %~ (token :))
+        & (chaosTokensL %~ (token {chaosTokenCancelled = False} :))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
     RemoveChaosToken face ->

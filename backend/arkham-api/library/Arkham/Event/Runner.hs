@@ -61,7 +61,10 @@ runEventMessage msg a@EventAttrs {..} = case msg of
       Nothing -> pure a
       Just i ->
         pure
-          $ a {eventCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i eventCustomizations}
+          $ a
+            { eventCustomizations =
+                IntMap.alter (Just . maybe (1, choices) (bimap (+ 1) (const choices))) i eventCustomizations
+            }
   SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
   AttachEvent eid target | eid == eventId -> do
     case target of

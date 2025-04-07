@@ -2,15 +2,16 @@
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Question from '@/arkham/components/Question.vue';
 import { useDebug } from '@/arkham/debug'
-import { computed, h } from 'vue';
+import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import * as Cards from '@/arkham/types/Card';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { scenarioToI18n } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
 import { Enemy } from '@/arkham/types/Enemy';
-import { ModifierType, Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
+import { Modifier, cannotCommitCardsToWords } from '@/arkham/types/Modifier';
 import { SkillTest } from '@/arkham/types/SkillTest';
+import { Source } from '@/arkham/types/Source';
 import { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import Draggable from '@/components/Draggable.vue';
 import Card from '@/arkham/components/Card.vue'

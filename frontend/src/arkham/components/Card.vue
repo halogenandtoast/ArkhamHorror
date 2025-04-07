@@ -32,6 +32,25 @@ const image = computed(() => {
   }
 
   const { cardCode, isFlipped, mutated } = cardContents.value
+  if (cardCode === "c05178b" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/b$/, 'a')}.avif`)
+  }
+  if (cardCode === "c05178d" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/d$/, 'c')}.avif`)
+  }
+  if (cardCode === "c05178f" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/f$/, 'e')}.avif`)
+  }
+  if (cardCode === "c05178h" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/h$/, 'g')}.avif`)
+  }
+  if (cardCode === "c05178j" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/j$/, 'i')}.avif`)
+  }
+  if (cardCode === "c05178l" && !isFlipped) {
+    return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/l$/, 'k')}.avif`)
+  }
+  console.log(cardContents.value)
   const suffix = !props.revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.avif`)

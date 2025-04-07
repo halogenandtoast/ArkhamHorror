@@ -142,20 +142,20 @@ instance RunMessage AssetAttrs where
         $ [PlaceDamage source (toTarget a) (damage + n) | damage > 0]
         <> [PlaceHorror source (toTarget a) horror | horror > 0]
         <> [ CheckWindows
-              $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
-                | damage > 0
-                ]
-              <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
-                 | horror > 0
+               $ [ mkWhen (Window.DealtDamage source damageEffect (toTarget a) damage)
+                 | damage > 0
                  ]
+               <> [ mkWhen (Window.DealtHorror source (toTarget a) horror)
+                  | horror > 0
+                  ]
            , checkDefeated source aid
            , CheckWindows
-              $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
-                | damage > 0
-                ]
-              <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
-                 | horror > 0
+               $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage)
+                 | damage > 0
                  ]
+               <> [ mkAfter (Window.DealtHorror source (toTarget a) horror)
+                  | horror > 0
+                  ]
            ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do
@@ -175,9 +175,12 @@ instance RunMessage AssetAttrs where
     IncreaseCustomization iid cardCode customization choices | toCardCode a == cardCode && a `ownedBy` iid -> do
       case customizationIndex a customization of
         Nothing -> pure a
-        Just i ->
+        Just i -> do
           pure
-            $ a {assetCustomizations = IntMap.adjust (bimap (+ 1) (const choices)) i assetCustomizations}
+            $ a
+              { assetCustomizations =
+                  IntMap.alter (Just . maybe (1, choices) (bimap (+ 1) (const choices))) i assetCustomizations
+              }
     SetOriginalCardCode cardCode -> pure $ a & originalCardCodeL .~ cardCode
     SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)

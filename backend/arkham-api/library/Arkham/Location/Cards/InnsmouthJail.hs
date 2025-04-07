@@ -20,7 +20,7 @@ instance HasAbilities InnsmouthJail where
   getAbilities (InnsmouthJail a) =
     extendRevealed1 a
       $ restricted a 1 Here
-      $ forced (EnemyDefeated #when You ByAny AnyEnemy)
+      $ forced (EnemyDefeated #when You ByAny (not_ EnemyWithVictory))
 
 instance RunMessage InnsmouthJail where
   runMessage msg l@(InnsmouthJail attrs) = runQueueT $ case msg of

@@ -73,21 +73,28 @@ instance RunMessage FatalMirage where
   runMessage msg s@(FatalMirage attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
-      lead <- getLead
-      chooseOneM lead do
-        questionLabeled
-          "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
-        cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
-        cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
-        cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
       pure s
-    DoStep n StandaloneSetup -> do
+    PreScenarioSetup -> do
+      isStandalone <- getIsStandalone
+      if isStandalone
+        then do
+          lead <- getLead
+          chooseOneM lead do
+            questionLabeled
+              "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
+            cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
+            cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
+            cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
+        else doStep 0 msg
+      pure s
+    DoStep n PreScenarioSetup | n > 0 -> do
+      doStep 0 PreScenarioSetup
       pure $ case n of
         1 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart1) s
         2 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart2) s
         3 -> overAttrs (standaloneCampaignLogL . optionsL %~ insertSet FatalMiragePart3) s
         _ -> s
-    PreScenarioSetup -> do
+    DoStep 0 PreScenarioSetup -> do
       isStandalone <- getIsStandalone
       when (not isStandalone || attrs.hasOption PerformIntro) do
         completed <- elem Step.FatalMirage <$> getCompletedSteps

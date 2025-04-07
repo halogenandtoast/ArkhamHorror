@@ -179,7 +179,7 @@ async function createDeck() {
     <div class="form-body">
       <img v-if="investigator && !noPortrait" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
       <div class="fields">
-        <ArkhamDbDeck type="url" v-model="deckList" />
+        <ArkhamDbDeck v-model="deckList" />
         <input type="file" @change="loadDeckFromFile" />
         <input v-if="investigator" v-model="deckName" />
         <button :disabled="!valid" @click.prevent="createDeck">Create</button>
@@ -201,7 +201,7 @@ async function createDeck() {
 
 <style lang="scss" scoped>
 .new-deck {
-  input {
+  :deep(input) {
     outline: 0;
     border: 1px solid var(--background);
     padding: 15px;

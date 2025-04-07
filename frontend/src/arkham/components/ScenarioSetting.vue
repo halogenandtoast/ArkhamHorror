@@ -17,6 +17,29 @@ const props = defineProps<{
 const standaloneSettings = ref<StandaloneSetting[]>([])
 const { t } = useI18n()
 
+const flattenedSettings = computed(() => {
+  const flattenSettings = (settings: StandaloneSetting[]): StandaloneSetting[] => {
+    return settings.reduce((acc: StandaloneSetting[], setting) => {
+      if (setting.type === 'Group') {
+        return acc.concat(flattenSettings(setting.content))
+      }
+      const {ifRecorded} = setting
+      if (ifRecorded) {
+        if(!ifRecorded.some((cond) => inactive(cond))) acc.push(setting)
+      } else {
+        acc.push(setting)
+      }
+      return acc
+    }, [])
+  }
+
+  return flattenSettings(standaloneSettings.value)
+})
+
+const findSetting = (key: string) => {
+  return (flattenedSettings.value || []).find((s) => s.key === key)
+}
+
 const inactive = (cond: SettingCondition): boolean => {
   if (cond.type === 'inSet') {
     const {key, content} = cond
@@ -58,6 +81,12 @@ const inactive = (cond: SettingCondition): boolean => {
     }
 
     return false
+  }
+
+  if (cond.type === 'survivedPlaneCrash') {
+    const k = findSetting("KilledInPlaneCrash")
+    if (!k) return false
+    return k.content === cond.key
   }
 
   throw new Error(`Unknown condition type ${JSON.stringify(cond)}`)

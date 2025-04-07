@@ -7,6 +7,7 @@ import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
@@ -89,8 +90,8 @@ instance RunMessage TheHeartOfMadnessPart2 where
         2 -> splitAt 2 . take 3 <$> shuffleM [minBound..]
         3 -> (, []) . take 1 <$> shuffleM [minBound..]
         _ -> pure ([], [])
-      unless (null placed) $ recordSetInsert SealsPlaced (map toJSON placed)
-      unless (null recovered) $ recordSetInsert SealsRecovered (map toJSON recovered)
+      unless (null placed) $ recordSetInsert SealsPlaced (map (\k -> toJSON $ Seal k True Nothing) placed)
+      unless (null recovered) $ recordSetInsert SealsRecovered (map (\k -> toJSON $ Seal k False Nothing) recovered)
       pure s
     PreScenarioSetup -> do
       kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology

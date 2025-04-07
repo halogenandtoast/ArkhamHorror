@@ -3,6 +3,7 @@ module Arkham.Agenda.Cards.TheyAreUponYou (TheyAreUponYou (..), theyAreUponYou) 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Helpers.Query (allInvestigators)
 
 newtype TheyAreUponYou = TheyAreUponYou AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)
@@ -15,7 +16,7 @@ instance RunMessage TheyAreUponYou where
   runMessage msg a@(TheyAreUponYou attrs) = runQueueT do
     case msg of
       AdvanceAgenda (isSide B attrs -> True) -> do
-        eachInvestigator (raiseAlarmLevel attrs)
+        raiseAlarmLevel attrs =<< allInvestigators
         eachInvestigator \iid -> do
           alarmLevel <- getAlarmLevel iid
           let horror = (alarmLevel + 1) `div` 2

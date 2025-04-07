@@ -316,6 +316,7 @@ data WindowType
   | EntersThreatArea InvestigatorId Card
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   | ScenarioCountIncremented ScenarioCountKey
+  | IncreasedAlarmLevel InvestigatorId
   | ScenarioEvent Text Value
   | -- used to avoid checking a window
     DoNotCheckWindow

@@ -10,18 +10,17 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Token
+import Arkham.Window
 
 getAlarmLevel :: HasGame m => InvestigatorId -> m Int
 getAlarmLevel = fieldMap InvestigatorTokens (countTokens AlarmLevel)
 {-# INLINE getAlarmLevel #-}
 
-raiseAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
-raiseAlarmLevel source = raiseAlarmLevelBy 1 source
+raiseAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> [InvestigatorId] -> m ()
+raiseAlarmLevel source iids = do
+  for_ iids $ \iid -> placeTokens source iid AlarmLevel 1
+  checkWindows $ mkAfter <$> map IncreasedAlarmLevel iids
 {-# INLINE raiseAlarmLevel #-}
-
-raiseAlarmLevelBy :: (Sourceable source, ReverseQueue m) => Int -> source -> InvestigatorId -> m ()
-raiseAlarmLevelBy n (toSource -> source) iid = placeTokens source iid AlarmLevel n
-{-# INLINE raiseAlarmLevelBy #-}
 
 reduceAlarmLevel :: (Sourceable source, ReverseQueue m) => source -> InvestigatorId -> m ()
 reduceAlarmLevel source = reduceAlarmLevelBy 1 source

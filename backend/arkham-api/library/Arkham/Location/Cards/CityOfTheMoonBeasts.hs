@@ -38,6 +38,6 @@ instance RunMessage CityOfTheMoonBeasts where
         beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      raiseAlarmLevel (attrs.ability 1) iid
+      raiseAlarmLevel (attrs.ability 1) [iid]
       pure l
     _ -> CityOfTheMoonBeasts <$> liftRunMessage msg attrs

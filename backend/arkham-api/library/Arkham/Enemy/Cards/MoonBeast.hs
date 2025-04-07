@@ -6,6 +6,7 @@ import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype MoonBeast = MoonBeast EnemyAttrs
@@ -26,7 +27,7 @@ instance HasAbilities MoonBeast where
 instance RunMessage MoonBeast where
   runMessage msg e@(MoonBeast attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      eachInvestigator (raiseAlarmLevel (attrs.ability 1))
+      raiseAlarmLevel (attrs.ability 1) =<< allInvestigators
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       eachInvestigator (reduceAlarmLevel (attrs.ability 2))

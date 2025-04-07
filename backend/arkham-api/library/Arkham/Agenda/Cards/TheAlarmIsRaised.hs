@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Log (whenHasRecord)
-import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Query (getLead, allInvestigators)
 import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
 
 newtype TheAlarmIsRaised = TheAlarmIsRaised AgendaAttrs
@@ -20,7 +20,7 @@ instance RunMessage TheAlarmIsRaised where
     case msg of
       AdvanceAgenda (isSide B attrs -> True) -> do
         shuffleEncounterDiscardBackIn
-        eachInvestigator (raiseAlarmLevel attrs)
+        raiseAlarmLevel attrs =<< allInvestigators
         whenHasRecord TheInvestigatorsForcedTheirWayIntoTheTemple do
           lead <- getLead
           findAndDrawEncounterCard lead Enemies.catsFromSaturn

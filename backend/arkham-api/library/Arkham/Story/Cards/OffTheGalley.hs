@@ -31,7 +31,7 @@ instance RunMessage OffTheGalley where
           for_ investigators $ \iid ->
             push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
         else do
-          eachInvestigator (raiseAlarmLevel attrs)
+          raiseAlarmLevel attrs =<< allInvestigators
           eachInvestigator $ \iid ->
             push $ Move $ (move attrs iid moonForest) {movePayAdditionalCosts = False, moveCancelable = False}
           for_ enemies $ \eid -> push $ Move $ move attrs eid moonForest

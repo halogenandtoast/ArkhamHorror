@@ -64,7 +64,7 @@ instance RunMessage TheDarkCrater where
       beginSkillTest sid iid (attrs.ability 2) iid #willpower (Fixed 3)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
-      raiseAlarmLevel (attrs.ability 2) iid
+      raiseAlarmLevel (attrs.ability 2) [iid]
       pure l
     Do (Msg.DiscoverClues iid d) -> do
       mlid <- getDiscoverLocation iid d

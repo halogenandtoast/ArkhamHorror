@@ -178,6 +178,8 @@ data ModifierType
   | CannotHaveAttachments
   | CannotHealDamage
   | CannotHealHorror
+  | CannotHaveHorrorHealed
+  | CannotHaveDamageHealed
   | CannotHealHorrorOnOtherCards Target
   | CannotInvestigate
   | CannotInvestigateLocation LocationId

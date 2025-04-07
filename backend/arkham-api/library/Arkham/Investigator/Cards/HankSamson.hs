@@ -23,34 +23,31 @@ hankSamson =
 
 instance HasModifiersFor HankSamson where
   getModifiersFor (HankSamson a) = do
-    other <-
-      modifySelect
-        a
-        (not_ (InvestigatorWithId a.id) <> colocatedWith a.id)
-        [CanAssignDamageToInvestigator a.id, CanAssignHorrorToInvestigator a.id]
-    assets <-
-      modifySelect
-        a
-        (AssetAt (locationWithInvestigator a.id) <> #ally)
-        [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
-    self <-
-      modifySelfWhen a (unCardCode (investigatorArt a) /= "10015") [CannotHealHorror, CannotHealDamage]
-    pure $ other <> assets <> self
+    modifySelect
+      a
+      (not_ (InvestigatorWithId a.id) <> colocatedWith a.id)
+      [CanAssignDamageToInvestigator a.id, CanAssignHorrorToInvestigator a.id]
+    modifySelect
+      a
+      (AssetAt (locationWithInvestigator a.id) <> #ally)
+      [CanAssignDamageToInvestigator (toId a), CanAssignHorrorToInvestigator (toId a)]
+    modifySelfWhen
+      a
+      (unCardCode (investigatorArt a) /= "10015")
+      [CannotHaveHorrorHealed, CannotHaveDamageHealed]
 
 instance HasAbilities HankSamson where
   getAbilities (HankSamson a) = case unCardCode (investigatorArt a) of
     "10015" -> [restrictedAbility a 1 Self $ freeReaction $ InvestigatorWouldBeDefeated #when ByAny You]
     "10016a" ->
-      [ restrictedAbility a 1 (Self <> can.draw.cards You)
+      [ restricted a 1 (Self <> can.draw.cards You)
           $ freeReaction
-          $ PlacedCounter #when You AnySource HorrorCounter
-          $ atLeast 1
+          $ PlacedCounter #when You AnySource HorrorCounter (atLeast 1)
       ]
     "10016b" ->
-      [ restrictedAbility a 1 (Self <> can.gain.resources You)
+      [ restricted a 1 (Self <> can.gain.resources You)
           $ freeReaction
-          $ PlacedCounter #when You AnySource DamageCounter
-          $ atLeast 1
+          $ PlacedCounter #when You AnySource DamageCounter (atLeast 1)
       ]
     _ -> error "Impossible"
 

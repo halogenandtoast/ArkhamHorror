@@ -8,9 +8,10 @@ import Import.NoFoundation hiding (get)
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
+import Arkham.Campaigns.EdgeOfTheEarth.Key
+import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
-import Arkham.Campaigns.EdgeOfTheEarth.Partner
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Cost
@@ -75,7 +76,7 @@ data StandaloneSetting
   | SetOption CampaignOption Bool
   | ChooseNum CampaignLogKey Int
   | NoChooseRecord
-  | StandaloneSetPartnerStatus Int Int PartnerStatus CardCode
+  | StandaloneSetPartnerStatus Int Int PartnerStatus Bool CardCode
   | SettingsGroup [StandaloneSetting]
   deriving stock Show
 
@@ -95,7 +96,12 @@ makeStandaloneCampaignLog = foldl' applySetting mkCampaignLog
   applySetting cl (SetKey k False) = deleteCampaignLogKey k cl
   applySetting cl (SetOption k True) = setCampaignLogOption k cl
   applySetting cl (SetOption _ False) = cl
-  applySetting cl (StandaloneSetPartnerStatus dmg hrr status cCode) = setCampaignLogPartnerStatus dmg hrr status cCode cl
+  applySetting cl (StandaloneSetPartnerStatus dmg hrr status crash cCode) =
+    if crash
+      then
+        setCampaignLogRecorded (EdgeOfTheEarthKey WasKilledInThePlaneCrash) [recorded cCode]
+          $ setCampaignLogPartnerStatus dmg hrr status cCode cl
+      else setCampaignLogPartnerStatus dmg hrr status cCode cl
   applySetting c1 (SettingsGroup xs) = foldl' applySetting c1 xs
   applySetting cl (SetRecorded k rt vs) = case rt of
     (SomeRecordableType RecordableCardCode) ->
@@ -139,12 +145,12 @@ instance FromJSON StandaloneSetting where
       "ToggleRecords" -> SetRecorded <$> o .: "key" <*> o .: "recordable" <*> o .: "content"
       "ChooseNum" -> ChooseNum <$> o .: "key" <*> o .: "content"
       "Group" -> SettingsGroup <$> o .: "content"
-      "SetPartnerKilled" -> StandaloneSetPartnerStatus 0 0 Eliminated <$> o .: "content"
+      "SetPartnerKilled" -> StandaloneSetPartnerStatus 0 0 Eliminated True <$> o .: "content"
       "SetPartnerDetails" -> do
         details :: PartnerDetailsResponse <- o .: "content"
         cCode <- o .: "value"
         pure
-          $ StandaloneSetPartnerStatus details.damage details.horror details.status
+          $ StandaloneSetPartnerStatus details.damage details.horror details.status False
           $ if details.status == Resolute then toResolute cCode else cCode
       _ -> fail $ "No such standalone setting " <> t
 

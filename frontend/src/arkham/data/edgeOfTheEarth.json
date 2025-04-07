@@ -130,7 +130,8 @@
         "value": "08714",
         "maxDamage": 0,
         "maxHorror": 4,
-        "content": { "damage": 0, "horror": 0, "status": "Safe" }
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08714" }]
       },
       {
         "type": "SetPartnerDetails",
@@ -138,14 +139,63 @@
         "value": "08715",
         "maxDamage": 1,
         "maxHorror": 3,
-        "content": { "damage": 0, "horror": 0, "status": "Safe" }
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08715" }]
       },
-      { "type": "SetPartnerDetails", "key": "Roald Ellsworth", "value": "08721", "maxDamage": 3, "maxHorror": 1, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
-      { "type": "SetPartnerDetails", "key": "Takada Hiroko", "value": "08722", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
-      { "type": "SetPartnerDetails", "key": "Avery Claypool", "value": "08718", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
-      { "type": "SetPartnerDetails", "key": "Dr. Mala Sinha", "value": "08717", "maxDamage": 3, "maxHorror": 1, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
-      { "type": "SetPartnerDetails", "key": "James \"Cookie\" Fredericks", "value": "08719", "maxDamage": 4, "maxHorror": 0, "content": { "damage": 0, "horror": 0, "status": "Safe" } },
-      { "type": "SetPartnerDetails", "key": "Eliyah Ashevak", "value": "08716", "maxDamage": 2, "maxHorror": 2, "content": { "damage": 0, "horror": 0, "status": "Safe" } }
+      {
+        "type": "SetPartnerDetails",
+        "key": "Roald Ellsworth",
+        "value": "08721",
+        "maxDamage": 3,
+        "maxHorror": 1,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08721" }]
+      },
+      {
+        "type": "SetPartnerDetails",
+        "key": "Takada Hiroko",
+        "value": "08722",
+        "maxDamage": 2,
+        "maxHorror": 2,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08722" }]
+      },
+      {
+        "type": "SetPartnerDetails",
+        "key": "Avery Claypool",
+        "value": "08718",
+        "maxDamage": 2,
+        "maxHorror": 2,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08718" }]
+      },
+      {
+        "type": "SetPartnerDetails",
+        "key": "Dr. Mala Sinha",
+        "value": "08717",
+        "maxDamage": 3,
+        "maxHorror": 1,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08717" }]
+      },
+      {
+        "type": "SetPartnerDetails",
+        "key": "James \"Cookie\" Fredericks",
+        "value": "08719",
+        "maxDamage": 4,
+        "maxHorror": 0,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08719" }]
+      },
+      {
+        "type": "SetPartnerDetails",
+        "key": "Eliyah Ashevak",
+        "value": "08716",
+        "maxDamage": 2,
+        "maxHorror": 2,
+        "content": { "damage": 0, "horror": 0, "status": "Safe" },
+        "ifRecorded": [{ "type": "survivedPlaneCrash", "key": "08716" }]
+      }
     ]
   },
   {

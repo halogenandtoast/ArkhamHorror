@@ -1,4 +1,4 @@
-module Arkham.Investigator.Cards.LostHomunculus (lostHomunculus, LostHomunculus(..)) where
+module Arkham.Investigator.Cards.LostHomunculus (lostHomunculus, LostHomunculus (..)) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModifySelf, modifySelf)
@@ -6,6 +6,7 @@ import Arkham.Helpers.SkillTest (getSkillTestSource, isSkillTestInvestigator)
 import Arkham.Helpers.Source
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (InvestigatorDefeated)
+import Arkham.Investigator.Types (InvestigatorForm (..))
 import Arkham.Matcher
 
 newtype LostHomunculus = LostHomunculus InvestigatorAttrs
@@ -15,8 +16,11 @@ newtype LostHomunculus = LostHomunculus InvestigatorAttrs
 
 lostHomunculus :: InvestigatorCard LostHomunculus
 lostHomunculus =
-  investigator LostHomunculus Cards.lostHomunculus
-    $ Stats {health = 6, sanity = 6, willpower = 2, intellect = 2, combat = 2, agility = 2}
+  investigatorWith
+    LostHomunculus
+    Cards.lostHomunculus
+    (Stats {health = 6, sanity = 6, willpower = 2, intellect = 2, combat = 2, agility = 2})
+    (formL .~ HomunculusForm)
 
 instance HasModifiersFor LostHomunculus where
   getModifiersFor (LostHomunculus a) = do

@@ -27,10 +27,10 @@ import Arkham.Target
 import Arkham.Xp
 import Control.Monad.Writer hiding (filterM)
 import Data.Aeson.TH
+import Data.Data
 import Data.List.NonEmpty qualified as NE
 import Data.Map.Monoidal.Strict (MonoidalMap (..))
 import Data.Map.Strict qualified as Map
-import Data.Typeable
 import GHC.Records
 
 class
@@ -246,6 +246,11 @@ instance Targetable Campaign where
   toTarget _ = CampaignTarget
 
 data Campaign = forall a. IsCampaign a => Campaign a
+
+instance Data Campaign where
+  gunfold _ _ _ = error "gunfold(Campaign)"
+  toConstr _ = error "toConstr(Campaign)"
+  dataTypeOf _ = error "dataTypeOf(Campaign)"
 
 instance HasAbilities Campaign where
   getAbilities _ = []

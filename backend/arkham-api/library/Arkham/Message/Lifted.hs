@@ -2325,7 +2325,10 @@ discardCard
   -> source
   -> card
   -> m ()
-discardCard investigator source card = push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
+discardCard investigator source = toCard <&> \case
+  card@(PlayerCard _) -> push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
+  card@(EncounterCard _) -> addToEncounterDiscard (only card)
+  VengeanceCard card -> discardCard investigator source card
 
 forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =

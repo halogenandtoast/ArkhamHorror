@@ -35,6 +35,7 @@ import Arkham.Token
 import Arkham.Xp
 import Data.Aeson.TH
 import Data.Typeable
+import Data.Data
 import GHC.Records
 
 class
@@ -314,6 +315,11 @@ instance Sourceable ScenarioAttrs where
 
 data Scenario where
   Scenario :: IsScenario a => a -> Scenario
+
+instance Data Scenario where
+  gunfold _ _ _ = error "gunfold(Scenario)"
+  toConstr _ = error "toConstr(Scenario)"
+  dataTypeOf _ = error "dataTypeOf(Scenario)"
 
 instance Targetable Scenario where
   toTarget _ = ScenarioTarget

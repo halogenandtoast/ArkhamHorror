@@ -21,7 +21,7 @@ data DefeatedEnemyAttrs = DefeatedEnemyAttrs
   { defeatedEnemyAttrs :: EnemyAttrs
   , defeatedEnemyHealth :: Int
   }
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (FromJSON, ToJSON)
 
 instance Entity DefeatedEnemyAttrs where
@@ -48,7 +48,7 @@ data History = History
   , historySuccessfulEvasions :: Int
   , historySuccessfulInvestigations :: Int
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 data HistoryField k where
   HistoryTreacheriesDrawn :: HistoryField [CardCode]

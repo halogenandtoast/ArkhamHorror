@@ -34,6 +34,10 @@ inTurnOrder xs = filter (`elem` xs) <$> allInvestigators
 instance HasGame m => HasPlayer m where
   getPlayer = field InvestigatorPlayerId
 
+maybeSomeInvestigator :: HasGame m => Maybe InvestigatorId -> m (Maybe InvestigatorId)
+maybeSomeInvestigator (Just iid) = pure (Just iid)
+maybeSomeInvestigator Nothing = selectOne ActiveInvestigator
+
 getActiveInvestigatorId :: (HasCallStack, HasGame m) => m InvestigatorId
 getActiveInvestigatorId = selectJust ActiveInvestigator
 

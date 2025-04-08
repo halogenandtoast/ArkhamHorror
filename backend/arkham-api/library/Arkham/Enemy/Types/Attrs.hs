@@ -22,7 +22,7 @@ import Data.Aeson.TH
 import GHC.Records
 
 data UnableToSpawn = DiscardIfUnableToSpawn | ShuffleBackInIfUnableToSpawn
-  deriving stock (Show, Eq, Generic)
+  deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
 data EnemyAttrs = EnemyAttrs
@@ -60,7 +60,7 @@ data EnemyAttrs = EnemyAttrs
   , enemyDelayEngagement :: Bool
   , enemyCardsUnderneath :: [Card]
   }
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Data)
 
 instance HasField "id" EnemyAttrs EnemyId where
   getField = enemyId

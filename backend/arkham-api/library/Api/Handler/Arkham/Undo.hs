@@ -79,7 +79,6 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
         void $ select do
           game <- from $ table @ArkhamGame
           where_ $ game.id ==. val gameId
-          locking ForUpdate
           forUpdateOf game noWait
           pure ()
         patched <- withSpan_ "patch" $ pure $ patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) 

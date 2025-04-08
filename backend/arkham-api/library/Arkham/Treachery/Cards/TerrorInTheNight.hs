@@ -1,7 +1,7 @@
-module Arkham.Treachery.Cards.TerrorInTheNight (terrorInTheNight, TerrorInTheNight (..)) where
+module Arkham.Treachery.Cards.TerrorInTheNight (terrorInTheNight) where
 
-import Arkham.Helpers.Query
 import Arkham.Matcher
+import Arkham.Message.Lifted.Placement
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
@@ -21,15 +21,13 @@ instance RunMessage TerrorInTheNight where
       revelationSkillTest sid iid attrs #willpower (Fixed 4)
       pure t
     FailedThisSkillTestBy _ (isSource attrs -> True) n -> do
-      aid <- selectJust AnyAgenda
-      other <- select $ treacheryIs Cards.terrorInTheNight
-      iids <- getInvestigators
-      attached <- filterByField TreacheryPlacement (== AttachedToAgenda aid) other
-      attachTreachery attrs aid
+      attached <-
+        filterByField TreacheryPlacement (== NextToAgenda) =<< select (treacheryIs Cards.terrorInTheNight)
+      place attrs NextToAgenda
       when (n >= 3) $ gainSurge attrs
       when (length attached >= 2) do
         toDiscard attrs attrs
         for_ attached $ toDiscard attrs
-        for_ iids \iid -> assignHorror iid attrs 3
+        eachInvestigator \iid -> assignHorror iid attrs 3
       pure t
     _ -> TerrorInTheNight <$> liftRunMessage msg attrs

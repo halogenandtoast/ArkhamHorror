@@ -16,8 +16,9 @@ import { type Card } from '@/arkham/types/Card';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
 import { TokenType } from '@/arkham/types/Token';
 import { Source } from '@/arkham/types/Source';
+import { Treachery } from '@/arkham/types/Treachery';
 import { Message } from '@/arkham/types/Message';
-import { waitForImagesToLoad, imgsrc, pluralize } from '@/arkham/helpers';
+import { waitForImagesToLoad, imgsrc, pluralize, groupBy } from '@/arkham/helpers';
 import { useMenu } from '@/composeable/menu';
 import { useSettings } from '@/stores/settings';
 import Act from '@/arkham/components/Act.vue';
@@ -37,6 +38,7 @@ import SkillTest from '@/arkham/components/SkillTest.vue';
 import ScenarioDeck from '@/arkham/components/ScenarioDeck.vue';
 import Story from '@/arkham/components/Story.vue';
 import Location from '@/arkham/components/Location.vue';
+import TreacheryView from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { useDebug } from '@/arkham/debug'
 import { storeToRefs } from 'pinia';
@@ -277,6 +279,11 @@ const cardsUnderAgenda = computed(() => props.scenario.cardsUnderAgendaDeck)
 const cardsUnderAct = computed(() => props.scenario.cardsUnderActDeck)
 const cardsNextToAct = computed(() => props.scenario.cardsNextToActDeck)
 const cardsNextToAgenda = computed(() => props.scenario.cardsNextToAgendaDeck)
+const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
+  filter((t) => t.placement.tag === "NextToAgenda").
+  map((t) => t.id))
+const agendaGroupedTreacheries = computed(() => Object.entries(groupBy(nextToTreacheries.value, (t: Treachery) => props.game.treacheries[t].cardCode)))
+
 const keys = computed(() => props.scenario.setAsideKeys)
 const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
@@ -561,18 +568,33 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
         </div>
 
         <div class="scenario-decks" :style="scenarioDeckStyles">
-          <Agenda
-            v-for="(agenda, key) in game.agendas"
-            :key="key"
-            :agenda="agenda"
-            :cardsUnder="cardsUnderAgenda"
-            :cardsNextTo="cardsNextToAgenda"
-            :game="game"
-            :playerId="playerId"
-            :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
-            @choose="choose"
-            @show="doShowCards"
-          />
+          <template v-if="Object.values(game.agendas).length > 0">
+            <Agenda
+              v-for="(agenda, key) in game.agendas"
+              :key="key"
+              :agenda="agenda"
+              :cardsUnder="cardsUnderAgenda"
+              :cardsNextTo="cardsNextToAgenda"
+              :game="game"
+              :playerId="playerId"
+              :style="{ 'grid-area': `agenda${agenda.deckId}`, 'justify-self': 'center' }"
+              @choose="choose"
+              @show="doShowCards"
+            />
+          </template>
+          <div v-else-if="agendaGroupedTreacheries.length > 0" class="treacheries">
+            <div v-for="([cCode, treacheries], idx) in agendaGroupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (agendaGroupedTreacheries.length - idx) * 10 }">
+              <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >
+                <TreacheryView
+                  :treachery="game.treacheries[treacheryId]"
+                  :game="game"
+                  :playerId="playerId"
+                  @choose="$emit('choose', $event)"
+                  :overlay-delay="310"
+                />
+              </div>
+            </div>
+          </div>
 
           <Act
             v-for="(act, key) in game.acts"
@@ -1294,6 +1316,44 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
     img {
       height: 20px;
     }
+  }
+}
+
+.treacheries {
+  position:relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.treachery-group {
+  display: flex;
+  gap: 5px;
+  flex-direction: row;
+  &:not(:first-of-type) {
+    margin-top: -50px;
+  }
+  //position: inherit;
+  transition: margin-top 0.3s;
+  position: relative;
+
+  &:hover {
+    margin-top: 0px;
+    .treachery-card {
+      margin-left: 0;
+    }
+  }
+}
+
+.treachery {
+  box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+.treachery-card {
+  margin-left: -50px;
+  transition: margin-left 0.3s;
+  &:first-of-type {
+    margin-left: 0;
   }
 }
 </style>

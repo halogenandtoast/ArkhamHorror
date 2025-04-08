@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref } from 'vue';
 import { useDebug } from '@/arkham/debug';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, groupBy } from '@/arkham/helpers';
 import { type Game } from '@/arkham/types/Game';
 import { type Card, cardImage } from '@/arkham/types/Card'
 import * as ArkhamGame from '@/arkham/types/Game';
@@ -81,20 +81,6 @@ const showCardsUnderAgenda = () => emit('show', cardsUnder, 'Cards Under Agenda'
 const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
-
-function groupBy<T, K extends string | number | symbol>(
-  array: T[],
-  getKey: (item: T) => K
-): Record<K, T[]> {
-  return array.reduce((result, item) => {
-    const key = getKey(item);
-    if (!result[key]) {
-      result[key] = [];
-    }
-    result[key].push(item);
-    return result;
-  }, {} as Record<K, T[]>);
-}
 
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 

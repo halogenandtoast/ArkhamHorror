@@ -450,6 +450,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
     intellect <- field InvestigatorBaseIntellect (toId investigator')
     combat <- field InvestigatorBaseCombat (toId investigator')
     agility <- field InvestigatorBaseAgility (toId investigator')
+    handSize <- getHandSize (toAttrs investigator')
     let
       additionalData =
         object
@@ -463,6 +464,7 @@ withInvestigatorConnectionData inner@(With target _) = case target of
           , "intellect" .= intellect
           , "combat" .= combat
           , "agility" .= agility
+          , "handSize" .= handSize
           ]
     case mLocation of
       Nothing -> pure $ inner `with` ConnectionData [] `with` additionalData

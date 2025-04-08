@@ -577,7 +577,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
           </template>
         </div>
       </div>
-      <div class="hand" >
+      <div class="hand hand-area">
         <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
           @drop="onDropHand($event)"
           @dragover.prevent="dragover($event)"
@@ -624,6 +624,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
           </template>
 
         </transition-group>
+        <div class="hand-size">Hand Size: {{investigator.handSize}}</div>
       </div>
     </div>
 
@@ -859,6 +860,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
 .hand {
   display: flex;
   gap: 5px;
+  flex: 0;
 }
 
 .investigator-and-deck {
@@ -871,4 +873,25 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   display: flex;
   flex-direction: column;
 }
+
+.hand-size {
+  padding: 3px;
+  justify-items: center;
+  font-size: calc(0.1rem + 0.4vw);
+  color: white;
+  background-color: var(--neutral-dark);
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  min-width: fit-content;
+}
+
+.hand-area {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  flex: 1;
+}
+
 </style>

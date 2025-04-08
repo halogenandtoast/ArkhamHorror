@@ -861,6 +861,12 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   display: flex;
   gap: 5px;
   flex: 0;
+  overflow: auto;
+}
+
+.split-view .hand {
+  flex-wrap: wrap;
+  min-height: fit-content;
 }
 
 .investigator-and-deck {
@@ -877,7 +883,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
 .hand-size {
   padding: 3px;
   justify-items: center;
-  font-size: calc(0.1rem + 0.4vw);
+  font-size: 0.7rem;
   color: white;
   background-color: var(--neutral-dark);
   display: grid;

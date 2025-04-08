@@ -28,7 +28,7 @@ instance RunMessage JamesCookieFredericksDubiousChoice where
   runMessage msg a@(JamesCookieFredericksDubiousChoice attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 6)
+      skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest _iid (isSource attrs -> True) -> do

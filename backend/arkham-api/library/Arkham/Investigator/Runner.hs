@@ -1974,8 +1974,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
     mods <- getModifiers iid
-    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | d.canModify, DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | d.canModify, d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
+    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
+    let additionalDiscovered = getSum (fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
 
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
 

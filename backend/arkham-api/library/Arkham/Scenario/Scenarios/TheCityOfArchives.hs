@@ -24,7 +24,6 @@ import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCityOfArchives.Helpers
 import Arkham.Scenarios.TheCityOfArchives.Story
 import Arkham.Timing qualified as Timing
-import Arkham.Trait hiding (Trait (Cultist, ElderThing))
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 import Control.Lens (over)
@@ -88,14 +87,10 @@ instance RunMessage TheCityOfArchives where
       setChaosTokens standaloneChaosTokens
       pure s
     Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
-      uniqueItemAssetCards <- select $ InDeckOf (InvestigatorWithId iid) <> basic (#item <> CardIsUnique)
-      uniqueItemAssets <- select $ AssetWithTrait Item <> UniqueAsset
+      uniqueItemAssetCards <- select $ inDeckOf iid <> basic (#asset <> #item <> CardIsUnique)
+      uniqueItemAssets <- select $ #item <> UniqueAsset
 
-      mAlejandro <-
-        selectOne
-          $ InDeckOf (InvestigatorWithId iid)
-          <> BasicCardMatch
-            (cardIs Assets.alejandroVela)
+      mAlejandro <- selectOne $ inDeckOf iid <> basic (cardIs Assets.alejandroVela)
 
       let setAsideUpdate = maybe id (over setAsideCardsL . (:)) mAlejandro
 

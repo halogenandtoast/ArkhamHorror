@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Query
 import Arkham.Keyword
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted

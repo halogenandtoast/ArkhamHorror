@@ -80,8 +80,13 @@ const isArkhamDBDeck = computed(() => {
   return currentDeckUrl.value.startsWith('https://arkhamdb.com')
 })
 
+const isArkhamBuildDeck = computed(() => {
+  if (!currentDeckUrl.value) { return false }
+  return currentDeckUrl.value.startsWith('https://api.arkham.build')
+})
+
 const deckSource = computed(() => {
-  return isArkhamDBDeck.value ? 'ArkhamDB' : 'arkham.build'
+  return isArkhamDBDeck.value ? 'ArkhamDB' : (isArkhamBuildDeck.value ? 'arkham.build' : null)
 })
 
 function viewDeck() {
@@ -303,7 +308,7 @@ const tabooList = function (investigator: Investigator) {
                   <p>{{ $t('upgrade.fetching', {deckSource: deckSource}) }}</p>
                 </template>
                 <template v-else>
-                  <template v-if="investigatorId == originalInvestigatorId && deckUrl">
+                  <template v-if="investigatorId == originalInvestigatorId && deckSource">
                     <p>{{ $t('upgrade.directlyUpdateContent', {deckSource: deckSource}) }}</p>
                     <div class="buttons">
                       <button @click.prevent="viewDeck">{{ $t('upgrade.openDeck', {deckSource: deckSource}) }}</button>

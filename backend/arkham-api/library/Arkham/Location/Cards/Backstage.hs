@@ -28,13 +28,7 @@ instance HasAbilities Backstage where
 instance RunMessage Backstage where
   runMessage msg l@(Backstage attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      backstageDoorwayCount <- selectCount $ LocationWithUnrevealedTitle "Backstage Doorway"
-      backstageDoorways <-
-        zip [backstageDoorwayCount ..]
-          . take 2
-          <$> (shuffleM =<< select (SetAsideCardMatch "Backstage Doorway"))
-      for_ backstageDoorways \(idx, backstageDoorway) -> do
-        locationId <- placeLocation backstageDoorway
-        push $ SetLocationLabel locationId $ "backstageDoorway" <> tshow (idx + 1)
+      backstageDoorways <- sampleListN 2 =<< getSetAsideCardsMatching "Backstage Doorway"
+      placeLabeledLocations_ "backstageDoorway" backstageDoorways
       pure l
     _ -> Backstage <$> liftRunMessage msg attrs

@@ -1,12 +1,12 @@
-module Arkham.Location.Cards.Lobby (lobby, Lobby (..)) where
+module Arkham.Location.Cards.Lobby (lobby) where
 
 import Arkham.Ability
-import Arkham.Classes
+import Arkham.Capability
 import Arkham.GameValue
+import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype Lobby = Lobby LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -16,27 +16,20 @@ lobby :: LocationCard Lobby
 lobby = location Lobby Cards.lobby 4 (Static 1)
 
 instance HasAbilities Lobby where
-  getAbilities (Lobby attrs) =
+  getAbilities (Lobby a) =
     extendRevealed
-      attrs
-      [ restrictedAbility attrs 1 CanDrawCards $ forced $ RevealLocation #when Anyone (be attrs)
-      , restrictedAbility attrs 2 Here $ ActionAbility [] $ ActionCost 2
+      a
+      [ mkAbility a 1 $ forced $ RevealLocation #when Anyone (be a)
+      , restricted a 2 (Here <> can.draw.cards You) $ ActionAbility [] $ ActionCost 2
       ]
 
 instance RunMessage Lobby where
-  runMessage msg l@(Lobby attrs) = case msg of
+  runMessage msg l@(Lobby attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      lobbyDoorwayCount <- selectCount $ LocationWithUnrevealedTitle "Lobby Doorway"
-      lobbyDoorways <-
-        zip [lobbyDoorwayCount ..]
-          . take 2
-          <$> (shuffleM =<< select (SetAsideCardMatch "Lobby Doorway"))
-      msgs <- for lobbyDoorways \(idx, lobbyDoorway) -> do
-        (locationId, placement) <- placeLocation lobbyDoorway
-        pure [placement, SetLocationLabel locationId $ "lobbyDoorway" <> tshow (idx + 1)]
-      pushAll $ concat msgs
+      lobbyDoorways <- sampleListN 2 =<< getSetAsideCardsMatching "Lobby Doorway"
+      placeLabeledLocations_ "lobbyDoorway" lobbyDoorways
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ drawCards iid (attrs.ability 2) 3
+      drawCards iid (attrs.ability 2) 3
       pure l
-    _ -> Lobby <$> runMessage msg attrs
+    _ -> Lobby <$> liftRunMessage msg attrs

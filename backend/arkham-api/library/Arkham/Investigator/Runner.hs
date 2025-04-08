@@ -1938,10 +1938,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & tokensL %~ flipClues n
   DiscoverClues iid d | iid == investigatorId -> do
     mods <- getModifiers iid
-    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
-
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
+
+    let additionalDiscoveredAt =
+          Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods, olid /= lid]
+    let additionalDiscovered = getSum $ fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods]
 
     let
       total lid' n = do
@@ -1959,28 +1960,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         base <- total lid (d.count + additionalDiscovered)
         discoveredClues <- min base <$> field LocationClues lid
         checkWindowMsg <- checkWindows [mkWhen (Window.WouldDiscoverClues iid lid d.source discoveredClues)]
-        pushAll [checkWindowMsg, DoStep 1 msg]
+
+        otherWindows <- forMaybeM (mapToList additionalDiscoveredAt) \(lid', n) -> runMaybeT do
+          liftGuardM $ getCanDiscoverClues d.isInvestigate iid lid'
+          discoveredClues' <- lift $ min <$> total lid' (getSum n) <*> field LocationClues lid'
+          guard (discoveredClues' > 0)
+          lift $ checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
+        pushAll $ checkWindowMsg : otherWindows <> [DoStep 1 msg]
       else do
         tokens <- field LocationTokens lid
         putStrLn $ "Can't discover clues in " <> tshow lid <> ": " <> tshow tokens
 
-    for_ (mapToList additionalDiscoveredAt) \(lid', n) -> do
-      whenM (getCanDiscoverClues d.isInvestigate iid lid') do
-        discoveredClues' <- min <$> total lid' (getSum n) <*> field LocationClues lid'
-        when (discoveredClues' > 0) do
-          checkWindowMsg' <-
-            checkWindows [mkWhen (Window.WouldDiscoverClues iid lid' d.source discoveredClues')]
-          pushAll
-            [ checkWindowMsg'
-            , DoStep 1
-                $ DiscoverClues iid
-                $ d {discoverLocation = DiscoverAtLocation lid', discoverCount = discoveredClues'}
-            ]
     pure a
   DoStep 1 (DiscoverClues iid d) | iid == investigatorId -> do
     mods <- getModifiers iid
-    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | DiscoveredCluesAt olid x <- mods]
-    let additionalDiscovered = getSum (fold [Sum x | d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
+    let additionalDiscoveredAt = Map.fromListWith (<>) [(olid, Sum x) | d.canModify, DiscoveredCluesAt olid x <- mods]
+    let additionalDiscovered = getSum (fold [Sum x | d.canModify, d.isInvestigate == IsInvestigate, DiscoveredClues x <- mods])
 
     lid <- fromJustNote "missing location" <$> getDiscoverLocation iid d
 

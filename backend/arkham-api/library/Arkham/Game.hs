@@ -2141,7 +2141,13 @@ getLocationsMatching lmatcher = do
                     let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
                     result <-
                       evalStateT
-                        (markDistances initialLocation (pure . (== destination)) extraConnectionsMap)
+                        ( markDistancesWithInclusion
+                            False
+                            initialLocation
+                            (pure . (== destination))
+                            (const (pure True))
+                            extraConnectionsMap
+                        )
                         state'
                     let
                       mdistance :: Maybe Int = headMay . drop 1 . map fst . sortOn fst . mapToList $ result

@@ -487,14 +487,14 @@ instance RunMessage EnemyAttrs where
         when (wantsToMove && CannotMove `notElem` mods) $ do
           keywords <- getModifiedKeywords a
           when (Keyword.Hunter `elem` keywords) do
-            pushAll
+            push $ HandleGroupTarget HunterGroup (toTarget a)
               [ CheckWindows [mkWhen $ Window.MovedFromHunter enemyId]
               , HunterMove (toId a)
               ]
           -- We should never have a case where an enemy has both patrol and
           -- hunter and should only have one patrol keyword
           for_ keywords \case
-            Keyword.Patrol lMatcher -> push $ PatrolMove (toId a) lMatcher
+            Keyword.Patrol lMatcher -> push $ HandleGroupTarget HunterGroup (toTarget a) [PatrolMove (toId a) lMatcher]
             _ -> pure ()
       pure a
     SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do

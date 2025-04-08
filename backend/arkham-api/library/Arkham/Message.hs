@@ -350,6 +350,10 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
   deriving stock (Show, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data GroupKey = HunterGroup
+  deriving stock (Show, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = UseAbility InvestigatorId Ability [Window]
   | SkillTestResultOption Text [Message]
@@ -1113,6 +1117,8 @@ data Message
   | ChoosingDecks
   | DoneChoosingDecks
   | SetPartnerStatus CardCode PartnerStatus
+  | HandleGroupTarget GroupKey Target [Message]
+  | HandleGroupTargets GroupKey (Map Target [Message])
   | -- Commit
     Do Message
   | DoBatch BatchId Message

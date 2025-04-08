@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { watch, ref, onMounted } from 'vue'
+import { watch, ref } from 'vue'
 import {imgsrc} from '@/arkham/helpers';
 import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
-import { CardDef } from '@/arkham/types/CardDef';
 import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
 
 type Props = {
@@ -17,13 +16,11 @@ const props = withDefaults(defineProps<Props>(), {
 const ready = ref(false)
 const emit = defineEmits(['newDeck'])
 
-onMounted(async () => {
-  fetchInvestigators().then(async (response) => {
-    fetch("/cards.json").then(async (cardResponse) => {
-      cards.value = await cardResponse.json()
-      investigators.value = response
-      ready.value = true
-    })
+await fetchInvestigators().then(async (response) => {
+  fetch("/cards.json").then(async (cardResponse) => {
+    cards.value = await cardResponse.json()
+    investigators.value = response
+    ready.value = true
   })
 })
 
@@ -59,7 +56,7 @@ const errors = ref([])
 const valid = ref(false)
 const investigatorError = ref<string | null>(null)
 const investigator = ref<string | null>(null)
-const investigators = ref<CardDef[]>([])
+const investigators = ref<string[]>([])
 const deck = ref<string | null>(null)
 const deckId = ref<string | null>(null)
 const deckName = ref<string | null>(null)
@@ -152,7 +149,7 @@ function runValidations() {
 
 async function createDeck() {
   errors.value = []
-  if (deckId.value && deckName.value && valid.value) {
+  if (deckId.value && deckName.value && valid.value && deckUrl.value) {
     newDeck(deckId.value, deckName.value, deckUrl.value, deckList.value).then((newDeck) => {
       deckId.value = null
       deckName.value = null

@@ -56,6 +56,7 @@ mconcat
                   , chaosTokenFace = #skull
                   , chaosTokenRevealedBy = Nothing
                   , chaosTokenCancelled = False
+                  , chaosTokenSealed = False
                   }
             "CultistKey" ->
               pure
@@ -65,6 +66,7 @@ mconcat
                   , chaosTokenFace = #cultist
                   , chaosTokenRevealedBy = Nothing
                   , chaosTokenCancelled = False
+                  , chaosTokenSealed = False
                   }
             "TabletKey" ->
               pure
@@ -74,6 +76,7 @@ mconcat
                   , chaosTokenFace = #tablet
                   , chaosTokenRevealedBy = Nothing
                   , chaosTokenCancelled = False
+                  , chaosTokenSealed = False
                   }
             "ElderThingKey" ->
               pure
@@ -83,6 +86,7 @@ mconcat
                   , chaosTokenFace = #elderthing
                   , chaosTokenRevealedBy = Nothing
                   , chaosTokenCancelled = False
+                  , chaosTokenSealed = False
                   }
             _ -> $(mkParseJSON defaultOptions ''ArkhamKey) o
       |]

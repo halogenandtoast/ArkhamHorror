@@ -19,13 +19,16 @@ oculaObscuraEsotericEyepiece = asset OculaObscuraEsotericEyepiece Cards.oculaObs
 instance HasAbilities OculaObscuraEsotericEyepiece where
   getAbilities (OculaObscuraEsotericEyepiece x) =
     [ playerLimit PerPhase
-        $ controlled x 1 (criteria1 <> DuringSkillTest (SkillTestWithRevealedChaosToken NonSymbol))
+        $ controlled x 1 (criteria1 <> DuringSkillTest (SkillTestWithRevealedChaosToken $ notSealedToken NonSymbol))
         $ freeReaction (SkillTestResult #after You #any #success)
     , playerLimit PerTestOrAbility $ controlled x 2 criteria2 $ forced $ WouldRevealChaosToken #when You
     ]
    where
     criteria1 = if null x.sealedChaosTokens then NoRestriction else Never
     criteria2 = if null x.sealedChaosTokens then Never else NoRestriction
+    notSealedToken matcher = case x.sealedChaosTokens of
+      [] -> matcher
+      xs -> matcher <> not_ (mapOneOf (ChaosTokenIs . chaosTokenId) xs)
 
 instance RunMessage OculaObscuraEsotericEyepiece where
   runMessage msg a@(OculaObscuraEsotericEyepiece attrs) = runQueueT $ case msg of
@@ -36,16 +39,10 @@ instance RunMessage OculaObscuraEsotericEyepiece where
         push unfocus
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
+      let tokens = map (\t -> t { chaosTokenSealed = True }) attrs.sealedChaosTokens
       push
         $ ReplaceCurrentDraw (attrs.ability 2) iid
-        $ Choose (attrs.ability 2) 1 ResolveChoice [Resolved attrs.sealedChaosTokens] [] Nothing
-      pure a
-    RevealChaosToken _ _ drawnToken -> do
-      when (drawnToken `elem` attrs.sealedChaosTokens) do
-        push $ UnsealChaosToken drawnToken
-      pure a
-    ResolveChaosToken drawnToken _ _ -> do
-      when (drawnToken `elem` attrs.sealedChaosTokens) do
-        push $ UnsealChaosToken drawnToken
+        $ Choose (attrs.ability 2) 1 ResolveChoice [Resolved tokens] [] Nothing
+      afterSkillTest $ for_ attrs.sealedChaosTokens unsealChaosToken
       pure a
     _ -> OculaObscuraEsotericEyepiece <$> liftRunMessage msg attrs

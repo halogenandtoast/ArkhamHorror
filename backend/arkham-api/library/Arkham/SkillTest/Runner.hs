@@ -265,7 +265,7 @@ instance RunMessage SkillTest where
               for_ tokensTreatedAsRevealed $ \chaosTokenFace -> do
                 t <- getRandom
                 pushAll
-                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False))
+                  $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
         else
           if SkillTestAutomaticallySucceeds `elem` modifiers''
             then pushAll [PassSkillTest, UnsetActiveCard]

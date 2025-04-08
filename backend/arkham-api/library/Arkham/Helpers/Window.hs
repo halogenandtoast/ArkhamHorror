@@ -1553,7 +1553,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       Window.RevealChaosToken who token ->
         andM
           [ matchWho iid who whoMatcher
-          , matchChaosToken who token tokenMatcher
+          , matchChaosToken who token (IncludeSealed tokenMatcher)
           ]
       _ -> noMatch
     Matcher.ResolvesTreachery timing whoMatcher treacheryMatcher -> guardTiming timing $ \case

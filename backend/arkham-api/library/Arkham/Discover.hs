@@ -47,9 +47,6 @@ discoverIsInvestigate d = if d.action == Just #investigate then IsInvestigate el
 viaInvestigate :: Discover -> Discover
 viaInvestigate discover' = discover' {discoverAction = Just #investigate}
 
-discoverAction :: Maybe Action -> Discover -> Discover
-discoverAction action discover' = discover' {discoverAction = action}
-
 discoverAtYourLocation :: Sourceable source => source -> Int -> Discover
 discoverAtYourLocation (toSource -> source) n =
   Discover
@@ -71,9 +68,8 @@ discover a (toSource -> source) n =
     , discoverThen = []
     }
 
-$( do
-    isInvestigateJSON <- deriveJSON defaultOptions ''IsInvestigate
-    discoverLocationJSON <- deriveJSON defaultOptions ''DiscoverLocation
-    discoverJSON <- deriveJSON defaultOptions ''Discover
-    pure $ concat [isInvestigateJSON, discoverLocationJSON, discoverJSON]
- )
+mconcat
+  [ deriveJSON defaultOptions ''IsInvestigate
+  , deriveJSON defaultOptions ''DiscoverLocation
+  , deriveJSON defaultOptions ''Discover
+  ]

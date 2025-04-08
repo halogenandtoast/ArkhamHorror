@@ -172,6 +172,7 @@ instance RunMessage IceAndDeathPart3 where
       seepingNightmareEnemies <- for (zip seepingNightmares locations) (uncurry createEnemyAt)
 
       eidolons <- shuffle =<< amongGathered (CardWithTrait Eidolon)
+      doNotShuffleIn eidolons
 
       case seepingNightmareEnemies of
         [a] -> placeUnderneath a eidolons

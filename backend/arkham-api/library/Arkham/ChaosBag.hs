@@ -156,7 +156,7 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> drawn))
+                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn))
                 )
               pure (Resolved drawn, [])
             Just drawn -> do
@@ -164,17 +164,17 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> [drawn]))
+                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) [drawn]))
                 )
               pure (Resolved [drawn], [])
         Nothing -> do
           (ignored, drawnAndRemaining) <- breakM (`matches` inner) =<< shuffleM bagChaosTokens
           case drawnAndRemaining of
             [] -> do
-              modify' ((chaosTokensL .~ []) . (setAsideChaosTokensL %~ (<> ignored)))
+              modify' ((chaosTokensL .~ []) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) ignored)))
               pure (Resolved [], map (ChaosTokenIgnored iid source) ignored)
             (drawn : remaining) -> do
-              modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ (drawn : ignored)))
+              modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ filter (not . (.sealed)) (drawn : ignored)))
               resolveFirstUnresolved source iid strategy
                 $ Decided (ChooseMatch source 1 ResolveChoice [Resolved [drawn], Resolved ignored] [] inner Nothing)
     Draw -> do
@@ -188,7 +188,7 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> drawn))
+                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn))
                 )
               pure (Resolved drawn, [])
             Just drawn -> do
@@ -196,12 +196,12 @@ resolveFirstUnresolved source iid strategy = \case
               modify'
                 ( (forceDrawL .~ Nothing)
                     . (chaosTokensL .~ remaining)
-                    . (setAsideChaosTokensL %~ (<> [drawn]))
+                    . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) [drawn]))
                 )
               pure (Resolved [drawn], [])
         Nothing -> do
           (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
-          modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> drawn)))
+          modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn)))
           pure (Resolved drawn, [])
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps tokens' AnyChaosToken nested, [])
@@ -857,13 +857,13 @@ instance RunMessage ChaosBag where
       pure
         $ c
         & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
-        & (setAsideChaosTokensL %~ map replaceToken)
+        & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     ChaosTokenCanceled _ _ token -> do
       let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
       pure
         $ c
         & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
-        & (setAsideChaosTokensL %~ map replaceToken)
+        & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
@@ -872,7 +872,7 @@ instance RunMessage ChaosBag where
     RevealChaosToken SkillTestSource {} _ token ->
       pure
         $ c
-        & (setAsideChaosTokensL %~ nub . ([token] <>))
+        & (setAsideChaosTokensL %~ nub . (filter (not . (.sealed)) [token] <>))
         & (revealedChaosTokensL %~ nub . ([token] <>))
         & (chaosTokensL %~ filter (/= token))
     ForTarget (SkillTestTarget _) (RevealChaosToken SkillTestSource {} _ token) ->
@@ -920,11 +920,11 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
     SetChaosTokenAside token -> do
-      pure $ c & setAsideChaosTokensL %~ (<> [token])
+      pure $ c & setAsideChaosTokensL %~ (<> [token { chaosTokenSealed = False }])
     UnsealChaosToken token -> do
       pure
         $ c
-        & (chaosTokensL %~ (token {chaosTokenCancelled = False} :))
+        & (chaosTokensL %~ (token {chaosTokenCancelled = False, chaosTokenSealed = False} :))
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
     RemoveChaosToken face ->

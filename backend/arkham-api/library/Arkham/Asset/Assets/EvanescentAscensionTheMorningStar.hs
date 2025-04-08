@@ -54,6 +54,8 @@ instance RunMessage EvanescentAscensionTheMorningStar where
               , chaosTokenFace = ElderSign
               , chaosTokenRevealedBy = Just iid'
               , chaosTokenCancelled = False
+              , chaosTokenSealed = True -- makes sure we do not add this to the bag
+
               }
           push RerunSkillTest
       pure a

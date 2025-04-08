@@ -28,13 +28,14 @@ data ChaosTokenValue = ChaosTokenValue ChaosTokenFace ChaosTokenModifier
 createChaosToken :: MonadRandom m => ChaosTokenFace -> m ChaosToken
 createChaosToken face = do
   tokenId <- getRandom
-  pure $ ChaosToken tokenId face Nothing False
+  pure $ ChaosToken tokenId face Nothing False False
 
 data ChaosToken = ChaosToken
   { chaosTokenId :: ChaosTokenId
   , chaosTokenFace :: ChaosTokenFace
   , chaosTokenRevealedBy :: Maybe InvestigatorId
   , chaosTokenCancelled :: Bool
+  , chaosTokenSealed :: Bool
   }
   deriving stock (Show, Data)
 
@@ -80,6 +81,9 @@ instance HasField "id" ChaosToken ChaosTokenId where
 
 instance HasField "face" ChaosToken ChaosTokenFace where
   getField = chaosTokenFace
+
+instance HasField "sealed" ChaosToken Bool where
+  getField = chaosTokenSealed
 
 instance HasField "revealedBy" ChaosToken (Maybe InvestigatorId) where
   getField = chaosTokenRevealedBy
@@ -272,6 +276,7 @@ mconcat
           chaosTokenFace <- o .: "chaosTokenFace"
           chaosTokenRevealedBy <- o .: "chaosTokenRevealedBy"
           chaosTokenCancelled <- o .:? "chaosTokenCancelled" .!= False
+          chaosTokenSealed <- o .:? "chaosTokenSealed" .!= False
           pure ChaosToken {..}
       |]
   , deriveJSON defaultOptions ''ChaosTokenValue

@@ -217,6 +217,9 @@ removeCards xs = do
   attrsL . encounterDeckL %= filter ((`notElem` xs) . toCard)
   otherCardsL %= filter (`notElem` xs)
 
+doNotShuffleIn :: Monad m => [Card] -> ScenarioBuilderT m ()
+doNotShuffleIn = removeCards
+
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
   attrsL . encounterDeckL %= flip removeEachFromDeck [def]

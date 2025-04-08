@@ -5,6 +5,7 @@ module Arkham.Investigator.Import.Lifted (
 where
 
 import Arkham.Classes as X
+import Arkham.Id as X
 import Arkham.Investigator.Runner as X (
   ChaosTokenFace (ElderSign),
   ChaosTokenModifier (..),
@@ -12,12 +13,13 @@ import Arkham.Investigator.Runner as X (
   Field (InvestigatorDiscard),
   InvestigatorAttrs (..),
   InvestigatorCard,
-  IsInvestigator(..),
+  IsInvestigator (..),
   Stats (..),
   deckL,
   decksL,
   defeatedL,
   deleteMetaKey,
+  formL,
   insertMetaKey,
   investigator,
   investigatorWith,
@@ -51,13 +53,12 @@ import Arkham.Message as X (
 import Arkham.Message.Lifted as X
 import Arkham.Prelude as X
 import Arkham.Question as X
-import Arkham.Id as X
 import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Calculation
-import Arkham.Matcher.Window
 import Arkham.Matcher.Investigator
+import Arkham.Matcher.Window
 
 elderSignValue :: GameCalculation -> ChaosTokenValue
 elderSignValue = ChaosTokenValue ElderSign . CalculatedModifier

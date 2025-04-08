@@ -473,10 +473,10 @@ getJustLocation
 getJustLocation = fieldJust InvestigatorLocation
 
 getMaybeLocation
-  :: (HasCallStack, HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
+  :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator
   -> m (Maybe LocationId)
-getMaybeLocation = field InvestigatorLocation . asId
+getMaybeLocation = fmap join . fieldMay InvestigatorLocation . asId
 
 withLocationOf
   :: (AsId investigator, IdOf investigator ~ InvestigatorId, HasGame m)
@@ -517,7 +517,7 @@ getAvailableSkillsFor skillType iid = do
     | toReplace == skillType = insertSet toUse skills
   applyModifier _ skills = skills
 
-isEliminated :: HasGame m => InvestigatorId -> m Bool
+isEliminated :: (HasCallStack, HasGame m) => InvestigatorId -> m Bool
 isEliminated iid =
   orM $ sequence [field InvestigatorResigned, field InvestigatorDefeated] iid
 

@@ -64,6 +64,7 @@ import Arkham.Helpers.Window hiding (getEnemy, getLocation)
 import Arkham.History
 import Arkham.Id
 import Arkham.Investigator (
+  InvestigatorForm (..),
   becomeHomunculus,
   becomeYithian,
   lookupInvestigator,
@@ -404,7 +405,7 @@ runGameMessage msg g = case msg of
     case gameMode g of
       These c _ -> pure $ update $ g & (modeL .~ This c)
       _ -> pure $ update g
-  ResetGame ->
+  ResetGame -> do
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
@@ -2969,12 +2970,12 @@ runGameMessage msg g = case msg of
   Discard miid source (TreacheryTarget tid) -> do
     mcard <- fieldMay TreacheryCard tid
     for_ mcard \card -> do
-      iid <- maybe getActiveInvestigatorId pure miid
+      miid' <- maybeSomeInvestigator miid
       let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
       wouldDo
         (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
         (Window.WouldBeDiscarded (TreacheryTarget tid))
-        (Window.Discarded (Just iid) source card)
+        (Window.Discarded miid' source card)
 
     pure g
   UpdateHistory iid historyItem -> do
@@ -2992,10 +2993,8 @@ runGameMessage msg g = case msg of
       Just theGreatWork -> do
         homunculus <- becomeHomunculus <$> getInvestigator iid
         removeCard theGreatWork.id
-        push $ RemoveCardFromDeckForCampaign "11068b" theGreatWork.id
-        pure
-          $ g
-          & (entitiesL . investigatorsL %~ deleteMap iid . insertMap "11068b" homunculus)
+        push $ RemoveCardFromDeckForCampaign iid theGreatWork.id
+        pure $ g & (entitiesL . investigatorsL %~ insertMap iid homunculus)
   _ -> pure g
 
 -- TODO: Clean this up, the found of stuff is a bit messy
@@ -3092,6 +3091,13 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
+  ResetGame -> do
+    let
+      promoteHomunculus (k, i) =
+        if i.form == HomunculusForm
+          then ("11068b", overAttrs (\x -> x {Investigator.investigatorId = "11068b"}) i)
+          else (k, i)
+    pure $ g & (entitiesL . investigatorsL %~ mapFromList . map promoteHomunculus . mapToList)
   CheckWindows ws -> do
     pushAll [Do (CheckWindows ws), EndCheckWindow]
     pure $ g & windowDepthL +~ 1 & (windowStackL %~ Just . maybe [ws] (ws :))

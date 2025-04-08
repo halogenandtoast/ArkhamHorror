@@ -10,6 +10,7 @@ data Entities
 
 instance Semigroup Entities
 instance Monoid Entities
+instance Data Entities
 instance Eq Entities
 instance Show Entities
 instance HasAbilities Entities

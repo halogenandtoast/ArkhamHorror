@@ -622,8 +622,7 @@ getCampaignsMatching matcher = do
   go = \case
     TheCampaign -> pure . const True
 
-getInvestigatorsMatching
-  :: HasGame m => InvestigatorMatcher -> m [Investigator]
+getInvestigatorsMatching :: (HasCallStack, HasGame m) => InvestigatorMatcher -> m [Investigator]
 getInvestigatorsMatching matcher = do
   investigators <- toList . view (entitiesL . investigatorsL) <$> getGame
   investigators' <-

@@ -248,7 +248,10 @@ instance RunMessage IceAndDeathPart2 where
       setAgendaDeck [Agendas.aHarshWindBlows, Agendas.theChillOfNight, Agendas.madnessAndDeath]
       setActDeck [Acts.theLostExpedition]
 
-      mia <- mapMaybe (\x -> lookup x.cardCode possessedMap) <$> getPartnersWithStatus (== Mia)
+      partners <- getPartnersWithStatus (const True) -- probably should extract a helper for this
+      let toEnemies = mapMaybe (\x -> lookup x.cardCode possessedMap)
+      let (mia, rest) = bimap toEnemies toEnemies $ partition (\x -> x.status == Mia) partners
+      removeEvery rest
       setAside $ mia <> stories
 
       addTekeliliDeck

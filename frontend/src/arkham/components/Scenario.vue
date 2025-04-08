@@ -757,7 +757,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
       <div class="phase" :class="{ 'active-phase': phase == 'EnemyPhase' }">
         <div class="subphases">
           <div v-tooltip.left="$t('phase.enemyPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'EnemyPhaseBeginsStep'}">3.1</div>
-          <div v-tooltip.left="$t('phase.hunterEnemiesMoveStep')" :class="{'current': phaseStep?.contents === 'HunterEnemiesMoveStep'}">3.2</div>
+          <div v-tooltip.left="$t('phase.hunterEnemiesMoveStep')" :class="{'current': phaseStep?.contents === 'HunterEnemiesMoveStep'}">3.2 <span v-if="phaseStep?.contents === 'HunterEnemiesMoveStep'">{{$t('phase.hunterEnemiesMoveStep')}}</span></div>
           <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'ResolveAttacksWindow'}"><i class="fast-icon" /></div>
           <div v-tooltip.left="$t('phase.resolveAttacksStep')" :class="{'current': phaseStep?.contents === 'ResolveAttacksStep'}">3.3</div>
           <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'AfterResolveAttacksWindow'}"><i class="fast-icon" /></div>
@@ -1044,6 +1044,19 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   font-family: Arial;
   .current {
     background: rgba(0, 0, 0, 0.5) !important;
+    position: relative;
+    span {
+      position: absolute;
+      right: 100%;
+      z-index: 100000;
+      background: #222;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-inline: 10px;
+      pointer-events: none;
+    }
   }
   > div {
     width: 100%;

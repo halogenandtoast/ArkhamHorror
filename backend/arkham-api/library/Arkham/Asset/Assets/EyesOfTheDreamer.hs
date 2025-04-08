@@ -33,7 +33,7 @@ instance RunMessage EyesOfTheDreamer where
       sid <- getRandom
       let source = attrs.ability 1
       onSucceedByEffect sid (atLeast 0) (attrs.ability 1) sid $ doStep 1 msg
-      aspect iid source (#willpower `InsteadOf` #combat) (mkInvestigate sid iid source)
+      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure
         $ EyesOfTheDreamer
         $ setMetaKey "eyesIgnored" ([] :: [ChaosTokenFace])

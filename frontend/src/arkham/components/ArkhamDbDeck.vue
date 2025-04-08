@@ -20,7 +20,7 @@ function loadDeck() {
   model.value = null
 
   const arkhamDbRegex = /https:\/\/(?:[a-zA-Z0-9-]+\.)?arkhamdb\.com\/(deck(list)?)(\/view)?\/([^/]+)/
-  const arkhamBuildRegex = /https:\/\/arkham\.build\/(?:deck\/view|share)\/([^/]+)/
+  const arkhamBuildRegex = /https:\/\/arkham\.build\/(deck(list)?)(\/view|share)\/([^/]+)/
   
   let matches
   if ((matches = deck.value.match(arkhamDbRegex))) {
@@ -29,17 +29,24 @@ function loadDeck() {
       .then((response) => response.json(), () => model.value = null)
       .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
   } else if ((matches = deck.value.match(arkhamBuildRegex))) {
-    deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[1]}`
-    fetch(deckUrl.value)
-      .then(async (response) => {
-        if (response.ok) {
-          const data = await response.json()
-          model.value = {...data, url: deckUrl.value}
-        } else {
-          model.value = null
-          error.value = "Could not find deck, please make sure you have created a public share."
-        }
-      }, () => model.value = null)
+    if (/^[0-9]+$/.test(matches[4])) {
+      deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
+      fetch(deckUrl.value)
+        .then((response) => response.json(), () => model.value = null)
+        .then((data) => model.value = {...data, url: deckUrl.value}, () => model.value = null)
+    } else {
+      deckUrl.value = `https://api.arkham.build/v1/public/share/${matches[4]}`
+      fetch(deckUrl.value)
+        .then(async (response) => {
+          if (response.ok) {
+            const data = await response.json()
+            model.value = {...data, url: deckUrl.value}
+          } else {
+            model.value = null
+            error.value = "Could not find deck, please make sure you have created a public share."
+          }
+        }, () => model.value = null)
+    }
   } else {
     return
   }

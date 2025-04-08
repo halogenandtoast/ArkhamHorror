@@ -4,7 +4,6 @@ import { imgsrc } from '@/arkham/helpers';
 import { TokenType } from '@/arkham/types/Token';
 import type { Card, CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
-import type { Enemy } from '@/arkham/types/Enemy';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
@@ -50,7 +49,6 @@ const image = computed(() => {
   if (cardCode === "c05178l" && !isFlipped) {
     return imgsrc(`cards/${cardCode.replace(/^c/, '').replace(/l$/, 'k')}.avif`)
   }
-  console.log(cardContents.value)
   const suffix = !props.revealed && isFlipped ? 'b' : ''
   const mutatedSuffix = mutated ? `_${mutated}` : ''
   return imgsrc(`cards/${cardCode.replace(/^c/, '')}${suffix}${mutatedSuffix}.avif`)

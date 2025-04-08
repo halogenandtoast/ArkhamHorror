@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
-import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon } from '@heroicons/vue/20/solid'
+import { EyeIcon, QuestionMarkCircleIcon, ViewColumnsIcon, ArchiveBoxXMarkIcon } from '@heroicons/vue/20/solid'
 import {
   watchEffect,
   onMounted,
@@ -114,6 +114,15 @@ addEntry({
   content: t('gameBar.splitView'),
   nested: 'view',
   action: toggleSplitView
+})
+
+
+addEntry({
+  id: "viewRemovedFromPlay",
+  icon: ArchiveBoxXMarkIcon,
+  content: "View removed from Play",
+  nested: 'view',
+  action: () => showRemovedFromPlay()
 })
 
 // Computed
@@ -668,7 +677,6 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
         >
         </SkillTest>
 
-        <button v-if="removedFromPlay.length > 0" class="view-removed-from-play-button" @click="showRemovedFromPlay"><font-awesome-icon icon="eye" /> Removed from Play</button>
       </div>
 
 

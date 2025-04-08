@@ -173,6 +173,7 @@ export type Investigator = {
   log: LogContents;
   meta: any;
   settings: CardSettings;
+  handSize: number;
 }
 
 type SlotType = 'HandSlot' | 'BodySlot' | 'AccessorySlot' | 'ArcaneSlot' | 'TarotSlot' | 'AllySlot'
@@ -276,6 +277,7 @@ export const investigatorDecoder = JsonDecoder.object({
   log: logContentsDecoder,
   meta: JsonDecoder.succeed(),
   settings: cardSettingsDecoder,
+  handSize: JsonDecoder.number(),
 }, 'Investigator').map(({search, placement, ...rest}) => ({
   foundCards: search,
   location: placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000",

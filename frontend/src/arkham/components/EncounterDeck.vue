@@ -63,11 +63,11 @@ const investigatorPortrait = computed(() => {
     return null;
   }
 
-  if (investigator.value.form === "HomunculusForm") {
+  if (investigator.value.form.tag === "HomunculusForm") {
     return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
   }
 
-  if (investigator.value.form === "YithianForm") {
+  if (investigator.value.form.tag === "YithianForm") {
     return imgsrc(`portraits/${investigator.value.id.replace('c', '')}.jpg`)
   }
 

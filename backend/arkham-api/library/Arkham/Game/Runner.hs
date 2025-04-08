@@ -2556,15 +2556,18 @@ runGameMessage msg g = case msg of
         $ CreateWindowModifierEffect (EffectCardResolutionWindow c.id) ems GameSource (CardIdTarget c.id)
     pure g
   GainSurge source target -> do
-    cardId <- case target of
-      EnemyTarget eid -> field EnemyCardId eid
-      TreacheryTarget tid -> field TreacheryCardId tid
-      AssetTarget aid -> field AssetCardId aid
-      LocationTarget lid -> field LocationCardId lid
-      CardIdTarget cid -> pure cid
+    mCardId <- case target of
+      EnemyTarget eid -> fieldMay EnemyCardId eid
+      TreacheryTarget tid -> fieldMay TreacheryCardId tid
+      AssetTarget aid -> fieldMay AssetCardId aid
+      LocationTarget lid -> fieldMay LocationCardId lid
+      CardIdTarget cid -> pure (Just cid)
       _ -> error "Unhandled surge target"
-    (effectId, surgeEffect) <- createSurgeEffect source cardId
-    pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
+    case mCardId of
+      Just cardId -> do
+        (effectId, surgeEffect) <- createSurgeEffect source cardId
+        pure $ g & entitiesL . effectsL . at effectId ?~ surgeEffect
+      Nothing -> pure g
   Surge iid source -> g <$ push (drawEncounterCard iid source)
   ReplaceCard cardId card -> do
     replaceCard cardId card -- We must update the IORef

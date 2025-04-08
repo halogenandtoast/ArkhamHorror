@@ -1660,6 +1660,31 @@ runGameMessage msg g = case msg of
             askMap
       _ -> push $ AskMap askMap
     pure g
+  HandleGroupTarget k t msgs -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (HandleGroupTarget k' t' msgs') | k == k' -> do
+        _ <- popMessage
+        push $ HandleGroupTargets k (mapFromList [(t, msgs), (t', msgs')])
+      Just (HandleGroupTargets k' m) | k == k' -> do
+        _ <- popMessage
+        push $ HandleGroupTargets k' (insertMap t msgs m)
+      _ -> pushAll msgs
+    pure g
+  HandleGroupTargets k targetMap -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (HandleGroupTarget k' t' msgs') | k == k' -> do
+        _ <- popMessage
+        push $ HandleGroupTargets k (insertMap t' msgs' targetMap)
+      Just (HandleGroupTargets k' m) | k == k' -> do
+        _ <- popMessage
+        push $ HandleGroupTargets k' (m <> targetMap)
+      _ -> do
+        let opts = map (uncurry TargetLabel) $ mapToList targetMap
+        lead <- getLeadPlayer
+        push $ Ask lead $ ChooseOneAtATime opts
+    pure g
   EnemyWillAttack details -> do
     modifiers' <- getModifiers (attackTarget details)
     cannotBeAttacked <- flip anyM modifiers' $ \case

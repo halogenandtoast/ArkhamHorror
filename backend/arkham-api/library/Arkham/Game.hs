@@ -1311,6 +1311,9 @@ getTreacheriesMatching matcher = do
     TreacheryWithHorror gameValueMatcher -> \t -> do
       horror <- fieldMap TreacheryTokens (Token.countTokens #horror) (toId t)
       horror `gameValueMatches` gameValueMatcher
+    TreacheryWithClues gameValueMatcher -> \t -> do
+      clues <- fieldMap TreacheryTokens (Token.countTokens #clue) (toId t)
+      clues `gameValueMatches` gameValueMatcher
     TreacheryWithDoom gameValueMatcher -> \t -> do
       doom <- field TreacheryDoom (toId t)
       doom `gameValueMatches` gameValueMatcher
@@ -4952,6 +4955,7 @@ runMessages mLogger = do
               runMessages mLogger
             ClearUI -> runMessages mLogger
             Ask _ (ChooseOneAtATime []) -> runMessages mLogger
+            Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages mLogger
             Ask pid q -> do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-

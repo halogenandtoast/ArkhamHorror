@@ -32,6 +32,7 @@ data TreacheryMatcher
   | TreacheryWithToken Token
   | TreacheryWithDoom ValueMatcher
   | TreacheryWithHorror ValueMatcher
+  | TreacheryWithClues ValueMatcher
   | TreacheryWithTrait Trait
   | TreacheryInHandOf InvestigatorMatcher
   | TreacheryInThreatAreaOf InvestigatorMatcher

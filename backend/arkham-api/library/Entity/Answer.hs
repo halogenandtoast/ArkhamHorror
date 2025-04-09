@@ -374,6 +374,19 @@ handleAnswer Game {..} playerId = \case
           [uiToRun m', Ask playerId $ f $ ChooseOneAtATime msgs'']
         (Nothing, msgs'') ->
           [Ask playerId $ f $ ChooseOneAtATime msgs'']
+    ChooseOneAtATimeWithAuto k msgs -> do
+      if qrChoice response == 0
+        then map uiToRun msgs
+        else do
+          let (mm, msgs') = extract (qrChoice response - 1) msgs
+          case (mm, msgs') of
+            (Just m', []) -> [uiToRun m']
+            (Just m', msgs'') ->
+              if length msgs'' > 1
+                then [uiToRun m', Ask playerId $ f $ ChooseOneAtATimeWithAuto k msgs'']
+                else [uiToRun m', Ask playerId $ f $ ChooseOneAtATime msgs'']
+            (Nothing, msgs'') ->
+              [Ask playerId $ f $ ChooseOneAtATimeWithAuto k msgs'']
     ChooseSome msgs -> do
       let (mm, msgs') = extract (qrChoice response) msgs
       case (mm, msgs') of

@@ -127,6 +127,7 @@ data Question msg
   | ChooseSome1 {label :: Text, choices :: [UI msg]}
   | ChooseUpToN {amount :: Int, choices :: [UI msg]}
   | ChooseOneAtATime {choices :: [UI msg]}
+  | ChooseOneAtATimeWithAuto {label :: Text, choices :: [UI msg]}
   | -- | Choosing payment amounts
     -- The core idea is that costs get broken up into unitary costs and we
     -- let the players decide how many times an individual player will pay

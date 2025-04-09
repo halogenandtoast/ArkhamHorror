@@ -124,6 +124,9 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
   ChooseOneAtATime msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
     [] -> Nothing
     x -> Just (Ask pid $ ChooseOneAtATime x)
+  ChooseOneAtATimeWithAuto k msgs -> case mapMaybe (filterOutEnemyUiMessages eid) msgs of
+    [] -> Nothing
+    x -> Just (Ask pid $ ChooseOneAtATimeWithAuto k x)
   ChooseUpgradeDeck -> Just (Ask pid ChooseUpgradeDeck)
   ChooseDeck -> Just ask'
   ChoosePaymentAmounts {} -> Just ask'

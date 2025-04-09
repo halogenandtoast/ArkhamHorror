@@ -35,7 +35,7 @@ instance HasAbilities TheTrueCulpritV9 where
              2
              ( exists
                  $ treacheryIs Cards.harvestedBrain
-                 <> TreacheryWithHorror (AtLeast $ PerPlayer 3)
+                 <> TreacheryWithClues (AtLeast $ PerPlayer 3)
              )
              $ Objective
              $ ForcedAbility AnyWindow

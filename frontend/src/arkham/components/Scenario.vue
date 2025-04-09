@@ -50,6 +50,8 @@ interface RefWrapper<T> {
   ref: ComputedRef<T>
 }
 
+const tarotCardBackground = `url(${imgsrc('background.jpg')})`
+
 // Setup
 export interface Props {
   game: Game
@@ -1172,7 +1174,7 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 }
 
 .tarot-card-choices {
-  background: url("/img/arkham/background.jpg");
+  background: v-bind(tarotCardBackground);
   background-position: center;
   background-size: contain;
   position: absolute;

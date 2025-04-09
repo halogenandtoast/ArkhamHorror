@@ -13,6 +13,7 @@ export interface Props {
   playerId: string
 }
 
+const checkpoint_fleur = `url(${imgsrc('checkpoint_fleur.png')})`
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
@@ -137,7 +138,8 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       pointer-events: none;
       position: absolute;
       inset: 10px;
-      border-image: url(/img/arkham/checkpoint_fleur.png) 49.9%;
+      border-image-source: v-bind(checkpoint_fleur);
+      border-image-slice: 49.9%;
       border-image-repeat: no-repeat;
       border-image-width: 50px;
       content: "";

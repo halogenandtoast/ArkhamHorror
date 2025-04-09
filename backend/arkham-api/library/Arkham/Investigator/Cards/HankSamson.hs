@@ -97,10 +97,10 @@ instance RunMessage HankSamson where
           , investigatorCombat = 6
           }
     UseThisAbility iid (isSource attrs -> True) 1 | investigatorArt attrs == "10016a" -> do
-      drawCardsIfCan iid attrs 1
+      drawCards iid attrs 1
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 | investigatorArt attrs == "10016b" -> do
-      gainResourcesIfCan iid attrs 2
+      gainResources iid attrs 2
       pure i
     ElderSignEffect iid | iid == attrs.id -> do
       case unCardCode (investigatorArt attrs) of

@@ -5,6 +5,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -29,7 +30,7 @@ instance RunMessage RoaldEllsworthIntrepidExplorer where
       sid <- getRandom
       chooseOneM iid do
         for_ [#combat, #agility] \sType ->
-          skillLabeled sType $ beginSkillTest sid iid (attrs.ability 1) iid sType (Fixed 5)
+          skillLabeled sType $ parley sid iid (attrs.ability 1) attrs sType (Fixed 5)
       doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

@@ -613,6 +613,7 @@ instance RunMessage AssetAttrs where
           _ -> Nothing
         controllerF = case mController of
           Just iid | entersPlay -> controllerL ?~ iid
+          Nothing | assetIsStory a -> controllerL .~ Nothing
           _ -> id
       -- we should update control here if need be
       for_ placement.attachedTo $ pushM . checkAfter . Window.AttachCard a.controller (toCard a)

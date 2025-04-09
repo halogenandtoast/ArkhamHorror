@@ -1608,15 +1608,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
           andM
             [ matches enemyId enemyMatcher
+
             , defeatedByMatches
                 defeatedBy
                 (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
           andM
-            [ matches
-                enemyId
-                enemyMatcher
+            [ matches enemyId enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch

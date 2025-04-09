@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.DissectionTools (dissectionTools, DissectionTools (..)) where
+module Arkham.Asset.Assets.DissectionTools (dissectionTools) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -23,7 +23,7 @@ instance HasModifiersFor DissectionTools where
 
 instance HasAbilities DissectionTools where
   getAbilities (DissectionTools a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ freeReaction
         $ EnemyDefeated #after Anyone ByAny
         $ EnemyAt YourLocation

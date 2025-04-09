@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.BindersJarInterdimensionalPrison1 (
-  bindersJarInterdimensionalPrison1,
-  BindersJarInterdimensionalPrison1 (..),
-)
-where
+module Arkham.Asset.Assets.BindersJarInterdimensionalPrison1 (bindersJarInterdimensionalPrison1) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -33,8 +29,7 @@ instance HasAbilities BindersJarInterdimensionalPrison1 where
     [ controlledAbility a 1 criteria1
         $ freeReaction
         $ EnemyDefeated #after Anyone ByAny
-        $ NonEliteEnemy
-        <> EnemyAt YourLocation
+        $ NonEliteEnemy <> EnemyAt YourLocation
     , restrictedAbility a 2 ControlsThis
         $ ReactionAbility
           (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) $ mapOneOf EnemyWithTrait traits)
@@ -47,6 +42,7 @@ instance HasAbilities BindersJarInterdimensionalPrison1 where
 instance RunMessage BindersJarInterdimensionalPrison1 where
   runMessage msg a@(BindersJarInterdimensionalPrison1 (With attrs meta)) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (defeatedEnemy -> eid) _ -> do
+      don'tAddToVictory eid
       card <- field EnemyCard eid
       push $ ObtainCard card.id
       push $ PlaceUnderneath (toTarget attrs) [card]

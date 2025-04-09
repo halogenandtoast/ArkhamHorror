@@ -1782,6 +1782,9 @@ insteadOfMatchingWith pred f = lift $ replaceMessageMatchingM pred f
 don't :: (MonadTrans t, HasQueue Message m) => Message -> t m ()
 don't msg = lift $ popMessageMatching_ (== msg)
 
+don'tAddToVictory :: (MonadTrans t, HasQueue Message m) => EnemyId -> t m ()
+don'tAddToVictory eid = don't $ DefeatedAddToVictory (toTarget eid)
+
 fromQueue :: (MonadTrans t, HasQueue Message m) => ([Message] -> r) -> t m r
 fromQueue f = lift $ Arkham.Classes.HasQueue.fromQueue f
 

@@ -54,18 +54,16 @@ instance HasChaosTokenValue BlackStarsRise where
     Cultist ->
       if isEasyStandard attrs
         then do
-          modifier <- do
-            getSkillTestAction >>= \case
-              Just action | action `elem` [#evade, #fight] -> do
-                getSkillTestTarget >>= \case
-                  Just (EnemyTarget eid) -> do
-                    hasDoom <- fieldP EnemyDoom (> 0) eid
-                    pure $ if hasDoom then AutoFailModifier else NoModifier
-                  _ -> pure NoModifier
-              _ -> pure NoModifier
+          modifier <-
+            fromMaybe NoModifier <$> runMaybeT do
+              action <- MaybeT getSkillTestAction
+              guard $ action `elem` [#evade, #fight]
+              eid <- MaybeT getSkillTestTargetedEnemy
+              liftGuardM $ fieldP EnemyDoom (> 0) eid
+              pure AutoFailModifier
           pure $ ChaosTokenValue Cultist modifier
         else do
-          anyEnemyWithDoom <- selectAny EnemyWithAnyDoom
+          anyEnemyWithDoom <- selectAny $ EnemyWithAnyDoom <> at_ (locationWithInvestigator iid)
           let modifier = if anyEnemyWithDoom then AutoFailModifier else NoModifier
           pure $ ChaosTokenValue Cultist modifier
     Tablet -> pure $ ChaosTokenValue Tablet NoModifier
@@ -192,7 +190,19 @@ instance RunMessage BlackStarsRise where
         findAndDrawEncounterCard iid $ #enemy <> CardWithTrait Trait.Byakhee
       pure s
     ResolveChaosToken _ Cultist iid -> do
-      drawAnotherChaosToken iid
+      drawAnother <-
+        if isEasyStandard attrs
+          then
+            fromMaybe True <$> runMaybeT do
+              action <- MaybeT getSkillTestAction
+              guard $ action `elem` [#evade, #fight]
+              eid <- MaybeT getSkillTestTargetedEnemy
+              liftGuardM $ fieldP EnemyDoom (> 0) eid
+              pure False
+          else selectNone $ EnemyWithAnyDoom <> at_ (locationWithInvestigator iid)
+      if drawAnother 
+        then drawAnotherChaosToken iid
+        else failSkillTest
       pure s
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid

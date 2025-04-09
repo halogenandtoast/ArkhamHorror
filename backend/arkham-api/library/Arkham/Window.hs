@@ -317,7 +317,7 @@ data WindowType
   | CancelledOrIgnoredCardOrGameEffect Source -- Diana Stanley
   | ScenarioCountIncremented ScenarioCountKey
   | IncreasedAlarmLevel InvestigatorId
-  | ScenarioEvent Text Value
+  | ScenarioEvent Text (Maybe InvestigatorId) Value
   | -- used to avoid checking a window
     DoNotCheckWindow
   deriving stock (Show, Eq, Data)
@@ -332,6 +332,11 @@ mconcat
         parseJSON = withObject "WindowType" \o -> do
           tag :: Text <- o .: "tag"
           case tag of
+            "ScenarioEvent" -> do
+              contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+              case contents of
+                Left (a, b) -> pure $ ScenarioEvent a Nothing b
+                Right (a, b, c) -> pure $ ScenarioEvent a b c
             "AttemptToEvadeEnemy" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of

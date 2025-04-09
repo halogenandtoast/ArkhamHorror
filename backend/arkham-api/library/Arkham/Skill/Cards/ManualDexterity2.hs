@@ -1,11 +1,8 @@
-module Arkham.Skill.Cards.ManualDexterity2 where
+module Arkham.Skill.Cards.ManualDexterity2 (manualDexterity2) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.Message
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype ManualDexterity2 = ManualDexterity2 SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -15,8 +12,8 @@ manualDexterity2 :: SkillCard ManualDexterity2
 manualDexterity2 = skill ManualDexterity2 Cards.manualDexterity2
 
 instance RunMessage ManualDexterity2 where
-  runMessage msg s@(ManualDexterity2 attrs@SkillAttrs {..}) = case msg of
+  runMessage msg s@(ManualDexterity2 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n -> do
-      push $ drawCards skillOwner attrs (if n >= 2 then 2 else 1)
+      drawCards (skillOwner attrs) attrs (if n >= 2 then 2 else 1)
       pure s
-    _ -> ManualDexterity2 <$> runMessage msg attrs
+    _ -> ManualDexterity2 <$> liftRunMessage msg attrs

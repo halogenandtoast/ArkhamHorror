@@ -220,7 +220,7 @@ data WindowMatcher
   | ScenarioCountIncremented Timing ScenarioCountKey
   | IncreasedAlarmLevel Timing Who
   | WindowWhen Criterion WindowMatcher
-  | ScenarioEvent Timing Text
+  | ScenarioEvent Timing (Maybe InvestigatorMatcher) Text
   | TakeControlOfClues Timing Who SourceMatcher
   | TakeControlOfKey Timing Who KeyMatcher
   deriving stock (Show, Eq, Ord, Data, Generic)
@@ -263,6 +263,11 @@ instance FromJSON WindowMatcher where
   parseJSON = withObject "WindowMatcher" $ \o -> do
     t :: Text <- o .: "tag"
     case t of
+      "ScenarioEvent" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b) -> pure $ ScenarioEvent a Nothing b
+          Right (a, b, c) -> pure $ ScenarioEvent a b c
       "EnemyAttackedSuccessfully" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

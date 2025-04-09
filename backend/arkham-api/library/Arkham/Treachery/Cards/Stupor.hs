@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.Stupor (stupor, Stupor (..)) where
+module Arkham.Treachery.Cards.Stupor (stupor) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -24,7 +24,7 @@ instance HasAbilities Stupor where
         $ oneOf [#parley, #draw, #investigate]
     ]
    where
-    injuryCriteria = if toResultDefault True a.meta then InThreatAreaOf You else Never
+    injuryCriteria = if toResultDefault True a.meta then InThreatAreaOf You <> exists TurnInvestigator else Never
 
 instance RunMessage Stupor where
   runMessage msg t@(Stupor attrs) = runQueueT $ case msg of

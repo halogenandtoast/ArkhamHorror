@@ -2,7 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
 
-export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
+export type Question = ChooseOne | ChooseUpToN | ChooseSome | ChooseSome1 | ChooseN | ChooseOneAtATime | ChooseOneAtATimeWithAuto | ChooseDeck | ChooseUpgradeDeck | ChoosePaymentAmounts | ChooseAmounts | QuestionLabel | Read | PickSupplies | DropDown | PickScenarioSettings | PickCampaignSettings | ChooseOneFromEach;
 
 export enum QuestionType {
   CHOOSE_ONE = 'ChooseOne',
@@ -13,6 +13,7 @@ export enum QuestionType {
   CHOOSE_SOME_1 = 'ChooseSome1',
   CHOOSE_N = 'ChooseN',
   CHOOSE_ONE_AT_A_TIME = 'ChooseOneAtATime',
+  CHOOSE_ONE_AT_A_TIME_WITH_AUTO = 'ChooseOneAtATimeWithAuto',
   CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
   CHOOSE_DECK = 'ChooseDeck',
   CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
@@ -127,6 +128,12 @@ export type ChooseUpToN = {
 
 export type ChooseOneAtATime = {
   tag: QuestionType.CHOOSE_ONE_AT_A_TIME
+  choices: Message[]
+}
+
+export type ChooseOneAtATimeWithAuto = {
+  tag: QuestionType.CHOOSE_ONE_AT_A_TIME_WITH_AUTO
+  label: string
   choices: Message[]
 }
 
@@ -358,6 +365,15 @@ export const chooseOneAtATimeDecoder = JsonDecoder.object<ChooseOneAtATime>(
   'ChooseOneAtATime',
 );
 
+export const chooseOneAtATimeWithAutoDecoder = JsonDecoder.object<ChooseOneAtATimeWithAuto>(
+  {
+    tag: JsonDecoder.literal(QuestionType.CHOOSE_ONE_AT_A_TIME_WITH_AUTO),
+    label: JsonDecoder.string(),
+    choices: JsonDecoder.array<Message>(messageDecoder, 'Message[]'),
+  },
+  'ChooseOneAtATimeWithAuto',
+);
+
 export const questionDecoder = JsonDecoder.oneOf<Question>(
   [
     chooseOneDecoder,
@@ -367,6 +383,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseSome1Decoder,
     chooseUpToNDecoder,
     chooseOneAtATimeDecoder,
+    chooseOneAtATimeWithAutoDecoder,
     chooseUpgradeDeckDecoder,
     chooseDeckDecoder,
     chooseAmountsDecoder,

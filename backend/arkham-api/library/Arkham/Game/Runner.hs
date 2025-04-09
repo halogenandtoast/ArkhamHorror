@@ -1683,7 +1683,7 @@ runGameMessage msg g = case msg of
       _ -> do
         let opts = map (uncurry TargetLabel) $ mapToList targetMap
         lead <- getLeadPlayer
-        push $ Ask lead $ ChooseOneAtATime opts
+        push $ Ask lead $ ChooseOneAtATimeWithAuto "Automatically handle all" opts
     pure g
   EnemyWillAttack details -> do
     modifiers' <- getModifiers (attackTarget details)

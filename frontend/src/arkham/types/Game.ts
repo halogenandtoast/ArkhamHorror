@@ -5,7 +5,7 @@ import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Story, storyDecoder } from '@/arkham/types/Story';
 import { Location, locationDecoder } from '@/arkham/types/Location';
-import { Message } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 import { Source } from '@/arkham/types/Source';
 import { Target, targetDecoder } from '@/arkham/types/Target';
 import { Scenario, ScenarioDetails, scenarioDecoder, scenarioDetailsDecoder } from '@/arkham/types/Scenario';
@@ -120,6 +120,8 @@ export function choices(game: Game, playerId: string): Message[] {
         return q.choices;
       case 'ChooseOneAtATime':
         return q.choices;
+      case 'ChooseOneAtATimeWithAuto':
+        return [{tag: MessageType.LABEL, label: q.label }, ...q.choices];
       case 'QuestionLabel':
         return toContents(q.question);
       case 'Read':
@@ -145,6 +147,8 @@ export function choicesSource(game: Game, investigatorId: string): Source | null
     case 'ChooseOne':
       return null;
     case 'ChooseOneAtATime':
+      return null;
+    case 'ChooseOneAtATimeWithAuto':
       return null;
     default:
       return null;

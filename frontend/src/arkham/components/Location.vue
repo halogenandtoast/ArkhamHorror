@@ -187,7 +187,7 @@ const blocked = computed(() => {
 const modifiers = computed(() => props.location.modifiers)
 
 const explosion = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Explosion") ?? false
+  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Explosion") ?? false
 })
 
 
@@ -568,7 +568,6 @@ function onDrop(event: DragEvent) {
   left: 0;
   width: 64px;
   height: 62px;
-  background: black;
   background-image: v-bind(explosionPNG);
   background-repeat: no-repeat;
   background-position: 0 0;

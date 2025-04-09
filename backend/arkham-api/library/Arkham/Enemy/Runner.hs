@@ -803,8 +803,7 @@ instance RunMessage EnemyAttrs where
           _ -> False
         isNotInvalidEnemyAttack = \case
           msg'@(TargetLabel _ [EnemyAttack details])
-            | isEnemyAttack msg' ->
-                attackIsValid details (a & exhaustedL .~ True)
+            | isEnemyAttack msg' -> attackIsValid details (a & exhaustedL .~ True)
           _ -> pure True
       overMessagesM \case
         Ask pid (ChooseOneAtATime xs) | any isEnemyAttack xs -> do
@@ -996,9 +995,27 @@ instance RunMessage EnemyAttrs where
                     (attackDamageStrategy details)
                     healthDamage
                     sanityDamage
+
+          massive <- eid <=~> MassiveEnemy
+          shouldExhaust <-
+            if massive
+              then do
+                let
+                  isEnemyAttack = \case
+                    TargetLabel (EnemyTarget eid') [EnemyAttack details'] -> eid' == enemyId && details'.enemy == enemyId
+                    _ -> False
+                not <$> assertQueue \case
+                  Ask _ (ChooseOneAtATime xs) -> any isEnemyAttack xs
+                  _ -> False
+              else pure True
           pushAll
             $ [attackMessage | allowAttack]
-            <> [Exhaust (toTarget a) | allowAttack, attackExhaustsEnemy details, DoNotExhaust `notElem` mods]
+            <> [ Exhaust (toTarget a)
+               | shouldExhaust
+               , allowAttack
+               , attackExhaustsEnemy details
+               , DoNotExhaust `notElem` mods
+               ]
             <> ignoreWindows
             <> [After (EnemyAttack details)]
         _ -> error "Unhandled"

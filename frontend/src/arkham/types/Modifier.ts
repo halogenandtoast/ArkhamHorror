@@ -83,6 +83,7 @@ export type ModifierType
   | GainVictory
   | ActionCostSetToModifier
   | OtherModifier
+  | UIModifier
   | SkillModifier
   | UseEncounterDeck
   | CannotCommitCards
@@ -212,6 +213,11 @@ export type OtherModifier = {
   contents: string
 }
 
+export type UIModifier = {
+  tag: "UIModifier"
+  contents: string
+}
+
 
 export type Modifier = {
   type: ModifierType;
@@ -334,6 +340,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('DoNotDrawConnection'),
       contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.string()], 'DoNotDrawConnection')
     }, 'DoNotDrawConnection'),
+  JsonDecoder.object<UIModifier>(
+    {
+      tag: JsonDecoder.literal('UIModifier'),
+      contents: JsonDecoder.string(),
+    }, 'UIModifier'),
   JsonDecoder.object({
     tag: JsonDecoder.string()
   }, 'OtherModifier').map(({tag}) => ({ tag: 'OtherModifier', contents: tag})),

@@ -36,6 +36,7 @@ const emit = defineEmits(['showCards', 'choose'])
 const id = computed(() => props.investigator.id)
 const debug = useDebug()
 const debugging = ref(false)
+const choose = (idx: number) => emits('choose', idx)
 
 const { addEntry, removeEntry } = useMenu()
 const showBonded = ref(false)

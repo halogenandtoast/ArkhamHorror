@@ -5,6 +5,7 @@ import Arkham.Campaigns.EdgeOfTheEarth.Helpers
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 
 newtype EliyahAshevakDogHandler = EliyahAshevakDogHandler EnemyAttrs
@@ -26,7 +27,7 @@ instance RunMessage EliyahAshevakDogHandler where
   runMessage msg e@(EliyahAshevakDogHandler attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
+      parley sid iid (attrs.ability 1) attrs #agility (Fixed 2)
       doStep 2 msg
       pure e
     DoStep 2 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

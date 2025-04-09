@@ -1,8 +1,4 @@
-module Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorer (
-  roaldEllsworthIntrepidExplorer,
-  RoaldEllsworthIntrepidExplorer (..),
-)
-where
+module Arkham.Asset.Assets.RoaldEllsworthIntrepidExplorer (roaldEllsworthIntrepidExplorer) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -21,7 +17,7 @@ roaldEllsworthIntrepidExplorer = allyWith RoaldEllsworthIntrepidExplorer Cards.r
 
 instance HasAbilities RoaldEllsworthIntrepidExplorer where
   getAbilities (RoaldEllsworthIntrepidExplorer a) =
-    [ controlled a 1 (DuringTurn You <> exists (TreacheryAttachedToLocation Anywhere))
+    [ controlled a 1 (DuringTurn Anyone <> exists (TreacheryAttachedToLocation Anywhere))
         $ FastAbility (exhaust a <> assetUseCost a Supply 1)
     ]
 

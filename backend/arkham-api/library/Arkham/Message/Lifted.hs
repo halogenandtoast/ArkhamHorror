@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.Ability
@@ -41,6 +42,7 @@ import Arkham.Evade qualified as Evade
 import Arkham.Event.Types qualified as Field
 import Arkham.Fight
 import Arkham.Fight qualified as Fight
+import {-# SOURCE #-} Arkham.GameEnv (findCard)
 import Arkham.Helpers
 import Arkham.Helpers.Act
 import Arkham.Helpers.Action (getActionsWith)
@@ -60,8 +62,8 @@ import Arkham.Helpers.Modifiers qualified as Msg
 import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
-import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.Scenario (getInResolution)
+import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
@@ -428,11 +430,20 @@ killRemaining (toSource -> source) = do
   gameOverIf (null resigned)
   pure remaining
 
+newtype UniqueFetchCard = UniqueFetchCard CardDef
+  deriving newtype (Show, Eq, ToJSON, FromJSON)
+
 class FetchCard a where
   fetchCard :: (HasCallStack, ReverseQueue m) => a -> m Card
 
+instance FetchCard UniqueFetchCard where
+  fetchCard (UniqueFetchCard def) = maybe (genCard def) pure =<< findCard ((== def.cardCode) . toCardCode)
+
 instance FetchCard CardDef where
-  fetchCard def = maybe (genCard def) pure =<< maybeGetSetAsideCard def
+  fetchCard def =
+    if def.unique
+      then fetchCard (UniqueFetchCard def)
+      else maybe (genCard def) pure =<< maybeGetSetAsideCard def
 
 instance FetchCard Card where
   fetchCard = pure
@@ -1621,7 +1632,7 @@ shuffleCardsIntoTopOfDeck
 shuffleCardsIntoTopOfDeck deck n cards = push $ Msg.shuffleCardsIntoTopOfDeck deck n cards
 
 shuffleDeck :: (ReverseQueue m, IsDeck deck) => deck -> m ()
-shuffleDeck deck = shuffleCardsIntoDeck deck ([] :: [Card])
+shuffleDeck deck = push $ ShuffleDeck (toDeck deck)
 
 reduceCostOf :: (Sourceable source, IsCard card, ReverseQueue m) => source -> card -> Int -> m ()
 reduceCostOf source card n = Msg.pushM $ Msg.reduceCostOf source card n
@@ -1910,7 +1921,9 @@ placeUnderneath
   -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard (toList cards)
 
-gainActions :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> source -> Int -> m ()
+gainActions
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator -> source -> Int -> m ()
 gainActions (asId -> iid) (toSource -> source) n = push $ Msg.GainActions iid source n
 
 takeActionAsIfTurn :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
@@ -2328,10 +2341,11 @@ discardCard
   -> source
   -> card
   -> m ()
-discardCard investigator source = toCard <&> \case
-  card@(PlayerCard _) -> push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
-  card@(EncounterCard _) -> addToEncounterDiscard (only card)
-  VengeanceCard card -> discardCard investigator source card
+discardCard investigator source =
+  toCard <&> \case
+    card@(PlayerCard _) -> push $ DiscardCard (asId investigator) (toSource source) (toCardId card)
+    card@(EncounterCard _) -> addToEncounterDiscard (only card)
+    VengeanceCard card -> discardCard investigator source card
 
 forTarget :: (LiftMessage m body, Targetable target) => target -> body -> m ()
 forTarget target f =
@@ -2438,10 +2452,12 @@ placeCluesOnLocation
 placeCluesOnLocation iid source n = push $ InvestigatorPlaceCluesOnLocation iid (toSource source) n
 
 drawCard :: (ReverseQueue m, IsCard card) => InvestigatorId -> card -> m ()
-drawCard iid card = case toCard card of
-  EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
-  PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
-  VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
+drawCard iid card = do
+  obtainCard card
+  case toCard card of
+    EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
+    VengeanceCard vc -> Arkham.Message.Lifted.drawCard iid vc
 
 resign :: ReverseQueue m => InvestigatorId -> m ()
 resign iid = push $ Resign iid
@@ -2506,7 +2522,7 @@ resolveChaosTokens iid source tokens = do
     $ map UnsealChaosToken tokens
     <> map ObtainChaosToken tokens
     <> [ ReplaceCurrentDraw (toSource source) iid
-          $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
+           $ Choose (toSource source) 1 ResolveChoice [Resolved tokens] [] Nothing
        ]
 
 removeLocation :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()

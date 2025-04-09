@@ -4106,9 +4106,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       push $ PlaceTokens source (LocationTarget lid) Clue (investigatorClues a)
     pure $ a & tokensL %~ removeAllTokens Clue
   RemoveFromBearersDeckOrDiscard card -> do
-    if pcOwner card == Just investigatorId
-      then pure $ a & (discardL %~ filter (/= card)) & (deckL %~ Deck . filter (/= card) . unDeck)
-      else pure a
+    pure $ a & (discardL %~ filter (/= card)) & (deckL %~ Deck . filter (/= card) . unDeck)
   RemovePlayerCardFromGame _addToRemovedFromGame card -> do
     case preview _PlayerCard card of
       Just pc ->

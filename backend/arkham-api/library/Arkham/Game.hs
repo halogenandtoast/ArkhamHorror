@@ -2145,15 +2145,7 @@ getLocationsMatching lmatcher = do
                 ( \initialLocation -> do
                     let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
                     result <-
-                      evalStateT
-                        ( markDistancesWithInclusion
-                            False
-                            initialLocation
-                            (pure . (== destination))
-                            (const (pure True))
-                            extraConnectionsMap
-                        )
-                        state'
+                      evalStateT (markDistances initialLocation (pure . (== destination)) extraConnectionsMap) state'
                     let
                       mdistance :: Maybe Int = headMay . drop 1 . map fst . sortOn fst . mapToList $ result
                     pure $ (initialLocation,) <$> mdistance
@@ -4416,10 +4408,7 @@ getShortestPath
   -> m [LocationId]
 getShortestPath !initialLocation !target !extraConnectionsMap = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <-
-    evalStateT
-      (markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap)
-      state'
+  !result <- evalStateT (markDistances initialLocation target extraConnectionsMap) state'
   pure $ fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
@@ -4438,10 +4427,7 @@ getLongestPath
   :: HasGame m => LocationId -> (LocationId -> m Bool) -> m [LocationId]
 getLongestPath !initialLocation !target = do
   let !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
-  !result <-
-    evalStateT
-      (markDistancesWithInclusion False initialLocation target (const (pure True)) mempty)
-      state'
+  !result <- evalStateT (markDistances initialLocation target mempty) state'
   pure $ fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ result
 
 markDistances
@@ -4450,7 +4436,7 @@ markDistances
   -> (LocationId -> m Bool)
   -> Map LocationId [LocationId]
   -> StateT LPState m (Map Int [LocationId])
-markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target target extraConnectionsMap
+markDistances initialLocation target extraConnectionsMap = markDistancesWithInclusion False initialLocation target (const (pure True)) extraConnectionsMap
 
 markBarricadedDistances
   :: HasGame m
@@ -4831,10 +4817,7 @@ instance HasDistance Game where
   getDistance' _ start fin | start == fin = pure $ Just 0
   getDistance' _ start fin = do
     let !state' = LPState (pure start) (singleton start) mempty
-    result <-
-      evalStateT
-        (markDistancesWithInclusion False start (pure . (== fin)) (const (pure True)) mempty)
-        state'
+    result <- evalStateT (markDistances start (pure . (== fin)) mempty) state'
     pure $ fmap Distance . headMay . drop 1 . map fst . sortOn fst . mapToList $ result
 
 readGame :: (MonadIO m, MonadReader env m, HasGameRef env) => m Game

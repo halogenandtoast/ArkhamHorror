@@ -2026,15 +2026,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         locationClues <- field LocationClues lid
         let lastClue = locationClues - d.count <= 0 && locationClues /= 0
         let clueCount = min locationClues d.count
-        locationWindows <-
-          checkWindows
-            $ mkWhen (Window.DiscoverClues iid lid d.source clueCount)
-            : mkAfter (Window.DiscoverClues iid lid d.source clueCount)
+        locationWindowsBefore <- checkWindows [mkWhen (Window.DiscoverClues iid lid d.source clueCount)]
+        locationWindowsAfter <-
+          checkWindows $ mkAfter (Window.DiscoverClues iid lid d.source clueCount)
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll
           $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
-            , locationWindows
+            , locationWindowsBefore
+            , locationWindowsAfter
             , RemoveClues d.source (LocationTarget lid) clueCount
             , After $ GainClues iid d.source clueCount
             ]

@@ -624,7 +624,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
           </template>
 
         </transition-group>
-        <div class="hand-size">Hand Size: {{investigator.handSize}}</div>
+        <div v-if="investigator.handSize" class="hand-size">Hand Size: {{investigator.handSize}}</div>
       </div>
     </div>
 

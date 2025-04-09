@@ -101,7 +101,6 @@ targetToSource = \case
   GameTarget -> GameSource
   ThisTarget -> error "not converted"
   InvestigatorTarget iid -> InvestigatorSource iid
-  InvestigatorHandTarget iid -> InvestigatorSource iid
   InvestigatorDiscardTarget iid -> InvestigatorSource iid
   AssetTarget aid -> AssetSource aid
   EnemyTarget eid -> EnemySource eid

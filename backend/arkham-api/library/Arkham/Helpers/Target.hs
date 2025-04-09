@@ -64,7 +64,6 @@ targetTraits = \case
   TestTarget -> pure mempty
   ChaosTokenTarget _ -> pure mempty
   YouTarget -> selectJust You >>= field InvestigatorTraits
-  InvestigatorHandTarget _ -> pure mempty
   InvestigatorDiscardTarget _ -> pure mempty
   SetAsideLocationsTarget _ -> pure mempty
   EncounterDeckTarget -> pure mempty

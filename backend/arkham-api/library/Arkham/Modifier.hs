@@ -303,7 +303,7 @@ data ModifierType
   | IgnoreText
   | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance
-  | IncreaseCostOf CardMatcher Int
+  | IncreaseCostOf ExtendedCardMatcher Int
   | InvestigateActionCriteria CriteriaOverride
   | IsEmptySpace
   | IsPointOfDamage
@@ -456,6 +456,11 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "IncreaseCostOf" -> do
+              contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+              case contents of
+                Right (matcher, n) -> pure $ IncreaseCostOf matcher n
+                Left (matcher, n) -> pure $ IncreaseCostOf (BasicCardMatch matcher) n
             "Explosion" -> pure $ UIModifier Explosion
             "Locus" -> pure $ UIModifier Locus
             "Ethereal" -> pure $ UIModifier Ethereal

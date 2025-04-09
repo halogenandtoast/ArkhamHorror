@@ -16,7 +16,7 @@ sacredWoods_185 = locationWith SacredWoods_185 Cards.sacredWoods_185 6 (PerPlaye
 
 instance HasModifiersFor SacredWoods_185 where
   getModifiersFor (SacredWoods_185 a) = whenRevealed a $ do
-    investigators <- modifySelect a (investigatorAt a) [IncreaseCostOf AnyCard 2]
+    investigators <- modifySelect a (investigatorAt a) [IncreaseCostOf (basic AnyCard) 2]
     self <- maybeModifySelf a do
       iid <- MaybeT getSkillTestInvestigator
       liftGuardM $ getIsBeingInvestigated a.id

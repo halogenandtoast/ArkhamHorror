@@ -62,7 +62,7 @@ RUN chmod +x /usr/bin/ghcup && \
     ghcup config set gpg-setting GPGNone
 
 ARG GHC=9.10.1
-ARG CABAL=3.10.3.0
+ARG CABAL=3.14.1.1
 ARG STACK=3.1.1
 ARG CACHE_ID="${TARGETARCH}-${GHC}-${CABAL}-${STACK}"
 ENV CACHE_ID=${CACHE_ID}

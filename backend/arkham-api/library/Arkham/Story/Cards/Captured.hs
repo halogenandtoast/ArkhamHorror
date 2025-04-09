@@ -25,6 +25,6 @@ instance RunMessage Captured where
       removeFromGame attrs
       holdingCells <- placeLocationCardInGrid (Pos 5 1) Locations.holdingCells
       place iid holdingCells
-      checkWhen $ Window.ScenarioEvent "captured" (toJSON iid)
+      checkWhen $ Window.ScenarioEvent "captured" (Just iid) (toJSON iid)
       pure s
     _ -> Captured <$> liftRunMessage msg attrs

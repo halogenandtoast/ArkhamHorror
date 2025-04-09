@@ -20,11 +20,11 @@ kindredMist :: TreacheryCard KindredMist
 kindredMist = treachery KindredMist Cards.kindredMist
 
 instance HasAbilities KindredMist where
-  getAbilities (KindredMist a) = [restricted a 1 OnSameLocation $ forced $ ScenarioEvent #when "shuffleTekelili"]
+  getAbilities (KindredMist a) = [restricted a 1 OnSameLocation $ forced $ ScenarioEvent #when (Just You) "shuffleTekelili"]
 
 fromScenarioEvent :: (HasCallStack, FromJSON a) => Text -> [Window] -> a
 fromScenarioEvent _ [] = error "No such scenario event"
-fromScenarioEvent k ((windowType -> Window.ScenarioEvent k' json) : _) | k == k' = toResult json
+fromScenarioEvent k ((windowType -> Window.ScenarioEvent k' _ json) : _) | k == k' = toResult json
 fromScenarioEvent k (_ : rest) = fromScenarioEvent k rest
 
 instance RunMessage KindredMist where

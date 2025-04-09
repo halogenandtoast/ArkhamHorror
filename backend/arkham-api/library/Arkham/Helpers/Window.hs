@@ -830,8 +830,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           , sourceMatches source' sourceMatcher
           ]
       _ -> noMatch
-    Matcher.ScenarioEvent timing eKey -> guardTiming timing \case
-      Window.ScenarioEvent eKey' _ -> pure $ eKey == eKey'
+    Matcher.ScenarioEvent timing mWhoMatcher eKey -> guardTiming timing \case
+      Window.ScenarioEvent eKey' mWho _ ->
+        andM
+          [ pure $ eKey == eKey'
+          , maybe
+              (pure True)
+              (\matcher -> maybe (pure False) (\who -> matchWho iid who matcher) mWho)
+              mWhoMatcher
+          ]
       _ -> noMatch
     Matcher.LostResources timing whoMatcher sourceMatcher -> guardTiming timing $ \case
       Window.LostResources who source' _ ->

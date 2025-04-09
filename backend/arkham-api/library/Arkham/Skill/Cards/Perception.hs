@@ -1,10 +1,8 @@
 module Arkham.Skill.Cards.Perception where
 
-import Arkham.Classes
 import Arkham.Message
-import Arkham.Prelude
 import Arkham.Skill.Cards qualified as Cards
-import Arkham.Skill.Runner
+import Arkham.Skill.Import.Lifted
 
 newtype Perception = Perception SkillAttrs
   deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
@@ -14,8 +12,8 @@ perception :: SkillCard Perception
 perception = skill Perception Cards.perception
 
 instance RunMessage Perception where
-  runMessage msg s@(Perception attrs) = case msg of
+  runMessage msg s@(Perception attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
-      push $ drawCards (skillOwner attrs) attrs 1
+      drawCards (skillOwner attrs) attrs 1
       pure s
-    _ -> Perception <$> runMessage msg attrs
+    _ -> Perception <$> liftRunMessage msg attrs

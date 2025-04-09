@@ -90,7 +90,7 @@ addTekelili :: ReverseQueue m => InvestigatorId -> [Card] -> m ()
 addTekelili _ [] = pure ()
 addTekelili iid cards = whenM (can.manipulate.deck iid) do
   batched \batchId -> do
-    checkWhen $ ScenarioEvent "shuffleTekelili" (toJSON (batchId, cards))
+    checkWhen $ ScenarioEvent "shuffleTekelili" (Just iid) (toJSON (batchId, cards))
     traverse_ (addCampaignCardToDeck iid ShuffleIn) cards
 
 resolveTekelili

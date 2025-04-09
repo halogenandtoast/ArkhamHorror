@@ -31,7 +31,7 @@ unchangingAsTheSea =
 instance HasAbilities UnchangingAsTheSea where
   getAbilities (UnchangingAsTheSea a) =
     guard (onSide A a)
-      *> [ mkAbility a 1 $ forced $ ScenarioEvent #when "captured"
+      *> [ mkAbility a 1 $ forced $ ScenarioEvent #when (Just You) "captured"
          , mkAbility a 2 $ forced $ AgendaAdvances #when (AgendaWithId a.id)
          ]
 

@@ -41,7 +41,7 @@ instance RunMessage HoldingCells where
       assets <- select $ assetControlledBy iid <> #hand
       for_ assets $ returnToHand iid
       place iid attrs.id
-      checkWhen $ Window.ScenarioEvent "captured" (toJSON iid)
+      checkWhen $ Window.ScenarioEvent "captured" (Just iid) (toJSON iid)
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

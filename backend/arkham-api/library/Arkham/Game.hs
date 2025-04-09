@@ -4255,7 +4255,12 @@ instance Query ExtendedCardMatcher where
         mTurnInvestigator <- selectOne TurnInvestigator
         active <- selectJust ActiveInvestigator
         let iid = fromMaybe active mTurnInvestigator
-        windows' <- maybe (Window.defaultWindows iid) concat . gameWindowStack <$> getGame
+        windows' <-
+          maybe
+            (Window.defaultWindows iid)
+            (nub . ([Window.duringTurnWindow tiid | tiid <- toList mTurnInvestigator] <>) . concat)
+            . gameWindowStack
+            <$> getGame
         go cs matcher' >>= filterM (getIsPlayable active GameSource costStatus windows')
       PlayableCardWithCriteria actionStatus override matcher' -> do
         mTurnInvestigator <- selectOne TurnInvestigator

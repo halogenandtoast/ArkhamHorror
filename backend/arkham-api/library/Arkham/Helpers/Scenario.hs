@@ -38,6 +38,12 @@ scenarioFieldMapM
   :: (HasCallStack, HasGame m) => Field Scenario a -> (a -> m b) -> m b
 scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 
+scenarioFieldMaybe :: (HasCallStack, HasGame m) => Field Scenario a -> m (Maybe a)
+scenarioFieldMaybe fld = selectOne TheScenario >>= traverse (field fld)
+
+getInResolution :: HasGame m => m Bool
+getInResolution = fromMaybe False <$> scenarioFieldMaybe ScenarioInResolution
+
 getIsStandalone :: HasGame m => m Bool
 getIsStandalone = isNothing <$> selectOne TheCampaign
 

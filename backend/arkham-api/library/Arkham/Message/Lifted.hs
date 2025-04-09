@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.Ability
@@ -60,6 +61,7 @@ import Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.SkillTest qualified as Msg
+import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
@@ -760,7 +762,8 @@ assignEnemyDamage assignment = push . Msg.assignEnemyDamage assignment
 
 eachInvestigator :: ReverseQueue m => (InvestigatorId -> m ()) -> m ()
 eachInvestigator f = do
-  investigators <- getInvestigators
+  inResolution <- getInResolution
+  investigators <- if inResolution then allInvestigators else getInvestigators
   for_ investigators f
 
 forInvestigator :: ReverseQueue m => InvestigatorId -> Message -> m ()

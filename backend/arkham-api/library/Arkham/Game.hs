@@ -4733,6 +4733,7 @@ instance Projection Scenario where
       ScenarioResignedCardCodes -> pure scenarioResignedCardCodes
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
+      ScenarioInResolution -> pure scenarioInResolution
       ScenarioSetAsideCards -> pure scenarioSetAsideCards
       ScenarioSetAsideKeys -> pure scenarioSetAsideKeys
       ScenarioKeys -> pure scenarioKeys

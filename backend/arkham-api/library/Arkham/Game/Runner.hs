@@ -435,6 +435,7 @@ runGameMessage msg g = case msg of
       & (foundCardsL .~ mempty)
       & (cardUsesL .~ mempty)
       & (windowStackL .~ mempty)
+      & (windowDepthL .~ 0)
   StartScenario sid -> do
     -- NOTE: The campaign log and player decks need to be copied over for
     -- standalones because we effectively reset it here when we `setScenario`.
@@ -3144,7 +3145,13 @@ runPreGameMessage msg g = case msg of
   ScenarioResolution _ -> do
     -- We want to empty the queue for triggering a resolution
     clearQueue
-    pure $ g & (skillTestL .~ Nothing) & (skillTestResultsL .~ Nothing)
+    pure
+      $ g
+      & (skillTestL .~ Nothing)
+      & (skillTestResultsL .~ Nothing)
+      & (windowStackL .~ mempty)
+      & (windowDepthL .~ 0)
+      & (modeL . there %~ overAttrs (\attrs -> attrs {scenarioInResolution = True}))
   ResetInvestigators ->
     pure
       $ g

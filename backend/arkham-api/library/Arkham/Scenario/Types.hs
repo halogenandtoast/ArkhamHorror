@@ -73,6 +73,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioResolvedStories :: Field Scenario [StoryId]
   ScenarioChaosBag :: Field Scenario ChaosBag
+  ScenarioInResolution :: Field Scenario Bool
   ScenarioSetAsideCards :: Field Scenario [Card]
   ScenarioSetAsideKeys :: Field Scenario (Set ArkhamKey)
   ScenarioKeys :: Field Scenario (Set ArkhamKey)

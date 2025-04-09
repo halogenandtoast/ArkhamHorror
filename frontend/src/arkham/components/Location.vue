@@ -26,6 +26,7 @@ export interface Props {
   playerId: string
 }
 
+const explosionPNG = `url(${imgsrc('explosion.png')})`
 const frame = ref(null)
 const debugging = ref(false)
 const showAbilities = ref<boolean>(false)
@@ -568,7 +569,8 @@ function onDrop(event: DragEvent) {
   width: 64px;
   height: 62px;
   background: black;
-  background: url("./img/arkham/explosion.png") no-repeat;
+  background-image: v-bind(explosionPNG);
+  background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 3072px;
 }

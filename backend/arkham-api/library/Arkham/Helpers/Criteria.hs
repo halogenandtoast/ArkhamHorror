@@ -80,8 +80,8 @@ import Control.Lens (over)
 import Control.Monad.Reader (local)
 import Control.Monad.Writer.Strict (execWriterT)
 import Data.Data.Lens (biplate)
-import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Map qualified as Map
+import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Set qualified as Set
 import Data.Typeable
 
@@ -158,9 +158,13 @@ passesCriteria iid mcard source' requestor windows' = \case
     groupings <- for iids \iid' -> do
       mlid <- field InvestigatorLocation iid'
       seals <- filter (\s -> s.active) . toList <$> field InvestigatorSeals iid'
-      pure (iid', mlid,seals)
+      pure (iid', mlid, seals)
 
-    let sealMap = foldl' (\acc (_,mlid,seals) -> maybe acc (\k -> Map.insertWith (<>) k seals acc) mlid) mempty groupings
+    let sealMap =
+          foldl'
+            (\acc (_, mlid, seals) -> maybe acc (\k -> Map.insertWith (<>) k seals acc) mlid)
+            mempty
+            groupings
     pure $ any ((> 1) . length) $ Map.elems sealMap
   Criteria.IfYouOweBiancaDieKatz -> do
     let
@@ -572,7 +576,10 @@ passesCriteria iid mcard source' requestor windows' = \case
         Just (card, AuxiliaryCost aux inner) -> do
           withModifiers
             card
-            (modified GameSource [IncreaseCostOf (Matcher.CardWithId card.id) $ totalResourceCost aux])
+            ( modified
+                GameSource
+                [IncreaseCostOf (Matcher.basic $ Matcher.CardWithId card.id) $ totalResourceCost aux]
+            )
             $ go (Just (card, inner))
         Just (card, UnpaidCost _) -> do
           cost <- getModifiedCardCost iid card

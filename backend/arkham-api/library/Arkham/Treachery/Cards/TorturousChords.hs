@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.TorturousChords (torturousChords) where
 
 import Arkham.Classes
 import Arkham.Helpers.Modifiers (ModifierType (..), inThreatAreaGets)
-import Arkham.Matcher (CardMatcher (AnyCard))
+import Arkham.Matcher (CardMatcher (AnyCard), basic)
 import Arkham.Prelude
 import Arkham.Token
 import Arkham.Treachery.Cards qualified as Cards
@@ -18,7 +18,7 @@ torturousChords = treachery TorturousChords Cards.torturousChords
 
 instance HasModifiersFor TorturousChords where
   getModifiersFor (TorturousChords a) =
-    inThreatAreaGets a [IncreaseCostOf AnyCard 1]
+    inThreatAreaGets a [IncreaseCostOf (basic AnyCard) 1]
 
 instance RunMessage TorturousChords where
   runMessage msg t@(TorturousChords attrs) = case msg of

@@ -33,7 +33,6 @@ data Target
   | ScenarioTarget
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
-  | InvestigatorHandTarget InvestigatorId -- used for cards in hand
   | InvestigatorDiscardTarget InvestigatorId -- used for cards in discard
   | LocationTarget LocationId
   | SetAsideLocationsTarget [Trait]
@@ -107,7 +106,6 @@ instance HasField "location" Target (Maybe LocationId) where
 instance HasField "investigator" Target (Maybe InvestigatorId) where
   getField = \case
     InvestigatorTarget aid -> Just aid
-    InvestigatorHandTarget aid -> Just aid
     InvestigatorDiscardTarget aid -> Just aid
     ResourceTarget aid -> Just aid
     InvestigationTarget aid _ -> Just aid
@@ -270,6 +268,7 @@ instance FromJSON Target where
   parseJSON = withObject "Target" \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "InvestigatorHandTarget" -> InvestigatorTarget <$> (o .: "contents")
       "CardTarget" -> do
         card :: Card <- o .: "contents"
         pure $ CardIdTarget card.id

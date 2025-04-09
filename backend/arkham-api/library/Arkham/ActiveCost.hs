@@ -392,7 +392,7 @@ payCost msg c iid skipAdditionalCosts cost = do
         _ -> push $ pay (ActionCost n)
       pure c
     IncreaseCostOfThis cardId n -> do
-      ems <- effectModifiers source [IncreaseCostOf (CardWithId cardId) n]
+      ems <- effectModifiers source [IncreaseCostOf (basic $ CardWithId cardId) n]
       push $ CreateWindowModifierEffect (EffectCardCostWindow cardId) ems source (toTarget cardId)
       pure c
     ExhaustCost target -> do

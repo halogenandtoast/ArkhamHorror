@@ -320,7 +320,10 @@ getModifiedCardCost iid c@(PlayerCard _) = do
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then n + m else n
+    ok <- case cardMatcher of
+      BasicCardMatch inner -> pure $ c `cardMatch` inner
+      _ -> c <=~> cardMatcher
+    pure $ if ok then n + m else n
   applyModifier n _ = pure n
 getModifiedCardCost iid c@(EncounterCard _) = do
   modifiers <- getModifiers (InvestigatorTarget iid)
@@ -332,7 +335,10 @@ getModifiedCardCost iid c@(EncounterCard _) = do
   applyModifier n (ReduceCostOf cardMatcher m) = do
     pure $ if c `cardMatch` cardMatcher then max 0 (n - m) else n
   applyModifier n (IncreaseCostOf cardMatcher m) = do
-    pure $ if c `cardMatch` cardMatcher then n + m else n
+    ok <- case cardMatcher of
+      BasicCardMatch inner -> pure $ c `cardMatch` inner
+      _ -> c <=~> cardMatcher
+    pure $ if ok then n + m else n
   applyModifier n _ = pure n
 getModifiedCardCost _ (VengeanceCard _) =
   error "should not happen for vengeance"

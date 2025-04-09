@@ -121,7 +121,7 @@ putApiV1ArkhamGameDecksR gameId = do
           Left err -> error $ show err
           Right decklist ->
             pure
-              $ if investigatorId /= investigator_code decklist
+              $ if investigatorId /= decklistInvestigatorId decklist
                 then ReplaceInvestigator investigatorId decklist
                 else UpgradeDecklist investigatorId decklist
     push msg

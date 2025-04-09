@@ -62,10 +62,10 @@ getCampaignStoryCards = do
 getCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m PlayerCard
 getCampaignStoryCard def = fromJustNote "missing card" <$> getMaybeCampaignStoryCard def
 
-getMaybeCampaignStoryCard :: (HasCallStack, HasGame m) => CardDef -> m (Maybe PlayerCard)
-getMaybeCampaignStoryCard def = do
+getMaybeCampaignStoryCard :: (HasGame m, HasCardCode def) => def -> m (Maybe PlayerCard)
+getMaybeCampaignStoryCard (toCardCode -> cardCode) = do
   cards <- concat . Map.elems <$> getCampaignStoryCards
-  pure $ find ((== def) . toCardDef) cards
+  pure $ find ((== toCardCode cardCode) . toCardCode) cards
 
 getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
 getIsAlreadyOwned cDef = any (any ((== cDef) . toCardDef)) . toList <$> getCampaignStoryCards

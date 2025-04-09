@@ -217,7 +217,9 @@ runGameMessage msg g = case msg of
             (lookupInvestigator iid' playerId)
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
-    push $ InitDeck iid (decklistUrl dl) (Deck deck)
+    push $ if iid /= oldIid
+      then InitDeck iid (decklistUrl dl) (Deck deck)
+      else UpgradeDeck iid (decklistUrl dl) (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =

@@ -1,6 +1,5 @@
 module Arkham.Treachery.Cards.ThePaleMaskBeckons (thePaleMaskBeckons) where
 
-import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Helpers.Card
 import Arkham.Matcher
@@ -20,10 +19,9 @@ instance RunMessage ThePaleMaskBeckons where
       selectOne (enemyIs Cards.theManInThePallidMask) >>= \case
         Just enemy -> eachInvestigator (initiateEnemyAttack enemy attrs)
         Nothing -> do
-          enemy <- getCampaignStoryCard Cards.theManInThePallidMask
-          pushAll
-            [ RemoveFromBearersDeckOrDiscard enemy
-            , DrewPlayerEnemy iid (PlayerCard enemy)
-            ]
+          enemy <- fetchCard Cards.theManInThePallidMask
+          obtainCard enemy
+          withOwner Cards.theManInThePallidMask shuffleDeck
+          push $ DrewPlayerEnemy iid enemy
       pure t
     _ -> ThePaleMaskBeckons <$> liftRunMessage msg attrs

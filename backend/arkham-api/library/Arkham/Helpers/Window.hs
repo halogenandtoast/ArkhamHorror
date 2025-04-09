@@ -1602,12 +1602,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyDefeated (Just who) defeatedBy enemyId ->
           andM
             [ matchWho iid who whoMatcher
-            , matches enemyId enemyMatcher
+            , matches enemyId $ if timing == #after then DefeatedEnemy enemyMatcher else enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
           andM
-            [ matches enemyId enemyMatcher
+            [ matches enemyId $ if timing == #after then DefeatedEnemy enemyMatcher else enemyMatcher
 
             , defeatedByMatches
                 defeatedBy
@@ -1615,7 +1615,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             ]
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.Anyone -> do
           andM
-            [ matches enemyId enemyMatcher
+            [ matches enemyId $ if timing == #after then DefeatedEnemy enemyMatcher else enemyMatcher
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch

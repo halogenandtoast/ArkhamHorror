@@ -210,7 +210,7 @@ const captured = computed(() => {
 })
 
 const ethereal = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Ethereal") ?? false
+  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Ethereal") ?? false
 })
 
 function calculateSkill(base: number, skillType: string, modifiers: Modifier[]) {

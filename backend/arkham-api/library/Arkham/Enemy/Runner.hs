@@ -1236,8 +1236,8 @@ instance RunMessage EnemyAttrs where
                  Just lid -> [PlaceKey (toTarget lid) ekey | ekey <- toList enemyKeys]
                  _ -> []
            )
-        <> victoryMsgs
         <> [afterMsg]
+        <> victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
       pure $ a & keysL .~ mempty

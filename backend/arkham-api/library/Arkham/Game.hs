@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2721,18 +2721,19 @@ getEnemyMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m (Maybe Enemy)
 getEnemyMatching = (listToMaybe <$>) . getEnemiesMatching
 
 getEnemiesMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m [Enemy]
-getEnemiesMatching (DefeatedEnemy matcher) = do
-  let
-    wrapEnemy (defeatedEnemyAttrs -> a) =
-      overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
-  allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
-  enemyMatcherFilter allDefeatedEnemies matcher
-getEnemiesMatching (IncludeOmnipotent matcher) = do
-  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
-  enemyMatcherFilter allGameEnemies matcher
-getEnemiesMatching matcher = do
-  allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
-  enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
+getEnemiesMatching matcher' = case matcher' of
+  DefeatedEnemy matcher -> do
+    let
+      wrapEnemy (defeatedEnemyAttrs -> a) =
+        overAttrs (const a) $ lookupEnemy (toCardCode a) (toId a) (toCardId a)
+    allDefeatedEnemies <- map wrapEnemy . toList <$> scenarioField ScenarioDefeatedEnemies
+    enemyMatcherFilter allDefeatedEnemies matcher
+  IncludeOmnipotent matcher -> do
+    allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+    enemyMatcherFilter allGameEnemies matcher
+  matcher -> do
+    allGameEnemies <- toList . view (entitiesL . enemiesL) <$> getGame
+    enemyMatcherFilter allGameEnemies (matcher <> EnemyWithoutModifier Omnipotent)
 
 enemyMatcherFilter :: (HasCallStack, HasGame m) => [Enemy] -> EnemyMatcher -> m [Enemy]
 enemyMatcherFilter [] _ = pure []
@@ -2740,7 +2741,17 @@ enemyMatcherFilter es matcher' = case matcher' of
   AttackingEnemy -> filterM (fieldMap EnemyAttacking isJust . toId) es
   EnemyWithToken tkn -> filterM (fieldMap EnemyTokens (Token.hasToken tkn) . toId) es
   DefeatedEnemy matcher -> do
-    let defeated' = filter (attr enemyDefeated) es
+    iids <- allInvestigators
+    history <-
+      map defeatedEnemyAttrs
+        . concat
+        <$> traverse (\iid -> getHistoryField RoundHistory iid HistoryEnemiesDefeated) iids
+    let
+      toDefeatedAttrs e =
+        case find ((== e.id) . toId) history of
+          Just attrs' -> overAttrs (const attrs') e
+          Nothing -> e
+    let defeated' = map toDefeatedAttrs $ filter (attr enemyDefeated) es
     enemyMatcherFilter defeated' matcher
   EnemyDiscardedBy investigatorMatcher -> do
     iids <- select investigatorMatcher
@@ -3101,8 +3112,8 @@ enemyMatcherFilter es matcher' = case matcher' of
     filterM isValid es
   EnemyAttachedToAsset assetMatcher -> do
     placements <- select assetMatcher
-    flip filterM es \enemy -> do
-      pure $ case enemyPlacement (toAttrs enemy) of
+    pure $ flip filter es \enemy -> do
+      case enemy.placement of
         AttachedToAsset placementId _ -> placementId `elem` placements
         _ -> False
   M.EnemyAt locationMatcher -> do
@@ -3110,10 +3121,7 @@ enemyMatcherFilter es matcher' = case matcher' of
     flip filterM es \enemy -> do
       if enemy.placement.isAttached
         then pure False
-        else
-          field EnemyLocation (toId $ toAttrs enemy) >>= \case
-            Nothing -> pure False
-            Just loc -> pure $ loc `elem` locations
+        else Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
   CanFightEnemy source -> do
     iid <- view activeInvestigatorIdL <$> getGame
     modifiers' <- getModifiers iid

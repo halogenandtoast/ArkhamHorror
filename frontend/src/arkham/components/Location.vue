@@ -53,7 +53,7 @@ const id = computed(() => props.location.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const locus = computed(() => {
-  return modifiers.value?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "Locus") ?? false
+  return modifiers.value?.some((m) => m.type.tag === "UIModifier" && m.type.contents === "Locus") ?? false
 })
 
 function isCardAction(c: Message): boolean {

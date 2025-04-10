@@ -1467,9 +1467,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyWouldAttack timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyWouldAttack details -> case attackTarget details of
-          InvestigatorTarget who ->
+          SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
+              , matches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
+              ]
+          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
+            andM
+              [ anyM (\who -> matchWho iid who whoMatcher) iids
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
@@ -1478,9 +1484,15 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacks details -> case attackTarget details of
-          InvestigatorTarget who ->
+          SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
+              , matches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
+              ]
+          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
+            andM
+              [ anyM (\who -> matchWho iid who whoMatcher) iids
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
@@ -1489,9 +1501,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyAttacksEvenIfCancelled timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacksEvenIfCancelled details -> case attackTarget details of
-          InvestigatorTarget who ->
+          SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
+              , matches (attackEnemy details) enemyMatcher
+              , enemyAttackMatches iid details enemyAttackMatcher
+              ]
+
+          MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
+            andM
+              [ anyM (\who -> matchWho iid who whoMatcher) iids
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]

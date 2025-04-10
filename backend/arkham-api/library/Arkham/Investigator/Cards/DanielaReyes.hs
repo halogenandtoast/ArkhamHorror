@@ -56,7 +56,7 @@ instance RunMessage DanielaReyes where
       pure i
     PerformEnemyAttack eid -> do
       fieldMay EnemyAttacking eid >>= \case
-        Just (Just details) | isTarget attrs details.target -> do
+        Just (Just details) | any (isTarget attrs) details.targets -> do
           let meta = toResult attrs.meta
           pure
             . DanielaReyes

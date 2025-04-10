@@ -207,8 +207,13 @@ enemyAttackMatches youId details@EnemyAttackDetails {..} = \case
     flip anyM (mapToList attackDamaged) \(target, (x, y)) -> case target of
       AssetTarget aid | x > 0 || y > 0 -> aid <=~> inner
       _ -> pure False
-  Matcher.AttackOfOpportunityAttackYouProvoked ->
-    pure $ attackType == AttackOfOpportunity && isTarget youId attackOriginalTarget
+  Matcher.AttackOfOpportunityAttackYouProvoked -> do
+    let
+      provokedByYou =
+        case attackOriginalTarget of
+          SingleAttackTarget target -> isTarget youId target
+          _ -> False
+    pure $ attackType == AttackOfOpportunity && provokedByYou
   Matcher.AttackViaAlert -> pure $ attackType == AlertAttack
   Matcher.AttackViaSource sourceMatcher -> sourceMatches details.source sourceMatcher
   Matcher.CancelableEnemyAttack matcher -> do

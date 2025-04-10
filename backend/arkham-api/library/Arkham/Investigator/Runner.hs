@@ -747,7 +747,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- if this investigator was the target of an enemy attack we need to remove them
     let
       isAttackingThisInvestigator = \case
-        EnemyAttack details -> isTarget iid details.target
+        EnemyAttack details -> any (isTarget iid) details.targets
         _ -> False
     let
       isNotEliminatedChoice = \case

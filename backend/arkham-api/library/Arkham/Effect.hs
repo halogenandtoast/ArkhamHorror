@@ -595,6 +595,7 @@ allEffects =
     , ("onfal", SomeEffect onFailedByEffect)
     , ("onnex", SomeEffect onNextTurnEffect)
     , ("eotef", SomeEffect endOfTurnEffect)
+    , ("eoref", SomeEffect endOfRoundEffect)
     , ("surge", SomeEffect surgeEffect)
     , ("maxef", SomeEffect maxEffect)
     , ("noair", SomeEffect noAirEffect)

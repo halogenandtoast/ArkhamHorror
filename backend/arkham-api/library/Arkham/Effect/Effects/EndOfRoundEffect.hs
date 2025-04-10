@@ -26,7 +26,7 @@ endOfRoundEffect' eid source msgs =
       { effectId = eid
       , effectSource = source
       , effectTarget = GameTarget
-      , effectCardCode = "eotef"
+      , effectCardCode = "eoref"
       , effectMetadata = Just (EffectMessages msgs)
       , effectTraits = mempty
       , effectWindow = Nothing
@@ -44,8 +44,7 @@ instance RunMessage EndOfRoundEffect where
   runMessage msg e@(EndOfRoundEffect attrs) = runQueueT $ case msg of
     EndRound -> do
       case attrs.metadata of
-        Just (EffectMessages msgs) -> do
-          pushAll $ DisableEffect attrs.id : msgs
-        _ -> push $ DisableEffect attrs.id
+        Just (EffectMessages msgs) -> push $ Priority $ Run $ DisableEffect attrs.id : msgs
+        _ -> push $ Priority $ DisableEffect attrs.id
       pure e
     _ -> EndOfRoundEffect <$> liftRunMessage msg attrs

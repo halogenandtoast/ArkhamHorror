@@ -217,9 +217,10 @@ runGameMessage msg g = case msg of
             (lookupInvestigator iid' playerId)
     let iid = toId investigator
     when (notNull sideDeck) $ push $ LoadSideDeck iid sideDeck
-    push $ if iid /= oldIid
-      then InitDeck iid (decklistUrl dl) (Deck deck)
-      else UpgradeDeck iid (decklistUrl dl) (Deck deck)
+    push
+      $ if iid /= oldIid
+        then InitDeck iid (decklistUrl dl) (Deck deck)
+        else UpgradeDeck iid (decklistUrl dl) (Deck deck)
     let activeInvestigatorF =
           if gameActiveInvestigatorId g == oldIid then set activeInvestigatorIdL iid else id
         turnPlayerInvestigatorF =
@@ -1392,7 +1393,7 @@ runGameMessage msg g = case msg of
         let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
         let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
         send $ format investigator' <> " played " <> format card
-        g' <- runGameMessage (Run [ObtainCard card.id, PutCardIntoPlay controller card mtarget payment windows']) g
+        g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1
@@ -1451,9 +1452,11 @@ runGameMessage msg g = case msg of
           investigator' <- getInvestigator iid
           let
             zone =
-              if card `elem` investigatorHand (toAttrs investigator')
-                then Zone.FromHand
-                else Zone.FromDiscard
+              if
+                | card `elem` investigatorHand (toAttrs investigator') -> Zone.FromHand
+                | maybe False (`elem` investigatorDiscard (toAttrs investigator')) (preview _PlayerCard card) ->
+                    Zone.FromDiscard
+                | otherwise -> Zone.FromPlay
           eid <- getRandom
           let
             event' =

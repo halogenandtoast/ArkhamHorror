@@ -22,12 +22,12 @@ instance HasAbilities SpectralShield where
   getAbilities (SpectralShield a) = case a.placement of
     AttachedToInvestigator iid ->
       [ restricted a 1 ControlsThis
-          $ freeReaction
+          $ forced
           $ DealtDamageOrHorror #when (SourceIsCancelable AnySource) (be iid)
       ]
     AttachedToAsset aid _ ->
       [ restricted a 1 ControlsThis
-          $ freeReaction
+          $ forced
           $ AssetDealtDamageOrHorror #when (SourceIsCancelable AnySource) (AssetWithId aid)
       ]
     _ -> []

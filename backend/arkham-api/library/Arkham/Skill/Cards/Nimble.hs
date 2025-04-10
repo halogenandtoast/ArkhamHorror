@@ -18,7 +18,7 @@ nimble = skill (Nimble . (`with` Metadata 0)) Cards.nimble
 
 instance RunMessage Nimble where
   runMessage msg s@(Nimble (attrs `With` meta)) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ SkillTestInitiatorTarget {} _ (min 3 -> n) | n > 0 -> do
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ (min 3 -> n) | n > 0 -> do
       let iid = skillOwner attrs
       connectingLocation <- notNull <$> getAccessibleLocations iid attrs
       if connectingLocation

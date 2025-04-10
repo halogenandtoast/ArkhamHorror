@@ -2,8 +2,8 @@ module Arkham.Location.Cards.TombOfShadows (tombOfShadows) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.GameValue
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
@@ -21,7 +21,8 @@ tombOfShadows =
 
 instance HasModifiersFor TombOfShadows where
   getModifiersFor (TombOfShadows a) = do
-    modifySelect a (enemyIs Enemies.theManInThePallidMask <> enemyAt a) [HealthModifier 1]
+    n <- perPlayer 1
+    modifySelect a (enemyIs Enemies.theManInThePallidMask <> enemyAt a) [HealthModifier n]
 
 instance HasAbilities TombOfShadows where
   getAbilities (TombOfShadows attrs) =

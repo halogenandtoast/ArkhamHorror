@@ -218,6 +218,7 @@ createActiveCostForAdditionalCardCosts iid card = do
             , activeCostWindows = []
             , activeCostInvestigator = iid
             , activeCostSealedChaosTokens = []
+            , activeCostCancelled = False
             }
 
 getEnemy :: (HasCallStack, HasGame m) => EnemyId -> m Enemy
@@ -339,6 +340,7 @@ createActiveCostForCard iid card isPlayAction windows' = do
       , activeCostWindows = windows'
       , activeCostInvestigator = iid
       , activeCostSealedChaosTokens = []
+      , activeCostCancelled = False
       }
 
 data MissingLocation = MissingLocation Text CallStack

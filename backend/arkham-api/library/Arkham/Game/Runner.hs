@@ -548,6 +548,7 @@ runGameMessage msg g = case msg of
           , activeCostWindows = []
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
+          , activeCostCancelled = False
           }
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
@@ -641,6 +642,7 @@ runGameMessage msg g = case msg of
           , activeCostWindows = windows'
           , activeCostInvestigator = iid
           , activeCostSealedChaosTokens = []
+          , activeCostCancelled = False
           }
     push $ CreatedCost acId
     pure $ g & activeCostL %~ insertMap acId activeCost
@@ -1390,7 +1392,7 @@ runGameMessage msg g = case msg of
         let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
         let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
         send $ format investigator' <> " played " <> format card
-        g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
+        g' <- runGameMessage (Run [ObtainCard card.id, PutCardIntoPlay controller card mtarget payment windows']) g
         let
           recordLimit g'' = \case
             MaxPerGame _ -> g'' & cardUsesL . at (toCardCode card) . non 0 +~ 1

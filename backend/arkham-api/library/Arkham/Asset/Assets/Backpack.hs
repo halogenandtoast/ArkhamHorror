@@ -45,7 +45,6 @@ instance RunMessage Backpack where
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
       when (null remaining) $ toDiscardBy iid attrs attrs
-      addToHand iid [card]
       push msg
       pure $ Backpack $ attrs & cardsUnderneathL .~ remaining
     _ -> do

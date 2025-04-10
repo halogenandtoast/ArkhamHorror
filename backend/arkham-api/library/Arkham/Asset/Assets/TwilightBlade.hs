@@ -42,7 +42,6 @@ instance RunMessage TwilightBlade where
       when (card `elem` underDiana) do
         exhaustThis attrs
         cardResolutionModifier card attrs iid $ CannotTriggerAbilityMatching $ AbilityIs (toSource iid) 1
-        addToHand iid [card]
         push msg
       pure a
     _ -> TwilightBlade <$> liftRunMessage msg attrs

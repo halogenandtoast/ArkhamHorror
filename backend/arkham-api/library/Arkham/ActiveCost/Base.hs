@@ -18,12 +18,28 @@ data ActiveCost = ActiveCost
   , activeCostWindows :: [Window]
   , activeCostInvestigator :: InvestigatorId
   , activeCostSealedChaosTokens :: [ChaosToken]
+  , activeCostCancelled :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass ToJSON
+
+instance FromJSON ActiveCost where
+  parseJSON = withObject "ActiveCost" \o -> do
+    activeCostId <- o .: "activeCostId"
+    activeCostCosts <- o .: "activeCostCosts"
+    activeCostPayments <- o .: "activeCostPayments"
+    activeCostTarget <- o .: "activeCostTarget"
+    activeCostWindows <- o .: "activeCostWindows"
+    activeCostInvestigator <- o .: "activeCostInvestigator"
+    activeCostSealedChaosTokens <- o .: "activeCostSealedChaosTokens"
+    activeCostCancelled <- o .:? "activeCostCancelled" .!= False
+    pure ActiveCost {..}
 
 instance HasField "id" ActiveCost ActiveCostId where
   getField = activeCostId
+
+instance HasField "cancelled" ActiveCost Bool where
+  getField = activeCostCancelled
 
 instance HasField "costs" ActiveCost Cost where
   getField = activeCostCosts

@@ -405,6 +405,9 @@ instance Sourceable InvestigatorAttrs where
     iid == investigatorId
   isSource _ _ = False
 
+instance HasField "eliminated" InvestigatorAttrs Bool where
+  getField = investigatorEliminated
+
 instance HasField "form" InvestigatorAttrs InvestigatorForm where
   getField = investigatorForm
 
@@ -473,6 +476,9 @@ data Investigator = forall a. IsInvestigator a => Investigator a
 instance AsId Investigator where
   type IdOf Investigator = InvestigatorId
   asId = toId
+
+instance HasField "eliminated" Investigator Bool where
+  getField (Investigator a) = attr (.eliminated) a
 
 instance HasField "player" Investigator PlayerId where
   getField (Investigator a) = attr (.player) a

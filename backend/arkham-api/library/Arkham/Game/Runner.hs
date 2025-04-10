@@ -2689,39 +2689,43 @@ runGameMessage msg g = case msg of
         other -> other
     pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
   InvestigatorDrewEncounterCard iid card -> do
-    hasForesight <- hasModifier iid (Foresight $ toTitle card)
-    whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
-    let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
-    case toCardType card of
-      EnemyType -> do
-        investigator <- getInvestigator iid
-        sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
-      TreacheryType -> uiRevelation
-      EncounterAssetType -> uiRevelation
-      EncounterEventType -> uiRevelation
-      LocationType -> uiRevelation
-      _ -> pure ()
-    if hasForesight
+    investigator <- getInvestigator iid
+    if investigator.eliminated
       then do
-        canCancel <- EncounterCard card <=~> CanCancelRevelationEffect #any
-        if canCancel
+        push $ AddToEncounterDiscard card
+        pure g
+      else do
+        hasForesight <- hasModifier iid (Foresight $ toTitle card)
+        whenDraw <- checkWindows [mkWhen (Window.DrawCard iid (toCard card) Deck.EncounterDeck)]
+        let uiRevelation = getPlayer iid >>= (`sendRevelation` (toJSON $ toCard card))
+        case toCardType card of
+          EnemyType -> sendEnemy (toTitle investigator <> " drew Enemy") (toJSON $ toCard card)
+          TreacheryType -> uiRevelation
+          EncounterAssetType -> uiRevelation
+          EncounterEventType -> uiRevelation
+          LocationType -> uiRevelation
+          _ -> pure ()
+        if hasForesight
           then do
-            player <- getPlayer iid
-            push
-              $ chooseOne
-                player
-                [ Label
-                    "Cancel card effects and discard it"
-                    [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
-                , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
-                ]
-            pure $ g & focusedCardsL %~ ([toCard card] :)
+            canCancel <- EncounterCard card <=~> CanCancelRevelationEffect #any
+            if canCancel
+              then do
+                player <- getPlayer iid
+                push
+                  $ chooseOne
+                    player
+                    [ Label
+                        "Cancel card effects and discard it"
+                        [UnfocusCards, CancelNext GameSource RevelationMessage, AddToEncounterDiscard card]
+                    , Label "Draw as normal" [UnfocusCards, whenDraw, Do msg]
+                    ]
+                pure $ g & focusedCardsL %~ ([toCard card] :)
+              else do
+                pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
+                pure g
           else do
             pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
             pure g
-      else do
-        pushAll [FocusCards [toCard card], whenDraw, UnfocusCards, Do msg]
-        pure g
   Do (InvestigatorDrewEncounterCard iid card) -> do
     push $ ResolvedCard iid (toCard card)
     let

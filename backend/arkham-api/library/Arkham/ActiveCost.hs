@@ -668,8 +668,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           canParallelRex <-
             iid
               <=~> ( InvestigatorIs "90078"
-                      <> InvestigatorAt Anywhere
-                      <> InvestigatorWithAnyClues
+                       <> InvestigatorAt Anywhere
+                       <> InvestigatorWithAnyClues
                    )
           if canParallelRex
             then do
@@ -841,8 +841,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                       $ reduceResourceCost nested
                   ]
                 : [ Label
-                    ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
-                    [PayCost acId iid skipAdditionalCosts nested]
+                      ("Done spending additional actions (" <> tshow currentlyPaid <> " spent so far)")
+                      [PayCost acId iid skipAdditionalCosts nested]
                   | canAffordNested
                   ]
             else push $ PayCost acId iid skipAdditionalCosts nested
@@ -954,7 +954,7 @@ payCost msg c iid skipAdditionalCosts cost = do
               ]
       pure c
     DiscoveredCluesCost -> do
-      let n  = discoveredClues c.windows
+      let n = discoveredClues c.windows
       push $ pay (ClueCost $ Static n)
       pure c
     GroupClueCostX -> do
@@ -1069,7 +1069,8 @@ payCost msg c iid skipAdditionalCosts cost = do
                 paymentOptions =
                   map
                     ( \(choiceId, (iid', name, cards)) ->
-                        PaymentAmountChoice choiceId iid' 0 cards name $ PayCost acId iid' True (HandDiscardCost 1 extendedCardMatcher)
+                        PaymentAmountChoice choiceId iid' 0 cards name
+                          $ PayCost acId iid' True (HandDiscardCost 1 extendedCardMatcher)
                     )
                     (zip rs iidsWithCards)
               lead <- getLeadPlayer
@@ -1099,8 +1100,8 @@ payCost msg c iid skipAdditionalCosts cost = do
           player
           x
           [ targetLabel
-            card
-            [pay (DiscardCardCost $ PlayerCard card)]
+              card
+              [pay (DiscardCardCost $ PlayerCard card)]
           | card <- cards
           ]
       pure c
@@ -1276,16 +1277,16 @@ instance RunMessage ActiveCost where
             <> mEffect
             <> [ wouldPayWindowMsg
                , Would
-                  batchId
-                  $ [PayCosts acId]
-                  <> [ CheckAttackOfOpportunity iid False
-                     | not modifiersPreventAttackOfOpportunity
-                        && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                        && isNothing cardDef.fastWindow
-                        && all (`notElem` nonAttackOfOpportunityActions) actions
-                        && (totalActionCost c.costs > 0)
-                     ]
-                  <> [PayCostFinished acId]
+                   batchId
+                   $ [PayCosts acId]
+                   <> [ CheckAttackOfOpportunity iid False
+                      | not modifiersPreventAttackOfOpportunity
+                          && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                          && isNothing cardDef.fastWindow
+                          && all (`notElem` nonAttackOfOpportunityActions) actions
+                          && (totalActionCost c.costs > 0)
+                      ]
+                   <> [PayCostFinished acId]
                ]
           pure c
         ForAbility a@Ability {..} -> do
@@ -1394,8 +1395,11 @@ instance RunMessage ActiveCost where
           afterActivateAbilityWindow <- checkWindows [mkAfter (Window.ActivateAbility iid c.windows ability)]
           pushAll
             $ [whenActivateAbilityWindow | isPlayAction == IsPlayAction]
-            <> [PlayCard iid card Nothing c.payments c.windows False]
-            <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
+            <> [PlayCard iid card Nothing c.payments c.windows False | not c.cancelled]
+            <> [ SealedChaosToken token (Just c.investigator) (toTarget card)
+               | not c.cancelled
+               , token <- c.sealedChaosTokens
+               ]
             <> [FinishAction | notNull actions]
             <> [TakenActions iid actions | notNull actions]
             <> [afterActivateAbilityWindow | isPlayAction == IsPlayAction]
@@ -1405,4 +1409,8 @@ instance RunMessage ActiveCost where
         ForAdditionalCost _ -> pure ()
       push PaidAllCosts
       pure c
+    Do (DiscardCard _ _ cardId) -> do
+      case c.target of
+        ForCard _ card | card.id == cardId -> pure c { activeCostCancelled = True }
+        _ -> pure c
     _ -> pure c

@@ -51,7 +51,6 @@ instance RunMessage StickToThePlan3 where
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` assetCardsUnderneath attrs -> do
       let remaining = deleteFirstMatch (== card) $ assetCardsUnderneath attrs
       costModifier attrs (toCardId card) (AdditionalCost $ ExhaustCost $ toTarget attrs)
-      addToHand iid [card]
       push msg
       pure $ StickToThePlan3 $ attrs & cardsUnderneathL .~ remaining
     _ -> StickToThePlan3 <$> liftRunMessage msg attrs

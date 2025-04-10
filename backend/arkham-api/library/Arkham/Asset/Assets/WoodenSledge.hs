@@ -45,7 +45,6 @@ instance RunMessage WoodenSledge where
       pure a
     InitiatePlayCard iid card _ _ _ _ | controlledBy attrs iid && card `elem` attrs.cardsUnderneath -> do
       let remaining = deleteFirstMatch (== card) attrs.cardsUnderneath
-      addToHand iid [card]
       push msg
       pure $ WoodenSledge $ attrs & cardsUnderneathL .~ remaining
     _ -> WoodenSledge <$> liftRunMessage msg attrs

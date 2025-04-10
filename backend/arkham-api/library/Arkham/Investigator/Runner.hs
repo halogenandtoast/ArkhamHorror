@@ -2122,6 +2122,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (cardsUnderneathL %~ filter ((/= cardId) . toCardId))
       & (foundCardsL . each %~ filter ((/= cardId) . toCardId))
       & (bondedCardsL %~ filter ((/= cardId) . toCardId))
+      & (decksL . each %~ filter ((/= cardId) . toCardId))
   PutCampaignCardIntoPlay iid cardDef | iid == investigatorId -> do
     let mcard = find ((== cardDef) . toCardDef) (unDeck investigatorDeck)
     case mcard of
@@ -3560,6 +3561,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     card <- getCard cardId
     liftRunMessage (AddToHandQuiet iid [card]) a
   AddToHand iid cards | iid == investigatorId -> do
+    for_ cards obtainCard
     for_ (reverse cards) \case
       PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
       EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
@@ -3573,6 +3575,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
       & (deckL %~ Deck . filter ((`notElem` cards) . PlayerCard) . unDeck)
+      & (decksL . each %~ filter (`notElem` cards))
   DrawToHandFrom iid deck cards | iid == investigatorId -> do
     let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
     push before
@@ -3610,6 +3613,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (bondedCardsL %~ filter (`notElem` cards))
       & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
   AddToHandQuiet iid cards | iid == investigatorId -> do
+    for_ cards obtainCard
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a
@@ -3619,6 +3623,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (foundCardsL . each %~ filter (`notElem` cards))
       & (bondedCardsL %~ filter (`notElem` cards))
       & (handL %~ (<> cards))
+      & (decksL . each %~ filter (`notElem` cards))
   SwapPlaces (aTarget, _) (_, newLocation) | a `is` aTarget -> do
     push $ CheckEnemyEngagement a.id
     pure $ a & placementL .~ AtLocation newLocation

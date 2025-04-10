@@ -1,7 +1,6 @@
 module Arkham.Asset.Assets.GraysAnatomyTheDoctorsBible5 (
   graysAnatomyTheDoctorsBible5,
   graysAnatomyTheDoctorsBible5Effect,
-  GraysAnatomyTheDoctorsBible5 (..),
 )
 where
 
@@ -53,7 +52,7 @@ instance RunMessage GraysAnatomyTheDoctorsBible5 where
           healX <-
             selectCount $ EffectWithTarget (toTarget tid) <> EffectWithCardCode cardCode <> EffectWithMetaInt 1
           damageX <-
-            selectCount $ EffectWithTarget (toTarget tid) <> EffectWithCardCode cardCode <> EffectWithMetaInt 1
+            selectCount $ EffectWithTarget (toTarget tid) <> EffectWithCardCode cardCode <> EffectWithMetaInt 2
 
           chooseOneM iid do
             labeled

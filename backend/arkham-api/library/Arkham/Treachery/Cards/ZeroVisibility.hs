@@ -1,7 +1,6 @@
-module Arkham.Treachery.Cards.ZeroVisibility (zeroVisibility, ZeroVisibility (..)) where
+module Arkham.Treachery.Cards.ZeroVisibility (zeroVisibility) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Matcher
 import Arkham.Placement
@@ -18,8 +17,7 @@ zeroVisibility = treachery ZeroVisibility Cards.zeroVisibility
 instance HasModifiersFor ZeroVisibility where
   getModifiersFor (ZeroVisibility a) = case a.placement of
     InThreatArea iid -> maybeModified_ a iid do
-      lid <- MaybeT $ getMaybeLocation iid
-      liftGuardM $ lid <=~> LocationWithTreachery AnyTreachery
+      liftGuardM $ selectAny $ TreacheryAttachedToLocation (locationWithInvestigator iid)
       pure [AdditionalCostToEnterMatching Anywhere $ ActionCost 1]
     _ -> pure mempty
 

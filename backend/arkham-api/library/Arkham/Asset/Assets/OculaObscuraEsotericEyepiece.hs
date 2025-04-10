@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, getSkillTestId)
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
 
@@ -43,6 +43,8 @@ instance RunMessage OculaObscuraEsotericEyepiece where
       push
         $ ReplaceCurrentDraw (attrs.ability 2) iid
         $ Choose (attrs.ability 2) 1 ResolveChoice [Resolved tokens] [] Nothing
-      afterSkillTest $ for_ attrs.sealedChaosTokens unsealChaosToken
+      getSkillTestId >>= \case
+        Nothing -> for_ attrs.sealedChaosTokens unsealChaosToken
+        Just _ -> afterSkillTest $ for_ attrs.sealedChaosTokens unsealChaosToken
       pure a
     _ -> OculaObscuraEsotericEyepiece <$> liftRunMessage msg attrs

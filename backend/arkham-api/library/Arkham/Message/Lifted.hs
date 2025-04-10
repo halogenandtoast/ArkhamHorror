@@ -1843,7 +1843,7 @@ oncePerAbility attrs n f = do
       (MetaModifier $ object ["_oncePerAbility" .= True])
       >> f
 
-insertAfterMatching :: (MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
+insertAfterMatching :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
 -- Usage:

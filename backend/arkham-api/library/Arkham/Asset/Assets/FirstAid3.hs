@@ -38,7 +38,7 @@ damageComponentLabel :: Targetable target => target -> Source -> UI Message
 damageComponentLabel (toTarget -> thing) source = componentLabel DamageToken thing [HealDamage thing source 1]
 
 horrorComponentLabel :: Targetable target => target -> Source -> UI Message
-horrorComponentLabel (toTarget -> thing) source = componentLabel HorrorToken thing [HealDamage thing source 1]
+horrorComponentLabel (toTarget -> thing) source = componentLabel HorrorToken thing [HealHorror thing source 1]
 
 getInvestigatorChoices :: HasGame m => InvestigatorId -> PlayerId -> Source -> m [UI Message]
 getInvestigatorChoices iid player source = do

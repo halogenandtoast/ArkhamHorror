@@ -18,8 +18,8 @@ enemyAttack
   -> EnemyAttackDetails
 enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
   EnemyAttackDetails
-    { attackTarget = target
-    , attackOriginalTarget = target
+    { attackTarget = SingleAttackTarget target
+    , attackOriginalTarget = SingleAttackTarget target
     , attackEnemy = enemyId
     , attackType = RegularAttack
     , attackDamageStrategy = DamageAny

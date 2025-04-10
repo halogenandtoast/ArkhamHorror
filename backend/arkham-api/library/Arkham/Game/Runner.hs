@@ -1691,7 +1691,7 @@ runGameMessage msg g = case msg of
         push $ Ask lead $ ChooseOneAtATimeWithAuto "Automatically handle all" opts
     pure g
   EnemyWillAttack details -> do
-    modifiers' <- getModifiers (attackTarget details)
+    modifiers' <- maybe (pure []) getModifiers details.singleTarget
     cannotBeAttacked <- flip anyM modifiers' $ \case
       CannotBeAttackedBy matcher ->
         elem (attackEnemy details) <$> select matcher
@@ -1708,7 +1708,7 @@ runGameMessage msg g = case msg of
             pushAll [aoo, msg]
           Just (EnemyWillAttack details2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiers (attackTarget details2)
+            modifiers2' <- maybe (pure []) getModifiers details2.singleTarget
             cannotBeAttacked2 <- flip anyM modifiers2' $ \case
               CannotBeAttackedBy matcher ->
                 elem (attackEnemy details2) <$> select matcher
@@ -1728,7 +1728,7 @@ runGameMessage msg g = case msg of
         EnemyAttack details -> targetLabel (attackEnemy details) [msg']
         _ -> error "unhandled"
       attackedInvestigator = \case
-        EnemyAttack details -> details.target.investigator
+        EnemyAttack details -> details.investigator
         _ -> Nothing
     case mNextMessage of
       Just (EnemyAttacks as2) -> do

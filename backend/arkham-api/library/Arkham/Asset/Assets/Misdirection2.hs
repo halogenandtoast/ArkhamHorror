@@ -27,7 +27,7 @@ instance HasAbilities Misdirection2 where
         $ triggered
           ( EnemyAttacks
               #when
-              (affectsOthers $ InvestigatorAt YourLocation)
+              (affectsOthers $ at_ YourLocation)
               (CancelableEnemyAttack AnyEnemyAttack)
               AnyEnemy
           )
@@ -39,9 +39,9 @@ instance RunMessage Misdirection2 where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
-      let details = (getAttackDetails ws)
+      let details = getAttackDetails ws
       cancelAttack attrs details
-      for_ details.target.investigator \iid -> do
+      for_ details.investigator \iid -> do
         locations <- getAccessibleLocations iid (attrs.ability 1)
         unless (null locations) do
           chooseOneM iid do

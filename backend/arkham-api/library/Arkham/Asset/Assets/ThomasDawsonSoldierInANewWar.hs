@@ -20,11 +20,11 @@ instance HasModifiersFor ThomasDawsonSoldierInANewWar where
 
 instance HasAbilities ThomasDawsonSoldierInANewWar where
   getAbilities (ThomasDawsonSoldierInANewWar a) =
-    [ restrictedAbility a 1 ControlsThis
+    [ restricted a 1 ControlsThis
         $ ReactionAbility
           ( EnemyAttacksEvenIfCancelled
               #after
-              (affectsOthers $ InvestigatorAt YourLocation <> can.draw.cards)
+              (affectsOthers $ at_ YourLocation <> can.draw.cards)
               AnyEnemyAttack
               AnyEnemy
           )
@@ -34,8 +34,7 @@ instance HasAbilities ThomasDawsonSoldierInANewWar where
 instance RunMessage ThomasDawsonSoldierInANewWar where
   runMessage msg a@(ThomasDawsonSoldierInANewWar attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (getAttackDetails -> details) _ -> do
-      case details.target of
-        InvestigatorTarget iid' -> drawCardsIfCan iid' (attrs.ability 1) 1
-        _ -> pure ()
+      for_ details.investigator \iid' ->
+        drawCardsIfCan iid' (attrs.ability 1) 1
       pure a
     _ -> ThomasDawsonSoldierInANewWar <$> liftRunMessage msg attrs

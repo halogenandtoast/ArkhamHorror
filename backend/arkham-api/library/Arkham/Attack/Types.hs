@@ -14,9 +14,12 @@ import GHC.Records
 data EnemyAttackType = AttackOfOpportunity | RegularAttack | AlertAttack | RetaliateAttack
   deriving stock (Show, Eq, Data)
 
+data AttackTarget = SingleAttackTarget Target | MassiveAttackTargets [Target]
+  deriving stock (Show, Eq, Data)
+
 data EnemyAttackDetails = EnemyAttackDetails
-  { attackTarget :: Target
-  , attackOriginalTarget :: Target
+  { attackTarget :: AttackTarget
+  , attackOriginalTarget :: AttackTarget
   , attackEnemy :: EnemyId
   , attackType :: EnemyAttackType
   , attackDamageStrategy :: DamageStrategy
@@ -32,8 +35,23 @@ data EnemyAttackDetails = EnemyAttackDetails
 instance HasField "kind" EnemyAttackDetails EnemyAttackType where
   getField = attackType
 
-instance HasField "target" EnemyAttackDetails Target where
+instance HasField "target" EnemyAttackDetails AttackTarget where
   getField = attackTarget
+
+instance HasField "investigator" EnemyAttackDetails (Maybe InvestigatorId) where
+  getField x = case attackTarget x of
+    SingleAttackTarget a -> preview _InvestigatorTarget a
+    _ -> Nothing
+
+instance HasField "singleTarget" EnemyAttackDetails (Maybe Target) where
+  getField x = case attackTarget x of
+    SingleAttackTarget a -> Just a
+    _ -> Nothing
+
+instance HasField "targets" EnemyAttackDetails [Target] where
+  getField x = case attackTarget x of
+    SingleAttackTarget target -> [target]
+    MassiveAttackTargets targets -> targets
 
 instance HasField "source" EnemyAttackDetails Source where
   getField = attackSource
@@ -56,13 +74,16 @@ damageStrategyL = lens attackDamageStrategy $ \m x -> m {attackDamageStrategy = 
 damagedL :: Lens' EnemyAttackDetails (Map Target (Int, Int))
 damagedL = lens attackDamaged $ \m x -> m {attackDamaged = x}
 
-$(deriveJSON defaultOptions ''EnemyAttackType)
-$(deriveToJSON defaultOptions ''EnemyAttackDetails)
+mconcat
+  [ deriveJSON defaultOptions ''EnemyAttackType
+  , deriveJSON defaultOptions ''AttackTarget
+  , deriveToJSON defaultOptions ''EnemyAttackDetails
+  ]
 
 instance FromJSON EnemyAttackDetails where
   parseJSON = withObject "EnemyAttackDetails" $ \o -> do
-    attackTarget <- o .: "attackTarget"
-    attackOriginalTarget <- o .: "attackOriginalTarget"
+    attackTarget <- o .: "attackTarget" <|> (SingleAttackTarget <$> o .: "attackTarget")
+    attackOriginalTarget <- o .: "attackOriginalTarget" <|> (SingleAttackTarget <$> o .: "attackOriginalTarget")
     attackEnemy <- o .: "attackEnemy"
     attackType <- o .: "attackType"
     attackDamageStrategy <- o .: "attackDamageStrategy"

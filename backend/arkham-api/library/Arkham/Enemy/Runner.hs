@@ -682,13 +682,23 @@ instance RunMessage EnemyAttrs where
       mods <- getModifiers (EnemyTarget enemyId)
       unless (CannotAttack `elem` mods) do
         iids <- select enemyAttacks
-        for_ iids \iid ->
-          push
-            $ EnemyWillAttack
-            $ (enemyAttack enemyId a iid)
-              { attackDamageStrategy = enemyDamageStrategy
-              , attackExhaustsEnemy = True
-              }
+        case iids of
+          [] -> pure ()
+          [x] -> push
+              $ EnemyWillAttack
+              $ (enemyAttack enemyId a x)
+                { attackDamageStrategy = enemyDamageStrategy
+                , attackExhaustsEnemy = True
+                }
+          (x : xs) ->
+            push
+              $ EnemyWillAttack
+              $ (enemyAttack enemyId a x)
+                { attackDamageStrategy = enemyDamageStrategy
+                , attackExhaustsEnemy = True
+                , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                }
       pure a
     AttackEnemy eid choose | eid == enemyId -> do
       let iid = choose.investigator
@@ -878,7 +888,7 @@ instance RunMessage EnemyAttrs where
       pure a
     ChangeEnemyAttackTarget eid target | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
-          details' = details {attackTarget = target}
+          details' = details {attackTarget = SingleAttackTarget target}
       replaceWindow
         \case
           (Window.windowType -> Window.EnemyAttacks d) -> d == details
@@ -897,7 +907,7 @@ instance RunMessage EnemyAttrs where
       pure $ a & attackingL ?~ details {attackAfter = msgs}
     EnemyAttack details | details.enemy == enemyId -> do
       whenM (attackIsValid details a) do
-        case details.target.investigator of
+        case details.investigator of
           Just iid -> do
             canIgnore <- hasModifier iid MayIgnoreAttacksOfOpportunity
             willIgnore <- hasModifier iid IgnoreAttacksOfOpportunity
@@ -932,7 +942,7 @@ instance RunMessage EnemyAttrs where
         ?~ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
     PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
       let details = fromJustNote "missing attack details" enemyAttacking
-      modifiers <- getModifiers (attackTarget details)
+      modifiers <- maybe (pure []) getModifiers details.singleTarget
       mods <- getModifiers a
       sourceModifiers <- maybe (pure []) getModifiers (sourceToMaybeTarget details.source)
 
@@ -961,7 +971,7 @@ instance RunMessage EnemyAttrs where
       sanityDamage <- field EnemySanityDamage (toId a)
 
       case attackTarget details of
-        InvestigatorTarget iid -> do
+        SingleAttackTarget (InvestigatorTarget iid) -> do
           player <- getPlayer iid
           let
             attackMessage =
@@ -996,28 +1006,31 @@ instance RunMessage EnemyAttrs where
                     healthDamage
                     sanityDamage
 
-          massive <- eid <=~> MassiveEnemy
-          shouldExhaust <-
-            if massive
-              then do
-                let
-                  isEnemyAttack = \case
-                    TargetLabel (EnemyTarget eid') [EnemyAttack details'] -> eid' == enemyId && details'.enemy == enemyId
-                    _ -> False
-                not <$> assertQueue \case
-                  Ask _ (ChooseOneAtATime xs) -> any isEnemyAttack xs
-                  _ -> False
-              else pure True
           pushAll
             $ [attackMessage | allowAttack]
             <> [ Exhaust (toTarget a)
-               | shouldExhaust
-               , allowAttack
+               | allowAttack
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
                ]
             <> ignoreWindows
             <> [After (EnemyAttack details)]
+        MassiveAttackTargets ts -> do
+          lead <- getLeadPlayer
+          pushAll
+            $ [ chooseOneAtATime
+                  lead
+                  [ TargetLabel
+                      t
+                      [EnemyAttack $ details {attackTarget = SingleAttackTarget t, attackExhaustsEnemy = False}]
+                  | t <- ts
+                  ]
+              ]
+            <> [ Exhaust (toTarget a)
+               | allowAttack
+               , attackExhaustsEnemy details
+               , DoNotExhaust `notElem` mods
+               ]
         _ -> error "Unhandled"
       pure a
     After (EnemyAttack details) | details.enemy == a.id -> do
@@ -1027,9 +1040,7 @@ instance RunMessage EnemyAttrs where
         pushWhen (Keyword.Elusive `elem` keywords) $ HandleElusive a.id
         pushAll $ afterAttacksWindow : attackAfter updatedDetails
         when (attackType details == AttackOfOpportunity) do
-          case attackTarget details of
-            InvestigatorTarget iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
-            _ -> pure ()
+          for_ details.investigator \iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
       pure a
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       afterWindow <- checkAfter $ Window.Healed DamageType (toTarget a) source n
@@ -1346,8 +1357,8 @@ instance RunMessage EnemyAttrs where
           $ EnemyWillAttack
           $ EnemyAttackDetails
             { attackEnemy = enemyId
-            , attackTarget = InvestigatorTarget iid
-            , attackOriginalTarget = InvestigatorTarget iid
+            , attackTarget = SingleAttackTarget (InvestigatorTarget iid)
+            , attackOriginalTarget = SingleAttackTarget (InvestigatorTarget iid)
             , attackDamageStrategy = enemyDamageStrategy
             , attackType = AttackOfOpportunity
             , attackExhaustsEnemy = False

@@ -30,7 +30,7 @@ instance RunMessage FineTuning1 where
         getUpgradeTargets iid
           $ assetControlledBy iid
           <> oneOf [#tool, #science]
-          <> not_ (AssetWithAttachedEvent $ eventIs Cards.tinker)
+          <> not_ (AssetWithAttachedEvent $ eventIs Cards.fineTuning1)
       chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

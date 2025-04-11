@@ -1,53 +1,36 @@
-module Arkham.Location.Cards.ScienceBuilding where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.ScienceBuilding (scienceBuilding) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
-import Arkham.Location.Cards qualified as Cards (scienceBuilding)
-import Arkham.Location.Runner
+import Arkham.Location.Cards qualified as Cards
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.SkillType
-import Arkham.Timing qualified as Timing
 
 newtype ScienceBuilding = ScienceBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: LocationCard ScienceBuilding
-scienceBuilding =
-  location ScienceBuilding Cards.scienceBuilding 2 (PerPlayer 1)
+scienceBuilding = symbolLabel $ location ScienceBuilding Cards.scienceBuilding 2 (PerPlayer 1)
 
 instance HasAbilities ScienceBuilding where
   getAbilities (ScienceBuilding x) =
-    withBaseAbilities x
-      $ if locationRevealed x
-        then
-          [ restrictedAbility
-              x
-              1
-              (Here <> Negate (LocationExists $ LocationWithTitle "Alchemy Labs"))
-              $ ForcedAbility
-              $ RevealLocation Timing.After You
-              $ LocationWithId
-              $ toId x
-          , restrictedAbility x 2 Here
-              $ ForcedAbility
-              $ SkillTestResult
-                Timing.When
-                You
-                (SkillTestWithSkillType SkillWillpower)
-                (FailureResult AnyValue)
-          ]
-        else []
+    extendRevealed
+      x
+      [ restricted x 1 (Here <> not_ (exists $ LocationWithTitle "Alchemy Labs"))
+          $ forced
+          $ RevealLocation #after You (be x)
+      , restricted x 2 Here
+          $ forced
+          $ SkillTestResult #when You (SkillTestWithSkillType #willpower) #failure
+      ]
 
 instance RunMessage ScienceBuilding where
-  runMessage msg l@(ScienceBuilding attrs) = case msg of
-    UseCardAbility _ source 1 _ _
-      | isSource attrs source ->
-          l <$ push (PlaceLocationMatching $ CardWithTitle "Alchemy Labs")
-    UseCardAbility iid source 2 _ _
-      | isSource attrs source ->
-          l <$ push (InvestigatorAssignDamage iid source DamageAny 1 0)
-    _ -> ScienceBuilding <$> runMessage msg attrs
+  runMessage msg l@(ScienceBuilding attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeSetAsideLocation_ Cards.alchemyLabs
+      pure l
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      assignDamage iid (attrs.ability 2) 1
+      pure l
+    _ -> ScienceBuilding <$> liftRunMessage msg attrs

@@ -26,7 +26,7 @@ ikey t = intercalate "." (?scope <> [t]) <> varStr
  where
   varStr = case map toVarPair (mapToList ?scopeVars) of
     [] -> ""
-    vs -> " " <> intercalate " " vs
+    vs -> " " <> unwords vs
   toVarPair (k, v) = k <> "=" <> toVar v
   toVar = \case
     Number n -> "i:" <> tshow n
@@ -37,4 +37,4 @@ withVar :: HasI18n => Text -> Value -> (HasI18n => a) -> a
 withVar k v a = let ?scopeVars = ?scopeVars <> singletonMap k v in a
 
 withVars :: HasI18n => [Pair] -> (HasI18n => a) -> a
-withVars kv a = let ?scopeVars = ?scopeVars <> (Map.fromList $ map (bimap K.toText id) kv) in a
+withVars kv a = let ?scopeVars = ?scopeVars <> Map.fromList (map (first K.toText) kv) in a

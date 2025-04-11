@@ -169,6 +169,20 @@ data EncounterSet
   | GhoulsOfUmordhoth
   | TheDevourersCult
   | ReturnCultOfUmordhoth
+  | ReturnToExtracurricularActivities
+  | ReturnToTheHouseAlwaysWins
+  | ReturnToTheMiskatonicMuseum
+  | ReturnToTheEssexCountyExpress
+  | ReturnToBloodOnTheAltar
+  | ReturnToUndimensionedAndUnseen
+  | ReturnToWhereDoomAwaits
+  | ReturnToLostInTimeAndSpace
+  | BeyondTheThreshold
+  | ResurgentEvils
+  | SecretDoors
+  | CreepingCold
+  | ErraticFear
+  | YogSothothsEmissaries
   | TheBayou
   | CurseOfTheRougarou
   | CarnevaleOfHorrors

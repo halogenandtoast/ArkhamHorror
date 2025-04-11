@@ -55,10 +55,7 @@
     "type": "scenario",
     "alternate": "arkham-api/tests/Arkham/Scenario/Scenarios/{}Spec.hs",
     "template": [
-      "module Arkham.Scenario.Scenarios.{dot}",
-      "  ( {dot}(..)",
-      "  , {dot|snakecase|camelcase}",
-      "  ) where",
+      "module Arkham.Scenario.Scenarios.{dot} ({dot|snakecase|camelcase}) where",
       "",
       "import Arkham.Scenario.Import.Lifted",
       "import Arkham.Scenarios.{dot}.Helpers",

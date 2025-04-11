@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy) where
+module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy, TheDunwichLegacy(..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted

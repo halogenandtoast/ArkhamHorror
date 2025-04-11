@@ -2989,11 +2989,11 @@ enemyMatcherFilter es matcher' = case matcher' of
   EnemyWithTitle title -> pure $ filter (`hasTitle` title) es
   EnemyWithFullTitle title subtitle -> pure $ filter ((== (title <:> subtitle)) . toName) es
   EnemyWithId enemyId -> pure $ filter ((== enemyId) . toId) es
-  NonEliteEnemy -> filterM (fmap (notElem Elite) . field EnemyTraits . toId) es
+  NonEliteEnemy -> filterM (fmap (maybe False (notElem Elite)) . fieldMay EnemyTraits . toId) es
   EnemyMatchAll ms -> foldM enemyMatcherFilter es ms
   EnemyOneOf ms -> nub . concat <$> traverse (enemyMatcherFilter es) ms
-  EnemyWithTrait t -> filterM (fmap (member t) . field EnemyTraits . toId) es
-  EnemyWithoutTrait t -> filterM (fmap (notMember t) . field EnemyTraits . toId) es
+  EnemyWithTrait t -> filterM (fmap (maybe False (member t)) . fieldMay EnemyTraits . toId) es
+  EnemyWithoutTrait t -> filterM (fmap (maybe False (notMember t)) . fieldMay EnemyTraits . toId) es
   EnemyWithAnyKey -> pure $ filter (notNull . attr enemyKeys) es
   EnemyWithKeyword k -> flip filterM es \enemy -> do
     keywords <- setToList <$> field EnemyKeywords (toId enemy)
@@ -3018,8 +3018,8 @@ enemyMatcherFilter es matcher' = case matcher' of
     doom <- field EnemyDoom (toId enemy)
     doom `gameValueMatches` gameValueMatcher
   EnemyWithBounty -> flip filterM es \enemy -> do
-    tokens <- field EnemyTokens (toId enemy)
-    pure $ Token.countTokens Token.Bounty tokens > 0
+    mtokens <- fieldMay EnemyTokens (toId enemy)
+    pure $ maybe 0 (Token.countTokens Token.Bounty) mtokens > 0
   EnemyWithMostDoom enemyMatcher -> do
     matches' <- getEnemiesMatching enemyMatcher
     mosts <- maxes <$> forToSnd matches' (field EnemyDoom . toId)

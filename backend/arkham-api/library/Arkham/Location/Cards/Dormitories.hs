@@ -12,7 +12,7 @@ newtype Dormitories = Dormitories LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dormitories :: LocationCard Dormitories
-dormitories = location Dormitories Cards.dormitories 1 (PerPlayer 3)
+dormitories = symbolLabel $ location Dormitories Cards.dormitories 1 (PerPlayer 3)
 
 instance HasModifiersFor Dormitories where
   getModifiersFor (Dormitories a) = whenUnrevealed a $ modifySelf a [Blocked]

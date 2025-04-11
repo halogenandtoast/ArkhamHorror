@@ -1411,6 +1411,7 @@ library
       Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.NightOfTheZealot
       Arkham.Campaign.Campaigns.ReturnToNightOfTheZealot
+      Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy
       Arkham.Campaign.Campaigns.TheCircleUndone
       Arkham.Campaign.Campaigns.TheDreamEaters
       Arkham.Campaign.Campaigns.TheDunwichLegacy
@@ -1645,6 +1646,7 @@ library
       Arkham.Enemy.Cards.EliyahAshevakDogHandler
       Arkham.Enemy.Cards.EmergentMonstrosity
       Arkham.Enemy.Cards.EmergingDeepOne
+      Arkham.Enemy.Cards.EnthralledSecurityGuard
       Arkham.Enemy.Cards.EztliGuardian
       Arkham.Enemy.Cards.Fanatic
       Arkham.Enemy.Cards.FangOfYig
@@ -3261,6 +3263,7 @@ library
       Arkham.Location.Cards.VipArea
       Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
+      Arkham.Location.Cards.WarrenObservatory
       Arkham.Location.Cards.WavewornIsland
       Arkham.Location.Cards.WellOfSouls
       Arkham.Location.Cards.WhateleyRuins_250
@@ -3390,6 +3393,7 @@ library
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks

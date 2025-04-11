@@ -41,3 +41,13 @@ pattern LostInTimeAndSpace :: CampaignStep
 pattern LostInTimeAndSpace <- ScenarioStep "02311"
   where
     LostInTimeAndSpace = ScenarioStep "02311"
+
+pattern ReturnToExtracurricularActivities :: CampaignStep
+pattern ReturnToExtracurricularActivities <- ScenarioStep "51012"
+  where
+    ReturnToExtracurricularActivities = ScenarioStep "51012"
+
+pattern ReturnToTheHouseAlwaysWins :: CampaignStep
+pattern ReturnToTheHouseAlwaysWins <- ScenarioStep "51015"
+  where
+    ReturnToTheHouseAlwaysWins = ScenarioStep "51015"

@@ -1,6 +1,4 @@
-module Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung (
-  facultyOfficesTheNightIsStillYoung,
-) where
+module Arkham.Location.Cards.FacultyOfficesTheNightIsStillYoung (facultyOfficesTheNightIsStillYoung) where
 
 import Arkham.Ability
 import Arkham.GameValue
@@ -14,14 +12,10 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-facultyOfficesTheNightIsStillYoung
-  :: LocationCard FacultyOfficesTheNightIsStillYoung
+facultyOfficesTheNightIsStillYoung :: LocationCard FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung =
-  location
-    FacultyOfficesTheNightIsStillYoung
-    Cards.facultyOfficesTheNightIsStillYoung
-    2
-    (PerPlayer 2)
+  symbolLabel
+    $ location FacultyOfficesTheNightIsStillYoung Cards.facultyOfficesTheNightIsStillYoung 2 (PerPlayer 2)
 
 instance HasModifiersFor FacultyOfficesTheNightIsStillYoung where
   getModifiersFor (FacultyOfficesTheNightIsStillYoung a) = whenUnrevealed a $ modifySelf a [Blocked]

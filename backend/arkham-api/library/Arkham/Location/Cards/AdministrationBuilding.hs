@@ -1,41 +1,32 @@
-module Arkham.Location.Cards.AdministrationBuilding where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.AdministrationBuilding (administrationBuilding) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (administrationBuilding)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
-import Arkham.Timing qualified as Timing
 
 newtype AdministrationBuilding = AdministrationBuilding LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 administrationBuilding :: LocationCard AdministrationBuilding
-administrationBuilding =
-  location AdministrationBuilding Cards.administrationBuilding 4 (PerPlayer 1)
+administrationBuilding = symbolLabel $ location AdministrationBuilding Cards.administrationBuilding 4 (PerPlayer 1)
 
 instance HasAbilities AdministrationBuilding where
   getAbilities (AdministrationBuilding x) =
-    withRevealedAbilities x
-      $ [ restrictedAbility x 1 Here
-            $ ForcedAbility
-            $ Matcher.RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId x
-        , restrictedAbility x 2 Here $ ForcedAbility $ TurnEnds Timing.When You
-        ]
+    extendRevealed
+      x
+      [ restricted x 1 Here $ forced $ RevealLocation #after You (be x)
+      , restricted x 2 Here $ forced $ TurnEnds #when You
+      ]
 
 instance RunMessage AdministrationBuilding where
-  runMessage msg l@(AdministrationBuilding attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 _ _ -> do
-      push $ PlaceLocationMatching $ CardWithTitle "Faculty Offices"
+  runMessage msg l@(AdministrationBuilding attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      placeLocation_ $ SetAsideCardMatch $ CardWithTitle "Faculty Offices"
       pure l
-    UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
-      push $ DiscardTopOfDeck iid 1 (toAbilitySource attrs 2) Nothing
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      discardTopOfDeck iid (attrs.ability 2) 1
       pure l
-    _ -> AdministrationBuilding <$> runMessage msg attrs
+    _ -> AdministrationBuilding <$> liftRunMessage msg attrs

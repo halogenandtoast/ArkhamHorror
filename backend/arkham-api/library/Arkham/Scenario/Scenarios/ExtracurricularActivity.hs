@@ -33,9 +33,9 @@ extracurricularActivity difficulty =
     "02041"
     "Extracurricular Activity"
     difficulty
-    [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
-    , "humanitiesBuilding studentUnion   administrationBuilding ."
-    , ".                  dormitories    facultyOffices         ."
+    [ "triangle plus    hourglass squiggle"
+    , "square   diamond circle    ."
+    , ".        equals  t         ."
     ]
 
 instance HasChaosTokenValue ExtracurricularActivity where

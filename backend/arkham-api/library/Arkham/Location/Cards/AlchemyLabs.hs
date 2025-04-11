@@ -4,19 +4,19 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Card
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Scenarios.ExtracurricularActivity.Helpers
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 alchemyLabs :: LocationCard AlchemyLabs
-alchemyLabs = location AlchemyLabs Cards.alchemyLabs 5 (Static 0)
+alchemyLabs = symbolLabel $ location AlchemyLabs Cards.alchemyLabs 5 (Static 0)
 
 instance HasModifiersFor AlchemyLabs where
   getModifiersFor (AlchemyLabs a) = whenUnrevealed a $ modifySelf a [Blocked]
@@ -24,11 +24,8 @@ instance HasModifiersFor AlchemyLabs where
 instance HasAbilities AlchemyLabs where
   getAbilities (AlchemyLabs attrs) =
     extendRevealed1 attrs
-      $ withTooltip
-        ( "{action}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able"
-            <> (if canTake then "" else " (YOU CANNOT)")
-            <> "."
-        )
+      $ scenarioI18n
+      $ withI18nTooltip ("alchemyLabs.action." <> if canTake then "can" else "cannot")
       $ investigateAbility attrs 1 mempty Here
    where
     canTake = any (`cardMatch` cardIs Cards.alchemicalConcoction) (locationCardsUnderneath attrs)

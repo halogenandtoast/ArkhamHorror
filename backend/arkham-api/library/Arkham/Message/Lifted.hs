@@ -445,6 +445,9 @@ instance FetchCard CardDef where
       then fetchCard (UniqueFetchCard def)
       else maybe (genCard def) pure =<< maybeGetSetAsideCard def
 
+instance FetchCard ExtendedCardMatcher where
+  fetchCard = selectJust
+
 instance FetchCard Card where
   fetchCard = pure
 
@@ -502,8 +505,8 @@ removeCardFromDeckForCampaign
   -> m ()
 removeCardFromDeckForCampaign investigator card = push $ Msg.RemoveCardFromDeckForCampaign (asId investigator) (toCardId card)
 
-defeatEnemy :: (ReverseQueue m, Sourceable source) => EnemyId -> InvestigatorId -> source -> m ()
-defeatEnemy enemyId investigatorId = Msg.defeatEnemy enemyId investigatorId >=> pushAll
+defeatEnemy :: (ReverseQueue m, Sourceable source, AsId enemy, IdOf enemy ~ EnemyId, AsId investigator, IdOf investigator ~ InvestigatorId) => enemy -> investigator -> source -> m ()
+defeatEnemy enemy investigator = Msg.defeatEnemy (asId enemy) (asId investigator) >=> pushAll
 
 createAsset :: (ReverseQueue m, IsCard card) => card -> m AssetId
 createAsset card = do

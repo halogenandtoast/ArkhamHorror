@@ -501,6 +501,9 @@ allEnemies =
       SomeEnemyCard jeremiahPierce
     , SomeEnemyCard billyCooper
     , SomeEnemyCard almaHill
+    , -- Return to the Dunwich Legacy
+      -- Return to Extracurricular Activities
+      SomeEnemyCard enthralledSecurityGuard
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

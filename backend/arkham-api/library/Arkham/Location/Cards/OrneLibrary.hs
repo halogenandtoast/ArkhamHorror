@@ -11,7 +11,7 @@ newtype OrneLibrary = OrneLibrary LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 orneLibrary :: LocationCard OrneLibrary
-orneLibrary = location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1)
+orneLibrary = symbolLabel $ location OrneLibrary Cards.orneLibrary 3 (PerPlayer 1)
 
 instance HasModifiersFor OrneLibrary where
   getModifiersFor (OrneLibrary a) = whenRevealed a $ modifySelf a [AdditionalCostToInvestigate (ActionCost 1)]

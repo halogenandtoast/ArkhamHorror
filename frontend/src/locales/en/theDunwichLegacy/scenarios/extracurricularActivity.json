@@ -1,4 +1,8 @@
 {
+  "intro1": {
+    "title": "Scenario I-A: Extracurricular Activity",
+    "body": "<p>Dr. Armitage is worried his colleague, Professor Warren Rice, might be in trouble, so he has asked for your help in finding his friend. He seems unreasonably nervous about his colleague’s disappearance considering Professor Rice has only been “missing” for a matter of hours…</p>"
+  },
   "tokens": {
     "easyStandard": {
       "skull": "-1. If you fail, discard the top 3 cards of your deck.",
@@ -14,5 +18,16 @@
   "xp": {
     "noResolution": "Reflects on the night’s events.",
     "resolution4": "Reflects on the night’s events."
+  },
+  "tooltips": {
+    "miskatonicQuad": {
+      "resign": "\"We can't find Rice anywhere...\" You leave the campus, hoping Armitage will forgive you."
+    },
+    "alchemyLabs": {
+      "action": {
+        "can": "{'{'}action{'}'}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able.",
+        "cannot": "{'{'}action{'}'}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able (YOU CANNOT)."
+      }
+    }
   }
 }

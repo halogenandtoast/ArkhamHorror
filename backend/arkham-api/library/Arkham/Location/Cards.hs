@@ -790,6 +790,7 @@ allLocationCards =
       , vipArea
       , waitingRoom
       , walterGilmansRoom
+      , warrenObservatory
       , wavewornIsland
       , wellOfSouls
       , whateleyRuins_250
@@ -8334,6 +8335,17 @@ arkhamWoodsWoodenBridge =
     Circle
     [Squiggle, Droplet]
     ReturnToTheDevourerBelow
+
+warrenObservatory :: CardDef
+warrenObservatory =
+  victory 1
+    $ location
+      "51013"
+      "Warren Observatory"
+      [Miskatonic]
+      Triangle
+      [Plus, Square]
+      ReturnToExtracurricularActivities
 
 cursedShores :: CardDef
 cursedShores =

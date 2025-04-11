@@ -85,7 +85,8 @@ instance RunMessage JennyBarnesParallel where
       gainResourcesIfCan iid (attrs.ability 2) n
       pure . JennyBarnesParallel $ attrs `with` Meta (responseCard meta) (n + resourcesGained meta)
     EndRound -> do
-      pure . JennyBarnesParallel $ attrs `with` Meta Nothing 0
+      attrs' <- liftRunMessage msg attrs
+      pure . JennyBarnesParallel $ attrs' `with` Meta Nothing 0
     PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
       gainResourcesIfCan iid attrs 3
       pure i

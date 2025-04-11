@@ -2034,9 +2034,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         pushAll
           $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
             , locationWindowsBefore
-            , locationWindowsAfter
             , RemoveClues d.source (LocationTarget lid) clueCount
             , After $ GainClues iid d.source clueCount
+            , locationWindowsAfter
             ]
           <> d.discoverThen
         send $ format a <> " discovered " <> pluralize clueCount "clue"

@@ -378,6 +378,7 @@ allEncounterEnemyCards =
       , umordhoth
       , unsealedPhantasm
       , valentinoRivas
+      , vassalOfTheLurker
       , vengefulSpecter
       , vengefulWitch
       , victoriaDevereux
@@ -2835,6 +2836,14 @@ enthralledSecurityGuard =
   (enemy "51014" "Entralled Security Guard" ReturnToExtracurricularActivities 2)
     { cdCardTraits = setFromList [Humanoid, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+vassalOfTheLurker :: CardDef
+vassalOfTheLurker =
+  (enemy "51071" "Vassal of the Lurker" YogSothothsEmissaries 2)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Hunter]
+    , cdVictoryPoints = Just 1
     }
 
 

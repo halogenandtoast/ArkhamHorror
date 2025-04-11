@@ -1872,6 +1872,7 @@ library
       Arkham.Enemy.Cards.UnboundBeast
       Arkham.Enemy.Cards.UnsealedPhantasm
       Arkham.Enemy.Cards.ValentinoRivas
+      Arkham.Enemy.Cards.VassalOfTheLurker
       Arkham.Enemy.Cards.VengefulHound
       Arkham.Enemy.Cards.VengefulShade
       Arkham.Enemy.Cards.VengefulSpecter
@@ -3801,6 +3802,7 @@ library
       Arkham.Trait
       Arkham.Treachery
       Arkham.Treachery.Cards
+      Arkham.Treachery.Cards.ABalefulWelcome
       Arkham.Treachery.Cards.AbandonedAndAlone
       Arkham.Treachery.Cards.AbandonedAndAloneAdvanced
       Arkham.Treachery.Cards.AbandonedByTheGods
@@ -3919,6 +3921,7 @@ library
       Arkham.Treachery.Cards.DrivenToMadness
       Arkham.Treachery.Cards.EagerForDeath
       Arkham.Treachery.Cards.EagerForDeathUnionAndDisillusion
+      Arkham.Treachery.Cards.EldritchAccord
       Arkham.Treachery.Cards.ElectrostaticDischarge
       Arkham.Treachery.Cards.EncephalonSignal
       Arkham.Treachery.Cards.EndlessDescent
@@ -3968,6 +3971,7 @@ library
       Arkham.Treachery.Cards.HarvestedBrain
       Arkham.Treachery.Cards.HastyRepairs
       Arkham.Treachery.Cards.Haunted
+      Arkham.Treachery.Cards.HauntingRecollections
       Arkham.Treachery.Cards.HeraldsOfTheDeep
       Arkham.Treachery.Cards.HideousLullaby
       Arkham.Treachery.Cards.HorrorsFromTheDeep
@@ -3986,6 +3990,7 @@ library
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted
       Arkham.Treachery.Cards.IndescribableApparition
+      Arkham.Treachery.Cards.InfiniteDoorway
       Arkham.Treachery.Cards.InnsmouthLook
       Arkham.Treachery.Cards.InsatiableBloodlust
       Arkham.Treachery.Cards.InternalInjury
@@ -4080,6 +4085,7 @@ library
       Arkham.Treachery.Cards.RestlessJourneyFallacy
       Arkham.Treachery.Cards.RestlessJourneyHardship
       Arkham.Treachery.Cards.RestlessJourneyLies
+      Arkham.Treachery.Cards.ResurgentEvils
       Arkham.Treachery.Cards.RexsCurse
       Arkham.Treachery.Cards.RexsCurseAdvanced
       Arkham.Treachery.Cards.RipplesOnTheSurface
@@ -4095,6 +4101,7 @@ library
       Arkham.Treachery.Cards.RuinedFilm
       Arkham.Treachery.Cards.SearchingForIzzie
       Arkham.Treachery.Cards.SearchingForIzzieAdvanced
+      Arkham.Treachery.Cards.SecretDoor
       Arkham.Treachery.Cards.SecretGathering
       Arkham.Treachery.Cards.SecretsInTheAttic
       Arkham.Treachery.Cards.SecretsOfTheBeyond

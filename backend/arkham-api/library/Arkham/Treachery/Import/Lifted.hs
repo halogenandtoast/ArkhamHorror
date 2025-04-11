@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Treachery.Import.Lifted (
   module X,
   module Arkham.Treachery.Import.Lifted,
@@ -54,6 +56,9 @@ import Arkham.Treachery.Runner as X (
   pattern PlaceResources,
  )
 
+import Arkham.Card.CardCode
+import Arkham.Classes.HasGame
+import Arkham.Helpers.History
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Placement
@@ -102,3 +107,8 @@ gainSurge = push . Msg.gainSurge
 
 guardInThreatArea :: Monad m => InvestigatorId -> TreacheryAttrs -> MaybeT m ()
 guardInThreatArea iid attrs = guard $ treacheryInThreatArea iid attrs
+
+isFirstCopyThisPhase :: (HasGame m, HasCardCode a) => a -> m Bool
+isFirstCopyThisPhase attrs = do
+  drawn <- getAllHistoryField #phase HistoryTreacheriesDrawn
+  pure $ count (== toCardCode attrs) drawn == 1

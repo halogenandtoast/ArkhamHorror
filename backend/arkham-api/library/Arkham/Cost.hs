@@ -138,6 +138,7 @@ data Cost
   | DirectDamageCost Source InvestigatorMatcher Int
   | InvestigatorDamageCost Source InvestigatorMatcher DamageStrategy Int
   | DiscardTopOfDeckCost Int
+  | DiscardTopOfDeckWithTargetCost Target Int
   | DiscardCost Zone Target
   | DiscardCardCost Card
   | DiscardUnderneathCardCost AssetId ExtendedCardMatcher
@@ -288,6 +289,7 @@ displayCostType = \case
   ActionCost n -> pluralize n "Action"
   UnlessFastActionCost n -> pluralize n "Action"
   DiscardTopOfDeckCost n -> pluralize n "Card" <> " from the top of your deck"
+  DiscardTopOfDeckWithTargetCost _ n -> pluralize n "Card" <> " from the top of your deck"
   DiscardAssetCost _ -> "Discard matching asset"
   DiscardCombinedCost n ->
     "Discard cards with a total combined cost of at least " <> tshow n

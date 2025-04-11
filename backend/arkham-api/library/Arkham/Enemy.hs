@@ -504,6 +504,8 @@ allEnemies =
     , -- Return to the Dunwich Legacy
       -- Return to Extracurricular Activities
       SomeEnemyCard enthralledSecurityGuard
+    , -- Yog Sothoth's Emissaries
+      SomeEnemyCard vassalOfTheLurker
     , -- Nathanial Cho
       SomeEnemyCard tommyMalloy
     , -- Curse of the Rougarou

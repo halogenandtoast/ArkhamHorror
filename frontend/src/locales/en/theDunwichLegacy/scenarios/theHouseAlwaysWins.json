@@ -1,7 +1,7 @@
 {
   "remembered": {
     "hadADrink": "{name} had a drink",
-    "cheated": "Cheated"
+    "cheated": "{name} cheated"
   },
   "tokens": {
     "easyStandard": {

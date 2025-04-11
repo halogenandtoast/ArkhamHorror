@@ -15,7 +15,7 @@ import Data.Char (isUpper, toLower)
 data ScenarioLogKey
   = HadADrink (Labeled InvestigatorId)
   | -- | The House Always Wins
-    Cheated
+    Cheated (Labeled InvestigatorId)
   | FoundAStrangeDoll
   | -- | Curse of the Rougarou
     FoundAnAncientBindingStone
@@ -112,6 +112,7 @@ instance ToGameLoggerFormat ScenarioLogKey where
       "{enemy:\"" <> display name <> "\":" <> tshow eid <> ":" <> tshow cardCode <> "} is Ichtaca's Prey"
     IchtacasDestination (Labeled name lid) -> "{location:\"" <> display name <> "\":" <> tshow lid <> "} is Ichtaca's Destination"
     HadADrink (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} had a drink"
+    Cheated (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} cheated"
     MeddledWithThePast (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} meddled with the past"
     other -> pack . go $ show other
    where

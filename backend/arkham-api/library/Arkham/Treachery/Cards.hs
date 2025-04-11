@@ -215,6 +215,7 @@ allEncounterTreacheryCards =
       , callToOrder
       , caughtInAWeb
       , captiveMind
+      , caughtCheating
       , centuriesOfSecrets
       , chaosInTheWater
       , chaosManifest
@@ -385,6 +386,7 @@ allEncounterTreacheryCards =
       , pulledByTheStars
       , punishment
       , pushedIntoTheBeyond
+      , raiseTheStakes
       , realmOfMadness
       , realmOfTorment
       , restlessJourneyFallacy
@@ -2838,6 +2840,18 @@ maskOfUmordhoth =
 throughTheGates :: CardDef
 throughTheGates =
   (basicWeakness "51011" "Through the Gates") {cdCardTraits = setFromList [Pact, Mystery]}
+
+caughtCheating :: CardDef
+caughtCheating =
+  surge $ (treachery "51018" "Caught Cheating" ReturnToTheHouseAlwaysWins 2)
+    { cdCardTraits = setFromList [Illicit]
+    }
+
+raiseTheStakes :: CardDef
+raiseTheStakes =
+  (treachery "51019" "Raise the Stakes" ReturnToTheHouseAlwaysWins 2)
+    { cdCardTraits = setFromList [Illicit]
+    }
 
 hauntingRecollections :: CardDef
 hauntingRecollections =

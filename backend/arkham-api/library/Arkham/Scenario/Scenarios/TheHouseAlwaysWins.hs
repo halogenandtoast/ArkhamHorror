@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (theHouseAlwaysWins) where
+module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (theHouseAlwaysWins, TheHouseAlwaysWins(..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -16,7 +16,6 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
-import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 import Arkham.Scenarios.TheHouseAlwaysWins.Story
 
@@ -32,12 +31,12 @@ theHouseAlwaysWins difficulty =
     "02062"
     "The House Always Wins"
     difficulty
-    [ ".           .                .                  backHallDoorway1 ."
-    , ".           .                cloverClubCardroom backHallDoorway1 ."
-    , "laBellaLuna cloverClubLounge cloverClubCardroom darkenedHall     backHallDoorway2"
-    , "laBellaLuna cloverClubLounge cloverClubBar      darkenedHall     backHallDoorway2"
-    , ".           .                cloverClubBar      backHallDoorway3 ."
-    , ".           .                .                  backHallDoorway3 ."
+    [ ".    .      .        backHallDoorway1 ."
+    , ".    .      triangle backHallDoorway1 ."
+    , "moon circle triangle diamond          backHallDoorway2"
+    , "moon circle square   diamond          backHallDoorway2"
+    , ".    .      square   backHallDoorway3 ."
+    , ".    .      .        backHallDoorway3 ."
     ]
 
 instance HasChaosTokenValue TheHouseAlwaysWins where
@@ -60,6 +59,8 @@ instance RunMessage TheHouseAlwaysWins where
       gather Set.BadLuck
       gather Set.NaomisCrew
       gather Set.Rats
+      gatherAndSetAside Set.HideousAbominations
+      gatherAndSetAside Set.StrikingFear
 
       startAt =<< place Locations.laBellaLuna
       cloverClubLounge <- place Locations.cloverClubLounge
@@ -106,7 +107,8 @@ instance RunMessage TheHouseAlwaysWins where
       story resolution1
       record OBannionGangHasABoneToPickWithTheInvestigators
       record DrFrancisMorganWasKidnapped
-      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      cheaters <- cheated
+      unless (null cheaters) $ addChaosToken ElderThing
       allGainXpWithBonus attrs $ toBonus "resolution1" 1
       endOfScenario
       pure s
@@ -116,7 +118,8 @@ instance RunMessage TheHouseAlwaysWins where
       record OBannionGangHasABoneToPickWithTheInvestigators
       record TheInvestigatorsRescuedDrFrancisMorgan
       addCampaignCardToDeckChoice investigatorIds DoNotShuffleIn Assets.drFrancisMorgan
-      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      cheaters <- cheated
+      unless (null cheaters) $ addChaosToken ElderThing
       allGainXp attrs
       endOfScenario
       pure s
@@ -124,7 +127,8 @@ instance RunMessage TheHouseAlwaysWins where
       story resolution3
       record NaomiHasTheInvestigatorsBacks
       record DrFrancisMorganWasKidnapped
-      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      cheaters <- cheated
+      unless (null cheaters) $ addChaosToken ElderThing
       allGainXp attrs
       endOfScenario
       pure s
@@ -134,7 +138,8 @@ instance RunMessage TheHouseAlwaysWins where
       record DrFrancisMorganWasKidnapped
       record InvestigatorsWereUnconsciousForSeveralHours
       eachInvestigator (`sufferPhysicalTrauma` 1)
-      when (Cheated `member` attrs.log) $ addChaosToken ElderThing
+      cheaters <- cheated
+      unless (null cheaters) $ addChaosToken ElderThing
       allGainXpWithBonus attrs $ toBonus "resolution4" 1
       endOfScenario
       pure s

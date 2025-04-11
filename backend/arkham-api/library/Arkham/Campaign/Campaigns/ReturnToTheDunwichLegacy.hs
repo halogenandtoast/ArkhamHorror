@@ -17,10 +17,10 @@ instance IsCampaign ReturnToTheDunwichLegacy where
   nextStep a = case campaignStep (toAttrs a) of
     PrologueStep -> error $ "Unhandled campaign step: " <> show a
     ReturnToExtracurricularActivities ->
-      if TheHouseAlwaysWins `elem` (toAttrs a).completedSteps
+      if ReturnToTheHouseAlwaysWins `elem` (toAttrs a).completedSteps
         then Just $ InterludeStep 1 Nothing
-        else Just (UpgradeDeckStep TheHouseAlwaysWins)
-    TheHouseAlwaysWins ->
+        else Just (UpgradeDeckStep ReturnToTheHouseAlwaysWins)
+    ReturnToTheHouseAlwaysWins ->
       if ReturnToExtracurricularActivities `elem` (toAttrs a).completedSteps
         then Just $ InterludeStep 1 Nothing
         else Just (UpgradeDeckStep ReturnToExtracurricularActivities)
@@ -56,7 +56,7 @@ instance RunMessage ReturnToTheDunwichLegacy where
           $ setNextCampaignStep ReturnToExtracurricularActivities
         labeled
           "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
-          $ setNextCampaignStep TheHouseAlwaysWins
+          $ setNextCampaignStep ReturnToTheHouseAlwaysWins
       pure c
     NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
     _ -> ReturnToTheDunwichLegacy <$> liftRunMessage msg theDunwichLegacy'

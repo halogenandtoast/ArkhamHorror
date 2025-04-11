@@ -34,7 +34,7 @@ const remembered = computed(() => {
       return `You owe Bianca resources (${record.contents})`
     }
 
-    if (record.tag === 'RememberNamed') {
+    if (record.tag === 'RememberedName') {
       return t(`${prefix}.remembered.${record.actualTag.charAt(0).toLowerCase() + record.actualTag.slice(1)}`, { name: simpleName(record.name) })
     }
 

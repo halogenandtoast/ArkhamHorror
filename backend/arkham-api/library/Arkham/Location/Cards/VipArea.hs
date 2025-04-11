@@ -1,14 +1,12 @@
 module Arkham.Location.Cards.VipArea (vipArea) where
 
-import Arkham.Classes
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (vipArea)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Phase
-import Arkham.Prelude
 
 newtype VipArea = VipArea LocationAttrs
   deriving anyclass IsLocation

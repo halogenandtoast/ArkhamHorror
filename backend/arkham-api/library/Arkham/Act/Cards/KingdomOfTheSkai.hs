@@ -30,9 +30,9 @@ kingdomOfTheSkai =
 
 instance HasAbilities KingdomOfTheSkai where
   getAbilities (KingdomOfTheSkai x) =
-    [ restrictedAbility x 1 (EachUndefeatedInvestigator $ InvestigatorAt $ LocationWithTrait Port)
+    [ mkAbility x 1
         $ Objective
-        $ ReactionAbility (RoundEnds #when) (GroupClueCost (PerPlayer 2) (LocationWithTrait Port))
+        $ triggered (RoundEnds #when) (GroupClueCost (PerPlayer 2) (LocationWithTrait Port))
     ]
 
 instance RunMessage KingdomOfTheSkai where

@@ -1,9 +1,11 @@
 [
-  { "id": "01104", "name": "The Gathering", "campaign": "01" },
+  { "id": "01104", "name": "The Gathering", "campaign": "01", "returnTo": "50011", "returnToName": "Return to the Gathering" },
   {
     "id": "01120",
     "name": "The Midnight Masks",
     "campaign": "01",
+    "returnTo": "50025",
+    "returnToName": "Return to The Midnight Masks",
     "settings": [
       { "key": "LitaWasForcedToFindOthersToHelpHerCause", "type": "ToggleKey", "content": false },
       { "key": "HouseStatus", "keys": ["YourHouseHasBurnedToTheGround", "YourHouseIsStillStanding"], "type": "PickKey", "content": "YourHouseHasBurnedToTheGround" },
@@ -15,6 +17,8 @@
     "id": "01142",
     "name": "The Devourer Below",
     "campaign": "01",
+    "returnTo": "50032",
+    "returnToName": "Return to The Devourer Below",
     "settings": [
       { "key": "ItIsPastMidnight", "type": "ToggleKey", "content": false },
       { "key": "GhoulPriestIsStillAlive", "type": "ToggleKey", "content": false },

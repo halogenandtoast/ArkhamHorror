@@ -379,6 +379,10 @@ payCost msg c iid skipAdditionalCosts cost = do
       cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
       push $ DiscardTopOfDeck iid n source Nothing
       withPayment $ DiscardCardPayment cards
+    DiscardTopOfDeckWithTargetCost t n -> do
+      cards <- fieldMap InvestigatorDeck (map PlayerCard . take n . unDeck) iid
+      push $ DiscardTopOfDeck iid n source (Just t)
+      withPayment $ DiscardCardPayment cards
     UnlessFastActionCost n -> do
       case activeCostTarget c of
         ForCard _ card -> do

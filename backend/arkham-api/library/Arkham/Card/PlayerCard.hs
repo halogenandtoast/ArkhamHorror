@@ -38,6 +38,9 @@ instance HasField "victoryPoints" PlayerCard (Maybe Int) where
 instance HasField "id" PlayerCard CardId where
   getField = pcId
 
+instance HasField "title" PlayerCard Text where
+  getField = toTitle
+
 instance HasField "customizations" PlayerCard Customizations where
   getField = pcCustomizations
 

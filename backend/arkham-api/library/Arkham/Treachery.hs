@@ -597,6 +597,16 @@ allTreacheries =
       SomeTreacheryCard maskOfUmordhoth
     , -- Return to the Dunwich Legacy
       SomeTreacheryCard throughTheGates
+    , -- Beyond the Threshold
+      SomeTreacheryCard hauntingRecollections
+    , SomeTreacheryCard aBalefulWelcome
+    , SomeTreacheryCard infiniteDoorway
+    , -- Resurgent Evils
+      SomeTreacheryCard resurgentEvils
+    , -- Secret Doors
+      SomeTreacheryCard secretDoor
+    , -- Yog Sothoth's Emissaries
+      SomeTreacheryCard eldritchAccord
     , -- Return to the Path to Carcosa
       SomeTreacheryCard unspeakableOathBloodthirst
     , SomeTreacheryCard unspeakableOathCuriosity

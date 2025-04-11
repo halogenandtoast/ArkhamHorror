@@ -16,7 +16,7 @@ instance HasAbilities EnthralledSecurityGuard where
   getAbilities (EnthralledSecurityGuard a) =
     extend
       a
-      [ forcedAbility a 1 $ EnemyAttacks #when You AnyEnemyAttack (be a)
+      [ forcedAbility a 1 $ EnemyAttacks #after You AnyEnemyAttack (be a)
       , forcedAbility a 2 $ EnemyEvaded #after Anyone (be a)
       ]
 

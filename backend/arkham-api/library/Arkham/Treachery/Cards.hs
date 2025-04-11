@@ -178,7 +178,8 @@ allEncounterTreacheryCards =
   mapFromList
     $ map
       (toCardCode &&& id)
-      [ aTearInTime
+      [ aBalefulWelcome
+      , aTearInTime
       , aWorldInDarkness
       , abandonedByTheGods
       , abandonedToMadness
@@ -260,6 +261,7 @@ allEncounterTreacheryCards =
       , drivenToMadness
       , eagerForDeath
       , eagerForDeathUnionAndDisillusion
+      , eldritchAccord
       , encephalonSignal
       , endlessDescent
       , endlessWeaving
@@ -296,6 +298,7 @@ allEncounterTreacheryCards =
       , graveLightSpectral
       , hangingOnTheEdge
       , harvestedBrain
+      , hauntingRecollections
       , heraldsOfTheDeep
       , hideousLullaby
       , horrorsFromTheDeep
@@ -309,6 +312,7 @@ allEncounterTreacheryCards =
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
+      , infiniteDoorway
       , innsmouthLook
       , insatiableBloodlust
       , inundated
@@ -386,6 +390,7 @@ allEncounterTreacheryCards =
       , restlessJourneyFallacy
       , restlessJourneyHardship
       , restlessJourneyLies
+      , resurgentEvils
       , ripplesOnTheSurface
       , riptide
       , riseOfTheElderThings
@@ -395,6 +400,7 @@ allEncounterTreacheryCards =
       , rottingRemains
       , rottingRemainsBloodOnTheAltar
       , ruinAndDestruction
+      , secretDoor
       , secretGathering
       , secretsInTheAttic
       , secretsOfTheBeyond
@@ -2832,6 +2838,43 @@ maskOfUmordhoth =
 throughTheGates :: CardDef
 throughTheGates =
   (basicWeakness "51011" "Through the Gates") {cdCardTraits = setFromList [Pact, Mystery]}
+
+hauntingRecollections :: CardDef
+hauntingRecollections =
+  (treachery "51061" "Haunting Recollections" BeyondTheThreshold 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+aBalefulWelcome :: CardDef
+aBalefulWelcome =
+  (treachery "51062" "A Baleful Welcome" BeyondTheThreshold 2)
+    { cdCardTraits = setFromList [Hex]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
+
+infiniteDoorway :: CardDef
+infiniteDoorway =
+  (treachery "51063" "Infinite Doorway" BeyondTheThreshold 2)
+    { cdCardTraits = setFromList [Hex]
+    }
+
+resurgentEvils :: CardDef
+resurgentEvils =
+  peril $ (treachery "51064" "Resurgent Evils" ResurgentEvils 3)
+    { cdCardTraits = setFromList [Omen]
+    }
+
+secretDoor :: CardDef
+secretDoor =
+  (treachery "51065" "Secret Door" SecretDoors 2)
+    { cdCardTraits = setFromList [Obstacle]
+    }
+
+eldritchAccord :: CardDef
+eldritchAccord =
+  peril $ (treachery "51072" "Eldritch Accord" YogSothothsEmissaries 2)
+    { cdCardTraits = setFromList [Pact]
+    }
 
 unspeakableOathBloodthirst :: CardDef
 unspeakableOathBloodthirst =

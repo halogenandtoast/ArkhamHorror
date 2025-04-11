@@ -203,6 +203,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     pure $ count ((== cardCode) . toCardCode) bondedCards >= n
   DiscardHandCost {} -> pure True
   DiscardTopOfDeckCost {} -> pure True
+  DiscardTopOfDeckWithTargetCost {} -> pure True
   AdditionalActionsCost {} -> pure True
   AdditionalActionsCostThatReducesResourceCostBy n cost -> do
     spendableActions <- field InvestigatorRemainingActions iid

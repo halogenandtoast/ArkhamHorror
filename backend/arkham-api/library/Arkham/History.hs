@@ -144,7 +144,7 @@ insertHistoryItem :: HistoryItem -> History -> History
 insertHistoryItem (HistoryItem fld k) h =
   case fld of
     HistoryEnemiesDrawn -> h {historyEnemiesDrawn = nub $ historyEnemiesDrawn h <> k}
-    HistoryTreacheriesDrawn -> h {historyTreacheriesDrawn = nub $ historyTreacheriesDrawn h <> k}
+    HistoryTreacheriesDrawn -> h {historyTreacheriesDrawn = historyTreacheriesDrawn h <> k}
     HistoryDealtDamageTo -> h {historyDealtDamageTo = nub $ historyDealtDamageTo h <> k}
     HistoryEnemiesDefeated -> h {historyEnemiesDefeated = nub $ historyEnemiesDefeated h <> k}
     HistoryMoved -> h {historyMoved = historyMoved h || k}

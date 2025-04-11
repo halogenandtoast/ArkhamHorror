@@ -240,6 +240,9 @@ instance IsLabel "play" ActionTarget where
 instance IsLabel "engage" ActionTarget where
   fromLabel = IsAction #engage
 
+instance IsLabel "fight" ActionTarget where
+  fromLabel = IsAction #fight
+
 instance IsLabel "resource" ActionTarget where
   fromLabel = IsAction #resource
 

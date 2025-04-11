@@ -1938,7 +1938,11 @@ runGameMessage msg g = case msg of
       checkWindows
         [ mkWhen Window.AnyPhaseBegins
         , mkWhen (Window.PhaseBegins #investigation)
-        , mkAfter Window.AnyPhaseBegins
+        ]
+
+    afterPhaseBeginsWindow <-
+      checkWindows
+        [ mkAfter Window.AnyPhaseBegins
         , mkAfter (Window.PhaseBegins #investigation)
         ]
 
@@ -1947,14 +1951,14 @@ runGameMessage msg g = case msg of
       [] -> error "no investigators"
       [iid] ->
         pushAll
-          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow]
+          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow, afterPhaseBeginsWindow]
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep NextInvestigatorsTurnBeginsStep [ChoosePlayer iid SetTurnPlayer]
           ]
       xs -> do
         player <- getPlayer (g ^. leadInvestigatorIdL)
         pushAll
-          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow]
+          [ phaseStep InvestigationPhaseBeginsStep [phaseBeginsWindow, afterPhaseBeginsWindow]
           , phaseStep InvestigationPhaseBeginsWindow [fastWindow]
           , phaseStep
               NextInvestigatorsTurnBeginsStep

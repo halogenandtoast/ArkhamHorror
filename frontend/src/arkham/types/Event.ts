@@ -2,6 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Customization, customizationsDecoder } from '@/arkham/types/Customization';
+import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { v2Optional } from '@/arkham/parser';
 import {
   Card,
@@ -19,6 +20,7 @@ export type Event = {
   tokens: Tokens;
   customizations: Customization[];
   mutated?: string;
+  placement: Placement;
 }
 
 export const eventDecoder = JsonDecoder.object<Event>({
@@ -32,4 +34,5 @@ export const eventDecoder = JsonDecoder.object<Event>({
   tokens: tokensDecoder,
   customizations: customizationsDecoder,
   mutated: v2Optional(JsonDecoder.string()),
+  placement: placementDecoder,
 }, 'Event');

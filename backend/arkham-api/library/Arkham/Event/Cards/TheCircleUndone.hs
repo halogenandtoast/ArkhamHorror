@@ -40,7 +40,11 @@ darkInsight =
                   (affectsOthers $ InvestigatorAt YourLocation)
                   (CanCancelRevelationEffect $ basic $ NonPeril <> oneOf [IsEncounterCard, WeaknessCard])
                   AnyDeck
-              , DrawCard #when You (CanCancelRevelationEffect $ basic $ oneOf [IsEncounterCard, WeaknessCard]) AnyDeck
+              , DrawCard
+                  #when
+                  You
+                  (CanCancelRevelationEffect $ basic $ oneOf [IsEncounterCard, WeaknessCard])
+                  AnyDeck
               ]
       }
 
@@ -265,7 +269,7 @@ decoy =
     , cdCriteria =
         Just
           $ Criteria.AnyCriterion
-            [ exists $ EnemyAt YourLocation <> CanEvadeEnemy ThisCard
+            [ exists $ EnemyAt YourLocation <> EnemyCanBeEvadedBy ThisCard <> NonEliteEnemy
             , Criteria.CanAffordCostIncrease 2
                 <> exists
                   ( CanEvadeEnemyWithOverride
@@ -273,6 +277,7 @@ decoy =
                       $ Criteria.EnemyCriteria
                       $ Criteria.EnemyExists
                       $ oneOf [EnemyAt (LocationWithDistanceFrom n YourLocation Anywhere) | n <- [1 .. 2]]
+                      <> EnemyCanBeEvadedBy ThisCard
                       <> NonEliteEnemy
                   )
             ]

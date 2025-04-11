@@ -21,7 +21,11 @@ const props = defineProps<{
 // need to drop the first letter of the scenario code
 const name = computed(() => {
   if (props.step.tag === 'ScenarioStep') {
-    const result = scenarios.find((s: { id: string, name: string }) => s.id === props.step.contents.slice(1))
+    const scenarioId = props.step.contents.slice(1)
+    const result = scenarios.find((s) => s.id === scenarioId || (s.returnTo && s.returnTo === scenarioId))
+    if (result && result.returnTo && result.returnTo === scenarioId) {
+      return result.returnToName
+    }
     return result?.name || "Unknown Scenario"
   }
 

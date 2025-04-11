@@ -713,7 +713,7 @@ scenarioEncounterSets =
     , ("50025", EncounterSet.ReturnToTheMidnightMasks)
     , ("50032", EncounterSet.ReturnToTheDevourerBelow)
     , ("51012", EncounterSet.ReturnToExtracurricularActivities)
-    , ("51012", EncounterSet.ReturnToTheHouseAlwaysWins)
+    , ("51015", EncounterSet.ReturnToTheHouseAlwaysWins)
     , ("81001", EncounterSet.CurseOfTheRougarou)
     , ("82001", EncounterSet.CarnevaleOfHorrors)
     , ("84001", EncounterSet.MurderAtTheExcelsiorHotel)

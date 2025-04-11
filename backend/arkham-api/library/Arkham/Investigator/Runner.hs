@@ -3225,7 +3225,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ ShuffleDiscardBackIn iid
     pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
-    push $ ForTarget (toTarget a) (DoStep 2 AllDrawCardAndResource)
     whenM (can.draw.cards a.id) $ do
       mods <- getModifiers a
       let alternateUpkeepDraws = [target | AlternateUpkeepDraw target <- mods]
@@ -3237,6 +3236,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               pid
               [targetLabel target [SendMessage target AllDrawCardAndResource] | target <- alternateUpkeepDraws]
         else push $ drawCards investigatorId ScenarioSource 1
+    push $ ForTarget (toTarget a) (DoStep 2 AllDrawCardAndResource)
     pure a
   ForTarget (isTarget a -> True) (DoStep 2 AllDrawCardAndResource) | not (a ^. defeatedL || a ^. resignedL) -> do
     lift $ takeUpkeepResources a

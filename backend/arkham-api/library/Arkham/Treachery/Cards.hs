@@ -310,6 +310,7 @@ allEncounterTreacheryCards =
       , hypothermia
       , iCantSee
       , iceShaft
+      , idleHands
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
@@ -352,6 +353,7 @@ allEncounterTreacheryCards =
       , mysteriesOfTheLodge
       , mysteriousChanting
       , nebulousMiasma
+      , needForKnowledge
       , nightTerrors
       , nightmarishVapors
       , noTurningBack
@@ -475,6 +477,7 @@ allEncounterTreacheryCards =
       , unhallowedCountry
       , vastExpanse
       , vaultOfEarthlyDemise
+      , violentCommands
       , violentOutburst
       , visionsOfFuturesPast
       , voiceOfTheJungle
@@ -2882,6 +2885,24 @@ secretDoor :: CardDef
 secretDoor =
   (treachery "51065" "Secret Door" SecretDoors 2)
     { cdCardTraits = setFromList [Obstacle]
+    }
+
+violentCommands :: CardDef
+violentCommands =
+  (treachery "51068" "Violent Commands" ErraticFear 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+idleHands :: CardDef
+idleHands =
+  (treachery "51069" "Idle Hands" ErraticFear 2)
+    { cdCardTraits = setFromList [Terror]
+    }
+
+needForKnowledge :: CardDef
+needForKnowledge =
+  (treachery "51070" "Need for Knowledge" ErraticFear 2)
+    { cdCardTraits = setFromList [Terror]
     }
 
 eldritchAccord :: CardDef

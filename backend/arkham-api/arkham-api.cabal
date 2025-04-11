@@ -3989,6 +3989,7 @@ library
       Arkham.Treachery.Cards.Hypothermia
       Arkham.Treachery.Cards.ICantSee
       Arkham.Treachery.Cards.IceShaft
+      Arkham.Treachery.Cards.IdleHands
       Arkham.Treachery.Cards.IllDoItMyself
       Arkham.Treachery.Cards.IllOmen
       Arkham.Treachery.Cards.IncriminatingEvidence
@@ -4039,6 +4040,7 @@ library
       Arkham.Treachery.Cards.MysteriousChanting
       Arkham.Treachery.Cards.Narcolepsy
       Arkham.Treachery.Cards.NebulousMiasma
+      Arkham.Treachery.Cards.NeedForKnowledge
       Arkham.Treachery.Cards.NightmarishVapors
       Arkham.Treachery.Cards.NightTerrors
       Arkham.Treachery.Cards.Nihilism
@@ -4209,6 +4211,7 @@ library
       Arkham.Treachery.Cards.UnspeakableOathCuriosity
       Arkham.Treachery.Cards.VastExpanse
       Arkham.Treachery.Cards.VaultOfEarthlyDemise
+      Arkham.Treachery.Cards.ViolentCommands
       Arkham.Treachery.Cards.ViolentOutburst
       Arkham.Treachery.Cards.VisionsOfFuturesPast
       Arkham.Treachery.Cards.VoiceOfTheJungle

@@ -608,6 +608,10 @@ allTreacheries =
       SomeTreacheryCard resurgentEvils
     , -- Secret Doors
       SomeTreacheryCard secretDoor
+    , -- Erratic Fear
+      SomeTreacheryCard violentCommands
+    , SomeTreacheryCard idleHands
+    , SomeTreacheryCard needForKnowledge
     , -- Yog Sothoth's Emissaries
       SomeTreacheryCard eldritchAccord
     , -- Return to the Path to Carcosa

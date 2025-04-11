@@ -10,6 +10,7 @@ import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import Event from '@/arkham/components/Event.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
 const props = defineProps<{
@@ -82,6 +83,10 @@ const nextToTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
 
+const nextToEvents = computed(() => Object.values(props.game.events).
+  filter((t) => t.placement.tag === "NextToAgenda").
+  map((t) => t.id))
+
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
 const debug = useDebug()
@@ -129,6 +134,13 @@ const debug = useDebug()
       class="sideways"
       @click="$emit('choose', ability.index)"
       />
+    <Event
+      v-for="eventId in nextToEvents"
+      :event="game.events[eventId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
     <div v-if="groupedTreacheries.length > 0" class="treacheries">
       <div v-for="([cCode, treacheries], idx) in groupedTreacheries" :key="cCode" class="treachery-group" :style="{ zIndex: (groupedTreacheries.length - idx) * 10 }">
         <div v-for="treacheryId in treacheries" class="treachery-card" :key="treacheryId" >

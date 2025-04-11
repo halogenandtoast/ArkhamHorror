@@ -471,7 +471,7 @@ const tokenEffects = computed(() => {
   width: fit-content;
   text-align: center;
   z-index: 10;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .skill-test-contents {

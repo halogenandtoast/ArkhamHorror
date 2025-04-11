@@ -10,19 +10,23 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.GameT
+import Arkham.Helpers (Deck (..), unDeck)
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs)
 import Arkham.Investigator.Types as X (Field (..))
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Name (Name)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Queue
 import Arkham.Slot
-import Arkham.Helpers (Deck(..), unDeck)
 import GHC.Records
+
+instance HasField "name" InvestigatorId (QueueT Message GameT Name) where
+  getField = field InvestigatorName
 
 instance HasField "deck" InvestigatorId (QueueT Message GameT [PlayerCard]) where
   getField = fieldMap InvestigatorDeck unDeck

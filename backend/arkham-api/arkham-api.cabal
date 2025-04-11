@@ -2696,6 +2696,7 @@ library
       Arkham.Location.Cards.CloverClubBar
       Arkham.Location.Cards.CloverClubCardroom
       Arkham.Location.Cards.CloverClubLounge
+      Arkham.Location.Cards.CloverClubStage
       Arkham.Location.Cards.ClutteredDormitory
       Arkham.Location.Cards.CoastalWaters
       Arkham.Location.Cards.ColdSpringGlen_244
@@ -3064,6 +3065,7 @@ library
       Arkham.Location.Cards.Restaurant
       Arkham.Location.Cards.ReturnToAttic
       Arkham.Location.Cards.ReturnToCellar
+      Arkham.Location.Cards.ReturnToCloverClubLounge
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
@@ -3397,6 +3399,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheGathering
+      Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
@@ -3855,6 +3858,7 @@ library
       Arkham.Treachery.Cards.CallToOrder
       Arkham.Treachery.Cards.CaptiveMind
       Arkham.Treachery.Cards.CastAdrift
+      Arkham.Treachery.Cards.CaughtCheating
       Arkham.Treachery.Cards.CaughtInAWeb
       Arkham.Treachery.Cards.CaughtRedHanded
       Arkham.Treachery.Cards.CenturiesOfSecrets
@@ -4078,6 +4082,7 @@ library
       Arkham.Treachery.Cards.PulledByTheStars
       Arkham.Treachery.Cards.Punishment
       Arkham.Treachery.Cards.PushedIntoTheBeyond
+      Arkham.Treachery.Cards.RaiseTheStakes
       Arkham.Treachery.Cards.RationalThought
       Arkham.Treachery.Cards.RealityAcid5U21
       Arkham.Treachery.Cards.RealmOfMadness

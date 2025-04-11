@@ -1,24 +1,20 @@
-module Arkham.Location.Cards.LaBellaLuna (
-  laBellaLuna,
-  LaBellaLuna (..),
-) where
+module Arkham.Location.Cards.LaBellaLuna (laBellaLuna) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (laBellaLuna)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LocationCard LaBellaLuna
-laBellaLuna = location LaBellaLuna Cards.laBellaLuna 2 (PerPlayer 1)
+laBellaLuna = symbolLabel $ location LaBellaLuna Cards.laBellaLuna 2 (PerPlayer 1)
 
 instance HasAbilities LaBellaLuna where
-  getAbilities (LaBellaLuna a) = withBaseAbilities a [locationResignAction a]
+  getAbilities (LaBellaLuna a) = extendRevealed1 a $ scenarioI18n $ withI18nTooltip "laBellaLuna.resign" $ locationResignAction a
 
 instance RunMessage LaBellaLuna where
   runMessage msg (LaBellaLuna attrs) = LaBellaLuna <$> runMessage msg attrs

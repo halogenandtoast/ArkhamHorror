@@ -248,6 +248,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c50011": return "nightOfTheZealot.theGathering"
     case "c50025": return "nightOfTheZealot.theMidnightMasks"
     case "c50032": return "nightOfTheZealot.theDevourerBelow"
+    case "c51012": return "theDunwichLegacy.extracurricularActivity"
+    case "c51015": return "theDunwichLegacy.theHouseAlwaysWins"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

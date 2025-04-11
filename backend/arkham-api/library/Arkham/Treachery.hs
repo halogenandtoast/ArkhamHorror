@@ -597,6 +597,9 @@ allTreacheries =
       SomeTreacheryCard maskOfUmordhoth
     , -- Return to the Dunwich Legacy
       SomeTreacheryCard throughTheGates
+    , -- Return to the House Always Wins
+      SomeTreacheryCard caughtCheating
+    , SomeTreacheryCard raiseTheStakes
     , -- Beyond the Threshold
       SomeTreacheryCard hauntingRecollections
     , SomeTreacheryCard aBalefulWelcome

@@ -30,10 +30,7 @@ returnToExtracurricularActivities difficulty =
     (referenceL .~ "02041")
 
 instance RunMessage ReturnToExtracurricularActivities where
-  runMessage msg s@(ReturnToExtracurricularActivities extracurricularActivity'@(ExtracurricularActivity attrs)) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
-      pure s
+  runMessage msg (ReturnToExtracurricularActivities extracurricularActivity'@(ExtracurricularActivity attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToExtracurricularActivities . ExtracurricularActivity) attrs do
       gather Set.ReturnToExtracurricularActivities
       gather Set.ExtracurricularActivity

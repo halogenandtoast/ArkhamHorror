@@ -223,6 +223,7 @@ allLocationCards =
       , cloverClubBar
       , cloverClubCardroom
       , cloverClubLounge
+      , cloverClubStage
       , clutteredDormitory
       , coastalWaters
       , coldSpringGlen_244
@@ -590,6 +591,7 @@ allLocationCards =
       , restaurant
       , returnToAttic
       , returnToCellar
+      , returnToCloverClubLounge
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -8346,6 +8348,30 @@ warrenObservatory =
       Triangle
       [Plus, Square]
       ReturnToExtracurricularActivities
+
+returnToCloverClubLounge :: CardDef
+returnToCloverClubLounge =
+    locationWithUnrevealed
+      "51016"
+      "Clover Club Lounge"
+      [CloverClub]
+      Circle
+      [Moon, Square, Triangle]
+      "Clover Club Lounge"
+      [CloverClub]
+      Circle
+      [Moon, Square, Triangle, Heart]
+      ReturnToTheHouseAlwaysWins
+
+cloverClubStage :: CardDef
+cloverClubStage =
+    location
+      "51017"
+      "Clover Club Stage"
+      [CloverClub]
+      Heart
+      [Circle, Square]
+      ReturnToTheHouseAlwaysWins
 
 cursedShores :: CardDef
 cursedShores =

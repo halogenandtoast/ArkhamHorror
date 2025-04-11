@@ -2,13 +2,11 @@ module Arkham.Agenda.Cards.UndergroundMuscle (undergroundMuscle) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Runner
-import Arkham.Card
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet
 import Arkham.Enemy.Types (Field (..))
 import Arkham.GameValue
-import Arkham.Helpers.EncounterSet
 import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Movement
@@ -21,8 +19,7 @@ newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 undergroundMuscle :: AgendaCard UndergroundMuscle
-undergroundMuscle =
-  agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
+undergroundMuscle = agenda (2, A) UndergroundMuscle Cards.undergroundMuscle (Static 3)
 
 instance RunMessage UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
@@ -30,27 +27,16 @@ instance RunMessage UndergroundMuscle where
       laBellaLunaId <- getJustLocationByName "La Bella Luna"
       cloverClubLoungeId <- getJustLocationByName "Clover Club Lounge"
       lead <- getLeadPlayer
-      result <- shuffleM =<< gatherEncounterSet HideousAbominations
-      let
-        enemy = fromJust . headMay $ result
-        rest = drop 1 result
-      strikingFear <- gatherEncounterSet StrikingFear
-      laBellaLunaInvestigators <-
-        select
-          $ InvestigatorAt
-          $ LocationWithId
-            laBellaLunaId
+      result <- shuffleM =<< getSetAsideEncounterSet HideousAbominations
+      let enemy = fromJust . headMay $ result
+      let rest = drop 1 result
+      strikingFear <- concatMapM getSetAsideEncounterSet [StrikingFear, ErraticFear]
+      laBellaLunaInvestigators <- select $ InvestigatorAt $ LocationWithId laBellaLunaId
       laBellaLunaEnemies <- select $ EnemyAt $ LocationWithId laBellaLunaId
       unEngagedEnemiesAtLaBellaLuna <-
-        filterM
-          (fieldMap EnemyEngagedInvestigators null)
-          laBellaLunaEnemies
+        filterM (fieldMap EnemyEngagedInvestigators null) laBellaLunaEnemies
 
-      enemyCreation <-
-        createEnemyAt_
-          (EncounterCard enemy)
-          cloverClubLoungeId
-          Nothing
+      enemyCreation <- createEnemyAt_ enemy cloverClubLoungeId Nothing
 
       push
         $ chooseOne
@@ -58,8 +44,7 @@ instance RunMessage UndergroundMuscle where
           [ Label "Continue"
               $ [ enemyCreation
                 , ShuffleEncounterDiscardBackIn
-                , ShuffleCardsIntoDeck Deck.EncounterDeck
-                    $ map EncounterCard (rest <> strikingFear)
+                , ShuffleCardsIntoDeck Deck.EncounterDeck (rest <> strikingFear)
                 ]
               <> [ Move $ move attrs iid cloverClubLoungeId
                  | iid <- laBellaLunaInvestigators
@@ -72,9 +57,5 @@ instance RunMessage UndergroundMuscle where
                  ]
           ]
 
-      pure
-        $ UndergroundMuscle
-        $ attrs
-        & (sequenceL .~ Sequence 1 B)
-        & (flippedL .~ True)
+      pure $ UndergroundMuscle $ attrs & (sequenceL .~ Sequence 1 B) & (flippedL .~ True)
     _ -> UndergroundMuscle <$> runMessage msg attrs

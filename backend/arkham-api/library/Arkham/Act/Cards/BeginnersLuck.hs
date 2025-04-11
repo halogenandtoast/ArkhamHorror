@@ -7,11 +7,14 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.ChaosBag
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
+import Arkham.Name qualified as Name
+import Arkham.Projection
 import Arkham.ScenarioLogKey
 import Arkham.Trait
 import Arkham.Window qualified as Window
@@ -30,8 +33,8 @@ instance HasAbilities BeginnersLuck where
       $ guard (onSide A x)
       *> [ groupLimit PerRound $ mkAbility x 1 $ freeReaction (RevealChaosToken #when You AnyChaosToken)
          , mkAbility x 2
-            $ Objective
-            $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
+             $ Objective
+             $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 4) Anywhere)
          ]
 
 instance RunMessage BeginnersLuck where
@@ -44,7 +47,8 @@ instance RunMessage BeginnersLuck where
           chaosTokenEffect source token $ ChaosTokenFaceModifier [token'.face]
           push UnfocusChaosTokens
           push $ FocusChaosTokens [token']
-      remember Cheated
+      name <- field InvestigatorName iid
+      remember $ Cheated $ Name.labeled name iid
       pure a
     UseCardAbility _ source 2 _ _ | isSource attrs source -> do
       push $ AdvanceAct (toId a) source AdvancedWithClues

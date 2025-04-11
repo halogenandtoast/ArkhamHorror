@@ -814,6 +814,9 @@ allLocations =
     , -- Return to The Dunwich Legacy
       -- Return to Extracurricular Activities
       SomeLocationCard warrenObservatory
+    , -- Return to The House Always Wins
+      SomeLocationCard returnToCloverClubLounge
+    , SomeLocationCard cloverClubStage
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

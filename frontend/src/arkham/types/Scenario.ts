@@ -43,6 +43,7 @@ export type Scenario = {
   name: ScenarioName;
   id: string;
   reference: string;
+  additionalReferences: string[];
   difficulty: Difficulty;
   locationLayout: string[] | null;
   usesGrid: boolean;
@@ -115,6 +116,7 @@ export const scenarioDecoder = JsonDecoder.object<Scenario>({
   id: JsonDecoder.string(),
   meta: JsonDecoder.succeed(),
   reference: JsonDecoder.string(),
+  additionalReferences: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
   log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
   difficulty: difficultyDecoder,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]')),

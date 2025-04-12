@@ -83,6 +83,7 @@ import Data.Data.Lens (biplate)
 import Data.Map qualified as Map
 import Data.Map.Monoidal.Strict (getMonoidalMap)
 import Data.Set qualified as Set
+import Data.Text qualified as T
 import Data.Typeable
 
 passesCriteria
@@ -642,6 +643,9 @@ passesCriteria iid mcard source' requestor windows' = \case
       _ -> selectAny (Matcher.replaceYouMatcher iid matcher)
   Criteria.TargetExists matcher -> do
     selectAny (Matcher.replaceYouMatcher iid matcher)
+  Criteria.IsReturnTo -> do
+    campaign <- selectJust Matcher.TheCampaign
+    pure $ "5" `T.isPrefixOf` coerce campaign
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)
     m2 <- select (Matcher.replaceYouMatcher iid matcher2)

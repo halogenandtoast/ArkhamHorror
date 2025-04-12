@@ -9,6 +9,9 @@ newtype IdleHands = IdleHands TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+-- Normally we would not set waiting here, but it is safe for this card and we
+-- want it to be marked waiting because the first ability has discard in the
+-- cost
 idleHands :: TreacheryCard IdleHands
 idleHands = treacheryWith IdleHands Cards.idleHands (waitingL .~ True)
 

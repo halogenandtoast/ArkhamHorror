@@ -91,6 +91,9 @@ instance HasCost Ability where
 instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
   getField = abilityWantsSkillTest
 
+instance HasField "limitType" Ability (Maybe AbilityLimitType) where
+  getField = abilityLimitType . abilityLimit
+
 instance HasField "criteria" Ability Criterion where
   getField = abilityCriteria
 

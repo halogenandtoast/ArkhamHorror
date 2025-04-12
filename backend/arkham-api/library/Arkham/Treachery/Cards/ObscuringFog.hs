@@ -1,15 +1,12 @@
 module Arkham.Treachery.Cards.ObscuringFog (obscuringFog) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Prelude
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Helpers
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype ObscuringFog = ObscuringFog TreacheryAttrs
   deriving anyclass IsTreachery
@@ -24,20 +21,20 @@ instance HasModifiersFor ObscuringFog where
     _ -> pure mempty
 
 instance HasAbilities ObscuringFog where
-  getAbilities (ObscuringFog a) = case treacheryAttachedTarget a of
-    Just (LocationTarget lid) ->
-      [ forcedAbility a 1 $ SkillTestResult #after Anyone (WhileInvestigating $ LocationWithId lid) #success
+  getAbilities (ObscuringFog a) = case a.attached.location of
+    Just lid ->
+      [ forcedAbility a 1 $ SkillTestResult #after Anyone (WhileInvestigating (be lid)) #success
       ]
     _ -> []
 
 instance RunMessage ObscuringFog where
-  runMessage msg t@(ObscuringFog attrs) = case msg of
+  runMessage msg t@(ObscuringFog attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      location <- getJustLocation iid
-      withoutObscuringFog <- selectNone $ treacheryAt location <> treacheryIs Cards.obscuringFog
-      pushWhen withoutObscuringFog $ attachTreachery attrs location
+      withLocationOf iid \location -> do
+        withoutObscuringFog <- selectNone $ treacheryAt location <> treacheryIs Cards.obscuringFog
+        when withoutObscuringFog $ attachTreachery attrs location
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      push $ toDiscardBy iid (attrs.ability 1) attrs
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
-    _ -> ObscuringFog <$> runMessage msg attrs
+    _ -> ObscuringFog <$> liftRunMessage msg attrs

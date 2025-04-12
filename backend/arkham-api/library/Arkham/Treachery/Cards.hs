@@ -240,6 +240,7 @@ allEncounterTreacheryCards =
       , daemonicPiping
       , danceOfTheYellowKing
       , darkAurora
+      , darkBidding
       , dawningOfTheTruth
       , deadlyFate
       , deathApproaches
@@ -314,6 +315,7 @@ allEncounterTreacheryCards =
       , illOmen
       , incriminatingEvidence
       , indescribableApparition
+      , inexplicableCold
       , infiniteDoorway
       , innsmouthLook
       , insatiableBloodlust
@@ -354,6 +356,7 @@ allEncounterTreacheryCards =
       , mysteriousChanting
       , nebulousMiasma
       , needForKnowledge
+      , nightBeyondVoid
       , nightTerrors
       , nightmarishVapors
       , noTurningBack
@@ -365,6 +368,7 @@ allEncounterTreacheryCards =
       , onTheProwl
       , onWingsOfDarkness
       , oozeAndFilth
+      , oppressiveMists
       , outbreak
       , overgrowth
       , passageIntoTheVeil
@@ -2856,6 +2860,19 @@ raiseTheStakes =
     { cdCardTraits = setFromList [Illicit]
     }
 
+darkBidding :: CardDef
+darkBidding =
+  (treachery "51023" "Dark Bidding" ReturnToTheMiskatonicMuseum 2)
+    { cdCardTraits = setFromList [Power]
+    }
+
+nightBeyondVoid :: CardDef
+nightBeyondVoid =
+  (treachery "51024" "Night Beyond Void" ReturnToTheMiskatonicMuseum 2)
+    { cdCardTraits = setFromList [Power]
+    , cdVictoryPoints = Just 0
+    }
+
 hauntingRecollections :: CardDef
 hauntingRecollections =
   (treachery "51061" "Haunting Recollections" BeyondTheThreshold 2)
@@ -2885,6 +2902,18 @@ secretDoor :: CardDef
 secretDoor =
   (treachery "51065" "Secret Door" SecretDoors 2)
     { cdCardTraits = setFromList [Obstacle]
+    }
+
+inexplicableCold :: CardDef
+inexplicableCold =
+  (treachery "51066" "Inexplicable Cold" CreepingCold 2)
+    { cdCardTraits = setFromList [Hazard]
+    }
+
+oppressiveMists :: CardDef
+oppressiveMists =
+  (treachery "51067" "Oppressive Mists" CreepingCold 2)
+    { cdCardTraits = setFromList [Hazard]
     }
 
 violentCommands :: CardDef

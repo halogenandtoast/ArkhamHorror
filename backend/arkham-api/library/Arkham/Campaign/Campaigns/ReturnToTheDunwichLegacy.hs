@@ -24,8 +24,8 @@ instance IsCampaign ReturnToTheDunwichLegacy where
       if ReturnToExtracurricularActivities `elem` (toAttrs a).completedSteps
         then Just $ InterludeStep 1 Nothing
         else Just (UpgradeDeckStep ReturnToExtracurricularActivities)
-    InterludeStep 1 _ -> Just (UpgradeDeckStep TheMiskatonicMuseum)
-    TheMiskatonicMuseum -> Just (UpgradeDeckStep TheEssexCountyExpress)
+    InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToTheMiskatonicMuseum)
+    ReturnToTheMiskatonicMuseum -> Just (UpgradeDeckStep TheEssexCountyExpress)
     TheEssexCountyExpress -> Just (UpgradeDeckStep BloodOnTheAltar)
     BloodOnTheAltar ->
       case lookup "02195" (toAttrs a).resolutions of

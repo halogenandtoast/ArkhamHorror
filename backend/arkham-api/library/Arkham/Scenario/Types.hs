@@ -94,6 +94,7 @@ data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Name
   , scenarioId :: ScenarioId
   , scenarioReference :: CardCode
+  , scenarioAdditionalReferences :: [CardCode]
   , scenarioDifficulty :: Difficulty
   , scenarioCardsUnderScenarioReference :: [Card]
   , scenarioCardsUnderAgendaDeck :: [Card]
@@ -247,6 +248,7 @@ scenario f cardCode name difficulty layout =
     $ ScenarioAttrs
       { scenarioId = ScenarioId cardCode
       , scenarioReference = cardCode
+      , scenarioAdditionalReferences = []
       , scenarioName = name
       , scenarioDifficulty = difficulty
       , scenarioCompletedAgendaStack = mempty
@@ -359,6 +361,7 @@ instance FromJSON ScenarioAttrs where
     scenarioName <- o .: "name"
     scenarioId <- o .: "id"
     scenarioReference <- o .: "reference"
+    scenarioAdditionalReferences <- o .:? "additionalReferences" .!= mempty
     scenarioDifficulty <- o .: "difficulty"
     scenarioCardsUnderScenarioReference <- o .: "cardsUnderScenarioReference"
     scenarioCardsUnderAgendaDeck <- o .: "cardsUnderAgendaDeck"

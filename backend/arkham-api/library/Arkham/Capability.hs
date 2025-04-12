@@ -37,6 +37,7 @@ instance Capable InvestigatorMatcher where
                 InvestigatorWithoutModifier CannotGainResources
                   <> InvestigatorWithoutModifier CannotGainResourcesFromPlayerCardEffects
             , xp = InvestigatorCanGainXp
+            , clues = Anyone
             }
       , spend = SpendCapabilities {resources = InvestigatorWithSpendableResources (GreaterThan $ Static 0), clues = InvestigatorWithClues (atLeast 1) <> InvestigatorWithoutModifier CannotSpendClues}
       , have =
@@ -91,6 +92,7 @@ instance Capable (FromSource -> InvestigatorMatcher) where
                     FromPlayerCardEffect -> can.gain.resources
                     FromOtherSource -> InvestigatorWithoutModifier CannotGainResources
                 , xp = const InvestigatorCanGainXp
+                , clues = const Anyone
                 }
           }
 
@@ -153,6 +155,7 @@ data HealCapabilities a = HealCapabilities
 data GainCapabilities a = GainCapabilities
   { resources :: a
   , xp :: a
+  , clues :: a
   }
   deriving stock Functor
 

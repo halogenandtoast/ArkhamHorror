@@ -135,6 +135,11 @@ const scenarioGuide = computed(() => {
     : ''
   return imgsrc(`cards/${reference.replace('c', '')}${difficultySuffix}.avif`)
 })
+
+const additionalReferences = computed(() => {
+  const { additionalReferences } = props.scenario
+  return additionalReferences.map((s) => imgsrc(`cards/${s.replace('c', '')}.avif`))
+})
 const scenarioDecks = computed(() => {
   if (!props.scenario.decks) return null
   return Object.entries(props.scenario.decks)
@@ -650,11 +655,18 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
 
         <div class="scenario-guide">
           <div class="scenario-guide-card">
-            <img
-              class="card"
-              :src="scenarioGuide"
-              :data-spent-keys="JSON.stringify(spentKeys)"
-            />
+            <div class="scenario-guide-card">
+              <img
+                class="card"
+                :src="scenarioGuide"
+                :data-spent-keys="JSON.stringify(spentKeys)"
+              />
+              <img
+                v-for="reference in additionalReferences"
+                class="card"
+                :src="reference"
+              />
+            </div>
             <PoolItem class="depth" v-if="currentDepth" type="resource" :amount="currentDepth" />
             <div class="spent-keys" v-if="spentKeys.length > 0">
               <Key v-for="key in spentKeys" :key="key" :name="key" />
@@ -1377,6 +1389,19 @@ const showVictoryDisplay = () => doShowCards(victoryDisplay, t('scenario.victory
   transition: margin-left 0.3s;
   &:first-of-type {
     margin-left: 0;
+  }
+}
+
+.scenario-guide-card {
+  display: flex;
+  flex-direction: column;
+  img:nth-of-type(1) {
+    z-index: 2;
+  }
+
+  img:not(:nth-of-type(1)) {
+    z-index: 1;
+    margin-top: calc((var(--card-width) / (3 / 2)) * -1);
   }
 }
 </style>

@@ -30,18 +30,7 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty =
-  scenario
-    TheMiskatonicMuseum
-    "02118"
-    "The Miskatonic Museum"
-    difficulty
-    [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
-    , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
-    , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
-    , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
-    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
-    ]
+  scenario TheMiskatonicMuseum "02118" "The Miskatonic Museum" difficulty scenarioLayout
 
 instance HasChaosTokenValue TheMiskatonicMuseum where
   getChaosTokenValue iid chaosTokenFace (TheMiskatonicMuseum attrs) = case chaosTokenFace of

@@ -1,11 +1,12 @@
 module Arkham.Ability.Used where
 
-import Arkham.Prelude
-
+import Arkham.Ability.Limit
 import Arkham.Ability.Types
 import Arkham.Id
+import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Window
+import GHC.Records
 
 data UsedAbility = UsedAbility
   { usedAbility :: Ability
@@ -18,6 +19,9 @@ data UsedAbility = UsedAbility
   }
   deriving stock (Eq, Show, Generic, Data)
   deriving anyclass ToJSON
+
+instance HasField "limitType" UsedAbility (Maybe AbilityLimitType) where
+  getField = abilityLimitType . abilityLimit . usedAbility
 
 instance FromJSON UsedAbility where
   parseJSON = withObject "UsedAbility" \o -> do

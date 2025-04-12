@@ -396,6 +396,9 @@ addExtraDeck k defs = do
   -- cards' <- shuffle cards
   attrsL . decksL %= (at k ?~ cards)
 
+addAdditionalReferences :: ReverseQueue m => [CardCode] -> ScenarioBuilderT m ()
+addAdditionalReferences codes = attrsL . additionalReferencesL %= (<> codes)
+
 setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setActDeck defs = do
   cards <- genCards defs

@@ -817,6 +817,9 @@ allLocations =
     , -- Return to The House Always Wins
       SomeLocationCard returnToCloverClubLounge
     , SomeLocationCard cloverClubStage
+    , -- Return to The Miskatonic Museum
+      SomeLocationCard exhibitHallMedievalExhibit
+    , SomeLocationCard exhibitHallTheArchives
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

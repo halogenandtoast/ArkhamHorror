@@ -275,6 +275,7 @@ data Criterion
   | IfYouOweBiancaDieKatz
   | ElectrostaticDetonation
   | BearerNotEliminated
+  | IsReturnTo
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion

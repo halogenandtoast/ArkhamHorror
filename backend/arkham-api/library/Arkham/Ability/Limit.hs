@@ -39,6 +39,7 @@ data AbilityLimitType
   | PerRound
   | PerTurn
   | PerWindow
+  | PerAttack
   | PerTestOrAbility
   | PerSearch Trait
   | PerDepthLevel

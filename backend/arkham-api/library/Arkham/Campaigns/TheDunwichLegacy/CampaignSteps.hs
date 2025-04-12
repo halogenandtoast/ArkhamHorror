@@ -51,3 +51,8 @@ pattern ReturnToTheHouseAlwaysWins :: CampaignStep
 pattern ReturnToTheHouseAlwaysWins <- ScenarioStep "51015"
   where
     ReturnToTheHouseAlwaysWins = ScenarioStep "51015"
+
+pattern ReturnToTheMiskatonicMuseum :: CampaignStep
+pattern ReturnToTheMiskatonicMuseum <- ScenarioStep "51020"
+  where
+    ReturnToTheMiskatonicMuseum = ScenarioStep "51020"

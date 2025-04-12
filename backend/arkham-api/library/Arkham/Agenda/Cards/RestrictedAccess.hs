@@ -21,8 +21,12 @@ restrictedAccess :: AgendaCard RestrictedAccess
 restrictedAccess = agenda (1, A) RestrictedAccess Cards.restrictedAccess (Static 5)
 
 instance HasAbilities RestrictedAccess where
-  getAbilities (RestrictedAccess x) =
-    [mkAbility x 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Enemies.huntingHorror | onSide A x]
+  getAbilities (RestrictedAccess a) =
+    [ restricted a 1 (oneOf [thisExists a (AgendaWithSide A), IsReturnTo])
+        $ forced
+        $ EnemySpawns #when Anywhere
+        $ enemyIs Enemies.huntingHorror
+    ]
 
 instance RunMessage RestrictedAccess where
   runMessage msg a@(RestrictedAccess attrs) = case msg of

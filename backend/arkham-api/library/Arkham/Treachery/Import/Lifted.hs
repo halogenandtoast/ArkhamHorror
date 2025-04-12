@@ -34,6 +34,7 @@ import Arkham.Treachery.Runner as X (
   TreacheryCard,
   canBeCommittedL,
   forcedOnElimination,
+  metaL,
   on,
   push,
   pushAll,

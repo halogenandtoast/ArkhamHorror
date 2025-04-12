@@ -2794,9 +2794,11 @@ library
       Arkham.Location.Cards.ExhibitHallAthabaskanExhibit
       Arkham.Location.Cards.ExhibitHallEgyptianExhibit
       Arkham.Location.Cards.ExhibitHallHallOfTheDead
+      Arkham.Location.Cards.ExhibitHallMedievalExhibit
       Arkham.Location.Cards.ExhibitHallMedusaExhibit
       Arkham.Location.Cards.ExhibitHallNatureExhibit
       Arkham.Location.Cards.ExhibitHallRestrictedHall
+      Arkham.Location.Cards.ExhibitHallTheArchives
       Arkham.Location.Cards.ExpeditionCamp
       Arkham.Location.Cards.ExperimentalTherapiesWard
       Arkham.Location.Cards.EztliExhibit
@@ -3401,6 +3403,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
+      Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheCityOfArchives
@@ -3893,6 +3896,7 @@ library
       Arkham.Treachery.Cards.Damned
       Arkham.Treachery.Cards.DanceOfTheYellowKing
       Arkham.Treachery.Cards.DarkAurora
+      Arkham.Treachery.Cards.DarkBidding
       Arkham.Treachery.Cards.DarkFuture
       Arkham.Treachery.Cards.DawningOfTheTruth
       Arkham.Treachery.Cards.DayOfReckoning
@@ -3995,6 +3999,7 @@ library
       Arkham.Treachery.Cards.IncriminatingEvidence
       Arkham.Treachery.Cards.Indebted
       Arkham.Treachery.Cards.IndescribableApparition
+      Arkham.Treachery.Cards.InexplicableCold
       Arkham.Treachery.Cards.InfiniteDoorway
       Arkham.Treachery.Cards.InnsmouthLook
       Arkham.Treachery.Cards.InsatiableBloodlust
@@ -4041,6 +4046,7 @@ library
       Arkham.Treachery.Cards.Narcolepsy
       Arkham.Treachery.Cards.NebulousMiasma
       Arkham.Treachery.Cards.NeedForKnowledge
+      Arkham.Treachery.Cards.NightBeyondVoid
       Arkham.Treachery.Cards.NightmarishVapors
       Arkham.Treachery.Cards.NightTerrors
       Arkham.Treachery.Cards.Nihilism
@@ -4055,6 +4061,7 @@ library
       Arkham.Treachery.Cards.OnTheProwl
       Arkham.Treachery.Cards.OnWingsOfDarkness
       Arkham.Treachery.Cards.OozeAndFilth
+      Arkham.Treachery.Cards.OppressiveMists
       Arkham.Treachery.Cards.Outbreak
       Arkham.Treachery.Cards.OutOfBodyExperience
       Arkham.Treachery.Cards.Overgrowth

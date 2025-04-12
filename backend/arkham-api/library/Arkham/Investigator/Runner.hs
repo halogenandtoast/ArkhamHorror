@@ -2289,25 +2289,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (handL %~ filter (/= card))
   Msg.InvestigatorDamage iid source damage horror | iid == investigatorId -> do
     mods <- getModifiers a
-    let n = sum [x | DamageTaken x <- mods]
-    let damage' = damage + n
+    let damage' = damage + sum [x | DamageTaken x <- mods]
+    let horror' = horror + sum [x | HorrorTaken x <- mods]
     if CancelOneDamageOrHorror `elem` mods
       then
         if
-          | horror == 0 && damage' > 0 ->
-              push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage' - 1) horror
-          | damage' == 0 && horror > 0 ->
-              push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' (horror - 1)
+          | horror' == 0 && damage' > 0 ->
+              push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage' - 1) horror'
+          | damage' == 0 && horror' > 0 ->
+              push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' (horror' - 1)
           | otherwise -> Choose.chooseOneM iid do
               Choose.labeled "Cancel 1 damage"
                 $ push
                 $ DoStep 1
-                $ Msg.InvestigatorDamage iid source (damage' - 1) horror
+                $ Msg.InvestigatorDamage iid source (damage' - 1) horror'
               Choose.labeled "Cancel 1 horror"
                 $ push
                 $ DoStep 1
-                $ Msg.InvestigatorDamage iid source damage' (horror - 1)
-      else push $ DoStep 1 $ Msg.InvestigatorDamage iid source (damage + n) horror
+                $ Msg.InvestigatorDamage iid source damage' (horror' - 1)
+      else push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' horror'
     pure a
   DoStep 1 (Msg.InvestigatorDamage iid _ damage horror) | iid == investigatorId -> do
     pure $ a & assignedHealthDamageL +~ max 0 damage & assignedSanityDamageL +~ max 0 horror
@@ -4387,6 +4387,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerTestOrAbility)
         )
       & (usedAbilitiesL %~ map (\u -> u {usedThisWindow = False}))
+  After (PerformEnemyAttack {}) -> do
+    pure $ a & (usedAbilitiesL %~ filter (\ab -> ab.limitType /= Just PerAttack))
   PickSupply iid s | iid == toId a -> pure $ a & suppliesL %~ (s :)
   UseSupply iid s | iid == toId a -> pure $ a & suppliesL %~ deleteFirst s
   Blanked msg' -> liftRunMessage msg' a

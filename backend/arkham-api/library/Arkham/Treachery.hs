@@ -600,6 +600,9 @@ allTreacheries =
     , -- Return to the House Always Wins
       SomeTreacheryCard caughtCheating
     , SomeTreacheryCard raiseTheStakes
+    , -- Return to the Miskatonic Museum
+      SomeTreacheryCard darkBidding
+    , SomeTreacheryCard nightBeyondVoid
     , -- Beyond the Threshold
       SomeTreacheryCard hauntingRecollections
     , SomeTreacheryCard aBalefulWelcome
@@ -608,6 +611,9 @@ allTreacheries =
       SomeTreacheryCard resurgentEvils
     , -- Secret Doors
       SomeTreacheryCard secretDoor
+    , -- Creeping Cold
+      SomeTreacheryCard inexplicableCold
+    , SomeTreacheryCard oppressiveMists
     , -- Erratic Fear
       SomeTreacheryCard violentCommands
     , SomeTreacheryCard idleHands

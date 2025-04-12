@@ -223,6 +223,7 @@ data ModifierType
   | DamageDealt Int
   | DamageDealtToInvestigator Int
   | DamageTaken Int
+  | HorrorTaken Int
   | DamageTakenFrom DamageEffectMatcher Int
   | Difficulty Int
   | DiscoveredClues Int

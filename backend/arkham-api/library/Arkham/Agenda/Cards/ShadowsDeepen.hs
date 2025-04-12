@@ -23,8 +23,12 @@ shadowsDeepen :: AgendaCard ShadowsDeepen
 shadowsDeepen = agenda (2, A) ShadowsDeepen Cards.shadowsDeepen (Static 7)
 
 instance HasAbilities ShadowsDeepen where
-  getAbilities (ShadowsDeepen x) =
-    [mkAbility x 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Enemies.huntingHorror]
+  getAbilities (ShadowsDeepen a) =
+    [ restricted a 1 (oneOf [thisExists a (AgendaWithSide A), IsReturnTo])
+        $ forced
+        $ EnemySpawns #when Anywhere
+        $ enemyIs Enemies.huntingHorror
+    ]
 
 instance RunMessage ShadowsDeepen where
   runMessage msg a@(ShadowsDeepen attrs) = case msg of

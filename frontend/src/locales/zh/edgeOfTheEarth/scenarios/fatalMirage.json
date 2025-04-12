@@ -1,52 +1,52 @@
 {
   "intro1": {
-    "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic valid'>If this is your first time playing Fatal Mirage this campaign, proceed to _Intro 1_. Otherwise, skip to _Intro 2_.</p><p>_Intro 1_: Upon entering the doorway, you find yourself in a web of icy tunnels, swathed in miasma and dripping with prismatic ichor. Your reflection peers back at you in myriad peculiar angles. Your voice echoes throughout this infinite hall of mirrors. You turn around to discover that your entryway has vanished behind you. Then, in the corner of your eye, you spot a familiar figure traversing the same mists—but, no, that can’t be possible. Can it?</p><p class='basic'>Find and read the passage below that corresponds to which character was killed in the plane crash. Then, proceed to _Setup_.</p>"
+    "title": "冒险???：致命幻景",
+    "body": "<p class='basic valid'>如果这是你第一次进入致命幻景，进入 _序言 1_. 否则，则进入 _序言 2_.</p><p>_序言 1_: 一进入门口，你就发现自己在一个冰冷的隧道网路中，里面充斥著瘴气，还滴著五光十色的脓水。你的倒影在无数奇特的角度注视著你。你的声音在这无尽的镜子大厅里回响。你转身，却发现入口已经消失在你身后。然后，在你的眼角，你发现一个熟悉的身影穿过同样的迷雾——但是，不，那不可能。那可能吗？</p><p class='basic'>找到并阅读下方与在坠机事故中遇难角色对应的章节。 然后进入 _设置_.</p>"
   },
   "intro2": {
     "title": "Scenario ???: Fatal Mirage",
-    "body": "<p class='basic invalid'>If this is your first time playing Fatal Mirage this campaign, proceed to _Intro 1_. Otherwise, skip to _Intro 2_.</p><p>Once again, you find yourself in a web of icy tunnels, permeated by mist and miasma. The entryway vanishes behind you. Your reflection, shimmering with the slightest hint of incorporeality, stares back at you from many angles at once.</p><p class='normal'>Proceed to _Setup_.</p>"
+    "body": "<p class='basic invalid'>如果这是你第一次进入致命幻景，进入 _序言 1_. 否则，则进入 _序言 2_。</p><p>又一次，你发现自己置身于一个冰冷的隧道网路中，弥漫著雾气和瘴气。入口在你身后消失了。你的倒影，闪烁著虚幻微弱的暗示，从众多角度同时盯著你。</p><p class='normal'>进入 _设置_.</p>"
   },
   "resolutions": {
     "xp": {
-      "memoriesBanished": "Memories Banished"
+      "memoriesBanished": "驱除的记忆"
     },
     "resolution1": {
-      "isThereADifference": "Is there a difference?",
-      "victory": "In the “Fatal Mirage” section of the Campaign Log, under “Memories Banished,” record each story card in the victory display. Each investigator earns experience equal to the Victory X value of each card recorded in this way. (*Do not earn experience points for cards already recorded in this section*).",
-      "memoriesDiscovered": " In the “Fatal Mirage” section of the Campaign Log, under “Memories Discovered,” record each non‑_Otherworld_ location in play.",
-      "crossOutMemoriesDiscovered": "Cross off each location recorded under “Memories Discovered” for which the corresponding story card is also recorded under “Memories Banished.”",
-      "nonStoryVictory": "If there are any other non-story cards in the victory display worth Victory X, each investigator earns experience equal to that amount.",
-      "partnerDamage": "In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.",
-      "proceed": "Proceed to the next scenario of the campaign, in numerical order, as follows:",
-      "proceedToTheForbiddenPeaks": "If the last scenario you played before this one was Ice and Death, proceed to _Scenario II: To the Forbidden Peaks_.",
-      "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
-      "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?"
+      "isThereADifference": "有区别吗？",
+      "victory": "在剧本日志中“致命幻景”部分，“驱除的记忆”下方记录胜利区中的所有剧情卡牌。每位调查员取得经验值，数量等于以此方式记录的所有卡牌的胜利X数值之和<i>(不要从已经记录在本部分的卡牌取得经验值)</i>。",
+      "memoriesDiscovered": "在剧本日志中“致命幻景”部分，“发现的记忆”下方记录场上每个非_异界_地点。",
+      "crossOutMemoriesDiscovered": "将“发现的记忆”下方记录的地点中，与记录在“驱除的记忆”下方的剧情卡牌对应的所有地点划掉。”",
+      "nonStoryVictory": "如果胜利区中有其他带有胜利X的非剧情卡牌，每位调查员取得经验值，数量等于这些卡牌的胜利X数值之和。",
+      "partnerDamage": "在剧本日志中“探险队”部分，记录场上每名伙伴支援的当前生命值与神智值。",
+      "proceed": "按照下面所述的顺序，进入战役的下一个冒险",
+      "proceedToTheForbiddenPeaks": "如果你上一次进入的冒险是亡命冰原, 则推进至 _冒险 II: 失落之峰_.",
+      "proceedToCityOfTheElderThings": "如果你上一次进入的冒险是失落之峰, 则推进至 _冒险 III: 古老者之城_.",
+      "proceedToTheHeartOfMadness": "如果你上一次进入的冒险是古老者之城，则推进到 _冒险 IV: 疯狂之心_.",
+      "title": "结局 1",
+      "body": "<div class='resolution'><p>_结局 1_: 你磕磕绊绊逃出门口，倒在你的睡垫上，在你温暖的毯子里胡乱挥舞四肢。你身后没有关上的门。这些都是你想像出来的吗？还是说这都是真的？"
     }
   },
-  "dyerWasKilledInThePlaneCrash": "<p>_If William Dyer was killed in the plane crash:_</p><p>Professor Dyer is dead. There is no way that can be him. And yet…</p><p>You see him pacing back and forth across one of the reflections, muttering to himself. “It must be stopped. They cannot do this.” He pauses, as if in conversation with another, who goes unheard. “I do not care. It must end at once!” Poor Dyer. He did try to warn you, you recall. And yet, here you are.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "ellsworthWasKilledInThePlaneCrash": "<p>_If Roald Ellsworth was killed in the plane crash:_</p><p>Ellsworth is dead. There is no way that can be him. And yet…</p><p>You spot him inside a telephone booth, arguing heatedly with somebody on the other end. “I know it is dangerous. But I have to go,” he reasons. “Trust me, this is too important to let go.”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "ashevakWasKilledInThePlaneCrash": "<p>_If Eliyah Ashevak was killed in the plane crash:_</p><p>Eliyah is dead. There is no way that can be him. And yet…</p><p>Eliyah crawls through the snow, leaving a trail of blood in his wake. “Are you guiding me to safety?” he asks quietly to a large gray dog. You recognize the familiar shape of Anyu, perhaps several years younger but no less enormous.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "danforthWasKilledInThePlaneCrash": "<p>_If Danforth was killed in the plane crash:_</p><p>Danforth is dead. There is no way that can be him. And yet…</p><p>The student sits at a table in the Orne Library, muttering to himself as he reads: “I saw it. I know I did. I saw it.” He begins to doze off, only to quickly shudder awake. The dark rings under his eyes tell you that he has not slept for many days. “I saw it…it was real…”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "cookieWasKilledInThePlaneCrash": "<p>_If James “Cookie” Fredericks was killed in the plane crash:_</p><p>Cookie is dead. There is no way that can be him. And yet…</p><p>He is braced against one of the crystalline mirrors, hands shaking as he reloads his rifle. Dirt and soot cover his face and stain his uniform. He looks younger, but no less haggard. “Sergeant Fredericks,” another voice snaps him out of his trance. “Germans broke the line last night. They’re circling around. We have to get out of here!”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "claypoolWasKilledInThePlaneCrash": "<p>_If Avery Claypool was killed in the plane crash:_</p><p>Claypool is dead. There is no way that can be him. And yet…</p><p>You watch as he studies a map of Antarctica, the regions inside its borders only partially documented. “It would have to be here,” he says, pointing to a spot inside a ring sketched hastily in pencil. “Inside these mountain ranges. But…” he falters, peering over his shoulder at someone you cannot see. “That cannot be the case, can it?”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "takadaWasKilledInThePlaneCrash": "<p>_If Takada Hiroko was killed in the plane crash:_</p><p>Takada is dead. There is no way that can be her. And yet…</p><p>Despite her youth, you recognize her. She waves as an aeroplane takes off from a rainy runway. Somebody’s hand grips her shoulder encouragingly. “He’ll be back soon,” a voice tells her. But Takada looks unconvinced.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "sinhaWasKilledInThePlaneCrash": "<p>_If Dr. Mala Sinha was killed in the plane crash:_</p><p>Dr. Sinha is dead. There is no way that can be her. And yet…</p><p>The physician examines what you can only assume to be a corpse, the body limp and lifeless. “Time of death: 14:23. Record it,” she says, her voice steady and calm. But within the misty reflection, you spot her lip quiver ever so slightly as her task takes its toll on her.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
-  "kenslerWasKilledInThePlaneCrash": "<p>_If Dr. Amy Kensler was killed in the plane crash:_</p><p>Dr. Kensler is dead. There is no way that can be her. And yet…</p><p>The professor writes in a small, leatherbound journal, her office lit dimly by candlelight. You wonder what kind of anatomical diagram she might be sketching, but before you can catch a glimpse, she rips the page out, crumples it, and throws it in the garbage with a sigh.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
+  "dyerWasKilledInThePlaneCrash": "<p>_如果威廉·戴尔教授在坠机事故中遇难：_:_</p><p>戴尔教授已经死了。这绝不可能是他。然而……</p><p>你看到他在其中一个映射中来回踱步，喃喃自语。“这必须得停止。他们不能这么做。”他停顿了一下，好像在和另一个人谈话，但你听不到。“我不在乎。必须立刻终止！”可怜的戴尔。你还记得吧，他曾试图警告你。然而，你还是来了。</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "ellsworthWasKilledInThePlaneCrash": "<p>_如果罗尔德·埃尔斯沃思在坠机事故中遇难：_</p><p>埃尔斯沃思已经死了。这绝不可能是他。然而……</p><p>你看到他在电话亭里和电话那头的人激烈地争论著。“我知道这很危险。但我不得不去。”他解释著。“相信我，这太重要了，我绝不能错过。”</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "ashevakWasKilledInThePlaneCrash": "<p>_如果伊里亚·阿什瓦克在坠机事故中遇难：_</p><p>伊里亚已经死了。这绝不可能是他。然而……</p><p>伊里亚在雪地里爬行，身后留下一串血迹。“你是在引导我到安全的地方吗？”他小声地询问一只大灰狗。你认出了安雨那熟悉的身影，也许年纪小点，但块头一样大。</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "danforthWasKilledInThePlaneCrash": "<p>_如果丹佛斯在坠机事故中遇难：_</p><p>丹佛斯已经死了。这绝不可能是他,然而……</p><p>这名学生坐在奥恩图书馆的一张桌子旁，一边开读著，一边喃喃自语：“我看到它了。我知道我看到了。我看到它了。”他开始打瞌睡，但很快就打了个寒颤醒了。他的黑眼圈告诉你，他已经好几天没睡觉了。“我看到它了……那是真实的……</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "cookieWasKilledInThePlaneCrash": "<p>_如果詹姆斯·“曲奇”·弗雷德里克斯在坠机事故中遇难：_</p><p>曲奇已经死了。这绝不可能是他。然而……</p><p>他靠在其中一面水晶镜子上，双手颤抖著重新装填步枪。污物和煤烟覆盖著他的脸，弄脏了他的制服。</p><p>他看起来更年轻，但依然很憔悴。“弗雷德里克斯中士。”另一个声音使他从恍惚中惊醒。“德国人昨晚突破阵线了。他们在周围打转。我们必须离开这里！”</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "claypoolWasKilledInThePlaneCrash": "<p>_如果艾弗里·克莱普尔在坠机事故中遇难：_</p><p>克莱普尔已经死了。这绝不可能是他。然而……</p><p>当你看到他在研究南极地图时，边界内的区域只有部分记录。“它一定在这里。”他指著一个用铅笔匆匆画出的圆圈里的一个点说道，“在这些山脉范围内。但是……”他颤抖著，回头看向你看不到的人。“那是不可能的啊？”</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢?</p>",
+  "takadaWasKilledInThePlaneCrash": "<p>_如果高田弘子在坠机事故中遇难：_</p><p>高田已经死了。这绝不可能是她。然而……</p><p>尽管她很年轻，但你依然认出了她。当一架飞机从下雨的跑道上起飞时，她向飞机挥手。有人用手抓住她的肩膀鼓励她。“他很快就会回来的。”一个声音告诉她。但高田看起来有些怀疑。</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "sinhaWasKilledInThePlaneCrash": "<p>_如果马拉辛哈在坠机事故中遇难：_</p><p>辛哈医生已经死了。这绝不可能是她。然而……</p><p>医师正在检查的是一具尸体，尸体软弱无力，毫无生气。“死亡时间：14:23。记录下来。”她说道，声音稳定而冷静。但在朦胧的倒影中，你看到她的嘴唇微微颤抖，因为她的任务让她付出了代价。</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
+  "kenslerWasKilledInThePlaneCrash": "<p>_如果艾米·肯斯勒博士在坠机事故中遇难：_</p><p>肯斯勒博士已经死了。这绝不可能是她。然而……</p><p>这位教授在一本皮革装订的小日记里写著什么，她的办公室点著昏暗的烛光。你想知道她在画什么样的结构图，但你还没来得及看一眼，她就把那页撕了下来，揉成一圈，叹息著扔进垃圾桶。</p><p>幻境消失了，速度就和它出现时一样快。这到底是什么鬼地方？这些你不知道的事情，怎么就在你眼前展开了呢？</p>",
   "tokens": {
     "easyStandard": {
-      "skull": "–X. X is the number of story cards in the victory display.",
-      "cultist": "–2. If you fail, place 1 of your clues on your location.",
-      "tablet": "–3. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it.",
-      "elderthing": "–4. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+      "skull": "–X. X为胜利区中剧情卡牌的数量。",
+      "cultist": "–2. 如果你检定失败，将你的1个线索放到你所在地点。",
+      "tablet": "–3. 如果你检定失败，你必须移动到记忆囚笼，或将忒咳哩-哩牌堆顶的1张卡牌混洗入你的牌堆，不要查看内容。",
+      "elderthing": "–4. 如果你检定失败，在场上一个_幻灵_敌人上放置1个毁灭标记。"
     },
     "hardExpert": {
-      "skull": "–X. X is the current agenda number plus the number of story cards in the victory display.",
-      "cultist": "–2. If you do not succeed by at least 2, place 1 of your clues on your location.",
-      "tablet": "–4. If you fail, you must either move to the Prison of Memories, or shuffle the top card of the Tekeli-li deck into your deck without looking at it. (If you fail by 2 or more, do both instead.)",
-      "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
+      "skull": "–X. X为当前密谋编号加上胜利区中剧情卡牌的数量。",
+      "cultist": "–2. 如果你没有检定成功且超过难度至少2点，将你的1个线索放到你所在地点。",
+      "tablet": "–4. 如果你检定失败，你必须移动到记忆囚笼，或将忒咳哩-哩牌堆顶的1张卡牌混洗入你的牌堆，不要查看内容。 (如果你检定失败且低于难度至少2点，改为两项都执行)。",
+      "elderthing": "–5. 如果你检定失败，在场上一个_幻灵_敌人上放置1个毁灭标记。"
     }
   }
 }

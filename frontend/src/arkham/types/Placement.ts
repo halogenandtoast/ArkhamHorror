@@ -13,11 +13,13 @@ export type Placement
   | { tag: "AsSwarm", swarmHost: string, swarmCard: Card }
   | { tag: "Limbo" }
   | { tag: "NextToAgenda" }
+  | { tag: "AttachedToAgenda" }
   | { tag: "OtherPlacement", contents: string }
 
 export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AsSwarm"), swarmHost: JsonDecoder.string(), swarmCard: cardDecoder }, 'AsSwarm'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("NextToAgenda")}, 'NextToAgenda'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAgenda")}, 'AttachedToAgenda'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("Limbo")}, 'Limbo'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AtLocation"), contents: JsonDecoder.string() }, 'AtLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InVehicle"), contents: JsonDecoder.string() }, 'InVehicle'),

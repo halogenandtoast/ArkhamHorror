@@ -820,6 +820,10 @@ allLocations =
     , -- Return to The Miskatonic Museum
       SomeLocationCard exhibitHallMedievalExhibit
     , SomeLocationCard exhibitHallTheArchives
+    , -- Return to The Essex County Express
+      SomeLocationCard returnToEngineCar
+    , SomeLocationCard freightCar
+    , SomeLocationCard baggageCar
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

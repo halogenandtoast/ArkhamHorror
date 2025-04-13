@@ -11,6 +11,7 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Event from '@/arkham/components/Event.vue';
+import Enemy from '@/arkham/components/Enemy.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
 const props = defineProps<{
@@ -87,6 +88,10 @@ const nextToEvents = computed(() => Object.values(props.game.events).
   filter((t) => t.placement.tag === "NextToAgenda").
   map((t) => t.id))
 
+const attachedEnemies = computed(() => Object.values(props.game.enemies).
+  filter((t) => t.placement.tag === "AttachedToAgenda").
+  map((t) => t.id))
+
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
 const debug = useDebug()
@@ -134,6 +139,13 @@ const debug = useDebug()
       class="sideways"
       @click="$emit('choose', ability.index)"
       />
+    <Enemy
+      v-for="enemyId in attachedEnemies"
+      :enemy="game.enemies[enemyId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
     <Event
       v-for="eventId in nextToEvents"
       :event="game.events[eventId]"

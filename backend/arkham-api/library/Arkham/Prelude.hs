@@ -196,6 +196,15 @@ sampleN n xs = do
     Nothing -> pure [x]
     Just xs' -> (x :) <$> sampleN (n - 1) xs'
 
+sampleNonEmptyN :: (Eq a, MonadRandom m) => Int -> NonEmpty a -> m (NonEmpty a)
+sampleNonEmptyN 0 _ = error "Must be value > 0"
+sampleNonEmptyN _ (x :| []) = pure $ x :| []
+sampleNonEmptyN n xs = do
+  (x, rest) <- sampleWithRest xs
+  case nonEmpty rest of
+    Nothing -> pure (x :| [])
+    Just xs' -> (x :|) <$> sampleN (n - 1) xs'
+
 sampleListN :: (Eq (Element mono), MonoFoldable mono, MonadRandom m) => Int -> mono -> m [Element mono]
 sampleListN n xs = maybe (pure []) (sampleN n) (nonEmpty $ otoList xs)
 

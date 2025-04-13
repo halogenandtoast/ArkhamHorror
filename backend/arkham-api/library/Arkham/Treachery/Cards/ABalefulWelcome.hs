@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Treachery.Cards.ABalefulWelcome (aBalefulWelcome) where
 
 import Arkham.Message.Lifted.Choose
@@ -16,7 +15,7 @@ aBalefulWelcome = treachery ABalefulWelcome Cards.aBalefulWelcome
 instance RunMessage ABalefulWelcome where
   runMessage msg t@(ABalefulWelcome attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      isFirst <- traceShowId <$> isFirstCopyThisPhase attrs
+      isFirst <- isFirstCopyThisPhase attrs
       chooseNM iid (if isFirst then 1 else 3) do
         labeled "Investigate" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotTakeAction #investigate)

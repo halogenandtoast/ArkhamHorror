@@ -361,6 +361,7 @@ allEncounterEnemyCards =
       , terrorOfTheStarsGuardianOfForbiddenPeaks
       , theAmalgam
       , theCrawlingMist
+      , theConductorBeastFromBeyondTheGate
       , theExperiment
       , theMaskedHunter
       , theNamelessMadness
@@ -2836,6 +2837,13 @@ enthralledSecurityGuard =
   (enemy "51014" "Entralled Security Guard" ReturnToExtracurricularActivities 2)
     { cdCardTraits = setFromList [Humanoid, Abomination]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+    }
+
+theConductorBeastFromBeyondTheGate :: CardDef
+theConductorBeastFromBeyondTheGate =
+  (enemy "51026b" ("The Conductor" <:> "Beast from beyond the Gate") ReturnToTheEssexCountyExpress 1)
+    { cdCardTraits = setFromList [Monster, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     }
 
 vassalOfTheLurker :: CardDef

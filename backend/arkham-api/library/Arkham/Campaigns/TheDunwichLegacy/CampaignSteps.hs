@@ -56,3 +56,8 @@ pattern ReturnToTheMiskatonicMuseum :: CampaignStep
 pattern ReturnToTheMiskatonicMuseum <- ScenarioStep "51020"
   where
     ReturnToTheMiskatonicMuseum = ScenarioStep "51020"
+
+pattern ReturnToTheEssexCountyExpress :: CampaignStep
+pattern ReturnToTheEssexCountyExpress <- ScenarioStep "51025"
+  where
+    ReturnToTheEssexCountyExpress = ScenarioStep "51025"

@@ -504,6 +504,8 @@ allEnemies =
     , -- Return to the Dunwich Legacy
       -- Return to Extracurricular Activities
       SomeEnemyCard enthralledSecurityGuard
+    , -- Return to Extracurricular Activities
+      SomeEnemyCard theConductorBeastFromBeyondTheGate
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
     , -- Nathanial Cho

@@ -1021,7 +1021,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           ]
       _ -> noMatch
     Matcher.AgendaAdvances timing agendaMatcher -> guardTiming timing $ \case
-      Window.AgendaAdvance aid -> matches aid agendaMatcher
+      Window.AgendaAdvance aid ->
+        case agendaMatcher of
+          AnyAgenda -> pure True
+          _ -> matches aid agendaMatcher
       _ -> noMatch
     Matcher.ActAdvances timing actMatcher -> guardTiming timing $ \case
       Window.ActAdvance aid -> actMatches aid actMatcher
@@ -1507,7 +1510,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               , matches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
-
           MassiveAttackTargets (mapMaybe (preview _InvestigatorTarget) -> iids) ->
             andM
               [ anyM (\who -> matchWho iid who whoMatcher) iids
@@ -1627,7 +1629,6 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.EnemyDefeated Nothing defeatedBy enemyId | whoMatcher == Matcher.You -> do
           andM
             [ matches enemyId $ if timing == #after then DefeatedEnemy enemyMatcher else enemyMatcher
-
             , defeatedByMatches
                 defeatedBy
                 (defeatedByMatcher <> Matcher.BySource (Matcher.SourceOwnedBy $ Matcher.InvestigatorWithId iid))

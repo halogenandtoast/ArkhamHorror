@@ -89,7 +89,7 @@ getRearLabels :: [GridTemplateRow] -> [Text]
 getRearLabels layout =
   let
     getRearLabel (GridTemplateRow txt) =
-      case (T.words txt) of
+      case T.words txt of
         [] -> Nothing
         ("." : _) -> Nothing
         (x : _) -> Just x

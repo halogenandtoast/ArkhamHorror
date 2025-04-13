@@ -3,6 +3,7 @@
   {
     "id": "02",
     "name": "The Dunwich Legacy",
+    "returnToId": "51",
     "settings": [
       {
         "key": "Extracurricular Activity",

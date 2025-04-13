@@ -298,6 +298,7 @@ allPlayerAssetCards =
       , enchantedBow2
       , encyclopedia
       , encyclopedia2
+      , engineer
       , eonChart1
       , eonChart4
       , esotericAtlas1

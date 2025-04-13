@@ -1,16 +1,21 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the amount of doom in play (max 5).",
-      "cultist": "-2. If you fail, move each unengaged _Byakhee_ in play once toward the nearest investigator.",
-      "tablet": "-3. Cancel the effects and icons of each skill card committed to this test.",
-      "elderThing": "-2. If you fail, lose 1 resource for each point you failed by."
+      "skull": "-X. 其中X为场上毁灭标记的数量(最多5)。",
+      "cultist": "-2. 如果你失败，场上每个未处于交战状态的 _拜亚基_ 朝最近的调查员移动一次。",
+      "tablet": "-3. 取消投入本次检定的每张技能卡上的效果和图标。",
+      "elderThing": "-2. 如果你失败，每低于难度1点，失去1资源。"
     },
     "hardExpert": {
-      "skull": "-X. X is the amount of doom in play.",
-      "cultist": "-2. Move each unengaged _Byakhee_ in play once toward the nearest investigator.",
-      "tablet": "-4. Cancel the effects and icons of each skill card committed to this test.",
-      "elderThing": "-3. If you fail, lose 1 resource for each point you failed by."
+      "skull": "-X. 其中X为场上毁灭标记的数量。",
+      "cultist": "-2. 场上每个未处于交战状态的 _拜亚基_ 朝最近的调查员移动一次。",
+      "tablet": "-4. 取消投入本次检定的每张技能卡上的效果和图标。",
+      "elderThing": "-3. 如果你失败，每低于难度1点，失去1资源。"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "insight": "洞察了褴褛之王的阴谋。"
     }
   }
 }

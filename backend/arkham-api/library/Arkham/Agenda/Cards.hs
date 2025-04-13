@@ -27,6 +27,7 @@ allAgendaCards =
       , aHarshWindBlows
       , aSinisterRealm
       , aTearInReality
+      , aTearInRealityV2
       , aTrailOfTwists
       , agentsOfTheOuterGods
       , allIsOne
@@ -216,6 +217,7 @@ allAgendaCards =
       , whatLurksBelowV2
       , whatsGoingOn
       , wheelOfFortuneX
+      , whereTheresSmoke
       ]
 
 whatsGoingOn :: CardDef
@@ -750,6 +752,12 @@ thatWhichHasNoName = agenda "08672" "That Which Has No Name" 5 StirringInTheDeep
 returnToPredatorOrPrey :: CardDef
 returnToPredatorOrPrey =
   agenda "50026a" "Predator or Prey?" 1 ReturnToTheMidnightMasks
+
+whereTheresSmoke :: CardDef
+whereTheresSmoke = agenda "51026" "Where There's Smoke" 0 ReturnToTheEssexCountyExpress
+
+aTearInRealityV2 :: CardDef
+aTearInRealityV2 = agenda "51027" "A Tear in Reality (v. II)" 1 ReturnToTheEssexCountyExpress
 
 aCreatureOfTheBayou :: CardDef
 aCreatureOfTheBayou = agenda "81002" "A Creature of the Bayou" 1 TheBayou

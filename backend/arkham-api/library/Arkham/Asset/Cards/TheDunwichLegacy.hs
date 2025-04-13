@@ -622,3 +622,9 @@ theRedGlovedMan5 =
       , cdUnique = True
       , cdSlots = [#ally]
       }
+
+engineer :: CardDef
+engineer =
+  (storyAsset "51031" "Engineer" 2 ReturnToTheEssexCountyExpress)
+    { cdCardTraits = setFromList [Ally, Bystander]
+    }

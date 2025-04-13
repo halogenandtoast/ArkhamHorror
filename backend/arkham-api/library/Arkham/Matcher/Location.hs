@@ -151,6 +151,7 @@ data LocationMatcher
   | LocationWithIncursion
   | FewestBreaches
   | RearmostLocation
+  | LeftmostLocation
   | MostBreaches LocationMatcher
   | IncludeEmptySpace LocationMatcher
   | LocationInRow Int

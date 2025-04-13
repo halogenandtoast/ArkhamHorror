@@ -283,6 +283,10 @@ allAgendas =
     , -- Return to the Night of the Zealot
       -- Return to the Midnight Masks
       SomeAgendaCard returnToPredatorOrPrey
+    , -- Return to the Dunwich Legacy
+      -- Return to the Essex County Express
+      SomeAgendaCard whereTheresSmoke
+    , SomeAgendaCard aTearInRealityV2
     , -- Curse of the Rougarou
       SomeAgendaCard aCreatureOfTheBayou
     , SomeAgendaCard theRougarouFeeds

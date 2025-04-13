@@ -2426,6 +2426,9 @@ createAssetAt c placement = do
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)
 
+healAllDamageAndHorror :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+healAllDamageAndHorror source target = push $ Msg.HealAllDamageAndHorror (toTarget target) (toSource source)
+
 placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
 placeKey target key = push $ Msg.PlaceKey (toTarget target) key
 

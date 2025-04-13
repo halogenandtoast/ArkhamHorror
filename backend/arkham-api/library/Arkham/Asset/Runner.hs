@@ -28,7 +28,15 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Placement
 import Arkham.Helpers.Ref (sourceToTarget)
 import Arkham.Helpers.Use
-import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, doFrame, frame, windows)
+import Arkham.Helpers.Window (
+  checkAfter,
+  checkWhen,
+  checkWindows,
+  doFrame,
+  frame,
+  windows,
+  wouldWindows,
+ )
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher (
   AssetMatcher (AnyAsset, AssetAttachedToAsset, AssetWithId),
@@ -479,10 +487,12 @@ instance RunMessage AssetAttrs where
       removeFromGame <- a `hasModifier` RemoveFromGameInsteadOfDiscard
       afterWindows <- checkAfter $ Window.Discarded mInvestigator source (toCard a)
       let discardMsg = if removeFromGame then RemoveFromGame (toTarget a) else Discarded (toTarget a) source (toCard a)
-      pushAll
-        $ windows [Window.WouldBeDiscarded (toTarget a)]
+      (batchId, windowMessages) <- wouldWindows $ Window.WouldBeDiscarded (toTarget a)
+      push
+        $ Would batchId
+        $ windowMessages
+        <> map (DiscardedCard . toCardId) a.cardsUnderneath
         <> [RemoveFromPlay $ toSource a, discardMsg, afterWindows]
-      for_ a.cardsUnderneath $ push . DiscardedCard . toCardId
       pure a
     Exile target | a `isTarget` target -> do
       pushAll [RemoveFromPlay $ toSource a, Exiled target (toCard a)]
@@ -533,7 +543,11 @@ instance RunMessage AssetAttrs where
           $ [mkAfter $ Window.Healed #damage (toTarget a) source (assetDamage a) | assetDamage a > 0]
           <> [mkAfter $ Window.Healed #horror (toTarget a) source (assetHorror a) | assetHorror a > 0]
       push afterWindow
-      pure $ a & tokensL %~ removeAllTokens Token.Horror & tokensL %~ removeAllTokens Token.Damage
+      pure
+        $ a
+        & (tokensL %~ removeAllTokens Token.Horror . removeAllTokens Token.Damage)
+        & (assignedHealthDamageL .~ 0)
+        & (assignedSanityDamageL .~ 0)
     InvestigatorPlayedAsset iid aid | aid == assetId -> do
       let placement = if isInPlayPlacement a.placement then a.placement else InPlayArea iid
       runMessage (PlaceAsset aid placement) a

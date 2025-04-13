@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheEssexCountyExpress (theEssexCountyExpress) where
+module Arkham.Scenario.Scenarios.TheEssexCountyExpress (theEssexCountyExpress, TheEssexCountyExpress (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -17,6 +17,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheEssexCountyExpress.Helpers
 import Arkham.Scenarios.TheEssexCountyExpress.Story
 import Arkham.Token
 import Arkham.Trait qualified as Trait
@@ -35,7 +36,7 @@ theEssexCountyExpress difficulty =
     "02159"
     "The Essex County Express"
     difficulty
-    ["trainCar6 trainCar5 trainCar4 trainCar3 trainCar2 trainCar1 engineCar"]
+    scenarioLayout
 
 instance HasChaosTokenValue TheEssexCountyExpress where
   getChaosTokenValue iid chaosTokenFace (TheEssexCountyExpress attrs) = case chaosTokenFace of
@@ -100,6 +101,15 @@ instance RunMessage TheEssexCountyExpress where
       setChaosTokens standaloneChaosTokens
       pure s
     Setup -> runScenarioSetup TheEssexCountyExpress attrs do
+      gather Set.TheEssexCountyExpress
+      gather Set.TheBeyond
+      gather Set.StrikingFear
+      gather Set.AncientEvils
+      gather Set.DarkCult
+
+      engineCar <-
+        place =<< sampleOneOf (Locations.engineCar_175, Locations.engineCar_176, Locations.engineCar_177)
+
       trainCars <-
         sampleN 6
           $ Locations.passengerCar_167
@@ -111,15 +121,6 @@ instance RunMessage TheEssexCountyExpress where
              , Locations.diningCar
              , Locations.parlorCar
              ]
-
-      gather Set.TheEssexCountyExpress
-      gather Set.TheBeyond
-      gather Set.StrikingFear
-      gather Set.AncientEvils
-      gather Set.DarkCult
-
-      engineCar <-
-        place =<< sampleOneOf (Locations.engineCar_175, Locations.engineCar_176, Locations.engineCar_177)
 
       placedCars <- for (zip [6, 5 ..] trainCars) $ \(idx, trainCarCard) -> do
         car <- place trainCarCard
@@ -193,8 +194,8 @@ instance RunMessage TheEssexCountyExpress where
       allGainXpWith attrs \iid ->
         guard (iid `elem` defeatedInvestigatorIds)
           *> [ InvestigatorGainXp
-                iid
-                (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
+                 iid
+                 (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
              ]
       endOfScenario
       pure s
@@ -206,8 +207,8 @@ instance RunMessage TheEssexCountyExpress where
       allGainXpWith attrs \iid ->
         guard (iid `elem` defeatedInvestigatorIds)
           *> [ InvestigatorGainXp
-                iid
-                (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
+                 iid
+                 (XpDetail XpBonus "His or her experience beyond the gate grants them insight into the cosmos" 1)
              ]
       endOfScenario
       pure s

@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Game (module Arkham.Game, module X) where
 
@@ -2242,6 +2242,8 @@ getLocationsMatching lmatcher = do
     RearmostLocation -> do
       rear <- getRear
       pure $ filter ((`elem` rear) . toId) ls
+    LeftmostLocation -> do
+      pure $ mins $ mapMaybe (\l -> (l,) . positionColumn <$> attr locationPosition l) ls
     LocationInRow n -> do
       pure $ filter (maybe False ((== n) . positionRow) . attr locationPosition) ls
     LocationInRowOf inner -> do

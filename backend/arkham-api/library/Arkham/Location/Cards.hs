@@ -141,6 +141,7 @@ allLocationCards =
       , audubonPark
       , backAlley
       , backstage
+      , baggageCar
       , baharna
       , balcony
       , balconyAtDeathsDoorstep
@@ -360,6 +361,7 @@ allLocationCards =
       , foyer
       , foyerMurderAtTheExcelsiorHotel
       , frankElwoodsRoom
+      , freightCar
       , frenchHill_290
       , frenchHill_291
       , frigidCave
@@ -594,6 +596,7 @@ allLocationCards =
       , returnToAttic
       , returnToCellar
       , returnToCloverClubLounge
+      , returnToEngineCar
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -8403,6 +8406,18 @@ exhibitHallTheArchives =
     Hourglass
     [Square, Equals]
     ReturnToTheHouseAlwaysWins
+
+returnToEngineCar :: CardDef
+returnToEngineCar =
+  victory 1 $ location "51028" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress
+
+freightCar :: CardDef
+freightCar =
+  locationWithUnrevealed_ "51029" "Train Car" [Train] "Freight Car" [Train] TheEssexCountyExpress
+
+baggageCar :: CardDef
+baggageCar =
+  locationWithUnrevealed_ "51030" "Train Car" [Train] "Baggage Car" [Train] TheEssexCountyExpress
 
 cursedShores :: CardDef
 cursedShores =

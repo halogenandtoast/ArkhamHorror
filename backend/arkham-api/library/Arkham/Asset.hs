@@ -1152,6 +1152,8 @@ allAssets =
     , --- mystic [rtdwl]
       SomeAssetCard riteOfSeeking2
     , SomeAssetCard clarityOfMind3
+    , --- Return to the Essex County Express
+      SomeAssetCard engineer
     , -- Return to the Path to Carcosa
       --- guardian [rtptc]
       SomeAssetCard thirtyTwoColt2

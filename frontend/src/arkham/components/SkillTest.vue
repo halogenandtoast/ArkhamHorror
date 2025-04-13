@@ -207,7 +207,10 @@ function modifierSource(mod: Modifier) {
 }
 
 const targetCard = computed(() => {
-  if (!props.skillTest.targetCard) return null
+  if (!props.skillTest.targetCard) {
+    if (!props.skillTest.sourceCard) return null
+    return props.game.cards[props.skillTest.sourceCard]
+  }
   return props.game.cards[props.skillTest.targetCard]
 })
 
@@ -232,7 +235,9 @@ const swarmHost = computed(() => {
 const sourceCard = computed(() => {
   if (!props.skillTest.sourceCard) return null
   if (props.skillTest.sourceCard === props.skillTest.targetCard) return null
-  return props.game.cards[props.skillTest.sourceCard]
+  const card = props.game.cards[props.skillTest.sourceCard]
+  if (targetCard.value === card) return null
+  return card  
 })
 
 const applyResultsAction = computed(() => {

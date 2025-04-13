@@ -1,19 +1,26 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy.",
-      "cultist": "-2. If you do not succeed by at least 1, take 1 damage.",
-      "tablet": "-2. If you do not succeed by at least 1, place 1 doom on the nearest _Cultist_ enemy.",
-      "elderThing": "-2. If you fail, lose 1 of your clues."
+      "skull": "-X. 其中X为带有最多毁灭标记的 _异教徒_ 敌人身上的毁灭标记数。",
+      "cultist": "-2. 如果你未成功并超过难度至少1点，受到1点伤害.",
+      "tablet": "-2. 如果你未成功并超过难度至少1点，在最近的 _异教徒_ 敌人身上放置1个毁灭标记。",
+      "elderThing": "-2. 如果你失败，你失去一个线索。"
     },
     "hardExpert": {
-      "skull": "-X. X is the total number of doom in play.",
-      "cultist": "-2. If you do not succeed by at least 2, take 1 direct damage.",
-      "tablet": "-2. If you do not succeed by at least 2, place 1 doom on each _Cultist_ enemy.",
-      "elderThing": "-3. If you fail, lose 1 of your clues."
+      "skull": "-X. 其中X为场上的毁灭标记总数。",
+      "cultist": "-2. 如果你未成功并超过难度至少2点，受到1点直接伤害。",
+      "tablet": "-2. 如果你未成功并超过难度至少2点，在每个 _异教徒_ 敌人身上放置1个毁灭标记。",
+      "elderThing": "-3. 如果你失败，你失去一个线索。"
     }
   },
   "xp": {
-    "bonus": "Gains insight into the schemes of the Brotherhood."
+    "bonus": "得知兄弟会的阴谋。"
+  },
+  "remembered": {
+    "youListenedToIchtacasTale": "你倾听了伊塔卡的叙述。",
+    "youFoughtWithIchtaca": "You fought with Ichtaca.",
+    "ichtacaLeftWithoutYou": "伊塔卡独自离开。",
+    "ichtacasDestination": "伊塔卡的目的地: {name}.",
+    "ichtacasPrey": "伊塔卡的猎物: {name}."
   }
 }

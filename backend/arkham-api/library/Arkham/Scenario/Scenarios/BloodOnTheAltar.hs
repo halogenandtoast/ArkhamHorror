@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.BloodOnTheAltar (bloodOnTheAltar) where
+module Arkham.Scenario.Scenarios.BloodOnTheAltar (bloodOnTheAltar, BloodOnTheAltar(..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas
@@ -79,6 +79,18 @@ instance RunMessage BloodOnTheAltar where
         setChaosTokens standaloneChaosTokens
         pure s
       Setup -> runScenarioSetup BloodOnTheAltar attrs do
+        gather Set.BloodOnTheAltar
+        gather Set.Dunwich
+        gather Set.Whippoorwills
+        gather Set.Nightgaunts
+        gather Set.AncientEvils
+
+        oBannionGangHasABoneToPick <-
+          getHasRecordOrStandalone
+            OBannionGangHasABoneToPickWithTheInvestigators
+            False
+        when oBannionGangHasABoneToPick $ gather Set.NaomisCrew
+
         bishopsBrook <- sample2 Locations.bishopsBrook_202 Locations.bishopsBrook_203
         burnedRuins <- sample2 Locations.burnedRuins_204 Locations.burnedRuins_205
         osbornsGeneralStore <- sample2 Locations.osbornsGeneralStore_206 Locations.osbornsGeneralStore_207
@@ -86,18 +98,6 @@ instance RunMessage BloodOnTheAltar where
           sample2 Locations.congregationalChurch_208 Locations.congregationalChurch_209
         houseInTheReeds <- sample2 Locations.houseInTheReeds_210 Locations.houseInTheReeds_211
         schoolhouse <- sample2 Locations.schoolhouse_212 Locations.schoolhouse_213
-
-        oBannionGangHasABoneToPick <-
-          getHasRecordOrStandalone
-            OBannionGangHasABoneToPickWithTheInvestigators
-            False
-
-        gather Set.BloodOnTheAltar
-        gather Set.Dunwich
-        gather Set.Whippoorwills
-        gather Set.Nightgaunts
-        gather Set.AncientEvils
-        when oBannionGangHasABoneToPick $ gather Set.NaomisCrew
 
         -- we set aside the Hidden Chamber and Key to the Chamber to avoid them being duplicated when we sample below
         setAside

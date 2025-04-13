@@ -1688,6 +1688,7 @@ library
       Arkham.Enemy.Cards.Heretic_K
       Arkham.Enemy.Cards.HermanCollins
       Arkham.Enemy.Cards.HighPriestNotToBeDescribed
+      Arkham.Enemy.Cards.HiredGun
       Arkham.Enemy.Cards.HitVan
       Arkham.Enemy.Cards.Hoods
       Arkham.Enemy.Cards.HordeOfNight
@@ -3072,9 +3073,15 @@ library
       Arkham.Location.Cards.RemnantsOfLakesCamp
       Arkham.Location.Cards.Restaurant
       Arkham.Location.Cards.ReturnToAttic
+      Arkham.Location.Cards.ReturnToBishopsBrook
+      Arkham.Location.Cards.ReturnToBurnedRuins
       Arkham.Location.Cards.ReturnToCellar
       Arkham.Location.Cards.ReturnToCloverClubLounge
+      Arkham.Location.Cards.ReturnToCongregationalChurch
       Arkham.Location.Cards.ReturnToEngineCar
+      Arkham.Location.Cards.ReturnToHouseInTheReeds
+      Arkham.Location.Cards.ReturnToOsbornsGeneralStore
+      Arkham.Location.Cards.ReturnToSchoolhouse
       Arkham.Location.Cards.RialtoBridge
       Arkham.Location.Cards.RitualGrounds
       Arkham.Location.Cards.RitualSite
@@ -3272,6 +3279,7 @@ library
       Arkham.Location.Cards.VictorianHalls
       Arkham.Location.Cards.VictorianHallsSpectral
       Arkham.Location.Cards.VillageCommons
+      Arkham.Location.Cards.VillageCommonsSilentDecay
       Arkham.Location.Cards.VipArea
       Arkham.Location.Cards.WaitingRoom
       Arkham.Location.Cards.WalterGilmansRoom
@@ -3405,6 +3413,7 @@ library
       Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
       Arkham.Scenario.Scenarios.PointOfNoReturn
+      Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress

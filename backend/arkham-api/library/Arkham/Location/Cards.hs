@@ -594,9 +594,15 @@ allLocationCards =
       , remnantsOfLakesCamp
       , restaurant
       , returnToAttic
+      , returnToBishopsBrook
+      , returnToBurnedRuins
       , returnToCellar
       , returnToCloverClubLounge
+      , returnToCongregationalChurch
       , returnToEngineCar
+      , returnToHouseInTheReeds
+      , returnToOsbornsGeneralStore
+      , returnToSchoolhouse
       , rialtoBridge
       , ritualGrounds
       , ritualSite
@@ -794,6 +800,7 @@ allLocationCards =
       , victorianHalls
       , victorianHallsSpectral
       , villageCommons
+      , villageCommonsSilentDecay
       , vipArea
       , waitingRoom
       , walterGilmansRoom
@@ -8409,15 +8416,85 @@ exhibitHallTheArchives =
 
 returnToEngineCar :: CardDef
 returnToEngineCar =
-  victory 1 $ location "51028" "Engine Car" [Train] NoSymbol [] TheEssexCountyExpress
+  victory 1 $ location "51028" "Engine Car" [Train] NoSymbol [] ReturnToTheEssexCountyExpress
 
 freightCar :: CardDef
 freightCar =
-  locationWithUnrevealed_ "51029" "Train Car" [Train] "Freight Car" [Train] TheEssexCountyExpress
+  locationWithUnrevealed_ "51029" "Train Car" [Train] "Freight Car" [Train] ReturnToTheEssexCountyExpress
 
 baggageCar :: CardDef
 baggageCar =
-  locationWithUnrevealed_ "51030" "Train Car" [Train] "Baggage Car" [Train] TheEssexCountyExpress
+  locationWithUnrevealed_ "51030" "Train Car" [Train] "Baggage Car" [Train] ReturnToTheEssexCountyExpress
+
+villageCommonsSilentDecay :: CardDef
+villageCommonsSilentDecay =
+  location
+    "51033"
+    ("Village Commons" <:> "Silent Decay")
+    [Dunwich, Central]
+    Plus
+    [Square, Diamond, Moon]
+    ReturnToBloodOnTheAltar
+
+returnToBishopsBrook :: CardDef
+returnToBishopsBrook =
+  location
+    "51034"
+    "Bishop's Brook"
+    [Dunwich]
+    Square
+    [Plus, Circle, Triangle]
+    ReturnToBloodOnTheAltar
+
+returnToBurnedRuins :: CardDef
+returnToBurnedRuins =
+  location
+    "51035"
+    "Burned Ruins"
+    [Dunwich]
+    Triangle
+    [Square, Diamond]
+    ReturnToBloodOnTheAltar
+
+returnToOsbornsGeneralStore :: CardDef
+returnToOsbornsGeneralStore =
+  location
+    "51036"
+    "Osborn's General Store"
+    [Dunwich]
+    Circle
+    [Moon, Square]
+    ReturnToBloodOnTheAltar
+
+returnToCongregationalChurch :: CardDef
+returnToCongregationalChurch =
+  location
+    "51037"
+    "Congregational Church"
+    [Dunwich]
+    Diamond
+    [Plus, Triangle, Squiggle]
+    ReturnToBloodOnTheAltar
+
+returnToHouseInTheReeds :: CardDef
+returnToHouseInTheReeds =
+  location
+    "51038"
+    "House in the Reeds"
+    [Dunwich]
+    Squiggle
+    [Diamond, Moon]
+    ReturnToBloodOnTheAltar
+
+returnToSchoolhouse :: CardDef
+returnToSchoolhouse =
+  location
+    "51039"
+    "Schoolhouse"
+    [Dunwich]
+    Moon
+    [Plus, Squiggle, Circle]
+    ReturnToBloodOnTheAltar
 
 cursedShores :: CardDef
 cursedShores =

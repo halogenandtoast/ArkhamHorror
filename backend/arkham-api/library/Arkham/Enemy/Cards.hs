@@ -208,6 +208,7 @@ allEncounterEnemyCards =
       , heretic_K
       , hermanCollins
       , highPriestNotToBeDescribed
+      , hiredGun
       , hitVan
       , hordeOfNight
       , horrifyingShade
@@ -2844,6 +2845,12 @@ theConductorBeastFromBeyondTheGate =
   (enemy "51026b" ("The Conductor" <:> "Beast from beyond the Gate") ReturnToTheEssexCountyExpress 1)
     { cdCardTraits = setFromList [Monster, Elite]
     , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
+    }
+
+hiredGun :: CardDef
+hiredGun =
+  (enemy "51040" "Hired Gun" ReturnToBloodOnTheAltar 2)
+    { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
     }
 
 vassalOfTheLurker :: CardDef

@@ -61,3 +61,8 @@ pattern ReturnToTheEssexCountyExpress :: CampaignStep
 pattern ReturnToTheEssexCountyExpress <- ScenarioStep "51025"
   where
     ReturnToTheEssexCountyExpress = ScenarioStep "51025"
+
+pattern ReturnToBloodOnTheAltar :: CampaignStep
+pattern ReturnToBloodOnTheAltar <- ScenarioStep "51032"
+  where
+    ReturnToBloodOnTheAltar = ScenarioStep "51032"

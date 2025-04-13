@@ -1,17 +1,10 @@
-module Arkham.Location.Cards.BurnedRuins_205 (
-  burnedRuins_205,
-  BurnedRuins_205 (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Location.Cards.BurnedRuins_205 (burnedRuins_205) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (burnedRuins_205)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Timing qualified as Timing
 
 newtype BurnedRuins_205 = BurnedRuins_205 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -21,26 +14,17 @@ burnedRuins_205 :: LocationCard BurnedRuins_205
 burnedRuins_205 = location BurnedRuins_205 Cards.burnedRuins_205 2 (Static 3)
 
 instance HasAbilities BurnedRuins_205 where
-  getAbilities (BurnedRuins_205 x) =
-    let rest = withDrawCardUnderneathAction x
-     in rest
-          <> [ mkAbility x 1
-              $ ForcedAbility
-              $ SkillTestResult
-                Timing.After
-                You
-                (WhileInvestigating $ LocationWithId $ toId x)
-              $ FailureResult AnyValue
-             | locationRevealed x
-             ]
+  getAbilities (BurnedRuins_205 a) =
+    withDrawCardUnderneathAction a
+      <> extendRevealed1
+        a
+        (mkAbility a 1 $ forced $ SkillTestResult #after You (WhileInvestigating $ be a) #failure)
 
 instance RunMessage BurnedRuins_205 where
-  runMessage msg l@(BurnedRuins_205 attrs) = case msg of
-    UseCardAbility _ source 1 _ _ | isSource attrs source -> do
-      when (locationClues attrs > 0)
-        $ pushAll
-          [ RemoveClues (toAbilitySource attrs 1) (toTarget attrs) 1
-          , PlaceDoom (toAbilitySource attrs 1) (toTarget attrs) 1
-          ]
+  runMessage msg l@(BurnedRuins_205 attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      when (attrs.clues > 0) do
+        removeClues (attrs.ability 1) attrs 1
+        placeDoom (attrs.ability 1) attrs 1
       pure l
-    _ -> BurnedRuins_205 <$> runMessage msg attrs
+    _ -> BurnedRuins_205 <$> liftRunMessage msg attrs

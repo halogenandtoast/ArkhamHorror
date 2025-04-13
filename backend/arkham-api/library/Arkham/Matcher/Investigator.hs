@@ -58,6 +58,11 @@ pattern MostHorror <- MostToken Horror
   where
     MostHorror = MostToken Horror
 
+pattern MostResources :: InvestigatorMatcher
+pattern MostResources <- MostToken Resource
+  where
+    MostResources = MostToken Resource
+
 data InvestigatorMatcher
   = InvestigatorAt LocationMatcher
   | InVehicleMatching AssetMatcher

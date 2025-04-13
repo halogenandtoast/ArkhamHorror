@@ -4,7 +4,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (houseInTheReeds_210)
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (withDrawCardUnderneathAction)
 import Arkham.Matcher
 
 newtype HouseInTheReeds_210 = HouseInTheReeds_210 LocationAttrs

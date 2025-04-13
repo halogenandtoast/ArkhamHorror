@@ -1,12 +1,10 @@
 module Arkham.Location.Cards.BishopsBrook_203 (bishopsBrook_203) where
 
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (CannotEnter), modifySelectWhen)
 import Arkham.Location.Cards qualified as Cards (bishopsBrook_203)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype BishopsBrook_203 = BishopsBrook_203 LocationAttrs
   deriving anyclass IsLocation

@@ -122,6 +122,10 @@ allEncounterEnemyCards =
       , brianBurnhamWantsOut
       , broodOfYig
       , broodOfYogSothoth
+      , broodOfYogSothothAmorphousTerror
+      , broodOfYogSothothChargingBeast
+      , broodOfYogSothothSwellingDevourer
+      , broodOfYogSothothThrashingSpawn
       , brotherhoodCultist
       , brownJenkin
       , carlSanfordDeathlessFanatic
@@ -2851,6 +2855,38 @@ hiredGun :: CardDef
 hiredGun =
   (enemy "51040" "Hired Gun" ReturnToBloodOnTheAltar 2)
     { cdCardTraits = setFromList [Humanoid, Criminal, Syndicate]
+    }
+
+broodOfYogSothothChargingBeast :: CardDef
+broodOfYogSothothChargingBeast =
+  (enemy "51042" ("Brood of Yog-Sothoth" <:> "Charging Beast") ReturnToUndimensionedAndUnseen 1)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+broodOfYogSothothSwellingDevourer :: CardDef
+broodOfYogSothothSwellingDevourer =
+  (enemy "51043" ("Brood of Yog-Sothoth" <:> "Swelling Devourer") ReturnToUndimensionedAndUnseen 1)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Massive]
+    , cdVictoryPoints = Just 1
+    }
+
+broodOfYogSothothThrashingSpawn :: CardDef
+broodOfYogSothothThrashingSpawn =
+  (enemy "51044" ("Brood of Yog-Sothoth" <:> "Thrashing Spawn") ReturnToUndimensionedAndUnseen 1)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
+    , cdVictoryPoints = Just 1
+    }
+
+broodOfYogSothothAmorphousTerror :: CardDef
+broodOfYogSothothAmorphousTerror =
+  (enemy "51045" ("Brood of Yog-Sothoth" <:> "Amorphous Terror") ReturnToUndimensionedAndUnseen 1)
+    { cdCardTraits = setFromList [Monster, Abomination]
+    , cdKeywords = setFromList [Keyword.Massive]
+    , cdVictoryPoints = Just 1
     }
 
 vassalOfTheLurker :: CardDef

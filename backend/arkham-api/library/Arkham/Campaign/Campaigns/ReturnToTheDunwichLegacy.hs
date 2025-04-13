@@ -29,10 +29,10 @@ instance IsCampaign ReturnToTheDunwichLegacy where
     ReturnToTheEssexCountyExpress -> Just (UpgradeDeckStep ReturnToBloodOnTheAltar)
     ReturnToBloodOnTheAltar ->
       case lookup "51032" (toAttrs a).resolutions of
-        Just NoResolution -> Just (UpgradeDeckStep UndimensionedAndUnseen)
+        Just NoResolution -> Just (UpgradeDeckStep ReturnToUndimensionedAndUnseen)
         _ -> Just $ InterludeStep 2 Nothing
-    InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)
-    UndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
+    InterludeStep 2 _ -> Just (UpgradeDeckStep ReturnToUndimensionedAndUnseen)
+    ReturnToUndimensionedAndUnseen -> Just (UpgradeDeckStep WhereDoomAwaits)
     WhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
     LostInTimeAndSpace -> Just EpilogueStep
     UpgradeDeckStep nextStep' -> Just nextStep'

@@ -30,7 +30,7 @@ instance RunMessage HorrorsUnleashed where
   runMessage msg a@(HorrorsUnleashed attrs) = case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLeadPlayer
-      broodOfYogSothoth <- selectTargets $ EnemyWithTitle "Brood of Yog-Sothoth"
+      broodOfYogSothoth <- selectTargets $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
       pushWhen (notNull broodOfYogSothoth)
         $ chooseOneAtATime lead
         $ targetLabels broodOfYogSothoth (\target -> only $ ChooseRandomLocation target mempty)

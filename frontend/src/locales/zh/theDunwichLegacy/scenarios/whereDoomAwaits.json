@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if you are at an _Altered_ location).",
-      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
-      "tablet": "-2 (-4 instead if it is Agenda 2).",
-      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-1 (如果你在 _幻境_ 地点，改为-3)。",
+      "cultist": "再抽取1个标记。该次检定中，投入的所有技能卡的效果和图标无效化。",
+      "tablet": "-2 (如果处于密谋2，改为-4)。",
+      "elderThing": "-X. 丢弃你牌堆顶部2张卡牌，X为这2张卡牌的打印费用之和。"
     },
     "hardExpert": {
-      "skull": "-2 (-5 instead if you are at an _Altered_ location).",
-      "cultist": "Reveal another token. Cancel the effects and icons of each skill card committed to this test.",
-      "tablet": "-3. If it is Agenda 2, you automatically fail instead.",
-      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-2 (如果你在 _幻境_ 地点，改为-5)。",
+      "cultist": "再抽取1个标记。该次检定中，投入的所有技能卡的效果和图标无效化。",
+      "tablet": "-3. (如果处于密谋2，改为自动失败)。",
+      "elderThing": "-X. 丢弃你牌堆顶部3张卡牌，X为这2张卡牌的打印费用之和。"
     }
   }
 }

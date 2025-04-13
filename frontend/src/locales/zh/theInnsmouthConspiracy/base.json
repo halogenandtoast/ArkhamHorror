@@ -69,6 +69,28 @@
       "blackKey": "The headdress was brought to the lighthouse."
     }
   },
+  "interlude4": {
+    "hiddenTruths": {
+      "title": "Interlude IV: Hidden Truths",
+      "body": "<p>As soon as your mind returned to the present, you began formulating your plan. A plan to enter the realm of the Deep Ones and end their conspiracy once and for all. “This is ridiculous, you know that, right?” Harper asks. You nod. Of course it’s ridiculous. You’ve spent the last two days on the run. Chased. Hunted. Tormented.</p><p>But you’ve also spent the last two days recovering the memories you’ve forgotten. And what you’ve seen is something you can’t possibly ignore. You have seen the deity the Esoteric Order of Dagon is named for, and you understand what the Order plans to do. The alignment of the celestial bodies in the sky, the steadily rising tides, the tumultuous, fluctuating weather, the creatures emerging from the deep, all of it is tied together. You have seen it. There will come a flood, a great disaster to wipe out humanity, so only the deep remains. The great city in the reef shall rise once more and become the beating heart of all life on Earth.</p><p>There are still gaps in your memory, but all this you know to be true. All of Innsmouth is consumed by this conspiracy. The Order controlled the town through its oaths and the secret wealth it hoarded from the deep. It was no wonder they treated outsiders like yourself with such scorn.</p><p>You give Harper a knowing glare. She sighs and nods. “I know. It’s the only way.” Together, the two of you plot your course. Abandoned ships still litter the harbor of Innsmouth. Under the cover of night, you must commandeer one of them, sail to Devil Reef, and descend once more into the antediluvian ruins in the depths below the forsaken islands. That is where the other entrance to the city lies. Y’ha-nthlei.</p><p>Your skin prickles with cold shivers as you utter the word aloud. Harper grimaces, though you can sense the determination behind her steely gaze. “I’m going to see this mission through, Dawson. For you.”</p><p>You lay out all of the information you’ve uncovered and the relics you’ve obtained despite the horrors arrayed against you. You know the way to Y’ha-nthlei is sealed tight. There must be a way to gain entrance. Perhaps you already have the answers you seek…</p>"
+    },
+    "guardianDispatched": "<p>You study the trophy you found in the sacrificial pit in which you awoke several days ago—part of what was once the creature that you fought in Devil Reef. It wasn’t the same kind of creature as the “Deep Ones” that the Esoteric Order of Dagon worships, but you cannot help ruminating over the similarities between them. You recall that fish never cease growing as they age, and wonder if the same may be true for Deep Ones. Perhaps it was an ancient breed of Deep One—something so old, it grew enormous and twisted beyond imagination. If so, what was it doing in Devil Reef? Was it guarding Y’ha-nthlei? And if so, what does that bode for you? You decide to take the trophy with you, hoping it is important enough to aid in your mission…</p>",
+    "rightfulKeeper": "<p>You understand now the purpose of the relic you found in Devil Reef. It isn’t just an object of power. It is a badge—an heirloom of sorts, worn by the one who stands guard over the gateway to the Deep Ones’ city. You defeated the one groomed to be its next protector. Now the relic recognizes you as its rightful heir. Perhaps with this, you will be able to gain entrance into Y’ha-nthlei…</p>"
+  },
+  "epilogue": {
+    "epilogue1":  {
+      "title": "Epilogue",
+      "body": "<p><b>Epilogue 1:</b> The drive home to Arkham is quiet. After everything you have been through, you would have thought the quiet to be a peaceful repreive…but you are alone with your thoughts—thoughts of Innsmouth, of Deep Ones, of enormous monsters dwelling in the depths beneath the waves. You find yourself checking your rearview mirror regularly, waiting to spot the headlights of pursuers who want you dead; the glowing, unblinking eyes of an aquatic horror in your back seat; or perhaps even the cold, dead glare of Thomas Dawson, mutated nearly beyond recognition. But you see nothing. Just an empty road.</p><p>You sigh and run through the events of the past few weeks once more. You believe you have a complete picture of what occurred, and yet you still feel like there is something missing. Another gap in your memories…</p>"
+    },
+    "epilogue2": {
+      "title": "Epilogue",
+      "body": "<p><b>Epilogue 2:</b> …you shake the feeling away. It doesn’t matter anymore. This whole ordeal is behind you now. Innsmouth, Dagon, Hydra, Y’ha-nthlei—just a terrible memory you wish you could forget, like all those other memories you lost. Your foot lies heavy on the accelerator. The faster you are away from this hellish place, the better.</p>"
+    },
+    "flashback15": {
+      "title": "Flashback XV",
+      "body": "<p>You are back in Agent Dawson’s office in Boston. He has stepped out for only a brief moment in order to retrieve some documents for you to sign. Some kind of agreement not to speak of anything you might see or hear while working for the government, no doubt. Several minutes pass. You begin to wander throughout the office, examining the many books and maps Dawson has scattered around. Some are harmless enough—a medical textbook, a history of New England, a treatise on the anatomy of aquatic creatures throughout the Atlantic—but the volumes get stranger and stranger the more of his collection you examine.</p><p>Venturing nearer to Dawson’s side of the office, you notice that the many books, envelopes, and documents spread across the surface of his desk lie atop an unfolded map. You decide to chance a peek, hoping Dawson’s task will keep him from his office for a while longer. Pushing some of the objects in your way aside, you examine the map. It is an enormous nautical chart of the world’s oceans, marked in many spots with fresh black ink. A fountain pen lies nearby.</p><p>The marks that Dawson has made are curious, to say the least. There are over a dozen scattered across the seas. Some lie just off the coast of various continents, while others are in the middle of the ocean, their locations marked with wide, unfilled cirles to show that their exact coordinates unknown. Strange words are scribbled next to each. P’tha’wei in the north Atlantic, near Greenland. Yhe’nthalla in the south Atlantic, just off the coast of Africa. R’lyeh deep in the south Pacific. Th’all-iewa by Australia in the eastern Indian Ocean. And at least ten more, some marked with question marks—an indication that this record is incomplete. You gently push aside the book that lies atop North America and see one more just off the coast of Massachusetts. Y’ha-nthlei.</p><p>You slam on the brakes and screech to a halt as your mind pulls back to the present. No. It can’t be. Your heart twists into a knot as you realize the truth. No—!</p><p>Y’ha-nthlei was not the home of the Deep Ones. It was just one of many.</p>"
+    }
+  },
   "memoriesRecovered": {
     "aMeetingWithThomasDawson": "A Meeting with Thomas Dawson",
     "aBattleWithAHorrifyingDevil": "A Battle with a Horrifying Devil",
@@ -80,7 +102,10 @@
     "aFollowedLead": "A Followed Lead",
     "discoveryOfAStrangeIdol": "Discovery of a Strange Idol",
     "discoveryOfAnUnholyMantle": "Discovery of an Unholy Mantle",
-    "discoveryOfAMysticalRelic": "Discovery of a Mystical Relic"
+    "discoveryOfAMysticalRelic": "Discovery of a Mystical Relic",
+    "aConversationWithMrMoore": "A Conversation with Mr. Moore",
+    "theLifecycleOfADeepOne": "The Lifecycle of a \"Deep One\"",
+    "aStingingBetrayal": "A Stinging Betrayal"
   },
   "possibleHideouts": {
     "innsmouthJail": "Innsmouth Jail",
@@ -100,5 +125,41 @@
   },
   "labels": {
     "shuffleThatCardIntoLeadsDeck": "Shuffle that card into the Leads deck"
+  },
+  "key": {
+    "memoriesRecovered" : "找回的记忆",
+    "outForBlood" : "要你血债血偿",
+    "theMissionFailed" : "任务失败",
+    "theMissionWasSuccessful" : "任务成功",
+    "possibleSuspects" : "可能嫌犯",
+    "possibleHideouts" : "可能窝点",
+    "innsmouthWasConsumedByTheRisingTide" : "印斯茅斯被怒潮吞没",
+    "theInvestigatorsMadeItSafelyToTheirVehicles" : "调查员安全爬上载具",
+    "theTideHasGrownStronger" : "浪潮愈烈",
+    "theTerrorOfDevilReefIsStillAlive" : "魔鬼礁石的骇物还活著",
+    "theTerrorOfDevilReefIsDead" : "魔鬼礁石的骇物已死",
+    "theIdolWasBroughtToTheLighthouse" : "偶像被带到灯塔",
+    "theMantleWasBroughtToTheLighthouse" : "斗篷被带到灯塔",
+    "theHeaddressWasBroughtToTheLighthouse" : "头冠被带到灯塔",
+    "theInvestigatorsReachedFalconPointBeforeSunrise": "调查员在日出前抵达了猎鹰岬",
+    "theInvestigatorsReachedFalconPointAfterSunrise": "调查员在日出后抵达了猎鹰岬",
+    "possessesADivingSuit": "有一件潜水服",
+    "theInvestigatorsPossessAMapOfYhaNthlei": "调查员有一幅伊哈·恩斯雷的地图",
+    "theInvestigatorsPossessTheKeyToYhaNthlei": "调查员有伊哈·恩斯雷的钥匙",
+    "dagonHasAwakened": "达贡已苏醒",
+    "dagonStillSlumbers": "达贡仍沉睡",
+    "theOrdersRitualWasDisrupted": "密教的仪式被破坏",
+    "theGatekeeperHasBeenDefeated": "门阈看守人已被击败",
+    "theGuardianOfYhanthleiIsDispatched": "伊哈·恩斯雷的守卫已消灭",
+    "theGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper": "伊哈·恩斯雷认可你为正统的看守人",
+    "theInvestigatorsEscapedYhanthlei": "调查员逃出伊哈·恩斯雷",
+    "thePlotOfTheDeepOnesWasThwarted": "深潜者的图谋遭瓦解",
+    "theFloodHasBegun": "洪水已至",
+    "agentHarpersMissionIsComplete": "哈珀特工的任务已完成",
+    "theRichesOfTheDeepAreLostForever": "深海的财富永远遗失",
+    "agentHarpersMissionIsCompleteButAtWhatCost": "哈珀特工的任务已完成……但代价是什么呢？",
+    "theRichesOfTheDeepAreLostForeverButAtWhatCost": "深海的财富永远遗失……但代价是什么呢？",
+    "theDeepOnesHaveFloodedTheEarth": "深潜者淹没地球",
+    "theHorribleTruth": "可怖的真相"
   }
 }

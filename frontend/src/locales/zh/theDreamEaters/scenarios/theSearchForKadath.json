@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of Signs of the Gods the investigators have uncovered.",
-      "cultist": "Reveal another token. If this token is revealed during an investigation and this skill test fails, increase that location's shroud by 1 for the remainder of the round.",
-      "tablet": "-2. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
-      "elderThing": "+2. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
+      "skull": "-X. 其中X等于调查员发现的神迹数量。",
+      "cultist": "再抽出1个标记。如果本标记是在调查期间抽出的，并且该次技能检定失败，则该地点的隐藏值+1，直到本轮结束。",
+      "tablet": "-2. 如果你检定失败，受到1点伤害和1点恐惧，或在当前密谋上放置1个毁灭标记。",
+      "elderThing": "+2. 黑猫指引你正确的方向。如果本标记是在调查期间抽出的，并且你检定成功，则发现额外1个线索。"
     },
     "hardExpert": {
-      "skull": "-X. X is 1 more than the number of Signs of the Gods the investigators have uncovered.",
-      "cultist": "Reveal another token. If this token is revealed during an investigation and this skill test fails, increase that location's shroud by 2 for the remainder of the round.",
-      "tablet": "-3. If you fail, either take 1 damage and 1 horror, or place 1 doom on the current agenda.",
-      "elderThing": "+1. The black cat points you in the right direction. If this token is revealed during an investigation and you succeed, discover 1 additional clue."
+      "skull": "-X. 其中X等于调查员发现的神迹数量+1。",
+      "cultist": "再抽出1个标记。如果本标记是在调查期间抽出的，并且该次技能检定失败，则该地点的隐藏值+2，直到本轮结束。",
+      "tablet": "-3. 如果你检定失败，受到1点伤害和1点恐惧，或在当前密谋上放置1个毁灭标记。",
+      "elderThing": "+1. 黑猫指引你正确的方向。如果本标记是在调查期间抽出的，并且你检定成功，则发现额外1个线索。"
     }
   }
 }

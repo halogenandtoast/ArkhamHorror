@@ -1,14 +1,14 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if you are engaged with a _Staff_ enemy).",
-      "cultist": "Reveal another chaos token. If you fail and it is agenda 2 or 3, make an infestation test.",
-      "elderThing": "-X. X is the number of infested locations."
+      "skull": "-1 -1(如果你与 _职工_ 敌人交战，改为-3)。",
+      "cultist": "再抽一个混乱标记。如果你检定失败且当前密谋为密谋2或密谋3，进行一次蛛群滋生检定。",
+      "elderThing": "-X. 其中X为蛛巢地点数量。"
     },
     "hardExpert": {
-      "skull": "-2 (-4 instead if you are engaged with a _Staff_ enemy).",
-      "cultist": "Reveal another chaos token. If it is agenda 2 or 3, make an infestation test.",
-      "elderThing": "-X. X is 1 higher than the number of infested locations."
+      "skull": "-2 -1(如果你与 _职工_ 敌人交战，改为-4)。",
+      "cultist": "再抽一个混乱标记。如果当前密谋为密谋2或密谋3，进行一次蛛群滋生检定。",
+      "elderThing": "-X. 其中X为蛛巢地点数量+1"
     }
   }
 }

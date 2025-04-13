@@ -1,21 +1,21 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2 (-4 instead if you have no sanity remaining).",
-      "cultist": "Reveal another token. If you fail, take 1 horror.",
-      "tablet": "-3. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-3. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "skull": "-2 (如果没有神智值剩余，改为-4)。",
+      "cultist": "再抽取一个标记。如果你失败，受到1点恐惧。",
+      "tablet": "-3. 如果你失败且哈斯塔在场上，在你所在地点放置1个线索(从供应堆拿取)。",
+      "elderThing": "-3. 如果攻击或躲避尝试 _怪物_ 或 _古神_ 敌人期间抽出本标记，失去1次行动。"
     },
     "hardExpert": {
       "skull": "-X. X is the amount of horror on you.",
-      "cultist": "Reveal another token. If you fail, take 2 horror.",
-      "tablet": "-5. If you fail and Hastur is in play, place 1 clue on your location (from the token bank).",
-      "elderThing": "-5. If this token is revealed during an attack or evasion attempt against a _Monster_ or _Ancient One_ enemy, lose 1 action."
+      "cultist": "再抽取一个标记。如果你失败，受到2点恐惧。",
+      "tablet": "-5. 如果你失败且哈斯塔在场上，在你所在地点放置1个线索(从供应堆拿取)。",
+      "elderThing": "-5. 如果攻击或躲避尝试 _怪物_ 或 _古神_ 敌人期间抽出本标记，失去1次行动。"
     }
   },
   "xp": {
-    "resolution1": "Truimphed over his or her own self—the most dangerous of foes.",
-    "resolution2": "Learned the truth behind The King in Yellow.",
-    "resolution3": "Learned the truth behind The King in Yellow."
+    "resolution1": "调查员们克服了自己的难关——最为险恶的敌人。",
+    "resolution2": "调查员得知了《黄衣之王》背后的真相。",
+    "resolution3": "调查员得知了《黄衣之王》背后的真相。"
   }
 }

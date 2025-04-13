@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest number of doom on a _Cultist_ enemy in play.",
-      "cultist": "-2. Reveal another token.",
-      "tablet": "-3. If you fail, place 1 doom on the nearest _Cultist_ enemy.",
-      "elderThing": "-3. If you fail, move 1 doom from the nearest _Cultist_ enemy to the current agenda."
+      "skull": "-X. 其中X为场上带有最多毁灭标记的_异教徒_敌人的毁灭标记数量。",
+      "cultist": "-2. 再抽出一个标记。",
+      "tablet": "-3. 如果你失败，在最近的_异教徒_敌人上放置1个毁灭标记。",
+      "elderThing": "-3. 如果你失败，从最近的_异教徒_敌人上将1个毁灭标记移动到当前密谋。"
     },
     "hardExpert": {
-      "skull": "-X. X is the total number of doom among _Cultist_ enemies in play.",
-      "cultist": "-2. Reveal another token.",
-      "tablet": "-3. If you fail, place 1 doom on each _Cultist_ enemy in play. If there are no _Cultist_ enemies in play, reveal another token.",
-      "elderThing": "-3. If you fail, move all doom from the _Cultist_ enemy with the most doom on it to the current agenda. If no _Cultist_ enemies in play have doom on them, reveal another token."
+      "skull": "-X. 其中X为场上_异教徒_敌人上的毁灭标记总数。",
+      "cultist": "-2. 再抽出一个标记。",
+      "tablet": "-3. 如果你失败，在场上每个_异教徒_敌人上放置1个毁灭标记。如果场上没有_异教徒_敌人，再抽出一个标记。",
+      "elderThing": "-3. 如果你失败，将拥有最多毁灭标记的_异教徒_敌人的所有毁灭标记移动到当前密谋。如果场上的_异教徒_敌人都没有毁灭标记，再抽出1个标记。"
     }
   }
 }

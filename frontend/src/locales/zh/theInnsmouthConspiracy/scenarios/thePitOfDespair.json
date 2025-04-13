@@ -1,31 +1,40 @@
 {
   "intro": {
-   "title": "Scenario I: The Pit of Despair",
-   "body": "<p>Your eyes flutter open with the languor of one who has slept for days on end. Your senses are in no hurry to return. You blink and struggle to see through the inky black surrounding you. Every inch of you aches with dull, throbbing pain. Your skin is cold and numb, and your clothes are waterlogged. Your mind swims with half-articulated thoughts and tangled memories. You have no idea where you are or how you got here.</p><p>You snap to attention, heart racing in your chest. You lie on a jagged stone floor in a shallow pool of dark, ice-cold water. Knowing panic will only make the situation worse, you take a series of deep, meditative breaths. You try to remember something—anything—that might allow you to retrace your steps, but your mind is blank. You remember who you are, but nothing whatsoever from the recent past. You steady yourself and examine your surroundings.</p><p>The chamber appears to be a natural cave formation. Kelp dangles from the ceiling. The stone walls and floor are wet and slimy. A rhythmic drip, drip, drip echoes throughout the otherwise silent cave. This cavern has been underwater, and not too long ago. A result of the tides, perhaps? You swallow your fear like a lump of cold iron. If it is low tide now…A cold shudder ripples up your spine. You examine the ceiling and are surprised to see a slab of metal set into the rough stone overhead. Its polished surface is alien to the rest of the natural cavern. You call out for help, hoping somebody can hear.</p><p>Your dread deepens at the reply: an awful croaking and gurgling that permeates the tunnels—a sound no human could make.</p>"
+    "title": "冒险I：绝望深坑",
+    "body": "<p>你挣扎著睁开双眼，疲惫得彷佛已经沉睡数日。你的知觉还未完全恢复。你眨眨眼，拼命想看清身边的一团墨黑。你身上每一寸都传来阵阵钝痛。你的皮肤冰冷麻木，衣服湿湿漉漉。你的脑海里回荡著四分五裂的思绪和支离破碎的记忆。你不知道自己是谁，也不明白自己为何会在这儿。</p><p>你猛地回过神来，胸膛里心脏狂跳。你躺在参差的石地上，周围是浅浅一滩冰冷的黑水。你知道惊慌失措只会让情况更糟，深呼吸了一阵，集中精神。你试著想起什么——任何东西——任何能让你回溯的东西，但你的脑海一片空白。你记起了自己是谁，但最近的事情你却怎么都想不起来。你稳住心神，查看周围。</p><p>这个空间看起来像是自然形成的洞穴。顶上垂下了水藻。石壁和地面潮湿黏滑。万籁俱寂，唯有水滴的回响还颇有些节奏。整座洞穴在不久之前都曾在水下。也许是潮汐的结果？你咽下自己的恐惧，彷佛生吞一块寒铁。如果现在恰是退潮之时……想到这里，一阵寒颤穿透脊背。你仔细查看天顶，却惊讶地发现头上粗糙的石板里嵌著金属板。那光滑的表面和天然形成的洞窟格格不入。你呼喊求救，希望有人能听到。</p><p>但得到的回应只让你更为恐惧——隧道间穿过一汨咕呱之声——能发出这声音的绝非人类。</p>"
+  },
+  "flashback1": {
+    "title": "记忆闪回I",
+    "body": "<p>你站在一间小小的办公室里，打量著精致木框里的老照片。照片上是一队穿著军服的男子，正站在一架布里斯托F.2战斗机前摆著拍照的姿势。其中几个穿著棕色的英国军服，而有一个得意地穿著橄榄色的外套和美军的卡其布军服。他两边的肩章上都是上尉的一对银杠。照片底部用黑色墨水潦草地写著“英国第四集团军，圣康坦市外，1918年。”</p><p>房间的门突然打开，吓了你一跳。你放下照片，转过来朝著进门的男子。他古铜色的皮肤，坚实的下巴和宽厚的肩膀，让你一下子就认出来了。这就是托马斯·道森——照片上的美国人。只不过他看起来比战时苍老了一些，眼睛下面也挂上了沉重的眼袋。“旧的战争结束了，新的战争又已开始。”他轻轻说著，“但这一次的敌人更难根除。”</p><p>你问他大战的英雄如今怎么干起了调查行当，而他只是轻轻一笑以作回应。“大战的英雄？我可不知道你这是从哪儿听来的。我只是在尽自己的职责。”你摇摇头，并未争辩。只是你觉得道森上尉救下的飞行中队可不会同意他的说法。</p><p>“无论如何，我想你正好奇为什么我得把你叫到波士顿来。”他说著示意你在桌前落座。你乖乖坐下，并坦言确实如此，提问有什么事不能在电话里说。“这……可还挺敏感。”他答道，“几天前，我和自己的特工艾莲娜·哈珀女士失去了联系。我派她去调查过去几个月里收到的奇怪报告，这些报告都提到一个名叫印斯茅斯的村子。你知道这地方吗？从你们阿卡姆镇沿著海岸往北，就靠著伊普斯威奇。”</p><p>你倒确实知道这地方。尽管大多数人都从未听说这个阴暗衰败的海港，知道的寥寥几人听到的也都是不祥的流言。你印象中的印斯茅斯，在1812年战争之前还是一座生机勃勃的港口，但打那以后，就开始萧条昏暗。唯一穿过印斯茅斯的铁路已经废弃，你能找到的地图和导览手册上都找不见它的身影。</p><p>“兴许她是找到了什么不寻常的事情，又或者藏了起来。但我怀疑情况可能不妙。兴许是惹上了黑帮，但这也不太可能。在确定情况之前，我不会再派别的特工。不过，我的预算里还有点活动空间，可以雇佣第三方——比如，你。”你觉得道森特工并没有跟你掏心窝子。说白了，就是你出事也没什么大不了。“现在的情况的确还不明朗，但我得知道哈珀特工的情况。现在坏消息也好过没消息。要是你帮我这个忙，‘组织’就算欠你的。”你问道森“组织”指的是什么。但他只咧嘴一个坏笑。</p><p>你猛地回到现实，眼前依然是道森特工那张脸，只是坏笑的表情已扭曲成徘徊不去的痛苦。这张脸和众多面庞一起，在这可怕怪物长鳞鼓动的血肉上痛苦翻滚。</p>"
+  },
+  "flashback2": {
+    "title": "记忆闪回II",
+    "body": "<p>狂风暴雨之际，波涛之下涌出了某种巨物的触手，袭击了你脚下的旧渔船，打得它四处飘荡。“得有人杀了那怪物！”船长叫道。船上传来一声破裂的巨响，巨大的触手绕住了船只，开始收紧，船体发出了抗拒的哀嚎。“它抓住我们了！我们动不了了！你该上了！”头发灰白的老船长叫道。你两眼放光，挥动了手中的武器……</p><p>你回到现实，腹中传来一阵不适。这怪物残存的骨架好似回瞪著你。这到底是个什么玩意儿？</p>"
+  },
+  "flashback3": {
+    "title": "记忆闪回III",
+    "body": "<p>“嘿，瞧瞧这个。”你的老板把一件奇怪的雕像塞进你手里。这东西由绿宝石雕成，看起来大概是某种水生生物，长著无睑的双眼和一排尖牙。中央嵌著一块心型的琥魄。“你怎么看？”</p><p>你回答说自己从没见过类似的东西，但你曾听说在港口外数英里的礁石处有“魔鬼”潜伏，关于它的描述倒是和这玩意儿很像。“我说哦，这地方有鬼。”这汉子叉著手说道，“我很庆幸把你拉来了。这事情越看越不像是黑帮干的。”你点头同意，把奇怪的雕像还给了特工。整个村子对你来说都是一片肮脏。“我们接下来还是一起行动吧。”你的同伴如此说著，但他的声音却黯了下去。</p>"
+  },
+  "flashback4": {
+    "title": "记忆闪回IV",
+    "body": "<p>你站在漆黑昏暗的地下室里，面前是一尊可怖的缟玛瑙雕像。腐败潮湿的空气和臭鱼烂虾的味道充斥你的鼻腔。这尊雕像刻的是鱼人混血，浑身披著丑陋变形的鳞片。又彷佛是受尽折磨的人长出了丑陋的鱼鳃鱼鳍。它圆滚滚的大眼睛瞪著你。你听到远处传来某种仪式模糊的咏唱。“伊哈·恩斯雷！伊哈·恩斯雷！”那声音叫道。你刚想辨认这奇怪的音节，背后就传来水花溅起的声音，吸引了你的注意。你蹲到缟玛瑙雕像后面，耐心等待。几个身影靠近了你刚刚站著的地方。你摒住呼吸。他们蹚水远去的轻声渐渐消逝。你松了口气，却又紧紧地跟在后面……</p>"
+  },
+  "resolutions": {
+    "noResolution": "<p>你狂咳不止，要把整肺的泥沙和脏水都吐出来。你把最后一口苦涩的海盐吐进滚滚潮水，冰冷乌黑的海水冲打著你的皮肤。</p><p>一双温暖的手将你翻了个身，然后你被拉著坐了起来。“感谢老天爷，你还活著。”有人说道。尽管她的声音有些不自然，你还是听出了抑扬顿挫的印度口音。那份坚定不移的自信，说明她训练有素、非常专业。等到眼睛适应了光线，你看见天空一片暗红。昏暗的太阳下面悬著一轮满月。“咱可没有时间浪费了。快，起来。”</p><p>你擦掉眼前蛰人的咸水，力气正慢慢恢复。救你的女子有一头乌黑的长发。她身上曾经光鲜的战壕大衣现已褴褛。她灰头土脸，身上全是擦伤。“你看上去很困惑嘛。干嘛这么看著我？”陌生人问道。</p>",
+    "resolution1": "<p>远方的天空一片暗红。昏暗的太阳下面悬著一轮满月。你刚想闭上眼，再次昏睡过去。就在这时一个陌生人的声音惊得你跳了起来。“噢！你还活著？”尽管她的声音有些不自然，你还是听出了抑扬顿挫的印度口音。那份坚定不移的自信，说明她训练有素、非常专业。站在你面前的女子有一头乌黑的长发。她身上曾经光鲜的战壕大衣现已褴褛。她灰头土脸，身上全是擦伤。“你看上去很困惑嘛。干嘛这么看著我？”陌生人问道。</p>"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (如果你所在地点部分淹没，改为-2；如果你所在地点完全淹没，改为-3)。",
+      "cultist": "-2. 如果你检定失败且你所在地点已淹没，受到1点伤害。",
+      "tablet": "-2. 如果你检定失败且你控制钥匙，受到1点恐惧。",
+      "elderThing": "-3. 如果你检定失败且混生畸物在深渊中，将其放置入场，与你交战。"
     },
-    "flashback1": {
-      "title": "Flashback 1",
-      "body": "<p>You stand in a small office, examining a worn photograph in a well-polished wooden frame. In the photo, a squad of men in military uniforms pose in front of a Bristol F.2 Fighter plane. Several of the men wear tan British uniforms, but one sports the olive overcoat and khakis of an American soldier. His sleeves each bear a rectangular patch striped vertically with a captain’s paired silver bars. At the bottom of the photograph, in black ink, cursive handwriting reads “British Fourth Army, outside St. Quentin, 1918.”</p><p>The door to the office opens suddenly, startling you. You put the photograph down and turn to address the man entering. You identify him immediately by his dark-brown skin, his strong jaw, and his broad shoulders. It is Thomas Dawson—the American from the photograph—though he has aged a bit since his war days, and heavy bags hang under his eyes. “One war ends; a new one begins,” he says quietly. “Only this enemy is even harder to root out.”</p><p>You ask the man what a war hero is doing in the investigative business, and he chuckles softly in response. “War hero? I don’t know where you heard that from. I was just doing my duty.” You shake your head but do not argue further. You suspect that the squadron Captain Dawson rescued would disagree as well.</p><p>“In any event, I suppose you’re wondering why I summoned you here to Boston,” he says, gesturing for you to take a seat in front of his desk. You sit and respond to his remark with affirmation, wondering aloud why a telephone call would not have sufficed. “This is a… sensitive matter,” he replies. “A few days ago, I lost contact with one of my agents, a Miss Elina Harper. I had her investigating several strange reports I’ve received in the past few months, all concerning a town called Innsmouth. Do you know the place? It’s along the coast to the north of your town of Arkham, just by Ipswich.”</p><P>You know the place. Though most have never heard of the shadowed, decrepit seaport, those who do hear only ill rumors. From what you understand, the town used to be a lively port before the War of 1812, but it has since become dingy and run-down. The only railway line that runs through Innsmouth is abandoned, and there are no references to the town on any maps or in any guidebooks you have ever seen.</p><p>“Perhaps she’s found something curious or has gone into hiding, but I suspect foul play. It could be mob work, but I doubt it. I’m not sending any more agents until I know for sure. However, I have some room in our discretionary budget to hire a third party, such as yourself.” You assume Agent Dawson is dancing around the truth, which is that you are expendable. “I know it isn’t much to go on, but I need to know the status of Agent Harper. Even bad news would be better than no news, at this point. If you do me this favor, our agency will be in your debt.” You ask which agency Dawson is referring to. A smirk tugs at his lips.</p><p>When you snap back to the present, you still gaze at Agent Dawson’s face, only now his smirk is twisted in a haunting visage of agony. It is just one of the many faces that writhe in torment throughout this repulsive creature’s scaly, pulsating flesh.</p>"
-    },
-    "flashback2": {
-      "title": "Flashback 2",
-      "body": "<p>An old fishing vessel rocks side to side beneath your feet, assaulted by tempestuous waters and the tentacles of some enormous creature looming just beneath the waves. “Somebody kill that damned thing!” the ship’s captain shouts. A loud crash erupts across the vessel, and the hull howls in protest as a vast tentacle encircles it and draws tight. “It’s got us in its grip! It ain’t goin’ nowhere. Now’s your chance!” the grizzled, old captain yells. With fire in your eyes, you raise your weapon and swing…</p><p>You return to the present, a sickness churning in your stomach. The skeletal remains of the creature stare back at you. What on Earth was that thing?</p>"
-    },
-    "flashback3": {
-      "title": "Flashback 3",
-      "body": "<p>“Hey, take a look at this.” Your employer shoves a strange figurine into your hands. It is hewn of emerald stone and looks vaguely aquatic, with two unblinking eyes and a row of sharp teeth. A piece of heart-shaped amber is embedded in its center. “What do you make of it?”</p><p>You reply that you have seen nothing quite like it before, but it does happen to match the descriptions you have heard of the “devils” that skulk about the reefs a couple of miles beyond the harbor. “Something fishy is going on here, if you’ll pardon my saying,” the man mutters, folding his arms across his chest. “I’m glad I roped you in on this case. It’s looking less and less like mob work with each passing hour.” You nod in agreement and hand the strange figurine back to the agent. Everything about this town feels foul to you. “Let’s stick together from here on out,” your companion says, his voice darkening.</p>"
-    },
-    "flashback4": {
-      "title": "Flashback 4",
-      "body": "<p>You stand before a terrible onyx statue in a dark, dingy basement. It smells of stale, dank air and rotting fish. The statue depicts a creature that is a hybrid of both fish and human, covered in hideous, misshapen scales. Grotesque gills and fins blend with tortured human features. Its large, round eyes glare at you. In the distance, you hear the faint chanting of some kind of ceremony. “Y’ha-nthlei! Y’ha-nthlei!” the voices cry. Just as you begin to make out the strange syllables, a splash behind you catches your attention. You duck behind the onyx statue and wait patiently as several figures approach where you stood just moments before. You hold your breath. The gentle sloshing of their steps as they wade through the water passes and fades into the distance. You allow a brief sigh of relief, but begin to follow close behind…</p>"
-    },
-    "resolutions": {
-      "noResolution": "<p>You sputter and cough up an entire lungful of dirty water and sand. Cold, dark seawater laps at your skin as you spit the last of the bitter salt taste back into the rolling tide.</p><p>A pair of warm hands shoves you onto your back and pulls you up into a sitting position. “Thank goodness you’re alive,” someone says. Even through the strained voice, you can hear a rhythmic Indian accent and the unwavering confidence of a trained professional. As your eyes adjust, they take in a sky of dark crimson, the full moon hanging just below the blackened sun. “We have no time to spare. Come on: get up.”</p><p>You wipe stinging salt water from your eyes, your strength returning slowly. Your savior is a woman with long, raven‑black hair. Her tattered trench coat has seen better days, and bruises splash across her dirt-covered skin. “You seem confused. Why are you looking at me like that?” the stranger asks.</p>",
-      "resolution1": "<p>In the distance, the sky is a dark crimson, and the full moon hangs just below the blackened sun. You are about to close your eyes and surrender to unconsciousness when a stranger’s voice startles you back to your feet. “Oh! You are alive?” Even through her strained voice, you can hear a rhythmic Indian accent and the unwavering confidence of a trained professional. Standing in front of you is a woman with long, raven-black hair. Her tattered trench coat has seen better days, and bruises splash across her dirt-covered skin. “You seem confused. Why are you looking at me like that?” the stranger asks.</p>"
-    },
-    "labels": {
-      "noAir": "You did not find air, Take 5 direct damage",
-      "theAmalgamAttacksYou": "The Amalgam attacks you",
-      "placeKeyOnTheAmalgam": "Place {key} key on the Amalgam"
+    "hardExpert": {
+      "skull": "-2 (如果你所在地点部分淹没，改为-3；如果你所在地点完全淹没，改为-4)。",
+      "cultist": "-2. 如果你所在地点已淹没，受到1点伤害。",
+      "tablet": "-2. 如果你控制钥匙，受到1点恐惧。",
+      "elderThing": "-3. 如果混生畸物在深渊中，将其放置入场，与你交战。"
     }
   }
+}

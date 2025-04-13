@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the current Agenda #.",
-      "cultist": "-1. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
-      "tablet": "-2. Add 1 doom token to the nearest Cultist enemy.",
-      "elderThing": "-3. If you fail, choose and discard a card from your hand."
+      "skull": "-X. X为当前密谋编号 #.",
+      "cultist": "-1. 如果失败并且是你的回合，失去所有剩余行动，并立刻结束你的回合。",
+      "tablet": "-2. 给最近的一名异教徒敌人放置1个毁灭标记。",
+      "elderThing": "-3. 如果失败，选择1张手牌并丢弃。"
     },
     "hardExpert": {
-      "skull": "-X. X is 1 more than the current Agenda #.",
-      "cultist": "Reveal another token. If you fail and it is your turn, lose all remaining actions and end your turn immediately.",
-      "tablet": "-4. Add 1 doom token to each Cultist enemy in play.",
-      "elderThing": "-3. If you fail, choose and discard a card from your hand for each point you failed by."
+      "skull": "-X. X为当前密谋编号+1 #.",
+      "cultist": "再抽取1个标记, 如果失败并且是你的回合，失去所有剩余行动，并立刻结束你的回合。",
+      "tablet": "-4. 给最近的一名异教徒敌人放置1个毁灭标记。",
+      "elderThing": "-3. 如果失败，每低于难度1点，你选择1张手牌并丢弃。"
     }
   }
 }

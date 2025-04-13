@@ -1,14 +1,14 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if your location is haunted).",
-      "tablet": "-2. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location.",
-      "elderThing": "-2. If there is a _Spectral_ enemy at your location, take 1 damage."
+      "skull": "-1 (如果你所在地点闹鬼，改为-3)。",
+      "tablet": "-2. 如果你失败且本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。",
+      "elderThing": "-2. 如果你所在地点有 _幽灵_ 敌人，受到1点伤害。"
     },
     "hardExpert": {
-      "skull": "-2 (-4 instead if your location is haunted).",
-      "tablet": "-3. If this is an attack or evasion attempt, resolve each haunted ability on your location.",
-      "elderThing": "-4. If there is a _Spectral_ enemy at your location, take 1 damage and 1 horror."
+      "skull": "-2 (如果你所在地点闹鬼，改为-4)。",
+      "tablet": "-3. 如果本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。",
+      "elderThing": "-4. 如果你所在地点有 _幽灵_ 敌人，受到1点伤害和1点恐惧。"
     }
   }
 }

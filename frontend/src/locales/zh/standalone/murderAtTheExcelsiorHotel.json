@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of _Guest_ enemies in play.",
-      "cultist": "-1. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
-      "tablet": "-3. You may place one of your clues on your location to treat this as a -1 instead.",
-      "elderThing": "-3. If you fail and there is an _Innocent_ enemy in the victory display, take 1 horror."
+      "skull": "-X. X为场上的 _客人_ 敌人的数量。",
+      "cultist": "-1. 如果胜利牌区有 _无辜_ 敌人，抽出另一个混乱标记。",
+      "tablet": "-3. 你可以在你所在地点放置1个你的线索，改为将此标记视为-1。",
+      "elderThing": "-3. 如果你失败且胜利牌区有 _无辜_ 敌人，受到1点恐惧。"
     },
     "hardExpert": {
-      "skull": "-X. X is the number of _Innocent_ enemies in play.",
-      "cultist": "-2. If there is an _Innocent_ enemy in the victory display, reveal another chaos token.",
-      "tablet": "-5. You may place one of your clues on your location to treat this as a -2 instead.",
-      "elderThing": "-3. If you fail, take 1 horror for each Innocent enemy in the victory display."
+      "skull": "-X. X为场上的 _无辜_ 敌人的数量。",
+      "cultist": "-2. 如果胜利牌区有 _无辜_ 敌人，抽出另一个混乱标记。",
+      "tablet": "-5. 你可以在你所在地点放置1个你的线索，改为将此标记视为-2。",
+      "elderThing": "-3. 如果你失败，胜利牌区每有1个 _无辜_ 敌人，受到1点恐惧。"
     }
   }
 }

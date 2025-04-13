@@ -1,55 +1,55 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if you are at a _Graveyard_ location).",
-      "cultist": "Reveal another token. If you fail and The Unnamable is in play, it attacks you (regardless of its current location).",
-      "tablet": "+2. The black cat causes a distraction. If this test is successful, choose and evade an enemy at any location with a fight value of X or lower, where X is the amount you succeeded by.",
-      "elderThing": "-2. If you fail, you must either place 1 of your clues on your location or take 1 damage."
+      "skull": "-1 (如果你位于 _墓地_ 地点，改为-3)。",
+      "cultist": "再抽出1个标记。如果你检定失败并且不可名状之物在场，其攻击你(无视其当前地点)。",
+      "tablet": "+2. 黑猫掩护你。如果本次检定成功，选择并躲避任意地点的、攻击值不超过X的1个敌人，其中X等于你超过难度的点数。",
+      "elderThing": "-2. 如果你检定失败，你必须将你的1个线索放在你所在地点上，或者受到1点伤害。"
     },
     "hardExpert": {
-      "skull": "-2 (-4 instead if you are at a _Graveyard_ location).",
-      "cultist": "Reveal another token. If you fail and The Unnamable is in play, it attacks you (regardless of its current location).",
-      "tablet": "+1. The black cat causes a distraction. If this test is successful, choose and evade an enemy at any location with a fight value of X or lower, where X is the amount you succeeded by.",
-      "elderThing": "-3. If you fail, you must either place 1 of your clues on your location or take 1 damage."
+      "skull": "-2 (如果你位于 _墓地_ 地点，改为-4)。",
+      "cultist": "再抽出1个标记。如果你检定失败并且不可名状之物在场，其攻击你(无视其当前地点)。",
+      "tablet": "+1. 黑猫掩护你。如果本次检定成功，选择并躲避任意地点的、攻击值不超过X的1个敌人，其中X等于你超过难度的点数。",
+      "elderThing": "-3. 如果你检定失败，你必须将你的1个线索放在你所在地点上，或者受到1点伤害。"
     }
   },
   "intro1": {
-    "title": "Scenario II–B: A Thousand Shapes of Horror",
-    "body": "<p><b>Intro 1:</b> To stop the merging between the land of dreams and the waking world, you decide to force your way into the “Dreamlands”—as your new companion Randolph calls the dimension—in your physical body, instead of traveling there in your sleep. “While there are many dangers to this method of travel, I think it is better than the alternative,” Randolph claims. “If we venture there in our sleep, we may become trapped like your companions, unable to wake.” You agree: you can do little good trapped on the other side, especially if you aim to help your dreaming companions.</p><p>“Our first step is to find a key. Even in places where the Dreamlands borders the waking world, one cannot simply walk between them. I once possessed a key to the Gate of Dreams, but I lost it years ago and have been unable to find it since,” he laments.</p>"
+    "title": "冒险II–B：万千骇形",
+    "body": "<p><b>Intro 1:</b> 为了阻止梦境世界与清醒世界之间的融合，你决定强行以肉身进入“幻梦境”——你的新伙伴伦道夫是那样称呼那个世界的——而不是以睡眠状态进入。“以这种方式进入幻梦境会面临许多危险，但我想总好过另一种方式。”伦道夫说道，“如果我们以睡眠状态进入，我们可能会像你的同伴们一样被困住，无法醒来。”你赞同他所说的：如果被困在那头，你几乎做不了什么，更加无法帮助仍在梦中的同伴。.</p><p>“我们首先要找到一把钥匙。就算能找到幻梦境与清醒世界之间的边界，那也不是随便就能穿越的地方。我曾经有睡梦之门的钥匙，但在很多年前已经不见了，至今也找不回来。”他惋惜地说道。.</p>"
   },
   "intro2": {
-    "title": "Scenario II–B: A Thousand Shapes of Horror",
-    "body": "<p><b>Intro 2:</b> The black cat, perched on a nearby park bench, glares at Randolph with narrow, disdainful eyes. “You lost the key to the Dreamlands?”</p><p>You share in the cat’s skepticism. Randolph sighs and shakes his head. “Let me explain,” he says to you. “It is not a physical key. It never was. The ‘key’ was the sense of wonder, fantasy, and creativity that sparked my imagination when I was young. These are things we do not value in maturity. It is only natural the key to these kinds of dreams should be lost with age.”</p><p>“What foolishness!” the black cat scolds. “It is not ‘maturity’ to leave one’s imagination behind. You have abandoned the best part of you. You are more a mewling kitten now than any child I have ever met.”</p><p>“Perhaps you are right,” Randolph agrees, downcast. “I forced myself to believe that earthly concerns were more important than juvenile fantasies of gilded spires, perfumed jungles, and twilight realms...and now I fear I shall never see such wonders again.” He turns back toward you, his eyes full of regret. “And worse, I will be unable to guide you.”</p>"
+    "title": "冒险II–B：万千骇形",
+    "body": "<p><b>Intro 2:</b> 黑猫坐在不远处公园的长凳上，眯起眼睛轻蔑地瞪著伦道夫：“你把通往幻梦境的钥匙弄丢了？”</p><p>你和那只黑猫一样怀疑他说的话。伦道夫叹气，摇摇头说道：“听我解释。”他对你说，“那不是一把真的钥匙。从来就不是。那把‘钥匙’是激发我小时候想象力的好奇、幻想，以及创造力。这都是我们变得成熟之后不再重视的。随著年龄的增长，这些梦境的钥匙便会自然消失。</p><p>“太蠢了！”黑猫骂道，“丢掉自己的想象力不等于‘成熟’。是你自己抛弃了你最宝贵的东西。比起我见过的任何一个人类小孩，现在的你都更像是一只只会喵喵叫的小猫咪。”</p><p>“或许你说的没错。”伦道夫沮丧地认同黑猫的批评，“我逼自己去相信，现实的桩桩件件，都比年少时的幻想更重要，比如镀金的尖塔、香气馥郁的丛林、朦胧的国度……如今，恐怕我再也无法见到这些奇景了。”他回头看著你，眼中满是后悔，“更糟的是，我不能再给你引路了。”</p>"
   },
   "intro3": {
-    "title": "Scenario II–B: A Thousand Shapes of Horror",
-    "body": "<p><b>Intro 3:</b> You go through the usual motions: “When was the last time you saw it?” “Where was the last time you used it?” and the like.</p><p>Randolph sighs and shakes his head. “You do not understand. It is not a physical key. It never was. The key was the sense of wonder, fantasy, and creativity that sparked my imagination when I was young. These are things we do not value in maturity. It is only natural the key to these kinds of dreams should be lost with age.”</p>"
+    "title": "冒险II–B：万千骇形",
+    "body": "<p><b>Intro 3:</b> 你像以往调查失物事件一样询问：“你最后一次看到它是什么时候？”“你最后一次使用它是什么时候？”之类的问题。.</p><p>伦道夫叹气，摇摇头说道：“你不明白。那不是一把真的钥匙。从来就不是。那把‘钥匙’是激发我小时候想象力的好奇、幻想，以及创造力。这都是我们变得成熟之后不再重视的。随著年龄的增长，这些梦境的钥匙便会自然消失。”</p>"
   },
   "intro4": {
-    "title": "Scenario II–B: A Thousand Shapes of Horror",
-    "body": "<p><b>Intro 4:</b> You ask what might have turned Randolph’s mind away from the fantastical and toward more practical concerns. He thinks for a brief time, mulling over the possibilities. Then, his eyes go wide as he realizes something important. “There was an incident many years ago. It was the last time I was involved with something supernatural—that is, before today,” he explains. “I met a friend of mine—Joel Manton— in the graveyard next to the old abandoned house in the Merchant District. The one they call the Unnamable. I didn’t want to believe that it was truly haunted, as the stories told, but in merely repeating the legend, I drew the creature’s ire.”<p><p>You ask of the creature, and Randolph closes his eyes as a violent shudder courses up his spine. “It cannot be described. All I know is that we barely survived. It was my fault Joel was hurt. From that day forth, I have had no desire to delve into the supernatural or the superstitious. Not because I did not believe, but because I was frightened. Is that why the key eludes me? Is that why I can no longer dream?” The realization hits him, clear as day. “I know where we have to go. That is where I lost the key. That must be where it can be regained!” he exclaims, wide-eyed.</p><p>As Randolph frantically tries to hail a taxicab, you realize where he means to go: to the house without a name, where the indescribable creature that still haunts his memory resides...</p>"
+    "title": "冒险II–B：万千骇形",
+    "body": "<p><b>Intro 4:</b> 你问伦道夫，他的思维是因为什么而远离幻想，转移到现实上。他想了一会，仔细考虑可能的原因。然后，他突然想到了一些重要的事情，睁大了眼睛。“几年前我发生过一件事。那是我最后一次跟超自然之类的扯上关系——今天这次除外。”他解释道，“我在商人区那间老废屋旁边的墓地，与我的朋友乔尔·曼顿见面。人们都说那是一间‘无名鬼屋’。我并不相信那里真的闹鬼，所以我就照著鬼故事里写的做了一遍，结果却激怒了它。”<p><p>你问‘它’是什么，伦道夫闭上眼睛，一股猛烈的颤栗跑上了他的脊柱。“我无法描述。我只知道我们勉强捡回了小命。乔尔受了伤，这都是我的错。在那天之后，我再也不想卷入超自然或者迷信的事情中。不是因为我不相信鬼神之说，而是因为我害怕。因此我失去了钥匙？因此我再也无法入梦？”他清楚地意识到了这一点，“我知道我们该去哪。我们要去我失去钥匙的地方。我一定可以在那里找回钥匙！”他瞪大了眼睛大声说道。.</p><p>当伦道夫发狂似地叫出租车时，你才意识到他要去的地方是那间无名鬼屋，那里有著一个至今仍萦绕在他记忆中的难以名状的怪物……</p>"
   },
   "resolutions": {
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "<p>This place is nothing like the mystical forests, charming medieval villages, and majestic panoramas of which Virgil Gray wrote in his stories. No, far from it: this cold, bleak gulf eats away your hope and replaces it with a feeling of empty, meaningless dread. You ask Randolph if this is the way to your comatose companions. You almost hope that you are traveling in the wrong direction, so you can leave this awful place behind.</p><p>“I do not know,” he replies, peering out one of the windows along the stairway. “We have traveled beyond the waking world, but this is the lower plane of the Dreamlands, known as the Underworld. It is an inhospitable place. Many of the creatures we have seen crossing over into our world come from this region. Perhaps our key knew this was our true destination?” Your guide examines the arcane key you found in the abandoned house, running his fingers over its arabesques as though recalling its shape, its weight, its texture. His eyes water with the depth of his loss.</p><p>You offer to hold the key for him, which yanks him from his private thoughts. “Ah. Yes, perhaps that would be best,” he says, handing the delicate artifact to you. It is surprisingly heavy for something that, according to Randolph, is not real.</p><p>With Randolph and the Silver Key in tow, you continue your descent anew. The Underworld may or may not be where your companions are, but if the creatures invading the world of the waking are indeed from this place, then perhaps here you can find answers.</p>"
+      "title": "结局 1",
+      "body": "<p>这个地方完全不像维吉尔·格雷笔下的神秘森林、迷人的中世纪村庄和宏伟景观。甚至与之大相径庭：这片寒冷、荒凉的海湾吞噬了你的希望，取而代之的是空虚且毫无意义的恐惧。你问伦道夫，这是找到你昏迷的同伴们的道路吗？你满心希望你只是走错了方向，那样你就能离开这个可怕的地方。.</p><p>“我不知道。”他一边盯著楼梯边上的一扇窗户外面，一边回答，“我们已经来到了清醒世界以外，但这里是幻梦境的下层，名叫地下世界。这里十分荒凉。之前我们看到的，进入我们世界的许多怪物，都来自这里。或许我们的钥匙知道这里是我们真正的目的地？”你的向导仔细检查你们在废屋里找到的神秘钥匙，他的手指在钥匙上阿拉伯式花纹上滑过，彷佛在回想它的形状、重量和材质。他深深沉浸在悔恨的思绪中，双眼含泪。.</p><p>你提出帮他保管钥匙，把他从自己的思绪里抽离出来。“啊。好的，或许这么做最好。”他说著，把那件精致的造物交给了你。根据伦道夫所说，它并不是真实的钥匙，但它却出奇的沉重。.</p><p>你与伦道夫一起，带著银钥匙继续旅程。你的同伴们或许就在地下世界，也可能不在，但如果入侵清醒世界的怪物确实来自此处，那么也许你能从这里找到答案。.</p>"
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "<p>Your last waking sensation is the rush of noxious, frigid air as you are knocked to the ground by the thrashing, monolithic abomination with no name. The wind is pulled out of your lungs. You cannot scream. You grasp desperately at the ground as the creature tears at your skin and tramples your bones. Somehow you wrench yourself free, escaping through the vortex of bitter, withering wind surrounding the creature. You hear the scrape of peeling plaster. Debris whips past your head. A loose brick hits your shoulder. You wonder if there will even be a building left to tremble at when this is all over.</p>"
+      "title": "结局 2",
+      "body": "<p>你被无名的异形巨怪扑打在地，你最后能清醒感觉到的不过是一股令人厌恶的寒冷气体。这阵气流是从你的肺中抽出的。你叫不出声。你绝望地抓挠著地面，而那头怪物撕裂你的皮肤，踩碎你的骨头。不知怎的，你挣扎著逃了出来，逃离了那头怪物周围的刺骨旋风。你听见水泥层剥落的刮擦声。无数碎片从你头顶上掠过。掉落的一块砖头击中了你的肩膀。你不禁会想，当这一切结束之后，这里是否还会有房子的模样？.</p>"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "<p>You barely hear Randolph shouting to you over the maelstrom of ice-cold air that surrounds you. Despite all odds, you somehow reach him, the indescribable monstrosity hot on your heels. Randolph wrenches open your hand, grabs the key you found in the unnamed house, and clutches it tightly. He closes his eyes and whispers something inaudible. As the abominable torrent crashes into you, everything goes black.</p><p>When you awaken, you lie on a flat stone platform overlooking a steep, straight staircase that descends into unknown depths. Behind you, the stairway curls upward into a stone spire that ascends into a hazy mist. In both directions, the entirety of the cavern is dimly lit with grey phosphorescence. Randolph pulls you to your feet. “That was a close one,” he admits. “I never wish to take a journey like that again.” You ask where you are, and he bites his lip, looking out over the bleak, desolate scenery.</p><p>“This is the lower plane of the Dreamlands, known as the Underworld. It is an inhospitable place. Many of the creatures we have seen crossing over into our world come from this region. Perhaps our key knew this was our true destination. I think...I think it is gone now,” your guide explains.</p><p>You are thunderstruck. Randolph grits his teeth at your reaction and looks away in shame. “Forget it. We no longer need it anyway. Let’s go.” His curt reply echoes off the stone steps. With Randolph leading the way, you continue your descent anew. The Underworld may or may not be where your companions are, but if the creatures invading the world of the waking are indeed from this place, then perhaps here you can find answers.</p>"
+      "title": "结局 3",
+      "body": "<p>你被寒冷气流形成的漩涡所包围，几乎听不见伦道夫在对你呼喊。你不知怎的越过这重重异像来到了他旁边，那头难以名状的怪物也紧随而来。伦道夫掰开你的手，把你在无名鬼屋里找到的钥匙紧紧攥在手里。他闭上眼睛，以微不可闻的声音低声说著些什么。那股令人厌恶的气流涌进了你的身体，接著，你眼前一黑。.</p><p>当你醒来时，你躺在一个石质平台上，这里可以俯瞰一道陡峭而笔直的阶梯，其向下延伸到未知的深度。在你身后，则是一条向上盘旋的阶梯，形成一座石质尖塔，向上延伸到一团朦胧的云雾之中。不管是往上看，还是往下看，整个洞穴都被微弱的灰色磷光照亮。伦道夫把你扶了起来。“刚才真是千钧一发。”他说，“我绝对不要再经历那样的旅程。”你问他你们现在在哪，他咬紧嘴唇，眺望这荒凉而孤寂的风光。.</p><p>“这里是幻梦境的下层，名叫地下世界。这里十分荒凉。之前我们看到的，进入我们世界的许多怪物，都来自这里。或许我们的钥匙知道这里是我们真正的目的地？不过……钥匙看来已经消失了。”你的向导解释说。</p><p>你听罢吓得大惊失色。伦道夫见此，咬紧牙关，羞愧地移开目光。“忘记那把钥匙吧。反正已经不需要它了。我们走吧。”他简短的话语声回荡在石阶上。伦道夫在前头带路，你继续旅程。你的同伴们或许就在地下世界，也可能不在，但如果入侵清醒世界的怪物确实来自此处，那么也许你能从这里找到答案。.</p>"
     },
     "resolution4": {
       "title": "Resolution 4",
-      "body": "<p>In the debris, you spot it: something glinting within the maelstrom of ice-cold air and dust, something that calls to you, whispers your name. You barely hear Randolph shouting as the indescribable monstrosity crashes into him. Despite all odds, you somehow reach the rubble that was once the attic of the house with no name. You realize now what that elusive glimmer was: the polished reflection of a bright silver key. “Use it!” Randolph screams between cries of agony. The abomination climbs atop his body. “Use it now, while you ca—”</p><p>The thing cuts Randolph’s cry short as it envelops his body. You clutch the key tightly in your hand and shudder as you watch a thousand shapes of horror devour Randolph whole. You think of your companions, trapped somewhere in a perilous dream far from home, and the key’s glow intensifies, swallowing you as completely as the creature swallowed Randolph. Everything goes white.</p><p>When you awaken, you lie on a flat stone platform overlooking a steep, straight staircase that descends into unknown depths. Behind you, the stairway curls upward into a stone spire that ascends into a hazy mist. In both directions, the entirety of the cavern is dimly lit with grey phosphorescence. You search for the Silver Key, but it has vanished. There is no sign of Randolph Carter.</p><p>It is clear you are no longer in the waking world. Perhaps the key transported your physical body into the Dreamlands, as Randolph claimed it could. But this place is nothing like the mystical forests, charming medieval villages, and majestic panoramas of which Virgil Gray wrote in his stories. No, far from it: this cold, bleak gulf eats away your hope and replaces it with a feeling of empty, meaningless dread. You peer once more up the countless steps behind you. It seems you have no choice now but to move on, deeper into this desolate and perilous realm.</p>"
+      "body": "<p>在无数碎片中，你发现有某物在寒冷气流与沙尘形成的漩涡中闪烁著光芒，它正在呼唤著你，低声念著你的名字。那头难以名状的怪物撞向伦道夫时，你几乎听不见他的喊叫。你不知怎的越过了这重重异像，来到曾经是无名鬼屋阁楼的一堆碎石前。你终于明白那抹难以捕捉的微光究竟是什么：那是一把明亮的银钥匙的反光。“用它！”伦道夫大喊著，近乎是痛苦的尖叫。那头异形巨怪爬在他身上。“快用那把钥匙，不然——”</p><p>那家伙包裹住伦道夫的身体，扼止了他的尖叫。你紧紧握著那把钥匙，颤抖著看著伦道夫被拥有万千形态的骇物完全吞噬。你想到被困在危险梦境之中、远离家乡的同伴，此时钥匙光芒骤然增强，将你整个人都吞没其中，就像那头怪物吞噬伦道夫一样。眼前只剩无际的白色。.</p><p>当你醒来时，你躺在一个石质平台上，这里可以俯瞰一道陡峭而笔直的阶梯，其向下延伸到未知的深度。在你身后，则是一条向上盘旋的阶梯，形成一座石质尖塔，向上延伸到一团朦胧的云雾之中。不管是往上看，还是往下看，整个洞穴都被微弱的灰色磷光照亮。你寻找银钥匙，却发现它没了踪影。伦道夫·卡特也不见了。.</p><p>显然，你已不在清醒世界中。或许就像伦道夫说的那样，那把钥匙把你的肉身送到了幻梦境。但这个地方完全不像维吉尔·格雷笔下的神秘森林、迷人的中世纪村庄和宏伟景观。甚至与之大相径庭：这片寒冷、荒凉的海湾吞噬了你的希望，取而代之的是空虚且毫无意义的恐惧。你再次凝望身后无数的台阶。看来你别无选择，只能前进，深入这片危机四伏的荒凉世界。.</p>"
     }
   },
   "remembered": {
-    "recoveredAStrangeKey": "Recovered a strange key",
-    "studiedADesecratedPortrait": "Studied a Desecrated Portrait",
-    "noticedTheMissingBones": "Noticed the Missing Bones"
+    "recoveredAStrangeKey": "发现了一把奇怪的钥匙",
+    "studiedADesecratedPortrait": "研究了一幅亵渎的肖像画",
+    "noticedTheMissingBones": "发现了缺失的骨头"
   }
 }

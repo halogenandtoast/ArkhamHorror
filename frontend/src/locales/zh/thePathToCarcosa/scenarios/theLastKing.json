@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "Reveal another token. If you fail, place 1 doom on a _Possessed_ enemy in play.",
-      "cultist": "-2. If you fail, place 1 of your clues on your location.",
-      "tablet": "-4. If you fail, take 1 horror.",
-      "elderThing": "-X. X is the shroud value of your location."
+      "skull": "再抽取一个标记。如果你失败，在场上的1个 _附身_ 敌人上放置1个毁灭标记。",
+      "cultist": "-2. 如果你失败，将1个你的线索放置到你所在地点上。",
+      "tablet": "-4. 如果你失败，受到1点恐惧。",
+      "elderThing": "-X. 其中X等于你所在地点的隐藏值。"
     },
     "hardExpert": {
-      "skull": "Reveal another token. If you fail, place 1 doom on the _Possessed_ enemy in play with the most remaining health.",
-      "cultist": "-3. Place 1 of your clues on your location.",
-      "tablet": "-4. Take 1 horror.",
-      "elderThing": "-X. X is the shroud value of your location. If you fail, take 1 damage."
+      "skull": "再抽取一个标记。如果你失败，在场上剩余生命值最多的1个 _附身_ 敌人上放置1个毁灭标记。",
+      "cultist": "-3. 将1个你的线索放置到你所在地点上。",
+      "tablet": "-4. 受到1点恐惧。",
+      "elderThing": "-X. 其中X等于你所在地点的隐藏值。如果你失败，受到1点伤害。"
     }
   }
 }

@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each _Extradimensional_ location in play (max -5).",
-      "cultist": "Reveal another token. If you fail, after this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-3. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderSign": "-X. X is the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "-1 场上每个 _异次元_ 地点-1(最大-5)。",
+      "cultist": "再抽取一个标记。如果失败，在检定结束后，从遭遇牌堆顶部弃牌，直到弃掉一张地点卡。将该地点放置入场，并移动到该地点。",
+      "tablet": "-3.如果犹格·索托斯在场，在检定结束后，它立刻攻击你。",
+      "elderSign": "-X. X为你所在地点的隐藏值。如果失败，并且你的所在地点为 _异次元_，将其丢弃。"
     },
     "hardExpert": {
-      "skull": "-1 for each _Extradimensional_ location in play.",
-      "cultist": "Reveal another token. After this skill test, discard cards from the top of the encounter deck until a location is discarded. Put that location into play and move there.",
-      "tablet": "-5. If Yog-Sothoth is in play, it attacks you after this skill test.",
-      "elderSign": "-X. X is twice the shroud value of your location. If you fail and your location is _Extradimensional_, discard it."
+      "skull": "-1 场上每个 _异次元_ 地点-1",
+      "cultist": "再抽取一个标记。在检定结束后，从遭遇牌堆顶部弃牌，直到弃掉一张地点卡。将该地点放置入场，并移动到该地点。",
+      "tablet": "-5. 如果犹格·索托斯在场，在检定结束后，它立刻攻击你。",
+      "elderSign": "-X. X为你所在地点的隐藏值的两倍。如果失败，并且你的所在地点为 _异次元_，将其丢弃。"
     }
   }
 }

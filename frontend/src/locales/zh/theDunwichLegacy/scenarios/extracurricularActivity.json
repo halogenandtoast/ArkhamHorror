@@ -1,18 +1,29 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1. If you fail, discard the top 3 cards of your deck.",
-      "cultist": "-1 (-3 instead if there are 10 or more cards in your discard pile).",
-      "elderThing": "-X. Discard the top 2 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-1. 如果失败，丢弃你牌堆顶部3张卡牌。",
+      "cultist": "-1 (如果你弃牌堆中至少有10张卡牌，改为-3)。",
+      "elderThing": "-X. 丢弃你牌堆顶部2张卡牌。 X为这2张弃牌的打印费用之和。"
     },
     "hardExpert": {
-      "skull": "-2. If you fail, discard the top 5 cards of your deck.",
-      "cultist": "-1 (-5 instead if there are 10 or more cards in your discard pile).",
-      "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
+      "skull": "-2. 如果失败，丢弃你牌堆顶部5张卡牌。",
+      "cultist": "-1 (如果你弃牌堆中至少有10张卡牌，改为-5)。",
+      "elderThing": "-X. 丢弃你牌堆顶部3张卡牌。 X为这2张弃牌的打印费用之和。"
     }
   },
   "xp": {
-    "noResolution": "Reflects on the night’s events.",
-    "resolution4": "Reflects on the night’s events."
+    "noResolution": "回想起今晚的恐惧",
+    "resolution4": "回想起今晚的恐惧"
+  },
+  "tooltips": {
+    "miskatonicQuad": {
+      "resign": "\"我们到处都找不到莱斯……\"你离开了校园，希望阿米蒂奇会原谅你们。"
+    },
+    "alchemyLabs": {
+      "action": {
+        "can": "{'{'}action{'}'}: _调查_. 如果成功，不发现线索，改为拿取该卡下的炼金试剂。",
+        "cannot": "{'{'}action{'}'}: _调查_. 如果成功，不发现线索，改为拿取该卡下的炼金试剂（你无法这样做）。"
+      }
+    }
   }
 }

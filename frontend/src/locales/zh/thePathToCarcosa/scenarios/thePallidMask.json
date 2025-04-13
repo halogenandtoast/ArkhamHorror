@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the number of locations away from the starting location you are (max 5).",
-      "cultist": "-2. If this token is revealed during an attack, and this skill test is successful, this attack deals 1 less damage.",
-      "tablet": "-2. If there is a ready _Ghoul_ or _Geist_ enemy at your location, it attacks you (if there is more than one, choose one).",
-      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+      "skull": "-X. 其中X为你与起始地点间的距离(最多5)。",
+      "cultist": "-2. 如果攻击中抽出本标记且本次技能检定成功，本次攻击造成的伤害降低1点。",
+      "tablet": "-2. 如果你所在地点有准备好的 _食尸鬼_ 或 _灵怪_ 敌人，它攻击你(如果有多个，选择1个)。",
+      "elderThing": "-3. 如果你失败，在遭遇牌堆和弃牌堆中查找并抽取1张 _食尸鬼_ 或 _灵怪_ 敌人。"
     },
     "hardExpert": {
-      "skull": "-X. X is the number of locations away from the starting location you are.",
-      "cultist": "-3. If this token is revealed during an attack and this skill test is successful, this attack deals no damage.",
-      "tablet": "-3. If there is a _Ghoul_ or _Geist_ enemy at your location, it readies and attacks you (if there is more than one, choose one).",
-      "elderThing": "-4. If you fail, search the encounter deck and discard pile for a _Ghoul_ or _Geist_ enemy and draw it."
+      "skull": "-X. 其中X为你与起始地点间的距离。",
+      "cultist": "-3. 如果攻击中抽出本标记且本次技能检定成功，本次攻击不造成伤害。",
+      "tablet": "-3. 如果你所在地点有 _食尸鬼_ 或 _灵怪_敌人，它准备并攻击你(如果有多个，选择1个)。",
+      "elderThing": "-4. 如果你失败，在遭遇牌堆和弃牌堆中查找并抽取1张 _食尸鬼_ 或 _灵怪_ 敌人。"
     }
   }
 }

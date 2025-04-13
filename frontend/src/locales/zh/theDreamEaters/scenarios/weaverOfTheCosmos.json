@@ -1,53 +1,53 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest amount of doom on a location in play.",
-      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
-      "tablet": "0. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
-      "elderThing": "-3. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+      "skull": "-X. 其中X为场上单个地点上的最高毁灭标记数量。",
+      "cultist": "再抽出1个标记。如果你检定失败且你所在地点有 _古神_ 敌人，其攻击你。",
+      "tablet": "0. 黑猫用爪子撕开蛛网。如果你检定成功且超过难度2点以上，移除你所在地点的1个毁灭标记。",
+      "elderThing": "-3. 如果在攻击 _蜘蛛_ 敌人期间本次技能检定失败，在该敌人所在地点放置1个毁灭标记。"
     },
     "hardExpert": {
-      "skull": "-X. X is the amount of doom on locations in play.",
-      "cultist": "Reveal another token. If you fail, and there is an _Ancient One_ enemy at your location, it attacks you.",
-      "tablet": "-1. The black cat tears at the web with its claws. If you succeed by 2 or more, remove 1 doom from your location.",
-      "elderThing": "-4. If this skill test fails during an attack against a _Spider_ enemy, place 1 doom on that enemy's location."
+      "skull": "-X. 其中X为场上的地点带有的毁灭标记总数。",
+      "cultist": "再抽出1个标记。如果你检定失败且你所在地点有 _古神_ 敌人，其攻击你。",
+      "tablet": "-1. 黑猫用爪子撕开蛛网。如果你检定成功且超过难度2点以上，移除你所在地点的1个毁灭标记。",
+      "elderThing": "-4. 如果在攻击 _蜘蛛_ 敌人期间本次技能检定失败，在该敌人所在地点放置1个毁灭标记。"
     }
   },
   "intro": {
-    "title": "Scenario IV–B: Weaver of the Cosmos",
-    "body": "<p>Everything has led to this. Virgil’s writings, your companions’ never-ending sleep, St. Mary’s, the black cat, all of it. You have no choice but to press on. This transdimensional space is home to a creature that would obliterate your world and replace it with a new reality, a nightmarescape of pitch-black darkness and creatures that prey on your kind. If you cannot stop its weaving, there will be no Earth left to wake up to. You have to do something, even if it means your end.</p>"
+    "title": "冒险IV-B：编织宇宙",
+    "body": "<p>所有的一切都指向这里。维吉尔的作品，你同伴的永眠症状，圣玛丽医院，黑猫，所有这一切。你别无选择，只得前进。这个跨维度的空间住著一个生物。它会摧毁你的世界，并且编织出一个崭新的现实世界——漆黑的噩梦，来替换掉你原来的世界，人类会成为怪物的猎物。如果你无法阻止它的编织，那么你们的地球家园将不复存在，苏醒也再无任何意义。你必须做些什么，哪怕这会赔上你的性命。</p>"
   },
   "resolutions": {
     "noResolution": {
-      "title": "No Resolution",
-      "body": "_If no resolution was reached because each investigator was defeated:_ You awaken trapped inside something tight and sticky. Your arms are bound to your sides, and no matter how fiercely you struggle, you cannot seem to move except to wiggle your fingers hopelessly. Slowly, dread creeps its way through your mind as you realize the situation you are in. As you cannot move your head, you are forced to watch as the eight-legged creature emerges from the darkness. It makes no sound as it steps onto the web. Its many eyes reflect your terrified expression. Its mandibles drip with hunger. You only wish you could look away."
+      "title": "未达成结局",
+      "body": "_如果你未达成任何结局（所有调查员都被击败）：_ 你醒来时发现自己被困在一个又紧又黏的东西内部。你双手被绑在身侧，无论用多大的力气，你都无法动弹，只能无助地活动自己的手指头。当你意识到你所处的境况，恐惧慢慢地渗入你的脑海。你的脑袋无法转动，所以你只得被迫眼睁睁地看著那头八腿怪物从黑暗里出现。它无声地踏上蛛网，无数眼睛里倒映出你惊恐的表情。它饥肠辘辘，口水从下颌滴落。你只希望此刻自己能把头扭向一边。"
     },
     "resolution1": {
-      "title": "Resolution 1",
-      "body": "You clutch a silken thread, the only thing keeping you from plummeting through the endless depths of the void."
+      "title": "结局 1",
+      "body": "你抓住了一根蛛丝，那是唯一能让你避免落入无尽深空的东西。."
     },
     "resolution2": {
-      "title": "Resolution 2",
-      "body": "You scramble for hours in the dark, sticky, web-infested void between worlds. When you reach the end of the bridge of cosmic webs, you are met with a terrible sight. The void that once surrounded you fades into a dusky evening, and a familiar skyline of clustering gambrel roofs stands before you. To your dismay, the entirety of the town has been infested by the brood of Atlach-Nacha. Thick webbing extends from the gloomy streets to the tallest rooftops. Spiders and ghasts prowl through the city’s once-busy avenues, seeking human prey to devour—or worse, to imprison forever in cocoons of unbreakable web. You drop to your knees, overtaken by despair. How far does this corruption reach? Is it just Arkham, or…?"
+      "title": "结局 2",
+      "body": "两个世界之间的虚空一片漆黑，布满蛛网，黏答答的，你在这里挣扎了好几个小时。当你来到巨网形成的桥梁末端，你看到了可怕的景象。曾经包围著你的虚空变成了黯淡的夜空，天际线是你熟悉的斜屋顶。你惊愕地发现整座小城都布满了阿特拉克·纳克亚的子嗣。从阴郁的大街小巷，到高耸的屋顶，到处都是厚重的蛛网。蜘蛛与噩妖在城中曾经繁华的街道上游荡，寻找人类猎物，吞噬他们——或者更糟，把他们永远囚禁在牢不可破的网茧之中。绝望的情绪让你崩溃，你不由跪倒在地。这惨剧会演变成什么样？只有阿卡姆沦陷了吗？还是说……"
     },
     "resolution3": {
-      "title": "Resolution 3",
-      "body": "In the distance, you can see the tower that loomed behind the spider god as it spun its web, the entrance beckoning you closer. You recall the Tower of Koth in the Underworld and the way to the surface. Is this the root of that same tower? Does it penetrate through this world-between- worlds? If so, you might be able to escape. Instead of climbing back the way you came, you swing your web from side to side and make a leap through the void, landing at the base of the tower. Then you begin the long climb up—above the surface of the Sea of Pitch, under the ground below the City of Gugs, then farther upward still. Finally, after miles and miles of restless travel, you push aside the stone slab at the top of the tower, and you emerge in the Enchanted Wood. You seal the entrance behind you. Nothing from the hellish Underworld can follow you here. For the first time since entering the Dreamlands, you breathe a sigh of relief. Recalling the first chapter’s of Virgil Gray’s story, you follow a narrow path through the woods until you reach a staircase of solid stone that ascends into the clouds. It is time to return home."
+      "title": "结局 3",
+      "body": "你远远望去，可以看到蜘蛛之神后面若隐若现的高塔，塔的入口诱惑著你，趁著蜘蛛之神正在织网时过去。你回想起来地下世界的卡斯之塔，以及通往地面的道路。这是那座塔的底部吗？它是否穿透了这片位于两个世界之间的空间？如果真是如此，或许你能够借此逃离。你不再像来时一样原路攀爬返回，而是藉助蛛网前后摆荡，腾空跳跃，落到那座高塔的底部。然后，你开始向上漫长的攀登——浮出漆黑之海的海面，进入古革巨人之城的地下，再继续向上攀登。最后，经过不眠不休的漫长攀登，你推开了塔顶的石板门，回到了魔幻森林。你封印了入口，继续前行。不能让那地狱般的地下世界里的怪物跟你到这里来。自从进入幻梦境以来，你终于第一次舒了一口气。你回忆著维吉尔·格雷的故事开头，沿著一条狭窄的小径穿过森林，来到一条高耸入云的石质楼梯前。是时候回家了。"
     },
     "resolution4": {
       "title": "Resolution 4",
-      "body": "You have stopped the spider god from completing its web, but in the process, you have cut off your only means of escape as well. You are fated to wander this hellish world-between-worlds, searching in vain for any hope of escape. Your only solace is that you have prevented this cruel future from being that of every person on Earth. Perhaps if you still possessed the Silver Key, you might have had a way out. Try as you might, in this dismal, cavernous void below the bottomless Sea of Pitch, you cannot muster the will to forge your own."
+      "body": "你阻止了蜘蛛之神完成它的蛛网桥梁，但在这过程中，你也斩断了自己唯一的退路。你找不到逃离的一丝希望，注定要游荡在这地狱般的异界之间。唯一能安慰你的，是你阻止了如此残酷的命运落在地球每一个人的身上。要是你还有银钥匙，说不定还能逃出这里。在深不可测的漆黑之海下方，这片沉闷而宽广的虚空之中，你用尽一切努力，始终无法振奋精神来打造自己的银钥匙。."
     },
     "resolution5": {
-      "title": "Resolution 5",
-      "body": "You have stopped the spider god from completing its web, but in the process, you have cut off the quickest way for you to return home. So, with your task complete, you begin the long climb toward reality. You are lucky that remnants of the web-bridge still remain intact, or you would have been stranded in this hellish world between worlds. It takes many hours for you to retrace your steps to the Underworld. You eventually emerge from the thick, tar-like Sea of Pitch, close to the shoreline. To your dismay, you realize that you are on the opposite shore of the sea from the dark vale from which you once embarked. With no way to cross the deadly sea, you’ll have to find another way out of this barren expanse. Days pass as you continue to explore the Underworld, reaching darker and more forbidden lands as you travel deeper and deeper below the crust of the Earth’s Dreamlands. Though you eventually find a stairway up, it is very different from the one leading to the Unnamable: a spiraling, otherworldly series of steps that reach dizzying heights and break all laws of reality. When you reach the top, your heart sinks. There is no sign of Arkham here. You are greeted instead by a strange, ruined city and its half-human denizens. The creatures inform you that you have reached the lost city of “Sarkomand.” It appears your return journey is far from over."
+      "title": "结局 5",
+      "body": "你阻止了蜘蛛之神完成它的蛛网桥梁，但在这过程中，你也斩断了自己重返家园的最快路径。于是，你完成自己的任务之后，开始了通往现实世界的漫长攀登。还好那座蛛网桥梁残余的部分仍然能用，不然你就永远被困在这地狱般的异界之间了。你花了无数小时，终于回到地下世界。你从漆黑之海那稠如沥青的水体浮出，接近海岸。让你感到沮丧的是，你意识到你所在的海岸与你乘船启航时的那片黑暗山谷隔海相望。你无法穿越这片危险的海域，必须另寻出路，好离开这片宽阔无边的荒凉之地。你又花了些日子继续探索地下世界，在幻梦境地壳以下越走越深，来到了更为黑暗、更不应进入的地方。虽然最后你找到了一条向上的楼梯，但这与通向无名小屋的那条楼梯截然不同：眼前的楼梯呈螺旋形，神秘的一级级台阶向上延伸，直至令人晕眩的高度，打破了现实世界的一切法则。你走到楼梯顶上时，心不禁往下一沉。迎接你的不是熟悉的阿卡姆，而是一座破败的古怪城市及其半人形的居民。这些生物告诉你，你来到了一座名叫“萨科曼德”的失落城市。看来你的归途远未结束。"
     }
   },
-  "theSpiderQueen1": "<p><b>The Spider Queen 1:</b> You climb a precipice of stone and behold the enormity of the spider’s bridge and the thing astride it: Atlach-Nacha, god of spiders, accompanied by its horde of weavers. The many-legged monstrosities continuously intertwine strands of cosmic web, toiling endlessly with nightmarish fervor. As the awful creatures weave each thread, you feel reality and dreams distort, collide, and crash together. In the distance, waves of dream break upon the rocks of reality, and reality collapses upon itself into the surging, amorphous dream. You can barely comprehend the strange, shifting vistas. A sticky web hangs off the side of your vantage point, like a silken ladder leading down to your doom.</p>",
-  "theSpiderQueen2": "<p><b>The Spider Queen 2:</b> You are about to climb down the web to the platform below, when you hear the black cat’s voice from behind your companion, Randolph. “Drop it,” the voice commands. A sinister grin spreads across Randolph’s face as he drops a jagged onyx blade, which clatters to the ground.</p><p>“So you have seen through my mask?” he says. “No matter. You will complete this errand upon which I have sent you, regardless. Your world depends on it.”</p><p>Bewildered, you ask why Randolph is acting this way. The black cat jumps onto your shoulder and perches there, its gaze never leaving your erstwhile companion. “I figured it out a little while ago. He’s not Randolph. He never was. Just an interloper in Randolph’s skin.”</p><p>“Interloper?” Randolph thunders with anger. “You, cat, are the interloper! Yes, I know what you are. This is not your place. But enough talk.” A smile crawls along his lips once more. “You have a task to perform. Goodbye, then…for now.” With his warning complete, Not- Randolph walks off of the edge of the platform and falls into oblivion.</p>",
-  "theSpiderQueen3": "<p><b>The Spider Queen 3:</b> You begin to climb down the web to the platform below, from which you can reach the edge of the bridge and Atlach-Nacha itself. Halfway down, the suspended platform jolts and starts to sway violently from side to side. You grip the silken threads tightly, hoping that the sticky web will keep you from falling. You look to Randolph to make sure he is okay, and it is then that you notice he is not climbing above you as you had suspected he would. You look up to find your companion scowling at you from above, a blade of onyx in his hands. He has cut a segment of the web upon which you are climbing. You have no time to ask what he is doing before he severs the web completely. You plummet to the rocks below, landing painfully on your back. When you look back up at Randolph, his countenance has changed.</p><p>“Foolish mortals. I was never going to allow you to save your companions. You have an errand of mine to run, and that is your sole purpose. If you wish to live, complete this task for me.” He peers across at the unfathomable spider that looms before you. “I shall be the one to claim your world—not that thing.” Then, Not-Randolph simply turns and walks away.</p>",
-  "theSpiderQueen4": "<p><b>The Spider Queen 4:</b> The creature is close to completing its design. Its legs move about swiftly, spinning thread after thread of cosmic silk with unearthly determination. It scarcely even recognizes your presence. Perhaps if you can sever its legs, or tear apart the webbing on which it stands…</p>",
+  "theSpiderQueen1": "<p><b>蛛后 1:</b> 你爬上了悬崖石壁，看到了蜘蛛筑造的巨大网桥，也看到了桥上的蜘蛛之神阿特拉克·纳克亚，还有它的织网者大军。这些多腿的可怕怪物不断编织著宇宙之网，像是被噩梦般的狂热驱动著不停劳作。它们每织上一根蛛丝，你都能感觉到现实与梦境的扭曲和相撞。在远处，梦像波浪一样拍在现实的岩石上，而现实岩石也自动崩塌，化作汹涌而无序的睡梦。你几乎无法理解这一幕怪异的变幻场景。你能看到一张黏糊糊的蛛网悬挂在你所处平台的边缘，就像一条丝状的梯子，通向你的死亡。</p>",
+  "theSpiderQueen2": "<p><b>蛛后 2:</b> 你正要爬下蛛网，到下方的平台去，这时你听见你的同伴伦道夫背后响起了黑猫的声音：“扔了它。”声音命令道。伦道夫脸上露出一抹邪恶的笑容，同时将一把带有锯齿的缟玛瑙尖刀扔在地上。</p><p>“你看穿了我的伪装？”他问道，“无所谓。反正，你们怎样都会完成我指派的任务。毕竟这关系到你们世界的存亡。”</p><p>你不解地问它伦道夫为什么会这样做。黑猫跳上你的肩膀，目光一刻不离你曾经的同伴。“我刚刚才发现，他不是伦道夫。从来就不是。它只是披著伦道夫皮囊的入侵者。”</p><p>“入侵者？”伦道夫怒道，“你这只猫才是入侵者！没错，我知道你是谁。你不该在这里。我们废话少说。”他嘴角又一次浮现了那邪恶的微笑，“毕竟你们还有要事在身。我们就此别过……后会有期。”说完之后，那位不是伦道夫的男子走下平台，坠入虚空消失不见。</p>",
+  "theSpiderQueen3": "<p><b>蛛后 3:</b> 你顺著那张蛛网爬下，去往下方的平台，到了那里你就能够到蛛网桥梁，对付阿特拉克·纳克亚。下到半路，那悬浮的平台突然动了起来，剧烈地左右摇晃。你紧紧抓著这黏糊糊的蛛网，希望不让自己掉下去。你望向伦道夫，确认他是否平安无虞，就在这时，你发现他并没有像你预想的一样，跟随著你爬下来。你抬头望去，却见他在上面脸色阴沉，手中攥著一柄缟玛瑙利剑。他在你爬下蛛网时，割破了一段蛛网。你没时间质问他为什么这么做，只能在他完全割断蛛网后直直摔到下方的岩石上，痛苦地背部著地。你抬头回望伦道夫，他的表情像变了一个人似的：</p><p>“愚蠢的凡人。我从未打算让你去救你的同伴。你得替我办事，而这也是你唯一的用处。如果你想活命，就完成我的任务。”他凝视著赫然出现在你面前的怪异蜘蛛，“你的世界只会属于我——而不属于<b>那家伙</b>。”然后，那个并非伦道夫的男子转身离开。</p>",
+  "theSpiderQueen4": "<p><b>蛛后 4:</b> 这怪物的计划即将完成。它的腿飞快移动，被可怕的决心驱动著，一根接一根地纺织著宇宙之线。它几乎没有发觉你的存在。或许你能切断它的腿，又或者撕开它立足的蛛网……</p>",
   "xp": {
-    "resolution1": "Prevented the Dreamlands and reality from merging."
+    "resolution1": "阻止了幻梦境和现实世界融合。"
   }
 }

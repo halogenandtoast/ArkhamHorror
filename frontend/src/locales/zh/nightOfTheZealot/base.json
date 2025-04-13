@@ -1,3 +1,16 @@
 {
-  "prologue": "<h1>食尸鬼们早已饥肠辘辘......</h1><p>1925年9月18日，星期五，马萨诸塞州，阿卡姆市。漫长而又炎热的夏天，终于到了尽头。秋天还刚来没多久，酷热仍未褪去。城里笼罩着一种寂静、无法言说的愤懑氛围。人们的脾气变得暴躁，仅在上周就有多不可计的报道指出，市民们对于小小误会反应激烈，动辄暴力相向。</p> <p>今天，我接到了詹姆士·汉克森的来电，他说在谷仓里找到了一具被肢解的尸体。</p> <p>天气显然不是这些事情的元凶，不过市里的这种情况很不寻常，快要进入一种连求神问佛都不管用的程度。经过占卜，我相信很快会有一支调查小队决定找到这一系列怪事的发生原因，将一切扭回正轨。我会一直盯着他们的进度......但我可不会袖手旁观。</p>"
+  "prologue": "<h1>食尸鬼们早已饥肠辘辘......</h1><p>1925年9月18日，星期五，马萨诸塞州，阿卡姆市。漫长而又炎热的夏天，终于到了尽头。秋天还刚来没多久，酷热仍未褪去。城里笼罩着一种寂静、无法言说的愤懑氛围。人们的脾气变得暴躁，仅在上周就有多不可计的报道指出，市民们对于小小误会反应激烈，动辄暴力相向。</p> <p>今天，我接到了詹姆士·汉克森的来电，他说在谷仓里找到了一具被肢解的尸体。</p> <p>天气显然不是这些事情的元凶，不过市里的这种情况很不寻常，快要进入一种连求神问佛都不管用的程度。经过占卜，我相信很快会有一支调查小队决定找到这一系列怪事的发生原因，将一切扭回正轨。我会一直盯着他们的进度......但我可不会袖手旁观。</p>",
+  "key": {
+    "ghoulPriestIsStillAlive" : "食尸鬼祭司还活着",
+    "yourHouseIsStillStanding" : "房屋还在",
+    "yourHouseHasBurnedToTheGround" : "房屋已烧毁",
+    "litaWasForcedToFindOthersToHelpHerCause" : "丽塔不得不去找别的帮手",
+    "cultistsWeInterrogated" : "我们盘问过的异教徒",
+    "cultistsWhoGotAway" : "逃跑的异教徒",
+    "itIsPastMidnight" : "午夜已至",
+    "arkhamSuccumbedToUmordhothsTerribleVengeance" : "阿卡姆被乌默尔多斯吞噬",
+    "theRitualToSummonUmordhothWasBroken" : "召唤仪式被中止",
+    "theInvestigatorsRepelledUmordoth" : "调查员击退乌默尔多斯",
+    "theInvestigatorsSacrificedLitaChantlerToUmordhoth" : "向乌默尔多斯献祭了丽塔·钱德勒"
+  }
 }

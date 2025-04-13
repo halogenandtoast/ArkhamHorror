@@ -277,5 +277,31 @@
   "YouHaveInterpretedTheDreams": "你洞悉了梦境",
   "YouHaveTranslatedTheGrimoire": "你翻译了魔法书",
   "YouHaveIdentifiedTheGateway": "你已经确认了前行道路",
-  "YouHaveClassifiedANewSpecies": "你定义了一个新物种"
+  "YouHaveClassifiedANewSpecies": "你定义了一个新物种",
+  "base": {
+    "key": {
+      "drivenInsaneInvestigators": "已发疯的调查员",
+      "killedInvestigators": "已被击败的调查员",
+      "theRougarouContinuesToHauntTheBayou" : "狼人继续在河口出没",
+      "theRougarouIsDestroyed" : "狼人被摧毁且诅咒被移除",
+      "theRougarouEscapedAndYouEmbracedTheCurse" : "狼人逃离且你身负诅咒",
+      "manyWereSacrificedToCnidathquaDuringTheCarnivale" : "狂欢节期间许多平民被献祭给奈达斯奎",
+      "theSunBanishedCnidathquaIntoTheDepths" : "太阳将奈达斯奎逐回深海",
+      "cnidathquaRetreatedToNurseItsWounds" : "奈达斯奎撤退疗伤",
+      "theExcelsiorClaimsAnotherVictim" : "艾肖希尔酒店又有一名受害者",
+      "theInvestigatorsFledTheSceneOfTheCrime" : "调查员逃离了犯罪现场",
+      "theExcelsiorIsQuietForNow" : "艾肖希尔酒店目前归于平静",
+      "theMurdersContinueUnsolved" : "谋杀仍在继续，尚未解决",
+      "youHaveIdentifiedTheSolution" : "确认溶液成分",
+      "youHaveTranslatedTheGlyphs" : "你翻译出了雕文",
+      "youHaveIdentifiedTheStone" : "你鉴定了古代巨石",
+      "doomApproaches" : "厄运降临",
+      "theHourIsNigh" : "时间已到",
+      "youHaveTranslatedTheTome" : "你翻译了这本书籍",
+      "youHaveInterpretedTheDreams" : "你洞悉了梦境",
+      "youHaveTranslatedTheGrimoire" : "你翻译了魔法书",
+      "youHaveIdentifiedTheGateway" : "你已经确认了前行道路",
+      "youHaveClassifiedANewSpecies" : "你定义了一个新物种"
+    }
+  }
 }

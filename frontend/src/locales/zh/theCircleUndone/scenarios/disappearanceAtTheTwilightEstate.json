@@ -1,10 +1,10 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-3. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location."
+      "skull": "-3. 如果你失败且本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。"
     },
     "hardExpert": {
-      "skull": "-5. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location."
+      "skull": "-5. 如果你失败且本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。"
     }
   }
 }

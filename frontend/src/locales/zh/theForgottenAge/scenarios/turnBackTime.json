@@ -1,12 +1,12 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X . X is the number of locations with doom on them.",
-      "elderThing": "-4. If you fail, place 1 doom on your location."
+      "skull": "-X . 其中X为带有毁灭标记的地点数。",
+      "elderThing": "-4. 如果你失败，将1个毁灭标记放到你所在地点。"
     },
     "hardExpert": {
-      "skull": "-X . X is the total amount of doom on locations.",
-      "elderThing": "-6. Place 1 doom on your location."
+      "skull": "-X . 其中X为地点带有的毁灭标记总数。",
+      "elderThing": "-6. 将1个毁灭标记放到你所在地点。"
     }
   }
 }

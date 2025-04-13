@@ -1,20 +1,20 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 for each location in play with no encounter card underneath it (max -4).",
-      "cultist": "-2. If you fail, add 1 clue from the token pool to your location.",
-      "tablet": "-2. If you are in the Hidden Chamber, reveal another token.",
-      "elderThing": "-3. If you fail, place 1 doom on the current agenda."
+      "skull": "-1 场上每个底下无遭遇卡的地点(最大-4)。",
+      "cultist": "-2. 如果失败，从供应堆中拿取1个线索，放置到你所在地点上。",
+      "tablet": "-2. 如果你在隐藏密室，再抽取一个标记。",
+      "elderThing": "-3. 如果失败，在当前密谋卡上放置1个毁灭标记。"
     },
     "hardExpert": {
-      "skull": "-1 for each location in play with no encounter card underneath it.",
-      "cultist": "-4. If you fail, add 1 clue from the token pool to your location.",
-      "tablet": "-3. Reveal another token.",
-      "elderThing": "-3. Place 1 doom on the current agenda."
+      "skull": "-1 场上每个底下无遭遇卡的地点。",
+      "cultist": "-4. 如果失败，从供应堆中拿取1个线索，放置到你所在地点上。",
+      "tablet": "-3. 再抽取一个标记。",
+      "elderThing": "-3. 在当前密谋卡上放置1个毁灭标记。"
     }
   },
   "xp": {
-    "bonus": "Gains insight into the hidden world of the Mythos."
+    "bonus": "看到了不可告人的景象。"
   }
 }
 

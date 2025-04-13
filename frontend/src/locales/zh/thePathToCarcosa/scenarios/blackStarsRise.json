@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the highest amount of doom on an agenda in play.",
-      "cultist": "Reveal another token. If this token is revealed during an attack or evasion attempt against an enemy with doom on it, this skill test automatically fails instead.",
-      "tablet": "Reveal another token. If you fail, place 1 doom on each agenda.",
-      "elderThing": "-2. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "-X. 其中X为场上单张密谋上最多毁灭标记的数量。",
+      "cultist": "再抽取一个标记。如果攻击或躲避尝试带有毁灭标记的敌人期间抽出本标记，本次技能检定自动失败。",
+      "tablet": "再抽取一个标记。如果你失败，在每张密谋上放置1个毁灭标记。",
+      "elderThing": "-2. 如果你失败，在遭遇牌堆和弃牌堆中查找并抽取1个 _拜亚基_ 敌人。"
     },
     "hardExpert": {
-      "skull": "-X. X is the total amount of doom on agendas in play.",
-      "cultist": "Reveal another token. If there is an enemy with 1 or more doom on it at your location, this test automatically fails instead.",
-      "tablet": "Reveal another token. If you do not succeed by at least 1, place 1 doom on each agenda.",
-      "elderThing": "-3. If you fail, search the encounter deck and discard pile for a _Byakhee_ enemy and draw it."
+      "skull": "-X. 其中X为场上密谋上毁灭标记的总数量。",
+      "cultist": "再抽取一个标记。如果你所在地点有敌人带有1个或以上的毁灭标记，本次技能检定自动失败。",
+      "tablet": "再抽取一个标记。如果你没有成功并超过难度至少1点，在每张密谋上放置1个毁灭标记。",
+      "elderThing": "-3. 如果你失败，在遭遇牌堆和弃牌堆中查找并抽取1个 _拜亚基_ 敌人。"
     }
   }
 }

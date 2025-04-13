@@ -1,18 +1,18 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2. You may spend 2 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you succeed, gain 3 resources.",
-      "tablet": "-2. If you fail, discard 3 resources."
+      "skull": "-2. 你可以花费2个资源，将这个标记视为0。",
+      "cultist": "-3. 如果成功，获得3个资源。",
+      "tablet": "-2. 如果失败，丢弃3个资源。"
     },
     "hardExpert": {
-      "skull": "-3. You may spend 3 resources to treat this token as a 0, instead.",
-      "cultist": "-3. If you fail, discard 3 resources.",
-      "tablet": "-2. Discard 3 resources."
+      "skull": "-3. 你可以花费3个资源，将这个标记视为0。",
+      "cultist": "-3. 如果失败，丢弃3个资源。",
+      "tablet": "-2. 丢弃3个资源。"
     }
   },
   "xp": {
-    "resolution1": "Reflects on the night’s events.",
-    "resolution4": "Reflects on the night’s events."
+    "resolution1": "回想起今晚的事件",
+    "resolution4": "回想起今晚的事件"
   }
 }

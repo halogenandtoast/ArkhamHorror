@@ -1,24 +1,24 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1. If you fail, randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it.",
-      "cultist": "-X. X is the amount of horror on you.",
-      "tablet": "-X. X is the base shroud value of your location.",
-      "elderThing": "0. Either randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it, or this test automatically fails instead."
+      "skull": "-1. 如果你失败，从放在一边的 _怪物_ 敌人中随机选择1个放在场景牌堆下，不要查看。 (每次检定限制1次。)",
+      "cultist": "-X. 其中X为你身上的恐惧数量。",
+      "tablet": "-X. 其中X等于你所在地点的基础隐藏值。",
+      "elderThing": "0. 从放在一边的 _怪物_ 敌人中随机选择1个放在场景牌堆下，不要查看，或者本次检定自动失败。"
     },
     "hardExpert": {
-      "skull": "Reveal another token. If you fail, randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it. (Limit once per test.)",
-      "cultist": "-X. X is the amount of horror on you. If you fail, take 1 horror.",
-      "tablet": "-X. X is the base shroud value of your location. If you fail, take 1 horror.",
-      "elderThing": "0. Either randomly choose an enemy from among the set-aside _Monster_ enemies and place it beneath the act deck without looking at it, or this test automatically fails instead."
+      "skull": "再抽取一个标记。如果你失败，从放在一边的 _怪物_ 敌人中随机选择1个放在场景牌堆下，不要查看。 (每次检定限制1次。)",
+      "cultist": "-X. 其中X为你身上的恐惧数量。如果你失败，受到1点恐惧。",
+      "tablet": "-X. 其中X等于你所在地点的基础隐藏值。如果你失败，受到1点恐惧。",
+      "elderThing": "0. 从放在一边的 _怪物_ 敌人中随机选择1个放在场景牌堆下，不要查看，或者本次检定自动失败。"
     }
   },
   "remembered": {
-    "setAFireInTheKitchen": "Set a fire in the kitchen",
-    "incitedAFightAmongstThePatients": "Incited a fight amongst the patients",
-    "distractedTheGuards": "Distracted the guards",
-    "releasedADangerousPatient": "Released a dangerous patient",
-    "knowTheGuardsPatrols": "Know the guards' patrols",
-    "recalledTheWayOut": "Recalled the way out"
+    "setAFireInTheKitchen": "在厨房放了火",
+    "incitedAFightAmongstThePatients": "煽动病人互相攻击",
+    "distractedTheGuards": "分散了守卫的注意力",
+    "releasedADangerousPatient": "释放了一个危险的病人",
+    "knowTheGuardsPatrols": "获知了守卫的巡逻路线",
+    "recalledTheWayOut": "想起了出去的路"
   }
 }

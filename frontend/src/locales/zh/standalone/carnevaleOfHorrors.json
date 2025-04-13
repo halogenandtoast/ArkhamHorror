@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the agenda deck.",
-      "cultist": "Reveal another token. If you fail this test, draw the top card of the encounter deck.",
-      "tablet": "-3. If you fail, deal 1 damage or 1 horror to the nearest Innocent Reveler in play.",
-      "elderThing": "-4. If you fail and Cnidathqua is in play, it attacks you."
+      "skull": "-2. 密谋牌堆底下每有1张无辜的狂欢者，本标记额外-1。",
+      "cultist": "再抽出1个标记。如果你本次检定失败，抽取遭遇牌堆顶的1张卡牌。",
+      "tablet": "-3. 如果你失败，对场上最近的无辜的狂欢者造成1点伤害和1点恐惧。",
+      "elderThing": "-4. 如果你失败且奈达斯奎在场，它攻击你。"
     },
     "hardExpert": {
-      "skull": "-2. This token has an additional -1 for each Innocent Reveler underneath the act or agenda decks.",
-      "cultist": "Reveal another token. If you fail this test, draw the top card of the encounter deck.",
-      "tablet": "-4. Deal 1 damage or 1 horror to the nearest Innocent Reveler in play.",
-      "elderThing": "-6. If you fail and Cnidathqua is in play, it attacks you."
+      "skull": "-2. 场景牌堆和密谋牌堆底下每有1张无辜的狂欢者，本标记额外-1",
+      "cultist": "再抽出1个标记。如果你本次检定失败，抽取遭遇牌堆顶的1张卡牌。",
+      "tablet": "-4. 对场上最近的无辜的狂欢者造成1点伤害和1点恐惧。",
+      "elderThing": "-6. 如果你失败且奈达斯奎在场，它攻击你。"
     }
   }
 }

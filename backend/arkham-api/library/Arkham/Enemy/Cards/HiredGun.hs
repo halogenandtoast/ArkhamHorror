@@ -1,7 +1,8 @@
 module Arkham.Enemy.Cards.HiredGun (hiredGun) where
 
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Treachery.Cards qualified as Treacheries
+import Arkham.Enemy.Import.Lifted hiding (Surge)
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 

@@ -23,7 +23,7 @@ instance HasAbilities DunwichVillage_243 where
       [ restricted
           x
           1
-          (Here <> exists (EnemyWithTitle "Brood of Yog-Sothoth" <> EnemyCanMove <> notAt_ (be x.id)))
+          (Here <> exists (InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth" <> EnemyCanMove <> notAt_ (be x.id)))
           actionAbility
       | x.revealed
       ]

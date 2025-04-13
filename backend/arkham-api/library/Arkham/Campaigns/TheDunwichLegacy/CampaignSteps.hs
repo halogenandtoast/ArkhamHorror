@@ -66,3 +66,8 @@ pattern ReturnToBloodOnTheAltar :: CampaignStep
 pattern ReturnToBloodOnTheAltar <- ScenarioStep "51032"
   where
     ReturnToBloodOnTheAltar = ScenarioStep "51032"
+
+pattern ReturnToUndimensionedAndUnseen :: CampaignStep
+pattern ReturnToUndimensionedAndUnseen <- ScenarioStep "51041"
+  where
+    ReturnToUndimensionedAndUnseen = ScenarioStep "51041"

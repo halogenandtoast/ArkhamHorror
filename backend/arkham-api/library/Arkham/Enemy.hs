@@ -508,6 +508,11 @@ allEnemies =
       SomeEnemyCard theConductorBeastFromBeyondTheGate
     , -- Return to Blood on the Altar
       SomeEnemyCard hiredGun
+    , -- Return to Undimensioned and Unseen
+      SomeEnemyCard broodOfYogSothothChargingBeast
+    , SomeEnemyCard broodOfYogSothothThrashingSpawn
+    , SomeEnemyCard broodOfYogSothothSwellingDevourer
+    , SomeEnemyCard broodOfYogSothothAmorphousTerror
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
     , -- Nathanial Cho

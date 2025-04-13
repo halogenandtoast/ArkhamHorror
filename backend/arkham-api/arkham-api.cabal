@@ -1598,6 +1598,10 @@ library
       Arkham.Enemy.Cards.BrianBurnhamWantsOut
       Arkham.Enemy.Cards.BroodOfYig
       Arkham.Enemy.Cards.BroodOfYogSothoth
+      Arkham.Enemy.Cards.BroodOfYogSothothAmorphousTerror
+      Arkham.Enemy.Cards.BroodOfYogSothothChargingBeast
+      Arkham.Enemy.Cards.BroodOfYogSothothSwellingDevourer
+      Arkham.Enemy.Cards.BroodOfYogSothothThrashingSpawn
       Arkham.Enemy.Cards.BrotherhoodCultist
       Arkham.Enemy.Cards.BrownJenkin
       Arkham.Enemy.Cards.CarlSanfordDeathlessFanatic
@@ -3414,6 +3418,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheCityOfArchives

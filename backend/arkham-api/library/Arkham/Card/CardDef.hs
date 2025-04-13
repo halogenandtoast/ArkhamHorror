@@ -171,6 +171,9 @@ data CardDef = CardDef
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where
   getField = cdAttackOfOpportunityModifiers
 
+instance HasField "title" CardDef Text where
+  getField = nameTitle . toName
+
 instance HasField "permanent" CardDef Bool where
   getField = cdPermanent
 

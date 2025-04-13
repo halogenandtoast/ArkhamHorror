@@ -21,7 +21,7 @@ instance HasAbilities TheyMustBeDestroyed where
         1
         ( not_
             $ oneOf
-              [ exists $ EnemyWithTitle "Brood of Yog-Sothoth"
+              [ exists $ InPlayEnemy $ EnemyWithTitle "Brood of Yog-Sothoth"
               , SetAsideCardExists $ CardWithTitle "Brood of Yog-Sothoth"
               ]
         )

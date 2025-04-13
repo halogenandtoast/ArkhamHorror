@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen) where
+module Arkham.Scenario.Scenarios.UndimensionedAndUnseen (undimensionedAndUnseen, UndimensionedAndUnseen (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas

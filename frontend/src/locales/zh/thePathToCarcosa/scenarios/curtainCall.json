@@ -1,14 +1,14 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1 (-3 instead if you have 3 or more horror on you).",
-      "cultist": "-4. If your location has at least 1 horror on it, take 1 horror (from the token pool). If your location has no horror on it, place 1 horror on it instead.",
+      "skull": "-1 (如果你身上有3点或以上恐惧，改为-3)。",
+      "cultist": "-4. 如果你所在地点有至少1点恐惧，受到1点恐惧(从供应堆拿取)。如果你所在地点没有恐惧，改为在上面放置1点恐惧。",
       "tablet": "@:thePathToCarcosa.curtainCall.tokens.easyStandard.cultist",
       "elderThing": "@:thePathToCarcosa.curtainCall.tokens.easyStandard.cultist"
     },
     "hardExpert": {
-      "skull": "-X, where X is the amount of horror on you. (If you have no horror on you, X is 1.)",
-      "cultist": "-5. If your location has at least 1 horror on it, take 1 horror (from the token pool). If your location has no horror on it, place 1 horror on it instead.",
+      "skull": "-X, 其中X等于你身上的恐惧数量。 (如果你身上没有恐惧，X等于1。)",
+      "cultist": "-5. 如果你所在地点有至少1点恐惧，受到1点恐惧(从供应堆拿取)。如果你所在地点没有恐惧，改为在上面放置1点恐惧。",
       "tablet": "@:thePathToCarcosa.curtainCall.tokens.hardExpert.cultist",
       "elderThing": "@:thePathToCarcosa.curtainCall.tokens.hardExpert.cultist"
     }

@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is the total amount of doom and breaches on your location.",
-      "cultist": "Reveal another token. If there are fewer than 3 breaches on your location, place 1 breach on your location.",
-      "tablet": "-2. For each point you fail by, remove 1 breach from the current act.",
-      "elderSign": "-3. If you fail, place 1 breach on a random location."
+      "skull": "-X. 其中X为你所在地点的裂口和毁灭标记总数。",
+      "cultist": "再抽出1个标记。如果你所在地点的裂口少于3个，在其上放置1个裂口。",
+      "tablet": "-2. 你失败且每低于难度1点，将当前场景的1个裂口移除。",
+      "elderSign": "-3. 如果你失败，在随机1个地点上放置1个裂口。"
     },
     "hardExpert": {
-      "skull": "-X. X is 1 higher than the total amount of doom and breaches on your location.",
-      "cultist": "Reveal another token. If there are fewer than 3 breaches on your location, place 1 breach on your location.",
-      "tablet": "-3. For each point you fail by, remove 1 breach from the current act.",
-      "elderSign": "-4. If you fail, place 1 breach on a random location."
+      "skull": "-X. 其中X为你所在地点的裂口和毁灭标记总数+1。",
+      "cultist": "再抽出1个标记。如果你所在地点的裂口少于3个，在其上放置1个裂口。",
+      "tablet": "-3. 你失败且每低于难度1点，将当前场景的1个裂口移除。",
+      "elderSign": "-4. 如果你失败，在随机1个地点上放置1个裂口。"
     }
   }
 }

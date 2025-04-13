@@ -1,17 +1,17 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-1. For each point you fail by, discard the top card of the encounter deck.",
-      "tablet": "-1. If you fail, after this test resolves, draw the bottommost treachery in the encounter discard pile.",
-      "elderThing": "-3. If you fail, choose an exhausted or damaged _Witch_ enemy at your location or at a connecting location. Ready that enemy and heal all damage from it."
+      "skull": "-1. 你失败且每低于难度1点，丢弃遭遇牌堆顶的1张卡牌。",
+      "tablet": "-1. 如果你失败，在本次检定结算后，抽取遭遇弃牌堆最底下的一张诡计卡。",
+      "elderThing": "-3. 如果你失败，选择你所在地点或连接地点上的1个被消耗或已受伤的 _女巫_ 敌人。准备该敌人并治愈该敌人的所有伤害。"
     },
     "hardExpert": {
-      "skull": "-2. Discard cards from the top of the encounter deck equal to this test's difficulty.",
-      "tablet": "-2. If you fail, after this test resolves, draw the bottommost treachery in the encounter discard pile.",
-      "elderThing": "-4. If you fail, ready each _Witch_ enemy at your location and at each connecting location. Heal all damage from each of those enemies."
+      "skull": "-2. 从遭遇牌堆顶弃牌，弃掉的张数等于本次检定的难度。",
+      "tablet": "-2. 如果你失败，在本次检定结算后，抽取遭遇弃牌堆最底下的一张诡计卡。",
+      "elderThing": "-4. 如果你失败，准备你所在地点和所有连接地点的所有 _女巫_ 敌人。治愈这些敌人的所有伤害。"
     }
   },
   "xp": {
-    "bonus": "Gains insight into Arkham’s mysterious past."
+    "bonus": "得知阿卡姆神秘的往昔。"
   }
 }

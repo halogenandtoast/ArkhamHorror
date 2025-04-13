@@ -1,16 +1,16 @@
 {
   "tokens": {
     "easyStandard": {
-      "skull": "-X. X is 1 higher than the number of copies of Unfinished Business in the victory display.",
-      "cultist": "-3. Until the end of the round, each Heretic enemy in play gets +1 fight and +1 evade.",
-      "tablet": "-3. If you fail, trigger the forced ability on a copy of Unfinished Business in yout threat area as if it were the end of the round.",
-      "elderThing": "-2. If you fail and this is an attack or evasion attempt, resolve each haunted ability on your location."
+      "skull": "-X. 其中X等于胜利牌区内的未了之事的数量+1。",
+      "cultist": "-3. 本轮结束前，场上每个异端者敌人+1攻击值和+1躲避值。",
+      "tablet": "-3. 如果你失败，触发你威胁区域的一张未了之事上的强制能力，如同此时是一轮结束。",
+      "elderThing": "-2. 如果你失败且本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。"
     },
     "hardExpert": {
-      "skull": "-X. X is the number of copies of Unfinished Business in the victory display. Reveal another token.",
-      "cultist": "-4. Until the end of the round, each Heretic enemy in play gets +1 fight and +1 evade.",
-      "tablet": "-4. If you fail, trigger the forced ability on a copy of Unfinished Business in your threat area as if it were the end of the round.",
-      "elderThing": "-2. If this is an attack or evasion attempt, resolve each haunted ability on your location."
+      "skull": "-X. 其中X等于胜利牌区内的未了之事的数量。再抽出一个标记。",
+      "cultist": "-4. 本轮结束前，场上每个异端者敌人+1攻击值和+1躲避值。",
+      "tablet": "-4. 如果你失败，触发你威胁区域的一张未了之事上的强制能力，如同此时是一轮结束。",
+      "elderThing": "-2. 如果本次检定为攻击或躲避尝试，结算你所在地点的所有闹鬼能力。"
     }
   }
 }

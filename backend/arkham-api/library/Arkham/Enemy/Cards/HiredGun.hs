@@ -7,7 +7,7 @@ import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher
-import Arkham.Trait
+import Arkham.Trait (Trait(Criminal))
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype HiredGun = HiredGun EnemyAttrs

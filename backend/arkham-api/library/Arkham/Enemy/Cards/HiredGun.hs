@@ -1,10 +1,14 @@
 module Arkham.Enemy.Cards.HiredGun (hiredGun) where
 
+import Arkham.Card
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Enemy.Import.Lifted hiding (Surge)
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
+import Arkham.Matcher
+import Arkham.Trait
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype HiredGun = HiredGun EnemyAttrs
   deriving anyclass IsEnemy

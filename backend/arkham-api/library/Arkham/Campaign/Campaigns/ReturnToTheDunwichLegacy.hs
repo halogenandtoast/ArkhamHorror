@@ -26,9 +26,9 @@ instance IsCampaign ReturnToTheDunwichLegacy where
         else Just (UpgradeDeckStep ReturnToExtracurricularActivities)
     InterludeStep 1 _ -> Just (UpgradeDeckStep ReturnToTheMiskatonicMuseum)
     ReturnToTheMiskatonicMuseum -> Just (UpgradeDeckStep ReturnToTheEssexCountyExpress)
-    ReturnToTheEssexCountyExpress -> Just (UpgradeDeckStep BloodOnTheAltar)
-    BloodOnTheAltar ->
-      case lookup "02195" (toAttrs a).resolutions of
+    ReturnToTheEssexCountyExpress -> Just (UpgradeDeckStep ReturnToBloodOnTheAltar)
+    ReturnToBloodOnTheAltar ->
+      case lookup "51032" (toAttrs a).resolutions of
         Just NoResolution -> Just (UpgradeDeckStep UndimensionedAndUnseen)
         _ -> Just $ InterludeStep 2 Nothing
     InterludeStep 2 _ -> Just (UpgradeDeckStep UndimensionedAndUnseen)

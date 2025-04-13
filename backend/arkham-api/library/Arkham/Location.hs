@@ -824,6 +824,14 @@ allLocations =
       SomeLocationCard returnToEngineCar
     , SomeLocationCard freightCar
     , SomeLocationCard baggageCar
+    , -- Return to Blood on the Altar
+      SomeLocationCard villageCommonsSilentDecay
+    , SomeLocationCard returnToBishopsBrook
+    , SomeLocationCard returnToBurnedRuins
+    , SomeLocationCard returnToOsbornsGeneralStore
+    , SomeLocationCard returnToCongregationalChurch
+    , SomeLocationCard returnToHouseInTheReeds
+    , SomeLocationCard returnToSchoolhouse
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

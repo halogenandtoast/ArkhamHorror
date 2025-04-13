@@ -1,10 +1,9 @@
-module Arkham.Location.Cards.Schoolhouse_213 (schoolhouse_213, Schoolhouse_213 (..)) where
+module Arkham.Location.Cards.Schoolhouse_213 (schoolhouse_213) where
 
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (schoolhouse_213)
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (withDrawCardUnderneathAction)
 import Arkham.Matcher
 
 newtype Schoolhouse_213 = Schoolhouse_213 LocationAttrs

@@ -1,14 +1,8 @@
-module Arkham.Location.Cards.VillageCommons (
-  villageCommons,
-  VillageCommons (..),
-) where
+module Arkham.Location.Cards.VillageCommons (villageCommons) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Location.Cards qualified as Cards (villageCommons)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,8 +12,7 @@ villageCommons :: LocationCard VillageCommons
 villageCommons = location VillageCommons Cards.villageCommons 3 (Static 0)
 
 instance HasAbilities VillageCommons where
-  getAbilities (VillageCommons a) =
-    withBaseAbilities a $ [locationResignAction a]
+  getAbilities (VillageCommons a) = extendRevealed1 a $ locationResignAction a
 
 instance RunMessage VillageCommons where
   runMessage msg (VillageCommons attrs) =

@@ -4,7 +4,6 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards (schoolhouse_212)
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Runner (withDrawCardUnderneathAction)
 import Arkham.Matcher
 
 newtype Schoolhouse_212 = Schoolhouse_212 LocationAttrs

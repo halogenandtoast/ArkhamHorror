@@ -38,6 +38,7 @@ import Arkham.Location.Runner as X (
   veiled,
   veiled1,
   withResignAction,
+  withDrawCardUnderneathAction,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,
   pattern PassedThisSkillTest,

@@ -506,6 +506,8 @@ allEnemies =
       SomeEnemyCard enthralledSecurityGuard
     , -- Return to Extracurricular Activities
       SomeEnemyCard theConductorBeastFromBeyondTheGate
+    , -- Return to Blood on the Altar
+      SomeEnemyCard hiredGun
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
     , -- Nathanial Cho

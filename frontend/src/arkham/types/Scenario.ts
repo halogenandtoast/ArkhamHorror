@@ -255,6 +255,8 @@ export function scenarioToI18n(scenario: Scenario): string {
     case "c51020": return "theDunwichLegacy.theMiskatonicMuseum"
     case "c51025": return "theDunwichLegacy.theEssexCountyExpress"
     case "c51032": return "theDunwichLegacy.bloodOnTheAltar"
+    case "c51041": return "theDunwichLegacy.undimensionedAndUnseen"
+    case "c51047": return "theDunwichLegacy.whereDoomAwaits"
     case "c81001": return "standalone.curseOfTheRougarou"
     case "c82001": return "standalone.carnevaleOfHorrors"
     case "c84001": return "standalone.murderAtTheExcelsiorHotel"

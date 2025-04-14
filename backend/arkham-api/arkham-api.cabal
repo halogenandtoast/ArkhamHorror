@@ -1037,6 +1037,7 @@ library
       Arkham.Asset.Assets.MrPeabody
       Arkham.Asset.Assets.MrRook
       Arkham.Asset.Assets.MysteriousRaven
+      Arkham.Asset.Assets.NaomiOBannionRuthlessTactician
       Arkham.Asset.Assets.NauticalCharts
       Arkham.Asset.Assets.NephthysHuntressOfBast4
       Arkham.Asset.Assets.Newspaper
@@ -2580,6 +2581,7 @@ library
       Arkham.Location.Brazier
       Arkham.Location.BreachStatus
       Arkham.Location.Cards
+      Arkham.Location.Cards.AbandonedCamp
       Arkham.Location.Cards.AbandonedChapel
       Arkham.Location.Cards.AbandonedChapelSpectral
       Arkham.Location.Cards.AbandonedSite
@@ -2611,6 +2613,7 @@ library
       Arkham.Location.Cards.ArkhamWoodsWoodenBridge
       Arkham.Location.Cards.ArtGallery
       Arkham.Location.Cards.AscendingPath
+      Arkham.Location.Cards.AscendingPathWarpedAndTwisted
       Arkham.Location.Cards.AsylumHallsEasternPatientWing_170
       Arkham.Location.Cards.AsylumHallsEasternPatientWing_171
       Arkham.Location.Cards.AsylumHallsWesternPatientWing_168
@@ -2633,6 +2636,7 @@ library
       Arkham.Location.Cards.Basement
       Arkham.Location.Cards.BasementHall
       Arkham.Location.Cards.BaseOfTheHill
+      Arkham.Location.Cards.BaseOfTheHillWarpedAndTwisted
       Arkham.Location.Cards.BaseOfTheSteps
       Arkham.Location.Cards.Bathroom
       Arkham.Location.Cards.Bedroom
@@ -2818,6 +2822,7 @@ library
       Arkham.Location.Cards.FalconPointCliffside
       Arkham.Location.Cards.FalconPointGatehouse
       Arkham.Location.Cards.FarAboveYourHouse
+      Arkham.Location.Cards.FathomlessLake
       Arkham.Location.Cards.FaubourgMarigny
       Arkham.Location.Cards.FirstNationalGrocery
       Arkham.Location.Cards.FirstNationalGroceryInTooDeep
@@ -3426,6 +3431,7 @@ library
       Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
       Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
+      Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
       Arkham.Scenario.Scenarios.ShatteredAeons
       Arkham.Scenario.Scenarios.TheBoundaryBeyond
       Arkham.Scenario.Scenarios.TheCityOfArchives
@@ -3551,6 +3557,7 @@ library
       Arkham.Scenarios.WakingNightmare.Helpers
       Arkham.Scenarios.WakingNightmare.InfestationBag
       Arkham.Scenarios.WeaverOfTheCosmos.Helpers
+      Arkham.Scenarios.WhereDoomAwaits.Helpers
       Arkham.Scenarios.WhereDoomAwaits.Story
       Arkham.Scenarios.WhereTheGodsDwell.Helpers
       Arkham.Script

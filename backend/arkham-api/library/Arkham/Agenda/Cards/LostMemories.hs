@@ -23,14 +23,12 @@ lostMemories :: AgendaCard LostMemories
 lostMemories = agenda (2, A) LostMemories Cards.lostMemories (Static 7)
 
 instance HasModifiersFor LostMemories where
-  getModifiersFor (LostMemories attrs) =
-    if onSide A attrs
-      then modifySelect attrs Anyone [HandSize (-2)]
-      else pure mempty
+  getModifiersFor (LostMemories attrs) = when (onSide A attrs) do
+    modifySelect attrs Anyone [HandSize (-2)]
 
 instance RunMessage LostMemories where
   runMessage msg a@(LostMemories attrs) = case msg of
-    AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       hasPendant <- getInvestigatorsWithSupply Pendant
       shouldMoveCustodian <- selectAny $ assetIs Assets.theCustodian <> UncontrolledAsset
 

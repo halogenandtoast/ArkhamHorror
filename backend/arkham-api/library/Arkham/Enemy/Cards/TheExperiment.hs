@@ -3,13 +3,11 @@ module Arkham.Enemy.Cards.TheExperiment (theExperiment) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted hiding (EnemyDefeated)
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Prelude
 
 newtype TheExperiment = TheExperiment EnemyAttrs
   deriving anyclass IsEnemy
@@ -32,11 +30,12 @@ instance HasModifiersFor TheExperiment where
     modifySelf attrs [HealthModifier modifier]
 
 instance RunMessage TheExperiment where
-  runMessage msg e@(TheExperiment attrs) = case msg of
+  runMessage msg e@(TheExperiment attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ Ready $ toTarget attrs
+      readyThis attrs
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
+      addToVictory attrs
       push $ AdvanceToAct 1 Acts.campusSafety B (toSource attrs)
       pure e
-    _ -> TheExperiment <$> runMessage msg attrs
+    _ -> TheExperiment <$> liftRunMessage msg attrs

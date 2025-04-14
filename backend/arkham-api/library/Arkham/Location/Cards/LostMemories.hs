@@ -1,15 +1,12 @@
 module Arkham.Location.Cards.LostMemories (lostMemories) where
 
 import Arkham.Ability
-import Arkham.Classes
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards (lostMemories)
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Timing qualified as Timing
 
 newtype LostMemories = LostMemories LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,24 +16,16 @@ lostMemories :: LocationCard LostMemories
 lostMemories = location LostMemories Cards.lostMemories 2 (PerPlayer 1)
 
 instance HasAbilities LostMemories where
-  getAbilities (LostMemories attrs) =
-    withBaseAbilities attrs
-      $ [ restrictedAbility
-            attrs
-            1
-            (InvestigatorExists $ You <> InvestigatorWithAnyActionsRemaining)
-            $ ForcedAbility
-            $ RevealLocation Timing.After You
-            $ LocationWithId
-            $ toId attrs
-        | locationRevealed attrs
-        ]
+  getAbilities (LostMemories a) =
+    extendRevealed1 a
+      $ restricted a 1 (youExist InvestigatorWithAnyActionsRemaining)
+      $ forced
+      $ RevealLocation #after You (be a)
 
 instance RunMessage LostMemories where
-  runMessage msg l@(LostMemories attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
+  runMessage msg l@(LostMemories attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
-      l
-        <$ push
-          (InvestigatorAssignDamage iid source DamageAny 0 actionRemainingCount)
-    _ -> LostMemories <$> runMessage msg attrs
+      assignHorror iid (attrs.ability 1) actionRemainingCount
+      pure l
+    _ -> LostMemories <$> liftRunMessage msg attrs

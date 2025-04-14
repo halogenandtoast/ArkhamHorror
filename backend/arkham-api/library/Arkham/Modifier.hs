@@ -127,6 +127,7 @@ data ModifierType
   | CanSpendResourcesOnCardFromInvestigator InvestigatorMatcher CardMatcher
   | CanSpendUsesAsResourceOnCardFromInvestigator AssetId UseType InvestigatorMatcher CardMatcher
   | CancelAnyChaosToken ChaosTokenMatcher
+  | CancelAnyChaosTokenAndDrawAnother ChaosTokenMatcher
   | CancelAttacksByEnemies Card EnemyMatcher
   | CancelEffects
   | CancelSkills

@@ -101,6 +101,7 @@ allLocationCards =
       (toCardCode &&& id)
       [ aPocketInTime
       , aTearInThePath
+      , abandonedCamp
       , abandonedChapel
       , abandonedChapelSpectral
       , abandonedSite
@@ -131,6 +132,7 @@ allLocationCards =
       , arkhamWoodsWoodenBridge
       , artGallery
       , ascendingPath
+      , ascendingPathWarpedAndTwisted
       , asylumHallsWesternPatientWing_168
       , asylumHallsWesternPatientWing_169
       , asylumHallsEasternPatientWing_170
@@ -150,6 +152,7 @@ allLocationCards =
       , barrierCamp
       , baseCamp
       , baseOfTheHill
+      , baseOfTheHillWarpedAndTwisted
       , baseOfTheSteps
       , basement
       , basementHall
@@ -335,6 +338,7 @@ allLocationCards =
       , falconPointCliffside
       , falconPointGatehouse
       , farAboveYourHouse
+      , fathomlessLake
       , faubourgMarigny
       , firstNationalGrocery
       , firstNationalGroceryInTooDeep
@@ -8495,6 +8499,54 @@ returnToSchoolhouse =
     Moon
     [Plus, Squiggle, Circle]
     ReturnToBloodOnTheAltar
+
+baseOfTheHillWarpedAndTwisted :: CardDef
+baseOfTheHillWarpedAndTwisted =
+  location
+    "51048"
+    ("Base of the Hill" <:> "Warped and Twisted")
+    [Dunwich, SentinelHill]
+    Triangle
+    [Square, Plus, Squiggle, Hourglass, Droplet]
+    ReturnToWhereDoomAwaits
+
+ascendingPathWarpedAndTwisted :: CardDef
+ascendingPathWarpedAndTwisted =
+  location
+    "51049"
+    ("Ascending Path" <:> "Warped and Twisted")
+    [Dunwich, SentinelHill]
+    Square
+    [Triangle, Diamond, T, Equals, Moon, Trefoil]
+    WhereDoomAwaits
+
+abandonedCamp :: CardDef
+abandonedCamp =
+  locationWithUnrevealed
+    "51050"
+    "Diverging Path"
+    [Dunwich, Woods]
+    NoSymbol
+    []
+    "Abandoned Camp"
+    [Dunwich, Woods]
+    Droplet
+    [Triangle, Trefoil]
+    ReturnToWhereDoomAwaits
+
+fathomlessLake :: CardDef
+fathomlessLake =
+  locationWithUnrevealed
+    "51051"
+    "Altered Path"
+    [Dunwich, Woods, Altered]
+    NoSymbol
+    []
+    "Fathomless Lake"
+    [Dunwich, Woods, Altered]
+    Trefoil
+    [Square, Droplet]
+    WhereDoomAwaits
 
 cursedShores :: CardDef
 cursedShores =

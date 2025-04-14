@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.WhereDoomAwaits (whereDoomAwaits) where
+module Arkham.Scenario.Scenarios.WhereDoomAwaits (whereDoomAwaits, WhereDoomAwaits (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Agenda.Cards qualified as Agendas

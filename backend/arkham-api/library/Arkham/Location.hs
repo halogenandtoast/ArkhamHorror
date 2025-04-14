@@ -832,6 +832,11 @@ allLocations =
     , SomeLocationCard returnToCongregationalChurch
     , SomeLocationCard returnToHouseInTheReeds
     , SomeLocationCard returnToSchoolhouse
+    , -- Return to Where Doom Awaits
+      SomeLocationCard baseOfTheHillWarpedAndTwisted
+    , SomeLocationCard ascendingPathWarpedAndTwisted
+    , SomeLocationCard abandonedCamp
+    , SomeLocationCard fathomlessLake
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

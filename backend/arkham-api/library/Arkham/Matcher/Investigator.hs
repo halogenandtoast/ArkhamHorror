@@ -120,6 +120,7 @@ data InvestigatorMatcher
   | InvestigatorWithModifier ModifierType
   | InvestigatorEngagedWith EnemyMatcher
   | InvestigatorWithActionsRemaining ValueMatcher
+  | InvestigatorWithActionsPerformed ValueMatcher
   | InvestigatorWithClues ValueMatcher
   | InvestigatorWithCluesInPool ValueMatcher
   | InvestigatorWithDamage ValueMatcher

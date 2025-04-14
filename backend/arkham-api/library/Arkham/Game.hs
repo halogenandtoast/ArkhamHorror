@@ -902,6 +902,11 @@ getInvestigatorsMatching matcher = do
         $ field InvestigatorRemainingActions
         . toId
         >=> (`gameValueMatches` gameValueMatcher)
+    InvestigatorWithActionsPerformed gameValueMatcher ->
+      flip filterM as
+        $ fieldMap InvestigatorActionsPerformed length
+        . toId
+        >=> (`gameValueMatches` gameValueMatcher)
     InvestigatorWithDoom gameValueMatcher ->
       flip filterM as $ (`gameValueMatches` gameValueMatcher) . attr investigatorDoom
     InvestigatorWithDamage gameValueMatcher -> flip filterM as $ \i -> do

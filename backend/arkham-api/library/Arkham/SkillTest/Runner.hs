@@ -159,6 +159,14 @@ instance RunMessage SkillTest where
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin
       pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
+    ChaosTokenCanceled _ _ token -> do
+      let cancelIf t = if t.id == token.id then token { chaosTokenCancelled = True } else token
+      pure
+        $ s
+        & (setAsideChaosTokensL %~ map cancelIf)
+        & (revealedChaosTokensL %~ map cancelIf)
+        & (resolvedChaosTokensL %~ map cancelIf)
+        & (toResolveChaosTokensL %~ map cancelIf)
     ReturnChaosTokens tokens -> do
       pure
         $ s

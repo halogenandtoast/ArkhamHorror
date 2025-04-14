@@ -513,6 +513,8 @@ allEnemies =
     , SomeEnemyCard broodOfYogSothothThrashingSpawn
     , SomeEnemyCard broodOfYogSothothSwellingDevourer
     , SomeEnemyCard broodOfYogSothothAmorphousTerror
+    , -- Return to Lost in Time and Space
+      SomeEnemyCard sethBishopThrallOfYogSothoth
     , -- Yog Sothoth's Emissaries
       SomeEnemyCard vassalOfTheLurker
     , -- Nathanial Cho

@@ -287,6 +287,8 @@ allAgendas =
       -- Return to the Essex County Express
       SomeAgendaCard whereTheresSmoke
     , SomeAgendaCard aTearInRealityV2
+    , -- Return to Lost in Time and Space
+      SomeAgendaCard breakingThroughV2
     , -- Curse of the Rougarou
       SomeAgendaCard aCreatureOfTheBayou
     , SomeAgendaCard theRougarouFeeds

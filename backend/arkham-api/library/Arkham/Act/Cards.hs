@@ -93,6 +93,7 @@ allActCards =
       , inAzathothsDomain
       , infiltratingTheLodge
       , intoTheBeyond
+      , intoTheBeyondV2
       , intoTheDarkness
       , intoTheRuins
       , intoTheRuinsOnceAgain
@@ -887,6 +888,9 @@ theFinalMirage = act "08681" "The Final Mirage" 4 StirringInTheDeep
 
 mysteriousGateway :: CardDef
 mysteriousGateway = act "50012" "Mysterious Gateway" 1 ReturnToTheGathering
+
+intoTheBeyondV2 :: CardDef
+intoTheBeyondV2 = act "51055" "Into the Beyond (v. II)" 2 ReturnToLostInTimeAndSpace
 
 findingLadyEsprit :: CardDef
 findingLadyEsprit = act "81005" "Finding Lady Esprit" 1 TheBayou

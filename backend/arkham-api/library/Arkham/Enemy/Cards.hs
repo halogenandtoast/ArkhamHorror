@@ -340,6 +340,7 @@ allEncounterEnemyCards =
       , servantOfManyMouths
       , servantOfTheLurker
       , sethBishop
+      , sethBishopThrallOfYogSothoth
       , shadowHound
       , silasBishop
       , skitteringNonsense
@@ -2887,6 +2888,14 @@ broodOfYogSothothAmorphousTerror =
     { cdCardTraits = setFromList [Monster, Abomination]
     , cdKeywords = setFromList [Keyword.Massive]
     , cdVictoryPoints = Just 1
+    }
+
+sethBishopThrallOfYogSothoth :: CardDef
+sethBishopThrallOfYogSothoth =
+  (enemy "51056" ("Seth Bishop" <:> "Thrall of Yog-Sothoth") ReturnToLostInTimeAndSpace 1)
+    { cdCardTraits = setFromList [Humanoid, Monster, Abomination, Elite]
+    , cdKeywords = setFromList [Keyword.Retaliate]
+    , cdVictoryPoints = Just 2
     }
 
 vassalOfTheLurker :: CardDef

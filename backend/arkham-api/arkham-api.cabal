@@ -121,6 +121,7 @@ library
       Arkham.Act.Cards.InPursuitOfTheLiving
       Arkham.Act.Cards.InTheBellyOfTheMoonBeast
       Arkham.Act.Cards.IntoTheBeyond
+      Arkham.Act.Cards.IntoTheBeyondV2
       Arkham.Act.Cards.IntoTheDarkness
       Arkham.Act.Cards.IntoTheRuins
       Arkham.Act.Cards.IntoTheRuinsOnceAgain
@@ -292,6 +293,7 @@ library
       Arkham.Agenda.Cards.BesetByMonsters
       Arkham.Agenda.Cards.BidingItsTime
       Arkham.Agenda.Cards.BreakingThrough
+      Arkham.Agenda.Cards.BreakingThroughV2
       Arkham.Agenda.Cards.CallingForthTheOldOnes
       Arkham.Agenda.Cards.CallOfMadness
       Arkham.Agenda.Cards.CelestialAlignment
@@ -1830,6 +1832,7 @@ library
       Arkham.Enemy.Cards.ServantOfManyMouths
       Arkham.Enemy.Cards.ServantOfTheLurker
       Arkham.Enemy.Cards.SethBishop
+      Arkham.Enemy.Cards.SethBishopThrallOfYogSothoth
       Arkham.Enemy.Cards.ShadowAgents
       Arkham.Enemy.Cards.ShadowHound
       Arkham.Enemy.Cards.SilasBishop
@@ -3077,6 +3080,7 @@ library
       Arkham.Location.Cards.QuietHalls_131
       Arkham.Location.Cards.QuietHalls_135
       Arkham.Location.Cards.RailroadStation
+      Arkham.Location.Cards.RealmsBeyondAllInOne
       Arkham.Location.Cards.RecordsOffice
       Arkham.Location.Cards.RehearsalRoom
       Arkham.Location.Cards.RemnantsOfLakesCamp
@@ -3424,6 +3428,7 @@ library
       Arkham.Scenario.Scenarios.PointOfNoReturn
       Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
       Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
+      Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
       Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress
       Arkham.Scenario.Scenarios.ReturnToTheGathering

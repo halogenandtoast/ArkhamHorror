@@ -1,14 +1,24 @@
 module Arkham.Enemy.Cards.BroodOfYogSothothAmorphousTerror (broodOfYogSothothAmorphousTerror) where
 
+import Arkham.Ability
 import Arkham.Asset.Cards.TheDunwichLegacy qualified as Assets
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Matcher
 
 newtype BroodOfYogSothothAmorphousTerror = BroodOfYogSothothAmorphousTerror EnemyAttrs
   deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+broodOfYogSothothAmorphousTerror :: EnemyCard BroodOfYogSothothAmorphousTerror
+broodOfYogSothothAmorphousTerror =
+  enemy
+    BroodOfYogSothothAmorphousTerror
+    Cards.broodOfYogSothothAmorphousTerror
+    (6, Static 1, 3)
+    (1, 2)
 
 instance HasModifiersFor BroodOfYogSothothAmorphousTerror where
   getModifiersFor (BroodOfYogSothothAmorphousTerror a) = do
@@ -19,14 +29,25 @@ instance HasModifiersFor BroodOfYogSothothAmorphousTerror where
       , CanOnlyBeAttackedByAbilityOn $ singleton Assets.esotericFormula.cardCode
       ]
 
-broodOfYogSothothAmorphousTerror :: EnemyCard BroodOfYogSothothAmorphousTerror
-broodOfYogSothothAmorphousTerror =
-  enemy
-    BroodOfYogSothothAmorphousTerror
-    Cards.broodOfYogSothothAmorphousTerror
-    (0, Static 1, 0)
-    (0, 0)
+instance HasAbilities BroodOfYogSothothAmorphousTerror where
+  getAbilities (BroodOfYogSothothAmorphousTerror a) =
+    extend
+      a
+      [ mkAbility a 1
+          $ forced
+          $ oneOf
+            [ EnemyEnters #after YourLocation (be a)
+            , Enters #after You (locationWithEnemy a)
+            ]
+      ]
 
 instance RunMessage BroodOfYogSothothAmorphousTerror where
-  runMessage msg (BroodOfYogSothothAmorphousTerror attrs) = runQueueT $ case msg of
+  runMessage msg e@(BroodOfYogSothothAmorphousTerror attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      sid <- getRandom
+      beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      pure e
+    FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      assignHorror iid (attrs.ability 1) 1
+      pure e
     _ -> BroodOfYogSothothAmorphousTerror <$> liftRunMessage msg attrs

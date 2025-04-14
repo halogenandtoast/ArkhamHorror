@@ -313,6 +313,7 @@ allEncounterTreacheryCards =
       , iceShaft
       , idleHands
       , illOmen
+      , imperceptableCreature
       , incriminatingEvidence
       , indescribableApparition
       , inexplicableCold
@@ -2871,6 +2872,13 @@ nightBeyondVoid =
   (treachery "51024" "Night Beyond Void" ReturnToTheMiskatonicMuseum 2)
     { cdCardTraits = setFromList [Power]
     , cdVictoryPoints = Just 0
+    }
+
+imperceptableCreature :: CardDef
+imperceptableCreature =
+  (treachery "51046" "Imperceptable Creature" ReturnToUndimensionedAndUnseen 2)
+    { cdCardTraits = setFromList [Power]
+    , cdKeywords = setFromList [Keyword.Surge]
     }
 
 hauntingRecollections :: CardDef

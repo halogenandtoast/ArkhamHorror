@@ -603,6 +603,8 @@ allTreacheries =
     , -- Return to the Miskatonic Museum
       SomeTreacheryCard darkBidding
     , SomeTreacheryCard nightBeyondVoid
+    , -- Return to Undimensioned and Unseen
+      SomeTreacheryCard imperceptableCreature
     , -- Beyond the Threshold
       SomeTreacheryCard hauntingRecollections
     , SomeTreacheryCard aBalefulWelcome

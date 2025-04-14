@@ -440,6 +440,7 @@ allLocationCards =
       , icyWastes
       , idolChamber
       , ilekVad
+      , indecipherableStairs
       , infinityOfDarkness
       , infirmary
       , infirmaryFatalMirage
@@ -8570,6 +8571,17 @@ realmsBeyondAllInOne =
       [Otherworld]
       Droplet
       [Circle]
+      ReturnToLostInTimeAndSpace
+
+indecipherableStairs :: CardDef
+indecipherableStairs =
+  singleSided
+    $ location
+      "51058"
+      "Indecipherable Stairs"
+      [Otherworld, Extradimensional]
+      Triangle
+      [Square, Equals]
       ReturnToLostInTimeAndSpace
 
 cursedShores :: CardDef

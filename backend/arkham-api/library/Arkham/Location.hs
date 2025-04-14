@@ -839,6 +839,7 @@ allLocations =
     , SomeLocationCard fathomlessLake
     , -- Return to Lost in Time and Space
       SomeLocationCard realmsBeyondAllInOne
+    , SomeLocationCard indecipherableStairs
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

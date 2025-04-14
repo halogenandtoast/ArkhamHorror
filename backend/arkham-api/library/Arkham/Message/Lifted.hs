@@ -2707,3 +2707,6 @@ priority :: ReverseQueue m => QueueT Message m () -> m ()
 priority body = do
   msgs <- evalQueueT body
   push $ Priority $ Run msgs
+
+flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
+flipCluesToDoom target n = push $ FlipClues (toTarget target) n

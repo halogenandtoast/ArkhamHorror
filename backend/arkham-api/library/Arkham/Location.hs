@@ -840,6 +840,8 @@ allLocations =
     , -- Return to Lost in Time and Space
       SomeLocationCard realmsBeyondAllInOne
     , SomeLocationCard indecipherableStairs
+    , SomeLocationCard toweringLuminosity
+    , SomeLocationCard unstableVortex
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

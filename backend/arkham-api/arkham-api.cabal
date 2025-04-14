@@ -3249,6 +3249,7 @@ library
       Arkham.Location.Cards.TitanicRamp_184
       Arkham.Location.Cards.TitanicRamp_185
       Arkham.Location.Cards.TombOfShadows
+      Arkham.Location.Cards.ToweringLuminosity
       Arkham.Location.Cards.TowerOfKoth
       Arkham.Location.Cards.TowersOfPnakotus
       Arkham.Location.Cards.TownHall
@@ -3269,6 +3270,7 @@ library
       Arkham.Location.Cards.UnfamiliarChamber
       Arkham.Location.Cards.UniversityHalls
       Arkham.Location.Cards.UnmarkedTomb
+      Arkham.Location.Cards.UnstableVortex
       Arkham.Location.Cards.UnvisitedIsleDecayedWillow
       Arkham.Location.Cards.UnvisitedIsleForsakenWoods
       Arkham.Location.Cards.UnvisitedIsleHauntedSpring

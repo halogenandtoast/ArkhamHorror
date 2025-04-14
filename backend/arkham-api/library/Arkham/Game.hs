@@ -2897,6 +2897,13 @@ enemyMatcherFilter es matcher' = case matcher' of
         case placement of
           AttachedToEnemy eid' -> eid' == enemy.id
           _ -> False
+  EnemyWithAttachedTreachery treacheryMatcher -> do
+    treacheries <- selectWithField TreacheryPlacement treacheryMatcher
+    pure $ flip filter es \enemy -> do
+      flip any treacheries \(_, placement) ->
+        case placement of
+          AttachedToEnemy eid' -> eid' == enemy.id
+          _ -> False
   FarthestEnemyFromAll enemyMatcher -> do
     locations <- select $ FarthestLocationFromAll $ LocationWithEnemy enemyMatcher
     flip filterM es \enemy -> do

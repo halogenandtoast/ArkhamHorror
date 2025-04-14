@@ -18,6 +18,7 @@ import {-# SOURCE #-} Arkham.Matcher.Investigator
 import {-# SOURCE #-} Arkham.Matcher.Location
 import {-# SOURCE #-} Arkham.Matcher.Source
 import {-# SOURCE #-} Arkham.Matcher.Target
+import {-# SOURCE #-} Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
@@ -72,6 +73,7 @@ data EnemyMatcher
   | EnemyWithAsset AssetMatcher
   | EnemyWithAttachedEvent EventMatcher
   | EnemyWithAttachedAsset AssetMatcher
+  | EnemyWithAttachedTreachery TreacheryMatcher
   | FarthestEnemyFrom InvestigatorId EnemyMatcher
   | FarthestEnemyFromAll EnemyMatcher
   | NearestEnemyTo InvestigatorId EnemyMatcher

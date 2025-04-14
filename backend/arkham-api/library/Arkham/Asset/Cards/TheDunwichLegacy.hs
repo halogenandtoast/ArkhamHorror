@@ -625,6 +625,16 @@ theRedGlovedMan5 =
 
 engineer :: CardDef
 engineer =
-  (storyAsset "51031" "Engineer" 2 ReturnToTheEssexCountyExpress)
+  (storyAsset "51031" "Engineer" 0 ReturnToTheEssexCountyExpress)
     { cdCardTraits = setFromList [Ally, Bystander]
+    , cdCost = Nothing
+    }
+
+naomiOBannionRuthlessTactician :: CardDef
+naomiOBannionRuthlessTactician =
+  (storyAsset "51052" ("Naomi O'Bannion" <:> "Ruthless Tactician") 5 ReturnToWhereDoomAwaits)
+    { cdCardTraits = setFromList [Ally, Criminal, Syndicate]
+    , cdSlots = [#ally]
+    , cdSkills = [#intellect, #intellect, #combat, #combat]
+    , cdUnique = True
     }

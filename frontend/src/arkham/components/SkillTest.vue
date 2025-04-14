@@ -413,6 +413,9 @@ const tokenEffects = computed(() => {
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">
             <span class="text">Reveal another chaos token</span>
           </template>
+          <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'CancelAnyChaosTokenAndDrawAnother'">
+            <span class="text">Cancel matching chaos tokens and reveal another</span>
+          </template>
         </div>
       </div>
       <div v-if="tokenEffects.length > 0" class="token-effects">

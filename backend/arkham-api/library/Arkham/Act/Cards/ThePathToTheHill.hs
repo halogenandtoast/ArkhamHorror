@@ -21,7 +21,7 @@ thePathToTheHill = act (1, A) ThePathToTheHill Cards.thePathToTheHill Nothing
 instance HasAbilities ThePathToTheHill where
   getAbilities (ThePathToTheHill x)
     | onSide A x =
-        [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost AnyWindow (GroupClueCost (PerPlayer 2) Anywhere)
+        [ mkAbility x 1 $ Objective $ ForcedAbilityWithCost FastPlayerWindow (GroupClueCost (PerPlayer 2) Anywhere)
         ]
   getAbilities _ = []
 

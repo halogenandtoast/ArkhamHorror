@@ -1154,6 +1154,8 @@ allAssets =
     , SomeAssetCard clarityOfMind3
     , --- Return to the Essex County Express
       SomeAssetCard engineer
+    , --- Return to Where Doom Awaits
+      SomeAssetCard naomiOBannionRuthlessTactician
     , -- Return to the Path to Carcosa
       --- guardian [rtptc]
       SomeAssetCard thirtyTwoColt2

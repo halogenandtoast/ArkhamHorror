@@ -27,7 +27,7 @@ skinGame =
 instance RunMessage SkinGame where
   runMessage msg a@(SkinGame attrs) = case msg of
     AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      completedExtracurricularActivity <- completedScenario "02041"
+      completedExtracurricularActivity <- anyM completedScenario ["02041", "51012"]
       lead <- getLead
       peterClover <- genCard Assets.peterClover
       drFrancisMorgan <- genCard Assets.drFrancisMorgan

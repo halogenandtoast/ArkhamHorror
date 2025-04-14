@@ -17,6 +17,8 @@ import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot))
+import Arkham.Message.Lifted.Queue
+import Arkham.Modifier (_CancelAnyChaosToken, _CancelAnyChaosTokenAndDrawAnother)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
@@ -27,15 +29,18 @@ import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Monad.State.Strict (StateT, execStateT, gets, modify', put, runStateT)
 
-cancelTokenIfShould :: HasGame m => ChaosToken -> m ChaosToken
+cancelTokenIfShould :: ReverseQueue m => ChaosToken -> m ChaosToken
 cancelTokenIfShould token =
   fromMaybe token <$> runMaybeT do
     st <- MaybeT getSkillTest
     mods <- lift $ getModifiers st
-    let matchers = [matcher | CancelAnyChaosToken matcher <- mods]
-    guard $ notNull matchers
+    let matchers = mapMaybe (preview _CancelAnyChaosToken) mods
+    let drawAnotherMatchers = mapMaybe (preview _CancelAnyChaosTokenAndDrawAnother) mods
+    guard $ notNull $ matchers <> drawAnotherMatchers
     cancelled <- lift $ anyM (matchChaosToken st.investigator token) matchers
-    pure token {chaosTokenCancelled = cancelled}
+    drawAnotherCancelled <- lift $ anyM (matchChaosToken st.investigator token) drawAnotherMatchers
+    when drawAnotherCancelled $ lift $ push $ DrawAnotherChaosToken st.investigator
+    pure token {chaosTokenCancelled = cancelled || drawAnotherCancelled}
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True
@@ -174,7 +179,8 @@ resolveFirstUnresolved source iid strategy = \case
               modify' ((chaosTokensL .~ []) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) ignored)))
               pure (Resolved [], map (ChaosTokenIgnored iid source) ignored)
             (drawn : remaining) -> do
-              modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ filter (not . (.sealed)) (drawn : ignored)))
+              modify'
+                ((chaosTokensL .~ remaining) . (setAsideChaosTokensL <>~ filter (not . (.sealed)) (drawn : ignored)))
               resolveFirstUnresolved source iid strategy
                 $ Decided (ChooseMatch source 1 ResolveChoice [Resolved [drawn], Resolved ignored] [] inner Nothing)
     Draw -> do
@@ -201,7 +207,8 @@ resolveFirstUnresolved source iid strategy = \case
               pure (Resolved [drawn], [])
         Nothing -> do
           (drawn, remaining) <- splitAt 1 <$> shuffleM bagChaosTokens
-          modify' ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn)))
+          modify'
+            ((chaosTokensL .~ remaining) . (setAsideChaosTokensL %~ (<> filter (not . (.sealed)) drawn)))
           pure (Resolved drawn, [])
     Choose chooseSource n tokenStrategy steps tokens' nested ->
       pure (Decided $ ChooseMatch chooseSource n tokenStrategy steps tokens' AnyChaosToken nested, [])
@@ -786,12 +793,20 @@ instance RunMessage ChaosBag where
           (updatedChoice, messages) = decideFirstUndecided source iid iids SetAside toDecided choice''
         unless (null messages) $ pushAll messages
         pure $ c & choiceL ?~ updatedChoice
+    ChaosTokenCanceled _ _ token -> do
+      let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
+      pure
+        $ c
+        & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
+        & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     RunDrawFromBag source miid strategy -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> case choice' of
         Resolved tokens -> do
           tokens' <- for tokens \token -> do
-            cancelTokenIfShould $ token {chaosTokenRevealedBy = miid, chaosTokenCancelled = False}
+            (token', msgs) <- execQueueT $ cancelTokenIfShould $ token {chaosTokenRevealedBy = miid, chaosTokenCancelled = False}
+            pushAll msgs
+            pure token'
           -- let tokens' = filter (not . chaosTokenCancelled) tokens''
 
           -- If we are dealing with the skill test, then the after window will be managed by it
@@ -858,12 +873,6 @@ instance RunMessage ChaosBag where
         $ c
         & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
         & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
-    ChaosTokenCanceled _ _ token -> do
-      let replaceToken t = if t == token then token {chaosTokenCancelled = True} else t
-      pure
-        $ c
-        & (totalRevealedChaosTokensL %~ (token {chaosTokenCancelled = True} :) . filter (/= token))
-        & (setAsideChaosTokensL %~ filter (not . (.sealed)) . map replaceToken)
     ChooseChaosTokenGroups source iid groupChoice -> case chaosBagChoice of
       Nothing -> error "unexpected"
       Just choice' -> do
@@ -920,7 +929,7 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
     SetChaosTokenAside token -> do
-      pure $ c & setAsideChaosTokensL %~ (<> [token { chaosTokenSealed = False }])
+      pure $ c & setAsideChaosTokensL %~ (<> [token {chaosTokenSealed = False}])
     UnsealChaosToken token -> do
       pure
         $ c

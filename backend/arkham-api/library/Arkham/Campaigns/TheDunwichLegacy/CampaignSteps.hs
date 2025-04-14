@@ -71,3 +71,8 @@ pattern ReturnToUndimensionedAndUnseen :: CampaignStep
 pattern ReturnToUndimensionedAndUnseen <- ScenarioStep "51041"
   where
     ReturnToUndimensionedAndUnseen = ScenarioStep "51041"
+
+pattern ReturnToWhereDoomAwaits :: CampaignStep
+pattern ReturnToWhereDoomAwaits <- ScenarioStep "51047"
+  where
+    ReturnToWhereDoomAwaits = ScenarioStep "51047"

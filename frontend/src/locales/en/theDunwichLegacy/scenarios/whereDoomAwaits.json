@@ -12,5 +12,10 @@
       "tablet": "-3. If it is Agenda 2, you automatically fail instead.",
       "elderThing": "-X. Discard the top 3 cards of your deck. X is the total printed cost of those discarded cards."
     }
+  },
+  "tooltips": {
+    "baseOfTheHill": {
+      "resign": "\"This is more than I signed up for!\""
+    }
   }
 }

@@ -417,7 +417,8 @@ instance RunMessage EnemyAttrs where
           then do
             enemyLocation <- field EnemyLocation enemyId
             let leaveWindows = join $ map (\oldId -> windows [Window.EnemyLeaves eid oldId]) (maybeToList enemyLocation)
-            pushAll $ leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid]
+            afterWindow <- checkAfter $ Window.EnemyMoves eid lid
+            pushAll $ leaveWindows <> [EnemyEntered eid lid, EnemyCheckEngagement eid, afterWindow]
             pure $ a & placementL .~ AtLocation lid
           else a <$ push (EnemyCheckEngagement eid)
     After (EndTurn _) | not enemyDefeated -> a <$ push (EnemyCheckEngagement $ toId a)
@@ -658,10 +659,7 @@ instance RunMessage EnemyAttrs where
             [lid] -> do
               pushAll
                 [ EnemyMove enemyId lid
-                , -- , CheckWindow
-                  --     [leadInvestigatorId]
-                  --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
-                  CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaOther enemyId]
+                , CheckWindows [mkAfter $ Window.EnemyMovesTo lid MovedViaOther enemyId]
                 ]
             ls -> do
               push
@@ -670,10 +668,7 @@ instance RunMessage EnemyAttrs where
                   [ targetLabel
                       l
                       [ EnemyMove enemyId l
-                      , -- , CheckWindow
-                        --     [leadInvestigatorId]
-                        --     [mkWindow Timing.After (Window.MovedFromHunter enemyId)]
-                        CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
+                      , CheckWindows [mkAfter $ Window.EnemyMovesTo l MovedViaOther enemyId]
                       ]
                   | l <- ls
                   ]
@@ -684,7 +679,8 @@ instance RunMessage EnemyAttrs where
         iids <- select enemyAttacks
         case iids of
           [] -> pure ()
-          [x] -> push
+          [x] ->
+            push
               $ EnemyWillAttack
               $ (enemyAttack enemyId a x)
                 { attackDamageStrategy = enemyDamageStrategy

@@ -13,7 +13,7 @@ newtype BroodOfYogSothothChargingBeast = BroodOfYogSothothChargingBeast EnemyAtt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 broodOfYogSothothChargingBeast :: EnemyCard BroodOfYogSothothChargingBeast
-broodOfYogSothothChargingBeast = enemy BroodOfYogSothothChargingBeast Cards.broodOfYogSothothChargingBeast (0, Static 1, 0) (0, 0)
+broodOfYogSothothChargingBeast = enemy BroodOfYogSothothChargingBeast Cards.broodOfYogSothothChargingBeast (5, Static 1, 4) (2, 1)
 
 instance HasModifiersFor BroodOfYogSothothChargingBeast where
   getModifiersFor (BroodOfYogSothothChargingBeast a) = do
@@ -30,7 +30,7 @@ instance HasAbilities BroodOfYogSothothChargingBeast where
       a
       [ restricted a 1 (criteria <> thisExists a UnengagedEnemy)
           $ forced
-          $ EnemyMovedTo #after Anywhere MovedViaAny (be a)
+          $ EnemyMoves #after Anywhere (be a)
       ]
    where
     criteria = if toResultDefault (0 :: Int) a.meta == 1 then NoRestriction else Never

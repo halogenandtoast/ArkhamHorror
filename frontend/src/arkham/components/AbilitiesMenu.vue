@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Game } from '@/arkham/types/Game';
 import { OnClickOutside } from '@vueuse/components'
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
 import type { AbilityMessage } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
@@ -67,7 +67,7 @@ watch(
   (newAbilities) => {
     if (newAbilities.some(a => 'ability' in a.contents && a.contents.ability.type.tag === 'ForcedAbility')) {
       showAbilities.value = true;
-      calculatePosition();
+      nextTick(() => calculatePosition());
     } else if (newAbilities.length === 0) {
       showAbilities.value = false;
     }
@@ -77,7 +77,7 @@ watch(
 
 watch(showAbilities, (newValue) => {
   if (newValue) {
-    calculatePosition();
+    nextTick(() => calculatePosition());
   }
 });
 </script>

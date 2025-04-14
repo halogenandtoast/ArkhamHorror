@@ -225,6 +225,7 @@ data WindowType
   | MovedBy Source LocationId InvestigatorId
   | MovedFromHunter EnemyId
   | EnemyMovesTo LocationId MovesVia EnemyId
+  | EnemyMoves EnemyId LocationId
   | HuntersMoveStep
   | Moves InvestigatorId Source (Maybe LocationId) LocationId
   | WouldMove InvestigatorId Source LocationId LocationId

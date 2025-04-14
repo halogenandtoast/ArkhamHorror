@@ -12,11 +12,13 @@ import Import hiding (delete, on, update, (=.), (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef
 import Arkham.Classes.HasQueue
 import Arkham.Decklist
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Id
+import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Message
 import Arkham.PlayerCard
 import Arkham.Queue
@@ -119,10 +121,16 @@ putApiV1ArkhamGameDecksR gameId = do
         edecklist <- getDeckList deckUrl
         case edecklist of
           Left err -> error $ show err
-          Right decklist ->
+          Right decklist -> do
+            let iid = decklistInvestigatorId decklist
             pure
-              $ if investigatorId /= decklistInvestigatorId decklist
-                then ReplaceInvestigator investigatorId decklist
+              $ if investigatorId /= iid
+                then case Map.lookup (toCardCode iid) allInvestigatorCards of
+                  Nothing -> ReplaceInvestigator investigatorId decklist
+                  Just def ->
+                    if toCardCode investigatorId `elem` (cdCardCode def : cdAlternateCardCodes def)
+                      then UpgradeDecklist investigatorId decklist
+                      else ReplaceInvestigator investigatorId decklist
                 else UpgradeDecklist investigatorId decklist
     push msg
     runMessages Nothing
@@ -163,7 +171,7 @@ fromPostData userId CreateDeckPost {..} = do
     }
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
-getDeckList url = liftIO $ second (\d -> d { url = Just url }) . eitherDecode <$> simpleHttp (T.unpack url)
+getDeckList url = liftIO $ second (\d -> d {url = Just url}) . eitherDecode <$> simpleHttp (T.unpack url)
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do

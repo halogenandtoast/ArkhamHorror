@@ -151,9 +151,6 @@ instance HasField "name" (AssetCard a) Name where
     Nothing -> error "Missing card"
     Just x -> x.name
 
-instance HasCardCode (AssetCard a) where
-  toCardCode = cbCardCode
-
 data instance Field (DiscardedEntity Asset) :: Type -> Type where
   DiscardedAssetTraits :: Field (DiscardedEntity Asset) (Set Trait)
   DiscardedAssetController :: Field (DiscardedEntity Asset) (Maybe InvestigatorId)

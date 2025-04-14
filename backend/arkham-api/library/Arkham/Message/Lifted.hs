@@ -505,7 +505,15 @@ removeCardFromDeckForCampaign
   -> m ()
 removeCardFromDeckForCampaign investigator card = push $ Msg.RemoveCardFromDeckForCampaign (asId investigator) (toCardId card)
 
-defeatEnemy :: (ReverseQueue m, Sourceable source, AsId enemy, IdOf enemy ~ EnemyId, AsId investigator, IdOf investigator ~ InvestigatorId) => enemy -> investigator -> source -> m ()
+defeatEnemy
+  :: ( ReverseQueue m
+     , Sourceable source
+     , AsId enemy
+     , IdOf enemy ~ EnemyId
+     , AsId investigator
+     , IdOf investigator ~ InvestigatorId
+     )
+  => enemy -> investigator -> source -> m ()
 defeatEnemy enemy investigator = Msg.defeatEnemy (asId enemy) (asId investigator) >=> pushAll
 
 createAsset :: (ReverseQueue m, IsCard card) => card -> m AssetId
@@ -1846,7 +1854,8 @@ oncePerAbility attrs n f = do
       (MetaModifier $ object ["_oncePerAbility" .= True])
       >> f
 
-insertAfterMatching :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
+insertAfterMatching
+  :: (HasCallStack, MonadTrans t, HasQueue msg m) => [msg] -> (msg -> Bool) -> t m ()
 insertAfterMatching msgs p = lift $ Msg.insertAfterMatching msgs p
 
 -- Usage:
@@ -1873,6 +1882,13 @@ atEndOfRound
 atEndOfRound a body = do
   msgs <- evalQueueT body
   push $ CreateEndOfRoundEffect (toSource a) msgs
+
+afterEnemyAttack
+  :: (AsId enemy, IdOf enemy ~ EnemyId, HasQueue Message (t m))
+  => enemy -> QueueT Message (t m) a -> t m ()
+afterEnemyAttack enemy body = do
+  msgs <- evalQueueT body
+  push $ AfterEnemyAttack (asId enemy) msgs
 
 afterSkillTest
   :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m)) => QueueT Message (t m) a -> t m ()
@@ -2426,7 +2442,8 @@ createAssetAt c placement = do
 healAllDamage :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamage source target = push $ Msg.HealAllDamage (toTarget target) (toSource source)
 
-healAllDamageAndHorror :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
+healAllDamageAndHorror
+  :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 healAllDamageAndHorror source target = push $ Msg.HealAllDamageAndHorror (toTarget target) (toSource source)
 
 placeKey :: (ReverseQueue m, Targetable target) => target -> ArkhamKey -> m ()
@@ -2566,6 +2583,15 @@ withTimings w body = do
   checkWindows [atIf]
   body
   checkWindows [after]
+
+withBatchedTimings :: ReverseQueue m => WindowType -> QueueT Message m () -> m ()
+withBatchedTimings w body = do
+  batched \batchId -> do
+    let (before, atIf, after) = Msg.batchedTimings batchId w
+    checkWindows [before]
+    checkWindows [atIf]
+    body
+    checkWindows [after]
 
 cancelBatch :: ReverseQueue m => BatchId -> m ()
 cancelBatch bId = push $ CancelBatch bId

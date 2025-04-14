@@ -593,6 +593,7 @@ allLocationCards =
       , quietHalls_131
       , quietHalls_135
       , railroadStation
+      , realmsBeyondAllInOne
       , recordsOffice
       , rehearsalRoom
       , remnantsOfLakesCamp
@@ -8424,11 +8425,23 @@ returnToEngineCar =
 
 freightCar :: CardDef
 freightCar =
-  locationWithUnrevealed_ "51029" "Train Car" [Train] "Freight Car" [Train] ReturnToTheEssexCountyExpress
+  locationWithUnrevealed_
+    "51029"
+    "Train Car"
+    [Train]
+    "Freight Car"
+    [Train]
+    ReturnToTheEssexCountyExpress
 
 baggageCar :: CardDef
 baggageCar =
-  locationWithUnrevealed_ "51030" "Train Car" [Train] "Baggage Car" [Train] ReturnToTheEssexCountyExpress
+  locationWithUnrevealed_
+    "51030"
+    "Train Car"
+    [Train]
+    "Baggage Car"
+    [Train]
+    ReturnToTheEssexCountyExpress
 
 villageCommonsSilentDecay :: CardDef
 villageCommonsSilentDecay =
@@ -8546,7 +8559,18 @@ fathomlessLake =
     [Dunwich, Woods, Altered]
     Trefoil
     [Square, Droplet]
-    WhereDoomAwaits
+    ReturnToWhereDoomAwaits
+
+realmsBeyondAllInOne :: CardDef
+realmsBeyondAllInOne =
+  singleSided
+    $ location
+      "51057"
+      ("Realms Beyond" <:> "All-In-One")
+      [Otherworld]
+      Droplet
+      [Circle]
+      ReturnToLostInTimeAndSpace
 
 cursedShores :: CardDef
 cursedShores =

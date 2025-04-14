@@ -2,50 +2,33 @@ module Arkham.Agenda.Cards.BreakingThrough (breakingThrough) where
 
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
-import Arkham.Agenda.Runner
-import Arkham.Classes
+import Arkham.Agenda.Import.Lifted hiding (EncounterCardSource)
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.GameValue
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Matcher qualified as Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype BreakingThrough = BreakingThrough AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 breakingThrough :: AgendaCard BreakingThrough
-breakingThrough =
-  agenda (3, A) BreakingThrough Cards.breakingThrough (Static 6)
+breakingThrough = agenda (3, A) BreakingThrough Cards.breakingThrough (Static 6)
 
 instance HasAbilities BreakingThrough where
   getAbilities (BreakingThrough x) =
-    [ mkAbility x 1
-        $ ForcedAbility
-        $ MovedBy
-          Timing.After
-          You
-          Matcher.EncounterCardSource
-    ]
+    [mkAbility x 1 $ forced $ MovedBy #after You EncounterCardSource]
 
 instance RunMessage BreakingThrough where
-  runMessage msg a@(BreakingThrough attrs@AgendaAttrs {..}) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      push $ InvestigatorAssignDamage iid source DamageAny 0 1
+  runMessage msg a@(BreakingThrough attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure a
-    AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
+    AdvanceAgenda (isSide B attrs -> True) -> do
       yogSothothSpawnLocation <-
         fromMaybeM
           (getJustLocationByName "Another Dimension")
           (getLocationByName "The Edge of the Universe")
-      yogSothoth <- getSetAsideCard Enemies.yogSothoth
-      createYogSothoth <-
-        createEnemyAt_
-          yogSothoth
-          yogSothothSpawnLocation
-          Nothing
-      pushAll [createYogSothoth, advanceAgendaDeck attrs]
+      createEnemyAt_ Enemies.yogSothoth yogSothothSpawnLocation
+      advanceAgendaDeck attrs
       pure a
-    _ -> BreakingThrough <$> runMessage msg attrs
+    _ -> BreakingThrough <$> liftRunMessage msg attrs

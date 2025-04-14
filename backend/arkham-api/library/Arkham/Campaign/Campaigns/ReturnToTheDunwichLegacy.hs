@@ -33,8 +33,8 @@ instance IsCampaign ReturnToTheDunwichLegacy where
         _ -> Just $ InterludeStep 2 Nothing
     InterludeStep 2 _ -> Just (UpgradeDeckStep ReturnToUndimensionedAndUnseen)
     ReturnToUndimensionedAndUnseen -> Just (UpgradeDeckStep ReturnToWhereDoomAwaits)
-    ReturnToWhereDoomAwaits -> Just (UpgradeDeckStep LostInTimeAndSpace)
-    LostInTimeAndSpace -> Just EpilogueStep
+    ReturnToWhereDoomAwaits -> Just (UpgradeDeckStep ReturnToLostInTimeAndSpace)
+    ReturnToLostInTimeAndSpace -> Just EpilogueStep
     UpgradeDeckStep nextStep' -> Just nextStep'
     _ -> Nothing
 

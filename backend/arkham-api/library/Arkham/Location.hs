@@ -837,6 +837,8 @@ allLocations =
     , SomeLocationCard ascendingPathWarpedAndTwisted
     , SomeLocationCard abandonedCamp
     , SomeLocationCard fathomlessLake
+    , -- Return to Lost in Time and Space
+      SomeLocationCard realmsBeyondAllInOne
     , -- The Curse of the Rougarou
       SomeLocationCard cursedShores
     , SomeLocationCard gardenDistrict

@@ -76,3 +76,8 @@ pattern ReturnToWhereDoomAwaits :: CampaignStep
 pattern ReturnToWhereDoomAwaits <- ScenarioStep "51047"
   where
     ReturnToWhereDoomAwaits = ScenarioStep "51047"
+
+pattern ReturnToLostInTimeAndSpace :: CampaignStep
+pattern ReturnToLostInTimeAndSpace <- ScenarioStep "51053"
+  where
+    ReturnToLostInTimeAndSpace = ScenarioStep "51053"

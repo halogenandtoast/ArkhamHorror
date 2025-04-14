@@ -322,6 +322,9 @@ allActs =
     , -- Return to Night of the Zealot
       -- Return to the Gathering
       SomeActCard mysteriousGateway
+    , -- Return to the Dunwich Legacy
+      -- Return to Lost in Time and Space
+      SomeActCard intoTheBeyondV2
     , -- Curse of the Rougarou
       SomeActCard findingLadyEsprit
     , SomeActCard huntingTheRougarou

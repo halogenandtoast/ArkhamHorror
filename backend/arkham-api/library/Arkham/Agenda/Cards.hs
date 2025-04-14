@@ -38,6 +38,7 @@ allAgendaCards =
       , besetByMonsters
       , bidingItsTime
       , breakingThrough
+      , breakingThroughV2
       , callOfMadness
       , callingForthTheOldOnes
       , celestialAlignment
@@ -758,6 +759,9 @@ whereTheresSmoke = agenda "51026" "Where There's Smoke" 0 ReturnToTheEssexCounty
 
 aTearInRealityV2 :: CardDef
 aTearInRealityV2 = agenda "51027" "A Tear in Reality (v. II)" 1 ReturnToTheEssexCountyExpress
+
+breakingThroughV2 :: CardDef
+breakingThroughV2 = agenda "51054" "Breaking Through (v. II)" 3 ReturnToLostInTimeAndSpace
 
 aCreatureOfTheBayou :: CardDef
 aCreatureOfTheBayou = agenda "81002" "A Creature of the Bayou" 1 TheBayou

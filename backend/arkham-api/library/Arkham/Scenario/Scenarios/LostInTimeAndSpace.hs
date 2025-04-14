@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.LostInTimeAndSpace (lostInTimeAndSpace) where
+module Arkham.Scenario.Scenarios.LostInTimeAndSpace (lostInTimeAndSpace, LostInTimeAndSpace (..)) where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Act.Sequence qualified as AS
@@ -36,19 +36,7 @@ lostInTimeAndSpace difficulty =
     "02311"
     "Lost in Time and Space"
     difficulty
-    [ ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-    , ".              .                  .                  tearThroughSpace2 tearThroughSpace2    tearThroughSpace1    tearThroughSpace1  .                 .                 ."
-    , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-    , ".              tearThroughSpace3  tearThroughSpace3  .                 .                    .                    .                  tearThroughSpace4 tearThroughSpace4 ."
-    , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-    , "endlessBridge2 endlessBridge2     endlessBridge1     endlessBridge1    .                    .                    prismaticCascade1  prismaticCascade1 prismaticCascade2 prismaticCascade2"
-    , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-    , ".              dimensionalDoorway dimensionalDoorway .                 anotherDimension     anotherDimension     .                  stepsOfYhagharl   stepsOfYhagharl   ."
-    , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-    , ".              .                  .                  .                 tearThroughTime      tearThroughTime      .                  .                 .                 ."
-    , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-    , ".              .                  .                  .                 theEdgeOfTheUniverse theEdgeOfTheUniverse .                  .                 .                 ."
-    ]
+    scenarioLayout
 
 instance HasChaosTokenValue LostInTimeAndSpace where
   getChaosTokenValue iid chaosTokenFace (LostInTimeAndSpace attrs) = case chaosTokenFace of

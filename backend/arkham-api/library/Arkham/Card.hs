@@ -59,7 +59,10 @@ data CardBuilder ident a = CardBuilder
   }
 
 instance HasField "cardCode" (CardBuilder ident a) CardCode where
-  getField = cbCardCode
+  getField = toCardCode
+
+instance HasCardCode (CardBuilder ident a) where
+  toCardCode = cbCardCode
 
 instance Functor (CardBuilder ident) where
   fmap f CardBuilder {..} =

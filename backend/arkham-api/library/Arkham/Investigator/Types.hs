@@ -1,6 +1,6 @@
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeAbstractions #-}
-{-# LANGUAGE DefaultSignatures #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Investigator.Types where
@@ -8,10 +8,10 @@ module Arkham.Investigator.Types where
 import Arkham.Prelude
 
 import Arkham.Ability
-import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Action hiding (Resource)
 import Arkham.Action.Additional
 import Arkham.CampaignLog
+import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Card.Settings
@@ -90,9 +90,10 @@ class
   , EntityAttrs a ~ InvestigatorAttrs
   , RunType a ~ a
   ) =>
-  IsInvestigator a where
+  IsInvestigator a
+  where
   investigatorFromAttrs :: InvestigatorAttrs -> a
-  default investigatorFromAttrs :: (Coercible a InvestigatorAttrs) => InvestigatorAttrs -> a
+  default investigatorFromAttrs :: Coercible a InvestigatorAttrs => InvestigatorAttrs -> a
   investigatorFromAttrs = coerce
 
 type InvestigatorCard a = CardBuilder PlayerId a
@@ -250,7 +251,7 @@ data InvestigatorForm
   | HomunculusForm
   | TransfiguredForm CardCode
   deriving stock (Show, Eq, Generic, Data)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 data InvestigatorAttrs = InvestigatorAttrs
   { investigatorId :: InvestigatorId
@@ -522,17 +523,17 @@ instance HasAbilities Investigator where
     TransfiguredForm inner -> withInvestigatorCardCode inner \(SomeInvestigator @a) ->
       getAbilities @a (investigatorFromAttrs @a (toAttrs a)) <> inateAbilities
     _ -> baseAbilities <> inateAbilities
-    where
-      baseAbilities = getAbilities a
-      inateAbilities = 
-        [ restricted
-               i
-               500
-               (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
-               $ ActionAbility []
-               $ ActionCost 1
-           | notNull (investigatorKeys $ toAttrs a)
-           ]
+   where
+    baseAbilities = getAbilities a
+    inateAbilities =
+      [ restricted
+          i
+          500
+          (Self <> InvestigatorExists (colocatedWith (toId a) <> NotInvestigator (InvestigatorWithId $ toId a)))
+          $ ActionAbility []
+          $ ActionCost 1
+      | notNull (investigatorKeys $ toAttrs a)
+      ]
         <> [ restricted i PlayAbility (Self <> Never) $ ActionAbility [#play] $ ActionCost 1
            , restricted i ResourceAbility (Self <> Never) $ ActionAbility [#resource] $ ActionCost 1
            ]
@@ -557,6 +558,11 @@ instance ToGameLoggerFormat Investigator where
 
 data SomeInvestigatorCard where
   SomeInvestigatorCard :: IsInvestigator a => InvestigatorCard a -> SomeInvestigatorCard
+
+instance HasField "def" SomeInvestigatorCard CardDef where
+  getField = liftInvestigatorCard $ \c -> case lookup (cbCardCode c) (allInvestigatorCards <> allEncounterInvestigatorCards) of
+    Nothing -> error $ "invalid card: " <> show (toCardCode c)
+    Just def -> def
 
 instance HasCardCode Investigator where
   toCardCode = investigatorCardCode . toAttrs
@@ -657,4 +663,3 @@ instance FromJSON InvestigatorForm where
   parseJSON (String "YithianForm") = pure YithianForm
   parseJSON (String "HomunculusForm") = pure HomunculusForm
   parseJSON v = $(mkParseJSON defaultOptions ''InvestigatorForm) v
-

@@ -1,15 +1,12 @@
 module Arkham.Location.Cards.TrapRoom (trapRoom) where
 
 import Arkham.Ability
-import Arkham.Card
-import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.GameValue
+import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Location.Cards qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Prelude
-import Arkham.Timing qualified as Timing
 
 newtype TrapRoom = TrapRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -19,30 +16,17 @@ trapRoom :: LocationCard TrapRoom
 trapRoom = location TrapRoom Cards.trapRoom 3 (PerPlayer 1)
 
 instance HasAbilities TrapRoom where
-  getAbilities (TrapRoom attrs) =
-    withBaseAbilities
-      attrs
-      [ mkAbility attrs 1
-          $ ForcedAbility
-          $ RevealLocation Timing.After You
-          $ LocationWithId
-          $ toId attrs
-      | locationRevealed attrs
-      ]
+  getAbilities (TrapRoom a) =
+    extendRevealed1 a $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
 
 instance RunMessage TrapRoom where
-  runMessage msg l@(TrapRoom attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      let
-        getSomeRats =
-          FindEncounterCard
-            iid
-            (toTarget attrs)
-            [FromEncounterDeck, FromEncounterDiscard]
-            $ cardIs Cards.swarmOfRats
+  runMessage msg l@(TrapRoom attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       playerCount <- getPlayerCount
-      l <$ pushAll (getSomeRats : [getSomeRats | playerCount >= 3])
-    FoundEncounterCard iid target card
-      | isTarget attrs target ->
-          l <$ push (SpawnEnemyAtEngagedWith (EncounterCard card) (toId attrs) iid)
-    _ -> TrapRoom <$> runMessage msg attrs
+      repeated (if playerCount >= 3 then 2 else 1) do
+        findEncounterCard iid attrs $ cardIs Cards.swarmOfRats
+      pure l
+    FoundEncounterCard iid (isTarget attrs -> True) card -> do
+      createEnemy_ card iid
+      pure l
+    _ -> TrapRoom <$> liftRunMessage msg attrs

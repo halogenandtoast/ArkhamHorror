@@ -117,7 +117,7 @@ data ModifierType
   | CanOnlyBeDefeatedBy SourceMatcher
   | CanOnlyBeDefeatedByDamage
   | CanOnlyUseCardsInRole ClassSymbol
-  | CanPlayFromDiscard (Maybe CardType, [Trait])
+  | CanPlayFromDiscard CardMatcher
   | CanPlayTopOfDeck CardMatcher
   | CanPlayTopmostOfDiscard (Maybe CardType, [Trait])
   | CanPlayWithOverride CriteriaOverride
@@ -458,6 +458,11 @@ mconcat
         parseJSON = withObject "ModifierType" \v -> do
           tag :: Text <- v .: "tag"
           case tag of
+            "CanPlayFromDiscard" -> do
+              contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
+              case contents of
+                Left (mType, traits :: [Trait]) -> pure $ CanPlayFromDiscard $ maybe AnyCard CardWithType mType <> foldMap CardWithTrait traits
+                Right matcher -> pure $ CanPlayFromDiscard matcher
             "IncreaseCostOf" -> do
               contents <- (Left <$> v .: "contents") <|> (Right <$> v .: "contents")
               case contents of

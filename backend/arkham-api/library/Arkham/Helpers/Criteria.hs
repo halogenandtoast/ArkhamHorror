@@ -317,24 +317,28 @@ passesCriteria iid mcard source' requestor windows' = \case
       TreacherySource tid -> elem tid <$> select (Matcher.treacheryInHandOf iid)
       _ -> error $ "source not handled for in your hand: " <> show source
   Criteria.InYourDiscard -> do
-    discard <- fieldMap InvestigatorDiscard (map toCardId) iid
-    case source of
-      AssetSource aid -> do
-        inPlay <- selectAny $ Matcher.AssetWithId aid
-        if inPlay
-          then pure False
-          else do
-            -- todo we should make a cleaner method for this
-            fieldMap InDiscardAssetCardId (`elem` discard) aid
-      SkillSource aid -> do
-        inPlay <- selectAny $ Matcher.SkillWithId aid
-        if inPlay
-          then pure False
-          else pure $ unsafeToCardId aid `elem` discard
-      InvestigatorSource _ -> case mcard of
-        Just (card, _) -> pure $ toCardId card `elem` discard
-        _ -> error "No card available to check"
-      _ -> error $ "source not handled for in your discard: " <> show source
+    inSetup <- getInSetup
+    if inSetup
+      then pure False
+      else do
+        discard <- fieldMap InvestigatorDiscard (map toCardId) iid
+        case source of
+          AssetSource aid -> do
+            inPlay <- selectAny $ Matcher.AssetWithId aid
+            if inPlay
+              then pure False
+              else do
+                -- todo we should make a cleaner method for this
+                fieldMap InDiscardAssetCardId (`elem` discard) aid
+          SkillSource aid -> do
+            inPlay <- selectAny $ Matcher.SkillWithId aid
+            if inPlay
+              then pure False
+              else pure $ unsafeToCardId aid `elem` discard
+          InvestigatorSource _ -> case mcard of
+            Just (card, _) -> pure $ toCardId card `elem` discard
+            _ -> error "No card available to check"
+          _ -> error $ "source not handled for in your discard: " <> show source
   Criteria.InThreatAreaOf (Matcher.replaceYouMatcher iid -> who) -> do
     case source of
       TreacherySource tid ->

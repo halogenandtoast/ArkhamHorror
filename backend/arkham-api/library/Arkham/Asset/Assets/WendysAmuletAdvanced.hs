@@ -2,7 +2,6 @@ module Arkham.Asset.Assets.WendysAmuletAdvanced (wendysAmuletAdvanced) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
-import Arkham.Card
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
@@ -15,13 +14,9 @@ wendysAmuletAdvanced :: AssetCard WendysAmuletAdvanced
 wendysAmuletAdvanced = asset WendysAmuletAdvanced Cards.wendysAmuletAdvanced
 
 instance HasModifiersFor WendysAmuletAdvanced where
-  getModifiersFor (WendysAmuletAdvanced a) = case a.controller of
-    Nothing -> pure mempty
-    Just iid -> do
-      controller <- controllerGets a [CanPlayFromDiscard (Just EventType, [])]
-      events <-
-        modifySelect a (EventOwnedBy $ InvestigatorWithId iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
-      pure $ controller <> events
+  getModifiersFor (WendysAmuletAdvanced a) = for_ a.controller \iid -> do
+    controllerGets a [CanPlayFromDiscard #event]
+    modifySelect a (EventOwnedBy $ InvestigatorWithId iid) [PlaceOnBottomOfDeckInsteadOfDiscard]
 
 instance RunMessage WendysAmuletAdvanced where
   runMessage msg (WendysAmuletAdvanced attrs) = WendysAmuletAdvanced <$> runMessage msg attrs

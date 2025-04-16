@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Message.Lifted (module X, module Arkham.Message.Lifted) where
 
 import Arkham.Ability

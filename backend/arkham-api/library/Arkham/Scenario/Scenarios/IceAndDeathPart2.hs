@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Scenario.Scenarios.IceAndDeathPart2 (iceAndDeathPart2) where
 
 import Arkham.Act.Cards qualified as Acts

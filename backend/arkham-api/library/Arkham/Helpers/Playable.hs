@@ -80,9 +80,8 @@ getPlayableDiscards source investigator costStatus windows' = do
      in case allMatches of
           (topmost : _) -> topmost == card
           _ -> False
-  allowsPlayFromDiscard InvestigatorAttrs {..} 0 card (CanPlayFromDiscard (mcardType, traits)) =
-    let cardMatcher = maybe AnyCard CardWithType mcardType <> foldMap CardWithTrait traits
-        allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
+  allowsPlayFromDiscard InvestigatorAttrs {..} _ card (CanPlayFromDiscard cardMatcher) =
+    let allMatches = filter (`cardMatch` cardMatcher) investigatorDiscard
      in card `elem` allMatches
   allowsPlayFromDiscard _ _ _ _ = False
 

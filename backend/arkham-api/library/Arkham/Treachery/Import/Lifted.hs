@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Treachery.Import.Lifted (
   module X,
   module Arkham.Treachery.Import.Lifted,

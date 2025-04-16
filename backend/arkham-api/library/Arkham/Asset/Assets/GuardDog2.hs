@@ -34,7 +34,7 @@ instance RunMessage GuardDog2 where
       push $ EngageEnemy iid enemy Nothing False
       push $ InitiateEnemyAttack $ enemyAttack enemy attrs iid
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (getDamageOrHorrorSource -> (.enemy) -> Just eid) _ -> do
-      nonAttackEnemyDamage (attrs.ability 2) 1 eid
+    UseCardAbility iid (isSource attrs -> True) 2 (getDamageOrHorrorSource -> (.enemy) -> Just eid) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 eid
       pure a
     _ -> GuardDog2 <$> liftRunMessage msg attrs

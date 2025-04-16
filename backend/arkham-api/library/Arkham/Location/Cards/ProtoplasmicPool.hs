@@ -36,7 +36,7 @@ instance RunMessage ProtoplasmicPool where
         labeled "Spend 1 {perPlayer} clues as a group to activate the seal" do
           push $ SpendClues targetAmount iids
           activateSeal SealB
-          chooseOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 2
+          chooseOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
         labeled "Do not spend clues" nothing
 
       pure l

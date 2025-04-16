@@ -34,7 +34,7 @@ instance RunMessage YhanthleiStatueDynamicRelic where
           $ withTrait Humanoid
           <> enemyAtLocationWith iid
           <> EnemyCanBeDamagedBySource (attrs.ability 1)
-      chooseTargetM iid enemies $ nonAttackEnemyDamage (attrs.ability 1) 1
+      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       n <- min <$> getRemainingBlessTokens <*> selectCount (ChaosTokenFaceIs #curse)

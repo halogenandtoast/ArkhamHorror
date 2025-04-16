@@ -29,6 +29,6 @@ instance RunMessage HeroicRescue where
       pushAll
         $ EnemyEngageInvestigator enemy iid
         : ChangeEnemyAttackTarget enemy (toTarget iid)
-        : [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack attrs 1] | canDealDamage]
+        : [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | canDealDamage]
       pure e
     _ -> HeroicRescue <$> runMessage msg attrs

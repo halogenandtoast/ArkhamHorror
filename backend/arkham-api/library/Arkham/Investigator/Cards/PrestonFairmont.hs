@@ -41,6 +41,12 @@ instance RunMessage PrestonFairmont where
                 else do
                   pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
                   pure i
+            UseAbilitySource _ abilitySource _ -> do
+              if abilitySource == AssetSource familyInheritance
+                then PrestonFairmont <$> runMessage msg attrs
+                else do
+                  pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
+                  pure i
             _ -> do
               pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
               pure i

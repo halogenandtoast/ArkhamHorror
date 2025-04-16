@@ -27,7 +27,7 @@ instance RunMessage WhispersOfDoom where
       getSkillTestTargetedEnemy >>= traverse_ \enemy -> do
         elite <- enemy <=~> EliteEnemy
         if elite
-          then nonAttackEnemyDamage attrs 3 enemy
+          then nonAttackEnemyDamage (Just iid) attrs 3 enemy
           else defeatEnemy enemy iid attrs
       pure e
     FailedThisSkillTest _iid (isSource attrs -> True) -> do

@@ -1371,6 +1371,7 @@ abilityMatches a@Ability {..} = \case
         EventSource eid -> elem eid <$> select (eventControlledBy iid)
         InvestigatorSource iid' -> pure $ iid == iid'
         AbilitySource s _ -> sourceMatch s
+        UseAbilitySource _ s _ -> sourceMatch s
         ProxySource s _ -> sourceMatch s
         IndexedSource _ s -> sourceMatch s
         _ -> pure False
@@ -1456,6 +1457,7 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
           EventSource eid -> elem eid <$> select (eventControlledBy iid)
           InvestigatorSource iid' -> pure $ iid == iid'
           AbilitySource s _ -> sourceMatch s
+          UseAbilitySource _ s _ -> sourceMatch s
           ProxySource s _ -> sourceMatch s
           IndexedSource _ s -> sourceMatch s
           _ -> pure False
@@ -2878,9 +2880,9 @@ enemyMatcherFilter es matcher' = case matcher' of
     modifiers <- getModifiers (toTarget enemy)
     flip allM modifiers $ \case
       CannotBeDamagedByPlayerSourcesExcept sourceMatcher ->
-        sourceMatches source sourceMatcher
+        sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
       CannotBeDamagedByPlayerSources sourceMatcher ->
-        not <$> sourceMatches source sourceMatcher
+        not <$> sourceMatches source (oneOf [NotSource SourceIsPlayerCard, sourceMatcher])
       CannotBeDamaged -> pure False
       _ -> pure True
   EnemyWithAsset assetMatcher -> do
@@ -3150,6 +3152,9 @@ enemyMatcherFilter es matcher' = case matcher' of
           AbilitySource abSource idx -> do
             abilities <- getAbilitiesMatching $ AbilityIs abSource idx
             foldMapM (getModifiers . AbilityTarget iid) abilities
+          UseAbilitySource _ abSource idx -> do
+            abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+            foldMapM (getModifiers . AbilityTarget iid) abilities
           _ -> pure []
         let
           isOverride = \case
@@ -3227,6 +3232,9 @@ enemyMatcherFilter es matcher' = case matcher' of
     modifiers' <- getModifiers (InvestigatorTarget iid)
     sourceModifiers <- case source of
       AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers . AbilityTarget iid) abilities
+      UseAbilitySource _ abSource idx -> do
         abilities <- getAbilitiesMatching $ AbilityIs abSource idx
         foldMapM (getModifiers . AbilityTarget iid) abilities
       _ -> pure []
@@ -3322,6 +3330,9 @@ enemyMatcherFilter es matcher' = case matcher' of
     modifiers' <- getModifiers (InvestigatorTarget iid)
     sourceModifiers <- case source of
       AbilitySource abSource idx -> do
+        abilities <- getAbilitiesMatching $ AbilityIs abSource idx
+        foldMapM (getModifiers . AbilityTarget iid) abilities
+      UseAbilitySource _ abSource idx -> do
         abilities <- getAbilitiesMatching $ AbilityIs abSource idx
         foldMapM (getModifiers . AbilityTarget iid) abilities
       _ -> pure []

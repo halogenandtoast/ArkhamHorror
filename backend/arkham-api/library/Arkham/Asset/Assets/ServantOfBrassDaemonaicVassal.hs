@@ -30,8 +30,8 @@ instance RunMessage ServantOfBrassDaemonaicVassal where
         <> EnemyCanBeDamagedBySource (attrs.ability 1)
       push $ Msg.DealAssetDamage attrs.id (attrs.ability 1) 1 0
       pure a
-    HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
-      nonAttackEnemyDamage (attrs.ability 1) 2 eid
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (EnemyTarget eid) -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2 eid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ PlaceInBonded iid (toCard attrs)

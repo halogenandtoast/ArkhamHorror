@@ -61,7 +61,7 @@ instance RunMessage BloodRite where
             $ [ SpendResources iid 1
               , Msg.chooseOne
                   player
-                  [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 1) 1] | enemy <- enemyIds]
+                  [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemyIds]
               ]
            | canDealDamage
            , notNull enemyIds

@@ -41,6 +41,6 @@ instance RunMessage Vamp where
               locations <- select $ ConnectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
               when (notNull locations) do
                 chooseOne iid [targetLabel lid [EnemyMove eid lid] | lid <- locations]
-          SkillCombat -> nonAttackEnemyDamage attrs 2 eid
+          SkillCombat -> nonAttackEnemyDamage (Just iid) attrs 2 eid
       pure e
     _ -> Vamp . (`with` meta) <$> liftRunMessage msg attrs

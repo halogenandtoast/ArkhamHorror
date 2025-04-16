@@ -181,6 +181,7 @@ instance RunMessage SkillTest where
       pushAll [windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
       mAbilityCardId <- case skillTestSource of
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
+        UseAbilitySource _ src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
       mTargetCardId <- case skillTestTarget of
         ProxyTarget t _ -> fmap toCardId <$> targetToMaybeCard t
@@ -189,6 +190,7 @@ instance RunMessage SkillTest where
         ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t
         IndexedSource _ t -> fmap toCardId <$> sourceToMaybeCard t
         AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
+        UseAbilitySource _ src _ -> fmap toCardId <$> sourceToMaybeCard src
         t -> fmap toCardId <$> sourceToMaybeCard t
 
       -- getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType

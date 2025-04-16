@@ -32,4 +32,4 @@ instance HasChaosTokenValue AgnesBaker where
 
 instance RunMessage AgnesBaker where
   runMessage = script $ onAbility 1 do
-    chooseEnemy (atYourLocation <> ability.canDamage) $ nonAttackEnemyDamage ability 1
+    chooseEnemy (atYourLocation <> ability.canDamage) $ nonAttackEnemyDamage (Just you) ability 1

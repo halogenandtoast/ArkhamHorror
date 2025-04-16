@@ -60,7 +60,7 @@ instance RunMessage CallForBackup2 where
       enemies <- select $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource (toSource attrs)
       canDealDamage <- iid <=~> InvestigatorWithoutModifier CannotDealDamage
       when (hasGuardian && not (null enemies) && canDealDamage) do
-        chooseOne iid $ targetLabels enemies $ only . Msg.nonAttackEnemyDamage attrs 1
+        chooseOne iid $ targetLabels enemies $ only . Msg.nonAttackEnemyDamage (Just iid) attrs 1
       push $ DoStep 3 msg'
       pure e
     DoStep 3 msg'@(PlayThisEvent iid (is attrs -> True)) -> do

@@ -35,7 +35,7 @@ instance RunMessage StirThePot5 where
           enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
           chooseOrRunOneAtATime
             iid
-            [targetLabel enemy [Msg.nonAttackEnemyDamage attrs x enemy] | enemy <- enemies]
+            [targetLabel enemy [Msg.nonAttackEnemyDamage (Just iid) attrs x enemy] | enemy <- enemies]
           doStep 1 msg
         _ -> error "invalid target"
       pure e

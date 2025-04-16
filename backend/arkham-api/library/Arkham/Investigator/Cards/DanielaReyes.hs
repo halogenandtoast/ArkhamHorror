@@ -50,7 +50,7 @@ instance RunMessage DanielaReyes where
       canDamage <- enemy <=~> EnemyCanBeDamagedBySource (attrs.ability 1)
       canEvade <- enemy <=~> EnemyCanBeEvadedBy (attrs.ability 1)
       chooseOneM iid do
-        when canDamage $ labeled "Deal 1 damage to the enemy" $ nonAttackEnemyDamage attrs 1 enemy
+        when canDamage $ labeled "Deal 1 damage to the enemy" $ nonAttackEnemyDamage (Just attrs.id) attrs 1 enemy
         when canEvade $ labeled "Automatically evade the enemy" $ automaticallyEvadeEnemy attrs.id enemy
 
       pure i

@@ -70,7 +70,7 @@ instance RunMessage ArchiveOfConduitsGatewayToTindalos4 where
                 , Label
                     "Remove Leyline"
                     [ RemoveTokens (attrs.ability 2) (toTarget enemy) Token.Leyline 1
-                    , EnemyDamage enemy $ nonAttack (attrs.ability 2) 1
+                    , EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 2) 1
                     ]
                 ]
             ]

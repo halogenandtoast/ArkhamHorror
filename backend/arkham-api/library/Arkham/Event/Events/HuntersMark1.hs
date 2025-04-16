@@ -41,7 +41,7 @@ instance RunMessage HuntersMark1 where
         select $ enemyAtLocationWith iid <> not_ (EnemyWithAttachedEvent $ eventIs Cards.huntersMark1)
       chooseTargetM iid enemies $ place attrs . attachTo
       pure e
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attachedTo.enemy (nonAttackEnemyDamage attrs 1)
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      for_ attrs.attachedTo.enemy (nonAttackEnemyDamage (Just iid) attrs 1)
       pure e
     _ -> HuntersMark1 <$> liftRunMessage msg attrs

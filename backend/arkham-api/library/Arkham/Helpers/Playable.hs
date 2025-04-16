@@ -145,6 +145,17 @@ getIsPlayableWithResources (asId -> iid) (toSource -> source) availableResources
               , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
               ]
           Nothing -> pure False
+      UseAbilitySource _ (InvestigatorSource "08016") 1 -> do
+        case toCardOwner c of
+          Just owner ->
+            andM
+              [ pure $ c `cardMatch` card_ (#asset <> #item)
+              , pure
+                  $ BobJenkinsAction
+                  `notElem` map additionalActionType (investigatorUsedAdditionalActions attrs)
+              , owner <=~> affectsOthers (colocatedWith @InvestigatorId "08016")
+              ]
+          Nothing -> pure False
       _ -> pure False
     iids <- filter (/= iid) <$> getInvestigators
     iidsWithModifiers <- for iids $ \iid' -> (iid',) <$> getModifiers iid'

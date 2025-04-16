@@ -18,7 +18,7 @@ instance RunMessage CoupDeGrace where
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
       chooseOrRunOne
         iid
-        [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1] | enemy <- enemies]
+        [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | enemy <- enemies]
 
       pushWhenM (iid <=~> TurnInvestigator) $ ChooseEndTurn iid
       pure e

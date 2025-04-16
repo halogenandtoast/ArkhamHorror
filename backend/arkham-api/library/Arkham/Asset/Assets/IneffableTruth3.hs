@@ -31,7 +31,7 @@ instance RunMessage IneffableTruth3 where
       skillTestModifier sid source iid (SkillModifier #willpower 2)
       aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
       pure a
-    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      getSkillTestTargetedEnemy >>= traverse_ (nonAttackEnemyDamage (attrs.ability 1) 1)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      getSkillTestTargetedEnemy >>= traverse_ (nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1)
       pure a
     _ -> IneffableTruth3 <$> liftRunMessage msg attrs

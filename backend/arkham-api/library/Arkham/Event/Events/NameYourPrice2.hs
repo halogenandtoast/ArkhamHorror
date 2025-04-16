@@ -18,6 +18,6 @@ instance RunMessage NameYourPrice2 where
       enemies <- select $ EnemyCanBeDamagedBySource (toSource attrs) <> at_ (locationWithInvestigator iid)
       chooseTargetM iid enemies \eid -> do
         isElite <- eid <=~> EliteEnemy
-        nonAttackEnemyDamage attrs (if isElite then 5 else 10) eid
+        nonAttackEnemyDamage (Just iid) attrs (if isElite then 5 else 10) eid
       pure e
     _ -> NameYourPrice2 <$> liftRunMessage msg attrs

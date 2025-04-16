@@ -43,7 +43,7 @@ instance RunMessage HypnoticGaze where
       pushWhen (shouldDamageEnemy && healthDamage' > 0) do
         If
           (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
-          [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+          [EnemyDamage enemyId $ nonAttack (Just iid) attrs healthDamage']
       push $ ResetChaosTokens (toSource attrs)
       pure e
     _ -> HypnoticGaze . (`with` meta) <$> liftRunMessage msg attrs

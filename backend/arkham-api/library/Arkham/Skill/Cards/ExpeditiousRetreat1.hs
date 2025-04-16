@@ -26,14 +26,14 @@ expeditiousRetreat1 = skill ExpeditiousRetreat1 Cards.expeditiousRetreat1
 instance HasModifiersFor ExpeditiousRetreat1 where
   getModifiersFor (ExpeditiousRetreat1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
     Action.Evade <- MaybeT getSkillTestAction
-    AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestSource
+    AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestAbilitySource
     pure [AddSkillIcons [#agility, #agility]]
 
 instance RunMessage ExpeditiousRetreat1 where
   runMessage msg s@(ExpeditiousRetreat1 attrs) = case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       mAction <- getSkillTestAction
-      mSource <- getSkillTestSource
+      mSource <- getSkillTestAbilitySource
       mInvestigator <- getSkillTestInvestigator
       case (mAction, mSource, mInvestigator) of
         (Just Action.Evade, Just (AbilitySource (EnemySource eid) AbilityAttack), Just iid) -> do

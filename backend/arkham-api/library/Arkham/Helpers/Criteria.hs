@@ -748,6 +748,7 @@ passesCriteria iid mcard source' requestor windows' = \case
  where
   source = case source' of
     AbilitySource s _ -> s
+    UseAbilitySource _ s _ -> s
     _ -> source'
 
 -- | Build a matcher and check the list

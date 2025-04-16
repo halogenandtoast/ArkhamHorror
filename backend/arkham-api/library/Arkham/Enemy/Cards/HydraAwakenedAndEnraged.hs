@@ -1,8 +1,4 @@
-module Arkham.Enemy.Cards.HydraAwakenedAndEnraged (
-  hydraAwakenedAndEnraged,
-  HydraAwakenedAndEnraged (..),
-)
-where
+module Arkham.Enemy.Cards.HydraAwakenedAndEnraged (hydraAwakenedAndEnraged) where
 
 import Arkham.Ability
 import Arkham.DamageEffect
@@ -34,12 +30,10 @@ instance HasModifiersFor HydraAwakenedAndEnraged where
 
 instance HasAbilities HydraAwakenedAndEnraged where
   getAbilities (HydraAwakenedAndEnraged a) =
-    extend
-      a
-      [ restricted a 1 (exists $ enemyIs Cards.hydrasBrood)
-          $ forced
-          $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
-      ]
+    extend1 a
+      $ restricted a 1 (exists $ enemyIs Cards.hydrasBrood)
+      $ forced
+      $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
 
 instance RunMessage HydraAwakenedAndEnraged where
   runMessage msg e@(HydraAwakenedAndEnraged attrs) = runQueueT $ case msg of
@@ -49,6 +43,5 @@ instance RunMessage HydraAwakenedAndEnraged where
         Window.EnemyEvaded iid _ -> for_ brood $ push . Msg.EnemyEvaded iid
         Window.DealtDamage source damageEffect _ n -> for_ brood \target -> push $ EnemyDamage target $ DamageAssignment source n damageEffect False False
         _ -> pure ()
-
       pure e
     _ -> HydraAwakenedAndEnraged <$> liftRunMessage msg attrs

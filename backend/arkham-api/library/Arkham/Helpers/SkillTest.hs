@@ -88,6 +88,14 @@ isSkillTestInvestigator iid = (== Just iid) <$> getSkillTestInvestigator
 getSkillTestSource :: HasGame m => m (Maybe Source)
 getSkillTestSource = getsSkillTest skillTestSource
 
+getSkillTestAbilitySource :: HasGame m => m (Maybe Source)
+getSkillTestAbilitySource = runMaybeT do
+  source <- MaybeT getSkillTestSource
+  case source of
+    AbilitySource {} -> pure source
+    UseAbilitySource _ a b -> pure $ AbilitySource a b
+    _ -> mzero
+
 isSkillTestSource :: (HasGame m, Sourceable source) => source -> m Bool
 isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
 
@@ -300,6 +308,7 @@ getIsScenarioAbility = do
  where
   go = \case
     AbilitySource s n | n < 100 || n > 102 -> go s
+    UseAbilitySource _ s n | n < 100 || n > 102 -> go s
     ProxySource inner1 inner2 -> orM [go inner1, go inner2]
     IndexedSource _ inner -> go inner
     EnemySource _ -> pure True
@@ -657,6 +666,8 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.UsingThis -> pure $ case skillTestSource st of
     AbilitySource (ProxySource _ s) _ -> s == source
     AbilitySource s _ -> s == source
+    UseAbilitySource _ (ProxySource _ s) _ -> s == source
+    UseAbilitySource _ s _ -> s == source
     ProxySource (CardIdSource _) s -> s == source
     ProxySource _ s -> s == source
     IndexedSource _ s -> s == source
@@ -677,6 +688,9 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
   Matcher.SkillTestOnLocation match -> case skillTestSource st of
     AbilitySource s n | n < 100 -> case s.location of
+      Just lid -> lid <=~> match
+      Nothing -> pure False
+    UseAbilitySource _ s n | n < 100 -> case s.location of
       Just lid -> lid <=~> match
       Nothing -> pure False
     _ -> pure False

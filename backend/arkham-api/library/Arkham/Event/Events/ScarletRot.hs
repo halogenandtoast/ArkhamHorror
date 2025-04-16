@@ -26,9 +26,9 @@ instance HasAbilities ScarletRot where
 
 instance RunMessage ScarletRot where
   runMessage msg e@(ScarletRot attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.attachedTo \case
-        EnemyTarget eid -> nonAttackEnemyDamage (attrs.ability 1) 1 eid
+        EnemyTarget eid -> nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
         _ -> pure ()
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -2,8 +2,8 @@
 
 module Arkham.DamageEffect where
 
+import Arkham.Id
 import Arkham.Prelude
-
 import Arkham.Source
 import Data.Aeson.TH
 import GHC.Records
@@ -33,15 +33,19 @@ attack a n =
     , damageAssignmentDelayed = False
     }
 
-nonAttack :: Sourceable a => a -> Int -> DamageAssignment
-nonAttack a n =
+nonAttack :: (Sourceable a) => Maybe InvestigatorId -> a -> Int -> DamageAssignment
+nonAttack mInvestigator a n =
   DamageAssignment
-    { damageAssignmentSource = toSource a
+    { damageAssignmentSource = maybe (toSource a) (`wrapAbilityUse` toSource a) mInvestigator
     , damageAssignmentAmount = n
     , damageAssignmentDamageEffect = NonAttackDamageEffect
     , damageAssignmentDirect = False
     , damageAssignmentDelayed = False
     }
+  where
+    wrapAbilityUse iid = \case
+      AbilitySource source idx -> UseAbilitySource iid source idx
+      other -> other
 
 storyDamage :: Sourceable a => a -> Int -> DamageAssignment
 storyDamage a n =
@@ -67,3 +71,4 @@ data DamageEffect
 
 $(deriveJSON defaultOptions ''DamageEffect)
 $(deriveJSON defaultOptions ''DamageAssignment)
+

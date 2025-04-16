@@ -40,9 +40,9 @@ instance HasAbilities TheTrueCulpritV1 where
 instance RunMessage TheTrueCulpritV1 where
   runMessage msg a@(TheTrueCulpritV1 attrs) =
     case msg of
-      UseThisAbility _ (ProxySource _ (isSource attrs -> True)) 1 -> do
+      UseThisAbility iid (ProxySource _ (isSource attrs -> True)) 1 -> do
         vengefulSpecter <- selectJust $ enemyIs Cards.vengefulSpecter
-        push $ EnemyDamage vengefulSpecter $ nonAttack (toAbilitySource attrs 1) 2
+        push $ EnemyDamage vengefulSpecter $ nonAttack (Just iid) (toAbilitySource attrs 1) 2
         pure a
       UseThisAbility _ (isSource attrs -> True) 2 -> do
         push $ AdvanceAgendaBy (toId attrs) AgendaAdvancedWithOther

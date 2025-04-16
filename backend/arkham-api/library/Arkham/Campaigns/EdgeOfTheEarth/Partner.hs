@@ -19,6 +19,7 @@ data Partner = Partner
   , partnerHorror :: Int
   , partnerStatus :: PartnerStatus
   }
+  deriving stock Show
 
 instance Eq Partner where
   (==) = (==) `on` partnerCardCode

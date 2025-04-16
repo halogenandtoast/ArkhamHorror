@@ -32,7 +32,7 @@ instance RunMessage TheHomeFront where
             do
               pushAll
                 [ HealDamageDirectly (InvestigatorTarget skillOwner) (toSource attrs) 1
-                , EnemyDamage eid $ nonAttack attrs 1
+                , EnemyDamage eid $ nonAttack (Just skillOwner) attrs 1
                 ]
         _ -> pure ()
       pure s

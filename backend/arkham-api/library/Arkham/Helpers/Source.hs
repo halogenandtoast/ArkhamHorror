@@ -18,6 +18,7 @@ import Arkham.Trait (Trait, toTraits)
 
 sourceTraits :: (HasCallStack, HasGame m) => Source -> m (Set Trait)
 sourceTraits = \case
+  UseAbilitySource _ s _ -> sourceTraits s
   AbilitySource s _ -> sourceTraits s
   ActDeckSource -> pure mempty
   ActMatcherSource _ -> pure mempty
@@ -65,6 +66,7 @@ sourceTraits = \case
 getSourceController :: HasGame m => Source -> m (Maybe InvestigatorId)
 getSourceController = \case
   AbilitySource s _ -> getSourceController s
+  UseAbilitySource iid _ _ -> pure $ Just iid
   AssetSource aid -> selectAssetController aid
   EventSource eid -> selectEventController eid
   SkillSource sid -> selectSkillController sid
@@ -100,6 +102,7 @@ sourceMatches s = \case
       isAssetSource s' = case s' of
         AssetSource aid -> elem aid <$> select am
         AbilitySource (AssetSource aid) _ -> elem aid <$> select am
+        UseAbilitySource _ (AssetSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isAssetSource pSource
         IndexedSource _ pSource -> isAssetSource pSource
         ProxySource pSource _ -> isAssetSource pSource
@@ -112,6 +115,7 @@ sourceMatches s = \case
       isEventSource s' = case s' of
         EventSource aid -> elem aid <$> select am
         AbilitySource (EventSource aid) _ -> elem aid <$> select am
+        UseAbilitySource _ (EventSource aid) _ -> elem aid <$> select am
         ProxySource (CardIdSource _) pSource -> isEventSource pSource
         ProxySource pSource _ -> isEventSource pSource
         IndexedSource _ pSource -> isEventSource pSource
@@ -125,6 +129,7 @@ sourceMatches s = \case
     let
       checkSource = \case
         AbilitySource source' _ -> checkSource source'
+        UseAbilitySource _ source' _ -> checkSource source'
         AssetSource aid ->
           selectAssetController aid >>= \case
             Just iid' -> elem iid' <$> select whoMatcher
@@ -160,6 +165,7 @@ sourceMatches s = \case
         ElderSignEffectSource {} -> True
         ActiveCostSource {} -> False
         AbilitySource {} -> True
+        UseAbilitySource {} -> True
         ActSource {} -> True
         ActDeckSource {} -> False
         AgendaDeckSource {} -> False
@@ -295,6 +301,7 @@ sourceMatches s = \case
     let
       check = \case
         AbilitySource source' _ -> check source'
+        UseAbilitySource _ source' _ -> check source'
         ActSource _ -> True
         AgendaSource _ -> True
         EnemySource _ -> True
@@ -307,6 +314,7 @@ sourceMatches s = \case
     let
       check = \case
         AbilitySource source' _ -> check source'
+        UseAbilitySource _ source' _ -> check source'
         ActSource _ -> True
         AgendaSource _ -> True
         EnemySource _ -> True
@@ -320,6 +328,7 @@ sourceMatches s = \case
     let
       check = \case
         AbilitySource source' _ -> check source'
+        UseAbilitySource _ source' _ -> check source'
         AssetSource _ -> True
         EventSource _ -> True
         SkillSource _ -> True
@@ -330,11 +339,13 @@ sourceMatches s = \case
   Matcher.SourceIsPlayerCardAbility ->
     case s of
       AbilitySource s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
+      UseAbilitySource _ s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       _ -> pure False
   Matcher.SourceWithCard cardMatcher -> do
     let
       getCardSource = \case
         AbilitySource source' _ -> getCardSource source'
+        UseAbilitySource _ source' _ -> getCardSource source'
         AssetSource aid -> fieldMay AssetCard aid
         EventSource eid -> fieldMay EventCard eid
         SkillSource sid -> fieldMay SkillCard sid

@@ -46,10 +46,10 @@ instance RunMessage HypnoticGaze2 where
           $ If
             (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
             [ Msg.chooseOrRunOne player
-                $ [ Label "Deal health damage" [EnemyDamage enemyId $ nonAttack attrs healthDamage']
+                $ [ Label "Deal health damage" [EnemyDamage enemyId $ nonAttack (Just iid) attrs healthDamage']
                   | healthDamage' > 0
                   ]
-                <> [ Label "Deal sanity damage" [EnemyDamage enemyId $ nonAttack attrs sanityDamage']
+                <> [ Label "Deal sanity damage" [EnemyDamage enemyId $ nonAttack (Just iid) attrs sanityDamage']
                    | sanityDamage' > 0
                    ]
             ]

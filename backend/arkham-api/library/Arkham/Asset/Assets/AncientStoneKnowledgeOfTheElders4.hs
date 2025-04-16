@@ -28,6 +28,6 @@ instance RunMessage AncientStoneKnowledgeOfTheElders4 where
   runMessage msg a@(AncientStoneKnowledgeOfTheElders4 attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalUsesPayment -> damage) -> do
       enemies <- select $ EnemyAt $ locationWithInvestigator iid
-      chooseOrRunOne iid [targetLabel x [EnemyDamage x $ nonAttack attrs damage] | x <- enemies]
+      chooseOrRunOne iid [targetLabel x [EnemyDamage x $ nonAttack (Just iid) attrs damage] | x <- enemies]
       pure a
     _ -> AncientStoneKnowledgeOfTheElders4 <$> liftRunMessage msg attrs

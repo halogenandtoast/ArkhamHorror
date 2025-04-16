@@ -1,14 +1,11 @@
 module Arkham.Enemy.Cards.Poltergeist (poltergeist) where
 
 import Arkham.Ability
-import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Enemy.Cards qualified as Cards
-import Arkham.Enemy.Runner
+import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.Trait
 
 newtype Poltergeist = Poltergeist EnemyAttrs
@@ -20,7 +17,7 @@ poltergeist = enemy Poltergeist Cards.poltergeist (3, Static 2, 4) (0, 2)
 
 instance HasAbilities Poltergeist where
   getAbilities (Poltergeist a) =
-    withBaseAbilities a [skillTestAbility $ restrictedAbility a 1 OnSameLocation parleyAction_]
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance HasModifiersFor Poltergeist where
   getModifiersFor (Poltergeist a) = do
@@ -29,12 +26,12 @@ instance HasModifiersFor Poltergeist where
       [CannotBeDamagedByPlayerSourcesExcept $ SourceMatchesAny $ map SourceWithTrait [Spell, Relic]]
 
 instance RunMessage Poltergeist where
-  runMessage msg e@(Poltergeist attrs) = case msg of
+  runMessage msg e@(Poltergeist attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #intellect (Fixed 3)
       pure e
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      push $ Msg.EnemyDamage (toId attrs) $ nonAttack (attrs.ability 1) 1
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 attrs
       pure e
-    _ -> Poltergeist <$> runMessage msg attrs
+    _ -> Poltergeist <$> liftRunMessage msg attrs

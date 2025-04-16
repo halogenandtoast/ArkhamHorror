@@ -84,6 +84,9 @@ instance RunMessage ShroudOfShadowsEffect where
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
             AbilitySource (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
+            UseAbilitySource _ (AssetSource assetId) 1 -> handleIt assetId
+            UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
+            UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e

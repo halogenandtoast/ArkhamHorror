@@ -518,6 +518,7 @@ instance Sourceable AssetAttrs where
   toSource = AssetSource . toId
   isSource AssetAttrs {assetId} (AssetSource aid) = assetId == aid
   isSource attrs (AbilitySource source _) = isSource attrs source
+  isSource attrs (UseAbilitySource _ source _) = isSource attrs source
   isSource _ _ = False
 
 controls :: (Entity attrs, EntityAttrs attrs ~ AssetAttrs) => InvestigatorId -> attrs -> Bool

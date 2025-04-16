@@ -32,7 +32,7 @@ instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
 
       chooseOneM iid do
         labeled "Do not deal damage" nothing
-        targets enemies (nonAttackEnemyDamage (attrs.ability 2) 1)
+        targets enemies (nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1)
 
       liftRunMessage (UseCardAbility iid (toSource attrs) 2 windows' payments) a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

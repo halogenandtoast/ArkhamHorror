@@ -47,6 +47,6 @@ instance RunMessage Lantern2 where
       enemies <- select $ enemyAtLocationWith iid
       player <- getPlayer iid
       push
-        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack source n] | enemy <- enemies]
+        $ chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) source n] | enemy <- enemies]
       pure a
     _ -> Lantern2 <$> runMessage msg attrs

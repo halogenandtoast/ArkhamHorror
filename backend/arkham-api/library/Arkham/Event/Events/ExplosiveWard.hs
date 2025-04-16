@@ -21,7 +21,7 @@ instance RunMessage ExplosiveWard where
       enemies <- select $ enemyEngagedWith iid <> NonEliteEnemy
       chooseOrRunOne
         iid
-        [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 1) n] | enemy <- enemies]
+        [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 1) n] | enemy <- enemies]
       pure e
     _ -> ExplosiveWard <$> liftRunMessage msg attrs
 

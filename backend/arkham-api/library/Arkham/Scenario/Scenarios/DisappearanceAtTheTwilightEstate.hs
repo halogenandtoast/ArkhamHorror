@@ -98,7 +98,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
 
       whenAny (investigatorIs Investigators.gavriellaMizrah) do
         theSpectralWatcher <- selectJust $ enemyIs Enemies.theSpectralWatcher
-        nonAttackEnemyDamage attrs 1 theSpectralWatcher
+        nonAttackEnemyDamage Nothing attrs 1 theSpectralWatcher
 
       whenAny (investigatorIs Investigators.valentinoRivas) do
         terrorInTheNight <- genCard Treacheries.terrorInTheNight

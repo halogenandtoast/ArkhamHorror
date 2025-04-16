@@ -64,7 +64,7 @@ instance RunMessage PuzzleBox where
         <> [ Label "Exhaust the Spectral Watcher" [Exhaust (toTarget enemyId)]
            | enemyId <- maybeToList readySpectralWatcher
            ]
-        <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack attrs 5]
+        <> [ Label "Deal 5 damage to the Spectral Watcher" [EnemyDamage enemyId $ nonAttack (Just iid) attrs 5]
            | canDealDamage
            , enemyId <- maybeToList exhaustedSpectralWatcher
            ]

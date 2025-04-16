@@ -57,7 +57,7 @@ instance RunMessage ForbiddenTomeDarkKnowledge3 where
               [ HealDamage target (toSource attrs) 1
               , chooseOne
                   player
-                  [ targetLabel enemy [EnemyDamage enemy $ nonAttack (toSource attrs) 1]
+                  [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (toSource attrs) 1]
                   | enemy <- enemies
                   ]
               ]

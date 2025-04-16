@@ -23,7 +23,7 @@ instance RunMessage BumsRush where
       pure e
     Successful (Action.Evade, EnemyTarget eid) iid _ (isTarget attrs -> True) n -> do
       push $ EnemyEvaded iid eid
-      when (n >= 2) $ nonAttackEnemyDamage attrs 1 eid
+      when (n >= 2) $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       isElite <- eid <=~> EliteEnemy
       unless isElite $ afterSkillTest $ push $ WillMoveEnemy eid msg
       pure e

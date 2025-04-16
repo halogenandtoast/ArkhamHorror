@@ -34,8 +34,8 @@ instance HasAbilities MemoryOfALostPatient where
 
 instance RunMessage MemoryOfALostPatient where
   runMessage msg e@(MemoryOfALostPatient attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (healedAmount -> n) _ -> do
-      nonAttackEnemyDamage (attrs.ability 1) n attrs.id
+    UseCardAbility iid (isSource attrs -> True) 1 (healedAmount -> n) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) n attrs.id
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       flipOverBy iid (attrs.ability 2) attrs

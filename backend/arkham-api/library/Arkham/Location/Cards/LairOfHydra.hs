@@ -45,6 +45,6 @@ instance RunMessage LairOfHydra where
       enemies <-
         select
           $ mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
-      chooseTargetM iid enemies $ nonAttackEnemyDamage (attrs.ability 1) 3
+      chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 3
       pure l
     _ -> LairOfHydra <$> liftRunMessage msg attrs

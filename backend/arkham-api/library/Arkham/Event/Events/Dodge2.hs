@@ -23,7 +23,7 @@ instance RunMessage Dodge2 where
       sid <- getRandom
       beginSkillTest sid iid attrs iid #agility $ Fixed 1
       pure $ Dodge2 (attrs `with` Metadata (Just currentAttack.enemy))
-    PassedThisSkillTest _ (isSource attrs -> True) -> do
-      for_ (selectedEnemy meta) $ nonAttackEnemyDamage (toSource attrs) 1
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
+      for_ (selectedEnemy meta) $ nonAttackEnemyDamage (Just iid) (toSource attrs) 1
       pure e
     _ -> Dodge2 . (`with` meta) <$> liftRunMessage msg attrs

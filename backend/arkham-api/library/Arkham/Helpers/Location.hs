@@ -155,6 +155,7 @@ locationMatches investigatorId source window locationId matcher' = do
           EnemySource eid -> field EnemyLocation eid
           AssetSource aid -> field AssetLocation aid
           AbilitySource s _ -> getSameLocationSource s
+          UseAbilitySource _ s _ -> getSameLocationSource s
           _ -> error $ "can't detect same location for source " <> show source
 
       mlid' <- getSameLocationSource source
@@ -169,6 +170,7 @@ locationMatches investigatorId source window locationId matcher' = do
           IndexedSource _ s -> go s
           ProxySource s _ -> go s
           AbilitySource s _ -> go s
+          UseAbilitySource _ s _ -> go s
           _ -> error $ "Invalid source for ThisLocation: " <> show source
        in
         go source

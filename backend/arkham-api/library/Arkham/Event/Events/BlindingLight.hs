@@ -23,6 +23,6 @@ instance RunMessage BlindingLight where
       aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      withSkillTestEnemyTarget (nonAttackEnemyDamage iid 1)
+      withSkillTestEnemyTarget (nonAttackEnemyDamage (Just iid) iid 1)
       pure e
     _ -> BlindingLight <$> liftRunMessage msg attrs

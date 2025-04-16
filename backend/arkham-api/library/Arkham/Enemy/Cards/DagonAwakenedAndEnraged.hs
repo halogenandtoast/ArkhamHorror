@@ -1,8 +1,4 @@
-module Arkham.Enemy.Cards.DagonAwakenedAndEnraged (
-  dagonAwakenedAndEnraged,
-  DagonAwakenedAndEnraged (..),
-)
-where
+module Arkham.Enemy.Cards.DagonAwakenedAndEnraged (dagonAwakenedAndEnraged) where
 
 import Arkham.Ability
 import Arkham.Enemy.Cards qualified as Cards
@@ -33,7 +29,7 @@ instance HasAbilities DagonAwakenedAndEnraged where
 instance RunMessage DagonAwakenedAndEnraged where
   runMessage msg e@(DagonAwakenedAndEnraged attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      when (attrs.exhausted) $ readyThis attrs
+      when attrs.exhausted $ readyThis attrs
       initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     _ -> DagonAwakenedAndEnraged <$> liftRunMessage msg attrs

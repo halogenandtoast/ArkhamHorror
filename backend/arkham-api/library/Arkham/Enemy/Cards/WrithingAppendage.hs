@@ -49,6 +49,6 @@ instance RunMessage WrithingAppendage where
       -- triggering any abilities
       mCnidathquaId <- getCnidathqua
       for_ mCnidathquaId $ \cnidathquaId ->
-        push $ Msg.EnemyDamage cnidathquaId $ nonAttack iid 1
+        push $ Msg.EnemyDamage cnidathquaId $ nonAttack Nothing iid 1
       pure e
     _ -> WrithingAppendage <$> runMessage msg attrs

@@ -57,7 +57,7 @@ instance RunMessage NephthysHuntressOfBast4 where
                [ ReturnChaosTokensToPool blessTokens
                , Msg.chooseOrRunOne
                    player
-                   [targetLabel enemy [EnemyDamage enemy $ nonAttack (attrs.ability 2) 2] | enemy <- enemies]
+                   [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (attrs.ability 2) 2] | enemy <- enemies]
                ]
            | notNull enemies
            ]

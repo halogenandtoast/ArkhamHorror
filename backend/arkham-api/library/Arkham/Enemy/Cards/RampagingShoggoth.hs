@@ -44,7 +44,7 @@ instance RunMessage RampagingShoggoth where
       enemies <- select $ at_ (locationWithEnemy attrs) <> not_ (EnemyWithTrait Shoggoth)
       lead <- getLead
       chooseOneAtATimeM lead do
-        targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 2
+        targets enemies $ nonAttackEnemyDamage Nothing (attrs.ability 1) 2
         targets investigators \iid -> assignDamage iid (attrs.ability 1) 2
 
       for_ investigators \iid -> drawTekelili iid (attrs.ability 1) 1

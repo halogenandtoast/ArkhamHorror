@@ -33,7 +33,7 @@ instance RunMessage SunkenHalls where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       placeKey attrs BlackKey
       pure l
-    UseCardAbility _iid (isSource attrs -> True) 2 (enteringEnemy -> eid) _ -> do
-      nonAttackEnemyDamage (attrs.ability 2) 2 eid
+    UseCardAbility iid (isSource attrs -> True) 2 (enteringEnemy -> eid) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2 eid
       pure l
     _ -> SunkenHalls <$> liftRunMessage msg attrs

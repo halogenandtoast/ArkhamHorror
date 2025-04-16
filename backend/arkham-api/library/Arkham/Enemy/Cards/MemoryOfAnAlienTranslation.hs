@@ -30,8 +30,8 @@ instance HasAbilities MemoryOfAnAlienTranslation where
 
 instance RunMessage MemoryOfAnAlienTranslation where
   runMessage msg e@(MemoryOfAnAlienTranslation attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      nonAttackEnemyDamage (attrs.ability 1) 4 attrs.id
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 4 attrs.id
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       flipOverBy iid (attrs.ability 2) attrs

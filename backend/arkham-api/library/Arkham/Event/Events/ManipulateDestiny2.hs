@@ -64,7 +64,7 @@ instance RunMessage ManipulateDestiny2 where
               $ chooseOrRunOneAtATime player
               $ [ Label
                   "Deal 2 damage to an enemy at your location"
-                  [chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 2] | enemy <- enemies]]
+                  [chooseOne player [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 2] | enemy <- enemies]]
                 | canDamage
                 ]
               <> [ Label

@@ -33,9 +33,9 @@ instance RunMessage GrievousWound where
       let enemy = attackedEnemy attrs.windows
       push $ PlaceEvent attrs.id (AttachedToEnemy enemy)
       pure e
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.attachedTo \case
-        EnemyTarget eid -> push $ EnemyDamage eid $ nonAttack (attrs.ability 1) 1
+        EnemyTarget eid -> push $ EnemyDamage eid $ nonAttack (Just iid) (attrs.ability 1) 1
         _ -> pure ()
       pure e
     _ -> GrievousWound <$> liftRunMessage msg attrs

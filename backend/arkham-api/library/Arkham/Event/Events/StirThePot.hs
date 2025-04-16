@@ -31,7 +31,7 @@ instance RunMessage StirThePot where
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
       chooseOrRunOneAtATime
         iid
-        [targetLabel enemy [Msg.nonAttackEnemyDamage attrs 2 enemy] | enemy <- enemies]
+        [targetLabel enemy [Msg.nonAttackEnemyDamage (Just iid) attrs 2 enemy] | enemy <- enemies]
       when (n >= 2) $ doStep 1 msg
       pure e
     DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do

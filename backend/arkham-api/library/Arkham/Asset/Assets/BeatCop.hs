@@ -28,6 +28,6 @@ instance RunMessage BeatCop where
   runMessage msg a@(BeatCop attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ enemyAtLocationWith iid
-      chooseOrRunOneM iid $ targets enemies $ assignEnemyDamage (nonAttack (attrs.ability 1) 1)
+      chooseOrRunOneM iid $ targets enemies $ assignEnemyDamage (nonAttack (Just iid) (attrs.ability 1) 1)
       pure a
     _ -> BeatCop <$> liftRunMessage msg attrs

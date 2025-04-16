@@ -32,7 +32,7 @@ toEnemyId (_ : ws) = toEnemyId ws
 
 instance RunMessage GuardDog where
   runMessage msg a@(GuardDog attrs) = case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (toEnemyId -> eid) _ -> do
-      push $ nonAttackEnemyDamage (attrs.ability 1) 1 eid
+    UseCardAbility iid (isSource attrs -> True) 1 (toEnemyId -> eid) _ -> do
+      push $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
       pure a
     _ -> GuardDog <$> runMessage msg attrs

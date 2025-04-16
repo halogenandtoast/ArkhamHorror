@@ -79,6 +79,7 @@ sourceToMaybeTarget = \case
   EffectSource eid -> Just $ EffectTarget eid
   ResourceSource iid -> Just $ ResourceTarget iid
   AbilitySource s _ -> sourceToMaybeTarget s
+  UseAbilitySource _ s _ -> sourceToMaybeTarget s
   ActDeckSource -> Just $ ActDeckTarget
   AgendaDeckSource -> Just $ AgendaDeckTarget
   ActMatcherSource {} -> Nothing

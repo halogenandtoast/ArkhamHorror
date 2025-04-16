@@ -66,7 +66,7 @@ instance RunMessage OverTheThreshold where
       pushWhen (notNull enemyPairs)
         $ chooseOrRunOneAtATime lead
         $ [ targetLabel enemy
-              $ [ EnemyDamage humanoid $ nonAttack (EnemySource enemy) damage
+              $ [ EnemyDamage humanoid $ nonAttack Nothing (EnemySource enemy) damage
                 | humanoid <- humanoids
                 ]
           | (enemy, damage, humanoids) <- enemyPairs

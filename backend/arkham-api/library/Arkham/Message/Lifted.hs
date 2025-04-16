@@ -1954,10 +1954,10 @@ takeActionAsIfTurn iid (toSource -> source) = do
   push $ PlayerWindow iid [] False
 
 nonAttackEnemyDamage
-  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => a -> Int -> enemy -> m ()
-nonAttackEnemyDamage source damage enemy = do
+  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
+nonAttackEnemyDamage miid source damage enemy = do
   whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
-    push $ Msg.EnemyDamage (asId enemy) (nonAttack source damage)
+    push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)
 
 attackEnemyDamage :: (ReverseQueue m, Sourceable a) => a -> Int -> EnemyId -> m ()
 attackEnemyDamage source damage enemy = do

@@ -273,6 +273,7 @@ instance Sourceable EnemyAttrs where
   isSource EnemyAttrs {enemyId} (EnemySource eid) = enemyId == eid
   isSource attrs (CardCodeSource cardCode) = toCardCode attrs == cardCode
   isSource attrs (AbilitySource source _) = isSource attrs source
+  isSource attrs (UseAbilitySource _ source _) = isSource attrs source
   isSource _ _ = False
 
 instance HasField "ability" EnemyAttrs (Int -> Source) where

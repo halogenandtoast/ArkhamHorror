@@ -27,7 +27,7 @@ instance RunMessage QuickShot3 where
   runMessage msg e@(QuickShot3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
-      chooseTargetM iid enemies (nonAttackEnemyDamage attrs 1)
+      chooseTargetM iid enemies (nonAttackEnemyDamage (Just iid) attrs 1)
       pure e
     InHand iid' (UseThisAbility iid (isSource attrs -> True) 1) | iid' == iid -> do
       reduceCostOf (attrs.ability 1) attrs 2

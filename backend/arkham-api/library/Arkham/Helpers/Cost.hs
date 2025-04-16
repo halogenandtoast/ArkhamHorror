@@ -459,6 +459,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
             AssetSource aid ->
               fmap (>= n) . countM (<=~> Matcher.IncludeSealed tokenMatcher) =<< field AssetSealedChaosTokens aid
             AbilitySource t _ -> handleSource t
+            UseAbilitySource _ t _ -> handleSource t
             _ -> error $ "Unhandled release token cost source: " <> show source
         handleSource source
   ReleaseChaosTokenCost t ->

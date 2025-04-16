@@ -459,6 +459,7 @@ payCost msg c iid skipAdditionalCosts cost = do
           let
             handleSource = \case
               AbilitySource t _ -> handleSource t
+              UseAbilitySource _ t _ -> handleSource t
               AssetSource aid -> do
                 tokens <- filterM (<=~> IncludeSealed matcher) =<< field AssetSealedChaosTokens aid
                 pushAll

@@ -55,7 +55,7 @@ instance RunMessage TheTrueCulpritV3 where
             player
             [ targetLabel
               staff
-              [if isElite then AddToVictory (toTarget staff) else EnemyDamage staff $ nonAttack originalSource 2]
+              [if isElite then AddToVictory (toTarget staff) else EnemyDamage staff $ nonAttack (Just iid) originalSource 2]
             | (staff, isElite) <- staffWithIsElite
             ]
         pure a

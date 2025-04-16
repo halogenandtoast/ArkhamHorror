@@ -84,7 +84,8 @@ instance RunMessage MakeshiftTrap where
             selectWithNonNull (EnemyAt (LocationWithId lid) <> EnemyCanBeDamagedBySource (toSource attrs)) \enemies ->
               chooseOne
                 attrs.controller
-                [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1] | enemy <- enemies]
+                [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just attrs.controller) attrs 1] | enemy <- enemies
+                ]
           _ -> pure ()
       when (remainingUses == 0) $ do
         when (attrs `hasCustomization` ExplosiveDevice) do
@@ -95,7 +96,8 @@ instance RunMessage MakeshiftTrap where
               when (notNull enemies || notNull investigators) do
                 uiEffect attrs lid Explosion
                 chooseOneAtATime attrs.controller
-                  $ [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 3] | enemy <- enemies]
+                  $ [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just attrs.controller) attrs 3] | enemy <- enemies
+                    ]
                   <> [targetLabel investigator [Msg.assignDamage investigator attrs 3] | investigator <- investigators]
             _ -> pure ()
 

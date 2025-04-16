@@ -19,10 +19,10 @@ bountyContracts = asset BountyContracts Cards.bountyContracts
 
 instance HasAbilities BountyContracts where
   getAbilities (BountyContracts a) =
-    [ restrictedAbility a 1 (available <> ControlsThis)
+    [ restricted a 1 (available <> ControlsThis)
         $ freeReaction
         $ EnemyEntersPlay #after EnemyWithHealth
-    , restrictedAbility a 2 ControlsThis $ ForcedAbility $ EnemyDefeated #after You ByAny EnemyWithBounty
+    , restricted a 2 ControlsThis $ forced $ EnemyDefeated #after You ByAny EnemyWithBounty
     ]
    where
     available = if hasUses a then mempty else Never

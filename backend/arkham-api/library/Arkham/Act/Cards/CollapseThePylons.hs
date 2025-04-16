@@ -38,8 +38,8 @@ instance HasAbilities CollapseThePylons where
 
 instance RunMessage CollapseThePylons where
   runMessage msg a@(CollapseThePylons attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (discoveredCluesAt -> (lid, n)) _ -> do
-      nonAttackEnemyDamage (attrs.ability 1) n (coerce @_ @EnemyId lid)
+    UseCardAbility iid (isSource attrs -> True) 1 (discoveredCluesAt -> (lid, n)) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) n (coerce @_ @EnemyId lid)
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

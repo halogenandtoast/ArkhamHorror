@@ -26,12 +26,12 @@ instance RunMessage LongShot where
   runMessage msg s@(LongShot attrs) = runQueueT $ case msg of
     PassedSkillTest _iid (Just Fight) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> nonAttackEnemyDamage attrs 1 eid
+        EnemyTarget eid -> nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s
     PassedSkillTest _iid (Just Evade) _ (isTarget attrs -> True) _ _ -> do
       whenJustM getSkillTestTarget \case
-        EnemyTarget eid -> nonAttackEnemyDamage attrs 1 eid
+        EnemyTarget eid -> nonAttackEnemyDamage (Just attrs.owner) attrs 1 eid
         _ -> error "invalid target"
       pure s
     _ -> LongShot <$> liftRunMessage msg attrs

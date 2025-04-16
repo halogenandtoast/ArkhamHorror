@@ -70,6 +70,7 @@ instance RunMessage DianaStanley where
           SkillSource sid -> (RemoveFromPlay (toSource sid),) <$> field SkillCard sid
           EventSource eid -> (RemoveFromPlay (toSource eid),) <$> field EventCard eid
           AbilitySource abilitySource _ -> getSource abilitySource
+          UseAbilitySource _ abilitySource _ -> getSource abilitySource
           CardIdSource cid -> do
             card <- getCard cid
             pure (RemovePlayerCardFromGame False card, card)

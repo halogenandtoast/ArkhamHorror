@@ -38,7 +38,7 @@ instance RunMessage Ambush1 where
     UseCardAbility _ (isSource attrs -> True) 2 (spawnedEnemy -> enemyId) _ -> do
       canDealDamage <- withoutModifier attrs.owner CannotDealDamage
       let source = attrs.ability 2
-      pushWhen canDealDamage $ EnemyDamage enemyId $ nonAttack source 2
+      pushWhen canDealDamage $ EnemyDamage enemyId $ nonAttack (Just attrs.owner) source 2
       toDiscardBy attrs.owner source attrs
       pure e
     _ -> Ambush1 <$> liftRunMessage msg attrs

@@ -16,6 +16,6 @@ instance RunMessage SneakAttack2 where
   runMessage msg e@(SneakAttack2 attrs) = runQueueT $ case msg of
     PlayThisEvent you (is attrs -> True) -> do
       enemies <- select $ EnemyNotEngagedWithYou <> enemiesColocatedWith you
-      chooseTargetM you enemies $ nonAttackEnemyDamage attrs 2
+      chooseTargetM you enemies $ nonAttackEnemyDamage (Just you) attrs 2
       pure e
     _ -> SneakAttack2 <$> liftRunMessage msg attrs

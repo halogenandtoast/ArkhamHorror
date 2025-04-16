@@ -27,7 +27,7 @@ instance RunMessage TheSchemesDemise where
   runMessage msg a@(TheSchemesDemise attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ enemyAtLocationWith iid <> withTrait AncientOne
-      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 3
+      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 3
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       requestChaosTokens iid (attrs.ability 2) 1

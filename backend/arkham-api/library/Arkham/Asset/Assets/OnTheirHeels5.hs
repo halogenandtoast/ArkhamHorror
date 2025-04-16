@@ -39,6 +39,6 @@ instance RunMessage OnTheirHeels5 where
           whenM (canDiscoverCluesAtYourLocation NotInvestigate iid) do
             labeled "Discover a clue at your location"
               $ discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
-          targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 1
+          targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure a
     _ -> OnTheirHeels5 <$> liftRunMessage msg attrs

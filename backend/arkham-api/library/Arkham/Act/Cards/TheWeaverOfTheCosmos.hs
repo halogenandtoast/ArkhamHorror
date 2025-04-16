@@ -38,7 +38,7 @@ instance RunMessage TheWeaverOfTheCosmos where
       enemies <- select $ enemyAtLocationWith iid <> EnemyWithTrait AncientOne
       chooseOrRunOne
         iid
-        [targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 3] | enemy <- enemies]
+        [targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 3] | enemy <- enemies]
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push (RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside)

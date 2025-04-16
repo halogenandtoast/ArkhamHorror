@@ -30,7 +30,7 @@ instance RunMessage DiscOfItzamna where
         chooseOrRunOne
           iid
           [ Label "Evade enemy" [EnemyEvaded iid eid]
-          , Label "Deal 2 damage" [EnemyDamage eid $ nonAttack attrs 2]
+          , Label "Deal 2 damage" [EnemyDamage eid $ nonAttack (Just iid) attrs 2]
           ]
       pure a
     _ -> DiscOfItzamna <$> liftRunMessage msg attrs

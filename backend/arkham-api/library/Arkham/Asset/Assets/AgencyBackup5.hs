@@ -42,7 +42,7 @@ instance RunMessage AgencyBackup5 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       xs <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource source
-      chooseTargetM iid xs $ nonAttackEnemyDamage source 1
+      chooseTargetM iid xs $ nonAttackEnemyDamage (Just iid) source 1
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discoverAtYourLocation NotInvestigate iid (attrs.ability 2) 1

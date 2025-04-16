@@ -52,7 +52,7 @@ instance RunMessage TheWayOut where
                 assignDamage investigator (attrs.ability 1) 2
               targets enemies \enemy -> do
                 enemyMoveTo enemy connected
-                nonAttackEnemyDamage (attrs.ability 1) 2 enemy
+                nonAttackEnemyDamage Nothing (attrs.ability 1) 2 enemy
       toDiscard (attrs.ability 1) lid
       pure a
     _ -> TheWayOut <$> liftRunMessage msg attrs

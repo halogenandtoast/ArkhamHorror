@@ -28,8 +28,8 @@ instance HasAbilities MemoryOfARavagedCountry where
 
 instance RunMessage MemoryOfARavagedCountry where
   runMessage msg e@(MemoryOfARavagedCountry attrs) = runQueueT $ case msg of
-    UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      nonAttackEnemyDamage (attrs.ability 1) 1 attrs.id
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 attrs.id
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       flipOverBy iid (attrs.ability 2) attrs

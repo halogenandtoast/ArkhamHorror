@@ -67,7 +67,7 @@ instance RunMessage HuntersArmor where
           drawCardsIfCan iid (attrs.ability 1) 1
         labeled "Do no exhaust" nothing
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (getDamageOrHorrorSource -> EnemyAttackSource enemy) _ -> do
-      nonAttackEnemyDamage (attrs.ability 2) 1 enemy
+    UseCardAbility iid (isSource attrs -> True) 2 (getDamageOrHorrorSource -> EnemyAttackSource enemy) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy
       pure a
     _ -> HuntersArmor <$> liftRunMessage msg attrs

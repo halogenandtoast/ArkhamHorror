@@ -62,11 +62,14 @@ instance RunMessage Armageddon4Effect where
                         push $ AddUses attrs.source assetId Charge 1
                     when (notNull enemies) do
                       labeled "Deal 1 damage to an enemy at your location" do
-                        chooseTargetM iid enemies $ nonAttackEnemyDamage attrs.source 1
+                        chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) attrs.source 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
             AbilitySource (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
+            UseAbilitySource _ (AssetSource assetId) 1 -> handleIt assetId
+            UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
+            UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do

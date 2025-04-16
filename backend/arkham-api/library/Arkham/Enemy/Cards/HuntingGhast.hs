@@ -25,9 +25,9 @@ instance HasAbilities HuntingGhast where
 
 instance RunMessage HuntingGhast where
   runMessage msg e@(HuntingGhast attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility _iid (isSource attrs -> True) 1 -> do
       gugs <- select $ EnemyWithTrait Gug <> ExhaustedEnemy
       for_ gugs $ push . Ready . toTarget
-      push $ Msg.EnemyDamage attrs.id $ nonAttack (attrs.ability 1) 1
+      push $ Msg.EnemyDamage attrs.id $ nonAttack Nothing (attrs.ability 1) 1
       pure e
     _ -> HuntingGhast <$> liftRunMessage msg attrs

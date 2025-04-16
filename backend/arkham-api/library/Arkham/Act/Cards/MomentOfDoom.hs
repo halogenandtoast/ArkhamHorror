@@ -70,7 +70,7 @@ instance RunMessage MomentOfDoom where
               [ FlipClues (InvestigatorTarget iid') 1
               , RemoveDoom (toAbilitySource attrs 1) (InvestigatorTarget iid') 1
               , PlaceDoom (toAbilitySource attrs 1) (LocationTarget lid) 1
-              , EnemyDamage yig $ nonAttack attrs 3
+              , EnemyDamage yig $ nonAttack (Just iid) attrs 3
               ]
             | iid' <- iids
             ]

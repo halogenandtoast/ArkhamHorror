@@ -42,7 +42,7 @@ instance RunMessage DrCharlesWestIIIKnowsHisPurpose where
         $ enemyAtLocationWith iid
         <> EnemyCanBeDamagedBySource (attrs.ability 1)
       pure a
-    HandleTargetChoice _iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      nonAttackEnemyDamage (attrs.ability 1) 1 eid
+    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
       pure a
     _ -> DrCharlesWestIIIKnowsHisPurpose <$> liftRunMessage msg attrs

@@ -18,7 +18,7 @@ bruteForce1 = skill BruteForce1 Cards.bruteForce1
 instance HasModifiersFor BruteForce1 where
   getModifiersFor (BruteForce1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
     Action.Fight <- MaybeT getSkillTestAction
-    AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestSource
+    AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestAbilitySource
     pure [AddSkillIcons [#combat, #combat]]
 
 instance RunMessage BruteForce1 where
@@ -26,7 +26,7 @@ instance RunMessage BruteForce1 where
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       void $ runMaybeT do
         Action.Fight <- MaybeT getSkillTestAction
-        AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestSource
+        AbilitySource (EnemySource _) AbilityAttack <- MaybeT getSkillTestAbilitySource
         iid <- MaybeT getSkillTestInvestigator
         lift $ withSkillTest \sid -> skillTestModifier sid (toSource attrs) iid (DamageDealt 2)
       pure s

@@ -30,6 +30,6 @@ instance RunMessage ElaborateDistraction where
         when canBeEvaded
           $ labeled "Automatically evade that enemy if it is not elite"
           $ automaticallyEvadeEnemy iid eid
-        when canBeDamaged $ labeled "Deal 1 damage to that enemy" $ nonAttackEnemyDamage attrs 1 eid
+        when canBeDamaged $ labeled "Deal 1 damage to that enemy" $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> ElaborateDistraction <$> liftRunMessage msg attrs

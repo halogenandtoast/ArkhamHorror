@@ -26,7 +26,7 @@ instance RunMessage ManoAMano1 where
       pushAll
         [ chooseOrRunOne
             player
-            [ targetLabel enemy [EnemyDamage enemy $ nonAttack attrs 1]
+            [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1]
             | enemy <- enemies
             ]
         ]

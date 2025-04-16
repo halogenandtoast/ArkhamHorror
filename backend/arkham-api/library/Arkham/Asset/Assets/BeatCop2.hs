@@ -31,6 +31,6 @@ instance RunMessage BeatCop2 where
       player <- getPlayer iid
       push
         $ chooseOrRunOne player
-        $ targetLabels enemies (only . nonAttackEnemyDamage (toAbilitySource attrs 1) 1)
+        $ targetLabels enemies (only . nonAttackEnemyDamage (Just iid) (toAbilitySource attrs 1) 1)
       pure a
     _ -> BeatCop2 <$> runMessage msg attrs

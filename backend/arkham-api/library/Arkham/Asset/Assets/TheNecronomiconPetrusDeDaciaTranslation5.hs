@@ -64,7 +64,7 @@ instance RunMessage TheNecronomiconPetrusDeDaciaTranslation5 where
         push
           $ chooseOrRunOne
             player
-            [ targetLabel eid [EnemyDamage eid $ nonAttack attrs 3]
+            [ targetLabel eid [EnemyDamage eid $ nonAttack (Just iid) attrs 3]
             | eid <- eids
             ]
         pure a

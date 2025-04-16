@@ -64,7 +64,7 @@ instance RunMessage CleanSneak4 where
     DoStep n (HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid)) -> do
       case n of
         1 -> gainResourcesIfCan iid attrs 2
-        2 -> nonAttackEnemyDamage attrs 2 eid
+        2 -> nonAttackEnemyDamage (Just iid) attrs 2 eid
         3 -> discoverAtYourLocation NotInvestigate iid attrs 1
         4 -> drawCardsIfCan iid attrs 1
         _ -> error "Unhandled options"

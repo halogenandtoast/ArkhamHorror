@@ -32,6 +32,6 @@ instance RunMessage Aquinnah3 where
       changeAttackDetails attack.enemy attack {attackDealDamage = False}
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemyIds <- select $ EnemyAt $ locationWithInvestigator iid
-      chooseOneM iid $ targets enemyIds $ nonAttackEnemyDamage (attrs.ability 1) healthDamage'
+      chooseOneM iid $ targets enemyIds $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) healthDamage'
       pure a
     _ -> Aquinnah3 <$> liftRunMessage msg attrs

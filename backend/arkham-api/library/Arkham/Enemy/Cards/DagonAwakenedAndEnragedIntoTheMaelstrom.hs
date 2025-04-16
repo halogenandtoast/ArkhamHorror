@@ -1,6 +1,5 @@
 module Arkham.Enemy.Cards.DagonAwakenedAndEnragedIntoTheMaelstrom (
   dagonAwakenedAndEnragedIntoTheMaelstrom,
-  DagonAwakenedAndEnragedIntoTheMaelstrom (..),
 )
 where
 
@@ -34,12 +33,10 @@ instance HasModifiersFor DagonAwakenedAndEnragedIntoTheMaelstrom where
 
 instance HasAbilities DagonAwakenedAndEnragedIntoTheMaelstrom where
   getAbilities (DagonAwakenedAndEnragedIntoTheMaelstrom a) =
-    extend
-      a
-      [ restricted a 1 (exists $ enemyIs Cards.dagonsBrood)
-          $ forced
-          $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
-      ]
+    extend1 a
+      $ restricted a 1 (exists $ enemyIs Cards.dagonsBrood)
+      $ forced
+      $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
 
 instance RunMessage DagonAwakenedAndEnragedIntoTheMaelstrom where
   runMessage msg e@(DagonAwakenedAndEnragedIntoTheMaelstrom attrs) = runQueueT $ case msg of

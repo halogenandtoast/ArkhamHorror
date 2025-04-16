@@ -35,6 +35,6 @@ instance RunMessage BrotherXavier1 where
       push
         $ chooseOrRunOne
           player
-          [targetLabel eid [EnemyDamage eid $ nonAttack (attrs.ability 1) 2] | eid <- enemies]
+          [targetLabel eid [EnemyDamage eid $ nonAttack (Just iid) (attrs.ability 1) 2] | eid <- enemies]
       pure a
     _ -> BrotherXavier1 <$> runMessage msg attrs

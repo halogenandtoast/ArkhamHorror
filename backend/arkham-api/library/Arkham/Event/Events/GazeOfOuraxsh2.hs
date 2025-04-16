@@ -33,7 +33,7 @@ instance RunMessage GazeOfOuraxsh2 where
             n
             ( chooseOne
                 player
-                [targetLabel enemy [EnemyDamage enemy $ delayDamage $ nonAttack attrs 1] | enemy <- enemies]
+                [targetLabel enemy [EnemyDamage enemy $ delayDamage $ nonAttack (Just iid) attrs 1] | enemy <- enemies]
             )
           <> map (checkDefeated attrs) enemies
           <> [ResetChaosTokens (toSource attrs)]

@@ -35,6 +35,6 @@ instance RunMessage AliceLuxley2 where
   runMessage msg a@(AliceLuxley2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ at_ (locationWithInvestigator iid) <> (attrs.ability 1).canDamage
-      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (attrs.ability 1) 1
+      chooseOrRunOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       pure a
     _ -> AliceLuxley2 <$> liftRunMessage msg attrs

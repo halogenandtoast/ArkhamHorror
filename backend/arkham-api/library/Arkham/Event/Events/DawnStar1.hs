@@ -56,7 +56,7 @@ instance RunMessage DawnStar1Effect where
             <> EnemyCanBeDamagedBySource (toSource attrs)
         _ -> pure ()
       pure e
-    HandleTargetChoice _iid (isSource attrs -> True) (EnemyTarget eid) -> do
-      nonAttackEnemyDamage attrs 1 eid
+    HandleTargetChoice iid (isSource attrs -> True) (EnemyTarget eid) -> do
+      nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> DawnStar1Effect <$> liftRunMessage msg attrs

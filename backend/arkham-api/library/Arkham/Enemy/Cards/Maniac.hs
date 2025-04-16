@@ -39,6 +39,6 @@ instance RunMessage Maniac where
           e
             <$ pushAll
               [ InvestigatorAssignDamage iid source DamageAny 1 0
-              , Msg.EnemyDamage (toId attrs) $ nonAttack (InvestigatorSource iid) 1
+              , Msg.EnemyDamage (toId attrs) $ nonAttack (Just iid) (InvestigatorSource iid) 1
               ]
     _ -> Maniac <$> runMessage msg attrs

@@ -33,6 +33,6 @@ instance RunMessage HeroicRescue2 where
         $ [Move $ move attrs iid lid | Just lid /= mlid]
         <> [EnemyEngageInvestigator enemy iid]
         <> [ChangeEnemyAttackTarget enemy (toTarget iid)]
-        <> [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack attrs 1] | canDealDamage]
+        <> [AfterEnemyAttack enemy [EnemyDamage enemy $ nonAttack (Just iid) attrs 1] | canDealDamage]
       pure e
     _ -> HeroicRescue2 <$> runMessage msg attrs

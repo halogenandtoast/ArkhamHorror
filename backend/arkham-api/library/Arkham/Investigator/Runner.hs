@@ -1136,6 +1136,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         source' =
           case source of
             AbilitySource _ 100 -> toSource iid
+            UseAbilitySource _ _ 100 -> toSource iid
             _ -> source
       push $ EnemyDamage eid $ attack source' damage
     pure a

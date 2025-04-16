@@ -32,7 +32,7 @@ instance RunMessage DevilFriendOrFoe2 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
-      for_ enemies $ nonAttackEnemyDamage (attrs.ability 2) 2
+      for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2
 
       investigators <- select $ colocatedWith iid
       for_ investigators \iid' -> do

@@ -35,7 +35,7 @@ instance RunMessage DynamiteBlast3 where
               $ Just
                 ( lid
                 , animation
-                    : map (\enid -> EnemyDamage enid $ nonAttack attrs 3) enemyIds
+                    : map (\enid -> EnemyDamage enid $ nonAttack (Just iid) attrs 3) enemyIds
                       <> map (\iid' -> assignDamage iid' eid 3) investigatorIds
                 )
       let availableChoices = map (uncurry targetLabel) $ filter (notNull . snd) choices

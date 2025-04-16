@@ -145,12 +145,12 @@ instance RunMessage DarkSideOfTheMoon where
           placeTokens TabletEffect iid AlarmLevel 1
         _ -> pure ()
       pure s
-    PassedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
+    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
         ElderThing -> void $ runMaybeT do
           Action.Evade <- MaybeT getSkillTestAction
           EnemyTarget eid <- MaybeT getSkillTestTarget
-          lift (assignEnemyDamage (nonAttack ElderThingEffect 2) eid)
+          lift (assignEnemyDamage (nonAttack (Just iid) ElderThingEffect 2) eid)
         _ -> pure ()
       pure s
     ScenarioResolution r -> do

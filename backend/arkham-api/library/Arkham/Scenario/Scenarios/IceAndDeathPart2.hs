@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Arkham.Scenario.Scenarios.IceAndDeathPart2 (iceAndDeathPart2) where
 
 import Arkham.Act.Cards qualified as Acts
@@ -14,7 +16,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard)
+import Arkham.Helpers.Query (getPlayerCount, getSetAsideCard, allInvestigators)
 import Arkham.Helpers.Text
 import Arkham.Location.Types qualified as Location
 import Arkham.Matcher
@@ -142,9 +144,11 @@ instance RunMessage IceAndDeathPart2 where
 
           sv <- fromMaybe 0 <$> getCurrentShelterValue
           story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
-          eachInvestigator (`forInvestigator` PreScenarioSetup)
+          investigators <- zip [0..] <$> allInvestigators
+          for_ investigators \(idx, investigator) ->
+            forInvestigator investigator (DoStep idx PreScenarioSetup)
           pure s
-    ForInvestigator iid PreScenarioSetup -> do
+    ForInvestigator iid (DoStep idx PreScenarioSetup) -> do
       getCurrentShelterValue >>= traverse_ \sv -> do
         setupModifier ScenarioSource iid (BaseStartingResources sv)
 
@@ -168,15 +172,17 @@ instance RunMessage IceAndDeathPart2 where
             <> [fredericks | fredericks.status `notElem` [Eliminated, Mia] && takada.status == Mia]
 
       n <- getPlayerCount
-      takenCount <- selectCount $ mapOneOf assetIs $ toList expeditionTeam
+
+      let remainingChoices = n - idx
+      needsToBeTaken <- filterM (selectNone . assetIs) mustTake
       remainingPartners <- getRemainingPartners
 
-      let partners = if length mustTake >= n - takenCount then mustTake else remainingPartners
+      let partners = if length needsToBeTaken >= remainingChoices then needsToBeTaken else remainingPartners
 
       unless (null partners) do
         chooseOneM iid do
           questionLabeled "Choose a partner for this scenario"
-          when (length mustTake < n - takenCount) do
+          when (length needsToBeTaken < remainingChoices) do
             labeled "Do not take a partner" nothing
           for_ partners \partner -> do
             inPlay <- selectAny $ assetIs partner.cardCode

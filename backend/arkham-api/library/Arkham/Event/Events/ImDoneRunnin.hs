@@ -53,7 +53,7 @@ instance RunMessage ImDoneRunninEffect where
         $ chooseOne
           player
           [ Label "Do not damage enemy" []
-          , Label "Damage enemy" [EnemyDamage eid $ nonAttack effectSource 1]
+          , Label "Damage enemy" [EnemyDamage eid $ nonAttack (Just iid) effectSource 1]
           ]
       pure e
     EndTurn _ -> do

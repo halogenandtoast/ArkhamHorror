@@ -55,7 +55,7 @@ instance RunMessage SergeantMonroe where
             chooseOrRunOne player
               $ targetLabels enemies
               $ only
-              . (`EnemyDamage` nonAttack (toAbilitySource attrs 1) n)
+              . (`EnemyDamage` nonAttack (Just iid) (toAbilitySource attrs 1) n)
       push
         $ chooseOrRunOne player
         $ [Label ("Deal damage dealt (" <> tshow damage <> ")") [deal damage] | damage > 0]

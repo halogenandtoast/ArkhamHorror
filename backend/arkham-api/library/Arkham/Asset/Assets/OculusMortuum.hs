@@ -46,6 +46,6 @@ instance RunMessage OculusMortuum where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discoverAtYourLocation NotInvestigate iid (attrs.ability 2) 1
       mEnemy <- selectOne $ AttackingEnemy <> withTrait Geist <> EnemyCanBeDamagedBySource (attrs.ability 1)
-      for_ mEnemy $ nonAttackEnemyDamage (attrs.ability 2) 1 
+      for_ mEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 
       pure a
     _ -> OculusMortuum <$> liftRunMessage msg attrs

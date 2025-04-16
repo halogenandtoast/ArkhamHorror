@@ -81,6 +81,7 @@ drawEncounterCardsWith i source n f = DrawCards i $ f $ newCardDraw source Deck.
 sourceToFromSource :: Sourceable source => source -> FromSource
 sourceToFromSource (toSource -> source) = case source of
   AbilitySource s _ -> sourceToFromSource s
+  UseAbilitySource _ s _ -> sourceToFromSource s
   InvestigatorSource _ -> FromPlayerCardEffect
   AssetSource _ -> FromPlayerCardEffect
   EventSource _ -> FromPlayerCardEffect
@@ -547,8 +548,8 @@ gainResourcesIfCan a source n = do
 assignEnemyDamage :: DamageAssignment -> EnemyId -> Message
 assignEnemyDamage = flip EnemyDamage
 
-nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a) => a -> Int -> enemy -> Message
-nonAttackEnemyDamage source damage enemy = EnemyDamage (asId enemy) (nonAttack source damage)
+nonAttackEnemyDamage :: (AsId enemy, IdOf enemy ~ EnemyId, Sourceable a) => Maybe InvestigatorId -> a -> Int -> enemy -> Message
+nonAttackEnemyDamage miid source damage enemy = EnemyDamage (asId enemy) (nonAttack miid source damage)
 
 placeDoom :: (Sourceable source, Targetable target) => source -> target -> Int -> Message
 placeDoom (toSource -> source) (toTarget -> target) n = PlaceDoom source target n

@@ -28,6 +28,7 @@ import GHC.Records
 data Source
   = IndexedSource Int Source
   | AbilitySource Source Int
+  | UseAbilitySource InvestigatorId Source Int
   | ActiveCostSource ActiveCostId
   | ActDeckSource
   | ActSource ActId
@@ -83,6 +84,7 @@ instance HasField "asset" Source (Maybe AssetId) where
     IndexedSource _ s -> s.asset
     ProxySource s _ -> s.asset
     AbilitySource s _ -> s.asset
+    UseAbilitySource _ s _ -> s.asset
     _ -> Nothing
 
 instance HasField "event" Source (Maybe EventId) where
@@ -92,6 +94,7 @@ instance HasField "event" Source (Maybe EventId) where
     IndexedSource _ s -> s.event
     ProxySource s _ -> s.event
     AbilitySource s _ -> s.event
+    UseAbilitySource _ s _ -> s.event
     _ -> Nothing
 
 instance HasField "location" Source (Maybe LocationId) where
@@ -101,6 +104,7 @@ instance HasField "location" Source (Maybe LocationId) where
     IndexedSource _ s -> s.location
     ProxySource s _ -> s.location
     AbilitySource s _ -> s.location
+    UseAbilitySource _ s _ -> s.location
     _ -> Nothing
 
 instance HasField "enemy" Source (Maybe EnemyId) where
@@ -110,6 +114,7 @@ instance HasField "enemy" Source (Maybe EnemyId) where
     IndexedSource _ s -> s.enemy
     ProxySource s _ -> s.enemy
     AbilitySource s _ -> s.enemy
+    UseAbilitySource _ s _ -> s.enemy
     EnemyAttackSource eid -> Just eid
     _ -> Nothing
 
@@ -120,6 +125,7 @@ instance HasField "treachery" Source (Maybe TreacheryId) where
     IndexedSource _ s -> s.treachery
     ProxySource s _ -> s.treachery
     AbilitySource s _ -> s.treachery
+    UseAbilitySource _ s _ -> s.treachery
     _ -> Nothing
 
 $(deriveToJSON defaultOptions ''Source)
@@ -219,14 +225,17 @@ instance Sourceable LocationMatcher where
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of
   AbilitySource b n' -> AbilitySource b n'
+  UseAbilitySource _ b n' -> AbilitySource b n'
   b -> AbilitySource b n
 
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
+isAbilitySource a idx (UseAbilitySource _ b idx') | idx == idx' = isSource a b
 isAbilitySource _ _ _ = False
 
 isProxyAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isProxyAbilitySource a idx (AbilitySource (ProxySource _ b) idx') | idx == idx' = isSource a b
+isProxyAbilitySource a idx (UseAbilitySource _ (ProxySource _ b) idx') | idx == idx' = isSource a b
 isProxyAbilitySource _ _ _ = False
 
 pattern CultistEffect :: Source

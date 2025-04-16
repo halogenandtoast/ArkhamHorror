@@ -61,6 +61,15 @@ instance RunMessage DisciplinePrescienceOfFateEffect where
         AbilitySource (IndexedSource _ (AssetSource inner)) _ -> case attrs.target of
           InvestigatorTarget iid -> flipOverBy iid attrs.source inner
           _ -> error "invalid target"
+        UseAbilitySource _ (AssetSource inner) _ -> case attrs.target of
+          InvestigatorTarget iid -> flipOverBy iid attrs.source inner
+          _ -> error "invalid target"
+        UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource inner)) _ -> case attrs.target of
+          InvestigatorTarget iid -> flipOverBy iid attrs.source inner
+          _ -> error "invalid target"
+        UseAbilitySource _ (IndexedSource _ (AssetSource inner)) _ -> case attrs.target of
+          InvestigatorTarget iid -> flipOverBy iid attrs.source inner
+          _ -> error "invalid target"
         _ -> error "invalid source"
       push $ disable attrs
       pure e

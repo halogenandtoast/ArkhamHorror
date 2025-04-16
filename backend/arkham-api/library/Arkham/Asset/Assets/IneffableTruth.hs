@@ -31,7 +31,7 @@ instance RunMessage IneffableTruth where
       createCardEffect Cards.ineffableTruth Nothing source sid
       aspect iid source (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid source)
       pure a
-    PassedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do
-      getSkillTestTargetedEnemy >>= traverse_ (nonAttackEnemyDamage (attrs.ability 1) 1)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      getSkillTestTargetedEnemy >>= traverse_ (nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1)
       pure a
     _ -> IneffableTruth <$> liftRunMessage msg attrs

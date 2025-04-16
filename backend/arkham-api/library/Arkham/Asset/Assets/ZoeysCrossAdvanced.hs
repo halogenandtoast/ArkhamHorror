@@ -23,8 +23,8 @@ instance HasAbilities ZoeysCrossAdvanced where
 
 instance RunMessage ZoeysCrossAdvanced where
   runMessage msg a@(ZoeysCrossAdvanced attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 (engagedEnemy -> eid) _ -> do
-      nonAttackEnemyDamage (attrs.ability 1) 1 eid
+    UseCardAbility iid (isSource attrs -> True) 1 (engagedEnemy -> eid) _ -> do
+      nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1 eid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       selectOneToHandle iid (attrs.ability 2)

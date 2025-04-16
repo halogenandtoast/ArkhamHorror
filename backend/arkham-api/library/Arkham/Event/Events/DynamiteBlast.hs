@@ -25,7 +25,7 @@ instance RunMessage DynamiteBlast where
           unless (null enemies && null investigators) do
             targeting location do
               uiEffect attrs location Explosion
-              for_ enemies (nonAttackEnemyDamage attrs 3)
+              for_ enemies (nonAttackEnemyDamage (Just iid) attrs 3)
               for_ investigators \iid' -> assignDamage iid' attrs 3
       pure e
     _ -> DynamiteBlast <$> liftRunMessage msg attrs

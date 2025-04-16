@@ -206,6 +206,7 @@ instance Sourceable ActAttrs where
   toSource = ActSource . toId
   isSource ActAttrs {actId} (ActSource aid) = actId == aid
   isSource attrs (AbilitySource source _) = isSource attrs source
+  isSource attrs (UseAbilitySource _ source _) = isSource attrs source
   isSource _ _ = False
 
 instance HasCardCode ActAttrs where

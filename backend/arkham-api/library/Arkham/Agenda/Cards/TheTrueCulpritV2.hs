@@ -75,7 +75,7 @@ instance RunMessage TheTrueCulpritV2 where
           <> [ Label
                 "remove 2 clues to deal it 2 damage"
                 [ RemoveClues (toSource sinisterSolution) (toTarget sinisterSolution) 2
-                , EnemyDamage otherworldlyMeddler $ nonAttack (toSource sinisterSolution) 2
+                , EnemyDamage otherworldlyMeddler $ nonAttack (Just iid) (toSource sinisterSolution) 2
                 ]
              , Label "Skip" []
              ]

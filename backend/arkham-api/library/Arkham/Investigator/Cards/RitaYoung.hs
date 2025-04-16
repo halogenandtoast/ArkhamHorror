@@ -56,7 +56,7 @@ instance RunMessage RitaYoung where
       chooseOrRunOneM iid do
         when canDamage do
           labeled "Damage enemy" do
-            push $ EnemyDamage enemyId $ nonAttack (attrs.ability 1) 1
+            push $ EnemyDamage enemyId $ nonAttack (Just iid) (attrs.ability 1) 1
         when (notNull connectingLocations) do
           labeled "Move to a connecting location" do
             chooseOne iid $ targetLabels connectingLocations $ only . Move . move attrs iid

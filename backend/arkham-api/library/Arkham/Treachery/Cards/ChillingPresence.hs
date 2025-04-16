@@ -34,7 +34,7 @@ instance RunMessage ChillingPresence where
         chooseOneM iid do
           labeled "Deal 1 damage to a Geist enemy at your location" do
             chooseTargetM iid geists \enemy -> do
-              nonAttackEnemyDamage (toSource attrs) 1 enemy
+              nonAttackEnemyDamage (Just iid) (toSource attrs) 1 enemy
               doStep (n - 1) msg'
           labeled "Skip" nothing
       pure t
@@ -55,7 +55,7 @@ instance RunMessage ChillingPresenceEffect where
         unless (null geists) $ do
           chooseOneM iid do
             labeled "Deal 2 damage to a Geist enemy at any location" do
-              chooseTargetM iid geists $ nonAttackEnemyDamage attrs.source 2
+              chooseTargetM iid geists $ nonAttackEnemyDamage (Just iid) attrs.source 2
             labeled "Skip" nothing
       pure e
     SkillTestEnds sid _ _ | isTarget sid attrs.target -> disableReturn e

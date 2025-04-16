@@ -44,7 +44,7 @@ instance RunMessage DelilahORourke3 where
       push
         $ chooseOrRunOne
           player
-          [ targetLabel enemy [EnemyDamage enemy $ nonAttack (toAbilitySource attrs 1) x]
+          [ targetLabel enemy [EnemyDamage enemy $ nonAttack (Just iid) (toAbilitySource attrs 1) x]
           | (enemy, exhausted) <- enemies
           , let x = if exhausted then 2 else 1
           ]

@@ -23,11 +23,11 @@ instance RunMessage Intimidation where
       sid <- getRandom
       beginSkillTest sid iid attrs eid #combat (EnemyMaybeFieldCalculation eid EnemyRemainingHealth)
       pure e
-    PassedThisSkillTest _iid (isSource attrs -> True) -> do
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       getSkillTestTargetedEnemy >>= traverse_ \enemy -> do
         elite <- enemy <=~> EliteEnemy
         if elite
-          then nonAttackEnemyDamage attrs 2 enemy
+          then nonAttackEnemyDamage (Just iid) attrs 2 enemy
           else shuffleIntoDeck Deck.EncounterDeck enemy
 
       pure e

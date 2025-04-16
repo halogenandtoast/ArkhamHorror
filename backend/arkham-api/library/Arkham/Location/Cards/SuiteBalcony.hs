@@ -57,7 +57,7 @@ instance RunMessage SuiteBalcony where
           isElite <- eid <=~> EliteEnemy
           defeat <- defeatEnemy eid iid (toAbilitySource attrs 1)
           pushAll $ directHorror iid (toAbilitySource attrs 1) 1
-            : if isElite then [Msg.EnemyDamage eid $ nonAttack (toAbilitySource attrs 1) 2] else defeat
+            : if isElite then [Msg.EnemyDamage eid $ nonAttack (Just iid) (toAbilitySource attrs 1) 2] else defeat
         _ -> error "wrong target"
       pure l
     _ -> SuiteBalcony <$> runMessage msg attrs

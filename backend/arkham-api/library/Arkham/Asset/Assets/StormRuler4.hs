@@ -34,7 +34,7 @@ instance RunMessage StormRuler4 where
         chooseOneM iid do
           labeled ("Exhaust Storm Ruler to deal " <> tshow tokens <> " damage to an enemy at your location") do
             exhaustThis attrs
-            chooseTargetM iid enemies (nonAttackEnemyDamage attrs tokens)
+            chooseTargetM iid enemies (nonAttackEnemyDamage (Just iid) attrs tokens)
           labeled "Do not exhaust" nothing
       pure a
     _ -> StormRuler4 <$> liftRunMessage msg attrs

@@ -735,7 +735,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
 }
 
 .hand {
-  flex-grow: 1;
+  flex: 0;
   display: flex;
   gap: 5px;
 }
@@ -855,13 +855,6 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   &.can-interact {
     border: 2px solid var(--select);
   }
-}
-
-.hand {
-  display: flex;
-  gap: 5px;
-  flex: 0;
-  overflow: auto;
 }
 
 .split-view .hand {

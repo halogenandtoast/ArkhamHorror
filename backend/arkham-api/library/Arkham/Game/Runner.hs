@@ -2007,7 +2007,7 @@ runGameMessage msg g = case msg of
     msgs <- resolveWithWindow (EndTurn iid) (Window.TurnEnds iid)
     pushAll $ wouldWindow : msgs
     pure g
-  After (EndTurn _) ->
+  After (EndTurn _) -> do
     pure $ g & turnHistoryL .~ mempty & turnPlayerInvestigatorIdL .~ Nothing
   After EndPhase -> do
     clearQueue

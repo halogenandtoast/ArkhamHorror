@@ -763,18 +763,20 @@ getInvestigatorsMatching matcher = do
       destinations <- select locationMatcher
       if null destinations
         then pure []
-        else mins <$> forMaybeM as \i -> runMaybeT do
-          loc <- MaybeT $ getMaybeLocation i
-          minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
-          pure (i, unDistance minDistance)
+        else
+          mins <$> forMaybeM as \i -> runMaybeT do
+            loc <- MaybeT $ getMaybeLocation i
+            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+            pure (i, unDistance minDistance)
     NearestToEnemy enemyMatcher -> do
       destinations <- select $ LocationWithEnemy enemyMatcher
       if null destinations
         then pure []
-        else mins <$> forMaybeM as \i -> runMaybeT do
-          loc <- MaybeT $ getMaybeLocation i
-          minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
-          pure (i, unDistance minDistance)
+        else
+          mins <$> forMaybeM as \i -> runMaybeT do
+            loc <- MaybeT $ getMaybeLocation i
+            minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+            pure (i, unDistance minDistance)
     HasMostMatchingAsset assetMatcher -> flip filterM as $ \i -> do
       selfCount <- length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
       allCounts <-

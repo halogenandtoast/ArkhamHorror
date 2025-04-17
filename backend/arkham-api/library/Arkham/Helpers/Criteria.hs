@@ -478,7 +478,7 @@ passesCriteria iid mcard source' requestor windows' = \case
             StorySource sid -> onSameLocation iid =<< field StoryPlacement sid
             AssetSource aid -> onSameLocation iid =<< field AssetPlacement aid
             EnemySource eid -> onSameLocation iid =<< field EnemyPlacement eid
-            TreacherySource tid -> onSameLocation iid =<< field TreacheryPlacement tid
+            TreacherySource tid -> maybe (pure False) (onSameLocation iid) =<< fieldMay TreacheryPlacement tid
             ProxySource (CardIdSource _) (AssetSource aid) -> go (AssetSource aid)
             ProxySource (CardCodeSource _) (AssetSource aid) -> go (AssetSource aid)
             ProxySource inner _ -> go inner

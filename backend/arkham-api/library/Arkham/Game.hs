@@ -3003,11 +3003,15 @@ enemyMatcherFilter es matcher' = case matcher' of
      in
       filterM (fieldMap EnemyKeywords (any isPatrol) . toId) es
   EnemyWithClues gameValueMatcher -> flip filterM es \enemy -> do
-    clues <- field EnemyClues (toId enemy)
-    clues `gameValueMatches` gameValueMatcher
+    mclues <- fieldMay EnemyClues (toId enemy)
+    case mclues of
+      Nothing -> pure False
+      Just clues -> clues `gameValueMatches` gameValueMatcher
   EnemyWithDoom gameValueMatcher -> flip filterM es \enemy -> do
-    doom <- field EnemyDoom (toId enemy)
-    doom `gameValueMatches` gameValueMatcher
+    mdoom <- fieldMay EnemyDoom (toId enemy)
+    case mdoom of
+      Nothing -> pure False
+      Just doom -> doom `gameValueMatches` gameValueMatcher
   EnemyWithBounty -> flip filterM es \enemy -> do
     mtokens <- fieldMay EnemyTokens (toId enemy)
     pure $ maybe 0 (Token.countTokens Token.Bounty) mtokens > 0

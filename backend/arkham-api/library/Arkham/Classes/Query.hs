@@ -353,7 +353,7 @@ isMatch a m = elem a <$> select m
 class (Ord (QueryElement a), Eq (QueryElement a)) => Query a where
   select :: (HasCallStack, HasGame m) => a -> m [QueryElement a]
 
-matches :: (HasGame m, Query a) => QueryElement a -> a -> m Bool
+matches :: (HasCallStack, HasGame m, Query a) => QueryElement a -> a -> m Bool
 matches a matcher = elem a <$> select matcher
 
 (<=~>) :: (HasGame m, Query a) => QueryElement a -> a -> m Bool

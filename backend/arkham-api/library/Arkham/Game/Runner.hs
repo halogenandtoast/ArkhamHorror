@@ -745,7 +745,7 @@ runGameMessage msg g = case msg of
   ChoosePlayer iid SetTurnPlayer -> do
     pushAll [BeginTurn iid, After (BeginTurn iid)]
     pure $ g & activeInvestigatorIdL .~ iid & turnPlayerInvestigatorIdL ?~ iid
-  MoveTo (moveTarget -> InvestigatorTarget iid) -> do
+  Do (MoveTo (moveTarget -> InvestigatorTarget iid)) -> do
     let
       historyItem = HistoryItem HistoryMoved True
       turn = isJust $ view turnPlayerInvestigatorIdL g

@@ -2033,8 +2033,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             : [mkAfter (Window.DiscoveringLastClue iid lid) | lastClue]
 
         pushAll
-          $ [ UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
-            , locationWindowsBefore
+          $ [ locationWindowsBefore
+            , UpdateHistory iid (HistoryItem HistoryCluesDiscovered $ singletonMap lid clueCount)
             , RemoveClues d.source (LocationTarget lid) clueCount
             , After $ GainClues iid d.source clueCount
             , locationWindowsAfter

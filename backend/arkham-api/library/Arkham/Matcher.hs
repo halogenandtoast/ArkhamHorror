@@ -415,6 +415,9 @@ replaceLocationMatcher lid m = over biplate (transform go)
   go n | m == n = LocationWithId lid
   go x = x
 
+replaceThisLocation :: Data a => LocationId -> a -> a
+replaceThisLocation lid = replaceLocationMatcher lid ThisLocation
+
 replaceThatLocation :: Data a => LocationId -> a -> a
 replaceThatLocation lid = replaceLocationMatcher lid ThatLocation
 

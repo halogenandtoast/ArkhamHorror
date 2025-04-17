@@ -1,15 +1,13 @@
-module Arkham.Act.Cards.TheStrangerACityAflame (TheStrangerACityAflame (..), theStrangerACityAflame, theStrangerACityAflameEffect) where
+module Arkham.Act.Cards.TheStrangerACityAflame (theStrangerACityAflame, theStrangerACityAflameEffect) where
 
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
-import Arkham.Act.Runner
+import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.ChaosToken
-import Arkham.Classes
-import Arkham.Effect.Runner
+import Arkham.Effect.Import
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Prelude
 import Arkham.Scenarios.CurtainCall.Helpers
 
 newtype TheStrangerACityAflame = TheStrangerACityAflame ActAttrs
@@ -17,8 +15,7 @@ newtype TheStrangerACityAflame = TheStrangerACityAflame ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theStrangerACityAflame :: ActCard TheStrangerACityAflame
-theStrangerACityAflame =
-  act (2, A) TheStrangerACityAflame Cards.theStrangerACityAflame Nothing
+theStrangerACityAflame = act (2, A) TheStrangerACityAflame Cards.theStrangerACityAflame Nothing
 
 instance HasAbilities TheStrangerACityAflame where
   getAbilities (TheStrangerACityAflame a) =
@@ -30,25 +27,22 @@ instance HasAbilities TheStrangerACityAflame where
     ]
 
 instance RunMessage TheStrangerACityAflame where
-  runMessage msg a@(TheStrangerACityAflame attrs) = case msg of
+  runMessage msg a@(TheStrangerACityAflame attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      push $ AdvanceAct (toId attrs) (attrs.ability 1) AdvancedWithOther
+      advancedWithOther attrs
       pure a
-    AdvanceAct aid _ _ | aid == toId attrs && onSide B attrs -> do
-      theatre <- selectJust (LocationWithTitle "Theatre")
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      addChaosToken Cultist
+      addChaosToken Cultist
+      theatre <- selectJust $ LocationWithTitle "Theatre"
+      placeTokens attrs theatre #horror 1
       card <- flipCard <$> genCard (toCardDef attrs)
-      enabled <- createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
-      pushAll
-        [ AddChaosToken Cultist
-        , AddChaosToken Cultist
-        , PlaceHorror (toSource attrs) (toTarget theatre) 1
-        , PlaceNextTo ActDeckTarget [card]
-        , enabled
-        , advanceActDeck attrs
-        ]
+      push $ PlaceNextTo ActDeckTarget [card]
+      createCardEffect Cards.theStrangerACityAflame Nothing attrs attrs
       moveTheManInThePalidMaskToLobbyInsteadOfDiscarding
+      advanceActDeck attrs
       pure a
-    _ -> TheStrangerACityAflame <$> runMessage msg attrs
+    _ -> TheStrangerACityAflame <$> liftRunMessage msg attrs
 
 newtype TheStrangerACityAflameEffect = TheStrangerACityAflameEffect EffectAttrs
   deriving anyclass (IsEffect, HasModifiersFor)
@@ -63,19 +57,19 @@ instance HasAbilities TheStrangerACityAflameEffect where
         $ skillTestAbility
         $ mkAbility (proxied (LocationMatcherSource LocationWithAnyHorror) attrs) 1
         $ forced
-        $ OrWindowMatcher
+        $ oneOf
           [ Enters #after You ThisLocation
-          , TurnEnds #when (You <> InvestigatorAt ThisLocation)
+          , TurnEnds #after $ You <> InvestigatorAt ThisLocation
           ]
     ]
 
 instance RunMessage TheStrangerACityAflameEffect where
-  runMessage msg e@(TheStrangerACityAflameEffect attrs) = case msg of
+  runMessage msg e@(TheStrangerACityAflameEffect attrs) = runQueueT $ case msg of
     UseThisAbility iid p@(isProxySource attrs -> True) 1 -> do
       sid <- getRandom
-      push $ beginSkillTest sid iid (AbilitySource p 1) attrs #agility (Fixed 3)
+      beginSkillTest sid iid (AbilitySource p 1) attrs #agility (Fixed 3)
       pure e
     FailedThisSkillTest iid (isProxyAbilitySource attrs 1 -> True) -> do
-      push $ assignDamage iid attrs.source 1
+      assignDamage iid attrs.source 1
       pure e
-    _ -> TheStrangerACityAflameEffect <$> runMessage msg attrs
+    _ -> TheStrangerACityAflameEffect <$> liftRunMessage msg attrs

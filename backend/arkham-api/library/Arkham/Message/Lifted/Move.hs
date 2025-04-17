@@ -34,6 +34,13 @@ moveUntil
   -> m ()
 moveUntil target location = push $ MoveUntil (asId location) (toTarget target)
 
+moveToward
+  :: (ReverseQueue m, Targetable target, IsLocationMatcher matcher)
+  => target
+  -> matcher
+  -> m ()
+moveToward target matcher = push $ MoveToward (toTarget target) (toLocationMatcher matcher)
+
 class AsMoveTo a where
   asMoveTo :: (Sourceable source, Targetable target) => source -> target -> a -> Movement
 

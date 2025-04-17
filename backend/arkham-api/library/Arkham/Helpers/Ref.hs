@@ -43,7 +43,12 @@ sourceToCard :: (HasCallStack, HasGame m) => Source -> m Card
 sourceToCard = targetToCard . sourceToTarget
 
 sourceToMaybeCard :: (HasCallStack, HasGame m, Sourceable source) => source -> m (Maybe Card)
-sourceToMaybeCard = maybe (pure Nothing) targetToMaybeCard . sourceToMaybeTarget . toSource
+sourceToMaybeCard (toSource -> source) = case source of
+  ProxySource u t -> runMaybeT $ MaybeT (sourceToMaybeCard t) <|> MaybeT (sourceToMaybeCard u)
+  IndexedSource _ t -> sourceToMaybeCard t
+  AbilitySource src _ -> sourceToMaybeCard src
+  UseAbilitySource _ src _ -> sourceToMaybeCard src
+  s -> maybe (pure Nothing) targetToMaybeCard (sourceToMaybeTarget s)
 
 sourceToTarget :: HasCallStack => Source -> Target
 sourceToTarget s =

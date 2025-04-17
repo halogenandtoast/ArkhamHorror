@@ -49,11 +49,14 @@ getCanPerformAbility !iid !ws !ability = do
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
+    abWindow = case ability.source.location of
+      Nothing -> abilityWindow ability
+      Just lid -> Matcher.replaceThisLocation lid $ abilityWindow ability
 
   andM
     [ getCanAffordCost iid (toSource ability) actions ws cost
     , meetsActionRestrictions iid ws ability
-    , anyM (\window -> windowMatches iid (toSource ability) window (abilityWindow ability)) ws
+    , anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
     , withActiveInvestigator iid (passesCriteria iid Nothing ability.source ability.requestor ws criteria)
     , allM (getCanAffordCost iid (abilitySource ability) actions ws) additionalCosts
     , not <$> preventedByInvestigatorModifiers iid ability

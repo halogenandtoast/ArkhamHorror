@@ -160,7 +160,7 @@ instance RunMessage SkillTest where
       -- see: faqs/drawing-thin
       pure $ s & difficultyL %~ \(SkillTestDifficulty d) -> SkillTestDifficulty (SumCalculation [d, Fixed n])
     ChaosTokenCanceled _ _ token -> do
-      let cancelIf t = if t.id == token.id then token { chaosTokenCancelled = True } else token
+      let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else token
       pure
         $ s
         & (setAsideChaosTokensL %~ map cancelIf)
@@ -186,14 +186,7 @@ instance RunMessage SkillTest where
       mTargetCardId <- case skillTestTarget of
         ProxyTarget t _ -> fmap toCardId <$> targetToMaybeCard t
         t -> fmap toCardId <$> targetToMaybeCard t
-      mSourceCardId <- case skillTestSource of
-        ProxySource _ t -> fmap toCardId <$> sourceToMaybeCard t
-        IndexedSource _ t -> fmap toCardId <$> sourceToMaybeCard t
-        AbilitySource src _ -> fmap toCardId <$> sourceToMaybeCard src
-        UseAbilitySource _ src _ -> fmap toCardId <$> sourceToMaybeCard src
-        t -> fmap toCardId <$> sourceToMaybeCard t
-
-      -- getAlternateSkill :: HasGame m => SkillTest -> SkillType -> m SkillType
+      mSourceCardId <- fmap toCardId <$> sourceToMaybeCard skillTestSource
 
       updatedSkillTestType <- case skillTestType of
         SkillSkillTest stype -> SkillSkillTest <$> getAlternateSkill s stype
@@ -453,9 +446,9 @@ instance RunMessage SkillTest where
             $ chooseOrRunOne
               lead
               [ targetLabel
-                resolver
-                $ SetSkillTestResolveFailureInvestigator resolver
-                : handleChoice resolver player
+                  resolver
+                  $ SetSkillTestResolveFailureInvestigator resolver
+                  : handleChoice resolver player
               | (resolver, player) <- resolversWithPlayers
               ]
         else do
@@ -493,8 +486,8 @@ instance RunMessage SkillTest where
             $ pushAll
             $ [SetActiveInvestigator iid | iid /= iid']
             <> [ PayForAbility
-                  (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) [] $ mconcat additionalCosts)
-                  []
+                   (abilityEffect (SourceableWithCardCode (CardCode "skilltest") s) [] $ mconcat additionalCosts)
+                   []
                ]
             <> [SetActiveInvestigator iid' | iid /= iid']
             <> msgs
@@ -610,25 +603,25 @@ instance RunMessage SkillTest where
         SucceededBy _ n ->
           pushAll
             ( [ Will
-                ( PassedSkillTest
-                    skillTestInvestigator
-                    skillTestAction
-                    skillTestSource
-                    target
-                    skillTestType
-                    n
-                )
+                  ( PassedSkillTest
+                      skillTestInvestigator
+                      skillTestAction
+                      skillTestSource
+                      target
+                      skillTestType
+                      n
+                  )
               | target <- skillTestSubscribers <> tokenSubscribers
               ]
                 <> [ Will
-                      ( PassedSkillTest
-                          skillTestInvestigator
-                          skillTestAction
-                          skillTestSource
-                          (SkillTestInitiatorTarget skillTestTarget)
-                          skillTestType
-                          n
-                      )
+                       ( PassedSkillTest
+                           skillTestInvestigator
+                           skillTestAction
+                           skillTestSource
+                           (SkillTestInitiatorTarget skillTestTarget)
+                           skillTestType
+                           n
+                       )
                    ]
             )
         FailedBy _ n -> do
@@ -641,25 +634,25 @@ instance RunMessage SkillTest where
           let
             handleChoice resolver =
               [ Will
-                ( FailedSkillTest
-                    resolver
-                    skillTestAction
-                    skillTestSource
-                    target
-                    skillTestType
-                    n
-                )
+                  ( FailedSkillTest
+                      resolver
+                      skillTestAction
+                      skillTestSource
+                      target
+                      skillTestType
+                      n
+                  )
               | target <- skillTestSubscribers <> tokenSubscribers
               ]
                 <> [ Will
-                      ( FailedSkillTest
-                          resolver
-                          skillTestAction
-                          skillTestSource
-                          (SkillTestInitiatorTarget skillTestTarget)
-                          skillTestType
-                          n
-                      )
+                       ( FailedSkillTest
+                           resolver
+                           skillTestAction
+                           skillTestSource
+                           (SkillTestInitiatorTarget skillTestTarget)
+                           skillTestType
+                           n
+                       )
                    ]
 
           if needsChoice
@@ -733,8 +726,8 @@ instance RunMessage SkillTest where
                   $ chooseOrRunOne
                     lead
                     [ targetLabel resolver
-                      $ SetSkillTestResolveFailureInvestigator resolver
-                      : handleChoice resolver
+                        $ SetSkillTestResolveFailureInvestigator resolver
+                        : handleChoice resolver
                     | resolver <- investigatorsToResolveFailure
                     ]
               else pushAll $ handleChoice skillTestResolveFailureInvestigator
@@ -795,8 +788,8 @@ instance RunMessage SkillTest where
                 $ chooseOrRunOne
                   lead
                   [ targetLabel resolver
-                    $ SetSkillTestResolveFailureInvestigator resolver
-                    : handleChoice resolver player
+                      $ SetSkillTestResolveFailureInvestigator resolver
+                      : handleChoice resolver player
                   | (resolver, player) <- resolversWithPlayers
                   ]
             else do

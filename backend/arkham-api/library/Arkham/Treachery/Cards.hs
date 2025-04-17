@@ -970,7 +970,7 @@ whispersInYourHeadDismay =
   (treachery "03084a" ("Whispers in Your Head" <:> "Dismay") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 whispersInYourHeadDread :: CardDef
@@ -978,7 +978,7 @@ whispersInYourHeadDread =
   (treachery "03084b" ("Whispers in Your Head" <:> "Dread") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 whispersInYourHeadAnxiety :: CardDef
@@ -986,7 +986,7 @@ whispersInYourHeadAnxiety =
   (treachery "03084c" ("Whispers in Your Head" <:> "Anxiety") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 whispersInYourHeadDoubt :: CardDef
@@ -994,7 +994,7 @@ whispersInYourHeadDoubt =
   (treachery "03084d" ("Whispers in Your Head" <:> "Doubt") Delusions 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 descentIntoMadness :: CardDef
@@ -1095,7 +1095,7 @@ giftOfMadnessPity =
   (treachery "03186" ("Gift of Madness" <:> "Pity") TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 giftOfMadnessMisery :: CardDef
@@ -1103,7 +1103,7 @@ giftOfMadnessMisery =
   (treachery "03187" ("Gift of Madness" <:> "Misery") TheUnspeakableOath 1)
     { cdCardTraits = singleton Terror
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 wallsClosingIn :: CardDef
@@ -1198,7 +1198,7 @@ possessionTraitorous =
   (treachery "03340" ("Possession" <:> "Traitorous") DimCarcosa 1)
     { cdCardTraits = setFromList [Hex, Terror]
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCommitRestrictions = [CommittableTreachery]
     }
 
@@ -1207,7 +1207,7 @@ possessionTorturous =
   (treachery "03341" ("Possession" <:> "Torturous") DimCarcosa 1)
     { cdCardTraits = setFromList [Hex, Terror]
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 possessionMurderous :: CardDef
@@ -1215,7 +1215,7 @@ possessionMurderous =
   (treachery "03342" ("Possession" <:> "Murderous") DimCarcosa 1)
     { cdCardTraits = setFromList [Hex, Terror]
     , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 boughtInBlood :: CardDef
@@ -1821,7 +1821,7 @@ shockingDiscovery :: CardDef
 shockingDiscovery =
   (weakness "06009" "Shocking Discovery")
     { cdCardTraits = setFromList [Blunder, Mystery]
-    , cdCardInSearchEffects = True
+    , cdOutOfPlayEffects = [InSearchEffect]
     }
 
 detachedFromReality :: CardDef
@@ -2428,6 +2428,7 @@ theHarbinger :: CardDef
 theHarbinger =
   (weakness "08006" "The Harbinger")
     { cdCardTraits = setFromList [Omen, Endtimes]
+    , cdOutOfPlayEffects = [OnTopOfDeckEffect]
     }
 
 buriedSecrets :: CardDef
@@ -2851,9 +2852,10 @@ throughTheGates =
 
 caughtCheating :: CardDef
 caughtCheating =
-  surge $ (treachery "51018" "Caught Cheating" ReturnToTheHouseAlwaysWins 2)
-    { cdCardTraits = setFromList [Illicit]
-    }
+  surge
+    $ (treachery "51018" "Caught Cheating" ReturnToTheHouseAlwaysWins 2)
+      { cdCardTraits = setFromList [Illicit]
+      }
 
 raiseTheStakes :: CardDef
 raiseTheStakes =
@@ -2902,9 +2904,10 @@ infiniteDoorway =
 
 resurgentEvils :: CardDef
 resurgentEvils =
-  peril $ (treachery "51064" "Resurgent Evils" ResurgentEvils 3)
-    { cdCardTraits = setFromList [Omen]
-    }
+  peril
+    $ (treachery "51064" "Resurgent Evils" ResurgentEvils 3)
+      { cdCardTraits = setFromList [Omen]
+      }
 
 secretDoor :: CardDef
 secretDoor =
@@ -2944,9 +2947,10 @@ needForKnowledge =
 
 eldritchAccord :: CardDef
 eldritchAccord =
-  peril $ (treachery "51072" "Eldritch Accord" YogSothothsEmissaries 2)
-    { cdCardTraits = setFromList [Pact]
-    }
+  peril
+    $ (treachery "51072" "Eldritch Accord" YogSothothsEmissaries 2)
+      { cdCardTraits = setFromList [Pact]
+      }
 
 unspeakableOathBloodthirst :: CardDef
 unspeakableOathBloodthirst =

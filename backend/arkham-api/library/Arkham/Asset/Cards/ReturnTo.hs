@@ -268,7 +268,7 @@ theStarXvii3 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 hallowedMirror3 :: CardDef
@@ -287,7 +287,7 @@ theWorldXxi3 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 occultLexicon3 :: CardDef
@@ -306,7 +306,7 @@ knightOfSwords3 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 wellConnected3 :: CardDef
@@ -324,7 +324,7 @@ theHierophantV3 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 signMagick3 :: CardDef
@@ -343,7 +343,7 @@ nineOfRods3 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 theFool03 :: CardDef
@@ -352,7 +352,7 @@ theFool03 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 moonPendant2 :: CardDef
@@ -361,7 +361,7 @@ moonPendant2 =
     { cdCardTraits = setFromList [Item, Charm]
     , cdSlots = [#accessory]
     , cdLevel = Just 2
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 observed4 :: CardDef
@@ -378,7 +378,7 @@ theDevilXv =
   (basicWeakness "54015" ("The Devil • XV" <:> "Your Shadow Hungers"))
     { cdCardTraits = setFromList [Omen, Tarot]
     , cdSlots = [#tarot]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCanReplace = False
     , cdRevelation = NoRevelation
     , cdCost = Just (StaticCost 3)

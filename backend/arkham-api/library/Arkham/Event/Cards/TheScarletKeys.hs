@@ -34,7 +34,7 @@ customModifications =
     , cdCardTraits = setFromList [Upgrade, Supply]
     , cdCriteria =
         Just $ exists $ AssetControlledBy You <> #firearm <> not_ (AssetWithAttachedEvent $ EventIs "09023")
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
         mapFromList
@@ -199,7 +199,7 @@ friendsInLowPlaces =
   (event "09060" "Friends in Low Places" 0 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Favor]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just $ can.manipulate.deck You
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdCustomizations =
@@ -220,7 +220,7 @@ honedInstinct =
   (event "09061" "Honed Instinct" 1 Rogue)
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Gambit]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdLimits = [MaxPerRound 1]
     , cdFastWindow =
@@ -420,7 +420,7 @@ makeshiftTrap =
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Improvised, Trap]
     , cdUses = Uses.Uses Uses.Time (Fixed 2)
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdCriteria = Just $ exists $ YourLocation <> LocationCanHaveAttachments
     , cdCustomizations =
@@ -573,7 +573,7 @@ quantumParadox =
     { cdCardTraits = setFromList [Paradox]
     , cdCardSubType = Just BasicWeakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdAdditionalCost = Just $ HandDiscardCost 4 #any
     , cdDeckRestrictions = [OnlyClass Seeker]
     }
@@ -584,7 +584,7 @@ payYourDue =
     { cdCardTraits = setFromList [Paradox]
     , cdCardSubType = Just BasicWeakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdAdditionalCost = Just $ AdditionalActionsCostThatReducesResourceCostBy 5 mempty
     , cdDeckRestrictions = [OnlyClass Seeker]
     }
@@ -595,7 +595,7 @@ underprepared =
     { cdCardTraits = setFromList [Blunder]
     , cdCardSubType = Just BasicWeakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdDeckRestrictions = [OnlyClass Survivor]
     , cdCriteria =
         Just $ youExist (HandWith (LengthIs $ atMost 1) <> InvestigatorWithResources (atMost 1))

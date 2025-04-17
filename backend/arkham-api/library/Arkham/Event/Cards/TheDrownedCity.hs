@@ -62,7 +62,7 @@ quickShot3 =
     , cdKeywords = setFromList [Keyword.Myriad]
     , cdCriteria = Just $ exists $ EnemyAt YourLocation <> EnemyCanBeDamagedBySource ThisCard
     , cdFastWindow = Just $ DuringTurn You
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 3
     }
 
@@ -264,7 +264,7 @@ shortRest =
   (event "11096" "Short Rest" 1 Neutral)
     { cdSkills = [#willpower]
     , cdKeywords = setFromList [Keyword.Myriad]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCardTraits = setFromList [Spirit]
     , cdCriteria =
         Just

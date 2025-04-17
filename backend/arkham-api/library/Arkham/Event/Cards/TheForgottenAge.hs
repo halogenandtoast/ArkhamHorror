@@ -96,7 +96,7 @@ darkPact =
     { cdCardTraits = singleton Pact
     , cdCardSubType = Just BasicWeakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdDeckRestrictions = [CampaignModeOnly]
     }
 
@@ -120,7 +120,7 @@ marksmanship1 =
           $ ActivateAbility #when You
           $ AbilityIsAction #fight
           <> AssetAbility (oneOf [AssetWithTrait Firearm, AssetWithTrait Ranged])
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 1
     }
 

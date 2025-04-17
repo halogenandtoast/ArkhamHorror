@@ -119,7 +119,7 @@ import Arkham.Tarot qualified as Tarot
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
 import Arkham.Treachery
-import Arkham.Treachery.Types (Field (..), drawnFromL, treacheryWaiting)
+import Arkham.Treachery.Types (Treachery, Field (..), drawnFromL, treacheryWaiting, treacheryPlacement)
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -3054,6 +3054,7 @@ preloadEntities g = do
       | Just Refl <- eqT @a @Asset = overAttrs (\attrs -> attrs {assetPlacement = p}) a
       | Just Refl <- eqT @a @Skill = overAttrs (\attrs -> attrs {skillPlacement = p}) a
       | Just Refl <- eqT @a @Event = overAttrs (\attrs -> attrs {eventPlacement = p}) a
+      | Just Refl <- eqT @a @Treachery = overAttrs (\attrs -> attrs {treacheryPlacement = p}) a
       | otherwise = a
     preloadHandEntities entities investigator' = do
       asIfInHandCards <- getAsIfInHandCards (toId investigator')
@@ -3092,6 +3093,26 @@ preloadEntities g = do
                   discardEffectCards
              in
               insertMap (toId investigator') discardEntities entities
+    preloadTopOfDeckEntities entities investigator' = do
+      topRevealed <- hasModifier (toId investigator') TopCardOfDeckIsRevealed
+      let
+        topOfDeckEffectCards =
+          map PlayerCard
+            . filter (elem OnTopOfDeckEffect . cdOutOfPlayEffects . toCardDef)
+            $ take 1
+            $ investigatorDeck (toAttrs investigator')
+      pure
+        $ if not topRevealed || null topOfDeckEffectCards
+          then entities
+          else
+            let
+              topOfDeckEntities =
+                foldl'
+                  (addCardEntityWith (toId investigator') (setPlacement $ OnTopOfDeck investigator'.id))
+                  defaultEntities
+                  topOfDeckEffectCards
+             in
+              topOfDeckEntities <> entities
     foundOfElems = concat . Map.elems . view Investigator.foundCardsL . toAttrs
     searchEffectCards =
       filter (cdCardInSearchEffects . toCardDef)
@@ -3101,12 +3122,14 @@ preloadEntities g = do
   let searchEntities = foldl' (addCardEntityWith active id) defaultEntities searchEffectCards
   handEntities <- foldM preloadHandEntities mempty investigators
   discardEntities <- foldM preloadDiscardEntities mempty investigators
+  topOfDeckEntities <- foldM preloadTopOfDeckEntities mempty investigators
 
   pure
     $ g
       { gameInHandEntities = handEntities
       , gameInSearchEntities = searchEntities
       , gameInDiscardEntities = discardEntities
+      , gameEntities = gameEntities g <> topOfDeckEntities
       }
 
 -- NOTE: We need preloadEntities to be a the end because the game state is not

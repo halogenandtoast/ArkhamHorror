@@ -402,7 +402,7 @@ anchorChain =
     { cdSkills = [#agility]
     , cdCardTraits = setFromList [Item, Tool]
     , cdSlots = [#hand]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 handHook :: CardDef
@@ -411,7 +411,7 @@ handHook =
     { cdSkills = [#combat]
     , cdCardTraits = setFromList [Item, Weapon, Tool, Melee]
     , cdSlots = [#hand]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 lawrenceCarlisleSculptingHisDreams :: CardDef
@@ -429,7 +429,7 @@ nauticalCharts =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Item, Tome, Tool]
     , cdSlots = [#hand]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 profaneIdol :: CardDef

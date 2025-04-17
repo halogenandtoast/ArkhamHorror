@@ -420,7 +420,7 @@ lastChance =
   (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 stunningBlow :: CardDef
@@ -434,7 +434,7 @@ takeTheInitiative =
   (skill "04150" "Take the Initiative" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = setFromList [Practiced, Bold]
     , cdCommitRestrictions = [OnlyYourTest]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 trueUnderstanding :: CardDef
@@ -489,7 +489,7 @@ steadfast :: CardDef
 steadfast =
   (skill "05022" "Steadfast" [#willpower, #combat] Guardian)
     { cdCardTraits = singleton Innate
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 curiosity :: CardDef
@@ -598,7 +598,7 @@ surprisingFind1 =
     { cdCardTraits = setFromList [Fortune, Research]
     , cdKeywords = singleton Keyword.Myriad
     , cdLevel = Just 1
-    , cdCardInSearchEffects = True
+    , cdOutOfPlayEffects = [InSearchEffect]
     }
 
 theEyeOfTruth5 :: CardDef
@@ -624,7 +624,7 @@ whispersFromTheDeep =
     { cdCardTraits = singleton Curse
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 planOfAction :: CardDef
@@ -694,7 +694,7 @@ defensiveStance1 =
   (skill "08024" "Defensive Stance" [] Guardian)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 surveyTheArea1 :: CardDef
@@ -702,7 +702,7 @@ surveyTheArea1 =
   (skill "08037" "Survey the Area" [] Seeker)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 savant1 :: CardDef
@@ -717,7 +717,7 @@ occultTheory1 =
   (skill "08065" "Occult Theory" [] Mystic)
     { cdCardTraits = setFromList [Practiced, Expert]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 strengthInNumbers1 :: CardDef
@@ -725,7 +725,7 @@ strengthInNumbers1 =
   (skill "08077" "Strength in Numbers" [#wild] Survivor)
     { cdCardTraits = setFromList [Innate, Synergy]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 dauntlessSpirit1 :: CardDef
@@ -733,7 +733,7 @@ dauntlessSpirit1 =
   (skill "08078" "Dauntless Spirit" [] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 asYouWish :: CardDef
@@ -758,7 +758,7 @@ fightingLessons =
   (skill "09030" "Fighting Lessons" [#combat, #agility, #wild] Guardian)
     { cdCardTraits = setFromList [Practiced]
     , cdCommitRestrictions = [OnlyTestWithActions [#fight, #evade]]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 helpingHand :: CardDef
@@ -793,8 +793,7 @@ grizzled =
   (skill "09101" "Grizzled" [#wild] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdKeywords = setFromList [Keyword.Customizable]
-    , cdCardInHandEffects = True
-    , cdCardInDiscardEffects = True
+    , cdOutOfPlayEffects = [InHandEffect, InDiscardEffect]
     , cdCustomizations =
         mapFromList
           [ (ChoicePlaceholder, 0)
@@ -832,7 +831,7 @@ wellFunded :: CardDef
 wellFunded =
   (skill "10051" "Well-Funded" [#wild] Seeker)
     { cdCardTraits = setFromList [Fortune]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 esotericMethod1 :: CardDef
@@ -846,7 +845,7 @@ diabolicalLuck :: CardDef
 diabolicalLuck =
   (skill "10075" "Diabolical Luck" [#wild] Rogue)
     { cdCardTraits = setFromList [Fortune, Cursed]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 lightfooted :: CardDef
@@ -872,7 +871,7 @@ longShot :: CardDef
 longShot =
   (skill "10116" "Long Shot" [] Survivor)
     { cdCardTraits = setFromList [Practiced]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCommitRestrictions =
         [ AnyCommitRestriction
             [ OnlyFightAgainst (EnemyAt $ oneOf [YourLocation, ConnectedLocation])
@@ -886,7 +885,7 @@ persistence1 =
   (skill "10118" "Persistence" [#wild] Survivor)
     { cdCardTraits = setFromList [Practiced]
     , cdLevel = Just 1
-    , cdCardInDiscardEffects = True
+    , cdOutOfPlayEffects = [InDiscardEffect]
     }
 
 providential2 :: CardDef
@@ -921,7 +920,7 @@ hardboiled =
   (skill "11025" "Hardboiled" [#combat, #wild] Guardian)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 inspiringPresence2 :: CardDef
@@ -937,7 +936,7 @@ quickWitted1 =
     { cdCardTraits = singleton Innate
     , cdKeywords = setFromList [Keyword.Myriad]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 crackShot :: CardDef
@@ -973,10 +972,11 @@ contemplative =
   (skill "11088" "Contemplative" [] Survivor)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions =
-        [ OnlySkillTest $ oneOf
-            [ WhileParleying <> SkillTestAt (orConnected YourLocation)
-            , WhileInvestigating (orConnected YourLocation)
-            ]
+        [ OnlySkillTest
+            $ oneOf
+              [ WhileParleying <> SkillTestAt (orConnected YourLocation)
+              , WhileInvestigating (orConnected YourLocation)
+              ]
         ]
     }
 
@@ -985,7 +985,7 @@ lastChance3 =
   (skill "11093" "Last Chance" [#wild, #wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 3
     }
 
@@ -993,14 +993,14 @@ confidence :: CardDef
 confidence =
   (skill "11097" "Confidence" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate]
-    , cdCommitRestrictions = [ MaxOnePerTest ]
+    , cdCommitRestrictions = [MaxOnePerTest]
     }
 
 dreamsOfTheClay1 :: CardDef
 dreamsOfTheClay1 =
   (skill "11100" "Dreams of the Clay" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate, Augury]
-    , cdCommitRestrictions = [ OnlySkillTestSource (SourceIsTreacheryEffect AnyTreachery) ]
+    , cdCommitRestrictions = [OnlySkillTestSource (SourceIsTreacheryEffect AnyTreachery)]
     , cdDeckRestrictions = [OnlyInvestigatorWithTraits [Artist, Clairvoyant, Dreamer, Performer]]
     , cdLevel = Just 1
     }
@@ -1088,7 +1088,7 @@ reckless =
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
     , cdCommitRestrictions = [OnlyYourTest, OnlyCardCommittedToTest]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 nimble :: CardDef
@@ -1161,5 +1161,5 @@ dreamsOfTheDeepTheDeepGate =
     { cdCardTraits = setFromList [Curse]
     , cdLevel = Nothing
     , cdCardSubType = Just Weakness
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }

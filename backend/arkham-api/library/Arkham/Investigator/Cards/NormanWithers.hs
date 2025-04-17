@@ -11,6 +11,7 @@ import Arkham.Investigator.Runner
 import Arkham.Matcher hiding (PlayCard, RevealChaosToken)
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype Metadata = Metadata {playedFromTopOfDeck :: Bool}
   deriving stock (Show, Generic, Eq, Data)
@@ -43,7 +44,10 @@ instance HasAbilities NormanWithers where
     [ selfAbility
         a
         1
-        (youExist (TopCardOfDeckIs WeaknessCard) <> CanManipulateDeck <> NotSetup)
+        ( youExist (TopCardOfDeckIs (WeaknessCard <> not_ (cardIs Treacheries.theHarbinger)))
+            <> CanManipulateDeck
+            <> NotSetup
+        )
         (forced AnyWindow)
     ]
 

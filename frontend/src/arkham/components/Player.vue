@@ -195,6 +195,16 @@ const inHandTreacheries = computed(() => Object.values(props.game.treacheries).
   filter((t) => t.placement.tag === "HiddenInHand" && t.placement.contents === id.value).
   map((t) => t.id))
 
+const totalHandSize = computed(() => {
+  return playerHand.value.length + inHandTreacheries.value.length
+})
+
+const handSizeClasses = computed(() => ({
+  'hand-size-ok': (props.investigator.handSize ?? 8) > totalHandSize.value,
+  'hand-size-warn': (props.investigator.handSize ?? 8) == totalHandSize.value,
+  'hand-size-alert': (props.investigator.handSize ?? 8) < totalHandSize.value,
+}))
+
 const doShowCards = (event: Event, cards: ComputedRef<ArkhamCard.Card[]>, title: string, isDiscards: boolean) => {
   cardRowTitle.value = title
   showCards.ref = cards
@@ -624,7 +634,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
           </template>
 
         </transition-group>
-        <div v-if="investigator.handSize" class="hand-size">Hand Size: {{investigator.handSize}}</div>
+        <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">Hand Size: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>
     </div>
 
@@ -881,9 +891,23 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   background-color: var(--neutral-dark);
   display: grid;
   grid-template-columns: 1fr;
-  width: 100%;
+  width: calc((v-bind(totalHandSize) * var(--card-width)) + ((v-bind(totalHandSize) - 1) * 5px));
+  max-width: 100%;
   min-width: fit-content;
+
+  &-ok {
+    background-color: var(--rogue-dark);
+  }
+
+  &-warn {
+    background-color: var(--seeker-dark);
+  }
+
+  &-alert {
+    background-color: var(--survivor-dark);
+  }
 }
+
 
 .hand-area {
   display: flex;
@@ -891,6 +915,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
   gap: 5px;
   align-items: flex-start;
   flex: 1;
+  max-width: 100%;
 }
 
 </style>

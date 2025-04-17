@@ -98,7 +98,7 @@ joinTheCaravan1 =
     , cdFastWindow = Just $ DuringTurn You
     , cdCriteria = Just $ exists $ CanMoveToLocation You ThisCard RevealedLocation
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 unearthTheAncients2 :: CardDef
@@ -134,7 +134,7 @@ counterespionage1 =
     , cdCardTraits = setFromList [Favor, Service]
     , cdCriteria = Just $ oneOf [Criteria.EventWindowInvestigatorIs You, Criteria.CanAffordCostIncrease 2] -- WindowInvestigatorIs only handles draw card right now
     , cdFastWindow = Just $ DrawCard #when Anyone (basic NonWeaknessTreachery) AnyDeck
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 1
     }
 
@@ -206,7 +206,7 @@ windsOfPower1 =
     { cdSkills = [#willpower, #willpower]
     , cdCardTraits = setFromList [Spirit]
     , cdCriteria = Just $ exists (AssetControlledBy You <> AssetCanHaveUses Uses.Charge)
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 1
     }
 

@@ -11,9 +11,8 @@ occultEvidence =
     $ (event "06008" "Occult Evidence" 0 Neutral)
       { cdSkills = [#wild]
       , cdCardTraits = setFromList [Insight, Research]
-      , cdCardInSearchEffects = True
-      , cdCardInHandEffects = True
-      , cdCriteria = Just $ Criteria.CanManipulateDeck
+      , cdOutOfPlayEffects = [InHandEffect, InSearchEffect]
+      , cdCriteria = Just Criteria.CanManipulateDeck
       }
 
 astoundingRevelation :: CardDef
@@ -22,7 +21,7 @@ astoundingRevelation =
     { cdSkills = [#intellect]
     , cdCardTraits = setFromList [Research]
     , cdCost = Nothing
-    , cdCardInSearchEffects = True
+    , cdOutOfPlayEffects = [InSearchEffect]
     , cdKeywords = singleton Keyword.Myriad
     , cdCriteria = Just Criteria.Never
     }
@@ -169,7 +168,7 @@ extensiveResearch1 =
   (event "06198" "Extensive Research" 10 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     , cdLevel = Just 1
     }

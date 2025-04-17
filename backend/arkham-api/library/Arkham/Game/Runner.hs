@@ -1930,7 +1930,9 @@ runGameMessage msg g = case msg of
     card <- field LocationCard lid
     pushAll $ RemoveLocation lid : windows [Window.AddedToVictory card]
     pure g
-  PlayerWindow iid _ _ -> pure $ g & activeInvestigatorIdL .~ iid
+  PlayerWindow iid _ _ -> do
+    player <- getPlayer iid
+    pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player
   Begin InvestigationPhase -> do
     let phaseStep step msgs = Msg.PhaseStep (InvestigationPhaseStep step) msgs
     investigatorIds <- getInvestigators

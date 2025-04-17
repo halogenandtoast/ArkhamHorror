@@ -2634,6 +2634,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ MoveTo $ (move source investigatorId lid) {moveMeans = Place}
     pure a
   MoveTo movement | isTarget a (moveTarget movement) -> do
+    cancelled <- hasModifier a CannotMove
+    unless cancelled $ push $ Do msg
+    pure a
+  Do (MoveTo movement) | isTarget a (moveTarget movement) -> do
     case moveDestination movement of
       ToLocationMatching matcher -> do
         lids <- select matcher

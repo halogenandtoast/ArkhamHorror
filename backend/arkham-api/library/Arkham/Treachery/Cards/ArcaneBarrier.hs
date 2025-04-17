@@ -1,10 +1,10 @@
-module Arkham.Treachery.Cards.ArcaneBarrier (ArcaneBarrier (..), arcaneBarrier) where
+module Arkham.Treachery.Cards.ArcaneBarrier (arcaneBarrier) where
 
 import Arkham.Cost
 import Arkham.Helpers.Modifiers
-import Arkham.Investigator.Types
+import Arkham.Message.Lifted.Choose
+import Arkham.Helpers.Investigator (withLocationOf)
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (movementModifier)
 
@@ -29,18 +29,12 @@ instance HasModifiersFor ArcaneBarrier where
 instance RunMessage ArcaneBarrier where
   runMessage msg t@(ArcaneBarrier attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      mLocation <- field InvestigatorLocation iid
-      for_ mLocation $ attachTreachery attrs
+      withLocationOf iid (attachTreachery attrs)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
-      cancelMove <- movementModifier attrs iid CannotMove
-      chooseOne
-        iid
-        [ Label "Cancel Move" [cancelMove]
-        , Label
-            "Discard top 5 cards of your deck"
-            [DiscardTopOfDeck iid 5 (toSource attrs) Nothing]
-        ]
+      chooseOneM iid do
+        labeled "Cancel Move" $ cancelMovement attrs iid
+        labeled "Discard top 5 cards of your deck" $ discardTopOfDeck iid attrs 5
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       toDiscardBy iid attrs attrs

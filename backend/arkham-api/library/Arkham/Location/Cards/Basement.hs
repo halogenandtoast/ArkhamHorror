@@ -39,7 +39,7 @@ instance RunMessage Basement where
   runMessage msg l@(Basement attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 1)
+      beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 0)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       humanoids <- select $ EnemyWithTrait Humanoid <> NotEnemy (enemyAt $ toId attrs)

@@ -26,7 +26,7 @@ occultScraps =
   (weakness "07013" "Occult Scraps")
     { cdCardTraits = setFromList [Item]
     , cdCriteria = Just Criteria.Never
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCost = Just (StaticCost 0)
     }
 
@@ -375,7 +375,7 @@ tristanBotleyFixerForHire2 =
     , cdSlots = [#ally]
     , cdLevel = Just 2
     , cdKeywords = singleton $ Keyword.Researched YouHaveTranslatedTheGrimoire
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdUnique = True
     }
 

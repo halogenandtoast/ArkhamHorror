@@ -191,7 +191,7 @@ crypticWritings =
   (event "60215" "Cryptic Writings" 0 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just $ can.gain.resources You
     }
 
@@ -200,7 +200,7 @@ extensiveResearch =
   (event "60216" "Extensive Research" 12 Seeker)
     { cdSkills = [#intellect, #intellect]
     , cdCardTraits = singleton Insight
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCriteria = Just canDiscoverCluesAtYourLocation
     }
 
@@ -227,7 +227,7 @@ crypticWritings2 =
   (event "60224" "Cryptic Writings" 0 Seeker)
     { cdSkills = [#intellect, #wild]
     , cdCardTraits = singleton Insight
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 2
     , cdCriteria = Just $ can.gain.resources You
     }

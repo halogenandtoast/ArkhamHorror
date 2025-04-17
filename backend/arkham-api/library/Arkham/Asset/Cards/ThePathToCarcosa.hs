@@ -275,7 +275,7 @@ claspOfBlackOnyx =
     { cdCardTraits = setFromList [Item, Relic]
     , cdCost = Just (StaticCost 1)
     , cdRevelation = NoRevelation
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 theTatteredCloak :: CardDef

@@ -267,7 +267,7 @@ britishBullDog =
     , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
     , cdSlots = [#hand]
     , cdUses = uses Ammo 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 fakeCredentials :: CardDef
@@ -302,7 +302,7 @@ britishBullDog2 =
     , cdCardTraits = setFromList [Item, Weapon, Firearm, Illicit]
     , cdSlots = [#hand]
     , cdUses = uses Ammo 3
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 2
     }
 
@@ -419,7 +419,7 @@ peltShipment =
     { cdCardTraits = setFromList [Item, Trait.Supply]
     , cdCost = Nothing
     , cdCriteria = Just Criteria.Never
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 pitchfork :: CardDef

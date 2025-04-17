@@ -54,7 +54,7 @@ aceOfSwords1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 fingerprintKit :: CardDef
@@ -72,7 +72,7 @@ deathXiii1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 wellConnected :: CardDef
@@ -89,7 +89,7 @@ theMoonXiii1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 fourOfCups1 :: CardDef
@@ -98,7 +98,7 @@ fourOfCups1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 trackShoes :: CardDef
@@ -115,7 +115,7 @@ fiveOfPentacles1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 aceOfRods1 :: CardDef
@@ -124,7 +124,7 @@ aceOfRods1 =
     { cdCardTraits = singleton Tarot
     , cdSlots = [#tarot]
     , cdLevel = Just 1
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 theTowerXVI :: CardDef
@@ -132,7 +132,7 @@ theTowerXVI =
   (basicWeakness "05042" ("The Tower • XVI" <:> "Circumstances Beyond Your Control"))
     { cdCardTraits = setFromList [Omen, Tarot]
     , cdSlots = [#tarot]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCanReplace = False
     , cdRevelation = NoRevelation
     , cdCost = Just (StaticCost 4)
@@ -521,7 +521,7 @@ annaKaslow4 =
     , cdCardTraits = setFromList [Ally, Clairvoyant]
     , cdLevel = Just 4
     , cdSlots = [#ally]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdUnique = True
     }
 

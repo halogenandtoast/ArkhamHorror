@@ -233,7 +233,7 @@ tetsuoMori =
     , cdCardTraits = setFromList [Ally, Police]
     , cdSlots = [#ally]
     , cdUnique = True
-    , cdCardInDiscardEffects = True
+    , cdOutOfPlayEffects = [InDiscardEffect]
     }
 
 otherworldCodex2 :: CardDef
@@ -322,8 +322,7 @@ moonstone =
     , cdSlots = [#accessory]
     , cdCriteria = Just Criteria.Never
     , cdCommitRestrictions = [SelfCanCommitWhen NoOne]
-    , cdCardInHandEffects = True
-    , cdCardInDiscardEffects = True
+    , cdOutOfPlayEffects = [InHandEffect, InDiscardEffect]
     }
 
 virgilGrayTrulyInspired :: CardDef

@@ -254,7 +254,7 @@ theStygianEye3 =
     { cdSkills = [#willpower, #willpower, #willpower]
     , cdCardTraits = setFromList [Insight, Cursed]
     , cdFastWindow = Just $ DuringTurn You
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdLevel = Just 3
     }
 

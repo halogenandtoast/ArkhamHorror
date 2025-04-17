@@ -19,7 +19,7 @@ darkMemoryAdvanced =
     { cdCardTraits = setFromList [Spell]
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdKeywords = singleton Keyword.Advanced
     }
 

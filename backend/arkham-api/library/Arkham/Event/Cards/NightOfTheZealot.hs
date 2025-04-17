@@ -19,7 +19,7 @@ darkMemory =
     { cdCardTraits = setFromList [Spell]
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdAlternateCardCodes = ["01513"]
     }
 

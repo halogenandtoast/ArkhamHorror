@@ -15,7 +15,7 @@ unsolvedCase =
     { cdCardTraits = setFromList [Insight, Mystery]
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 lodgeDebts :: CardDef
@@ -24,7 +24,7 @@ lodgeDebts =
     { cdCardTraits = singleton Pact
     , cdCardSubType = Just Weakness
     , cdLevel = Nothing
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 darkInsight :: CardDef
@@ -171,7 +171,7 @@ intelReport =
                         (LocationMatchAny [LocationWithDistanceFrom n YourLocation LocationWithAnyClues | n <- [0 .. 2]])
                   )
             ]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 banish1 :: CardDef
@@ -282,7 +282,7 @@ decoy =
                   )
             ]
     , cdOverrideActionPlayableIfCriteriaMet = True
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 fortuneOrFate2 :: CardDef
@@ -316,7 +316,7 @@ smallFavor =
             , exists (oneOf [EnemyAt (LocationWithDistanceFrom n YourLocation Anywhere) | n <- [1 .. 2]])
                 <> Criteria.CanAffordCostIncrease 2
             ]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     }
 
 denyExistence5 :: CardDef

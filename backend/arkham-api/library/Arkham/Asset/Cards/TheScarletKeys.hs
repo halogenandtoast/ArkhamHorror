@@ -55,7 +55,7 @@ huntersArmor =
     , cdSkills = [#willpower]
     , cdSlots = [#body]
     , cdKeywords = setFromList [Keyword.Customizable]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCustomizations =
         mapFromList
           [ (Enchanted, 1)
@@ -77,7 +77,7 @@ runicAxe =
     , cdUses = uses Charge 4
     , cdUnique = True
     , cdKeywords = setFromList [Keyword.Customizable]
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdCustomizations =
         mapFromList
           [ (Heirloom, 1)
@@ -415,7 +415,7 @@ summonedServitor =
     , cdKeywords = setFromList [Keyword.Customizable]
     , cdSlots = [#ally, #arcane]
     , cdUnique = True
-    , cdCardInHandEffects = True
+    , cdOutOfPlayEffects = [InHandEffect]
     , cdAdditionalCost =
         Just
           $ CostIfCustomization

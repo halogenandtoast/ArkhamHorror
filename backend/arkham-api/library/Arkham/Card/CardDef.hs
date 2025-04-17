@@ -109,6 +109,18 @@ data DiscardType
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+cdCardInSearchEffects :: CardDef -> Bool
+cdCardInSearchEffects CardDef {cdOutOfPlayEffects} =
+  InSearchEffect `elem` cdOutOfPlayEffects
+
+cdCardInDiscardEffects :: CardDef -> Bool
+cdCardInDiscardEffects CardDef {cdOutOfPlayEffects} =
+  InDiscardEffect `elem` cdOutOfPlayEffects
+
+cdCardInHandEffects :: CardDef -> Bool
+cdCardInHandEffects CardDef {cdOutOfPlayEffects} =
+  InHandEffect `elem` cdOutOfPlayEffects
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -143,9 +155,6 @@ data CardDef = CardDef
   , cdPlayableFromDiscard :: Bool
   , cdStage :: Maybe Int
   , cdSlots :: [SlotType]
-  , cdCardInHandEffects :: Bool
-  , cdCardInDiscardEffects :: Bool
-  , cdCardInSearchEffects :: Bool
   , cdAlternateCardCodes :: [CardCode]
   , cdArt :: Text
   , cdLocationSymbol :: Maybe LocationSymbol
@@ -165,7 +174,11 @@ data CardDef = CardDef
   , cdCanCommitWhenNoIcons :: Bool
   , cdMeta :: Map Text Value
   , cdTags :: [Text]
+  , cdOutOfPlayEffects :: [OutOfPlayEffect]
   }
+  deriving stock (Show, Eq, Ord, Data)
+
+data OutOfPlayEffect = InHandEffect | InDiscardEffect | InSearchEffect | OnTopOfDeckEffect
   deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where
@@ -261,9 +274,6 @@ emptyCardDef cCode name cType =
     , cdPlayableFromDiscard = False
     , cdStage = Nothing
     , cdSlots = mempty
-    , cdCardInHandEffects = False
-    , cdCardInDiscardEffects = False
-    , cdCardInSearchEffects = False
     , cdAlternateCardCodes = mempty
     , cdArt = unCardCode cCode
     , cdLocationSymbol = Nothing
@@ -283,6 +293,7 @@ emptyCardDef cCode name cType =
     , cdCanCommitWhenNoIcons = False
     , cdMeta = mempty
     , cdTags = []
+    , cdOutOfPlayEffects = []
     }
 
 instance IsCardMatcher CardDef where
@@ -347,7 +358,10 @@ instance HasCardCode CardDef where
 
 newtype Unrevealed a = Unrevealed a
 
-$(deriveToJSON (aesonOptions $ Just "cd") ''CardDef)
+mconcat
+  [ deriveJSON defaultOptions ''OutOfPlayEffect
+  , deriveToJSON (aesonOptions $ Just "cd") ''CardDef
+  ]
 
 instance FromJSON CardDef where
   parseJSON = withObject "CardDef" \o -> do
@@ -384,9 +398,6 @@ instance FromJSON CardDef where
     cdPlayableFromDiscard <- o .: "playableFromDiscard"
     cdStage <- o .:? "stage"
     cdSlots <- o .: "slots"
-    cdCardInHandEffects <- o .: "cardInHandEffects"
-    cdCardInDiscardEffects <- o .: "cardInDiscardEffects"
-    cdCardInSearchEffects <- o .: "cardInSearchEffects"
     cdAlternateCardCodes <- o .: "alternateCardCodes"
     cdArt <- o .: "art"
     cdLocationSymbol <- o .:? "locationSymbol"
@@ -404,8 +415,18 @@ instance FromJSON CardDef where
     cdOtherSide <- o .:? "otherSide"
     cdWhenDiscarded <- o .: "whenDiscarded"
     cdCanCommitWhenNoIcons <-
-      o .:? "canCommitWhenNoIcons" .!= (cdSkills == [] && cdCardType == SkillType)
+      o .:? "canCommitWhenNoIcons" .!= (null cdSkills && cdCardType == SkillType)
     cdMeta <- o .:? "meta" .!= mempty
     cdTags <- o .:? "tags" .!= []
+    inHandEffects <- o .:? "cardInHandEffects" .!= False
+    inDiscardEffects <- o .:? "cardInDiscardEffects" .!= False
+    inSearchEffects <- o .:? "cardInSearchEffects" .!= False
+    cdOutOfPlayEffects <-
+      o
+        .:? "outOfPlayEffects"
+        .!= ( [InHandEffect | inHandEffects]
+                <> [InDiscardEffect | inDiscardEffects]
+                <> [InSearchEffect | inSearchEffects]
+            )
 
     pure CardDef {..}

@@ -759,49 +759,22 @@ getInvestigatorsMatching matcher = do
       remainingSanity <- field InvestigatorRemainingSanity (toId i)
       mostRemainingSanity <- fieldMax InvestigatorRemainingSanity UneliminatedInvestigator
       pure $ mostRemainingSanity == remainingSanity
-    NearestToLocation locationMatcher -> flip filterM as $ \i -> do
-      let
-        getLocationDistance start =
-          Distance
-            . fromJustNote "error"
-            . minimumMay
-            . keys
-            <$> evalStateT
-              (markDistances start (<=~> locationMatcher) mempty)
-              (LPState (pure start) (singleton start) mempty)
-
-      mappings <-
-        traverse (traverseToSnd (getLocationDistance <=< getJustLocation))
-          =<< getInvestigators
-
-      let
-        mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
-        minDistance :: Int = fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-        investigatorDistance :: Int =
-          unDistance $ findWithDefault (error "investigator not found") (toId i) mappingsMap
-      pure $ investigatorDistance == minDistance
-    NearestToEnemy enemyMatcher -> flip filterM as $ \i -> do
-      let
-        hasMatchingEnemy lid = selectAny $ enemyAt lid <> enemyMatcher
-        getEnemyDistance start =
-          Distance
-            . fromJustNote "error"
-            . minimumMay
-            . keys
-            <$> evalStateT
-              (markDistances start hasMatchingEnemy mempty)
-              (LPState (pure start) (singleton start) mempty)
-
-      mappings <-
-        traverse (traverseToSnd (getEnemyDistance <=< getJustLocation))
-          =<< getInvestigators
-
-      let
-        mappingsMap :: Map InvestigatorId Distance = mapFromList mappings
-        minDistance :: Int = fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
-        investigatorDistance :: Int =
-          unDistance $ findWithDefault (error "investigator not found") (toId i) mappingsMap
-      pure $ investigatorDistance == minDistance
+    NearestToLocation locationMatcher -> do
+      destinations <- select locationMatcher
+      if null destinations
+        then pure []
+        else mins <$> forMaybeM as \i -> runMaybeT do
+          loc <- MaybeT $ getMaybeLocation i
+          minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+          pure (i, unDistance minDistance)
+    NearestToEnemy enemyMatcher -> do
+      destinations <- select $ LocationWithEnemy enemyMatcher
+      if null destinations
+        then pure []
+        else mins <$> forMaybeM as \i -> runMaybeT do
+          loc <- MaybeT $ getMaybeLocation i
+          minDistance <- MaybeT $ minimumMay <$> mapMaybeM (getDistance loc) destinations
+          pure (i, unDistance minDistance)
     HasMostMatchingAsset assetMatcher -> flip filterM as $ \i -> do
       selfCount <- length <$> select (assetMatcher <> AssetControlledBy (InvestigatorWithId $ toId i))
       allCounts <-

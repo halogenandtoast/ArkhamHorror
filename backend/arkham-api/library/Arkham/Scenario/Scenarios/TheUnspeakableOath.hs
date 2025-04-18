@@ -27,7 +27,6 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Helpers hiding (forceAddCampaignCardToDeckChoice)
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheUnspeakableOath.Story
-import Arkham.Strategy
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 import Arkham.Window qualified as Window
 
@@ -106,16 +105,14 @@ instance RunMessage TheUnspeakableOath where
           deck <- fieldMap InvestigatorDeck unDeck iid
           case deck of
             (x : _) -> do
-              courageProxy <- genPlayerCard Assets.courage
-              let courage = PlayerCard (courageProxy {pcOriginalCardCode = toCardCode x})
-              forcedDrawCards iid attrs 1
+              let courage = x { pcCardCode = Assets.courage.cardCode }
+              replaceCard courage.id (PlayerCard courage)
+              obtainCard x
               push
-                $ InitiatePlayCardAs
+                $ InitiatePlayCard
                   iid
-                  (PlayerCard x)
-                  courage
-                  []
-                  LeaveChosenCard
+                  (PlayerCard courage)
+                  Nothing
                   NoPayment
                   (Window.defaultWindows iid)
                   False

@@ -8,6 +8,7 @@ import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Types (Field (..))
+import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Log
@@ -75,6 +76,9 @@ standaloneChaosTokens =
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
+      traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort)
+      traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.alejandroVela)
+
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       story intro1
       storyWithChooseOneM (if gaveCustodyToHarlan then intro3 else intro2) do
@@ -153,18 +157,21 @@ instance RunMessage ThreadsOfFate where
         [ Locations.townHall
         , Assets.ichtacaTheForgottenGuardian
         , Assets.expeditionJournal
-        , Assets.relicOfAgesADeviceOfSomeSort
-        , Assets.alejandroVela
         ]
+
+      findCard (`cardMatch` cardIs Assets.alejandroVela) >>= \case
+        Nothing -> setAside [Assets.alejandroVela]
+        Just card -> setAside [card]
+
+      findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort) >>= \case
+        Nothing -> setAside [Assets.relicOfAgesADeviceOfSomeSort]
+        Just card -> setAside [card]
 
       setAgendaDeck
         [ Agendas.threeFates
         , Agendas.behindTheCurtain
         , Agendas.hiddenEntanglements
         ]
-
-      removeCampaignCard Assets.relicOfAgesADeviceOfSomeSort
-      removeCampaignCard Assets.alejandroVela
 
       lead <- getLead
       act2Deck1 <- do

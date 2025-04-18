@@ -1,4 +1,4 @@
-module Arkham.Event.Events.OnTheHunt (onTheHunt, OnTheHunt (..)) where
+module Arkham.Event.Events.OnTheHunt (onTheHunt) where
 
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
@@ -33,10 +33,13 @@ instance RunMessage OnTheHunt where
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       additionalTargets <- getAdditionalSearchTargets iid
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
-      if (notNull enemyCards)
+      if notNull enemyCards
         then chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
           targets enemyCards \card -> do
-            searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+            searchModifiers
+              attrs
+              card
+              [ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid), IgnoreRevelation]
             push $ InvestigatorDrewEncounterCard iid card
         else do
           prompt_ iid "No enemies were found."

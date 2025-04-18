@@ -39,9 +39,12 @@ instance RunMessage AbandonedToMadness where
           attachTreachery attrs enemy
           placeDoom attrs enemy 1
       pure t
-    FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card) -> do
-      obtainCard card
-      enemy <- createEnemy card ()
-      attachTreachery attrs enemy
+    FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
+      drawCard iid card
+      doStep 1 msg
+      pure t
+    DoStep 1 (FoundEncounterCard _iid (isTarget attrs -> True) (toCard -> card)) -> do
+      menemy <- select $ EnemyWithCardId card.id
+      for_ menemy (attachTreachery attrs)
       pure t
     _ -> AbandonedToMadness <$> liftRunMessage msg attrs

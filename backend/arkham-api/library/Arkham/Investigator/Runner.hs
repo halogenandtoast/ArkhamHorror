@@ -1533,7 +1533,6 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                | target <- nub horrorTargets
                , let horror = count (== target) horrorTargets
                ]
-            <> [mkAfter (Window.AssignedHorror source iid horrorTargets) | notNull horrorTargets]
         ]
         <> [whenAssignedWindowMsg | notNull horrorTargets]
         <> [CheckDefeated source (toTarget aid) | aid <- checkAssets]

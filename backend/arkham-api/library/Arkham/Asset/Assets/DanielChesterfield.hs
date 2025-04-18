@@ -1,14 +1,10 @@
-module Arkham.Asset.Assets.DanielChesterfield (
-  danielChesterfield,
-  DanielChesterfield (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.DanielChesterfield (danielChesterfield) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype DanielChesterfield = DanielChesterfield AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -19,25 +15,23 @@ danielChesterfield = ally DanielChesterfield Cards.danielChesterfield (1, 3)
 
 instance HasAbilities DanielChesterfield where
   getAbilities (DanielChesterfield a) =
-    [ controlledAbility a 1 (exists (NotYou <> InvestigatorAt YourLocation)) $ FastAbility Free
-    , restrictedAbility a 2 ControlsThis
-        $ ForcedAbility
+    [ controlled a 1 (exists (NotYou <> at_ YourLocation)) $ FastAbility Free
+    , restricted a 2 ControlsThis
+        $ forced
         $ AssignedHorror #after You (ExcludesTarget $ TargetIs $ toTarget a)
-    , mkAbility a 3 $ forced $ AssetLeavesPlay #when $ AssetWithId $ toId a
+    , mkAbility a 3 $ forced $ AssetLeavesPlay #when (be a)
     ]
 
 instance RunMessage DanielChesterfield where
-  runMessage msg a@(DanielChesterfield attrs) = case msg of
-    UseCardAbility iid source 1 _ _ | isSource attrs source -> do
-      otherInvestigators <- select (InvestigatorAt YourLocation <> NotYou)
-      player <- getPlayer iid
-      push
-        $ chooseOne player [targetLabel i [TakeControlOfAsset i (toId attrs)] | i <- otherInvestigators]
+  runMessage msg a@(DanielChesterfield attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      others <- select $ at_ YourLocation <> not_ (InvestigatorWithId iid)
+      chooseTargetM iid others (`takeControlOfAsset` attrs)
       pure a
-    UseCardAbility iid source 2 _ _ | isSource attrs source -> do
-      push $ assignDamage iid (toAbilitySource attrs 2) 1
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      assignDamage iid (attrs.ability 2) 1
       pure a
-    UseCardAbility _ source 3 _ _ | isSource attrs source -> do
-      push (RemoveFromGame $ toTarget attrs)
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      removeFromGame attrs
       pure a
-    _ -> DanielChesterfield <$> runMessage msg attrs
+    _ -> DanielChesterfield <$> liftRunMessage msg attrs

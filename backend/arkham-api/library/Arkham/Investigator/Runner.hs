@@ -2073,6 +2073,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           { pcOriginalCardCode = toCardCode card
           , pcCustomizations = choice.customizations
           , pcMutated = choice.mutated
+          , pcOwner = Just iid
           }
       chosenCardMsgs = case chosenCardStrategy of
         LeaveChosenCard -> []

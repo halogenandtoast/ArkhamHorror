@@ -1033,6 +1033,9 @@ h2 {
 }
 
 .intro-text {
+  > * {
+    z-index: 2;
+  }
   &:has(.resolution) {
     background-color: #BAA597;
     box-shadow: unset;

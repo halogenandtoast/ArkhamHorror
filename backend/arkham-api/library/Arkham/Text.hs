@@ -5,6 +5,7 @@
 
 module Arkham.Text where
 
+import Arkham.Card.CardCode
 import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
@@ -21,6 +22,9 @@ data FlavorTextModifier
   | InvalidEntry
   | ValidEntry
   | ResolutionEntry
+  | CheckpointEntry
+  | InterludeEntry
+  | NestedEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -32,6 +36,7 @@ data ListItemEntry = ListItemEntry
 data FlavorTextEntry
   = BasicEntry {text :: Text}
   | I18nEntry {key :: Text, variables :: Map Text Value}
+  | HeaderEntry {key :: Text}
   | ModifyEntry
       { modifiers :: [FlavorTextModifier]
       , entry :: FlavorTextEntry
@@ -43,7 +48,11 @@ data FlavorTextEntry
       { entries :: [FlavorTextEntry]
       }
   | ListEntry {list :: [ListItemEntry]}
+  | CardEntry {cardCode :: CardCode, imageModifiers :: [ImageModifier]}
   | EntrySplit
+  deriving stock (Show, Eq, Ord, Data)
+
+data ImageModifier = RemoveImage | SelectImage
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup FlavorTextEntry where
@@ -95,6 +104,15 @@ instance IsString FlavorTextEntry where
 
 mconcat
   [ deriveJSON defaultOptions ''FlavorTextModifier
+  , deriveToJSON defaultOptions ''ImageModifier
+  , [d|
+      instance FromJSON ImageModifier where
+        parseJSON (String s) = pure $ case s of
+          "RemoveImage" -> RemoveImage
+          "SelectImage" -> SelectImage
+          _ -> error $ "Unknown image modifier: " <> show s
+        parseJSON _ = pure RemoveImage
+      |]
   , deriveJSON defaultOptions ''ListItemEntry
   , deriveToJSON defaultOptions ''FlavorTextEntry
   , [d|

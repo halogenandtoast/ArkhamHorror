@@ -1,5 +1,6 @@
 module Arkham.Agenda.Cards.ForbiddenPeaks (forbiddenPeaks) where
 
+import Arkham.FlavorText
 import Arkham.Ability
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted hiding (terror)
@@ -10,7 +11,6 @@ import Arkham.DamageEffect (nonAttack)
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.Message (pushWhen)
 import Arkham.Helpers.Text
-import Arkham.I18n
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Placement
@@ -44,8 +44,16 @@ instance RunMessage ForbiddenPeaks where
           scenarioI18n
             $ scope "interlude"
             $ story
-            $ withVars ["isCookie" .= String (if isCookie then "valid" else "invalid")]
-            $ i18nWithTitle "tragedyStrikes"
+            $ flavorText
+            $ modifyEntry InterludeEntry
+            $ compose
+              [ h "title"
+              , p "instructions1"
+              , p "paragraph1"
+              , cols [img.remove x.cardCode, p.blue.nested.validate isCookie "cookie"]
+              , p "paragraph2"
+              , p "instructions2"
+              ]
           setPartnerStatus x Eliminated
           selectForMaybeM
             (assetIs x.cardCode)

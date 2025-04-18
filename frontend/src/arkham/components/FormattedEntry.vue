@@ -1,8 +1,9 @@
 <script lang="ts">
 import { defineComponent, h } from 'vue';
-import { type FlavorTextEntry, type FlavorTextModifier } from '@/arkham/types/FlavorText';
+import { type FlavorTextEntry, type FlavorTextModifier, type ImageModifier, type ListItemEntry } from '@/arkham/types/FlavorText';
 import { baseUrl, formatContent } from '@/arkham/helpers';
-import { useI18n } from 'vue-i18n';
+import { I18n, useI18n } from 'vue-i18n';
+import { imgsrc } from '@/arkham/helpers';
 
 function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
   switch (entry.tag) {
@@ -13,14 +14,32 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'ColumnEntry': return {}
     case 'ListEntry': return {}
     case 'EntrySplit': return {}
+    case 'HeaderEntry': return {}
+    case 'CardEntry': {
+      const mods = entry.imageModifiers.map((m) => { return { [imageModifierToStyle(m)]: true }})
+      console.log(mods)
+      return [{"card": true}, {"no-overlay": true}, ...mods]
+    }
+
     default: return {}
+  }
+}
+
+function imageModifierToStyle(modifier: ImageModifier): string {
+  switch (modifier) {
+    case 'RemoveImage': return 'remove'
+    case 'SelectImage': return 'select'
+    default: throw new Error("Unknown modifier")
   }
 }
 
 function modifierToStyle(modifier: FlavorTextModifier): string {
   switch (modifier) {
     case 'BlueEntry': return 'blue'
+    case 'NestedEntry': return 'nested'
     case 'ResolutionEntry': return 'resolution'
+    case 'CheckpointEntry': return 'checkpoint'
+    case 'InterludeEntry': return 'interlude'
     case 'RightAligned': return 'right'
     case 'PlainText': return 'basic'
     case 'InvalidEntry': return 'invalid'
@@ -29,20 +48,22 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
   }
 }
 
-function formatListEntry(t, entry: ListEntry): any {
+function formatListEntry(t: I18n, entry: { tag: 'ListEntry', list: ListItemEntry[] }): any {
   const inner = formatEntry(t, entry.entry)
   return h('li',  entry.nested.length == 0 ? inner : [inner, h('ul', entry.nested.map((e) => formatListEntry(t, e)))])
 }
 
-function formatEntry(t, entry: FlavorTextEntry): any {
+function formatEntry(t: I18n, entry: FlavorTextEntry): any {
   switch (entry.tag) {
     case 'BasicEntry': return h('p', { innerHTML: formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text) })
-     case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
-     case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
-     case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
-     case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
-     case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
-     case 'EntrySplit': return h('hr')
+    case 'HeaderEntry': return h('header', [h('h1', { innerHTML: formatContent(t(entry.key)) })])
+    case 'I18nEntry': return h('div', { innerHTML: formatContent(t(entry.key, {...entry.variables, setImgPath: `${baseUrl}/img/arkham/encounter-sets` })) })
+    case 'ModifyEntry': return h('div', { class: entryStyles(entry) }, [formatEntry(t, entry.entry)])
+    case 'CompositeEntry': return h('div', { class: "composite" }, entry.entries.map((e) => formatEntry(t, e)))
+    case 'ColumnEntry': return h('div', { class: "columns" }, entry.entries.map((e) => formatEntry(t, e)))
+    case 'ListEntry': return h('ul', entry.list.map((e) => formatListEntry(t, e)))
+    case 'CardEntry': return h('div', [h('img', { class: entryStyles(entry), src: imgsrc(`cards/${entry.cardCode.replace(/^c/, "")}.avif`)})])
+    case 'EntrySplit': return h('hr')
     default: return h('div', "Unknown entry type")
   }
 }
@@ -60,19 +81,33 @@ export default defineComponent({
 <style scoped lang="scss">
 .composite { display: contents; }
 .columns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  > * {
     display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    padding: 10px 20px;
+    z-index: 5;
+  }
+  > * + * {
+    border-left: solid 1px black;
+  }
+  > div:has(img) {
+    max-width: 300px;
+    min-width: 25%;
+    padding: 0;
+    .card {
+      border-radius: 10px;
+    }
+  }
+
+  .invalid {
     flex-direction: row;
-    justify-content: space-between;
-    gap: 10px;
-    > * {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-      padding: 10px 20px;
-    }
-    > * + * {
-      border-left: solid 1px black;
-    }
+    height: fit-content;
+  }
 }
 
 .blue, :deep(.blue), p.blue, :deep(p.blue) {
@@ -273,5 +308,23 @@ ul, :deep(ul) {
   border-bottom: 2px solid #60759F;
   margin-inline: -20px;
   margin-block: 10px;
+}
+
+img.remove {
+  filter: brightness(81%) saturate(113%);
+}
+
+div:has(> img.remove) {
+  position: relative;
+  &::before {
+    z-index: 1;
+    content: "";
+    display: block;
+    inset: 0;
+    position: absolute;
+    pointer-events: none;
+    background: rgba(253, 62, 65, 0.31);
+    border-radius: 10px;
+  }
 }
 </style>

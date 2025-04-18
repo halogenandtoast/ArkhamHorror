@@ -1,14 +1,8 @@
 module Arkham.Campaign.Campaigns.NightOfTheZealot where
 
-import Arkham.Campaign.Runner
-import Arkham.CampaignStep
-import Arkham.Campaigns.NightOfTheZealot.Import
+import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.NightOfTheZealot.CampaignSteps
-import Arkham.Classes
-import Arkham.Difficulty
-import Arkham.Helpers.Query
-import Arkham.I18n
-import Arkham.Prelude
+import Arkham.Campaigns.NightOfTheZealot.Import
 
 newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasModifiersFor)
@@ -23,17 +17,12 @@ instance IsCampaign NightOfTheZealot where
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
 nightOfTheZealot difficulty =
-  campaign
-    NightOfTheZealot
-    "01"
-    "Night of the Zealot"
-    difficulty
-    (chaosBagContents difficulty)
+  campaign NightOfTheZealot "01" "Night of the Zealot" difficulty (chaosBagContents difficulty)
 
 instance RunMessage NightOfTheZealot where
-  runMessage msg c = withI18n $ case msg of
+  runMessage msg c = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> do
-      players <- allPlayers
-      pushAll [story players (i18n "nightOfTheZealot.prologue"), NextCampaignStep Nothing]
+      story $ i18n "prologue"
+      push $ NextCampaignStep Nothing
       pure c
-    _ -> defaultCampaignRunner msg c
+    _ -> lift $ defaultCampaignRunner msg c

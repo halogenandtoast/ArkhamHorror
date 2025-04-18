@@ -11,24 +11,17 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
+import Arkham.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Resolution
-import Arkham.Scenario.Runner hiding (
-  assignDamageAndHorror,
-  assignHorror,
-  findAndDrawEncounterCard,
-  placeLocationCard,
-  story,
- )
-import Arkham.Scenario.Setup
+import Arkham.Scenario.Import.Lifted
 import Arkham.Trait (Trait (Ghoul))
 
 newtype TheGathering = TheGathering ScenarioAttrs
@@ -38,11 +31,15 @@ newtype TheGathering = TheGathering ScenarioAttrs
 
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty =
-  scenario TheGathering "01104" "The Gathering" difficulty
-    $ [ "   .   attic   .     "
-      , " study hallway parlor"
-      , "   .   cellar  .     "
-      ]
+  scenario
+    TheGathering
+    "01104"
+    "The Gathering"
+    difficulty
+    [ "   .   attic   .     "
+    , " study hallway parlor"
+    , "   .   cellar  .     "
+    ]
 
 instance HasChaosTokenValue TheGathering where
   getChaosTokenValue iid chaosTokenFace (TheGathering attrs) = case chaosTokenFace of
@@ -62,9 +59,15 @@ instance RunMessage TheGathering where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ flavorText $ compose [h "intro.title", p "intro.body"]
       pure s
     Setup -> runScenarioSetup TheGathering attrs do
+      scope "setup" $ story $ flavorText $ ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "setOutOfPlay"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.TheGathering
       gather Set.Rats
       gather Set.Ghouls
@@ -109,22 +112,28 @@ instance RunMessage TheGathering where
             addCampaignCardToDeckChoice valids' DoNotShuffleIn Assets.litaChantler
       case resolution of
         NoResolution -> do
-          story $ i18n "resolutions.noResolution"
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
+          story
+            $ withVars ["xp" .= xp]
+            $ i18nWithTitle "resolutions.noResolution"
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita []
-          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 1 -> do
-          story $ i18nWithTitle "resolutions.resolution1"
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
+          story
+            $ withVars ["xp" .= xp]
+            $ i18nWithTitle "resolutions.resolution1"
           record YourHouseHasBurnedToTheGround
           chooseToAddLita []
           sufferMentalTrauma leadId 1
-          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 2 -> do
-          story $ i18nWithTitle "resolutions.resolution2"
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
+          story
+            $ withVars ["xp" .= xp]
+            $ i18nWithTitle "resolutions.resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs (ikey "xp.resolution2") 1
-          allGainXpWithBonus attrs $ toBonus "bonus" 2
         Resolution 3 -> do
           story $ i18nWithTitle "resolutions.resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause

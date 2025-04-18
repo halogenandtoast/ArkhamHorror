@@ -273,7 +273,6 @@ ul, :deep(ul) {
   font-family: "Teutonic";
   font-weight: 500;
   color: #38615F;
-  margin: 0 0 10px 0;
   padding-bottom: 2px;
   border-bottom: 1px solid #38615f;
   &::after {
@@ -289,8 +288,6 @@ ul, :deep(ul) {
   font-weight: 500;
   font-size: 1.5em;
   color: #222;
-  margin: 0 0 10px 0;
-  padding-bottom: 2px;
 }
 
 

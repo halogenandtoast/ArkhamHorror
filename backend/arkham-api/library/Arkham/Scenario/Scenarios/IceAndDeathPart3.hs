@@ -29,6 +29,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.IceAndDeath.Helpers
 import Arkham.Trait (Trait (Eidolon))
+import Control.Monad.State.Strict
 import Data.Map.Strict qualified as Map
 
 newtype IceAndDeathPart3 = IceAndDeathPart3 ScenarioAttrs
@@ -77,10 +78,12 @@ instance RunMessage IceAndDeathPart3 where
         whenM hasRemainingFrostTokens $ addChaosToken #frost
         sv <- fromMaybe 0 <$> getCurrentShelterValue
         story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"
+
+      when (not isStandalone || attrs.hasOption IncludePartners) do
         eachInvestigator (`forInvestigator` PreScenarioSetup)
+
       if attrs.hasOption IncludePartners
         then do
-          eachInvestigator (`forInvestigator` PreScenarioSetup)
           let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
           pure $ IceAndDeathPart3 $ foldl' (flip addPartner) attrs expeditionTeam
         else pure s
@@ -261,11 +264,10 @@ instance RunMessage IceAndDeathPart3 where
         _ -> error "Unknown resolution"
       pure s
     HandleOption option -> do
-      whenM getIsStandalone do
-        case option of
-          ManuallyPickCamp -> pure ()
-          PerformIntro -> pure ()
-          IncludePartners -> pure ()
-          _ -> error $ "Unhandled option: " <> show option
-      pure s
+      flip execStateT s do
+        whenM getIsStandalone do
+          case option of
+            ManuallyPickCamp -> pure ()
+            PerformIntro -> modify $ overAttrs $ standaloneCampaignLogL . optionsL %~ insertSet IncludePartners
+            _ -> error $ "Unhandled option: " <> show option
     _ -> IceAndDeathPart3 <$> liftRunMessage msg attrs

@@ -25,6 +25,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
+import Control.Monad.State.Strict (execStateT, modify)
 
 newtype TheHeartOfMadnessPart2 = TheHeartOfMadnessPart2 ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -79,34 +80,49 @@ instance RunMessage TheHeartOfMadnessPart2 where
       lead <- getLead
       chooseOneM lead do
         questionLabeled "The investigators may choose how many seals they have:"
-        labeled "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”" (doStep 1 msg)
-        labeled "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used." (doStep 2 msg)
-        labeled "For a harder experience, one random seal is “Placed,” and the other four are not used." (doStep 3 msg)
+        labeled
+          "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”"
+          (doStep 1 msg)
+        labeled
+          "For an average experience, two random seals are “Placed,” one is “Recovered,” and the other two are not used."
+          (doStep 2 msg)
+        labeled
+          "For a harder experience, one random seal is “Placed,” and the other four are not used."
+          (doStep 3 msg)
         labeled "For a nightmarish experience, no seals are used." nothing
       pure s
     DoStep n StandaloneSetup -> do
       (placed, recovered) <- case n of
-        1 -> splitAt 3 <$> shuffleM [minBound..]
-        2 -> splitAt 2 . take 3 <$> shuffleM [minBound..]
-        3 -> (, []) . take 1 <$> shuffleM [minBound..]
+        1 -> splitAt 3 <$> shuffleM [minBound ..]
+        2 -> splitAt 2 . take 3 <$> shuffleM [minBound ..]
+        3 -> (,[]) . take 1 <$> shuffleM [minBound ..]
         _ -> pure ([], [])
       unless (null placed) $ recordSetInsert SealsPlaced (map (\k -> toJSON $ Seal k True Nothing) placed)
-      unless (null recovered) $ recordSetInsert SealsRecovered (map (\k -> toJSON $ Seal k False Nothing) recovered)
+      unless (null recovered)
+        $ recordSetInsert SealsRecovered (map (\k -> toJSON $ Seal k False Nothing) recovered)
       pure s
     PreScenarioSetup -> do
-      kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
-      understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
-      story $ i18nWithTitle "intro1.main" `addFlavorEntry` ul do
-        li.nested "intro1.check" do
-          li.validate (kenslerAlive && understandsTheTrueNature) "intro1.intro2"
-          li.validate (not $ kenslerAlive && understandsTheTrueNature) "intro1.intro3"
+      isStandalone <- getIsStandalone
+      when (not isStandalone || attrs.hasOption PerformIntro) do
+        kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
+        understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
+        story $ i18nWithTitle "intro1.main" `addFlavorEntry` ul do
+          li.nested "intro1.check" do
+            li.validate (kenslerAlive && understandsTheTrueNature) "intro1.intro2"
+            li.validate (not $ kenslerAlive && understandsTheTrueNature) "intro1.intro3"
 
-      if kenslerAlive && understandsTheTrueNature
-        then doStep 2 msg
-        else doStep 3 msg
+        if kenslerAlive && understandsTheTrueNature
+          then doStep 2 msg
+          else doStep 3 msg
 
-      eachInvestigator (`forInvestigator` PreScenarioSetup)
-      pure s
+      when (not isStandalone || attrs.hasOption IncludePartners) do
+        eachInvestigator (`forInvestigator` PreScenarioSetup)
+
+      if attrs.hasOption IncludePartners
+        then do
+          let addPartner partner = standaloneCampaignLogL . partnersL . at partner.cardCode ?~ CampaignLogPartner 0 0 Safe
+          pure $ TheHeartOfMadnessPart2 $ foldl' (flip addPartner) attrs expeditionTeam
+        else pure s
     DoStep 2 PreScenarioSetup -> do
       story $ i18nWithTitle "intro2"
       record DrKenslerHasAPlan
@@ -240,17 +256,17 @@ instance RunMessage TheHeartOfMadnessPart2 where
       pure s
     HandleOption option -> do
       investigators <- allInvestigators
-      whenM getIsStandalone $ do
-        case option of
-          AddGreenSoapstone -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.greenSoapstoneJinxedIdol
-          AddWoodenSledge -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.woodenSledge
-          AddDynamite -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.dynamite
-          AddMiasmicCrystal -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.miasmicCrystalStrangeEvidence
-          AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
-          AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
-          AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
-          PerformIntro -> pure ()
-          IncludePartners -> pure ()
-          _ -> error $ "Unhandled option: " <> show option
-      pure s
+      flip execStateT s do
+        whenM getIsStandalone do
+          case option of
+            AddGreenSoapstone -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.greenSoapstoneJinxedIdol
+            AddWoodenSledge -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.woodenSledge
+            AddDynamite -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.dynamite
+            AddMiasmicCrystal -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.miasmicCrystalStrangeEvidence
+            AddMineralSpecimen -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.mineralSpecimen
+            AddSmallRadio -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.smallRadio
+            AddSpareParts -> forceAddCampaignCardToDeckChoice investigators ShuffleIn Assets.spareParts
+            PerformIntro -> modify $ overAttrs $ standaloneCampaignLogL . optionsL %~ insertSet IncludePartners
+            IncludePartners -> pure ()
+            _ -> error $ "Unhandled option: " <> show option
     _ -> TheHeartOfMadnessPart2 <$> liftRunMessage msg attrs

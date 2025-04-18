@@ -47,7 +47,10 @@ instance RunMessage OnTheHunt3 where
       if notNull enemyCards
         then chooseNM iid (min (length enemyCards) (1 + additionalTargets)) do
           targets enemyCards \card -> do
-            searchModifier attrs card (ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid))
+            searchModifiers
+              attrs
+              card
+              [ForceSpawn (SpawnEngagedWith $ InvestigatorWithId iid), IgnoreRevelation]
             push $ InvestigatorDrewEncounterCard iid card
             push $ AttachEvent attrs.id (toTarget card)
         else drawEncounterCard iid attrs

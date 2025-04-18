@@ -1321,6 +1321,16 @@ searchModifier
 searchModifier (toSource -> source) (toTarget -> target) modifier =
   Msg.pushM $ Msg.searchModifier source target modifier
 
+searchModifiers
+  :: forall target source m
+   . (ReverseQueue m, Sourceable source, Targetable target)
+  => source
+  -> target
+  -> [ModifierType]
+  -> m ()
+searchModifiers (toSource -> source) (toTarget -> target) modifiers =
+  Msg.pushM $ Msg.searchModifiers source target modifiers
+
 chooseFightEnemy
   :: (ReverseQueue m, Sourceable source) => SkillTestId -> InvestigatorId -> source -> m ()
 chooseFightEnemy sid iid = mkChooseFight sid iid >=> push . toMessage
@@ -1952,7 +1962,8 @@ takeActionAsIfTurn iid (toSource -> source) = do
   push $ PlayerWindow iid [] False
 
 nonAttackEnemyDamage
-  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a) => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
+  :: (AsId enemy, IdOf enemy ~ EnemyId, ReverseQueue m, Sourceable a)
+  => Maybe InvestigatorId -> a -> Int -> enemy -> m ()
 nonAttackEnemyDamage miid source damage enemy = do
   whenM (asId enemy <=~> EnemyCanBeDamagedBySource (toSource source)) do
     push $ Msg.EnemyDamage (asId enemy) (nonAttack miid source damage)

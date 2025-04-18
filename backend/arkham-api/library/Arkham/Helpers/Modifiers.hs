@@ -644,6 +644,10 @@ cardResolutionModifiers
   -> m Message
 cardResolutionModifiers card source target modifiers = createWindowModifierEffect (EffectCardResolutionWindow $ toCardId card) source target modifiers
 
+searchModifiers
+  :: (Sourceable source, Targetable target, HasGame m) => source -> target -> [ModifierType] -> m Message
+searchModifiers source target modifiers = createWindowModifierEffect EffectSearchWindow source target modifiers
+
 searchModifier
   :: (Sourceable source, Targetable target, HasGame m) => source -> target -> ModifierType -> m Message
 searchModifier source target modifier = createWindowModifierEffect EffectSearchWindow source target [modifier]

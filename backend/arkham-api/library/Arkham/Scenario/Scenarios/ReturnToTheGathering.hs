@@ -6,7 +6,6 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
 import Arkham.Prelude
@@ -15,7 +14,6 @@ import Arkham.Scenario.Scenarios.TheGathering
 import Arkham.Scenario.Setup
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving stock Generic
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, ToJSON, FromJSON, Entity, Eq, HasChaosTokenValue)
 
@@ -35,10 +33,7 @@ returnToTheGathering difficulty =
     (referenceL .~ "01104")
 
 instance RunMessage ReturnToTheGathering where
-  runMessage msg s@(ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ withI18n $ case msg of
-    PreScenarioSetup -> do
-      story $ i18nWithTitle "nightOfTheZealot.theGathering.intro"
-      pure s
+  runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ case msg of
     Setup -> runScenarioSetup (ReturnToTheGathering . TheGathering) attrs do
       gather EncounterSet.ReturnToTheGathering
       gather EncounterSet.TheGathering
@@ -48,8 +43,7 @@ instance RunMessage ReturnToTheGathering where
       gather EncounterSet.AncientEvils
       gather EncounterSet.ChillingCold
 
-      study <- place Locations.studyAberrantGateway
-      startAt study
+      startAt =<< place Locations.studyAberrantGateway
 
       placeAll [Locations.guestHall, Locations.bedroom, Locations.bathroom]
 
@@ -69,4 +63,4 @@ instance RunMessage ReturnToTheGathering where
 
       setAgendaDeck theGatheringAgendaDeck
       setActDeck [Acts.mysteriousGateway, Acts.theBarrier, Acts.whatHaveYouDone]
-    _ -> ReturnToTheGathering <$> lift (runMessage msg theGathering')
+    _ -> ReturnToTheGathering <$> liftRunMessage msg theGathering'

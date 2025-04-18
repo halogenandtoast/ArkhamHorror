@@ -60,6 +60,7 @@ import Arkham.Matcher (
   MovesVia (..),
   PreyMatcher (..),
   be,
+  enemyEngagedWith,
   investigatorAt,
   investigatorEngagedWith,
   locationWithEnemy,
@@ -1291,7 +1292,10 @@ instance RunMessage EnemyAttrs where
         <> [UnsealChaosToken token | token <- enemySealedChaosTokens]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      runMessage (EngageEnemy iid eid Nothing False) a
+      alreadyEngaged <- eid <=~> enemyEngagedWith iid
+      if alreadyEngaged
+        then pure a
+        else runMessage (EngageEnemy iid eid Nothing False) a
     EngageEnemy iid eid mTarget False | eid == enemyId -> do
       eliminated <- selectNone $ InvestigatorWithId iid
       if eliminated

@@ -1228,9 +1228,10 @@ instance RunMessage EnemyAttrs where
       mloc <- field EnemyLocation a.id
       vengeance <- getVengeancePoints eid
       let
-        victoryMsgs = [DefeatedAddToVictory $ toTarget a | isJust (victory <|> vengeance)]
+        placeInVictory = isJust (victory <|> vengeance)
+        victoryMsgs = [DefeatedAddToVictory $ toTarget a | placeInVictory]
         defeatMsgs =
-          if isJust (victory <|> vengeance)
+          if placeInVictory
             then resolve $ RemoveEnemy eid
             else [Discard miid GameSource $ toTarget a]
 
@@ -1248,7 +1249,10 @@ instance RunMessage EnemyAttrs where
         <> victoryMsgs
         <> windows [Window.EntityDiscarded source (toTarget a)]
         <> defeatMsgs
-      pure $ a & keysL .~ mempty
+      pure
+        $ a
+        & (keysL .~ mempty)
+        & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of
         AsSwarm eid' _ -> push $ CheckDefeated source (toTarget eid')

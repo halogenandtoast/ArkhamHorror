@@ -4142,38 +4142,41 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let
       windows = do
         Action.Investigate <- maybeToList mAction
-        case mTarget of
-          Just (LocationTarget lid) ->
-            [ mkWhen $ Window.FailInvestigationSkillTest iid lid n
-            , mkAfter $ Window.FailInvestigationSkillTest iid lid n
-            ]
-          _ -> case mCurrentLocation of
+        go =<< maybeToList mTarget
+      go = \case
+        ProxyTarget t _ -> go t
+        LocationTarget lid ->
+          [ mkWhen $ Window.FailInvestigationSkillTest iid lid n
+          , mkAfter $ Window.FailInvestigationSkillTest iid lid n
+          ]
+        BothTarget t1 t2 -> go t1 <> go t2
+        _ -> []
+      windows' =
+        if null windows
+          then case mCurrentLocation of
             Just currentLocation ->
               [ mkWhen $ Window.FailInvestigationSkillTest iid currentLocation n
               , mkAfter $ Window.FailInvestigationSkillTest iid currentLocation n
               ]
             _ -> []
+          else windows
     pushM
       $ checkWindows
       $ mkWhen (Window.FailSkillTest iid n)
       : mkAfter (Window.FailSkillTest iid n)
-      : windows
+      : windows'
     pure a
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
     let
       windows = do
         Action.Investigate <- maybeToList mAction
-        case mTarget of
-          Just (ProxyTarget (LocationTarget lid) _) -> do
-            [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
-          Just (LocationTarget lid) -> do
-            [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
-          Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
-            [ mkWhen $ Window.PassInvestigationSkillTest iid lid1 n
-            , mkWhen $ Window.PassInvestigationSkillTest iid lid2 n
-            ]
-          _ -> error "expecting location source for investigate"
+        go =<< maybeToList mTarget
+      go = \case
+        ProxyTarget t _ -> go t
+        LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
+        BothTarget t1 t2 -> go t1 <> go t2
+        _ -> []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
     pure a
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
@@ -4181,16 +4184,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let
       windows = do
         Action.Investigate <- maybeToList mAction
-        case mTarget of
-          Just (ProxyTarget (LocationTarget lid) _) -> do
-            [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
-          Just (LocationTarget lid) -> do
-            [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
-          Just (BothTarget (LocationTarget lid1) (LocationTarget lid2)) ->
-            [ mkAfter $ Window.PassInvestigationSkillTest iid lid1 n
-            , mkAfter $ Window.PassInvestigationSkillTest iid lid2 n
-            ]
-          _ -> error "expecting location source for investigate"
+        go =<< maybeToList mTarget
+      go = \case
+        ProxyTarget t _ -> go t
+        LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
+        BothTarget t1 t2 -> go t1 <> go t2
+        _ -> []
     pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
     pure a
   PlayerWindow iid additionalActions isAdditional | iid == investigatorId -> do

@@ -1,11 +1,10 @@
-module Arkham.Asset.Assets.SixthSense (sixthSense, sixthSenseEffect, SixthSense (..)) where
+module Arkham.Asset.Assets.SixthSense (sixthSense, sixthSenseEffect) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Classes.HasQueue (evalQueueT)
 import Arkham.Effect.Import
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator
@@ -30,11 +29,11 @@ instance HasAbilities SixthSense where
 instance RunMessage SixthSense where
   runMessage msg a@(SixthSense attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let source = attrs.ability 1
-      lid <- getJustLocation iid
-      sid <- getRandom
-      createCardEffect Cards.sixthSense (effectMetaTarget sid) source (InvestigationTarget iid lid)
-      aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
+      withLocationOf iid \lid -> do
+        let source = attrs.ability 1
+        sid <- getRandom
+        createCardEffect Cards.sixthSense (effectMetaTarget sid) source (InvestigationTarget iid lid)
+        aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> SixthSense <$> liftRunMessage msg attrs
 
@@ -48,6 +47,10 @@ sixthSenseEffect = cardEffect SixthSenseEffect Cards.sixthSense
 instance RunMessage SixthSenseEffect where
   runMessage msg e@(SixthSenseEffect attrs) = runQueueT $ case msg of
     RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> do
+      push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
+      disable attrs
+      pure e
+    DoStep 1 (RevealChaosToken (SkillTestSource sid) iid token) | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
           when (token.face `elem` [Skull, Cultist, Tablet, ElderThing]) $ do
@@ -61,7 +64,7 @@ instance RunMessage SixthSenseEffect where
               canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
               pure $ guard canAfford $> (location, costs)
             batchId <- getRandom
-            askQ <- evalQueueT $ chooseOneM iid do
+            chooseOneM iid do
               labeled "Do not choose other location" nothing
               for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
                 targeting location do
@@ -74,8 +77,6 @@ instance RunMessage SixthSenseEffect where
 
                       labeled "Use original locations shroud" do
                         skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
-            push $ If (Window.RevealChaosTokenEffect iid token attrs.id) askQ
-            disable attrs
         _ -> error "Invalid target"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e

@@ -1,7 +1,4 @@
-module Arkham.Event.Events.EldritchInspiration (
-  eldritchInspiration,
-  EldritchInspiration (..),
-) where
+module Arkham.Event.Events.EldritchInspiration (eldritchInspiration) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card

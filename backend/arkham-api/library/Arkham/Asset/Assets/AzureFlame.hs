@@ -1,11 +1,10 @@
-module Arkham.Asset.Assets.AzureFlame (azureFlame, AzureFlame (..)) where
+module Arkham.Asset.Assets.AzureFlame (azureFlame) where
 
 import Arkham.Ability
 import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.ChaosToken
 import Arkham.Fight
 import Arkham.Matcher
 import Arkham.Modifier
@@ -29,8 +28,8 @@ instance RunMessage AzureFlame where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      skillTestModifiers sid attrs iid [DamageDealt 1]
-      onRevealChaosTokenEffect sid (mapOneOf ChaosTokenFaceIs [ElderSign, PlusOne, Zero]) source sid do
+      skillTestModifiers sid source iid [DamageDealt 1]
+      onRevealChaosTokenEffect sid (oneOf [#eldersign, #"+1", #"0"]) source sid do
         assignDamage iid source 1
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a

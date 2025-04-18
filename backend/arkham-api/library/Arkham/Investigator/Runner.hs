@@ -4174,7 +4174,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         go =<< maybeToList mTarget
       go = \case
         ProxyTarget t _ -> go t
-        LocationTarget lid -> [mkAfter $ Window.PassInvestigationSkillTest iid lid n]
+        LocationTarget lid -> [mkWhen $ Window.PassInvestigationSkillTest iid lid n]
         BothTarget t1 t2 -> go t1 <> go t2
         _ -> []
     pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows

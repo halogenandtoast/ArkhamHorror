@@ -64,6 +64,7 @@ import Arkham.Matcher (
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
 import Arkham.Modifier
+import Arkham.Name (display, toName)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
@@ -136,7 +137,7 @@ instance RunMessage LocationAttrs where
       let clues = locationClues a
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       push
-        $ SkillTestResultOption "Discover Clue"
+        $ SkillTestResultOption ("Discover Clue at " <> display (toName a))
         $ [before | clues == 0]
         <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
            , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
@@ -147,7 +148,7 @@ instance RunMessage LocationAttrs where
       let clues = locationClues a
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       push
-        $ SkillTestResultOption "Discover Clue"
+        $ SkillTestResultOption ("Discover Clue at " <> display (toName a))
         $ [before | clues == 0]
         <> [Successful (Action.Investigate, toTarget a) iid source actual n]
         <> [after | clues == 0]
@@ -267,8 +268,8 @@ instance RunMessage LocationAttrs where
                 $ chooseOne
                   player
                   [ targetLabel
-                    lid'
-                    [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+                      lid'
+                      [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
                   | lid' <- availableLocationIds
                   ]
       pure a
@@ -547,13 +548,13 @@ instance HasAbilities LocationAttrs where
         $ ActionAbility [#move] moveCost
     ]
       <> [ withI18n
-          $ withVar "key" (String $ keyName k)
-          $ withI18nTooltip "takeControlOfKey"
-          $ restrictedAbility
-            l
-            (500 + idx)
-            (onLocation l <> youExist (not_ $ InvestigatorWithModifier CannotTakeKeys))
-          $ FastAbility Free
+             $ withVar "key" (String $ keyName k)
+             $ withI18nTooltip "takeControlOfKey"
+             $ restrictedAbility
+               l
+               (500 + idx)
+               (onLocation l <> youExist (not_ $ InvestigatorWithModifier CannotTakeKeys))
+             $ FastAbility Free
          | l.revealed
          , l.clues == 0
          , (idx, k) <- withIndex l.keys

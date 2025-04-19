@@ -2,16 +2,15 @@ module Arkham.Scenario.Scenarios.ReturnToTheGathering where
 
 import Arkham.Act.Cards qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
-import Arkham.Prelude
-import Arkham.Scenario.Runner hiding (placeLocationCard, story)
+import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheGathering
-import Arkham.Scenario.Setup
+import Arkham.Scenarios.TheGathering.Helpers
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -33,8 +32,14 @@ returnToTheGathering difficulty =
     (referenceL .~ "01104")
 
 instance RunMessage ReturnToTheGathering where
-  runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ case msg of
+  runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheGathering . TheGathering) attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "setOutOfPlay"
+        unscoped $ li "shuffleRemainder"
+
       gather EncounterSet.ReturnToTheGathering
       gather EncounterSet.TheGathering
       gather EncounterSet.Rats

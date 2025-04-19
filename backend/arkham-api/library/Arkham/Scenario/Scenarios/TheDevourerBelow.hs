@@ -11,8 +11,10 @@ import Arkham.Classes
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Message (pushWhenM)
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
@@ -26,7 +28,7 @@ import Arkham.Scenario.Import.Lifted hiding (
   placeLocationCard,
   story,
  )
-import Arkham.Scenarios.TheDevourerBelow.Story
+import Arkham.Scenarios.TheDevourerBelow.Helpers
 import Arkham.Token
 import Arkham.Trait hiding (Cultist, ElderThing)
 
@@ -68,14 +70,33 @@ agendaDeck =
   [Agendas.theArkhamWoods, Agendas.theRitualBegins, Agendas.vengeanceAwaits]
 
 instance RunMessage TheDevourerBelow where
-  runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheDevourerBelow attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       push $ SetChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
-      story intro
+      flavor do
+        setTitle "intro.title"
+        h "intro.title"
+        p "intro.body"
       pure s
     Setup -> runScenarioSetup TheDevourerBelow attrs do
+      cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
+      pastMidnight <- getHasRecord ItIsPastMidnight
+      ghoulPriestIsStillAlive <- getHasRecord GhoulPriestIsStillAlive
+      setup $ ul do
+        li "gatherSets"
+        li "placeLocations"
+        li "setOutOfPlay"
+        li "randomSet"
+        li.nested "cultistsWhoGotAway.instructions" do
+          li.validate (null cultistsWhoGotAway) "cultistsWhoGotAway.zeroNames"
+          li.validate (length cultistsWhoGotAway `elem` [1, 2]) "cultistsWhoGotAway.oneOrTwoNames"
+          li.validate (length cultistsWhoGotAway `elem` [3, 4]) "cultistsWhoGotAway.threeOrFourNames"
+          li.validate (length cultistsWhoGotAway `elem` [5, 6]) "cultistsWhoGotAway.fiveOrSixNames"
+        unscoped $ withVars ["token" .= String "elderThing"] $ li "addToken"
+        li.validate pastMidnight "pastMidnight"
+        li.validate ghoulPriestIsStillAlive "ghoulPriest"
       gather EncounterSet.TheDevourerBelow
       gather EncounterSet.AncientEvils
       gather EncounterSet.StrikingFear
@@ -86,7 +107,7 @@ instance RunMessage TheDevourerBelow where
         :| [EncounterSet.AgentsOfShubNiggurath, EncounterSet.AgentsOfCthulhu, EncounterSet.AgentsOfHastur]
 
       setAside [Locations.ritualSite, Enemies.umordhoth]
-      whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
+      when ghoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
 
       setActDeck actDeck
       setAgendaDeck agendaDeck
@@ -102,11 +123,10 @@ instance RunMessage TheDevourerBelow where
            , Locations.arkhamWoodsQuietGlade
            ]
 
-      cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
       let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
       pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
 
-      whenHasRecord ItIsPastMidnight
+      when pastMidnight
         $ pushAll
           [ AllRandomDiscard (toSource attrs) AnyCard
           , AllRandomDiscard (toSource attrs) AnyCard
@@ -131,16 +151,30 @@ instance RunMessage TheDevourerBelow where
     FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> Skull)) _ _ | isHardExpert attrs -> do
       findAndDrawEncounterCard iid $ CardWithType EnemyType <> CardWithTrait Monster
       pure s
-    ScenarioResolution r -> do
-      let
-        (resolution, key) = case r of
-          NoResolution -> (noResolution, ArkhamSuccumbedToUmordhothsTerribleVengeance)
-          Resolution 1 -> (resolution1, TheRitualToSummonUmordhothWasBroken)
-          Resolution 2 -> (resolution2, TheInvestigatorsRepelledUmordoth)
-          Resolution 3 -> (resolution3, TheInvestigatorsSacrificedLitaChantlerToUmordhoth)
-          _ -> error "Invalid resolution"
-      story resolution
-      record key
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          story $ i18n "noResolution"
+          record ArkhamSuccumbedToUmordhothsTerribleVengeance
+        Resolution 1 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 5
+          story
+            $ withVars ["xp" .= xp]
+            $ i18n "resolution1"
+          record TheRitualToSummonUmordhothWasBroken
+        Resolution 2 -> do
+          xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 10
+          story
+            $ withVars ["xp" .= xp]
+            $ i18n "resolution2"
+          record TheInvestigatorsRepelledUmordoth
+        Resolution 3 -> do
+          xp <- allGainXp' attrs
+          story
+            $ withVars ["xp" .= xp]
+            $ i18n "resolution3"
+          record TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+        _ -> error "Invalid resolution"
       endOfScenario
       pure s
     HandleOption option -> do

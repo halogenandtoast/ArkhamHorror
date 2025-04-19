@@ -8,6 +8,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as EncounterSet
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
@@ -16,7 +17,7 @@ import Arkham.Prelude
 import Arkham.Scenario.Runner hiding (placeLocationCard, story)
 import Arkham.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Scenario.Setup
-import Arkham.Scenarios.TheMidnightMasks.Story
+import Arkham.Scenarios.TheMidnightMasks.Helpers
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving stock Generic
@@ -37,15 +38,29 @@ returnToTheMidnightMasks difficulty =
     ((decksL .~ mapFromList [(CultistDeck, [])]) . (referenceL .~ "01120"))
 
 instance RunMessage ReturnToTheMidnightMasks where
-  runMessage msg s@(ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs)) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
-      story
-        $ introPart1
-        $ if forcedToFindOthers then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
-      story introPart2
-      pure s
+  runMessage msg (ReturnToTheMidnightMasks theMidnightMasks'@(TheMidnightMasks attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheMidnightMasks . TheMidnightMasks) attrs do
+      burnedToTheGround <- getHasRecord YourHouseHasBurnedToTheGround
+      ghoulPriestStillAlive <- getHasRecord GhoulPriestIsStillAlive
+      n <- getPlayerCount
+      setup $ ul do
+        li "gatherSets"
+        li "cultistDeck"
+        li "placeLocations"
+
+        li.nested "acolytes.instructions" do
+          li.validate (n == 1) "acolytes.onePlayer"
+          li.validate (n == 2) "acolytes.twoPlayer"
+          li.validate (n == 3) "acolytes.threePlayer"
+          li.validate (n == 4) "acolytes.fourPlayer"
+
+        li.validate burnedToTheGround "burnedToTheGround"
+        li.validate (not burnedToTheGround) "houseStillStanding"
+
+        unscoped $ li "shuffleRemainder"
+
+        li.validate ghoulPriestStillAlive "ghoulPriest"
+
       gather EncounterSet.ReturnToTheMidnightMasks
       gather EncounterSet.TheMidnightMasks
       gather EncounterSet.ChillingCold
@@ -70,8 +85,7 @@ instance RunMessage ReturnToTheMidnightMasks where
       cultistCards <- drop 3 <$> shuffleM (cultOfUmordhoth <> returnCultOfUmordhoth)
       addExtraDeck CultistDeck cultistCards
 
-      houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
-      if houseBurnedDown
+      if burnedToTheGround
         then startAt rivertown
         else startAt =<< place Locations.yourHouse
 
@@ -79,5 +93,5 @@ instance RunMessage ReturnToTheMidnightMasks where
       let acolytes = replicate (count' - 1) Enemies.discipleOfTheDevourer
       zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
 
-      whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
+      when ghoulPriestStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     _ -> ReturnToTheMidnightMasks <$> lift (runMessage msg theMidnightMasks')

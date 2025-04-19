@@ -49,5 +49,7 @@
   "Results": "Results",
   "Story": "Story",
   "ChooseOne": "Choose one",
-  "Choose": "Choose"
+  "Choose": "Choose",
+  "setup": "Setup",
+  "addToken": "Add 1 {'{'}{token}{'}'} chaos token to the chaos bag for the remainder of the campaign."
 }

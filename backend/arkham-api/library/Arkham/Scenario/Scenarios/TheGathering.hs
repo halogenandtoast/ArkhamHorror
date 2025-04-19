@@ -11,7 +11,8 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.FlavorText
+import Arkham.FlavorText (ikey)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Helpers.Xp
@@ -22,6 +23,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Prelude
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheGathering.Helpers
 import Arkham.Trait (Trait (Ghoul))
 
 newtype TheGathering = TheGathering ScenarioAttrs
@@ -54,15 +56,18 @@ theGatheringAgendaDeck :: [CardDef]
 theGatheringAgendaDeck = [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
 
 instance RunMessage TheGathering where
-  runMessage msg s@(TheGathering attrs) = runQueueT $ campaignI18n $ scope "theGathering" $ case msg of
+  runMessage msg s@(TheGathering attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      story $ flavorText $ compose [h "intro.title", p "intro.body"]
+      flavor do
+        setTitle "intro.title"
+        h "intro.title"
+        p "intro.body"
       pure s
     Setup -> runScenarioSetup TheGathering attrs do
-      scope "setup" $ story $ flavorText $ ul do
+      setup $ ul do
         li "gatherSets"
         li "placeLocations"
         li "setOutOfPlay"

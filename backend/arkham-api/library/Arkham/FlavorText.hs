@@ -13,6 +13,7 @@ module Arkham.FlavorText (
   p,
   cols,
   img,
+  UlItems,
 )
 where
 

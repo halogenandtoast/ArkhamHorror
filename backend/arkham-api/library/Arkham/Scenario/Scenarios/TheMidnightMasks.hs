@@ -15,6 +15,7 @@ import Arkham.Enemy.Types
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.EncounterSet
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher (
@@ -34,7 +35,7 @@ import Arkham.Scenario.Import.Lifted hiding (
   placeLocationCard,
   story,
  )
-import Arkham.Scenarios.TheMidnightMasks.Story
+import Arkham.Scenarios.TheMidnightMasks.Helpers
 import Arkham.Token
 import Arkham.Trait qualified as Trait
 import Control.Lens (non)
@@ -79,18 +80,51 @@ allCultists =
     ]
 
 instance RunMessage TheMidnightMasks where
-  runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ case msg of
+  runMessage msg s@(TheMidnightMasks attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
+      flavor do
+        setTitle "intro.title"
+        h "intro.title"
+        p "intro.body"
       forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
-      story
-        $ introPart1
-        $ if forcedToFindOthers then TheMidnightMasksIntroOne else TheMidnightMasksIntroTwo
-      story introPart2
+      doStep (if forcedToFindOthers then 1 else 2) msg
+      pure s
+    DoStep 1 PreScenarioSetup -> do
+      story $ i18n "intro1"
+      doStep 3 PreScenarioSetup
+      pure s
+    DoStep 2 PreScenarioSetup -> do
+      story $ i18n "intro2"
+      doStep 3 PreScenarioSetup
+      pure s
+    DoStep 3 PreScenarioSetup -> do
+      story $ i18n "intro3"
       pure s
     Setup -> runScenarioSetup TheMidnightMasks attrs do
+      burnedToTheGround <- getHasRecord YourHouseHasBurnedToTheGround
+      ghoulPriestStillAlive <- getHasRecord GhoulPriestIsStillAlive
+      n <- getPlayerCount
+      setup $ ul do
+        li "gatherSets"
+        li "cultistDeck"
+        li "placeLocations"
+
+        li.nested "acolytes.instructions" do
+          li.validate (n == 1) "acolytes.onePlayer"
+          li.validate (n == 2) "acolytes.twoPlayer"
+          li.validate (n == 3) "acolytes.threePlayer"
+          li.validate (n == 4) "acolytes.fourPlayer"
+
+        li.validate burnedToTheGround "burnedToTheGround"
+        li.validate (not burnedToTheGround) "houseStillStanding"
+
+        unscoped $ li "shuffleRemainder"
+
+        li.validate ghoulPriestStillAlive "ghoulPriest"
+
       gather EncounterSet.TheMidnightMasks
       gather EncounterSet.ChillingCold
       gather EncounterSet.Nightgaunts
@@ -109,15 +143,15 @@ instance RunMessage TheMidnightMasks where
 
       addExtraDeck CultistDeck =<< shuffle =<< gatherEncounterSet EncounterSet.CultOfUmordhoth
 
-      getHasRecord YourHouseHasBurnedToTheGround >>= \case
-        True -> startAt rivertown
-        False -> startAt =<< place Locations.yourHouse
+      if burnedToTheGround
+        then startAt rivertown
+        else startAt =<< place Locations.yourHouse
 
       count' <- getPlayerCount
       let acolytes = replicate (count' - 1) Enemies.acolyte
       zipWithM_ enemyAt acolytes [southside, downtown, graveyard]
 
-      whenHasRecord GhoulPriestIsStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
+      when ghoulPriestStillAlive $ addToEncounterDeck (Only Enemies.ghoulPriest)
     ResolveChaosToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- select $ NearestEnemyTo iid $ EnemyWithTrait Trait.Cultist
       when (notNull closestCultists) do
@@ -139,28 +173,31 @@ instance RunMessage TheMidnightMasks where
           (InvestigatorPlaceCluesOnLocation iid (ChaosTokenEffectSource Tablet) 1)
           (InvestigatorPlaceAllCluesOnLocation iid (ChaosTokenEffectSource Tablet))
       pure s
-    ScenarioResolution NoResolution -> do
+    ScenarioResolution NoResolution -> scope "resolutions" do
+      story $ i18n "noResolution"
       push R1
       pure s
-    ScenarioResolution (Resolution n) -> do
+    ScenarioResolution (Resolution n) -> scope "resolutions" do
       cultistsWeInterrogated <-
         selectMap toCardCode (VictoryDisplayCardMatch $ basic $ CardWithTrait Trait.Cultist <> CardIsUnique)
       agenda <- getCurrentAgendaStep
       inPlayCultistsWhoGotAway <-
         selectField EnemyCardCode (InPlayEnemy $ EnemyWithTrait Trait.Cultist <> UniqueEnemy)
       let
-        resolution = if n == 1 then resolution1 else resolution2
         cultistsWhoGotAway =
           inPlayCultistsWhoGotAway
             <> map toCardCode (attrs ^. decksL . at CultistDeck . non [])
             <> [toCardCode Enemies.theMaskedHunter | agenda == 1]
       ghoulPriestDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ cardIs Enemies.ghoulPriest)
-      story resolution
+      xp <- allGainXp' attrs
+      story
+        $ withVars ["xp" .= xp]
+        $ i18n
+        $ if n == 1 then "resolution1" else "resolution2"
       recordSetInsert CultistsWeInterrogated cultistsWeInterrogated
       recordSetInsert CultistsWhoGotAway cultistsWhoGotAway
       when (n == 2) $ record ItIsPastMidnight
       when ghoulPriestDefeated $ crossOut GhoulPriestIsStillAlive
-      allGainXp attrs
       endOfScenario
       pure s
     HandleOption option -> do

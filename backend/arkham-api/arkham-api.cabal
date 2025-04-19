@@ -2439,6 +2439,7 @@ library
       Arkham.Helpers.EncounterSet
       Arkham.Helpers.Enemy
       Arkham.Helpers.Event
+      Arkham.Helpers.FlavorText
       Arkham.Helpers.Game
       Arkham.Helpers.GameValue
       Arkham.Helpers.Healing
@@ -3525,6 +3526,7 @@ library
       Arkham.Scenarios.TheCityOfArchives.Story
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Story
+      Arkham.Scenarios.TheDevourerBelow.Helpers
       Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
@@ -3536,7 +3538,7 @@ library
       Arkham.Scenarios.TheHouseAlwaysWins.Story
       Arkham.Scenarios.TheLairOfDagon.Helpers
       Arkham.Scenarios.TheLastKing.Story
-      Arkham.Scenarios.TheMidnightMasks.Story
+      Arkham.Scenarios.TheMidnightMasks.Helpers
       Arkham.Scenarios.TheMiskatonicMuseum.Helpers
       Arkham.Scenarios.TheMiskatonicMuseum.Story
       Arkham.Scenarios.ThePallidMask.Helpers

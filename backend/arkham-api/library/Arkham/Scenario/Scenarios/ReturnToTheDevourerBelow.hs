@@ -17,7 +17,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Import.Lifted hiding (placeLocationCard, story)
 import Arkham.Scenario.Scenarios.TheDevourerBelow
-import Arkham.Scenarios.TheDevourerBelow.Story
+import Arkham.Scenarios.TheDevourerBelow.Helpers
 import Arkham.Treachery.Cards qualified as Treacheries
 
 newtype ReturnToTheDevourerBelow = ReturnToTheDevourerBelow TheDevourerBelow
@@ -41,10 +41,7 @@ returnToTheDevourerBelow difficulty =
     (referenceL .~ "01142")
 
 instance RunMessage ReturnToTheDevourerBelow where
-  runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs)) = runQueueT $ case msg of
-    PreScenarioSetup -> do
-      story intro
-      pure s
+  runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs)) = runQueueT $ scenarioI18n $ case msg of
     Setup -> runScenarioSetup (ReturnToTheDevourerBelow . TheDevourerBelow) attrs do
       gather EncounterSet.ReturnToTheDevourerBelow
       gather EncounterSet.TheDevourerBelow

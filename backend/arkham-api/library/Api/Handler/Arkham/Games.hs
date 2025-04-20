@@ -183,7 +183,7 @@ getApiV1ArkhamGamesR = do
         $ from
         $ table @ArkhamPlayer
         `innerJoin` table @ArkhamGameRaw
-          `on` (\(players :& games) -> coerce players.arkhamGameId ==. games.id)
+          `on` (\(players :& games) -> players.arkhamGameId ==. toBaseId games.id)
     where_ $ players.userId ==. val userId
     orderBy [desc games.updatedAt]
     pure games
@@ -325,7 +325,7 @@ updateGame response gameId userId writeChannel = do
     void $ select do
       game <- from $ table @ArkhamGame
       where_ $ game.id ==. val gameId
-      locking ForUpdate
+      locking forUpdate
       pure ()
     deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
     replace gameId

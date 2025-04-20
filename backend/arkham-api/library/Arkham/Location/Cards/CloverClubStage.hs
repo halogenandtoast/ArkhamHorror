@@ -38,6 +38,6 @@ instance RunMessage CloverClubStage where
       placeTokens (attrs.ability 1) attrs #resource 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      gainResources iid (attrs.ability 2) =<< perPlayer 1
+      gainClues iid (attrs.ability 2) =<< perPlayer 1
       pure l
     _ -> CloverClubStage <$> liftRunMessage msg attrs

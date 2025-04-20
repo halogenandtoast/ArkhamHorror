@@ -11,17 +11,18 @@ import Relude
 import Api.Arkham.Types.MultiplayerVariant
 import Data.Aeson.Types
 import Data.Time.Clock
-import Data.UUID
+import Database.Esqueleto.Experimental (ToBaseId (..))
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
+import Entity.Arkham.Game
 import Json
 import Orphans ()
 
-share
-  [mkPersist sqlSettings]
+mkPersist
+  sqlSettings
   [persistLowerCase|
 ArkhamGameRaw sql=arkham_games
-  Id UUID default=uuid_generate_v4()
+  Id ArkhamGameId
   name Text
   currentData Value
   step Int
@@ -30,6 +31,10 @@ ArkhamGameRaw sql=arkham_games
   updatedAt UTCTime
   deriving Generic Show
 |]
+
+instance ToBaseId ArkhamGameRaw where
+  type BaseEnt ArkhamGameRaw = ArkhamGame
+  toBaseIdWitness = ArkhamGameRawKey
 
 instance ToJSON ArkhamGameRaw where
   toJSON = genericToJSON $ aesonOptions $ Just "arkhamGameRaw"

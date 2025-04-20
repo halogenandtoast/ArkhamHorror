@@ -54,7 +54,7 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
             void $ select do
               game <- from $ table @ArkhamGame
               where_ $ game.id ==. val gameId
-              locking ForUpdate
+              locking forUpdate
               forUpdateOf game noWait
               pure ()
           -- ensure previous step exists

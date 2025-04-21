@@ -1,4 +1,4 @@
-module Arkham.Asset.Assets.LuckyCigaretteCase3 (luckyCigaretteCase3, LuckyCigaretteCase3 (..)) where
+module Arkham.Asset.Assets.LuckyCigaretteCase3 (luckyCigaretteCase3) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
@@ -17,8 +17,8 @@ luckyCigaretteCase3 = asset LuckyCigaretteCase3 Cards.luckyCigaretteCase3
 
 instance HasAbilities LuckyCigaretteCase3 where
   getAbilities (LuckyCigaretteCase3 a) =
-    [ restrictedAbility a 1 ControlsThis
-        $ ReactionAbility (SkillTestResult #after You #any (SuccessResult $ atLeast 1)) (exhaust a)
+    [ restricted a 1 ControlsThis
+        $ triggered (SkillTestResult #after You #any (SuccessResult $ atLeast 1)) (exhaust a)
     ]
 
 toSuccessResult :: [Window] -> Int

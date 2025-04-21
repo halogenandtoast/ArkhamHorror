@@ -1,10 +1,10 @@
-module Arkham.Location.Cards.HereticsGraves_171 (hereticsGraves_171, HereticsGraves_171 (..)) where
+module Arkham.Location.Cards.HereticsGraves_171 (hereticsGraves_171) where
 
 import Arkham.Card
 import Arkham.GameValue
-import Arkham.Helpers.Investigator
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Import.Lifted
@@ -19,12 +19,9 @@ hereticsGraves_171 = location HereticsGraves_171 Cards.hereticsGraves_171 7 (Sta
 
 instance HasModifiersFor HereticsGraves_171 where
   getModifiersFor (HereticsGraves_171 a) =
-    getSkillTestInvestigator >>= \case
-      Nothing -> pure mempty
-      Just iid -> maybeModified_ a iid do
-        liftGuardM $ isInvestigating iid a.id
-        willpower <- lift $ getSkillValue #willpower iid
-        pure [AnySkillValue willpower]
+    getSkillTestInvestigator >>= traverse_ \iid -> maybeModified_ a iid do
+      liftGuardM $ isInvestigating iid a.id
+      pure [AnySkillValueCalculated $ InvestigatorFieldCalculation iid InvestigatorWillpower]
 
 instance RunMessage HereticsGraves_171 where
   runMessage msg l@(HereticsGraves_171 attrs) = runQueueT $ case msg of

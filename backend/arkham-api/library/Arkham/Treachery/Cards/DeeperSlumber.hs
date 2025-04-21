@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.DeeperSlumber (deeperSlumber, DeeperSlumber (..)) where
+module Arkham.Treachery.Cards.DeeperSlumber (deeperSlumber) where
 
 import Arkham.Ability
 import Arkham.Helpers.Modifiers
@@ -17,7 +17,7 @@ instance HasModifiersFor DeeperSlumber where
     inThreatAreaGets attrs [HandSize (-3), CheckHandSizeAfterDraw]
 
 instance HasAbilities DeeperSlumber where
-  getAbilities (DeeperSlumber a) = [restrictedAbility a 1 OnSameLocation $ ActionAbility [] $ ActionCost 2]
+  getAbilities (DeeperSlumber a) = [restrictedAbility a 1 OnSameLocation doubleActionAbility]
 
 instance RunMessage DeeperSlumber where
   runMessage msg t@(DeeperSlumber attrs) = runQueueT $ case msg of

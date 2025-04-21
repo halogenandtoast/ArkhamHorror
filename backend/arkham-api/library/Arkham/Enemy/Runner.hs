@@ -312,7 +312,7 @@ instance RunMessage EnemyAttrs where
           pure a
         _ -> do
           swarm <- select $ SwarmOf eid
-          pushAll
+          pushAll . (<> [After msg])
             =<< traverse
               (\eid' -> checkWindows (($ Window.EnemyEnters eid' lid) <$> [mkWhen]))
               (eid : swarm)

@@ -61,9 +61,9 @@ instance RunMessage TheGathering where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      flavor do
-        h "intro.title"
-        p "intro.body"
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       pure s
     Setup -> runScenarioSetup TheGathering attrs do
       setup $ ul do

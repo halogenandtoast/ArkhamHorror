@@ -73,8 +73,7 @@ instance RunMessage TheDunwichLegacy where
         then do
           interlude "armitagesFate1"
           record DrHenryArmitageWasKidnapped
-          interludeXpAll
-            (WithBonus "Reading Wilbur’s journal gives them insight into the hidden world of the mythos." 2)
+          interludeXpAll $ toBonus "bonus" 2
         else do
           interlude "armitagesFate2"
           record TheInvestigatorsRescuedDrHenryArmitage
@@ -161,10 +160,10 @@ instance RunMessage TheDunwichLegacy where
             investigators
             ShuffleIn
             Assets.theNecronomiconOlausWormiusTranslation
-        AddAcrossTimeAndSpace -> do
+        AddAcrossSpaceAndTime -> scope "options" do
           acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
           lead <- getActiveInvestigatorId
-          chooseSome1M lead "Do not add Across Time and Space to any other decks" do
+          chooseSome1M' lead "acrossSpaceAndTime" do
             for_ (zip investigators acrossSpaceAndTimes) \(iid, acrossSpaceAndTime) ->
               portraitLabeled iid $ addCampaignCardToDeck iid ShuffleIn acrossSpaceAndTime
         Cheated -> addChaosToken #elderthing

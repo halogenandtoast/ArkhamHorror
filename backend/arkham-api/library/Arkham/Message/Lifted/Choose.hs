@@ -17,7 +17,7 @@ import Arkham.Question
 import Arkham.Queue
 import Arkham.SkillType
 import Arkham.Target
-import Arkham.Text (FlavorText)
+import Arkham.Text (FlavorText, toI18n)
 import Arkham.Window (defaultWindows)
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -291,8 +291,8 @@ chooseFromM
 chooseFromM iid matcher action = do
   ((_, ChooseState {label, labelCardCode}), choices') <-
     runChooseT $ traverse_ (\t -> targeting t (action t)) =<< select matcher
-  unless (null choices')
-    $ case label of
+  unless (null choices') do
+    case label of
       Nothing -> chooseOne iid choices'
       Just l -> case labelCardCode of
         Nothing -> questionLabel l iid $ ChooseOne choices'
@@ -322,3 +322,11 @@ storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a ->
 storyWithChooseOneM' builder choices = do
   (_, choices') <- runChooseT choices
   storyWithChooseOne (buildFlavor builder) choices'
+
+chooseSome1M' :: (HasI18n, ReverseQueue m) => InvestigatorId -> Text -> ChooseT m a -> m ()
+chooseSome1M' iid txt choices = do
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (null choices') do
+    case label of
+      Nothing -> chooseSome1 iid (toI18n txt) choices'
+      Just l -> questionLabel l iid $ ChooseSome1 (toI18n txt) choices'

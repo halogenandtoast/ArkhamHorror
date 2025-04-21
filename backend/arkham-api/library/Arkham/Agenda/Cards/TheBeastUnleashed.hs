@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.TheBeastUnleashed (TheBeastUnleashed (..), theBeastUnleashed) where
+module Arkham.Agenda.Cards.TheBeastUnleashed (theBeastUnleashed) where
 
 import Arkham.Ability
 import Arkham.Agenda.AdvancementReason
@@ -19,7 +19,7 @@ theBeastUnleashed = agenda (3, A) TheBeastUnleashed Cards.theBeastUnleashed (Sta
 
 instance HasAbilities TheBeastUnleashed where
   getAbilities (TheBeastUnleashed x) =
-    [ mkAbility x 1 $ forced $ AgendaWouldAdvance #when DoomThreshold $ AgendaWithId $ toId x
+    [ mkAbility x 1 $ forced $ AgendaWouldAdvance #when DoomThreshold (be x)
     , mkAbility x 2
         $ Objective
         $ forced

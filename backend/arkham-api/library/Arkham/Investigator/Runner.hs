@@ -2207,6 +2207,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   pure $ replicate lessSlots aid
               pure $ foldr removeIfMatchesOnce (foldr removeIfMatches slot ignored) (concat assetsToRemove)
       pure (slotType, slots')
+    push $ RefillSlots iid
     pure $ a & slotsL .~ mapFromList updatedSlots
   Do (InvestigatorPlayAsset iid aid) | iid == investigatorId -> do
     -- this asset might already be slotted so check first

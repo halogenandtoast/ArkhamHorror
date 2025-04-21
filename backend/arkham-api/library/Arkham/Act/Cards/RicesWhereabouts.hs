@@ -63,7 +63,7 @@ instance RunMessage RicesWhereabouts where
       alchemyLabsInPlay <-
         isJust
           <$> selectOne (LocationWithTitle "Alchemy Labs")
-      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
+      completedTheHouseAlwaysWins <- any (`elem` ["02062", "51015"]) <$> getCompletedScenarios
       theExperiment <- getSetAsideCard Enemies.theExperiment
       alchemicalConcoction <- getSetAsideCard Assets.alchemicalConcoction
 

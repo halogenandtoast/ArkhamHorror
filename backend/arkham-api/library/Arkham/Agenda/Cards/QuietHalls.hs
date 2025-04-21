@@ -21,7 +21,7 @@ instance RunMessage QuietHalls where
   runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && onSide B attrs -> do
       investigatorIds <- getInvestigators
-      completedTheHouseAlwaysWins <- elem "02062" <$> getCompletedScenarios
+      completedTheHouseAlwaysWins <- any (`elem` ["02062", "51015"]) <$> getCompletedScenarios
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
         discardCount <- fieldMap InvestigatorDiscard length iid
         if discardCount >= 5

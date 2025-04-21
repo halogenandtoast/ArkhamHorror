@@ -1,10 +1,9 @@
 module Arkham.Asset.Assets.ArcaneEnlightenment (arcaneEnlightenment) where
 
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
+import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.Modifiers
-import Arkham.Prelude
 import Arkham.Trait
 import Arkham.Slot
 
@@ -16,17 +15,15 @@ arcaneEnlightenment :: AssetCard ArcaneEnlightenment
 arcaneEnlightenment = asset ArcaneEnlightenment Cards.arcaneEnlightenment
 
 instance HasModifiersFor ArcaneEnlightenment where
-  getModifiersFor (ArcaneEnlightenment a) = case a.controller of
-    Just iid -> modified_ a iid [HandSize 1]
-    Nothing -> pure mempty
+  getModifiersFor (ArcaneEnlightenment a) = controllerGets a [HandSize 1]
 
 slot :: AssetAttrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome []
 
 instance RunMessage ArcaneEnlightenment where
-  runMessage msg (ArcaneEnlightenment attrs) = case msg of
+  runMessage msg (ArcaneEnlightenment attrs) = runQueueT $ case msg of
     -- Slots need to be added before the asset is played so we hook into played card
     CardIsEnteringPlay iid card | toCardId card == toCardId attrs -> do
-      push (AddSlot iid HandSlot (slot attrs))
-      ArcaneEnlightenment <$> runMessage msg attrs
-    _ -> ArcaneEnlightenment <$> runMessage msg attrs
+      push $ AddSlot iid HandSlot (slot attrs)
+      ArcaneEnlightenment <$> liftRunMessage msg attrs
+    _ -> ArcaneEnlightenment <$> liftRunMessage msg attrs

@@ -35,11 +35,11 @@
     "resolution3": {
       "title": "Resolution 3",
       "body": "<div class='resolution'><p>_Resolution 3:_ You run to the hallway to try to find a way to escape the house, but the burning-hot barrier still blocks your path. Trapped, the horde of feral creatures that have invaded your home close in, and you have nowhere to run.</p><ul><li>In your Campaign Log, record that *Lita was forced to find others to help her cause*.</li><li>In your Campaign Log, record that *your house is still standing*.</li><li>In your Campaign Log, record that *the Ghoul Priest is still alive*.</li><li>Each investigator who has not resigned is _killed_. If there are not enough investigators to continue the campaign, the campaign is over and the players lose. Otherwise, advance to the next scenario. (Each player whose investigator has been killed must choose a new investigator from the pool of available investigators. Refer to page 13 of the Rules Reference for the full rules on killed investigators.)</li><li>If the lead investigator was _killed_, choose an investigator to earn the Lita Chantler card. That investigator may include this card in his or her deck. It does not count toward that investigator’s deck size.</li></ul></div>"
+    },
+    "xp": {
+      "resolution2": "Refused to let the night’s events destroy their life",
+      "bonus": "Gains insight into the hidden world of the Mythos"
     }
-  },
-  "xp": {
-    "resolution2": "Refused to let the night’s events destroy their life",
-    "bonus": "Gains insight into the hidden world of the Mythos"
   },
   "labels": {
     "r1": "It was never much of a home. Burn it down! (→ _R1_)",

@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Scenario I: Curtain Call")
-    [ "You awaken with a start, as though shaken by an unseen force. You\
+    [ BasicEntry "You awaken with a start, as though shaken by an unseen force. You\
       \ must have slept for quite some time, for there are only a few other\
       \ patrons in the audience, and no performers on stage. The lights are\
       \ dimmed, and the stage curtains are tattered and ripped, though you\
@@ -26,7 +26,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     (Just "No Resolution")
-    [ "Once again you are startled awake, this time by\
+    [ BasicEntry "Once again you are startled awake, this time by\
       \ the cold, clammy fingers of a hand on your shoulder. “Are\
       \ you alright?” an elderly man asks, helping you to your feet.\
       \ Your mind is a flurry of memories. Last you remember, the\
@@ -42,7 +42,7 @@ noResolution =
       \ Damn those trouble boys!” he exclaims. “Dry-gulching folk on\
       \ a night out to the the-a-tre! Not a single street those hooligans\
       \ haven’t staked a claim on, I tell you.”"
-    , "You stand and walk over to the front window of the Ward\
+    , BasicEntry "You stand and walk over to the front window of the Ward\
       \ Theatre to tentatively peer through, but it is too dark to see\
       \ anything inside. The elderly man eyes you curiously for a\
       \ moment, then shrugs and continues walking. “Well, I’d best\
@@ -68,7 +68,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "Fleeing from the theatre, you head straight to\
+    [ BasicEntry "Fleeing from the theatre, you head straight to\
       \ the police station in Easttown. Bursting through the door, to the\
       \ stares of onlookers and police officers alike, you demand to see\
       \ Sheriff Engle, stressing the importance of your visit. The desk\
@@ -89,7 +89,7 @@ resolution1 =
       \ He raises his voice. “What, you think we’re not busy enough or\
       \ something? Beat it!” He mumbles about “blind birds” behind\
       \ your back as he escorts you out of the station."
-    , "You know what you saw earlier that night. Frustrated, you\
+    , BasicEntry "You know what you saw earlier that night. Frustrated, you\
       \ head back to the Ward Theatre to find some kind of proof you\
       \ can take to the police. You are surprised to find that the front\
       \ door of the theatre is locked. You are about to decide whether\
@@ -107,7 +107,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You think about going to the police, but\
+    [ BasicEntry "You think about going to the police, but\
       \ considering the horrors in the theatre, they’re more likely to\
       \ think you’re mad than to believe your story. A small part of you\
       \ wonders if this is still some kind of prank, but that can’t be the\
@@ -122,14 +122,14 @@ resolution2 =
       \ did when you arrived to see The King in Yellow earlier that\
       \ night. You walk to the front window of the Ward Theatre and\
       \ tentatively peer through, but it is too dark to see anything inside."
-    , "Just then, a chill brushes the nape of your neck, and you feel\
+    , BasicEntry "Just then, a chill brushes the nape of your neck, and you feel\
       \ that you are being watched. You turn, and spot a shadow\
       \ fleeing around the corner. A swarm of roaches skitters across\
       \ the sidewalk, following in the shadow’s wake. Your muscles\
       \ tense with uncertainty, and you round the corner in pursuit.\
       \ Standing unconcerned on the sidewalk is a familiar-looking\
       \ man in a featureless pallid mask."
-    , "His unwavering gaze bears down upon you. “Who are you?”\
+    , BasicEntry "His unwavering gaze bears down upon you. “Who are you?”\
       \ you call out. The Stranger does not respond, and instead\
       \ turns and disappears into the alleyway behind the theatre.\
       \ You give chase, hoping for answers, but by the time you reach\

@@ -1,12 +1,11 @@
-module Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy where
-
-import Arkham.Prelude
+module Arkham.Campaign.Campaigns.ReturnToTheDunwichLegacy (returnToTheDunwichLegacy) where
 
 import Arkham.Campaign.Campaigns.TheDunwichLegacy
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
 import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Campaigns.TheDunwichLegacy.Import
+import Arkham.Helpers.FlavorText
 import Arkham.Message.Lifted.Choose
 import Arkham.Resolution
 
@@ -50,13 +49,8 @@ returnToTheDunwichLegacy difficulty =
 instance RunMessage ReturnToTheDunwichLegacy where
   runMessage msg c@(ReturnToTheDunwichLegacy theDunwichLegacy') = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> do
-      storyWithChooseOneM prologue do
-        labeled
-          "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
-          $ setNextCampaignStep ReturnToExtracurricularActivities
-        labeled
-          "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
-          $ setNextCampaignStep ReturnToTheHouseAlwaysWins
+      storyWithChooseOneM' (setTitle "title" >> p "body") do
+        labeled' "extracurricularActivity" $ setNextCampaignStep ReturnToExtracurricularActivities
+        labeled' "theHouseAlwaysWins" $ setNextCampaignStep ReturnToTheHouseAlwaysWins
       pure c
-    NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
     _ -> ReturnToTheDunwichLegacy <$> liftRunMessage msg theDunwichLegacy'

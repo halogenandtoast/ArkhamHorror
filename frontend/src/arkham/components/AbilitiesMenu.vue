@@ -108,7 +108,7 @@ watch(showAbilities, (newValue) => {
 <style scoped>
 .abilities {
   position: absolute;
-  padding: 10px;
+  padding: min(10px, 1vw);
   background: rgba(0, 0, 0, 0.8);
   border-radius: 10px;
   display: flex;

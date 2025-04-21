@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Scenario VII: Black Stars Rise")
-    [ "The island commune of Mont Saint-Michel\
+    [ BasicEntry "The island commune of Mont Saint-Michel\
       \ lies off the northwestern coast of France. It is\
       \ beautiful, elegant, and enigmatic—a place out\
       \ of a fairy tale. Only this tale is one of horrors and\
@@ -26,7 +26,7 @@ ashleighsInformation :: FlavorText
 ashleighsInformation =
   FlavorText
     (Just "Ashleigh's Information")
-    [ "You recall the night where this all began,\
+    [ BasicEntry "You recall the night where this all began,\
       \ and your thoughts drift to the mesmerizing song Ashleigh sang that\
       \ night. Somehow you remember the lyrics perfectly after all this time,\
       \ and its haunting melody is ingrained in your mind. “Above the city the\
@@ -41,7 +41,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "You hold your breath as you swim through freezing water toward the spires\
+    [ BasicEntry "You hold your breath as you swim through freezing water toward the spires\
       \ below. As you get closer, you see ripples throughout the water, as though you\
       \ are peering into a reflection upon the sea’s surface. You break through the\
       \ surface and gasp as air fills your lungs."
@@ -51,7 +51,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You marvel at the cloud-waves encircling you and fly toward the spires above.\
+    [ BasicEntry "You marvel at the cloud-waves encircling you and fly toward the spires above.\
       \ The desolate and inscrutable city of Carcosa towers before you. You suddenly\
       \ realize you are falling—not floating—and a pulling force takes hold of your\
       \ body."
@@ -61,7 +61,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
+    [ BasicEntry "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
       \ abbey. No rain pelts the glass of the windows above, and you hear no thunder,\
       \ nor the screeching of winged horrors overhead. Somehow, you had escaped the\
       \ island’s certain doom. You creep to the door of the abbey and open it with\

@@ -5,6 +5,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Helpers.FlavorText (FlavorTextBuilder, buildFlavor)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Id
@@ -146,6 +147,11 @@ labeled label action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [Label label msgs]
 
+labeled' :: (HasI18n, ReverseQueue m) => Text -> QueueT Message m () -> ChooseT m ()
+labeled' label action = unterminated do
+  msgs <- lift $ evalQueueT action
+  tell [Label ("$" <> ikey ("label." <> label)) msgs]
+
 skip :: ReverseQueue m => Text -> ChooseT m ()
 skip = (`labeled` nothing)
 
@@ -225,12 +231,14 @@ targeting target action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [targetLabel target msgs]
 
-evading :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
+evading
+  :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
 evading enemy action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [evadeLabel enemy msgs]
 
-fighting :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
+fighting
+  :: (ReverseQueue m, AsId enemy, IdOf enemy ~ EnemyId) => enemy -> QueueT Message m () -> ChooseT m ()
 fighting enemy action = unterminated do
   msgs <- lift $ evalQueueT action
   tell [fightLabel enemy msgs]
@@ -300,9 +308,17 @@ questionLabeledCard :: (ReverseQueue m, HasCardCode a) => a -> ChooseT m ()
 questionLabeledCard a = modify $ \s -> s {Arkham.Message.Lifted.Choose.labelCardCode = Just (toCardCode a)}
 
 storyWithContinue :: ReverseQueue m => FlavorText -> Text -> m ()
-storyWithContinue flavor button = storyWithChooseOneM flavor $ labeled button nothing
+storyWithContinue txt button = storyWithChooseOneM txt $ labeled button nothing
 
 storyWithChooseOneM :: ReverseQueue m => FlavorText -> ChooseT m a -> m ()
-storyWithChooseOneM flavor choices = do
+storyWithChooseOneM txt choices = do
   (_, choices') <- runChooseT choices
-  storyWithChooseOne flavor choices'
+  storyWithChooseOne txt choices'
+
+storyWithContinue' :: ReverseQueue m => FlavorTextBuilder () -> Text -> m ()
+storyWithContinue' builder button = storyWithChooseOneM' builder $ labeled button nothing
+
+storyWithChooseOneM' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m a -> m ()
+storyWithChooseOneM' builder choices = do
+  (_, choices') <- runChooseT choices
+  storyWithChooseOne (buildFlavor builder) choices'

@@ -393,7 +393,7 @@ instance RunMessage TheForgottenAge where
                   | otherwise = "You suffer no ill-effects"
               focusChaosTokens tokens \unfocus -> do
                 player <- getPlayer iid
-                push $ Ask player $ Read qLabel (BasicReadChoices [Label "Continue" []]) Nothing
+                push $ Ask player $ Read (ft qLabel) (BasicReadChoices [Label "Continue" []]) Nothing
                 push unfocus
               when outOfBody do
                 addCampaignCardToDeck iid DoNotShuffleIn Treacheries.outOfBodyExperience

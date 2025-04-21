@@ -66,6 +66,7 @@ import Arkham.Helpers.UI qualified as Msg
 import Arkham.Helpers.Window qualified as Msg
 import Arkham.Helpers.Xp
 import Arkham.History
+import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigate
 import Arkham.Investigate qualified as Investigate
@@ -231,6 +232,11 @@ revealBy
   -> location
   -> m ()
 revealBy investigator = push . Msg.RevealLocation (Just $ asId investigator) . asId
+
+storyI :: (HasI18n, ReverseQueue m) => Text -> m ()
+storyI flavor = do
+  players <- allPlayers
+  push $ Msg.story players (i18n flavor)
 
 story :: ReverseQueue m => FlavorText -> m ()
 story flavor = do

@@ -31,7 +31,7 @@ const image = computed(() => {
 
 .poolItem.poolItem-resource {
   img {
-    width: 30px;
+    width: min(30px, 5vw);
   }
   padding: 2px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -39,12 +39,12 @@ const image = computed(() => {
 
 .poolItem.poolItem-clue {
   img {
-    width: 30px;
+    width: min(30px, 5vw);
   }
 }
 
 .poolItem {
-  width: 30px;
+  width: min(30px, 5vw);
   display: grid;
   place-items: center;
   color: black;

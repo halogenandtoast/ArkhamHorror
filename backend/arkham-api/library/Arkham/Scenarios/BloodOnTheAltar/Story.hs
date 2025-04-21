@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Scenario IV: Blood on the Altar")
-    [ "When you finally reach Dunwich, you are\
+    [ BasicEntry "When you finally reach Dunwich, you are\
       \ greeted by Zebulon Whateley and Earl Sawyer,\
       \ another man from the village who had met with\
       \ Dr. Armitage during the incident several months\
@@ -18,7 +18,7 @@ intro =
       \ Dunno what yer doin’ here, but last time you Arkham folk came ‘round\
       \ it was bad news. Very bad news.” His eyes blink rapidly, and he coughs\
       \ and looks away."
-    , "“Look, why don’t you rest fer the night an’ look fer whatever it is yer\
+    , BasicEntry "“Look, why don’t you rest fer the night an’ look fer whatever it is yer\
       \ looking fer t’morra,” Zebulon chimes in, putting a wrinkled hand on\
       \ your shoulder. You begin to protest, but your aching muscles and weary\
       \ mind won’t allow you to refuse. The elderly man offers to take you in\
@@ -26,7 +26,7 @@ intro =
       \ village. The town is disheveled and eerie, and you find yourself wishing\
       \ you hadn’t come here at all. You fall asleep on the ride over and scarcely\
       \ remember anything else from that night."
-    , "When you awaken, you find that Zebulon’s house is abandoned, and\
+    , BasicEntry "When you awaken, you find that Zebulon’s house is abandoned, and\
       \ there is no sign of the elderly man, or of Mr. Sawyer. Fearing the worst,\
       \ you head into the village of Dunwich to investigate, hoping to find\
       \ answers."
@@ -36,7 +36,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     Nothing
-    [ "The cries of the whippoorwills\
+    [ BasicEntry "The cries of the whippoorwills\
       \ fade into the distance, and the town of Dunwich is filled with\
       \ an eerie silence. All that can be heard is the dry whistle of the\
       \ chill wind and the slow rustling of dead leaves. There is no sign\
@@ -47,7 +47,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "As you land the finishing blow, the creature’s\
+    [ BasicEntry "As you land the finishing blow, the creature’s\
       \ body explodes into hundreds of squirming ropelike\
       \ appendages, wriggling across the ground and climbing up the\
       \ walls. You’re so startled that you aren’t fast enough to prevent\
@@ -59,7 +59,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "With the creature that once was Silas\
+    [ BasicEntry "With the creature that once was Silas\
       \ lashing out at you from its chains, you have little time to\
       \ react. Knowing that the Necronomicon might have a spell\
       \ or incantation that could subdue Silas, you fend off the\
@@ -78,7 +78,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "With the creature that once was Silas lashing\
+    [ BasicEntry "With the creature that once was Silas lashing\
       \ out at you from its chains, you have little time to react.\
       \ Hoping there is something in the chamber you can use to your\
       \ advantage, you fend off the abomination long enough to find a\

@@ -8,7 +8,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Scenario IV: The Unspeakable Oath")
-    [ "Several months have passed since The\
+    [ BasicEntry "Several months have passed since The\
       \ King in Yellow came to the Ward Theatre. You\
       \ and your companions have been investigating\
       \ the strange incidents that followed in its wake.\
@@ -22,7 +22,7 @@ intro1 =
       \ attacked them. Somehow this doesn’t surprise you. Their fate makes\
       \ you all the more certain you are on the right trail... And all the more\
       \ certain that you should stop while you still have the chance."
-    , "You’ve found the records those investigators kept before their\
+    , BasicEntry "You’ve found the records those investigators kept before their\
       \ incarceration, and picked up the trail where they left off. They had\
       \ interviewed some of the cast and crew of The King in Yellow, and\
       \ discovered several pieces of vital information. Their research also\
@@ -38,7 +38,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Scenario IV: The Unspeakable Oath")
-    [ "It has been several weeks since the events in the asylum, and\
+    [ BasicEntry "It has been several weeks since the events in the asylum, and\
       \ you are still no closer to the truth about The King in Yellow and\
       \ Carcosa. You have scoured the city for signs of the others Daniel had\
       \ mentioned—the ones who are “opening the path to Carcosa”—but\
@@ -53,7 +53,7 @@ dream1 :: FlavorText
 dream1 =
   FlavorText
     (Just "Dream 1")
-    [ "You fall through the empty abyss of Hali. Creatures of\
+    [ BasicEntry "You fall through the empty abyss of Hali. Creatures of\
       \ unknown and impossible origin lurk just beyond the darkness of your\
       \ sight. Hastur looms above you, magnificent and yet bound in his\
       \ prison of madness, manipulating your torturous descent with a sole\
@@ -64,7 +64,7 @@ dream2 :: FlavorText
 dream2 =
   FlavorText
     (Just "Dream 2")
-    [ "Constance takes your hand and pulls you onto the polished\
+    [ BasicEntry "Constance takes your hand and pulls you onto the polished\
       \ dance floor. “Come now, don’t be shy. Tonight is a night for dancing!\
       \ For celebration!”"
     ]
@@ -73,7 +73,7 @@ dream3 :: FlavorText
 dream3 =
   FlavorText
     (Just "Dream 3")
-    [ "“Ah, if it isn’t our esteemed guest,” the man with the\
+    [ BasicEntry "“Ah, if it isn’t our esteemed guest,” the man with the\
       \ mustache and the silver-handled cane says. He grabs a bottle of wine\
       \ from the nearby countertop and pours you a glass. “I hear you have\
       \ taken quite the interest in our little production,” he says with a smile.\
@@ -84,7 +84,7 @@ dream4 :: FlavorText
 dream4 =
   FlavorText
     (Just "Dream 4")
-    [ "Smoke and embers float upwards into the starless night\
+    [ BasicEntry "Smoke and embers float upwards into the starless night\
       \ sky. The screams of burning creatures fill you with a horrid sense of\
       \ accomplishment. They almost sound human, you consider. But you\
       \ know that isn’t true."
@@ -94,7 +94,7 @@ dream5 :: FlavorText
 dream5 =
   FlavorText
     (Just "Dream 5")
-    [ "You peer in the mirror, and your reflection gives you a\
+    [ BasicEntry "You peer in the mirror, and your reflection gives you a\
       \ curious glance. “Wait a second, this isn’t Dream 1,” you say."
     ]
 
@@ -102,7 +102,7 @@ dream6 :: FlavorText
 dream6 =
   FlavorText
     (Just "Dream 6")
-    [ "The lights of the theatre dim and a spotlight shines on the\
+    [ BasicEntry "The lights of the theatre dim and a spotlight shines on the\
       \ stage. “Welcome, ladies and gentleman!” the creature exclaims. Its many\
       \ tentacles reach across the stage, up into the rafters, and throughout the\
       \ aisles. It tears the curtains down, and tattered red cloth falls over its\
@@ -113,7 +113,7 @@ dream7 :: FlavorText
 dream7 =
   FlavorText
     (Just "Dream 7")
-    [ "You find yourself inside the Arkham Police Department,\
+    [ BasicEntry "You find yourself inside the Arkham Police Department,\
       \ desperately trying to explain to the desk sergeant what happened in the\
       \ Ward Theatre. He scoffs and refuses to believe you. “We know what\
       \ you’re really up to,” he says, and claps a pair of handcuffs over your\
@@ -130,7 +130,7 @@ dream8 :: FlavorText
 dream8 =
   FlavorText
     (Just "Dream 8")
-    [ "You peer in the mirror, and the Stranger peers back at you.\
+    [ BasicEntry "You peer in the mirror, and the Stranger peers back at you.\
       \ His gaze drills into your mind. The mirror shatters."
     ]
 
@@ -138,7 +138,7 @@ dream9 :: FlavorText
 dream9 =
   FlavorText
     (Just "Dream 9")
-    [ "You chase the Stranger through dark, chilly passageways\
+    [ BasicEntry "You chase the Stranger through dark, chilly passageways\
       \ composed of hundreds of thousands of skeletal bodies. Skulls watch\
       \ as you run, their mouths rattling a mocking taunt as you pass. The\
       \ Stranger reaches a solid wall of bone, and is grabbed by bony hands and\
@@ -149,7 +149,7 @@ dream10 :: FlavorText
 dream10 =
   FlavorText
     (Just "Dream 10")
-    [ "You chase the Stranger up a steep staircase of broken\
+    [ BasicEntry "You chase the Stranger up a steep staircase of broken\
       \ stone, a torrent of rain crashing upon your back as you run. Lighting\
       \ flashes in the distance. A vortex of swirling black clouds looms above\
       \ you, threatening to swallow the world whole. The masked man dashes\
@@ -163,7 +163,7 @@ dream11 :: FlavorText
 dream11 =
   FlavorText
     (Just "Dream 11")
-    [ "You avoid looking at the stained glass. If this vile man\
+    [ BasicEntry "You avoid looking at the stained glass. If this vile man\
       \ considers it to be beautiful, it is probably some trap meant to ensnare\
       \ your mind. You clench your fist until your knuckles are white and step\
       \ forward to confront the Stranger"
@@ -173,7 +173,7 @@ dream12 :: FlavorText
 dream12 =
   FlavorText
     (Just "Dream 12")
-    [ "You peer up at the stained glass, curious. What is the shape\
+    [ BasicEntry "You peer up at the stained glass, curious. What is the shape\
       \ of the shadow along the window? What is the meaning behind this\
       \ strange design?"
     ]
@@ -182,7 +182,7 @@ dream13 :: FlavorText
 dream13 =
   FlavorText
     (Just "Dream 13")
-    [ "Daniel’s voice calls out to you. “They are opening the path to\
+    [ BasicEntry "Daniel’s voice calls out to you. “They are opening the path to\
       \ Carcosa.”"
     ]
 
@@ -190,7 +190,7 @@ awakening :: FlavorText
 awakening =
   FlavorText
     (Just "Awakening")
-    [ "You awaken from your fitful dream, sweating and\
+    [ BasicEntry "You awaken from your fitful dream, sweating and\
       \ gagging. This cannot go on any longer. You have only one option if\
       \ you are to continue your investigation. You must find Nigel Engram,\
       \ director of The King in Yellow, and architect of this madness. Only he\
@@ -202,7 +202,7 @@ jordansInformation :: FlavorText
 jordansInformation =
   FlavorText
     (Just "Jordan's Information")
-    [ "According to Mr. Jordan Perry, who had\
+    [ BasicEntry "According to Mr. Jordan Perry, who had\
       \ financed several performances of The King in Yellow across the world,\
       \ Nigel Engram was an eccentric and impassioned man, almost to the\
       \ point of mania. Rumor was, he hadn’t directed any other works since\
@@ -215,7 +215,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     (Just "No Resolution")
-    [ "You lose track of yourself\
+    [ BasicEntry "You lose track of yourself\
       \ within the city as you flee for your life. Your feet move of their\
       \ own accord. The beating of sinewy wings and screeching of\
       \ creatures above you spurs you onward. Soon you find yourself\
@@ -235,7 +235,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "You can only assume this house belongs to\
+    [ BasicEntry "You can only assume this house belongs to\
       \ Nigel Engram, the director of The King in Yellow. At last,\
       \ you have finally found your quarry…and yet, it is little relief to\
       \ your straining sanity. You feel like a dog being led by a leash,\
@@ -246,7 +246,7 @@ resolution1 =
       \ sudden noise. You try the doorknob, hoping you won’t have to\
       \ resort to more forceful measures. To your surprise, you find the\
       \ door unlocked."
-    , "Inside, Nigel’s home is a mess of notes, old books, and strange\
+    , BasicEntry "Inside, Nigel’s home is a mess of notes, old books, and strange\
       \ diagrams. Covering the coffee table in his living room is an\
       \ old, faded map, bearing many fold creases and tattered edges.\
       \ It looks to be an incomplete map of the catacombs beneath\
@@ -255,14 +255,14 @@ resolution1 =
       \ years, and yet the ink upon the living room walls is wet and\
       \ fresh. Over and over, across nearly every inch of the wallpaper,\
       \ it reads:"
-    , "He is already here"
+    , BasicEntry "He is already here"
     ]
 
 resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You can only assume this house belongs to Nigel\
+    [ BasicEntry "You can only assume this house belongs to Nigel\
       \ Engram, the director of The King in Yellow. At last, you have\
       \ finally found your quarry…and yet, it is little relief to your\
       \ straining sanity. You feel like a dog being led by a leash, your\
@@ -271,13 +271,13 @@ resolution2 =
       \ and knock on Mr. Engram’s door. A flock of magpies scatters\
       \ from the rooftop at the sudden noise. Then, to your surprise, the\
       \ door opens."
-    , "Across the threshold of the doorway stands a tall man with a\
+    , BasicEntry "Across the threshold of the doorway stands a tall man with a\
       \ thick, brown mustache. A familiar silver-handled cane leans\
       \ against the wall next to his coat hanger. “So it’s you,” he says.\
       \ “Come in. I have expected you for some time now.” He turns\
       \ away and walks toward his kitchen. You can hear a teapot\
       \ whistling, as though he’d been preparing for your arrival."
-    , "You enter his home, unsure of what to do next. This gentle,\
+    , BasicEntry "You enter his home, unsure of what to do next. This gentle,\
       \ unassuming man is not quite what you had expected. Nigel’s\
       \ home is a mess of notes, old books, and strange diagrams.\
       \ Covering the coffee table in his living room is an old, faded\
@@ -306,7 +306,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "As the sun rises once more over the skyline of\
+    [ BasicEntry "As the sun rises once more over the skyline of\
       \ Paris, you lose sight of the mysterious figure. Frustrated at\
       \ your failure, you return to your hotel to sleep and recover from\
       \ the horrors of the past few nights. Your fitful dreams return—\

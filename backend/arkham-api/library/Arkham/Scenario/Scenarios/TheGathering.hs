@@ -62,7 +62,6 @@ instance RunMessage TheGathering where
       pure s
     PreScenarioSetup -> do
       flavor do
-        setTitle "intro.title"
         h "intro.title"
         p "intro.body"
       pure s
@@ -106,7 +105,7 @@ instance RunMessage TheGathering where
         Cultist -> assignHorror iid (ChaosTokenSource token) (byDifficulty attrs 1 2)
         _ -> pure ()
       pure s
-    ScenarioResolution resolution -> do
+    ScenarioResolution resolution -> scope "resolutions" do
       resigned <- select ResignedInvestigator
       leadId <- getLead
       let
@@ -120,7 +119,7 @@ instance RunMessage TheGathering where
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
           story
             $ withVars ["xp" .= xp]
-            $ i18nWithTitle "resolutions.noResolution"
+            $ i18nWithTitle "noResolution"
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive
           chooseToAddLita []
@@ -128,7 +127,7 @@ instance RunMessage TheGathering where
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
           story
             $ withVars ["xp" .= xp]
-            $ i18nWithTitle "resolutions.resolution1"
+            $ i18nWithTitle "resolution1"
           record YourHouseHasBurnedToTheGround
           chooseToAddLita []
           sufferMentalTrauma leadId 1
@@ -136,11 +135,11 @@ instance RunMessage TheGathering where
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 2
           story
             $ withVars ["xp" .= xp]
-            $ i18nWithTitle "resolutions.resolution2"
+            $ i18nWithTitle "resolution2"
           record YourHouseIsStillStanding
           gainXp leadId attrs (ikey "xp.resolution2") 1
         Resolution 3 -> do
-          story $ i18nWithTitle "resolutions.resolution3"
+          story $ i18nWithTitle "resolution3"
           record LitaWasForcedToFindOthersToHelpHerCause
           record YourHouseIsStillStanding
           record GhoulPriestIsStillAlive

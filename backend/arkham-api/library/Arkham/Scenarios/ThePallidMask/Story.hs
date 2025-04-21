@@ -8,7 +8,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Intro 1")
-    [ "You are stirred awake by dirty, stale air and dust in your throat. You are\
+    [ BasicEntry "You are stirred awake by dirty, stale air and dust in your throat. You are\
       \ lying on a slab of cold stone inside a lightless underground passageway.\
       \ How did you get here? And where is “here” exactly? A shiver courses up\
       \ your body, and your hair stands on end. Rising to your feet, you take\
@@ -20,7 +20,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Intro 2")
-    [ "The contents of Nigel Engram’s home answer none of your questions about The\
+    [ BasicEntry "The contents of Nigel Engram’s home answer none of your questions about The\
       \ King in Yellow, but do hint at where you should head next. The old, tattered\
       \ map you found on his coffee table depicts a section of the infamous\
       \ Catacombs of Paris. One particular room on the map has been circled with\
@@ -33,7 +33,7 @@ harukosInformation :: FlavorText
 harukosInformation =
   FlavorText
     (Just "Haruko's Information")
-    [ "Just past the archway closest to you, you see a familiar symbol etched into\
+    [ BasicEntry "Just past the archway closest to you, you see a familiar symbol etched into\
       \ the skull of a sheep: rows of concentric semicircles, lined with exotic\
       \ runes. Two wavy lines descend from the design, leading into the skull’s\
       \ lower jawbone. You recognize it as the pattern Haruko had shown you.\
@@ -47,7 +47,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     (Just "No Resolution")
-    [ "You are shaken awake by a police officer and\
+    [ BasicEntry "You are shaken awake by a police officer and\
       \ lifted to your feet. You feel as though the weight of a train has\
       \ slammed into your head. The pain is unbearable. The man\
       \ shines a flashlight in your eyes and asks you several questions\
@@ -56,7 +56,7 @@ noResolution =
       \ the catacombs. You stumble onto the Rue de la Tombe-Issoire\
       \ and slowly make your way to a hotel where you can stay the\
       \ night."
-    , "Several days of research later, the meaning of the strange\
+    , BasicEntry "Several days of research later, the meaning of the strange\
       \ diagrams you saw within the catacombs still escapes you. You\
       \ feel as though you have been led on a wild goose chase. Just as\
       \ you are about to give up, you see a faded yellow book on the\
@@ -77,7 +77,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "The burned skull holds the key to everything.\
+    [ BasicEntry "The burned skull holds the key to everything.\
       \ You are sure of it. You have tried every method available to\
       \ you in studying the diagram it bears, but the answer eludes\
       \ you still. You have brought the skull to experts, occultists,\
@@ -86,7 +86,7 @@ resolution1 =
       \ on your night table and try to get some sleep for the first time\
       \ since escaping the catacombs. As you fall asleep, you cannot\
       \ shake the sight of the diagram etched in the skull’s forehead."
-    , "You awaken with a spark of inspiration and rush to the\
+    , BasicEntry "You awaken with a spark of inspiration and rush to the\
       \ Musée du Louvre, a famous Parisian museum housing tens\
       \ of thousands of paintings, drawings, and archaeological\
       \ finds. You spend days exploring the museum—every display,\
@@ -106,7 +106,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You fall ceaselessly through the empty abyss.\
+    [ BasicEntry "You fall ceaselessly through the empty abyss.\
       \ No air slows your descent or courses through your hair. It is\
       \ a passageway devoid of reality. Finally, you pass through an\
       \ invisible gateway and enter another realm. Looming above\
@@ -117,7 +117,7 @@ resolution2 =
       \ passageway between realities, where realms converge? If so, all\
       \ that is left is to find where this gate appears on Earth. You fall\
       \ into the vortex below."
-    , "You are shaken awake by a police officer and lifted to your feet.\
+    , BasicEntry "You are shaken awake by a police officer and lifted to your feet.\
       \ You feel as though the weight of a train has slammed into your\
       \ head. The pain is unbearable. The man shines a flashlight in\
       \ your eyes and asks you several questions in French. Your eyes\

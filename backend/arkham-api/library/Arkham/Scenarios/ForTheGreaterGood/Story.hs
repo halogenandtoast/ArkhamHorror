@@ -9,7 +9,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Scenario V: For the Greater Good")
-    [ "Ever since your brush with death at Hangman’s Hill, the situation in Arkham has\
+    [ BasicEntry "Ever since your brush with death at Hangman’s Hill, the situation in Arkham has\
       \ only worsened. In the days since, there have been more reports of “ghost\
       \ sightings” and even several more disappearances. A thin layer of grey mist\
       \ lingers over the streets at all hours, day and night. As soon as the sun begins\
@@ -23,7 +23,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Intro 2")
-    [ "The creature that appeared at the Lodge’s charity gala is clearly not bound to\
+    [ BasicEntry "The creature that appeared at the Lodge’s charity gala is clearly not bound to\
       \ Josef Meiger’s manor, which means the horrors you’ve experienced could be just\
       \ the start of something much worse. It is time to report your findings to the\
       \ Silver Twilight Lodge. Perhaps they can help interpret the knowledge you’ve\
@@ -43,7 +43,7 @@ intro3 :: FlavorText
 intro3 =
   FlavorText
     (Just "Intro 3")
-    [ "The creature that appeared at the Lodge’s charity gala is clearly not bound to\
+    [ BasicEntry "The creature that appeared at the Lodge’s charity gala is clearly not bound to\
       \ Josef Meiger’s manor, which means the horrors you’ve experienced could be just\
       \ the start of something much worse. You’re not sure why just yet, but you know\
       \ the Silver Twilight Lodge is connected to the creature in some way. Perhaps\
@@ -54,7 +54,7 @@ intro4 :: FlavorText
 intro4 =
   FlavorText
     (Just "Intro 4")
-    [ "You can’t help but wonder if you missed something important in the home of\
+    [ BasicEntry "You can’t help but wonder if you missed something important in the home of\
       \ Josef Meiger. The four disappearances that occurred at the Lodge’s charity gala\
       \ could not have been a coincidence. If those victims encountered a creature like\
       \ the one you saw at the graveyard, the horrors you’ve experienced could be just\
@@ -67,7 +67,7 @@ intro5 :: FlavorText
 intro5 =
   FlavorText
     (Just "Intro 5")
-    [ "Too many disappearances have occurred at Josef Meiger’s estate for it to be a\
+    [ BasicEntry "Too many disappearances have occurred at Josef Meiger’s estate for it to be a\
       \ coincidence: first, the four victims at the charity gala, then the ones who\
       \ attended the benefit dinner one week later. If they encountered a creature like\
       \ the one you saw at the graveyard, the horrors you’ve experienced could be just\
@@ -80,19 +80,19 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     (Just "No Resolution")
-    [ "You manage to escape the building and flee on foot. As you run, you can hear a\
+    [ BasicEntry "You manage to escape the building and flee on foot. As you run, you can hear a\
       \ thunderous rumble coming from the manor. Several others burst through the front\
       \ door behind you, too preoccupied to notice you. One yells to her companions:\
       \ “Get out and gather at the Unvisited Isle! We have to perform the binding rite\
       \ with or without the device!”"
-    , "“What about the guardian?” A man at the gates asks."
-    , "“It’s no use,” she replies. “Just go!”"
-    , "That is when the screaming begins. A spray of blood splatters against the\
+    , BasicEntry "“What about the guardian?” A man at the gates asks."
+    , BasicEntry "“It’s no use,” she replies. “Just go!”"
+    , BasicEntry "That is when the screaming begins. A spray of blood splatters against the\
       \ basement window. Those who escaped immediately panic and flee."
-    , "You don’t stop or look back. You run until the building has faded behind the\
+    , BasicEntry "You don’t stop or look back. You run until the building has faded behind the\
       \ dense, grey mist, until you can no longer hear the screams of those still\
       \ inside, until your legs can barely move."
-    , "Is this the kind of “sacrifice” the Silver Twilight Lodge believes in making?\
+    , BasicEntry "Is this the kind of “sacrifice” the Silver Twilight Lodge believes in making?\
       \ And if so, what does this mean for the “binding rite” they seek to complete at\
       \ the Unvisited Isle?"
     ]
@@ -101,7 +101,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "Every fiber of your being is stretched as the box pulls you in. However, before\
+    [ BasicEntry "Every fiber of your being is stretched as the box pulls you in. However, before\
       \ it can accomplish its task, the lid is suddenly slammed shut by an elderly\
       \ hand. You reel backward and collapse as the pulling force ceases. When your\
       \ senses finally return to you, Carl Sanford is standing over you, unflappable as\
@@ -119,7 +119,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "Every fiber of your being is stretched as the box pulls you in. However, before\
+    [ BasicEntry "Every fiber of your being is stretched as the box pulls you in. However, before\
       \ it can accomplish its task, you manage to reach out and slam the lid shut. You\
       \ shudder uncontrollably as your senses slowly return to you. This box is more\
       \ dangerous than you could have imagined. In the hands of the Lodge, it could\
@@ -128,9 +128,9 @@ resolution2 =
       \ shift one of the room’s bookcases aside and hide behind it before they enter\
       \ the room. “You’re sure you heard something in here? I don’t see anybody,” one\
       \ of them says."
-    , "“Hm...” the other pauses, presumably inspecting the room for signs of\
+    , BasicEntry "“Hm...” the other pauses, presumably inspecting the room for signs of\
       \ intruders. “Must have been nothing.”"
-    , "“It’s all right. We’re all a bit on edge since the trap box went missing. Come,\
+    , BasicEntry "“It’s all right. We’re all a bit on edge since the trap box went missing. Come,\
       \ we don’t want to be late for the ceremony. Tonight is an important night.”\
       \ Their footfalls become softer as they depart. The man’s words linger in your\
       \ thoughts momentarily. What did he mean by tonight being an important night?\
@@ -141,7 +141,7 @@ resolution2 =
       \ large door with the familiar three arrows of Silver Twilight emblazoned along\
       \ its surface. Ritualistic chanting fills the hall from the other side. You\
       \ approach softly, placing your ear against the door to listen in."
-    , "“Brothers and sisters,” an elderly voice announces, “thank you for coming to\
+    , BasicEntry "“Brothers and sisters,” an elderly voice announces, “thank you for coming to\
       \ this hallowed gathering. The time we have long waited for approaches.” You\
       \ recognize the man’s voice – it is Carl Sanford, president of the Silver\
       \ Twilight Lodge. “For many decades, the Order of the Silver Twilight has pursued\
@@ -153,7 +153,7 @@ resolution2 =
       \ the Unvisited Isle. Tonight, we will finally bind the revenant and learn what\
       \ it knows. We must not allow the secrets of AZATHOTH to be lost to those who\
       \ would do humanity harm.”"
-    , "The cult replies with a monotone hymn, and you take this opportunity to flee\
+    , BasicEntry "The cult replies with a monotone hymn, and you take this opportunity to flee\
       \ the Lodge before you are discovered. The conspiracy you have unveiled leaves\
       \ you with even more questions. If the revenant Mr. Sanford speaks of is what you\
       \ think it is, binding it will surely protect Arkham, as he claims. But what\
@@ -165,7 +165,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "The beast that had emerged from the box was a vicious guardian, slaughtering\
+    [ BasicEntry "The beast that had emerged from the box was a vicious guardian, slaughtering\
       \ anyone in its path. Somehow you were able to slay the creature, but the\
       \ consequences were dire. Many Lodge members were gruesomely killed by the\
       \ creature’s rampage before you were able to put it down. Worse, the device it\
@@ -174,10 +174,10 @@ resolution3 =
       \ way, it is a regretful outcome. “This didn’t work as planned,” one of the robed\
       \ members of the Order states matter-of-factly as you examine the crushed puzzle\
       \ box."
-    , "“That’s a hell of an understatement,” another adds. She places a hand on your\
+    , BasicEntry "“That’s a hell of an understatement,” another adds. She places a hand on your\
       \ shoulder and gently pulls you away from the remains of the device. “Come on,\
       \ that’s a lost cause,” she says."
-    , "Her partner ignores your presence and stoically addresses her. “We’ll have to\
+    , BasicEntry "Her partner ignores your presence and stoically addresses her. “We’ll have to\
       \ get to the Unvisited Isle and complete the binding rite without the trap.” She\
       \ nods and takes one last look at you before the remaining Lodge members flee the\
       \ building. Is this the kind of “sacrifice” the Silver Twilight Lodge believes in\

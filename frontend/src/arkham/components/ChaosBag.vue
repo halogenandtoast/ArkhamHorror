@@ -123,13 +123,13 @@ const choose = (idx: number) => emit('choose', idx)
 
 <style scoped lang="scss">
 .token--can-draw {
-  border: 5px solid #ff00ff;
+  border: min(5px, 1vw) solid #ff00ff;
   border-radius: 500px;
   cursor: pointer;
 }
 
 .token {
-  width: 100px;
+  width: min(100px, 20vw);
   height: auto;
   margin-bottom: 10px;
 }

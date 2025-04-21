@@ -1,13 +1,15 @@
-module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy, TheDunwichLegacy(..)) where
+module Arkham.Campaign.Campaigns.TheDunwichLegacy (theDunwichLegacy, TheDunwichLegacy (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Option
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.CampaignSteps
+import Arkham.Campaigns.TheDunwichLegacy.Helpers
 import Arkham.Campaigns.TheDunwichLegacy.Import
 import Arkham.Card
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
 import Arkham.Message.Lifted.Choose
@@ -57,26 +59,24 @@ theDunwichLegacy difficulty =
     (chaosBagContents difficulty)
 
 instance RunMessage TheDunwichLegacy where
-  runMessage msg c = runQueueT $ case msg of
-    CampaignStep PrologueStep -> do
-      storyWithChooseOneM prologue do
-        labeled
-          "Professor Warren Rice was last seen working late at night in the humanities department of Miskatonic University. Let’s search for him there. Proceed with “Scenario I–A: Extracurricular Activity” if you wish to find Professor Warren Rice first."
-          $ setNextCampaignStep ExtracurricularActivity
-        labeled
-          "Dr. Francis Morgan was last seen gambling at the Clover Club, an upscale speakeasy and gambling joint located downtown.  Let’s go talk to him.  Proceed with “Scenario I–B: The House Always Wins” if you wish to find Dr. Francis Morgan first."
-          $ setNextCampaignStep TheHouseAlwaysWins
+  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+    CampaignStep PrologueStep -> scope "prologue" do
+      storyWithChooseOneM' (setTitle "title" >> p "body") do
+        labeled' "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
+        labeled' "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
       pure c
-    CampaignStep (InterludeStep 1 _) -> do
+    CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
+      let interlude k = storyBuild $ setTitle "title" >> p k
+      interlude "body"
       unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours
       if unconsciousForSeveralHours
         then do
-          story armitagesFate1
+          interlude "armitagesFate1"
           record DrHenryArmitageWasKidnapped
           interludeXpAll
             (WithBonus "Reading Wilbur’s journal gives them insight into the hidden world of the mythos." 2)
         else do
-          story armitagesFate2
+          interlude "armitagesFate2"
           record TheInvestigatorsRescuedDrHenryArmitage
 
           investigators <- allInvestigators
@@ -84,41 +84,42 @@ instance RunMessage TheDunwichLegacy where
 
       nextCampaignStep
       pure c
-    CampaignStep (InterludeStep 2 _) -> do
+    CampaignStep (InterludeStep 2 _) -> scope "interlude2" do
       sacrificedToYogSothoth <- getRecordSet SacrificedToYogSothoth
       let sacrificed = (`elem` sacrificedToYogSothoth) . recorded . toCardCode
       investigators <- allInvestigators
+      let interlude k = storyBuild $ setTitle "title" >> p k
 
-      story interlude2
+      interlude "body"
 
       unless (sacrificed Assets.drHenryArmitage) do
-        story interlude2DrHenryArmitage
+        interlude "drHenryArmitage"
         record DrHenryArmitageSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.drHenryArmitage) do
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drHenryArmitage
 
       unless (sacrificed Assets.professorWarrenRice) do
-        story interlude2ProfessorWarrenRice
+        interlude "professorWarrenRice"
         record ProfessorWarrenRiceSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.professorWarrenRice) do
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.professorWarrenRice
 
       unless (sacrificed Assets.drFrancisMorgan) do
-        story interlude2DrFrancisMorgan
+        interlude "drFrancisMorgan"
         record DrFrancisMorganSurvivedTheDunwichLegacy
 
         whenM (isNothing <$> getOwner Assets.drFrancisMorgan) do
           addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.drFrancisMorgan
 
       unless (sacrificed Assets.zebulonWhateley) do
-        story interlude2ZebulonWhateley
+        interlude "zebulonWhateley"
         record ZebulonWhateleySurvivedTheDunwichLegacy
         addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.zebulonWhateley
 
       unless (sacrificed Assets.earlSawyer) do
-        story interlude2EarlSawyer
+        interlude "earlSawyer"
         record EarlSawyerSurvivedTheDunwichLegacy
         addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.earlSawyer
 
@@ -129,9 +130,12 @@ instance RunMessage TheDunwichLegacy where
 
       nextCampaignStep
       pure c
-    CampaignStep EpilogueStep -> do
+    CampaignStep EpilogueStep -> scope "epilogue" do
       warned <- getHasRecord YouWarnedTheTownsfolk
-      story $ if warned then epilogue2 else epilogue1
+      storyBuild do
+        setTitle "title"
+        p "intro"
+        p $ if warned then "epilogue2" else "epilogue1"
       gameOver
       pure c
     HandleOption option -> do

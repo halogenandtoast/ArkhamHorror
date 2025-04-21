@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.37.0.
+-- This file has been generated from package.yaml by hpack version 0.38.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -3518,6 +3518,7 @@ library
       Arkham.Scenarios.LostInTimeAndSpace.FlavorText
       Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.FlavorText
+      Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
       Arkham.Scenarios.ShatteredAeons.Helpers
       Arkham.Scenarios.ShatteredAeons.Story
       Arkham.Scenarios.TheBoundaryBeyond.Helpers
@@ -3527,7 +3528,6 @@ library
       Arkham.Scenarios.TheDepthsOfYoth.Helpers
       Arkham.Scenarios.TheDepthsOfYoth.Story
       Arkham.Scenarios.TheDevourerBelow.Helpers
-      Arkham.Scenarios.TheDevourerBelow.Story
       Arkham.Scenarios.TheDoomOfEztli.Story
       Arkham.Scenarios.TheEssexCountyExpress.Helpers
       Arkham.Scenarios.TheEssexCountyExpress.Story

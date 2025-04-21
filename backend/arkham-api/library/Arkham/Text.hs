@@ -96,11 +96,8 @@ toI18n = ("$" <>) . ikey
 toFlavor :: FlavorTextEntry -> FlavorText
 toFlavor = FlavorText Nothing . pure
 
-instance IsString FlavorText where
-  fromString s = FlavorText Nothing [fromString s]
-
-instance IsString FlavorTextEntry where
-  fromString s = BasicEntry (fromString s)
+ft :: Text -> FlavorText
+ft = FlavorText Nothing . pure . BasicEntry
 
 mconcat
   [ deriveJSON defaultOptions ''FlavorTextModifier

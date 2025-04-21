@@ -108,39 +108,43 @@ const choose = (idx: number) => emit('choose', idx)
     />
   </template>
   <div class="question-label" v-else-if="question && question.tag === 'QuestionLabel'">
-    <img :src="questionImage" v-if="questionImage" class="card" />
-    <p v-html="formatContent(question.label)"></p>
-
-    <div class="portrait-choices" v-if="portraitChoices.length > 0">
-      <template v-for="[choice, index] in portraitChoices" :key="index">
-        <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
-          <a href='#' @click.prevent="choose(index)">
-            <img class="portrait card active" :src="portraitLabelImage(choice.investigatorId)"/>
-          </a>
-        </template>
-      </template>
+    <div v-if="questionImage" class="question-image">
+      <img :src="questionImage" class="card" />
     </div>
+    <div class="question-content">
+      <h2 v-html="formatContent(question.label)"></h2>
 
-    <div class="label-choices" v-if="labelChoices.length > 0">
-      <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
-        <template v-for="[choice, index] in labelChoices" :key="index">
-          <template v-if="choice.tag === MessageType.CARD_LABEL">
+      <div class="portrait-choices" v-if="portraitChoices.length > 0">
+        <template v-for="[choice, index] in portraitChoices" :key="index">
+          <template v-if="choice.tag === MessageType.PORTRAIT_LABEL">
             <a href='#' @click.prevent="choose(index)">
-              <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+              <img class="portrait card active no-overlay active" :src="portraitLabelImage(choice.investigatorId)"/>
             </a>
           </template>
         </template>
       </div>
-      <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
-        <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
-          <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
-        </template>
-        <template v-if="choice.tag === MessageType.LABEL">
-          <button @click="choose(index)">{{$t(choice.label)}}</button>
-        </template>
-        <template v-if="choice.tag === MessageType.DONE">
-          <button @click="choose(index)">{{$t(choice.label)}}</button>
-        </template>
+
+      <div class="label-choices" v-if="labelChoices.length > 0">
+        <div class="card-labels" v-if="labelChoices.some(([choice, _]) => choice.tag === MessageType.CARD_LABEL)">
+          <template v-for="[choice, index] in labelChoices" :key="index">
+            <template v-if="choice.tag === MessageType.CARD_LABEL">
+              <a href='#' @click.prevent="choose(index)">
+                <img class="card no-overlay" :src="cardLabelImage(choice.cardCode)"/>
+              </a>
+            </template>
+          </template>
+        </div>
+        <div class="other-labels" v-for="[choice, index] in labelChoices" :key="index">
+          <template v-if="choice.tag === MessageType.TOOLTIP_LABEL">
+            <button @click="choose(index)" v-tooltip="choice.tooltip">{{choice.label}}</button>
+          </template>
+          <template v-if="choice.tag === MessageType.LABEL">
+            <button @click="choose(index)">{{$t(choice.label)}}</button>
+          </template>
+          <template v-if="choice.tag === MessageType.DONE">
+            <button @click="choose(index)">{{$t(choice.label)}}</button>
+          </template>
+        </div>
       </div>
     </div>
   </div>
@@ -244,5 +248,51 @@ button {
 
 .card {
   width: calc(var(--card-width) * 2);
+}
+
+.question-label:has(> .question-image) {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  align-self: center;
+  height: fit-content;
+  gap: 10px;
+  border-radius: 15px;
+  h2 {
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.8em;
+    background: var(--neutral-extra-dark);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-family: Teutonic, sans-serif;
+    padding: 10px 20px;
+  }
+  > .question-image {
+    img  {
+      width: calc(var(--card-width) * 4);
+    }
+  }
+  > .question-content {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+    padding-bottom: 10px;
+    .portrait-choices {
+      align-content: center;
+      justify-items: flex-start;
+      flex: 1;
+    }
+  }
+  button {
+    width: 100%;
+  }
+}
+
+.active {
+  border: 1px solid var(--select);
 }
 </style>

@@ -8,7 +8,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Intro 1")
-    [ "Several hours after you wake, your laborious descent pays dividends. The red\
+    [ BasicEntry "Several hours after you wake, your laborious descent pays dividends. The red\
       \ glow emanating from the bottom of the steps grows brighter with each step. The\
       \ stone floor finally levels off, and the choking tunnel walls open to reveal a\
       \ labyrinthine network of immense, far-reaching caverns. Littered throughout the\
@@ -18,7 +18,7 @@ intro1 =
       \ fathom. When you turn around to question Ichtaca, you notice a faint yellow\
       \ glow in her eyes, her pupils narrowed and contracted. “Yoth...the last refuge\
       \ of Valusia...” she quietly intones."
-    , "Just then, a terrifying roar echoes throughout the cavern. The walls and floor\
+    , BasicEntry "Just then, a terrifying roar echoes throughout the cavern. The walls and floor\
       \ shake with tremendous force, and the red glow that permeates the area\
       \ brightens. A flood of hisses emerges from the tunnels all around you. Ichtaca\
       \ walks to the edge of a nearby precipice and looks out over the vast depths. “He\
@@ -29,7 +29,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Intro 2")
-    [ "You realize now that Ichtaca has her own agenda. Alejandro, as well—both have\
+    [ BasicEntry "You realize now that Ichtaca has her own agenda. Alejandro, as well—both have\
       \ been using you for their own ends, keeping you from the truth. You raise a\
       \ weapon and demand answers from her, catching her by surprise. “Yig demands the\
       \ relic be brought to the Nexus,” she responds anxiously. Her eyes glow brightly,\
@@ -44,7 +44,7 @@ intro3 :: FlavorText
 intro3 =
   FlavorText
     (Just "Intro 3")
-    [ "You approach Ichtaca and rest a hand on her shoulder. Your companion takes a\
+    [ BasicEntry "You approach Ichtaca and rest a hand on her shoulder. Your companion takes a\
       \ deep breath and turns to face you. Her eyes are cast downward in shame, and\
       \ they have returned to their normal color. “I...I’m sorry. I have brought you to\
       \ your ruin. He called out to me, long ago, told me of my heritage, of my people.\
@@ -62,7 +62,7 @@ intro4 :: FlavorText
 intro4 =
   FlavorText
     (Just "Intro 4")
-    [ "You hesitate, unsure what to do next. What are Ichtaca’s true motives? Why has\
+    [ BasicEntry "You hesitate, unsure what to do next. What are Ichtaca’s true motives? Why has\
       \ she led you here? Before you have the chance to react, she draws her bow and\
       \ aims an arrow at your heart. “Thank you for aiding me this far,” Ichtaca says\
       \ curtly, “but the time has come for us to part ways. Yig has called, and I must\
@@ -73,7 +73,7 @@ intro5 :: FlavorText
 intro5 =
   FlavorText
     (Just "Intro 5")
-    [ "“You must leave this place at once. This is not humanity’s battle. It is ours.\
+    [ BasicEntry "“You must leave this place at once. This is not humanity’s battle. It is ours.\
       \ We cannot let you or the Brotherhood foil our plans. Not now, not when we are\
       \ so close.” Her hand wavers for a moment, and her eyes flicker again. You can\
       \ tell that something is tearing at her, weighing on her mind. Finally, she\
@@ -87,7 +87,7 @@ intro6 :: FlavorText
 intro6 =
   FlavorText
     (Just "Intro 6")
-    [ "“Now drop your weapons.” The betrayal stings your chest, and you are gripped\
+    [ BasicEntry "“Now drop your weapons.” The betrayal stings your chest, and you are gripped\
       \ with anger and despair. Thoughts of escape flash across your mind, but you have\
       \ seen her skill with a bow—with her steady aim, you would be dead before you\
       \ took two steps. You have no choice but to comply. Your weapons clatter to the\
@@ -99,7 +99,7 @@ intro7 :: FlavorText
 intro7 =
   FlavorText
     (Just "Intro 7")
-    [ "As Ichtaca reaches out to grab the relic, you pull out your concealed\
+    [ BasicEntry "As Ichtaca reaches out to grab the relic, you pull out your concealed\
       \ pocketknife and quickly attack, catching her by surprise. The blade cuts deeply\
       \ across her forearm. Blood sprays across your chest, and she staggers with pain,\
       \ gripping her arm. Her heel clips a rock near the edge of the precipice, and she\
@@ -113,7 +113,7 @@ intro8 :: FlavorText
 intro8 =
   FlavorText
     (Just "Intro 8")
-    [ "Ichtaca grabs the relic. You can see the skin on the back of her hand growing\
+    [ BasicEntry "Ichtaca grabs the relic. You can see the skin on the back of her hand growing\
       \ hard and scaly. You take a few steps back, knuckles white with anger. “Go now.\
       \ Before I change my mind,” she says. “And if you wish to live, do not follow.  I\
       \ will not give you a second chance.” Ichtaca swiftly departs, eyes trained on\
@@ -125,7 +125,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "After hours and hours of travel, you’ve only just scratched the surface of this\
+    [ BasicEntry "After hours and hours of travel, you’ve only just scratched the surface of this\
       \ boundless subterranean world. Humanity could spend centuries mapping out these\
       \ tunnels and never complete the task. No matter how quickly you plumb the\
       \ depths, the serpents chasing you are hot on your tail. You are intruders in\
@@ -146,7 +146,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "Somehow, despite the odds stacked against you, you’ve reached your destination.\
+    [ BasicEntry "Somehow, despite the odds stacked against you, you’ve reached your destination.\
       \ The telltale red glow that has enveloped you since you entered Yoth recedes,\
       \ replaced with an unpierceable inky darkness. The Nexus must be close... You can\
       \ feel it."

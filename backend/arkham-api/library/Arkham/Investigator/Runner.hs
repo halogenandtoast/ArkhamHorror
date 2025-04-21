@@ -3619,6 +3619,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
   AddToHandQuiet iid cards | iid == investigatorId -> do
     for_ cards obtainCard
+    push $ Do msg
+    pure a
+  Do (AddToHandQuiet iid cards) | iid == investigatorId -> do
     assetIds <- catMaybes <$> for cards (selectOne . AssetWithCardId . toCardId)
     pure
       $ a

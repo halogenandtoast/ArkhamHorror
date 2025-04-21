@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Arkham.Effect.Types where
@@ -204,7 +203,7 @@ instance HasAbilities EffectAttrs
 
 isEndOfWindow :: EffectAttrs -> EffectWindow -> Bool
 isEndOfWindow EffectAttrs {effectWindow, effectDisableWindow} effectWindow' =
-    traceShowId (effectWindow') `elem` (traceShowId $ toEffectWindowList (effectDisableWindow <|> effectWindow))
+    effectWindow' `elem` toEffectWindowList (effectDisableWindow <|> effectWindow)
  where
   toEffectWindowList Nothing = []
   toEffectWindowList (Just (FirstEffectWindow xs)) = xs

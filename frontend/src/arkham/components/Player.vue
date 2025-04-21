@@ -870,11 +870,13 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
 .split-view .hand {
   flex-wrap: wrap;
   min-height: fit-content;
+  overflow: unset;
 }
 
 .investigator-and-deck {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 5px;
 }
 

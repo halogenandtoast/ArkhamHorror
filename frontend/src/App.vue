@@ -445,7 +445,7 @@ button {
   --button-2: #532e61;
   --button-2-highlight: #4d2b61;
 
-  --card-width: calc(2.5vw + 20px);
+  --card-width: min(calc(2.5vw + 20px), 60px);
   --card-aspect: 0.705;
   --card-sideways-aspect: 1.41844;
   --card-tarot-aspect: 0.571429;

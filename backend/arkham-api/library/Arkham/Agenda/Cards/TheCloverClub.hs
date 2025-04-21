@@ -47,7 +47,7 @@ instance RunMessage TheCloverClub where
     AdvanceAgenda aid | aid == toId attrs && onSide B attrs -> do
       lead <- getLeadPlayer
       completedExtracurricularActivity <-
-        elem "02041" <$> getCompletedScenarios
+        any (`elem` ["02041", "51012"]) <$> getCompletedScenarios
       enemyIds <- select $ EnemyWithTrait Criminal
 
       let

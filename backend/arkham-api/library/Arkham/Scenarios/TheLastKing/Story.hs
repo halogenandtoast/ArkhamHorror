@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Scenario II: The Last King")
-    [ "If anyone has the answers to the questions that burn in your mind, it’s\
+    [ BasicEntry "If anyone has the answers to the questions that burn in your mind, it’s\
       \ the cast and crew of The King in Yellow. With no other leads to pursue,\
       \ you put on your best clothes and head to 1452 Atlantic Avenue, where a\
       \ woman named Constance Dumaine is hosting an event in celebration of\
@@ -19,7 +19,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "The brisk autumn air embraces you as you exit\
+    [ BasicEntry "The brisk autumn air embraces you as you exit\
       \ the manor. There is no doubt in your mind that the cast and\
       \ crew of The King in Yellow have become affected by madness.\
       \ Perhaps it’s getting to you, as well. You feel an encroaching\
@@ -37,7 +37,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "“Excuse me, but it’s very late,” you hear a\
+    [ BasicEntry "“Excuse me, but it’s very late,” you hear a\
       \ server say as he gently taps you on your shoulder. You realize\
       \ that you are sitting on a couch in the manor’s living room, and\
       \ that you have been asleep for some time. The party appears to\
@@ -48,7 +48,7 @@ resolution2 =
       \ armrest. Your head pounds with a dizzying intensity, and\
       \ your vision is spotted. You insist that you are fine, and begin\
       \ walking toward the foyer."
-    , "You no longer see any of the guests you were searching for\
+    , BasicEntry "You no longer see any of the guests you were searching for\
       \ earlier, not even the hostess, Mrs. Dumaine. All traces of\
       \ the madness and horror you’ve experienced are gone. Even\
       \ the oddities you witnessed upon entering the manor have\
@@ -62,7 +62,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "Several days later, you find yourself\
+    [ BasicEntry "Several days later, you find yourself\
       \ reminiscing about the party you attended at 1452 Atlantic\
       \ Avenue. What a roaring good time you had! And yet, your\
       \ memory is hazy. You can’t help but feel you are forgetting\

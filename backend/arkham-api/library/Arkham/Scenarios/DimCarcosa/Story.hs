@@ -8,7 +8,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Intro 1")
-    [ "You swim to the edge of the water and throw yourself upon the rocky shore,\
+    [ BasicEntry "You swim to the edge of the water and throw yourself upon the rocky shore,\
       \ gasping for air. You lie there for some time, utterly exhausted. Every muscle\
       \ in your body aches. Before you lies a desolate expanse of plain. In the\
       \ distance, the alien spires of a warped city rise into the clouds. Behind you,\
@@ -22,7 +22,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Intro 2")
-    [ "You land on a piece of black obsidian stone winding up a dark spire. You cough\
+    [ BasicEntry "You land on a piece of black obsidian stone winding up a dark spire. You cough\
       \ blood and feel a searing pain in your gut, as though you’d broken a rib. Before\
       \ you lies a warped, alien city. Its twisting streets and aberrant architecture\
       \ have no semblance of order or structure. In the distance, a murky lake reflects\
@@ -35,7 +35,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "You stand atop the balcony of the abbey tower in Mont Saint-Michel, wet wind\
+    [ BasicEntry "You stand atop the balcony of the abbey tower in Mont Saint-Michel, wet wind\
       \ coursing through your hair. The Pallid Mask lies in your hands, devoid of\
       \ warmth. You can scarcely bring yourself to look at it. You remember everything\
       \ now—how it all began, how it ended, and everything in between. There is only\
@@ -47,13 +47,13 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "A roar of applause startles you awake. The crowd of the theatre rises to their\
+    [ BasicEntry "A roar of applause startles you awake. The crowd of the theatre rises to their\
       \ feet, cheering endlessly. Several patrons in the front row are throwing roses\
       \ to the actors on stage, who are bowing with wide smiles across their faces. A\
       \ searing headache crawls through your temples. How did you get back here? Were\
       \ you in the theatre all along? What about the dinner party? The asylum? The\
       \ catacombs?... Carcosa? Was it all just a terrible dream?"
-    , "You exit the auditorium before the crowd rushes to do the same. Dizziness and\
+    , BasicEntry "You exit the auditorium before the crowd rushes to do the same. Dizziness and\
       \ exhaustion harries your senses. The weight of your lengthy investigation is\
       \ crushing your mind. By the time you finally reach the lobby, you are clawing\
       \ your way across the ground.  Just then, a man in an elegant suit reaches down\
@@ -68,7 +68,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
+    [ BasicEntry "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
       \ abbey. No rain pelts the glass of the windows above, and you hear no thunder,\
       \ nor the screeching of winged horrors overhead. Somehow, you have escaped. You\
       \ creep to the door of the abbey and open it with trepidation. A dazzling light\
@@ -76,7 +76,7 @@ resolution3 =
       \ stand overlooking beautiful Mont Saint-Michel. Seagulls fly over the abbey\
       \ under a backdrop of cloudless sky. The waters around the abbey are calm and\
       \ azure-blue."
-    , "“I’ve been looking all over for you!” You hear a voice exclaim behind you. You\
+    , BasicEntry "“I’ve been looking all over for you!” You hear a voice exclaim behind you. You\
       \ turn with a startle. For a moment you expect to see the Stranger and his Pallid\
       \ Mask, but instead, the boat captain you’d hired to take you to Mont\
       \ Saint-Michel stands at the edge of the steps, smiling at you. “Are you ready to\
@@ -87,7 +87,7 @@ resolution4 :: FlavorText
 resolution4 =
   FlavorText
     (Just "Resolution 4")
-    [ "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
+    [ BasicEntry "When you awaken, you are sitting in the choeur gothique of Mont Saint-Michel’s\
       \ abbey. No rain pelts the glass of the windows above, and you hear no thunder,\
       \ nor the screeching of winged horrors overhead. Somehow, you have escaped the\
       \ island’s certain doom. You creep to the door of the abbey and open it with\
@@ -101,7 +101,7 @@ resolution5 :: FlavorText
 resolution5 =
   FlavorText
     (Just "Resolution 5")
-    [ "The outside world will never know how you tried to save them. They treat you\
+    [ BasicEntry "The outside world will never know how you tried to save them. They treat you\
       \ with pity, with scorn and contempt, but you know the truth. They are resigned\
       \ to their hideous fate, but still you try day after day to bring them your\
       \ message. You must warn them of The King in Yellow, of Hastur and of Carcosa.\

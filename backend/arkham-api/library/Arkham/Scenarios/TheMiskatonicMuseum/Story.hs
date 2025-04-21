@@ -9,14 +9,14 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Scenario II: The Miskatonic Museum")
-    [ "Several months ago, Armitage and his colleagues\
+    [ BasicEntry "Several months ago, Armitage and his colleagues\
       \ stopped a rampaging horror from tearing\
       \ through Dunwich, a backwater town several\
       \ hours north and west of Arkham. At first you\
       \ imagine this beast as a rabid bear, or worse, but\
       \ the professor’s description of the creature paints\
       \ a different picture."
-    , "It all began when a man named Wilbur Whateley entered the Orne\
+    , BasicEntry "It all began when a man named Wilbur Whateley entered the Orne\
       \ Library looking for Olaus Wormius’s Latin translation of a book called\
       \ the Necronomicon. Wilbur already possessed a beaten-up English\
       \ translation by Dr. John Dee, but it was insufficient for his purposes.\
@@ -33,7 +33,7 @@ intro2 :: Bool -> FlavorText
 intro2 True =
   FlavorText
     Nothing
-    [ "The notes written by Dr. Armitage in the journal stress\
+    [ BasicEntry "The notes written by Dr. Armitage in the journal stress\
       \ Whateley’s desire to get his hands on the Necronomicon for some\
       \ terrible purpose. As you read on, it seems that Dr. Armitage brought\
       \ the university’s copy of the tome to Harold Walsted—the curator of\
@@ -46,7 +46,7 @@ intro2 True =
 intro2 False =
   FlavorText
     Nothing
-    [ "“My colleagues and I were quick to put the ordeal behind\
+    [ BasicEntry "“My colleagues and I were quick to put the ordeal behind\
       \ us,” Armitage says with a sigh. “But it seems that things haven’t\
       \ fully resolved themselves. I’ll tell you the rest later, but for now, it is\
       \ imperative that we get our hands on that copy of the Necronomicon.\
@@ -63,7 +63,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     Nothing
-    [ "Whatever the creature in the\
+    [ BasicEntry "Whatever the creature in the\
       \ museum was, you had neither the will nor the tools to destroy\
       \ it. It seems you must give up any hope of recovering the\
       \ Necronomicon. Even so, there are others depending on you.\
@@ -74,7 +74,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "As long as this translation of the\
+    [ BasicEntry "As long as this translation of the\
       \ Necronomicon exists, there will be sorcerers and other foul\
       \ agents like Whateley seeking it. In the end, you know what\
       \ must be done to protect humanity from the threats you’ve seen.\
@@ -90,7 +90,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "The Necronomicon is more than just a book;\
+    [ BasicEntry "The Necronomicon is more than just a book;\
       \ it is a tool. Within its pages is a wealth of information about\
       \ the forces and creatures you have encountered. Knowing how\
       \ useful it could be in your endeavors, how could you possibly\

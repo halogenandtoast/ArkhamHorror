@@ -8,7 +8,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "Scenario VI: Where Doom Awaits")
-    [ "You awaken to the sound of screeching. Fearing\
+    [ BasicEntry "You awaken to the sound of screeching. Fearing\
       \ the worst, you grab your equipment and head\
       \ out into the streets of Dunwich. As soon as you\
       \ step outside, you sense a foulness in the cold night\
@@ -21,7 +21,7 @@ intro =
       \ Armitage’s records. It is called Sentinel Hill. The tales speak of satanic\
       \ rites being performed there—rites in which great ritual-pyres light up\
       \ the night sky while the ground rumbles furiously below."
-    , "Flocks of whippoorwills perch on the rooftops of the village around you,\
+    , BasicEntry "Flocks of whippoorwills perch on the rooftops of the village around you,\
       \ watching ominously as you climb inside Zebulon’s old and beat-up truck.\
       \ As you drive towards Sentinel Hill, more screeching fills the sky with an\
       \ awful pitch that is painful to your ears. Everything you have read about\
@@ -36,7 +36,7 @@ introPart1 :: FlavorText
 introPart1 =
   FlavorText
     Nothing
-    [ "The path leading up Sentinel Hill is narrow and too torn up for\
+    [ BasicEntry "The path leading up Sentinel Hill is narrow and too torn up for\
       \ Zebulon’s truck, so you park at the base of the hill and prepare to make\
       \ the rest of the trip on foot. Just then, you notice that you are not alone.\
       \ Several men and women emerge from the woods behind you, brandishing\
@@ -44,7 +44,7 @@ introPart1 =
       \ for the worst. “Wait,” one of them says, raising his hand to the others. “I\
       \ recognize you from the Clover Club.” He grins toothily and lowers his\
       \ weapon. “Naomi sends her regards.”"
-    , "Curious, you ask what the gangsters are doing here. “Ms. O’Bannion had\
+    , BasicEntry "Curious, you ask what the gangsters are doing here. “Ms. O’Bannion had\
       \ us investigate the attack on her fiancé’s club,” he explains. “Turns out\
       \ there were some men in Arkham behind the whole thing. Some Bishop\
       \ fellow and his lackeys. We tailed them all the way to this dump.” Before\
@@ -58,7 +58,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "The poorly bound tome appears to be the\
+    [ BasicEntry "The poorly bound tome appears to be the\
       \ written records of Old Whateley, the man who taught Wilbur\
       \ the ancient secrets of sorcery. You find a passage describing a\
       \ place outside of time and space, where worlds converge and\
@@ -72,7 +72,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "The sorcerers from Dunwich, seeking arcane\
+    [ BasicEntry "The sorcerers from Dunwich, seeking arcane\
       \ power from beyond this realm, have accomplished what\
       \ Wilbur and Old Whateley could not. Through blood sacrifice\
       \ and indescribable experiments, the dark power the sorcerers\

@@ -22,7 +22,7 @@ nightOfTheZealot difficulty =
 instance RunMessage NightOfTheZealot where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
     CampaignStep PrologueStep -> do
-      story $ i18n "prologue"
-      push $ NextCampaignStep Nothing
+      storyI "prologue"
+      nextCampaignStep
       pure c
     _ -> lift $ defaultCampaignRunner msg c

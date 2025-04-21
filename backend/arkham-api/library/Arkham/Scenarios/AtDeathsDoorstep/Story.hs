@@ -7,14 +7,14 @@ introPart1 :: FlavorText
 introPart1 =
   FlavorText
     (Just "Scenario II: At Death’s Doorstep")
-    [ "<b>Four Missing, Whereabouts Unknown<b>"
-    , "Residents of French Hill are still in a tizzy after the sudden disappearance of\
+    [ BasicEntry "<b>Four Missing, Whereabouts Unknown<b>"
+    , BasicEntry "Residents of French Hill are still in a tizzy after the sudden disappearance of\
       \ several guests and house staff from the home of Mr. Josef Meiger during the\
       \ night of the annual Silver Twilight charity gala last Sunday. “We are\
       \ absolutely baffled as to how this could have happened,” said Mr. Meiger the day\
       \ after the disappearances. “That said, we are confident that Sheriff Engle and\
       \ the Arkham Police will do their due diligence in finding the missing persons.”"
-    , "There is still no evidence whatsoever as to the whereabouts of Miss Gavriella\
+    , BasicEntry "There is still no evidence whatsoever as to the whereabouts of Miss Gavriella\
       \ Mizrah, Mr. Jerome Davids, Mr. Valentino Rivas, and Mrs. Penny White, all of\
       \ whom vanished halfway through the event and have not been seen since. The\
       \ police are offering a substantial reward for any person or persons who come\
@@ -24,20 +24,20 @@ introPart1 =
       \ the circumstances, we have to consider every possibility.” No other attendees\
       \ have come forward with statements concerning the gala, which seemed to finish\
       \ without a hitch despite the disappearances."
-    , "So far, none of the prominent members of the Silver Twilight Lodge have\
+    , BasicEntry "So far, none of the prominent members of the Silver Twilight Lodge have\
       \ expressed any concern about the Lodge’s upcoming benefit dinner, which was\
       \ recently moved to the same location: Josef Meiger’s estate in French Hill. “I\
       \ am certain that this event will be a smashing success,” Mr. Meiger told the\
       \ Arkham Advertiser in an interview yesterday. “There is no reason for the fair\
       \ residents of Arkham to worry.”"
-    , "–Minnie Klein"
+    , BasicEntry "–Minnie Klein"
     ]
 
 introPart2 :: FlavorText
 introPart2 =
   FlavorText
     (Just "Scenario II: At Death’s Doorstep")
-    [ "You fold up the newspaper and shove it aside on your desk, examining the other\
+    [ BasicEntry "You fold up the newspaper and shove it aside on your desk, examining the other\
       \ files you’ve collected over the last few days concerning the missing persons.\
       \ It has been several days since your experience in the woods. You have tried to\
       \ put it all out of mind, but it is impossible. Every night, you dream of a\
@@ -55,8 +55,8 @@ introPart3 :: FlavorText
 introPart3 =
   FlavorText
     (Just "Scenario II: At Death’s Doorstep")
-    [ "<i>The Silver Twilight Lodge</i>"
-    , "requests the pleasure of your company on the evening of November the\
+    [ BasicEntry "<i>The Silver Twilight Lodge</i>"
+    , BasicEntry "requests the pleasure of your company on the evening of November the\
       \ twenty‐ninth at eight o’clock at the estate of Josef Ekhard Meiger, Esq. for\
       \ the benefit of The Fairchild Foundation"
     ]
@@ -65,7 +65,7 @@ introPart4 :: FlavorText
 introPart4 =
   FlavorText
     (Just "Scenario II: At Death’s Doorstep")
-    [ "As you prepare for the night ahead, you cannot help but wonder: Are you taking\
+    [ BasicEntry "As you prepare for the night ahead, you cannot help but wonder: Are you taking\
       \ action to remedy your fate, as the soothsayer advised? Or are you walking\
       \ willingly into the jaws of a grim destiny?"
     ]
@@ -74,7 +74,7 @@ interlude1Gavriella :: FlavorText
 interlude1Gavriella =
   FlavorText
     Nothing
-    [ "The entry hall to the manor is beautifully decorated, but you find it odd that\
+    [ BasicEntry "The entry hall to the manor is beautifully decorated, but you find it odd that\
       \ the grand staircase’s wooden balustrade has been recently repaired and, by the\
       \ looks of it, hastily so. While nobody is looking, you follow the handrail up\
       \ and down the stairs until you spot what you are looking for: several splinters\
@@ -90,7 +90,7 @@ interlude1Jerome :: FlavorText
 interlude1Jerome =
   FlavorText
     Nothing
-    [ "Josef Meiger’s personal office is pretty tidy for somebody whose personal\
+    [ BasicEntry "Josef Meiger’s personal office is pretty tidy for somebody whose personal\
       \ secretary just went missing. Perhaps he’s just a fastidious person...or perhaps\
       \ he’s been scrubbing evidence of some wrongdoing. You find nothing of note in\
       \ any of Josef ’s files, but after some perusing, you realize there is one place\
@@ -105,7 +105,7 @@ interlude1Penny :: FlavorText
 interlude1Penny =
   FlavorText
     Nothing
-    [ "The balcony outside Josef Meiger’s bedroom overlooks the rainy streets and\
+    [ BasicEntry "The balcony outside Josef Meiger’s bedroom overlooks the rainy streets and\
       \ somber spires of French Hill. According to eyewitnesses, Penny was last seen\
       \ entering Josef ’s bedroom, presumably to tidy it up, or perhaps to look for one\
       \ of his personal belongings. The cigarette butt on the floor of the balcony\
@@ -123,7 +123,7 @@ interlude1Valentino :: FlavorText
 interlude1Valentino =
   FlavorText
     Nothing
-    [ "Tracing Valentino’s steps isn’t difficult. As the guest of honor (and life of\
+    [ BasicEntry "Tracing Valentino’s steps isn’t difficult. As the guest of honor (and life of\
       \ the party, from what you hear) there was always a crowd around him. This makes\
       \ the story that he “vanished when they weren’t looking” all the more\
       \ unbelievable. In the billiards room, where Valentino was last seen, you corner\
@@ -140,7 +140,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "As soon as you emerge onto the patio, you are surrounded by grim men in trench\
+    [ BasicEntry "As soon as you emerge onto the patio, you are surrounded by grim men in trench\
       \ coats. Several of them reach into their coat pockets: a warning not to do\
       \ anything too hasty. Before any threats can be fulfilled, the silence is broken\
       \ by an icy voice. “Now gentlemen, there is no need for that.” The men withdraw\
@@ -155,7 +155,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You head out of the manor and are embraced by the brisk evening air. Your\
+    [ BasicEntry "You head out of the manor and are embraced by the brisk evening air. Your\
       \ investigation has left you exhausted and strangely paranoid. Something about\
       \ that event felt peculiar to you, though you aren’t sure why. Although the\
       \ guests seemed oblivious, you noticed that the staff was sweaty and jittery, and\
@@ -170,7 +170,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "You flee toward the manor’s entry hall, but the wall of spectral mist still\
+    [ BasicEntry "You flee toward the manor’s entry hall, but the wall of spectral mist still\
       \ blocks your way. Emerging from the mist are several ghostly faces and arms,\
       \ writhing and screaming in torment. You turn and are confronted by the empty\
       \ visage of the hooded Watcher. Before you even realize your doom, the creature’s\

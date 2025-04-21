@@ -19,13 +19,11 @@ const emit = defineEmits(['choose'])
 const choose = (idx: number) => emit('choose', idx)
 const { t } = useI18n()
 
-const format = function(body: string) {
-  return formatContent(body)
-}
-
 const maybeFormat = function(body: string) {
   return body.startsWith("$") ? t(tformat(body.split(' ')[0])) : body
 }
+
+const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 
 const readCards = computed(() => props.question.readCards || [])
 
@@ -50,19 +48,6 @@ const readChoices = computed(() => {
 })
 
 const focusedChaosTokens = computed(() => props.game.focusedChaosTokens)
-
-function formatEntry(entry: FlavorTextEntry): string {
-  switch (entry.tag) {
-    case 'BasicEntry': return formatContent(entry.text.startsWith('$') ? t(entry.text.slice(1)) : entry.text)
-    case 'I18nEntry': return formatContent(t(entry.key, entry.variables))
-    case 'ModifyEntry': return formatEntry(entry.entry)
-    case 'CompositeEntry': return entry.entries.map(formatEntry).join(' ')
-    default: return "Unknown entry type"
-  }
-}
-
-const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
-
 </script>
 <template>
   <div class="intro-text">
@@ -79,7 +64,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
         v-for="readChoice in readChoices"
         @click="choose(readChoice.index)"
         :key="readChoice.index"
-        ><i class="option"></i><span v-html="formatContent(tformat(readChoice.label))"></span></button>
+        ><i class="option"></i><span v-html="formatContent(maybeFormat(readChoice.label))"></span></button>
     </div>
   </div>
 </template>
@@ -92,6 +77,7 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
 }
 
 .entry {
+  h1 { font-size: 1.3em; }
   &:has(.iceAndDeath) {
     h1 {
       color: #19214F;
@@ -128,7 +114,6 @@ const tformat = (t:string) => t.startsWith("$") ? t.slice(1) : t
       &::after {
         border-bottom: 1px solid #19214F;
       }
-      font-size: 1.3em;
       font-weight: 500;
     }
     padding: 50px;

@@ -237,8 +237,9 @@ onMounted(() => {
       border: none;
       color: white;
       border-radius: 50%;
-      width: 24px;
-      height: 24px;
+      width: min(24px, 2vw);
+      height: min(24px, 2vw);
+      aspect-ratio: 1;
       display: flex;
       align-items: center;
       justify-content: center;

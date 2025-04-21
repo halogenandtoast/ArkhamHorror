@@ -500,8 +500,8 @@ const tokenEffects = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
-  padding: 0 30px;
+  gap: min(30px, 2vw);
+  padding: 0 min(30px, 2vw);
   text-transform: uppercase;
 }
 
@@ -519,8 +519,8 @@ const tokenEffects = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: min(30px, 4vw);
+  height: min(30px, 4vw);
   border-radius: 50%;
 }
 
@@ -531,8 +531,8 @@ const tokenEffects = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: min(30px, 4vw);
+  height: min(30px, 4vw);
   border-radius: 50%;
 }
 
@@ -548,7 +548,6 @@ const tokenEffects = computed(() => {
   height: auto;
   border-radius: 5px;
   box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.45);
-  margin-right: calc(var(--card-width) + 5px);
 
   &:has(+ .card-container) {
     margin-right: 0;
@@ -810,10 +809,6 @@ i.iconSkillAgility {
   display: none;
 }
 
-.target-card {
-  margin-left: calc(var(--card-width) + 5px);
-}
-
 .swarming {
   display: flex;
   flex-direction: row;
@@ -911,5 +906,15 @@ i.iconSkillAgility {
   display: flex;
   flex-direction: row;
   gap: 5px;
+}
+
+.target-card {
+  width: 100%;
+  align-items: flex-end;
+}
+
+.test-source {
+  width: 100%;
+  align-items: flex-start;
 }
 </style>

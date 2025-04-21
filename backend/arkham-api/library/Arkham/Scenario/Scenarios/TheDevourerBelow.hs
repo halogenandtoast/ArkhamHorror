@@ -76,7 +76,6 @@ instance RunMessage TheDevourerBelow where
       pure s
     PreScenarioSetup -> do
       flavor do
-        setTitle "intro.title"
         h "intro.title"
         p "intro.body"
       pure s

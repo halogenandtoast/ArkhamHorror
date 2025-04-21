@@ -53,7 +53,7 @@ instance RunMessage KingdomOfTheSkai where
         , storyWithChooseOne
             lead
             players
-            "You find a captain willing to grant you passage to the remote regions of the Dreamlands, wherein you may find signs from the gods to point you in the direction of Kadath."
+            (ft "You find a captain willing to grant you passage to the remote regions of the Dreamlands, wherein you may find signs from the gods to point you in the direction of Kadath.")
             [ Label
                 "Visit the isle of Oriab to the south. Resolve _Oriab Setup_ in the Campaign Guide."
                 [SetScenarioMeta $ toJSON Oriab]

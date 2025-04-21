@@ -8,7 +8,7 @@ lolaPrologue :: FlavorText
 lolaPrologue =
   FlavorText
     (Just "Lola Prologue")
-    [ "Act I came and went without a hitch, as it often did in\
+    [ BasicEntry "Act I came and went without a hitch, as it often did in\
       \ rehearsal. You couldn’t help but note the blank, dismissive expressions\
       \ on many of the audience members’ faces, and you wonder how the\
       \ audience will react to the play’s disturbing second half. The role of\
@@ -19,7 +19,7 @@ lolaPrologue =
       \ corner backstage to escape the sounds of stagehands preparing for the\
       \ next scene. You try to quell your emotions and replace your thoughts\
       \ with those of Cassilda’s—her hopes, her fears, her fate."
-    , "Just then, you catch the Stranger staring at you from afar, and you find\
+    , BasicEntry "Just then, you catch the Stranger staring at you from afar, and you find\
       \ yourself shaking at the mere sight of him. Even though they continue\
       \ to replace the actor who plays the Stranger before each show (and\
       \ indeed many times during rehearsals), you know that this last-minute\
@@ -33,13 +33,13 @@ prologue :: FlavorText
 prologue =
   FlavorText
     (Just "Prologue")
-    [ "You turn over the folded program in your hand, reading it for what seems\
+    [ BasicEntry "You turn over the folded program in your hand, reading it for what seems\
       \ like the hundredth time. “Miskatonic Playhouse presents: The King in\
       \ Yellow,” it reads. “A special one-night engagement at Arkham’s very\
       \ own Ward Theatre. An irresistible drama in two acts. Production staged\
       \ and directed by Nigel Engram.” The cast is a small ensemble, with one\
       \ unattributed credit at the end: “The Stranger.”"
-    , "To have such a highly anticipated play come to Arkham all the way\
+    , BasicEntry "To have such a highly anticipated play come to Arkham all the way\
       \ from Paris is a noteworthy event, even if it is just for one night. For\
       \ weeks leading up to the show, it was the talk of the town. It seemed\
       \ so unassuming…and yet, you have evidence something sinister is at\
@@ -51,12 +51,12 @@ prologue =
       \ in Independence Square who had been ranting and raving about the\
       \ “King’s return.” He was brought to Arkham Asylum, and you were\
       \ surprised to discover that he was not alone in his delusions."
-    , "Finding these events suspicious, you and your companions have delved\
+    , BasicEntry "Finding these events suspicious, you and your companions have delved\
       \ deeper into the matter. Although no connection can be proven, these\
       \ weren’t the only strange events surrounding the up-and-coming play.\
       \ Instances of suicide and madness have followed in its wake, and you are\
       \ determined to discover why."
-    , "The lights in the auditorium dim, and a spotlight shines on the\
+    , BasicEntry "The lights in the auditorium dim, and a spotlight shines on the\
       \ stage. What unfolds is not quite what you expected. Slow-paced\
       \ and monotonous, the first act of The King in Yellow is a tedious\
       \ bore. The setting and characters are compelling, but the meandering\
@@ -74,7 +74,7 @@ lunacysReward1 :: FlavorText
 lunacysReward1 =
   FlavorText
     (Just "Lunacy's Reward 1")
-    [ "The change in the atmosphere has you curious.\
+    [ BasicEntry "The change in the atmosphere has you curious.\
       \ What if it was all a trick of your mind? What if the hauntings that\
       \ follow The King in Yellow are but transitory? The answers to all of\
       \ your questions might lie inside. Cautiously, you open the front door\
@@ -96,7 +96,7 @@ lunacysReward2 :: FlavorText
 lunacysReward2 =
   FlavorText
     (Just "Lunacy's Reward 2")
-    [ "You can’t trust your senses. This is all a trick, an\
+    [ BasicEntry "You can’t trust your senses. This is all a trick, an\
       \ attempt to lure you back inside. You’re no safer now than you were before.\
       \ Swallowing your fear, you set to work barricading the front door of the\
       \ manor using several of the heavy stone benches lining the cobblestone\
@@ -109,7 +109,7 @@ lunacysReward3 :: FlavorText
 lunacysReward3 =
   FlavorText
     (Just "Lunacy's Reward 3")
-    [ "You dare not risk stepping back inside that\
+    [ BasicEntry "You dare not risk stepping back inside that\
       \ madhouse. But you canbpt let the monstrosities run amok, either. You\
       \ root through the open garage for a few supplies, finding an old hose, an\
       \ empty gasoline canister, and some matches. Knowing what you must do,\
@@ -127,7 +127,7 @@ danielSurvived :: FlavorText
 danielSurvived =
   FlavorText
     (Just "Daniel Survived")
-    [ "You decide to lay low for some time in Ma’s\
+    [ BasicEntry "You decide to lay low for some time in Ma’s\
       \ Boarding House and hide Daniel from the authorities, although you’re\
       \ unsure how long you’ll be able to stay in Arkham with an escaped\
       \ asylum patient. Daniel is a loose cannon, dazed and unresponsive one\
@@ -147,7 +147,7 @@ danielSurvived =
       \ Hastur from His prison. But you!—You can open the way to Carcosa\
       \ before they do! You can seal Hastur for good!” He grips you tightly as he\
       \ rants. “Quickly, before the Stranger discovers our plan!”"
-    , "Hours later, Daniel is incoherent and unresponsive once more. You take\
+    , BasicEntry "Hours later, Daniel is incoherent and unresponsive once more. You take\
       \ a long walk to ease your thoughts, mulling over this new information.\
       \ You’re unsure what to make of his wild claims. Before you can make a\
       \ decision about what to do next, you return to find the door to your room\
@@ -160,7 +160,7 @@ danielDidNotSurvive :: FlavorText
 danielDidNotSurvive =
   FlavorText
     (Just "Daniel Did Not Survive")
-    [ "You decide to lay low for some time in Ma’s\
+    [ BasicEntry "You decide to lay low for some time in Ma’s\
       \ Boarding House, unsure whether news of the events at the asylum will\
       \ get out to the general public. You take this time to make extensive notes\
       \ of the events you’ve experienced thus far, including the brief dialogue\
@@ -177,7 +177,7 @@ danielWasPossessed :: FlavorText
 danielWasPossessed =
   FlavorText
     (Just "Daniel Was Possessed")
-    [ "You decide to lay low for some time in Ma’s\
+    [ BasicEntry "You decide to lay low for some time in Ma’s\
       \ Boarding House, unsure whether news of the events at the asylum will\
       \ get out to the general public. You take this time to make extensive notes\
       \ of the events you’ve experienced thus far, including the brief dialogue\
@@ -186,7 +186,7 @@ danielWasPossessed =
       \ muttered and screeched other phrases, as well. You doubt you’ll ever\
       \ forget them. “He made us speak the Oath.” “The price was paid.” “They\
       \ are opening the path to Carcosa.”"
-    , "On the third night, you return to your room to find the door broken\
+    , BasicEntry "On the third night, you return to your room to find the door broken\
       \ open. You enter cautiously, wondering if the police are onto you. Or\
       \ worse, the Stranger. You are surprised to find the body of Daniel\
       \ Chesterfield instead, lying on the ground with a pained, wide-eyed\
@@ -196,13 +196,13 @@ danielWasPossessed =
       \ scribbled notes in the margins of each page, mostly incomprehensible,\
       \ but with a few lucid standouts. The first time the fictional city of\
       \ Carcosa is mentioned, scrawled next to it Daniel has written:"
-    , "*Carcosa is real"
-    , "Do not let them open the path"
-    , "When Cassilda speaks of the tattered king, Daniel has written:"
-    , "Hastur is the king in tatters"
-    , "locked in his prison in the stars"
-    , "seal him away and stop this madness!"
-    , "Your mind swims with questions. How did he escape the asylum? How\
+    , BasicEntry "*Carcosa is real"
+    , BasicEntry "Do not let them open the path"
+    , BasicEntry "When Cassilda speaks of the tattered king, Daniel has written:"
+    , BasicEntry "Hastur is the king in tatters"
+    , BasicEntry "locked in his prison in the stars"
+    , BasicEntry "seal him away and stop this madness!"
+    , BasicEntry "Your mind swims with questions. How did he escape the asylum? How\
       \ did he die? And why does he appear human to your eyes now? With\
       \ little time to spare, you clean the room of your belongings and flee.\
       \ Daniel’s words, which he begged you to heed, play out in your mind over\
@@ -213,7 +213,7 @@ ignoreTheWarning :: FlavorText
 ignoreTheWarning =
   FlavorText
     (Just "Ignore the Warning")
-    [ "For hours, you struggle with this insight into\
+    [ BasicEntry "For hours, you struggle with this insight into\
       \ The King in Yellow. What is true? What is real? Only you can sort\
       \ through this madness."
     ]
@@ -222,7 +222,7 @@ headTheWarning :: FlavorText
 headTheWarning =
   FlavorText
     (Just "Head the Warning")
-    [ "For hours, you struggle with this insight into\
+    [ BasicEntry "For hours, you struggle with this insight into\
       \ The King in Yellow. What is true? What is real? Only you can sort\
       \ through this madness."
     ]
@@ -231,7 +231,7 @@ epilogue :: FlavorText
 epilogue =
   FlavorText
     (Just "Epilogue")
-    [ "It has taken months of preparation, but you are finally ready to unveil your\
+    [ BasicEntry "It has taken months of preparation, but you are finally ready to unveil your\
       \ latest work to the world. Gathering financial investments was your first task,\
       \ of course. That hadn’t taken too long given the connections you’d made during\
       \ your stay in Paris. You have been assured that the cast assembled is the finest\
@@ -241,5 +241,5 @@ epilogue =
       \ the concern about your piercing yellow eyes. It matters not to you. All you\
       \ care about is the performance. The pronunciation of the words. The melody of\
       \ Cassilda’s song. The design of the Stranger’s mask."
-    , "This would be the greatest performance of The King in Yellow ever."
+    , BasicEntry "This would be the greatest performance of The King in Yellow ever."
     ]

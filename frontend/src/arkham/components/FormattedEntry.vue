@@ -335,4 +335,9 @@ div:has(> img.remove) {
     border-radius: 10px;
   }
 }
+
+.center, :deep(.center) {
+  justify-content: center;
+  align-content: center;
+}
 </style>

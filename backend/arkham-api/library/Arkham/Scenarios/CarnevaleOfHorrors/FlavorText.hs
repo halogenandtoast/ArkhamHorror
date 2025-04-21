@@ -9,7 +9,7 @@ intro :: FlavorText
 intro =
   FlavorText
     (Just "The Carnevale is Coming...")
-    [ "\"Look,\" Sheriff Engel insists, \"I know it sounds crazy, but that's\
+    [ BasicEntry "\"Look,\" Sheriff Engel insists, \"I know it sounds crazy, but that's\
       \ all there is to it.\" He sighs and sits back down, pouring a cup of joe\
       \ for you and one for himself. \"A dame in Uptown spotted a cracked egg\
       \ wearing this mask and holdin' a bloody butcher's cleaver,\" he says,\
@@ -21,7 +21,7 @@ intro =
       \ Called himself Zanni. Said nothing except the 'carnival is coming,' whatever\
       \ the hell that meant. Wasn't until the next day we found the victim's body.\
       \ Defense wanted him in a straitjacket. We were happy to oblige.\""
-    , "There isn't much time to spare. If your research is right, there is more to\
+    , BasicEntry "There isn't much time to spare. If your research is right, there is more to\
       \ this case than meets the eye. This \"Zanni\" wasn't talking about Darke's\
       \ Carnival, but rather, the Carnevale of Venice, which begins just before the\
       \ next full moon..."
@@ -31,7 +31,7 @@ noResolution :: FlavorText
 noResolution =
   FlavorText
     (Just "No resolution")
-    [ "You sputter awake as an oar gently taps your shoulder. \"Tutto bene?\"\
+    [ BasicEntry "You sputter awake as an oar gently taps your shoulder. \"Tutto bene?\"\
       \ The gondolier holding the oar says with a concerned expression. You nod\
       \ and drag yourself onto the docks from his gondola, drenched and aching\
       \ all over. The city is devastated. Most of the boats in the canal are\
@@ -42,7 +42,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "The city is still recovering from the events during the eclipse. With\
+    [ BasicEntry "The city is still recovering from the events during the eclipse. With\
       \ nearly all evidence of the creature melted away by the hot sun, many\
       \ attribute the violence during the Carnevale to local crime lord Cascio\
       \ Di Boerio and his crew. Those that know the truth know better than the\
@@ -54,7 +54,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "The creature recoils as globules of its jelly-like flesh rip and tear\
+    [ BasicEntry "The creature recoils as globules of its jelly-like flesh rip and tear\
       \ from its body, splashing into the lagoon. It makes no sound as its torn\
       \ body sinks into the depths. The chanting in the city plunges into mournful\
       \ silence. As you return it to the canal-side streets, black feathers fall\
@@ -66,7 +66,7 @@ sacrificesMade :: FlavorText
 sacrificesMade =
   FlavorText
     (Just "Sacrifices Made")
-    [ "Too many lives were lost during the eclipse to stop the machinations of\
+    [ BasicEntry "Too many lives were lost during the eclipse to stop the machinations of\
       \ Cindathqua's servants. The beast has been fed, its minions empowered. You find \
       \ yourself hoping you don't live long enough to see the fallout of your failure."
     ]
@@ -75,7 +75,7 @@ abbessSatisfied :: FlavorText
 abbessSatisfied =
   FlavorText
     (Just "Abbess Satisfied")
-    [ "\"Grazie mille - thank you for all your help,\" Allegria says as you return\
+    [ BasicEntry "\"Grazie mille - thank you for all your help,\" Allegria says as you return\
       \ to the basilica. \"Thanks to you, there were few casualties. I shudder to think\
       \ what might have happened had you not arrived. Should you ever require assistance,\
       \ please do not hesitate to ask."

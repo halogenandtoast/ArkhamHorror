@@ -50,7 +50,7 @@ async function logout() {
 #nav {
   background-color: var(--background-dark);
   color: #f2f2f2;
-  height: 40px;
+  padding-block: min(10px, 1vw);
   display: flex;
   align-items: center;
   padding-right: 10px;

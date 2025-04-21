@@ -109,12 +109,12 @@ investigatorDefeat attrs = do
       then do
         story defeat
         story
-          "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
+          $ ft "The creatures are upon you before you have time to react. You scream in agony as you are skewered by razor-sharp spears."
         for_ defeated $ kill attrs
         when (length defeated == length investigators) gameOver
       else do
         story
-          "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
+          $ ft "Suddenly, a distant voice hisses to the others, and the serpents tentatively retreat into the darkness. You run for your life, not taking any chances."
         recordCount YigsFury (yigsFury + 3)
 
 instance RunMessage TheDoomOfEztli where

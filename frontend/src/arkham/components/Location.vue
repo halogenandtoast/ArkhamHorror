@@ -524,11 +524,11 @@ function onDrop(event: DragEvent) {
     top: 10%;
   }
   &:deep(.poolItem img) {
-    width: 30px !important;
+    width: min(30px, 5vw) ;
   }
 
   &:deep(.poolItem) {
-    width: 30px !important;
+    width: min(30px, 5vw);
   }
 
   pointer-events: none;
@@ -680,7 +680,7 @@ function onDrop(event: DragEvent) {
 }
 
 .flood-level {
-  width: 25px;
+  width: min(20px, 4vw);
 }
 
 .wave {

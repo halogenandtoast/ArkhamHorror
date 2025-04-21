@@ -8,7 +8,7 @@ intro1 :: FlavorText
 intro1 =
   FlavorText
     (Just "Scenario IV: The Unspeakable Oath")
-    [ "“Wake up, Daniel.” The words\
+    [ BasicEntry "“Wake up, Daniel.” The words\
       \ echo in your thoughts as you pace through the\
       \ disheveled room, trying to make sense of what\
       \ you’d just experienced. You had awoken that\
@@ -17,7 +17,7 @@ intro1 =
       \ feel even more exhausted than you had the previous night. You catch a\
       \ glimpse of your dark, bloodshot eyes in the mirror next to the dresser,\
       \ and wonder if you’ve gotten any real sleep at all."
-    , "Who is Daniel, you wonder? The chamber from your dream looked\
+    , BasicEntry "Who is Daniel, you wonder? The chamber from your dream looked\
       \ like a prison, but the man—Daniel—he seemed unhinged, as though\
       \ he wasn’t in control of his mind. This led to only one conclusion: An\
       \ asylum. Knowing you’ll get little rest here, you head towards Arkham\
@@ -28,7 +28,7 @@ intro2 :: FlavorText
 intro2 =
   FlavorText
     (Just "Scenario IV: The Unspeakable Oath")
-    [ "Over the course of the next few days, you delve into the\
+    [ BasicEntry "Over the course of the next few days, you delve into the\
       \ evidence you’ve collected, hoping to find any information regarding\
       \ Daniel Chesterfield, a stagehand during the previous production of\
       \ The King in Yellow. As far as you can tell, he is the only surviving\
@@ -36,7 +36,7 @@ intro2 =
       \ those for whom you can find any records at all—disappeared or died\
       \ soon after opening night in a variety of fashions connected only by their\
       \ morbidness. Freak accidents. Suicides. Vanishings."
-    , "It would seem that Daniel is your only lead, if you are to investigate\
+    , BasicEntry "It would seem that Daniel is your only lead, if you are to investigate\
       \ further. According to the records you found, he was admitted to\
       \ Arkham Asylum many years ago. All documentation about Daniel’s\
       \ treatment seems to end there. You’re unsure if he’s even still alive.\
@@ -49,7 +49,7 @@ intro3 :: FlavorText
 intro3 =
   FlavorText
     Nothing
-    [ "As you enter the asylum, you stop to speak with the\
+    [ BasicEntry "As you enter the asylum, you stop to speak with the\
       \ receptionist, though you feel your body urged to step deeper into the\
       \ clutches of this madhouse. He gives you a confused expression as you\
       \ tell him of The King in Yellow and of Daniel. But at your insistence,\
@@ -61,7 +61,7 @@ intro3 =
       \ Doctor Mintz. But you can’t see him; his level is restricted to staff only.”\
       \ You argue and insist to be let into the patient wing, knowing that Daniel\
       \ must hold the key to understanding what is really going on."
-    , "The receptionist gives a pitying smile and relents, nodding to the\
+    , BasicEntry "The receptionist gives a pitying smile and relents, nodding to the\
       \ security guards nearby. “Oh, of course, of course,” he says with all\
       \ the honesty of a street peddler. “I will schedule a meeting for you\
       \ with Doctor Mintz so you can speak with him about Daniel. These\
@@ -73,7 +73,7 @@ constancesInformation :: FlavorText
 constancesInformation =
   FlavorText
     (Just "Constances's Information")
-    [ "You recall what Constance had told you\
+    [ BasicEntry "You recall what Constance had told you\
       \ when you spoke with her during her hellish dinner party. She and the\
       \ other members of the cast and crew had been told by the director, Nigel\
       \ Engram, to take some kind of oath. At first, she’d written it off as the\
@@ -90,7 +90,7 @@ resolution1 :: FlavorText
 resolution1 =
   FlavorText
     (Just "Resolution 1")
-    [ "…And so ended the madness of The King in\
+    [ BasicEntry "…And so ended the madness of The King in\
       \ Yellow."
     ]
 
@@ -98,7 +98,7 @@ resolution2 :: FlavorText
 resolution2 =
   FlavorText
     (Just "Resolution 2")
-    [ "You are confronted by a number\
+    [ BasicEntry "You are confronted by a number\
       \ of orderlies and security guards, who bar your escape. Feeling\
       \ cornered and trapped, you have no choice but to fight your\
       \ way through them. As you struggle to escape, several of the\
@@ -113,7 +113,7 @@ resolution3 :: FlavorText
 resolution3 =
   FlavorText
     (Just "Resolution 3")
-    [ "With the asylum staff distracted\
+    [ BasicEntry "With the asylum staff distracted\
       \ and patients running amok, you are able to slip away without\
       \ being noticed. You escape deeper into the garden behind the\
       \ asylum, where a two-story tall fence topped with barbed wire\
@@ -128,24 +128,24 @@ defeat :: FlavorText
 defeat =
   FlavorText
     (Just "Investigator Defeat")
-    [ "“Doctor Mintz, the patient has been\
+    [ BasicEntry "“Doctor Mintz, the patient has been\
       \ medicated and is ready to see you now.” Nurse Heather\
       \ opened the file on the desk nearby, taking a moment to review\
       \ the patient’s records."
-    , "“Any changes in the patient’s condition?” Doctor Mintz asked\
+    , BasicEntry "“Any changes in the patient’s condition?” Doctor Mintz asked\
       \ in a monotone voice. A formality. Both knew the patient was\
       \ beyond repair."
-    , "“None. The patient’s delusions remain. Demanding to speak\
+    , BasicEntry "“None. The patient’s delusions remain. Demanding to speak\
       \ with the Warden, claiming they are only guests, and rambling\
       \ about that play that aired the other night, The King in Yellow.”"
-    , "“And their other crimes? The incident in the theatre? What\
+    , BasicEntry "“And their other crimes? The incident in the theatre? What\
       \ about 1452 Atlantic Ave?”"
-    , "“They believe they were attacked, and were defending\
+    , BasicEntry "“They believe they were attacked, and were defending\
       \ themselves.” Her voice was thick with pity. What could\
       \ have caused somebody to snap like this so quickly? None\
       \ of the patient’s records showed any prior history of mental\
       \ instability. “Can you make any sense of it, Doctor?”"
-    , "“Who could?” Doctor Mintz sighed and stood, grabbing the\
+    , BasicEntry "“Who could?” Doctor Mintz sighed and stood, grabbing the\
       \ file from his desk. “My job is not to understand. It is to cure.\
       \ Perhaps my experimental procedures will prove fruitful\
       \ on this one.” The nurse winced and felt goosebumps on her\

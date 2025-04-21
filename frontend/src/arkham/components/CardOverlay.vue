@@ -27,7 +27,11 @@ onMounted(() => {
     }
   }
 
-  document.addEventListener('mouseover', handleMouseover)
+  const isMobile = !window.matchMedia('only screen and (min-width: 768px)').matches
+
+  if (!isMobile) {
+    document.addEventListener('mouseover', handleMouseover)
+  }
 
   onUnmounted(() => {
     document.removeEventListener('mouseover', handleMouseover)

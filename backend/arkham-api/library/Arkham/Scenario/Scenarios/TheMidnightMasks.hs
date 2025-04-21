@@ -85,9 +85,9 @@ instance RunMessage TheMidnightMasks where
       setChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
-      flavor do
-        h "intro.title"
-        p "intro.body"
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       forcedToFindOthers <- getHasRecord LitaWasForcedToFindOthersToHelpHerCause
       doStep (if forcedToFindOthers then 1 else 2) msg
       pure s

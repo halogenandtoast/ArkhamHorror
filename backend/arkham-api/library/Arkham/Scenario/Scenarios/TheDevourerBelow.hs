@@ -19,6 +19,7 @@ import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message hiding (chooseOrRunOne, story)
 import Arkham.Message.Lifted hiding (setActDeck, setAgendaDeck)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted hiding (
@@ -29,7 +30,6 @@ import Arkham.Scenario.Import.Lifted hiding (
   story,
  )
 import Arkham.Scenarios.TheDevourerBelow.Helpers
-import Arkham.Token
 import Arkham.Trait hiding (Cultist, ElderThing)
 
 newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
@@ -75,9 +75,9 @@ instance RunMessage TheDevourerBelow where
       push $ SetChaosTokens (chaosBagContents attrs.difficulty)
       pure s
     PreScenarioSetup -> do
-      flavor do
-        h "intro.title"
-        p "intro.body"
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
       pure s
     Setup -> runScenarioSetup TheDevourerBelow attrs do
       cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
@@ -88,11 +88,11 @@ instance RunMessage TheDevourerBelow where
         li "placeLocations"
         li "setOutOfPlay"
         li "randomSet"
-        li.nested "cultistsWhoGotAway.instructions" do
-          li.validate (null cultistsWhoGotAway) "cultistsWhoGotAway.zeroNames"
-          li.validate (length cultistsWhoGotAway `elem` [1, 2]) "cultistsWhoGotAway.oneOrTwoNames"
-          li.validate (length cultistsWhoGotAway `elem` [3, 4]) "cultistsWhoGotAway.threeOrFourNames"
-          li.validate (length cultistsWhoGotAway `elem` [5, 6]) "cultistsWhoGotAway.fiveOrSixNames"
+        scope "cultistsWhoGotAway" $ li.nested "instructions" do
+          li.validate (null cultistsWhoGotAway) "zeroNames"
+          li.validate (length cultistsWhoGotAway `elem` [1, 2]) "oneOrTwoNames"
+          li.validate (length cultistsWhoGotAway `elem` [3, 4]) "threeOrFourNames"
+          li.validate (length cultistsWhoGotAway `elem` [5, 6]) "fiveOrSixNames"
         unscoped $ withVars ["token" .= String "elderThing"] $ li "addToken"
         li.validate pastMidnight "pastMidnight"
         li.validate ghoulPriestIsStillAlive "ghoulPriest"
@@ -124,20 +124,11 @@ instance RunMessage TheDevourerBelow where
 
       let placeDoomAmount = (length cultistsWhoGotAway + 1) `div` 2
       pushWhen (placeDoomAmount > 0) $ PlaceDoomOnAgenda placeDoomAmount CanNotAdvance
-
-      when pastMidnight
-        $ pushAll
-          [ AllRandomDiscard (toSource attrs) AnyCard
-          , AllRandomDiscard (toSource attrs) AnyCard
-          ]
+      when pastMidnight $ twice $ allRandomDiscard attrs AnyCard
     ResolveChaosToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      closestEnemyIds <- select $ NearestEnemyTo iid AnyEnemy
-      when (notNull closestEnemyIds) do
-        chooseOrRunOne iid
-          $ [ targetLabel x [PlaceTokens (ChaosTokenEffectSource Cultist) (toTarget x) Doom doom]
-            | x <- closestEnemyIds
-            ]
+      enemies <- select $ NearestEnemyTo iid AnyEnemy
+      chooseOrRunOneM iid $ targets enemies \x -> placeTokens Cultist x #doom doom
       pure s
     ResolveChaosToken _ Tablet iid -> do
       let horror = byDifficulty attrs 0 1
@@ -157,21 +148,15 @@ instance RunMessage TheDevourerBelow where
           record ArkhamSuccumbedToUmordhothsTerribleVengeance
         Resolution 1 -> do
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 5
-          story
-            $ withVars ["xp" .= xp]
-            $ i18n "resolution1"
+          story $ withVars ["xp" .= xp] $ i18n "resolution1"
           record TheRitualToSummonUmordhothWasBroken
         Resolution 2 -> do
           xp <- allGainXpWithBonus' attrs $ toBonus "bonus" 10
-          story
-            $ withVars ["xp" .= xp]
-            $ i18n "resolution2"
+          story $ withVars ["xp" .= xp] $ i18n "resolution2"
           record TheInvestigatorsRepelledUmordoth
         Resolution 3 -> do
           xp <- allGainXp' attrs
-          story
-            $ withVars ["xp" .= xp]
-            $ i18n "resolution3"
+          story $ withVars ["xp" .= xp] $ i18n "resolution3"
           record TheInvestigatorsSacrificedLitaChantlerToUmordhoth
         _ -> error "Invalid resolution"
       endOfScenario

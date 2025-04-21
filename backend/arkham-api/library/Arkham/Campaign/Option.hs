@@ -19,7 +19,7 @@ data CampaignOption
   | TakeEarlSawyer
   | TakePowderOfIbnGhazi
   | TakeTheNecronomicon
-  | AddAcrossTimeAndSpace
+  | AddAcrossSpaceAndTime
   | -- | The Circle Undone
     TakeBlackBook
   | TakePuzzleBox

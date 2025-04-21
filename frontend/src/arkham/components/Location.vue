@@ -572,6 +572,7 @@ function onDrop(event: DragEvent) {
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: 3072px;
+  pointer-events: none;
 }
 
 .abilities {

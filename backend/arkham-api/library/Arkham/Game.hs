@@ -4954,7 +4954,7 @@ runMessages mLogger = do
             Run msgs -> do
               pushAll msgs
               runMessages mLogger
-            ClearUI -> runMessages mLogger
+            ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages mLogger
             Ask _ (ChooseOneAtATime []) -> runMessages mLogger
             Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages mLogger
             Ask pid q -> do

@@ -324,13 +324,13 @@ getAttackedEnemy :: HasGame m => m (Maybe EnemyId)
 getAttackedEnemy = getSkillTestTargetedEnemy
 
 getSkillTestTargetedEnemy :: HasGame m => m (Maybe EnemyId)
-getSkillTestTargetedEnemy = join . fmap (.enemy) <$> getSkillTestTarget
+getSkillTestTargetedEnemy = ((.enemy) =<<) <$> getSkillTestTarget
 
 isInvestigating
   :: (HasGame m, AsId location, IdOf location ~ LocationId) => InvestigatorId -> location -> m Bool
 isInvestigating iid location =
   andM
-    [ (== Just (asId location)) . join . fmap (.location) <$> getSkillTestTarget
+    [ (== Just (asId location)) . ((.location) =<<) <$> getSkillTestTarget
     , (== Just #investigate) <$> getSkillTestAction
     , (== Just iid) <$> getSkillTestInvestigator
     ]

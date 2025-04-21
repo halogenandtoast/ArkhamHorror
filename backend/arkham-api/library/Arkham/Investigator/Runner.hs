@@ -3116,6 +3116,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let
       cardFilter :: IsCard c => [c] -> [c]
       cardFilter = filter ((/= card.id) . toCardId)
+    doCheck <- hasModifier iid CheckHandSizeAfterDraw
+    when doCheck $ push $ CheckHandSize iid
     pure
       $ a
       & (handL %~ nub . (toCard card :))

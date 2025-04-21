@@ -196,6 +196,10 @@ function sourceCardCode(source: Source) {
     return `${event.cardCode.replace('c', '')}${mutated}`
   }
 
+  if (source.tag === 'InvestigatorSource') {
+    return `${source.contents.replace('c', '')}`
+  }
+
   return null
 }
 
@@ -203,6 +207,7 @@ function modifierSource(mod: Modifier) {
   if(mod.card) {
     return mod.card.contents.cardCode.replace(/^c/, '')
   }
+
   return sourceCardCode(mod.source)
 }
 
@@ -348,7 +353,7 @@ const tokenEffects = computed(() => {
         @choose="choose"
       />
       <div v-if="modifiers.length > 0" class="modifiers">
-        <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier" :data-image-id="modifierSource(modifier)">
+        <div v-for="(modifier, idx) in modifiers" :key="idx" class="modifier" :class="{ 'sideways': modifier.source.tag === 'InvestigatorSource' }" :data-image-id="modifierSource(modifier)">
           <template v-if="modifier.type.tag === 'CannotCommitCards'">
             <span>{{cannotCommitCardsToWords(modifier.type)}}</span>
           </template>

@@ -89,16 +89,14 @@ instance RunMessage TheHouseAlwaysWins where
             chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
           labeled "Do not spend resources" nothing
       pure s
-    PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case token.face of
-        Cultist | isEasyStandard attrs -> gainResourcesIfCan iid Cultist 3
-        _ -> pure ()
+    PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
+      gainResourcesIfCan iid Cultist 3
       pure s
-    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
-      case token.face of
-        Cultist | isHardExpert attrs -> push $ SpendResources iid 3
-        Tablet | isEasyStandard attrs -> push $ SpendResources iid 3
-        _ -> pure ()
+    FailedSkillTestWithToken iid Cultist | isHardExpert attrs -> do
+      spendResources iid 3
+      pure s
+    FailedSkillTestWithToken iid Tablet | isEasyStandard attrs -> do
+      spendResources iid 3
       pure s
     ScenarioResolution NoResolution -> do
       push R1

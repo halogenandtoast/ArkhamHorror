@@ -218,6 +218,10 @@ pattern FailedThisSkillTestBy :: InvestigatorId -> Source -> Int -> Message
 pattern FailedThisSkillTestBy iid source n <-
   FailedSkillTest iid _ source SkillTestInitiatorTarget {} _ n
 
+pattern FailedSkillTestWithToken :: InvestigatorId -> ChaosTokenFace -> Message
+pattern FailedSkillTestWithToken iid face <-
+  FailedSkillTest iid _ _ (ChaosTokenTarget (chaosTokenFace -> face)) _ _
+
 pattern ElderSignEffect :: InvestigatorId -> Message
 pattern ElderSignEffect iid <- ResolveChaosToken _ ElderSign iid
 

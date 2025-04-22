@@ -22,7 +22,8 @@ instance HasModifiersFor JimCulver where
   getModifiersFor (JimCulver attrs) =
     getSkillTestInvestigator >>= \case
       Just iid | iid == attrs.id -> do
-        skulls <- filter ((== #skull) . (.face)) <$> getSkillTestRevealedChaosTokens
+        skulls <-
+          filterM (fmap (elem #skull) . getModifiedChaosTokenFace) =<< getSkillTestRevealedChaosTokens
         modifyEach attrs skulls [ChangeChaosTokenModifier (PositiveModifier 0)]
       _ -> pure mempty
 

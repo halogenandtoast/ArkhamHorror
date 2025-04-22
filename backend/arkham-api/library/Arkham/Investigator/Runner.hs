@@ -129,6 +129,7 @@ import Arkham.Matcher (
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard)
+import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
@@ -938,19 +939,30 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   RemoveCardFromSearch iid cardId | iid == investigatorId -> do
     pure $ a & foundCardsL %~ Map.map (filter ((/= cardId) . toCardId))
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (AssetTarget aid) | iid == investigatorId -> do
-    card <- field AssetCard aid
-    obtainCard card
-    push $ RemoveFromPlay (AssetSource aid)
-    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-    push $ After msg
-    pushWhen (providedSlot a aid) $ RefillSlots a.id
-    pure $ a & (slotsL %~ removeFromSlots aid)
+    if null investigatorDeck
+      then do
+        isDefeated <- field AssetIsDefeated aid
+        when isDefeated $ Lifted.toDiscard GameSource aid
+        pure a
+      else do
+        card <- field AssetCard aid
+        obtainCard card
+        push $ RemoveFromPlay (AssetSource aid)
+        push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+        push $ After msg
+        pushWhen (providedSlot a aid) $ RefillSlots a.id
+        pure $ a & (slotsL %~ removeFromSlots aid)
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (EventTarget eid) | iid == investigatorId -> do
-    card <- field EventCard eid
-    obtainCard card
-    push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-    push $ After msg
-    pushWhen (providedSlot a eid) $ RefillSlots a.id
+    if null investigatorDeck
+      then do
+        placement <- field EventPlacement eid
+        when (isOutOfPlayPlacement placement) (Lifted.toDiscard GameSource eid)
+      else do
+        card <- field EventCard eid
+        obtainCard card
+        push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
+        push $ After msg
+        pushWhen (providedSlot a eid) $ RefillSlots a.id
     pure a
   ShuffleIntoDeck (Deck.InvestigatorDeck iid) (SkillTarget aid) | iid == investigatorId -> do
     card <- field SkillCard aid
@@ -958,8 +970,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     if toCardCode card == "06113"
       then pure $ a & bondedCardsL %~ (card :)
       else do
-        push $ ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card]
-        push $ After msg
+        if null investigatorDeck
+          then Lifted.addToDiscard iid (only card)
+          else do
+            Lifted.shuffleCardsIntoDeck iid (only card)
+            push $ After msg
         pure a
   Discarded (AssetTarget aid) _ (PlayerCard card) -> do
     -- TODO: This message is ugly, we should do something different

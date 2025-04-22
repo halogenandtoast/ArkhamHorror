@@ -236,32 +236,28 @@ instance RunMessage FatalMirage where
         _ -> pure ()
       pure s
     ScenarioResolution resolution -> scope "resolutions" do
-      case resolution of
-        NoResolution -> story $ i18nWithTitle "noResolution"
-        Resolution 1 -> scope "resolution1" do
-          completed <- getCompletedSteps
-          let step3 = CityOfTheElderThings `elem` completed
-          let step2 = not step3 && ToTheForbiddenPeaks `elem` completed
-          let step1 = not step3 && not step2
-          story
-            $ setFlavorTitle "Resolution 1"
-            $ flavorText
-            $ modifyEntry ResolutionEntry
-            $ compose
-              [ p "body"
-              , ul do
-                  li "isThereADifference"
-                  li "victory"
-                  li.nested "memoriesDiscovered" do
-                    li "crossOutMemoriesDiscovered"
-                  li "nonStoryVictory"
-                  li "partnerDamage"
-                  li.nested "proceed" do
-                    li.validate step1 "proceedToTheForbiddenPeaks"
-                    li.validate step2 "proceedToCityOfTheElderThings"
-                    li.validate step3 "proceedToTheHeartOfMadness"
-              ]
-        _ -> error "Unknown resolution"
+      completed <- getCompletedSteps
+      let step3 = CityOfTheElderThings `elem` completed
+      let step2 = not step3 && ToTheForbiddenPeaks `elem` completed
+      let step1 = not step3 && not step2
+      story
+        $ setFlavorTitle (if resolution == NoResolution then "No Resolution" else "Resolution 1")
+        $ flavorText
+        $ modifyEntry ResolutionEntry
+        $ compose
+          [ p $ if resolution == NoResolution then "noResolution" else "resolution1"
+          , ul do
+              li $ if resolution == NoResolution then "noSay" else "isThereADifference"
+              li "victory"
+              li.nested "memoriesDiscovered" do
+                li "crossOutMemoriesDiscovered"
+              li "nonStoryVictory"
+              li "partnerDamage"
+              li.nested "proceed" do
+                li.validate step1 "proceedToTheForbiddenPeaks"
+                li.validate step2 "proceedToCityOfTheElderThings"
+                li.validate step3 "proceedToTheHeartOfMadness"
+          ]
       memoriesInVictory <- select (VictoryDisplayCardMatch #story)
       previouslyBanished <- getRecordSet MemoriesBanished
       let newMemories = map toCardDef $ filter ((`notElem` previouslyBanished) . recorded . toCardCode) memoriesInVictory

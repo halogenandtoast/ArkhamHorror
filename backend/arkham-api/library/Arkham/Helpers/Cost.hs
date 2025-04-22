@@ -121,8 +121,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                <> Matcher.InvestigatorAt Matcher.Anywhere
-                <> Matcher.InvestigatorWithAnyClues
+                 <> Matcher.InvestigatorAt Matcher.Anywhere
+                 <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -134,8 +134,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     canParallelRex <-
       iid
         <=~> ( Matcher.InvestigatorIs "90078"
-                <> Matcher.InvestigatorAt Matcher.Anywhere
-                <> Matcher.InvestigatorWithAnyClues
+                 <> Matcher.InvestigatorAt Matcher.Anywhere
+                 <> Matcher.InvestigatorWithAnyClues
              )
     z <-
       if canParallelRex
@@ -195,8 +195,14 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
       andM
         [ can.manipulate.deck iid
         , selectAny $ Matcher.TreacheryWithId tid
+        , fieldMap InvestigatorDeck (not . null) iid
         ]
-    AssetTarget tid -> andM [can.manipulate.deck iid, selectAny $ Matcher.AssetWithId tid]
+    AssetTarget tid ->
+      andM
+        [ can.manipulate.deck iid
+        , selectAny $ Matcher.AssetWithId tid
+        , fieldMap InvestigatorDeck (not . null) iid
+        ]
     _ -> error "Unhandled shuffle into deck cost"
   ShuffleBondedCost n cardCode -> do
     bondedCards <- field InvestigatorBondedCards iid
@@ -331,7 +337,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
     pure $ totalSpendableClues >= cost
   GroupDiscardCost n extendedCardMatcher locationMatcher -> do
     cost <- getPlayerCountValue n
-    cards <- selectCount $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt locationMatcher) <> extendedCardMatcher <> Matcher.basic Matcher.DiscardableCard
+    cards <-
+      selectCount
+        $ Matcher.InHandOf Matcher.NotForPlay (Matcher.InvestigatorAt locationMatcher)
+        <> extendedCardMatcher
+        <> Matcher.basic Matcher.DiscardableCard
     pure $ cards >= cost
   GroupClueCostRange (cost, _) locationMatcher -> do
     iids <- select $ Matcher.InvestigatorAt locationMatcher
@@ -488,7 +498,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify = \ca
   SupplyCost locationMatcher supply ->
     iid
       <=~> ( Matcher.InvestigatorWithSupply supply
-              <> Matcher.InvestigatorAt locationMatcher
+               <> Matcher.InvestigatorAt locationMatcher
            )
   ResolveEachHauntedAbility _ -> pure True
 

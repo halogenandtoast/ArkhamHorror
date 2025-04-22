@@ -1,15 +1,9 @@
-module Arkham.Treachery.Cards.CaughtRedHanded (
-  caughtRedHanded,
-  CaughtRedHanded (..),
-) where
+module Arkham.Treachery.Cards.CaughtRedHanded (caughtRedHanded) where
 
-import Arkham.Prelude
-
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Matcher
+import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype CaughtRedHanded = CaughtRedHanded TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -19,28 +13,12 @@ caughtRedHanded :: TreacheryCard CaughtRedHanded
 caughtRedHanded = treachery CaughtRedHanded Cards.caughtRedHanded
 
 instance RunMessage CaughtRedHanded where
-  runMessage msg t@(CaughtRedHanded attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      enemies <-
-        selectMap EnemyTarget
-          $ EnemyAt
-          $ LocationMatchAny
-            [ locationWithInvestigator iid
-            , ConnectedFrom (locationWithInvestigator iid)
-            ]
-      hunters <-
-        selectMap EnemyTarget
-          $ HunterEnemy
-          <> EnemyAt
-            (ConnectedFrom $ locationWithInvestigator iid)
-      pushAll
-        $ map Ready enemies
-        <> [ MoveToward target (locationWithInvestigator iid)
-           | target <- hunters
-           ]
-        <> [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-           | null hunters
-           ]
-
+  runMessage msg t@(CaughtRedHanded attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      enemies <- selectTargets $ EnemyAt $ orConnected $ locationWithInvestigator iid
+      hunters <- selectTargets $ HunterEnemy <> at_ (ConnectedFrom $ locationWithInvestigator iid)
+      for_ enemies readyThis
+      for_ hunters (`moveToward` locationWithInvestigator iid)
+      when (null hunters) $ shuffleIntoDeck iid attrs
       pure t
-    _ -> CaughtRedHanded <$> runMessage msg attrs
+    _ -> CaughtRedHanded <$> liftRunMessage msg attrs

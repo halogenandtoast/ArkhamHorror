@@ -126,9 +126,11 @@ instance RunMessage CustomModifications where
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       for_ attrs.attachedTo \t -> placeTokens (attrs.ability 3) t Ammo 1
       pure e
-    When (PassedThisSkillTestBy iid (AbilitySource source _) n) | maybe False ((`isSource` source) . targetToSource) attrs.attachedTo && n >= 3 -> do
-      whenM inAttackSkillTest do
-        withSkillTest \sid ->
-          skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)
-      pure e
+    When (PassedThisSkillTestBy iid (AbilitySource source _) n)
+      | maybe False ((`isSource` source) . targetToSource) attrs.attachedTo
+          && (n >= 3)
+          && (attrs `hasCustomization` QuicksilverBullets) -> do
+          whenM inAttackSkillTest do
+            withSkillTest \sid -> skillTestModifier sid (attrs.ability 3) iid (DamageDealt 1)
+          pure e
     _ -> CustomModifications <$> liftRunMessage msg attrs

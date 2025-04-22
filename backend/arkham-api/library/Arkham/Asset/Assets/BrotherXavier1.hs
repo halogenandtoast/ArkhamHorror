@@ -25,7 +25,12 @@ instance HasModifiersFor BrotherXavier1 where
 
 instance HasAbilities BrotherXavier1 where
   getAbilities (BrotherXavier1 a) =
-    [controlled a 1 CanDealDamage $ freeReaction (AssetDefeated #when ByAny $ be a)]
+    [ controlled
+        a
+        1
+        (CanDealDamage <> exists (at_ YourLocation <> EnemyCanBeDamagedBySource (a.ability 1)))
+        $ freeReaction (AssetDefeated #when ByAny $ be a)
+    ]
 
 instance RunMessage BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of

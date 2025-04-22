@@ -55,8 +55,6 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
               game <- from $ table @ArkhamGame
               where_ $ game.id ==. val gameId
               locking forUpdate
-              forUpdateOf game noWait
-              pure ()
           -- ensure previous step exists
           maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
             =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
@@ -75,18 +73,20 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
         sendStatusJSON Status.status200 arkhamGame
 
       now <- liftIO getCurrentTime
-      runDB do
-        void $ select do
-          game <- from $ table @ArkhamGame
-          where_ $ game.id ==. val gameId
-          forUpdateOf game noWait
-          pure ()
-        patched <- withSpan_ "patch" $ pure $ patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step) 
-        case patched of
-          Error e -> withSpan_ "patch error" $ error $ T.pack e
-          Success ge -> withSpan_ "patch success" do
-            -- TODO: We need to add back the gameActionDiff
-            -- ensure previous step exists
+      patched <-
+        withSpan_ "patch" $ pure $ patch arkhamGameCurrentData (choicePatchDown $ arkhamStepChoice step)
+
+      case patched of
+        -- TODO: We need to add back the gameActionDiff
+        -- ensure previous step exists
+        Error e -> withSpan_ "patch error" $ error $ T.pack e
+        Success ge -> withSpan_ "patch success" do
+          runDB do
+            void $ select do
+              game <- from $ table @ArkhamGame
+              where_ $ game.id ==. val gameId
+              forUpdateOf game noWait
+              pure ()
             maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
               =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 

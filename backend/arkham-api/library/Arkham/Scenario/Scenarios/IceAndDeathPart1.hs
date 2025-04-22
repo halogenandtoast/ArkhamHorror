@@ -196,7 +196,7 @@ instance RunMessage IceAndDeathPart1 where
         _ -> pure ()
       pure s
     DiscardedTopOfDeck iid cards (isSource Tablet -> True) (isTarget attrs -> True) -> do
-      let weaknesses = filter (`cardMatch` WeaknessCard) cards
+      let weaknesses = filterCards WeaknessCard cards
       when (notNull weaknesses) $ addToHand iid weaknesses
       pure s
     ScenarioResolution resolution -> scope "resolutions" do

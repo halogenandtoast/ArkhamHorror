@@ -17,7 +17,7 @@ oops2 = event Oops2 Cards.oops2
 instance RunMessage Oops2 where
   runMessage msg e@(Oops2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ (attackedEnemy -> enemy) _ | eid == toId attrs -> do
-      enemies <- filter (/= enemy) <$> select (enemyAtLocationWith iid)
+      enemies <- select (enemyAtLocationWith iid)
       withSkillTest \sid -> do
         skillTestModifier sid (toSource attrs) iid DoesNotDamageOtherInvestigator
         case enemies of

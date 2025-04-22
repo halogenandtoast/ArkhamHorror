@@ -1,4 +1,4 @@
-module Arkham.Agenda.Cards.ColdWelcome (ColdWelcome (..), coldWelcome) where
+module Arkham.Agenda.Cards.ColdWelcome (coldWelcome) where
 
 import Arkham.Agenda.Cards qualified as Cards
 import Arkham.Agenda.Import.Lifted

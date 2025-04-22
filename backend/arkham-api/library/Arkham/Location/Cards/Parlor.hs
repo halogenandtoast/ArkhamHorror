@@ -31,12 +31,12 @@ instance HasAbilities Parlor where
 
 instance RunMessage Parlor where
   runMessage msg l@(Parlor attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
+    UseThisAbility iid source@(isProxySource attrs -> True) 1 -> do
       aid <- selectJust $ assetIs Cards.litaChantler
       sid <- getRandom
-      parley sid iid attrs aid #intellect (Fixed 4)
+      parley sid iid source aid #intellect (Fixed 4)
       pure l
-    PassedThisSkillTest iid (isSource attrs -> True) -> do
+    PassedThisSkillTest iid (isProxySource attrs -> True) -> do
       aid <- selectJust $ assetIs Cards.litaChantler
       takeControlOfAsset iid aid
       pure l

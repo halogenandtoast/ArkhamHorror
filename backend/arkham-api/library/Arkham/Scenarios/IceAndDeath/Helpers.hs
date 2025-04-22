@@ -43,7 +43,7 @@ iceAndDeathLayout =
   ]
 
 placeSetAsideConnectedAbility :: (Sourceable a, HasCardCode a) => a -> Int -> Ability
-placeSetAsideConnectedAbility a n = mkAbility a n $ forced $ Enters #after You $ ConnectedToSetAsideLocation
+placeSetAsideConnectedAbility a n = mkAbility a n $ forced $ Enters #after You ConnectedToSetAsideLocation
 
 placeSetAsideConnectedLocations :: ReverseQueue m => LocationId -> m ()
 placeSetAsideConnectedLocations lid = do

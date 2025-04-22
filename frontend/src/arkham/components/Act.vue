@@ -124,8 +124,8 @@ async function chooseAbility(index: number) {
   emits('choose', index)
 }
 
-const isOtherEncounterCard = computed(() => {
-  return ["04134b", "04137b"].includes(cardCode.value)
+const isVertical = computed(() => {
+  return ["03321b", "04117b", "04118b", "04122b", "04125b", "04126b", "04128b", "04130b", "04133b", "04134b", "04137b", "04209b", "05055b", "05286b", "05288b", "10607b", "53029b", "53030b", "53032b", "53034b", "53046b", "82006b"].includes(cardCode.value)
 })
 
 const breaches = computed(() => {
@@ -139,7 +139,7 @@ const breaches = computed(() => {
   <div class="act-container">
     <div class="card-container" :class="{ 'act--objective': hasObjective }">
       <img
-        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isOtherEncounterCard}"
+        :class="{ 'act--can-progress': interactAction !== -1, 'act--can-interact': canInteract, 'card--sideways': !isVertical}"
         class="card"
         @click="clicked"
         :src="image"

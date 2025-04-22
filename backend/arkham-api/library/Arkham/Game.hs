@@ -762,7 +762,7 @@ getInvestigatorsMatching matcher = do
     NearestToLocation locationMatcher -> do
       destinations <- select locationMatcher
       if null destinations
-        then pure []
+        then pure as
         else
           mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i
@@ -771,7 +771,7 @@ getInvestigatorsMatching matcher = do
     NearestToEnemy enemyMatcher -> do
       destinations <- select $ LocationWithEnemy enemyMatcher
       if null destinations
-        then pure []
+        then pure as
         else
           mins <$> forMaybeM as \i -> runMaybeT do
             loc <- MaybeT $ getMaybeLocation i

@@ -95,14 +95,18 @@ const attachedEnemies = computed(() => Object.values(props.game.enemies).
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
 const debug = useDebug()
+const isVertical = computed(() => {
+  const cardCode = props.agenda.flipped ? id.value.replace(/a$/, 'b') : id.value
+  return ["c01121b", "c06169b", "c50026b", "c07164b", "c07165b", "c07199b", "c82002b", "c90033b", "c90066b"].includes(cardCode) 
+})
 </script>
 
 <template>
   <div class="agenda-container">
     <div class="agenda-card">
       <img
-        :class="{ 'agenda--can-progress': interactAction !== -1 }"
-        class="card card--sideways card--agenda"
+      :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical }"
+        class="card card--agenda"
         @click="$emit('choose', interactAction)"
         :src="image"
       />

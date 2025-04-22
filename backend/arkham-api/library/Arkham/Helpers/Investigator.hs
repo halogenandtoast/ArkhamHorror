@@ -208,9 +208,9 @@ getCanDiscoverClues isInvestigation iid lid = do
   match (CannotDiscoverCluesExceptAsResultOfInvestigation matcher) | isInvestigation == NotInvestigate = elem lid <$> select matcher
   match _ = pure False
 
-getCanSpendClues :: HasGame m => InvestigatorAttrs -> m Bool
-getCanSpendClues attrs = do
-  modifiers <- getModifiers (toTarget attrs)
+getCanSpendClues :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Bool
+getCanSpendClues (asId -> iid) = do
+  modifiers <- getModifiers iid
   pure $ not (any match modifiers)
  where
   match CannotSpendClues {} = True
@@ -425,10 +425,10 @@ defaultSlots iid =
     , (TarotSlot, [Slot (InvestigatorSource iid) []])
     ]
 
-getSpendableClueCount :: HasGame m => InvestigatorAttrs -> m Int
-getSpendableClueCount a = do
-  canSpendClues <- getCanSpendClues a
-  pure $ if canSpendClues then investigatorClues a else 0
+getSpendableClueCount :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Int
+getSpendableClueCount (asId -> iid) = do
+  canSpendClues <- getCanSpendClues iid
+  if canSpendClues then field InvestigatorClues iid else pure 0
 
 getCanSpendNClues :: HasGame m => InvestigatorId -> Int -> m Bool
 getCanSpendNClues iid n = iid <=~> InvestigatorCanSpendClues (Static n)

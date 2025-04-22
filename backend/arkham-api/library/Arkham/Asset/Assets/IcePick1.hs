@@ -16,7 +16,8 @@ icePick1 = asset IcePick1 Cards.icePick1
 
 instance HasAbilities IcePick1 where
   getAbilities (IcePick1 x) =
-    [ controlledAbility x 1 (DuringSkillTest $ oneOf [#investigating, #fighting])
+    [ wantsSkillTest (YourSkillTest $ oneOf [#investigating, #fighting])
+        $ controlled x 1 (DuringSkillTest $ oneOf [#investigating, #fighting])
         $ FastAbility (exhaust x)
     ]
 

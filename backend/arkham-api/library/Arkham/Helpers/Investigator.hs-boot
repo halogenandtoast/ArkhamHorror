@@ -8,5 +8,6 @@ import Arkham.Id
 import Arkham.Matcher.Investigator
 
 matchWho :: HasGame m => InvestigatorId -> InvestigatorId -> InvestigatorMatcher -> m Bool
+getSpendableClueCount :: (HasGame m, AsId investigator, IdOf investigator ~ InvestigatorId) => investigator -> m Int
 
 instance HasGame m => Capable (InvestigatorId -> m Bool)

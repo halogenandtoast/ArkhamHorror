@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-orphans -Wno-deprecations #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 
 module Arkham.Helpers.Investigator where
 
@@ -144,9 +144,7 @@ data DamageFor = DamageForEnemy | DamageForInvestigator
 
 damageValueFor :: HasGame m => Int -> InvestigatorId -> DamageFor -> m Int
 damageValueFor baseValue iid damageFor = do
-  fullModifiers <- getFullModifiers (InvestigatorTarget iid)
-  traceShowId fullModifiers `seq` pure ()
-  modifiers <- traceShowId <$> getModifiers (InvestigatorTarget iid)
+  modifiers <- getModifiers (InvestigatorTarget iid)
   let baseValue' = if NoStandardDamage `elem` modifiers then 0 else baseValue
   foldrM applyModifier baseValue' modifiers
  where

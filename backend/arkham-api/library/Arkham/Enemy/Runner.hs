@@ -1252,6 +1252,7 @@ instance RunMessage EnemyAttrs where
       pure
         $ a
         & (keysL .~ mempty)
+        & (lastKnownLocationL .~ mloc)
         & (if placeInVictory then placementL .~ OutOfPlay VictoryDisplayZone else id)
     After (EnemyDefeated eid _ source _) | eid == toId a -> do
       case a.placement of

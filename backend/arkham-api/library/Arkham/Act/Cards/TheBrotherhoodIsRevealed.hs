@@ -6,7 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Classes
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Enemy.Types (Field (EnemyLocation))
+import Arkham.Enemy.Types (Field (EnemyLastKnownLocation))
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
@@ -40,12 +40,10 @@ instance HasModifiersFor TheBrotherhoodIsRevealed where
       pure [EnemyFight 1, HealthModifier n, EnemyEvade 1]
 
 instance HasAbilities TheBrotherhoodIsRevealed where
-  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) | onSide E a = do
-    [ restrictedAbility a 1 (Negate $ enemyExists IsIchtacasPrey)
-        $ Objective
-        $ ForcedAbility AnyWindow
-      ]
-  getAbilities _ = []
+  getAbilities (TheBrotherhoodIsRevealed (a `With` _)) =
+    [ restricted a 1 (not_ $ exists IsIchtacasPrey) $ Objective $ forced AnyWindow
+    | onSide E a
+    ]
 
 instance RunMessage TheBrotherhoodIsRevealed where
   runMessage msg a@(TheBrotherhoodIsRevealed (attrs `With` metadata)) =
@@ -74,8 +72,11 @@ instance RunMessage TheBrotherhoodIsRevealed where
         isMariaDeSilva <- eid <=~> enemyIs Enemies.mariaDeSilvaKnowsMoreThanSheLetsOn
         if isPrey && isMariaDeSilva
           then do
-            location <- fieldJust EnemyLocation eid
-            pure . TheBrotherhoodIsRevealed $ attrs `with` Metadata (Just location)
+            location <- join <$> fieldMay EnemyLastKnownLocation eid
+            pure
+              . TheBrotherhoodIsRevealed
+              $ attrs
+              `with` Metadata (Just $ fromJustNote "missing location" location)
           else pure a
       _ ->
         TheBrotherhoodIsRevealed . (`with` metadata) <$> runMessage msg attrs

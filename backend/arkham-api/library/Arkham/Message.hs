@@ -1,5 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -O0 #-}
 
 module Arkham.Message (module Arkham.Message, module X) where
 

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -O0 #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE NoFieldSelectors #-}
@@ -1908,4 +1909,3 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AttemptExplore timing whoMatcher -> guardTiming timing $ \case
       Window.AttemptExplore who -> matchWho iid who whoMatcher
       _ -> noMatch
-{-# NOINLINE windowMatches #-}

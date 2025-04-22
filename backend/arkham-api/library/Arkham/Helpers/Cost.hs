@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 module Arkham.Helpers.Cost where
 
 import Arkham.Action (Action)
@@ -21,6 +22,7 @@ import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
 import {-# SOURCE #-} Arkham.Helpers.Investigator ()
+import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (getSpendableClueCount)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
@@ -516,13 +518,7 @@ getSpendableResources iid = do
 
 getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
-  getSum
-    <$> selectAgg
-      Sum
-      InvestigatorClues
-      ( Matcher.InvestigatorWithoutModifier CannotSpendClues
-          <> Matcher.AnyInvestigator (map Matcher.InvestigatorWithId investigatorIds)
-      )
+  getSum <$> foldMapM (fmap Sum . Investigator.getSpendableClueCount) investigatorIds
 
 applyActionCostModifier
   :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int

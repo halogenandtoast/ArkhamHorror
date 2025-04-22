@@ -1065,17 +1065,20 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           then orConnected (locationWithInvestigator investigatorId)
           else locationWithInvestigator investigatorId
     player <- getPlayer investigatorId
-    push
-      $ chooseOne
-        player
-        [ FightLabel
-            eid
-            $ ChoseEnemy choose.skillTest investigatorId source eid
-            : [ FightEnemy eid choose
-              | not choose.onlyChoose
-              ]
-        | eid <- enemyIds <> map coerce locationIds
-        ]
+    let choices = enemyIds <> map coerce locationIds
+    -- we might have killed the enemy via a reaction before getting here
+    unless (null choices) do
+      push
+        $ chooseOne
+          player
+          [ FightLabel
+              eid
+              $ ChoseEnemy choose.skillTest investigatorId source eid
+              : [ FightEnemy eid choose
+                | not choose.onlyChoose
+                ]
+          | eid <- enemyIds <> map coerce locationIds
+          ]
     pure a
   EngageEnemy iid eid _ True | iid == investigatorId -> do
     modifiers' <- getModifiers (toTarget a)

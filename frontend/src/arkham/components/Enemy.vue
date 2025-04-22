@@ -186,7 +186,6 @@ async function clicked() {
   } else {
     showAbilities.value = false
   }
-  console.log('clicked', cardAction.value, abilities.value, showAbilities.value)
 }
 
 async function chooseAbility(ability: number) {

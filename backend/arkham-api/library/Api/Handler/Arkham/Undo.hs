@@ -1,7 +1,4 @@
-module Api.Handler.Arkham.Undo (
-  putApiV1ArkhamGameUndoR,
-  putApiV1ArkhamGameUndoScenarioR,
-) where
+module Api.Handler.Arkham.Undo (putApiV1ArkhamGameUndoR, putApiV1ArkhamGameUndoScenarioR) where
 
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
@@ -15,7 +12,6 @@ import Data.Text qualified as T
 import Data.These
 import Data.Time.Clock
 import Database.Esqueleto.Experimental
-import Database.Esqueleto.PostgreSQL (forUpdateOf, noWait)
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
 import Import hiding (delete, on, update, (<.), (=.), (==.), (>=.))
@@ -85,8 +81,7 @@ stepBack userId gameId current@ArkhamGame {..} = withSpan_ "stepBack" do
             void $ select do
               game <- from $ table @ArkhamGame
               where_ $ game.id ==. val gameId
-              forUpdateOf game noWait
-              pure ()
+              locking forUpdate
             maybe (error $ "can not go back, at step: " <> tshow arkhamGameStep) (\_ -> pure ())
               =<< getBy (UniqueStep gameId (arkhamGameStep - 1))
 

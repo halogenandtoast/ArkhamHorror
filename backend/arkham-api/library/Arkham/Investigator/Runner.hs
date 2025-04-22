@@ -1365,7 +1365,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     batchedTimings batchId (Window.WouldMove iid source from destinationLocationId) & \case
                       (whens, _, _) -> Just whens
                   Nothing -> Nothing
-                (whenEntering, atIfEntering, afterEntering) = batchedTimings batchId (Window.Entering iid destinationLocationId)
+                (whenEntering, atIfEntering, _) = batchedTimings batchId (Window.Entering iid destinationLocationId)
 
               -- Windows we need to check as understood:
               -- according to Empirical Hypothesis ruling the order should be like:
@@ -1388,7 +1388,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               runAtIfMoves <- checkWindows [atIfMoves]
               runWhenEntering <- checkWindows [whenEntering]
               runAtIfEntering <- checkWindows [atIfEntering]
-              runAfterEnteringMoves <- checkWindows [afterEntering, afterMoves]
+              runAfterMoves <- checkWindows [afterMoves]
 
               pushBatched batchId
                 $ maybeToList mRunWouldMove
@@ -1404,7 +1404,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                           , runWhenMoves
                           , runAtIfMoves
                           , MoveTo movement
-                          , runAfterEnteringMoves
+                          , runAfterMoves
                           ]
                        <> maybeToList mRunAfterLeaving
                    ]
@@ -1418,15 +1418,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                     batchedTimings batchId (Window.Leaving iid from) & \case
                       (whens, atIfs, afters) -> (Just whens, Just atIfs, Just afters)
                   Nothing -> (Nothing, Nothing, Nothing)
-              mRunWhenLeaving <- case mWhenLeaving of
-                Just whenLeaving -> Just <$> checkWindows [whenLeaving]
-                Nothing -> pure Nothing
-              mRunAtIfLeaving <- case mAtIfLeaving of
-                Just atIfLeaving -> Just <$> checkWindows [atIfLeaving]
-                Nothing -> pure Nothing
-              mRunAfterLeaving <- case mAfterLeaving of
-                Just afterLeaving -> Just <$> checkWindows [afterLeaving]
-                Nothing -> pure Nothing
+              mRunWhenLeaving <- for mWhenLeaving \whenLeaving -> checkWindows [whenLeaving]
+              mRunAtIfLeaving <- for mAtIfLeaving \atIfLeaving -> checkWindows [atIfLeaving]
+              mRunAfterLeaving <- for mAfterLeaving \afterLeaving -> checkWindows [afterLeaving]
               runWhenEntering <- checkWindows [whenEntering]
               runAtIfEntering <- checkWindows [atIfEntering]
               runAfterEntering <- checkWindows [afterEntering]
@@ -2680,6 +2674,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         afterMoveButBeforeEnemyEngagement <-
           Helpers.checkWindows [mkAfter (Window.MovedButBeforeEnemyEngagement iid lid)]
 
+        afterEntering <- checkAfter $ Window.Entering iid lid
+
         pushAll
           $ [ WhenWillEnterLocation iid lid
             , Do (WhenWillEnterLocation iid lid)
@@ -2693,10 +2689,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                  ]
              | (iid', player) <- moveWith
              ]
-          <> [ afterMoveButBeforeEnemyEngagement
+          <> moveAfter movement
+          <> [ afterEntering
+             , afterMoveButBeforeEnemyEngagement
              , CheckEnemyEngagement iid
              ]
-          <> moveAfter movement
         pure a
   Do (WhenWillEnterLocation iid lid) | iid == investigatorId -> do
     pure $ a & placementL .~ AtLocation lid

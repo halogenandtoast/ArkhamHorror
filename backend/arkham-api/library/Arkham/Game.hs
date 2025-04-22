@@ -3659,6 +3659,7 @@ getEnemyField f e = do
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
     EnemyCardsUnderneath -> pure enemyCardsUnderneath
+    EnemyLastKnownLocation -> pure enemyLastKnownLocation
     EnemySealedChaosTokens -> pure enemySealedChaosTokens
     EnemyKeys -> pure enemyKeys
     EnemySpawnedBy -> pure enemySpawnedBy

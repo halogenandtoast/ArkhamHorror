@@ -1,16 +1,10 @@
-module Arkham.Asset.Assets.Kleptomania (
-  kleptomania,
-  Kleptomania (..),
-)
-where
-
-import Arkham.Prelude
+module Arkham.Asset.Assets.Kleptomania (kleptomania) where
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
-import Arkham.Asset.Runner
-import Arkham.Deck qualified as Deck
+import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype Kleptomania = Kleptomania AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -21,7 +15,7 @@ kleptomania = asset Kleptomania Cards.kleptomania
 
 instance HasAbilities Kleptomania where
   getAbilities (Kleptomania a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         ( atYourLocation
@@ -30,36 +24,27 @@ instance HasAbilities Kleptomania where
             <> oneOf [InvestigatorWithResources (atLeast 2), HasMatchingAsset #item]
         )
         actionAbility
-    , restrictedAbility a 2 ControlsThis $ ForcedAbility $ TurnEnds #when You
+    , restricted a 2 ControlsThis $ forced $ TurnEnds #when You
     ]
 
 instance RunMessage Kleptomania where
-  runMessage msg t@(Kleptomania attrs) = case msg of
+  runMessage msg t@(Kleptomania attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      push $ putCardIntoPlay iid attrs
+      putCardIntoPlay iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ AssetOwnedBy (notInvestigator iid <> colocatedWith iid) <> #item
       investigators <-
         select $ notInvestigator iid <> colocatedWith iid <> InvestigatorWithResources (atLeast 2)
-      player <- getPlayer iid
-      push
-        $ chooseOne player
-        $ [ targetLabel
-            iid'
-            [ LoseResources iid' (toAbilitySource attrs 1) 2
-            , takeResources iid iid' 2
-            , ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-            ]
-          | iid' <- investigators
-          ]
-        <> [ targetLabel
-            aid
-            [TakeControlOfAsset iid aid, ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)]
-           | aid <- assets
-           ]
+      chooseOneM iid do
+        targets investigators \iid' -> do
+          loseResources iid' (attrs.ability 1) 2
+          takeResources iid iid' 2
+
+        targets assets (takeControlOfAsset iid)
+      shuffleIntoDeck iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
-      push $ assignHorror iid (toAbilitySource attrs 2) 1
+      assignHorror iid (attrs.ability 2) 1
       pure t
-    _ -> Kleptomania <$> runMessage msg attrs
+    _ -> Kleptomania <$> liftRunMessage msg attrs

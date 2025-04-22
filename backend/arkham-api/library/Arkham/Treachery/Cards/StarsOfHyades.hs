@@ -1,17 +1,11 @@
-module Arkham.Treachery.Cards.StarsOfHyades (
-  starsOfHyades,
-  StarsOfHyades (..),
-) where
-
-import Arkham.Prelude
+module Arkham.Treachery.Cards.StarsOfHyades (starsOfHyades) where
 
 import Arkham.Card
-import Arkham.Classes
-import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Treachery.Cards qualified as Cards
-import Arkham.Treachery.Runner
+import Arkham.Treachery.Import.Lifted
 
 newtype StarsOfHyades = StarsOfHyades TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -21,28 +15,17 @@ starsOfHyades :: TreacheryCard StarsOfHyades
 starsOfHyades = treachery StarsOfHyades Cards.starsOfHyades
 
 instance RunMessage StarsOfHyades where
-  runMessage msg t@(StarsOfHyades attrs) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      events <-
-        fieldMap
-          InvestigatorCardsUnderneath
-          (filter ((== EventType) . toCardType))
-          iid
+  runMessage msg t@(StarsOfHyades attrs) = runQueueT $ case msg of
+    Revelation iid (isSource attrs -> True) -> do
+      events <- fieldMap InvestigatorCardsUnderneath (filterCards (card_ #event)) iid
       case nonEmpty events of
-        Nothing -> push (InvestigatorAssignDamage iid source DamageAny 1 1)
-        Just targets -> do
+        Nothing -> assignDamageAndHorror iid attrs 1 1
+        Just xs -> do
           deckSize <- fieldMap InvestigatorDeck length iid
-          discardedEvent <- sample targets
-          player <- getPlayer iid
-          pushAll
-            $ chooseOne
-              player
-              [ targetLabel
-                  (toCardId discardedEvent)
-                  [RemoveFromGame (CardIdTarget $ toCardId discardedEvent)]
-              ]
-            : [ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
-              | deckSize >= 5
-              ]
+          discardedEvent <- sample xs
+          chooseOneM iid do
+            targeting (toCardId discardedEvent) do
+              push $ RemoveFromGame (CardIdTarget $ toCardId discardedEvent)
+          when (deckSize < 5) $ shuffleIntoDeck iid attrs
       pure t
-    _ -> StarsOfHyades <$> runMessage msg attrs
+    _ -> StarsOfHyades <$> liftRunMessage msg attrs

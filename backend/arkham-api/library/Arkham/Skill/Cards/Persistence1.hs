@@ -1,4 +1,4 @@
-module Arkham.Skill.Cards.Persistence1 (persistence1, Persistence1 (..)) where
+module Arkham.Skill.Cards.Persistence1 (persistence1) where
 
 import Arkham.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
@@ -17,7 +17,7 @@ persistence1 = skill Persistence1 Cards.persistence1
 instance HasModifiersFor Persistence1 where
   getModifiersFor (Persistence1 attrs) = case attrs.placement of
     StillInDiscard iid -> modified_ attrs iid [CanCommitToSkillTestsAsIfInHand (toCard attrs)]
-    _ -> pure mempty
+    _ -> pure ()
 
 instance RunMessage Persistence1 where
   runMessage msg (Persistence1 attrs) = runQueueT $ case msg of

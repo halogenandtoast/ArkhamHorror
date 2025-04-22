@@ -3570,6 +3570,10 @@ instance Projection Asset where
       AssetCardDef -> pure $ toCardDef attrs
       AssetCard -> pure $ toCard a
       AssetAbilities -> pure $ getAbilities a
+      AssetIsDefeated -> do
+        let damage = Token.countTokens #damage assetTokens
+        let horror = Token.countTokens #horror assetTokens
+        pure $ maybe False (damage >=) assetHealth || maybe False (horror >=) assetSanity
 
 instance Projection (DiscardedEntity Asset) where
   getAttrs aid = do

@@ -11,20 +11,20 @@
     "xp": {
       "memoriesBanished": "Memories Banished"
     },
-    "resolution1": {
-      "isThereADifference": "Is there a difference?",
-      "victory": "In the “Fatal Mirage” section of the Campaign Log, under “Memories Banished,” record each story card in the victory display. Each investigator earns experience equal to the Victory X value of each card recorded in this way. (*Do not earn experience points for cards already recorded in this section*).",
-      "memoriesDiscovered": " In the “Fatal Mirage” section of the Campaign Log, under “Memories Discovered,” record each non‑_Otherworld_ location in play.",
-      "crossOutMemoriesDiscovered": "Cross off each location recorded under “Memories Discovered” for which the corresponding story card is also recorded under “Memories Banished.”",
-      "nonStoryVictory": "If there are any other non-story cards in the victory display worth Victory X, each investigator earns experience equal to that amount.",
-      "partnerDamage": "In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.",
-      "proceed": "Proceed to the next scenario of the campaign, in numerical order, as follows:",
-      "proceedToTheForbiddenPeaks": "If the last scenario you played before this one was Ice and Death, proceed to _Scenario II: To the Forbidden Peaks_.",
-      "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
-      "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
-      "title": "Resolution 1",
-      "body": "<div class='resolution'><p>_Resolution 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?"
-    }
+    "isThereADifference": "Is there a difference?",
+    "noSay": "But you have no say in the matter.",
+    "victory": "In the “Fatal Mirage” section of the Campaign Log, under “Memories Banished,” record each story card in the victory display. Each investigator earns experience equal to the Victory X value of each card recorded in this way. (*Do not earn experience points for cards already recorded in this section*).",
+    "memoriesDiscovered": " In the “Fatal Mirage” section of the Campaign Log, under “Memories Discovered,” record each non‑_Otherworld_ location in play.",
+    "crossOutMemoriesDiscovered": "Cross off each location recorded under “Memories Discovered” for which the corresponding story card is also recorded under “Memories Banished.”",
+    "nonStoryVictory": "If there are any other non-story cards in the victory display worth Victory X, each investigator earns experience equal to that amount.",
+    "partnerDamage": "In the “Expedition Team” section of the Campaign Log, record the amount of damage and horror on each partner asset in play.",
+    "proceed": "Proceed to the next scenario of the campaign, in numerical order, as follows:",
+    "proceedToTheForbiddenPeaks": "If the last scenario you played before this one was Ice and Death, proceed to _Scenario II: To the Forbidden Peaks_.",
+    "proceedToCityOfTheElderThings": "If the last scenario you played before this one was To the Forbidden Peaks, proceed to _Scenario III: City of the Elder Things_.",
+    "proceedToTheHeartOfMadness": "If the last scenario you played before this one was City of the Elder Things, proceed to _Scenario IV: The Heart of Madness_.",
+    "title": "Resolution 1",
+    "noResolution": "<p>_If no resolution was reached (each investigator was defeated)_: You stumble wearily to your feet. A dream? Your grip your temples, your mind aching. It feels as though a pneumatic drill has been taken to the inside of your skull. If this is what sleep is to be in this hellish place, you want no part of it.</p>",
+    "resolution1": "<p>_Resolution 1_: You tumble through the doorway and onto your sleeping mat, flailing within your tangle of warm blankets. No door shuts behind you. Did you only imagine all of that? Or was it all real?</p>"
   },
   "dyerWasKilledInThePlaneCrash": "<p>_If William Dyer was killed in the plane crash:_</p><p>Professor Dyer is dead. There is no way that can be him. And yet…</p><p>You see him pacing back and forth across one of the reflections, muttering to himself. “It must be stopped. They cannot do this.” He pauses, as if in conversation with another, who goes unheard. “I do not care. It must end at once!” Poor Dyer. He did try to warn you, you recall. And yet, here you are.</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",
   "ellsworthWasKilledInThePlaneCrash": "<p>_If Roald Ellsworth was killed in the plane crash:_</p><p>Ellsworth is dead. There is no way that can be him. And yet…</p><p>You spot him inside a telephone booth, arguing heatedly with somebody on the other end. “I know it is dangerous. But I have to go,” he reasons. “Trust me, this is too important to let go.”</p><p>As quickly as it appeared, the mirage vanishes. What the hell is this place? And how are these events, which you were not privy to, unfolding before your very eyes?</p>",

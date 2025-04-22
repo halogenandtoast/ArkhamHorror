@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.LiberOmniumFinium (liberOmniumFinium) where
 
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Matcher
@@ -21,15 +20,15 @@ instance RunMessage LiberOmniumFinium where
   runMessage msg t@(LiberOmniumFinium attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       cardsUnderneath <-
-        onlyEncounterCards . filter (`cardMatch` NonWeakness) <$> field InvestigatorCardsUnderneath iid
+        onlyEncounterCards . filterCards NonWeakness <$> field InvestigatorCardsUnderneath iid
 
       case cardsUnderneath of
         (x : xs) -> do
           c <- sample (x :| xs)
           cardResolutionModifiers c attrs (toCardId c) [AddKeyword Peril, EffectsCannotBeCanceled]
           cardResolutionModifier c attrs iid (AnySkillValue (-2))
-          push $ InvestigatorDrewEncounterCard iid c
-        _ -> push $ ShuffleIntoDeck (Deck.InvestigatorDeck iid) (toTarget attrs)
+          drawCard iid c
+        _ -> shuffleIntoDeck iid attrs
 
       pure t
     _ -> LiberOmniumFinium <$> liftRunMessage msg attrs

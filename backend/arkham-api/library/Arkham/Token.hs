@@ -61,6 +61,9 @@ instance IsLabel "resource" Token where
 instance IsLabel "charge" Token where
   fromLabel = Charge
 
+instance IsLabel "secret" Token where
+  fromLabel = Secret
+
 instance IsLabel "clue" Token where
   fromLabel = Clue
 

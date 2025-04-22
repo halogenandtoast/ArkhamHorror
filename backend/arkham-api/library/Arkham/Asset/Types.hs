@@ -197,6 +197,7 @@ data instance Field Asset :: Type -> Type where
   AssetCardDef :: Field Asset CardDef
   AssetCard :: Field Asset Card
   AssetAbilities :: Field Asset [Ability]
+  AssetIsDefeated :: Field Asset Bool
 
 deriving stock instance Show (Field Asset typ)
 deriving stock instance Ord (Field Asset typ)
@@ -239,6 +240,7 @@ instance FromJSON (SomeField Asset) where
     "AssetCardDef" -> pure $ SomeField AssetCardDef
     "AssetCard" -> pure $ SomeField AssetCard
     "AssetAbilities" -> pure $ SomeField AssetAbilities
+    "AssetIsDefeated" -> pure $ SomeField AssetIsDefeated
     "AssetCardsUnderneath" -> pure $ SomeField AssetCardsUnderneath
     "AssetCustomizations" -> pure $ SomeField AssetCustomizations
     "AssetAssignedHealthHeal" -> pure $ SomeField AssetAssignedHealthHeal

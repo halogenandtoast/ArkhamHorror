@@ -264,7 +264,7 @@ findCardMatch
   :: (IsCardMatcher a, IsCard card, Element cards ~ card, MonoFoldable cards)
   => a
   -> cards
-  -> (Maybe card)
+  -> Maybe card
 findCardMatch matcher = find ((`cardMatch` matcher) . toCard) . toList
 
 card_ :: CardMatcher -> CardMatcher

@@ -1069,17 +1069,34 @@ instance RunMessage EdgeOfTheEarth where
       cCode <- field AssetCardCode aid
       pushWhen (cCode `elem` map (.cardCode) expeditionTeam) $ SetPartnerStatus cCode Eliminated
       pure c
+    RemoveFromPlay (AssetSource aid) -> do
+      mCode <- fieldMay AssetCardCode aid
+      case mCode of
+        Nothing -> pure c
+        Just cCode ->
+          if cCode `elem` map (.cardCode) expeditionTeam
+            then do
+              damage <- field AssetDamage aid
+              horror <- field AssetHorror aid
+              pure
+                $ EdgeOfTheEarth
+                $ attrs
+                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
+            else pure c
     RemoveFromGame (AssetTarget aid) -> do
-      cCode <- field AssetCardCode aid
-      if cCode `elem` map (.cardCode) expeditionTeam
-        then do
-          damage <- field AssetDamage aid
-          horror <- field AssetHorror aid
-          pure
-            $ EdgeOfTheEarth
-            $ attrs
-            & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
-        else pure c
+      mCode <- fieldMay AssetCardCode aid
+      case mCode of
+        Nothing -> pure c
+        Just cCode ->
+          if cCode `elem` map (.cardCode) expeditionTeam
+            then do
+              damage <- field AssetDamage aid
+              horror <- field AssetHorror aid
+              pure
+                $ EdgeOfTheEarth
+                $ attrs
+                & (logL . partnersL . ix cCode %~ ((damageL .~ damage) . (horrorL .~ horror)))
+            else pure c
     HealDamage (CardCodeTarget cCode) CampaignSource n -> do
       if cCode `elem` map (.cardCode) expeditionTeam
         then do

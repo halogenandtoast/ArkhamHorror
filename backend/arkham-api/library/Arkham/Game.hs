@@ -2086,7 +2086,7 @@ getLocationsMatching lmatcher = do
     AccessibleFrom matcher -> do
       -- we need to add the (ConnectedToWhen)
       -- NOTE: We need to not filter the starts
-      starts <- select (Unblocked <> matcher)
+      starts <- select matcher
       others :: [Location] <- concatForM starts \l -> do
         mods <- getModifiers l
         let barricaded = concat [xs | Barricades xs <- mods]
@@ -2094,10 +2094,10 @@ getLocationsMatching lmatcher = do
         concatForM checks $ \(isValid, connectedTo) -> do
           valid <- l <=~> isValid
           if valid
-            then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching connectedTo
+            then filter ((`notElem` barricaded) . toId) <$> getLocationsMatching (Unblocked <> connectedTo)
             else pure []
       matcherSupreme <- foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher) starts
-      allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
+      allOptions <- (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
       pure $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do
       iid <- getLead

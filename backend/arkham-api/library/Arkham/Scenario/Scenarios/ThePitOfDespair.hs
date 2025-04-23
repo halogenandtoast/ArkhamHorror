@@ -7,7 +7,7 @@ import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
@@ -36,7 +36,7 @@ instance HasChaosTokenValue ThePitOfDespair where
   getChaosTokenValue iid tokenFace (ThePitOfDespair attrs) = case tokenFace of
     Skull -> do
       floodLevel <-
-        maybe (pure Unflooded) (fieldWithDefault Unflooded LocationFloodLevel) =<< getMaybeLocation iid
+        maybe (pure Unflooded) (fieldWithDefault Unflooded LocationFloodLevel) =<< getLocationOf iid
       pure $ case floodLevel of
         FullyFlooded -> toChaosTokenValue attrs Skull 3 4
         PartiallyFlooded -> toChaosTokenValue attrs Skull 2 3

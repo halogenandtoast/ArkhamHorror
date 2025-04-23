@@ -7,7 +7,7 @@ where
 import Arkham.Ability
 import Arkham.Capability
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
 import Arkham.Investigator.Cards qualified as Cards

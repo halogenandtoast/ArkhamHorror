@@ -5,7 +5,7 @@ import Arkham.Action qualified as Action
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Investigate
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher

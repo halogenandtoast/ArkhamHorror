@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.Pitchfork (pitchfork, Pitchfork (..)) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Modifier
 import Arkham.Placement
 

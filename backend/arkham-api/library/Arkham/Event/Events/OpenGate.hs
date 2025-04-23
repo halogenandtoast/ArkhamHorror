@@ -2,7 +2,7 @@ module Arkham.Event.Events.OpenGate (openGate) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Placement

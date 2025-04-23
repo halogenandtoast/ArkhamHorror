@@ -15,7 +15,7 @@ import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Text

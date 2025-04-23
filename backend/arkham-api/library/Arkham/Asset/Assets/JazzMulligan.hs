@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.JazzMulligan (jazzMulligan) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher

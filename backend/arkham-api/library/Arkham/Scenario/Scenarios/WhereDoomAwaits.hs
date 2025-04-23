@@ -110,6 +110,21 @@ instance RunMessage WhereDoomAwaits where
       broodEscapedCount <- if noBroodEscaped then pure 0 else getRecordCount BroodEscapedIntoTheWild
       silasBishopPutOutOfMisery <- getHasRecord TheInvestigatorsPutSilasBishopOutOfHisMisery
 
+      setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
+      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
+      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
+      useV2 <-
+        liftA2
+          (||)
+          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
+          (getHasRecord TheNecronomiconWasStolen)
+      let
+        ascendingTheHill = case (useV1, useV2) of
+          (True, _) -> Acts.ascendingTheHillV1
+          (False, True) -> Acts.ascendingTheHillV2
+          (False, False) -> Acts.ascendingTheHillV3
+      setActDeck [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
+
       startAt =<< place Locations.baseOfTheHill
       ascendingPath <- place Locations.ascendingPath
       place_ Locations.sentinelPeak
@@ -141,26 +156,9 @@ instance RunMessage WhereDoomAwaits where
         Hard -> MinusSix
         Expert -> MinusSeven
 
-      when (broodEscapedCount > 0) $ placeDoomOnAgenda broodEscapedCount
-
       lead <- getLead
       whenHasRecord NaomiHasTheInvestigatorsBacks $ push $ GainClues lead (toSource attrs) 1
-
       setAside $ Enemies.sethBishop : divergingPaths <> alteredPaths
-      setAgendaDeck [Agendas.callingForthTheOldOnes, Agendas.beckoningForPower]
-
-      useV1 <- getHasRecord TheInvestigatorsRestoredSilasBishop
-      useV2 <-
-        liftA2
-          (||)
-          (getHasRecord TheInvestigatorsFailedToRecoverTheNecronomicon)
-          (getHasRecord TheNecronomiconWasStolen)
-      let
-        ascendingTheHill = case (useV1, useV2) of
-          (True, _) -> Acts.ascendingTheHillV1
-          (False, True) -> Acts.ascendingTheHillV2
-          (False, False) -> Acts.ascendingTheHillV3
-      setActDeck [Acts.thePathToTheHill, ascendingTheHill, Acts.theGateOpens]
     ResolveChaosToken drawnToken Cultist iid -> do
       withSkillTest \sid -> do
         skillTestModifier sid drawnToken.face sid CancelSkills

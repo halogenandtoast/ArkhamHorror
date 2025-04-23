@@ -2112,6 +2112,12 @@ getLocationsMatching lmatcher = do
     NotLocation matcher -> do
       excludes <- go ls matcher
       pure $ filter (`notElem` excludes) ls
+    ClosestPathLocationMatch start destination -> do
+      ms <- selectOne start
+      md <- selectOne destination
+      case (ms, md) of
+        (Just s, Just d) -> go ls (ClosestPathLocation s d)
+        _ -> pure []
     ClosestPathLocation start destination -> do
       -- logic is to get each adjacent location and determine which is closest to
       -- the destination

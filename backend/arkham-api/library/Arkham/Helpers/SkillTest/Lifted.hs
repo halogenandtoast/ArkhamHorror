@@ -3,7 +3,7 @@ module Arkham.Helpers.SkillTest.Lifted (module Arkham.Helpers.SkillTest.Lifted, 
 import Arkham.Calculation
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message (toMessage)
 import Arkham.Investigate.Types qualified as I
 import Arkham.Investigate (mkInvestigateLocation)

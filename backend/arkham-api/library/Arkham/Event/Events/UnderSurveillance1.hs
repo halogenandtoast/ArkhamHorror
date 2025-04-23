@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Arkham.Placement

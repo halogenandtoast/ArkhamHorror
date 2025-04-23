@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.ArcaneBarrier (arcaneBarrier) where
 import Arkham.Cost
 import Arkham.Helpers.Modifiers
 import Arkham.Message.Lifted.Choose
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Placement
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (movementModifier)

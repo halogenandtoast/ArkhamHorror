@@ -4,8 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
-import Arkham.Helpers.Investigator (withLocationOf)
-import Arkham.Helpers.Location (placementLocation)
+import Arkham.Helpers.Location (placementLocation, withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement

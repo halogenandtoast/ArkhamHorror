@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.HuntedDown (HuntedDown (..), huntedDown) where
 
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait

@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.OppressiveMists (oppressiveMists) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Matcher
 import Arkham.Helpers.Window (cardsDrawn)

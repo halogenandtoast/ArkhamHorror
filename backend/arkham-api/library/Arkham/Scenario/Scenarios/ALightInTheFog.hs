@@ -12,7 +12,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Exception
-import Arkham.Helpers.Investigator (withLocationOf, getMaybeLocation)
+import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (modifySelectMaybe, modifySelectMaybeWith)
 import Arkham.Modifier
@@ -217,7 +217,7 @@ instance RunMessage ALightInTheFog where
         _ -> throw $ UnknownResolution resolution
       pure s
     Resign iid -> do
-      getMaybeLocation iid >>= \case
+      getLocationOf iid >>= \case
         Nothing -> pure s
         Just lid -> do
           isMoonRoom <- lid <=~> locationIs Locations.theMoonRoom

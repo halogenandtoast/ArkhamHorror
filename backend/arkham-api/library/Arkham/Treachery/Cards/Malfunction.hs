@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.Malfunction (malfunction) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

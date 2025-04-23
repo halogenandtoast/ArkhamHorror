@@ -404,109 +404,125 @@ const cardPiles = computed(() => {
   </div>
 
 
-  <div class="question-image" v-if="questionImage">
-    <img :src="questionImage" class="card" />
-  </div>
-
   <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
+    <div class="question-image" v-if="questionImage">
+      <img :src="questionImage" class="card" />
+    </div>
+
     <DropDown @choose="choose" :options="question.options" />
   </div>
 
   <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
+    <div class="question-image" v-if="questionImage">
+      <img :src="questionImage" class="card" />
+    </div>
+
     <DropDown @choose="choose" :options="question.question.options" />
   </div>
 
   <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
+    <div class="question-image" v-if="questionImage">
+      <img :src="questionImage" class="card" />
+    </div>
+
     <Token v-for="(focusedToken, index) in focusedChaosTokens" :key="index" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
   </div>
 
   <div v-if="showChoices" class="choices">
-    <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
-      <div class="modal-contents focused-cards">
-        <Card
-          v-for="(card, index) in focusedCards"
-          :card="card"
-          :game="game"
-          :playerId="playerId"
-          :key="index"
-          @choose="$emit('choose', $event)"
-        />
+    <div class="question-label">
+      <div class="question-image" v-if="questionImage">
+        <img :src="questionImage" class="card" />
       </div>
-    </div>
-    <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
-      <div class="modal-contents searched-cards">
-        <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-          <h2>{{zoneToLabel(group)}}</h2>
-          <div class="group-cards">
-            <Card
-              v-for="card in cards"
-              :card="card"
-              :game="game"
-              :playerId="playerId"
-              :key="`${group}-${card}`"
-              @choose="$emit('choose', $event)"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-if="paymentAmountsLabel" class="modal amount-modal">
-      <div class="modal-contents amount-contents">
-        <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
-          <legend v-html="paymentAmountsLabel"></legend>
-          <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
-            <div v-if="amountChoice.maxBound !== 0">
-              {{amountChoice.title}}
-              <input
-                type="number"
-                :min="amountChoice.minBound"
-                :max="amountChoice.maxBound"
-                v-model.number="amountSelections[amountChoice.choiceId]"
-                onclick="this.select()"
-              />
-            </div>
-          </template>
-          <button :disabled="unmetAmountRequirements">Submit</button>
-        </form>
-      </div>
-    </div>
-    <div v-if="amountsLabel" class="modal amount-modal">
-      <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
-        <div v-for="[group, cards] in searchedCards" :key="group" class="group">
-          <h2>{{zoneToLabel(group)}}</h2>
-          <div class="group-cards">
-            <Card
-              v-for="card in cards"
-              :card="card"
-              :game="game"
-              :playerId="playerId"
-              :key="`${group}-${card}`"
-              @choose="$emit('choose', $event)"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="modal-contents amount-contents">
-        <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
-          <legend v-html="amountsLabel"></legend>
-          <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
-            <div v-if="paymentChoice.maxBound !== 0">
-              <label :for="`choice-${paymentChoice.choiceId}`" v-html="formatContent(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
-            </div>
-          </template>
-          <button :disabled="unmetAmountRequirements">Submit</button>
-        </form>
-      </div>
-    </div>
 
-    <div v-if="portraits.length > 0" class="portraits">
-      <template v-for="([choice, index]) in portraits" :key="index">
-        <template v-if="choice.tag === 'PortraitLabel'">
-          <div class="portrait">
-            <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+      <div class='question-content'>
+        <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
+          <div class="modal-contents focused-cards">
+            <Card
+              v-for="(card, index) in focusedCards"
+              :card="card"
+              :game="game"
+              :playerId="playerId"
+              :key="index"
+              @choose="$emit('choose', $event)"
+            />
           </div>
-        </template>
-      </template>
+        </div>
+        <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
+          <div class="modal-contents searched-cards">
+            <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+              <h2>{{zoneToLabel(group)}}</h2>
+              <div class="group-cards">
+                <Card
+                  v-for="card in cards"
+                  :card="card"
+                  :game="game"
+                  :playerId="playerId"
+                  :key="`${group}-${card}`"
+                  @choose="$emit('choose', $event)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="paymentAmountsLabel" class="modal amount-modal">
+          <div class="modal-contents amount-contents">
+            <form @submit.prevent="submitPaymentAmounts" :disabled="unmetAmountRequirements">
+              <legend v-html="paymentAmountsLabel"></legend>
+              <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.investigatorId">
+                <div v-if="amountChoice.maxBound !== 0">
+                  {{amountChoice.title}}
+                  <input
+                    type="number"
+                    :min="amountChoice.minBound"
+                    :max="amountChoice.maxBound"
+                    v-model.number="amountSelections[amountChoice.choiceId]"
+                    onclick="this.select()"
+                  />
+                </div>
+              </template>
+              <button :disabled="unmetAmountRequirements">Submit</button>
+            </form>
+          </div>
+        </div>
+        <div v-if="amountsLabel" class="modal amount-modal">
+          <div v-if="searchedCards.length > 0" class="modal-contents searched-cards">
+            <div v-for="[group, cards] in searchedCards" :key="group" class="group">
+              <h2>{{zoneToLabel(group)}}</h2>
+              <div class="group-cards">
+                <Card
+                  v-for="card in cards"
+                  :card="card"
+                  :game="game"
+                  :playerId="playerId"
+                  :key="`${group}-${card}`"
+                  @choose="$emit('choose', $event)"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-contents amount-contents">
+            <form @submit.prevent="submitAmounts" :disabled="unmetAmountRequirements">
+              <legend v-html="amountsLabel"></legend>
+              <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
+                <div v-if="paymentChoice.maxBound !== 0">
+                  <label :for="`choice-${paymentChoice.choiceId}`" v-html="formatContent(paymentChoice.label)"></label> <input type="number" :min="paymentChoice.minBound" :max="paymentChoice.maxBound" v-model.number="amountSelections[paymentChoice.choiceId]" :name="`choice-${paymentChoice.choiceId}`" onclick="this.select()" />
+                </div>
+              </template>
+              <button :disabled="unmetAmountRequirements">Submit</button>
+            </form>
+          </div>
+        </div>
+
+        <div v-if="portraits.length > 0" class="portraits">
+          <template v-for="([choice, index]) in portraits" :key="index">
+            <template v-if="choice.tag === 'PortraitLabel'">
+              <div class="portrait">
+                <img class="active" :src="portraitLabelImage(choice.investigatorId)" @click="choose(index)" />
+              </div>
+            </template>
+          </template>
+        </div>
+      </div>
     </div>
 
     <template v-for="(choice, index) in choices" :key="index">
@@ -1092,4 +1108,68 @@ h2 {
   display: flex;
   gap: 10px;
 }
+
+.question-label:has(> .question-image) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  align-self: center;
+  height: fit-content;
+  gap: 10px;
+  width: 100%;
+  border-radius: 15px;
+  h2 {
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.8em;
+    background: var(--neutral-extra-dark);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-family: Teutonic, sans-serif;
+    padding: 10px 20px;
+  }
+  > .question-image {
+    justify-content: flex-start;
+    img  {
+      width: calc(var(--card-width) * 4);
+      flex-basis: unset;
+      flex-shrink: unset;
+    }
+  }
+  > .question-content {
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+    flex: 1;
+    .portraits {
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .portrait {
+      display: flex;
+      margin: 0;
+      img { min-width: fit-content; };
+    }
+    .portrait-choices {
+      justify-items: flex-start;
+      flex: 1;
+    }
+  }
+  button {
+    width: 100%;
+  }
+}
+
+.active {
+  border: 1px solid var(--select);
+}
+
+
 </style>

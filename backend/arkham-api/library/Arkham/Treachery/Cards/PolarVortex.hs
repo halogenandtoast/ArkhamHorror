@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.PolarVortex (polarVortex, PolarVortex (..)) where
 
 import Arkham.Ability
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message (pattern DealAssetDamage)
 import Arkham.Message.Lifted.Choose

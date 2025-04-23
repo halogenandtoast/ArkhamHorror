@@ -4,7 +4,8 @@ import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
-import Arkham.Helpers.Investigator (getCanDiscoverClues, withLocationOf)
+import Arkham.Helpers.Investigator (getCanDiscoverClues)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message (handleTargetChoice)
 import Arkham.Matcher
 import Arkham.Message qualified as Msg

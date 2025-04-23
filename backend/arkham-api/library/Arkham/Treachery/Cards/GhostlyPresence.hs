@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.GhostlyPresence (ghostlyPresence) where
 
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Location.Cards (siteOfTheSacrifice)
 import Arkham.Matcher

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.InfiniteDoorway (infiniteDoorway) where
 
 import Arkham.Card
 import Arkham.Cost
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

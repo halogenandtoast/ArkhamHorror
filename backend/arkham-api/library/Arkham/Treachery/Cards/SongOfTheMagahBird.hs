@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.SongOfTheMagahBird (songOfTheMagahBird, SongOfTheM
 
 import Arkham.Ability
 import Arkham.Classes
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Prelude

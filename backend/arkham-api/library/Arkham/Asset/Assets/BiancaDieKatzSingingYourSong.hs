@@ -4,7 +4,8 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies
-import Arkham.Helpers.Investigator (searchBonded, withLocationOf)
+import Arkham.Helpers.Investigator (searchBonded)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message (getChoiceAmount)

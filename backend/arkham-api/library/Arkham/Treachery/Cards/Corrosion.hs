@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.Corrosion (corrosion, Corrosion (..)) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Id
 import Arkham.Investigator.Projection ()
 import Arkham.Location.Projection ()

@@ -7,7 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Helpers.Cost
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
 import Arkham.Investigate
 import Arkham.Location.Types (Field (..))

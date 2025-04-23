@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheLostExpedition (theLostExpedition) where
 import Arkham.Ability
 import Arkham.Act.Cards qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Helpers.Investigator (withLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection

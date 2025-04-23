@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 

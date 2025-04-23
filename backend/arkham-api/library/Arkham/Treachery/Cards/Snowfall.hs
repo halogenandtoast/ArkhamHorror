@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.Snowfall (snowfall) where
 
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Location
 import Arkham.Treachery.Cards qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

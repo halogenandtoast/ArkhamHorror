@@ -67,6 +67,7 @@ b, strong {
 
 img, svg {
   max-width: 100%;
+  -webkit-touch-callout: none
 }
 
 button {

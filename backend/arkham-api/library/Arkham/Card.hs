@@ -307,6 +307,16 @@ data Card
   | VengeanceCard Card
   deriving stock (Show, Ord, Data)
 
+instance HasTraits Card where
+  toTraits = \case
+    PlayerCard pc -> case pc.cardCode of
+      "09022" ->
+        let customizations = cdCustomizations $ toCardDef pc
+        in toTraits pc <> if hasCustomization_ customizations (pcCustomizations pc) Heirloom then singleton Relic else mempty
+      _ -> toTraits pc
+    EncounterCard ec -> toTraits ec
+    VengeanceCard c -> toTraits c
+
 instance HasField "victoryPoints" Card (Maybe Int) where
   getField = (.victoryPoints) . toCardDef
 

@@ -27,7 +27,7 @@ onMounted(() => {
     }
   }
 
-  const isMobile = !window.matchMedia('only screen and (min-width: 768px)').matches
+  const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   let pressTimer : number | undefined = undefined
 
   const handlePress = (event: Event) => {
@@ -61,7 +61,7 @@ const card = computed(() => {
   return getImage(hoveredElement.value)
 })
 
-const isMobile = !window.matchMedia('only screen and (min-width: 768px)').matches
+const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
 const allCustomizations = ["09021", "09022", "09023", "09040", "09041", "09042", "09059", "09060", "09061", "09079", "09080", "09081", "09099", "09100", "09101", "09119"]
 
@@ -436,11 +436,6 @@ const getImage = (el: HTMLElement): string | null => {
   position: absolute;
   z-index: 1000;
   display: flex;
-  .card-image {
-    max-height: 420px;
-    max-width: 300px;
-    height: fit-content;
-  }
   img {
     box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.75);
     border-radius: 15px;
@@ -487,7 +482,7 @@ const getImage = (el: HTMLElement): string | null => {
     height: 300px !important;
     width: fit-content !important;
     height: 300px;
-    aspect-ratio: var(--card-sideways-aspect);
+    //aspect-ratio: var(--card-sideways-aspect);
     width: auto;
     img {
       aspect-ratio: var(--card-sideways-aspect);

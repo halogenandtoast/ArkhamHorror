@@ -26,12 +26,13 @@ const image = computed(() => {
 <style scoped lang="scss">
 
 .poolItem {
+  --width: var(--pool-token-width);
   pointer-events: inherit;
 }
 
 .poolItem.poolItem-resource {
-  img {
-    width: min(30px, 5vw);
+  img { 
+    width: var(--width);
   }
   padding: 2px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -39,12 +40,12 @@ const image = computed(() => {
 
 .poolItem.poolItem-clue {
   img {
-    width: min(30px, 5vw);
+    width: var(--width);
   }
 }
 
 .poolItem {
-  width: min(30px, 5vw);
+  width: var(--width);
   display: grid;
   place-items: center;
   color: black;

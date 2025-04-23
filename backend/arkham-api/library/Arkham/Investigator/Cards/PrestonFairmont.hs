@@ -51,7 +51,7 @@ instance RunMessage PrestonFairmont where
               pushWhen canGainResources $ PlaceResources (toSource attrs) (toTarget familyInheritance) n
               pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
-      hasResources <- (> 0) <$> getSpendableResources iid
+      hasResources <- (>= 2) <$> getSpendableResources iid
       player <- getPlayer iid
       push
         $ chooseOrRunOne player

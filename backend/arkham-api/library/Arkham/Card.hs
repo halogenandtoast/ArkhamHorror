@@ -310,6 +310,9 @@ data Card
 instance HasTraits Card where
   toTraits = \case
     PlayerCard pc -> case pc.cardCode of
+      "09021" ->
+        let customizations = cdCustomizations $ toCardDef pc
+        in toTraits pc <> if hasCustomization_ customizations (pcCustomizations pc) Enchanted then singleton Relic else mempty
       "09022" ->
         let customizations = cdCustomizations $ toCardDef pc
         in toTraits pc <> if hasCustomization_ customizations (pcCustomizations pc) Heirloom then singleton Relic else mempty
